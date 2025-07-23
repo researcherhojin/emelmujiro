@@ -7,40 +7,40 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  frontend-test:
+  test:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
     
-    - name: Use Node.js 18
-      uses: actions/setup-node@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
       with:
         node-version: '18'
     
-    - name: Install and Build Frontend
-      run: |
-        cd frontend
-        npm install
-        npm run build
-        echo "Frontend build successful!"
-  
-  backend-test:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v5
+    - name: Setup Python
+      uses: actions/setup-python@v4
       with:
         python-version: '3.11'
     
-    - name: Install and Check Backend
+    - name: Test Frontend
       run: |
+        echo "Testing frontend..."
+        cd frontend
+        echo "Installing dependencies..."
+        npm install --legacy-peer-deps
+        echo "Building frontend..."
+        npm run build
+        echo "Frontend test completed!"
+    
+    - name: Test Backend
+      run: |
+        echo "Testing backend..."
         cd backend
+        echo "Installing dependencies..."
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install black flake8
+        echo "Checking Django configuration..."
         python manage.py check
-        echo "Backend setup successful!"
+        echo "Backend test completed!"
