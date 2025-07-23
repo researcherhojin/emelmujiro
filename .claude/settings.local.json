@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(npm run test:*)",
+      "Bash(python manage.py test:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm start)"
+    ],
+    "deny": []
+  }
+}

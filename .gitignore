@@ -1,0 +1,15 @@
+.env
+*.log
+*.sqlite3
+__pycache__/
+
+# frontend
+frontend/node_modules/
+frontend/.next/
+frontend/dist/
+frontend/build/
+
+# backend
+backend/__pycache__/
+backend/*.pyc
+backend/db.sqlite3
