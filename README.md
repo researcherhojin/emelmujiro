@@ -38,8 +38,10 @@ AI 교육 및 컨설팅 전문 기업 에멀무지로의 공식 웹사이트입�
 ### DevOps & CI/CD
 - **Docker** & **Docker Compose** - 컨테이너화 및 오케스트레이션
 - **GitHub Actions** - CI/CD 파이프라인
+- **GitHub Pages** - Frontend 호스팅
 - **npm workspaces** - Monorepo 관리
 - **Makefile** - 자동화 스크립트
+- **Husky** & **lint-staged** - Git hooks 자동화
 
 ### 개발 도구
 - **Create React App** - 프로젝트 부트스트래핑
@@ -66,8 +68,13 @@ AI 교육 및 컨설팅 전문 기업 에멀무지로의 공식 웹사이트입�
 emelmujiro/
 ├── .github/
 │   └── workflows/           # GitHub Actions CI/CD
-│       ├── ci.yml          # CI 파이프라인
-│       └── cd.yml          # CD 파이프라인
+│       ├── test.yml        # 기본 테스트 워크플로우
+│       ├── ci-simple.yml   # 간단한 CI 파이프라인
+│       ├── deploy-gh-pages.yml # GitHub Pages 배포
+│       ├── ci.yml          # 고급 CI (비활성화)
+│       ├── cd.yml          # CD 파이프라인 (비활성화)
+│       ├── cd-simple.yml   # 간단한 CD (비활성화)
+│       └── build-test.yml  # Docker 빌드 테스트 (비활성화)
 ├── frontend/                # React 기반 프론트엔드
 │   ├── src/
 │   │   ├── components/
@@ -93,8 +100,17 @@ emelmujiro/
 ├── docker-compose.yml      # 프로덕션 구성
 ├── docker-compose.dev.yml  # 개발 구성
 ├── package.json            # Monorepo 설정
+├── package-lock.json       # 의존성 잠금 파일
 ├── Makefile                # 자동화 명령어
-└── README.md               # 프로젝트 문서
+├── .env.example            # 환경 변수 예시
+├── .eslintrc.js            # ESLint 설정
+├── .prettierrc             # Prettier 설정
+├── .gitignore              # Git 제외 파일
+├── README.md               # 프로젝트 문서
+├── CLAUDE.md               # Claude Code 가이드
+├── CI-CD-GUIDE.md          # CI/CD 가이드
+├── SETUP-GUIDE.md          # 설정 가이드
+└── TROUBLESHOOTING.md      # 문제 해결 가이드
 ```
 
 ## 📱 페이지 구조
@@ -149,21 +165,29 @@ make install
 
 ### 개발 환경 실행
 
-#### 방법 1: Docker 사용 (권장)
+#### 방법 1: Monorepo 스크립트 사용 (권장)
 ```bash
-# Docker 환경에서 실행
-make dev
+# 의존성 설치
+npm install
 
-# 또는 포트 충돌 시
-make dev-clean
-```
-
-#### 방법 2: 로컬 실행
-```bash
-# Monorepo 스크립트로 실행
+# Frontend와 Backend 동시 실행
 npm run dev
 
-# 또는 개별 실행
+# 포트 충돌 시 자동 정리 후 실행
+npm run dev:clean
+```
+
+#### 방법 2: Docker 사용
+```bash
+# Docker 환경에서 실행
+make dev-docker
+
+# 또는
+docker-compose -f docker-compose.dev.yml up
+```
+
+#### 방법 3: 개별 실행
+```bash
 # Frontend (터미널 1)
 cd frontend && npm start
 
@@ -210,6 +234,30 @@ python manage.py runserver
 - ✅ 사용되지 않는 import 정리
 - ✅ 컴포넌트 최적화 및 성능 개선
 
+### Phase 6: Monorepo 및 CI/CD 구축 (2025.07.23)
+- ✅ npm workspaces를 이용한 Monorepo 구조 설정
+- ✅ GitHub Actions CI/CD 파이프라인 구축
+  - `test.yml` - 기본 빌드 및 테스트
+  - `ci-simple.yml` - Frontend/Backend 통합 테스트
+  - `deploy-gh-pages.yml` - GitHub Pages 자동 배포
+- ✅ Docker 및 Docker Compose 설정
+  - 개발/프로덕션 환경 분리
+  - PostgreSQL, Redis, Nginx 통합
+- ✅ 개발 자동화 스크립트 추가
+  - Makefile로 명령어 통합
+  - 포트 관리 스크립트 (check-ports.sh, kill-ports.sh)
+- ✅ Git submodule 문제 해결
+  - frontend/backend 폴더가 submodule로 잘못 등록된 문제 수정
+  - 모든 소스 코드를 정상적으로 Git에 추가
+- ✅ GitHub Actions 오류 해결
+  - Git checkout 오류 (exit code 128) 해결
+  - Husky CI 환경 충돌 해결
+  - npm 캐시 경로 문제 수정
+- ✅ GitHub Pages 배포 설정
+  - HashRouter로 변경하여 SPA 라우팅 지원
+  - gh-pages 패키지 추가 및 배포 스크립트 설정
+  - 로고 링크 React Router 호환성 문제 해결
+
 ## 🎨 디자인 특징
 
 ### 모노크롬 디자인 시스템
@@ -255,15 +303,42 @@ python manage.py runserver
 
 ## 🚀 배포
 
-### Frontend
-- **플랫폼**: Netlify
+### Frontend (GitHub Pages)
+- **URL**: https://researcherhojin.github.io/emelmujiro
+- **자동 배포**: main 브랜치 push 시
 - **빌드 명령어**: `npm run build`
-- **배포 디렉토리**: `build/`
+- **배포 디렉토리**: `frontend/build/`
 
-### Backend
-- **플랫폼**: Heroku
+### Backend (미배포)
+- **플랫폼 옵션**: Railway, Render, Heroku
 - **데이터베이스**: PostgreSQL
-- **정적 파일**: AWS S3 (선택사항)
+- **정적 파일**: WhiteNoise 또는 S3
+
+## 🛠️ 추가 개발 도구
+
+### Makefile 명령어
+```bash
+make install        # 전체 의존성 설치
+make dev           # Docker로 개발 환경 실행
+make dev-clean     # 포트 정리 후 실행
+make build         # 프로덕션 빌드
+make test          # 테스트 실행
+make lint          # 린트 실행
+make clean         # 빌드 파일 정리
+make ports         # 포트 상태 확인
+make kill-ports    # 포트 강제 종료
+```
+
+### npm 스크립트
+```bash
+npm run dev              # Frontend + Backend 동시 실행
+npm run dev:clean        # 포트 정리 후 실행
+npm run dev:frontend     # Frontend만 실행
+npm run dev:backend      # Backend만 실행
+npm run build            # Frontend 빌드
+npm run test             # 테스트 실행
+npm run lint             # ESLint 실행
+```
 
 ## 🤝 기여하기
 
