@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Mail, Phone, Send, Code, BookOpen } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Send, Code, BookOpen, Wifi, WifiOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { registerBackgroundSync, SYNC_TAGS } from '../../utils/backgroundSync';
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({
@@ -11,14 +12,52 @@ const ContactPage = () => {
         inquiryType: 'solution',
         message: '',
     });
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
+    const [showOfflineMessage, setShowOfflineMessage] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         window.scrollTo(0, 0);
+        
+        // Monitor online/offline status
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+        
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+        
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
     }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // If offline, save for background sync
+        if (!isOnline) {
+            try {
+                await registerBackgroundSync(SYNC_TAGS.CONTACT_FORM, formData);
+                setShowOfflineMessage(true);
+                
+                // Clear form
+                setFormData({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    company: '',
+                    inquiryType: 'solution',
+                    message: '',
+                });
+                
+                // Hide message after 5 seconds
+                setTimeout(() => setShowOfflineMessage(false), 5000);
+                return;
+            } catch (error) {
+                console.error('Failed to register background sync:', error);
+            }
+        }
 
         const subject =
             formData.inquiryType === 'education'
@@ -86,11 +125,28 @@ ${formData.message}
 
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
                 <div className="mb-16">
-                    <h1 className="text-5xl font-bold text-gray-900 mb-6">문의하기</h1>
+                    <div className="flex items-center justify-between mb-6">
+                        <h1 className="text-5xl font-bold text-gray-900">문의하기</h1>
+                        <div className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                            isOnline ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+                        }`}>
+                            {isOnline ? <Wifi className="w-4 h-4 mr-1" /> : <WifiOff className="w-4 h-4 mr-1" />}
+                            {isOnline ? '온라인' : '오프라인'}
+                        </div>
+                    </div>
                     <p className="text-xl text-gray-600 leading-relaxed">
                         AI 솔루션, 컨설팅, 교육 문의에 대한 궁금한 점이 있으시면 언제든지 연락주세요.
                     </p>
                 </div>
+                
+                {/* Offline message */}
+                {showOfflineMessage && (
+                    <div className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                        <p className="text-sm text-orange-800">
+                            <strong>오프라인 모드:</strong> 문의가 저장되었습니다. 인터넷 연결이 복구되면 자동으로 전송됩니다.
+                        </p>
+                    </div>
+                )}
 
                 {/* Inquiry Types */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 mb-12 sm:mb-16">

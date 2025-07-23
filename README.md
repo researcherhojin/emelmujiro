@@ -134,11 +134,14 @@ emelmujiro/
 - **부드러운 애니메이션** - Framer Motion 기반 인터랙션
 - **SEO 최적화** - React Helmet을 통한 메타데이터 관리
 - **접근성 고려** - WCAG 가이드라인 준수
+- **PWA 지원** - 오프라인 작동, 앱 설치 가능
 
 ### 성능 최적화
 - **코드 스플리팅** - React.lazy를 통한 번들 최적화
-- **이미지 최적화** - 최적화된 이미지 로딩
+- **이미지 최적화** - LazyImage 컴포넌트로 지연 로딩
 - **CSS 최적화** - Tailwind CSS의 PurgeCSS 적용
+- **Service Worker** - 리소스 캐싱 및 오프라인 지원
+- **테스트 자동화** - Jest & React Testing Library
 
 ## 🚀 설치 및 실행
 
@@ -257,6 +260,129 @@ python manage.py runserver
   - HashRouter로 변경하여 SPA 라우팅 지원
   - gh-pages 패키지 추가 및 배포 스크립트 설정
   - 로고 링크 React Router 호환성 문제 해결
+
+### Phase 7: 대규모 리팩토링 (2025.07.23)
+- ✅ **중복 데이터 통합**
+  - `src/constants/` 폴더 생성
+  - 서비스, 통계, 파트너사, 스킬 데이터를 중앙 집중화
+  - 모든 컴포넌트에서 constants 사용으로 일관성 향상
+- ✅ **모바일 반응형 대폭 개선**
+  - ContactPage: 폼 입력 필드 크기 증가 (py-3, text-base)
+  - ProfilePage: 탭 네비게이션 가로 스크롤 및 간격 조정
+  - 통계 카드 모바일 최적화
+  - scrollbar-hide 유틸리티 클래스 추가
+- ✅ **접근성(a11y) 개선**
+  - 모든 이미지에 의미있는 alt 텍스트 추가
+  - 로고 이미지: 회사 설명 포함
+  - 블로그 이미지: 포스트 제목 포함
+  - SVG 아이콘에 aria-hidden 속성 추가
+- ✅ **공통 컴포넌트 추출**
+  - Button 컴포넌트: 다양한 variant와 size 지원
+  - Section 컴포넌트: 섹션 레이아웃 표준화
+  - LazyImage 컴포넌트: IntersectionObserver 활용 지연 로딩
+  - LoadingSpinner, ErrorMessage 컴포넌트 추가
+- ✅ **이미지 최적화**
+  - LazyImage 컴포넌트로 지연 로딩 구현
+  - 로딩 중 placeholder 표시
+  - 에러 상태 처리
+- ✅ **파트너사 로고 개선**
+  - 메인 페이지: 2줄 무한 슬라이딩 애니메이션
+  - AboutPage: 동일한 로고 이미지 사용, 무한 슬라이딩 적용
+  - 색상 표시 및 호버 효과 추가
+- ✅ **ProfilePage 개선**
+  - 탭 네비게이션 border 스타일 개선
+  - 텍스트 간격 증가로 가독성 향상
+  - 학력 날짜 줄바꿈 처리
+- ✅ **AboutPage 디자인 통일**
+  - 섹션별 배경색 통일 (흰색/연한 회색 번갈아)
+  - 파트너사 섹션 제목과 설명 추가
+  - CTA 섹션 색상 개선 (bg-gray-900)
+- ✅ **ESLint 경고 모두 해결**
+  - LazyImage useEffect cleanup 경고 수정
+  - 사용하지 않는 변수 및 import 제거
+  - 코드 품질 향상
+
+### Phase 8: SEO 및 추가 개선 (2025.07.23)
+- ✅ **SEO 최적화**
+  - sitemap.xml 업데이트 (2024-01-04 → 2025-07-23)
+  - GitHub Pages URL로 변경 (https://researcherhojin.github.io/emelmujiro)
+  - 모든 페이지 포함 (/, /about, /profile, /contact)
+  - robots.txt의 Sitemap URL 업데이트
+
+### Phase 9: PWA 구현 및 테스트 환경 구축 (2025.07.23)
+- ✅ **PWA (Progressive Web App) 완전 구현**
+  - manifest.json 한글화 및 최적화
+    - 앱 이름: "에멜무지로 - AI 교육 및 컨설팅"
+    - 테마 색상: #111827 (다크 그레이)
+    - 디스플레이: standalone (앱 모드)
+    - 앱 아이콘 및 스플래시 화면 설정
+  - Service Worker 구현 (public/service-worker.js)
+    - 오프라인 모드 지원
+    - 캐싱 전략: 네트워크 우선(API), 캐시 우선(정적 리소스)
+    - 자동 캐시 업데이트 및 이전 버전 정리
+    - 푸시 알림 지원
+    - 백그라운드 동기화
+  - PWA 설치 버튼 컴포넌트 추가
+    - 브라우저 설치 프롬프트 감지
+    - 우측 하단 플로팅 버튼
+    - 설치 후 자동 숨김
+  - Service Worker 등록 (serviceWorkerRegistration.js)
+    - 자동 업데이트 감지
+    - 사용자 알림 및 새로고침 프롬프트
+  - 푸시 알림 기능 구현
+    - pushNotifications.js 유틸리티
+    - 알림 권한 요청 컴포넌트
+    - 백그라운드 푸시 메시지 처리
+  - 백그라운드 동기화 구현
+    - backgroundSync.js 유틸리티
+    - IndexedDB 통합
+    - 오프라인 문의 폼 지원
+- ✅ **테스트 환경 구축**
+  - 테스트 도구 설치
+    - @testing-library/react
+    - @testing-library/jest-dom
+    - @testing-library/user-event
+    - jest-environment-jsdom
+  - 테스트 설정 (setupTests.js)
+    - window.matchMedia mock
+    - IntersectionObserver mock
+    - Service Worker mock
+    - scrollTo mock
+  - 단위 테스트 작성
+    - App.test.js: 앱 전체 렌더링 및 네비게이션
+    - Button.test.js: 버튼 컴포넌트 (8개 테스트)
+    - LazyImage.test.js: 이미지 지연 로딩 (2개 테스트)
+    - PWAInstallButton.test.js: PWA 설치 버튼 (2개 테스트)
+    - HeroSection.test.js: 히어로 섹션 (3개 테스트)
+    - Section.test.js: 섹션 컴포넌트 (5개 테스트)
+    - Footer.test.js: 푸터 컴포넌트
+    - Navbar.test.js: 네비게이션 바
+    - LoadingSpinner.test.js: 로딩 스피너
+    - ErrorMessage.test.js: 에러 메시지
+    - ServicesSection.test.js: 서비스 섹션
+    - ContactPage.test.js: 문의 페이지
+  - Framer Motion mock 설정
+    - 애니메이션 라이브러리 테스트 환경 대응
+  - npm test 스크립트로 테스트 실행 가능
+- ✅ **E2E 테스트 환경 구축 (Playwright)**
+  - Playwright 설치 및 설정
+  - playwright.config.js 구성
+    - Chrome, Firefox, Safari 지원
+    - 모바일 테스트 지원
+  - E2E 테스트 스펙 작성
+    - homepage.spec.js: 홈페이지 테스트
+    - contact.spec.js: 문의 페이지 테스트
+    - pwa.spec.js: PWA 기능 테스트
+    - accessibility.spec.js: 접근성 테스트
+  - npm run test:e2e 스크립트 추가
+- ✅ **성능 모니터링 (Lighthouse CI)**
+  - Lighthouse CI 설치 및 설정
+  - lighthouserc.js 구성
+    - 성능, 접근성, SEO, PWA 점수 측정
+    - 임계값 설정
+  - GitHub Actions 워크플로우 추가
+    - lighthouse-ci.yml: PR 및 푸시 시 자동 실행
+  - npm run lhci 스크립트 추가
 
 ## 🎨 디자인 특징
 

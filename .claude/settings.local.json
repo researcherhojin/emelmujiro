@@ -22,7 +22,9 @@
       "Bash(cat:*)",
       "Bash(git submodule:*)",
       "Bash(git rm:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm test:*)",
+      "Bash(npx playwright:*)"
     ],
     "deny": []
   }

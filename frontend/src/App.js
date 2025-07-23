@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import PageLoading from './components/common/PageLoading';
+import PWAInstallButton from './components/common/PWAInstallButton';
+import NotificationPermission from './components/common/NotificationPermission';
 
 // Main page components
 import HeroSection from './components/sections/HeroSection';
@@ -70,6 +72,8 @@ function App() {
                     </Suspense>
                 </main>
                 <Footer />
+                <PWAInstallButton />
+                <NotificationPermission />
             </div>
         </Router>
     );

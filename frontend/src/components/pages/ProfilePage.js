@@ -36,7 +36,7 @@ const ProfilePage = () => {
 
     const educationData = [
         {
-            period: '2024.09 ~ 2026.06 (예정)',
+            period: '2024.09 ~ 2026.06\n(예정)',
             school: '한양대학교',
             degree: '인공지능융합대학원 인공지능시스템학과 석사과정',
             description: '지도교수: 조동현 교수'
@@ -79,65 +79,74 @@ const ProfilePage = () => {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
-                        <div className="text-4xl font-bold text-gray-900 mb-2">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-16">
+                    <div className="bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
+                        <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1 sm:mb-2">
                             {projectStats.totalProjects}
                         </div>
-                        <div className="text-base text-gray-600">프로젝트</div>
+                        <div className="text-sm sm:text-base text-gray-600">프로젝트</div>
                     </div>
-                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
-                        <div className="text-4xl font-bold text-gray-900 mb-2">
+                    <div className="bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
+                        <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1 sm:mb-2">
                             {projectStats.totalStudents}
                         </div>
-                        <div className="text-base text-gray-600">교육생</div>
+                        <div className="text-sm sm:text-base text-gray-600">교육생</div>
                     </div>
-                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
-                        <div className="text-4xl font-bold text-gray-900 mb-2">
+                    <div className="bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
+                        <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1 sm:mb-2">
                             {projectStats.partnerCompanies}
                         </div>
-                        <div className="text-base text-gray-600">협력 기업</div>
+                        <div className="text-sm sm:text-base text-gray-600">협력 기업</div>
                     </div>
-                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
-                        <div className="text-4xl font-bold text-gray-900 mb-2">
+                    <div className="bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
+                        <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1 sm:mb-2">
                             {projectStats.yearsOfExperience}
                         </div>
-                        <div className="text-base text-gray-600">교육 경력</div>
+                        <div className="text-sm sm:text-base text-gray-600">교육 경력</div>
                     </div>
                 </div>
 
                 {/* Tab Navigation */}
                 <div className="border-b border-gray-200 mb-12">
-                    <nav className="-mb-px flex space-x-8">
+                    <nav className="-mb-px flex overflow-x-auto scrollbar-hide">
                         <button
                             onClick={() => setActiveTab('career')}
-                            className={`py-4 px-2 border-b-3 font-semibold text-lg transition-colors ${
+                            className={`relative py-4 px-6 sm:px-8 font-semibold text-base sm:text-lg transition-all whitespace-nowrap ${
                                 activeTab === 'career'
-                                    ? 'border-gray-900 text-gray-900'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    ? 'text-gray-900'
+                                    : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
                             경력
+                            <span className={`absolute -bottom-1 left-4 right-4 h-1 bg-gray-900 transition-all duration-200 ${
+                                activeTab === 'career' ? 'opacity-100' : 'opacity-0'
+                            }`}></span>
                         </button>
                         <button
                             onClick={() => setActiveTab('education')}
-                            className={`py-4 px-2 border-b-3 font-semibold text-lg transition-colors ${
+                            className={`relative py-4 px-6 sm:px-8 font-semibold text-base sm:text-lg transition-all whitespace-nowrap ${
                                 activeTab === 'education'
-                                    ? 'border-gray-900 text-gray-900'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    ? 'text-gray-900'
+                                    : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
                             학력
+                            <span className={`absolute -bottom-1 left-4 right-4 h-1 bg-gray-900 transition-all duration-200 ${
+                                activeTab === 'education' ? 'opacity-100' : 'opacity-0'
+                            }`}></span>
                         </button>
                         <button
                             onClick={() => setActiveTab('projects')}
-                            className={`py-4 px-2 border-b-3 font-semibold text-lg transition-colors ${
+                            className={`relative py-4 px-6 sm:px-8 font-semibold text-base sm:text-lg transition-all whitespace-nowrap ${
                                 activeTab === 'projects'
-                                    ? 'border-gray-900 text-gray-900'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    ? 'text-gray-900'
+                                    : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
                             주요 프로젝트
+                            <span className={`absolute -bottom-1 left-4 right-4 h-1 bg-gray-900 transition-all duration-200 ${
+                                activeTab === 'projects' ? 'opacity-100' : 'opacity-0'
+                            }`}></span>
                         </button>
                     </nav>
                 </div>
@@ -156,7 +165,7 @@ const ProfilePage = () => {
                         <div className="space-y-6">
                             {careerData.map((item, index) => (
                                 <div key={index} className="flex gap-8">
-                                    <div className="flex-shrink-0 w-44 text-base text-gray-600 font-medium">
+                                    <div className="flex-shrink-0 w-44 text-base text-gray-600 font-medium whitespace-pre-line">
                                         {item.period}
                                     </div>
                                     <div className="flex-grow pb-8 border-b border-gray-100 last:border-0">
@@ -191,7 +200,7 @@ const ProfilePage = () => {
                         <div className="space-y-6">
                             {educationData.map((item, index) => (
                                 <div key={index} className="flex gap-8">
-                                    <div className="flex-shrink-0 w-44 text-base text-gray-600 font-medium">
+                                    <div className="flex-shrink-0 w-44 text-base text-gray-600 font-medium whitespace-pre-line">
                                         {item.period}
                                     </div>
                                     <div className="flex-grow pb-8 border-b border-gray-100 last:border-0">

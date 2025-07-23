@@ -2,4 +2,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://emelmujiro.com/sitemap.xml
+Sitemap: https://researcherhojin.github.io/emelmujiro/sitemap.xml

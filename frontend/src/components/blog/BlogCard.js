@@ -20,7 +20,7 @@ const BlogCard = ({ post }) => {
             <Link to={`/blog/${id}`} className="block flex-grow">
                 <div className="relative">
                     {image_url ? (
-                        <img src={image_url} alt="" className="w-full h-48 object-cover" loading="lazy" />
+                        <img src={image_url} alt={`${title} 블로그 포스트 썸네일`} className="w-full h-48 object-cover" loading="lazy" />
                     ) : (
                         <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
                             <span className="text-gray-400">No image available</span>
@@ -66,6 +66,7 @@ const BlogCard = ({ post }) => {
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
+                                aria-hidden="true"
                             >
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>

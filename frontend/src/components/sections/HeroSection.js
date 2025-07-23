@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { STATISTICS } from '../../constants';
+import { Button } from '../common';
 
 const HeroSection = () => {
-    const navigate = useNavigate();
 
     return (
         <section className="relative min-h-screen flex items-center overflow-hidden bg-white">
@@ -49,22 +49,22 @@ const HeroSection = () => {
 
                         {/* CTA Buttons */}
                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                            <button
-                                onClick={() => navigate('/contact')}
-                                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-black text-white text-base sm:text-lg font-semibold 
-                                    rounded-lg hover:bg-gray-800 transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-100"
+                            <Button
+                                to="/contact"
+                                variant="primary"
+                                size="lg"
+                                icon={<ArrowRight className="w-4 h-4" />}
                             >
                                 프로젝트 문의하기
-                                <ArrowRight className="w-4 h-4 ml-2" />
-                            </button>
+                            </Button>
 
-                            <button
-                                onClick={() => navigate('/about')}
-                                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white border-2 border-gray-300
-                                    text-gray-700 text-base sm:text-lg font-semibold rounded-lg hover:bg-gray-50 transition-all hover:border-gray-400"
+                            <Button
+                                to="/about"
+                                variant="secondary"
+                                size="lg"
                             >
                                 회사 소개
-                            </button>
+                            </Button>
                         </div>
 
                         {/* 빈 공간으로 균형 조정 */}
@@ -81,19 +81,19 @@ const HeroSection = () => {
                         <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-6 sm:p-8 lg:p-12 border border-gray-200">
                             <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
                                 <div>
-                                    <div className="text-4xl sm:text-5xl font-black text-black mb-2 tracking-tight">1,000+</div>
+                                    <div className="text-4xl sm:text-5xl font-black text-black mb-2 tracking-tight">{STATISTICS.education.totalStudentsText}</div>
                                     <div className="text-base sm:text-lg text-gray-600 font-medium">교육 수료생</div>
                                 </div>
                                 <div>
-                                    <div className="text-4xl sm:text-5xl font-black text-black mb-2 tracking-tight">50+</div>
+                                    <div className="text-4xl sm:text-5xl font-black text-black mb-2 tracking-tight">{STATISTICS.projects.totalProjectsText}</div>
                                     <div className="text-base sm:text-lg text-gray-600 font-medium">프로젝트 완료</div>
                                 </div>
                                 <div>
-                                    <div className="text-4xl sm:text-5xl font-black text-black mb-2 tracking-tight">15+</div>
+                                    <div className="text-4xl sm:text-5xl font-black text-black mb-2 tracking-tight">{STATISTICS.experience.totalCompaniesWorkedWith}+</div>
                                     <div className="text-base sm:text-lg text-gray-600 font-medium">파트너 기업</div>
                                 </div>
                                 <div>
-                                    <div className="text-4xl sm:text-5xl font-black text-black mb-2 tracking-tight">98%</div>
+                                    <div className="text-4xl sm:text-5xl font-black text-black mb-2 tracking-tight">{STATISTICS.education.satisfactionRate}%</div>
                                     <div className="text-base sm:text-lg text-gray-600 font-medium">고객 만족도</div>
                                 </div>
                             </div>

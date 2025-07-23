@@ -235,7 +235,7 @@ const ContactPage = () => {
                             transition={{ duration: 0.8, delay: 0.2 }}
                         >
                             <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-                                <div className="p-8 md:p-10">
+                                <div className="p-6 sm:p-8 md:p-10">
                                     {responseMessage && (
                                         <motion.div
                                             initial={{ opacity: 0, y: -10 }}
@@ -292,7 +292,7 @@ const ContactPage = () => {
                                             </div>
                                         </div>
 
-                                        <div className="grid md:grid-cols-2 gap-6">
+                                        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                                             <div>
                                                 <label className="block mb-2 text-sm font-medium text-gray-700">
                                                     이름 <span className="text-red-500">*</span>
@@ -303,7 +303,7 @@ const ContactPage = () => {
                                                     value={formData.name}
                                                     onChange={handleChange}
                                                     required
-                                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 ${
+                                                    className={`w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 ${
                                                         validationErrors.name ? 'border-red-300' : 'border-gray-200'
                                                     }`}
                                                     placeholder="홍길동"
@@ -321,13 +321,13 @@ const ContactPage = () => {
                                                     name="company"
                                                     value={formData.company}
                                                     onChange={handleChange}
-                                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                                                    className="w-full px-4 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                                                     placeholder="회사명을 입력해주세요"
                                                 />
                                             </div>
                                         </div>
 
-                                        <div className="grid md:grid-cols-2 gap-6">
+                                        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                                             <div>
                                                 <label className="block mb-2 text-sm font-medium text-gray-700">
                                                     이메일 <span className="text-red-500">*</span>
@@ -338,7 +338,7 @@ const ContactPage = () => {
                                                     value={formData.email}
                                                     onChange={handleChange}
                                                     required
-                                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 ${
+                                                    className={`w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 ${
                                                         validationErrors.email ? 'border-red-300' : 'border-gray-200'
                                                     }`}
                                                     placeholder="example@domain.com"
@@ -358,7 +358,7 @@ const ContactPage = () => {
                                                     name="phone"
                                                     value={formData.phone}
                                                     onChange={handleChange}
-                                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 ${
+                                                    className={`w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 ${
                                                         validationErrors.phone ? 'border-red-300' : 'border-gray-200'
                                                     }`}
                                                     placeholder="010-1234-5678"
@@ -381,7 +381,7 @@ const ContactPage = () => {
                                                 value={formData.subject}
                                                 onChange={handleChange}
                                                 required
-                                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
+                                                className={`w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
                                                     validationErrors.subject ? 'border-red-300' : 'border-gray-200'
                                                 }`}
                                                 placeholder="문의 제목을 입력해주세요"
@@ -404,7 +404,7 @@ const ContactPage = () => {
                                                 onChange={handleChange}
                                                 required
                                                 rows="6"
-                                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
+                                                className={`w-full px-4 py-3 text-base border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
                                                     validationErrors.message ? 'border-red-300' : 'border-gray-200'
                                                 }`}
                                                 placeholder="문의하실 내용을 자세히 적어주세요"

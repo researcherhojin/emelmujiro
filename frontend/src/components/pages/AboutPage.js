@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import SEOHelmet from '../common/SEOHelmet';
 import { ArrowRight, CheckCircle } from 'lucide-react';
+import { SERVICES, PARTNER_COMPANIES } from '../../constants';
 
 const AboutPage = () => {
 
@@ -30,28 +31,7 @@ const AboutPage = () => {
         }
     ];
 
-    const services = [
-        {
-            title: 'AI/ML 컨설팅',
-            description: '비즈니스 문제에 대한 실용적 AI 솔루션',
-            features: ['맞춤형 모델 개발', 'MLOps 구축 지원', '성능 최적화']
-        },
-        {
-            title: '기업 교육',
-            description: '실무자를 위한 체계적인 AI 역량 강화',
-            features: ['대기업 맞춤 커리큘럼', '핸즈온 실습 중심', '전문가 1:1 멘토링']
-        },
-        {
-            title: 'R&D 협력',
-            description: '기술 혁신을 위한 공동 연구 개발',
-            features: ['공동 연구 프로젝트', '기술 검증 서비스', 'POC 개발 지원']
-        }
-    ];
-
-    const partnerCompanies = [
-        '삼성전자', 'SK', 'LG', '한국전력공사', '국민은행', 
-        'CJ', '현대자동차', '포스코', 'KT', '네이버'
-    ];
+    const services = SERVICES;
 
     return (
         <div className="min-h-screen bg-white">
@@ -63,7 +43,7 @@ const AboutPage = () => {
             />
             
             {/* Hero Section */}
-            <section className="pt-32 pb-20">
+            <section className="pt-32 pb-20 bg-white">
                 <div className="max-w-6xl mx-auto px-4">
                     <div className="max-w-3xl">
                         <motion.div
@@ -86,7 +66,7 @@ const AboutPage = () => {
             </section>
 
             {/* Company Overview */}
-            <section className="py-20 border-t border-gray-100">
+            <section className="py-20 bg-white">
                 <div className="max-w-6xl mx-auto px-4">
                     <div className="grid lg:grid-cols-3 gap-16">
                         <div className="lg:col-span-2">
@@ -118,7 +98,7 @@ const AboutPage = () => {
                         </div>
                         
                         <div>
-                            <div className="bg-gray-50 rounded-xl p-8">
+                            <div className="bg-gray-100 rounded-xl p-8">
                                 <h3 className="text-lg font-semibold text-gray-900 mb-6">회사 현황</h3>
                                 <div className="space-y-4">
                                     <div>
@@ -141,7 +121,7 @@ const AboutPage = () => {
             </section>
 
             {/* Timeline */}
-            <section className="py-20">
+            <section className="py-20 bg-gray-50">
                 <div className="max-w-6xl mx-auto px-4">
                     <h2 className="text-2xl font-semibold text-gray-900 mb-12">연혁</h2>
                     
@@ -169,13 +149,13 @@ const AboutPage = () => {
             </section>
 
             {/* Core Values */}
-            <section className="py-20 bg-gray-50">
+            <section className="py-20 bg-white">
                 <div className="max-w-6xl mx-auto px-4">
                     <h2 className="text-2xl font-semibold text-gray-900 mb-12">핵심 가치</h2>
                     
                     <div className="grid md:grid-cols-3 gap-8">
                         {companyValues.map((value, index) => (
-                            <div key={index} className="bg-white p-8 rounded-xl">
+                            <div key={index} className="bg-gray-50 p-8 rounded-xl">
                                 <h3 className="text-xl font-semibold text-gray-900 mb-4">{value.title}</h3>
                                 <p className="text-gray-600 mb-6">{value.description}</p>
                                 
@@ -194,13 +174,13 @@ const AboutPage = () => {
             </section>
 
             {/* Services Overview */}
-            <section className="py-20">
+            <section className="py-20 bg-gray-50">
                 <div className="max-w-6xl mx-auto px-4">
                     <h2 className="text-2xl font-semibold text-gray-900 mb-12">주요 서비스</h2>
                     
                     <div className="grid lg:grid-cols-3 gap-8">
                         {services.map((service, index) => (
-                            <div key={index} className="border border-gray-200 rounded-xl p-8 hover:border-gray-300 transition-colors">
+                            <div key={index} className="bg-white border border-gray-200 rounded-xl p-8 hover:border-gray-300 hover:shadow-lg transition-all">
                                 <h3 className="text-xl font-semibold text-gray-900 mb-3">{service.title}</h3>
                                 <p className="text-gray-600 mb-6">{service.description}</p>
                                 
@@ -219,22 +199,58 @@ const AboutPage = () => {
             </section>
 
             {/* Partner Companies */}
-            <section className="py-20 bg-gray-50">
-                <div className="max-w-6xl mx-auto px-4">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-12">파트너사</h2>
+            <section className="py-20 bg-white overflow-hidden">
+                <div className="max-w-6xl mx-auto px-4 mb-12 text-center">
+                    <h2 className="text-2xl font-semibold text-gray-900 mb-4">함께한 기업 및 기관</h2>
+                    <p className="text-lg text-gray-600">다양한 분야의 선도 기업들과 AI 프로젝트를 진행했습니다</p>
+                </div>
+                
+                {/* 무한 슬라이딩 컨테이너 - 2줄 */}
+                <div className="relative space-y-8">
+                    {/* 첫 번째 줄 */}
+                    <div className="relative">
+                        <div className="flex animate-scroll hover:pause">
+                            {[...PARTNER_COMPANIES.slice(0, Math.ceil(PARTNER_COMPANIES.length / 2)), 
+                              ...PARTNER_COMPANIES.slice(0, Math.ceil(PARTNER_COMPANIES.length / 2))].map((company, index) => (
+                                <div key={`row1-${company.id}-${index}`} className="flex-shrink-0 px-6">
+                                    <div className="flex flex-col items-center justify-center w-32 h-32">
+                                        <img 
+                                            src={company.logo} 
+                                            alt={`${company.name} 로고 - ${company.description}`}
+                                            className="h-14 w-auto object-contain opacity-70 hover:opacity-100 hover:scale-110 transition-all duration-300"
+                                            loading="lazy"
+                                        />
+                                        <span className="mt-3 text-sm text-gray-600 text-center whitespace-nowrap">{company.name}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                     
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-                        {partnerCompanies.map((company, index) => (
-                            <div key={index} className="text-center">
-                                <div className="text-gray-600 font-medium">{company}</div>
-                            </div>
-                        ))}
+                    {/* 두 번째 줄 - 반대 방향 */}
+                    <div className="relative">
+                        <div className="flex animate-scroll-reverse hover:pause">
+                            {[...PARTNER_COMPANIES.slice(Math.ceil(PARTNER_COMPANIES.length / 2)), 
+                              ...PARTNER_COMPANIES.slice(Math.ceil(PARTNER_COMPANIES.length / 2))].map((company, index) => (
+                                <div key={`row2-${company.id}-${index}`} className="flex-shrink-0 px-6">
+                                    <div className="flex flex-col items-center justify-center w-32 h-32">
+                                        <img 
+                                            src={company.logo} 
+                                            alt={`${company.name} 로고 - ${company.description}`}
+                                            className="h-14 w-auto object-contain opacity-70 hover:opacity-100 hover:scale-110 transition-all duration-300"
+                                            loading="lazy"
+                                        />
+                                        <span className="mt-3 text-sm text-gray-600 text-center whitespace-nowrap">{company.name}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 bg-black text-white">
+            <section className="py-20 bg-gray-900 text-white">
                 <div className="max-w-4xl mx-auto px-4 text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-6">
                         프로젝트를 시작하세요

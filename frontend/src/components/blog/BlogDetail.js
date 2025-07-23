@@ -74,7 +74,7 @@ const BlogDetailPage = () => {
                         뒤로가기
                     </button>
                     <article className="bg-white rounded-lg shadow-md overflow-hidden">
-                        {post.image_url && <img src={post.image_url} alt="" className="w-full h-64 object-cover" />}
+                        {post.image_url && <img src={post.image_url} alt={`${post.title} 관련 이미지`} className="w-full h-64 object-cover" />}
                         <div className="p-8">
                             <div className="mb-6">
                                 <span
