@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -69,12 +69,12 @@ const Navbar = () => {
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
                     {/* Logo */}
-                    <button 
-                        onClick={() => navigate('/')}
-                        className="text-2xl font-black text-gray-900 hover:text-gray-700 transition-colors tracking-tight select-none cursor-pointer"
+                    <Link 
+                        to="/"
+                        className="text-2xl font-black text-gray-900 hover:text-gray-700 transition-colors tracking-tight select-none"
                     >
                         에멜무지로
-                    </button>
+                    </Link>
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-12">
