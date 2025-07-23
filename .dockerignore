@@ -1,0 +1,83 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info
+dist
+build
+.tox
+.coverage
+.coverage.*
+.cache
+.pytest_cache
+htmlcov
+.mypy_cache
+.hypothesis
+
+# Django
+*.log
+*.pot
+*.sqlite3
+media/
+staticfiles/
+.env*
+!.env.example
+
+# Node
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+
+# React
+frontend/build
+frontend/.env*
+!frontend/.env.example
+
+# Documentation
+*.md
+!README.md
+docs/
+LICENSE
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

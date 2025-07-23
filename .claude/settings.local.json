@@ -6,7 +6,17 @@
       "Bash(npm run test:*)",
       "Bash(python manage.py test:*)",
       "Bash(mkdir:*)",
-      "Bash(npm start)"
+      "Bash(npm start)",
+      "Bash(chmod:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(npm install:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(kill:*)",
+      "Bash(PORT=3001 npm start)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(pip install black flake8)"
     ],
     "deny": []
   }

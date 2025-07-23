@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: emelmujiro-backend-dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/emelmujiro_dev
+      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - ./backend/.env.dev
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./backend:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    command: python manage.py runserver 0.0.0.0:8000
+    networks:
+      - emelmujiro-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: emelmujiro-frontend-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_API_URL=http://localhost:8000/api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm start
+    networks:
+      - emelmujiro-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: emelmujiro-db-dev
+    restart: unless-stopped
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=emelmujiro_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - emelmujiro-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: emelmujiro-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data_dev:/data
+    networks:
+      - emelmujiro-network
+
+volumes:
+  postgres_data_dev:
+  redis_data_dev:
+  static_volume:
+  media_volume:
+
+networks:
+  emelmujiro-network:
+    driver: bridge
