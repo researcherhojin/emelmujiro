@@ -1,10 +1,7 @@
 name: Build Test
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+  workflow_dispatch:
 
 jobs:
   build-frontend:
@@ -13,10 +10,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
+    - name: Check Frontend Files
+      run: |
+        cd frontend
+        ls -la
+        cat package.json
     
     - name: Build Frontend Docker Image
       run: |
@@ -29,6 +27,12 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Check Backend Files
+      run: |
+        cd backend
+        ls -la
+        cat requirements.txt
     
     - name: Build Backend Docker Image
       run: |
