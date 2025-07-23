@@ -16,7 +16,8 @@
       "Bash(PORT=3001 npm start)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(pip install black flake8)"
+      "Bash(pip install black flake8)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }

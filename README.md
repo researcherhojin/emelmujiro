@@ -16,15 +16,25 @@ AI 교육 및 컨설팅 전문 기업 에멀무지로의 공식 웹사이트입�
 - **Lucide React** 0.263.1 - 현대적인 아이콘 라이브러리
 
 ### Backend
-- **Django** 4.2+ - 웹 프레임워크
-- **Django REST Framework** - API 개발
+- **Django** 5.1.5 - 웹 프레임워크
+- **Django REST Framework** 3.15.2 - API 개발
 - **SQLite** (개발) / **PostgreSQL** (프로덕션) - 데이터베이스
 - **Django CORS Headers** - CORS 설정
+- **Gunicorn** - WSGI HTTP 서버
+- **WhiteNoise** - 정적 파일 서빙
+
+### DevOps & CI/CD
+- **Docker** & **Docker Compose** - 컨테이너화 및 오케스트레이션
+- **GitHub Actions** - CI/CD 파이프라인
+- **npm workspaces** - Monorepo 관리
+- **Makefile** - 자동화 스크립트
 
 ### 개발 도구
 - **Create React App** - 프로젝트 부트스트래핑
 - **PostCSS** & **Autoprefixer** - CSS 후처리
-- **ESLint** & **Prettier** - 코드 품질 및 포맷팅
+- **ESLint** & **Prettier** - 코드 품질 및 포맷팅 (Frontend)
+- **Black** & **Flake8** - 코드 포맷팅 및 린팅 (Backend)
+- **Husky** & **lint-staged** - Git hooks 자동화
 
 ## 🎨 디자인 시스템
 
@@ -42,6 +52,10 @@ AI 교육 및 컨설팅 전문 기업 에멀무지로의 공식 웹사이트입�
 
 ```
 emelmujiro/
+├── .github/
+│   └── workflows/           # GitHub Actions CI/CD
+│       ├── ci.yml          # CI 파이프라인
+│       └── cd.yml          # CD 파이프라인
 ├── frontend/                # React 기반 프론트엔드
 │   ├── src/
 │   │   ├── components/
@@ -51,12 +65,23 @@ emelmujiro/
 │   │   ├── styles/
 │   │   │   └── theme.js     # 디자인 시스템
 │   │   └── assets/
-│   └── public/
+│   ├── public/
+│   ├── Dockerfile          # 프로덕션 이미지
+│   └── Dockerfile.dev      # 개발 이미지
 ├── backend/                 # Django 기반 백엔드
 │   ├── api/                 # API 앱
 │   ├── config/              # Django 설정
-│   └── requirements.txt
-├── todo.txt                 # 개발 계획 및 TODO 리스트
+│   ├── requirements.txt
+│   ├── Dockerfile          # 프로덕션 이미지
+│   └── Dockerfile.dev      # 개발 이미지
+├── scripts/                 # 유틸리티 스크립트
+│   ├── check-ports.sh      # 포트 확인
+│   ├── kill-ports.sh       # 포트 정리
+│   └── start-dev.sh        # 개발 환경 시작
+├── docker-compose.yml      # 프로덕션 구성
+├── docker-compose.dev.yml  # 개발 구성
+├── package.json            # Monorepo 설정
+├── Makefile                # 자동화 명령어
 └── README.md               # 프로젝트 문서
 ```
 
@@ -92,31 +117,54 @@ emelmujiro/
 ### 사전 요구사항
 - Node.js (v14 이상)
 - Python (v3.8 이상)
-- npm 또는 yarn
+- Docker & Docker Compose (선택사항)
+- npm 7.0 이상 (workspaces 지원)
 
-### 전체 프로젝트 설치
+### 빠른 시작
 ```bash
 # 저장소 클론
-git clone https://github.com/YOUR_USERNAME/emelmujiro.git
+git clone https://github.com/researcherhojin/emelmujiro.git
 cd emelmujiro
 
-# Frontend 설치 및 실행
-cd frontend
-npm install
-npm start
+# 환경 변수 설정
+cp .env.example .env
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 
-# Backend 설치 및 실행 (새 터미널)
+# 의존성 설치
+make install
+```
+
+### 개발 환경 실행
+
+#### 방법 1: Docker 사용 (권장)
+```bash
+# Docker 환경에서 실행
+make dev
+
+# 또는 포트 충돌 시
+make dev-clean
+```
+
+#### 방법 2: 로컬 실행
+```bash
+# Monorepo 스크립트로 실행
+npm run dev
+
+# 또는 개별 실행
+# Frontend (터미널 1)
+cd frontend && npm start
+
+# Backend (터미널 2)
 cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
 ```
 
-### 개발 서버
+### 접속 주소
 - **Frontend**: [http://localhost:3000](http://localhost:3000)
 - **Backend**: [http://localhost:8000](http://localhost:8000)
+- **Django Admin**: [http://localhost:8000/admin](http://localhost:8000/admin)
 
 ## 🔧 개발 기록
 
