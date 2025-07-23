@@ -32,12 +32,12 @@ describe('Section Component', () => {
 
   test('applies background color class', () => {
     const { container } = render(
-      <Section bg="gray">
+      <Section bgColor="gray">
         <p>Content</p>
       </Section>
     );
     const section = container.firstChild;
-    expect(section.className).toContain('bg-');
+    expect(section.className).toContain('bg-gray-50');
   });
 
   test('applies custom className', () => {

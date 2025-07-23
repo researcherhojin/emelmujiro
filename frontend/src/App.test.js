@@ -16,15 +16,15 @@ describe('App Component', () => {
 
   test('renders navigation links', () => {
     render(<App />);
-    expect(screen.getByText('회사소개')).toBeInTheDocument();
+    expect(screen.getAllByText('회사소개')[0]).toBeInTheDocument();
     expect(screen.getAllByText('서비스')[0]).toBeInTheDocument();
-    expect(screen.getByText('대표 프로필')).toBeInTheDocument();
+    expect(screen.getAllByText('대표 프로필')[0]).toBeInTheDocument();
     expect(screen.getAllByText('문의하기')[0]).toBeInTheDocument();
   });
 
   test('renders footer', () => {
     render(<App />);
-    const footer = screen.getByText(/© 2024/);
-    expect(footer).toBeInTheDocument();
+    const footerElements = screen.getAllByText('에멜무지로');
+    expect(footerElements.length).toBeGreaterThan(0);
   });
 });

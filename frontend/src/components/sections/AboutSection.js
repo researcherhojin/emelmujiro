@@ -14,13 +14,14 @@ import {
     Brain,
     Zap,
 } from 'lucide-react';
+import { STATISTICS } from '../../constants';
 
 const AboutSection = () => {
     const profileStats = [
-        { icon: <Award className="w-6 h-6" />, label: '교육 경력', value: '3년+', color: 'text-gray-700' },
-        { icon: <Users className="w-6 h-6" />, label: '교육 수료생', value: '1000명+', color: 'text-green-600' },
-        { icon: <Briefcase className="w-6 h-6" />, label: '협력 기업', value: '15곳+', color: 'text-gray-700' },
-        { icon: <BookOpen className="w-6 h-6" />, label: '강의 프로젝트', value: '50건+', color: 'text-orange-600' },
+        { icon: <Award className="w-6 h-6" />, label: '교육 경력', value: `${STATISTICS.experience.yearsInEducation}년+`, color: 'text-gray-700' },
+        { icon: <Users className="w-6 h-6" />, label: '교육 수료생', value: `${STATISTICS.education.totalStudentsText}`, color: 'text-green-600' },
+        { icon: <Briefcase className="w-6 h-6" />, label: '협력 기업', value: `${STATISTICS.experience.totalCompaniesWorkedWith}곳+`, color: 'text-gray-700' },
+        { icon: <BookOpen className="w-6 h-6" />, label: '강의 프로젝트', value: `${STATISTICS.projects.totalProjectsText}`, color: 'text-orange-600' },
     ];
 
     const goals = [

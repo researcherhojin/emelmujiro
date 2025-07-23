@@ -14,27 +14,27 @@ describe('ErrorMessage Component', () => {
     expect(screen.getByText('Failed to load data')).toBeInTheDocument();
   });
 
-  test('renders retry button when onRetry provided', () => {
-    const handleRetry = jest.fn();
-    render(<ErrorMessage message="Error" onRetry={handleRetry} />);
+  test('renders close button when onClose provided', () => {
+    const handleClose = jest.fn();
+    render(<ErrorMessage message="Error" onClose={handleClose} />);
     
-    const retryButton = screen.getByRole('button', { name: '다시 시도' });
-    expect(retryButton).toBeInTheDocument();
+    const closeButton = screen.getByRole('button', { name: '닫기' });
+    expect(closeButton).toBeInTheDocument();
   });
 
-  test('calls onRetry when retry button clicked', () => {
-    const handleRetry = jest.fn();
-    render(<ErrorMessage message="Error" onRetry={handleRetry} />);
+  test('calls onClose when close button clicked', () => {
+    const handleClose = jest.fn();
+    render(<ErrorMessage message="Error" onClose={handleClose} />);
     
-    const retryButton = screen.getByRole('button', { name: '다시 시도' });
-    fireEvent.click(retryButton);
+    const closeButton = screen.getByRole('button', { name: '닫기' });
+    fireEvent.click(closeButton);
     
-    expect(handleRetry).toHaveBeenCalledTimes(1);
+    expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
-  test('does not render retry button when onRetry not provided', () => {
+  test('does not render close button when onClose not provided', () => {
     render(<ErrorMessage message="Error" />);
-    expect(screen.queryByRole('button', { name: '다시 시도' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '닫기' })).not.toBeInTheDocument();
   });
 
   test('applies error styling', () => {

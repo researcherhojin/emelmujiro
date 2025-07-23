@@ -1,8 +1,8 @@
 export const STATISTICS = {
   // 교육 관련 통계
   education: {
-    totalStudents: 10000,
-    totalStudentsText: '10,000+',
+    totalStudents: 1000,
+    totalStudentsText: '1,000+',
     completionRate: 95,
     satisfactionRate: 98
   },

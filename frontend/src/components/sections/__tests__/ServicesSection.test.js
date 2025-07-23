@@ -14,12 +14,12 @@ describe('ServicesSection Component', () => {
 
   test('renders section title', () => {
     renderWithRouter(<ServicesSection />);
-    expect(screen.getByText('우리의 서비스')).toBeInTheDocument();
+    expect(screen.getByText('주요 서비스')).toBeInTheDocument();
   });
 
   test('renders section subtitle', () => {
     renderWithRouter(<ServicesSection />);
-    expect(screen.getByText(/최신 AI 기술을 활용한 맞춤형 솔루션/)).toBeInTheDocument();
+    expect(screen.getByText(/기업의 AI 도입을 위한 단계별 솔루션/)).toBeInTheDocument();
   });
 
   test('renders all service cards', () => {
@@ -34,32 +34,34 @@ describe('ServicesSection Component', () => {
   test('renders service descriptions', () => {
     renderWithRouter(<ServicesSection />);
     
-    expect(screen.getByText(/귀사의 비즈니스에 최적화된 AI 전략/)).toBeInTheDocument();
-    expect(screen.getByText(/임직원들의 AI 활용 능력/)).toBeInTheDocument();
-    expect(screen.getByText(/대규모 언어 모델을 활용한/)).toBeInTheDocument();
+    expect(screen.getByText(/비즈니스 문제에 대한 실용적 AI 솔루션/)).toBeInTheDocument();
+    expect(screen.getByText(/실무자를 위한 체계적인 AI 역량 강화/)).toBeInTheDocument();
+    expect(screen.getByText(/최신 언어 모델 기반 비즈니스 혁신/)).toBeInTheDocument();
   });
 
-  test('renders service features', () => {
+  test('renders service details', () => {
     renderWithRouter(<ServicesSection />);
     
-    // Check for some feature items
-    expect(screen.getByText('비즈니스 분석 및 AI 기회 발굴')).toBeInTheDocument();
-    expect(screen.getByText('맞춤형 AI 로드맵 수립')).toBeInTheDocument();
-    expect(screen.getByText('ChatGPT/LLM 기초부터 고급까지')).toBeInTheDocument();
+    // Check for some detail items
+    expect(screen.getByText(/모델 개발, MLOps 구축, 성능 최적화/)).toBeInTheDocument();
+    expect(screen.getByText(/맞춤형 커리큘럼, 핸즈온 실습, 1:1 멘토링/)).toBeInTheDocument();
+    expect(screen.getByText(/챗봇 개발, RAG 시스템, 문서 분석/)).toBeInTheDocument();
   });
 
-  test('renders icons for each service', () => {
+  test('renders service cards with icons', () => {
     const { container } = renderWithRouter(<ServicesSection />);
-    const icons = container.querySelectorAll('svg');
-    expect(icons.length).toBeGreaterThanOrEqual(3); // At least 3 service icons
+    // The new design uses div elements instead of SVG icons
+    const iconContainers = container.querySelectorAll('.w-12.h-12.bg-gray-100');
+    expect(iconContainers.length).toBe(3); // 3 service cards
   });
 
   test('service cards have hover effects', () => {
     const { container } = renderWithRouter(<ServicesSection />);
     const cards = container.querySelectorAll('.group');
     
+    expect(cards.length).toBe(3);
     cards.forEach(card => {
-      expect(card).toHaveClass('hover:shadow-xl');
+      expect(card).toHaveClass('hover:shadow-2xl');
     });
   });
 });

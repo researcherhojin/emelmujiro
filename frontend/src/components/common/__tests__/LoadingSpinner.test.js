@@ -11,14 +11,14 @@ describe('LoadingSpinner Component', () => {
 
   test('renders with default size', () => {
     const { container } = render(<LoadingSpinner />);
-    const spinner = container.querySelector('svg');
-    expect(spinner).toHaveClass('h-12', 'w-12');
+    const spinner = container.querySelector('.animate-spin');
+    expect(spinner).toHaveClass('w-10', 'h-10');
   });
 
   test('renders with custom size', () => {
-    const { container } = render(<LoadingSpinner size="small" />);
-    const spinner = container.querySelector('svg');
-    expect(spinner).toHaveClass('h-6', 'w-6');
+    const { container } = render(<LoadingSpinner size="sm" />);
+    const spinner = container.querySelector('.animate-spin');
+    expect(spinner).toHaveClass('w-6', 'h-6');
   });
 
   test('renders with custom message', () => {
@@ -26,10 +26,9 @@ describe('LoadingSpinner Component', () => {
     expect(screen.getByText('Loading data...')).toBeInTheDocument();
   });
 
-  test('applies custom className', () => {
-    const { container } = render(<LoadingSpinner className="custom-spinner" />);
-    const wrapper = container.firstChild;
-    expect(wrapper).toHaveClass('custom-spinner');
+  test('renders default message', () => {
+    render(<LoadingSpinner />);
+    expect(screen.getByText('로딩 중...')).toBeInTheDocument();
   });
 
   test('centers content by default', () => {

@@ -5,6 +5,8 @@
 
 # Testing output
 /coverage
+/playwright-report
+/test-results
 
 # Build output
 /build

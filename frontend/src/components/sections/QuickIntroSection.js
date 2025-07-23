@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { STATISTICS } from '../../constants';
 
 const QuickIntroSection = () => {
     const navigate = useNavigate();
@@ -21,15 +22,15 @@ const QuickIntroSection = () => {
 
                     <div className="grid grid-cols-3 gap-8 mb-12">
                         <div>
-                            <div className="text-3xl font-bold text-gray-900 mb-2">1,000+</div>
+                            <div className="text-3xl font-bold text-gray-900 mb-2">{STATISTICS.education.totalStudentsText}</div>
                             <div className="text-sm text-gray-600">누적 교육 수료생</div>
                         </div>
                         <div>
-                            <div className="text-3xl font-bold text-gray-900 mb-2">50+</div>
+                            <div className="text-3xl font-bold text-gray-900 mb-2">{STATISTICS.projects.totalProjectsText}</div>
                             <div className="text-sm text-gray-600">완료된 프로젝트</div>
                         </div>
                         <div>
-                            <div className="text-3xl font-bold text-gray-900 mb-2">15+</div>
+                            <div className="text-3xl font-bold text-gray-900 mb-2">{STATISTICS.experience.totalCompaniesWorkedWith}+</div>
                             <div className="text-sm text-gray-600">협력 기업</div>
                         </div>
                     </div>

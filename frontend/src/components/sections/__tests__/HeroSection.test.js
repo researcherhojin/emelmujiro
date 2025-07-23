@@ -22,20 +22,20 @@ describe('HeroSection Component', () => {
   test('renders main heading', () => {
     renderWithRouter(<HeroSection />);
     
-    expect(screen.getByText('AI 기술의 대중화를')).toBeInTheDocument();
-    expect(screen.getByText('선도하는 전문 기업')).toBeInTheDocument();
+    expect(screen.getByText('실무에 강한')).toBeInTheDocument();
+    expect(screen.getByText('AI 전문가 그룹')).toBeInTheDocument();
   });
 
   test('renders subheading', () => {
     renderWithRouter(<HeroSection />);
     
-    expect(screen.getByText(/2022년부터 축적한 AI 교육 노하우/)).toBeInTheDocument();
+    expect(screen.getByText(/대기업 AI 교육부터 스타트업 기술 컨설팅까지/)).toBeInTheDocument();
   });
 
   test('renders call to action buttons', () => {
     renderWithRouter(<HeroSection />);
     
-    expect(screen.getByRole('button', { name: '프로젝트 문의하기' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '회사 소개 보기' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /프로젝트 문의하기/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /회사 소개/ })).toBeInTheDocument();
   });
 });
