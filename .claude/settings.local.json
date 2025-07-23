@@ -24,7 +24,8 @@
       "Bash(git rm:*)",
       "Bash(grep:*)",
       "Bash(npm test:*)",
-      "Bash(npx playwright:*)"
+      "Bash(npx playwright:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: 교육 수료생 통계 1,000+로 수정 및 테스트 업데이트\n\n- 통계 데이터 10,000+에서 1,000+로 변경\n- 하드코딩된 값들을 중앙화된 상수 사용하도록 수정\n- 모든 단위 테스트 업데이트 및 오류 수정\n- E2E 테스트 업데이트\n- axe-playwright 의존성 추가\n- .gitignore에 playwright 관련 디렉토리 추가\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": []
   }
