@@ -6,6 +6,18 @@ AI 교육 및 컨설팅 전문 기업 에멀무지로의 공식 웹사이트입�
 
 에멀무지로는 2022년부터 축적한 AI 교육 노하우와 실무 프로젝트 경험을 바탕으로, 각 기업의 특성에 맞는 맞춤형 AI 솔루션을 제공하는 전문 컨설팅 기업입니다.
 
+## 🌐 GitHub Pages 배포
+
+### 초기 설정 (한 번만 수행)
+1. GitHub 저장소 설정 페이지로 이동: `Settings` → `Pages`
+2. Source를 `GitHub Actions`로 설정
+3. 저장
+
+### 자동 배포
+- `main` 브랜치에 push하면 자동으로 배포됩니다
+- 배포 URL: https://researcherhojin.github.io/emelmujiro
+- 현재 Frontend만 배포 (Backend API는 별도 호스팅 필요)
+
 ## 🛠 기술 스택
 
 ### Frontend
