@@ -1,0 +1,333 @@
+import React, { useState } from 'react';
+import { ArrowLeft, Calendar, School, Building, Award, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+const ProfilePage = () => {
+    const [activeTab, setActiveTab] = useState('career');
+    const navigate = useNavigate();
+
+    const careerData = [
+        {
+            period: '2024.12 ~ 현재',
+            company: '에멜무지로',
+            position: '대표',
+            description: 'AI 솔루션 개발 및 컨설팅 전문 기업 창업',
+            current: true
+        },
+        {
+            period: '2022.10 ~ 2024.09',
+            company: 'Cobslab',
+            position: '책임 연구원 / 전문 강사',
+            description: '대기업 AI 교육 및 컨설팅 프로젝트 진행'
+        },
+        {
+            period: '2022.06',
+            company: '코코넛사일로',
+            position: '연구원',
+            description: 'AI 모델 성능 개선 연구 및 데이터바우처 사업 관리'
+        },
+        {
+            period: '2022.04 ~ 2022.10',
+            company: '모두의연구소',
+            position: '보조 강사',
+            description: '대기업 및 대학교 AI 교육 프로그램 운영'
+        }
+    ];
+
+    const educationData = [
+        {
+            period: '2024.09 ~ 2026.06 (예정)',
+            school: '한양대학교',
+            degree: '인공지능융합대학원 인공지능시스템학과 석사과정',
+            description: '지도교수: 조동현 교수'
+        },
+        {
+            period: '2013.03 ~ 2021.02',
+            school: '경북대학교',
+            degree: '축산생명공학 학사',
+            description: '부전공: 식품공학부 식품응용공학'
+        }
+    ];
+
+    const projectStats = {
+        totalProjects: '50+',
+        totalStudents: '1,000+',
+        partnerCompanies: '15+',
+        yearsOfExperience: '3+'
+    };
+
+    return (
+        <div className="min-h-screen bg-white">
+            {/* Header */}
+            <div className="border-b border-gray-100">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <button
+                        onClick={() => navigate('/')}
+                        className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        돌아가기
+                    </button>
+                </div>
+            </div>
+
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                {/* Profile Header */}
+                <div className="mb-16">
+                    <h1 className="text-5xl font-bold text-gray-900 mb-4">이호진</h1>
+                    <p className="text-2xl text-gray-600">AI Researcher & Educator</p>
+                </div>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
+                        <div className="text-4xl font-bold text-gray-900 mb-2">
+                            {projectStats.totalProjects}
+                        </div>
+                        <div className="text-base text-gray-600">프로젝트</div>
+                    </div>
+                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
+                        <div className="text-4xl font-bold text-gray-900 mb-2">
+                            {projectStats.totalStudents}
+                        </div>
+                        <div className="text-base text-gray-600">교육생</div>
+                    </div>
+                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
+                        <div className="text-4xl font-bold text-gray-900 mb-2">
+                            {projectStats.partnerCompanies}
+                        </div>
+                        <div className="text-base text-gray-600">협력 기업</div>
+                    </div>
+                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-center hover:border-gray-300 transition-all hover:shadow-lg">
+                        <div className="text-4xl font-bold text-gray-900 mb-2">
+                            {projectStats.yearsOfExperience}
+                        </div>
+                        <div className="text-base text-gray-600">교육 경력</div>
+                    </div>
+                </div>
+
+                {/* Tab Navigation */}
+                <div className="border-b border-gray-200 mb-12">
+                    <nav className="-mb-px flex space-x-8">
+                        <button
+                            onClick={() => setActiveTab('career')}
+                            className={`py-4 px-2 border-b-3 font-semibold text-lg transition-colors ${
+                                activeTab === 'career'
+                                    ? 'border-gray-900 text-gray-900'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            경력
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('education')}
+                            className={`py-4 px-2 border-b-3 font-semibold text-lg transition-colors ${
+                                activeTab === 'education'
+                                    ? 'border-gray-900 text-gray-900'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            학력
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('projects')}
+                            className={`py-4 px-2 border-b-3 font-semibold text-lg transition-colors ${
+                                activeTab === 'projects'
+                                    ? 'border-gray-900 text-gray-900'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            주요 프로젝트
+                        </button>
+                    </nav>
+                </div>
+
+                {/* Tab Content */}
+                {activeTab === 'career' && (
+                    <div className="space-y-8">
+                        <div className="mb-12">
+                            <div className="flex items-center mb-4">
+                                <Building className="w-6 h-6 mr-3 text-gray-700" />
+                                <h2 className="text-3xl font-bold text-gray-900">경력 사항</h2>
+                            </div>
+                            <div className="h-1 w-20 bg-gray-900 rounded-full"></div>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            {careerData.map((item, index) => (
+                                <div key={index} className="flex gap-8">
+                                    <div className="flex-shrink-0 w-44 text-base text-gray-600 font-medium">
+                                        {item.period}
+                                    </div>
+                                    <div className="flex-grow pb-8 border-b border-gray-100 last:border-0">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                            {item.company}
+                                        </h3>
+                                        <p className="text-lg text-gray-700 mb-2">{item.position}</p>
+                                        <p className="text-base text-gray-600 leading-relaxed">{item.description}</p>
+                                        {item.current && (
+                                            <span className="inline-flex items-center mt-3 px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-900 text-white">
+                                                <Clock className="w-4 h-4 mr-1.5" />
+                                                현재 재직중
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'education' && (
+                    <div className="space-y-8">
+                        <div className="mb-12">
+                            <div className="flex items-center mb-4">
+                                <School className="w-6 h-6 mr-3 text-gray-700" />
+                                <h2 className="text-3xl font-bold text-gray-900">학력 사항</h2>
+                            </div>
+                            <div className="h-1 w-20 bg-gray-900 rounded-full"></div>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            {educationData.map((item, index) => (
+                                <div key={index} className="flex gap-8">
+                                    <div className="flex-shrink-0 w-44 text-base text-gray-600 font-medium">
+                                        {item.period}
+                                    </div>
+                                    <div className="flex-grow pb-8 border-b border-gray-100 last:border-0">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                            {item.school}
+                                        </h3>
+                                        <p className="text-gray-600 mb-2">{item.degree}</p>
+                                        <p className="text-sm text-gray-500">{item.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-12">
+                            <div className="flex items-center mb-6">
+                                <Award className="w-5 h-5 mr-3 text-gray-600" />
+                                <h3 className="text-2xl font-bold text-gray-900">자격 사항</h3>
+                            </div>
+                            
+                            <div className="bg-gray-50 rounded-xl p-8 border border-gray-200">
+                                <div className="mb-4">
+                                    <h4 className="text-lg font-semibold text-gray-900">ADsP</h4>
+                                    <p className="text-sm text-gray-600">데이터 분석 준전문가</p>
+                                    <p className="text-xs text-gray-500 mt-1">한국데이터산업진흥원 (2025.03)</p>
+                                </div>
+                                
+                                <div className="pt-4 border-t border-gray-200">
+                                    <h4 className="font-medium text-gray-900 mb-3">NCS 직무능력</h4>
+                                    <ul className="space-y-2 text-sm">
+                                        <li className="flex justify-between">
+                                            <span className="text-gray-600">정보기술전략·계획</span>
+                                            <span className="font-medium">57점</span>
+                                        </li>
+                                        <li className="flex justify-between">
+                                            <span className="text-gray-600">정보기술개발</span>
+                                            <span className="font-medium">57점</span>
+                                        </li>
+                                        <li className="flex justify-between">
+                                            <span className="text-gray-600">인공지능</span>
+                                            <span className="font-medium">57점</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'projects' && (
+                    <div className="space-y-8">
+                        <div className="mb-12">
+                            <div className="flex items-center mb-4">
+                                <Calendar className="w-6 h-6 mr-3 text-gray-700" />
+                                <h2 className="text-3xl font-bold text-gray-900">주요 프로젝트</h2>
+                            </div>
+                            <div className="h-1 w-20 bg-gray-900 rounded-full"></div>
+                        </div>
+                        
+                        <div className="grid gap-6">
+                            <div className="bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-gray-300 transition-all hover:shadow-lg">
+                                <div className="flex items-start justify-between mb-4">
+                                    <h3 className="text-lg font-semibold text-gray-900">
+                                        대기업 AI 교육 프로그램
+                                    </h3>
+                                    <span className="text-base text-gray-600">2022 ~ 현재</span>
+                                </div>
+                                <p className="text-lg text-gray-700 mb-4 leading-relaxed">
+                                    삼성전자, LG전자, SK, 현대건설 등 국내 주요 대기업 임직원 대상 
+                                    맞춤형 AI 교육 프로그램 설계 및 운영
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
+                                        Python
+                                    </span>
+                                    <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
+                                        Machine Learning
+                                    </span>
+                                    <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
+                                        Deep Learning
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-gray-300 transition-all hover:shadow-lg">
+                                <div className="flex items-start justify-between mb-4">
+                                    <h3 className="text-lg font-semibold text-gray-900">
+                                        AI 부트캠프 멘토링
+                                    </h3>
+                                    <span className="text-base text-gray-600">2022 ~ 현재</span>
+                                </div>
+                                <p className="text-lg text-gray-700 mb-4 leading-relaxed">
+                                    멋쟁이사자처럼, 엘리스 등 주요 교육 기관에서 AI 부트캠프 
+                                    커리큘럼 개발 및 멘토링 진행
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
+                                        교육 설계
+                                    </span>
+                                    <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
+                                        멘토링
+                                    </span>
+                                    <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
+                                        프로젝트 지도
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-gray-300 transition-all hover:shadow-lg">
+                                <div className="flex items-start justify-between mb-4">
+                                    <h3 className="text-lg font-semibold text-gray-900">
+                                        Computer Vision 프로젝트
+                                    </h3>
+                                    <span className="text-base text-gray-600">2023</span>
+                                </div>
+                                <p className="text-lg text-gray-700 mb-4 leading-relaxed">
+                                    현대건설 안전장비 착용 탐지 모델 개발 및 실시간 모니터링 
+                                    시스템 구축
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
+                                        YOLOv5
+                                    </span>
+                                    <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
+                                        Object Detection
+                                    </span>
+                                    <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
+                                        Real-time Processing
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default ProfilePage;

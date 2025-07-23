@@ -1,0 +1,27 @@
+[flake8]
+max-line-length = 120
+exclude = 
+    .git,
+    __pycache__,
+    migrations,
+    .venv,
+    venv,
+    env,
+    build,
+    dist,
+    *.egg-info,
+    staticfiles,
+    media
+ignore = 
+    # Line too long
+    E501,
+    # Module imported but unused
+    F401,
+    # Line break before binary operator
+    W503,
+    # Line break after binary operator
+    W504
+per-file-ignores =
+    __init__.py:F401
+    settings.py:E501
+    */tests/*:F401,F811

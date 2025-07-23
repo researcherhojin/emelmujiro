@@ -1,0 +1,38 @@
+# Django 기본 설정
+SECRET_KEY=your-secret-key-here-minimum-50-characters-long
+DEBUG=False
+ALLOWED_HOSTS=localhost,127.0.0.1,yourdomain.com
+
+# 데이터베이스 설정
+DATABASE_URL=sqlite:///db.sqlite3
+
+# CORS 설정
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,https://yourdomain.com
+
+# 이메일 설정
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+
+# reCAPTCHA 설정 (Google reCAPTCHA에서 발급)
+RECAPTCHA_PUBLIC_KEY=your-recaptcha-public-key
+RECAPTCHA_PRIVATE_KEY=your-recaptcha-private-key
+
+# HTTPS 보안 설정 (프로덕션)
+SECURE_HSTS_SECONDS=31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+SECURE_HSTS_PRELOAD=True
+SECURE_SSL_REDIRECT=True
+
+# 추가 보안 설정
+# 개발 모드에서는 False, 프로덕션에서는 True
+USE_WHITENOISE=True
+
+# 세션 보안
+SESSION_COOKIE_AGE=3600
+CSRF_COOKIE_AGE=3600
+
+# 관리자 이메일
+ADMIN_EMAIL=researcherhojin@gmail.com
+
+# 외부 API (필요시)
+GITHUB_API_TOKEN=your-github-token 

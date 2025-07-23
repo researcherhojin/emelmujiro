@@ -1,0 +1,14 @@
+# API 설정
+REACT_APP_API_BASE_URL=http://localhost:8000/api
+REACT_APP_API_TIMEOUT=10000
+
+# reCAPTCHA 설정
+REACT_APP_RECAPTCHA_SITE_KEY=your-recaptcha-site-key
+
+# 기타 설정
+REACT_APP_SITE_NAME=에멜무지로
+REACT_APP_SITE_URL=https://yourdomain.com
+REACT_APP_CONTACT_EMAIL=researcherhojin@gmail.com
+
+# 개발 모드 설정
+REACT_APP_DEBUG=true 
