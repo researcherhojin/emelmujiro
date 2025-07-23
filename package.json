@@ -24,7 +24,7 @@
     "clean:frontend": "rm -rf frontend/build frontend/node_modules",
     "clean:backend": "find backend -type d -name '__pycache__' -exec rm -rf {} + && rm -rf backend/staticfiles",
     "install:all": "npm install && cd backend && pip install -r requirements.txt",
-    "prepare": "husky install"
+    "prepare": "husky install || true"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

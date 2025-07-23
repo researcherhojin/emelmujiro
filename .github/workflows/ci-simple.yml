@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      CI: true
+      HUSKY: 0
     
     steps:
     - name: Checkout code
@@ -29,7 +32,7 @@ jobs:
         echo "Testing frontend..."
         cd frontend
         echo "Installing dependencies..."
-        npm install --legacy-peer-deps
+        CI=true npm install --legacy-peer-deps --no-audit --no-fund
         echo "Building frontend..."
         npm run build
         echo "Frontend test completed!"

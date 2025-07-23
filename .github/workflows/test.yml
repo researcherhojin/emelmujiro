@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      CI: true
+      HUSKY: 0
     
     steps:
     - name: Checkout
@@ -50,6 +53,6 @@ jobs:
     - name: Test Frontend
       run: |
         cd frontend
-        npm install
+        CI=true npm install --no-audit --no-fund
         npm run build
         echo "Frontend setup successful!"
