@@ -28,11 +28,13 @@ jobs:
         python-version: '3.11'
     
     - name: Test Frontend
+      env:
+        CI: true
       run: |
         echo "Testing frontend..."
         cd frontend
         echo "Installing dependencies..."
-        CI=true npm install --legacy-peer-deps --no-audit --no-fund
+        npm install --legacy-peer-deps --no-audit --no-fund --ignore-scripts
         echo "Building frontend..."
         npm run build
         echo "Frontend test completed!"
