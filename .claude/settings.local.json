@@ -21,7 +21,8 @@
       "Bash(npm run build:*)",
       "Bash(cat:*)",
       "Bash(git submodule:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
