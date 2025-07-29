@@ -78,3 +78,6 @@ Thumbs.db
 
 # Husky
 .husky/_
+
+# Claude settings
+.claude/settings.local.json
