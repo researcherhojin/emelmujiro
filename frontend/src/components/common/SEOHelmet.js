@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { Helmet } from 'react-helmet-async';
 
 const SEOHelmet = ({ 
     title = '에멜무지로', 
@@ -7,14 +7,13 @@ const SEOHelmet = ({
     keywords = 'AI 컨설팅, 머신러닝, 딥러닝, LLM, 기업 교육, AI 솔루션',
     author = '에멜무지로',
     image = '/og-image.jpg',
-    url = 'https://emelmujiro.com',
+    url = 'https://researcherhojin.github.io/emelmujiro',
     type = 'website'
 }) => {
     const siteTitle = title === '에멜무지로' ? title : `${title} | 에멜무지로`;
     
     return (
-        <HelmetProvider>
-            <Helmet>
+        <Helmet>
                 {/* Basic Meta Tags */}
                 <title>{siteTitle}</title>
                 <meta name="description" content={description} />
@@ -55,8 +54,12 @@ const SEOHelmet = ({
                         "@type": "Organization",
                         "name": "에멜무지로",
                         "description": description,
-                        "url": "https://emelmujiro.com",
-                        "logo": "https://emelmujiro.com/logo.png",
+                        "url": "https://researcherhojin.github.io/emelmujiro",
+                        "logo": "https://researcherhojin.github.io/emelmujiro/logo512.png",
+                        "founder": {
+                            "@type": "Person",
+                            "name": "이호진"
+                        },
                         "contactPoint": {
                             "@type": "ContactPoint",
                             "email": "researcherhojin@gmail.com",
@@ -69,7 +72,6 @@ const SEOHelmet = ({
                     })}
                 </script>
             </Helmet>
-        </HelmetProvider>
     );
 };
 

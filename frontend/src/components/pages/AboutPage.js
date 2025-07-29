@@ -39,7 +39,7 @@ const AboutPage = () => {
                 title="회사소개"
                 description="에멜무지로는 AI 기술의 대중화를 선도하는 전문 컨설팅 기업입니다."
                 keywords="에멜무지로, AI 컨설팅, 기업 AI 교육, 머신러닝 컨설팅"
-                url="https://emelmujiro.com/about"
+                url="https://researcherhojin.github.io/emelmujiro/about"
             />
             
             {/* Hero Section */}
