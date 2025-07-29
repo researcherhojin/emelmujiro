@@ -41,7 +41,7 @@ export const isValidEmail = (email) => {
  * @returns {boolean} 유효한 전화번호인지 여부
  */
 export const isValidPhone = (phone) => {
-  const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+  const phoneRegex = /^[\d\s\-+()]+$/;
   return phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 10;
 };
 
