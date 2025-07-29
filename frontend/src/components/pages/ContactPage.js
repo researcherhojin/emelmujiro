@@ -3,6 +3,7 @@ import { ArrowLeft, Mail, Phone, Send, Code, BookOpen, Wifi, WifiOff } from 'luc
 import { useNavigate } from 'react-router-dom';
 import { registerBackgroundSync, SYNC_TAGS } from '../../utils/backgroundSync';
 import { escapeHtml, isValidEmail, isValidPhone, isWithinLength } from '../../utils/security';
+import SEOHelmet from '../common/SEOHelmet';
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({
@@ -130,7 +131,14 @@ ${escapeHtml(formData.message)}
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <>
+            <SEOHelmet 
+                title="문의하기"
+                description="AI 프로젝트 및 교육 관련 문의를 남겨주세요. 에멜무지로가 최적의 AI 솔루션을 제공합니다."
+                keywords="AI 컨설팅 문의, 에멜무지로 연락처, AI 교육 문의, 기업 AI 도입 상담"
+                url="https://researcherhojin.github.io/emelmujiro/#/contact"
+            />
+            <div className="min-h-screen bg-white">
 
             {/* Header */}
             <div className="border-b border-gray-100">
@@ -394,6 +402,7 @@ ${escapeHtml(formData.message)}
                 </div>
             </div>
         </div>
+        </>
     );
 };
 

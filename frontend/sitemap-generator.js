@@ -8,10 +8,9 @@ const hostname = 'https://researcherhojin.github.io/emelmujiro';
 // 페이지 목록 정의
 const pages = [
   { url: '/', changefreq: 'weekly', priority: 1.0 },
-  { url: '/about', changefreq: 'monthly', priority: 0.8 },
-  { url: '/services', changefreq: 'monthly', priority: 0.8 },
-  { url: '/blog', changefreq: 'daily', priority: 0.9 },
-  { url: '/contact', changefreq: 'monthly', priority: 0.7 },
+  { url: '/#/about', changefreq: 'monthly', priority: 0.8 },
+  { url: '/#/profile', changefreq: 'monthly', priority: 0.8 },
+  { url: '/#/contact', changefreq: 'monthly', priority: 0.7 },
 ];
 
 async function generateSitemap() {

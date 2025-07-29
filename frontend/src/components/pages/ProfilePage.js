@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Calendar, School, Building, Award, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import SEOHelmet from '../common/SEOHelmet';
+import StructuredData from '../common/StructuredData';
 
 const ProfilePage = () => {
     const [activeTab, setActiveTab] = useState('career');
@@ -57,7 +59,15 @@ const ProfilePage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <>
+            <SEOHelmet 
+                title="대표 프로필 - 이호진"
+                description="AI/ML 전문가, 풀스택 개발자, IT 교육 전문가. 에멜무지로 대표 이호진의 경력과 전문 분야를 소개합니다."
+                keywords="이호진, AI 전문가, 머신러닝 전문가, IT 강사, 에멜무지로 대표, 프로그래밍 교육, 인공지능 컨설팅"
+                url="https://researcherhojin.github.io/emelmujiro/#/profile"
+            />
+            <StructuredData type="Person" />
+            <div className="min-h-screen bg-white">
             {/* Header */}
             <div className="border-b border-gray-100">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -336,6 +346,7 @@ const ProfilePage = () => {
                 )}
             </div>
         </div>
+        </>
     );
 };
 

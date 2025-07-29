@@ -4,9 +4,9 @@ import { Helmet } from 'react-helmet-async';
 const SEOHelmet = ({ 
     title = '에멜무지로', 
     description = 'AI 기술의 대중화를 선도하는 전문 컨설팅 기업',
-    keywords = 'AI 컨설팅, 머신러닝, 딥러닝, LLM, 기업 교육, AI 솔루션',
+    keywords = 'AI 컨설팅, 머신러닝, 딥러닝, LLM, 기업 교육, AI 솔루션, 에멜무지로, emelmujiro, ChatGPT, 프롬프트 엔지니어링, 인공지능 교육, AI 전문가, 이호진',
     author = '에멜무지로',
-    image = '/og-image.jpg',
+    image = 'https://researcherhojin.github.io/emelmujiro/og-image.png',
     url = 'https://researcherhojin.github.io/emelmujiro',
     type = 'website'
 }) => {
@@ -44,8 +44,23 @@ const SEOHelmet = ({
                 <html lang="ko" />
                 
                 {/* Additional SEO Tags */}
-                <meta name="robots" content="index, follow" />
-                <meta name="googlebot" content="index, follow" />
+                <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+                <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+                <meta name="bingbot" content="index, follow" />
+                <meta name="revisit-after" content="7 days" />
+                <meta name="rating" content="general" />
+                <meta name="distribution" content="global" />
+                
+                {/* Additional Open Graph Tags */}
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+                <meta property="og:image:alt" content="에멜무지로 - AI 교육 및 컨설팅 전문 기업" />
+                
+                {/* Twitter additional tags */}
+                <meta name="twitter:image:alt" content="에멜무지로 - AI 교육 및 컨설팅 전문 기업" />
+                
+                {/* 언어 설정 */}
+                <meta httpEquiv="content-language" content="ko" />
                 
                 {/* Schema.org JSON-LD */}
                 <script type="application/ld+json">
@@ -63,12 +78,22 @@ const SEOHelmet = ({
                         "contactPoint": {
                             "@type": "ContactPoint",
                             "email": "researcherhojin@gmail.com",
+                            "telephone": "+82-10-7279-0380",
                             "contactType": "customer service",
                             "availableLanguage": ["Korean", "English"]
                         },
+                        "address": {
+                            "@type": "PostalAddress",
+                            "addressCountry": "KR",
+                            "addressLocality": "서울"
+                        },
                         "sameAs": [
-                            // Add social media URLs here when available
-                        ]
+                            "https://github.com/researcherhojin",
+                            "https://emelmujiro.com"
+                        ],
+                        "foundingDate": "2022",
+                        "areaServed": "대한민국",
+                        "serviceType": ["AI 컨설팅", "기업 교육", "LLM 솔루션 개발"]
                     })}
                 </script>
             </Helmet>

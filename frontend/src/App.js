@@ -15,6 +15,7 @@ import ServicesSection from './components/sections/ServicesSection';
 import LogosSection from './components/sections/LogosSection';
 import CTASection from './components/sections/CTASection';
 import SEOHelmet from './components/common/SEOHelmet';
+import StructuredData from './components/common/StructuredData';
 
 // Lazy load pages for code splitting
 const ContactPage = lazy(() => import('./components/pages/ContactPage'));
@@ -40,6 +41,9 @@ function HomePage() {
                 description="최신 기술로 비즈니스의 미래를 설계합니다. AI, 머신러닝, 딥러닝을 활용한 맞춤형 솔루션을 제공합니다."
                 url="https://researcherhojin.github.io/emelmujiro"
             />
+            <StructuredData type="Organization" />
+            <StructuredData type="Website" />
+            <StructuredData type="Breadcrumb" />
             <div className="min-h-screen">
                 {/* Hero Section */}
                 <div id="home">
