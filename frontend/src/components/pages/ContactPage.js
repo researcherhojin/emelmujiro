@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Mail, Phone, Send, Code, BookOpen, Wifi, WifiOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { registerBackgroundSync, SYNC_TAGS } from '../../utils/backgroundSync';
+import { escapeHtml, isValidEmail, isValidPhone, isWithinLength } from '../../utils/security';
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({
@@ -34,6 +35,27 @@ const ContactPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // 입력값 유효성 검사
+        if (!formData.name || !isWithinLength(formData.name, 50)) {
+            alert('이름을 올바르게 입력해주세요. (최대 50자)');
+            return;
+        }
+
+        if (!isValidEmail(formData.email)) {
+            alert('올바른 이메일 주소를 입력해주세요.');
+            return;
+        }
+
+        if (formData.phone && !isValidPhone(formData.phone)) {
+            alert('올바른 전화번호를 입력해주세요.');
+            return;
+        }
+
+        if (!formData.message || !isWithinLength(formData.message, 1000)) {
+            alert('문의 내용을 입력해주세요. (최대 1000자)');
+            return;
+        }
 
         // If offline, save for background sync
         if (!isOnline) {
@@ -68,15 +90,15 @@ const ContactPage = () => {
 안녕하세요. 에멀무지로 문의드립니다.
 
 ■ 문의자 정보
-- 이름: ${formData.name}
-- 이메일: ${formData.email}
-- 전화번호: ${formData.phone || '미제공'}
-- 회사/기관: ${formData.company || '개인'}
+- 이름: ${escapeHtml(formData.name)}
+- 이메일: ${escapeHtml(formData.email)}
+- 전화번호: ${escapeHtml(formData.phone) || '미제공'}
+- 회사/기관: ${escapeHtml(formData.company) || '개인'}
 
 ■ 문의 유형: ${formData.inquiryType === 'education' ? '교육 & 강의' : 'AI 솔루션 & 컨설팅'}
 
 ■ 문의 내용:
-${formData.message}
+${escapeHtml(formData.message)}
 
 ---
 이 메일은 에멀무지로 웹사이트 문의 폼을 통해 발송되었습니다.
