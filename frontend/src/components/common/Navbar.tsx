@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo, useCallback } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 
-const Navbar = () => {
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
+interface NavItem {
+    label: string;
+    path: string;
+}
+
+const Navbar: React.FC = memo(() => {
+    const [isScrolled, setIsScrolled] = useState<boolean>(false);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -17,14 +22,14 @@ const Navbar = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const navItems = [
+    const navItems: NavItem[] = [
         { label: '회사소개', path: '/about' },
         { label: '서비스', path: '/#services' },
         { label: '블로그', path: '/blog' },
         { label: '대표 프로필', path: '/profile' }
     ];
 
-    const handleNavigation = (path) => {
+    const handleNavigation = useCallback((path: string) => {
         setIsOpen(false);
         
         if (path.startsWith('/#')) {
@@ -50,14 +55,23 @@ const Navbar = () => {
             // 일반 페이지로 이동
             navigate(path);
         }
-    };
+    }, [location.pathname, navigate]);
 
-    const isActive = (path) => {
+    const isActive = useCallback((path: string): boolean => {
         if (path.startsWith('/#')) {
             return location.pathname === '/' && location.hash === path.substring(1);
         }
         return location.pathname === path;
-    };
+    }, [location.pathname, location.hash]);
+
+    const handleContactClick = useCallback(() => {
+        setIsOpen(false);
+        navigate('/contact');
+    }, [navigate]);
+
+    const toggleMenu = useCallback(() => {
+        setIsOpen(prev => !prev);
+    }, []);
 
     return (
         <nav
@@ -79,7 +93,7 @@ const Navbar = () => {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-12">
-                        {navItems.map((item, index) => (
+                        {navItems.map((item) => (
                             <button
                                 key={item.path}
                                 onClick={() => handleNavigation(item.path)}
@@ -94,7 +108,7 @@ const Navbar = () => {
                         ))}
                         
                         <button
-                            onClick={() => navigate('/contact')}
+                            onClick={handleContactClick}
                             className="px-6 py-3 bg-gray-900 text-white text-base font-semibold 
                                 rounded-lg hover:bg-gray-800 transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-100"
                         >
@@ -104,7 +118,7 @@ const Navbar = () => {
 
                     {/* Mobile Menu Button */}
                     <button
-                        onClick={() => setIsOpen(!isOpen)}
+                        onClick={toggleMenu}
                         className="md:hidden inline-flex items-center justify-center p-2 text-gray-700 
                             hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200 active:scale-95"
                         aria-label="메뉴 토글"
@@ -135,10 +149,7 @@ const Navbar = () => {
 
                         <div className="pt-4">
                             <button
-                                onClick={() => {
-                                    setIsOpen(false);
-                                    navigate('/contact');
-                                }}
+                                onClick={handleContactClick}
                                 className="w-full px-4 py-4 bg-gray-900 text-white text-base 
                                     font-semibold rounded-lg hover:bg-gray-800 transition-all shadow-md active:scale-95"
                             >
@@ -150,6 +161,8 @@ const Navbar = () => {
             )}
         </nav>
     );
-};
+});
 
-export default React.memo(Navbar);
+Navbar.displayName = 'Navbar';
+
+export default Navbar;

@@ -1,6 +1,5 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect, memo } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { BlogProvider } from './contexts/BlogContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -31,7 +30,7 @@ const BlogDetail = lazy(() => import('./components/blog/BlogDetail'));
 const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
 
 // ScrollToTop component to handle page navigation
-function ScrollToTop() {
+const ScrollToTop: React.FC = memo(() => {
     const { pathname } = useLocation();
 
     useEffect(() => {
@@ -39,9 +38,11 @@ function ScrollToTop() {
     }, [pathname]);
 
     return null;
-}
+});
 
-function HomePage() {
+ScrollToTop.displayName = 'ScrollToTop';
+
+const HomePage: React.FC = memo(() => {
     return (
         <>
             <SEOHelmet 
@@ -74,9 +75,11 @@ function HomePage() {
             </div>
         </>
     );
-}
+});
 
-function App() {
+HomePage.displayName = 'HomePage';
+
+const App: React.FC = () => {
     return (
         <HelmetProvider>
             <UIProvider>
@@ -112,6 +115,6 @@ function App() {
             </UIProvider>
         </HelmetProvider>
     );
-}
+};
 
 export default App;

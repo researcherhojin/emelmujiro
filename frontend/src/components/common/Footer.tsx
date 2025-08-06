@@ -1,15 +1,117 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Phone, ExternalLink, X, Code, GraduationCap, BarChart3, Database } from 'lucide-react';
+import { Mail, Phone, ExternalLink, X, Code, GraduationCap, BarChart3, Database, LucideIcon } from 'lucide-react';
 
-const Footer = () => {
+interface ServiceDetail {
+    title: string;
+    icon: LucideIcon;
+    description: string;
+    details: string[];
+    cases: string[];
+}
+
+interface Services {
+    [key: string]: ServiceDetail;
+}
+
+interface ServiceModalProps {
+    isOpen: boolean;
+    service: ServiceDetail | null;
+    onClose: () => void;
+    onContactClick: () => void;
+}
+
+const ServiceModal: React.FC<ServiceModalProps> = memo(({ isOpen, service, onClose, onContactClick }) => {
+    if (!isOpen || !service) return null;
+
+    const IconComponent = service.icon;
+
+    return (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div
+                    className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                    onClick={onClose}
+                ></div>
+
+                <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+                    <div className="absolute top-0 right-0 pt-4 pr-4">
+                        <button
+                            type="button"
+                            className="bg-white rounded-md text-gray-400 hover:text-gray-600 focus:outline-none"
+                            onClick={onClose}
+                        >
+                            <X className="h-6 w-6" />
+                        </button>
+                    </div>
+
+                    <div className="sm:flex sm:items-start">
+                        <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <IconComponent className="h-6 w-6 text-gray-700" />
+                        </div>
+                        <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
+                            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">
+                                {service.title}
+                            </h3>
+                            <p className="text-sm text-gray-600 mb-4">{service.description}</p>
+
+                            <div className="mb-6">
+                                <h4 className="text-sm font-medium text-gray-900 mb-3">주요 서비스</h4>
+                                <ul className="space-y-2">
+                                    {service.details.map((detail, index) => (
+                                        <li key={index} className="flex items-start">
+                                            <div className="w-1.5 h-1.5 bg-gray-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                            <span className="text-sm text-gray-700">{detail}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className="mb-6">
+                                <h4 className="text-sm font-medium text-gray-900 mb-3">주요 사례</h4>
+                                <ul className="space-y-1">
+                                    {service.cases.map((caseItem, index) => (
+                                        <li key={index} className="text-sm text-gray-600">
+                                            • {caseItem}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                        <button
+                            type="button"
+                            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-900 text-base font-medium text-white hover:bg-gray-800 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
+                            onClick={onContactClick}
+                        >
+                            문의하기
+                        </button>
+                        <button
+                            type="button"
+                            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
+                            onClick={onClose}
+                        >
+                            닫기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+});
+
+ServiceModal.displayName = 'ServiceModal';
+
+const Footer: React.FC = memo(() => {
     const navigate = useNavigate();
-    const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
-    const [selectedService, setSelectedService] = useState(null);
+    const [isServiceModalOpen, setIsServiceModalOpen] = useState<boolean>(false);
+    const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
 
     const currentYear = new Date().getFullYear();
 
-    const services = {
+    const services: Services = {
         'ai-solution': {
             title: 'AI 솔루션 개발',
             icon: Code,
@@ -72,16 +174,16 @@ const Footer = () => {
         },
     };
 
-    const handleServiceClick = (serviceKey) => {
+    const handleServiceClick = useCallback((serviceKey: string) => {
         setSelectedService(services[serviceKey]);
         setIsServiceModalOpen(true);
-    };
+    }, [services]);
 
-    const handleNavigate = (path) => {
+    const handleNavigate = useCallback((path: string) => {
         navigate(path);
-    };
+    }, [navigate]);
 
-    const scrollToSection = (sectionId) => {
+    const scrollToSection = useCallback((sectionId: string) => {
         if (window.location.pathname !== '/') {
             navigate('/');
             setTimeout(() => {
@@ -96,7 +198,16 @@ const Footer = () => {
                 element.scrollIntoView({ behavior: 'smooth' });
             }
         }
-    };
+    }, [navigate]);
+
+    const handleModalClose = useCallback(() => {
+        setIsServiceModalOpen(false);
+    }, []);
+
+    const handleModalContactClick = useCallback(() => {
+        setIsServiceModalOpen(false);
+        handleNavigate('/contact');
+    }, [handleNavigate]);
 
     return (
         <>
@@ -222,85 +333,16 @@ const Footer = () => {
             </footer>
 
             {/* Service Detail Modal */}
-            {isServiceModalOpen && selectedService && (
-                <div className="fixed inset-0 z-50 overflow-y-auto">
-                    <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        <div
-                            className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                            onClick={() => setIsServiceModalOpen(false)}
-                        ></div>
-
-                        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
-                            <div className="absolute top-0 right-0 pt-4 pr-4">
-                                <button
-                                    type="button"
-                                    className="bg-white rounded-md text-gray-400 hover:text-gray-600 focus:outline-none"
-                                    onClick={() => setIsServiceModalOpen(false)}
-                                >
-                                    <X className="h-6 w-6" />
-                                </button>
-                            </div>
-
-                            <div className="sm:flex sm:items-start">
-                                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 sm:mx-0 sm:h-10 sm:w-10">
-                                    <selectedService.icon className="h-6 w-6 text-gray-700" />
-                                </div>
-                                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
-                                    <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">
-                                        {selectedService.title}
-                                    </h3>
-                                    <p className="text-sm text-gray-600 mb-4">{selectedService.description}</p>
-
-                                    <div className="mb-6">
-                                        <h4 className="text-sm font-medium text-gray-900 mb-3">주요 서비스</h4>
-                                        <ul className="space-y-2">
-                                            {selectedService.details.map((detail, index) => (
-                                                <li key={index} className="flex items-start">
-                                                    <div className="w-1.5 h-1.5 bg-gray-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                                                    <span className="text-sm text-gray-700">{detail}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-
-                                    <div className="mb-6">
-                                        <h4 className="text-sm font-medium text-gray-900 mb-3">주요 사례</h4>
-                                        <ul className="space-y-1">
-                                            {selectedService.cases.map((caseItem, index) => (
-                                                <li key={index} className="text-sm text-gray-600">
-                                                    • {caseItem}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                                <button
-                                    type="button"
-                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-900 text-base font-medium text-white hover:bg-gray-800 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
-                                    onClick={() => {
-                                        setIsServiceModalOpen(false);
-                                        handleNavigate('/contact');
-                                    }}
-                                >
-                                    문의하기
-                                </button>
-                                <button
-                                    type="button"
-                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
-                                    onClick={() => setIsServiceModalOpen(false)}
-                                >
-                                    닫기
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ServiceModal 
+                isOpen={isServiceModalOpen}
+                service={selectedService}
+                onClose={handleModalClose}
+                onContactClick={handleModalContactClick}
+            />
         </>
     );
-};
+});
+
+Footer.displayName = 'Footer';
 
 export default Footer;

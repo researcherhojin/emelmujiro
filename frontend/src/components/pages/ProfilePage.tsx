@@ -1,14 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { ArrowLeft, Calendar, School, Building, Award, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
 
-const ProfilePage = () => {
-    const [activeTab, setActiveTab] = useState('career');
+interface CareerItem {
+    period: string;
+    company: string;
+    position: string;
+    description: string;
+    current?: boolean;
+}
+
+interface EducationItem {
+    period: string;
+    school: string;
+    degree: string;
+    description: string;
+}
+
+interface ProjectStats {
+    totalProjects: string;
+    totalStudents: string;
+    partnerCompanies: string;
+    yearsOfExperience: string;
+}
+
+type TabType = 'career' | 'education' | 'projects';
+
+const ProfilePage: React.FC = memo(() => {
+    const [activeTab, setActiveTab] = useState<TabType>('career');
     const navigate = useNavigate();
 
-    const careerData = [
+    const careerData: CareerItem[] = [
         {
             period: '2024.12 ~ 현재',
             company: '에멜무지로',
@@ -36,7 +60,7 @@ const ProfilePage = () => {
         }
     ];
 
-    const educationData = [
+    const educationData: EducationItem[] = [
         {
             period: '2024.09 ~ 2026.06\n(예정)',
             school: '한양대학교',
@@ -51,12 +75,20 @@ const ProfilePage = () => {
         }
     ];
 
-    const projectStats = {
+    const projectStats: ProjectStats = {
         totalProjects: '50+',
         totalStudents: '1,000+',
         partnerCompanies: '15+',
         yearsOfExperience: '3+'
     };
+
+    const handleBackClick = useCallback(() => {
+        navigate('/');
+    }, [navigate]);
+
+    const handleTabChange = useCallback((tab: TabType) => {
+        setActiveTab(tab);
+    }, []);
 
     return (
         <>
@@ -72,7 +104,7 @@ const ProfilePage = () => {
             <div className="border-b border-gray-100">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <button
-                        onClick={() => navigate('/')}
+                        onClick={handleBackClick}
                         className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
                     >
                         <ArrowLeft className="w-4 h-4 mr-2" />
@@ -120,7 +152,7 @@ const ProfilePage = () => {
                 <div className="border-b border-gray-200 mb-12">
                     <nav className="-mb-px flex overflow-x-auto scrollbar-hide">
                         <button
-                            onClick={() => setActiveTab('career')}
+                            onClick={() => handleTabChange('career')}
                             className={`relative py-4 px-6 sm:px-8 font-semibold text-base sm:text-lg transition-all whitespace-nowrap ${
                                 activeTab === 'career'
                                     ? 'text-gray-900'
@@ -133,7 +165,7 @@ const ProfilePage = () => {
                             }`}></span>
                         </button>
                         <button
-                            onClick={() => setActiveTab('education')}
+                            onClick={() => handleTabChange('education')}
                             className={`relative py-4 px-6 sm:px-8 font-semibold text-base sm:text-lg transition-all whitespace-nowrap ${
                                 activeTab === 'education'
                                     ? 'text-gray-900'
@@ -146,7 +178,7 @@ const ProfilePage = () => {
                             }`}></span>
                         </button>
                         <button
-                            onClick={() => setActiveTab('projects')}
+                            onClick={() => handleTabChange('projects')}
                             className={`relative py-4 px-6 sm:px-8 font-semibold text-base sm:text-lg transition-all whitespace-nowrap ${
                                 activeTab === 'projects'
                                     ? 'text-gray-900'
@@ -297,23 +329,22 @@ const ProfilePage = () => {
                             <div className="bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-gray-300 transition-all hover:shadow-lg">
                                 <div className="flex items-start justify-between mb-4">
                                     <h3 className="text-lg font-semibold text-gray-900">
-                                        AI 부트캠프 멘토링
+                                        Computer Vision 프로젝트
                                     </h3>
-                                    <span className="text-base text-gray-600">2022 ~ 현재</span>
+                                    <span className="text-base text-gray-600">2023</span>
                                 </div>
                                 <p className="text-lg text-gray-700 mb-4 leading-relaxed">
-                                    멋쟁이사자처럼, 엘리스 등 주요 교육 기관에서 AI 부트캠프 
-                                    커리큘럼 개발 및 멘토링 진행
+                                    제조업 품질 검사 자동화를 위한 YOLO 기반 객체 탐지 시스템 개발 및 구축
                                 </p>
                                 <div className="flex flex-wrap gap-2">
                                     <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
-                                        교육 설계
+                                        YOLO
                                     </span>
                                     <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
-                                        멘토링
+                                        OpenCV
                                     </span>
                                     <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
-                                        프로젝트 지도
+                                        PyTorch
                                     </span>
                                 </div>
                             </div>
@@ -321,23 +352,22 @@ const ProfilePage = () => {
                             <div className="bg-white border-2 border-gray-200 rounded-xl p-8 hover:border-gray-300 transition-all hover:shadow-lg">
                                 <div className="flex items-start justify-between mb-4">
                                     <h3 className="text-lg font-semibold text-gray-900">
-                                        Computer Vision 프로젝트
+                                        LLM 기반 솔루션 개발
                                     </h3>
-                                    <span className="text-base text-gray-600">2023</span>
+                                    <span className="text-base text-gray-600">2024</span>
                                 </div>
                                 <p className="text-lg text-gray-700 mb-4 leading-relaxed">
-                                    현대건설 안전장비 착용 탐지 모델 개발 및 실시간 모니터링 
-                                    시스템 구축
+                                    기업 내부 문서 자동 분석 및 인사이트 도출을 위한 LLM 기반 시스템 구축
                                 </p>
                                 <div className="flex flex-wrap gap-2">
                                     <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
-                                        YOLOv5
+                                        GPT-4
                                     </span>
                                     <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
-                                        Object Detection
+                                        LangChain
                                     </span>
                                     <span className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-base font-medium">
-                                        Real-time Processing
+                                        RAG
                                     </span>
                                 </div>
                             </div>
@@ -348,6 +378,8 @@ const ProfilePage = () => {
         </div>
         </>
     );
-};
+});
+
+ProfilePage.displayName = 'ProfilePage';
 
 export default ProfilePage;

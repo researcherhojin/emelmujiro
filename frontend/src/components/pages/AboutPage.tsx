@@ -1,19 +1,81 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import SEOHelmet from '../common/SEOHelmet';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import { SERVICES, PARTNER_COMPANIES } from '../../constants';
 
-const AboutPage = () => {
+interface TimelineItem {
+    year: string;
+    title: string;
+    description: string;
+}
 
-    const timeline = [
+interface CompanyValue {
+    title: string;
+    description: string;
+    points: string[];
+}
+
+interface TimelineCardProps {
+    item: TimelineItem;
+    index: number;
+}
+
+const TimelineCard: React.FC<TimelineCardProps> = memo(({ item, index }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: index * 0.1 }}
+        className="flex gap-8 items-start"
+    >
+        <div className="flex-shrink-0">
+            <div className="text-2xl font-bold text-gray-900">{item.year}</div>
+        </div>
+        <div className="flex-grow pb-8 border-b border-gray-200 last:border-0">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
+            <p className="text-gray-600">{item.description}</p>
+        </div>
+    </motion.div>
+));
+
+TimelineCard.displayName = 'TimelineCard';
+
+interface ValueCardProps {
+    value: CompanyValue;
+    index: number;
+}
+
+const ValueCard: React.FC<ValueCardProps> = memo(({ value, index }) => (
+    <div key={index} className="bg-gray-50 p-8 rounded-xl">
+        <h3 className="text-xl font-semibold text-gray-900 mb-4">{value.title}</h3>
+        <p className="text-gray-600 mb-6">{value.description}</p>
+        
+        <ul className="space-y-3">
+            {value.points.map((point, idx) => (
+                <li key={idx} className="flex items-start text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
+                    {point}
+                </li>
+            ))}
+        </ul>
+    </div>
+));
+
+ValueCard.displayName = 'ValueCard';
+
+const AboutPage: React.FC = memo(() => {
+    const navigate = useNavigate();
+
+    const timeline: TimelineItem[] = [
         { year: '2022', title: 'AI 교육 시작', description: '국내 주요 기업 대상 AI/ML 교육 프로그램 운영' },
         { year: '2023', title: '교육 프로그램 확대', description: '삼성전자, SK, LG 등 대기업 교육 프로젝트 진행' },
         { year: '2024', title: '에멜무지로 설립', description: 'AI 교육 및 컨설팅 전문 기업으로 법인 설립' },
         { year: '2025', title: '사업 영역 확장', description: 'LLM 기반 솔루션 및 AI 자동화 서비스 준비' }
     ];
 
-    const companyValues = [
+    const companyValues: CompanyValue[] = [
         {
             title: '실무 중심',
             description: '이론보다 실제 비즈니스 문제 해결에 집중합니다',
@@ -32,6 +94,10 @@ const AboutPage = () => {
     ];
 
     const services = SERVICES;
+
+    const handleContactClick = useCallback(() => {
+        navigate('/contact');
+    }, [navigate]);
 
     return (
         <div className="min-h-screen bg-white">
@@ -127,22 +193,7 @@ const AboutPage = () => {
                     
                     <div className="space-y-8">
                         {timeline.map((item, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="flex gap-8 items-start"
-                            >
-                                <div className="flex-shrink-0">
-                                    <div className="text-2xl font-bold text-gray-900">{item.year}</div>
-                                </div>
-                                <div className="flex-grow pb-8 border-b border-gray-200 last:border-0">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
-                                    <p className="text-gray-600">{item.description}</p>
-                                </div>
-                            </motion.div>
+                            <TimelineCard key={index} item={item} index={index} />
                         ))}
                     </div>
                 </div>
@@ -155,19 +206,7 @@ const AboutPage = () => {
                     
                     <div className="grid md:grid-cols-3 gap-8">
                         {companyValues.map((value, index) => (
-                            <div key={index} className="bg-gray-50 p-8 rounded-xl">
-                                <h3 className="text-xl font-semibold text-gray-900 mb-4">{value.title}</h3>
-                                <p className="text-gray-600 mb-6">{value.description}</p>
-                                
-                                <ul className="space-y-3">
-                                    {value.points.map((point, idx) => (
-                                        <li key={idx} className="flex items-start text-sm text-gray-600">
-                                            <CheckCircle className="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" />
-                                            {point}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                            <ValueCard key={index} value={value} index={index} />
                         ))}
                     </div>
                 </div>
@@ -259,7 +298,7 @@ const AboutPage = () => {
                         AI 전문가와 함께 귀사의 비즈니스 문제를 해결하세요
                     </p>
                     <button
-                        onClick={() => window.location.href = '/contact'}
+                        onClick={handleContactClick}
                         className="inline-flex items-center px-8 py-4 bg-white text-black 
                             font-medium rounded-lg hover:bg-gray-100 transition-colors"
                     >
@@ -270,6 +309,8 @@ const AboutPage = () => {
             </section>
         </div>
     );
-};
+});
+
+AboutPage.displayName = 'AboutPage';
 
 export default AboutPage;
