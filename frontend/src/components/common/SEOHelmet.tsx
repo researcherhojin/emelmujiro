@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const SEOHelmet = ({ 
+interface SEOHelmetProps {
+    title?: string;
+    description?: string;
+    keywords?: string;
+    author?: string;
+    image?: string;
+    url?: string;
+    type?: string;
+}
+
+const SEOHelmet: React.FC<SEOHelmetProps> = memo(({ 
     title = '에멜무지로', 
     description = 'AI 기술의 대중화를 선도하는 전문 컨설팅 기업',
     keywords = 'AI 컨설팅, 머신러닝, 딥러닝, LLM, 기업 교육, AI 솔루션, 에멜무지로, emelmujiro, ChatGPT, 프롬프트 엔지니어링, 인공지능 교육, AI 전문가, 이호진',
@@ -98,6 +108,8 @@ const SEOHelmet = ({
                 </script>
             </Helmet>
     );
-};
+});
 
-export default React.memo(SEOHelmet);
+SEOHelmet.displayName = 'SEOHelmet';
+
+export default SEOHelmet;

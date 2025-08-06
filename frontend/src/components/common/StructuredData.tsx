@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const StructuredData = ({ type = 'Organization' }) => {
+type SchemaType = 'Organization' | 'Website' | 'Breadcrumb' | 'Person';
+
+interface StructuredDataProps {
+    type?: SchemaType;
+}
+
+const StructuredData: React.FC<StructuredDataProps> = memo(({ type = 'Organization' }) => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -98,49 +104,51 @@ const StructuredData = ({ type = 'Organization' }) => {
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "이호진",
-    "jobTitle": "AI 교육 및 컨설팅 전문가",
+    "alternateName": "Hojin Lee",
+    "jobTitle": "AI Researcher & Educator",
     "worksFor": {
       "@type": "Organization",
       "name": "에멜무지로"
     },
-    "description": "AI/ML 전문가, 풀스택 개발자, IT 교육 전문가",
+    "email": "researcherhojin@gmail.com",
+    "telephone": "+82-10-7279-0380",
+    "url": "https://researcherhojin.github.io/emelmujiro/#/profile",
+    "sameAs": [
+      "https://github.com/researcherhojin"
+    ],
     "alumniOf": [
       {
-        "@type": "CollegeOrUniversity",
-        "name": "서울시립대학교",
-        "department": "전자전기컴퓨터공학부"
+        "@type": "EducationalOrganization",
+        "name": "한양대학교",
+        "department": "인공지능융합대학원"
+      },
+      {
+        "@type": "EducationalOrganization",
+        "name": "경북대학교",
+        "department": "축산생명공학과"
       }
     ],
-    "knowsAbout": ["인공지능", "머신러닝", "딥러닝", "웹 개발", "모바일 개발", "IT 교육"],
-    "hasOccupation": {
-      "@type": "Occupation",
-      "name": "소프트웨어 개발자 및 교육자",
-      "skills": ["Python", "JavaScript", "React", "Django", "TensorFlow", "PyTorch"]
-    }
+    "knowsAbout": ["AI", "Machine Learning", "Deep Learning", "Python", "Django", "React", "교육"]
   };
 
-  let schemaData;
-  switch (type) {
-    case 'Person':
-      schemaData = personSchema;
-      break;
-    case 'Website':
-      schemaData = websiteSchema;
-      break;
-    case 'Breadcrumb':
-      schemaData = breadcrumbSchema;
-      break;
-    default:
-      schemaData = organizationSchema;
-  }
+  const schemas: Record<SchemaType, any> = {
+    'Organization': organizationSchema,
+    'Website': websiteSchema,
+    'Breadcrumb': breadcrumbSchema,
+    'Person': personSchema
+  };
+
+  const selectedSchema = schemas[type];
 
   return (
     <Helmet>
       <script type="application/ld+json">
-        {JSON.stringify(schemaData)}
+        {JSON.stringify(selectedSchema)}
       </script>
     </Helmet>
   );
-};
+});
+
+StructuredData.displayName = 'StructuredData';
 
 export default StructuredData;

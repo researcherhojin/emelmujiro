@@ -1,4 +1,4 @@
-import React, { useState, memo, useCallback } from 'react';
+import React, { useState, memo, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Phone, ExternalLink, X, Code, GraduationCap, BarChart3, Database, LucideIcon } from 'lucide-react';
 
@@ -111,7 +111,7 @@ const Footer: React.FC = memo(() => {
 
     const currentYear = new Date().getFullYear();
 
-    const services: Services = {
+    const services: Services = useMemo(() => ({
         'ai-solution': {
             title: 'AI 솔루션 개발',
             icon: Code,
@@ -172,7 +172,7 @@ const Footer: React.FC = memo(() => {
             ],
             cases: ['이커머스 고객 분석', '제조업 품질 데이터 분석', '금융 리스크 분석'],
         },
-    };
+    }), []);
 
     const handleServiceClick = useCallback((serviceKey: string) => {
         setSelectedService(services[serviceKey]);

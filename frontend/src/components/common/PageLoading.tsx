@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 
-const PageLoading = () => {
+const PageLoading: React.FC = memo(() => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <motion.div
@@ -15,6 +15,8 @@ const PageLoading = () => {
             </motion.div>
         </div>
     );
-};
+});
+
+PageLoading.displayName = 'PageLoading';
 
 export default PageLoading;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo, useCallback } from 'react';
 import { Bell, X } from 'lucide-react';
 import { 
   isPushNotificationSupported, 
@@ -7,9 +7,9 @@ import {
   subscribeToPushNotifications
 } from '../../utils/pushNotifications';
 
-const NotificationPermission = () => {
-  const [showBanner, setShowBanner] = useState(false);
-  const [isSubscribing, setIsSubscribing] = useState(false);
+const NotificationPermission: React.FC = memo(() => {
+  const [showBanner, setShowBanner] = useState<boolean>(false);
+  const [isSubscribing, setIsSubscribing] = useState<boolean>(false);
 
   useEffect(() => {
     // Check if we should show the notification permission banner
@@ -23,7 +23,7 @@ const NotificationPermission = () => {
     }
   }, []);
 
-  const handleEnableNotifications = async () => {
+  const handleEnableNotifications = useCallback(async () => {
     setIsSubscribing(true);
     
     try {
@@ -53,13 +53,13 @@ const NotificationPermission = () => {
     } finally {
       setIsSubscribing(false);
     }
-  };
+  }, []);
 
-  const handleDismiss = () => {
+  const handleDismiss = useCallback(() => {
     setShowBanner(false);
     // Store dismissal in localStorage to not show again for a while
     localStorage.setItem('notificationBannerDismissed', Date.now().toString());
-  };
+  }, []);
 
   if (!showBanner) return null;
 
@@ -107,6 +107,8 @@ const NotificationPermission = () => {
       </div>
     </div>
   );
-};
+});
+
+NotificationPermission.displayName = 'NotificationPermission';
 
 export default NotificationPermission;
