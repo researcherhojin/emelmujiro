@@ -5,7 +5,14 @@ import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+    throw new Error('Failed to find the root element');
+}
+
+const root = ReactDOM.createRoot(rootElement);
+
 root.render(
     <React.StrictMode>
         <HelmetProvider>
@@ -16,13 +23,14 @@ root.render(
 
 // PWA로 작동하도록 서비스 워커 등록
 serviceWorkerRegistration.register({
-    onUpdate: (registration) => {
+    onUpdate: (registration: ServiceWorkerRegistration) => {
         // 새 버전이 있을 때 사용자에게 알림
         if (window.confirm('새로운 버전이 있습니다. 페이지를 새로고침하시겠습니까?')) {
             window.location.reload();
         }
     },
-    onSuccess: (registration) => {
+    onSuccess: (registration: ServiceWorkerRegistration) => {
         // PWA offline mode ready
+        console.log('Service Worker registered successfully');
     }
 });
