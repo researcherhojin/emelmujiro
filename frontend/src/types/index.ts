@@ -6,9 +6,15 @@ export interface BlogPost {
   content: string;
   excerpt: string;
   author: string;
+  category?: string;
+  tags?: string[];
+  image_url?: string;
+  date?: string;
   created_at: string;
   updated_at: string;
   published: boolean;
+  views?: number;
+  likes?: number;
 }
 
 export interface ApiResponse<T> {
