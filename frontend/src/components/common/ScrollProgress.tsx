@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
-const ScrollProgress = () => {
+const ScrollProgress: React.FC = memo(() => {
     const [scrollProgress, setScrollProgress] = useState(0);
 
     useEffect(() => {
@@ -20,12 +20,14 @@ const ScrollProgress = () => {
                 className="h-full bg-indigo-600 transition-all duration-200"
                 style={{ width: `${scrollProgress}%` }}
                 role="progressbar"
-                aria-valuenow={scrollProgress}
-                aria-valuemin="0"
-                aria-valuemax="100"
+                aria-valuenow={Math.round(scrollProgress)}
+                aria-valuemin={0}
+                aria-valuemax={100}
             />
         </div>
     );
-};
+});
+
+ScrollProgress.displayName = 'ScrollProgress';
 
 export default ScrollProgress;

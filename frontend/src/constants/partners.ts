@@ -18,7 +18,17 @@ import nipaLogo from '../assets/logos/nipa.jpg';
 import ablearnLogo from '../assets/logos/ablearn.png';
 import nanoLogo from '../assets/logos/nano.jpg';
 
-export const PARTNER_COMPANIES = [
+export type CompanyCategory = 'enterprise' | 'education' | 'public';
+
+export interface PartnerCompany {
+  id: string;
+  name: string;
+  logo: string;
+  category: CompanyCategory;
+  description: string;
+}
+
+export const PARTNER_COMPANIES: PartnerCompany[] = [
   // 대기업
   {
     id: 'samsung',
@@ -153,16 +163,16 @@ export const PARTNER_COMPANIES = [
 ];
 
 // 카테고리별 회사 필터링
-export const getCompaniesByCategory = (category) => {
+export const getCompaniesByCategory = (category: CompanyCategory): PartnerCompany[] => {
   return PARTNER_COMPANIES.filter((company) => company.category === category);
 };
 
 // 회사 이름 목록만 가져오기
-export const getCompanyNames = () => {
+export const getCompanyNames = (): string[] => {
   return PARTNER_COMPANIES.map((company) => company.name);
 };
 
 // ID로 회사 정보 가져오기
-export const getCompanyById = (id) => {
+export const getCompanyById = (id: string): PartnerCompany | undefined => {
   return PARTNER_COMPANIES.find((company) => company.id === id);
 };

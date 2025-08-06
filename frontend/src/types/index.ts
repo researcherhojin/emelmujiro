@@ -1,18 +1,18 @@
 // API Response Types
 export interface BlogPost {
-  id: number;
+  id: string | number;
   title: string;
-  slug: string;
+  slug?: string;
   content: string;
-  excerpt: string;
+  excerpt?: string;
   author: string;
   category?: string;
   tags?: string[];
   image_url?: string;
   date?: string;
-  created_at: string;
-  updated_at: string;
-  published: boolean;
+  created_at?: string;
+  updated_at?: string;
+  published?: boolean;
   views?: number;
   likes?: number;
 }

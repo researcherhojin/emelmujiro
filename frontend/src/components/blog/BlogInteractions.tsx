@@ -79,7 +79,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   const toggleBookmark = () => {
     try {
       const bookmarksData = localStorage.getItem('bookmarks');
-      const bookmarks: Array<{id: number, title: string, excerpt: string, date?: string, savedAt: string}> = bookmarksData ? JSON.parse(bookmarksData) : [];
+      const bookmarks: Array<{id: string | number, title: string, excerpt: string, date?: string, savedAt: string}> = bookmarksData ? JSON.parse(bookmarksData) : [];
       
       if (isBookmarked) {
         // Remove bookmark
@@ -90,7 +90,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
       const bookmark = {
         id: post.id,
         title: post.title,
-        excerpt: post.excerpt,
+        excerpt: post.excerpt || post.title,
         date: post.date,
         savedAt: new Date().toISOString()
       };

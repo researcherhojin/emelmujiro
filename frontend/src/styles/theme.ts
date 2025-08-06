@@ -1,5 +1,88 @@
 // Theme configuration for consistent design
-export const theme = {
+interface ColorPalette {
+    main: string;
+    light: string;
+    dark: string;
+}
+
+interface GrayScale {
+    50: string;
+    100: string;
+    200: string;
+    300: string;
+    400: string;
+    500: string;
+    600: string;
+    700: string;
+    800: string;
+    900: string;
+}
+
+interface AccentColors {
+    coral: string;
+    mint: string;
+    amber: string;
+}
+
+interface FontFamily {
+    sans: string;
+    mono: string;
+}
+
+interface FontSizes {
+    xs: string;
+    sm: string;
+    base: string;
+    lg: string;
+    xl: string;
+    '2xl': string;
+    '3xl': string;
+    '4xl': string;
+    '5xl': string;
+    '6xl': string;
+    '7xl': string;
+}
+
+interface Spacing {
+    xs: string;
+    sm: string;
+    md: string;
+    lg: string;
+    xl: string;
+    '2xl': string;
+    '3xl': string;
+}
+
+interface AnimationDuration {
+    fast: string;
+    normal: string;
+    slow: string;
+}
+
+interface AnimationEasing {
+    default: string;
+    smooth: string;
+}
+
+interface Theme {
+    colors: {
+        primary: ColorPalette;
+        secondary: ColorPalette;
+        gray: GrayScale;
+        accent: AccentColors;
+    };
+    typography: {
+        fontFamily: FontFamily;
+        fontSize: FontSizes;
+    };
+    spacing: Spacing;
+    animation: {
+        duration: AnimationDuration;
+        easing: AnimationEasing;
+    };
+}
+
+export const theme: Theme = {
     colors: {
         // Main brand colors - professional and clean
         primary: {

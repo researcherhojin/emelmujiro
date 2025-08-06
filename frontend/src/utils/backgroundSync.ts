@@ -1,19 +1,38 @@
 // Background Sync utilities
 
+// Extend ServiceWorkerRegistration to include sync property
+interface ExtendedServiceWorkerRegistration extends ServiceWorkerRegistration {
+  sync: {
+    register(tag: string): Promise<void>;
+  };
+}
+
+interface SyncData {
+  tag: string;
+  data: any;
+  timestamp: number;
+}
+
+interface SyncRequest {
+  url: string;
+  options: RequestInit;
+  timestamp: number;
+}
+
 // Check if background sync is supported
-export function isBackgroundSyncSupported() {
+export function isBackgroundSyncSupported(): boolean {
   return 'serviceWorker' in navigator && 'SyncManager' in window;
 }
 
 // Register a sync event
-export async function registerBackgroundSync(tag, data = null) {
+export async function registerBackgroundSync(tag: string, data: any = null): Promise<boolean> {
   if (!isBackgroundSyncSupported()) {
     console.log('Background sync is not supported in this browser');
     return false;
   }
 
   try {
-    const registration = await navigator.serviceWorker.ready;
+    const registration = await navigator.serviceWorker.ready as ExtendedServiceWorkerRegistration;
     
     // Store data in IndexedDB if provided
     if (data) {
@@ -32,7 +51,7 @@ export async function registerBackgroundSync(tag, data = null) {
 }
 
 // Store data for background sync
-async function storeSyncData(tag, data) {
+async function storeSyncData(tag: string, data: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('emelmujiro-sync', 1);
     
@@ -50,7 +69,7 @@ async function storeSyncData(tag, data) {
     };
     
     request.onupgradeneeded = (event) => {
-      const db = event.target.result;
+      const db = (event.target as IDBOpenDBRequest).result;
       if (!db.objectStoreNames.contains('sync-data')) {
         db.createObjectStore('sync-data', { keyPath: 'tag' });
       }
@@ -59,7 +78,7 @@ async function storeSyncData(tag, data) {
 }
 
 // Get stored sync data
-export async function getSyncData(tag) {
+export async function getSyncData(tag: string): Promise<SyncData | undefined> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('emelmujiro-sync', 1);
     
@@ -79,7 +98,7 @@ export async function getSyncData(tag) {
 }
 
 // Clear sync data
-export async function clearSyncData(tag) {
+export async function clearSyncData(tag: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('emelmujiro-sync', 1);
     
@@ -103,11 +122,13 @@ export const SYNC_TAGS = {
   CONTACT_FORM: 'sync-contact-form',
   ANALYTICS: 'sync-analytics',
   USER_PREFERENCES: 'sync-user-preferences'
-};
+} as const;
+
+export type SyncTag = typeof SYNC_TAGS[keyof typeof SYNC_TAGS];
 
 // Queue failed API requests for retry
-export async function queueFailedRequest(url, options) {
-  const syncData = {
+export async function queueFailedRequest(url: string, options: RequestInit): Promise<void> {
+  const syncData: SyncRequest = {
     url,
     options,
     timestamp: Date.now()

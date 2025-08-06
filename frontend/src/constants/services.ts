@@ -1,4 +1,14 @@
-export const SERVICES = [
+export interface Service {
+  id: string;
+  title: string;
+  shortTitle: string;
+  description: string;
+  features: string[];
+  details: string;
+  icon: string;
+}
+
+export const SERVICES: Service[] = [
   {
     id: 'ai-consulting',
     title: 'AI/ML 컨설팅',
@@ -28,13 +38,13 @@ export const SERVICES = [
   }
 ];
 
-export const getServiceById = (id) => {
+export const getServiceById = (id: string): Service | undefined => {
   return SERVICES.find(service => service.id === id);
 };
 
-export const getServiceIcon = (iconName) => {
+export const getServiceIcon = (iconName: string): string => {
   // Icon mapping for different icon libraries
-  const iconMap = {
+  const iconMap: Record<string, string> = {
     'Brain': 'Brain',
     'GraduationCap': 'GraduationCap',
     'Lightbulb': 'Lightbulb'

@@ -51,7 +51,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
     const results = posts.filter(post => 
       post.title.toLowerCase().includes(lowerTerm) ||
       post.content.toLowerCase().includes(lowerTerm) ||
-      post.excerpt.toLowerCase().includes(lowerTerm) ||
+      (post.excerpt && post.excerpt.toLowerCase().includes(lowerTerm)) ||
       (post.category && post.category.toLowerCase().includes(lowerTerm)) ||
       (post.tags && post.tags.some(tag => tag.toLowerCase().includes(lowerTerm)))
     );

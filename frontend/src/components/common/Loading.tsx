@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 
-const Loading = ({ message = 'Loading...', isFullScreen = false }) => {
+interface LoadingProps {
+    message?: string;
+    isFullScreen?: boolean;
+}
+
+const Loading: React.FC<LoadingProps> = memo(({ message = 'Loading...', isFullScreen = false }) => {
     return (
         <div className={`flex flex-col items-center justify-center ${isFullScreen ? 'min-h-screen' : ''}`}>
             <motion.div
@@ -19,6 +24,8 @@ const Loading = ({ message = 'Loading...', isFullScreen = false }) => {
             <p className="mt-4 text-gray-600">{message}</p>
         </div>
     );
-};
+});
+
+Loading.displayName = 'Loading';
 
 export default Loading;

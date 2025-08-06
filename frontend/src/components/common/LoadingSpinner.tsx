@@ -1,18 +1,28 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-const LoadingSpinner = ({ 
+type SpinnerSize = 'sm' | 'md' | 'lg';
+type SpinnerColor = 'gray' | 'white' | 'primary';
+
+interface LoadingSpinnerProps {
+    size?: SpinnerSize;
+    color?: SpinnerColor;
+    fullScreen?: boolean;
+    message?: string;
+}
+
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = memo(({ 
     size = 'md', 
     color = 'gray', 
     fullScreen = false,
     message = '로딩 중...'
 }) => {
-    const sizes = {
+    const sizes: Record<SpinnerSize, string> = {
         sm: 'w-6 h-6',
         md: 'w-10 h-10',
         lg: 'w-16 h-16'
     };
 
-    const colors = {
+    const colors: Record<SpinnerColor, string> = {
         gray: 'border-gray-900',
         white: 'border-white',
         primary: 'border-indigo-600'
@@ -45,6 +55,8 @@ const LoadingSpinner = ({
     }
 
     return spinner;
-};
+});
+
+LoadingSpinner.displayName = 'LoadingSpinner';
 
 export default LoadingSpinner;

@@ -1,4 +1,15 @@
-export const SKILLS = {
+interface SkillCategory {
+  title: string;
+  items: string[];
+}
+
+interface SkillCategoryInfo {
+  key: string;
+  title: string;
+  items: string[];
+}
+
+export const SKILLS: Record<string, SkillCategory> = {
   ai: {
     title: 'AI/ML',
     items: ['TensorFlow', 'PyTorch', 'Scikit-learn', 'Keras', 'OpenCV', 'NLP', 'Computer Vision']
@@ -31,17 +42,17 @@ export const SKILLS = {
 };
 
 // 모든 스킬을 플랫 배열로 가져오기
-export const getAllSkills = () => {
+export const getAllSkills = (): string[] => {
   return Object.values(SKILLS).flatMap(category => category.items);
 };
 
 // 카테고리별 스킬 가져오기
-export const getSkillsByCategory = (categoryKey) => {
+export const getSkillsByCategory = (categoryKey: string): string[] => {
   return SKILLS[categoryKey]?.items || [];
 };
 
 // 스킬 카테고리 목록 가져오기
-export const getSkillCategories = () => {
+export const getSkillCategories = (): SkillCategoryInfo[] => {
   return Object.entries(SKILLS).map(([key, value]) => ({
     key,
     title: value.title,

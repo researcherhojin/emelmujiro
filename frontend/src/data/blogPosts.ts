@@ -1,5 +1,22 @@
 // 임시 블로그 데이터 (나중에 API 연결 가능)
-export const blogPosts = [
+
+export interface BlogPost {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  date: string;
+  created_at: string;
+  updated_at: string;
+  published: boolean;
+  category: string;
+  tags: string[];
+  image_url: string;
+}
+
+export const blogPosts: BlogPost[] = [
   {
     id: 1,
     title: "AI와 머신러닝의 미래",
@@ -201,11 +218,11 @@ function greetUser(user: User): string {
   }
 ];
 
-export const getBlogPosts = () => {
+export const getBlogPosts = (): Promise<BlogPost[]> => {
   try {
     // Get custom posts from localStorage
     const customPostsData = localStorage.getItem('customBlogPosts');
-    const customPosts = customPostsData ? JSON.parse(customPostsData) : [];
+    const customPosts: BlogPost[] = customPostsData ? JSON.parse(customPostsData) : [];
     
     // Merge with default posts (custom posts first for visibility)
     const allPosts = [...customPosts, ...blogPosts];
@@ -229,24 +246,26 @@ export const getBlogPosts = () => {
   }
 };
 
-export const getBlogPost = (id) => {
+export const getBlogPost = (id: string | number): Promise<BlogPost | undefined> => {
+  const parsedId = typeof id === 'string' ? parseInt(id) : id;
+  
   try {
     // First check custom posts
     const customPostsData = localStorage.getItem('customBlogPosts');
-    const customPosts = customPostsData ? JSON.parse(customPostsData) : [];
-    const customPost = customPosts.find(p => p.id === parseInt(id));
+    const customPosts: BlogPost[] = customPostsData ? JSON.parse(customPostsData) : [];
+    const customPost = customPosts.find(p => p.id === parsedId);
     
     if (customPost) {
       return Promise.resolve(customPost);
     }
     
     // Then check default posts
-    const post = blogPosts.find(p => p.id === parseInt(id));
+    const post = blogPosts.find(p => p.id === parsedId);
     return Promise.resolve(post);
   } catch (error) {
     console.error('Error loading blog post:', error);
     // Fallback to default posts
-    const post = blogPosts.find(p => p.id === parseInt(id));
+    const post = blogPosts.find(p => p.id === parsedId);
     return Promise.resolve(post);
   }
 };

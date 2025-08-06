@@ -1,6 +1,23 @@
-import React from 'react';
+import React, { memo, ReactNode } from 'react';
 
-const Section = ({ 
+type BgColor = 'white' | 'gray' | 'dark' | 'transparent';
+type Padding = 'none' | 'small' | 'normal' | 'large';
+
+interface SectionProps {
+    children: ReactNode;
+    title?: string;
+    subtitle?: string;
+    className?: string;
+    containerClassName?: string;
+    titleClassName?: string;
+    subtitleClassName?: string;
+    centered?: boolean;
+    id?: string;
+    bgColor?: BgColor;
+    padding?: Padding;
+}
+
+const Section: React.FC<SectionProps> = memo(({ 
     children, 
     title, 
     subtitle, 
@@ -13,16 +30,14 @@ const Section = ({
     bgColor = 'white',
     padding = 'normal'
 }) => {
-    // 배경색 변형
-    const bgColors = {
+    const bgColors: Record<BgColor, string> = {
         white: 'bg-white',
         gray: 'bg-gray-50',
         dark: 'bg-gray-900 text-white',
         transparent: 'bg-transparent'
     };
 
-    // 패딩 변형
-    const paddings = {
+    const paddings: Record<Padding, string> = {
         none: 'py-0',
         small: 'py-12 sm:py-16',
         normal: 'py-16 sm:py-20 lg:py-24',
@@ -69,6 +84,8 @@ const Section = ({
             </div>
         </section>
     );
-};
+});
+
+Section.displayName = 'Section';
 
 export default Section;

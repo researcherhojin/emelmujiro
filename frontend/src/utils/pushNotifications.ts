@@ -2,8 +2,19 @@
 
 const PUBLIC_VAPID_KEY = process.env.REACT_APP_VAPID_PUBLIC_KEY || 'YOUR_PUBLIC_VAPID_KEY';
 
+interface NotificationOptions {
+  icon?: string;
+  badge?: string;
+  vibrate?: number[];
+  tag?: string;
+  renotify?: boolean;
+  requireInteraction?: boolean;
+  body?: string;
+  data?: any;
+}
+
 // URL-safe base64 decode
-function urlBase64ToUint8Array(base64String) {
+function urlBase64ToUint8Array(base64String: string): BufferSource {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
   const base64 = (base64String + padding)
     .replace(/-/g, '+')
@@ -19,18 +30,18 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 // Check if push notifications are supported
-export function isPushNotificationSupported() {
+export function isPushNotificationSupported(): boolean {
   return 'serviceWorker' in navigator && 'PushManager' in window;
 }
 
 // Check if user has granted permission
-export function isPushNotificationEnabled() {
+export function isPushNotificationEnabled(): boolean {
   if (!isPushNotificationSupported()) return false;
   return Notification.permission === 'granted';
 }
 
 // Request notification permission
-export async function requestNotificationPermission() {
+export async function requestNotificationPermission(): Promise<boolean> {
   if (!isPushNotificationSupported()) {
     console.log('Push notifications are not supported in this browser');
     return false;
@@ -41,7 +52,7 @@ export async function requestNotificationPermission() {
 }
 
 // Subscribe to push notifications
-export async function subscribeToPushNotifications() {
+export async function subscribeToPushNotifications(): Promise<PushSubscription> {
   if (!isPushNotificationSupported()) {
     throw new Error('Push notifications are not supported');
   }
@@ -72,7 +83,7 @@ export async function subscribeToPushNotifications() {
 }
 
 // Unsubscribe from push notifications
-export async function unsubscribeFromPushNotifications() {
+export async function unsubscribeFromPushNotifications(): Promise<boolean> {
   try {
     const registration = await navigator.serviceWorker.ready;
     const subscription = await registration.pushManager.getSubscription();
@@ -90,7 +101,7 @@ export async function unsubscribeFromPushNotifications() {
 }
 
 // Send subscription to server
-export async function sendSubscriptionToServer(subscription) {
+export async function sendSubscriptionToServer(subscription: PushSubscription): Promise<any> {
   try {
     const response = await fetch('/api/notifications/subscribe', {
       method: 'POST',
@@ -112,7 +123,7 @@ export async function sendSubscriptionToServer(subscription) {
 }
 
 // Show local notification
-export async function showNotification(title, options = {}) {
+export async function showNotification(title: string, options: NotificationOptions = {}): Promise<void> {
   if (!isPushNotificationEnabled()) {
     console.log('Push notifications are not enabled');
     return;
@@ -121,7 +132,7 @@ export async function showNotification(title, options = {}) {
   try {
     const registration = await navigator.serviceWorker.ready;
     
-    const defaultOptions = {
+    const defaultOptions: NotificationOptions = {
       icon: '/logo192.png',
       badge: '/logo192.png',
       vibrate: [200, 100, 200],

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PlusCircle } from 'lucide-react';
@@ -8,13 +8,14 @@ import Loading from '../common/Loading';
 import ErrorBoundary from '../common/ErrorBoundary';
 import SEO from '../layout/SEO';
 import { useBlog } from '../../contexts/BlogContext';
+import type { BlogPost } from '../../types';
 
-const BlogListPage = () => {
+const BlogListPage: React.FC = memo(() => {
     const navigate = useNavigate();
     const { posts, loading, error, totalPages, currentPage, fetchPosts } = useBlog();
     const [filter, setFilter] = useState('All');
-    const [categories, setCategories] = useState(['All']);
-    const [searchResults, setSearchResults] = useState(null);
+    const [categories, setCategories] = useState<string[]>(['All']);
+    const [searchResults, setSearchResults] = useState<BlogPost[] | null>(null);
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
@@ -28,23 +29,32 @@ const BlogListPage = () => {
     // Extract categories from posts
     useEffect(() => {
         if (posts.length > 0) {
-            const uniqueCategories = ['All', ...new Set(posts.map((post) => post.category).filter(Boolean))];
+            const categories = posts.map((post) => post.category).filter((category): category is string => Boolean(category));
+            const uniqueCategories: string[] = ['All', ...Array.from(new Set(categories))];
             setCategories(uniqueCategories);
         }
     }, [posts]);
 
-    const handleSearch = (results) => {
+    const handleSearch = useCallback((results: BlogPost[]) => {
         setSearchResults(results);
-    };
+    }, []);
+
+    const handleFilterChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFilter(e.target.value);
+    }, []);
 
     // Use search results if available, otherwise use filtered posts
     const displayPosts = searchResults !== null ? searchResults : posts;
     const filteredPosts = filter === 'All' ? displayPosts : displayPosts.filter((post) => post.category === filter);
 
-    const handlePageChange = (newPage) => {
+    const handlePageChange = useCallback((newPage: number) => {
         fetchPosts(newPage);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    }, [fetchPosts]);
+
+    const handleNewPost = useCallback(() => {
+        navigate('/blog/new');
+    }, [navigate]);
 
     if (loading) {
         return <Loading message="블로그 포스트를 불러오는 중입니다..." />;
@@ -65,7 +75,7 @@ const BlogListPage = () => {
                             <h1 className="text-3xl font-bold">블로그</h1>
                             {isAdmin && (
                                 <button
-                                    onClick={() => navigate('/blog/new')}
+                                    onClick={handleNewPost}
                                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
                                 >
                                     <PlusCircle className="w-5 h-5 mr-2" />
@@ -88,7 +98,7 @@ const BlogListPage = () => {
                             <div className="relative">
                                 <select
                                     value={filter}
-                                    onChange={(e) => setFilter(e.target.value)}
+                                    onChange={handleFilterChange}
                                     className="appearance-none bg-white border border-gray-200 px-4 py-2 pr-8 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 >
                                     {categories.map((category) => (
@@ -157,6 +167,8 @@ const BlogListPage = () => {
             </div>
         </ErrorBoundary>
     );
-};
+});
+
+BlogListPage.displayName = 'BlogListPage';
 
 export default BlogListPage;

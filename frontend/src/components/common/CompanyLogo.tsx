@@ -1,13 +1,27 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-const CompanyLogo = ({ name, color, size = 'md' }) => {
-    const sizeClasses = {
+type LogoSize = 'sm' | 'md' | 'lg';
+
+interface CompanyLogoProps {
+    name: string;
+    color: string;
+    size?: LogoSize;
+}
+
+interface LogoStyle {
+    text: string;
+    font: string;
+    bgColor: string;
+}
+
+const CompanyLogo: React.FC<CompanyLogoProps> = memo(({ name, color, size = 'md' }) => {
+    const sizeClasses: Record<LogoSize, string> = {
         sm: 'w-20 h-12 text-sm',
         md: 'w-32 h-16 text-base',
         lg: 'w-40 h-20 text-lg'
     };
 
-    const logoStyles = {
+    const logoStyles: Record<string, LogoStyle> = {
         '삼성전자': {
             text: 'SAMSUNG',
             font: 'font-bold tracking-wider',
@@ -90,6 +104,8 @@ const CompanyLogo = ({ name, color, size = 'md' }) => {
             </span>
         </div>
     );
-};
+});
 
-export default React.memo(CompanyLogo);
+CompanyLogo.displayName = 'CompanyLogo';
+
+export default CompanyLogo;

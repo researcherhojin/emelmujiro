@@ -3,7 +3,7 @@ import { MessageCircle, Send, User, Calendar, ThumbsUp } from 'lucide-react';
 
 interface Comment {
   id: string;
-  postId: number;
+  postId: string | number;
   author: string;
   content: string;
   date: string;
@@ -13,7 +13,7 @@ interface Comment {
 }
 
 interface BlogCommentsProps {
-  postId: number;
+  postId: string | number;
 }
 
 const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {

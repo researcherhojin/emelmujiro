@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { formatDate } from '../../utils/dateFormat';
+import type { BlogPost } from '../../types';
 
-const BlogCard = ({ post }) => {
+interface BlogCardProps {
+    post: BlogPost;
+}
+
+const BlogCard: React.FC<BlogCardProps> = memo(({ post }) => {
     // Error handling for missing post data
     if (!post) {
         return null;
     }
 
-    const { id, title, description, date, image_url, category, categoryColor = '#E0E7FF', readTime } = post;
+    const { id, title, excerpt, date, image_url, category } = post;
 
     return (
         <motion.article
@@ -20,7 +25,12 @@ const BlogCard = ({ post }) => {
             <Link to={`/blog/${id}`} className="block flex-grow">
                 <div className="relative">
                     {image_url ? (
-                        <img src={image_url} alt={`${title} 블로그 포스트 썸네일`} className="w-full h-48 object-cover" loading="lazy" />
+                        <img 
+                            src={image_url} 
+                            alt={`${title} 블로그 포스트 썸네일`} 
+                            className="w-full h-48 object-cover" 
+                            loading="lazy" 
+                        />
                     ) : (
                         <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
                             <span className="text-gray-400">No image available</span>
@@ -30,7 +40,7 @@ const BlogCard = ({ post }) => {
                         <span
                             className="inline-block px-3 py-1 text-sm rounded-full font-medium"
                             style={{
-                                backgroundColor: categoryColor,
+                                backgroundColor: '#E0E7FF',
                                 color: '#4F46E5',
                             }}
                         >
@@ -41,8 +51,7 @@ const BlogCard = ({ post }) => {
 
                 <div className="p-6 flex flex-col flex-grow">
                     <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
-                        <time dateTime={date}>{formatDate(date)}</time>
-                        {readTime && <span>{readTime}분 읽기</span>}
+                        <time dateTime={date || ''}>{date && formatDate(date)}</time>
                     </div>
 
                     <h3
@@ -52,7 +61,7 @@ const BlogCard = ({ post }) => {
                         {title}
                     </h3>
 
-                    <p className="text-gray-600 line-clamp-3 mb-4">{description}</p>
+                    <p className="text-gray-600 line-clamp-3 mb-4">{excerpt || ''}</p>
 
                     <div className="mt-auto">
                         <span
@@ -76,6 +85,8 @@ const BlogCard = ({ post }) => {
             </Link>
         </motion.article>
     );
-};
+});
+
+BlogCard.displayName = 'BlogCard';
 
 export default BlogCard;

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo, useCallback } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const ScrollToTop = () => {
+const ScrollToTop: React.FC = memo(() => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -14,12 +14,12 @@ const ScrollToTop = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const scrollToTop = () => {
+    const scrollToTop = useCallback(() => {
         window.scrollTo({
             top: 0,
             behavior: 'smooth',
         });
-    };
+    }, []);
 
     return (
         <AnimatePresence>
@@ -37,6 +37,8 @@ const ScrollToTop = () => {
             )}
         </AnimatePresence>
     );
-};
+});
+
+ScrollToTop.displayName = 'ScrollToTop';
 
 export default ScrollToTop;

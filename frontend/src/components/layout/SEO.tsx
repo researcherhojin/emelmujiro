@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const SEO = ({ title, description, keywords, ogImage = '/og-image.png', canonical, type = 'website' }) => {
+interface SEOProps {
+    title?: string;
+    description?: string;
+    keywords?: string;
+    ogImage?: string;
+    canonical?: string;
+    type?: 'website' | 'article' | 'profile';
+}
+
+const SEO: React.FC<SEOProps> = memo(({
+    title,
+    description,
+    keywords,
+    ogImage = '/og-image.png',
+    canonical,
+    type = 'website'
+}) => {
     const siteTitle = '에멜무지로 | AI 혁신 파트너';
     const defaultDescription =
         '기업의 AI 전환을 위한 솔루션 개발, 실전 교육, 전략 컨설팅을 제공합니다. ' +
@@ -56,6 +72,8 @@ const SEO = ({ title, description, keywords, ogImage = '/og-image.png', canonica
             <meta name="mobile-web-app-capable" content="yes" />
         </Helmet>
     );
-};
+});
+
+SEO.displayName = 'SEO';
 
 export default SEO;

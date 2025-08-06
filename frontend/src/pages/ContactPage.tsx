@@ -1,19 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 
-const ContactPage = () => {
-    const [formData, setFormData] = useState({ name: '', email: '', company: '', message: '' });
+interface FormData {
+    name: string;
+    email: string;
+    company: string;
+    message: string;
+}
+
+const ContactPage: React.FC = memo(() => {
+    const [formData, setFormData] = useState<FormData>({
+        name: '',
+        email: '',
+        company: '',
+        message: ''
+    });
     const [submitted, setSubmitted] = useState(false);
 
-    const handleChange = (e) => {
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-    };
+    }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSubmitted(true);
         // 실제 전송 로직은 필요시 추가
-    };
+    }, []);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-black text-white px-4 py-24">
@@ -96,6 +108,8 @@ const ContactPage = () => {
             </div>
         </div>
     );
-};
+});
+
+ContactPage.displayName = 'ContactPage';
 
 export default ContactPage;

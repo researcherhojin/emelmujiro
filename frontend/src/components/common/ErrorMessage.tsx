@@ -1,7 +1,26 @@
-import React from 'react';
-import { AlertTriangle, XCircle, Info, CheckCircle } from 'lucide-react';
+import React, { memo, ReactNode } from 'react';
+import { AlertTriangle, XCircle, Info, CheckCircle, LucideIcon } from 'lucide-react';
 
-const ErrorMessage = ({ 
+type MessageType = 'error' | 'warning' | 'info' | 'success';
+
+interface ErrorMessageProps {
+    type?: MessageType;
+    title?: string;
+    message?: string;
+    onClose?: () => void;
+    action?: ReactNode;
+    className?: string;
+}
+
+interface TypeConfig {
+    bgColor: string;
+    borderColor: string;
+    textColor: string;
+    iconColor: string;
+    icon: LucideIcon;
+}
+
+const ErrorMessage: React.FC<ErrorMessageProps> = memo(({ 
     type = 'error', 
     title, 
     message, 
@@ -9,7 +28,7 @@ const ErrorMessage = ({
     action,
     className = '' 
 }) => {
-    const types = {
+    const types: Record<MessageType, TypeConfig> = {
         error: {
             bgColor: 'bg-red-50',
             borderColor: 'border-red-200',
@@ -88,6 +107,8 @@ const ErrorMessage = ({
             </div>
         </div>
     );
-};
+});
+
+ErrorMessage.displayName = 'ErrorMessage';
 
 export default ErrorMessage;
