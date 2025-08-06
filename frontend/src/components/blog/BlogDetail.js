@@ -1,42 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import Loading from '../common/Loading';
 import ErrorBoundary from '../common/ErrorBoundary';
 import SEO from '../layout/SEO';
-import { api } from '../../services/api';
+import BlogInteractions from './BlogInteractions';
+import BlogComments from './BlogComments';
+import { useBlog } from '../../contexts/BlogContext';
 import { formatDate } from '../../utils/dateFormat';
 
 const BlogDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [post, setPost] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { currentPost: post, loading, error, fetchPostById, clearCurrentPost } = useBlog();
 
     useEffect(() => {
-        const fetchPost = async () => {
-            try {
-                setIsLoading(true);
-                setError(null);
-                const response = await api.getBlogPost(id);
-                setPost(response.data);
-            } catch (error) {
-                console.error('Error fetching blog post:', error);
-                setError(error.response?.status === 404 ? 'not_found' : 'error');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchPost();
+        fetchPostById(id);
+        return () => clearCurrentPost();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
-    if (isLoading) {
+    if (loading) {
         return <Loading message="블로그 포스트를 불러오는 중입니다..." />;
     }
 
-    if (error === 'not_found') {
+    if (error && error.includes('404')) {
         navigate('/404', { replace: true });
         return null;
     }
@@ -45,7 +35,7 @@ const BlogDetailPage = () => {
         return (
             <div className="min-h-screen bg-gray-50 pt-20">
                 <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-                    <p className="text-red-600">포스트를 불러오는 중 오류가 발생했습니다.</p>
+                    <p className="text-red-600">{error}</p>
                     <button onClick={() => navigate(-1)} className="mt-4 text-indigo-600 hover:text-indigo-700">
                         뒤로 가기
                     </button>
@@ -91,10 +81,36 @@ const BlogDetailPage = () => {
                                 </time>
                             </div>
                             <h1 className="text-3xl font-bold mb-6">{post.title}</h1>
-                            <div
-                                className="prose prose-indigo max-w-none"
-                                dangerouslySetInnerHTML={{ __html: post.content }}
-                            />
+                            
+                            {/* Author and tags */}
+                            <div className="flex items-center mb-6 text-gray-600">
+                                <span>작성자: {post.author}</span>
+                                {post.tags && post.tags.length > 0 && (
+                                    <>
+                                        <span className="mx-2">•</span>
+                                        <div className="flex gap-2">
+                                            {post.tags.map((tag, index) => (
+                                                <span key={index} className="text-sm bg-gray-100 px-2 py-1 rounded">
+                                                    #{tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+
+                            {/* Content with Markdown support */}
+                            <div className="prose prose-indigo max-w-none">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {post.content}
+                                </ReactMarkdown>
+                            </div>
+
+                            {/* Like and Share buttons */}
+                            <BlogInteractions post={post} />
+
+                            {/* Comments section */}
+                            <BlogComments postId={post.id} />
                         </div>
                     </article>
                 </div>
