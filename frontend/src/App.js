@@ -2,11 +2,16 @@ import React, { lazy, Suspense } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
+import { BlogProvider } from './contexts/BlogContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { UIProvider } from './contexts/UIContext';
+import { FormProvider } from './contexts/FormContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import PageLoading from './components/common/PageLoading';
 import PWAInstallButton from './components/common/PWAInstallButton';
 import NotificationPermission from './components/common/NotificationPermission';
+import NotificationContainer from './components/common/NotificationContainer';
 
 // Main page components
 import HeroSection from './components/sections/HeroSection';
@@ -21,6 +26,9 @@ import StructuredData from './components/common/StructuredData';
 const ContactPage = lazy(() => import('./components/pages/ContactPage'));
 const ProfilePage = lazy(() => import('./components/pages/ProfilePage'));
 const AboutPage = lazy(() => import('./components/pages/AboutPage'));
+const BlogListPage = lazy(() => import('./components/blog/BlogListPage'));
+const BlogDetail = lazy(() => import('./components/blog/BlogDetail'));
+const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
 
 // ScrollToTop component to handle page navigation
 function ScrollToTop() {
@@ -71,25 +79,37 @@ function HomePage() {
 function App() {
     return (
         <HelmetProvider>
-            <Router>
-                <div className="App">
-                    <ScrollToTop />
-                    <Navbar />
-                    <main className="min-h-screen">
-                        <Suspense fallback={<PageLoading />}>
-                            <Routes>
-                                <Route path="/" element={<HomePage />} />
-                                <Route path="/about" element={<AboutPage />} />
-                                <Route path="/contact" element={<ContactPage />} />
-                                <Route path="/profile" element={<ProfilePage />} />
-                            </Routes>
-                        </Suspense>
-                    </main>
-                    <Footer />
-                    <PWAInstallButton />
-                    <NotificationPermission />
-                </div>
-            </Router>
+            <UIProvider>
+                <AuthProvider>
+                    <BlogProvider>
+                        <FormProvider>
+                            <Router>
+                                <div className="App">
+                                    <ScrollToTop />
+                                    <Navbar />
+                                    <main className="min-h-screen">
+                                        <Suspense fallback={<PageLoading />}>
+                                            <Routes>
+                                                <Route path="/" element={<HomePage />} />
+                                                <Route path="/about" element={<AboutPage />} />
+                                                <Route path="/contact" element={<ContactPage />} />
+                                                <Route path="/profile" element={<ProfilePage />} />
+                                                <Route path="/blog" element={<BlogListPage />} />
+                                                <Route path="/blog/new" element={<BlogEditor />} />
+                                                <Route path="/blog/:id" element={<BlogDetail />} />
+                                            </Routes>
+                                        </Suspense>
+                                    </main>
+                                    <Footer />
+                                    <PWAInstallButton />
+                                    <NotificationPermission />
+                                    <NotificationContainer />
+                                </div>
+                            </Router>
+                        </FormProvider>
+                    </BlogProvider>
+                </AuthProvider>
+            </UIProvider>
         </HelmetProvider>
     );
 }

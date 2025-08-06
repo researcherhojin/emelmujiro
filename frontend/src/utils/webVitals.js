@@ -13,25 +13,22 @@ export const measureWebVitals = (onPerfEntry) => {
 
 // Custom performance monitoring
 export const logPerformanceMetrics = () => {
-    // Log performance metrics in development
-    if (process.env.NODE_ENV === 'development') {
+    // Performance metrics logging - disabled by default
+    // Enable for debugging performance issues
+    if (process.env.NODE_ENV === 'development' && false) {
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const perfData = window.performance.getEntriesByType('navigation')[0];
                 if (perfData) {
-                    console.log('Performance Metrics:');
-                    console.log(`DNS Lookup: ${perfData.domainLookupEnd - perfData.domainLookupStart}ms`);
-                    console.log(`TCP Connection: ${perfData.connectEnd - perfData.connectStart}ms`);
-                    console.log(`DOM Content Loaded: ${perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart}ms`);
-                    console.log(`Total Load Time: ${perfData.loadEventEnd - perfData.fetchStart}ms`);
+                    const metrics = {
+                        dnsLookup: perfData.domainLookupEnd - perfData.domainLookupStart,
+                        tcpConnection: perfData.connectEnd - perfData.connectStart,
+                        domContentLoaded: perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
+                        totalLoadTime: perfData.loadEventEnd - perfData.fetchStart
+                    };
+                    // console.log('Performance Metrics:', metrics);
                 }
             }, 0);
         });
     }
 };
-
-// Usage in index.js:
-// import { measureWebVitals, logPerformanceMetrics } from './utils/webVitals';
-// 
-// measureWebVitals(console.log);
-// logPerformanceMetrics();

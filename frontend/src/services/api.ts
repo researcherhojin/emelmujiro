@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { BlogPost, ContactFormData } from '../types';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/';
+// API URL 설정
+const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8001/api/';
 
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: API_URL,
@@ -35,16 +36,24 @@ interface CustomAxiosError extends AxiosError {
 // Request interceptor
 axiosInstance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
+        // 강제로 HTTP 사용 확인
+        if (config.url && config.url.startsWith('https://')) {
+            console.warn('HTTPS detected, forcing HTTP');
+            config.url = config.url.replace('https://', 'http://');
+        }
+        if (config.baseURL && config.baseURL.startsWith('https://')) {
+            console.warn('HTTPS in baseURL detected, forcing HTTP');
+            config.baseURL = config.baseURL.replace('https://', 'http://');
+        }
+        
         // Add auth token if available
         const token = localStorage.getItem('authToken');
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         
-        // Log request in development
-        if (process.env.NODE_ENV === 'development') {
-            console.log('API Request:', config.method?.toUpperCase(), config.url);
-        }
+        // Development logging can be enabled if needed
+        // console.log('API Request:', config.method?.toUpperCase(), config.url);
         
         return config;
     },
@@ -56,10 +65,7 @@ axiosInstance.interceptors.request.use(
 // Response interceptor
 axiosInstance.interceptors.response.use(
     (response) => {
-        // Log successful response in development
-        if (process.env.NODE_ENV === 'development') {
-            console.log('API Response:', response.config.url, response.status);
-        }
+        // Development logging can be enabled if needed
         return response;
     },
     async (error: CustomAxiosError) => {

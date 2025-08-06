@@ -23,6 +23,6 @@ serviceWorkerRegistration.register({
         }
     },
     onSuccess: (registration) => {
-        console.log('PWA 오프라인 모드 준비 완료');
+        // PWA offline mode ready
     }
 });

@@ -114,7 +114,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS 설정
 CORS_ALLOWED_ORIGINS = os.environ.get(
-    "CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
+    "CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,http://192.168.0.80:3000"
 ).split(",")
 
 CORS_ALLOW_CREDENTIALS = True
@@ -141,19 +141,20 @@ CORS_ALLOW_HEADERS = [
 ]
 
 # 보안 헤더 설정
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = "DENY"
-SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = "DENY"
+    SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 # CSRF 보호 강화
-CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = False if DEBUG else True
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_AGE = 3600  # 1시간
 
 # 세션 보안 강화
-SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = False if DEBUG else True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_AGE = 3600  # 1시간
@@ -172,6 +173,13 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = (
         os.environ.get("SECURE_SSL_REDIRECT", "True").lower() == "true"
     )
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    # 개발 환경에서는 모든 HTTPS 관련 설정 비활성화
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 # 파일 업로드 보안
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
