@@ -1,89 +1,110 @@
 {
-    "name": "frontend",
-    "version": "0.1.0",
-    "private": true,
-    "homepage": "https://researcherhojin.github.io/emelmujiro",
-    "dependencies": {
-        "axios": "^1.6.2",
-        "framer-motion": "^11.15.0",
-        "lucide-react": "^0.294.0",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "react-helmet-async": "^2.0.5",
-        "react-markdown": "^9.0.3",
-        "react-router-dom": "^6.20.0",
-        "react-scroll": "^1.9.0",
-        "remark-gfm": "^4.0.0",
-        "web-vitals": "^2.1.4"
-    },
-    "devDependencies": {
-        "@babel/core": "^7.24.0",
-        "@babel/preset-env": "^7.24.0",
-        "@babel/preset-react": "^7.24.0",
-        "@lhci/cli": "^0.15.1",
-        "@playwright/test": "^1.54.1",
-        "@svgr/webpack": "^8.1.0",
-        "@testing-library/dom": "^10.4.0",
-        "@testing-library/jest-dom": "^6.6.3",
-        "@testing-library/react": "^16.3.0",
-        "@testing-library/user-event": "^14.6.1",
-        "@types/jest": "^30.0.0",
-        "@types/node": "^24.2.0",
-        "@types/react": "^19.1.9",
-        "@types/react-dom": "^19.1.7",
-        "@types/react-helmet-async": "^1.0.1",
-        "@types/react-router-dom": "^5.3.3",
-        "@typescript-eslint/eslint-plugin": "^8.39.0",
-        "@typescript-eslint/parser": "^8.39.0",
-        "autoprefixer": "^10.4.16",
-        "axe-playwright": "^2.1.0",
-        "axios-mock-adapter": "^2.1.0",
-        "file-loader": "^6.2.0",
-        "gh-pages": "^6.3.0",
-        "jest-environment-jsdom": "^30.0.5",
-        "react-router-sitemap": "^1.2.0",
-        "react-scripts": "^5.0.1",
-        "sitemap": "^8.0.0",
-        "tailwindcss": "^3.3.5",
-        "typescript": "^5.9.2"
-    },
-    "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test",
-        "test:coverage": "react-scripts test --coverage --watchAll=false",
-        "test:e2e": "playwright test",
-        "test:e2e:ui": "playwright test --ui",
-        "test:e2e:debug": "playwright test --debug",
-        "lighthouse": "lhci autorun",
-        "lighthouse:view": "lhci open",
-        "eject": "react-scripts eject",
-        "predeploy": "npm run build",
-        "deploy": "gh-pages -d build",
-        "build:sitemap": "node sitemap-generator.js",
-        "postbuild": "npm run build:sitemap"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
-        ]
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
-    },
-    "jest": {
-        "moduleNameMapper": {
-            "^framer-motion$": "<rootDir>/src/__mocks__/framer-motion.js"
-        }
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://researcherhojin.github.io/emelmujiro",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "framer-motion": "^11.15.0",
+    "lucide-react": "^0.294.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-helmet-async": "^2.0.5",
+    "react-markdown": "^9.0.3",
+    "react-router-dom": "^6.20.0",
+    "react-scroll": "^1.9.0",
+    "remark-gfm": "^4.0.0",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-react": "^7.24.0",
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.54.1",
+    "@svgr/webpack": "^8.1.0",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.2.0",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "@types/react-helmet-async": "^1.0.1",
+    "@types/react-router-dom": "^5.3.3",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "autoprefixer": "^10.4.16",
+    "axe-playwright": "^2.1.0",
+    "axios-mock-adapter": "^2.1.0",
+    "file-loader": "^6.2.0",
+    "gh-pages": "^6.3.0",
+    "husky": "^9.1.7",
+    "jest-environment-jsdom": "^30.0.5",
+    "lint-staged": "^15.5.2",
+    "react-router-sitemap": "^1.2.0",
+    "react-scripts": "^5.0.1",
+    "sitemap": "^8.0.0",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.9.2",
+    "webpack-bundle-analyzer": "^4.10.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "lighthouse": "lhci autorun",
+    "lighthouse:view": "lhci open",
+    "eject": "react-scripts eject",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
+    "format": "prettier --write src/**/*.{js,jsx,ts,tsx,css,md}",
+    "format:check": "prettier --check src/**/*.{js,jsx,ts,tsx,css,md}",
+    "analyze": "npx webpack-bundle-analyzer build/static/js/*.js",
+    "analyze:build": "npm run build && npm run analyze",
+    "build:profile": "react-scripts build --profile",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "build:sitemap": "node sitemap-generator.js",
+    "postbuild": "npm run build:sitemap",
+    "prepare": "husky",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch",
+    "clean": "rm -rf build node_modules/.cache",
+    "clean:all": "rm -rf build node_modules coverage playwright-report test-results",
+    "dev": "npm run start",
+    "validate": "npm run lint && npm run type-check && npm run test:coverage",
+    "pre-commit": "lint-staged"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^framer-motion$": "<rootDir>/src/__mocks__/framer-motion.js"
     }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "src/**/*.{json,css,md}": [
+      "prettier --write"
+    ]
+  }
 }

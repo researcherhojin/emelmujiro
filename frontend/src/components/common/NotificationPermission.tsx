@@ -1,10 +1,10 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
 import { Bell, X } from 'lucide-react';
-import { 
-  isPushNotificationSupported, 
+import {
+  isPushNotificationSupported,
   isPushNotificationEnabled,
   requestNotificationPermission,
-  subscribeToPushNotifications
+  subscribeToPushNotifications,
 } from '../../utils/pushNotifications';
 
 const NotificationPermission: React.FC = memo(() => {
@@ -25,28 +25,28 @@ const NotificationPermission: React.FC = memo(() => {
 
   const handleEnableNotifications = useCallback(async () => {
     setIsSubscribing(true);
-    
+
     try {
       // Request permission
       const granted = await requestNotificationPermission();
-      
+
       if (granted) {
         // Subscribe to push notifications
-        const subscription = await subscribeToPushNotifications();
-        
+        await subscribeToPushNotifications();
+
         // Send subscription to server (implement this endpoint)
         // await sendSubscriptionToServer(subscription);
-        
-        console.log('Push notifications enabled:', subscription);
+
+        // Push notifications enabled
         setShowBanner(false);
-        
+
         // Show success notification
         new Notification('알림 활성화 완료!', {
           body: '이제 에멜무지로의 중요한 소식을 받아보실 수 있습니다.',
-          icon: '/logo192.png'
+          icon: '/logo192.png',
         });
       } else {
-        console.log('Notification permission denied');
+        // Notification permission denied
       }
     } catch (error) {
       console.error('Failed to enable notifications:', error);
@@ -64,17 +64,17 @@ const NotificationPermission: React.FC = memo(() => {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 md:left-auto md:right-4 md:w-96 z-40 
-      bg-white border border-gray-200 rounded-lg shadow-lg p-4 animate-fade-in">
+    <div
+      className="fixed bottom-20 left-4 right-4 md:left-auto md:right-4 md:w-96 z-40 
+      bg-white border border-gray-200 rounded-lg shadow-lg p-4 animate-fade-in"
+    >
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0">
             <Bell className="w-6 h-6 text-gray-900" />
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 mb-1">
-              알림을 받아보시겠습니까?
-            </h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">알림을 받아보시겠습니까?</h3>
             <p className="text-sm text-gray-600 mb-3">
               새로운 AI 교육 프로그램과 특별 이벤트 소식을 가장 먼저 받아보세요.
             </p>

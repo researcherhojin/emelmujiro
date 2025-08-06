@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { registerBackgroundSync, SYNC_TAGS } from '../../utils/backgroundSync';
 import { escapeHtml, isValidEmail, isValidPhone, isWithinLength } from '../../utils/security';
 import SEOHelmet from '../common/SEOHelmet';
+import Loading from '../common/Loading';
 
 interface FormData {
   name: string;
@@ -27,8 +28,8 @@ const ContactIcon: React.FC<ContactIconProps> = memo(({ icon, title, value, link
     <div>
       <div className="text-sm text-gray-500">{title}</div>
       {link ? (
-        <a 
-          href={link} 
+        <a
+          href={link}
           className="text-lg font-medium text-gray-900 hover:text-gray-600 transition-colors"
           aria-label={`${title}: ${value}`}
         >
@@ -54,82 +55,95 @@ const ContactPage: React.FC = memo(() => {
   });
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
   const [showOfflineMessage, setShowOfflineMessage] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
+
+    // Simulate loading for demonstration
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+
     // Monitor online/offline status
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-    
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
 
-  const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  }, []);
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      setFormData(prev => ({ ...prev, [name]: value }));
+    },
+    []
+  );
 
-  const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setIsSubmitting(true);
 
-    // Input validation
-    if (!formData.name || !isWithinLength(formData.name, 50)) {
-      alert('이름을 올바르게 입력해주세요. (최대 50자)');
-      return;
-    }
-
-    if (!isValidEmail(formData.email)) {
-      alert('올바른 이메일 주소를 입력해주세요.');
-      return;
-    }
-
-    if (formData.phone && !isValidPhone(formData.phone)) {
-      alert('올바른 전화번호를 입력해주세요.');
-      return;
-    }
-
-    if (!formData.message || !isWithinLength(formData.message, 1000)) {
-      alert('문의 내용을 입력해주세요. (최대 1000자)');
-      return;
-    }
-
-    // If offline, save for background sync
-    if (!isOnline) {
       try {
-        await registerBackgroundSync(SYNC_TAGS.CONTACT_FORM, formData as any);
-        setShowOfflineMessage(true);
-        
-        // Clear form
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          company: '',
-          inquiryType: 'solution',
-          message: '',
-        });
-        
-        // Hide message after 5 seconds
-        setTimeout(() => setShowOfflineMessage(false), 5000);
-        return;
-      } catch (error) {
-        console.error('Failed to register background sync:', error);
-      }
-    }
+        // Input validation
+        if (!formData.name || !isWithinLength(formData.name, 50)) {
+          alert('이름을 올바르게 입력해주세요. (최대 50자)');
+          return;
+        }
 
-    const subject = formData.inquiryType === 'education'
-      ? `[교육 문의] ${formData.company || '개인'} - ${formData.name}`
-      : `[AI 솔루션 문의] ${formData.company || '개인'} - ${formData.name}`;
+        if (!isValidEmail(formData.email)) {
+          alert('올바른 이메일 주소를 입력해주세요.');
+          return;
+        }
 
-    const body = `
+        if (formData.phone && !isValidPhone(formData.phone)) {
+          alert('올바른 전화번호를 입력해주세요.');
+          return;
+        }
+
+        if (!formData.message || !isWithinLength(formData.message, 1000)) {
+          alert('문의 내용을 입력해주세요. (최대 1000자)');
+          return;
+        }
+
+        // If offline, save for background sync
+        if (!isOnline) {
+          try {
+            await registerBackgroundSync(SYNC_TAGS.CONTACT_FORM, formData as any);
+            setShowOfflineMessage(true);
+
+            // Clear form
+            setFormData({
+              name: '',
+              email: '',
+              phone: '',
+              company: '',
+              inquiryType: 'solution',
+              message: '',
+            });
+
+            // Hide message after 5 seconds
+            setTimeout(() => setShowOfflineMessage(false), 5000);
+            return;
+          } catch (error) {
+            console.error('Failed to register background sync:', error);
+          }
+        } else {
+          // Online submission
+          const subject =
+            formData.inquiryType === 'education'
+              ? `[교육 문의] ${formData.company || '개인'} - ${formData.name}`
+              : `[AI 솔루션 문의] ${formData.company || '개인'} - ${formData.name}`;
+
+          const body = `
 안녕하세요. 에멜무지로 문의드립니다.
 
 ■ 문의자 정보
@@ -146,13 +160,37 @@ ${escapeHtml(formData.message)}
 감사합니다.
         `.trim();
 
-    const mailtoLink = `mailto:researcherhojin@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoLink;
-  }, [formData, isOnline]);
+          const mailtoLink = `mailto:researcherhojin@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          window.location.href = mailtoLink;
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [formData, isOnline]
+  );
 
   const handleBack = useCallback(() => {
     navigate(-1);
   }, [navigate]);
+
+  // Show loading skeleton while page is loading
+  if (isLoading) {
+    return (
+      <>
+        <SEOHelmet
+          title="문의하기 | 에멜무지로"
+          description="AI 컨설팅 및 교육 프로그램에 대해 문의해주세요. 맞춤형 솔루션을 제공합니다."
+          keywords="AI 컨설팅 문의, AI 교육 문의, 에멜무지로 연락처"
+        />
+        <div className="min-h-screen bg-gray-50 pt-20">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <Loading type="form" />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -191,7 +229,8 @@ ${escapeHtml(formData.message)}
               <div>
                 <h1 className="text-4xl font-bold text-gray-900 mb-4">문의하기</h1>
                 <p className="text-lg text-gray-600">
-                  프로젝트에 대해 상담하고 싶으신가요?<br />
+                  프로젝트에 대해 상담하고 싶으신가요?
+                  <br />
                   언제든지 연락주세요.
                 </p>
               </div>
@@ -239,7 +278,10 @@ ${escapeHtml(formData.message)}
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="name"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         이름 *
                       </label>
                       <input
@@ -256,7 +298,10 @@ ${escapeHtml(formData.message)}
                     </div>
 
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         이메일 *
                       </label>
                       <input
@@ -274,7 +319,10 @@ ${escapeHtml(formData.message)}
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="phone"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         연락처
                       </label>
                       <input
@@ -289,7 +337,10 @@ ${escapeHtml(formData.message)}
                     </div>
 
                     <div>
-                      <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="company"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         회사/기관
                       </label>
                       <input
@@ -306,7 +357,10 @@ ${escapeHtml(formData.message)}
                   </div>
 
                   <div>
-                    <label htmlFor="inquiryType" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      htmlFor="inquiryType"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
                       문의 유형 *
                     </label>
                     <select
@@ -322,7 +376,10 @@ ${escapeHtml(formData.message)}
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
                       문의 내용 *
                     </label>
                     <textarea
@@ -336,17 +393,29 @@ ${escapeHtml(formData.message)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-colors text-base resize-none"
                       placeholder="프로젝트에 대해 자세히 설명해주세요..."
                     />
-                    <p className="mt-2 text-sm text-gray-500">
-                      {formData.message.length}/1000
-                    </p>
+                    <p className="mt-2 text-sm text-gray-500">{formData.message.length}/1000</p>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full sm:w-auto px-8 py-4 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center group"
+                    disabled={isSubmitting}
+                    className={`w-full sm:w-auto px-8 py-4 font-medium rounded-lg transition-colors flex items-center justify-center group ${
+                      isSubmitting
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-black text-white hover:bg-gray-800'
+                    }`}
                   >
-                    <Send className="w-4 h-4 mr-2 group-hover:translate-x-1 transition-transform" />
-                    문의 보내기
+                    {isSubmitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                        전송 중...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2 group-hover:translate-x-1 transition-transform" />
+                        문의 보내기
+                      </>
+                    )}
                   </button>
                 </form>
               </div>

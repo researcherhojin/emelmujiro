@@ -30,15 +30,7 @@ export interface ApiError {
 }
 
 // Component Props Types
-export interface ButtonProps {
-  children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
-  onClick?: () => void;
-  disabled?: boolean;
-  className?: string;
-  type?: 'button' | 'submit' | 'reset';
-}
+// ButtonProps are now defined in Button.tsx component
 
 export interface CardProps {
   title?: string;
