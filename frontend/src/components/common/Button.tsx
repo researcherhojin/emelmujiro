@@ -1,7 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Button = ({ 
+interface ButtonProps {
+    children: React.ReactNode;
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+    size?: 'sm' | 'md' | 'lg';
+    to?: string;
+    href?: string;
+    onClick?: () => void;
+    disabled?: boolean;
+    fullWidth?: boolean;
+    icon?: React.ReactNode;
+    iconPosition?: 'left' | 'right';
+    className?: string;
+    [key: string]: any; // Allow additional props
+}
+
+const Button: React.FC<ButtonProps> = ({ 
     children, 
     variant = 'primary', 
     size = 'md', 

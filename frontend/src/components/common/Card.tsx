@@ -1,6 +1,13 @@
 import React from 'react';
 
-const Card = ({ children, className = '', hover = true, padding = 'p-8', ...props }) => {
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+    children: React.ReactNode;
+    className?: string;
+    hover?: boolean;
+    padding?: string;
+}
+
+const Card: React.FC<CardProps> = ({ children, className = '', hover = true, padding = 'p-8', ...props }) => {
     const baseClasses = `
         bg-white 
         border-2 border-gray-200 

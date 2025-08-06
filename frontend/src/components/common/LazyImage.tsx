@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const LazyImage = ({ 
+interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+    src: string;
+    alt: string;
+    className?: string;
+    placeholderClassName?: string;
+    onLoad?: (event: React.SyntheticEvent<HTMLImageElement>) => void;
+    onError?: (event: React.SyntheticEvent<HTMLImageElement>) => void;
+    threshold?: number;
+    rootMargin?: string;
+}
+
+const LazyImage: React.FC<LazyImageProps> = ({ 
     src, 
     alt, 
     className = '', 
@@ -11,10 +22,10 @@ const LazyImage = ({
     rootMargin = '50px',
     ...props 
 }) => {
-    const [imageSrc, setImageSrc] = useState(null);
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [hasError, setHasError] = useState(false);
-    const imgRef = useRef(null);
+    const imgRef = useRef<HTMLImageElement>(null);
 
     useEffect(() => {
         const imageElement = imgRef.current;
@@ -45,12 +56,12 @@ const LazyImage = ({
         };
     }, [src, threshold, rootMargin]);
 
-    const handleLoad = (e) => {
+    const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
         setImageLoaded(true);
         if (onLoad) onLoad(e);
     };
 
-    const handleError = (e) => {
+    const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
         setHasError(true);
         if (onError) onError(e);
     };

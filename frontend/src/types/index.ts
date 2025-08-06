@@ -1,0 +1,82 @@
+// API Response Types
+export interface BlogPost {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  author: string;
+  created_at: string;
+  updated_at: string;
+  published: boolean;
+}
+
+export interface ApiResponse<T> {
+  data: T;
+  status: number;
+  message?: string;
+}
+
+export interface ApiError {
+  message: string;
+  status?: number;
+  code?: string;
+}
+
+// Component Props Types
+export interface ButtonProps {
+  children: React.ReactNode;
+  variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+  onClick?: () => void;
+  disabled?: boolean;
+  className?: string;
+  type?: 'button' | 'submit' | 'reset';
+}
+
+export interface CardProps {
+  title?: string;
+  description?: string;
+  image?: string;
+  link?: string;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+export interface LoadingProps {
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
+
+export interface LazyImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+  width?: number | string;
+  height?: number | string;
+  placeholder?: string;
+}
+
+// Service Types
+export interface ContactFormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
+// Navigation Types
+export interface NavLink {
+  to: string;
+  label: string;
+  isActive?: boolean;
+}
+
+// SEO Types
+export interface SEOData {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  image?: string;
+  url?: string;
+  type?: string;
+}

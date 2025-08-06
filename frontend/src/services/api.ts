@@ -1,8 +1,9 @@
-import axios from 'axios';
+import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { BlogPost, ContactFormData } from '../types';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/';
 
-const axiosInstance = axios.create({
+const axiosInstance: AxiosInstance = axios.create({
     baseURL: API_URL,
     timeout: 5000,
     headers: {
@@ -11,8 +12,8 @@ const axiosInstance = axios.create({
 });
 
 // Error message mapping
-const getErrorMessage = (status) => {
-    const errorMessages = {
+const getErrorMessage = (status: number): string => {
+    const errorMessages: Record<number, string> = {
         400: '입력값을 확인해주세요.',
         401: '인증이 필요합니다.',
         403: '권한이 없습니다.',
@@ -25,12 +26,18 @@ const getErrorMessage = (status) => {
     return errorMessages[status] || '알 수 없는 오류가 발생했습니다.';
 };
 
+// Custom error interface
+interface CustomAxiosError extends AxiosError {
+    userMessage?: string;
+    _retry?: boolean;
+}
+
 // Request interceptor
 axiosInstance.interceptors.request.use(
-    (config) => {
+    (config: InternalAxiosRequestConfig) => {
         // Add auth token if available
         const token = localStorage.getItem('authToken');
-        if (token) {
+        if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         
@@ -41,7 +48,7 @@ axiosInstance.interceptors.request.use(
         
         return config;
     },
-    (error) => {
+    (error: AxiosError) => {
         return Promise.reject(error);
     }
 );
@@ -55,12 +62,12 @@ axiosInstance.interceptors.response.use(
         }
         return response;
     },
-    async (error) => {
+    async (error: CustomAxiosError) => {
         const originalRequest = error.config;
         
         // Handle timeout errors
-        if (error.code === 'ECONNABORTED' && !originalRequest._retry) {
-            originalRequest._retry = true;
+        if (error.code === 'ECONNABORTED' && originalRequest && !error._retry) {
+            error._retry = true;
             console.warn('Request timeout, retrying...');
             return axiosInstance(originalRequest);
         }
@@ -73,7 +80,7 @@ axiosInstance.interceptors.response.use(
         
         // Handle HTTP errors
         const { status, data } = error.response;
-        error.userMessage = data?.message || getErrorMessage(status);
+        error.userMessage = (data as any)?.message || getErrorMessage(status);
         
         // Log error in development
         if (process.env.NODE_ENV === 'development') {
@@ -90,22 +97,38 @@ axiosInstance.interceptors.response.use(
     }
 );
 
+// API response interfaces
+interface PaginatedResponse<T> {
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: T[];
+}
+
+interface Project {
+    id: number;
+    title: string;
+    description: string;
+    technologies: string[];
+    link?: string;
+}
+
 // API methods with improved error handling
 export const api = {
     // Projects
-    getProjects: () => axiosInstance.get('projects/'),
-    createProject: (data) => axiosInstance.post('projects/', data),
+    getProjects: () => axiosInstance.get<Project[]>('projects/'),
+    createProject: (data: Partial<Project>) => axiosInstance.post<Project>('projects/', data),
     
     // Blog
-    getBlogPosts: (page = 1) => axiosInstance.get(`blog-posts/?page=${page}`),
-    getBlogPost: (id) => axiosInstance.get(`blog-posts/${id}/`),
+    getBlogPosts: (page: number = 1) => axiosInstance.get<PaginatedResponse<BlogPost>>(`blog-posts/?page=${page}`),
+    getBlogPost: (id: number | string) => axiosInstance.get<BlogPost>(`blog-posts/${id}/`),
     
     // Contact
-    createContact: async (data) => {
+    createContact: async (data: ContactFormData) => {
         try {
             const response = await axiosInstance.post('contact/', data);
             return response;
-        } catch (error) {
+        } catch (error: any) {
             // Add specific handling for contact errors
             if (error.response?.status === 429) {
                 error.userMessage = '너무 많은 문의를 보내셨습니다. 1시간 후에 다시 시도해주세요.';
@@ -115,10 +138,10 @@ export const api = {
     },
     
     // Newsletter
-    subscribeNewsletter: (email) => axiosInstance.post('newsletter/', { email }),
+    subscribeNewsletter: (email: string) => axiosInstance.post('newsletter/', { email }),
     
     // Health check
-    checkHealth: () => axiosInstance.get('health/'),
+    checkHealth: () => axiosInstance.get<{ status: string }>('health/'),
 };
 
 // Export axios instance for custom requests
