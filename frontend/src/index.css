@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Font imports */
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+/* Font imports - Pretendard 폰트는 index.html에서 로드 */
+/* @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css'); */
 
 @layer base {
     html {

@@ -10,7 +10,6 @@ export { default as Loading } from './Loading';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as Navbar } from './Navbar';
 export { default as NotFound } from './NotFound';
-export { default as OptimizedImage } from './OptimizedImage';
 export { default as PageLoading } from './PageLoading';
 export { default as ScrollProgress } from './ScrollProgress';
 export { default as ScrollToTop } from './ScrollToTop';

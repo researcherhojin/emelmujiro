@@ -20,6 +20,7 @@ const Navbar = () => {
     const navItems = [
         { label: '회사소개', path: '/about' },
         { label: '서비스', path: '/#services' },
+        { label: '블로그', path: '/blog' },
         { label: '대표 프로필', path: '/profile' }
     ];
 
