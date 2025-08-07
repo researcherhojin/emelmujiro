@@ -32,7 +32,7 @@ const TestComponent: React.FC = () => {
     <div>
       <div data-testid="loading">{loading.toString()}</div>
       <div data-testid="error">{error || 'no-error'}</div>
-      <div data-testid="posts-count">{posts.length}</div>
+      <div data-testid="posts-count">{posts?.length || 0}</div>
       <div data-testid="current-page">{currentPage}</div>
       <div data-testid="total-pages">{totalPages}</div>
       <button onClick={() => fetchPosts(1)}>Fetch Posts</button>

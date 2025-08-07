@@ -120,6 +120,11 @@ const Button: React.FC<ButtonProps> = props => {
     href,
     fullWidth: _,
     iconPosition: __,
+    className: ___,
+    variant: ____,
+    size: _____,
+    icon: ______,
+    children: _______,
     ...buttonProps
   } = props as ButtonElementProps;
   return (
