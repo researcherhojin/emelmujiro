@@ -113,7 +113,14 @@ const Button: React.FC<ButtonProps> = props => {
   }
 
   // 일반 버튼으로 렌더링
-  const { onClick, disabled = false, ...buttonProps } = props as ButtonElementProps;
+  const {
+    onClick,
+    disabled = false,
+    to,
+    href,
+    fullWidth: _,
+    ...buttonProps
+  } = props as ButtonElementProps;
   return (
     <button className={baseClasses} onClick={onClick} disabled={disabled} {...buttonProps}>
       {content}

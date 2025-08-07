@@ -1,28 +1,32 @@
 import { api } from '../api';
 import { BlogPost, ContactFormData } from '../../types';
 
-// Create a properly mocked axios instance
-const mockAxiosInstance = {
-  get: jest.fn(),
-  post: jest.fn(),
-  put: jest.fn(),
-  patch: jest.fn(),
-  delete: jest.fn(),
-  interceptors: {
-    request: {
-      use: jest.fn(),
-    },
-    response: {
-      use: jest.fn(),
-    },
-  },
-};
-
 // Mock axios
-jest.mock('axios', () => ({
-  create: jest.fn(() => mockAxiosInstance),
-  isAxiosError: jest.fn(),
-}));
+jest.mock('axios', () => {
+  const mockAxiosInstance = {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    patch: jest.fn(),
+    delete: jest.fn(),
+    interceptors: {
+      request: {
+        use: jest.fn(),
+      },
+      response: {
+        use: jest.fn(),
+      },
+    },
+  };
+
+  return {
+    create: jest.fn(() => mockAxiosInstance),
+    isAxiosError: jest.fn(),
+  };
+});
+
+// Get the mocked instance for use in tests
+const mockAxiosInstance = (require('axios').create as jest.Mock)();
 
 describe('API Service', () => {
   beforeEach(() => {

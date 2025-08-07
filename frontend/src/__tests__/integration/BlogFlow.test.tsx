@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, fireEvent, waitFor, render } from '@testing-library/react';
+import { screen, waitFor, render } from '@testing-library/react';
 import App from '../../App';
 import { blogService } from '../../services/api';
 
@@ -59,7 +59,7 @@ jest.mock('framer-motion', () => ({
     ul: ({ children, ...props }: any) => <ul {...props}>{children}</ul>,
     li: ({ children, ...props }: any) => <li {...props}>{children}</li>,
     a: ({ children, ...props }: any) => <a {...props}>{children}</a>,
-    img: (props: any) => <img {...props} />,
+    img: (props: any) => <img alt="" {...props} />,
   },
   AnimatePresence: ({ children }: any) => children,
 }));

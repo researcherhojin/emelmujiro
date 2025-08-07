@@ -16,12 +16,6 @@ jest.mock('../../services/api', () => ({
   },
 }));
 
-// Mock localBlogPosts to ensure error message appears
-jest.mock('../../data/localBlogPosts', () => ({
-  getLocalBlogPosts: jest.fn().mockRejectedValue(new Error('Local fetch failed')),
-  getLocalBlogPost: jest.fn().mockRejectedValue(new Error('Local fetch failed')),
-}));
-
 const mockedApi = api as jest.Mocked<typeof api>;
 
 // Test component to consume the context

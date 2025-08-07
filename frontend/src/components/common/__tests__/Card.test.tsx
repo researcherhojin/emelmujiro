@@ -50,8 +50,8 @@ describe('Card Component', () => {
 
   describe('Hover Effects', () => {
     it('applies hover classes by default', () => {
-      const { container } = render(<Card>Content</Card>);
-      const card = container.firstChild as HTMLElement;
+      render(<Card data-testid="test-card">Content</Card>);
+      const card = screen.getByTestId('test-card');
 
       expect(card).toHaveClass('hover:border-gray-300');
       expect(card).toHaveClass('hover:shadow-xl');
@@ -60,8 +60,12 @@ describe('Card Component', () => {
     });
 
     it('does not apply hover classes when hover is false', () => {
-      const { container } = render(<Card hover={false}>Content</Card>);
-      const card = container.firstChild as HTMLElement;
+      render(
+        <Card data-testid="test-card" hover={false}>
+          Content
+        </Card>
+      );
+      const card = screen.getByTestId('test-card');
 
       expect(card).not.toHaveClass('hover:border-gray-300');
       expect(card).not.toHaveClass('hover:shadow-xl');
@@ -72,15 +76,23 @@ describe('Card Component', () => {
 
   describe('Custom ClassName', () => {
     it('applies custom className', () => {
-      const { container } = render(<Card className="custom-class">Content</Card>);
-      const card = container.firstChild as HTMLElement;
+      render(
+        <Card data-testid="test-card" className="custom-class">
+          Content
+        </Card>
+      );
+      const card = screen.getByTestId('test-card');
 
       expect(card).toHaveClass('custom-class');
     });
 
     it('combines custom className with base classes', () => {
-      const { container } = render(<Card className="custom-class">Content</Card>);
-      const card = container.firstChild as HTMLElement;
+      render(
+        <Card data-testid="test-card" className="custom-class">
+          Content
+        </Card>
+      );
+      const card = screen.getByTestId('test-card');
 
       expect(card).toHaveClass('custom-class');
       expect(card).toHaveClass('bg-white');
@@ -91,12 +103,12 @@ describe('Card Component', () => {
   describe('Additional Props', () => {
     it('passes through additional props', () => {
       const handleClick = jest.fn();
-      const { container } = render(
+      render(
         <Card data-testid="custom-card" onClick={handleClick} role="article">
           Content
         </Card>
       );
-      const card = container.firstChild as HTMLElement;
+      const card = screen.getByTestId('custom-card');
 
       expect(card).toHaveAttribute('data-testid', 'custom-card');
       expect(card).toHaveAttribute('role', 'article');

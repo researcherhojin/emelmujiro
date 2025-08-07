@@ -190,8 +190,8 @@ describe('Button Component', () => {
       // Check that the button has the custom class
       expect(button).toHaveClass('custom-class');
       // Check that the button also has default classes
-      expect(button.className).toMatch(/bg-gray-900/);
-      expect(button.className).toMatch(/inline-flex/);
+      expect(button).toHaveClass('bg-gray-900');
+      expect(button).toHaveClass('inline-flex');
     });
   });
 
