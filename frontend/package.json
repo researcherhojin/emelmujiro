@@ -79,7 +79,8 @@
     "clean:all": "rm -rf build node_modules coverage playwright-report test-results",
     "dev": "npm run start",
     "validate": "npm run lint && npm run type-check && npm run test:coverage",
-    "pre-commit": "lint-staged"
+    "pre-commit": "lint-staged",
+    "analyze": "npm run build && source-map-explorer 'build/static/js/*.js'"
   },
   "browserslist": {
     "production": [
