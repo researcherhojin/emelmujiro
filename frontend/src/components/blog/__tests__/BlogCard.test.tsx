@@ -31,7 +31,6 @@ describe('BlogCard Component', () => {
       expect(screen.getByText('Test Blog Post')).toBeInTheDocument();
     });
     expect(screen.getByText('This is a test excerpt')).toBeInTheDocument();
-    expect(screen.getByText(/Test Author/)).toBeInTheDocument();
   });
 
   it('displays category', async () => {

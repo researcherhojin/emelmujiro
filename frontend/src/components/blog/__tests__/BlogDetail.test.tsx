@@ -4,6 +4,47 @@ import BlogDetail from '../BlogDetail';
 import { BlogProvider } from '../../../contexts/BlogContext';
 import { BlogPost } from '../../../types';
 
+// Mock react-markdown to avoid dependency issues
+jest.mock('react-markdown', () => {
+  return function ReactMarkdown({ children }: { children: string }) {
+    return <div data-testid="markdown-content">{children}</div>;
+  };
+});
+
+// Mock remark-gfm to avoid dependency issues
+jest.mock('remark-gfm', () => {
+  return function remarkGfm() {
+    return {};
+  };
+});
+
+// Mock ErrorBoundary to prevent error catching during tests
+jest.mock('../../common/ErrorBoundary', () => {
+  return function ErrorBoundary({ children }: { children: React.ReactNode }) {
+    return <>{children}</>;
+  };
+});
+
+// Mock SEO component that uses Helmet
+jest.mock('../../layout/SEO', () => {
+  return function SEO() {
+    return null;
+  };
+});
+
+// Mock other blog components
+jest.mock('../BlogInteractions', () => {
+  return function BlogInteractions() {
+    return <div>Blog Interactions</div>;
+  };
+});
+
+jest.mock('../BlogComments', () => {
+  return function BlogComments() {
+    return <div>Blog Comments</div>;
+  };
+});
+
 const mockNavigate = jest.fn();
 const mockFetchPostById = jest.fn();
 const mockClearCurrentPost = jest.fn();
