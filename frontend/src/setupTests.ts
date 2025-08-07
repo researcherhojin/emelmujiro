@@ -29,7 +29,7 @@ class MockIntersectionObserver implements IntersectionObserver {
     public callback: IntersectionObserverCallback,
     public options?: IntersectionObserverInit
   ) {
-    this.root = options?.root || null;
+    this.root = (options?.root instanceof Element ? options.root : null) || null;
     this.rootMargin = options?.rootMargin || '0px';
     this.thresholds = Array.isArray(options?.threshold)
       ? options.threshold
@@ -46,6 +46,21 @@ global.IntersectionObserver = MockIntersectionObserver as any;
 
 // Mock scrollTo
 window.scrollTo = jest.fn();
+
+// Mock matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
 
 // Mock Service Worker
 Object.defineProperty(navigator, 'serviceWorker', {
