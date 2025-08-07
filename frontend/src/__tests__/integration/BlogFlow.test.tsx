@@ -95,31 +95,29 @@ describe('Blog Flow Integration Tests', () => {
   });
 
   test('app renders without crashing', async () => {
-    render(<App />);
+    const { container } = render(<App />);
 
     // Wait for the app to render
     await waitFor(
       () => {
-        const body = document.body;
-        expect(body.textContent).toBeTruthy();
+        expect(container.textContent).toBeTruthy();
       },
       { timeout: 3000 }
     );
 
     // Check that the app wrapper exists
     await waitFor(() => {
-      const appElement = document.querySelector('.App');
-      expect(appElement || document.body.firstChild).toBeTruthy();
+      const appElement = container.querySelector('.App');
+      expect(appElement || container.firstChild).toBeTruthy();
     });
   });
 
   test('handles navigation when available', async () => {
-    render(<App />);
+    const { container } = render(<App />);
 
     // Wait for initial render
     await waitFor(() => {
-      const body = document.body;
-      expect(body.textContent).toBeTruthy();
+      expect(container.textContent).toBeTruthy();
     });
 
     // Check if blog navigation exists
@@ -131,16 +129,15 @@ describe('Blog Flow Integration Tests', () => {
   });
 
   test('displays content based on route', async () => {
-    render(<App />);
+    const { container } = render(<App />);
 
     // Wait for content to load
     await waitFor(() => {
-      const body = document.body;
-      expect(body.textContent).toBeTruthy();
+      expect(container.textContent).toBeTruthy();
     });
 
     // Check that some content is displayed
-    const hasAnyContent = document.body.textContent && document.body.textContent.length > 0;
+    const hasAnyContent = container.textContent && container.textContent.length > 0;
     expect(hasAnyContent).toBe(true);
   });
 
@@ -148,16 +145,15 @@ describe('Blog Flow Integration Tests', () => {
     // Mock an error response
     mockedBlogService.getPosts.mockRejectedValue(new Error('Network error'));
 
-    render(<App />);
+    const { container } = render(<App />);
 
     // Wait for render
     await waitFor(() => {
-      const body = document.body;
-      expect(body.textContent).toBeTruthy();
+      expect(container.textContent).toBeTruthy();
     });
 
     // App should still render even with errors
-    const hasContent = document.body.textContent && document.body.textContent.length > 0;
+    const hasContent = container.textContent && container.textContent.length > 0;
     expect(hasContent).toBe(true);
   });
 
@@ -169,16 +165,15 @@ describe('Blog Flow Integration Tests', () => {
       value: 375,
     });
 
-    render(<App />);
+    const { container } = render(<App />);
 
     // Wait for render
     await waitFor(() => {
-      const body = document.body;
-      expect(body.textContent).toBeTruthy();
+      expect(container.textContent).toBeTruthy();
     });
 
     // App should render in mobile view
-    const hasContent = document.body.textContent && document.body.textContent.length > 0;
+    const hasContent = container.textContent && container.textContent.length > 0;
     expect(hasContent).toBe(true);
   });
 
