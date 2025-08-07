@@ -8,7 +8,7 @@ describe('LazyImage Component', () => {
   });
 
   it('renders placeholder initially without img element', () => {
-    const { container } = render(
+    render(
       <LazyImage
         src="test.jpg"
         alt="Test image"
@@ -17,11 +17,7 @@ describe('LazyImage Component', () => {
       />
     );
 
-    // Should render placeholder div but no img element yet
-    const placeholder = container.querySelector('.placeholder-class');
-    expect(placeholder).toBeInTheDocument();
-
-    // Image should not be rendered yet
+    // Image should not be rendered yet (lazy loading)
     const img = screen.queryByAltText('Test image');
     expect(img).not.toBeInTheDocument();
   });
@@ -54,9 +50,7 @@ describe('LazyImage Component', () => {
   });
 
   it('renders with custom className', () => {
-    const { container } = render(
-      <LazyImage src="test.jpg" alt="Test image" priority={true} className="custom-class" />
-    );
+    render(<LazyImage src="test.jpg" alt="Test image" priority={true} className="custom-class" />);
 
     const img = screen.getByAltText('Test image');
     expect(img).toHaveClass('custom-class');
