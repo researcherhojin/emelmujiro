@@ -1,39 +1,52 @@
+// Mock axios before importing api
 import { blogService } from '../api';
 import axios from 'axios';
 import { PaginatedResponse, BlogPost } from '../../types';
 
-// Mock axios for integration tests
-jest.mock('axios');
+jest.mock('axios', () => {
+  const actualAxios = jest.requireActual('axios');
+  return {
+    ...actualAxios,
+    create: jest.fn(() => ({
+      get: jest.fn(),
+      post: jest.fn(),
+      put: jest.fn(),
+      delete: jest.fn(),
+      interceptors: {
+        request: { use: jest.fn() },
+        response: { use: jest.fn() },
+      },
+    })),
+  };
+});
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('API Service Integration Tests', () => {
+  let mockedAxiosInstance: any;
+
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Mock axios interceptors
-    const mockInterceptors = {
-      request: { use: jest.fn() },
-      response: { use: jest.fn() },
-    };
-
-    // Mock axios create to return the mocked axios instance with interceptors
-    mockedAxios.create = jest.fn().mockReturnValue({
-      ...mockedAxios,
-      interceptors: mockInterceptors,
-    } as any);
+    // Get the mocked axios instance that was created
+    mockedAxiosInstance = (axios.create as jest.Mock).mock.results[0]?.value;
 
     // Default successful response
-    mockedAxios.get.mockResolvedValue({
-      data: { data: [], totalPages: 1, currentPage: 1, totalPosts: 0 },
-      status: 200,
-    });
+    if (mockedAxiosInstance) {
+      mockedAxiosInstance.get.mockResolvedValue({
+        data: { count: 0, next: null, previous: null, results: [] },
+        status: 200,
+      });
+    }
   });
 
   describe('blogService.getPosts', () => {
     test('fetches posts with correct parameters', async () => {
       const mockResponse = {
         data: {
-          data: [
+          count: 1,
+          next: null,
+          previous: null,
+          results: [
             {
               id: 1,
               title: 'Test Post',
@@ -41,55 +54,44 @@ describe('API Service Integration Tests', () => {
               author: 'Test Author',
             },
           ],
-          totalPages: 1,
-          currentPage: 1,
-          totalPosts: 1,
         },
         status: 200,
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxiosInstance.get.mockResolvedValue(mockResponse);
 
       const result = await blogService.getPosts(1, 10);
 
-      expect(mockedAxios.get).toHaveBeenCalledWith('/api/blog-posts/', {
-        params: { page: 1, limit: 10 },
-      });
+      expect(mockedAxiosInstance.get).toHaveBeenCalledWith('blog-posts/?page=1&page_size=10');
 
-      expect(result).toEqual({
-        data: mockResponse.data.data,
-        totalPages: 1,
-        currentPage: 1,
-        totalPosts: 1,
-      });
+      expect(result.data).toEqual(mockResponse.data);
     });
 
     test('handles pagination correctly', async () => {
       const mockResponse = {
         data: {
-          data: [],
-          totalPages: 5,
-          currentPage: 3,
-          totalPosts: 50,
+          count: 50,
+          next: 'http://localhost:8000/api/blog-posts/?page=4',
+          previous: 'http://localhost:8000/api/blog-posts/?page=2',
+          results: [],
         },
         status: 200,
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxiosInstance.get.mockResolvedValue(mockResponse);
 
       const result = await blogService.getPosts(3, 10);
 
-      expect(mockedAxios.get).toHaveBeenCalledWith('/api/blog-posts/', {
-        params: { page: 3, limit: 10 },
-      });
+      expect(mockedAxiosInstance.get).toHaveBeenCalledWith('blog-posts/?page=3&page_size=10');
 
-      expect(result.currentPage).toBe(3);
-      expect(result.totalPages).toBe(5);
+      expect(result.data.count).toBe(50);
+      expect(result.data.next).toContain('page=4');
+      expect(result.data.previous).toContain('page=2');
     });
 
     test('handles API errors correctly', async () => {
       const errorMessage = 'Network Error';
-      mockedAxios.get.mockRejectedValue(new Error(errorMessage));
+      mockedAxiosInstance.get.mockRejectedValue(new Error(errorMessage));
 
       await expect(blogService.getPosts(1)).rejects.toThrow(errorMessage);
     });
@@ -102,7 +104,7 @@ describe('API Service Integration Tests', () => {
         },
       };
 
-      mockedAxios.get.mockRejectedValue(errorResponse);
+      mockedAxiosInstance.get.mockRejectedValue(errorResponse);
 
       await expect(blogService.getPosts(1)).rejects.toEqual(errorResponse);
     });
@@ -117,15 +119,15 @@ describe('API Service Integration Tests', () => {
         author: 'Test Author',
       };
 
-      mockedAxios.get.mockResolvedValue({
+      mockedAxiosInstance.get.mockResolvedValue({
         data: mockPost,
         status: 200,
       });
 
       const result = await blogService.getPost('1');
 
-      expect(mockedAxios.get).toHaveBeenCalledWith('/api/blog-posts/1/');
-      expect(result).toEqual(mockPost);
+      expect(mockedAxiosInstance.get).toHaveBeenCalledWith('blog-posts/1/');
+      expect(result.data).toEqual(mockPost);
     });
 
     test('handles post not found', async () => {
@@ -136,7 +138,7 @@ describe('API Service Integration Tests', () => {
         },
       };
 
-      mockedAxios.get.mockRejectedValue(errorResponse);
+      mockedAxiosInstance.get.mockRejectedValue(errorResponse);
 
       await expect(blogService.getPost('999')).rejects.toEqual(errorResponse);
     });
@@ -153,33 +155,31 @@ describe('API Service Integration Tests', () => {
         },
       ];
 
-      mockedAxios.get.mockResolvedValue({
-        data: mockResults,
+      mockedAxiosInstance.get.mockResolvedValue({
+        data: { count: 1, next: null, previous: null, results: mockResults },
         status: 200,
       });
 
       const result = await blogService.searchPosts('search term');
 
-      expect(mockedAxios.get).toHaveBeenCalledWith('/api/blog-posts/search/', {
-        params: { q: 'search term' },
-      });
+      expect(mockedAxiosInstance.get).toHaveBeenCalledWith('blog-posts/?search=search term');
 
-      expect(result).toEqual(mockResults);
+      expect(result.data).toEqual(mockResults);
     });
 
     test('handles empty search results', async () => {
-      mockedAxios.get.mockResolvedValue({
-        data: [],
+      mockedAxiosInstance.get.mockResolvedValue({
+        data: { count: 0, next: null, previous: null, results: [] },
         status: 200,
       });
 
       const result = await blogService.searchPosts('nonexistent');
 
-      expect(result).toEqual([]);
+      expect(result.data.results).toEqual([]);
     });
 
     test('handles search errors', async () => {
-      mockedAxios.get.mockRejectedValue(new Error('Search failed'));
+      mockedAxiosInstance.get.mockRejectedValue(new Error('Search failed'));
 
       await expect(blogService.searchPosts('test')).rejects.toThrow('Search failed');
     });
@@ -187,7 +187,7 @@ describe('API Service Integration Tests', () => {
 
   describe('API Configuration', () => {
     test('uses correct base URL', () => {
-      expect(mockedAxios.create).toHaveBeenCalledWith(
+      expect(axios.create).toHaveBeenCalledWith(
         expect.objectContaining({
           baseURL: expect.any(String),
           timeout: expect.any(Number),
@@ -200,13 +200,13 @@ describe('API Service Integration Tests', () => {
 
     test('includes request interceptor for HTTPS upgrade', () => {
       // Test that the interceptor is set up
-      const createdInstance = mockedAxios.create.mock.results[0]?.value;
+      const createdInstance = (axios.create as jest.Mock).mock.results[0]?.value;
       expect(createdInstance?.interceptors?.request?.use).toHaveBeenCalled();
     });
 
     test('includes response interceptor for error handling', () => {
       // Test that the response interceptor is set up
-      const createdInstance = mockedAxios.create.mock.results[0]?.value;
+      const createdInstance = (axios.create as jest.Mock).mock.results[0]?.value;
       expect(createdInstance?.interceptors?.response?.use).toHaveBeenCalled();
     });
   });
@@ -220,7 +220,7 @@ describe('API Service Integration Tests', () => {
         },
       };
 
-      mockedAxios.get.mockRejectedValue(rateLimitError);
+      mockedAxiosInstance.get.mockRejectedValue(rateLimitError);
 
       await expect(blogService.getPosts(1)).rejects.toEqual(rateLimitError);
     });
@@ -233,7 +233,7 @@ describe('API Service Integration Tests', () => {
         message: 'Network Error',
       };
 
-      mockedAxios.get.mockRejectedValue(networkError);
+      mockedAxiosInstance.get.mockRejectedValue(networkError);
 
       await expect(blogService.getPosts(1)).rejects.toEqual(networkError);
     });

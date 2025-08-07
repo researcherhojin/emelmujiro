@@ -56,10 +56,16 @@ describe('Blog Flow Integration Tests', () => {
     jest.clearAllMocks();
     // Mock successful blog posts fetch
     mockedBlogService.getPosts.mockResolvedValue({
-      data: mockPosts,
-      totalPages: 1,
-      currentPage: 1,
-      totalPosts: mockPosts.length,
+      data: {
+        count: mockPosts.length,
+        next: null,
+        previous: null,
+        results: mockPosts,
+      },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as any,
     });
   });
 
@@ -86,7 +92,18 @@ describe('Blog Flow Integration Tests', () => {
   test('blog search functionality', async () => {
     // Mock search results
     const searchResults = [mockPosts[0]];
-    mockedBlogService.searchPosts.mockResolvedValue(searchResults);
+    mockedBlogService.searchPosts.mockResolvedValue({
+      data: {
+        count: 1,
+        next: null,
+        previous: null,
+        results: searchResults,
+      },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as any,
+    });
 
     render(<App />);
 
@@ -152,7 +169,13 @@ describe('Blog Flow Integration Tests', () => {
 
   test('blog post detail view', async () => {
     // Mock individual post fetch
-    mockedBlogService.getPost.mockResolvedValue(mockPosts[0]);
+    mockedBlogService.getPost.mockResolvedValue({
+      data: mockPosts[0],
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as any,
+    });
 
     render(<App />);
 

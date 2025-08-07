@@ -95,7 +95,8 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "^framer-motion$": "<rootDir>/src/__mocks__/framer-motion.js"
+      "^framer-motion$": "<rootDir>/src/__mocks__/framer-motion.js",
+      "^axios$": "axios/dist/node/axios.cjs"
     }
   },
   "lint-staged": {
