@@ -1,8 +1,28 @@
 import React from 'react';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
-import { render } from '../../test-utils/renderWithProviders';
+import { screen, fireEvent, waitFor, render } from '@testing-library/react';
 import App from '../../App';
 import { blogService } from '../../services/api';
+
+// Mock react-helmet-async
+jest.mock('react-helmet-async', () => ({
+  HelmetProvider: ({ children }: any) => children,
+  Helmet: () => null,
+}));
+
+// Mock SEOHelmet to prevent issues
+jest.mock('../../components/common/SEOHelmet', () => {
+  return function MockSEOHelmet() {
+    return null;
+  };
+});
+
+// Mock logger to prevent console output
+jest.mock('../../utils/logger', () => ({
+  error: jest.fn(),
+  debug: jest.fn(),
+  warn: jest.fn(),
+  info: jest.fn(),
+}));
 
 // Mock the blogService
 jest.mock('../../services/api', () => ({
@@ -14,6 +34,12 @@ jest.mock('../../services/api', () => ({
     deletePost: jest.fn(),
     searchPosts: jest.fn(),
   },
+  api: {
+    getBlogPosts: jest.fn(),
+    getBlogPost: jest.fn(),
+    searchBlogPosts: jest.fn(),
+    createContact: jest.fn(),
+  },
 }));
 
 const mockedBlogService = blogService as jest.Mocked<typeof blogService>;
@@ -24,6 +50,11 @@ jest.mock('framer-motion', () => ({
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
     section: ({ children, ...props }: any) => <section {...props}>{children}</section>,
     h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
+    h2: ({ children, ...props }: any) => <h2 {...props}>{children}</h2>,
+    h3: ({ children, ...props }: any) => <h3 {...props}>{children}</h3>,
+    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
+    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
+    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
   },
   AnimatePresence: ({ children }: any) => children,
 }));
