@@ -30,7 +30,7 @@ describe('Section Component', () => {
   });
 
   test('applies background color class', () => {
-    const { container } = render(
+    render(
       <Section bgColor="gray">
         <p>Content</p>
       </Section>
@@ -40,7 +40,7 @@ describe('Section Component', () => {
   });
 
   test('applies custom className', () => {
-    const { container } = render(
+    render(
       <Section className="custom-section">
         <p>Content</p>
       </Section>
