@@ -3,23 +3,7 @@ import axios from 'axios';
 import { blogService } from '../api';
 import { PaginatedResponse, BlogPost } from '../../types';
 
-jest.mock('axios', () => {
-  const actualAxios = jest.requireActual('axios');
-  const mockInstance = {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-    interceptors: {
-      request: { use: jest.fn() },
-      response: { use: jest.fn() },
-    },
-  };
-  return {
-    ...actualAxios,
-    create: jest.fn(() => mockInstance),
-  };
-});
+jest.mock('axios');
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const mockedAxiosInstance = {
@@ -38,7 +22,7 @@ describe('API Service Integration Tests', () => {
     jest.clearAllMocks();
 
     // Setup mock axios.create to return our mocked instance
-    (axios.create as jest.Mock).mockReturnValue(mockedAxiosInstance);
+    mockedAxios.create = jest.fn().mockReturnValue(mockedAxiosInstance);
 
     // Default successful response
     mockedAxiosInstance.get.mockResolvedValue({
