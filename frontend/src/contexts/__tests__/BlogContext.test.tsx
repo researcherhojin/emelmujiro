@@ -16,6 +16,12 @@ jest.mock('../../services/api', () => ({
   },
 }));
 
+// Mock local blog posts - these should also fail to trigger the error message
+jest.mock('../../data/blogPosts', () => ({
+  getBlogPosts: jest.fn().mockRejectedValue(new Error('No local posts')),
+  getBlogPostById: jest.fn().mockRejectedValue(new Error('No local post')),
+}));
+
 const mockedApi = api as jest.Mocked<typeof api>;
 
 // Test component to consume the context

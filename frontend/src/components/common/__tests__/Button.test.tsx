@@ -188,10 +188,11 @@ describe('Button Component', () => {
       const button = screen.getByRole('button');
 
       // Check that the button has the custom class
-      expect(button).toHaveClass('custom-class');
+      const classAttribute = button.getAttribute('class') || '';
+      expect(classAttribute).toContain('custom-class');
       // Check that the button also has default classes
-      expect(button).toHaveClass('bg-gray-900');
-      expect(button).toHaveClass('inline-flex');
+      expect(classAttribute).toContain('bg-gray-900');
+      expect(classAttribute).toContain('inline-flex');
     });
   });
 

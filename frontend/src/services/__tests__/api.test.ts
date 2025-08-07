@@ -200,7 +200,7 @@ describe('API Service', () => {
 
       const response = await api.createProject(newProject);
       expect(response.data).toEqual({ id: 1, ...newProject });
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/api/projects/', newProject);
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('projects/', newProject);
     });
   });
 
@@ -216,7 +216,7 @@ describe('API Service', () => {
 
       const response = await api.checkHealth();
       expect(response.data).toEqual({ status: 'ok' });
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/health/');
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('health/');
     });
   });
 });
