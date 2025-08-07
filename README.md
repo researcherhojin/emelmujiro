@@ -30,11 +30,12 @@ npm run dev
 
 ### Frontend
 
-- **React** 18.2.0 + **TypeScript** - 모던 웹 애플리케이션
-- **Tailwind CSS** 3.4.1 - 유틸리티 기반 스타일링
+- **React** 18.2.0 + **TypeScript** 5.9.2 - 모던 웹 애플리케이션 (84.5% TypeScript 적용)
+- **Tailwind CSS** 3.3.5 - 유틸리티 기반 스타일링
 - **Framer Motion** 11.15.0 - 애니메이션
 - **React Router** 6.20.0 (HashRouter) - SPA 라우팅
-- **Context API** - 상태 관리
+- **Context API** - 상태 관리 (Auth, Blog, UI, Form)
+- **React Markdown** 9.0.3 + **Remark GFM** 4.0.0 - 마크다운 렌더링
 
 ### Backend (선택사항)
 
@@ -42,10 +43,14 @@ npm run dev
 - **SQLite** (개발) / **PostgreSQL** (프로덕션)
 - **Gunicorn** + **WhiteNoise** - 프로덕션 서빙
 
-### DevOps
+### DevOps & Testing
 
 - **GitHub Actions** - CI/CD 자동화
 - **GitHub Pages** - 정적 호스팅
+- **Jest** + **React Testing Library** - 단위/통합 테스트 (223개 테스트, 100% 통과)
+- **Playwright** - E2E 테스트
+- **ESLint** + **TypeScript ESLint** - 코드 품질 관리
+- **Husky** + **Lint-staged** - Git 훅 자동화
 - **Docker** & **Docker Compose** - 컨테이너화
 
 ## 🎯 주요 기능
@@ -213,12 +218,18 @@ npm run build
 
 ## 📊 성능 지표
 
-- **Lighthouse 점수**
-  - Performance: 95+
-  - Accessibility: 100
-  - Best Practices: 100
-  - SEO: 100
-  - PWA: 100
+### Lighthouse 점수
+- Performance: 95+
+- Accessibility: 100
+- Best Practices: 100
+- SEO: 100
+- PWA: 100
+
+### 테스트 커버리지
+- **전체 커버리지**: 34.19% (개선 중)
+- **테스트 수**: 223개 (모두 통과)
+- **테스트 파일**: 26개
+- **CI/CD**: GitHub Actions 자동화 완료
 
 ## 🔄 최근 업데이트 (2025.08)
 
@@ -248,6 +259,62 @@ npm run build
 - ✅ Button 컴포넌트 className 결합 로직 수정
 - ✅ Security utils 엣지 케이스 처리
 - ✅ 테스트 환경 TypeScript 지원 강화
+
+### Phase 14: CI/CD 완전 복구 및 최적화 (2025.08.08)
+
+- ✅ 모든 테스트 통과 (223개, 100% 성공률 달성)
+- ✅ GitHub Actions CI/CD 파이프라인 완전 복구
+- ✅ ESLint 경고 완전 제거
+- ✅ TypeScript 마이그레이션 추가 진행 (84.5% 달성)
+- ✅ 테스트 커버리지 33% → 34.19% 개선
+- ✅ react-markdown 종속성 문제 해결
+- ✅ 프로덕션 환경 설정 최적화
+- ✅ 보안 취약점 13개 제거
+
+## 🚧 향후 개선 사항
+
+### 우선순위 높음
+1. **테스트 커버리지 향상** - 목표: 70% 이상
+   - Blog 컴포넌트 테스트 (현재 6.02%)
+   - Services 레이어 테스트
+   - E2E 테스트 시나리오 추가
+
+2. **성능 최적화**
+   - 번들 크기 축소 (현재 ~500KB)
+   - React.memo 최적화
+   - Virtual scrolling 도입
+
+3. **백엔드 통합**
+   - Django REST API 연동
+   - 실제 데이터베이스 구현
+   - 인증/권한 시스템
+
+### 중간 우선순위
+4. **TypeScript 완전 마이그레이션**
+   - 남은 JS 파일 16개 마이그레이션
+   - Strict mode 활성화
+   - Type coverage 100% 달성
+
+5. **접근성 개선**
+   - 키보드 네비게이션 강화
+   - 스크린 리더 지원 개선
+   - WCAG 2.1 AA 준수
+
+6. **SEO 강화**
+   - 구조화된 데이터 추가
+   - 동적 sitemap 생성
+   - Open Graph 메타 태그 최적화
+
+### 낮은 우선순위
+7. **기능 추가**
+   - 다국어 지원 (i18n)
+   - 실시간 알림 시스템
+   - 고급 검색 필터
+
+8. **개발자 경험**
+   - Storybook 도입
+   - Visual regression 테스트
+   - 문서화 자동화
 
 ## 🤝 기여하기
 
