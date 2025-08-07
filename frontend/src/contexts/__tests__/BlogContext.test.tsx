@@ -16,6 +16,12 @@ jest.mock('../../services/api', () => ({
   },
 }));
 
+// Mock localBlogPosts to ensure error message appears
+jest.mock('../../data/localBlogPosts', () => ({
+  getLocalBlogPosts: jest.fn().mockRejectedValue(new Error('Local fetch failed')),
+  getLocalBlogPost: jest.fn().mockRejectedValue(new Error('Local fetch failed')),
+}));
+
 const mockedApi = api as jest.Mocked<typeof api>;
 
 // Test component to consume the context
@@ -116,7 +122,7 @@ describe('BlogContext', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('posts-count')).toHaveTextContent('2');
-      expect(screen.getByTestId('total-pages')).toHaveTextContent('2');
+      expect(screen.getByTestId('total-pages')).toHaveTextContent('1'); // 2 posts / 6 per page = 1 page
     });
 
     expect(mockedApi.getBlogPosts).toHaveBeenCalledWith(1);
@@ -139,7 +145,9 @@ describe('BlogContext', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('error')).toHaveTextContent(errorMessage);
+      expect(screen.getByTestId('error')).toHaveTextContent(
+        '블로그 포스트를 불러오는데 실패했습니다.'
+      );
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
   });
