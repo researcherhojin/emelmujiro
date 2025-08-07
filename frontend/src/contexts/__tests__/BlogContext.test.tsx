@@ -1,21 +1,22 @@
 import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { BlogProvider, useBlog } from '../BlogContext';
-import { blogService } from '../../services/api';
+import { api } from '../../services/api';
+import { PaginatedResponse, BlogPost } from '../../types';
 
-// Mock the blogService
+// Mock the api
 jest.mock('../../services/api', () => ({
-  blogService: {
-    getPosts: jest.fn(),
-    getPost: jest.fn(),
-    createPost: jest.fn(),
-    updatePost: jest.fn(),
-    deletePost: jest.fn(),
-    searchPosts: jest.fn(),
+  api: {
+    getBlogPosts: jest.fn(),
+    getBlogPost: jest.fn(),
+    createBlogPost: jest.fn(),
+    updateBlogPost: jest.fn(),
+    deleteBlogPost: jest.fn(),
+    searchBlogPosts: jest.fn(),
   },
 }));
 
-const mockedBlogService = blogService as jest.Mocked<typeof blogService>;
+const mockedApi = api as jest.Mocked<typeof api>;
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
@@ -53,26 +54,52 @@ describe('BlogContext', () => {
   });
 
   test('fetches posts successfully', async () => {
-    const mockPosts = [
+    const mockPosts: BlogPost[] = [
       {
         id: 1,
         title: 'Test Post 1',
+        slug: 'test-post-1',
         content: 'Content 1',
+        excerpt: 'Excerpt 1',
         author: 'Author 1',
+        date: '2024-01-01',
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+        published: true,
+        category: 'Test',
+        tags: ['test'],
+        image_url: 'https://example.com/image1.jpg',
       },
       {
         id: 2,
         title: 'Test Post 2',
+        slug: 'test-post-2',
         content: 'Content 2',
+        excerpt: 'Excerpt 2',
         author: 'Author 2',
+        date: '2024-01-02',
+        created_at: '2024-01-02T00:00:00Z',
+        updated_at: '2024-01-02T00:00:00Z',
+        published: true,
+        category: 'Test',
+        tags: ['test'],
+        image_url: 'https://example.com/image2.jpg',
       },
     ];
 
-    mockedBlogService.getPosts.mockResolvedValue({
-      data: mockPosts,
-      totalPages: 2,
-      currentPage: 1,
-      totalPosts: mockPosts.length,
+    const mockResponse: PaginatedResponse<BlogPost> = {
+      count: 2,
+      next: null,
+      previous: null,
+      results: mockPosts,
+    };
+
+    mockedApi.getBlogPosts.mockResolvedValue({
+      data: mockResponse,
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as any,
     });
 
     render(
@@ -92,12 +119,12 @@ describe('BlogContext', () => {
       expect(screen.getByTestId('total-pages')).toHaveTextContent('2');
     });
 
-    expect(mockedBlogService.getPosts).toHaveBeenCalledWith(1, 6);
+    expect(mockedApi.getBlogPosts).toHaveBeenCalledWith(1);
   });
 
   test('handles fetch error', async () => {
     const errorMessage = 'Failed to fetch posts';
-    mockedBlogService.getPosts.mockRejectedValue(new Error(errorMessage));
+    mockedApi.getBlogPosts.mockRejectedValue(new Error(errorMessage));
 
     render(
       <BlogProvider>
@@ -118,16 +145,24 @@ describe('BlogContext', () => {
   });
 
   test('sets loading state during fetch', async () => {
-    mockedBlogService.getPosts.mockImplementation(
+    const mockResponse: PaginatedResponse<BlogPost> = {
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    };
+
+    mockedApi.getBlogPosts.mockImplementation(
       () =>
         new Promise(resolve =>
           setTimeout(
             () =>
               resolve({
-                data: [],
-                totalPages: 1,
-                currentPage: 1,
-                totalPosts: 0,
+                data: mockResponse,
+                status: 200,
+                statusText: 'OK',
+                headers: {},
+                config: {} as any,
               }),
             100
           )

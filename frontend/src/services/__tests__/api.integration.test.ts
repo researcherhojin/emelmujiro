@@ -1,5 +1,6 @@
-import { blogService } from '../api';
+import { api } from '../api';
 import axios from 'axios';
+import { PaginatedResponse, BlogPost } from '../../types';
 
 // Mock axios for integration tests
 jest.mock('axios');

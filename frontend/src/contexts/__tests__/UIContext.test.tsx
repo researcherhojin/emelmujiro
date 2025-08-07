@@ -4,17 +4,18 @@ import { UIProvider, useUI } from '../UIContext';
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
-  const { theme, isMenuOpen, isLoading, toggleTheme, toggleMenu, setLoading } = useUI();
+  const { theme, isSidebarOpen, isGlobalLoading, toggleTheme, toggleSidebar, setGlobalLoading } =
+    useUI();
 
   return (
     <div>
       <div data-testid="theme">{theme}</div>
-      <div data-testid="menu-open">{isMenuOpen.toString()}</div>
-      <div data-testid="loading">{isLoading.toString()}</div>
+      <div data-testid="sidebar-open">{isSidebarOpen.toString()}</div>
+      <div data-testid="loading">{isGlobalLoading.toString()}</div>
       <button onClick={toggleTheme}>Toggle Theme</button>
-      <button onClick={toggleMenu}>Toggle Menu</button>
-      <button onClick={() => setLoading(true)}>Set Loading True</button>
-      <button onClick={() => setLoading(false)}>Set Loading False</button>
+      <button onClick={toggleSidebar}>Toggle Sidebar</button>
+      <button onClick={() => setGlobalLoading(true)}>Set Loading True</button>
+      <button onClick={() => setGlobalLoading(false)}>Set Loading False</button>
     </div>
   );
 };
@@ -45,7 +46,7 @@ describe('UIContext', () => {
     );
 
     expect(screen.getByTestId('theme')).toHaveTextContent('light');
-    expect(screen.getByTestId('menu-open')).toHaveTextContent('false');
+    expect(screen.getByTestId('sidebar-open')).toHaveTextContent('false');
     expect(screen.getByTestId('loading')).toHaveTextContent('false');
   });
 
@@ -74,26 +75,26 @@ describe('UIContext', () => {
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith('theme', 'light');
   });
 
-  test('toggles menu state', async () => {
+  test('toggles sidebar state', async () => {
     render(
       <UIProvider>
         <TestComponent />
       </UIProvider>
     );
 
-    const toggleMenuButton = screen.getByText('Toggle Menu');
+    const toggleSidebarButton = screen.getByText('Toggle Sidebar');
 
     await act(async () => {
-      fireEvent.click(toggleMenuButton);
+      fireEvent.click(toggleSidebarButton);
     });
 
-    expect(screen.getByTestId('menu-open')).toHaveTextContent('true');
+    expect(screen.getByTestId('sidebar-open')).toHaveTextContent('true');
 
     await act(async () => {
-      fireEvent.click(toggleMenuButton);
+      fireEvent.click(toggleSidebarButton);
     });
 
-    expect(screen.getByTestId('menu-open')).toHaveTextContent('false');
+    expect(screen.getByTestId('sidebar-open')).toHaveTextContent('false');
   });
 
   test('sets loading state', async () => {

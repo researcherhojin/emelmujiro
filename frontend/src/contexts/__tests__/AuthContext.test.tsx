@@ -4,16 +4,15 @@ import { AuthProvider, useAuth } from '../AuthContext';
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
-  const { user, isAuthenticated, isLoading, login, logout, checkAuthStatus } = useAuth();
+  const { user, isAuthenticated, loading, login, logout } = useAuth();
 
   return (
     <div>
       <div data-testid="authenticated">{isAuthenticated.toString()}</div>
-      <div data-testid="loading">{isLoading.toString()}</div>
-      <div data-testid="user">{user ? user.username : 'no-user'}</div>
-      <button onClick={() => login('testuser', 'password')}>Login</button>
+      <div data-testid="loading">{loading.toString()}</div>
+      <div data-testid="user">{user ? user.email : 'no-user'}</div>
+      <button onClick={() => login('test@example.com', 'password')}>Login</button>
       <button onClick={logout}>Logout</button>
-      <button onClick={checkAuthStatus}>Check Auth</button>
     </div>
   );
 };
@@ -63,7 +62,7 @@ describe('AuthContext', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
-      expect(screen.getByTestId('user')).toHaveTextContent('testuser');
+      expect(screen.getByTestId('user')).toHaveTextContent('test@example.com');
     });
 
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith('authToken', expect.any(String));
