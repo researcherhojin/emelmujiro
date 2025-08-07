@@ -23,10 +23,10 @@ test.describe('Contact Page', () => {
     await page.fill('input[name="company"]', '테스트 회사');
     await page.selectOption('select[name="project_type"]', 'ai-consulting');
     await page.fill('textarea[name="message"]', '프로젝트 문의 내용입니다.');
-    
+
     // Submit form
     await page.click('button:has-text("문의 전송")');
-    
+
     // Check for success message or form submission
     // Note: Actual behavior depends on backend implementation
   });
@@ -34,7 +34,7 @@ test.describe('Contact Page', () => {
   test('validates required fields', async ({ page }) => {
     // Try to submit empty form
     await page.click('button:has-text("문의 전송")');
-    
+
     // Check for HTML5 validation messages
     const nameInput = page.locator('input[name="name"]');
     const isInvalid = await nameInput.evaluate(el => !el.validity.valid);
@@ -62,11 +62,11 @@ test.describe('Contact Page', () => {
   test('responsive form on mobile', async ({ page }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 812 });
-    
+
     // Check if form is still accessible
     await expect(page.locator('input[name="name"]')).toBeVisible();
     await expect(page.locator('button:has-text("문의 전송")')).toBeVisible();
-    
+
     // Check if layout is properly stacked
     const formContainer = page.locator('form').first();
     await expect(formContainer).toBeVisible();

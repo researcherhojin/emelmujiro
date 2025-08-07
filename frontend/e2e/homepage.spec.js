@@ -19,11 +19,11 @@ test.describe('Homepage', () => {
     // Click on 회사소개
     await page.click('text=회사소개');
     await expect(page).toHaveURL(/#\/about$/);
-    
+
     // Go back to home
     await page.click('text=에멜무지로');
     await expect(page).toHaveURL(/\/#?$/);
-    
+
     // Click on 대표 프로필
     await page.click('text=대표 프로필');
     await expect(page).toHaveURL(/#\/profile$/);
@@ -54,7 +54,7 @@ test.describe('Homepage', () => {
   test('displays partner logos section', async ({ page }) => {
     const logosSection = page.locator('text=함께한 기업 및 기관').first();
     await expect(logosSection).toBeVisible();
-    
+
     // Check if logos are visible
     const logos = page.locator('img[alt*="로고"]');
     await expect(logos.first()).toBeVisible();
@@ -63,14 +63,14 @@ test.describe('Homepage', () => {
   test('mobile menu works', async ({ page }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 812 });
-    
+
     // Click mobile menu button
     await page.click('[aria-label="메뉴 토글"]');
-    
+
     // Check if mobile menu is visible
     const mobileMenu = page.locator('.md\\:hidden').filter({ hasText: '회사소개' });
     await expect(mobileMenu).toBeVisible();
-    
+
     // Click a menu item
     await mobileMenu.locator('text=회사소개').click();
     await expect(page).toHaveURL(/#\/about$/);
