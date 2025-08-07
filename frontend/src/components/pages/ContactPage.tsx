@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, memo, ChangeEvent, FormEvent } from 'react';
 import { ArrowLeft, Mail, Phone, Send, Code, BookOpen, Wifi, WifiOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../services/api';
 import { registerBackgroundSync, SYNC_TAGS } from '../../utils/backgroundSync';
 import { escapeHtml, isValidEmail, isValidPhone, isWithinLength } from '../../utils/security';
 import SEOHelmet from '../common/SEOHelmet';
@@ -137,13 +138,46 @@ const ContactPage: React.FC = memo(() => {
             console.error('Failed to register background sync:', error);
           }
         } else {
-          // Online submission
-          const subject =
-            formData.inquiryType === 'education'
-              ? `[교육 문의] ${formData.company || '개인'} - ${formData.name}`
-              : `[AI 솔루션 문의] ${formData.company || '개인'} - ${formData.name}`;
+          // Online submission - Try API first, fallback to mailto
+          try {
+            // Prepare data for API
+            const apiData = {
+              name: formData.name,
+              email: formData.email,
+              phone: formData.phone || '',
+              company: formData.company || '',
+              inquiry_type: formData.inquiryType,
+              message: formData.message,
+            };
 
-          const body = `
+            // Try to submit via API
+            await api.createContact(apiData);
+
+            // Success - show success message
+            alert('문의가 성공적으로 전송되었습니다. 빠른 시일 내에 답변드리겠습니다.');
+
+            // Clear form
+            setFormData({
+              name: '',
+              email: '',
+              phone: '',
+              company: '',
+              inquiryType: 'solution',
+              message: '',
+            });
+
+            // Navigate to home after success
+            setTimeout(() => navigate('/'), 2000);
+          } catch (error: any) {
+            // If API fails, fallback to mailto
+            console.warn('API 전송 실패, mailto로 폴백:', error.message);
+
+            const subject =
+              formData.inquiryType === 'education'
+                ? `[교육 문의] ${formData.company || '개인'} - ${formData.name}`
+                : `[AI 솔루션 문의] ${formData.company || '개인'} - ${formData.name}`;
+
+            const body = `
 안녕하세요. 에멜무지로 문의드립니다.
 
 ■ 문의자 정보
@@ -158,10 +192,11 @@ const ContactPage: React.FC = memo(() => {
 ${escapeHtml(formData.message)}
 
 감사합니다.
-        `.trim();
+          `.trim();
 
-          const mailtoLink = `mailto:researcherhojin@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-          window.location.href = mailtoLink;
+            const mailtoLink = `mailto:${process.env.REACT_APP_CONTACT_EMAIL || 'researcherhojin@gmail.com'}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
+          }
         }
       } finally {
         setIsSubmitting(false);

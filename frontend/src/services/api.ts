@@ -1,15 +1,17 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { BlogPost, ContactFormData } from '../types';
 
-// API URL 설정
-const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8001/api/';
+// API URL 설정 (백엔드 기본 포트는 8000)
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+const API_TIMEOUT = Number(process.env.REACT_APP_API_TIMEOUT) || 30000;
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
-  timeout: 5000,
+  timeout: API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // CORS 쿠키 지원
 });
 
 // Error message mapping
@@ -130,9 +132,16 @@ export const api = {
   createProject: (data: Partial<Project>) => axiosInstance.post<Project>('projects/', data),
 
   // Blog
-  getBlogPosts: (page: number = 1) =>
-    axiosInstance.get<PaginatedResponse<BlogPost>>(`blog-posts/?page=${page}`),
+  getBlogPosts: (page: number = 1, pageSize?: number) => {
+    const size = pageSize || Number(process.env.REACT_APP_POSTS_PER_PAGE) || 6;
+    return axiosInstance.get<PaginatedResponse<BlogPost>>(
+      `blog-posts/?page=${page}&page_size=${size}`
+    );
+  },
   getBlogPost: (id: number | string) => axiosInstance.get<BlogPost>(`blog-posts/${id}/`),
+  searchBlogPosts: (query: string) =>
+    axiosInstance.get<PaginatedResponse<BlogPost>>(`blog-posts/?search=${query}`),
+  getBlogCategories: () => axiosInstance.get<string[]>('categories/'),
 
   // Contact
   createContact: async (data: ContactFormData) => {
@@ -153,6 +162,18 @@ export const api = {
 
   // Health check
   checkHealth: () => axiosInstance.get<{ status: string }>('health/'),
+};
+
+// Export specific services for backward compatibility
+export const blogService = {
+  getPosts: api.getBlogPosts,
+  getPost: api.getBlogPost,
+  searchPosts: api.searchBlogPosts,
+  getCategories: api.getBlogCategories,
+  createPost: (data: Partial<BlogPost>) => axiosInstance.post<BlogPost>('blog-posts/', data),
+  updatePost: (id: number | string, data: Partial<BlogPost>) =>
+    axiosInstance.put<BlogPost>(`blog-posts/${id}/`, data),
+  deletePost: (id: number | string) => axiosInstance.delete(`blog-posts/${id}/`),
 };
 
 // Export axios instance for custom requests

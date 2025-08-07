@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
 import { BlogPost } from '../../types';
 import { useBlog } from '../../contexts/BlogContext';
+import { api } from '../../services/api';
 
 interface BlogSearchProps {
   onSearch?: (results: BlogPost[]) => void;
@@ -33,32 +34,50 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
   // Save search to recent searches
   const saveToRecentSearches = (term: string) => {
     if (!term.trim()) return;
-    
+
     const updated = [term, ...recentSearches.filter(s => s !== term)].slice(0, 5);
     setRecentSearches(updated);
     localStorage.setItem('recentSearches', JSON.stringify(updated));
   };
 
-  // Search function
-  const performSearch = useCallback((term: string) => {
-    if (!term.trim()) {
-      setSearchResults([]);
-      if (onSearch) onSearch(posts);
-      return;
-    }
+  // Search function - try API first, fallback to local search
+  const performSearch = useCallback(
+    async (term: string) => {
+      if (!term.trim()) {
+        setSearchResults([]);
+        if (onSearch) onSearch(posts);
+        return;
+      }
 
-    const lowerTerm = term.toLowerCase();
-    const results = posts.filter(post => 
-      post.title.toLowerCase().includes(lowerTerm) ||
-      post.content.toLowerCase().includes(lowerTerm) ||
-      (post.excerpt && post.excerpt.toLowerCase().includes(lowerTerm)) ||
-      (post.category && post.category.toLowerCase().includes(lowerTerm)) ||
-      (post.tags && post.tags.some(tag => tag.toLowerCase().includes(lowerTerm)))
-    );
+      try {
+        // Try API search first
+        const response = await api.searchBlogPosts(term);
+        if (response.data && response.data.results) {
+          const results = response.data.results;
+          setSearchResults(results);
+          if (onSearch) onSearch(results);
+          return;
+        }
+      } catch (error) {
+        console.warn('API search failed, using local search:', error);
+      }
 
-    setSearchResults(results);
-    if (onSearch) onSearch(results);
-  }, [posts, onSearch]);
+      // Fallback to local search
+      const lowerTerm = term.toLowerCase();
+      const results = posts.filter(
+        post =>
+          post.title.toLowerCase().includes(lowerTerm) ||
+          post.content.toLowerCase().includes(lowerTerm) ||
+          (post.excerpt && post.excerpt.toLowerCase().includes(lowerTerm)) ||
+          (post.category && post.category.toLowerCase().includes(lowerTerm)) ||
+          (post.tags && post.tags.some(tag => tag.toLowerCase().includes(lowerTerm)))
+      );
+
+      setSearchResults(results);
+      if (onSearch) onSearch(results);
+    },
+    [posts, onSearch]
+  );
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
