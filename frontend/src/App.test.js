@@ -3,11 +3,12 @@ import App from './App';
 
 describe('App Component', () => {
   test('renders without crashing', async () => {
-    render(<App />);
+    const { container } = render(<App />);
 
     // Wait for lazy-loaded components
     await waitFor(() => {
-      expect(document.querySelector('.App')).toBeInTheDocument();
+      const appElement = container.querySelector('.App');
+      expect(appElement).toBeInTheDocument();
     });
   });
 
