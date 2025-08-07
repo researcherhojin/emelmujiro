@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ErrorBoundary from '../ErrorBoundary';
 
@@ -171,7 +170,8 @@ describe('ErrorBoundary Component', () => {
       </ErrorBoundary>
     );
 
-    const errorContainer = container.firstChild;
+    const errorMessage = screen.getByText(/문제가 발생했습니다/);
+    const errorContainer = errorMessage.closest('div')?.parentElement;
     expect(errorContainer).toHaveClass(
       'flex',
       'flex-col',
