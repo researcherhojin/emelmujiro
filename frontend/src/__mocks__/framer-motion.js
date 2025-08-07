@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Mock framer-motion
 // Filter out motion-specific props to avoid React warnings
 const filterMotionProps = props => {
@@ -44,7 +44,7 @@ const filterMotionProps = props => {
   } = props;
   return filteredProps;
 };
-/* eslint-enable no-unused-vars */
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 const motion = {
   div: ({ children, ...props }) => <div {...filterMotionProps(props)}>{children}</div>,
