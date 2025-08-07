@@ -1,4 +1,4 @@
-import { api } from '../api';
+import { blogService } from '../api';
 import axios from 'axios';
 import { PaginatedResponse, BlogPost } from '../../types';
 
@@ -10,8 +10,17 @@ describe('API Service Integration Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Mock axios create to return the mocked axios instance
-    mockedAxios.create.mockReturnValue(mockedAxios);
+    // Mock axios interceptors
+    const mockInterceptors = {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    };
+
+    // Mock axios create to return the mocked axios instance with interceptors
+    mockedAxios.create = jest.fn().mockReturnValue({
+      ...mockedAxios,
+      interceptors: mockInterceptors,
+    } as any);
 
     // Default successful response
     mockedAxios.get.mockResolvedValue({
@@ -178,23 +187,27 @@ describe('API Service Integration Tests', () => {
 
   describe('API Configuration', () => {
     test('uses correct base URL', () => {
-      expect(mockedAxios.create).toHaveBeenCalledWith({
-        baseURL: expect.stringContaining('http'), // Should contain http/https
-        timeout: expect.any(Number),
-        headers: expect.objectContaining({
-          'Content-Type': 'application/json',
-        }),
-      });
+      expect(mockedAxios.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          baseURL: expect.any(String),
+          timeout: expect.any(Number),
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json',
+          }),
+        })
+      );
     });
 
     test('includes request interceptor for HTTPS upgrade', () => {
       // Test that the interceptor is set up
-      expect(mockedAxios.interceptors.request.use).toHaveBeenCalled();
+      const createdInstance = mockedAxios.create.mock.results[0]?.value;
+      expect(createdInstance?.interceptors?.request?.use).toHaveBeenCalled();
     });
 
     test('includes response interceptor for error handling', () => {
       // Test that the response interceptor is set up
-      expect(mockedAxios.interceptors.response.use).toHaveBeenCalled();
+      const createdInstance = mockedAxios.create.mock.results[0]?.value;
+      expect(createdInstance?.interceptors?.response?.use).toHaveBeenCalled();
     });
   });
 

@@ -29,6 +29,13 @@ export interface ApiError {
   code?: string;
 }
 
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
 // Component Props Types
 // ButtonProps are now defined in Button.tsx component
 
