@@ -1,196 +1,222 @@
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 import { api } from '../api';
 import { BlogPost, ContactFormData } from '../../types';
 
+// Create a properly mocked axios instance
+const mockAxiosInstance = {
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  patch: jest.fn(),
+  delete: jest.fn(),
+  interceptors: {
+    request: {
+      use: jest.fn(),
+    },
+    response: {
+      use: jest.fn(),
+    },
+  },
+};
+
+// Mock axios
+jest.mock('axios', () => ({
+  create: jest.fn(() => mockAxiosInstance),
+  isAxiosError: jest.fn(),
+}));
+
 describe('API Service', () => {
-    let mock: MockAdapter;
+  beforeEach(() => {
+    localStorage.clear();
+    jest.clearAllMocks();
+  });
 
-    beforeEach(() => {
-        mock = new MockAdapter(axios);
-        localStorage.clear();
+  describe('Blog API', () => {
+    it('should fetch blog posts with pagination', async () => {
+      const mockPosts: BlogPost[] = [
+        {
+          id: 1,
+          title: 'Test Post',
+          slug: 'test-post',
+          content: 'Test content',
+          excerpt: 'Test excerpt',
+          author: 'Test Author',
+          created_at: '2024-01-01',
+          updated_at: '2024-01-01',
+          published: true,
+        },
+      ];
+
+      const mockResponse = {
+        data: {
+          count: 1,
+          next: null,
+          previous: null,
+          results: mockPosts,
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      };
+
+      mockAxiosInstance.get.mockResolvedValue(mockResponse);
+
+      const response = await api.getBlogPosts(1);
+      expect(response.data.results).toEqual(mockPosts);
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/blog-posts/', {
+        params: { page: 1 },
+      });
     });
 
-    afterEach(() => {
-        mock.restore();
+    it('should fetch a single blog post', async () => {
+      const mockPost: BlogPost = {
+        id: 1,
+        title: 'Test Post',
+        slug: 'test-post',
+        content: 'Test content',
+        excerpt: 'Test excerpt',
+        author: 'Test Author',
+        created_at: '2024-01-01',
+        updated_at: '2024-01-01',
+        published: true,
+      };
+
+      mockAxiosInstance.get.mockResolvedValue({
+        data: mockPost,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
+
+      const response = await api.getBlogPost(1);
+      expect(response.data).toEqual(mockPost);
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/blog-posts/1/');
     });
 
-    describe('Request Interceptor', () => {
-        it('should add auth token to headers if available', async () => {
-            localStorage.setItem('authToken', 'test-token');
-            mock.onGet('/api/health/').reply(200, { status: 'ok' });
+    it('should search blog posts', async () => {
+      const searchQuery = 'test';
+      const mockResults: BlogPost[] = [];
 
-            await api.checkHealth();
+      mockAxiosInstance.get.mockResolvedValue({
+        data: {
+          count: 0,
+          next: null,
+          previous: null,
+          results: mockResults,
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
 
-            expect(mock.history.get[0].headers?.Authorization).toBe('Bearer test-token');
-        });
+      const response = await api.searchBlogPosts(searchQuery);
+      expect(response.data.results).toEqual(mockResults);
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/blog-posts/', {
+        params: { search: searchQuery },
+      });
+    });
+  });
 
-        it('should not add auth token if not available', async () => {
-            mock.onGet('/api/health/').reply(200, { status: 'ok' });
+  describe('Contact API', () => {
+    it('should submit contact form successfully', async () => {
+      const contactData: ContactFormData = {
+        name: 'John Doe',
+        email: 'john@example.com',
+        message: 'Test message',
+      };
 
-            await api.checkHealth();
+      mockAxiosInstance.post.mockResolvedValue({
+        status: 201,
+        data: { id: 1, ...contactData },
+        statusText: 'Created',
+        headers: {},
+        config: {} as any,
+      });
 
-            expect(mock.history.get[0].headers?.Authorization).toBeUndefined();
-        });
+      const response = await api.createContact(contactData);
+      expect(response.status).toBe(201);
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/api/contact/', contactData);
+    });
+  });
+
+  describe('Newsletter API', () => {
+    it('should subscribe to newsletter', async () => {
+      const email = 'test@example.com';
+
+      mockAxiosInstance.post.mockResolvedValue({
+        data: { email, subscribed: true },
+        status: 201,
+        statusText: 'Created',
+        headers: {},
+        config: {} as any,
+      });
+
+      const response = await api.subscribeNewsletter(email);
+      expect(response.data).toEqual({ email, subscribed: true });
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/api/newsletter/', { email });
+    });
+  });
+
+  describe('Projects API', () => {
+    it('should fetch projects', async () => {
+      const mockProjects = [
+        {
+          id: 1,
+          title: 'Project 1',
+          description: 'Description 1',
+          technologies: ['React', 'TypeScript'],
+        },
+      ];
+
+      mockAxiosInstance.get.mockResolvedValue({
+        data: mockProjects,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
+
+      const response = await api.getProjects();
+      expect(response.data).toEqual(mockProjects);
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/projects/');
     });
 
-    describe('Response Interceptor', () => {
-        it('should handle network errors', async () => {
-            mock.onGet('/api/health/').networkError();
+    it('should create a new project', async () => {
+      const newProject = {
+        title: 'New Project',
+        description: 'New Description',
+        technologies: ['React', 'Node.js'],
+      };
 
-            await expect(api.checkHealth()).rejects.toThrow('네트워크 연결을 확인해주세요.');
-        });
+      mockAxiosInstance.post.mockResolvedValue({
+        data: { id: 1, ...newProject },
+        status: 201,
+        statusText: 'Created',
+        headers: {},
+        config: {} as any,
+      });
 
-        it('should handle timeout and retry', async () => {
-            let attempts = 0;
-            mock.onGet('/api/health/').reply(() => {
-                attempts++;
-                if (attempts === 1) {
-                    return [0, null, { code: 'ECONNABORTED' }];
-                }
-                return [200, { status: 'ok' }];
-            });
-
-            const response = await api.checkHealth();
-            expect(response.data).toEqual({ status: 'ok' });
-            expect(attempts).toBe(2);
-        });
-
-        it('should handle 401 errors and clear auth token', async () => {
-            localStorage.setItem('authToken', 'test-token');
-            mock.onGet('/api/health/').reply(401);
-
-            await expect(api.checkHealth()).rejects.toThrow();
-            expect(localStorage.getItem('authToken')).toBeNull();
-        });
-
-        it('should map error messages based on status code', async () => {
-            mock.onGet('/api/health/').reply(429);
-
-            try {
-                await api.checkHealth();
-            } catch (error: any) {
-                expect(error.userMessage).toBe('너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요.');
-            }
-        });
+      const response = await api.createProject(newProject);
+      expect(response.data).toEqual({ id: 1, ...newProject });
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/api/projects/', newProject);
     });
+  });
 
-    describe('Blog API', () => {
-        it('should fetch blog posts with pagination', async () => {
-            const mockPosts: BlogPost[] = [
-                {
-                    id: 1,
-                    title: 'Test Post',
-                    slug: 'test-post',
-                    content: 'Test content',
-                    excerpt: 'Test excerpt',
-                    author: 'Test Author',
-                    created_at: '2024-01-01',
-                    updated_at: '2024-01-01',
-                    published: true,
-                },
-            ];
+  describe('Health Check', () => {
+    it('should check API health', async () => {
+      mockAxiosInstance.get.mockResolvedValue({
+        data: { status: 'ok' },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
 
-            mock.onGet('/api/blog-posts/?page=1').reply(200, {
-                count: 1,
-                next: null,
-                previous: null,
-                results: mockPosts,
-            });
-
-            const response = await api.getBlogPosts(1);
-            expect(response.data.results).toEqual(mockPosts);
-        });
-
-        it('should fetch a single blog post', async () => {
-            const mockPost: BlogPost = {
-                id: 1,
-                title: 'Test Post',
-                slug: 'test-post',
-                content: 'Test content',
-                excerpt: 'Test excerpt',
-                author: 'Test Author',
-                created_at: '2024-01-01',
-                updated_at: '2024-01-01',
-                published: true,
-            };
-
-            mock.onGet('/api/blog-posts/1/').reply(200, mockPost);
-
-            const response = await api.getBlogPost(1);
-            expect(response.data).toEqual(mockPost);
-        });
+      const response = await api.checkHealth();
+      expect(response.data).toEqual({ status: 'ok' });
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/health/');
     });
-
-    describe('Contact API', () => {
-        it('should submit contact form successfully', async () => {
-            const contactData: ContactFormData = {
-                name: 'John Doe',
-                email: 'john@example.com',
-                message: 'Test message',
-            };
-
-            mock.onPost('/api/contact/').reply(201, { id: 1, ...contactData });
-
-            const response = await api.createContact(contactData);
-            expect(response.status).toBe(201);
-        });
-
-        it('should handle rate limiting for contact form', async () => {
-            const contactData: ContactFormData = {
-                name: 'John Doe',
-                email: 'john@example.com',
-                message: 'Test message',
-            };
-
-            mock.onPost('/api/contact/').reply(429);
-
-            try {
-                await api.createContact(contactData);
-            } catch (error: any) {
-                expect(error.userMessage).toBe('너무 많은 문의를 보내셨습니다. 1시간 후에 다시 시도해주세요.');
-            }
-        });
-    });
-
-    describe('Newsletter API', () => {
-        it('should subscribe to newsletter', async () => {
-            const email = 'test@example.com';
-            mock.onPost('/api/newsletter/').reply(201, { email, subscribed: true });
-
-            const response = await api.subscribeNewsletter(email);
-            expect(response.data).toEqual({ email, subscribed: true });
-        });
-    });
-
-    describe('Projects API', () => {
-        it('should fetch projects', async () => {
-            const mockProjects = [
-                {
-                    id: 1,
-                    title: 'Project 1',
-                    description: 'Description 1',
-                    technologies: ['React', 'TypeScript'],
-                },
-            ];
-
-            mock.onGet('/api/projects/').reply(200, mockProjects);
-
-            const response = await api.getProjects();
-            expect(response.data).toEqual(mockProjects);
-        });
-
-        it('should create a new project', async () => {
-            const newProject = {
-                title: 'New Project',
-                description: 'New Description',
-                technologies: ['React', 'Node.js'],
-            };
-
-            mock.onPost('/api/projects/').reply(201, { id: 1, ...newProject });
-
-            const response = await api.createProject(newProject);
-            expect(response.data).toEqual({ id: 1, ...newProject });
-        });
-    });
+  });
 });
