@@ -63,19 +63,21 @@ const Button: React.FC<ButtonProps> = props => {
   };
 
   // 기본 클래스
-  const baseClasses = `
-        inline-flex items-center justify-center
-        font-semibold rounded-lg
-        transition-all duration-200
-        shadow-md hover:shadow-lg
-        hover:scale-105 active:scale-100
-        focus:outline-none focus:ring-2 focus:ring-offset-2
-        disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
-        ${fullWidth ? 'w-full' : ''}
-        ${variants[variant]}
-        ${sizes[size]}
-        ${className}
-    `;
+  const baseClasses = [
+    'inline-flex items-center justify-center',
+    'font-semibold rounded-lg',
+    'transition-all duration-200',
+    'shadow-md hover:shadow-lg',
+    'hover:scale-105 active:scale-100',
+    'focus:outline-none focus:ring-2 focus:ring-offset-2',
+    'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100',
+    fullWidth ? 'w-full' : '',
+    variants[variant],
+    sizes[size],
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   // 아이콘 렌더링
   const renderIcon = () => {
