@@ -119,6 +119,7 @@ const Button: React.FC<ButtonProps> = props => {
     to,
     href,
     fullWidth: _,
+    iconPosition: __,
     ...buttonProps
   } = props as ButtonElementProps;
   return (
