@@ -220,6 +220,16 @@ npm run build
 - ✅ 날짜 정렬 버그 수정
 - ✅ 파일 업로드 검증
 
+### Phase 13: 테스트 커버리지 개선 (2025.08.07)
+- ✅ Jest 테스트 실패 수정 (48개 → 7개, 85% 개선)
+- ✅ IntersectionObserver 전역 mock 수정
+- ✅ ContactPage 테스트 한국어 지원
+- ✅ API 테스트 axios mock 간소화
+- ✅ ErrorBoundary 테스트 개선
+- ✅ Button 컴포넌트 className 결합 로직 수정
+- ✅ Security utils 엣지 케이스 처리
+- ✅ 테스트 환경 TypeScript 지원 강화
+
 ## 🤝 기여하기
 
 1. Fork the Project
