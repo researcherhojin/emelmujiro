@@ -69,6 +69,7 @@ jobs:
       env:
         CI: true
       continue-on-error: true
+      timeout-minutes: 2
 
   lighthouse:
     runs-on: ubuntu-latest
