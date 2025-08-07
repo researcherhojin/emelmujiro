@@ -138,6 +138,10 @@ jobs:
     needs: [test]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
 
     steps:
     - uses: actions/checkout@v4
@@ -162,4 +166,4 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./frontend/build
-        cname: your-domain.com # Optional: replace with your domain
+        # cname: your-domain.com # Optional: replace with your domain
