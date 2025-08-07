@@ -1,15 +1,10 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Footer from '../Footer';
 
 describe('Footer Component', () => {
-  const renderWithRouter = (component) => {
-    return render(
-      <BrowserRouter>
-        {component}
-      </BrowserRouter>
-    );
+  const renderWithRouter = component => {
+    return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 
   test('renders company name', () => {
@@ -23,7 +18,7 @@ describe('Footer Component', () => {
     const serviceTexts = screen.getAllByText('서비스');
     expect(serviceTexts.length).toBeGreaterThan(0);
     expect(serviceTexts[0]).toBeInTheDocument();
-    
+
     expect(screen.getByText('AI 솔루션 개발')).toBeInTheDocument();
     expect(screen.getByText('AI 교육 & 강의')).toBeInTheDocument();
   });
@@ -45,12 +40,14 @@ describe('Footer Component', () => {
   test('renders copyright text', () => {
     renderWithRouter(<Footer />);
     const currentYear = new Date().getFullYear();
-    expect(screen.getByText(`© ${currentYear} 에멜무지로. All rights reserved.`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`© ${currentYear} 에멜무지로. All rights reserved.`)
+    ).toBeInTheDocument();
   });
 
   test('contact information is displayed correctly', () => {
     renderWithRouter(<Footer />);
-    
+
     // Email and phone are displayed as text, not links in the new Footer
     expect(screen.getByText('researcherhojin@gmail.com')).toBeInTheDocument();
     expect(screen.getByText('010-7279-0380')).toBeInTheDocument();
