@@ -45,20 +45,20 @@ describe('AboutSection Component', () => {
   it('displays all profile statistics', () => {
     render(<AboutSection />);
 
-    // Check statistics display - using English text from component
-    expect(screen.getByText('Teaching Experience')).toBeInTheDocument();
+    // Check statistics display - using Korean text from component
+    expect(screen.getByText('교육 경력')).toBeInTheDocument();
+    expect(screen.getByText(`${STATISTICS.experience.yearsInEducation}년+`)).toBeInTheDocument();
+
+    expect(screen.getByText('교육 수료생')).toBeInTheDocument();
+    expect(screen.getByText(`${STATISTICS.education.totalStudentsText}`)).toBeInTheDocument();
+
+    expect(screen.getByText('협력 기업')).toBeInTheDocument();
     expect(
-      screen.getByText(`${STATISTICS.experience.yearsInEducation}+ Years`)
+      screen.getByText(`${STATISTICS.experience.totalCompaniesWorkedWith}곳+`)
     ).toBeInTheDocument();
 
-    expect(screen.getByText('Students Taught')).toBeInTheDocument();
-    expect(screen.getByText(`${STATISTICS.stats.totalStudents}+ Students`)).toBeInTheDocument();
-
-    expect(screen.getByText('Industry Experience')).toBeInTheDocument();
-    expect(screen.getByText(`${STATISTICS.experience.yearsInIndustry}+ Years`)).toBeInTheDocument();
-
-    expect(screen.getByText('Projects Completed')).toBeInTheDocument();
-    expect(screen.getByText(`${STATISTICS.stats.completedProjects}+ Projects`)).toBeInTheDocument();
+    expect(screen.getByText('강의 프로젝트')).toBeInTheDocument();
+    expect(screen.getByText(`${STATISTICS.projects.totalProjectsText}`)).toBeInTheDocument();
   });
 
   it('displays profile statistics icons', () => {
@@ -66,7 +66,7 @@ describe('AboutSection Component', () => {
 
     // Some icons appear multiple times, so check they exist
     expect(screen.getAllByTestId('award-icon').length).toBeGreaterThan(0);
-    expect(screen.getByTestId('users-icon')).toBeInTheDocument();
+    expect(screen.getAllByTestId('users-icon').length).toBeGreaterThan(0);
     expect(screen.getByTestId('briefcase-icon')).toBeInTheDocument();
     expect(screen.getByTestId('bookopen-icon')).toBeInTheDocument();
   });
@@ -74,8 +74,8 @@ describe('AboutSection Component', () => {
   it('displays profile introduction', () => {
     render(<AboutSection />);
 
-    // Check for the English introduction text
-    expect(screen.getByText(/passionate educator and developer/i)).toBeInTheDocument();
+    // Check for the Korean introduction text
+    expect(screen.getByText(/에멜무지로 대표 이호진/)).toBeInTheDocument();
   });
 
   it('displays goals section', () => {
@@ -103,9 +103,9 @@ describe('AboutSection Component', () => {
     render(<AboutSection />);
 
     // Check for skill categories
-    expect(screen.getByText('Frontend')).toBeInTheDocument();
-    expect(screen.getByText('Backend')).toBeInTheDocument();
-    expect(screen.getByText('AI/ML')).toBeInTheDocument();
+    expect(screen.getByText('Web Programming')).toBeInTheDocument();
+    expect(screen.getByText('ML / DL / Data Engineering')).toBeInTheDocument();
+    expect(screen.getByText('Collaboration & Tools')).toBeInTheDocument();
   });
 
   it('displays certifications section', () => {
@@ -118,13 +118,13 @@ describe('AboutSection Component', () => {
   it('applies correct CSS classes for styling', () => {
     const { container } = render(<AboutSection />);
     const section = container.querySelector('#about');
-    expect(section).toHaveClass('py-16', 'md:py-24', 'bg-gradient-to-b');
+    expect(section).toHaveClass('py-20', 'bg-white');
   });
 
   it('renders stats with correct colors', () => {
     const { container } = render(<AboutSection />);
-    // Check for colored elements - emerald is used in the component
-    const coloredElement = container.querySelector('.text-emerald-600');
+    // Check for colored elements - gray is used in the component
+    const coloredElement = container.querySelector('.text-gray-700');
     expect(coloredElement).toBeInTheDocument();
   });
 
