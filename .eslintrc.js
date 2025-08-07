@@ -1,10 +1,6 @@
 module.exports = {
   root: true,
-  extends: [
-    'react-app',
-    'react-app/jest',
-    'plugin:prettier/recommended'
-  ],
+  extends: ['react-app', 'react-app/jest', 'plugin:prettier/recommended'],
   plugins: ['prettier'],
   rules: {
     'prettier/prettier': 'error',
@@ -12,14 +8,14 @@ module.exports = {
     'no-unused-vars': 'warn',
     'prefer-const': 'error',
     'react/prop-types': 'off',
-    'react-hooks/exhaustive-deps': 'warn'
+    'react-hooks/exhaustive-deps': 'warn',
   },
   overrides: [
     {
       files: ['**/*.ts', '**/*.tsx'],
       rules: {
-        '@typescript-eslint/no-unused-vars': 'warn'
-      }
-    }
-  ]
+        '@typescript-eslint/no-unused-vars': 'warn',
+      },
+    },
+  ],
 };

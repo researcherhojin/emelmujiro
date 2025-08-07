@@ -57,6 +57,7 @@ npm test                                # Run Jest tests
 ## Architecture Overview
 
 ### API Structure
+
 The backend provides a RESTful API with Django REST Framework:
 
 - **Main API endpoint**: `/api/blog-posts/` - Full CRUD for blog posts
@@ -65,6 +66,7 @@ The backend provides a RESTful API with Django REST Framework:
 - **Security**: Rate limiting, CORS headers, security middleware
 
 ### Frontend Architecture
+
 React SPA with component-based structure:
 
 ```
@@ -94,6 +96,7 @@ src/
 ### Environment Configuration
 
 Backend requires `.env` file (see `env_example.txt`):
+
 - `SECRET_KEY`: Django secret key
 - `DATABASE_URL`: Database connection
 - `CORS_ALLOWED_ORIGINS`: Frontend URLs

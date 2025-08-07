@@ -5,6 +5,7 @@
 ### 🔧 환경 설정 가이드
 
 #### Docker 환경
+
 ```bash
 # 개발 환경
 docker-compose -f docker-compose.dev.yml up
@@ -17,6 +18,7 @@ docker-compose logs -f
 ```
 
 #### 환경 변수 상세
+
 ```bash
 # Backend (.env)
 SECRET_KEY=              # Django 시크릿 키 (50자 이상)
@@ -34,6 +36,7 @@ REACT_APP_GA_ID=         # Google Analytics ID
 #### 일반적인 문제
 
 **포트 충돌**
+
 ```bash
 # 포트 확인 및 종료
 lsof -i :3000
@@ -41,6 +44,7 @@ kill -9 [PID]
 ```
 
 **npm 패키지 충돌**
+
 ```bash
 # 완전 초기화
 rm -rf node_modules package-lock.json
@@ -50,6 +54,7 @@ npm install
 ```
 
 **Django 마이그레이션 오류**
+
 ```bash
 # 마이그레이션 리셋
 python manage.py migrate --fake-zero
@@ -59,17 +64,20 @@ python manage.py migrate
 ```
 
 **Service Worker 캐시 문제**
+
 - Chrome DevTools > Application > Storage
 - "Clear site data" 클릭
 
 ### 🚀 CI/CD 가이드
 
 #### GitHub Actions
+
 - `.github/workflows/deploy-gh-pages.yml` - 자동 배포
 - main 브랜치 push 시 자동 실행
 - 빌드 → 테스트 → 배포 순서
 
 #### 수동 배포
+
 ```bash
 # GitHub Pages
 npm run build
@@ -85,6 +93,7 @@ netlify deploy --prod --dir=frontend/build
 ### 🔒 보안 가이드
 
 #### 구현된 보안 기능
+
 1. **기본 보안**
    - SECRET_KEY: 환경 변수로 관리
    - DEBUG: 프로덕션에서 False
@@ -105,6 +114,7 @@ netlify deploy --prod --dir=frontend/build
 ### 📈 SEO 가이드
 
 #### 구현된 SEO 기능
+
 1. **메타 태그**
    - 페이지별 고유 title/description
    - Open Graph 태그
@@ -123,6 +133,7 @@ netlify deploy --prod --dir=frontend/build
    - 시맨틱 HTML
 
 #### Google 인덱싱
+
 1. [Google Search Console](https://search.google.com/search-console) 접속
 2. URL 검사 도구 사용
 3. `https://researcherhojin.github.io/emelmujiro` 입력
