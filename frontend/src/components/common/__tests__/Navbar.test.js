@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Navbar from '../Navbar';
@@ -8,16 +7,12 @@ const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
-  useLocation: () => ({ pathname: '/' })
+  useLocation: () => ({ pathname: '/' }),
 }));
 
 describe('Navbar Component', () => {
-  const renderWithRouter = (component) => {
-    return render(
-      <BrowserRouter>
-        {component}
-      </BrowserRouter>
-    );
+  const renderWithRouter = component => {
+    return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 
   beforeEach(() => {
@@ -39,7 +34,7 @@ describe('Navbar Component', () => {
 
   test('navigates on menu item click', () => {
     renderWithRouter(<Navbar />);
-    
+
     const aboutButton = screen.getByRole('button', { name: '회사소개' });
     fireEvent.click(aboutButton);
     expect(mockNavigate).toHaveBeenCalledWith('/about');
@@ -47,14 +42,16 @@ describe('Navbar Component', () => {
 
   test('mobile menu button toggles menu', () => {
     renderWithRouter(<Navbar />);
-    
+
     // Mobile menu should not be visible initially
-    expect(screen.queryByText('회사소개', { selector: '.md\\:hidden button' })).not.toBeInTheDocument();
-    
+    expect(
+      screen.queryByText('회사소개', { selector: '.md\\:hidden button' })
+    ).not.toBeInTheDocument();
+
     // Click mobile menu button
     const menuButton = screen.getByLabelText('메뉴 토글');
     fireEvent.click(menuButton);
-    
+
     // Mobile menu should now be visible
     const mobileMenuItems = screen.getAllByText('회사소개');
     expect(mobileMenuItems.length).toBeGreaterThan(1); // One in desktop, one in mobile
@@ -62,22 +59,22 @@ describe('Navbar Component', () => {
 
   test('logo navigates to home', () => {
     renderWithRouter(<Navbar />);
-    
+
     const logo = screen.getByRole('link', { name: '에멜무지로' });
     expect(logo).toHaveAttribute('href', '/');
   });
 
   test('applies scroll styles', () => {
     renderWithRouter(<Navbar />);
-    
+
     const navbar = screen.getByRole('navigation');
-    
+
     // Initial state
     expect(navbar).toHaveClass('bg-white/98');
-    
+
     // Simulate scroll
     fireEvent.scroll(window, { target: { scrollY: 100 } });
-    
+
     // Note: This test might need adjustment based on actual scroll behavior implementation
   });
 });

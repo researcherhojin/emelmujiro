@@ -9,6 +9,10 @@ const motion = {
   h3: ({ children, ...props }) => <h3 {...props}>{children}</h3>,
   p: ({ children, ...props }) => <p {...props}>{children}</p>,
   img: props => <img alt="" {...props} />,
+  a: ({ children, ...props }) => <a {...props}>{children}</a>,
+  article: ({ children, ...props }) => <article {...props}>{children}</article>,
+  ul: ({ children, ...props }) => <ul {...props}>{children}</ul>,
+  li: ({ children, ...props }) => <li {...props}>{children}</li>,
 };
 
 const AnimatePresence = ({ children }) => children;
