@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { BlogProvider, useBlog } from '../BlogContext';
 import { api } from '../../services/api';
