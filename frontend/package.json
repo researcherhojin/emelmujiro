@@ -12,7 +12,6 @@
     "react-helmet-async": "^2.0.5",
     "react-markdown": "^9.0.3",
     "react-router-dom": "^6.20.0",
-    "react-scroll": "^1.9.0",
     "remark-gfm": "^4.0.0",
     "web-vitals": "^2.1.4"
   },
@@ -20,7 +19,6 @@
     "@babel/core": "^7.24.0",
     "@babel/preset-env": "^7.24.0",
     "@babel/preset-react": "^7.24.0",
-    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.54.1",
     "@svgr/webpack": "^8.1.0",
     "@testing-library/dom": "^10.4.0",
