@@ -63,15 +63,15 @@ export const isWithinLength = (input: string, maxLength: number): boolean => {
  * @returns {string} 마스킹된 문자열
  */
 export const maskSensitiveInfo = (
-  str: string, 
-  visibleStart: number = 3, 
+  str: string,
+  visibleStart: number = 3,
   visibleEnd: number = 4
 ): string => {
   if (str.length <= visibleStart + visibleEnd) {
     return str;
   }
   const start = str.slice(0, visibleStart);
-  const end = str.slice(-visibleEnd);
+  const end = visibleEnd > 0 ? str.slice(-visibleEnd) : '';
   const masked = '*'.repeat(str.length - visibleStart - visibleEnd);
   return `${start}${masked}${end}`;
 };

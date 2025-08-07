@@ -105,7 +105,7 @@ describe('Security Utils', () => {
 
     it('should handle custom visible lengths', () => {
       expect(maskSensitiveInfo('secret-password', 2, 2)).toBe('se***********rd');
-      expect(maskSensitiveInfo('confidential', 0, 0)).toBe('confidential');
+      expect(maskSensitiveInfo('confidential', 0, 0)).toBe('************');
     });
 
     it('should handle edge cases', () => {
