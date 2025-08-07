@@ -44,10 +44,10 @@ jobs:
     - name: Run tests
       run: |
         cd frontend
-        npm run test:coverage -- --passWithNoTests --watchAll=false --verbose --maxWorkers=2
+        CI=true npm test -- --watchAll=false --passWithNoTests --coverage
       env:
         CI: true
-      timeout-minutes: 5
+      timeout-minutes: 3
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
