@@ -202,7 +202,7 @@ ${escapeHtml(formData.message)}
         setIsSubmitting(false);
       }
     },
-    [formData, isOnline]
+    [formData, isOnline, navigate]
   );
 
   const handleBack = useCallback(() => {
