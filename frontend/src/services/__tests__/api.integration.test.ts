@@ -1,42 +1,50 @@
 // Mock axios before importing api
-import { blogService } from '../api';
 import axios from 'axios';
+import { blogService } from '../api';
 import { PaginatedResponse, BlogPost } from '../../types';
 
 jest.mock('axios', () => {
   const actualAxios = jest.requireActual('axios');
+  const mockInstance = {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    },
+  };
   return {
     ...actualAxios,
-    create: jest.fn(() => ({
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      delete: jest.fn(),
-      interceptors: {
-        request: { use: jest.fn() },
-        response: { use: jest.fn() },
-      },
-    })),
+    create: jest.fn(() => mockInstance),
   };
 });
+
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxiosInstance = {
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+  interceptors: {
+    request: { use: jest.fn() },
+    response: { use: jest.fn() },
+  },
+};
 
 describe('API Service Integration Tests', () => {
-  let mockedAxiosInstance: any;
-
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Get the mocked axios instance that was created
-    mockedAxiosInstance = (axios.create as jest.Mock).mock.results[0]?.value;
+    // Setup mock axios.create to return our mocked instance
+    (axios.create as jest.Mock).mockReturnValue(mockedAxiosInstance);
 
     // Default successful response
-    if (mockedAxiosInstance) {
-      mockedAxiosInstance.get.mockResolvedValue({
-        data: { count: 0, next: null, previous: null, results: [] },
-        status: 200,
-      });
-    }
+    mockedAxiosInstance.get.mockResolvedValue({
+      data: { count: 0, next: null, previous: null, results: [] },
+      status: 200,
+    });
   });
 
   describe('blogService.getPosts', () => {
