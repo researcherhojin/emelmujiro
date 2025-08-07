@@ -44,25 +44,7 @@ jest.mock('../../services/api', () => ({
 
 const mockedBlogService = blogService as jest.Mocked<typeof blogService>;
 
-// Mock framer-motion to avoid animation issues in tests
-jest.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    section: ({ children, ...props }: any) => <section {...props}>{children}</section>,
-    h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
-    h2: ({ children, ...props }: any) => <h2 {...props}>{children}</h2>,
-    h3: ({ children, ...props }: any) => <h3 {...props}>{children}</h3>,
-    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
-    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-    article: ({ children, ...props }: any) => <article {...props}>{children}</article>,
-    ul: ({ children, ...props }: any) => <ul {...props}>{children}</ul>,
-    li: ({ children, ...props }: any) => <li {...props}>{children}</li>,
-    a: ({ children, ...props }: any) => <a {...props}>{children}</a>,
-    img: (props: any) => <img alt="" {...props} />,
-  },
-  AnimatePresence: ({ children }: any) => children,
-}));
+// framer-motion is already mocked in src/__mocks__/framer-motion.js
 
 // Mock Navbar and other complex components to simplify tests
 jest.mock('../../components/common/Navbar', () => {

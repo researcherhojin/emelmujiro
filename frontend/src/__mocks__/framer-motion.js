@@ -1,6 +1,7 @@
 // Mock framer-motion
 // Filter out motion-specific props to avoid React warnings
 const filterMotionProps = props => {
+  // eslint-disable-next-line no-unused-vars
   const {
     whileInView,
     whileHover,
