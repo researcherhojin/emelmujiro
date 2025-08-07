@@ -1,33 +1,43 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import ContactPage from '../ContactPage';
+import { api } from '../../../services/api';
 import { registerBackgroundSync } from '../../../utils/backgroundSync';
-import * as api from '../../../services/api';
 
 // Mock dependencies
-jest.mock('../../../utils/backgroundSync', () => ({
-  registerBackgroundSync: jest.fn(),
-  SYNC_TAGS: { CONTACT_FORM: 'contact-form' },
+jest.mock('../../../services/api');
+jest.mock('../../../utils/backgroundSync');
+jest.mock('../../../utils/logger', () => ({
+  debug: jest.fn(),
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
 }));
 
-jest.mock('../../../services/api', () => ({
-  api: {
-    createContact: jest.fn(),
-  },
-}));
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn(),
-}));
-
-// Mock SEOHelmet
+// Mock SEOHelmet to prevent react-helmet-async errors
 jest.mock('../../common/SEOHelmet', () => {
-  return function SEOHelmet() {
+  return function MockSEOHelmet() {
     return null;
   };
 });
+
+// Mock framer-motion
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }) => <div {...props}>{children}</div>,
+    section: ({ children, ...props }) => <section {...props}>{children}</section>,
+    button: ({ children, ...props }) => <button {...props}>{children}</button>,
+  },
+  AnimatePresence: ({ children }) => <>{children}</>,
+}));
+
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
 
 describe('ContactPage Component', () => {
   const renderWithRouter = component => {
@@ -36,6 +46,7 @@ describe('ContactPage Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     // Reset navigator.onLine
     Object.defineProperty(navigator, 'onLine', {
       writable: true,
@@ -47,22 +58,34 @@ describe('ContactPage Component', () => {
     window.alert = jest.fn();
   });
 
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
+  const waitForFormToLoad = async () => {
+    // Advance timers to skip loading state
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    // Wait for form to be visible
+    await waitFor(() => {
+      const nameInput = screen.queryByPlaceholderText('홍길동');
+      expect(nameInput).toBeInTheDocument();
+    });
+  };
+
   it('renders contact form with all fields', async () => {
     renderWithRouter(<ContactPage />);
 
-    // Wait for loading to complete
-    await waitFor(
-      () => {
-        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-      },
-      { timeout: 2000 }
-    );
+    await waitForFormToLoad();
 
+    // Check form fields
     expect(screen.getByPlaceholderText('홍길동')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('example@email.com')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('010-1234-5678')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('회사명 또는 기관명')).toBeInTheDocument();
-    expect(screen.getByLabelText('문의 유형')).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...')
     ).toBeInTheDocument();
@@ -72,89 +95,74 @@ describe('ContactPage Component', () => {
     it('validates required fields', async () => {
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
-      const submitButton = screen.getByRole('button', { name: /문의 전송/i });
+      const submitButton = screen.getByText('문의 보내기');
       fireEvent.click(submitButton);
 
+      // Check for validation errors
       await waitFor(() => {
-        expect(window.alert).toHaveBeenCalled();
+        expect(window.alert).toHaveBeenCalledWith('이름을 올바르게 입력해주세요. (최대 50자)');
       });
     });
 
     it('validates email format', async () => {
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
-      fireEvent.change(screen.getByPlaceholderText('홍길동'), {
-        target: { value: 'John Doe' },
-      });
-      fireEvent.change(screen.getByPlaceholderText('example@email.com'), {
-        target: { value: 'invalid-email' },
-      });
-      fireEvent.change(screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'), {
-        target: { value: 'Test message' },
-      });
+      const nameInput = screen.getByPlaceholderText('홍길동');
+      const emailInput = screen.getByPlaceholderText('example@email.com');
+      const messageInput = screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...');
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      // Fill form with invalid email
+      fireEvent.change(nameInput, { target: { value: 'John Doe' } });
+      fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
+      fireEvent.change(messageInput, { target: { value: 'Test message' } });
 
-      const submitButton = screen.getByRole('button', { name: /문의 전송/i });
+      const submitButton = screen.getByText('문의 보내기');
       fireEvent.click(submitButton);
 
+      // Check for validation error
       await waitFor(() => {
         expect(window.alert).toHaveBeenCalledWith('올바른 이메일 주소를 입력해주세요.');
+      });
+
+      // Test with valid email
+      jest.clearAllMocks();
+      fireEvent.change(emailInput, { target: { value: 'valid@email.com' } });
+
+      // Mock successful submission
+      api.createContact.mockResolvedValue({ data: { id: 1 } });
+
+      fireEvent.click(submitButton);
+
+      // Should not show email validation error
+      await waitFor(() => {
+        expect(window.alert).not.toHaveBeenCalledWith('올바른 이메일 주소를 입력해주세요.');
       });
     });
 
     it('validates phone number format', async () => {
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
-      fireEvent.change(screen.getByPlaceholderText('홍길동'), {
-        target: { value: 'John Doe' },
-      });
-      fireEvent.change(screen.getByPlaceholderText('example@email.com'), {
-        target: { value: 'john@example.com' },
-      });
-      fireEvent.change(screen.getByPlaceholderText('010-1234-5678'), {
-        target: { value: '123' },
-      });
-      fireEvent.change(screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'), {
-        target: { value: 'Test message' },
-      });
+      const nameInput = screen.getByPlaceholderText('홍길동');
+      const emailInput = screen.getByPlaceholderText('example@email.com');
+      const phoneInput = screen.getByPlaceholderText('010-1234-5678');
+      const messageInput = screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...');
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      // Fill form with invalid phone
+      fireEvent.change(nameInput, { target: { value: 'John Doe' } });
+      fireEvent.change(emailInput, { target: { value: 'test@email.com' } });
+      fireEvent.change(phoneInput, { target: { value: '123' } });
+      fireEvent.change(messageInput, { target: { value: 'Test message' } });
 
-      const submitButton = screen.getByRole('button', { name: /문의 전송/i });
+      const submitButton = screen.getByText('문의 보내기');
       fireEvent.click(submitButton);
 
+      // Check for validation error
       await waitFor(() => {
         expect(window.alert).toHaveBeenCalledWith('올바른 전화번호를 입력해주세요.');
       });
@@ -163,36 +171,46 @@ describe('ContactPage Component', () => {
     it('validates message length', async () => {
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
-      fireEvent.change(screen.getByPlaceholderText('홍길동'), {
-        target: { value: 'John Doe' },
-      });
-      fireEvent.change(screen.getByPlaceholderText('example@email.com'), {
-        target: { value: 'john@example.com' },
-      });
-      fireEvent.change(screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'), {
-        target: { value: 'a'.repeat(1001) },
-      });
+      const nameInput = screen.getByPlaceholderText('홍길동');
+      const emailInput = screen.getByPlaceholderText('example@email.com');
+      const messageInput = screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...');
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      // Fill form with empty message
+      fireEvent.change(nameInput, { target: { value: 'John Doe' } });
+      fireEvent.change(emailInput, { target: { value: 'test@email.com' } });
+      fireEvent.change(messageInput, { target: { value: '' } });
 
-      const submitButton = screen.getByRole('button', { name: /문의 전송/i });
+      const submitButton = screen.getByText('문의 보내기');
       fireEvent.click(submitButton);
 
+      // Check for validation error for empty message
+      await waitFor(() => {
+        expect(window.alert).toHaveBeenCalledWith('문의 내용을 입력해주세요. (최대 1000자)');
+      });
+
+      // Test with message that's too long
+      jest.clearAllMocks();
+      const longMessage = 'a'.repeat(1001);
+      fireEvent.change(messageInput, { target: { value: longMessage } });
+      fireEvent.click(submitButton);
+
+      // Check for validation error for too long message
+      await waitFor(() => {
+        expect(window.alert).toHaveBeenCalledWith('문의 내용을 입력해주세요. (최대 1000자)');
+      });
+
+      // Test with valid length message
+      jest.clearAllMocks();
+      api.createContact.mockResolvedValue({ data: { id: 1 } });
+      fireEvent.change(messageInput, { target: { value: 'This is a valid message' } });
+      fireEvent.click(submitButton);
+
+      // Should show success message
       await waitFor(() => {
         expect(window.alert).toHaveBeenCalledWith(
-          '프로젝트에 대해 자세히 설명해주세요.... (최대 1000자)'
+          '문의가 성공적으로 전송되었습니다. 빠른 시일 내에 답변드리겠습니다.'
         );
       });
     });
@@ -200,16 +218,11 @@ describe('ContactPage Component', () => {
 
   describe('Form Submission', () => {
     it('submits form successfully when online', async () => {
-      api.api.createContact.mockResolvedValue({ data: { success: true } });
+      api.createContact.mockResolvedValue({ data: { id: 1, message: 'Success' } });
 
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
       // Fill form
       fireEvent.change(screen.getByPlaceholderText('홍길동'), {
@@ -219,46 +232,58 @@ describe('ContactPage Component', () => {
         target: { value: 'john@example.com' },
       });
       fireEvent.change(screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'), {
-        target: { value: 'Test message' },
+        target: { value: 'This is a test message for the contact form' },
       });
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      // Select inquiry type
+      // Select inquiry type using select dropdown
+      const inquirySelect = screen.getByLabelText('문의 유형 *');
+      fireEvent.change(inquirySelect, { target: { value: 'solution' } });
 
-      const submitButton = screen.getByRole('button', { name: /문의 전송/i });
+      // Submit form
+      const submitButton = screen.getByText('문의 보내기');
       fireEvent.click(submitButton);
 
+      // Verify API was called
       await waitFor(() => {
-        expect(api.api.createContact).toHaveBeenCalledWith({
+        expect(api.createContact).toHaveBeenCalledWith({
           name: 'John Doe',
           email: 'john@example.com',
           phone: '',
           company: '',
           inquiry_type: 'solution',
-          message: 'Test message',
+          message: 'This is a test message for the contact form',
         });
+      });
+
+      // Verify success message
+      await waitFor(() => {
         expect(window.alert).toHaveBeenCalledWith(
-          '문의가 성공적으로 접수되었습니다. 빠른 시일 내에 연락드리겠습니다.'
+          '문의가 성공적으로 전송되었습니다. 빠른 시일 내에 답변드리겠습니다.'
         );
+      });
+
+      // Advance timers to trigger navigation (which happens after 2 seconds)
+      act(() => {
+        jest.advanceTimersByTime(2000);
+      });
+
+      // Verify navigation
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('/');
       });
     });
 
     it('handles offline submission with background sync', async () => {
-      Object.defineProperty(navigator, 'onLine', { value: false });
+      Object.defineProperty(navigator, 'onLine', {
+        writable: true,
+        value: false,
+      });
       registerBackgroundSync.mockResolvedValue(true);
 
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
       // Fill form
       fireEvent.change(screen.getByPlaceholderText('홍길동'), {
@@ -271,33 +296,45 @@ describe('ContactPage Component', () => {
         target: { value: 'Test message' },
       });
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
-
-      const submitButton = screen.getByRole('button', { name: /문의 전송/i });
+      // Submit form
+      const submitButton = screen.getByText('문의 보내기');
       fireEvent.click(submitButton);
 
+      // Verify background sync was registered with correct tag
       await waitFor(() => {
-        expect(registerBackgroundSync).toHaveBeenCalled();
-        expect(screen.getByText(/인터넷 연결이 복구되면 자동으로 전송됩니다/)).toBeInTheDocument();
+        expect(registerBackgroundSync).toHaveBeenCalledWith(
+          'sync-contact-form',
+          expect.objectContaining({
+            name: 'John Doe',
+            email: 'john@example.com',
+            message: 'Test message',
+          })
+        );
+      });
+
+      // Verify offline message appears in the UI
+      await waitFor(() => {
+        expect(screen.getByText(/현재 오프라인 상태입니다/)).toBeInTheDocument();
       });
     });
 
     it('handles API error', async () => {
-      api.api.createContact.mockRejectedValue(new Error('Network error'));
+      api.createContact.mockRejectedValue(new Error('Network error'));
+
+      // Mock window.location.href setter
+      const originalLocation = window.location;
+      delete window.location;
+      window.location = { ...originalLocation, href: '' };
+      const hrefSetter = jest.fn();
+      Object.defineProperty(window.location, 'href', {
+        set: hrefSetter,
+        get: () => '',
+        configurable: true,
+      });
 
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
       // Fill form
       fireEvent.change(screen.getByPlaceholderText('홍길동'), {
@@ -310,21 +347,22 @@ describe('ContactPage Component', () => {
         target: { value: 'Test message' },
       });
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
-
-      const submitButton = screen.getByRole('button', { name: /문의 전송/i });
+      // Submit form
+      const submitButton = screen.getByText('문의 보내기');
       fireEvent.click(submitButton);
 
+      // Verify that API was called and failed
       await waitFor(() => {
-        expect(window.alert).toHaveBeenCalledWith(
-          '문의 접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
-        );
+        expect(api.createContact).toHaveBeenCalled();
       });
+
+      // Verify fallback to mailto (window.location.href is set to mailto link)
+      await waitFor(() => {
+        expect(hrefSetter).toHaveBeenCalledWith(expect.stringContaining('mailto:'));
+      });
+
+      // Restore original location
+      window.location = originalLocation;
     });
   });
 
@@ -332,76 +370,65 @@ describe('ContactPage Component', () => {
     it('shows online status indicator', async () => {
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
-      // Online indicator might not be visible in the current UI
-      // Skip this test for now
-      const onlineIndicator = screen.queryByText(/온라인/);
-      if (onlineIndicator) {
-        expect(onlineIndicator).toBeInTheDocument();
-        expect(onlineIndicator).toHaveClass('bg-green-500');
-      }
+      // Check for online status text
+      const onlineText = screen.getByText('온라인');
+      expect(onlineText).toBeInTheDocument();
     });
 
     it('shows offline status indicator', async () => {
-      Object.defineProperty(navigator, 'onLine', { value: false });
+      Object.defineProperty(navigator, 'onLine', {
+        writable: true,
+        value: false,
+      });
+
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
-      // Offline indicator might not be visible in the current UI
-      // Skip this test for now
-      const offlineIndicator = screen.queryByText(/오프라인/);
-      if (offlineIndicator) {
-        expect(offlineIndicator).toBeInTheDocument();
-        expect(offlineIndicator).toHaveClass('bg-orange-500');
-      }
+      // Check for offline status text
+      const offlineText = screen.getByText('오프라인');
+      expect(offlineText).toBeInTheDocument();
     });
 
     it('updates status when connection changes', async () => {
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
-      // Initially online - skip if not visible
-      if (screen.queryByText(/온라인/)) {
-        expect(screen.getByText(/온라인/)).toBeInTheDocument();
-      }
+      // Initially online
+      expect(screen.getByText('온라인')).toBeInTheDocument();
 
-      // Go offline
-      Object.defineProperty(navigator, 'onLine', { value: false });
-      fireEvent(window, new Event('offline'));
+      // Simulate going offline
+      Object.defineProperty(navigator, 'onLine', {
+        writable: true,
+        value: false,
+      });
 
-      if (screen.queryByText(/오프라인/)) {
-        await waitFor(() => {
-          expect(screen.getByText(/오프라인/)).toBeInTheDocument();
-        });
-      }
+      act(() => {
+        window.dispatchEvent(new Event('offline'));
+      });
 
-      // Go back online
-      Object.defineProperty(navigator, 'onLine', { value: true });
-      fireEvent(window, new Event('online'));
+      // Check for offline status
+      await waitFor(() => {
+        expect(screen.getByText('오프라인')).toBeInTheDocument();
+      });
 
-      if (screen.queryByText(/온라인/)) {
-        await waitFor(() => {
-          expect(screen.getByText(/온라인/)).toBeInTheDocument();
-        });
-      }
+      // Simulate going back online
+      Object.defineProperty(navigator, 'onLine', {
+        writable: true,
+        value: true,
+      });
+
+      act(() => {
+        window.dispatchEvent(new Event('online'));
+      });
+
+      // Check for online status
+      await waitFor(() => {
+        expect(screen.getByText('온라인')).toBeInTheDocument();
+      });
     });
   });
 
@@ -409,37 +436,28 @@ describe('ContactPage Component', () => {
     it('shows character count for message field', async () => {
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
       const messageField = screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...');
 
       fireEvent.change(messageField, { target: { value: 'Hello' } });
 
+      // Check character counter
       expect(screen.getByText('5/1000')).toBeInTheDocument();
     });
 
     it('updates character count as user types', async () => {
       renderWithRouter(<ContactPage />);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitForFormToLoad();
 
       const messageField = screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...');
 
       fireEvent.change(messageField, { target: { value: 'Test message' } });
       expect(screen.getByText('12/1000')).toBeInTheDocument();
 
-      fireEvent.change(messageField, { target: { value: 'Updated test message' } });
-      expect(screen.getByText('20/1000')).toBeInTheDocument();
+      fireEvent.change(messageField, { target: { value: 'A longer test message here' } });
+      expect(screen.getByText('26/1000')).toBeInTheDocument();
     });
   });
 
@@ -454,10 +472,13 @@ describe('ContactPage Component', () => {
       const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
 
       const { unmount } = renderWithRouter(<ContactPage />);
+
       unmount();
 
       expect(removeEventListenerSpy).toHaveBeenCalledWith('online', expect.any(Function));
       expect(removeEventListenerSpy).toHaveBeenCalledWith('offline', expect.any(Function));
+
+      removeEventListenerSpy.mockRestore();
     });
   });
 });
