@@ -1,5 +1,7 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { BlogPost, ContactFormData } from '../types';
+import { ErrorResponse } from '../types/api.types';
+import logger from '../utils/logger';
 
 // API URL 설정 (백엔드 기본 포트는 8000)
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
@@ -40,7 +42,7 @@ axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Security: Always use HTTPS in production
     if (process.env.NODE_ENV === 'production' && config.url && config.url.startsWith('http://')) {
-      console.warn('Insecure HTTP detected in production, upgrading to HTTPS');
+      logger.warn('Insecure HTTP detected in production, upgrading to HTTPS');
       config.url = config.url.replace('http://', 'https://');
     }
     if (
@@ -48,7 +50,7 @@ axiosInstance.interceptors.request.use(
       config.baseURL &&
       config.baseURL.startsWith('http://')
     ) {
-      console.warn('Insecure HTTP in baseURL detected in production, upgrading to HTTPS');
+      logger.warn('Insecure HTTP in baseURL detected in production, upgrading to HTTPS');
       config.baseURL = config.baseURL.replace('http://', 'https://');
     }
 
@@ -59,7 +61,7 @@ axiosInstance.interceptors.request.use(
     }
 
     // Development logging can be enabled if needed
-    // console.log('API Request:', config.method?.toUpperCase(), config.url);
+    // logger.debug('API Request:', `${config.method?.toUpperCase()} ${config.url}`);
 
     return config;
   },
@@ -80,7 +82,7 @@ axiosInstance.interceptors.response.use(
     // Handle timeout errors
     if (error.code === 'ECONNABORTED' && originalRequest && !error._retry) {
       error._retry = true;
-      console.warn('Request timeout, retrying...');
+      logger.warn('Request timeout, retrying...');
       return axiosInstance(originalRequest);
     }
 
@@ -92,11 +94,12 @@ axiosInstance.interceptors.response.use(
 
     // Handle HTTP errors
     const { status, data } = error.response;
-    error.userMessage = (data as any)?.message || getErrorMessage(status);
+    const errorData = data as ErrorResponse;
+    error.userMessage = errorData?.message || getErrorMessage(status);
 
     // Log error in development
     if (process.env.NODE_ENV === 'development') {
-      console.error('API Error:', status, error.userMessage);
+      logger.error('API Error:', `${status} ${error.userMessage}`);
     }
 
     // Handle 401 - Clear auth and redirect to login if needed
@@ -148,12 +151,13 @@ export const api = {
     try {
       const response = await axiosInstance.post('contact/', data);
       return response;
-    } catch (error: any) {
+    } catch (error) {
       // Add specific handling for contact errors
-      if (error.response?.status === 429) {
-        error.userMessage = '너무 많은 문의를 보내셨습니다. 1시간 후에 다시 시도해주세요.';
+      const axiosError = error as CustomAxiosError;
+      if (axiosError.response?.status === 429) {
+        axiosError.userMessage = '너무 많은 문의를 보내셨습니다. 1시간 후에 다시 시도해주세요.';
       }
-      throw error;
+      throw axiosError;
     }
   },
 

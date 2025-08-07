@@ -1,4 +1,5 @@
 // Push Notification utilities
+import logger from './logger';
 
 const PUBLIC_VAPID_KEY = process.env.REACT_APP_VAPID_PUBLIC_KEY || 'YOUR_PUBLIC_VAPID_KEY';
 
@@ -41,10 +42,7 @@ export function isPushNotificationEnabled(): boolean {
 // Request notification permission
 export async function requestNotificationPermission(): Promise<boolean> {
   if (!isPushNotificationSupported()) {
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log('Push notifications are not supported in this browser');
-    }
+    logger.info('Push notifications are not supported in this browser');
     return false;
   }
 
@@ -78,7 +76,7 @@ export async function subscribeToPushNotifications(): Promise<PushSubscription> 
 
     return subscription;
   } catch (error) {
-    console.error('Failed to subscribe to push notifications:', error);
+    logger.error('Failed to subscribe to push notifications:', error);
     throw error;
   }
 }
@@ -96,7 +94,7 @@ export async function unsubscribeFromPushNotifications(): Promise<boolean> {
 
     return false;
   } catch (error) {
-    console.error('Failed to unsubscribe from push notifications:', error);
+    logger.error('Failed to unsubscribe from push notifications:', error);
     throw error;
   }
 }
@@ -118,7 +116,7 @@ export async function sendSubscriptionToServer(subscription: PushSubscription): 
 
     return await response.json();
   } catch (error) {
-    console.error('Failed to send subscription to server:', error);
+    logger.error('Failed to send subscription to server:', error);
     throw error;
   }
 }
@@ -129,10 +127,7 @@ export async function showNotification(
   options: NotificationOptions = {}
 ): Promise<void> {
   if (!isPushNotificationEnabled()) {
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log('Push notifications are not enabled');
-    }
+    logger.info('Push notifications are not enabled');
     return;
   }
 
@@ -151,7 +146,7 @@ export async function showNotification(
 
     await registration.showNotification(title, defaultOptions);
   } catch (error) {
-    console.error('Failed to show notification:', error);
+    logger.error('Failed to show notification:', error);
     throw error;
   }
 }

@@ -1,4 +1,5 @@
 // Background Sync utilities
+import logger from './logger';
 
 // Extend ServiceWorkerRegistration to include sync property
 interface ExtendedServiceWorkerRegistration extends ServiceWorkerRegistration {
@@ -27,10 +28,7 @@ export function isBackgroundSyncSupported(): boolean {
 // Register a sync event
 export async function registerBackgroundSync(tag: string, data: any = null): Promise<boolean> {
   if (!isBackgroundSyncSupported()) {
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log('Background sync is not supported in this browser');
-    }
+    logger.info('Background sync is not supported in this browser');
     return false;
   }
 
@@ -45,13 +43,10 @@ export async function registerBackgroundSync(tag: string, data: any = null): Pro
     // Register sync
     await registration.sync.register(tag);
 
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log(`Background sync registered: ${tag}`);
-    }
+    logger.info(`Background sync registered: ${tag}`);
     return true;
   } catch (error) {
-    console.error('Failed to register background sync:', error);
+    logger.error('Failed to register background sync:', error);
     return false;
   }
 }

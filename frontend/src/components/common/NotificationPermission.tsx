@@ -6,6 +6,7 @@ import {
   requestNotificationPermission,
   subscribeToPushNotifications,
 } from '../../utils/pushNotifications';
+import logger from '../../utils/logger';
 
 const NotificationPermission: React.FC = memo(() => {
   const [showBanner, setShowBanner] = useState<boolean>(false);
@@ -49,7 +50,7 @@ const NotificationPermission: React.FC = memo(() => {
         // Notification permission denied
       }
     } catch (error) {
-      console.error('Failed to enable notifications:', error);
+      logger.error('Failed to enable notifications:', error);
     } finally {
       setIsSubscribing(false);
     }

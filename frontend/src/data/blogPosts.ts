@@ -1,4 +1,5 @@
 // 임시 블로그 데이터 (나중에 API 연결 가능)
+import logger from '../utils/logger';
 
 export interface BlogPost {
   id: number;
@@ -19,9 +20,9 @@ export interface BlogPost {
 export const blogPosts: BlogPost[] = [
   {
     id: 1,
-    title: "AI와 머신러닝의 미래",
-    slug: "ai-and-machine-learning-future",
-    excerpt: "인공지능이 우리의 일상을 어떻게 변화시키고 있는지 알아봅니다.",
+    title: 'AI와 머신러닝의 미래',
+    slug: 'ai-and-machine-learning-future',
+    excerpt: '인공지능이 우리의 일상을 어떻게 변화시키고 있는지 알아봅니다.',
     content: `## AI 기술의 현재와 미래
 
 인공지능(AI)과 머신러닝 기술은 이제 우리 일상의 일부가 되었습니다. 스마트폰의 음성 비서부터 자율주행 자동차까지, AI는 빠르게 발전하며 우리의 삶을 변화시키고 있습니다.
@@ -34,20 +35,20 @@ export const blogPosts: BlogPost[] = [
 
 ### 미래 전망
 앞으로 AI는 더욱 정교해지고 인간과 자연스럽게 협업하는 시대가 올 것입니다. 윤리적인 AI 개발과 규제가 중요한 과제가 될 것입니다.`,
-    author: "이호진",
-    date: "2024-01-15",
-    created_at: "2024-01-15T09:00:00Z",
-    updated_at: "2024-01-15T09:00:00Z",
+    author: '이호진',
+    date: '2024-01-15',
+    created_at: '2024-01-15T09:00:00Z',
+    updated_at: '2024-01-15T09:00:00Z',
     published: true,
-    category: "AI",
-    tags: ["인공지능", "머신러닝", "딥러닝", "ChatGPT"],
-    image_url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop"
+    category: 'AI',
+    tags: ['인공지능', '머신러닝', '딥러닝', 'ChatGPT'],
+    image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
   },
   {
     id: 2,
-    title: "효과적인 프로그래밍 학습법",
-    slug: "effective-programming-learning",
-    excerpt: "초보자를 위한 프로그래밍 학습 가이드",
+    title: '효과적인 프로그래밍 학습법',
+    slug: 'effective-programming-learning',
+    excerpt: '초보자를 위한 프로그래밍 학습 가이드',
     content: `## 프로그래밍 학습의 정석
 
 프로그래밍을 처음 시작하는 분들이 가장 많이 하는 질문은 "어떻게 시작해야 하나요?"입니다.
@@ -67,20 +68,20 @@ export const blogPosts: BlogPost[] = [
 - Codecademy, freeCodeCamp
 - 백준, 프로그래머스 (알고리즘 연습)
 - GitHub (포트폴리오 관리)`,
-    author: "이호진",
-    date: "2024-01-10",
-    created_at: "2024-01-10T09:00:00Z",
-    updated_at: "2024-01-10T09:00:00Z",
+    author: '이호진',
+    date: '2024-01-10',
+    created_at: '2024-01-10T09:00:00Z',
+    updated_at: '2024-01-10T09:00:00Z',
     published: true,
-    category: "교육",
-    tags: ["프로그래밍", "코딩", "학습법", "초보자"],
-    image_url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop"
+    category: '교육',
+    tags: ['프로그래밍', '코딩', '학습법', '초보자'],
+    image_url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop',
   },
   {
     id: 3,
-    title: "웹 개발 트렌드 2024",
-    slug: "web-development-trends-2024",
-    excerpt: "올해 주목해야 할 웹 개발 기술들",
+    title: '웹 개발 트렌드 2024',
+    slug: 'web-development-trends-2024',
+    excerpt: '올해 주목해야 할 웹 개발 기술들',
     content: `## 2024년 웹 개발 트렌드
 
 웹 개발 분야는 매년 새로운 기술과 트렌드가 등장합니다. 2024년에 주목해야 할 트렌드를 소개합니다.
@@ -101,20 +102,20 @@ export const blogPosts: BlogPost[] = [
 - **React**: 여전히 강세, Server Components 주목
 - **Vue 3**: Composition API 성숙
 - **Svelte/SvelteKit**: 빠른 성장세`,
-    author: "이호진",
-    date: "2024-01-05",
-    created_at: "2024-01-05T09:00:00Z",
-    updated_at: "2024-01-05T09:00:00Z",
+    author: '이호진',
+    date: '2024-01-05',
+    created_at: '2024-01-05T09:00:00Z',
+    updated_at: '2024-01-05T09:00:00Z',
     published: true,
-    category: "웹개발",
-    tags: ["웹개발", "프론트엔드", "React", "트렌드"],
-    image_url: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop"
+    category: '웹개발',
+    tags: ['웹개발', '프론트엔드', 'React', '트렌드'],
+    image_url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',
   },
   {
     id: 4,
-    title: "React vs Vue vs Angular: 2024년 비교",
-    slug: "react-vue-angular-comparison-2024",
-    excerpt: "주요 프론트엔드 프레임워크 비교 분석",
+    title: 'React vs Vue vs Angular: 2024년 비교',
+    slug: 'react-vue-angular-comparison-2024',
+    excerpt: '주요 프론트엔드 프레임워크 비교 분석',
     content: `## 프론트엔드 프레임워크 선택 가이드
 
 ### React
@@ -131,20 +132,20 @@ export const blogPosts: BlogPost[] = [
 - **장점**: 완전한 프레임워크, TypeScript 기본
 - **단점**: 복잡성, 큰 번들 크기
 - **적합한 경우**: 엔터프라이즈 앱, 대규모 팀`,
-    author: "이호진",
-    date: "2024-01-20",
-    created_at: "2024-01-20T09:00:00Z",
-    updated_at: "2024-01-20T09:00:00Z",
+    author: '이호진',
+    date: '2024-01-20',
+    created_at: '2024-01-20T09:00:00Z',
+    updated_at: '2024-01-20T09:00:00Z',
     published: true,
-    category: "프론트엔드",
-    tags: ["React", "Vue", "Angular", "프레임워크"],
-    image_url: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop"
+    category: '프론트엔드',
+    tags: ['React', 'Vue', 'Angular', '프레임워크'],
+    image_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop',
   },
   {
     id: 5,
-    title: "클라우드 네이티브 애플리케이션 개발",
-    slug: "cloud-native-application-development",
-    excerpt: "쿠버네티스와 도커를 활용한 현대적인 앱 개발",
+    title: '클라우드 네이티브 애플리케이션 개발',
+    slug: 'cloud-native-application-development',
+    excerpt: '쿠버네티스와 도커를 활용한 현대적인 앱 개발',
     content: `## 클라우드 네이티브란?
 
 클라우드 네이티브는 클라우드 환경에 최적화된 애플리케이션 개발 방식입니다.
@@ -166,20 +167,20 @@ export const blogPosts: BlogPost[] = [
 - 확장성과 유연성
 - 빠른 배포 사이클
 - 장애 격리`,
-    author: "이호진",
-    date: "2024-01-18",
-    created_at: "2024-01-18T09:00:00Z",
-    updated_at: "2024-01-18T09:00:00Z",
+    author: '이호진',
+    date: '2024-01-18',
+    created_at: '2024-01-18T09:00:00Z',
+    updated_at: '2024-01-18T09:00:00Z',
     published: true,
-    category: "DevOps",
-    tags: ["클라우드", "쿠버네티스", "도커", "마이크로서비스"],
-    image_url: "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=400&h=300&fit=crop"
+    category: 'DevOps',
+    tags: ['클라우드', '쿠버네티스', '도커', '마이크로서비스'],
+    image_url: 'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=400&h=300&fit=crop',
   },
   {
     id: 6,
-    title: "TypeScript 완벽 가이드",
-    slug: "typescript-complete-guide",
-    excerpt: "JavaScript 개발자를 위한 TypeScript 입문",
+    title: 'TypeScript 완벽 가이드',
+    slug: 'typescript-complete-guide',
+    excerpt: 'JavaScript 개발자를 위한 TypeScript 입문',
     content: `## TypeScript를 배워야 하는 이유
 
 TypeScript는 JavaScript의 슈퍼셋으로, 정적 타입을 제공합니다.
@@ -207,15 +208,15 @@ function greetUser(user: User): string {
 2. 인터페이스와 타입 별칭
 3. 제네릭
 4. 고급 타입`,
-    author: "이호진",
-    date: "2024-01-12",
-    created_at: "2024-01-12T09:00:00Z",
-    updated_at: "2024-01-12T09:00:00Z",
+    author: '이호진',
+    date: '2024-01-12',
+    created_at: '2024-01-12T09:00:00Z',
+    updated_at: '2024-01-12T09:00:00Z',
     published: true,
-    category: "프로그래밍",
-    tags: ["TypeScript", "JavaScript", "타입스크립트"],
-    image_url: "https://images.unsplash.com/photo-1619410283995-43d9134e7656?w=400&h=300&fit=crop"
-  }
+    category: '프로그래밍',
+    tags: ['TypeScript', 'JavaScript', '타입스크립트'],
+    image_url: 'https://images.unsplash.com/photo-1619410283995-43d9134e7656?w=400&h=300&fit=crop',
+  },
 ];
 
 export const getBlogPosts = (): Promise<BlogPost[]> => {
@@ -223,47 +224,47 @@ export const getBlogPosts = (): Promise<BlogPost[]> => {
     // Get custom posts from localStorage
     const customPostsData = localStorage.getItem('customBlogPosts');
     const customPosts: BlogPost[] = customPostsData ? JSON.parse(customPostsData) : [];
-    
+
     // Merge with default posts (custom posts first for visibility)
     const allPosts = [...customPosts, ...blogPosts];
-    
+
     // Remove duplicates based on ID
-    const uniquePosts = allPosts.filter((post, index, self) =>
-      index === self.findIndex((p) => p.id === post.id)
+    const uniquePosts = allPosts.filter(
+      (post, index, self) => index === self.findIndex(p => p.id === post.id)
     );
-    
+
     // Sort by date (newest first) - properly handle date comparison
     uniquePosts.sort((a, b) => {
       const dateA = new Date(b.created_at).getTime();
       const dateB = new Date(a.created_at).getTime();
       return dateA - dateB;
     });
-    
+
     return Promise.resolve(uniquePosts);
   } catch (error) {
-    console.error('Error loading blog posts:', error);
+    logger.error('Error loading blog posts:', error);
     return Promise.resolve(blogPosts);
   }
 };
 
 export const getBlogPost = (id: string | number): Promise<BlogPost | undefined> => {
   const parsedId = typeof id === 'string' ? parseInt(id) : id;
-  
+
   try {
     // First check custom posts
     const customPostsData = localStorage.getItem('customBlogPosts');
     const customPosts: BlogPost[] = customPostsData ? JSON.parse(customPostsData) : [];
     const customPost = customPosts.find(p => p.id === parsedId);
-    
+
     if (customPost) {
       return Promise.resolve(customPost);
     }
-    
+
     // Then check default posts
     const post = blogPosts.find(p => p.id === parsedId);
     return Promise.resolve(post);
   } catch (error) {
-    console.error('Error loading blog post:', error);
+    logger.error('Error loading blog post:', error);
     // Fallback to default posts
     const post = blogPosts.find(p => p.id === parsedId);
     return Promise.resolve(post);

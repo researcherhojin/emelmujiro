@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, memo } from 'react';
-import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { createHashRouter, RouterProvider, useLocation, Outlet } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { BlogProvider } from './contexts/BlogContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -7,7 +7,8 @@ import { UIProvider } from './contexts/UIContext';
 import { FormProvider } from './contexts/FormContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
-import PageLoading from './components/common/PageLoading';
+import { PageLoading } from './components/common/UnifiedLoading';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import PWAInstallButton from './components/common/PWAInstallButton';
 import NotificationPermission from './components/common/NotificationPermission';
 import NotificationContainer from './components/common/NotificationContainer';
@@ -81,40 +82,60 @@ const HomePage: React.FC = memo(() => {
 
 HomePage.displayName = 'HomePage';
 
+// Layout component that includes common elements
+const Layout: React.FC = memo(() => {
+  return (
+    <div className="App">
+      <ScrollToTop />
+      <Navbar />
+      <main className="min-h-screen">
+        <ErrorBoundary>
+          <Suspense fallback={<PageLoading />}>
+            <Outlet />
+          </Suspense>
+        </ErrorBoundary>
+      </main>
+      <Footer />
+      <PWAInstallButton />
+      <NotificationPermission />
+      <NotificationContainer />
+    </div>
+  );
+});
+
+Layout.displayName = 'Layout';
+
+// Create router
+const router = createHashRouter([
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: 'about', element: <AboutPage /> },
+      { path: 'contact', element: <ContactPage /> },
+      { path: 'profile', element: <ProfilePage /> },
+      { path: 'blog', element: <BlogListPage /> },
+      { path: 'blog/new', element: <BlogEditor /> },
+      { path: 'blog/:id', element: <BlogDetail /> },
+    ],
+  },
+]);
+
 const App: React.FC = () => {
   return (
     <HelmetProvider>
-      <UIProvider>
-        <AuthProvider>
-          <BlogProvider>
-            <FormProvider>
-              <Router>
-                <div className="App">
-                  <ScrollToTop />
-                  <Navbar />
-                  <main className="min-h-screen">
-                    <Suspense fallback={<PageLoading />}>
-                      <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/about" element={<AboutPage />} />
-                        <Route path="/contact" element={<ContactPage />} />
-                        <Route path="/profile" element={<ProfilePage />} />
-                        <Route path="/blog" element={<BlogListPage />} />
-                        <Route path="/blog/new" element={<BlogEditor />} />
-                        <Route path="/blog/:id" element={<BlogDetail />} />
-                      </Routes>
-                    </Suspense>
-                  </main>
-                  <Footer />
-                  <PWAInstallButton />
-                  <NotificationPermission />
-                  <NotificationContainer />
-                </div>
-              </Router>
-            </FormProvider>
-          </BlogProvider>
-        </AuthProvider>
-      </UIProvider>
+      <ErrorBoundary>
+        <UIProvider>
+          <AuthProvider>
+            <BlogProvider>
+              <FormProvider>
+                <RouterProvider router={router} />
+              </FormProvider>
+            </BlogProvider>
+          </AuthProvider>
+        </UIProvider>
+      </ErrorBoundary>
     </HelmetProvider>
   );
 };

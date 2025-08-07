@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Share2, Bookmark, Link2, Check } from 'lucide-react';
 import { BlogPost } from '../../types';
+import logger from '../../utils/logger';
 
 interface BlogInteractionsProps {
   post: BlogPost;
@@ -27,7 +28,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   useEffect(() => {
     try {
       const userId = getUserId();
-      
+
       // Load likes
       const likesData = localStorage.getItem('postLikes');
       const postLikes = likesData ? JSON.parse(likesData) : {};
@@ -37,10 +38,10 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
 
       // Load bookmarks
       const bookmarksData = localStorage.getItem('bookmarks');
-      const bookmarks: Array<{id: number}> = bookmarksData ? JSON.parse(bookmarksData) : [];
+      const bookmarks: Array<{ id: number }> = bookmarksData ? JSON.parse(bookmarksData) : [];
       setIsBookmarked(bookmarks.some(b => b.id === post.id));
     } catch (error) {
-      console.error('Failed to load interactions:', error);
+      logger.error('Failed to load interactions:', error);
       setLikes(0);
       setIsLiked(false);
       setIsBookmarked(false);
@@ -55,23 +56,23 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
       const postLikes = likesData ? JSON.parse(likesData) : {};
       const postLikeData = postLikes[post.id] || { count: 0, users: [] };
 
-    if (isLiked) {
-      // Unlike
-      postLikeData.count = Math.max(0, postLikeData.count - 1);
-      postLikeData.users = postLikeData.users.filter((id: string) => id !== userId);
-    } else {
-      // Like
-      postLikeData.count += 1;
-      postLikeData.users.push(userId);
-    }
+      if (isLiked) {
+        // Unlike
+        postLikeData.count = Math.max(0, postLikeData.count - 1);
+        postLikeData.users = postLikeData.users.filter((id: string) => id !== userId);
+      } else {
+        // Like
+        postLikeData.count += 1;
+        postLikeData.users.push(userId);
+      }
 
       postLikes[post.id] = postLikeData;
       localStorage.setItem('postLikes', JSON.stringify(postLikes));
-      
+
       setLikes(postLikeData.count);
       setIsLiked(!isLiked);
     } catch (error) {
-      console.error('Failed to toggle like:', error);
+      logger.error('Failed to toggle like:', error);
     }
   };
 
@@ -79,28 +80,34 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   const toggleBookmark = () => {
     try {
       const bookmarksData = localStorage.getItem('bookmarks');
-      const bookmarks: Array<{id: string | number, title: string, excerpt: string, date?: string, savedAt: string}> = bookmarksData ? JSON.parse(bookmarksData) : [];
-      
+      const bookmarks: Array<{
+        id: string | number;
+        title: string;
+        excerpt: string;
+        date?: string;
+        savedAt: string;
+      }> = bookmarksData ? JSON.parse(bookmarksData) : [];
+
       if (isBookmarked) {
         // Remove bookmark
         const filtered = bookmarks.filter(b => b.id !== post.id);
         localStorage.setItem('bookmarks', JSON.stringify(filtered));
       } else {
-      // Add bookmark
-      const bookmark = {
-        id: post.id,
-        title: post.title,
-        excerpt: post.excerpt || post.title,
-        date: post.date,
-        savedAt: new Date().toISOString()
-      };
+        // Add bookmark
+        const bookmark = {
+          id: post.id,
+          title: post.title,
+          excerpt: post.excerpt || post.title,
+          date: post.date,
+          savedAt: new Date().toISOString(),
+        };
         bookmarks.unshift(bookmark);
         localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
       }
-      
+
       setIsBookmarked(!isBookmarked);
     } catch (error) {
-      console.error('Failed to toggle bookmark:', error);
+      logger.error('Failed to toggle bookmark:', error);
     }
   };
 
@@ -154,7 +161,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
         await navigator.share({
           title: shareTitle,
           text: shareText,
-          url: shareUrl
+          url: shareUrl,
         });
       } catch (err) {
         // User cancelled or error - silently handle
@@ -171,9 +178,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
         <button
           onClick={toggleLike}
           className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-            isLiked 
-              ? 'bg-red-50 text-red-600' 
-              : 'hover:bg-gray-100 text-gray-600'
+            isLiked ? 'bg-red-50 text-red-600' : 'hover:bg-gray-100 text-gray-600'
           }`}
         >
           <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
@@ -184,9 +189,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
         <button
           onClick={toggleBookmark}
           className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-            isBookmarked 
-              ? 'bg-yellow-50 text-yellow-600' 
-              : 'hover:bg-gray-100 text-gray-600'
+            isBookmarked ? 'bg-yellow-50 text-yellow-600' : 'hover:bg-gray-100 text-gray-600'
           }`}
         >
           <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
@@ -206,10 +209,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
         {/* Share menu */}
         {showShareMenu && (
           <>
-            <div 
-              className="fixed inset-0 z-40" 
-              onClick={() => setShowShareMenu(false)}
-            />
+            <div className="fixed inset-0 z-40" onClick={() => setShowShareMenu(false)} />
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
               <button
                 onClick={() => {

@@ -5,6 +5,7 @@ import {
   getBlogPost as getLocalBlogPost,
 } from '../data/blogPosts';
 import { BlogPost } from '../types';
+import logger from '../utils/logger';
 
 interface BlogContextType {
   posts: BlogPost[];
@@ -51,8 +52,11 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
         setTotalPages(1);
         setCurrentPage(1);
       }
-    } catch (err: any) {
-      console.warn('API 호출 실패, 로컬 데이터 사용:', err.message);
+    } catch (err) {
+      logger.warn(
+        'API 호출 실패, 로컬 데이터 사용:',
+        err instanceof Error ? err.message : 'Unknown error'
+      );
       // API 실패 시 로컬 데이터로 폴백
       try {
         const localPosts = await getLocalBlogPosts();
@@ -81,8 +85,11 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
         const localPost = await getLocalBlogPost(id);
         setCurrentPost(localPost as BlogPost);
       }
-    } catch (err: any) {
-      console.warn('API 호출 실패, 로컬 데이터 사용:', err.message);
+    } catch (err) {
+      logger.warn(
+        'API 호출 실패, 로컬 데이터 사용:',
+        err instanceof Error ? err.message : 'Unknown error'
+      );
       // API 실패 시 로컬 데이터로 폴백
       try {
         const localPost = await getLocalBlogPost(id);

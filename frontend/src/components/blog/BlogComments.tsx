@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, Send, User, Calendar, ThumbsUp } from 'lucide-react';
+import logger from '../../utils/logger';
 
 interface Comment {
   id: string;
@@ -43,13 +44,13 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
           setComments(parsed[postId] || []);
         }
       } catch (error) {
-        console.error('Failed to load comments:', error);
+        logger.error('Failed to load comments:', error);
         setComments([]);
       }
     };
 
     loadComments();
-    
+
     // Load saved author name
     const savedName = localStorage.getItem('commentAuthorName');
     if (savedName) {
@@ -66,14 +67,14 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
       localStorage.setItem('blogComments', JSON.stringify(allComments));
       setComments(updatedComments);
     } catch (error) {
-      console.error('Failed to save comments:', error);
+      logger.error('Failed to save comments:', error);
     }
   };
 
   // Add new comment
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!newComment.trim() || !authorName.trim()) return;
 
     const comment: Comment = {
@@ -84,7 +85,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
       date: new Date().toISOString(),
       likes: 0,
       likedBy: [],
-      replies: []
+      replies: [],
     };
 
     // Save author name for future use
@@ -105,14 +106,14 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
       content: replyContent,
       date: new Date().toISOString(),
       likes: 0,
-      likedBy: []
+      likedBy: [],
     };
 
     const updatedComments = comments.map(comment => {
       if (comment.id === commentId) {
         return {
           ...comment,
-          replies: [...(comment.replies || []), reply]
+          replies: [...(comment.replies || []), reply],
         };
       }
       return comment;
@@ -126,18 +127,16 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
   // Toggle like on comment
   const toggleLike = (commentId: string, isReply: boolean = false, parentId?: string) => {
     const userId = getUserId();
-    
+
     const updatedComments = comments.map(comment => {
       if (!isReply && comment.id === commentId) {
         const likedBy = comment.likedBy || [];
         const isLiked = likedBy.includes(userId);
-        
+
         return {
           ...comment,
           likes: isLiked ? comment.likes - 1 : comment.likes + 1,
-          likedBy: isLiked 
-            ? likedBy.filter(id => id !== userId)
-            : [...likedBy, userId]
+          likedBy: isLiked ? likedBy.filter(id => id !== userId) : [...likedBy, userId],
         };
       } else if (isReply && comment.id === parentId) {
         return {
@@ -146,17 +145,15 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
             if (reply.id === commentId) {
               const likedBy = reply.likedBy || [];
               const isLiked = likedBy.includes(userId);
-              
+
               return {
                 ...reply,
                 likes: isLiked ? reply.likes - 1 : reply.likes + 1,
-                likedBy: isLiked 
-                  ? likedBy.filter(id => id !== userId)
-                  : [...likedBy, userId]
+                likedBy: isLiked ? likedBy.filter(id => id !== userId) : [...likedBy, userId],
               };
             }
             return reply;
-          })
+          }),
         };
       }
       return comment;
@@ -171,7 +168,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
+
     if (days === 0) {
       const hours = Math.floor(diff / (1000 * 60 * 60));
       if (hours === 0) {
@@ -201,7 +198,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
           <input
             type="text"
             value={authorName}
-            onChange={(e) => setAuthorName(e.target.value)}
+            onChange={e => setAuthorName(e.target.value)}
             placeholder="이름"
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
@@ -210,7 +207,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
         <div className="mb-4">
           <textarea
             value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
+            onChange={e => setNewComment(e.target.value)}
             placeholder="댓글을 작성해주세요..."
             rows={3}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -237,17 +234,15 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
                   <span className="font-medium">{comment.author}</span>
                   <span className="mx-2 text-gray-300">•</span>
                   <Calendar className="w-4 h-4 mr-1 text-gray-500" />
-                  <span className="text-sm text-gray-500">
-                    {formatDate(comment.date)}
-                  </span>
+                  <span className="text-sm text-gray-500">{formatDate(comment.date)}</span>
                 </div>
                 <p className="text-gray-700 mb-3">{comment.content}</p>
                 <div className="flex items-center space-x-4">
                   <button
                     onClick={() => toggleLike(comment.id)}
                     className={`flex items-center space-x-1 text-sm ${
-                      comment.likedBy?.includes(userId) 
-                        ? 'text-blue-600' 
+                      comment.likedBy?.includes(userId)
+                        ? 'text-blue-600'
                         : 'text-gray-500 hover:text-blue-600'
                     }`}
                   >
@@ -267,7 +262,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
                   <div className="mt-4 ml-4 p-3 bg-gray-50 rounded">
                     <textarea
                       value={replyContent}
-                      onChange={(e) => setReplyContent(e.target.value)}
+                      onChange={e => setReplyContent(e.target.value)}
                       placeholder="답글을 작성해주세요..."
                       rows={2}
                       className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
@@ -301,16 +296,14 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
                           <User className="w-3 h-3 mr-1 text-gray-500" />
                           <span className="font-medium text-sm">{reply.author}</span>
                           <span className="mx-2 text-gray-300">•</span>
-                          <span className="text-xs text-gray-500">
-                            {formatDate(reply.date)}
-                          </span>
+                          <span className="text-xs text-gray-500">{formatDate(reply.date)}</span>
                         </div>
                         <p className="text-sm text-gray-700 mb-2">{reply.content}</p>
                         <button
                           onClick={() => toggleLike(reply.id, true, comment.id)}
                           className={`flex items-center space-x-1 text-xs ${
-                            reply.likedBy?.includes(userId) 
-                              ? 'text-blue-600' 
+                            reply.likedBy?.includes(userId)
+                              ? 'text-blue-600'
                               : 'text-gray-500 hover:text-blue-600'
                           }`}
                         >

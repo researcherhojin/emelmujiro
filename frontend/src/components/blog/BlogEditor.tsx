@@ -4,6 +4,7 @@ import { Save, X, Eye, Download, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { BlogPost } from '../../types';
+import logger from '../../utils/logger';
 
 const BlogEditor: React.FC = () => {
   const navigate = useNavigate();
@@ -16,14 +17,14 @@ const BlogEditor: React.FC = () => {
     category: '',
     tags: '',
     author: '이호진',
-    image_url: ''
+    image_url: '',
   });
 
   // Check admin mode
   useEffect(() => {
     const adminMode = localStorage.getItem('adminMode') === 'true';
     setIsAdmin(adminMode);
-    
+
     // URL parameter for admin mode activation
     const params = new URLSearchParams(window.location.search);
     if (params.get('admin') === 'true') {
@@ -33,11 +34,13 @@ const BlogEditor: React.FC = () => {
   }, []);
 
   // Handle form changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -49,33 +52,37 @@ const BlogEditor: React.FC = () => {
     }
 
     try {
-
-    const newPost: BlogPost = {
-      id: Date.now(),
-      title: formData.title,
-      slug: formData.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
-      excerpt: formData.excerpt || formData.content.substring(0, 150) + '...',
-      content: formData.content,
-      author: formData.author,
-      category: formData.category || '일반',
-      tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
-      image_url: formData.image_url || `https://source.unsplash.com/800x400/?${formData.category || 'technology'}`,
-      date: new Date().toISOString().split('T')[0],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      published: true
-    };
+      const newPost: BlogPost = {
+        id: Date.now(),
+        title: formData.title,
+        slug: formData.title
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^a-z0-9-]/g, ''),
+        excerpt: formData.excerpt || formData.content.substring(0, 150) + '...',
+        content: formData.content,
+        author: formData.author,
+        category: formData.category || '일반',
+        tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
+        image_url:
+          formData.image_url ||
+          `https://source.unsplash.com/800x400/?${formData.category || 'technology'}`,
+        date: new Date().toISOString().split('T')[0],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        published: true,
+      };
 
       // Get existing posts from localStorage
       const postsData = localStorage.getItem('customBlogPosts');
       const existingPosts = postsData ? JSON.parse(postsData) : [];
       const updatedPosts = [newPost, ...existingPosts];
-      
+
       // Save to localStorage
       localStorage.setItem('customBlogPosts', JSON.stringify(updatedPosts));
-      
+
       alert('포스트가 저장되었습니다!');
-      
+
       // Reset form
       setFormData({
         title: '',
@@ -84,13 +91,13 @@ const BlogEditor: React.FC = () => {
         category: '',
         tags: '',
         author: '이호진',
-        image_url: ''
+        image_url: '',
       });
-      
+
       // Navigate to blog
       navigate('/blog');
     } catch (error) {
-      console.error('Failed to save post:', error);
+      logger.error('Failed to save post:', error);
       alert('포스트 저장 중 오류가 발생했습니다.');
     }
   };
@@ -102,15 +109,15 @@ const BlogEditor: React.FC = () => {
       const posts = customPosts ? JSON.parse(customPosts) : [];
       const dataStr = JSON.stringify(posts, null, 2);
       const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-    
-    const exportFileDefaultName = `blog-posts-${new Date().toISOString().split('T')[0]}.json`;
-    
+
+      const exportFileDefaultName = `blog-posts-${new Date().toISOString().split('T')[0]}.json`;
+
       const linkElement = document.createElement('a');
       linkElement.setAttribute('href', dataUri);
       linkElement.setAttribute('download', exportFileDefaultName);
       linkElement.click();
     } catch (error) {
-      console.error('Failed to export posts:', error);
+      logger.error('Failed to export posts:', error);
       alert('포스트 내보내기 중 오류가 발생했습니다.');
     }
   };
@@ -119,29 +126,29 @@ const BlogEditor: React.FC = () => {
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = event => {
       try {
         const result = event.target?.result;
         if (typeof result !== 'string') {
           throw new Error('Invalid file content');
         }
-        
+
         const posts = JSON.parse(result);
         if (!Array.isArray(posts)) {
           throw new Error('Invalid JSON format: expected array');
         }
-        
+
         const existingData = localStorage.getItem('customBlogPosts');
         const existingPosts = existingData ? JSON.parse(existingData) : [];
         const mergedPosts = [...posts, ...existingPosts];
-        
+
         // Remove duplicates based on ID
-        const uniquePosts = mergedPosts.filter((post, index, self) =>
-          index === self.findIndex((p) => p.id === post.id)
+        const uniquePosts = mergedPosts.filter(
+          (post, index, self) => index === self.findIndex(p => p.id === post.id)
         );
-        
+
         localStorage.setItem('customBlogPosts', JSON.stringify(uniquePosts));
         alert(`${posts.length}개의 포스트를 가져왔습니다!`);
       } catch (error) {
@@ -159,12 +166,11 @@ const BlogEditor: React.FC = () => {
       <div className="min-h-screen bg-gray-50 pt-20">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
           <h2 className="text-2xl font-bold mb-4">관리자 모드가 필요합니다</h2>
-          <p className="text-gray-600 mb-8">
-            블로그 글을 작성하려면 관리자 권한이 필요합니다.
-          </p>
+          <p className="text-gray-600 mb-8">블로그 글을 작성하려면 관리자 권한이 필요합니다.</p>
           <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
             <p className="text-sm text-gray-500 mb-4">
-              관리자 모드를 활성화하려면 URL에 <code className="bg-gray-100 px-2 py-1 rounded">?admin=true</code>를 추가하세요.
+              관리자 모드를 활성화하려면 URL에{' '}
+              <code className="bg-gray-100 px-2 py-1 rounded">?admin=true</code>를 추가하세요.
             </p>
             <button
               onClick={() => {
@@ -189,12 +195,7 @@ const BlogEditor: React.FC = () => {
             <label className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer flex items-center">
               <Upload className="w-4 h-4 mr-2" />
               JSON 가져오기
-              <input
-                type="file"
-                accept=".json"
-                onChange={handleImport}
-                className="hidden"
-              />
+              <input type="file" accept=".json" onChange={handleImport} className="hidden" />
             </label>
             <button
               onClick={handleExport}
@@ -217,7 +218,7 @@ const BlogEditor: React.FC = () => {
           {/* Editor */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold mb-4">편집기</h2>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">제목 *</label>
@@ -254,7 +255,9 @@ const BlogEditor: React.FC = () => {
                   >
                     <option value="">선택하세요</option>
                     {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -329,24 +332,24 @@ const BlogEditor: React.FC = () => {
           {/* Preview */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold mb-4">미리보기</h2>
-            
+
             <article className="prose prose-indigo max-w-none">
               {formData.image_url && (
-                <img 
-                  src={formData.image_url} 
-                  alt={formData.title} 
+                <img
+                  src={formData.image_url}
+                  alt={formData.title}
                   className="w-full h-48 object-cover rounded-lg mb-4"
                 />
               )}
-              
+
               {formData.category && (
                 <span className="inline-block px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full mb-2">
                   {formData.category}
                 </span>
               )}
-              
+
               <h1>{formData.title || '제목을 입력하세요'}</h1>
-              
+
               {formData.tags && (
                 <div className="flex gap-2 mb-4">
                   {formData.tags.split(',').map((tag, index) => (
@@ -356,11 +359,9 @@ const BlogEditor: React.FC = () => {
                   ))}
                 </div>
               )}
-              
-              {formData.excerpt && (
-                <p className="text-gray-600 italic">{formData.excerpt}</p>
-              )}
-              
+
+              {formData.excerpt && <p className="text-gray-600 italic">{formData.excerpt}</p>}
+
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {formData.content || '*내용을 입력하세요...*'}
               </ReactMarkdown>
@@ -375,7 +376,10 @@ const BlogEditor: React.FC = () => {
             <li>• 작성한 글은 브라우저의 localStorage에 저장됩니다</li>
             <li>• JSON 내보내기로 포스트를 백업할 수 있습니다</li>
             <li>• JSON 파일을 수정하여 대량의 포스트를 추가할 수 있습니다</li>
-            <li>• 실제 배포 시에는 <code className="bg-yellow-100 px-1">blogPosts.js</code> 파일에 직접 추가하는 것을 추천합니다</li>
+            <li>
+              • 실제 배포 시에는 <code className="bg-yellow-100 px-1">blogPosts.js</code> 파일에
+              직접 추가하는 것을 추천합니다
+            </li>
             <li>• Markdown 문법을 사용하여 풍부한 콘텐츠를 작성할 수 있습니다</li>
           </ul>
         </div>

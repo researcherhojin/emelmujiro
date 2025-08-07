@@ -6,6 +6,7 @@ import { registerBackgroundSync, SYNC_TAGS } from '../../utils/backgroundSync';
 import { escapeHtml, isValidEmail, isValidPhone, isWithinLength } from '../../utils/security';
 import SEOHelmet from '../common/SEOHelmet';
 import Loading from '../common/Loading';
+import logger from '../../utils/logger';
 
 interface FormData {
   name: string;
@@ -135,7 +136,7 @@ const ContactPage: React.FC = memo(() => {
             setTimeout(() => setShowOfflineMessage(false), 5000);
             return;
           } catch (error) {
-            console.error('Failed to register background sync:', error);
+            logger.error('Failed to register background sync:', error);
           }
         } else {
           // Online submission - Try API first, fallback to mailto
@@ -168,9 +169,12 @@ const ContactPage: React.FC = memo(() => {
 
             // Navigate to home after success
             setTimeout(() => navigate('/'), 2000);
-          } catch (error: any) {
+          } catch (error) {
             // If API fails, fallback to mailto
-            console.warn('API 전송 실패, mailto로 폴백:', error.message);
+            logger.warn(
+              'API 전송 실패, mailto로 폴백:',
+              error instanceof Error ? error.message : 'Unknown error'
+            );
 
             const subject =
               formData.inquiryType === 'education'

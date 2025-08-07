@@ -3,6 +3,7 @@ import { Search, X } from 'lucide-react';
 import { BlogPost } from '../../types';
 import { useBlog } from '../../contexts/BlogContext';
 import { api } from '../../services/api';
+import logger from '../../utils/logger';
 
 interface BlogSearchProps {
   onSearch?: (results: BlogPost[]) => void;
@@ -26,7 +27,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
         }
       }
     } catch (error) {
-      console.error('Failed to load recent searches:', error);
+      logger.error('Failed to load recent searches:', error);
       setRecentSearches([]);
     }
   }, []);
@@ -59,7 +60,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
           return;
         }
       } catch (error) {
-        console.warn('API search failed, using local search:', error);
+        logger.warn('API search failed, using local search:', error);
       }
 
       // Fallback to local search
