@@ -36,6 +36,7 @@
     "autoprefixer": "^10.4.16",
     "axe-playwright": "^2.1.0",
     "axios-mock-adapter": "^2.1.0",
+    "eslint": "^9.32.0",
     "file-loader": "^6.2.0",
     "gh-pages": "^6.3.0",
     "husky": "^9.1.7",
@@ -65,7 +66,7 @@
     "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx,css,md}",
     "format:check": "prettier --check src/**/*.{js,jsx,ts,tsx,css,md}",
-    "analyze": "npx webpack-bundle-analyzer build/static/js/*.js",
+    "analyze": "npm run build && source-map-explorer 'build/static/js/*.js'",
     "analyze:build": "npm run build && npm run analyze",
     "build:profile": "react-scripts build --profile",
     "predeploy": "npm run build",
@@ -79,8 +80,7 @@
     "clean:all": "rm -rf build node_modules coverage playwright-report test-results",
     "dev": "npm run start",
     "validate": "npm run lint && npm run type-check && npm run test:coverage",
-    "pre-commit": "lint-staged",
-    "analyze": "npm run build && source-map-explorer 'build/static/js/*.js'"
+    "pre-commit": "lint-staged"
   },
   "browserslist": {
     "production": [

@@ -6,158 +6,180 @@
 /* @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css'); */
 
 @layer base {
-    html {
-        scroll-behavior: smooth;
-        -webkit-tap-highlight-color: transparent;
-    }
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-    body {
-        @apply antialiased text-gray-900 overflow-x-hidden;
-        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-        letter-spacing: -0.025em;
-        font-size: 16px;
-        line-height: 1.7;
-        font-weight: 400;
-        scroll-behavior: smooth;
-    }
-    
-    /* Typography adjustments */
-    h1, h2, h3, h4, h5, h6 {
-        @apply font-bold;
-        letter-spacing: -0.03em;
-        line-height: 1.3;
-    }
-    
-    p {
-        @apply leading-relaxed;
-        line-height: 1.8;
-    }
+  body {
+    @apply antialiased text-gray-900 overflow-x-hidden;
+    font-family:
+      'Pretendard',
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      Roboto,
+      'Helvetica Neue',
+      'Segoe UI',
+      'Apple SD Gothic Neo',
+      'Noto Sans KR',
+      'Malgun Gothic',
+      'Apple Color Emoji',
+      'Segoe UI Emoji',
+      'Segoe UI Symbol',
+      sans-serif;
+    letter-spacing: -0.025em;
+    font-size: 16px;
+    line-height: 1.7;
+    font-weight: 400;
+    scroll-behavior: smooth;
+  }
+
+  /* Typography adjustments */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold;
+    letter-spacing: -0.03em;
+    line-height: 1.3;
+  }
+
+  p {
+    @apply leading-relaxed;
+    line-height: 1.8;
+  }
 }
 
 @layer components {
-    .container {
-        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-    }
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
 
-    .company-logo {
-        @apply h-12 w-auto object-contain grayscale opacity-70 transition-all duration-300 ease-in-out hover:grayscale-0 hover:opacity-100;
-    }
-    
-    /* Button defaults for better consistency */
-    button {
-        @apply transition-all duration-200;
-    }
-    
-    /* Focus states for better accessibility */
-    button:focus, a:focus, input:focus, textarea:focus {
-        @apply outline-none ring-2 ring-gray-900 ring-offset-2;
-    }
-    
-    /* Common card styles */
-    .card {
-        @apply bg-white border-2 border-gray-200 rounded-2xl p-8 transition-all duration-300;
-    }
-    
-    .card-hover {
-        @apply hover:border-gray-300 hover:shadow-xl hover:-translate-y-1;
-    }
-    
-    /* Section heading styles */
-    .section-heading {
-        @apply text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 sm:mb-8;
-    }
-    
-    .section-subheading {
-        @apply text-lg sm:text-xl text-gray-700 leading-relaxed;
-    }
-    
-    /* Primary button styles */
-    .btn-primary {
-        @apply inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 text-white text-base sm:text-lg font-semibold rounded-lg hover:bg-gray-800 transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-100;
-    }
-    
-    .btn-secondary {
-        @apply inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white border-2 border-gray-300 text-gray-700 text-base sm:text-lg font-semibold rounded-lg hover:bg-gray-50 transition-all hover:border-gray-400;
-    }
+  .company-logo {
+    @apply h-12 w-auto object-contain grayscale opacity-70 transition-all duration-300 ease-in-out hover:grayscale-0 hover:opacity-100;
+  }
+
+  /* Button defaults for better consistency */
+  button {
+    @apply transition-all duration-200;
+  }
+
+  /* Focus states for better accessibility */
+  button:focus,
+  a:focus,
+  input:focus,
+  textarea:focus {
+    @apply outline-none ring-2 ring-gray-900 ring-offset-2;
+  }
+
+  /* Common card styles */
+  .card {
+    @apply bg-white border-2 border-gray-200 rounded-2xl p-8 transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply hover:border-gray-300 hover:shadow-xl hover:-translate-y-1;
+  }
+
+  /* Section heading styles */
+  .section-heading {
+    @apply text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 sm:mb-8;
+  }
+
+  .section-subheading {
+    @apply text-lg sm:text-xl text-gray-700 leading-relaxed;
+  }
+
+  /* Primary button styles */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 text-white text-base sm:text-lg font-semibold rounded-lg hover:bg-gray-800 transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-100;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white border-2 border-gray-300 text-gray-700 text-base sm:text-lg font-semibold rounded-lg hover:bg-gray-50 transition-all hover:border-gray-400;
+  }
 }
 
 @layer utilities {
-    .animate-slide {
-        animation: slide 30s linear infinite;
-    }
+  .animate-slide {
+    animation: slide 30s linear infinite;
+  }
 
-    @keyframes slide {
-        0% {
-            transform: translateX(0);
-        }
-        100% {
-            transform: translateX(-100%);
-        }
+  @keyframes slide {
+    0% {
+      transform: translateX(0);
     }
-    
-    /* 애니메이션 일시정지 클래스 */
-    .pause {
-        animation-play-state: paused;
+    100% {
+      transform: translateX(-100%);
     }
-    
-    /* 스크롤바 숨기기 클래스 */
-    .scrollbar-hide {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
-    }
-    .scrollbar-hide::-webkit-scrollbar {
-        display: none;  /* Chrome, Safari and Opera */
-    }
-    
-    /* Enhanced animations */
-    .animate-fade-in-up {
-        animation: fadeInUp 0.6s ease-out forwards;
-    }
-    
-    .animate-fade-in-up-delay {
-        animation: fadeInUp 0.6s ease-out 0.2s forwards;
-        opacity: 0;
-    }
-    
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .animate-scale-in {
-        animation: scaleIn 0.5s ease-out forwards;
-    }
-    
-    @keyframes scaleIn {
-        from {
-            opacity: 0;
-            transform: scale(0.9);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-    
-    /* PWA 설치 버튼 애니메이션 */
-    @keyframes fade-in {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+  }
 
-    .animate-fade-in {
-        animation: fade-in 0.3s ease-out;
+  /* 애니메이션 일시정지 클래스 */
+  .pause {
+    animation-play-state: paused;
+  }
+
+  /* 스크롤바 숨기기 클래스 */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+
+  /* Enhanced animations */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-up-delay {
+    animation: fadeInUp 0.6s ease-out 0.2s forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
     }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* PWA 설치 버튼 애니메이션 */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
 }

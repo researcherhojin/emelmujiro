@@ -25,7 +25,7 @@ async function generateSitemap() {
       url: page.url,
       changefreq: page.changefreq,
       priority: page.priority,
-      lastmod: new Date().toISOString()
+      lastmod: new Date().toISOString(),
     });
   });
 

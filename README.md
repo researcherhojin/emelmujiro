@@ -219,6 +219,7 @@ npm run build
 ## 📊 성능 지표
 
 ### Lighthouse 점수
+
 - Performance: 95+
 - Accessibility: 100
 - Best Practices: 100
@@ -226,6 +227,7 @@ npm run build
 - PWA: 100
 
 ### 테스트 커버리지
+
 - **전체 커버리지**: 34.19% (개선 중)
 - **테스트 수**: 223개 (모두 통과)
 - **테스트 파일**: 26개
@@ -274,6 +276,7 @@ npm run build
 ## 🚧 향후 개선 사항
 
 ### 우선순위 높음
+
 1. **테스트 커버리지 향상** - 목표: 70% 이상
    - Blog 컴포넌트 테스트 (현재 6.02%)
    - Services 레이어 테스트
@@ -290,6 +293,7 @@ npm run build
    - 인증/권한 시스템
 
 ### 중간 우선순위
+
 4. **TypeScript 완전 마이그레이션**
    - 남은 JS 파일 16개 마이그레이션
    - Strict mode 활성화
@@ -306,6 +310,7 @@ npm run build
    - Open Graph 메타 태그 최적화
 
 ### 낮은 우선순위
+
 7. **기능 추가**
    - 다국어 지원 (i18n)
    - 실시간 알림 시스템

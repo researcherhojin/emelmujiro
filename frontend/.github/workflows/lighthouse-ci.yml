@@ -33,8 +33,9 @@ jobs:
           cd frontend
           npm install -g @lhci/cli@0.13.x
           lhci autorun
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+        # Optional: Add LHCI_GITHUB_APP_TOKEN if you want GitHub PR comments
+        # env:
+        #   LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
       - name: Upload Lighthouse results
         uses: actions/upload-artifact@v3
