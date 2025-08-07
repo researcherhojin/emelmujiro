@@ -67,9 +67,7 @@ describe('API Service', () => {
 
       const response = await api.getBlogPosts(1);
       expect(response.data.results).toEqual(mockPosts);
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/blog-posts/', {
-        params: { page: 1 },
-      });
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('blog-posts/?page=1&page_size=6');
     });
 
     it('should fetch a single blog post', async () => {
@@ -95,7 +93,7 @@ describe('API Service', () => {
 
       const response = await api.getBlogPost(1);
       expect(response.data).toEqual(mockPost);
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/blog-posts/1/');
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('blog-posts/1/');
     });
 
     it('should search blog posts', async () => {
@@ -117,9 +115,7 @@ describe('API Service', () => {
 
       const response = await api.searchBlogPosts(searchQuery);
       expect(response.data.results).toEqual(mockResults);
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/blog-posts/', {
-        params: { search: searchQuery },
-      });
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('blog-posts/?search=test');
     });
   });
 
@@ -141,7 +137,7 @@ describe('API Service', () => {
 
       const response = await api.createContact(contactData);
       expect(response.status).toBe(201);
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/api/contact/', contactData);
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('contact/', contactData);
     });
   });
 
@@ -159,7 +155,7 @@ describe('API Service', () => {
 
       const response = await api.subscribeNewsletter(email);
       expect(response.data).toEqual({ email, subscribed: true });
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('/api/newsletter/', { email });
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('newsletter/', { email });
     });
   });
 
@@ -184,7 +180,7 @@ describe('API Service', () => {
 
       const response = await api.getProjects();
       expect(response.data).toEqual(mockProjects);
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('/api/projects/');
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith('projects/');
     });
 
     it('should create a new project', async () => {
