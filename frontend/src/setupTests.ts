@@ -43,7 +43,6 @@ class MockIntersectionObserver implements IntersectionObserver {
   takeRecords = jest.fn(() => []);
 }
 
-// @ts-expect-error - global type augmentation
 global.IntersectionObserver = MockIntersectionObserver as any;
 
 // Mock scrollTo

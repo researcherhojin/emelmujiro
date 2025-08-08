@@ -57,13 +57,18 @@ describe('BlogEditor Component', () => {
 
     it('activates admin mode via URL parameter', () => {
       const originalLocation = window.location;
-      delete (window as any).location;
-      window.location = { ...originalLocation, search: '?admin=true' };
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: { ...originalLocation, search: '?admin=true' },
+      });
 
       renderWithRouter(<BlogEditor />);
       expect(localStorage.getItem('adminMode')).toBe('true');
 
-      window.location = originalLocation;
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: originalLocation,
+      });
     });
   });
 
@@ -74,7 +79,7 @@ describe('BlogEditor Component', () => {
 
     it('renders all form fields', () => {
       renderWithRouter(<BlogEditor />);
-      
+
       expect(screen.getByText('제목 *')).toBeInTheDocument();
       expect(screen.getByText('요약')).toBeInTheDocument();
       expect(screen.getByText('카테고리')).toBeInTheDocument();
@@ -86,11 +91,13 @@ describe('BlogEditor Component', () => {
 
     it('updates form data on input change', () => {
       renderWithRouter(<BlogEditor />);
-      
+
       // Find inputs by placeholder or name attribute
       const titleInput = screen.getByRole('textbox', { name: '' }) as HTMLInputElement;
       const textareas = screen.getAllByRole('textbox');
-      const contentTextarea = textareas.find(el => (el as HTMLTextAreaElement).rows > 1) as HTMLTextAreaElement;
+      const contentTextarea = textareas.find(
+        el => (el as HTMLTextAreaElement).rows > 1
+      ) as HTMLTextAreaElement;
 
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
@@ -116,17 +123,17 @@ describe('BlogEditor Component', () => {
 
     it('toggles preview mode', () => {
       renderWithRouter(<BlogEditor />);
-      
+
       const previewButton = screen.getByRole('button', { name: /미리보기/ });
-      
+
       // Initially preview is hidden
       expect(screen.queryByText('미리보기')).toBeInTheDocument();
       expect(screen.queryByTestId('markdown-preview')).not.toBeInTheDocument();
-      
+
       // Show preview
       fireEvent.click(previewButton);
       expect(screen.getByTestId('markdown-preview')).toBeInTheDocument();
-      
+
       // Hide preview
       fireEvent.click(previewButton);
       expect(screen.queryByTestId('markdown-preview')).not.toBeInTheDocument();
@@ -134,13 +141,13 @@ describe('BlogEditor Component', () => {
 
     it('displays content in preview mode', () => {
       renderWithRouter(<BlogEditor />);
-      
+
       const contentTextarea = screen.getByLabelText('내용') as HTMLTextAreaElement;
       fireEvent.change(contentTextarea, { target: { value: '# Test Markdown' } });
-      
+
       const previewButton = screen.getByRole('button', { name: /미리보기/ });
       fireEvent.click(previewButton);
-      
+
       expect(screen.getByTestId('markdown-preview')).toHaveTextContent('# Test Markdown');
     });
   });
@@ -152,67 +159,71 @@ describe('BlogEditor Component', () => {
 
     it('validates required fields before saving', () => {
       renderWithRouter(<BlogEditor />);
-      
+
       const saveButton = screen.getByRole('button', { name: /저장/ });
-      
+
       // Mock alert
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
-      
+
       fireEvent.click(saveButton);
-      
+
       expect(alertSpy).toHaveBeenCalledWith('제목과 내용은 필수입니다.');
-      
+
       alertSpy.mockRestore();
     });
 
     it('saves post to localStorage with valid data', () => {
       renderWithRouter(<BlogEditor />);
-      
+
       const inputs = screen.getAllByRole('textbox');
       const titleInput = inputs[0] as HTMLInputElement;
-      const contentTextarea = inputs.find(el => (el as HTMLTextAreaElement).rows > 1) as HTMLTextAreaElement;
+      const contentTextarea = inputs.find(
+        el => (el as HTMLTextAreaElement).rows > 1
+      ) as HTMLTextAreaElement;
       const categorySelect = screen.getByRole('combobox') as HTMLSelectElement;
-      
+
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
       fireEvent.change(categorySelect, { target: { value: 'Technology' } });
-      
+
       const saveButton = screen.getByRole('button', { name: /저장/ });
-      
+
       // Mock alert and confirm
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
-      
+
       fireEvent.click(saveButton);
-      
+
       const savedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
       expect(savedPosts).toHaveLength(1);
       expect(savedPosts[0].title).toBe('Test Post');
       expect(savedPosts[0].content).toBe('Test Content');
       expect(savedPosts[0].category).toBe('Technology');
-      
+
       expect(alertSpy).toHaveBeenCalledWith('글이 저장되었습니다.');
       expect(mockNavigate).toHaveBeenCalledWith('/blog');
-      
+
       alertSpy.mockRestore();
     });
 
     it('generates unique ID and timestamp for new posts', () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
-      
+
       const inputs = screen.getAllByRole('textbox');
       const titleInput = inputs[0] as HTMLInputElement;
-      const contentTextarea = inputs.find(el => (el as HTMLTextAreaElement).rows > 1) as HTMLTextAreaElement;
-      
+      const contentTextarea = inputs.find(
+        el => (el as HTMLTextAreaElement).rows > 1
+      ) as HTMLTextAreaElement;
+
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
-      
+
       const saveButton = screen.getByRole('button', { name: /저장/ });
-      
+
       jest.spyOn(window, 'alert').mockImplementation();
-      
+
       fireEvent.click(saveButton);
-      
+
       const savedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
       expect(savedPosts[0].id).toBeDefined();
       expect(savedPosts[0].date).toBeDefined();
@@ -232,69 +243,69 @@ describe('BlogEditor Component', () => {
         { id: 2, title: 'Post 2', content: 'Content 2' },
       ];
       localStorage.setItem('blogPosts', JSON.stringify(mockPosts));
-      
+
       renderWithRouter(<BlogEditor />);
-      
+
       // Mock createElement and click
       const linkElement = document.createElement('a');
       const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(linkElement);
       const clickSpy = jest.spyOn(linkElement, 'click').mockImplementation();
-      
+
       const exportButton = screen.getByRole('button', { name: /내보내기/ });
       fireEvent.click(exportButton);
-      
+
       expect(createElementSpy).toHaveBeenCalledWith('a');
       expect(linkElement.download).toContain('blog-posts-');
       expect(clickSpy).toHaveBeenCalled();
-      
+
       createElementSpy.mockRestore();
       clickSpy.mockRestore();
     });
 
     it('imports posts from JSON file', async () => {
       renderWithRouter(<BlogEditor />);
-      
+
       const file = new File(
         [JSON.stringify([{ id: 1, title: 'Imported Post', content: 'Imported Content' }])],
         'posts.json',
         { type: 'application/json' }
       );
-      
+
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-      
+
       const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
-      
+
       fireEvent.change(fileInput, { target: { files: [file] } });
-      
+
       await waitFor(() => {
         const savedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
         expect(savedPosts).toHaveLength(1);
         expect(savedPosts[0].title).toBe('Imported Post');
       });
-      
+
       expect(confirmSpy).toHaveBeenCalled();
       expect(alertSpy).toHaveBeenCalledWith('1개의 글을 가져왔습니다.');
-      
+
       confirmSpy.mockRestore();
       alertSpy.mockRestore();
     });
 
     it('validates imported JSON structure', async () => {
       renderWithRouter(<BlogEditor />);
-      
+
       const invalidFile = new File(['invalid json'], 'posts.json', { type: 'application/json' });
-      
+
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-      
+
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
-      
+
       fireEvent.change(fileInput, { target: { files: [invalidFile] } });
-      
+
       await waitFor(() => {
         expect(alertSpy).toHaveBeenCalledWith('유효한 JSON 파일이 아닙니다.');
       });
-      
+
       alertSpy.mockRestore();
     });
   });
@@ -306,10 +317,10 @@ describe('BlogEditor Component', () => {
 
     it('navigates back on cancel', () => {
       renderWithRouter(<BlogEditor />);
-      
+
       const cancelButton = screen.getByRole('button', { name: /취소/ });
       fireEvent.click(cancelButton);
-      
+
       expect(mockNavigate).toHaveBeenCalledWith('/blog');
     });
   });

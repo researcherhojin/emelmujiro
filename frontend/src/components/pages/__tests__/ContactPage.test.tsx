@@ -8,6 +8,12 @@ import { registerBackgroundSync } from '../../../utils/backgroundSync';
 // Mock dependencies
 jest.mock('../../../services/api');
 jest.mock('../../../utils/backgroundSync');
+
+const mockedApi = api as jest.Mocked<typeof api>;
+const mockedRegisterBackgroundSync = registerBackgroundSync as jest.MockedFunction<
+  typeof registerBackgroundSync
+>;
+
 jest.mock('../../../utils/logger', () => ({
   debug: jest.fn(),
   info: jest.fn(),
@@ -132,7 +138,13 @@ describe('ContactPage Component', () => {
       fireEvent.change(emailInput, { target: { value: 'valid@email.com' } });
 
       // Mock successful submission
-      api.createContact.mockResolvedValue({ data: { id: 1 } });
+      mockedApi.createContact.mockResolvedValue({
+        data: { id: 1 },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
 
       fireEvent.click(submitButton);
 
@@ -202,7 +214,13 @@ describe('ContactPage Component', () => {
 
       // Test with valid length message
       jest.clearAllMocks();
-      api.createContact.mockResolvedValue({ data: { id: 1 } });
+      mockedApi.createContact.mockResolvedValue({
+        data: { id: 1 },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
       fireEvent.change(messageInput, { target: { value: 'This is a valid message' } });
       fireEvent.click(submitButton);
 
@@ -217,7 +235,13 @@ describe('ContactPage Component', () => {
 
   describe('Form Submission', () => {
     it('submits form successfully when online', async () => {
-      api.createContact.mockResolvedValue({ data: { id: 1, message: 'Success' } });
+      mockedApi.createContact.mockResolvedValue({
+        data: { id: 1, message: 'Success' },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as any,
+      });
 
       renderWithRouter(<ContactPage />);
 
@@ -245,7 +269,7 @@ describe('ContactPage Component', () => {
 
       // Verify API was called
       await waitFor(() => {
-        expect(api.createContact).toHaveBeenCalledWith({
+        expect(mockedApi.createContact).toHaveBeenCalledWith({
           name: 'John Doe',
           email: 'john@example.com',
           phone: '',
@@ -278,7 +302,7 @@ describe('ContactPage Component', () => {
         writable: true,
         value: false,
       });
-      registerBackgroundSync.mockResolvedValue(true);
+      mockedRegisterBackgroundSync.mockResolvedValue(true);
 
       renderWithRouter(<ContactPage />);
 
@@ -318,13 +342,21 @@ describe('ContactPage Component', () => {
     });
 
     it('handles API error', async () => {
-      api.createContact.mockRejectedValue(new Error('Network error'));
+      mockedApi.createContact.mockRejectedValue(new Error('Network error'));
 
       // Mock window.location.href setter
       const originalLocation = window.location;
-      delete window.location;
-      window.location = { ...originalLocation, href: '' };
       const hrefSetter = jest.fn();
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: {
+          ...originalLocation,
+          href: '',
+          assign: jest.fn(),
+          reload: jest.fn(),
+          replace: jest.fn(),
+        },
+      });
       Object.defineProperty(window.location, 'href', {
         set: hrefSetter,
         get: () => '',
@@ -352,7 +384,7 @@ describe('ContactPage Component', () => {
 
       // Verify that API was called and failed
       await waitFor(() => {
-        expect(api.createContact).toHaveBeenCalled();
+        expect(mockedApi.createContact).toHaveBeenCalled();
       });
 
       // Verify fallback to mailto (window.location.href is set to mailto link)
@@ -361,7 +393,10 @@ describe('ContactPage Component', () => {
       });
 
       // Restore original location
-      window.location = originalLocation;
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: originalLocation,
+      });
     });
   });
 

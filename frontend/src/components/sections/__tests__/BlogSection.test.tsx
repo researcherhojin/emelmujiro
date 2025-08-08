@@ -34,11 +34,39 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('BlogSection Component', () => {
-  const mockPosts = [
-    { id: 1, title: 'AI Trend 1', excerpt: 'First AI trend post' },
-    { id: 2, title: 'AI Trend 2', excerpt: 'Second AI trend post' },
-    { id: 3, title: 'AI Trend 3', excerpt: 'Third AI trend post' },
-    { id: 4, title: 'AI Trend 4', excerpt: 'Fourth AI trend post' },
+  const mockPosts: any[] = [
+    {
+      id: 1,
+      title: 'AI Trend 1',
+      excerpt: 'First AI trend post',
+      content: '',
+      author: 'Test',
+      created_at: '2024-01-01',
+    },
+    {
+      id: 2,
+      title: 'AI Trend 2',
+      excerpt: 'Second AI trend post',
+      content: '',
+      author: 'Test',
+      created_at: '2024-01-01',
+    },
+    {
+      id: 3,
+      title: 'AI Trend 3',
+      excerpt: 'Third AI trend post',
+      content: '',
+      author: 'Test',
+      created_at: '2024-01-01',
+    },
+    {
+      id: 4,
+      title: 'AI Trend 4',
+      excerpt: 'Fourth AI trend post',
+      content: '',
+      author: 'Test',
+      created_at: '2024-01-01',
+    },
   ];
 
   const renderWithRouter = component => {
@@ -165,9 +193,16 @@ describe('BlogSection Component', () => {
     });
 
     it('handles posts with missing properties', () => {
-      const incompletePosts = [
-        { id: 1, title: 'Only title' },
-        { id: 2, excerpt: 'Only excerpt' },
+      const incompletePosts: any[] = [
+        { id: 1, title: 'Only title', content: '', author: 'Test', created_at: '2024-01-01' },
+        {
+          id: 2,
+          excerpt: 'Only excerpt',
+          title: 'Test',
+          content: '',
+          author: 'Test',
+          created_at: '2024-01-01',
+        },
       ];
 
       renderWithRouter(<BlogSection posts={incompletePosts} isLoading={false} error={null} />);
