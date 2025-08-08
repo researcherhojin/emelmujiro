@@ -268,6 +268,7 @@ describe('BlogEditor Component', () => {
         { type: 'application/json' }
       );
 
+      const importButton = screen.getByRole('button', { name: /가져오기/ });
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
 
       const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
@@ -280,8 +281,11 @@ describe('BlogEditor Component', () => {
         // Check that the imported post was added
         const importedPost = savedPosts.find(p => p.title === 'Imported Post');
         expect(importedPost).toBeDefined();
-        expect(importedPost.content).toBe('Imported Content');
       });
+
+      const savedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+      const importedPost = savedPosts.find(p => p.title === 'Imported Post');
+      expect(importedPost.content).toBe('Imported Content');
 
       expect(confirmSpy).toHaveBeenCalled();
       expect(alertSpy).toHaveBeenCalledWith('1개의 글을 가져왔습니다.');
@@ -295,6 +299,7 @@ describe('BlogEditor Component', () => {
 
       const invalidFile = new File(['invalid json'], 'posts.json', { type: 'application/json' });
 
+      const importButton = screen.getByRole('button', { name: /가져오기/ });
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
 
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();

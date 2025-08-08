@@ -24,7 +24,7 @@ test.describe('PWA Features', () => {
     // Check both API existence and registration status
     const hasServiceWorkerAPI = await page.evaluate(() => 'serviceWorker' in navigator);
     expect(hasServiceWorkerAPI).toBeTruthy();
-    
+
     // Log registration status for debugging (not a failure if false in test env)
     if (!hasServiceWorker) {
       // Service worker not active in test environment is expected
@@ -80,7 +80,9 @@ test.describe('PWA Features', () => {
       // Service worker might not be fully functional in test environment
       // This is expected in test environments, not a failure
       // eslint-disable-next-line no-console
-      console.log('Info: Offline test skipped - service worker not fully functional in test environment');
+      console.log(
+        'Info: Offline test skipped - service worker not fully functional in test environment'
+      );
     }
 
     // Go back online

@@ -28,20 +28,10 @@ const DYNAMIC_CACHE_PATTERNS = [
 ];
 
 // Image patterns for separate image cache
-const IMAGE_PATTERNS = [
-  /\.png$/,
-  /\.jpg$/,
-  /\.jpeg$/,
-  /\.gif$/,
-  /\.svg$/,
-  /\.webp$/,
-];
+const IMAGE_PATTERNS = [/\.png$/, /\.jpg$/, /\.jpeg$/, /\.gif$/, /\.svg$/, /\.webp$/];
 
 // API endpoints that should be cached
-const API_CACHE_PATTERNS = [
-  /\/api\/blog-posts\/$/,
-  /\/api\/blog-posts\/\d+\/$/,
-];
+const API_CACHE_PATTERNS = [/\/api\/blog-posts\/$/, /\/api\/blog-posts\/\d+\/$/];
 
 // Maximum cache sizes
 const MAX_DYNAMIC_CACHE_SIZE = 50;
@@ -57,9 +47,10 @@ const CACHE_EXPIRATION = {
 // Install event - cache essential resources
 self.addEventListener('install', event => {
   console.log('[Service Worker] Installing...');
-  
+
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches
+      .open(CACHE_NAME)
       .then(cache => {
         console.log('[Service Worker] Caching essential resources');
         return cache.addAll(urlsToCache);
@@ -77,15 +68,18 @@ self.addEventListener('install', event => {
 // Activate event - clean up old caches
 self.addEventListener('activate', event => {
   console.log('[Service Worker] Activating...');
-  
+
   event.waitUntil(
-    caches.keys()
+    caches
+      .keys()
       .then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (cacheName !== CACHE_NAME && 
-                cacheName !== DYNAMIC_CACHE_NAME && 
-                cacheName !== IMAGE_CACHE_NAME) {
+            if (
+              cacheName !== CACHE_NAME &&
+              cacheName !== DYNAMIC_CACHE_NAME &&
+              cacheName !== IMAGE_CACHE_NAME
+            ) {
               console.log('[Service Worker] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
@@ -103,24 +97,24 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
-  
+
   // Skip cross-origin requests
   if (url.origin !== location.origin && !isAllowedCrossOrigin(url)) {
     return;
   }
-  
+
   // Handle API requests
   if (isApiRequest(url)) {
     event.respondWith(handleApiRequest(request));
     return;
   }
-  
+
   // Handle image requests
   if (isImageRequest(url)) {
     event.respondWith(handleImageRequest(request));
     return;
   }
-  
+
   // Handle all other requests
   event.respondWith(handleGeneralRequest(request));
 });
@@ -128,36 +122,36 @@ self.addEventListener('fetch', event => {
 // Handle API requests with network-first strategy
 async function handleApiRequest(request) {
   const cache = await caches.open(DYNAMIC_CACHE_NAME);
-  
+
   try {
     // Try network first
     const response = await fetch(request);
-    
+
     // Clone the response before caching
     if (response && response.status === 200) {
       const responseToCache = response.clone();
       cache.put(request, responseToCache);
     }
-    
+
     return response;
   } catch (error) {
     // If network fails, try cache
     console.log('[Service Worker] Network failed, trying cache for:', request.url);
     const cachedResponse = await cache.match(request);
-    
+
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     // Return offline API response
     return new Response(
-      JSON.stringify({ 
-        error: 'Offline', 
-        message: 'This content is not available offline' 
+      JSON.stringify({
+        error: 'Offline',
+        message: 'This content is not available offline',
       }),
-      { 
+      {
         status: 503,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       }
     );
   }
@@ -166,26 +160,26 @@ async function handleApiRequest(request) {
 // Handle image requests with cache-first strategy
 async function handleImageRequest(request) {
   const cache = await caches.open(IMAGE_CACHE_NAME);
-  
+
   // Try cache first
   const cachedResponse = await cache.match(request);
   if (cachedResponse) {
     return cachedResponse;
   }
-  
+
   try {
     // If not in cache, fetch from network
     const response = await fetch(request);
-    
+
     // Cache the image if successful
     if (response && response.status === 200) {
       const responseToCache = response.clone();
       cache.put(request, responseToCache);
-      
+
       // Limit cache size
       limitCacheSize(IMAGE_CACHE_NAME, MAX_IMAGE_CACHE_SIZE);
     }
-    
+
     return response;
   } catch (error) {
     // Return placeholder image if offline
@@ -201,27 +195,27 @@ async function handleGeneralRequest(request) {
   if (cachedResponse) {
     return cachedResponse;
   }
-  
+
   try {
     // If not in cache, fetch from network
     const response = await fetch(request);
-    
+
     // Cache dynamic resources if successful
     if (response && response.status === 200 && shouldCacheDynamically(request.url)) {
       const cache = await caches.open(DYNAMIC_CACHE_NAME);
       cache.put(request, response.clone());
-      
+
       // Limit cache size
       limitCacheSize(DYNAMIC_CACHE_NAME, MAX_DYNAMIC_CACHE_SIZE);
     }
-    
+
     return response;
   } catch (error) {
     // Return offline page for navigation requests
     if (request.mode === 'navigate') {
       return caches.match('/emelmujiro/offline.html');
     }
-    
+
     // Return 503 for other failed requests
     return new Response('Service Unavailable', { status: 503 });
   }
@@ -230,7 +224,7 @@ async function handleGeneralRequest(request) {
 // Background sync for offline form submissions
 self.addEventListener('sync', event => {
   console.log('[Service Worker] Background sync:', event.tag);
-  
+
   if (event.tag === 'sync-contact-form') {
     event.waitUntil(syncContactForms());
   }
@@ -241,26 +235,26 @@ async function syncContactForms() {
   try {
     // Get pending forms from IndexedDB or localStorage
     const pendingForms = await getPendingForms();
-    
+
     for (const form of pendingForms) {
       try {
         const response = await fetch('/api/contact/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(form)
+          body: JSON.stringify(form),
         });
-        
+
         if (response.ok) {
           // Remove successfully synced form
           await removePendingForm(form.id);
-          
+
           // Notify user of successful sync
           await self.registration.showNotification('문의 전송 완료', {
             body: '오프라인에서 작성한 문의가 성공적으로 전송되었습니다.',
             icon: '/emelmujiro/logo192.png',
             badge: '/emelmujiro/logo192.png',
             tag: 'contact-sync',
-            requireInteraction: false
+            requireInteraction: false,
           });
         }
       } catch (error) {
@@ -275,12 +269,12 @@ async function syncContactForms() {
 // Push notification handler
 self.addEventListener('push', event => {
   console.log('[Service Worker] Push received');
-  
+
   let data = {};
   if (event.data) {
     data = event.data.json();
   }
-  
+
   const options = {
     title: data.title || 'Emelmujiro',
     body: data.body || 'You have a new notification',
@@ -288,35 +282,32 @@ self.addEventListener('push', event => {
     badge: '/emelmujiro/logo192.png',
     vibrate: [200, 100, 200],
     data: data.data || {},
-    actions: data.actions || []
+    actions: data.actions || [],
   };
-  
-  event.waitUntil(
-    self.registration.showNotification(options.title, options)
-  );
+
+  event.waitUntil(self.registration.showNotification(options.title, options));
 });
 
 // Notification click handler
 self.addEventListener('notificationclick', event => {
   console.log('[Service Worker] Notification clicked');
   event.notification.close();
-  
+
   const urlToOpen = event.notification.data?.url || '/emelmujiro/';
-  
+
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then(windowClients => {
-        // Check if there's already a window/tab open
-        for (const client of windowClients) {
-          if (client.url === urlToOpen && 'focus' in client) {
-            return client.focus();
-          }
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+      // Check if there's already a window/tab open
+      for (const client of windowClients) {
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
         }
-        // Open new window if not found
-        if (clients.openWindow) {
-          return clients.openWindow(urlToOpen);
-        }
-      })
+      }
+      // Open new window if not found
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
   );
 });
 
@@ -340,7 +331,7 @@ function shouldCacheDynamically(url) {
 async function limitCacheSize(cacheName, maxSize) {
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
-  
+
   if (keys.length > maxSize) {
     // Delete oldest entries
     const keysToDelete = keys.slice(0, keys.length - maxSize);
@@ -355,7 +346,7 @@ async function getPendingForms() {
   const cache = await caches.open('pending-forms');
   const requests = await cache.keys();
   const forms = [];
-  
+
   for (const request of requests) {
     const response = await cache.match(request);
     if (response) {
@@ -363,14 +354,14 @@ async function getPendingForms() {
       forms.push(form);
     }
   }
-  
+
   return forms;
 }
 
 async function removePendingForm(formId) {
   const cache = await caches.open('pending-forms');
   const requests = await cache.keys();
-  
+
   for (const request of requests) {
     if (request.url.includes(formId)) {
       await cache.delete(request);
@@ -382,15 +373,12 @@ async function removePendingForm(formId) {
 // Message handler for client communication
 self.addEventListener('message', event => {
   console.log('[Service Worker] Message received:', event.data);
-  
+
   if (event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
-  
+
   if (event.data.type === 'CACHE_URLS') {
-    event.waitUntil(
-      caches.open(CACHE_NAME)
-        .then(cache => cache.addAll(event.data.urls))
-    );
+    event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(event.data.urls)));
   }
 });

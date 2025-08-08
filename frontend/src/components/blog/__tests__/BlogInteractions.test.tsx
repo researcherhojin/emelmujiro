@@ -62,9 +62,9 @@ describe('BlogInteractions Component', () => {
     jest.clearAllMocks();
 
     // Mock window.location.href to include blog path
-    const originalLocation = window.location;
-    delete (window as any).location;
-    window.location = new URL('http://localhost/#/blog/1') as any;
+    const _originalLocation = window.location;
+    delete (window as unknown as { location: Location }).location;
+    window.location = new URL('http://localhost/#/blog/1') as unknown as Location;
   });
 
   describe('Rendering', () => {
@@ -228,11 +228,11 @@ describe('BlogInteractions Component', () => {
     it('shows share menu when share button is clicked', () => {
       // Mock navigator.share as not available to trigger share menu
       const originalShare = navigator.share;
-      delete (navigator as any).share;
+      delete (navigator as unknown as { share?: typeof navigator.share }).share;
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
+      const shareButton = screen.getByRole('button', { name: /공유/ });
       fireEvent.click(shareButton);
 
       expect(screen.getByText('Facebook')).toBeInTheDocument();
@@ -251,7 +251,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
+      const shareButton = screen.getByRole('button', { name: /공유/ });
 
       // Click to show menu
       fireEvent.click(shareButton);
@@ -272,7 +272,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
+      const shareButton = screen.getByRole('button', { name: /공유/ });
       fireEvent.click(shareButton);
 
       const facebookButton = screen.getByText('Facebook');
@@ -295,7 +295,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
+      const shareButton = screen.getByRole('button', { name: /공유/ });
       fireEvent.click(shareButton);
 
       const twitterButton = screen.getByText('Twitter');
@@ -318,7 +318,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
+      const shareButton = screen.getByRole('button', { name: /공유/ });
       fireEvent.click(shareButton);
 
       const linkedinButton = screen.getByText('LinkedIn');
@@ -343,7 +343,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
+      const shareButton = screen.getByRole('button', { name: /공유/ });
       fireEvent.click(shareButton);
 
       const copyButton = screen.getByText('링크 복사');
@@ -377,7 +377,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
+      const shareButton = screen.getByRole('button', { name: /공유/ });
       fireEvent.click(shareButton);
 
       await waitFor(() => {
@@ -434,7 +434,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
+      const shareButton = screen.getByRole('button', { name: /공유/ });
       fireEvent.click(shareButton);
 
       const copyButton = screen.getByText(/링크 복사/);
