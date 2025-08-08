@@ -30,6 +30,29 @@ updates:
       prefix: "deps"
       prefix-development: "deps-dev"
       include: "scope"
+    ignore:
+      # Ignore React 19 until we're ready for migration
+      - dependency-name: "react"
+        versions: ["19.x"]
+      - dependency-name: "react-dom"
+        versions: ["19.x"]
+      - dependency-name: "@types/react"
+        versions: ["19.x"]
+      - dependency-name: "@types/react-dom"
+        versions: ["19.x"]
+      # Ignore major versions that require manual migration
+      - dependency-name: "framer-motion"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "web-vitals"
+        update-types: ["version-update:semver-major"]
+      # Ignore unstable Node 24
+      - dependency-name: "node"
+        versions: ["24.x"]
+      # Dev dependencies with major changes
+      - dependency-name: "eslint-plugin-jest"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "lint-staged"
+        update-types: ["version-update:semver-major"]
 
   # Backend dependencies
   - package-ecosystem: "pip"
@@ -72,6 +95,10 @@ updates:
       - "dependencies"
       - "docker"
       - "frontend"
+    ignore:
+      # Ignore Node 24 until it's stable
+      - dependency-name: "node"
+        versions: ["24-alpine", "24.*"]
 
   - package-ecosystem: "docker"
     directory: "/backend"
