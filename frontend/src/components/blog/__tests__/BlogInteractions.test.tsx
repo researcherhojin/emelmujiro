@@ -221,18 +221,29 @@ describe('BlogInteractions Component', () => {
 
   describe('Share Functionality', () => {
     it('shows share menu when share button is clicked', () => {
+      // Mock navigator.share as not available to trigger share menu
+      const originalShare = navigator.share;
+      delete (navigator as any).share;
+
       render(<BlogInteractions post={mockPost} />);
 
       const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
       fireEvent.click(shareButton);
 
-      expect(screen.getByText('페이스북')).toBeInTheDocument();
-      expect(screen.getByText('트위터')).toBeInTheDocument();
-      expect(screen.getByText('링크드인')).toBeInTheDocument();
-      expect(screen.getByText('링크 복사')).toBeInTheDocument();
+      expect(screen.getByText('Facebook')).toBeInTheDocument();
+      expect(screen.getByText('Twitter')).toBeInTheDocument();
+      expect(screen.getByText('LinkedIn')).toBeInTheDocument();
+      expect(screen.getByText(/링크 복사/)).toBeInTheDocument();
+
+      // Restore
+      (navigator as any).share = originalShare;
     });
 
     it('hides share menu when clicking outside', async () => {
+      // Mock navigator.share as not available
+      const originalShare = navigator.share;
+      delete (navigator as any).share;
+
       render(
         <div>
           <BlogInteractions post={mockPost} />
@@ -243,62 +254,90 @@ describe('BlogInteractions Component', () => {
       const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
       fireEvent.click(shareButton);
 
-      expect(screen.getByText('페이스북')).toBeInTheDocument();
+      expect(screen.getByText('Facebook')).toBeInTheDocument();
 
       // Click outside
       fireEvent.mouseDown(screen.getByTestId('outside'));
 
       await waitFor(() => {
-        expect(screen.queryByText('페이스북')).not.toBeInTheDocument();
+        expect(screen.queryByText('Facebook')).not.toBeInTheDocument();
       });
+
+      // Restore
+      (navigator as any).share = originalShare;
     });
 
     it('shares to Facebook', () => {
+      // Mock navigator.share as not available
+      const originalShare = navigator.share;
+      delete (navigator as any).share;
+
       render(<BlogInteractions post={mockPost} />);
 
       const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
       fireEvent.click(shareButton);
 
-      const facebookButton = screen.getByText('페이스북');
+      const facebookButton = screen.getByText('Facebook');
       fireEvent.click(facebookButton);
 
       expect(mockOpen).toHaveBeenCalledWith(
         expect.stringContaining('facebook.com/sharer'),
         '_blank'
       );
+
+      // Restore
+      (navigator as any).share = originalShare;
     });
 
     it('shares to Twitter', () => {
+      // Mock navigator.share as not available
+      const originalShare = navigator.share;
+      delete (navigator as any).share;
+
       render(<BlogInteractions post={mockPost} />);
 
       const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
       fireEvent.click(shareButton);
 
-      const twitterButton = screen.getByText('트위터');
+      const twitterButton = screen.getByText('Twitter');
       fireEvent.click(twitterButton);
 
       expect(mockOpen).toHaveBeenCalledWith(
         expect.stringContaining('twitter.com/intent/tweet'),
         '_blank'
       );
+
+      // Restore
+      (navigator as any).share = originalShare;
     });
 
     it('shares to LinkedIn', () => {
+      // Mock navigator.share as not available
+      const originalShare = navigator.share;
+      delete (navigator as any).share;
+
       render(<BlogInteractions post={mockPost} />);
 
       const shareButton = screen.getByText('공유').closest('button') as HTMLButtonElement;
       fireEvent.click(shareButton);
 
-      const linkedinButton = screen.getByText('링크드인');
+      const linkedinButton = screen.getByText('LinkedIn');
       fireEvent.click(linkedinButton);
 
       expect(mockOpen).toHaveBeenCalledWith(
         expect.stringContaining('linkedin.com/sharing'),
         '_blank'
       );
+
+      // Restore
+      (navigator as any).share = originalShare;
     });
 
     it('copies link to clipboard', async () => {
+      // Mock navigator.share as not available
+      const originalShare = navigator.share;
+      delete (navigator as any).share;
+
       mockWriteText.mockResolvedValue(undefined);
 
       render(<BlogInteractions post={mockPost} />);
@@ -322,6 +361,9 @@ describe('BlogInteractions Component', () => {
         },
         { timeout: 3000 }
       );
+
+      // Restore
+      (navigator as any).share = originalShare;
     });
 
     it('uses native share API on mobile when available', async () => {
