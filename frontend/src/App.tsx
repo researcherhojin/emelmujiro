@@ -14,6 +14,8 @@ import NotificationPermission from './components/common/NotificationPermission';
 import NotificationContainer from './components/common/NotificationContainer';
 import SEOHelmet from './components/common/SEOHelmet';
 import StructuredData from './components/common/StructuredData';
+import OfflineIndicator from './components/common/OfflineIndicator';
+import AppUpdateNotification from './components/common/AppUpdateNotification';
 
 // Main page components - lazy load for better performance
 const HeroSection = lazy(() => import('./components/sections/HeroSection'));
@@ -99,6 +101,8 @@ const Layout: React.FC = memo(() => {
       <PWAInstallButton />
       <NotificationPermission />
       <NotificationContainer />
+      <OfflineIndicator />
+      <AppUpdateNotification />
     </div>
   );
 });

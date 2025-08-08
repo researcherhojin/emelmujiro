@@ -31,7 +31,6 @@ jest.mock('lucide-react', () => ({
 
 describe('AboutSection Component', () => {
   it('renders section with correct ID', () => {
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const { container } = render(<AboutSection />);
     // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const section = container.querySelector('#about');

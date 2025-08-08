@@ -24,7 +24,8 @@ export const measureWebVitals = (onPerfEntry?: (metric: Metric) => void): void =
 export const logPerformanceMetrics = (): void => {
   // Performance metrics logging - disabled by default
   // Enable for debugging performance issues
-  if (process.env.NODE_ENV === 'development' && false) {
+  const enablePerformanceLogging = false;
+  if (process.env.NODE_ENV === 'development' && enablePerformanceLogging) {
     window.addEventListener('load', () => {
       setTimeout(() => {
         const perfData = window.performance.getEntriesByType(

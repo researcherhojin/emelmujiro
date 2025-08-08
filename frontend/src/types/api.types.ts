@@ -42,6 +42,7 @@ export interface ServiceWorkerData {
 }
 
 export interface MockEvent {
+  // eslint-disable-next-line no-undef
   preventDefault: jest.Mock;
   target: {
     value?: string;
