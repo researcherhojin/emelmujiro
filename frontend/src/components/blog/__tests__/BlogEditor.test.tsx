@@ -101,10 +101,7 @@ describe('BlogEditor Component', () => {
       expect(titleInput.value).toBe('Test Title');
 
       // Find content textarea - it has a multiline placeholder
-      const contentLabel = screen.getByText('내용 * (Markdown 지원)');
-      const contentTextarea = contentLabel.parentElement?.querySelector(
-        'textarea'
-      ) as HTMLTextAreaElement;
+      const contentTextarea = screen.getByRole('textbox', { name: /내용/i }) as HTMLTextAreaElement;
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
       expect(contentTextarea.value).toBe('Test Content');
     });
@@ -127,8 +124,6 @@ describe('BlogEditor Component', () => {
     it('toggles preview mode', () => {
       renderWithRouter(<BlogEditor />);
 
-      const previewButton = screen.getByRole('button', { name: /미리보기/ });
-
       // Initially preview is shown
       expect(screen.getByTestId('markdown-preview')).toBeInTheDocument();
       expect(screen.getByTestId('markdown-preview')).toHaveTextContent('*내용을 입력하세요...*');
@@ -137,10 +132,7 @@ describe('BlogEditor Component', () => {
     it('displays content in preview mode', () => {
       renderWithRouter(<BlogEditor />);
 
-      const contentLabel = screen.getByText('내용 * (Markdown 지원)');
-      const contentTextarea = contentLabel.parentElement?.querySelector(
-        'textarea'
-      ) as HTMLTextAreaElement;
+      const contentTextarea = screen.getByRole('textbox', { name: /내용/i }) as HTMLTextAreaElement;
       fireEvent.change(contentTextarea, { target: { value: '# Test Markdown' } });
 
       // Preview is already shown by default
@@ -178,10 +170,7 @@ describe('BlogEditor Component', () => {
       const titleInput = screen.getByPlaceholderText(
         '포스트 제목을 입력하세요'
       ) as HTMLInputElement;
-      const contentLabel = screen.getByText('내용 * (Markdown 지원)');
-      const contentTextarea = contentLabel.parentElement?.querySelector(
-        'textarea'
-      ) as HTMLTextAreaElement;
+      const contentTextarea = screen.getByRole('textbox', { name: /내용/i }) as HTMLTextAreaElement;
       const categorySelect = screen.getByRole('combobox') as HTMLSelectElement;
 
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
@@ -220,10 +209,7 @@ describe('BlogEditor Component', () => {
       const titleInput = screen.getByPlaceholderText(
         '포스트 제목을 입력하세요'
       ) as HTMLInputElement;
-      const contentLabel = screen.getByText('내용 * (Markdown 지원)');
-      const contentTextarea = contentLabel.parentElement?.querySelector(
-        'textarea'
-      ) as HTMLTextAreaElement;
+      const contentTextarea = screen.getByRole('textbox', { name: /내용/i }) as HTMLTextAreaElement;
 
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });

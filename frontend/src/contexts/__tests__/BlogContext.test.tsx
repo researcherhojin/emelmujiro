@@ -2,7 +2,7 @@ import { render, screen, waitFor, act } from '@testing-library/react';
 import { BlogProvider, useBlog } from '../BlogContext';
 import { api } from '../../services/api';
 import { PaginatedResponse, BlogPost } from '../../types';
-import { AxiosRequestConfig } from 'axios';
+import { InternalAxiosRequestConfig } from 'axios';
 
 // Mock the api
 jest.mock('../../services/api', () => ({
@@ -105,7 +105,7 @@ describe('BlogContext', () => {
       status: 200,
       statusText: 'OK',
       headers: {},
-      config: {} as AxiosRequestConfig,
+      config: {} as InternalAxiosRequestConfig,
     });
 
     render(
@@ -172,7 +172,7 @@ describe('BlogContext', () => {
                 status: 200,
                 statusText: 'OK',
                 headers: {},
-                config: {} as AxiosRequestConfig,
+                config: {} as InternalAxiosRequestConfig,
               }),
             100
           )

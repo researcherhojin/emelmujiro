@@ -1,6 +1,6 @@
 import { api } from '../api';
 import { BlogPost, ContactFormData } from '../../types';
-import { AxiosRequestConfig } from 'axios';
+import { InternalAxiosRequestConfig } from 'axios';
 
 // Mock axios
 jest.mock('axios', () => {
@@ -61,7 +61,7 @@ describe('API Service', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as AxiosRequestConfig,
+        config: {} as InternalAxiosRequestConfig,
       };
 
       mockAxiosInstance.get.mockResolvedValue(mockResponse);
@@ -89,7 +89,7 @@ describe('API Service', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as AxiosRequestConfig,
+        config: {} as InternalAxiosRequestConfig,
       });
 
       const response = await api.getBlogPost(1);
@@ -111,7 +111,7 @@ describe('API Service', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as AxiosRequestConfig,
+        config: {} as InternalAxiosRequestConfig,
       });
 
       const response = await api.searchBlogPosts(searchQuery);
@@ -133,7 +133,7 @@ describe('API Service', () => {
         data: { id: 1, ...contactData },
         statusText: 'Created',
         headers: {},
-        config: {} as AxiosRequestConfig,
+        config: {} as InternalAxiosRequestConfig,
       });
 
       const response = await api.createContact(contactData);
@@ -151,7 +151,7 @@ describe('API Service', () => {
         status: 201,
         statusText: 'Created',
         headers: {},
-        config: {} as AxiosRequestConfig,
+        config: {} as InternalAxiosRequestConfig,
       });
 
       const response = await api.subscribeNewsletter(email);
@@ -176,7 +176,7 @@ describe('API Service', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as AxiosRequestConfig,
+        config: {} as InternalAxiosRequestConfig,
       });
 
       const response = await api.getProjects();
@@ -196,7 +196,7 @@ describe('API Service', () => {
         status: 201,
         statusText: 'Created',
         headers: {},
-        config: {} as AxiosRequestConfig,
+        config: {} as InternalAxiosRequestConfig,
       });
 
       const response = await api.createProject(newProject);
@@ -212,7 +212,7 @@ describe('API Service', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as AxiosRequestConfig,
+        config: {} as InternalAxiosRequestConfig,
       });
 
       const response = await api.checkHealth();
