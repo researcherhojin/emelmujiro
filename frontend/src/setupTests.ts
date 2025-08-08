@@ -43,7 +43,7 @@ class MockIntersectionObserver implements IntersectionObserver {
   takeRecords = jest.fn(() => []);
 }
 
-global.IntersectionObserver = MockIntersectionObserver as any;
+global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
 // Mock scrollTo
 window.scrollTo = jest.fn();

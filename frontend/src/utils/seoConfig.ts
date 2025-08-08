@@ -85,10 +85,21 @@ export function generateMetaTags(page: keyof typeof SEO_CONFIG.pages) {
   };
 }
 
+interface StructuredDataInput {
+  items?: Array<{ position: number; name: string; item: string }>;
+  title?: string;
+  description?: string;
+  author?: string;
+  datePublished?: string;
+  dateModified?: string;
+  image?: string;
+  [key: string]: unknown;
+}
+
 // Generate JSON-LD structured data
 export function generateStructuredData(
   type: 'organization' | 'website' | 'breadcrumb' | 'person' | 'article',
-  data?: any
+  data?: StructuredDataInput
 ) {
   const baseUrl = SEO_CONFIG.site.url;
 

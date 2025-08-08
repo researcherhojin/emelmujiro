@@ -35,7 +35,7 @@ class Logger {
     return messageLevelIndex >= currentLevelIndex;
   }
 
-  private formatMessage(level: LogLevel, message: string, data?: unknown): string {
+  private formatMessage(level: LogLevel, message: string, _data?: unknown): string {
     const timestamp = new Date().toISOString();
     return `[${timestamp}] [${level.toUpperCase()}] ${message}`;
   }
@@ -110,7 +110,7 @@ class Logger {
   }
 
   // 에러 리포팅 서비스로 전송 (Sentry, LogRocket 등)
-  private reportToErrorService(message: string, error: unknown): void {
+  private reportToErrorService(_message: string, _error: unknown): void {
     // 실제 구현 시 Sentry 등의 서비스 연동
     // if (window.Sentry) {
     //   window.Sentry.captureException(error, {

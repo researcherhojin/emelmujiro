@@ -79,27 +79,27 @@ describe('ProfilePage Component', () => {
     it('switches to projects tab', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByText('프로젝트');
+      const projectsTab = screen.getByRole('button', { name: '주요 프로젝트' });
       fireEvent.click(projectsTab);
 
       // Check for project section is rendered
-      expect(projectsTab.closest('button')).toHaveAttribute('aria-selected', 'true');
+      expect(projectsTab).toHaveClass('text-gray-900');
     });
 
     it('maintains active tab styling', () => {
       renderWithRouter(<ProfilePage />);
 
-      const careerTab = screen.getByText('경력');
-      const educationTab = screen.getByText('학력');
+      const careerTab = screen.getByRole('button', { name: '경력' });
+      const educationTab = screen.getByRole('button', { name: '학력' });
 
       // Career tab should be active initially
-      expect(careerTab.closest('button')).toHaveClass('border-blue-600');
+      expect(careerTab).toHaveClass('text-gray-900');
 
       // Switch to education tab
       fireEvent.click(educationTab);
 
-      expect(educationTab.closest('button')).toHaveClass('border-blue-600');
-      expect(careerTab.closest('button')).not.toHaveClass('border-blue-600');
+      expect(educationTab).toHaveClass('text-gray-900');
+      expect(careerTab).not.toHaveClass('text-gray-900');
     });
   });
 
@@ -108,9 +108,9 @@ describe('ProfilePage Component', () => {
       renderWithRouter(<ProfilePage />);
 
       // Check for career section existence
-      const careerTab = screen.getByText('경력');
+      const careerTab = screen.getByRole('button', { name: '경력' });
       expect(careerTab).toBeInTheDocument();
-      expect(careerTab.closest('button')).toHaveClass('border-blue-600');
+      expect(careerTab).toHaveClass('text-gray-900');
     });
 
     it('shows current position badge', () => {
@@ -148,22 +148,21 @@ describe('ProfilePage Component', () => {
     it('displays project items when tab is selected', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByText('프로젝트');
+      const projectsTab = screen.getByRole('button', { name: '주요 프로젝트' });
       fireEvent.click(projectsTab);
 
       // Check that projects tab is active
-      expect(projectsTab.closest('button')).toHaveClass('border-blue-600');
+      expect(projectsTab).toHaveClass('text-gray-900');
     });
 
     it('displays project descriptions', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByText('프로젝트');
+      const projectsTab = screen.getByRole('button', { name: '주요 프로젝트' });
       fireEvent.click(projectsTab);
 
       // Projects content should be visible
-      const projectSection = projectsTab.closest('button')?.parentElement?.parentElement;
-      expect(projectSection).toBeInTheDocument();
+      expect(projectsTab).toBeInTheDocument();
     });
   });
 
@@ -171,8 +170,11 @@ describe('ProfilePage Component', () => {
     it('applies responsive grid for statistics', () => {
       renderWithRouter(<ProfilePage />);
 
-      const statsGrid = screen.getByText('50+').closest('div')?.parentElement;
-      expect(statsGrid).toHaveClass('grid');
+      // Find the parent container that has the grid class
+      const statsElement = screen.getByText('50+');
+      // Go up to find the grid container (it's the grandparent)
+      const statsContainer = statsElement.closest('div')?.parentElement?.parentElement;
+      expect(statsContainer?.className).toContain('grid');
     });
   });
 

@@ -11,7 +11,7 @@ interface NotificationOptions {
   renotify?: boolean;
   requireInteraction?: boolean;
   body?: string;
-  data?: any;
+  data?: unknown;
 }
 
 // URL-safe base64 decode
@@ -20,7 +20,8 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
   const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
+  const buffer = new ArrayBuffer(rawData.length);
+  const outputArray = new Uint8Array(buffer);
 
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
@@ -70,7 +71,7 @@ export async function subscribeToPushNotifications(): Promise<PushSubscription> 
       // Subscribe to push notifications
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY) as any,
+        applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY) as ArrayBuffer,
       });
     }
 
@@ -100,7 +101,7 @@ export async function unsubscribeFromPushNotifications(): Promise<boolean> {
 }
 
 // Send subscription to server
-export async function sendSubscriptionToServer(subscription: PushSubscription): Promise<any> {
+export async function sendSubscriptionToServer(subscription: PushSubscription): Promise<unknown> {
   try {
     const response = await fetch('/api/notifications/subscribe', {
       method: 'POST',

@@ -10,12 +10,12 @@ interface ExtendedServiceWorkerRegistration extends ServiceWorkerRegistration {
 
 interface SyncData {
   tag: string;
-  data: any;
+  data: unknown;
   timestamp: number;
 }
 
 // Type for request options
-type RequestOptions = Record<string, any>;
+type RequestOptions = Record<string, unknown>;
 
 interface SyncRequest {
   url: string;
@@ -29,7 +29,7 @@ export function isBackgroundSyncSupported(): boolean {
 }
 
 // Register a sync event
-export async function registerBackgroundSync(tag: string, data: any = null): Promise<boolean> {
+export async function registerBackgroundSync(tag: string, data: unknown = null): Promise<boolean> {
   if (!isBackgroundSyncSupported()) {
     logger.info('Background sync is not supported in this browser');
     return false;
@@ -55,7 +55,7 @@ export async function registerBackgroundSync(tag: string, data: any = null): Pro
 }
 
 // Store data for background sync
-async function storeSyncData(tag: string, data: any): Promise<void> {
+async function storeSyncData(tag: string, data: unknown): Promise<void> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('emelmujiro-sync', 1);
 
