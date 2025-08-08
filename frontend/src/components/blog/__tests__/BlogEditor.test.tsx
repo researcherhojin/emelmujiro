@@ -110,9 +110,8 @@ describe('BlogEditor Component', () => {
       renderWithRouter(<BlogEditor />);
 
       // Find author input by its label
-      const authorLabel = screen.getByText('작성자');
-      const authorInput = authorLabel.parentElement?.querySelector('input') as HTMLInputElement;
-      expect(authorInput?.value).toBe('이호진');
+      const authorInput = screen.getByDisplayValue('이호진');
+      expect(authorInput).toBeInTheDocument();
     });
   });
 
@@ -279,7 +278,7 @@ describe('BlogEditor Component', () => {
       await waitFor(() => {
         const savedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
         // Check that the imported post was added
-        const importedPost = savedPosts.find((p: any) => p.title === 'Imported Post');
+        const importedPost = savedPosts.find(p => p.title === 'Imported Post');
         expect(importedPost).toBeDefined();
         expect(importedPost.content).toBe('Imported Content');
       });

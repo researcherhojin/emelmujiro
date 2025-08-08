@@ -4,16 +4,16 @@ const { injectAxe, checkA11y } = require('axe-playwright');
 test.describe('Accessibility Tests', () => {
   test('homepage has no accessibility violations', async ({ page }) => {
     await page.goto('/');
-    
+
     // Inject axe-core for accessibility testing
     await injectAxe(page);
-    
+
     // Run comprehensive accessibility checks
     await checkA11y(page, null, {
       detailedReport: true,
       detailedReportOptions: {
-        html: true
-      }
+        html: true,
+      },
     });
 
     // Basic accessibility checks
@@ -50,13 +50,13 @@ test.describe('Accessibility Tests', () => {
 
   test('contact form has proper labels', async ({ page }) => {
     await page.goto('/#/contact');
-    
+
     // Inject axe-core for accessibility testing
     await injectAxe(page);
-    
+
     // Check accessibility of the contact form
     await checkA11y(page, '#contact-form', {
-      detailedReport: true
+      detailedReport: true,
     });
 
     // Check all form inputs have associated labels
@@ -66,8 +66,6 @@ test.describe('Accessibility Tests', () => {
     for (let i = 0; i < inputCount; i++) {
       const input = inputs.nth(i);
       const id = await input.getAttribute('id');
-      // eslint-disable-next-line no-unused-vars
-      const name = await input.getAttribute('name');
 
       // Check if there's a label for this input
       if (id) {
@@ -139,16 +137,16 @@ test.describe('Accessibility Tests', () => {
 
   test('ARIA landmarks are present', async ({ page }) => {
     await page.goto('/');
-    
+
     // Inject axe-core for accessibility testing
     await injectAxe(page);
-    
+
     // Check for ARIA landmarks
     await checkA11y(page, null, {
       runOnly: {
         type: 'tag',
-        values: ['wcag2a', 'wcag2aa', 'best-practice']
-      }
+        values: ['wcag2a', 'wcag2aa', 'best-practice'],
+      },
     });
 
     // Check for main navigation

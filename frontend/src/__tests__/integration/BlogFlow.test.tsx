@@ -1,5 +1,5 @@
 import { screen, waitFor, render } from '@testing-library/react';
-import { AxiosRequestConfig } from 'axios';
+import { InternalAxiosRequestConfig } from 'axios';
 import App from '../../App';
 import { blogService } from '../../services/api';
 
@@ -90,7 +90,7 @@ describe('Blog Flow Integration Tests', () => {
       status: 200,
       statusText: 'OK',
       headers: {},
-      config: {} as AxiosRequestConfig,
+      config: {} as InternalAxiosRequestConfig,
     });
   });
 
