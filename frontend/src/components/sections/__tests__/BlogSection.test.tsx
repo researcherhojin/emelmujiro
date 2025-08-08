@@ -31,10 +31,22 @@ type MotionComponentProps = {
 // Mock dependencies
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: MotionComponentProps) => <div {...props}>{children}</div>,
-    section: ({ children, ...props }: MotionComponentProps) => (
-      <section {...props}>{children}</section>
-    ),
+    div: ({
+      children,
+      whileInView,
+      initial,
+      viewport,
+      transition,
+      ...props
+    }: MotionComponentProps) => <div {...props}>{children}</div>,
+    section: ({
+      children,
+      whileInView,
+      initial,
+      viewport,
+      transition,
+      ...props
+    }: MotionComponentProps) => <section {...props}>{children}</section>,
   },
 }));
 

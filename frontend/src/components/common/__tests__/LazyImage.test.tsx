@@ -24,7 +24,7 @@ describe('LazyImage Component', () => {
   it('creates IntersectionObserver on mount', () => {
     // Mock to capture the IntersectionObserver instance
     const mockObserve = jest.fn();
-    global.IntersectionObserver = jest.fn().mockImplementation((callback, options) => ({
+    global.IntersectionObserver = jest.fn().mockImplementation((_callback, _options) => ({
       observe: mockObserve,
       unobserve: jest.fn(),
       disconnect: jest.fn(),

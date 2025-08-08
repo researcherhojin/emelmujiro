@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import Card from '../Card';
 
 describe('Card Component', () => {
@@ -112,7 +112,7 @@ describe('Card Component', () => {
       expect(card).toHaveAttribute('data-testid', 'custom-card');
       expect(card).toHaveAttribute('role', 'article');
 
-      card.click();
+      fireEvent.click(card);
       expect(handleClick).toHaveBeenCalledTimes(1);
     });
   });
