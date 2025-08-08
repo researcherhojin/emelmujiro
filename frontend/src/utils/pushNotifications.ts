@@ -68,9 +68,13 @@ export async function subscribeToPushNotifications(): Promise<PushSubscription> 
 
     if (!subscription) {
       // Subscribe to push notifications
+      const vapidKey = urlBase64ToUint8Array(PUBLIC_VAPID_KEY);
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY),
+        applicationServerKey: vapidKey.buffer.slice(
+          vapidKey.byteOffset,
+          vapidKey.byteOffset + vapidKey.byteLength
+        ),
       });
     }
 
