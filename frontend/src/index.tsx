@@ -4,6 +4,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import { initWebVitals, PerformanceMonitor } from './utils/performanceMonitoring';
 
 const rootElement = document.getElementById('root');
 
@@ -34,3 +35,9 @@ serviceWorkerRegistration.register({
     // Service Worker registered successfully
   },
 });
+
+// Initialize Web Vitals monitoring
+initWebVitals();
+
+// Start performance monitoring
+PerformanceMonitor();

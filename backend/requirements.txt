@@ -8,9 +8,13 @@ Pillow==11.3.0
 # 보안 관련
 django-ratelimit==4.1.0
 django-extensions==4.1
+djangorestframework-simplejwt==5.3.1
 
 # 개발 도구
 ipython==8.29.0
+
+# API 문서화
+drf-yasg==1.21.7
 
 # 프로덕션 의존성 (선택사항)
 gunicorn==23.0.0
