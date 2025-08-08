@@ -7,7 +7,7 @@ Pillow==11.0.0
 
 # 보안 관련
 django-ratelimit==4.1.0
-django-extensions==3.2.3
+django-extensions==4.1
 
 # 개발 도구
 ipython==8.29.0
