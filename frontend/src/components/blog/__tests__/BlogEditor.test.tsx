@@ -2,19 +2,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import BlogEditor from '../BlogEditor';
 
-// Mock react-markdown and remark-gfm
-jest.mock('react-markdown', () => {
-  return function ReactMarkdown({ children }: { children: string }) {
-    return <div data-testid="markdown-preview">{children}</div>;
-  };
-});
-
-jest.mock('remark-gfm', () => {
-  return function remarkGfm() {
-    return {};
-  };
-});
-
 // Mock useNavigate
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -22,13 +9,24 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
+// Mock ReactMarkdown to avoid issues with markdown rendering
+jest.mock('react-markdown', () => {
+  return function ReactMarkdown({ children }: { children: string }) {
+    return <div data-testid="markdown-preview">{children}</div>;
+  };
+});
+
+// Mock remarkGfm
+jest.mock('remark-gfm', () => () => {});
+
 // Mock logger
 jest.mock('../../../utils/logger', () => ({
+  __esModule: true,
   default: {
-    error: jest.fn(),
     info: jest.fn(),
-    debug: jest.fn(),
+    error: jest.fn(),
     warn: jest.fn(),
+    debug: jest.fn(),
   },
 }));
 
@@ -95,27 +93,28 @@ describe('BlogEditor Component', () => {
     it('updates form data on input change', () => {
       renderWithRouter(<BlogEditor />);
 
-      // Find inputs by placeholder or name attribute
-      const titleInput = screen.getByRole('textbox', { name: '' }) as HTMLInputElement;
-      const textareas = screen.getAllByRole('textbox');
-      const contentTextarea = textareas.find(
-        el => (el as HTMLTextAreaElement).rows > 1
-      ) as HTMLTextAreaElement;
-
+      // Find title input by placeholder
+      const titleInput = screen.getByPlaceholderText(
+        '포스트 제목을 입력하세요'
+      ) as HTMLInputElement;
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
-      fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
-
       expect(titleInput.value).toBe('Test Title');
+
+      // Find content textarea by placeholder
+      const contentTextarea = screen.getByPlaceholderText(
+        'Markdown 형식으로 내용을 작성하세요'
+      ) as HTMLTextAreaElement;
+      fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
       expect(contentTextarea.value).toBe('Test Content');
     });
 
     it('has default author value', () => {
       renderWithRouter(<BlogEditor />);
-      // Find all input elements and check for the one with default value
-      const inputs = screen.getAllByRole('textbox');
-      const authorInput = inputs.find(input => (input as HTMLInputElement).value === '이호진');
-      expect(authorInput).toBeDefined();
-      expect((authorInput as HTMLInputElement).value).toBe('이호진');
+
+      // Find author input by its label
+      const authorLabel = screen.getByText('작성자');
+      const authorInput = authorLabel.parentElement?.querySelector('input') as HTMLInputElement;
+      expect(authorInput?.value).toBe('이호진');
     });
   });
 
@@ -130,7 +129,6 @@ describe('BlogEditor Component', () => {
       const previewButton = screen.getByRole('button', { name: /미리보기/ });
 
       // Initially preview is hidden
-      expect(screen.queryByText('미리보기')).toBeInTheDocument();
       expect(screen.queryByTestId('markdown-preview')).not.toBeInTheDocument();
 
       // Show preview
@@ -145,7 +143,9 @@ describe('BlogEditor Component', () => {
     it('displays content in preview mode', () => {
       renderWithRouter(<BlogEditor />);
 
-      const contentTextarea = screen.getByLabelText('내용') as HTMLTextAreaElement;
+      const contentTextarea = screen.getByPlaceholderText(
+        'Markdown 형식으로 내용을 작성하세요'
+      ) as HTMLTextAreaElement;
       fireEvent.change(contentTextarea, { target: { value: '# Test Markdown' } });
 
       const previewButton = screen.getByRole('button', { name: /미리보기/ });
@@ -178,10 +178,11 @@ describe('BlogEditor Component', () => {
     it('saves post to localStorage with valid data', () => {
       renderWithRouter(<BlogEditor />);
 
-      const inputs = screen.getAllByRole('textbox');
-      const titleInput = inputs[0] as HTMLInputElement;
-      const contentTextarea = inputs.find(
-        el => (el as HTMLTextAreaElement).rows > 1
+      const titleInput = screen.getByPlaceholderText(
+        '포스트 제목을 입력하세요'
+      ) as HTMLInputElement;
+      const contentTextarea = screen.getByPlaceholderText(
+        'Markdown 형식으로 내용을 작성하세요'
       ) as HTMLTextAreaElement;
       const categorySelect = screen.getByRole('combobox') as HTMLSelectElement;
 
@@ -191,7 +192,7 @@ describe('BlogEditor Component', () => {
 
       const saveButton = screen.getByRole('button', { name: /저장/ });
 
-      // Mock alert and confirm
+      // Mock alert
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
 
       fireEvent.click(saveButton);
@@ -212,10 +213,11 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
 
-      const inputs = screen.getAllByRole('textbox');
-      const titleInput = inputs[0] as HTMLInputElement;
-      const contentTextarea = inputs.find(
-        el => (el as HTMLTextAreaElement).rows > 1
+      const titleInput = screen.getByPlaceholderText(
+        '포스트 제목을 입력하세요'
+      ) as HTMLInputElement;
+      const contentTextarea = screen.getByPlaceholderText(
+        'Markdown 형식으로 내용을 작성하세요'
       ) as HTMLTextAreaElement;
 
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });

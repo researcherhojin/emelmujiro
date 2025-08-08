@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 describe('index.tsx', () => {
   beforeEach(() => {
     // Clear all mocks
@@ -14,7 +10,7 @@ describe('index.tsx', () => {
     // It only renders the app to the DOM
     // We can't really test it without executing the whole app
     // So we just verify the file exists and can be imported without error
-    
+
     expect(() => {
       jest.isolateModules(() => {
         // This would normally execute the index file, but we've mocked it
