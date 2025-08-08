@@ -94,7 +94,6 @@ jobs:
           npm run build
 
       - name: Run Lighthouse CI
-        if: ${{ secrets.LHCI_GITHUB_APP_TOKEN != '' }}
         run: |
           cd frontend
           npm run lighthouse || echo "Lighthouse CI skipped - command not found"
@@ -125,10 +124,13 @@ jobs:
         continue-on-error: true
 
       - name: Run Snyk to check for vulnerabilities
-        if: ${{ secrets.SNYK_TOKEN != '' }}
         run: |
           cd frontend
-          npx snyk test --severity-threshold=high || echo "Snyk test completed"
+          if [ -n "$SNYK_TOKEN" ]; then
+            npx snyk test --severity-threshold=high || echo "Snyk test completed with issues"
+          else
+            echo "Snyk test skipped - no token provided"
+          fi
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: true
