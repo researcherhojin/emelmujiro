@@ -25,12 +25,15 @@ const sendToAnalytics = async (metric: WebVitalsData) => {
   if (process.env.NODE_ENV === 'production') {
     try {
       // Example: Send to Google Analytics
-      if (typeof window !== 'undefined' && (window as any).gtag) {
-        (window as any).gtag('event', metric.name, {
-          value: Math.round(metric.value),
-          metric_rating: metric.rating,
-          non_interaction: true,
-        });
+      if (typeof window !== 'undefined' && 'gtag' in window) {
+        const gtag = (window as { gtag?: Function }).gtag;
+        if (gtag) {
+          gtag('event', metric.name, {
+            value: Math.round(metric.value),
+            metric_rating: metric.rating,
+            non_interaction: true,
+          });
+        }
       }
 
       // Example: Send to custom analytics endpoint
@@ -42,10 +45,8 @@ const sendToAnalytics = async (metric: WebVitalsData) => {
     } catch (error) {
       console.error('Failed to send metrics:', error);
     }
-  } else {
-    // In development, log to console
-    console.log('Web Vitals:', metric);
   }
+  // Development logging is handled by the caller if needed
 };
 
 // Get rating based on thresholds
@@ -59,7 +60,14 @@ const getRating = (name: string, value: number): 'good' | 'needs-improvement' | 
 };
 
 // Report handler
-const reportWebVital = (metric: any) => {
+interface WebVitalMetric {
+  name: string;
+  value: number;
+  id?: string;
+  delta?: number;
+}
+
+const reportWebVital = (metric: WebVitalMetric) => {
   const data: WebVitalsData = {
     name: metric.name,
     value: metric.value,
@@ -89,8 +97,21 @@ export const clearMetrics = () => {
 };
 
 // Get summary of metrics
+interface MetricSummary {
+  values: number[];
+  ratings: {
+    good: number;
+    'needs-improvement': number;
+    poor: number;
+  };
+  average?: number;
+  median?: number;
+  p75?: number;
+  p95?: number;
+}
+
 export const getMetricsSummary = () => {
-  const summary: Record<string, any> = {};
+  const summary: Record<string, MetricSummary> = {};
 
   metricsStore.forEach(metric => {
     if (!summary[metric.name]) {
@@ -135,15 +156,15 @@ export const PerformanceMonitor = () => {
       });
 
       observer.observe({ entryTypes: ['longtask'] });
-    } catch (e) {
+    } catch {
       // PerformanceObserver not supported
     }
   }
 
   // Monitor resource timing
   if ('performance' in window && 'getEntriesByType' in performance) {
-    const resources = performance.getEntriesByType('resource');
-    const slowResources = resources.filter((r: any) => r.duration > 1000);
+    const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+    const slowResources = resources.filter(r => r.duration > 1000);
 
     if (slowResources.length > 0) {
       console.warn('Slow resources detected:', slowResources);
