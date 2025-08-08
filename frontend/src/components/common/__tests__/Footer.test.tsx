@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import Footer from '../Footer';
 
 describe('Footer Component', () => {
-  const renderWithRouter = component => {
+  const renderWithRouter = (component: React.ReactElement) => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 

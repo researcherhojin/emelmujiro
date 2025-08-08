@@ -11,7 +11,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('Navbar Component', () => {
-  const renderWithRouter = component => {
+  const renderWithRouter = (component: React.ReactElement) => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 

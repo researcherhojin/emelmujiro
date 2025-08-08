@@ -98,6 +98,9 @@ jobs:
   security-scan:
     name: Security Vulnerability Scan
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -275,7 +278,7 @@ jobs:
       - name: Upload coverage reports
         uses: codecov/codecov-action@v5
         with:
-          file: ./backend/coverage.xml
+          files: ./backend/coverage.xml
           flags: backend
           name: backend-coverage
 
