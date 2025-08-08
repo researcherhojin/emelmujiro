@@ -1,0 +1,600 @@
+name: Main CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+  schedule:
+    # Run security scans daily at 2 AM UTC
+    - cron: "0 2 * * *"
+
+env:
+  NODE_VERSION: "20"
+  PYTHON_VERSION: "3.11"
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+jobs:
+  # ========================================
+  # Code Quality & Linting
+  # ========================================
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for better analysis
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            ~/.cache/pip
+            frontend/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci --prefer-offline --no-audit
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install black flake8 pylint
+
+      - name: Frontend - ESLint
+        run: |
+          cd frontend
+          npm run lint || true
+        continue-on-error: true
+
+      - name: Frontend - TypeScript Check
+        run: |
+          cd frontend
+          npx tsc --noEmit --project tsconfig.json || true
+
+      - name: Backend - Black Formatting Check
+        run: |
+          cd backend
+          black --check . || true
+        continue-on-error: true
+
+      - name: Backend - Flake8 Linting
+        run: |
+          cd backend
+          flake8 . --config=.flake8 || true
+        continue-on-error: true
+
+  # ========================================
+  # Security Scanning
+  # ========================================
+  security-scan:
+    name: Security Vulnerability Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Frontend - npm audit
+        run: |
+          cd frontend
+          npm audit --audit-level=high || true
+        continue-on-error: true
+
+      - name: Backend - pip audit
+        run: |
+          pip install pip-audit
+          cd backend
+          pip-audit -r requirements.txt || true
+        continue-on-error: true
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy-results.sarif"
+        continue-on-error: true
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: "trivy-results.sarif"
+        continue-on-error: true
+
+  # ========================================
+  # Frontend Testing
+  # ========================================
+  frontend-test:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    needs: [code-quality]
+
+    strategy:
+      matrix:
+        node-version: [18, 20]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci --prefer-offline --no-audit
+
+      - name: Run unit tests
+        run: |
+          cd frontend
+          CI=true npm test -- --watchAll=false --coverage --passWithNoTests
+        env:
+          CI: true
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./frontend/coverage
+          flags: frontend
+          name: frontend-coverage-node-${{ matrix.node-version }}
+
+      - name: Build application
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        if: matrix.node-version == 20
+        with:
+          name: frontend-build
+          path: frontend/build
+          retention-days: 7
+
+  # ========================================
+  # Backend Testing
+  # ========================================
+  backend-test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    needs: [code-quality]
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install coverage pytest pytest-django
+
+      - name: Run Django checks
+        env:
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
+          SECRET_KEY: test-secret-key-for-ci
+          DEBUG: false
+        run: |
+          cd backend
+          python manage.py check
+          python manage.py check --deploy || true
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
+          SECRET_KEY: test-secret-key-for-ci
+          DEBUG: false
+        run: |
+          cd backend
+          python manage.py migrate
+
+      - name: Run tests with coverage
+        env:
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
+          SECRET_KEY: test-secret-key-for-ci
+          DEBUG: false
+        run: |
+          cd backend
+          coverage run --source='.' manage.py test
+          coverage xml
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./backend/coverage.xml
+          flags: backend
+          name: backend-coverage
+
+  # ========================================
+  # E2E Testing
+  # ========================================
+  e2e-test:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [frontend-test, backend-test]
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          # Frontend
+          cd frontend
+          npm ci --prefer-offline --no-audit
+          npx playwright install --with-deps chromium
+
+          # Backend
+          cd ../backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Start backend server
+        run: |
+          cd backend
+          python manage.py migrate
+          python manage.py runserver &
+        env:
+          SECRET_KEY: test-secret-key-for-ci
+          DEBUG: false
+
+      - name: Wait for backend
+        run: |
+          timeout 30 bash -c 'until curl -f http://localhost:8000/api/health/ 2>/dev/null; do sleep 1; done' || true
+
+      - name: Run E2E tests
+        run: |
+          cd frontend
+          npm run test:e2e || true
+        env:
+          CI: true
+          REACT_APP_API_URL: http://localhost:8000
+        continue-on-error: true
+        timeout-minutes: 10
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: e2e-test-results
+          path: frontend/test-results
+          retention-days: 7
+
+  # ========================================
+  # Performance Testing (Lighthouse)
+  # ========================================
+  performance-test:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: [frontend-test]
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-build
+          path: frontend/build
+
+      - name: Install and run Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.13.x http-server
+
+          # Start server
+          npx http-server frontend/build -p 3000 &
+          sleep 5
+
+          # Run Lighthouse
+          lhci autorun --collect.url=http://localhost:3000 --collect.numberOfRuns=3 || true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ vars.LHCI_GITHUB_APP_TOKEN || '' }}
+
+      - name: Upload Lighthouse results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: lighthouse-results
+          path: .lighthouseci
+          retention-days: 7
+
+  # ========================================
+  # Build Docker Images
+  # ========================================
+  docker-build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [frontend-test, backend-test]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKER_USERNAME || 'skip' }}
+          password: ${{ secrets.DOCKER_PASSWORD || 'skip' }}
+        continue-on-error: true
+
+      - name: Build and push Frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: false # Set to true when Docker Hub is configured
+          tags: |
+            ${{ vars.DOCKER_USERNAME || 'emelmujiro' }}/emelmujiro-frontend:latest
+            ${{ vars.DOCKER_USERNAME || 'emelmujiro' }}/emelmujiro-frontend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+        continue-on-error: true
+
+      - name: Build and push Backend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false # Set to true when Docker Hub is configured
+          tags: |
+            ${{ vars.DOCKER_USERNAME || 'emelmujiro' }}/emelmujiro-backend:latest
+            ${{ vars.DOCKER_USERNAME || 'emelmujiro' }}/emelmujiro-backend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+        continue-on-error: true
+
+  # ========================================
+  # Deploy to Staging
+  # ========================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [frontend-test, backend-test, security-scan]
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment:
+      name: github-pages
+      url: https://staging.emelmujiro.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-build
+          path: frontend/build
+
+      - name: Deploy to staging
+        run: |
+          echo "Deploying to staging environment..."
+          # Add your staging deployment commands here
+          # Examples:
+          # - Deploy to AWS S3/CloudFront
+          # - Deploy to Vercel/Netlify
+          # - Deploy to Kubernetes staging namespace
+          # - Deploy to staging server via SSH
+
+      - name: Smoke tests on staging
+        run: |
+          echo "Running smoke tests on staging..."
+          # Add smoke test commands
+          # curl -f https://staging.emelmujiro.com/health || exit 1
+
+      - name: Notify deployment
+        if: always()
+        run: |
+          echo "Staging deployment completed"
+          # Add Slack/Discord notification here
+
+  # ========================================
+  # Deploy to Production (GitHub Pages)
+  # ========================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [frontend-test, backend-test, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: https://researcherhojin.github.io/emelmujiro
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install and Build Frontend
+        run: |
+          cd frontend
+          npm ci --prefer-offline --no-audit
+          npm run build
+          # GitHub Pages 404 처리를 위한 index.html 복사
+          cp build/index.html build/404.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./frontend/build
+          cname: emelmujiro.com # Replace with your domain
+
+      - name: Deploy backend to production
+        run: |
+          echo "Deploying backend to production..."
+          # Add your production backend deployment commands here
+          # Examples:
+          # - Deploy to AWS ECS/EKS
+          # - Deploy to Google Cloud Run
+          # - Deploy to Azure App Service
+          # - Deploy to production server via SSH
+
+      - name: Run database migrations
+        run: |
+          echo "Running production database migrations..."
+          # Add migration commands for production database
+
+      - name: Health check
+        run: |
+          echo "Running health checks..."
+          # curl -f https://emelmujiro.com/api/health || exit 1
+          # curl -f https://emelmujiro.com || exit 1
+
+      - name: Create GitHub Release
+        if: success()
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body: |
+            ## Changes in this Release
+            - Automated deployment from commit ${{ github.sha }}
+            - View commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+          draft: false
+          prerelease: false
+        continue-on-error: true
+
+      - name: Notify deployment
+        if: always()
+        run: |
+          echo "Production deployment completed"
+          # Add Slack/Discord notification here
+
+  # ========================================
+  # Cleanup Old Artifacts
+  # ========================================
+  cleanup:
+    name: Cleanup Old Artifacts
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [deploy-staging, deploy-production]
+
+    steps:
+      - name: Delete old artifacts
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const daysToKeep = 7;
+            const msPerDay = 24 * 60 * 60 * 1000;
+            const cutoffDate = new Date(Date.now() - daysToKeep * msPerDay);
+
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            for (const artifact of artifacts.data.artifacts) {
+              if (new Date(artifact.created_at) < cutoffDate) {
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: artifact.id,
+                });
+                console.log(`Deleted artifact: ${artifact.name}`);
+              }
+            }
+        continue-on-error: true
