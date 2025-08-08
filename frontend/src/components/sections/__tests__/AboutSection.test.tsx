@@ -13,11 +13,51 @@ type MotionComponentProps = {
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: MotionComponentProps) => <div {...props}>{children}</div>,
-    h2: ({ children, ...props }: MotionComponentProps) => <h2 {...props}>{children}</h2>,
-    h3: ({ children, ...props }: MotionComponentProps) => <h3 {...props}>{children}</h3>,
-    p: ({ children, ...props }: MotionComponentProps) => <p {...props}>{children}</p>,
-    span: ({ children, ...props }: MotionComponentProps) => <span {...props}>{children}</span>,
+    div: ({
+      children,
+      whileInView: _whileInView,
+      initial: _initial,
+      viewport: _viewport,
+      transition: _transition,
+      animate: _animate,
+      ...props
+    }: MotionComponentProps) => <div {...props}>{children}</div>,
+    h2: ({
+      children,
+      whileInView: _whileInView,
+      initial: _initial,
+      viewport: _viewport,
+      transition: _transition,
+      animate: _animate,
+      ...props
+    }: MotionComponentProps) => <h2 {...props}>{children}</h2>,
+    h3: ({
+      children,
+      whileInView: _whileInView,
+      initial: _initial,
+      viewport: _viewport,
+      transition: _transition,
+      animate: _animate,
+      ...props
+    }: MotionComponentProps) => <h3 {...props}>{children}</h3>,
+    p: ({
+      children,
+      whileInView: _whileInView,
+      initial: _initial,
+      viewport: _viewport,
+      transition: _transition,
+      animate: _animate,
+      ...props
+    }: MotionComponentProps) => <p {...props}>{children}</p>,
+    span: ({
+      children,
+      whileInView: _whileInView,
+      initial: _initial,
+      viewport: _viewport,
+      transition: _transition,
+      animate: _animate,
+      ...props
+    }: MotionComponentProps) => <span {...props}>{children}</span>,
   },
 }));
 
@@ -40,8 +80,8 @@ jest.mock('lucide-react', () => ({
 describe('AboutSection Component', () => {
   it('renders section with correct content', () => {
     render(<AboutSection />);
-    // Check for the main heading instead of checking for ID
-    expect(screen.getByText('우리의 비전')).toBeInTheDocument();
+    // Check for the main heading
+    expect(screen.getByText('About Me')).toBeInTheDocument();
   });
 
   it('displays the main title', () => {
@@ -125,8 +165,9 @@ describe('AboutSection Component', () => {
   it('renders all main content sections', () => {
     render(<AboutSection />);
     // Verify main sections are present through their content
-    expect(screen.getByText('우리의 비전')).toBeInTheDocument();
-    expect(screen.getByText('핵심 가치')).toBeInTheDocument();
+    expect(screen.getByText('Goals & Values')).toBeInTheDocument();
+    expect(screen.getByText('Work Style')).toBeInTheDocument();
+    expect(screen.getByText('Technical Skills')).toBeInTheDocument();
   });
 
   it('renders stats with correct content', () => {

@@ -48,16 +48,16 @@ describe('ServicesSection Component', () => {
     renderWithRouter(<ServicesSection />);
     // Check that all service titles are rendered
     expect(screen.getByText('AI 컨설팅')).toBeInTheDocument();
-    expect(screen.getByText('AI 교육')).toBeInTheDocument();
-    expect(screen.getByText('AI 개발')).toBeInTheDocument();
+    expect(screen.getByText('기업 AI 교육')).toBeInTheDocument();
+    expect(screen.getByText('LLM 솔루션')).toBeInTheDocument();
   });
 
   test('service cards have proper content', () => {
     renderWithRouter(<ServicesSection />);
 
     // Check that service descriptions are present
-    expect(screen.getByText(/기업의 AI 전환/)).toBeInTheDocument();
-    expect(screen.getByText(/비전공자를 위한/)).toBeInTheDocument();
-    expect(screen.getByText(/맞춤형 AI 솔루션/)).toBeInTheDocument();
+    expect(screen.getByText(/비즈니스 문제에 대한 실용적 AI 솔루션/)).toBeInTheDocument();
+    expect(screen.getByText(/실무자를 위한 체계적인 AI 역량 강화/)).toBeInTheDocument();
+    expect(screen.getByText(/최신 언어 모델 기반 비즈니스 혁신/)).toBeInTheDocument();
   });
 });

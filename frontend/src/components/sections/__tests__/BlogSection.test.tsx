@@ -262,7 +262,9 @@ describe('BlogSection Component', () => {
 
       // Check for content presence instead of CSS classes
       expect(screen.getByText('AI 트렌드')).toBeInTheDocument();
-      expect(screen.getByText('최신 AI 기술 동향과 인사이트를 공유합니다')).toBeInTheDocument();
+      expect(
+        screen.getByText('최신 AI 기술 동향과 실제 도입 사례를 공유합니다')
+      ).toBeInTheDocument();
     });
 
     it('applies grid layout for posts', () => {

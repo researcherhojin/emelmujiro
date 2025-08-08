@@ -220,8 +220,8 @@ describe('BlogInteractions Component', () => {
         id: mockPost.id,
         title: mockPost.title,
         excerpt: mockPost.excerpt,
-        date: expect.stringMatching(/^\\d{4}-\\d{2}-\\d{2}$/),
-        savedAt: expect.stringMatching(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/),
+        date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+        savedAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/),
       });
     });
   });
