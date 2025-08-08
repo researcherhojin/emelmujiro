@@ -1,6 +1,5 @@
 // Mock the api module directly
 import { blogService, api } from '../api';
-import { PaginatedResponse, BlogPost } from '../../types';
 
 jest.mock('../api', () => {
   const mockBlogService = {

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AuthProvider, useAuth } from '../AuthContext';
 import axiosInstance from '../../services/api';
 
@@ -24,7 +24,7 @@ const TestComponent: React.FC = () => {
   const handleLogin = async () => {
     try {
       await login('test@example.com', 'password');
-    } catch (e) {
+    } catch {
       // Silently catch errors for testing
     }
   };
@@ -87,14 +87,13 @@ describe('AuthContext', () => {
 
     const loginButton = screen.getByText('Login');
 
-    await act(async () => {
-      fireEvent.click(loginButton);
-    });
+    fireEvent.click(loginButton);
 
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
-      expect(screen.getByTestId('user')).toHaveTextContent('test@example.com');
     });
+
+    expect(screen.getByTestId('user')).toHaveTextContent('test@example.com');
 
     expect(mockedAxios.post).toHaveBeenCalledWith('/auth/login/', {
       email: 'test@example.com',
@@ -115,9 +114,7 @@ describe('AuthContext', () => {
 
     const logoutButton = screen.getByText('Logout');
 
-    await act(async () => {
-      fireEvent.click(logoutButton);
-    });
+    fireEvent.click(logoutButton);
 
     expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
     expect(screen.getByTestId('user')).toHaveTextContent('no-user');
@@ -140,8 +137,9 @@ describe('AuthContext', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
-      expect(screen.getByTestId('user')).toHaveTextContent('existing@example.com');
     });
+
+    expect(screen.getByTestId('user')).toHaveTextContent('existing@example.com');
 
     expect(mockLocalStorage.getItem).toHaveBeenCalledWith('authToken');
     expect(mockedAxios.get).toHaveBeenCalledWith('/auth/me/');
@@ -164,16 +162,15 @@ describe('AuthContext', () => {
 
     const loginButton = screen.getByText('Login');
 
-    await act(async () => {
-      fireEvent.click(loginButton);
-    });
+    fireEvent.click(loginButton);
 
     // Loading state should have been true during operation
     // After successful login, loading should be false
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
-      expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
     });
+
+    expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
   });
 
   test('handles failed login attempts', async () => {
@@ -196,15 +193,14 @@ describe('AuthContext', () => {
     const loginButton = screen.getByText('Login');
 
     // Attempt login which should fail
-    await act(async () => {
-      fireEvent.click(loginButton);
-    });
+    fireEvent.click(loginButton);
 
     // Should remain unauthenticated after failed login
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
-      expect(screen.getByTestId('user')).toHaveTextContent('no-user');
     });
+
+    expect(screen.getByTestId('user')).toHaveTextContent('no-user');
 
     expect(mockLocalStorage.setItem).not.toHaveBeenCalledWith('authToken', expect.any(String));
   });

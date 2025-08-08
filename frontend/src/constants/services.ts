@@ -16,7 +16,7 @@ export const SERVICES: Service[] = [
     description: '비즈니스 문제에 대한 실용적 AI 솔루션',
     features: ['맞춤형 모델 개발', 'MLOps 구축 지원', '성능 최적화'],
     details: '모델 개발, MLOps 구축, 성능 최적화',
-    icon: 'Brain'
+    icon: 'Brain',
   },
   {
     id: 'education',
@@ -25,7 +25,7 @@ export const SERVICES: Service[] = [
     description: '실무 중심의 AI/데이터 교육 프로그램',
     features: ['커스텀 커리큘럼', '실습 위주 교육', '사후 지원'],
     details: '맞춤형 커리큘럼, 실습 중심, 멘토링',
-    icon: 'GraduationCap'
+    icon: 'GraduationCap',
   },
   {
     id: 'poc',
@@ -34,8 +34,8 @@ export const SERVICES: Service[] = [
     description: '아이디어를 현실로 만드는 빠른 프로토타이핑',
     features: ['빠른 검증', '비용 효율적', 'MVP 개발'],
     details: '빠른 검증, 비용 효율적, MVP 지원',
-    icon: 'Lightbulb'
-  }
+    icon: 'Lightbulb',
+  },
 ];
 
 export const getServiceById = (id: string): Service | undefined => {
@@ -45,9 +45,9 @@ export const getServiceById = (id: string): Service | undefined => {
 export const getServiceIcon = (iconName: string): string => {
   // Icon mapping for different icon libraries
   const iconMap: Record<string, string> = {
-    'Brain': 'Brain',
-    'GraduationCap': 'GraduationCap',
-    'Lightbulb': 'Lightbulb'
+    Brain: 'Brain',
+    GraduationCap: 'GraduationCap',
+    Lightbulb: 'Lightbulb',
   };
   return iconMap[iconName] || iconName;
 };

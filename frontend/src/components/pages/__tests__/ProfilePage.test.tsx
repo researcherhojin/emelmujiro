@@ -189,11 +189,12 @@ describe('ProfilePage Component', () => {
 
   describe('Icons', () => {
     it('displays appropriate icons for each section', () => {
-      const { container } = renderWithRouter(<ProfilePage />);
+      renderWithRouter(<ProfilePage />);
 
-      // Check for SVG icons
-      const svgElements = container.querySelectorAll('svg');
-      expect(svgElements.length).toBeGreaterThan(0);
+      // Check for icon test ids
+      expect(screen.getByTestId('user-icon')).toBeInTheDocument();
+      expect(screen.getByTestId('briefcase-icon')).toBeInTheDocument();
+      expect(screen.getByTestId('graduation-cap-icon')).toBeInTheDocument();
     });
   });
 });

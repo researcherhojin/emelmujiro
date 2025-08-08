@@ -116,8 +116,8 @@ const Button: React.FC<ButtonProps> = props => {
   const {
     onClick,
     disabled = false,
-    to,
-    href,
+    to: _to,
+    href: _href,
     fullWidth: _,
     iconPosition: __,
     className: ___,

@@ -119,7 +119,7 @@ const ContactPage: React.FC = memo(() => {
         // If offline, save for background sync
         if (!isOnline) {
           try {
-            await registerBackgroundSync(SYNC_TAGS.CONTACT_FORM, formData as any);
+            await registerBackgroundSync(SYNC_TAGS.CONTACT_FORM, formData);
             setShowOfflineMessage(true);
 
             // Clear form

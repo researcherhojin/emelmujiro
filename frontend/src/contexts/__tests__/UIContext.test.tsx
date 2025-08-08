@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { UIProvider, useUI } from '../UIContext';
 
 // Test component to consume the context
@@ -58,17 +58,13 @@ describe('UIContext', () => {
 
     const toggleButton = screen.getByText('Toggle Theme');
 
-    await act(async () => {
-      fireEvent.click(toggleButton);
-    });
+    fireEvent.click(toggleButton);
 
     expect(screen.getByTestId('theme')).toHaveTextContent('dark');
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith('theme', 'dark');
 
     // Toggle back
-    await act(async () => {
-      fireEvent.click(toggleButton);
-    });
+    fireEvent.click(toggleButton);
 
     expect(screen.getByTestId('theme')).toHaveTextContent('light');
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith('theme', 'light');
@@ -83,15 +79,11 @@ describe('UIContext', () => {
 
     const toggleSidebarButton = screen.getByText('Toggle Sidebar');
 
-    await act(async () => {
-      fireEvent.click(toggleSidebarButton);
-    });
+    fireEvent.click(toggleSidebarButton);
 
     expect(screen.getByTestId('sidebar-open')).toHaveTextContent('true');
 
-    await act(async () => {
-      fireEvent.click(toggleSidebarButton);
-    });
+    fireEvent.click(toggleSidebarButton);
 
     expect(screen.getByTestId('sidebar-open')).toHaveTextContent('false');
   });
@@ -106,15 +98,11 @@ describe('UIContext', () => {
     const setLoadingTrueButton = screen.getByText('Set Loading True');
     const setLoadingFalseButton = screen.getByText('Set Loading False');
 
-    await act(async () => {
-      fireEvent.click(setLoadingTrueButton);
-    });
+    fireEvent.click(setLoadingTrueButton);
 
     expect(screen.getByTestId('loading')).toHaveTextContent('true');
 
-    await act(async () => {
-      fireEvent.click(setLoadingFalseButton);
-    });
+    fireEvent.click(setLoadingFalseButton);
 
     expect(screen.getByTestId('loading')).toHaveTextContent('false');
   });

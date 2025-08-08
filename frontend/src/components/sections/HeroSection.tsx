@@ -11,12 +11,8 @@ interface StatItemProps {
 
 const StatItem: React.FC<StatItemProps> = memo(({ value, label }) => (
   <div>
-    <div className="text-4xl sm:text-5xl font-black text-black mb-2 tracking-tight">
-      {value}
-    </div>
-    <div className="text-base sm:text-lg text-gray-600 font-medium">
-      {label}
-    </div>
+    <div className="text-4xl sm:text-5xl font-black text-black mb-2 tracking-tight">{value}</div>
+    <div className="text-base sm:text-lg text-gray-600 font-medium">{label}</div>
   </div>
 ));
 
@@ -60,7 +56,8 @@ const HeroSection: React.FC = memo(() => {
 
             {/* Subheadline */}
             <p className="text-lg sm:text-xl md:text-2xl text-gray-700 mb-8 sm:mb-10 leading-relaxed max-w-2xl">
-              대기업 AI 교육부터 스타트업 기술 컨설팅까지,<br/>
+              대기업 AI 교육부터 스타트업 기술 컨설팅까지,
+              <br />
               맞춤형 솔루션으로 비즈니스 성장을 가속화합니다.
             </p>
 
@@ -75,11 +72,7 @@ const HeroSection: React.FC = memo(() => {
                 프로젝트 문의하기
               </Button>
 
-              <Button
-                to="/about"
-                variant="secondary"
-                size="lg"
-              >
+              <Button to="/about" variant="secondary" size="lg">
                 회사 소개
               </Button>
             </div>
@@ -97,24 +90,15 @@ const HeroSection: React.FC = memo(() => {
           >
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-6 sm:p-8 lg:p-12 border border-gray-200">
               <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-                <StatItem 
-                  value={STATISTICS.education.totalStudentsText} 
-                  label="교육 수료생" 
+                <StatItem value={STATISTICS.education.totalStudentsText} label="교육 수료생" />
+                <StatItem value={STATISTICS.projects.totalProjectsText} label="프로젝트 완료" />
+                <StatItem
+                  value={`${STATISTICS.experience.totalCompaniesWorkedWith}+`}
+                  label="파트너 기업"
                 />
-                <StatItem 
-                  value={STATISTICS.projects.totalProjectsText} 
-                  label="프로젝트 완료" 
-                />
-                <StatItem 
-                  value={`${STATISTICS.experience.totalCompaniesWorkedWith}+`} 
-                  label="파트너 기업" 
-                />
-                <StatItem 
-                  value={`${STATISTICS.education.satisfactionRate}%`} 
-                  label="고객 만족도" 
-                />
+                <StatItem value={`${STATISTICS.education.satisfactionRate}%`} label="고객 만족도" />
               </div>
-              
+
               {/* Achievement badge */}
               <div className="mt-8 pt-6 border-t border-gray-300/50">
                 <div className="inline-flex items-center px-4 py-2 bg-white rounded-full border border-gray-200 shadow-sm">

@@ -5,6 +5,7 @@ import ContactPage from '../ContactPage';
 import { api } from '../../../services/api';
 import { registerBackgroundSync } from '../../../utils/backgroundSync';
 import { InternalAxiosRequestConfig } from 'axios';
+import React from 'react';
 
 // Mock dependencies
 jest.mock('../../../services/api');
@@ -29,14 +30,29 @@ jest.mock('../../common/SEOHelmet', () => {
   };
 });
 
+// Define type for motion component props
+type MotionComponentProps = {
+  children?: React.ReactNode;
+  className?: string;
+  id?: string;
+  onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  [key: string]: unknown;
+};
+
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }) => <div {...props}>{children}</div>,
-    section: ({ children, ...props }) => <section {...props}>{children}</section>,
-    button: ({ children, ...props }) => <button {...props}>{children}</button>,
+    div: ({ children, ...props }: MotionComponentProps) => <div {...props}>{children}</div>,
+    section: ({ children, ...props }: MotionComponentProps) => (
+      <section {...props}>{children}</section>
+    ),
+    button: ({ children, ...props }: MotionComponentProps) => (
+      <button {...props}>{children}</button>
+    ),
   },
-  AnimatePresence: ({ children }) => <>{children}</>,
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 }));
 
 const mockNavigate = jest.fn();
@@ -46,7 +62,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('ContactPage Component', () => {
-  const renderWithRouter = component => {
+  const renderWithRouter = (component: React.ReactElement) => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 

@@ -15,7 +15,7 @@ const PWAInstallButton: React.FC = memo(() => {
     // PWA 설치 여부 확인
     if (
       window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone
+      (window.navigator as Navigator & { standalone?: boolean }).standalone
     ) {
       setIsInstalled(true);
       return;

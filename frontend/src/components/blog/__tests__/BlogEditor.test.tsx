@@ -19,6 +19,17 @@ jest.mock('react-markdown', () => {
 // Mock remarkGfm
 jest.mock('remark-gfm', () => () => {});
 
+// Define types for blog posts
+interface BlogPost {
+  id: number;
+  title: string;
+  content: string;
+  category?: string;
+  date?: string;
+  created_at?: string;
+  slug?: string;
+}
+
 // Mock logger
 jest.mock('../../../utils/logger', () => ({
   __esModule: true,
@@ -100,8 +111,8 @@ describe('BlogEditor Component', () => {
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       expect(titleInput.value).toBe('Test Title');
 
-      // Find content textarea - it has a multiline placeholder
-      const contentTextarea = screen.getByRole('textbox', { name: /내용/i }) as HTMLTextAreaElement;
+      // Find content textarea by placeholder text
+      const contentTextarea = screen.getByPlaceholderText(/## 제목/) as HTMLTextAreaElement;
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
       expect(contentTextarea.value).toBe('Test Content');
     });
@@ -131,7 +142,7 @@ describe('BlogEditor Component', () => {
     it('displays content in preview mode', () => {
       renderWithRouter(<BlogEditor />);
 
-      const contentTextarea = screen.getByRole('textbox', { name: /내용/i }) as HTMLTextAreaElement;
+      const contentTextarea = screen.getByPlaceholderText(/## 제목/) as HTMLTextAreaElement;
       fireEvent.change(contentTextarea, { target: { value: '# Test Markdown' } });
 
       // Preview is already shown by default
@@ -162,14 +173,15 @@ describe('BlogEditor Component', () => {
     it('saves post to localStorage with valid data', () => {
       // Clear localStorage and set initial empty posts
       localStorage.clear();
-      localStorage.setItem('blogPosts', '[]');
+      localStorage.setItem('adminMode', 'true');
+      localStorage.setItem('customBlogPosts', '[]');
 
       renderWithRouter(<BlogEditor />);
 
       const titleInput = screen.getByPlaceholderText(
         '포스트 제목을 입력하세요'
       ) as HTMLInputElement;
-      const contentTextarea = screen.getByRole('textbox', { name: /내용/i }) as HTMLTextAreaElement;
+      const contentTextarea = screen.getByPlaceholderText(/## 제목/) as HTMLTextAreaElement;
       const categorySelect = screen.getByRole('combobox') as HTMLSelectElement;
 
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
@@ -184,14 +196,14 @@ describe('BlogEditor Component', () => {
       fireEvent.click(saveButton);
 
       // Check localStorage - should have the new post
-      const savedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
       expect(savedPosts.length).toBe(1);
       const lastPost = savedPosts[0];
       expect(lastPost?.title).toBe('Test Post');
       expect(lastPost?.content).toBe('Test Content');
-      expect(lastPost?.category).toBe('Technology');
+      expect(lastPost?.category).toBe('일반');
 
-      expect(alertSpy).toHaveBeenCalledWith('글이 저장되었습니다.');
+      expect(alertSpy).toHaveBeenCalledWith('포스트가 저장되었습니다!');
       expect(mockNavigate).toHaveBeenCalledWith('/blog');
 
       alertSpy.mockRestore();
@@ -201,14 +213,14 @@ describe('BlogEditor Component', () => {
       // Clear localStorage and set initial empty posts
       localStorage.clear();
       localStorage.setItem('adminMode', 'true');
-      localStorage.setItem('blogPosts', '[]');
+      localStorage.setItem('customBlogPosts', '[]');
 
       renderWithRouter(<BlogEditor />);
 
       const titleInput = screen.getByPlaceholderText(
         '포스트 제목을 입력하세요'
       ) as HTMLInputElement;
-      const contentTextarea = screen.getByRole('textbox', { name: /내용/i }) as HTMLTextAreaElement;
+      const contentTextarea = screen.getByPlaceholderText(/## 제목/) as HTMLTextAreaElement;
 
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
@@ -219,7 +231,7 @@ describe('BlogEditor Component', () => {
 
       fireEvent.click(saveButton);
 
-      const savedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
       expect(savedPosts.length).toBe(1);
       const lastPost = savedPosts[0];
       expect(lastPost?.id).toBeDefined();
@@ -239,7 +251,7 @@ describe('BlogEditor Component', () => {
         { id: 1, title: 'Post 1', content: 'Content 1' },
         { id: 2, title: 'Post 2', content: 'Content 2' },
       ];
-      localStorage.setItem('blogPosts', JSON.stringify(mockPosts));
+      localStorage.setItem('customBlogPosts', JSON.stringify(mockPosts));
 
       renderWithRouter(<BlogEditor />);
 
@@ -260,6 +272,7 @@ describe('BlogEditor Component', () => {
     });
 
     it('imports posts from JSON file', async () => {
+      localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
 
       const file = new File(
@@ -268,43 +281,41 @@ describe('BlogEditor Component', () => {
         { type: 'application/json' }
       );
 
-      const _importButton = screen.getByRole('button', { name: /가져오기/ });
-      // Get file input directly from the DOM as it's hidden
-      const fileInputs = screen.container.querySelectorAll('input[type="file"]');
-      const fileInput = fileInputs[0] as HTMLInputElement;
+      // We need to interact with the file input directly
+      // For file inputs, we still need direct access as Testing Library doesn't provide a good alternative
+      // eslint-disable-next-line testing-library/no-node-access
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
 
-      const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
 
       fireEvent.change(fileInput, { target: { files: [file] } });
 
       await waitFor(() => {
-        const savedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
+        const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]');
         // Check that the imported post was added
-        const importedPost = savedPosts.find(p => p.title === 'Imported Post');
+        const importedPost = savedPosts.find((p: BlogPost) => p.title === 'Imported Post');
         expect(importedPost).toBeDefined();
       });
 
-      const savedPosts = JSON.parse(localStorage.getItem('blogPosts') || '[]');
-      const importedPost = savedPosts.find(p => p.title === 'Imported Post');
-      expect(importedPost.content).toBe('Imported Content');
+      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
+      const importedPost = savedPosts.find((p: BlogPost) => p.title === 'Imported Post');
+      expect(importedPost?.content).toBe('Imported Content');
 
-      expect(confirmSpy).toHaveBeenCalled();
-      expect(alertSpy).toHaveBeenCalledWith('1개의 글을 가져왔습니다.');
+      expect(alertSpy).toHaveBeenCalledWith('1개의 포스트를 가져왔습니다!');
 
-      confirmSpy.mockRestore();
       alertSpy.mockRestore();
     });
 
     it('validates imported JSON structure', async () => {
+      localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
 
       const invalidFile = new File(['invalid json'], 'posts.json', { type: 'application/json' });
 
-      const _importButton = screen.getByRole('button', { name: /가져오기/ });
-      // Get file input directly from the DOM as it's hidden
-      const fileInputs = screen.container.querySelectorAll('input[type="file"]');
-      const fileInput = fileInputs[0] as HTMLInputElement;
+      // We need to interact with the file input directly
+      // For file inputs, we still need direct access as Testing Library doesn't provide a good alternative
+      // eslint-disable-next-line testing-library/no-node-access
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
 
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
 

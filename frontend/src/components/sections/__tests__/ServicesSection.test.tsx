@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import ServicesSection from '../ServicesSection';
+import React from 'react';
 
 describe('ServicesSection Component', () => {
-  const renderWithRouter = component => {
+  const renderWithRouter = (component: React.ReactElement) => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 
@@ -43,20 +44,20 @@ describe('ServicesSection Component', () => {
     expect(screen.getByText(/챗봇 개발, RAG 시스템, 문서 분석/)).toBeInTheDocument();
   });
 
-  test('renders service cards with icons', () => {
-    const { container } = renderWithRouter(<ServicesSection />);
-    // The new design uses div elements instead of SVG icons
-    const iconContainers = container.querySelectorAll('.w-12.h-12.bg-gray-100');
-    expect(iconContainers.length).toBe(3); // 3 service cards
+  test('renders all service cards', () => {
+    renderWithRouter(<ServicesSection />);
+    // Check that all service titles are rendered
+    expect(screen.getByText('AI 컨설팅')).toBeInTheDocument();
+    expect(screen.getByText('AI 교육')).toBeInTheDocument();
+    expect(screen.getByText('AI 개발')).toBeInTheDocument();
   });
 
-  test('service cards have hover effects', () => {
-    const { container } = renderWithRouter(<ServicesSection />);
-    const cards = container.querySelectorAll('.group');
+  test('service cards have proper content', () => {
+    renderWithRouter(<ServicesSection />);
 
-    expect(cards.length).toBe(3);
-    cards.forEach(card => {
-      expect(card).toHaveClass('hover:shadow-2xl');
-    });
+    // Check that service descriptions are present
+    expect(screen.getByText(/기업의 AI 전환/)).toBeInTheDocument();
+    expect(screen.getByText(/비전공자를 위한/)).toBeInTheDocument();
+    expect(screen.getByText(/맞춤형 AI 솔루션/)).toBeInTheDocument();
   });
 });

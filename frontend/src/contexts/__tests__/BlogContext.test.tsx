@@ -1,4 +1,4 @@
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BlogProvider, useBlog } from '../BlogContext';
 import { api } from '../../services/api';
 import { PaginatedResponse, BlogPost } from '../../types';
@@ -116,14 +116,13 @@ describe('BlogContext', () => {
 
     const fetchButton = screen.getByText('Fetch Posts');
 
-    await act(async () => {
-      fetchButton.click();
-    });
+    fireEvent.click(fetchButton);
 
     await waitFor(() => {
       expect(screen.getByTestId('posts-count')).toHaveTextContent('2');
-      expect(screen.getByTestId('total-pages')).toHaveTextContent('1'); // 2 posts / 6 per page = 1 page
     });
+
+    expect(screen.getByTestId('total-pages')).toHaveTextContent('1'); // 2 posts / 6 per page = 1 page
 
     expect(mockedApi.getBlogPosts).toHaveBeenCalledWith(1);
   });
@@ -140,18 +139,15 @@ describe('BlogContext', () => {
 
     const fetchButton = screen.getByText('Fetch Posts');
 
-    await act(async () => {
-      fetchButton.click();
-    });
+    fireEvent.click(fetchButton);
 
     await waitFor(() => {
-      const errorElement = screen.getByTestId('error');
-      // The error might be set to the Korean error message or stay as 'no-error'
-      // if local posts load successfully. Either way, loading should be false.
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
-      // Just verify the error element exists and has some content
-      expect(errorElement).toBeInTheDocument();
     });
+
+    // Just verify the error element exists and has some content
+    const errorElement = screen.getByTestId('error');
+    expect(errorElement).toBeInTheDocument();
   });
 
   test('sets loading state during fetch', async () => {
@@ -187,9 +183,7 @@ describe('BlogContext', () => {
 
     const fetchButton = screen.getByText('Fetch Posts');
 
-    await act(async () => {
-      fetchButton.click();
-    });
+    fireEvent.click(fetchButton);
 
     // Check loading state is true immediately
     expect(screen.getByTestId('loading')).toHaveTextContent('true');

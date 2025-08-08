@@ -33,7 +33,7 @@ const QuickIntroSection: React.FC = memo(() => {
   return (
     <section className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
@@ -41,27 +41,24 @@ const QuickIntroSection: React.FC = memo(() => {
           className="max-w-3xl"
         >
           <h2 className="text-3xl font-semibold text-gray-900 mb-8">
-            실무 경험을 바탕으로한 <br/>
+            실무 경험을 바탕으로한 <br />
             체계적인 AI 교육과 컨설팅
           </h2>
-          
+
           <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-            2022년부터 축적한 AI 교육 노하우와 실무 프로젝트 경험을 바탕으로,<br/>
-            각 기업의 특성에 맞는 맞춤형 AI 솔루션을 제공합니다.
+            2022년부터 축적한 AI 교육 노하우와 실무 프로젝트 경험을 바탕으로,
+            <br />각 기업의 특성에 맞는 맞춤형 AI 솔루션을 제공합니다.
           </p>
 
           <div className="grid grid-cols-3 gap-8 mb-12">
-            <StatisticItem 
-              value={STATISTICS.education.totalStudentsText} 
-              label="누적 교육 수료생" 
+            <StatisticItem
+              value={STATISTICS.education.totalStudentsText}
+              label="누적 교육 수료생"
             />
-            <StatisticItem 
-              value={STATISTICS.projects.totalProjectsText} 
-              label="완료된 프로젝트" 
-            />
-            <StatisticItem 
-              value={`${STATISTICS.experience.totalCompaniesWorkedWith}+`} 
-              label="협력 기업" 
+            <StatisticItem value={STATISTICS.projects.totalProjectsText} label="완료된 프로젝트" />
+            <StatisticItem
+              value={`${STATISTICS.experience.totalCompaniesWorkedWith}+`}
+              label="협력 기업"
             />
           </div>
 
