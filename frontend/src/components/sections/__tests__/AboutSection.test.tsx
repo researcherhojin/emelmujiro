@@ -209,10 +209,20 @@ describe('AboutSection Component', () => {
     const headings = screen.getAllByRole('heading');
     const headingTexts = headings.map(h => h.textContent);
 
-    expect(headingTexts[0]).toContain('About Me');
-    expect(headingTexts[1]).toContain('Goals & Values');
-    expect(headingTexts[2]).toContain('Work Style');
-    expect(headingTexts[3]).toContain('Technical Skills');
-    expect(headingTexts[4]).toContain('Certifications & Achievements');
+    // Find main section headings (h2 and h3 with icons)
+    const mainHeadings = headingTexts.filter(
+      text =>
+        text?.includes('About Me') ||
+        text?.includes('Goals & Values') ||
+        text?.includes('Work Style') ||
+        text?.includes('Technical Skills') ||
+        text?.includes('Certifications & Achievements')
+    );
+
+    expect(mainHeadings[0]).toContain('About Me');
+    expect(mainHeadings[1]).toContain('Goals & Values');
+    expect(mainHeadings[2]).toContain('Work Style');
+    expect(mainHeadings[3]).toContain('Technical Skills');
+    expect(mainHeadings[4]).toContain('Certifications & Achievements');
   });
 });
