@@ -36,8 +36,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "yarn"
           cache-dependency-path: frontend/yarn.lock
-          cache: "yarn"
-          cache-dependency-path: frontend/yarn.lock
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -531,8 +529,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "yarn"
-          cache-dependency-path: frontend/yarn.lock
           cache: "yarn"
           cache-dependency-path: frontend/yarn.lock
 
