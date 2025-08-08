@@ -62,9 +62,11 @@ describe('BlogInteractions Component', () => {
     jest.clearAllMocks();
 
     // Mock window.location.href to include blog path
-    const _originalLocation = window.location;
-    delete (window as unknown as { location: Location }).location;
-    window.location = new URL('http://localhost/#/blog/1') as unknown as Location;
+    Object.defineProperty(window, 'location', {
+      value: new URL('http://localhost/#/blog/1'),
+      writable: true,
+      configurable: true,
+    });
   });
 
   describe('Rendering', () => {
@@ -241,13 +243,21 @@ describe('BlogInteractions Component', () => {
       expect(screen.getByText(/링크 복사/)).toBeInTheDocument();
 
       // Restore
-      (navigator as any).share = originalShare;
+      Object.defineProperty(navigator, 'share', {
+        value: originalShare,
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('shows and hides share menu', () => {
       // Mock navigator.share as not available
       const originalShare = navigator.share;
-      delete (navigator as any).share;
+      Object.defineProperty(navigator, 'share', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
 
       render(<BlogInteractions post={mockPost} />);
 
@@ -262,13 +272,21 @@ describe('BlogInteractions Component', () => {
       expect(screen.queryByText('Facebook')).not.toBeInTheDocument();
 
       // Restore
-      (navigator as any).share = originalShare;
+      Object.defineProperty(navigator, 'share', {
+        value: originalShare,
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('shares to Facebook', () => {
       // Mock navigator.share as not available
       const originalShare = navigator.share;
-      delete (navigator as any).share;
+      Object.defineProperty(navigator, 'share', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
 
       render(<BlogInteractions post={mockPost} />);
 
@@ -285,13 +303,21 @@ describe('BlogInteractions Component', () => {
       );
 
       // Restore
-      (navigator as any).share = originalShare;
+      Object.defineProperty(navigator, 'share', {
+        value: originalShare,
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('shares to Twitter', () => {
       // Mock navigator.share as not available
       const originalShare = navigator.share;
-      delete (navigator as any).share;
+      Object.defineProperty(navigator, 'share', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
 
       render(<BlogInteractions post={mockPost} />);
 
@@ -308,13 +334,21 @@ describe('BlogInteractions Component', () => {
       );
 
       // Restore
-      (navigator as any).share = originalShare;
+      Object.defineProperty(navigator, 'share', {
+        value: originalShare,
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('shares to LinkedIn', () => {
       // Mock navigator.share as not available
       const originalShare = navigator.share;
-      delete (navigator as any).share;
+      Object.defineProperty(navigator, 'share', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
 
       render(<BlogInteractions post={mockPost} />);
 
@@ -331,13 +365,21 @@ describe('BlogInteractions Component', () => {
       );
 
       // Restore
-      (navigator as any).share = originalShare;
+      Object.defineProperty(navigator, 'share', {
+        value: originalShare,
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('copies link to clipboard', async () => {
       // Mock navigator.share as not available
       const originalShare = navigator.share;
-      delete (navigator as any).share;
+      Object.defineProperty(navigator, 'share', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
 
       mockWriteText.mockResolvedValue(undefined);
 
@@ -366,13 +408,21 @@ describe('BlogInteractions Component', () => {
       );
 
       // Restore
-      (navigator as any).share = originalShare;
+      Object.defineProperty(navigator, 'share', {
+        value: originalShare,
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('uses native share API on mobile when available', async () => {
       // Mock as mobile device
       const originalCanShare = navigator.canShare;
-      (navigator as any).canShare = () => true;
+      Object.defineProperty(navigator, 'canShare', {
+        value: () => true,
+        writable: true,
+        configurable: true,
+      });
       mockShare.mockResolvedValue(undefined);
 
       render(<BlogInteractions post={mockPost} />);
@@ -389,7 +439,11 @@ describe('BlogInteractions Component', () => {
       });
 
       // Restore
-      (navigator as any).canShare = originalCanShare;
+      Object.defineProperty(navigator, 'canShare', {
+        value: originalCanShare,
+        writable: true,
+        configurable: true,
+      });
     });
   });
 
@@ -425,7 +479,11 @@ describe('BlogInteractions Component', () => {
     it('handles clipboard API failure', async () => {
       // Mock navigator.share as not available
       const originalShare = navigator.share;
-      delete (navigator as any).share;
+      Object.defineProperty(navigator, 'share', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
 
       // Mock clipboard failure and provide fallback
       mockWriteText.mockRejectedValue(new Error('Clipboard error'));
@@ -445,7 +503,11 @@ describe('BlogInteractions Component', () => {
       });
 
       // Restore
-      (navigator as any).share = originalShare;
+      Object.defineProperty(navigator, 'share', {
+        value: originalShare,
+        writable: true,
+        configurable: true,
+      });
     });
   });
 });

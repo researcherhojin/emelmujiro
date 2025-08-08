@@ -268,8 +268,10 @@ describe('BlogEditor Component', () => {
         { type: 'application/json' }
       );
 
-      const importButton = screen.getByRole('button', { name: /가져오기/ });
-      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      const _importButton = screen.getByRole('button', { name: /가져오기/ });
+      // Get file input directly from the DOM as it's hidden
+      const fileInputs = screen.container.querySelectorAll('input[type="file"]');
+      const fileInput = fileInputs[0] as HTMLInputElement;
 
       const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
@@ -299,8 +301,10 @@ describe('BlogEditor Component', () => {
 
       const invalidFile = new File(['invalid json'], 'posts.json', { type: 'application/json' });
 
-      const importButton = screen.getByRole('button', { name: /가져오기/ });
-      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      const _importButton = screen.getByRole('button', { name: /가져오기/ });
+      // Get file input directly from the DOM as it's hidden
+      const fileInputs = screen.container.querySelectorAll('input[type="file"]');
+      const fileInput = fileInputs[0] as HTMLInputElement;
 
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
 
