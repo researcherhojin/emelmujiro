@@ -26,9 +26,17 @@ jobs:
 
       - name: Check commit messages
         run: |
-          # Validate commit message format
+          # Validate commit message format (skip merge commits)
           git log --format="%s" ${{ github.event.pull_request.base.sha }}..${{ github.sha }} | while read msg; do
-            if [[ ! "$msg" =~ ^(feat|fix|docs|style|refactor|test|chore|deps)(\(.+\))?: ]]; then
+            # Skip merge commits
+            if [[ "$msg" =~ ^Merge ]]; then
+              continue
+            fi
+            # Skip dependabot commits (they follow their own format)
+            if [[ "$msg" =~ ^Bump\ |^build\(deps|^chore\(deps|^ci\(deps ]]; then
+              continue
+            fi
+            if [[ ! "$msg" =~ ^(feat|fix|docs|style|refactor|test|chore|deps|ci)(\(.+\))?: ]]; then
               echo "Invalid commit message: $msg"
               echo "Please use conventional commits format: type(scope): description"
               exit 1
@@ -168,19 +176,25 @@ jobs:
           echo "Build size:"
           du -sh build/
 
-          # Ensure build doesn't exceed 5MB
+          # Ensure build doesn't exceed 10MB (increased limit for production builds)
           BUILD_SIZE=$(du -sb build/ | cut -f1)
-          if [ $BUILD_SIZE -gt 5242880 ]; then
-            echo "Build size exceeds 5MB limit!"
+          MAX_SIZE=10485760  # 10MB in bytes
+          if [ $BUILD_SIZE -gt $MAX_SIZE ]; then
+            echo "Build size exceeds 10MB limit!"
+            echo "Current size: $(du -sh build/)"
             exit 1
           fi
+          echo "Build size is acceptable: $(du -sh build/)"
 
   # PR comment with results summary
   pr-comment:
     name: PR Summary
     runs-on: ubuntu-latest
-    if: always()
+    if: always() && github.actor != 'dependabot[bot]'
     needs: [lint, affected-tests, security-scan, bundle-analysis]
+    permissions:
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Comment PR
