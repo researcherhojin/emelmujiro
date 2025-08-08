@@ -44,8 +44,10 @@ describe('BlogEditor Component', () => {
   });
 
   describe('Admin Mode', () => {
-    it('renders nothing when not in admin mode', () => {
+    it('shows admin required message when not in admin mode', () => {
+      localStorage.removeItem('adminMode');
       renderWithRouter(<BlogEditor />);
+      expect(screen.getByText('관리자 모드가 필요합니다')).toBeInTheDocument();
       expect(screen.queryByText('블로그 글쓰기')).not.toBeInTheDocument();
     });
 
@@ -53,6 +55,7 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
       expect(screen.getByText('블로그 글쓰기')).toBeInTheDocument();
+      expect(screen.queryByText('관리자 모드가 필요합니다')).not.toBeInTheDocument();
     });
 
     it('activates admin mode via URL parameter', () => {
