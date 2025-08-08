@@ -63,7 +63,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
         setPosts(localPosts as BlogPost[]);
         setTotalPages(1);
         setCurrentPage(1);
-      } catch (_localErr) {
+      } catch {
         setError('블로그 포스트를 불러오는데 실패했습니다.');
         setPosts([]);
       }
@@ -94,7 +94,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
       try {
         const localPost = await getLocalBlogPost(id);
         setCurrentPost(localPost as BlogPost);
-      } catch (_localErr) {
+      } catch {
         setError('포스트를 불러오는데 실패했습니다.');
         setCurrentPost(null);
       }

@@ -33,18 +33,18 @@ jest.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
-      whileInView,
-      initial,
-      viewport,
-      transition,
+      whileInView: _whileInView,
+      initial: _initial,
+      viewport: _viewport,
+      transition: _transition,
       ...props
     }: MotionComponentProps) => <div {...props}>{children}</div>,
     section: ({
       children,
-      whileInView,
-      initial,
-      viewport,
-      transition,
+      whileInView: _whileInView,
+      initial: _initial,
+      viewport: _viewport,
+      transition: _transition,
       ...props
     }: MotionComponentProps) => <section {...props}>{children}</section>,
   },
