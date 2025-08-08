@@ -270,9 +270,9 @@ describe('BlogSection Component', () => {
     it('applies grid layout for posts', () => {
       renderWithRouter(<BlogSection posts={mockPosts} isLoading={false} error={null} />);
 
-      // Check that all blog cards are rendered
+      // BlogSection only displays first 3 posts, not all posts
       const blogCards = screen.getAllByTestId('blog-card');
-      expect(blogCards).toHaveLength(mockPosts.length);
+      expect(blogCards).toHaveLength(3); // Only first 3 posts are displayed
     });
 
     it('shows loading state', () => {

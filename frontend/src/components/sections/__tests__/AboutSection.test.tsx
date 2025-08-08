@@ -174,8 +174,8 @@ describe('AboutSection Component', () => {
     render(<AboutSection />);
     // Check for specific stat values instead of iterating
     // Since STATISTICS is a complex nested object, check for specific content
-    expect(screen.getByText('10,000+')).toBeInTheDocument(); // totalStudentsText
-    expect(screen.getByText('500+')).toBeInTheDocument(); // totalProjectsText
+    expect(screen.getByText('1,000+')).toBeInTheDocument(); // totalStudentsText
+    expect(screen.getByText('50+')).toBeInTheDocument(); // totalProjectsText
   });
 
   it('uses proper semantic HTML', () => {

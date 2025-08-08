@@ -191,9 +191,9 @@ describe('ProfilePage Component', () => {
       renderWithRouter(<ProfilePage />);
 
       // Check that the component renders without errors
-      // Icons are now mocked as simple divs so we check for section headings instead
-      expect(screen.getByText('Profile')).toBeInTheDocument();
+      // Since icons are mocked, check for actual content
       expect(screen.getByText('이호진')).toBeInTheDocument();
+      expect(screen.getByText('AI Researcher & Educator')).toBeInTheDocument();
     });
   });
 });
