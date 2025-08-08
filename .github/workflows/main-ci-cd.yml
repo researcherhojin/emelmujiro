@@ -49,14 +49,18 @@ jobs:
             ~/.npm
             ~/.cache/pip
             frontend/node_modules
-          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/requirements.txt') }}
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/yarn.lock', '**/package-lock.json', '**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-deps-
 
       - name: Install frontend dependencies
         run: |
           cd frontend
-          npm ci --prefer-offline --no-audit
+          if [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile --prefer-offline
+          else
+            npm ci --prefer-offline --no-audit
+          fi
 
       - name: Install backend dependencies
         run: |
@@ -159,14 +163,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: frontend/node_modules
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('frontend/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('frontend/yarn.lock', 'frontend/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ matrix.node-version }}-
 
       - name: Install dependencies
         run: |
           cd frontend
-          npm ci --prefer-offline --no-audit
+          if [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile --prefer-offline
+          else
+            npm ci --prefer-offline --no-audit
+          fi
 
       - name: Run unit tests
         run: |
@@ -298,7 +306,11 @@ jobs:
         run: |
           # Frontend
           cd frontend
-          npm ci --prefer-offline --no-audit
+          if [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile --prefer-offline
+          else
+            npm ci --prefer-offline --no-audit
+          fi
           npx playwright install --with-deps chromium
 
           # Backend
@@ -509,7 +521,11 @@ jobs:
       - name: Install and Build Frontend
         run: |
           cd frontend
-          npm ci --prefer-offline --no-audit
+          if [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile --prefer-offline
+          else
+            npm ci --prefer-offline --no-audit
+          fi
           npm run build
           # GitHub Pages 404 처리를 위한 index.html 복사
           cp build/index.html build/404.html

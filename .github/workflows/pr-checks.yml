@@ -74,7 +74,11 @@ jobs:
       - name: Frontend lint
         run: |
           cd frontend
-          npm ci --prefer-offline --no-audit
+          if [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile --prefer-offline
+          else
+            npm ci --prefer-offline --no-audit
+          fi
           npm run lint || true
           npx prettier --check "src/**/*.{js,jsx,ts,tsx,css}" || true
 
@@ -114,7 +118,11 @@ jobs:
         if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/')
         run: |
           cd frontend
-          npm ci --prefer-offline --no-audit
+          if [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile --prefer-offline
+          else
+            npm ci --prefer-offline --no-audit
+          fi
           CI=true npm test -- --watchAll=false --passWithNoTests --changedSince=${{ github.event.pull_request.base.sha }}
 
       - name: Setup Python
@@ -169,7 +177,11 @@ jobs:
       - name: Build and analyze
         run: |
           cd frontend
-          npm ci --prefer-offline --no-audit
+          if [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile --prefer-offline
+          else
+            npm ci --prefer-offline --no-audit
+          fi
           npm run build
 
           # Check build size
