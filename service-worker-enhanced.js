@@ -10,8 +10,6 @@ const IMAGE_CACHE_NAME = `emelmujiro-images-${CACHE_VERSION}`;
 const urlsToCache = [
   '/emelmujiro/',
   '/emelmujiro/index.html',
-  '/emelmujiro/static/css/main.css',
-  '/emelmujiro/static/js/main.js',
   '/emelmujiro/manifest.json',
   '/emelmujiro/favicon.ico',
   '/emelmujiro/logo192.png',
@@ -25,6 +23,9 @@ const DYNAMIC_CACHE_PATTERNS = [
   /^https:\/\/fonts\.gstatic\.com/,
   /\.woff2?$/,
   /\.ttf$/,
+  /\/static\/css\//,
+  /\/static\/js\//,
+  /\/static\/media\//,
 ];
 
 // Image patterns for separate image cache
@@ -53,7 +54,14 @@ self.addEventListener('install', event => {
       .open(CACHE_NAME)
       .then(cache => {
         console.log('[Service Worker] Caching essential resources');
-        return cache.addAll(urlsToCache);
+        // Cache each URL individually to handle failures gracefully
+        return Promise.all(
+          urlsToCache.map(url => {
+            return cache.add(url).catch(error => {
+              console.warn(`[Service Worker] Failed to cache ${url}:`, error);
+            });
+          })
+        );
       })
       .then(() => {
         console.log('[Service Worker] Skip waiting');
