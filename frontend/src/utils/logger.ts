@@ -56,14 +56,12 @@ class Logger {
 
   warn(message: string, data?: unknown): void {
     if (this.shouldLog('warn')) {
-      // eslint-disable-next-line no-console
       console.warn(this.formatMessage('warn', message), data || '');
     }
   }
 
   error(message: string, error?: Error | unknown): void {
     if (this.shouldLog('error')) {
-      // eslint-disable-next-line no-console
       console.error(this.formatMessage('error', message), error || '');
 
       // 프로덕션에서는 에러 리포팅 서비스로 전송

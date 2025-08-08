@@ -14,9 +14,12 @@ interface SyncData {
   timestamp: number;
 }
 
+// Type for request options
+type RequestOptions = Record<string, any>;
+
 interface SyncRequest {
   url: string;
-  options: RequestInit;
+  options: RequestOptions;
   timestamp: number;
 }
 
@@ -128,7 +131,7 @@ export const SYNC_TAGS = {
 export type SyncTag = (typeof SYNC_TAGS)[keyof typeof SYNC_TAGS];
 
 // Queue failed API requests for retry
-export async function queueFailedRequest(url: string, options: RequestInit): Promise<void> {
+export async function queueFailedRequest(url: string, options: RequestOptions): Promise<void> {
   const syncData: SyncRequest = {
     url,
     options,
