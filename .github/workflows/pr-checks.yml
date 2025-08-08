@@ -63,7 +63,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -112,7 +113,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Test frontend changes
         if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/')
@@ -172,7 +174,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Build and analyze
         run: |

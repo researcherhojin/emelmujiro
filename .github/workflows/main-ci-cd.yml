@@ -34,7 +34,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -110,6 +113,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Frontend - npm audit
         run: |
@@ -160,7 +165,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -299,6 +305,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -369,6 +377,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Download build artifacts
         uses: actions/download-artifact@v5
@@ -466,6 +476,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Download build artifacts
         uses: actions/download-artifact@v5
@@ -519,7 +531,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
+          cache: "yarn"
+          cache-dependency-path: frontend/yarn.lock
 
       - name: Install and Build Frontend
         run: |
