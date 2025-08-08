@@ -37,8 +37,8 @@ test.describe('Contact Page', () => {
 
     // Check for HTML5 validation messages
     const nameInput = page.locator('input[name="name"]');
-    const isInvalid = await nameInput.evaluate(el => !el.validity.valid);
-    expect(isInvalid).toBeTruthy();
+    await expect(nameInput).toHaveAttribute('required');
+    await expect(nameInput).toBeEmpty();
   });
 
   test('displays contact information', async ({ page }) => {

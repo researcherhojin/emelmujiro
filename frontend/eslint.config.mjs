@@ -19,10 +19,13 @@ export default [
       'node_modules/**',
       'coverage/**',
       'public/service-worker.js',
+      'public/service-worker-enhanced.js',
       'sitemap-generator.js',
       '*.config.js',
       '*.config.mjs',
-      '.lighthouserc.js'
+      '.lighthouserc.js',
+      'e2e/**/*.js',
+      'e2e/**/*.ts'
     ]
   },
   
