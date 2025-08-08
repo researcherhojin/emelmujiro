@@ -11,6 +11,7 @@ AI 교육 및 컨설팅 전문 기업 에멜무지로의 공식 웹사이트입�
 ## 🚀 빠른 시작
 
 ### 필수 요구사항
+
 - Node.js 18.x 이상
 - npm 9.x 이상
 - Git
@@ -48,7 +49,8 @@ npm test           # 테스트 실행
 npm run lint       # ESLint 검사
 npm run lint:fix   # ESLint 자동 수정
 npm run format     # Prettier 포맷팅
-npm run typecheck  # TypeScript 타입 체크
+npm run type-check # TypeScript 타입 체크
+npm run validate   # 린트 + 타입 체크 + 테스트
 ```
 
 ## 🛠 기술 스택
@@ -70,7 +72,10 @@ npm run typecheck  # TypeScript 타입 체크
 
 ### DevOps & Testing
 
-- **GitHub Actions** - CI/CD 자동화 (100% 성공률)
+- **GitHub Actions** - 통합 CI/CD 파이프라인 (100% 성공률)
+  - main-ci-cd.yml: 코드 품질, 보안 스캔, 테스트, 배포
+  - pr-checks.yml: PR 검증, 번들 크기 체크
+  - Dependabot 자동 의존성 업데이트
 - **GitHub Pages** - 정적 호스팅
 - **Jest** + **React Testing Library** - 277개 테스트 케이스
 - **Playwright** - E2E 테스트 (설정 완료)
@@ -78,13 +83,18 @@ npm run typecheck  # TypeScript 타입 체크
 - **Prettier** - 코드 포맷팅 자동화
 - **Husky** + **Lint-staged** - Git 훅 자동화
 - **Docker** & **Docker Compose** - 컨테이너화
+- **보안 스캔** - Trivy, npm audit, pip-audit
+- **코드 커버리지** - Codecov 통합
 
 ## 📈 프로젝트 현황
 
 ### 성과 지표
-- **CI/CD 파이프라인**: ![CI Status](https://github.com/researcherhojin/emelmujiro/actions/workflows/frontend-ci.yml/badge.svg)
+
+- **CI/CD 파이프라인**: ![CI Status](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)
 - **코드 품질**: ESLint 0 errors, TypeScript 0 errors
 - **테스트 통과율**: 100% (277/277 tests)
+- **의존성 관리**: Dependabot 자동 업데이트 활성화
+- **보안 스캔**: 취약점 0건 (Critical/High)
 - **빌드 시간**: ~45초
 - **번들 크기**: ~500KB (gzipped)
 
@@ -149,8 +159,11 @@ emelmujiro/
 │   ├── config/                 # 설정
 │   └── requirements.txt
 ├── .github/
-│   └── workflows/              # GitHub Actions
-│       └── deploy-gh-pages.yml
+│   ├── workflows/              # GitHub Actions
+│   │   ├── main-ci-cd.yml      # 통합 CI/CD 파이프라인
+│   │   ├── pr-checks.yml       # PR 검증 워크플로우
+│   │   └── deploy-gh-pages.yml # GitHub Pages 배포
+│   └── dependabot.yml          # 자동 의존성 업데이트
 └── README.md
 ```
 
@@ -283,9 +296,43 @@ npm run build
 - **TypeScript 커버리지**: 100% (114개 TS/TSX 파일, 0개 JS/JSX)
 - **컴포넌트 수**: 60개+ (모두 TypeScript)
 - **Context API**: 4개 (UI, Blog, Auth, Form)
-- **CI/CD 상태**: ![CI Status](https://github.com/researcherhojin/emelmujiro/actions/workflows/frontend-ci.yml/badge.svg)
+- **CI/CD 상태**: ![CI Status](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)
+- **의존성 업데이트**: Dependabot 13개+ PR 자동 병합
 
 ## 🔄 최근 업데이트 (2025.08)
+
+### Phase 18: CI/CD 파이프라인 고도화 및 자동화 (2025.08.08)
+
+#### ✅ 완료된 작업
+
+- **Dependabot 설정 및 자동화**
+  - 자동 의존성 업데이트 구성 (npm, pip, GitHub Actions)
+  - 주요 버전 업데이트 자동 제외 규칙 추가
+  - 13개+ Dependabot PR 검토 및 병합 완료
+  
+- **GitHub Actions 워크플로우 완전 개편**
+  - `main-ci-cd.yml`: 통합 CI/CD 파이프라인 구축
+    - 코드 품질 검사 (ESLint, TypeScript, Black, Flake8)
+    - 보안 취약점 스캔 (Trivy, npm audit, pip-audit)
+    - 병렬 테스트 실행 (Node.js 18.x, 20.x 매트릭스)
+    - Docker 이미지 빌드 자동화
+    - 스테이징/프로덕션 자동 배포
+  - `pr-checks.yml`: PR 전용 빠른 검증
+    - 커밋 메시지 검증 (Conventional Commits)
+    - 변경된 파일만 테스트 (affected-tests)
+    - 번들 크기 체크 (10MB 제한)
+    - PR 자동 코멘트 결과 요약
+
+- **듀얼 패키지 매니저 지원**
+  - yarn/npm 자동 감지 및 전환
+  - CI/CD에서 yarn.lock과 package-lock.json 모두 지원
+  - 캐시 키 최적화로 빌드 속도 향상
+
+- **CI/CD 오류 완전 해결**
+  - TypeScript strict mode 오류 수정
+  - Codecov action deprecated 매개변수 수정 (file → files)
+  - Trivy 보안 스캔 권한 오류 해결 (security-events 권한 추가)
+  - GitHub Actions deprecated 경고 모두 해결
 
 ### Phase 17: CI/CD 완전 자동화 및 테스트 100% 성공 (2025.08.08)
 
@@ -417,6 +464,7 @@ npm run build
 ## 🔍 문제 해결 가이드
 
 ### Service Worker 캐시 문제
+
 ```bash
 # Chrome DevTools > Application > Storage > Clear site data
 # 또는
@@ -425,6 +473,7 @@ caches.delete('emelmujiro-v2')
 ```
 
 ### 테스트 실패 시
+
 ```bash
 # 특정 테스트만 실행
 CI=true npm test -- --testPathPattern="BlogSection" --watchAll=false
@@ -434,6 +483,7 @@ CI=true npm test -- --coverage --watchAll=false
 ```
 
 ### GitHub Actions 실패 시
+
 - Secrets 확인: Settings > Secrets and variables > Actions
 - 워크플로우 로그 확인: Actions 탭에서 실패한 워크플로우 클릭
 
