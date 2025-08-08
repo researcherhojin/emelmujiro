@@ -142,7 +142,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
       await navigator.clipboard.writeText(shareUrl);
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
-    } catch (err) {
+    } catch {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = shareUrl;
@@ -163,7 +163,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
           text: shareText,
           url: shareUrl,
         });
-      } catch (err) {
+      } catch {
         // User cancelled or error - silently handle
       }
     } else {

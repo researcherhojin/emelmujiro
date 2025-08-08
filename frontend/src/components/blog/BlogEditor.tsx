@@ -151,7 +151,7 @@ const BlogEditor: React.FC = () => {
 
         localStorage.setItem('customBlogPosts', JSON.stringify(uniquePosts));
         alert(`${posts.length}개의 포스트를 가져왔습니다!`);
-      } catch (error) {
+      } catch {
         alert('파일을 읽는 중 오류가 발생했습니다.');
       }
     };

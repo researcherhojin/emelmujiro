@@ -1,10 +1,11 @@
 import { screen, waitFor, render } from '@testing-library/react';
+import { AxiosRequestConfig } from 'axios';
 import App from '../../App';
 import { blogService } from '../../services/api';
 
 // Mock react-helmet-async
 jest.mock('react-helmet-async', () => ({
-  HelmetProvider: ({ children }: any) => children,
+  HelmetProvider: ({ children }: { children: React.ReactNode }) => children,
   Helmet: () => null,
 }));
 
@@ -89,7 +90,7 @@ describe('Blog Flow Integration Tests', () => {
       status: 200,
       statusText: 'OK',
       headers: {},
-      config: {} as any,
+      config: {} as AxiosRequestConfig,
     });
   });
 

@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import ContactPage from '../ContactPage';
 import { api } from '../../../services/api';
 import { registerBackgroundSync } from '../../../utils/backgroundSync';
+import { AxiosRequestConfig } from 'axios';
 
 // Mock dependencies
 jest.mock('../../../services/api');
@@ -143,7 +144,7 @@ describe('ContactPage Component', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: {} as AxiosRequestConfig,
       });
 
       fireEvent.click(submitButton);
@@ -219,7 +220,7 @@ describe('ContactPage Component', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: {} as AxiosRequestConfig,
       });
       fireEvent.change(messageInput, { target: { value: 'This is a valid message' } });
       fireEvent.click(submitButton);
@@ -240,7 +241,7 @@ describe('ContactPage Component', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: {} as AxiosRequestConfig,
       });
 
       renderWithRouter(<ContactPage />);

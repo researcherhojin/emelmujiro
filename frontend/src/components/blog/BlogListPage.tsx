@@ -88,13 +88,16 @@ const BlogListPage: React.FC = memo(() => {
         <div className="max-w-6xl mx-auto px-4 py-12">
           <div className="mb-8">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-3xl font-bold">블로그</h1>
+              <h1 className="text-3xl font-bold" id="blog-title">
+                블로그
+              </h1>
               {isAdmin && (
                 <button
                   onClick={handleNewPost}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  aria-label="새 블로그 글 작성"
                 >
-                  <PlusCircle className="w-5 h-5 mr-2" />
+                  <PlusCircle className="w-5 h-5 mr-2" aria-hidden="true" />
                   글쓰기
                 </button>
               )}

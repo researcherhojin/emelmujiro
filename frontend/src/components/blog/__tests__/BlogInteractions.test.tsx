@@ -62,8 +62,9 @@ describe('BlogInteractions Component', () => {
     jest.clearAllMocks();
 
     // Mock window.location.href to include blog path
+    const originalLocation = window.location;
     delete (window as any).location;
-    (window as any).location = new URL('http://localhost/#/blog/1');
+    window.location = new URL('http://localhost/#/blog/1') as any;
   });
 
   describe('Rendering', () => {
@@ -217,8 +218,8 @@ describe('BlogInteractions Component', () => {
         id: mockPost.id,
         title: mockPost.title,
         excerpt: mockPost.excerpt,
-        date: expect.any(String),
-        savedAt: expect.any(String),
+        date: expect.stringMatching(/^\\d{4}-\\d{2}-\\d{2}$/),
+        savedAt: expect.stringMatching(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/),
       });
     });
   });

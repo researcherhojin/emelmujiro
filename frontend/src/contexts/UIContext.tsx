@@ -12,8 +12,8 @@ interface Notification {
 
 interface Modal {
   id: string;
-  component: React.ComponentType<any>;
-  props?: any;
+  component: React.ComponentType<Record<string, unknown>>;
+  props?: Record<string, unknown>;
 }
 
 interface UIContextType {
@@ -33,7 +33,10 @@ interface UIContextType {
 
   // Modals
   modals: Modal[];
-  openModal: (component: React.ComponentType<any>, props?: any) => string;
+  openModal: (
+    component: React.ComponentType<Record<string, unknown>>,
+    props?: Record<string, unknown>
+  ) => string;
   closeModal: (id: string) => void;
   closeAllModals: () => void;
 
@@ -95,7 +98,10 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  const openModal = (component: React.ComponentType<any>, props?: any): string => {
+  const openModal = (
+    component: React.ComponentType<Record<string, unknown>>,
+    props?: Record<string, unknown>
+  ): string => {
     const id = Date.now().toString();
     const modal: Modal = { id, component, props };
     setModals(prev => [...prev, modal]);

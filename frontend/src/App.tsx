@@ -5,17 +5,11 @@ import { BlogProvider } from './contexts/BlogContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { UIProvider } from './contexts/UIContext';
 import { FormProvider } from './contexts/FormContext';
-import Navbar from './components/common/Navbar';
-import Footer from './components/common/Footer';
+import Layout from './components/layout/Layout';
 import { PageLoading } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
-import PWAInstallButton from './components/common/PWAInstallButton';
-import NotificationPermission from './components/common/NotificationPermission';
-import NotificationContainer from './components/common/NotificationContainer';
 import SEOHelmet from './components/common/SEOHelmet';
 import StructuredData from './components/common/StructuredData';
-import OfflineIndicator from './components/common/OfflineIndicator';
-import AppUpdateNotification from './components/common/AppUpdateNotification';
 
 // Main page components - lazy load for better performance
 const HeroSection = lazy(() => import('./components/sections/HeroSection'));
@@ -84,36 +78,27 @@ const HomePage: React.FC = memo(() => {
 
 HomePage.displayName = 'HomePage';
 
-// Layout component that includes common elements
-const Layout: React.FC = memo(() => {
+// App Layout component that includes the accessibility-enhanced layout
+const AppLayout: React.FC = memo(() => {
   return (
-    <div className="App">
+    <Layout>
       <ScrollToTop />
-      <Navbar />
-      <main className="min-h-screen">
-        <ErrorBoundary>
-          <Suspense fallback={<PageLoading />}>
-            <Outlet />
-          </Suspense>
-        </ErrorBoundary>
-      </main>
-      <Footer />
-      <PWAInstallButton />
-      <NotificationPermission />
-      <NotificationContainer />
-      <OfflineIndicator />
-      <AppUpdateNotification />
-    </div>
+      <ErrorBoundary>
+        <Suspense fallback={<PageLoading />}>
+          <Outlet />
+        </Suspense>
+      </ErrorBoundary>
+    </Layout>
   );
 });
 
-Layout.displayName = 'Layout';
+AppLayout.displayName = 'AppLayout';
 
 // Create router
 const router = createHashRouter([
   {
     path: '/',
-    element: <Layout />,
+    element: <AppLayout />,
     children: [
       { index: true, element: <HomePage /> },
       { path: 'about', element: <AboutPage /> },
