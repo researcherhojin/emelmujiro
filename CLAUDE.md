@@ -9,6 +9,7 @@ Emelmujiro (에멜무지로) is a full-stack web application for an AI Education
 ## Essential Commands
 
 ### Development
+
 ```bash
 # Start full application (frontend + backend)
 npm run dev
@@ -24,6 +25,7 @@ npm install:all
 ```
 
 ### Testing
+
 ```bash
 # Run all tests
 npm test
@@ -45,6 +47,7 @@ cd frontend && CI=true npm test -- --coverage
 ```
 
 ### Building & Deployment
+
 ```bash
 # Build frontend for production
 npm run build:frontend
@@ -57,6 +60,7 @@ npm run build:frontend
 ```
 
 ### Code Quality
+
 ```bash
 # Lint frontend
 cd frontend && npm run lint
@@ -71,6 +75,7 @@ cd backend && black . && flake8 .
 ## Architecture Overview
 
 ### Frontend Architecture
+
 The frontend is a React SPA with TypeScript, using HashRouter for GitHub Pages compatibility:
 
 - **Component Structure**: All components are TypeScript functional components with proper typing
@@ -80,6 +85,7 @@ The frontend is a React SPA with TypeScript, using HashRouter for GitHub Pages c
 - **PWA Implementation**: Service Worker in `public/service-worker-enhanced.js` with offline support and background sync
 
 ### Backend Architecture
+
 Django REST API with PostgreSQL/SQLite:
 
 - **API Structure**: Single `api` app handling all endpoints
@@ -88,6 +94,7 @@ Django REST API with PostgreSQL/SQLite:
 - **Database**: SQLite for development, PostgreSQL for production (via DATABASE_URL)
 
 ### CI/CD Pipeline
+
 GitHub Actions workflows handle all automation:
 
 - **main-ci-cd.yml**: Comprehensive pipeline for testing, security scanning, building, and deployment
@@ -95,6 +102,7 @@ GitHub Actions workflows handle all automation:
 - **Deployment**: Automatic to GitHub Pages on main branch push
 
 ### Docker Setup
+
 Multi-stage builds with optimized images:
 
 - **Frontend**: nginx serving static files (Dockerfile uses yarn/npm detection)
@@ -105,6 +113,7 @@ Multi-stage builds with optimized images:
 ## Key Development Patterns
 
 ### Frontend Component Pattern
+
 ```typescript
 // Components use TypeScript interfaces for props
 interface ComponentProps {
@@ -119,6 +128,7 @@ const Component: React.FC<ComponentProps> = ({ title, onAction }) => {
 ```
 
 ### API Integration Pattern
+
 ```typescript
 // All API calls go through frontend/src/services/api.ts
 import api from '@/services/api';
@@ -130,6 +140,7 @@ const fetchData = async () => {
 ```
 
 ### Testing Pattern
+
 ```typescript
 // Tests use renderWithProviders from test-utils
 import { renderWithProviders } from '@/test-utils';
@@ -158,15 +169,19 @@ test('component behavior', () => {
 ## Common Issues & Solutions
 
 ### ESLint Errors During Build
+
 The frontend Dockerfile sets `DISABLE_ESLINT_PLUGIN=true` to bypass ESLint during Docker builds.
 
 ### Yarn Lock Outdated
+
 Frontend uses yarn. If lock file is outdated, run `cd frontend && yarn install` to update.
 
 ### Port Conflicts
+
 Use `npm run dev:clean` to kill existing processes on ports 3000 and 8000.
 
 ### Docker Platform Warnings
+
 Images are built for linux/amd64. ARM users may see platform warnings but containers will run.
 
 ## Testing Requirements

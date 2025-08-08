@@ -4,18 +4,18 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - '.github/labels.yml'
+      - ".github/labels.yml"
 
 jobs:
   setup-labels:
     runs-on: ubuntu-latest
     permissions:
       issues: write
-      
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Create Labels
         uses: actions/github-script@v7
         with:
@@ -32,7 +32,7 @@ jobs:
               { name: 'security', color: 'ee0701', description: 'Security related changes' },
               { name: 'performance', color: 'fbca04', description: 'Performance improvements' }
             ];
-            
+
             for (const label of labels) {
               try {
                 await github.rest.issues.createLabel({
