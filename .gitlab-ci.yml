@@ -1,0 +1,280 @@
+# GitLab CI/CD Configuration
+# Alternative CI/CD pipeline for GitLab
+
+stages:
+  - build
+  - test
+  - security
+  - deploy
+  - cleanup
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+  NODE_VERSION: "20"
+  PYTHON_VERSION: "3.11"
+  POSTGRES_DB: test_db
+  POSTGRES_USER: test_user
+  POSTGRES_PASSWORD: test_pass
+  POSTGRES_HOST_AUTH_METHOD: trust
+
+# Cache configuration
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - frontend/node_modules/
+    - backend/.venv/
+    - .pip-cache/
+
+# ========================================
+# Build Stage
+# ========================================
+
+build:frontend:
+  stage: build
+  image: node:${NODE_VERSION}-alpine
+  script:
+    - cd frontend
+    - npm ci --cache .npm --prefer-offline
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/build/
+    expire_in: 1 week
+  only:
+    - main
+    - develop
+    - merge_requests
+
+build:backend:
+  stage: build
+  image: python:${PYTHON_VERSION}-slim
+  script:
+    - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+  artifacts:
+    paths:
+      - backend/.venv/
+    expire_in: 1 week
+  only:
+    - main
+    - develop
+    - merge_requests
+
+build:docker:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA ./frontend
+    - docker build -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA ./backend
+    - docker push $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA
+  only:
+    - main
+    - develop
+
+# ========================================
+# Test Stage
+# ========================================
+
+test:frontend:
+  stage: test
+  image: node:${NODE_VERSION}-alpine
+  needs: ["build:frontend"]
+  coverage: '/Lines\s*:\s*(\d+\.\d+)%/'
+  script:
+    - cd frontend
+    - npm ci --cache .npm --prefer-offline
+    - npm run lint
+    - npm test -- --coverage --watchAll=false
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: frontend/coverage/cobertura-coverage.xml
+      junit: frontend/junit.xml
+  only:
+    - main
+    - develop
+    - merge_requests
+
+test:backend:
+  stage: test
+  image: python:${PYTHON_VERSION}-slim
+  needs: ["build:backend"]
+  services:
+    - postgres:15-alpine
+  variables:
+    DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
+  coverage: '/TOTAL.*\s+(\d+%)$/'
+  script:
+    - cd backend
+    - source .venv/bin/activate
+    - python manage.py check
+    - python manage.py migrate
+    - coverage run --source='.' manage.py test
+    - coverage report
+    - coverage xml
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: backend/coverage.xml
+      junit: backend/junit.xml
+  only:
+    - main
+    - develop
+    - merge_requests
+
+test:e2e:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.40.0-focal
+  needs: ["build:frontend", "build:backend"]
+  services:
+    - postgres:15-alpine
+  script:
+    - cd backend
+    - apt-get update && apt-get install -y python3-pip
+    - pip3 install -r requirements.txt
+    - python3 manage.py migrate
+    - python3 manage.py runserver &
+    - cd ../frontend
+    - npm ci
+    - npx playwright install
+    - npm run test:e2e
+  artifacts:
+    when: always
+    paths:
+      - frontend/playwright-report/
+      - frontend/test-results/
+    expire_in: 1 week
+  only:
+    - merge_requests
+
+# ========================================
+# Security Stage
+# ========================================
+
+security:sast:
+  stage: security
+  include:
+    - template: Security/SAST.gitlab-ci.yml
+  only:
+    - main
+    - develop
+    - merge_requests
+
+security:dependency-scanning:
+  stage: security
+  include:
+    - template: Security/Dependency-Scanning.gitlab-ci.yml
+  only:
+    - main
+    - develop
+    - merge_requests
+
+security:container-scanning:
+  stage: security
+  include:
+    - template: Security/Container-Scanning.gitlab-ci.yml
+  needs: ["build:docker"]
+  variables:
+    CS_IMAGE: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA
+  only:
+    - main
+    - develop
+
+security:secrets-detection:
+  stage: security
+  include:
+    - template: Security/Secret-Detection.gitlab-ci.yml
+  only:
+    - main
+    - develop
+    - merge_requests
+
+# ========================================
+# Deploy Stage
+# ========================================
+
+deploy:staging:
+  stage: deploy
+  image: alpine:latest
+  needs: ["test:frontend", "test:backend", "security:sast"]
+  environment:
+    name: staging
+    url: https://staging.emelmujiro.com
+  before_script:
+    - apk add --no-cache curl openssh-client
+  script:
+    - echo "Deploying to staging environment..."
+    # Add your staging deployment commands here
+    # Example SSH deployment:
+    # - ssh -o StrictHostKeyChecking=no $STAGING_USER@$STAGING_SERVER "docker pull $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA"
+    # - ssh -o StrictHostKeyChecking=no $STAGING_USER@$STAGING_SERVER "docker pull $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA"
+    # - ssh -o StrictHostKeyChecking=no $STAGING_USER@$STAGING_SERVER "docker-compose up -d"
+  only:
+    - develop
+
+deploy:production:
+  stage: deploy
+  image: alpine:latest
+  needs: ["test:frontend", "test:backend", "security:sast"]
+  environment:
+    name: production
+    url: https://emelmujiro.com
+  before_script:
+    - apk add --no-cache curl openssh-client
+  script:
+    - echo "Deploying to production environment..."
+    # Add your production deployment commands here
+  when: manual
+  only:
+    - main
+
+# ========================================
+# Cleanup Stage
+# ========================================
+
+cleanup:old-images:
+  stage: cleanup
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - |
+      # Delete images older than 30 days
+      BEFORE_DATE=$(date -d "30 days ago" +%Y-%m-%d)
+      for IMAGE in $(docker images --format "{{.Repository}}:{{.Tag}}" | grep $CI_REGISTRY_IMAGE); do
+        IMAGE_DATE=$(docker inspect -f '{{.Created}}' $IMAGE | cut -d'T' -f1)
+        if [[ "$IMAGE_DATE" < "$BEFORE_DATE" ]]; then
+          docker rmi $IMAGE || true
+        fi
+      done
+  only:
+    - schedules
+
+# ========================================
+# Pages (Documentation)
+# ========================================
+
+pages:
+  stage: deploy
+  needs: ["test:frontend"]
+  script:
+    - mkdir -p public
+    - cp -r frontend/coverage/lcov-report/* public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - main

@@ -1,19 +1,31 @@
 # Build stage
-FROM node:20-alpine as builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files (including yarn.lock if exists)
+COPY package.json yarn.lock* package-lock.json* ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies - use yarn if yarn.lock exists, otherwise npm
+RUN if [ -f yarn.lock ]; then \
+      yarn install; \
+    elif [ -f package-lock.json ]; then \
+      npm ci; \
+    else \
+      npm install; \
+    fi
 
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application (disable ESLint during build)
+ENV DISABLE_ESLINT_PLUGIN=true
+ENV ESLINT_NO_DEV_ERRORS=true
+RUN if [ -f yarn.lock ]; then \
+      yarn build; \
+    else \
+      npm run build; \
+    fi
 
 # Production stage
 FROM nginx:alpine

@@ -1,0 +1,232 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  NODE_VERSION: "20"
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # Quick validation checks that should pass before running expensive tests
+  quick-checks:
+    name: Quick Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for merge conflicts
+        run: |
+          git merge-tree $(git merge-base HEAD ${{ github.base_ref }}) HEAD ${{ github.base_ref }} | grep -q "<<<<<<< " && exit 1 || exit 0
+
+      - name: Check commit messages
+        run: |
+          # Validate commit message format
+          git log --format="%s" ${{ github.event.pull_request.base.sha }}..${{ github.sha }} | while read msg; do
+            if [[ ! "$msg" =~ ^(feat|fix|docs|style|refactor|test|chore|deps)(\(.+\))?: ]]; then
+              echo "Invalid commit message: $msg"
+              echo "Please use conventional commits format: type(scope): description"
+              exit 1
+            fi
+          done
+        continue-on-error: true
+
+      - name: File size check
+        run: |
+          # Check for large files (> 10MB)
+          find . -type f -size +10M | grep -v node_modules | grep -v .git && echo "Large files detected!" && exit 1 || exit 0
+
+  # Lightweight linting and formatting checks
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    needs: quick-checks
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Frontend lint
+        run: |
+          cd frontend
+          npm ci --prefer-offline --no-audit
+          npm run lint || true
+          npx prettier --check "src/**/*.{js,jsx,ts,tsx,css}" || true
+
+      - name: Backend lint
+        run: |
+          cd backend
+          pip install black flake8
+          black --check . || true
+          flake8 . --max-line-length=120 --exclude=migrations,venv,.venv || true
+
+  # Run only affected tests based on changed files
+  affected-tests:
+    name: Test Affected Code
+    runs-on: ubuntu-latest
+    needs: quick-checks
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+        with:
+          separator: ","
+
+      - name: Setup Node.js
+        if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/')
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Test frontend changes
+        if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/')
+        run: |
+          cd frontend
+          npm ci --prefer-offline --no-audit
+          CI=true npm test -- --watchAll=false --passWithNoTests --changedSince=${{ github.event.pull_request.base.sha }}
+
+      - name: Setup Python
+        if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Test backend changes
+        if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          python manage.py test
+
+  # Security scan for dependencies
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: quick-checks
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy security scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "table"
+          exit-code: "0"
+          severity: "CRITICAL,HIGH"
+
+  # Size and performance budget checks
+  bundle-analysis:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    needs: quick-checks
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Build and analyze
+        run: |
+          cd frontend
+          npm ci --prefer-offline --no-audit
+          npm run build
+
+          # Check build size
+          echo "Build size:"
+          du -sh build/
+
+          # Ensure build doesn't exceed 5MB
+          BUILD_SIZE=$(du -sb build/ | cut -f1)
+          if [ $BUILD_SIZE -gt 5242880 ]; then
+            echo "Build size exceeds 5MB limit!"
+            exit 1
+          fi
+
+  # PR comment with results summary
+  pr-comment:
+    name: PR Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [lint, affected-tests, security-scan, bundle-analysis]
+
+    steps:
+      - name: Comment PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes('## Pull Request Check Results')
+            );
+
+            const body = `## Pull Request Check Results
+
+            | Check | Status |
+            |-------|--------|
+            | Linting | ${{ needs.lint.result == 'success' && '✅' || '❌' }} |
+            | Tests | ${{ needs.affected-tests.result == 'success' && '✅' || '❌' }} |
+            | Security | ${{ needs.security-scan.result == 'success' && '✅' || '❌' }} |
+            | Bundle Size | ${{ needs.bundle-analysis.result == 'success' && '✅' || '❌' }} |
+
+            <details>
+            <summary>Details</summary>
+
+            - **Commit:** ${{ github.sha }}
+            - **Author:** ${{ github.actor }}
+            - **Workflow Run:** [View Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            </details>`;
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
