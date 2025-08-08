@@ -23,8 +23,6 @@ updates:
         dependency-type: "development"
         patterns:
           - "*"
-    reviewers:
-      - "@emelmujiro/frontend-team"
     labels:
       - "dependencies"
       - "frontend"
@@ -41,8 +39,6 @@ updates:
       day: "monday"
       time: "04:00"
     open-pull-requests-limit: 10
-    reviewers:
-      - "@emelmujiro/backend-team"
     labels:
       - "dependencies"
       - "backend"
