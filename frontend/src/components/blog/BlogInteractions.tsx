@@ -209,7 +209,14 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
         {/* Share menu */}
         {showShareMenu && (
           <>
-            <div className="fixed inset-0 z-40" onClick={() => setShowShareMenu(false)} />
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setShowShareMenu(false)}
+              onKeyDown={e => e.key === 'Escape' && setShowShareMenu(false)}
+              role="button"
+              tabIndex={0}
+              aria-label="Close share menu"
+            />
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
               <button
                 onClick={() => {
