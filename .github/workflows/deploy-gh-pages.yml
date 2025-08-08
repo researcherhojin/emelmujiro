@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -20,41 +20,41 @@ jobs:
     env:
       CI: true
       HUSKY: 0
-    
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-    
-    - name: Install dependencies
-      run: |
-        cd frontend
-        npm install --no-audit --no-fund --ignore-scripts
-    
-    - name: Build
-      run: |
-        cd frontend
-        npm run build
-        # GitHub Pages 404 처리를 위한 index.html 복사
-        cp build/index.html build/404.html
-    
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: frontend/build
-  
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install --no-audit --no-fund --ignore-scripts
+
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
+          # GitHub Pages 404 처리를 위한 index.html 복사
+          cp build/index.html build/404.html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/build
+
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
-    
+
     steps:
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
