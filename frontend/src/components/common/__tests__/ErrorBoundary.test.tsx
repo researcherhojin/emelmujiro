@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import ErrorBoundary from '../ErrorBoundary';
 
 // Component that throws an error
-const ProblemChild = ({ shouldThrow }) => {
+const ProblemChild = ({ shouldThrow }: { shouldThrow: boolean }) => {
   if (shouldThrow) {
     throw new Error('Test error');
   }
