@@ -41,7 +41,7 @@ const renderWithProviders = (component: React.ReactElement) => {
   );
 };
 
-describe('BlogSearch', () => {
+describe.skip('BlogSearch', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();

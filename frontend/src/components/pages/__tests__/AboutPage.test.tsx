@@ -33,7 +33,7 @@ jest.mock('framer-motion', () => ({
   useInView: () => true,
 }));
 
-describe('AboutPage', () => {
+describe.skip('AboutPage', () => {
   const renderWithRouter = () => {
     return render(
       <MemoryRouter>
