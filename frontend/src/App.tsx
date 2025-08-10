@@ -10,6 +10,7 @@ import { PageLoading } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import SEOHelmet from './components/common/SEOHelmet';
 import StructuredData from './components/common/StructuredData';
+import WebVitalsDashboard from './components/common/WebVitalsDashboard';
 
 // Main page components - lazy load for better performance
 const HeroSection = lazy(() => import('./components/sections/HeroSection'));
@@ -88,28 +89,37 @@ const AppLayout: React.FC = memo(() => {
           <Outlet />
         </Suspense>
       </ErrorBoundary>
+      <WebVitalsDashboard />
     </Layout>
   );
 });
 
 AppLayout.displayName = 'AppLayout';
 
-// Create router
-const router = createHashRouter([
+// Create router with v7 future flags
+const router = createHashRouter(
+  [
+    {
+      path: '/',
+      element: <AppLayout />,
+      children: [
+        { index: true, element: <HomePage /> },
+        { path: 'about', element: <AboutPage /> },
+        { path: 'contact', element: <ContactPage /> },
+        { path: 'profile', element: <ProfilePage /> },
+        { path: 'blog', element: <BlogListPage /> },
+        { path: 'blog/new', element: <BlogEditor /> },
+        { path: 'blog/:id', element: <BlogDetail /> },
+      ],
+    },
+  ],
   {
-    path: '/',
-    element: <AppLayout />,
-    children: [
-      { index: true, element: <HomePage /> },
-      { path: 'about', element: <AboutPage /> },
-      { path: 'contact', element: <ContactPage /> },
-      { path: 'profile', element: <ProfilePage /> },
-      { path: 'blog', element: <BlogListPage /> },
-      { path: 'blog/new', element: <BlogEditor /> },
-      { path: 'blog/:id', element: <BlogDetail /> },
-    ],
-  },
-]);
+    future: {
+      // React Router v7 future flags - currently available flags only
+      // More flags will be available as React Router updates
+    },
+  }
+);
 
 const App: React.FC = () => {
   return (

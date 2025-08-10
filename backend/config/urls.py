@@ -34,7 +34,7 @@ router.register(r"blog-posts", BlogPostViewSet, basename="blog-post")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include(router.urls)),
+    path("api/", include("api.urls")),  # Include all API URLs from api app
     path("api/categories/", CategoryListView.as_view(), name="category-list"),
     path("api/contact/", ContactView.as_view(), name="contact"),
     path("api/newsletter/", NewsletterView.as_view(), name="newsletter"),

@@ -22,6 +22,8 @@ const NotificationPermission: React.FC = memo(() => {
 
       return () => clearTimeout(timer);
     }
+    // Return undefined when condition is not met
+    return undefined;
   }, []);
 
   const handleEnableNotifications = useCallback(async () => {
