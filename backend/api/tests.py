@@ -2,9 +2,11 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework.response import Response
 from django.contrib.auth.models import User
 from .models import BlogPost, Contact, NewsletterSubscription
 from datetime import datetime, timezone
+from typing import cast
 
 
 class BlogPostAPITestCase(APITestCase):
@@ -25,28 +27,28 @@ class BlogPostAPITestCase(APITestCase):
     def test_list_blog_posts(self):
         """Test listing all blog posts"""
         url = reverse("blog-list")
-        response = self.client.get(url)
+        response: Response = self.client.get(url)  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_retrieve_blog_post(self):
         """Test retrieving a single blog post"""
         url = reverse("blog-detail", kwargs={"pk": self.blog_post.pk})
-        response = self.client.get(url)
+        response: Response = self.client.get(url)  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["title"], "Test Blog Post")
 
     def test_filter_blog_posts_by_category(self):
         """Test filtering blog posts by category"""
         url = reverse("blog-list")
-        response = self.client.get(url, {"category": "ai_development"})
+        response: Response = self.client.get(url, {"category": "ai_development"})  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_featured_blog_posts(self):
         """Test filtering featured blog posts"""
         url = reverse("blog-list")
-        response = self.client.get(url, {"is_featured": "true"})
+        response: Response = self.client.get(url, {"is_featured": "true"})  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 1)
 
@@ -66,7 +68,7 @@ class ContactAPITestCase(APITestCase):
             "subject": "Test Subject",
             "message": "This is a test message with sufficient length.",
         }
-        response = self.client.post(url, data, format="json")
+        response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Contact.objects.count(), 1)
         self.assertEqual(Contact.objects.first().name, "Test User")
@@ -80,7 +82,7 @@ class ContactAPITestCase(APITestCase):
             "subject": "Test Subject",
             "message": "This is a test message with sufficient length.",
         }
-        response = self.client.post(url, data, format="json")
+        response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("details", response.data)
         self.assertIn("email", response.data["details"])
@@ -94,7 +96,7 @@ class ContactAPITestCase(APITestCase):
             "subject": "Test Subject",
             "message": "Short",
         }
-        response = self.client.post(url, data, format="json")
+        response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("details", response.data)
         self.assertIn("message", response.data["details"])
@@ -107,7 +109,7 @@ class NewsletterAPITestCase(APITestCase):
         """Test newsletter subscription"""
         url = reverse("newsletter-subscribe")
         data = {"email": "subscriber@example.com", "name": "Test Subscriber"}
-        response = self.client.post(url, data, format="json")
+        response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(NewsletterSubscription.objects.count(), 1)
 
@@ -118,7 +120,7 @@ class NewsletterAPITestCase(APITestCase):
         )
         url = reverse("newsletter-subscribe")
         data = {"email": "subscriber@example.com", "name": "Second Subscriber"}
-        response = self.client.post(url, data, format="json")
+        response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
@@ -141,7 +143,7 @@ class AuthenticationAPITestCase(APITestCase):
             "first_name": "New",
             "last_name": "User",
         }
-        response = self.client.post(url, data, format="json")
+        response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
@@ -150,7 +152,7 @@ class AuthenticationAPITestCase(APITestCase):
         """Test user login"""
         url = reverse("login")
         data = {"username": "testuser", "password": "testpass123"}
-        response = self.client.post(url, data, format="json")
+        response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
@@ -159,7 +161,7 @@ class AuthenticationAPITestCase(APITestCase):
         """Test login with invalid credentials"""
         url = reverse("login")
         data = {"username": "testuser", "password": "wrongpassword"}
-        response = self.client.post(url, data, format="json")
+        response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_password_mismatch_registration(self):
@@ -171,7 +173,7 @@ class AuthenticationAPITestCase(APITestCase):
             "password": "newpass123",
             "password_confirm": "differentpass123",
         }
-        response = self.client.post(url, data, format="json")
+        response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("error", response.data)
 
@@ -182,7 +184,7 @@ class HealthCheckAPITestCase(APITestCase):
     def test_health_check(self):
         """Test health check endpoint"""
         url = reverse("health-check")
-        response = self.client.get(url)
+        response: Response = self.client.get(url)  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["status"], "healthy")
         self.assertIn("timestamp", response.data)
