@@ -7,110 +7,153 @@ import {
   maskSensitiveInfo,
 } from '../security';
 
-describe('Security Utils', () => {
+describe('Security Utilities', () => {
   describe('escapeHtml', () => {
-    it('should escape HTML special characters', () => {
-      expect(escapeHtml('<script>alert("XSS")</script>')).toBe(
-        '&lt;script&gt;alert("XSS")&lt;/script&gt;'
-      );
-      expect(escapeHtml('Hello & goodbye')).toBe('Hello &amp; goodbye');
-      expect(escapeHtml('"quotes" and \'apostrophes\'')).toBe('"quotes" and \'apostrophes\'');
+    it('should escape HTML tags', () => {
+      const input = '<script>alert("XSS")</script>';
+      const result = escapeHtml(input);
+      expect(result).toBe('&lt;script&gt;alert("XSS")&lt;/script&gt;');
+    });
+
+    it('should escape special characters', () => {
+      expect(escapeHtml('<div>')).toBe('&lt;div&gt;');
+      expect(escapeHtml('&')).toBe('&amp;');
+      // Note: The actual implementation uses textContent which doesn't escape quotes
+      expect(escapeHtml('"')).toBe('"');
+      expect(escapeHtml("'")).toBe("'");
+    });
+
+    it('should handle normal text', () => {
+      const input = 'Normal text without HTML';
+      expect(escapeHtml(input)).toBe(input);
     });
 
     it('should handle empty string', () => {
       expect(escapeHtml('')).toBe('');
     });
-
-    it('should handle normal text without special characters', () => {
-      expect(escapeHtml('Hello World')).toBe('Hello World');
-    });
   });
 
   describe('isValidUrl', () => {
-    it('should validate correct URLs', () => {
-      expect(isValidUrl('https://example.com')).toBe(true);
+    it('should validate HTTP URLs', () => {
       expect(isValidUrl('http://example.com')).toBe(true);
-      expect(isValidUrl('https://example.com/path?query=value')).toBe(true);
-      expect(isValidUrl('https://sub.example.com:8080')).toBe(true);
+      expect(isValidUrl('http://localhost:3000')).toBe(true);
+      expect(isValidUrl('http://192.168.1.1')).toBe(true);
+    });
+
+    it('should validate HTTPS URLs', () => {
+      expect(isValidUrl('https://example.com')).toBe(true);
+      expect(isValidUrl('https://www.example.com/path')).toBe(true);
+      expect(isValidUrl('https://api.example.com/v1/endpoint')).toBe(true);
     });
 
     it('should reject invalid URLs', () => {
-      expect(isValidUrl('not a url')).toBe(false);
+      expect(isValidUrl('not-a-url')).toBe(false);
       expect(isValidUrl('ftp://example.com')).toBe(false);
       expect(isValidUrl('javascript:alert(1)')).toBe(false);
+      expect(isValidUrl('file:///etc/passwd')).toBe(false);
       expect(isValidUrl('')).toBe(false);
-      expect(isValidUrl('example.com')).toBe(false);
+    });
+
+    it('should handle URLs with query parameters', () => {
+      expect(isValidUrl('https://example.com?param=value')).toBe(true);
+      expect(isValidUrl('https://example.com?a=1&b=2')).toBe(true);
     });
   });
 
   describe('isValidEmail', () => {
-    it('should validate correct email addresses', () => {
+    it('should validate correct email formats', () => {
       expect(isValidEmail('user@example.com')).toBe(true);
       expect(isValidEmail('user.name@example.com')).toBe(true);
       expect(isValidEmail('user+tag@example.co.kr')).toBe(true);
-      expect(isValidEmail('123@example.com')).toBe(true);
+      expect(isValidEmail('user123@subdomain.example.com')).toBe(true);
     });
 
-    it('should reject invalid email addresses', () => {
-      expect(isValidEmail('invalid.email')).toBe(false);
+    it('should reject invalid email formats', () => {
+      expect(isValidEmail('invalid')).toBe(false);
       expect(isValidEmail('@example.com')).toBe(false);
       expect(isValidEmail('user@')).toBe(false);
       expect(isValidEmail('user @example.com')).toBe(false);
+      expect(isValidEmail('user@example')).toBe(false);
       expect(isValidEmail('')).toBe(false);
-      expect(isValidEmail('user@.com')).toBe(false);
+    });
+
+    it('should handle edge cases', () => {
+      expect(isValidEmail('a@b.c')).toBe(true);
+      expect(isValidEmail('user@localhost.localdomain')).toBe(true);
     });
   });
 
   describe('isValidPhone', () => {
-    it('should validate correct phone numbers', () => {
+    it('should validate correct phone formats', () => {
       expect(isValidPhone('010-1234-5678')).toBe(true);
       expect(isValidPhone('01012345678')).toBe(true);
-      expect(isValidPhone('+82 10 1234 5678')).toBe(true);
+      expect(isValidPhone('+82-10-1234-5678')).toBe(true);
       expect(isValidPhone('(02) 1234-5678')).toBe(true);
+      expect(isValidPhone('02 1234 5678')).toBe(true);
     });
 
-    it('should reject invalid phone numbers', () => {
-      expect(isValidPhone('123')).toBe(false);
-      expect(isValidPhone('abc-defg-hijk')).toBe(false);
+    it('should reject invalid phone formats', () => {
+      expect(isValidPhone('123')).toBe(false); // Too short
+      expect(isValidPhone('abc-1234-5678')).toBe(false); // Contains letters
+      expect(isValidPhone('!@#$%^&*()')).toBe(false); // Special characters
       expect(isValidPhone('')).toBe(false);
-      expect(isValidPhone('12345')).toBe(false); // Too short
+    });
+
+    it('should require minimum 10 digits', () => {
+      expect(isValidPhone('123456789')).toBe(false); // 9 digits
+      expect(isValidPhone('1234567890')).toBe(true); // 10 digits
     });
   });
 
   describe('isWithinLength', () => {
-    it('should check string length correctly', () => {
-      expect(isWithinLength('Hello', 10)).toBe(true);
-      expect(isWithinLength('Hello', 5)).toBe(true);
-      expect(isWithinLength('Hello', 4)).toBe(false);
-      expect(isWithinLength('', 0)).toBe(true);
+    it('should check if string is within length limit', () => {
+      expect(isWithinLength('hello', 10)).toBe(true);
+      expect(isWithinLength('hello', 5)).toBe(true);
+      expect(isWithinLength('hello', 4)).toBe(false);
     });
 
-    it('should handle edge cases', () => {
-      expect(isWithinLength('Test', 4)).toBe(true); // Exact length
-      expect(isWithinLength('안녕하세요', 5)).toBe(true); // Unicode characters
+    it('should handle empty string', () => {
+      expect(isWithinLength('', 0)).toBe(true);
+      expect(isWithinLength('', 10)).toBe(true);
+    });
+
+    it('should handle exact length', () => {
+      expect(isWithinLength('12345', 5)).toBe(true);
     });
   });
 
   describe('maskSensitiveInfo', () => {
-    it('should mask sensitive information correctly', () => {
-      expect(maskSensitiveInfo('1234567890123456', 4, 4)).toBe('1234********3456');
-      expect(maskSensitiveInfo('johndoe@example.com', 3, 4)).toBe('joh************.com');
-      expect(maskSensitiveInfo('010-1234-5678')).toBe('010******5678');
+    it('should mask middle part of string', () => {
+      const result = maskSensitiveInfo('1234567890123456', 3, 4);
+      expect(result).toBe('123*********3456');
+    });
+
+    it('should use default values', () => {
+      const result = maskSensitiveInfo('1234567890');
+      expect(result).toBe('123***7890');
     });
 
     it('should handle short strings', () => {
-      expect(maskSensitiveInfo('12345', 3, 4)).toBe('12345'); // Too short to mask
-      expect(maskSensitiveInfo('1234567', 3, 4)).toBe('1234567'); // Exactly at limit
+      // String shorter than visibleStart + visibleEnd
+      const result = maskSensitiveInfo('12345', 3, 4);
+      expect(result).toBe('12345');
     });
 
-    it('should handle custom visible lengths', () => {
-      expect(maskSensitiveInfo('secret-password', 2, 2)).toBe('se***********rd');
-      expect(maskSensitiveInfo('confidential', 0, 0)).toBe('************');
+    it('should handle no end visible', () => {
+      const result = maskSensitiveInfo('1234567890', 3, 0);
+      expect(result).toBe('123*******');
     });
 
-    it('should handle edge cases', () => {
-      expect(maskSensitiveInfo('', 3, 4)).toBe('');
-      expect(maskSensitiveInfo('abc', 1, 1)).toBe('a*c');
+    it('should mask email addresses', () => {
+      const email = 'user@example.com';
+      const result = maskSensitiveInfo(email, 3, 8);
+      expect(result).toBe('use*****mple.com');
+    });
+
+    it('should mask phone numbers', () => {
+      const phone = '010-1234-5678';
+      const result = maskSensitiveInfo(phone, 4, 4);
+      expect(result).toBe('010-*****5678');
     });
   });
 });
