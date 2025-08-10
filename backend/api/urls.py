@@ -10,6 +10,7 @@ from .views import (
     NewsletterView,
     health_check,
     CategoryListView,
+    send_test_email,
 )
 from .auth import (
     register,
@@ -34,6 +35,8 @@ urlpatterns = [
     path("categories/", CategoryListView.as_view(), name="category-list"),
     # Health check
     path("health/", health_check, name="health-check"),
+    # Test email (debug only)
+    path("send-test-email/", send_test_email, name="send-test-email"),
     # Authentication endpoints
     path("auth/register/", register, name="register"),
     path("auth/login/", login, name="login"),

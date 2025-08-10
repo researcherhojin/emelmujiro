@@ -19,27 +19,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from rest_framework.routers import DefaultRouter
-from api.views import (
-    BlogPostViewSet,
-    CategoryListView,
-    ContactView,
-    NewsletterView,
-    health_check,
-    send_test_email,
-)
-
-router = DefaultRouter()
-router.register(r"blog-posts", BlogPostViewSet, basename="blog-post")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("api.urls")),  # Include all API URLs from api app
-    path("api/categories/", CategoryListView.as_view(), name="category-list"),
-    path("api/contact/", ContactView.as_view(), name="contact"),
-    path("api/newsletter/", NewsletterView.as_view(), name="newsletter"),
-    path("api/health/", health_check, name="health-check"),
-    path("api/send-test-email/", send_test_email, name="send-test-email"),
 ]
 
 # 개발 환경에서 미디어 파일 서빙
