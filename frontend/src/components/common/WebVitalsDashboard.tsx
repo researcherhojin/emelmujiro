@@ -1,5 +1,5 @@
 import React, { useEffect, useState, memo } from 'react';
-import { onCLS, onFCP, onFID, onLCP, onTTFB, onINP, Metric } from 'web-vitals';
+import { onCLS, onFCP, onLCP, onTTFB, onINP, Metric } from 'web-vitals';
 
 interface VitalMetric {
   name: string;
@@ -11,7 +11,6 @@ interface VitalMetric {
 interface WebVitalsData {
   CLS: VitalMetric | null;
   FCP: VitalMetric | null;
-  FID: VitalMetric | null;
   LCP: VitalMetric | null;
   TTFB: VitalMetric | null;
   INP: VitalMetric | null;
@@ -21,7 +20,6 @@ const getMetricRating = (name: string, value: number): 'good' | 'needs-improveme
   const thresholds: Record<string, { good: number; poor: number }> = {
     CLS: { good: 0.1, poor: 0.25 },
     FCP: { good: 1800, poor: 3000 },
-    FID: { good: 100, poor: 300 },
     LCP: { good: 2500, poor: 4000 },
     TTFB: { good: 800, poor: 1800 },
     INP: { good: 200, poor: 500 },
@@ -46,7 +44,6 @@ const getMetricDescription = (name: string): string => {
   const descriptions: Record<string, string> = {
     CLS: 'Cumulative Layout Shift - Visual stability',
     FCP: 'First Contentful Paint - First render time',
-    FID: 'First Input Delay - Interactivity',
     LCP: 'Largest Contentful Paint - Loading performance',
     TTFB: 'Time to First Byte - Server response time',
     INP: 'Interaction to Next Paint - Overall responsiveness',
@@ -92,7 +89,6 @@ const WebVitalsDashboard: React.FC = memo(() => {
   const [metrics, setMetrics] = useState<WebVitalsData>({
     CLS: null,
     FCP: null,
-    FID: null,
     LCP: null,
     TTFB: null,
     INP: null,
@@ -137,7 +133,6 @@ const WebVitalsDashboard: React.FC = memo(() => {
     // Register Web Vitals observers
     onCLS(handleMetric);
     onFCP(handleMetric);
-    onFID(handleMetric);
     onLCP(handleMetric);
     onTTFB(handleMetric);
     onINP(handleMetric);
