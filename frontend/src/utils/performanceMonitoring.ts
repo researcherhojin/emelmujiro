@@ -1,4 +1,4 @@
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+import { onCLS, onFCP, onLCP, onTTFB, onINP, Metric } from 'web-vitals';
 
 export interface WebVitalsData {
   name: string;
@@ -10,7 +10,7 @@ export interface WebVitalsData {
 // Thresholds based on Web Vitals recommendations
 const THRESHOLDS = {
   LCP: { good: 2500, poor: 4000 },
-  FID: { good: 100, poor: 300 },
+  INP: { good: 200, poor: 500 },
   CLS: { good: 0.1, poor: 0.25 },
   FCP: { good: 1800, poor: 3000 },
   TTFB: { good: 800, poor: 1800 },
@@ -60,14 +60,7 @@ const getRating = (name: string, value: number): 'good' | 'needs-improvement' | 
 };
 
 // Report handler
-interface WebVitalMetric {
-  name: string;
-  value: number;
-  id?: string;
-  delta?: number;
-}
-
-const reportWebVital = (metric: WebVitalMetric) => {
+const reportWebVital = (metric: Metric) => {
   const data: WebVitalsData = {
     name: metric.name,
     value: metric.value,
@@ -81,11 +74,11 @@ const reportWebVital = (metric: WebVitalMetric) => {
 
 // Initialize Web Vitals tracking
 export const initWebVitals = () => {
-  getCLS(reportWebVital);
-  getFID(reportWebVital);
-  getFCP(reportWebVital);
-  getLCP(reportWebVital);
-  getTTFB(reportWebVital);
+  onCLS(reportWebVital);
+  onFCP(reportWebVital);
+  onLCP(reportWebVital);
+  onTTFB(reportWebVital);
+  onINP(reportWebVital);
 };
 
 // Get current metrics
