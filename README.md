@@ -46,8 +46,10 @@ npm test
 npm start          # 개발 서버 시작
 npm run build      # 프로덕션 빌드
 npm test           # 테스트 실행
+npm run test:e2e   # E2E 테스트 실행 (Playwright)
 npm run lint       # ESLint 검사
 npm run lint:fix   # ESLint 자동 수정
+npm run type-check # TypeScript 타입 체크
 npm run format     # Prettier 포맷팅
 npm run type-check # TypeScript 타입 체크
 npm run validate   # 린트 + 타입 체크 + 테스트
@@ -80,9 +82,9 @@ npm run validate   # 린트 + 타입 체크 + 테스트
   - pr-checks.yml: PR 검증, 번들 크기 체크
   - Dependabot 자동 의존성 업데이트
 - **GitHub Pages** - 정적 호스팅
-- **Jest** + **React Testing Library** - 277개 테스트 케이스
-- **Playwright** - E2E 테스트 (6개 스위트 구현: homepage, blog, contact, auth, accessibility, pwa)
-- **Codecov** - 코드 커버리지 추적 (목표: 60%+)
+- **Jest** + **React Testing Library** - 371개 테스트 케이스 (93% 통과율)
+- **Playwright** - E2E 테스트 (3개 핵심 스위트: homepage, blog, contact)
+- **Codecov** - 코드 커버리지 50.29% 달성
 - **ESLint 9** + **TypeScript ESLint** - 최신 flat config 형식
 - **Prettier** - 코드 포맷팅 자동화
 - **Husky** + **Lint-staged** - Git 훅 자동화
@@ -96,7 +98,8 @@ npm run validate   # 린트 + 타입 체크 + 테스트
 
 - **CI/CD 파이프라인**: ![CI Status](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)
 - **코드 품질**: ESLint 0 errors, TypeScript 0 errors
-- **테스트 통과율**: 100% (277/277 tests)
+- **테스트 통과율**: 93% (346/371 tests)
+- **테스트 커버리지**: 50.29% (Statements)
 - **의존성 관리**: Dependabot 자동 업데이트 활성화
 - **보안 스캔**: 취약점 0건 (Critical/High)
 - **빌드 시간**: ~45초
@@ -309,15 +312,21 @@ npm run build
 
 ### 테스트 현황
 
-- **단위 테스트**: 38개 파일, 277개 테스트 케이스 (100% 통과) ✅
-- **E2E 테스트**: 6개 스위트 (Playwright) ✅
-  - homepage, blog, contact, auth, accessibility, pwa
-- **코드 커버리지**: Codecov 통합 (목표: 60%+)
-- **TypeScript 커버리지**: 100% (114개 TS/TSX 파일, 0개 JS/JSX)
+- **단위 테스트**: 42개 파일, 371개 테스트 케이스 (93% 통과) ✅
+- **E2E 테스트**: 3개 핵심 스위트 (Playwright) ✅
+  - homepage.spec.ts: 홈페이지 네비게이션 및 반응형 테스트
+  - blog.spec.ts: 블로그 기능 (검색, 페이지네이션, 댓글)
+  - contact.spec.ts: 문의 폼 검증 및 제출
+- **코드 커버리지**: 50.29% 달성 ✅
+  - Statements: 50.29%
+  - Branches: 40.75%
+  - Functions: 47.97%
+  - Lines: 51.33%
+- **TypeScript 커버리지**: 100% (120개+ TS/TSX 파일)
 - **컴포넌트 수**: 60개+ (모두 TypeScript)
-- **Context API**: 4개 (UI, Blog, Auth, Form)
+- **테스트 유틸리티**: 커스텀 render 함수, mock 데이터 팩토리
 - **CI/CD 상태**: ![CI Status](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)
-- **의존성 업데이트**: Dependabot 13개+ PR 자동 병합
+- **의존성 업데이트**: Dependabot 자동 관리
 
 ### Web Vitals 메트릭
 
