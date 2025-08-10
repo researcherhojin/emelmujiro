@@ -63,6 +63,7 @@ class ContactAPITestCase(APITestCase):
     def test_create_contact(self):
         """Test creating a new contact"""
         url = reverse("contact-create")
+        print(f"DEBUG: Contact URL = {url}")  # Debug print
         data = {
             "name": "Test User",
             "email": "test@example.com",
@@ -73,6 +74,8 @@ class ContactAPITestCase(APITestCase):
             "message": "This is a test message with sufficient length.",
         }
         response: Response = self.client.post(url, data, format="json")  # type: ignore
+        if response.status_code == 301:
+            print(f"DEBUG: Redirected to = {response.url}")  # Debug redirect
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Contact.objects.count(), 1)
         self.assertEqual(Contact.objects.first().name, "Test User")
@@ -181,6 +184,7 @@ class AuthenticationAPITestCase(APITestCase):
         }
         response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert response.data is not None
         self.assertIn("error", response.data)
 
 
