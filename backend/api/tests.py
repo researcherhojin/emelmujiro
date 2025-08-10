@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from .models import BlogPost, Contact, NewsletterSubscription
 from datetime import datetime, timezone
-from typing import cast
+from typing import cast, Any, Dict
 
 
 class BlogPostAPITestCase(APITestCase):
@@ -29,6 +29,7 @@ class BlogPostAPITestCase(APITestCase):
         url = reverse("blog-list")
         response: Response = self.client.get(url)  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.data is not None
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_retrieve_blog_post(self):
@@ -36,6 +37,7 @@ class BlogPostAPITestCase(APITestCase):
         url = reverse("blog-detail", kwargs={"pk": self.blog_post.pk})
         response: Response = self.client.get(url)  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.data is not None
         self.assertEqual(response.data["title"], "Test Blog Post")
 
     def test_filter_blog_posts_by_category(self):
@@ -43,6 +45,7 @@ class BlogPostAPITestCase(APITestCase):
         url = reverse("blog-list")
         response: Response = self.client.get(url, {"category": "ai_development"})  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.data is not None
         self.assertEqual(len(response.data["results"]), 1)
 
     def test_featured_blog_posts(self):
@@ -50,6 +53,7 @@ class BlogPostAPITestCase(APITestCase):
         url = reverse("blog-list")
         response: Response = self.client.get(url, {"is_featured": "true"})  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.data is not None
         self.assertEqual(len(response.data["results"]), 1)
 
 
@@ -84,6 +88,7 @@ class ContactAPITestCase(APITestCase):
         }
         response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert response.data is not None
         self.assertIn("details", response.data)
         self.assertIn("email", response.data["details"])
 
@@ -98,6 +103,7 @@ class ContactAPITestCase(APITestCase):
         }
         response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        assert response.data is not None
         self.assertIn("details", response.data)
         self.assertIn("message", response.data["details"])
 
@@ -186,5 +192,6 @@ class HealthCheckAPITestCase(APITestCase):
         url = reverse("health-check")
         response: Response = self.client.get(url)  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.data is not None
         self.assertEqual(response.data["status"], "healthy")
         self.assertIn("timestamp", response.data)
