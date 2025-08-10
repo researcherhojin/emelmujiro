@@ -6,6 +6,10 @@ from rest_framework_simplejwt.views import (
 )
 from .views import (
     BlogPostViewSet,
+    ContactView,
+    NewsletterView,
+    health_check,
+    CategoryListView,
 )
 from .auth import (
     register,
@@ -23,6 +27,13 @@ router.register(r"blog", BlogPostViewSet, basename="blog")
 urlpatterns = [
     # API endpoints
     path("", include(router.urls)),
+    # Contact and Newsletter
+    path("contact/", ContactView.as_view(), name="contact-create"),
+    path("newsletter/", NewsletterView.as_view(), name="newsletter-subscribe"),
+    # Categories
+    path("categories/", CategoryListView.as_view(), name="category-list"),
+    # Health check
+    path("health/", health_check, name="health-check"),
     # Authentication endpoints
     path("auth/register/", register, name="register"),
     path("auth/login/", login, name="login"),

@@ -1,8 +1,18 @@
 from rest_framework import serializers
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 from .models import BlogPost, Contact, ContactAttempt, NewsletterSubscription
 import re
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """User serializer for authentication"""
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "first_name", "last_name"]
+        read_only_fields = ["id"]
 
 
 class BlogPostSerializer(serializers.ModelSerializer):
