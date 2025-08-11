@@ -107,6 +107,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
+    // Ensure mediaQuery exists before accessing its properties
+    if (!mediaQuery) {
+      return;
+    }
+
     const handleSystemThemeChange = (e: MediaQueryListEvent) => {
       const savedTheme = localStorage.getItem('theme');
       // Only apply system theme if user hasn't set a preference

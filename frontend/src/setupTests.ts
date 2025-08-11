@@ -85,52 +85,43 @@ if (!navigator.serviceWorker.ready || !navigator.serviceWorker.ready.then) {
 }
 
 // Mock classList - ensure it's always available
-if (typeof DOMTokenList === 'undefined') {
-  // Create a simple mock for classList if DOMTokenList doesn't exist
-  Object.defineProperty(Element.prototype, 'classList', {
-    get: function () {
-      const self = this;
-      return {
-        add: function (...tokens: string[]) {
-          tokens.forEach(token => {
-            const className = self.className || '';
-            if (!this.contains(token)) {
-              self.className = className + (className ? ' ' : '') + token;
-            }
-          });
-        },
-        remove: function (...tokens: string[]) {
-          tokens.forEach(token => {
-            const className = self.className || '';
-            self.className = className
-              .replace(new RegExp(`(^|\\s)${token}(\\s|$)`, 'g'), ' ')
-              .trim();
-          });
-        },
-        contains: function (token: string) {
-          const className = self.className || '';
-          return new RegExp(`(^|\\s)${token}(\\s|$)`).test(className);
-        },
-        toggle: function (token: string, force?: boolean) {
-          if (force === undefined) {
-            if (this.contains(token)) {
-              this.remove(token);
-              return false;
-            } else {
-              this.add(token);
-              return true;
-            }
-          } else {
-            if (force) {
-              this.add(token);
-            } else {
-              this.remove(token);
-            }
-            return force;
-          }
-        },
-      };
-    },
+// Ensure document elements have classList
+if (!document.documentElement.classList) {
+  const mockClassList = {
+    add: jest.fn(),
+    remove: jest.fn(),
+    contains: jest.fn(() => false),
+    toggle: jest.fn(),
+    replace: jest.fn(),
+    item: jest.fn(),
+    toString: jest.fn(() => ''),
+    length: 0,
+    value: '',
+  };
+
+  Object.defineProperty(document.documentElement, 'classList', {
+    value: mockClassList,
+    writable: true,
+    configurable: true,
+  });
+}
+
+if (!document.body.classList) {
+  const mockClassList = {
+    add: jest.fn(),
+    remove: jest.fn(),
+    contains: jest.fn(() => false),
+    toggle: jest.fn(),
+    replace: jest.fn(),
+    item: jest.fn(),
+    toString: jest.fn(() => ''),
+    length: 0,
+    value: '',
+  };
+
+  Object.defineProperty(document.body, 'classList', {
+    value: mockClassList,
+    writable: true,
     configurable: true,
   });
 }
