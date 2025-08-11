@@ -24,9 +24,15 @@ const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// Custom render function
-export const renderWithProviders = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
-  render(ui, { wrapper: AllTheProviders, ...options });
+// Custom render function with proper typing
+interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
+  // Additional custom options can be added here if needed
+}
+
+export const renderWithProviders = (ui: ReactElement, options?: CustomRenderOptions) => {
+  const mergedOptions = { wrapper: AllTheProviders, ...options } as RenderOptions;
+  return render(ui, mergedOptions);
+};
 
 // Re-export everything
 export * from '@testing-library/react';
@@ -37,26 +43,30 @@ export const renderWithBlogProvider = (ui: ReactElement) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <BlogProvider>{children}</BlogProvider>
   );
-  return render(ui, { wrapper: Wrapper });
+  const options = { wrapper: Wrapper } as RenderOptions;
+  return render(ui, options);
 };
 
 export const renderWithAuthProvider = (ui: ReactElement) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <AuthProvider>{children}</AuthProvider>
   );
-  return render(ui, { wrapper: Wrapper });
+  const options = { wrapper: Wrapper } as RenderOptions;
+  return render(ui, options);
 };
 
 export const renderWithUIProvider = (ui: ReactElement) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <UIProvider>{children}</UIProvider>
   );
-  return render(ui, { wrapper: Wrapper });
+  const options = { wrapper: Wrapper } as RenderOptions;
+  return render(ui, options);
 };
 
 export const renderWithFormProvider = (ui: ReactElement) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <FormProvider>{children}</FormProvider>
   );
-  return render(ui, { wrapper: Wrapper });
+  const options = { wrapper: Wrapper } as RenderOptions;
+  return render(ui, options);
 };

@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  ReactNode,
+} from 'react';
 import { useUI } from './UIContext';
 import { ChatWebSocketService, createChatWebSocket } from '../services/websocket';
 
@@ -44,16 +52,16 @@ interface ChatContextType {
   messages: ChatMessage[];
   unreadCount: number;
   connectionId: string | null;
-  
+
   // Agent info
   agentAvailable: boolean;
   agentName: string;
   agentAvatar?: string;
   businessHours: BusinessHours;
-  
+
   // Settings
   settings: ChatSettings;
-  
+
   // Actions
   openChat: () => void;
   closeChat: () => void;
@@ -65,7 +73,7 @@ interface ChatContextType {
   stopTyping: () => void;
   clearHistory: () => void;
   exportHistory: () => string;
-  
+
   // WebSocket
   connect: () => void;
   disconnect: () => void;
@@ -84,10 +92,10 @@ const getDefaultBusinessHours = (): BusinessHours => {
   const kstOffset = 9; // KST is UTC+9
   const currentHour = (now.getUTCHours() + kstOffset) % 24;
   const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-  
+
   const isBusinessDay = currentDay >= 1 && currentDay <= 5; // Monday to Friday
   const isBusinessHour = currentHour >= 9 && currentHour < 18; // 9 AM to 6 PM
-  
+
   return {
     isOpen: isBusinessDay && isBusinessHour,
     hours: '월-금 09:00-18:00 (KST)',
@@ -97,19 +105,13 @@ const getDefaultBusinessHours = (): BusinessHours => {
 
 const defaultSettings: ChatSettings = {
   welcomeMessage: '안녕하세요! 에멜무지로 고객지원입니다. 무엇을 도와드릴까요?',
-  quickReplies: [
-    '서비스 문의',
-    '기술 지원',
-    '요금 문의',
-    '예약 문의',
-    '기타'
-  ],
+  quickReplies: ['서비스 문의', '기술 지원', '요금 문의', '예약 문의', '기타'],
   cannedResponses: [
     '문의해주셔서 감사합니다.',
     '곧 담당자가 연결될 예정입니다.',
     '추가 정보가 필요합니다.',
     '문제가 해결되었는지 확인해주세요.',
-    '다른 도움이 필요하시면 언제든 문의해주세요.'
+    '다른 도움이 필요하시면 언제든 문의해주세요.',
   ],
   allowFileUpload: true,
   allowEmoji: true,
@@ -119,42 +121,42 @@ const defaultSettings: ChatSettings = {
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const { showNotification } = useUI();
-  
+
   // UI State
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  
+
   // Connection State
   const [isConnected, setIsConnected] = useState(false);
   const [connectionId, setConnectionId] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
-  
+
   // Messages
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  
+
   // Agent Info
   const [agentAvailable] = useState(true);
   const [agentName] = useState('고객지원팀');
   const [agentAvatar, setAgentAvatar] = useState<string>();
   const [businessHours, setBusinessHours] = useState<BusinessHours>(getDefaultBusinessHours);
-  
+
   // Settings
   const [settings, setSettings] = useState<ChatSettings>(defaultSettings);
-  
+
   // WebSocket connection
   const wsRef = useRef<ChatWebSocketService | null>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messageQueueRef = useRef<ChatMessage[]>([]);
 
   // Load persisted data on mount
   useEffect(() => {
     loadPersistedData();
     updateBusinessHours();
-    
+
     // Update business hours every minute
     const interval = setInterval(updateBusinessHours, 60000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -169,8 +171,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (
-      lastMessage && 
-      lastMessage.sender !== 'user' && 
+      lastMessage &&
+      lastMessage.sender !== 'user' &&
       settings.soundEnabled &&
       !isOpen // Only play sound when chat is closed
     ) {
@@ -221,19 +223,20 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       interface WindowWithWebkit extends Window {
         webkitAudioContext?: typeof AudioContext;
       }
-      const audioContext = new (window.AudioContext || (window as WindowWithWebkit).webkitAudioContext)();
+      const audioContext = new (window.AudioContext ||
+        (window as WindowWithWebkit).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
+
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
+
       oscillator.frequency.value = 800;
       oscillator.type = 'sine';
-      
+
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-      
+
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.5);
     } catch (error) {
@@ -248,7 +251,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const openChat = () => {
     setIsOpen(true);
     setIsMinimized(false);
-    
+
     // Send welcome message if no messages exist
     if (messages.length === 0) {
       const welcomeMsg: ChatMessage = {
@@ -291,13 +294,11 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
           type: 'message',
           data: message,
         });
-        
+
         if (success) {
           // Update status to sent
           setMessages(prev =>
-            prev.map(msg =>
-              msg.id === message.id ? { ...msg, status: 'sent' } : msg
-            )
+            prev.map(msg => (msg.id === message.id ? { ...msg, status: 'sent' } : msg))
           );
         } else {
           throw new Error('Failed to send message via WebSocket');
@@ -305,7 +306,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       } else {
         // Queue message for later sending
         messageQueueRef.current.push(message);
-        
+
         // Simulate offline response
         setTimeout(() => {
           const autoReply: ChatMessage = {
@@ -322,9 +323,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     } catch (error) {
       // Update message status to failed
       setMessages(prev =>
-        prev.map(msg =>
-          msg.id === message.id ? { ...msg, status: 'failed' } : msg
-        )
+        prev.map(msg => (msg.id === message.id ? { ...msg, status: 'failed' } : msg))
       );
       throw error;
     }
@@ -333,20 +332,16 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const markAsRead = (messageId: string) => {
     setMessages(prev =>
       prev.map(msg =>
-        msg.id === messageId && msg.sender !== 'user'
-          ? { ...msg, status: 'read' }
-          : msg
+        msg.id === messageId && msg.sender !== 'user' ? { ...msg, status: 'read' } : msg
       )
     );
-    
+
     setUnreadCount(prev => Math.max(0, prev - 1));
   };
 
   const markAllAsRead = () => {
     setMessages(prev =>
-      prev.map(msg =>
-        msg.sender !== 'user' ? { ...msg, status: 'read' } : msg
-      )
+      prev.map(msg => (msg.sender !== 'user' ? { ...msg, status: 'read' } : msg))
     );
     setUnreadCount(0);
   };
@@ -398,7 +393,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       },
       businessHours,
     };
-    
+
     return JSON.stringify(exportData, null, 2);
   };
 
@@ -412,77 +407,72 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
         onOpen: () => {
           setIsConnected(true);
           setConnectionId(`conn_${Date.now()}`);
-          
+
           // Send queued messages
           if (messageQueueRef.current.length > 0) {
             messageQueueRef.current.forEach(message => {
               setMessages(prev =>
-                prev.map(msg =>
-                  msg.id === message.id ? { ...msg, status: 'sent' } : msg
-                )
+                prev.map(msg => (msg.id === message.id ? { ...msg, status: 'sent' } : msg))
               );
             });
             messageQueueRef.current = [];
           }
-          
+
           showNotification('success', '채팅 서비스에 연결되었습니다.');
         },
-        
+
         onClose: () => {
           setIsConnected(false);
           setConnectionId(null);
         },
-        
-        onError: (error) => {
+
+        onError: error => {
           console.error('WebSocket error:', error);
           setIsConnected(false);
           showNotification('error', '채팅 서비스 연결에 실패했습니다.');
         },
-        
-        onMessage: (data) => {
+
+        onMessage: data => {
           if (data.type === 'message' && data.data) {
             const message: ChatMessage = {
               ...data.data,
               timestamp: new Date(data.data.timestamp),
             };
-            
+
             setMessages(prev => [...prev, message]);
-            
+
             // Update unread count if chat is closed
             if (!isOpen && message.sender !== 'user') {
               setUnreadCount(prev => prev + 1);
             }
           } else if (data.type === 'message_delivered' && data.messageId) {
             setMessages(prev =>
-              prev.map(msg =>
-                msg.id === data.messageId ? { ...msg, status: 'delivered' } : msg
-              )
+              prev.map(msg => (msg.id === data.messageId ? { ...msg, status: 'delivered' } : msg))
             );
           }
         },
-        
+
         onTypingStart: () => {
           setIsTyping(true);
         },
-        
+
         onTypingStop: () => {
           setIsTyping(false);
         },
-        
+
         onReconnect: () => {
           showNotification('info', '채팅 서비스에 재연결 중입니다...');
         },
-        
+
         onReconnectFailed: () => {
           showNotification('error', '채팅 서비스 재연결에 실패했습니다.');
-        }
+        },
       });
 
       wsRef.current.connect().catch(error => {
         console.error('Connection failed:', error);
         setIsConnected(false);
       });
-      
     } catch (error) {
       console.error('WebSocket initialization failed:', error);
       setIsConnected(false);
@@ -495,7 +485,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       wsRef.current.disconnect();
       wsRef.current = null;
     }
-    
+
     setIsConnected(false);
     setConnectionId(null);
     setIsTyping(false);
@@ -525,16 +515,16 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     messages,
     unreadCount,
     connectionId,
-    
+
     // Agent info
     agentAvailable,
     agentName,
     agentAvatar,
     businessHours,
-    
+
     // Settings
     settings,
-    
+
     // Actions
     openChat,
     closeChat,
@@ -546,18 +536,14 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     stopTyping,
     clearHistory,
     exportHistory,
-    
+
     // WebSocket
     connect,
     disconnect,
     reconnect,
   };
 
-  return (
-    <ChatContext.Provider value={value}>
-      {children}
-    </ChatContext.Provider>
-  );
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };
 
 export const useChatContext = (): ChatContextType => {

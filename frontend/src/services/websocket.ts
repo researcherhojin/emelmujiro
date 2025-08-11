@@ -23,8 +23,8 @@ export class ChatWebSocketService {
   private config: WebSocketConfig;
   private callbacks: WebSocketCallbacks;
   private reconnectAttempts = 0;
-  private reconnectTimer: NodeJS.Timeout | null = null;
-  private heartbeatTimer: NodeJS.Timeout | null = null;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private heartbeatTimer: ReturnType<typeof setTimeout> | null = null;
   private isConnecting = false;
   private isManualClose = false;
 
@@ -59,64 +59,67 @@ export class ChatWebSocketService {
 
   private simulateConnection(resolve: () => void, reject: (error: any) => void) {
     // Simulate connection delay
-    setTimeout(() => {
-      this.isConnecting = false;
-      this.reconnectAttempts = 0;
-      
-      // Simulate successful connection
-      if (this.callbacks.onOpen) {
-        this.callbacks.onOpen();
-      }
-      
-      // Start simulated heartbeat
-      this.startHeartbeat();
-      
-      resolve();
-      
-      // Simulate receiving messages
-      this.simulateIncomingMessages();
-    }, 1000 + Math.random() * 2000); // Random delay 1-3 seconds
+    setTimeout(
+      () => {
+        this.isConnecting = false;
+        this.reconnectAttempts = 0;
+
+        // Simulate successful connection
+        if (this.callbacks.onOpen) {
+          this.callbacks.onOpen();
+        }
+
+        // Start simulated heartbeat
+        this.startHeartbeat();
+
+        resolve();
+
+        // Simulate receiving messages
+        this.simulateIncomingMessages();
+      },
+      1000 + Math.random() * 2000
+    ); // Random delay 1-3 seconds
   }
 
   private createRealConnection(resolve: () => void, reject: (error: any) => void) {
     this.ws = new WebSocket(this.config.url);
-    
+
     this.ws.onopen = () => {
       this.isConnecting = false;
       this.reconnectAttempts = 0;
-      
+
       if (this.callbacks.onOpen) {
         this.callbacks.onOpen();
       }
-      
+
       this.startHeartbeat();
       resolve();
     };
-    
-    this.ws.onclose = (event) => {
+
+    this.ws.onclose = event => {
       this.isConnecting = false;
       this.stopHeartbeat();
-      
+
       if (this.callbacks.onClose) {
         this.callbacks.onClose();
       }
-      
+
       if (!this.isManualClose) {
         this.attemptReconnect();
       }
     };
-    
-    this.ws.onerror = (error) => {
+
+    this.ws.onerror = error => {
       this.isConnecting = false;
-      
+
       if (this.callbacks.onError) {
         this.callbacks.onError(error);
       }
-      
+
       reject(error);
     };
-    
-    this.ws.onmessage = (event) => {
+
+    this.ws.onmessage = event => {
       try {
         const data = JSON.parse(event.data);
         this.handleMessage(data);
@@ -138,36 +141,40 @@ export class ChatWebSocketService {
     let responseIndex = 0;
 
     // Set up periodic simulated responses
-    setInterval(() => {
-      if (Math.random() > 0.7) { // 30% chance of agent message
-        const response = responses[responseIndex % responses.length];
-        responseIndex++;
+    setInterval(
+      () => {
+        if (Math.random() > 0.7) {
+          // 30% chance of agent message
+          const response = responses[responseIndex % responses.length];
+          responseIndex++;
 
-        const simulatedMessage = {
-          type: 'message',
-          data: {
-            id: `sim_${Date.now()}`,
-            type: 'text',
-            content: response,
-            sender: 'agent' as MessageSender,
-            timestamp: new Date(),
-            status: 'read',
-            agentName: '고객지원팀',
+          const simulatedMessage = {
+            type: 'message',
+            data: {
+              id: `sim_${Date.now()}`,
+              type: 'text',
+              content: response,
+              sender: 'agent' as MessageSender,
+              timestamp: new Date(),
+              status: 'read',
+              agentName: '고객지원팀',
+            },
+          };
+
+          if (this.callbacks.onMessage) {
+            this.callbacks.onMessage(simulatedMessage);
           }
-        };
-
-        if (this.callbacks.onMessage) {
-          this.callbacks.onMessage(simulatedMessage);
         }
-      }
-    }, 30000 + Math.random() * 60000); // Random interval 30-90 seconds
+      },
+      30000 + Math.random() * 60000
+    ); // Random interval 30-90 seconds
   }
 
   disconnect() {
     this.isManualClose = true;
     this.stopHeartbeat();
     this.stopReconnect();
-    
+
     if (this.ws) {
       this.ws.close();
       this.ws = null;
@@ -178,17 +185,20 @@ export class ChatWebSocketService {
     if (process.env.NODE_ENV === 'development') {
       // In development mode, just simulate sending
       console.log('Simulated WebSocket send:', data);
-      
+
       // Simulate message delivery confirmation
-      setTimeout(() => {
-        if (data.type === 'message' && this.callbacks.onMessage) {
-          this.callbacks.onMessage({
-            type: 'message_delivered',
-            messageId: data.data?.id,
-          });
-        }
-      }, 500 + Math.random() * 1000);
-      
+      setTimeout(
+        () => {
+          if (data.type === 'message' && this.callbacks.onMessage) {
+            this.callbacks.onMessage({
+              type: 'message_delivered',
+              messageId: data.data?.id,
+            });
+          }
+        },
+        500 + Math.random() * 1000
+      );
+
       return true;
     }
 
@@ -212,23 +222,23 @@ export class ChatWebSocketService {
           this.callbacks.onMessage(data);
         }
         break;
-        
+
       case 'typing_start':
         if (this.callbacks.onTypingStart) {
           this.callbacks.onTypingStart();
         }
         break;
-        
+
       case 'typing_stop':
         if (this.callbacks.onTypingStop) {
           this.callbacks.onTypingStop();
         }
         break;
-        
+
       case 'pong':
         // Heartbeat response
         break;
-        
+
       default:
         console.log('Unknown message type:', data.type);
     }
@@ -261,7 +271,7 @@ export class ChatWebSocketService {
     }
 
     this.reconnectAttempts++;
-    
+
     if (this.callbacks.onReconnect) {
       this.callbacks.onReconnect();
     }

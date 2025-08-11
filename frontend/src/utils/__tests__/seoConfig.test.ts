@@ -280,7 +280,6 @@ describe('seoConfig', () => {
           '@id': 'https://example.com/article/ai-trends',
         },
         title: 'AI 기술 동향',
-        author: '이호진',
         publishedDate: '2024-01-01',
         modifiedDate: '2024-01-02',
         url: 'https://example.com/article/ai-trends',
