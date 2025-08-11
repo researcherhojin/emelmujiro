@@ -159,12 +159,17 @@ describe('BlogContext', () => {
     };
 
     mockedApi.getBlogPosts.mockImplementation(
-      (_page = 1, _pageSize?: number) =>
+      (page?: number, pageSize?: number) =>
         new Promise(resolve =>
           setTimeout(
             () =>
               resolve({
-                data: mockResponse,
+                data: {
+                  count: 0,
+                  next: null,
+                  previous: null,
+                  results: [],
+                },
                 status: 200,
                 statusText: 'OK',
                 headers: {},
