@@ -36,12 +36,35 @@
   /* Border radius */
   --radius-base: 0.5rem;
   --radius-large: 1rem;
+  --radius-xl: 1.5rem;
 
   /* Shadows */
   --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
   --shadow-hover: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+  /* Colors */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  /* Dark mode colors */
+  --color-dark-600: #475569;
+  --color-dark-700: #334155;
+  --color-dark-800: #1e293b;
+  --color-dark-900: #0f172a;
 }
 
+/* Base styles without @apply */
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -50,14 +73,28 @@
   }
 
   body {
-    @apply antialiased text-gray-900 dark:text-gray-100 overflow-x-hidden;
-    transition: var(--transition-theme);
+    /* Antialiased text */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Typography */
+    color: var(--color-gray-900);
     font-family: var(--font-family-primary);
     letter-spacing: var(--letter-spacing-tight);
     font-size: 16px;
     line-height: var(--line-height-base);
     font-weight: 400;
-    /* Remove duplicate scroll-behavior */
+
+    /* Layout */
+    overflow-x: hidden;
+
+    /* Transitions */
+    transition: var(--transition-theme);
+  }
+
+  /* Dark mode body styles */
+  .dark body {
+    color: var(--color-gray-100);
   }
 
   /* Typography adjustments */
@@ -67,29 +104,58 @@
   h4,
   h5,
   h6 {
-    @apply font-bold;
+    font-weight: 700;
     letter-spacing: var(--letter-spacing-tighter);
     line-height: var(--line-height-heading);
   }
 
   p {
-    @apply leading-relaxed;
     line-height: var(--line-height-relaxed);
   }
 }
 
+/* Component styles without @apply */
 @layer components {
   .container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 80rem; /* max-w-7xl = 80rem */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem; /* px-4 */
+    padding-right: 1rem;
+  }
+
+  /* Responsive container padding */
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem; /* sm:px-6 */
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem; /* lg:px-8 */
+      padding-right: 2rem;
+    }
   }
 
   .company-logo {
-    @apply h-12 w-auto object-contain grayscale opacity-70 transition-all duration-300 ease-in-out hover:grayscale-0 hover:opacity-100;
+    height: 3rem; /* h-12 */
+    width: auto;
+    object-fit: contain;
+    filter: grayscale(1);
+    opacity: 0.7;
+    transition: all 300ms ease-in-out;
+  }
+
+  .company-logo:hover {
+    filter: grayscale(0);
+    opacity: 1;
   }
 
   /* Button defaults for better consistency */
   button {
-    @apply transition-all duration-200;
+    transition: all 200ms;
   }
 
   /* Focus states for better accessibility */
@@ -97,50 +163,167 @@
   a:focus,
   input:focus,
   textarea:focus {
-    @apply outline-none ring-2 ring-gray-900 dark:ring-gray-100 ring-offset-2 dark:ring-offset-dark-900;
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--color-gray-900),
+      0 0 0 4px white;
+  }
+
+  /* Dark mode focus states */
+  .dark button:focus,
+  .dark a:focus,
+  .dark input:focus,
+  .dark textarea:focus {
+    box-shadow:
+      0 0 0 2px var(--color-gray-100),
+      0 0 0 4px var(--color-dark-900);
   }
 
   /* Common card styles */
   .card {
-    @apply bg-white dark:bg-dark-800 border-2 border-gray-200 dark:border-dark-600 rounded-2xl transition-all duration-300;
+    background-color: white;
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-xl);
     padding: var(--spacing-card);
+    transition: all 300ms;
   }
 
-  .card-hover {
-    @apply hover:border-gray-300 dark:hover:border-dark-500 hover:-translate-y-1;
+  .dark .card {
+    background-color: var(--color-dark-800);
+    border-color: var(--color-dark-600);
+  }
+
+  .card-hover:hover {
+    border-color: var(--color-gray-300);
+    transform: translateY(-0.25rem);
     box-shadow: var(--shadow-hover);
+  }
+
+  .dark .card-hover:hover {
+    border-color: var(--color-dark-500);
   }
 
   /* Section heading styles */
   .section-heading {
-    @apply text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white;
+    font-size: 1.875rem; /* text-3xl */
+    font-weight: 700;
+    color: var(--color-gray-900);
     margin-bottom: var(--spacing-section);
   }
 
+  @media (min-width: 640px) {
+    .section-heading {
+      font-size: 2.25rem; /* sm:text-4xl */
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-heading {
+      font-size: 3rem; /* lg:text-5xl */
+    }
+  }
+
+  .dark .section-heading {
+    color: white;
+  }
+
   .section-subheading {
-    @apply text-lg sm:text-xl text-gray-700 dark:text-gray-300;
+    font-size: 1.125rem; /* text-lg */
+    color: var(--color-gray-700);
     line-height: var(--line-height-relaxed);
+  }
+
+  @media (min-width: 640px) {
+    .section-subheading {
+      font-size: 1.25rem; /* sm:text-xl */
+    }
+  }
+
+  .dark .section-subheading {
+    color: var(--color-gray-300);
   }
 
   /* Primary button styles */
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-base sm:text-lg font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 hover:scale-105 active:scale-100;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem; /* py-3 px-6 */
+    background-color: var(--color-gray-900);
+    color: white;
+    font-size: 1rem; /* text-base */
+    font-weight: 600;
     border-radius: var(--radius-base);
     transition: var(--transition-default);
     box-shadow: var(--shadow-base);
+    transform: scale(1);
+  }
+
+  @media (min-width: 640px) {
+    .btn-primary {
+      padding: 1rem 2rem; /* sm:py-4 sm:px-8 */
+      font-size: 1.125rem; /* sm:text-lg */
+    }
   }
 
   .btn-primary:hover {
+    background-color: var(--color-gray-800);
+    transform: scale(1.05);
     box-shadow: var(--shadow-hover);
   }
 
+  .btn-primary:active {
+    transform: scale(1);
+  }
+
+  .dark .btn-primary {
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-900);
+  }
+
+  .dark .btn-primary:hover {
+    background-color: var(--color-gray-200);
+  }
+
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-white dark:bg-dark-800 border-2 border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 text-base sm:text-lg font-semibold hover:bg-gray-50 dark:hover:bg-dark-700 hover:border-gray-400 dark:hover:border-dark-500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem; /* py-3 px-6 */
+    background-color: white;
+    border: 2px solid var(--color-gray-300);
+    color: var(--color-gray-700);
+    font-size: 1rem; /* text-base */
+    font-weight: 600;
     border-radius: var(--radius-base);
     transition: var(--transition-default);
   }
+
+  @media (min-width: 640px) {
+    .btn-secondary {
+      padding: 1rem 2rem; /* sm:py-4 sm:px-8 */
+      font-size: 1.125rem; /* sm:text-lg */
+    }
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--color-gray-50);
+    border-color: var(--color-gray-400);
+  }
+
+  .dark .btn-secondary {
+    background-color: var(--color-dark-800);
+    border-color: var(--color-dark-600);
+    color: var(--color-gray-300);
+  }
+
+  .dark .btn-secondary:hover {
+    background-color: var(--color-dark-700);
+    border-color: var(--color-dark-500);
+  }
 }
 
+/* Utility styles */
 @layer utilities {
   /* Slide animation */
   .animate-slide {
@@ -166,6 +349,7 @@
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
   }
