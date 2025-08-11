@@ -9,6 +9,7 @@ import OptimizedImage from '../OptimizedImage';
 
 // Mock LazyImage component
 jest.mock('../LazyImage', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return function MockLazyImage(props: any) {
     return (
       <img
@@ -145,12 +146,15 @@ describe('OptimizedImage', () => {
 
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
-      const src = image.getAttribute('src');
-      expect(src).toContain('q=85'); // Quality for high DPI
-      expect(src).toContain('fm=webp'); // WebP format
-      expect(src).toContain('w=1600'); // Width * devicePixelRatio
-      expect(src).toContain('h=1200'); // Height * devicePixelRatio
+      expect(image).toBeInTheDocument();
     });
+
+    const image = screen.getByTestId('lazy-image');
+    const src = image.getAttribute('src');
+    expect(src).toContain('q=85'); // Quality for high DPI
+    expect(src).toContain('fm=webp'); // WebP format
+    expect(src).toContain('w=1600'); // Width * devicePixelRatio
+    expect(src).toContain('h=1200'); // Height * devicePixelRatio
   });
 
   it('optimizes Unsplash images without WebP support', async () => {
@@ -171,10 +175,13 @@ describe('OptimizedImage', () => {
 
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
-      const src = image.getAttribute('src');
-      expect(src).toContain('q=90'); // Higher quality for standard DPI
-      expect(src).toContain('fm=auto'); // Auto format
+      expect(image).toBeInTheDocument();
     });
+
+    const image = screen.getByTestId('lazy-image');
+    const src = image.getAttribute('src');
+    expect(src).toContain('q=90'); // Higher quality for standard DPI
+    expect(src).toContain('fm=auto'); // Auto format
   });
 
   it('optimizes Pexels images', async () => {
@@ -220,12 +227,15 @@ describe('OptimizedImage', () => {
 
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
-      const srcSet = image.getAttribute('srcset');
-      expect(srcSet).toContain('320w');
-      expect(srcSet).toContain('640w');
-      expect(srcSet).toContain('768w');
-      expect(srcSet).toContain('1024w');
+      expect(image).toBeInTheDocument();
     });
+
+    const image = screen.getByTestId('lazy-image');
+    const srcSet = image.getAttribute('srcset');
+    expect(srcSet).toContain('320w');
+    expect(srcSet).toContain('640w');
+    expect(srcSet).toContain('768w');
+    expect(srcSet).toContain('1024w');
   });
 
   it('limits srcSet widths to 2x original width', async () => {
@@ -471,7 +481,7 @@ describe('OptimizedImage', () => {
 
     // Should not throw error
     render(<OptimizedImage src="/test-image.jpg" alt="Test image" />);
-    
+
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
       expect(image).toBeInTheDocument();
@@ -485,7 +495,7 @@ describe('OptimizedImage', () => {
 
     // Should not throw error
     render(<OptimizedImage src="/test-image.jpg" alt="Test image" />);
-    
+
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
       expect(image).toBeInTheDocument();
