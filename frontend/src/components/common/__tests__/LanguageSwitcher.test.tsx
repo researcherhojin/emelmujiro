@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '../../../test-utils/renderWithProviders';
+import { render, screen, waitFor } from '../../../test-utils/renderWithProviders';
+import userEvent from '@testing-library/user-event';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../LanguageSwitcher';
 
@@ -59,11 +60,12 @@ describe('LanguageSwitcher', () => {
     expect(screen.getByText('한국어')).toBeInTheDocument();
   });
 
-  it('opens dropdown when button is clicked', () => {
+  it('opens dropdown when button is clicked', async () => {
+    const user = userEvent.setup();
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
-    fireEvent.click(button);
+    await user.click(button);
 
     // Dropdown should be open
     expect(button).toHaveAttribute('aria-expanded', 'true');
@@ -73,31 +75,33 @@ describe('LanguageSwitcher', () => {
     expect(screen.getByRole('option', { name: /English/ })).toBeInTheDocument();
   });
 
-  it('closes dropdown when clicking outside', () => {
+  it('closes dropdown when clicking outside', async () => {
+    const user = userEvent.setup();
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
-    fireEvent.click(button);
+    await user.click(button);
 
     // Dropdown should be open
     expect(button).toHaveAttribute('aria-expanded', 'true');
 
     // Simulate clicking outside by pressing Escape key instead
-    fireEvent.keyDown(button, { key: 'Escape' });
+    await user.keyboard('{Escape}');
 
     // Dropdown should be closed
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('changes language when option is selected', async () => {
+    const user = userEvent.setup();
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
-    fireEvent.click(button);
+    await user.click(button);
 
     // Click on English option
     const englishOption = screen.getByRole('option', { name: /English/ });
-    fireEvent.click(englishOption);
+    await user.click(englishOption);
 
     // Should call changeLanguage with 'en'
     await waitFor(() => {
@@ -106,17 +110,18 @@ describe('LanguageSwitcher', () => {
   });
 
   it('stores language preference in localStorage', async () => {
+    const user = userEvent.setup();
     // Mock successful language change
     mockChangeLanguage.mockResolvedValue(undefined);
 
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
-    fireEvent.click(button);
+    await user.click(button);
 
     // Click on English option
     const englishOption = screen.getByRole('option', { name: /English/ });
-    fireEvent.click(englishOption);
+    await user.click(englishOption);
 
     await waitFor(() => {
       expect(localStorage.getItem('i18nextLng')).toBe('en');
@@ -124,42 +129,48 @@ describe('LanguageSwitcher', () => {
   });
 
   it('updates document language attribute', async () => {
+    const user = userEvent.setup();
     // Mock successful language change
     mockChangeLanguage.mockResolvedValue(undefined);
 
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
-    fireEvent.click(button);
+    await user.click(button);
 
     // Click on English option
     const englishOption = screen.getByRole('option', { name: /English/ });
-    fireEvent.click(englishOption);
+    await user.click(englishOption);
 
     await waitFor(() => {
       expect(mockChangeLanguage).toHaveBeenCalledWith('en');
     });
   });
 
-  it('handles keyboard navigation', () => {
+  it('handles keyboard navigation', async () => {
+    const user = userEvent.setup();
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
 
+    // Focus the button
+    button.focus();
+
     // Test Enter key to open dropdown
-    fireEvent.keyDown(button, { key: 'Enter' });
+    await user.keyboard('{Enter}');
     expect(button).toHaveAttribute('aria-expanded', 'true');
 
     // Test Escape key to close dropdown
-    fireEvent.keyDown(button, { key: 'Escape' });
+    await user.keyboard('{Escape}');
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it('shows current language as selected', () => {
+  it('shows current language as selected', async () => {
+    const user = userEvent.setup();
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
-    fireEvent.click(button);
+    await user.click(button);
 
     // Korean should be marked as selected
     const koreanOption = screen.getByRole('option', { name: /한국어/ });
@@ -171,15 +182,16 @@ describe('LanguageSwitcher', () => {
   });
 
   it('calls changeLanguage when option is selected', async () => {
+    const user = userEvent.setup();
     mockChangeLanguage.mockResolvedValue(undefined);
 
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
-    fireEvent.click(button);
+    await user.click(button);
 
     const englishOption = screen.getByRole('option', { name: /English/ });
-    fireEvent.click(englishOption);
+    await user.click(englishOption);
 
     await waitFor(() => {
       expect(mockChangeLanguage).toHaveBeenCalledWith('en');
@@ -202,21 +214,48 @@ describe('LanguageSwitcher', () => {
   });
 
   it('handles language change errors gracefully', async () => {
+    const user = userEvent.setup();
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     mockChangeLanguage.mockRejectedValue(new Error('Language change failed'));
 
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
-    fireEvent.click(button);
+    await user.click(button);
 
     const englishOption = screen.getByRole('option', { name: /English/ });
-    fireEvent.click(englishOption);
+    await user.click(englishOption);
 
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith('Failed to change language:', expect.any(Error));
     });
 
     consoleSpy.mockRestore();
+  });
+
+  it('dispatches custom language change event', async () => {
+    const user = userEvent.setup();
+    mockChangeLanguage.mockResolvedValue(undefined);
+
+    const eventListener = jest.fn();
+    window.addEventListener('languageChanged', eventListener);
+
+    render(<LanguageSwitcher />);
+
+    const button = screen.getByLabelText('Language selector');
+    await user.click(button);
+
+    const englishOption = screen.getByRole('option', { name: /English/ });
+    await user.click(englishOption);
+
+    await waitFor(() => {
+      expect(eventListener).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: { language: 'en' },
+        })
+      );
+    });
+
+    window.removeEventListener('languageChanged', eventListener);
   });
 });
