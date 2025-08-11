@@ -174,7 +174,10 @@ const WebVitalsDashboard: React.FC = memo(() => {
 
       {/* Dashboard */}
       {isVisible && (
-        <div className="fixed bottom-20 right-4 z-40 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-2xl max-w-4xl max-h-[80vh] overflow-auto">
+        <div
+          data-testid="web-vitals-dashboard"
+          className="fixed bottom-20 right-4 z-40 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-2xl max-w-4xl max-h-[80vh] overflow-auto"
+        >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
               Web Vitals Dashboard
