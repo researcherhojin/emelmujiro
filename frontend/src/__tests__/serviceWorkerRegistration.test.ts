@@ -449,7 +449,7 @@ describe('serviceWorkerRegistration', () => {
 
       // Mock 404 response
       const mock404Headers = createMockHeaders();
-      mock404Headers.get = jest.fn((name: string): string | null => null);
+      mock404Headers.get = jest.fn((_name: string): string | null => null);
       mockFetch.mockResolvedValue({
         status: 404,
         headers: mock404Headers,

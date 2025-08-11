@@ -16,24 +16,27 @@ describe('CompanyLogo', () => {
   });
 
   it('applies default medium size', () => {
-    const { container } = render(<CompanyLogo name="테스트회사" color="#000000" />);
+    render(<CompanyLogo name="테스트회사" color="#000000" />);
 
-    const logoContainer = container.querySelector('.w-32.h-16.text-base');
-    expect(logoContainer).toBeInTheDocument();
+    const textElement = screen.getByText('테스트회사');
+    const logoContainer = textElement.closest('div');
+    expect(logoContainer).toHaveClass('w-32', 'h-16', 'text-base');
   });
 
   it('applies small size correctly', () => {
-    const { container } = render(<CompanyLogo name="테스트회사" color="#000000" size="sm" />);
+    render(<CompanyLogo name="테스트회사" color="#000000" size="sm" />);
 
-    const logoContainer = container.querySelector('.w-20.h-12.text-sm');
-    expect(logoContainer).toBeInTheDocument();
+    const textElement = screen.getByText('테스트회사');
+    const logoContainer = textElement.closest('div');
+    expect(logoContainer).toHaveClass('w-20', 'h-12', 'text-sm');
   });
 
   it('applies large size correctly', () => {
-    const { container } = render(<CompanyLogo name="테스트회사" color="#000000" size="lg" />);
+    render(<CompanyLogo name="테스트회사" color="#000000" size="lg" />);
 
-    const logoContainer = container.querySelector('.w-40.h-20.text-lg');
-    expect(logoContainer).toBeInTheDocument();
+    const textElement = screen.getByText('테스트회사');
+    const logoContainer = textElement.closest('div');
+    expect(logoContainer).toHaveClass('w-40', 'h-20', 'text-lg');
   });
 
   it('applies custom color to text', () => {

@@ -173,11 +173,11 @@ afterAll(() => {
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: jest.fn((key: string): string | null => null),
-  setItem: jest.fn((key: string, value: string): void => undefined),
-  removeItem: jest.fn((key: string): void => undefined),
+  getItem: jest.fn((_key: string): string | null => null),
+  setItem: jest.fn((_key: string, _value: string): void => undefined),
+  removeItem: jest.fn((_key: string): void => undefined),
   clear: jest.fn((): void => undefined),
-  key: jest.fn((index: number): string | null => null),
+  key: jest.fn((_index: number): string | null => null),
   length: 0,
 };
 global.localStorage = localStorageMock as Storage;
