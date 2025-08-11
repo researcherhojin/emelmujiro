@@ -59,7 +59,10 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
     const FullScreenWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       if (fullScreen || variant === 'page') {
         return (
-          <div className="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center">
+          <div
+            className="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center"
+            data-testid="fullscreen-wrapper"
+          >
             {children}
           </div>
         );
@@ -87,7 +90,10 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
     if (variant === 'dots') {
       return (
         <FullScreenWrapper>
-          <div className={`flex items-center justify-center space-x-2 ${className}`}>
+          <div
+            className={`flex items-center justify-center space-x-2 ${className}`}
+            data-testid="loading-dots"
+          >
             {[0, 1, 2].map(index => (
               <motion.div
                 key={index}
@@ -114,9 +120,13 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
     if (variant === 'pulse') {
       return (
         <FullScreenWrapper>
-          <div className={`flex flex-col items-center justify-center ${className}`}>
+          <div
+            className={`flex flex-col items-center justify-center ${className}`}
+            data-testid="loading-pulse"
+          >
             <motion.div
               className={`${sizeClasses[size]} bg-${color}-600 rounded-full`}
+              data-testid="pulse-element"
               animate={{
                 scale: [1, 1.5, 1],
                 opacity: [1, 0.5, 1],
@@ -136,9 +146,10 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
     // 인라인 로딩
     if (variant === 'inline') {
       return (
-        <span className={`inline-flex items-center ${className}`}>
+        <span className={`inline-flex items-center ${className}`} data-testid="loading-inline">
           <motion.span
             className={`inline-block w-4 h-4 border-2 ${colorClasses[color as keyof typeof colorClasses] || colorClasses.indigo} border-t-transparent rounded-full`}
+            data-testid="inline-spinner"
             animate={{ rotate: 360 }}
             transition={{
               duration: 1,
@@ -154,7 +165,10 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
     // 기본 스피너 (spinner, page)
     return (
       <FullScreenWrapper>
-        <div className={`flex flex-col items-center justify-center ${className}`}>
+        <div
+          className={`flex flex-col items-center justify-center ${className}`}
+          data-testid="loading-spinner"
+        >
           <motion.div
             animate={{
               rotate: 360,
@@ -165,6 +179,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
               ease: 'linear',
             }}
             className={`${sizeClasses[size]} border-4 ${colorClasses[color as keyof typeof colorClasses] || colorClasses.indigo} border-t-transparent rounded-full`}
+            data-testid="spinner-element"
           />
           {message && (
             <motion.p
