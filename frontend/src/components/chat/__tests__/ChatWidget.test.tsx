@@ -31,21 +31,13 @@ describe.skip('ChatWidget', () => {
   });
 
   it('renders chat button initially', () => {
-    const { container } = renderWithProviders(<ChatWidget />);
+    renderWithProviders(<ChatWidget />);
 
     // Advance timers to show the widget
     jest.advanceTimersByTime(2000);
 
-    // Debug: Check what's rendered
-    const buttons = screen.queryAllByRole('button');
-    console.log('Number of buttons found:', buttons.length);
-    if (buttons.length > 0) {
-      buttons.forEach(btn => console.log('Button text:', btn.textContent));
-    }
-    console.log('Container HTML:', container.innerHTML);
-
-    // Should show chat button initially - try more flexible query
-    const chatButton = screen.queryByRole('button') || container.querySelector('button');
+    // Should show chat button initially
+    const chatButton = screen.getByRole('button', { name: /채팅 열기|open chat/i });
     expect(chatButton).toBeInTheDocument();
   });
 
