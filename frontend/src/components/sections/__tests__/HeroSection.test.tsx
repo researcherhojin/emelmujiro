@@ -37,7 +37,11 @@ describe('HeroSection Component', () => {
   test('renders main heading', () => {
     renderWithRouter(<HeroSection />);
 
-    expect(screen.getByText(/실무에 강한.*AI 전문가 그룹/s)).toBeInTheDocument();
+    // Check that the heading is rendered (h1 element specifically)
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toBeInTheDocument();
+    expect(heading.textContent).toContain('실무에 강한');
+    expect(heading.textContent).toContain('AI 전문가 그룹');
   });
 
   test('renders subheading', () => {

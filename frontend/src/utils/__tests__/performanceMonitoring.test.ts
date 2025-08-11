@@ -269,9 +269,9 @@ describe('performanceMonitoring', () => {
         writable: true,
         configurable: true,
       });
-      (window as WindowWithGtag).gtag = () => {
+      (window as WindowWithGtag).gtag = jest.fn(() => {
         throw new Error('Analytics error');
-      };
+      });
 
       initWebVitals();
       const lcpCallback = mockOnLCP.mock.calls[0][0];
@@ -399,9 +399,17 @@ describe('performanceMonitoring', () => {
   });
 
   describe('PerformanceMonitor', () => {
+    interface MockPerformanceEntry {
+      duration: number;
+      startTime: number;
+      name: string;
+      entryType: string;
+      toJSON: () => any;
+    }
+
     interface MockPerformanceObserver {
       observe: jest.Mock;
-      callback?: (list: { getEntries: () => PerformanceEntry[] }) => void;
+      callback?: (list: { getEntries: () => MockPerformanceEntry[] }) => void;
     }
 
     interface MockPerformance {
@@ -420,7 +428,7 @@ describe('performanceMonitoring', () => {
       global.PerformanceObserver = jest
         .fn()
         .mockImplementation(
-          (callback: (list: { getEntries: () => PerformanceEntry[] }) => void) => {
+          (callback: (list: { getEntries: () => MockPerformanceEntry[] }) => void) => {
             mockPerformanceObserver.callback = callback;
             return mockPerformanceObserver;
           }
@@ -433,14 +441,13 @@ describe('performanceMonitoring', () => {
       mockPerformance = {
         getEntriesByType: jest.fn().mockReturnValue([]),
       };
-      (global as typeof globalThis & { performance: MockPerformance }).performance =
-        mockPerformance;
+      (global as any).performance = mockPerformance;
     });
 
     afterEach(() => {
-      delete (global as typeof globalThis & { PerformanceObserver?: typeof PerformanceObserver })
-        .PerformanceObserver;
-      delete (global as typeof globalThis & { performance?: MockPerformance }).performance;
+      const g = global as any;
+      delete g.PerformanceObserver;
+      delete g.performance;
     });
 
     it('should set up long task observer', () => {
@@ -455,14 +462,16 @@ describe('performanceMonitoring', () => {
     it('should warn about long tasks', () => {
       PerformanceMonitor();
 
-      const mockEntry = {
+      const mockEntry: MockPerformanceEntry = {
         duration: 100,
         startTime: 1000,
         name: 'long-task',
+        entryType: 'longtask',
+        toJSON: () => ({}),
       };
 
       // Simulate long task detection
-      mockPerformanceObserver.callback({
+      mockPerformanceObserver.callback?.({
         getEntries: () => [mockEntry],
       });
 
@@ -476,13 +485,15 @@ describe('performanceMonitoring', () => {
     it('should not warn about short tasks', () => {
       PerformanceMonitor();
 
-      const mockEntry = {
+      const mockEntry: MockPerformanceEntry = {
         duration: 30,
         startTime: 1000,
         name: 'short-task',
+        entryType: 'longtask',
+        toJSON: () => ({}),
       };
 
-      mockPerformanceObserver.callback({
+      mockPerformanceObserver.callback?.({
         getEntries: () => [mockEntry],
       });
 
@@ -523,20 +534,21 @@ describe('performanceMonitoring', () => {
     });
 
     it('should handle missing PerformanceObserver', () => {
-      delete (global as typeof globalThis & { PerformanceObserver?: typeof PerformanceObserver })
-        .PerformanceObserver;
+      const g = global as any;
+      delete g.PerformanceObserver;
 
       expect(() => PerformanceMonitor()).not.toThrow();
     });
 
     it('should handle missing performance API', () => {
-      delete (global as typeof globalThis & { performance?: MockPerformance }).performance;
+      const g = global as any;
+      delete g.performance;
 
       expect(() => PerformanceMonitor()).not.toThrow();
     });
 
     it('should handle performance API without getEntriesByType', () => {
-      (global as typeof globalThis & { performance: {} }).performance = {};
+      (global as any).performance = {};
 
       expect(() => PerformanceMonitor()).not.toThrow();
     });
