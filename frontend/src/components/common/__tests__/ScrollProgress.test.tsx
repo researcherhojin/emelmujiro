@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ScrollProgress from '../ScrollProgress';
 
 describe('ScrollProgress', () => {
@@ -60,10 +60,11 @@ describe('ScrollProgress', () => {
 
   describe('Basic Rendering', () => {
     test('renders scroll progress container', () => {
-      render(<ScrollProgress />);
+      const { container } = render(<ScrollProgress />);
 
-      const container = document.querySelector('.fixed.top-0.left-0.w-full.h-1.z-50');
-      expect(container).toBeInTheDocument();
+      const scrollContainer = container.firstChild as HTMLElement;
+      expect(scrollContainer).toBeInTheDocument();
+      expect(scrollContainer).toHaveClass('fixed', 'top-0', 'left-0', 'w-full', 'h-1', 'z-50');
     });
 
     test('renders progress bar with initial 0% width', () => {
@@ -75,9 +76,10 @@ describe('ScrollProgress', () => {
     });
 
     test('applies correct CSS classes to container', () => {
-      const { container } = render(<ScrollProgress />);
+      render(<ScrollProgress />);
 
-      const outerDiv = container.firstChild as HTMLElement;
+      const progressBar = screen.getByRole('progressbar');
+      const outerDiv = progressBar.parentElement as HTMLElement;
       expect(outerDiv).toHaveClass('fixed', 'top-0', 'left-0', 'w-full', 'h-1', 'z-50');
     });
 
@@ -109,9 +111,7 @@ describe('ScrollProgress', () => {
         value: 300, // (2000 - 800) * 0.25 = 300
       });
 
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('aria-valuenow', '25');
@@ -126,9 +126,7 @@ describe('ScrollProgress', () => {
         value: 400, // (2000 - 800) * 0.333... = 400
       });
 
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('aria-valuenow', '33');
@@ -140,9 +138,7 @@ describe('ScrollProgress', () => {
       render(<ScrollProgress />);
 
       // Already at top (scrollY = 0)
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveStyle('width: 0%');
@@ -159,9 +155,7 @@ describe('ScrollProgress', () => {
         value: 600,
       });
 
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveStyle('width: 50%');
@@ -177,9 +171,7 @@ describe('ScrollProgress', () => {
         value: 1200,
       });
 
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveStyle('width: 100%');
@@ -194,9 +186,7 @@ describe('ScrollProgress', () => {
         value: 1500, // More than total scrollable height
       });
 
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       // Should cap at 100%
@@ -224,9 +214,7 @@ describe('ScrollProgress', () => {
         value: 600,
       });
 
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveStyle('width: 25%');
@@ -243,9 +231,7 @@ describe('ScrollProgress', () => {
 
       // Total scrollable height = 800 - 800 = 0
       // This would cause division by zero
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       // Should handle division by zero gracefully
@@ -281,9 +267,7 @@ describe('ScrollProgress', () => {
         value: 900, // (2000 - 800) * 0.75 = 900
       });
 
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveStyle('width: 75%');
@@ -296,23 +280,17 @@ describe('ScrollProgress', () => {
 
       // First scroll event
       Object.defineProperty(window, 'scrollY', { value: 240 });
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
       expect(progressBar).toHaveStyle('width: 20%');
 
       // Second scroll event
       Object.defineProperty(window, 'scrollY', { value: 480 });
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
       expect(progressBar).toHaveStyle('width: 40%');
 
       // Third scroll event
       Object.defineProperty(window, 'scrollY', { value: 720 });
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
       expect(progressBar).toHaveStyle('width: 60%');
     });
   });
@@ -351,9 +329,7 @@ describe('ScrollProgress', () => {
 
       render(<ScrollProgress />);
 
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toBeInTheDocument();
@@ -369,9 +345,7 @@ describe('ScrollProgress', () => {
         value: -100,
       });
 
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       // Should handle negative values without crashing
@@ -388,9 +362,7 @@ describe('ScrollProgress', () => {
 
       render(<ScrollProgress />);
 
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toBeInTheDocument();
@@ -404,9 +376,7 @@ describe('ScrollProgress', () => {
         value: 999999,
       });
 
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toBeInTheDocument();
@@ -434,9 +404,7 @@ describe('ScrollProgress', () => {
         const scrollValue = (percentage / 100) * 1200; // 1200 is total scrollable height
         Object.defineProperty(window, 'scrollY', { value: scrollValue });
 
-        act(() => {
-          fireEvent.scroll(window);
-        });
+        fireEvent.scroll(window);
 
         expect(progressBar).toHaveClass('h-full', 'bg-indigo-600');
         expect(progressBar).toHaveStyle(`width: ${percentage}%`);
@@ -452,19 +420,13 @@ describe('ScrollProgress', () => {
 
       // Simulate rapid scroll events
       Object.defineProperty(window, 'scrollY', { value: 100 });
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       Object.defineProperty(window, 'scrollY', { value: 200 });
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       Object.defineProperty(window, 'scrollY', { value: 300 });
-      act(() => {
-        fireEvent.scroll(window);
-      });
+      fireEvent.scroll(window);
 
       // Final state should reflect the last scroll event
       expect(progressBar).toHaveStyle('width: 25%');
