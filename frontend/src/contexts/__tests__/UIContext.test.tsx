@@ -31,6 +31,23 @@ Object.defineProperty(window, 'localStorage', {
   value: mockLocalStorage,
 });
 
+// Mock matchMedia - make sure it returns the mock object properly
+const mockMatchMedia = jest.fn().mockImplementation(query => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+  dispatchEvent: jest.fn(),
+}));
+
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: mockMatchMedia,
+});
+
 describe('UIContext', () => {
   beforeEach(() => {
     jest.clearAllMocks();

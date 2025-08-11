@@ -17,6 +17,24 @@ describe('App Component', () => {
         dispatchEvent: jest.fn(),
       })),
     });
+
+    // Mock Service Worker
+    const mockServiceWorkerRegistration = {
+      installing: null,
+      waiting: null,
+      active: null,
+      onupdatefound: null,
+      unregister: jest.fn().mockResolvedValue(true),
+    };
+
+    Object.defineProperty(navigator, 'serviceWorker', {
+      writable: true,
+      value: {
+        register: jest.fn().mockResolvedValue(mockServiceWorkerRegistration),
+        ready: Promise.resolve(mockServiceWorkerRegistration),
+        controller: null,
+      },
+    });
   });
   test('renders without crashing', () => {
     expect(() => render(<App />)).not.toThrow();

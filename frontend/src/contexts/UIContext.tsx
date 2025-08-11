@@ -60,8 +60,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
       return savedTheme;
     }
     // If no saved preference, check system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+      if (prefersDark && prefersDark.matches) {
+        return 'dark';
+      }
     }
     return 'light';
   });
@@ -98,6 +101,10 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
   // Listen for system theme changes
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return;
+    }
+    
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
     const handleSystemThemeChange = (e: MediaQueryListEvent) => {
