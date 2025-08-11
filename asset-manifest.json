@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/emelmujiro/static/css/main.518ab90f.css",
-    "main.js": "/emelmujiro/static/js/main.459d5299.js",
+    "main.css": "/emelmujiro/static/css/main.4bf2004e.css",
+    "main.js": "/emelmujiro/static/js/main.30bedeef.js",
     "static/js/832.04970e4c.chunk.js": "/emelmujiro/static/js/832.04970e4c.chunk.js",
     "static/js/467.57e1978d.chunk.js": "/emelmujiro/static/js/467.57e1978d.chunk.js",
     "static/js/639.97b220c6.chunk.js": "/emelmujiro/static/js/639.97b220c6.chunk.js",
@@ -46,7 +46,7 @@
     "static/media/hyundaiconstruction.svg": "/emelmujiro/static/media/hyundaiconstruction.7d7f9feb0e41aa66cb89d93ef8f4105e.svg"
   },
   "entrypoints": [
-    "static/css/main.518ab90f.css",
-    "static/js/main.459d5299.js"
+    "static/css/main.4bf2004e.css",
+    "static/js/main.30bedeef.js"
   ]
 }
