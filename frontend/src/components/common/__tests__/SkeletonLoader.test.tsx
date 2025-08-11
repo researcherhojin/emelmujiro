@@ -628,18 +628,24 @@ describe('Skeleton Component', () => {
 
     it('skeleton components have proper border radius', () => {
       render(
-        <div>
-          <Skeleton />
-          <Skeleton circle />
+        <div data-testid="border-test-container">
+          <Skeleton data-testid="normal-skeleton" />
+          <Skeleton circle data-testid="circle-skeleton" />
           <SkeletonCard />
         </div>
       );
 
-      const roundedElements = document.querySelectorAll('.rounded, .rounded-lg, .rounded-3xl');
-      expect(roundedElements.length).toBeGreaterThan(0);
+      // Test normal skeleton has rounded class
+      const normalSkeleton = screen.getByTestId('normal-skeleton');
+      expect(normalSkeleton).toHaveClass('rounded');
 
-      const circleElements = document.querySelectorAll('.rounded-full');
-      expect(circleElements.length).toBeGreaterThan(0);
+      // Test circle skeleton has rounded-full class
+      const circleSkeleton = screen.getByTestId('circle-skeleton');
+      expect(circleSkeleton).toHaveClass('rounded-full');
+
+      // Test card has border class
+      const card = screen.getByTestId('skeleton-card');
+      expect(card).toHaveClass('border');
     });
   });
 

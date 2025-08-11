@@ -114,7 +114,7 @@ describe('SkipLink Component', () => {
       // Simulate Enter key press
       fireEvent.keyDown(skipLink, { key: 'Enter' });
 
-      expect(document.getElementById).toHaveBeenCalledWith('main-content');
+      expect(jest.mocked(document.getElementById)).toHaveBeenCalledWith('main-content');
       expect(mockMainContent.focus).toHaveBeenCalled();
       expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
     });
@@ -123,9 +123,6 @@ describe('SkipLink Component', () => {
       render(<SkipLink />);
 
       const skipLink = screen.getByRole('link', { name: /skip to main content/i });
-
-      const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
-      const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 
       fireEvent.keyDown(skipLink, { key: 'Enter' });
 
@@ -148,7 +145,7 @@ describe('SkipLink Component', () => {
       });
 
       // Should not have been called for any of these keys
-      expect(document.getElementById).not.toHaveBeenCalled();
+      expect(jest.mocked(document.getElementById)).not.toHaveBeenCalled();
       expect(mockMainContent.focus).not.toHaveBeenCalled();
       expect(mockScrollIntoView).not.toHaveBeenCalled();
     });
@@ -163,11 +160,11 @@ describe('SkipLink Component', () => {
       fireEvent.keyDown(skipLink, { key: 'ENTER' }); // uppercase
 
       // Should not trigger for case variations
-      expect(document.getElementById).not.toHaveBeenCalled();
+      expect(jest.mocked(document.getElementById)).not.toHaveBeenCalled();
 
       // Only exact 'Enter' should work
       fireEvent.keyDown(skipLink, { key: 'Enter' });
-      expect(document.getElementById).toHaveBeenCalledWith('main-content');
+      expect(jest.mocked(document.getElementById)).toHaveBeenCalledWith('main-content');
     });
   });
 
@@ -178,7 +175,7 @@ describe('SkipLink Component', () => {
       const skipLink = screen.getByRole('link', { name: /skip to main content/i });
       fireEvent.keyDown(skipLink, { key: 'Enter' });
 
-      expect(document.getElementById).toHaveBeenCalledWith('main-content');
+      expect(jest.mocked(document.getElementById)).toHaveBeenCalledWith('main-content');
       expect(mockMainContent.focus).toHaveBeenCalled();
     });
 
@@ -204,7 +201,7 @@ describe('SkipLink Component', () => {
         fireEvent.keyDown(skipLink, { key: 'Enter' });
       }).not.toThrow();
 
-      expect(document.getElementById).toHaveBeenCalledWith('main-content');
+      expect(jest.mocked(document.getElementById)).toHaveBeenCalledWith('main-content');
     });
 
     it('handles main content element without focus method', () => {
@@ -374,7 +371,7 @@ describe('SkipLink Component', () => {
       fireEvent.keyDown(skipLink, { key: 'Enter' });
 
       // 3. Main content is focused and scrolled into view
-      expect(document.getElementById).toHaveBeenCalledWith('main-content');
+      expect(jest.mocked(document.getElementById)).toHaveBeenCalledWith('main-content');
       expect(mockMainContent.focus).toHaveBeenCalled();
       expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
     });
