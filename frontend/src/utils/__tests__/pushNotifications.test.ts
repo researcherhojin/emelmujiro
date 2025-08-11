@@ -32,7 +32,7 @@ global.fetch = mockFetch;
 
 // Mock subscription object
 const mockSubscription = {
-  unsubscribe: jest.fn(),
+  unsubscribe: jest.fn().mockResolvedValue(true),
   endpoint: 'https://test-endpoint.com',
   expirationTime: null,
   options: {
@@ -55,7 +55,7 @@ const mockSubscription = {
       auth: 'test-auth',
     },
   }),
-} as PushSubscription;
+} as unknown as PushSubscription;
 
 // Mock service worker registration
 const mockRegistration = {

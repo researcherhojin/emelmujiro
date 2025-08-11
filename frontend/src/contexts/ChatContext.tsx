@@ -138,11 +138,11 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   // Agent Info
   const [agentAvailable] = useState(true);
   const [agentName] = useState('고객지원팀');
-  const [agentAvatar, setAgentAvatar] = useState<string>();
+  const [agentAvatar] = useState<string>();
   const [businessHours, setBusinessHours] = useState<BusinessHours>(getDefaultBusinessHours);
 
   // Settings
-  const [settings, setSettings] = useState<ChatSettings>(defaultSettings);
+  const [settings] = useState<ChatSettings>(defaultSettings);
 
   // WebSocket connection
   const wsRef = useRef<ChatWebSocketService | null>(null);
@@ -165,7 +165,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     if (isOpen && !isConnected) {
       connect();
     }
-  }, [isOpen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, isConnected]); // connect will be defined later
 
   // Play sound for new messages (except user messages)
   useEffect(() => {

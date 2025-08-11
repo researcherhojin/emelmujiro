@@ -44,13 +44,13 @@ describe('serviceWorkerRegistration', () => {
       installing: null,
       waiting: null,
       active: mockServiceWorker as ServiceWorker,
-      onupdatefound: null as any,
+      onupdatefound: null as ((event?: Event) => void) | null,
       unregister: jest.fn().mockResolvedValue(true),
       pushManager: {
         getSubscription: jest.fn().mockResolvedValue(null),
         subscribe: jest.fn().mockResolvedValue({}),
       } as unknown as PushManager,
-    } as any;
+    } as unknown as ServiceWorkerRegistration;
 
     // Mock window.location
     Object.defineProperty(window, 'location', {
@@ -240,8 +240,8 @@ describe('serviceWorkerRegistration', () => {
       const mockRegistrationWithUpdate = {
         ...mockServiceWorkerRegistration,
         installing: mockInstallingWorker,
-        onupdatefound: null as any,
-      } as any;
+        onupdatefound: null as ((event?: Event) => void) | null,
+      } as unknown as ServiceWorkerRegistration;
 
       const mockRegister = jest.fn().mockResolvedValue(mockRegistrationWithUpdate);
 
@@ -273,7 +273,7 @@ describe('serviceWorkerRegistration', () => {
 
       // Simulate update found
       if (mockRegistrationWithUpdate.onupdatefound) {
-        mockRegistrationWithUpdate.onupdatefound();
+        mockRegistrationWithUpdate.onupdatefound(new Event('updatefound'));
 
         // Simulate installing worker state change to installed
         mockInstallingWorker.state = 'installed';
@@ -298,8 +298,8 @@ describe('serviceWorkerRegistration', () => {
       const mockRegistrationWithSuccess = {
         ...mockServiceWorkerRegistration,
         installing: mockInstallingWorker,
-        onupdatefound: null as any,
-      } as any;
+        onupdatefound: null as ((event?: Event) => void) | null,
+      } as unknown as ServiceWorkerRegistration;
 
       const mockRegister = jest.fn().mockResolvedValue(mockRegistrationWithSuccess);
 
@@ -331,7 +331,7 @@ describe('serviceWorkerRegistration', () => {
 
       // Simulate update found
       if (mockRegistrationWithSuccess.onupdatefound) {
-        mockRegistrationWithSuccess.onupdatefound();
+        mockRegistrationWithSuccess.onupdatefound(new Event('updatefound'));
 
         // Simulate installing worker state change to installed
         mockInstallingWorker.state = 'installed';
@@ -399,9 +399,12 @@ describe('serviceWorkerRegistration', () => {
         },
       });
 
-      Object.defineProperty(window.location, 'reload', {
+      Object.defineProperty(window, 'location', {
         writable: true,
-        value: mockReload,
+        value: {
+          ...window.location,
+          reload: mockReload,
+        },
       });
 
       // Mock 404 response
@@ -440,9 +443,12 @@ describe('serviceWorkerRegistration', () => {
         },
       });
 
-      Object.defineProperty(window.location, 'reload', {
+      Object.defineProperty(window, 'location', {
         writable: true,
-        value: mockReload,
+        value: {
+          ...window.location,
+          reload: mockReload,
+        },
       });
 
       // Mock HTML response instead of JS
@@ -603,13 +609,8 @@ describe('serviceWorkerRegistration', () => {
         const fetchWasCalled = mockFetch.mock.calls.length > 0;
         const registerWasCalled = mockRegister.mock.calls.length > 0;
 
-        if (expected) {
-          // Should call fetch for validation on localhost
-          expect(fetchWasCalled).toBe(true);
-        } else {
-          // Should call register directly for non-localhost
-          expect(registerWasCalled).toBe(true);
-        }
+        // Test expectations based on whether it's localhost or not
+        expect(expected ? fetchWasCalled : registerWasCalled).toBe(true);
       });
     });
   });
@@ -619,8 +620,8 @@ describe('serviceWorkerRegistration', () => {
       const mockRegistrationNullInstalling = {
         ...mockServiceWorkerRegistration,
         installing: null,
-        onupdatefound: null as any,
-      } as any;
+        onupdatefound: null as ((event?: Event) => void) | null,
+      } as unknown as ServiceWorkerRegistration;
 
       const mockRegister = jest.fn().mockResolvedValue(mockRegistrationNullInstalling);
 
@@ -651,7 +652,7 @@ describe('serviceWorkerRegistration', () => {
 
       // Simulate update found with null installing worker
       if (mockRegistrationNullInstalling.onupdatefound) {
-        mockRegistrationNullInstalling.onupdatefound();
+        mockRegistrationNullInstalling.onupdatefound(new Event('updatefound'));
       }
 
       // Should not throw or cause errors
@@ -668,8 +669,8 @@ describe('serviceWorkerRegistration', () => {
       const mockRegistrationWithInstalling = {
         ...mockServiceWorkerRegistration,
         installing: mockInstallingWorker,
-        onupdatefound: null as any,
-      } as any;
+        onupdatefound: null as ((event?: Event) => void) | null,
+      } as unknown as ServiceWorkerRegistration;
 
       const mockRegister = jest.fn().mockResolvedValue(mockRegistrationWithInstalling);
 
@@ -701,7 +702,7 @@ describe('serviceWorkerRegistration', () => {
 
       // Simulate update found
       if (mockRegistrationWithInstalling.onupdatefound) {
-        mockRegistrationWithInstalling.onupdatefound();
+        mockRegistrationWithInstalling.onupdatefound(new Event('updatefound'));
 
         // Keep worker in installing state (not installed)
         if (mockInstallingWorker.onstatechange) {

@@ -46,29 +46,29 @@ const mockTransaction = {
 
 const mockRequest = {
   result: mockDatabase,
-  error: null as any,
-  onsuccess: null as any,
-  onerror: null as any,
-  onupgradeneeded: null as any,
+  error: null as Error | null,
+  onsuccess: null as (() => void) | null,
+  onerror: null as (() => void) | null,
+  onupgradeneeded: null as (() => void) | null,
 };
 
 const mockPutRequest = {
-  onsuccess: null as any,
-  onerror: null as any,
+  onsuccess: null as (() => void) | null,
+  onerror: null as (() => void) | null,
   error: null,
 };
 
 const mockGetRequest = {
-  result: null as any,
-  onsuccess: null as any,
-  onerror: null as any,
-  error: null as any,
+  result: null as unknown,
+  onsuccess: null as (() => void) | null,
+  onerror: null as (() => void) | null,
+  error: null as Error | null,
 };
 
 const mockDeleteRequest = {
-  onsuccess: null as any,
-  onerror: null as any,
-  error: null as any,
+  onsuccess: null as (() => void) | null,
+  onerror: null as (() => void) | null,
+  error: null as Error | null,
 };
 
 // Mock service worker registration
@@ -179,11 +179,11 @@ describe('backgroundSync', () => {
 
       // Mock successful IndexedDB operations
       setTimeout(() => {
-        mockRequest.onsuccess();
+        mockRequest.onsuccess?.();
       }, 0);
 
       setTimeout(() => {
-        mockPutRequest.onsuccess();
+        mockPutRequest.onsuccess?.();
       }, 0);
 
       const result = await registerBackgroundSync('test-sync', testData);
@@ -221,7 +221,7 @@ describe('backgroundSync', () => {
 
       // Mock IndexedDB error
       setTimeout(() => {
-        mockRequest.onerror();
+        mockRequest.onerror?.();
       }, 0);
 
       const result = await registerBackgroundSync('test-sync', testData);
@@ -240,12 +240,12 @@ describe('backgroundSync', () => {
 
       // Mock successful IndexedDB operations
       setTimeout(() => {
-        mockRequest.onsuccess();
+        mockRequest.onsuccess?.();
       }, 0);
 
       setTimeout(() => {
         mockGetRequest.result = testData;
-        mockGetRequest.onsuccess();
+        mockGetRequest.onsuccess?.();
       }, 0);
 
       const result = await getSyncData('test-sync');
@@ -259,7 +259,7 @@ describe('backgroundSync', () => {
       // Mock IndexedDB error
       setTimeout(() => {
         mockRequest.error = new Error('Database error');
-        mockRequest.onerror();
+        mockRequest.onerror?.();
       }, 0);
 
       await expect(getSyncData('test-sync')).rejects.toThrow('Database error');
@@ -268,12 +268,12 @@ describe('backgroundSync', () => {
     it('should handle get operation errors', async () => {
       // Mock successful database open but failed get
       setTimeout(() => {
-        mockRequest.onsuccess();
+        mockRequest.onsuccess?.();
       }, 0);
 
       setTimeout(() => {
         mockGetRequest.error = new Error('Get operation failed');
-        mockGetRequest.onerror();
+        mockGetRequest.onerror?.();
       }, 0);
 
       await expect(getSyncData('test-sync')).rejects.toThrow('Get operation failed');
@@ -282,12 +282,12 @@ describe('backgroundSync', () => {
     it('should return undefined when data not found', async () => {
       // Mock successful operations but no data
       setTimeout(() => {
-        mockRequest.onsuccess();
+        mockRequest.onsuccess?.();
       }, 0);
 
       setTimeout(() => {
         mockGetRequest.result = undefined;
-        mockGetRequest.onsuccess();
+        mockGetRequest.onsuccess?.();
       }, 0);
 
       const result = await getSyncData('non-existent');
@@ -299,11 +299,11 @@ describe('backgroundSync', () => {
     it('should clear sync data successfully', async () => {
       // Mock successful IndexedDB operations
       setTimeout(() => {
-        mockRequest.onsuccess();
+        mockRequest.onsuccess?.();
       }, 0);
 
       setTimeout(() => {
-        mockDeleteRequest.onsuccess();
+        mockDeleteRequest.onsuccess?.();
       }, 0);
 
       await clearSyncData('test-sync');
@@ -316,7 +316,7 @@ describe('backgroundSync', () => {
       // Mock IndexedDB error
       setTimeout(() => {
         mockRequest.error = new Error('Database error');
-        mockRequest.onerror();
+        mockRequest.onerror?.();
       }, 0);
 
       await expect(clearSyncData('test-sync')).rejects.toThrow('Database error');
@@ -325,12 +325,12 @@ describe('backgroundSync', () => {
     it('should handle delete operation errors', async () => {
       // Mock successful database open but failed delete
       setTimeout(() => {
-        mockRequest.onsuccess();
+        mockRequest.onsuccess?.();
       }, 0);
 
       setTimeout(() => {
         mockDeleteRequest.error = new Error('Delete operation failed');
-        mockDeleteRequest.onerror();
+        mockDeleteRequest.onerror?.();
       }, 0);
 
       await expect(clearSyncData('test-sync')).rejects.toThrow('Delete operation failed');
@@ -349,11 +349,11 @@ describe('backgroundSync', () => {
 
       // Mock successful IndexedDB operations
       setTimeout(() => {
-        mockRequest.onsuccess();
+        mockRequest.onsuccess?.();
       }, 0);
 
       setTimeout(() => {
-        mockPutRequest.onsuccess();
+        mockPutRequest.onsuccess?.();
       }, 0);
 
       await queueFailedRequest(url, options);
@@ -380,12 +380,12 @@ describe('backgroundSync', () => {
       // Mock database upgrade needed
       setTimeout(() => {
         const upgradeEvent = { target: mockRequest };
-        mockRequest.onupgradeneeded(upgradeEvent);
-        mockRequest.onsuccess();
+        mockRequest.onupgradeneeded?.(upgradeEvent);
+        mockRequest.onsuccess?.();
       }, 0);
 
       setTimeout(() => {
-        mockPutRequest.onsuccess();
+        mockPutRequest.onsuccess?.();
       }, 0);
 
       await registerBackgroundSync('test-sync', { data: 'test' });
@@ -401,12 +401,12 @@ describe('backgroundSync', () => {
       // Mock database upgrade needed
       setTimeout(() => {
         const upgradeEvent = { target: mockRequest };
-        mockRequest.onupgradeneeded(upgradeEvent);
-        mockRequest.onsuccess();
+        mockRequest.onupgradeneeded?.(upgradeEvent);
+        mockRequest.onsuccess?.();
       }, 0);
 
       setTimeout(() => {
-        mockPutRequest.onsuccess();
+        mockPutRequest.onsuccess?.();
       }, 0);
 
       await registerBackgroundSync('test-sync', { data: 'test' });
@@ -445,11 +445,11 @@ describe('backgroundSync', () => {
       };
 
       setTimeout(() => {
-        mockRequest.onsuccess();
+        mockRequest.onsuccess?.();
       }, 0);
 
       setTimeout(() => {
-        mockPutRequest.onsuccess();
+        mockPutRequest.onsuccess?.();
       }, 0);
 
       const result = await registerBackgroundSync('complex-sync', complexData);
