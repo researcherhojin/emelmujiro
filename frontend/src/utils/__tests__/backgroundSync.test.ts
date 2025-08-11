@@ -26,14 +26,6 @@ import logger from '../logger';
 const mockLogger = logger as jest.Mocked<typeof logger>;
 
 // Mock IndexedDB
-const mockDatabase = {
-  transaction: jest.fn(),
-  objectStoreNames: {
-    contains: jest.fn(),
-  },
-  createObjectStore: jest.fn(),
-};
-
 const mockObjectStore = {
   put: jest.fn(),
   get: jest.fn(),
@@ -42,6 +34,14 @@ const mockObjectStore = {
 
 const mockTransaction = {
   objectStore: jest.fn().mockReturnValue(mockObjectStore),
+};
+
+const mockDatabase = {
+  transaction: jest.fn().mockReturnValue(mockTransaction),
+  objectStoreNames: {
+    contains: jest.fn(),
+  },
+  createObjectStore: jest.fn(),
 };
 
 const mockRequest = {
@@ -116,9 +116,14 @@ describe('backgroundSync', () => {
       writable: true,
     });
 
+    // Reset mock request to return mockDatabase
+    mockRequest.result = mockDatabase;
+    mockRequest.error = null;
+
     // Reset mock states
     mockDatabase.transaction.mockReturnValue(mockTransaction);
     mockDatabase.objectStoreNames.contains.mockReturnValue(false);
+    mockTransaction.objectStore.mockReturnValue(mockObjectStore);
     mockObjectStore.put.mockReturnValue(mockPutRequest);
     mockObjectStore.get.mockReturnValue(mockGetRequest);
     mockObjectStore.delete.mockReturnValue(mockDeleteRequest);

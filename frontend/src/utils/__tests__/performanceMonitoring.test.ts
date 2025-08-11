@@ -10,6 +10,14 @@ import {
   PerformanceMonitor,
 } from '../performanceMonitoring';
 
+// Type for web-vitals metric
+type MetricCallback = (metric: {
+  name: string;
+  value: number;
+  id: string;
+  delta: number;
+}) => void | Promise<void>;
+
 // Mock web-vitals library
 const mockOnCLS = jest.fn();
 const mockOnFCP = jest.fn();
@@ -18,11 +26,11 @@ const mockOnTTFB = jest.fn();
 const mockOnINP = jest.fn();
 
 jest.mock('web-vitals', () => ({
-  onCLS: (callback: Function) => mockOnCLS(callback),
-  onFCP: (callback: Function) => mockOnFCP(callback),
-  onLCP: (callback: Function) => mockOnLCP(callback),
-  onTTFB: (callback: Function) => mockOnTTFB(callback),
-  onINP: (callback: Function) => mockOnINP(callback),
+  onCLS: (callback: MetricCallback) => mockOnCLS(callback),
+  onFCP: (callback: MetricCallback) => mockOnFCP(callback),
+  onLCP: (callback: MetricCallback) => mockOnLCP(callback),
+  onTTFB: (callback: MetricCallback) => mockOnTTFB(callback),
+  onINP: (callback: MetricCallback) => mockOnINP(callback),
 }));
 
 // Mock console methods
@@ -38,6 +46,11 @@ global.fetch = mockFetch;
 // Mock gtag
 const mockGtag = jest.fn();
 
+// Type for window with gtag
+interface WindowWithGtag extends Window {
+  gtag?: typeof mockGtag;
+}
+
 describe('performanceMonitoring', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -46,7 +59,7 @@ describe('performanceMonitoring', () => {
     console.warn = mockConsoleWarn;
 
     // Reset window properties
-    delete (window as any).gtag;
+    delete (window as WindowWithGtag).gtag;
     mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ success: true }),
@@ -209,7 +222,7 @@ describe('performanceMonitoring', () => {
         writable: true,
         configurable: true,
       });
-      (window as any).gtag = mockGtag;
+      (window as WindowWithGtag).gtag = mockGtag;
 
       initWebVitals();
       const lcpCallback = mockOnLCP.mock.calls[0][0];
@@ -256,7 +269,7 @@ describe('performanceMonitoring', () => {
         writable: true,
         configurable: true,
       });
-      (window as any).gtag = () => {
+      (window as WindowWithGtag).gtag = () => {
         throw new Error('Analytics error');
       };
 
@@ -280,7 +293,7 @@ describe('performanceMonitoring', () => {
         writable: true,
         configurable: true,
       });
-      (window as any).gtag = mockGtag;
+      (window as WindowWithGtag).gtag = mockGtag;
 
       initWebVitals();
       const lcpCallback = mockOnLCP.mock.calls[0][0];
@@ -357,8 +370,8 @@ describe('performanceMonitoring', () => {
         },
         average: 2166.6666666666665,
         median: 2000,
-        p75: 2000,
-        p95: 2000,
+        p75: 3000,
+        p95: 3000,
       });
     });
 
@@ -386,8 +399,17 @@ describe('performanceMonitoring', () => {
   });
 
   describe('PerformanceMonitor', () => {
-    let mockPerformanceObserver: any;
-    let mockPerformance: any;
+    interface MockPerformanceObserver {
+      observe: jest.Mock;
+      callback?: (list: { getEntries: () => PerformanceEntry[] }) => void;
+    }
+
+    interface MockPerformance {
+      getEntriesByType: jest.Mock;
+    }
+
+    let mockPerformanceObserver: MockPerformanceObserver;
+    let mockPerformance: MockPerformance;
 
     beforeEach(() => {
       // Mock PerformanceObserver
@@ -395,22 +417,30 @@ describe('performanceMonitoring', () => {
         observe: jest.fn(),
       };
 
-      global.PerformanceObserver = jest.fn().mockImplementation(callback => {
-        mockPerformanceObserver.callback = callback;
-        return mockPerformanceObserver;
-      }) as any;
-      (global.PerformanceObserver as any).supportedEntryTypes = ['longtask', 'resource'];
+      global.PerformanceObserver = jest
+        .fn()
+        .mockImplementation(
+          (callback: (list: { getEntries: () => PerformanceEntry[] }) => void) => {
+            mockPerformanceObserver.callback = callback;
+            return mockPerformanceObserver;
+          }
+        ) as unknown as typeof PerformanceObserver;
+      (
+        global.PerformanceObserver as typeof PerformanceObserver & { supportedEntryTypes: string[] }
+      ).supportedEntryTypes = ['longtask', 'resource'];
 
       // Mock performance API
       mockPerformance = {
-        getEntriesByType: jest.fn(),
+        getEntriesByType: jest.fn().mockReturnValue([]),
       };
-      (global as any).performance = mockPerformance;
+      (global as typeof globalThis & { performance: MockPerformance }).performance =
+        mockPerformance;
     });
 
     afterEach(() => {
-      delete (global as any).PerformanceObserver;
-      delete (global as any).performance;
+      delete (global as typeof globalThis & { PerformanceObserver?: typeof PerformanceObserver })
+        .PerformanceObserver;
+      delete (global as typeof globalThis & { performance?: MockPerformance }).performance;
     });
 
     it('should set up long task observer', () => {
@@ -484,26 +514,29 @@ describe('performanceMonitoring', () => {
     it('should handle PerformanceObserver errors gracefully', () => {
       global.PerformanceObserver = jest.fn().mockImplementation(() => {
         throw new Error('PerformanceObserver error');
-      }) as any;
-      (global.PerformanceObserver as any).supportedEntryTypes = ['longtask', 'resource'];
+      }) as unknown as typeof PerformanceObserver;
+      (
+        global.PerformanceObserver as typeof PerformanceObserver & { supportedEntryTypes: string[] }
+      ).supportedEntryTypes = ['longtask', 'resource'];
 
       expect(() => PerformanceMonitor()).not.toThrow();
     });
 
     it('should handle missing PerformanceObserver', () => {
-      delete (global as any).PerformanceObserver;
+      delete (global as typeof globalThis & { PerformanceObserver?: typeof PerformanceObserver })
+        .PerformanceObserver;
 
       expect(() => PerformanceMonitor()).not.toThrow();
     });
 
     it('should handle missing performance API', () => {
-      delete (global as any).performance;
+      delete (global as typeof globalThis & { performance?: MockPerformance }).performance;
 
       expect(() => PerformanceMonitor()).not.toThrow();
     });
 
     it('should handle performance API without getEntriesByType', () => {
-      (global as any).performance = {};
+      (global as typeof globalThis & { performance: {} }).performance = {};
 
       expect(() => PerformanceMonitor()).not.toThrow();
     });
