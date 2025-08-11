@@ -16,16 +16,16 @@ describe('CompanyLogo', () => {
   });
 
   it('applies default medium size', () => {
-    const { container } = render(<CompanyLogo name="테스트회사" color="#000000" />);
+    render(<CompanyLogo name="테스트회사" color="#000000" />);
 
-    const logoContainer = container.firstChild as HTMLElement;
+    const logoContainer = screen.getByText('테스트회사').parentElement;
     expect(logoContainer).toHaveClass('w-32', 'h-16', 'text-base');
   });
 
   it('applies small size correctly', () => {
-    const { container } = render(<CompanyLogo name="테스트회사" color="#000000" size="sm" />);
+    render(<CompanyLogo name="테스트회사" color="#000000" size="sm" />);
 
-    const logoContainer = container.firstChild as HTMLElement;
+    const logoContainer = screen.getByText('테스트회사').parentElement;
     expect(logoContainer).toHaveClass('w-20', 'h-12', 'text-sm');
   });
 
