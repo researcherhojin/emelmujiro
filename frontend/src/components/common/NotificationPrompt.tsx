@@ -25,7 +25,7 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({ onClose, classN
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [permissionState, setPermissionState] = useState<NotificationPermissionType>('default');
+  // Permission state tracking removed - using Notification.permission directly
   const [settings, setSettings] = useState<NotificationSettings>({
     blog: true,
     contact: true,
@@ -36,7 +36,7 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({ onClose, classN
   useEffect(() => {
     // Check if notifications are supported and not yet requested
     if (isPushNotificationSupported()) {
-      setPermissionState(Notification.permission);
+      // Permission state is checked directly from Notification.permission
 
       // Show prompt if permission is default and user hasn't dismissed it recently
       const dismissed = localStorage.getItem('notification-prompt-dismissed');
@@ -64,7 +64,7 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({ onClose, classN
 
     try {
       const granted = await requestNotificationPermission();
-      setPermissionState(Notification.permission);
+      // Permission state is checked directly from Notification.permission
 
       if (granted) {
         // Subscribe to push notifications

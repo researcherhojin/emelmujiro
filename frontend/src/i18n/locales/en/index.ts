@@ -6,7 +6,7 @@ import contact from './contact.json';
 import blog from './blog.json';
 import profile from './profile.json';
 
-export default {
+const enTranslations = {
   common,
   navigation,
   home,
@@ -15,3 +15,5 @@ export default {
   blog,
   profile,
 };
+
+export default enTranslations;

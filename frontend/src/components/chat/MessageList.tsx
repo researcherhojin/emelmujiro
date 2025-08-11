@@ -1,18 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Check, 
-  CheckCheck, 
-  Clock, 
-  AlertTriangle, 
+import {
+  Check,
+  CheckCheck,
+  Clock,
+  AlertTriangle,
   RefreshCw,
   Download,
   Eye,
   Bot,
-  Info
+  Info,
 } from 'lucide-react';
 import { useChatContext } from '../../contexts/ChatContext';
-import { useUI } from '../../contexts/UIContext';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
@@ -34,7 +33,7 @@ const MessageList: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
       if (!listRef.current) return;
-      
+
       const { scrollTop, scrollHeight, clientHeight } = listRef.current;
       const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
       setShouldAutoScroll(isNearBottom);
@@ -45,7 +44,7 @@ const MessageList: React.FC = () => {
       listElement.addEventListener('scroll', handleScroll);
       return () => listElement.removeEventListener('scroll', handleScroll);
     }
-    
+
     return undefined;
   }, []);
 
@@ -57,7 +56,7 @@ const MessageList: React.FC = () => {
     const now = new Date();
     const messageDate = new Date(date);
     const isToday = now.toDateString() === messageDate.toDateString();
-    
+
     if (isToday) {
       return format(messageDate, 'HH:mm');
     }
@@ -97,7 +96,7 @@ const MessageList: React.FC = () => {
     }
   };
 
-  const handleFileDownload = (file: any, filename: string) => {
+  const handleFileDownload = (file: File | { url: string } | undefined, filename: string) => {
     if (file instanceof File) {
       // Create blob URL for local file
       const url = URL.createObjectURL(file);
@@ -120,7 +119,7 @@ const MessageList: React.FC = () => {
     }
   };
 
-  const handleImagePreview = (file: any, filename: string) => {
+  const handleImagePreview = (file: File | { url: string } | undefined, filename: string) => {
     if (file instanceof File) {
       const url = URL.createObjectURL(file);
       const img = new Image();
@@ -143,21 +142,23 @@ const MessageList: React.FC = () => {
     }
   };
 
-  const renderMessageContent = (message: any) => {
+  const renderMessageContent = (message: {
+    type: string;
+    content: string;
+    file?: File | { url: string; size?: number };
+  }) => {
     switch (message.type) {
       case 'text':
-        return (
-          <div className="whitespace-pre-wrap break-words">
-            {message.content}
-          </div>
-        );
-      
+        return <div className="whitespace-pre-wrap break-words">{message.content}</div>;
+
       case 'image':
         return (
           <div className="space-y-2">
-            <div 
-              className="cursor-pointer relative group rounded-lg overflow-hidden max-w-xs"
+            <button
+              className="cursor-pointer relative group rounded-lg overflow-hidden max-w-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
               onClick={() => handleImagePreview(message.file, message.content)}
+              type="button"
+              aria-label={`Preview image: ${message.content}`}
             >
               {message.file instanceof File ? (
                 <img
@@ -173,7 +174,7 @@ const MessageList: React.FC = () => {
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
                 <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-            </div>
+            </button>
             <button
               onClick={() => handleFileDownload(message.file, message.content)}
               className="flex items-center space-x-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
@@ -183,7 +184,7 @@ const MessageList: React.FC = () => {
             </button>
           </div>
         );
-      
+
       case 'file':
         return (
           <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 max-w-xs">
@@ -192,9 +193,7 @@ const MessageList: React.FC = () => {
                 <Download className="w-5 h-5 text-gray-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium truncate">
-                  {message.content}
-                </div>
+                <div className="text-sm font-medium truncate">{message.content}</div>
                 {message.file?.size && (
                   <div className="text-xs text-gray-500">
                     {(message.file.size / 1024).toFixed(1)} KB
@@ -211,25 +210,36 @@ const MessageList: React.FC = () => {
             </div>
           </div>
         );
-      
+
       case 'system':
         return (
           <div className="text-center text-gray-600 dark:text-gray-400 italic">
             {message.content}
           </div>
         );
-      
+
       default:
         return <div>{message.content}</div>;
     }
   };
 
-  const renderMessage = (message: any, index: number) => {
+  const renderMessage = (
+    message: {
+      id: string;
+      type: string;
+      content: string;
+      sender: string;
+      status: string;
+      timestamp: Date;
+      agentName?: string;
+      file?: File | { url: string };
+    },
+    _index: number
+  ) => {
     const isUser = message.sender === 'user';
     const isSystem = message.sender === 'system';
     const showAvatar = !isUser && !isSystem;
-    const showTimestamp = index === 0 || 
-      (new Date(message.timestamp).getTime() - new Date(messages[index - 1]?.timestamp).getTime()) > 300000; // 5 minutes
+    // Timestamp logic can be added here if needed in the future
 
     if (isSystem) {
       return (
@@ -266,29 +276,28 @@ const MessageList: React.FC = () => {
               {message.agentName ? message.agentName[0] : <Bot className="w-4 h-4" />}
             </div>
           )}
-          
+
           {/* Message Content */}
           <div className="flex flex-col">
             {/* Agent Name */}
             {showAvatar && message.agentName && (
-              <div className="text-xs text-gray-500 mb-1 px-2">
-                {message.agentName}
-              </div>
+              <div className="text-xs text-gray-500 mb-1 px-2">{message.agentName}</div>
             )}
-            
+
             {/* Message Bubble */}
             <div
               className={`
                 px-4 py-2 rounded-2xl relative
-                ${isUser 
-                  ? 'bg-blue-500 text-white rounded-br-md' 
-                  : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 rounded-bl-md'
+                ${
+                  isUser
+                    ? 'bg-blue-500 text-white rounded-br-md'
+                    : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 rounded-bl-md'
                 }
                 ${message.status === 'failed' ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : ''}
               `}
             >
               {renderMessageContent(message)}
-              
+
               {/* Failed Message Actions */}
               {message.status === 'failed' && (
                 <div className="mt-2 flex items-center space-x-2">
@@ -302,9 +311,11 @@ const MessageList: React.FC = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Timestamp and Status */}
-            <div className={`flex items-center mt-1 text-xs text-gray-500 ${isUser ? 'justify-end' : 'justify-start'}`}>
+            <div
+              className={`flex items-center mt-1 text-xs text-gray-500 ${isUser ? 'justify-end' : 'justify-start'}`}
+            >
               <span className="mr-1">{formatMessageTime(message.timestamp)}</span>
               {isUser && getStatusIcon(message.status)}
             </div>
@@ -331,7 +342,7 @@ const MessageList: React.FC = () => {
   }
 
   return (
-    <div 
+    <div
       ref={listRef}
       className="flex-1 overflow-y-auto px-4 py-2 scroll-smooth"
       style={{ scrollBehavior: 'smooth' }}
@@ -339,10 +350,10 @@ const MessageList: React.FC = () => {
       <AnimatePresence>
         {messages.map((message, index) => renderMessage(message, index))}
       </AnimatePresence>
-      
+
       {/* Auto-scroll trigger */}
       <div ref={messagesEndRef} />
-      
+
       {/* Scroll to bottom button */}
       <AnimatePresence>
         {!shouldAutoScroll && (
@@ -355,7 +366,12 @@ const MessageList: React.FC = () => {
             title={t('chat.scrollToBottom', '최신 메시지로 이동')}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
             </svg>
           </motion.button>
         )}

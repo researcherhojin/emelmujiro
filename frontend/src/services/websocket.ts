@@ -1,4 +1,4 @@
-import { ChatMessage, MessageSender } from '../contexts/ChatContext';
+import { MessageSender } from '../contexts/ChatContext';
 
 export interface WebSocketConfig {
   url: string;

@@ -210,18 +210,18 @@ export async function requestWakeLock(): Promise<boolean> {
         request: (type: string) => Promise<WakeLockSentinel>;
       };
     };
-    wakeLock = await (navigator as NavigatorWithWakeLock).wakeLock?.request('screen') || null;
+    wakeLock = (await (navigator as NavigatorWithWakeLock).wakeLock?.request('screen')) || null;
 
     if (wakeLock) {
       // WakeLockSentinel has onrelease event handler, not addEventListener
       (wakeLock as WakeLockSentinel & { onrelease?: () => void }).onrelease = () => {
         logger.info('Screen wake lock released');
       };
-      
+
       logger.info('Screen wake lock acquired');
       return true;
     }
-    
+
     return false;
   } catch (error) {
     logger.error('Failed to acquire screen wake lock:', error);
@@ -332,7 +332,7 @@ export function getPerformanceMetrics(): PerformanceMetrics {
   };
 }
 
-export default {
+const pwaUtils = {
   // Badge API
   isAppBadgeSupported,
   setAppBadge,
@@ -362,3 +362,5 @@ export default {
   // Performance
   getPerformanceMetrics,
 };
+
+export default pwaUtils;
