@@ -152,7 +152,7 @@ describe('BlogContext', () => {
 
   test('sets loading state during fetch', async () => {
     mockedApi.getBlogPosts.mockImplementation(
-      () =>
+      (_page?: number, _pageSize?: number) =>
         new Promise(resolve =>
           setTimeout(
             () =>

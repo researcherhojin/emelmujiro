@@ -435,9 +435,14 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
         onMessage: data => {
           if (data.type === 'message' && data.data) {
-            const messageData = data.data as any;
+            const messageData = data.data as Partial<ChatMessage> & { timestamp?: string | Date };
             const message: ChatMessage = {
               ...messageData,
+              id: messageData.id || generateMessageId(),
+              type: messageData.type || 'text',
+              content: messageData.content || '',
+              sender: messageData.sender || 'agent',
+              status: messageData.status || 'delivered',
               timestamp: messageData.timestamp ? new Date(messageData.timestamp) : new Date(),
             };
 
