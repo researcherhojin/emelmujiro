@@ -374,7 +374,7 @@ npm run build
 
 ## 🔄 최근 업데이트 (2025.08)
 
-### Phase 20: CI/CD 테스트 완전 안정화 (2025.08.11)
+### Phase 20: CI/CD 테스트 완전 안정화 및 CSS 최적화 (2025.08.11)
 
 #### ✅ 완료된 작업
 
@@ -399,6 +399,13 @@ npm run build
   - TypeScript 타입 안정성 강화
   - ESLint 경고 모두 해결
   - React.memo 최적화 구조 개선
+
+- **CSS 아키텍처 개선**
+  - 모든 `@apply` 디렉티브를 표준 CSS로 리팩토링
+  - CSS 변수 시스템 확장 (색상, 그림자, 간격, 반경)
+  - 다크 모드 지원 개선 (`.dark` 클래스 기반)
+  - GPU 가속 유틸리티 추가 (`will-change`, `gpu-accelerated`)
+  - VSCode "Unknown at rule" 경고 완전 해결
 
 ### Phase 19: 엔터프라이즈급 품질 관리 시스템 구축 (2025.08.08)
 
