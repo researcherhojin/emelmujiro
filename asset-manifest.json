@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/emelmujiro/static/css/main.4bf2004e.css",
-    "main.js": "/emelmujiro/static/js/main.5ed8969e.js",
+    "main.js": "/emelmujiro/static/js/main.41997b52.js",
     "static/js/832.04970e4c.chunk.js": "/emelmujiro/static/js/832.04970e4c.chunk.js",
     "static/js/467.57e1978d.chunk.js": "/emelmujiro/static/js/467.57e1978d.chunk.js",
     "static/js/639.97b220c6.chunk.js": "/emelmujiro/static/js/639.97b220c6.chunk.js",
@@ -10,16 +10,16 @@
     "static/js/570.a7d4a6b7.chunk.js": "/emelmujiro/static/js/570.a7d4a6b7.chunk.js",
     "static/js/926.7dfcd77b.chunk.js": "/emelmujiro/static/js/926.7dfcd77b.chunk.js",
     "static/js/444.750000bd.chunk.js": "/emelmujiro/static/js/444.750000bd.chunk.js",
-    "static/js/118.d14f0a14.chunk.js": "/emelmujiro/static/js/118.d14f0a14.chunk.js",
+    "static/js/118.cbabbd60.chunk.js": "/emelmujiro/static/js/118.cbabbd60.chunk.js",
     "static/js/308.9d692307.chunk.js": "/emelmujiro/static/js/308.9d692307.chunk.js",
     "static/js/515.020ae5eb.chunk.js": "/emelmujiro/static/js/515.020ae5eb.chunk.js",
     "static/js/833.81edf671.chunk.js": "/emelmujiro/static/js/833.81edf671.chunk.js",
-    "static/js/895.fa237e91.chunk.js": "/emelmujiro/static/js/895.fa237e91.chunk.js",
+    "static/js/895.6b5d0c53.chunk.js": "/emelmujiro/static/js/895.6b5d0c53.chunk.js",
     "static/js/800.8944ce9b.chunk.js": "/emelmujiro/static/js/800.8944ce9b.chunk.js",
     "static/js/295.fe3263f9.chunk.js": "/emelmujiro/static/js/295.fe3263f9.chunk.js",
     "static/js/159.1436cace.chunk.js": "/emelmujiro/static/js/159.1436cace.chunk.js",
     "static/js/38.aacca0d8.chunk.js": "/emelmujiro/static/js/38.aacca0d8.chunk.js",
-    "static/js/517.17f7051e.chunk.js": "/emelmujiro/static/js/517.17f7051e.chunk.js",
+    "static/js/517.6ef7f769.chunk.js": "/emelmujiro/static/js/517.6ef7f769.chunk.js",
     "static/js/95.cc97493f.chunk.js": "/emelmujiro/static/js/95.cc97493f.chunk.js",
     "static/js/917.599a983e.chunk.js": "/emelmujiro/static/js/917.599a983e.chunk.js",
     "static/js/55.415d8c85.chunk.js": "/emelmujiro/static/js/55.415d8c85.chunk.js",
@@ -47,6 +47,6 @@
   },
   "entrypoints": [
     "static/css/main.4bf2004e.css",
-    "static/js/main.5ed8969e.js"
+    "static/js/main.41997b52.js"
   ]
 }
