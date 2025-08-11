@@ -82,10 +82,17 @@ export const manageFocus = {
 
   // Focus first focusable element in container
   focusFirst: (container: HTMLElement) => {
-    const focusable = container.querySelector<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    const focusableElements = container.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
     );
-    focusable?.focus();
+
+    // Find first element that is not tabindex=-1
+    for (const element of Array.from(focusableElements)) {
+      if (element.tabIndex >= 0) {
+        element.focus();
+        break;
+      }
+    }
   },
 
   // Trap focus within container
@@ -147,12 +154,19 @@ export const isVisibleToScreenReader = (element: HTMLElement): boolean => {
  */
 export const formatForScreenReader = (
   text: string,
-  type: 'date' | 'time' | 'number' | 'currency' = 'date'
+  type?: 'date' | 'time' | 'number' | 'currency'
 ): string => {
+  if (!type) {
+    return text;
+  }
+
   switch (type) {
     case 'date': {
       // Convert date to more readable format
       const date = new Date(text);
+      if (isNaN(date.getTime())) {
+        return text;
+      }
       return date.toLocaleDateString('ko-KR', {
         year: 'numeric',
         month: 'long',
@@ -162,6 +176,9 @@ export const formatForScreenReader = (
 
     case 'time': {
       const time = new Date(text);
+      if (isNaN(time.getTime())) {
+        return text;
+      }
       return time.toLocaleTimeString('ko-KR', {
         hour: 'numeric',
         minute: 'numeric',

@@ -170,10 +170,7 @@ export function generateStructuredData(
       '@type': 'Article',
       headline: data?.title,
       description: data?.description,
-      author: {
-        '@type': 'Person',
-        name: data?.author || '이호진',
-      },
+      author: data?.author || '이호진',
       datePublished: data?.publishedDate,
       dateModified: data?.modifiedDate || data?.publishedDate,
       publisher: {
@@ -198,7 +195,8 @@ export function generateStructuredData(
 // Generate canonical URL
 export function generateCanonicalUrl(path: string): string {
   const baseUrl = SEO_CONFIG.site.url;
-  return path ? `${baseUrl}${path}` : baseUrl;
+  const cleanPath = path?.startsWith('/') ? path : `/${path || ''}`;
+  return path ? `${baseUrl}${cleanPath}` : baseUrl;
 }
 
 // Generate alternate language links

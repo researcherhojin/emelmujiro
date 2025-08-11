@@ -270,10 +270,7 @@ describe('seoConfig', () => {
         '@type': 'Article',
         headline: 'AI 기술 동향',
         description: 'AI 기술의 최신 동향을 알아보세요',
-        author: {
-          '@type': 'Person',
-          name: '이호진',
-        },
+        author: '이호진',
         datePublished: '2024-01-01',
         dateModified: '2024-01-02',
         publisher: {
@@ -306,10 +303,7 @@ describe('seoConfig', () => {
       // Type narrowing for article
       expect(structuredData['@type']).toBe('Article');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((structuredData as any).author).toEqual({
-        '@type': 'Person',
-        name: '이호진',
-      });
+      expect((structuredData as any).author).toEqual('이호진');
     });
 
     it('should use publishedDate for modifiedDate if not provided', () => {
@@ -439,7 +433,7 @@ describe('seoConfig', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).description).toBe(complexArticleData.description);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((structuredData as any).author.name).toBe(complexArticleData.author);
+      expect((structuredData as any).author).toBe(complexArticleData.author);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).datePublished).toBe(complexArticleData.publishedDate);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

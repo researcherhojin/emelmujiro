@@ -359,7 +359,7 @@ describe('Footer Component', () => {
           const modalContent = screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.');
           expect(modalContent).not.toBeInTheDocument();
         },
-        { timeout: 5000 }
+        { timeout: 3000 }
       );
     });
 

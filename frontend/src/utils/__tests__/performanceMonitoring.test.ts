@@ -91,10 +91,13 @@ describe('performanceMonitoring', () => {
     it('should handle LCP metric with good rating', async () => {
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       const mockMetric = {
-        name: 'LCP',
+        name: 'LCP' as const,
         value: 1500,
         id: 'test-id',
         delta: 1500,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
       };
 
       await lcpCallback(mockMetric);
@@ -112,10 +115,13 @@ describe('performanceMonitoring', () => {
     it('should handle CLS metric with needs-improvement rating', async () => {
       const clsCallback = mockOnCLS.mock.calls[0][0];
       const mockMetric = {
-        name: 'CLS',
+        name: 'CLS' as const,
         value: 0.15,
         id: 'test-id',
         delta: 0.15,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'needs-improvement' as const,
       };
 
       await clsCallback(mockMetric);
@@ -131,10 +137,13 @@ describe('performanceMonitoring', () => {
     it('should handle INP metric with poor rating', async () => {
       const inpCallback = mockOnINP.mock.calls[0][0];
       const mockMetric = {
-        name: 'INP',
+        name: 'INP' as const,
         value: 600,
         id: 'test-id',
         delta: 600,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'poor' as const,
       };
 
       await inpCallback(mockMetric);
@@ -150,10 +159,13 @@ describe('performanceMonitoring', () => {
     it('should handle FCP metric', async () => {
       const fcpCallback = mockOnFCP.mock.calls[0][0];
       const mockMetric = {
-        name: 'FCP',
+        name: 'FCP' as const,
         value: 1200,
         id: 'test-id',
         delta: 1200,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
       };
 
       await fcpCallback(mockMetric);
@@ -169,10 +181,13 @@ describe('performanceMonitoring', () => {
     it('should handle TTFB metric', async () => {
       const ttfbCallback = mockOnTTFB.mock.calls[0][0];
       const mockMetric = {
-        name: 'TTFB',
+        name: 'TTFB' as const,
         value: 1200,
         id: 'test-id',
         delta: 1200,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'needs-improvement' as const,
       };
 
       await ttfbCallback(mockMetric);
@@ -188,10 +203,13 @@ describe('performanceMonitoring', () => {
     it('should handle unknown metric name with good rating as fallback', async () => {
       const clsCallback = mockOnCLS.mock.calls[0][0];
       const mockMetric = {
-        name: 'UNKNOWN_METRIC',
+        name: 'UNKNOWN_METRIC' as string,
         value: 1000,
         id: 'test-id',
         delta: 1000,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
       };
 
       await clsCallback(mockMetric);
@@ -227,10 +245,13 @@ describe('performanceMonitoring', () => {
       initWebVitals();
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       const mockMetric = {
-        name: 'LCP',
+        name: 'LCP' as const,
         value: 2000,
         id: 'test-id',
         delta: 2000,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
       };
 
       await lcpCallback(mockMetric);
@@ -252,10 +273,13 @@ describe('performanceMonitoring', () => {
       initWebVitals();
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       const mockMetric = {
-        name: 'LCP',
+        name: 'LCP' as const,
         value: 2000,
         id: 'test-id',
         delta: 2000,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
       };
 
       await lcpCallback(mockMetric);
@@ -276,10 +300,13 @@ describe('performanceMonitoring', () => {
       initWebVitals();
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       const mockMetric = {
-        name: 'LCP',
+        name: 'LCP' as const,
         value: 2000,
         id: 'test-id',
         delta: 2000,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
       };
 
       await lcpCallback(mockMetric);
@@ -298,10 +325,13 @@ describe('performanceMonitoring', () => {
       initWebVitals();
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       const mockMetric = {
-        name: 'LCP',
+        name: 'LCP' as const,
         value: 2000,
         id: 'test-id',
         delta: 2000,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
       };
 
       await lcpCallback(mockMetric);
@@ -318,10 +348,13 @@ describe('performanceMonitoring', () => {
     it('should clear metrics', async () => {
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       await lcpCallback({
-        name: 'LCP',
+        name: 'LCP' as const,
         value: 1500,
         id: 'test-id',
         delta: 1500,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
       });
 
       expect(getMetrics()).toHaveLength(1);
@@ -332,10 +365,13 @@ describe('performanceMonitoring', () => {
     it('should return copy of metrics array', async () => {
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       await lcpCallback({
-        name: 'LCP',
+        name: 'LCP' as const,
         value: 1500,
         id: 'test-id',
         delta: 1500,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
       });
 
       const metrics1 = getMetrics();
@@ -355,9 +391,33 @@ describe('performanceMonitoring', () => {
       const lcpCallback = mockOnLCP.mock.calls[0][0];
 
       // Add multiple LCP metrics
-      await lcpCallback({ name: 'LCP', value: 1500, id: '1', delta: 1500 });
-      await lcpCallback({ name: 'LCP', value: 2000, id: '2', delta: 2000 });
-      await lcpCallback({ name: 'LCP', value: 3000, id: '3', delta: 3000 });
+      await lcpCallback({
+        name: 'LCP' as const,
+        value: 1500,
+        id: '1',
+        delta: 1500,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
+      });
+      await lcpCallback({
+        name: 'LCP' as const,
+        value: 2000,
+        id: '2',
+        delta: 2000,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
+      });
+      await lcpCallback({
+        name: 'LCP' as const,
+        value: 3000,
+        id: '3',
+        delta: 3000,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'needs-improvement' as const,
+      });
 
       const summary = getMetricsSummary();
 
@@ -379,9 +439,33 @@ describe('performanceMonitoring', () => {
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       const clsCallback = mockOnCLS.mock.calls[0][0];
 
-      await lcpCallback({ name: 'LCP', value: 1500, id: '1', delta: 1500 });
-      await clsCallback({ name: 'CLS', value: 0.05, id: '2', delta: 0.05 });
-      await clsCallback({ name: 'CLS', value: 0.2, id: '3', delta: 0.2 });
+      await lcpCallback({
+        name: 'LCP' as const,
+        value: 1500,
+        id: '1',
+        delta: 1500,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
+      });
+      await clsCallback({
+        name: 'CLS' as const,
+        value: 0.05,
+        id: '2',
+        delta: 0.05,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'good' as const,
+      });
+      await clsCallback({
+        name: 'CLS' as const,
+        value: 0.2,
+        id: '3',
+        delta: 0.2,
+        entries: [],
+        navigationType: 'navigate' as const,
+        rating: 'needs-improvement' as const,
+      });
 
       const summary = getMetricsSummary();
 

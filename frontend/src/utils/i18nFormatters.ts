@@ -14,7 +14,7 @@ export const formatNumber = (number: number, i18n: i18n): string => {
 export const formatCurrency = (amount: number, i18n: i18n, currency = 'KRW'): string => {
   const locale = i18n.language === 'ko' ? 'ko-KR' : 'en-US';
   const currencyCode = i18n.language === 'ko' ? 'KRW' : currency === 'KRW' ? 'USD' : currency;
-  
+
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: currencyCode,
@@ -24,16 +24,20 @@ export const formatCurrency = (amount: number, i18n: i18n, currency = 'KRW'): st
 /**
  * Format date according to current locale
  */
-export const formatDate = (date: Date | string, i18n: i18n, options?: Intl.DateTimeFormatOptions): string => {
+export const formatDate = (
+  date: Date | string,
+  i18n: i18n,
+  options?: Intl.DateTimeFormatOptions
+): string => {
   const locale = i18n.language === 'ko' ? 'ko-KR' : 'en-US';
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
+
   const defaultOptions: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   };
-  
+
   return new Intl.DateTimeFormat(locale, options || defaultOptions).format(dateObj);
 };
 
@@ -45,9 +49,9 @@ export const formatRelativeTime = (date: Date | string, i18n: i18n): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
-  
+
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
-  
+
   if (diffInSeconds < 60) {
     return i18n.t('time.now', { ns: 'common' });
   } else if (diffInSeconds < 3600) {
@@ -73,15 +77,14 @@ export const formatRelativeTime = (date: Date | string, i18n: i18n): string => {
  */
 export const formatFileSize = (bytes: number, i18n: i18n): string => {
   const locale = i18n.language === 'ko' ? 'ko-KR' : 'en-US';
-  const sizes = i18n.language === 'ko' 
-    ? ['바이트', 'KB', 'MB', 'GB', 'TB']
-    : ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  
+  const sizes =
+    i18n.language === 'ko' ? ['바이트', 'KB', 'MB', 'GB', 'TB'] : ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+
   if (bytes === 0) return `0 ${sizes[0]}`;
-  
+
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   const size = bytes / Math.pow(1024, i);
-  
+
   return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(size)} ${sizes[i]}`;
 };
 
@@ -103,7 +106,7 @@ export const formatPercentage = (value: number, i18n: i18n): string => {
 export const formatDuration = (minutes: number, i18n: i18n): string => {
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
-  
+
   if (i18n.language === 'ko') {
     if (hours > 0 && remainingMinutes > 0) {
       return `${hours}시간 ${remainingMinutes}분`;
@@ -129,7 +132,7 @@ export const formatDuration = (minutes: number, i18n: i18n): string => {
 export const formatPhoneNumber = (phoneNumber: string, i18n: i18n): string => {
   // Remove all non-digit characters
   const cleaned = phoneNumber.replace(/\D/g, '');
-  
+
   if (i18n.language === 'ko') {
     // Korean phone number format
     if (cleaned.length === 11) {
@@ -145,6 +148,6 @@ export const formatPhoneNumber = (phoneNumber: string, i18n: i18n): string => {
       return cleaned.replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, '+$1 ($2) $3-$4');
     }
   }
-  
+
   return phoneNumber; // Return original if no pattern matches
 };

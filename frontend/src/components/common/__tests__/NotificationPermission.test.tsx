@@ -3,10 +3,10 @@
  * Testing notification permission requests, banner display logic, and user interactions
  */
 
-import React from 'react';
 import { screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { renderWithSelectiveProviders } from '../../../test-utils/test-utils';
 import NotificationPermission from '../NotificationPermission';
+import * as logger from '../../../utils/logger';
 
 // Mock push notification utilities
 const mockIsPushNotificationSupported = jest.fn();
@@ -22,10 +22,11 @@ jest.mock('../../../utils/pushNotifications', () => ({
 }));
 
 // Mock logger
-const mockLoggerError = jest.fn();
 jest.mock('../../../utils/logger', () => ({
-  error: mockLoggerError,
+  error: jest.fn(),
 }));
+
+const mockLoggerError = logger.error as jest.Mock;
 
 // Mock lucide-react icons
 jest.mock('lucide-react', () => ({
