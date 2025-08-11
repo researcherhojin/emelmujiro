@@ -69,6 +69,8 @@ Object.defineProperty(navigator, 'serviceWorker', {
     controller: null,
     getRegistration: jest.fn().mockResolvedValue(mockServiceWorkerRegistration),
     getRegistrations: jest.fn().mockResolvedValue([]),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
   },
 });
 
@@ -191,8 +193,12 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 // Mock requestAnimationFrame
-global.requestAnimationFrame = jest.fn((cb: FrameRequestCallback) => setTimeout(cb, 0)) as unknown as typeof requestAnimationFrame;
-global.cancelAnimationFrame = jest.fn((id: number) => clearTimeout(id)) as unknown as typeof cancelAnimationFrame;
+global.requestAnimationFrame = jest.fn((cb: FrameRequestCallback) =>
+  setTimeout(cb, 0)
+) as unknown as typeof requestAnimationFrame;
+global.cancelAnimationFrame = jest.fn((id: number) =>
+  clearTimeout(id)
+) as unknown as typeof cancelAnimationFrame;
 
 // Mock Notification API
 interface MockNotification {

@@ -19,7 +19,7 @@ describe('OfflineIndicator', () => {
     render(<OfflineIndicator />);
 
     // Should not render anything when online
-    const offlineMessage = screen.queryByText(/오프라인 상태입니다/i);
+    const offlineMessage = screen.queryByText(/오프라인 상태/i);
     expect(offlineMessage).not.toBeInTheDocument();
   });
 
@@ -31,7 +31,7 @@ describe('OfflineIndicator', () => {
 
     render(<OfflineIndicator />);
 
-    expect(screen.getByText(/오프라인 상태입니다/i)).toBeInTheDocument();
+    expect(screen.getByText(/오프라인 상태/i)).toBeInTheDocument();
   });
 
   it('responds to online event', () => {
@@ -43,7 +43,7 @@ describe('OfflineIndicator', () => {
     render(<OfflineIndicator />);
 
     // Initially offline
-    expect(screen.getByText(/오프라인 상태입니다/i)).toBeInTheDocument();
+    expect(screen.getByText(/오프라인 상태/i)).toBeInTheDocument();
 
     // Simulate going online
     act(() => {
@@ -57,7 +57,7 @@ describe('OfflineIndicator', () => {
     });
 
     // Should hide indicator
-    const offlineMessage = screen.queryByText(/오프라인 상태입니다/i);
+    const offlineMessage = screen.queryByText(/오프라인 상태/i);
     expect(offlineMessage).not.toBeInTheDocument();
   });
 
@@ -70,7 +70,7 @@ describe('OfflineIndicator', () => {
     render(<OfflineIndicator />);
 
     // Initially online (no indicator)
-    expect(screen.queryByText(/오프라인 상태입니다/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/오프라인 상태/i)).not.toBeInTheDocument();
 
     // Simulate going offline
     act(() => {
@@ -84,6 +84,6 @@ describe('OfflineIndicator', () => {
     });
 
     // Should show indicator
-    expect(screen.getByText(/오프라인 상태입니다/i)).toBeInTheDocument();
+    expect(screen.getByText(/오프라인 상태/i)).toBeInTheDocument();
   });
 });
