@@ -93,24 +93,26 @@ describe('BlogListPage', () => {
 
     // The component should render the loading state initially
     // Verify that the component renders without crashing
-    const mainContainer = await screen.findByRole('main');
-    expect(mainContainer).toBeInTheDocument();
+    const heading = await screen.findByRole('heading', { level: 1 });
+    expect(heading).toHaveTextContent('블로그');
   });
 
   it('handles search query from URL', async () => {
     renderWithRouter(['/blog?search=React']);
 
     // Verify the component renders without errors
-    const mainContainer = await screen.findByRole('main');
-    expect(mainContainer).toBeInTheDocument();
+    const heading = await screen.findByRole('heading', { level: 1 });
+    expect(heading).toHaveTextContent('블로그');
   });
 
-  it('shows loading state while fetching', () => {
+  it('shows loading state while fetching', async () => {
     renderWithRouter();
 
     // The component should render without errors
-    const mainContainer = screen.getByRole('main');
-    expect(mainContainer).toBeInTheDocument();
+    await waitFor(() => {
+      const heading = screen.getByRole('heading', { level: 1 });
+      expect(heading).toHaveTextContent('블로그');
+    });
   });
 
   it('handles error state', async () => {
@@ -121,8 +123,8 @@ describe('BlogListPage', () => {
 
     // The component should still render without crashing
     await waitFor(() => {
-      const mainContainer = screen.getByRole('main');
-      expect(mainContainer).toBeInTheDocument();
+      const heading = screen.getByRole('heading', { level: 1 });
+      expect(heading).toHaveTextContent('블로그');
     });
   });
 

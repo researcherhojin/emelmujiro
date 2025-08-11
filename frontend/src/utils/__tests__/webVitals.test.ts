@@ -29,7 +29,9 @@ const mockWebVitals = {
 };
 
 // Override the dynamic import to return our mock
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const originalImport = (global as any).import;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (global as any).import = jest.fn().mockImplementation((moduleName: string) => {
   if (moduleName === 'web-vitals') {
     return Promise.resolve(mockWebVitals);
@@ -54,6 +56,7 @@ describe('webVitals', () => {
   });
 
   afterEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).import = originalImport;
   });
 
@@ -74,6 +77,7 @@ describe('webVitals', () => {
     });
 
     it('should not call web vitals functions when callback is null', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       measureWebVitals(null as any);
 
       expect(mockOnCLS).not.toHaveBeenCalled();
@@ -94,6 +98,7 @@ describe('webVitals', () => {
     });
 
     it('should not call web vitals functions when callback is not a function', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       measureWebVitals('not a function' as any);
 
       expect(mockOnCLS).not.toHaveBeenCalled();
@@ -108,6 +113,7 @@ describe('webVitals', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       // Mock import to fail
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global as any).import = jest.fn().mockRejectedValue(new Error('Import failed'));
 
       expect(() => measureWebVitals(mockCallback)).not.toThrow();
@@ -116,7 +122,7 @@ describe('webVitals', () => {
     });
 
     it('should work with arrow function callback', async () => {
-      const mockCallback = (metric: any) => {
+      const mockCallback = (metric: { name: string; value: number }) => {
         console.log(metric.name, metric.value);
       };
       const spy = jest.spyOn(console, 'log').mockImplementation();
@@ -132,7 +138,7 @@ describe('webVitals', () => {
     });
 
     it('should work with function expression callback', async () => {
-      const mockCallback = function (metric: any) {
+      const mockCallback = function (metric: { value: number }) {
         return metric.value;
       };
 
@@ -216,7 +222,7 @@ describe('webVitals', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
 
       // Mock the internal enablePerformanceLogging to true for this test
-      const originalLogPerformanceMetrics = logPerformanceMetrics;
+      const _originalLogPerformanceMetrics = logPerformanceMetrics;
 
       // Create a version with logging enabled for testing
       const testLogPerformanceMetrics = () => {
@@ -330,6 +336,7 @@ describe('webVitals', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
 
       // Remove performance API
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (window as any).performance;
 
       expect(() => logPerformanceMetrics()).not.toThrow();
@@ -432,7 +439,7 @@ describe('webVitals', () => {
     });
 
     it('should work with simplified callback', async () => {
-      const simpleCallback = (metric: any) => metric.value;
+      const simpleCallback = (metric: { value: number }) => metric.value;
 
       expect(() => measureWebVitals(simpleCallback)).not.toThrow();
     });
