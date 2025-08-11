@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Footer from '../Footer';
 
@@ -348,10 +348,7 @@ describe('Footer Component', () => {
         button.className.includes('bg-gray-900')
       );
 
-      // Use act to ensure state updates are processed
-      await act(async () => {
-        fireEvent.click(modalContactButton!);
-      });
+      fireEvent.click(modalContactButton!);
 
       expect(mockNavigate).toHaveBeenCalledWith('/contact');
 

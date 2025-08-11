@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { screen, fireEvent } from '@testing-library/react';
+import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import Navbar from '../Navbar';
 
 // Mock useNavigate
@@ -11,21 +11,17 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('Navbar Component', () => {
-  const renderWithRouter = (component: React.ReactElement) => {
-    return render(<BrowserRouter>{component}</BrowserRouter>);
-  };
-
   beforeEach(() => {
     mockNavigate.mockClear();
   });
 
   test('renders logo', () => {
-    renderWithRouter(<Navbar />);
+    renderWithProviders(<Navbar />);
     expect(screen.getByText('에멜무지로')).toBeInTheDocument();
   });
 
   test('renders navigation items', () => {
-    renderWithRouter(<Navbar />);
+    renderWithProviders(<Navbar />);
     expect(screen.getByRole('button', { name: '회사소개' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '서비스' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '대표 프로필' })).toBeInTheDocument();
@@ -33,7 +29,7 @@ describe('Navbar Component', () => {
   });
 
   test('navigates on menu item click', () => {
-    renderWithRouter(<Navbar />);
+    renderWithProviders(<Navbar />);
 
     const aboutButton = screen.getByRole('button', { name: '회사소개' });
     fireEvent.click(aboutButton);
@@ -41,7 +37,7 @@ describe('Navbar Component', () => {
   });
 
   test('mobile menu button toggles menu', () => {
-    renderWithRouter(<Navbar />);
+    renderWithProviders(<Navbar />);
 
     // Mobile menu should not be visible initially
     expect(
@@ -58,14 +54,14 @@ describe('Navbar Component', () => {
   });
 
   test('logo navigates to home', () => {
-    renderWithRouter(<Navbar />);
+    renderWithProviders(<Navbar />);
 
     const logo = screen.getByRole('link', { name: '에멜무지로' });
     expect(logo).toHaveAttribute('href', '/');
   });
 
   test('applies scroll styles', () => {
-    renderWithRouter(<Navbar />);
+    renderWithProviders(<Navbar />);
 
     const navbar = screen.getByRole('navigation');
 

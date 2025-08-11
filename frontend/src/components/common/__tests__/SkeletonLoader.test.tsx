@@ -277,7 +277,9 @@ describe('Skeleton Component', () => {
 
       const hero = screen.getByTestId('skeleton-hero');
       const skeletons = within(hero).getAllByRole('generic');
-      const titleLines = skeletons.filter(el => el.style.height === '48px');
+      // Title lines have 48px height and are wider (w-3/4 or w-2/3)
+      // Filter out CTA buttons which also have 48px height but specific widths (120px, 140px)
+      const titleLines = skeletons.filter(el => el.style.height === '48px' && !el.style.width);
       expect(titleLines.length).toBe(2);
     });
 
