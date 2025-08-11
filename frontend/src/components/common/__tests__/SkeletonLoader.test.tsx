@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Skeleton, {
   SkeletonCard,
@@ -18,64 +17,62 @@ import Skeleton, {
 describe('Skeleton Component', () => {
   describe('Basic Skeleton', () => {
     it('renders with default props', () => {
-      const { container } = render(<Skeleton />);
+      render(<Skeleton data-testid="skeleton" />);
 
-      const skeleton = container.firstChild as HTMLElement;
+      const skeleton = screen.getByTestId('skeleton');
       expect(skeleton).toHaveClass('animate-pulse', 'bg-gray-200', 'rounded');
     });
 
     it('applies custom className', () => {
-      const { container } = render(<Skeleton className="custom-class" />);
+      render(<Skeleton className="custom-class" data-testid="skeleton" />);
 
-      const skeleton = container.firstChild as HTMLElement;
+      const skeleton = screen.getByTestId('skeleton');
       expect(skeleton).toHaveClass('custom-class', 'animate-pulse', 'bg-gray-200', 'rounded');
     });
 
     it('applies custom width and height', () => {
-      const { container } = render(<Skeleton width="100px" height="50px" />);
+      render(<Skeleton width="100px" height="50px" data-testid="skeleton" />);
 
-      const skeleton = container.firstChild as HTMLElement;
-      expect(skeleton.style.width).toBe('100px');
-      expect(skeleton.style.height).toBe('50px');
+      const skeleton = screen.getByTestId('skeleton');
+      expect(skeleton).toHaveStyle({ width: '100px', height: '50px' });
     });
 
     it('applies numeric width and height', () => {
-      const { container } = render(<Skeleton width={200} height={100} />);
+      render(<Skeleton width={200} height={100} data-testid="skeleton" />);
 
-      const skeleton = container.firstChild as HTMLElement;
-      expect(skeleton.style.width).toBe('200px');
-      expect(skeleton.style.height).toBe('100px');
+      const skeleton = screen.getByTestId('skeleton');
+      expect(skeleton).toHaveStyle({ width: '200px', height: '100px' });
     });
 
     it('renders as circle when circle prop is true', () => {
-      const { container } = render(<Skeleton circle />);
+      render(<Skeleton circle data-testid="skeleton" />);
 
-      const skeleton = container.firstChild as HTMLElement;
+      const skeleton = screen.getByTestId('skeleton');
       expect(skeleton).toHaveClass('rounded-full');
       expect(skeleton).not.toHaveClass('rounded');
     });
 
     it('renders without rounded corners when rounded is false', () => {
-      const { container } = render(<Skeleton rounded={false} />);
+      render(<Skeleton rounded={false} data-testid="skeleton" />);
 
-      const skeleton = container.firstChild as HTMLElement;
+      const skeleton = screen.getByTestId('skeleton');
       expect(skeleton).not.toHaveClass('rounded');
       expect(skeleton).not.toHaveClass('rounded-full');
     });
 
     it('circle prop overrides rounded prop', () => {
-      const { container } = render(<Skeleton circle rounded={false} />);
+      render(<Skeleton circle rounded={false} data-testid="skeleton" />);
 
-      const skeleton = container.firstChild as HTMLElement;
+      const skeleton = screen.getByTestId('skeleton');
       expect(skeleton).toHaveClass('rounded-full');
       expect(skeleton).not.toHaveClass('rounded');
     });
 
     it('renders as div element', () => {
-      const { container } = render(<Skeleton />);
+      render(<Skeleton data-testid="skeleton" />);
 
-      const skeleton = container.firstChild;
-      expect(skeleton?.nodeName).toBe('DIV');
+      const skeleton = screen.getByTestId('skeleton');
+      expect(skeleton.nodeName).toBe('DIV');
     });
   });
 

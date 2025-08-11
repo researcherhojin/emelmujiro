@@ -3,7 +3,6 @@
  * Testing scroll progress calculation, event handling, and accessibility
  */
 
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ScrollProgress from '../ScrollProgress';
 
@@ -60,11 +59,14 @@ describe('ScrollProgress', () => {
 
   describe('Basic Rendering', () => {
     test('renders scroll progress container', () => {
-      const { container } = render(<ScrollProgress />);
+      render(<ScrollProgress />);
 
-      const scrollContainer = container.firstChild as HTMLElement;
-      expect(scrollContainer).toBeInTheDocument();
-      expect(scrollContainer).toHaveClass('fixed', 'top-0', 'left-0', 'w-full', 'h-1', 'z-50');
+      const progressBar = screen.getByRole('progressbar');
+      expect(progressBar).toBeInTheDocument();
+
+      // Check that the container has the correct classes
+      const container = screen.getByTestId('scroll-progress-container');
+      expect(container).toHaveClass('fixed', 'top-0', 'left-0', 'w-full', 'h-1', 'z-50');
     });
 
     test('renders progress bar with initial 0% width', () => {
@@ -78,9 +80,9 @@ describe('ScrollProgress', () => {
     test('applies correct CSS classes to container', () => {
       render(<ScrollProgress />);
 
-      const progressBar = screen.getByRole('progressbar');
-      const outerDiv = progressBar.parentElement as HTMLElement;
-      expect(outerDiv).toHaveClass('fixed', 'top-0', 'left-0', 'w-full', 'h-1', 'z-50');
+      // Verify the container has the correct classes
+      const container = screen.getByTestId('scroll-progress-container');
+      expect(container).toHaveClass('fixed', 'top-0', 'left-0', 'w-full', 'h-1', 'z-50');
     });
 
     test('applies correct CSS classes to progress bar', () => {
