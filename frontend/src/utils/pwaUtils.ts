@@ -128,11 +128,24 @@ let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
 // Check if app is installed (PWA)
 export function isPWAInstalled(): boolean {
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    window.matchMedia('(display-mode: fullscreen)').matches ||
-    (window.navigator as Navigator & { standalone?: boolean }).standalone === true
-  );
+  // Check if matchMedia is available (not available in some test environments)
+  if (typeof window === 'undefined' || !window.matchMedia) {
+    return false;
+  }
+
+  try {
+    const standaloneMatch = window.matchMedia('(display-mode: standalone)');
+    const fullscreenMatch = window.matchMedia('(display-mode: fullscreen)');
+
+    return (
+      (standaloneMatch && standaloneMatch.matches) ||
+      (fullscreenMatch && fullscreenMatch.matches) ||
+      (window.navigator as Navigator & { standalone?: boolean }).standalone === true
+    );
+  } catch {
+    // If matchMedia throws an error, return false
+    return false;
+  }
 }
 
 // Check if install prompt is available

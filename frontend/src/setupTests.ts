@@ -66,11 +66,11 @@ const mockReady = Promise.resolve(mockServiceWorkerRegistration);
 Object.defineProperty(navigator, 'serviceWorker', {
   writable: true,
   value: {
-    register: jest.fn().mockResolvedValue(mockServiceWorkerRegistration),
+    register: jest.fn(() => Promise.resolve(mockServiceWorkerRegistration)),
     ready: mockReady,
     controller: null,
-    getRegistration: jest.fn().mockResolvedValue(mockServiceWorkerRegistration),
-    getRegistrations: jest.fn().mockResolvedValue([]),
+    getRegistration: jest.fn(() => Promise.resolve(mockServiceWorkerRegistration)),
+    getRegistrations: jest.fn(() => Promise.resolve([])),
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
   },

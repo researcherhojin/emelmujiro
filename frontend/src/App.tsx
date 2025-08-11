@@ -173,17 +173,22 @@ const App: React.FC = () => {
     initBlogCache();
 
     // Register service worker if not already registered
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/emelmujiro/service-worker-enhanced.js')
-        .then(registration => {
-          // Service Worker registered successfully
-          // eslint-disable-next-line no-console
-          console.info('Service Worker registered successfully:', registration);
-        })
-        .catch(error => {
-          console.error('Service Worker registration failed:', error);
-        });
+    if ('serviceWorker' in navigator && navigator.serviceWorker?.register) {
+      const registerPromise = navigator.serviceWorker.register(
+        '/emelmujiro/service-worker-enhanced.js'
+      );
+
+      if (registerPromise && typeof registerPromise.then === 'function') {
+        registerPromise
+          .then(registration => {
+            // Service Worker registered successfully
+            // eslint-disable-next-line no-console
+            console.info('Service Worker registered successfully:', registration);
+          })
+          .catch(error => {
+            console.error('Service Worker registration failed:', error);
+          });
+      }
     }
   }, []);
 
