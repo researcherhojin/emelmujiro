@@ -61,11 +61,13 @@ const mockServiceWorkerRegistration = {
   },
 };
 
+const mockReady = Promise.resolve(mockServiceWorkerRegistration);
+
 Object.defineProperty(navigator, 'serviceWorker', {
   writable: true,
   value: {
     register: jest.fn().mockResolvedValue(mockServiceWorkerRegistration),
-    ready: Promise.resolve(mockServiceWorkerRegistration),
+    ready: mockReady,
     controller: null,
     getRegistration: jest.fn().mockResolvedValue(mockServiceWorkerRegistration),
     getRegistrations: jest.fn().mockResolvedValue([]),
@@ -73,6 +75,14 @@ Object.defineProperty(navigator, 'serviceWorker', {
     removeEventListener: jest.fn(),
   },
 });
+
+// Ensure ready.then is always available
+if (!navigator.serviceWorker.ready || !navigator.serviceWorker.ready.then) {
+  Object.defineProperty(navigator.serviceWorker, 'ready', {
+    value: mockReady,
+    writable: true,
+  });
+}
 
 // Mock classList - ensure it's always available
 if (typeof DOMTokenList === 'undefined') {

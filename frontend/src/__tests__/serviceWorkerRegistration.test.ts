@@ -168,6 +168,8 @@ describe('serviceWorkerRegistration', () => {
         writable: true,
         value: {
           register: mockRegister,
+          ready: Promise.resolve(mockServiceWorkerRegistration),
+          controller: null,
         },
       });
 
@@ -225,6 +227,8 @@ describe('serviceWorkerRegistration', () => {
         writable: true,
         value: {
           register: mockRegister,
+          ready: Promise.resolve(mockServiceWorkerRegistration),
+          controller: null,
         },
       });
 
@@ -245,6 +249,8 @@ describe('serviceWorkerRegistration', () => {
         writable: true,
         value: {
           register: mockRegister,
+          ready: Promise.resolve(mockServiceWorkerRegistration),
+          controller: null,
         },
       });
 
@@ -671,6 +677,8 @@ describe('serviceWorkerRegistration', () => {
         writable: true,
         value: {
           register: mockRegister,
+          ready: Promise.resolve(mockServiceWorkerRegistration),
+          controller: null,
         },
       });
 
