@@ -72,10 +72,14 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
                 <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-2">
                   {service.title}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{service.description}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  {service.description}
+                </p>
 
                 <div className="mb-6">
-                  <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">주요 서비스</h4>
+                  <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+                    주요 서비스
+                  </h4>
                   <ul className="space-y-2">
                     {service.details.map((detail, index) => (
                       <li key={index} className="flex items-start">
@@ -87,7 +91,9 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
                 </div>
 
                 <div className="mb-6">
-                  <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">주요 사례</h4>
+                  <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+                    주요 사례
+                  </h4>
                   <ul className="space-y-1">
                     {service.cases.map((caseItem, index) => (
                       <li key={index} className="text-sm text-gray-600 dark:text-gray-400">

@@ -19,7 +19,7 @@ const OfflineIndicator: React.FC = memo(() => {
     const handleOnline = () => {
       setState(prev => ({ ...prev, isOnline: true, syncStatus: 'syncing' }));
       setShowIndicator(true);
-      
+
       // Simulate sync process
       setTimeout(() => {
         setState(prev => ({ ...prev, syncStatus: 'success', pendingRequests: 0 }));
@@ -31,11 +31,11 @@ const OfflineIndicator: React.FC = memo(() => {
     };
 
     const handleOffline = () => {
-      setState(prev => ({ 
-        ...prev, 
-        isOnline: false, 
+      setState(prev => ({
+        ...prev,
+        isOnline: false,
         syncStatus: 'idle',
-        pendingRequests: prev.pendingRequests + 1 
+        pendingRequests: prev.pendingRequests + 1,
       }));
       setShowIndicator(true);
     };
@@ -43,7 +43,7 @@ const OfflineIndicator: React.FC = memo(() => {
     // Service worker message handler for enhanced sync status
     const handleServiceWorkerMessage = (event: MessageEvent) => {
       const { type, data } = event.data || {};
-      
+
       switch (type) {
         case 'NETWORK_STATUS':
           if (data?.online) {
@@ -53,17 +53,17 @@ const OfflineIndicator: React.FC = memo(() => {
           }
           break;
         case 'SYNC_STATUS':
-          setState(prev => ({ 
-            ...prev, 
+          setState(prev => ({
+            ...prev,
             syncStatus: data?.status || 'idle',
-            pendingRequests: data?.pendingCount || 0 
+            pendingRequests: data?.pendingCount || 0,
           }));
           break;
         case 'BACKGROUND_SYNC_COMPLETE':
-          setState(prev => ({ 
-            ...prev, 
+          setState(prev => ({
+            ...prev,
             syncStatus: 'success',
-            pendingRequests: Math.max(0, prev.pendingRequests - 1)
+            pendingRequests: Math.max(0, prev.pendingRequests - 1),
           }));
           setTimeout(() => {
             setState(prev => ({ ...prev, syncStatus: 'idle' }));
@@ -74,7 +74,7 @@ const OfflineIndicator: React.FC = memo(() => {
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     // Listen to service worker messages
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
@@ -110,9 +110,10 @@ const OfflineIndicator: React.FC = memo(() => {
       return {
         icon: <WifiOff className="w-4 h-4" />,
         title: '오프라인 상태',
-        message: pendingRequests > 0 
-          ? `${pendingRequests}개 요청이 대기 중입니다` 
-          : '일부 기능이 제한될 수 있습니다',
+        message:
+          pendingRequests > 0
+            ? `${pendingRequests}개 요청이 대기 중입니다`
+            : '일부 기능이 제한될 수 있습니다',
         bgColor: 'bg-red-500',
         showActions: true,
       };
@@ -164,22 +165,22 @@ const OfflineIndicator: React.FC = memo(() => {
       aria-atomic="true"
     >
       <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0 mt-0.5">
-          {content.icon}
-        </div>
+        <div className="flex-shrink-0 mt-0.5">{content.icon}</div>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold">{content.title}</div>
           <div className="text-xs opacity-90 mt-1">{content.message}</div>
-          
+
           {/* Progress bar for syncing */}
           {state.syncStatus === 'syncing' && (
             <div className="mt-2 h-1 bg-white/20 rounded-full overflow-hidden">
-              <div className="h-full bg-white rounded-full transition-all duration-1000 animate-pulse" 
-                   style={{ width: '75%' }} />
+              <div
+                className="h-full bg-white rounded-full transition-all duration-1000 animate-pulse"
+                style={{ width: '75%' }}
+              />
             </div>
           )}
         </div>
-        
+
         {/* Close button */}
         <button
           onClick={handleDismiss}
@@ -187,9 +188,11 @@ const OfflineIndicator: React.FC = memo(() => {
           aria-label="알림 닫기"
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" 
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" 
-                  clipRule="evenodd" />
+            <path
+              fillRule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clipRule="evenodd"
+            />
           </svg>
         </button>
       </div>

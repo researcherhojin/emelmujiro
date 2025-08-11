@@ -4,7 +4,7 @@ import { useUI } from '../../contexts/UIContext';
 
 const DarkModeToggle: React.FC = memo(() => {
   const { theme, toggleTheme } = useUI();
-  
+
   return (
     <button
       onClick={toggleTheme}
@@ -21,25 +21,19 @@ const DarkModeToggle: React.FC = memo(() => {
                    ${theme === 'dark' ? 'translate-x-5' : 'translate-x-0'}`}
       >
         {theme === 'light' ? (
-          <Sun 
-            className="w-3 h-3 text-yellow-500 transition-all duration-200" 
-            strokeWidth={2.5}
-          />
+          <Sun className="w-3 h-3 text-yellow-500 transition-all duration-200" strokeWidth={2.5} />
         ) : (
-          <Moon 
-            className="w-3 h-3 text-blue-500 transition-all duration-200" 
-            strokeWidth={2.5}
-          />
+          <Moon className="w-3 h-3 text-blue-500 transition-all duration-200" strokeWidth={2.5} />
         )}
       </div>
-      
+
       {/* Background icons */}
-      <Sun 
+      <Sun
         className={`absolute left-1.5 w-3 h-3 text-yellow-400 transition-opacity duration-200 
                    ${theme === 'light' ? 'opacity-0' : 'opacity-100'}`}
         strokeWidth={2}
       />
-      <Moon 
+      <Moon
         className={`absolute right-1.5 w-3 h-3 text-blue-400 transition-opacity duration-200 
                    ${theme === 'dark' ? 'opacity-0' : 'opacity-100'}`}
         strokeWidth={2}

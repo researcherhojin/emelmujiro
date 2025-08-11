@@ -4,8 +4,26 @@
 
 import React from 'react';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
-import { Helmet } from 'react-helmet-async';
+import { screen } from '@testing-library/react';
 import SEO from '../SEO';
+
+// Type for mocked Helmet
+interface HelmetProps {
+  name?: string;
+  property?: string;
+  content?: string;
+  rel?: string;
+  href?: string;
+  lang?: string;
+}
+
+interface MockedHelmetElement extends React.ReactElement {
+  props: HelmetProps;
+}
+
+type MockedHelmet = jest.Mock & {
+  lastChildren?: React.ReactNode;
+};
 
 // Mock react-helmet-async
 jest.mock('react-helmet-async', () => ({
@@ -21,9 +39,9 @@ describe('SEO Component', () => {
 
   describe('Default props behavior', () => {
     it('should render with default props', () => {
-      const { container } = renderWithProviders(<SEO />);
+      renderWithProviders(<SEO />);
 
-      const helmet = container.querySelector('[data-testid="helmet-mock"]');
+      const helmet = screen.getByTestId('helmet-mock');
       expect(helmet).toBeInTheDocument();
     });
 
@@ -123,7 +141,7 @@ describe('SEO Component', () => {
   });
 
   describe('Meta tags structure', () => {
-    let originalHelmet: any;
+    let originalHelmet: unknown;
 
     beforeEach(() => {
       originalHelmet = require('react-helmet-async').Helmet;
@@ -131,7 +149,7 @@ describe('SEO Component', () => {
       // Mock Helmet to capture the actual children structure
       require('react-helmet-async').Helmet = jest.fn(({ children }) => {
         // Store the children for inspection
-        (require('react-helmet-async').Helmet as any).lastChildren = children;
+        (require('react-helmet-async').Helmet as MockedHelmet).lastChildren = children;
         return React.createElement('div', { 'data-testid': 'helmet-mock' }, children);
       });
     });
@@ -145,19 +163,26 @@ describe('SEO Component', () => {
         <SEO title="Test Title" description="Test Description" keywords="test, keywords" />
       );
 
-      const children = (require('react-helmet-async').Helmet as any).lastChildren;
+      const children = (require('react-helmet-async').Helmet as MockedHelmet)
+        .lastChildren as MockedHelmetElement[];
       expect(Array.isArray(children)).toBe(true);
 
       // Check for title tag
-      const titleTag = children.find((child: any) => child?.type === 'title');
+      const titleTag = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.type === 'title'
+      );
       expect(titleTag).toBeDefined();
 
       // Check for description meta tag
-      const descriptionTag = children.find((child: any) => child?.props?.name === 'description');
+      const descriptionTag = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'description'
+      );
       expect(descriptionTag).toBeDefined();
 
       // Check for keywords meta tag
-      const keywordsTag = children.find((child: any) => child?.props?.name === 'keywords');
+      const keywordsTag = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'keywords'
+      );
       expect(keywordsTag).toBeDefined();
     });
 
@@ -166,21 +191,22 @@ describe('SEO Component', () => {
         <SEO title="OG Test" description="OG Description" ogImage="/test-og.png" type="article" />
       );
 
-      const children = (require('react-helmet-async').Helmet as any).lastChildren;
+      const children = (require('react-helmet-async').Helmet as MockedHelmet)
+        .lastChildren as React.ReactElement[];
 
       // Check for OG tags
-      const ogTitleTag = children.find((child: any) => child?.props?.property === 'og:title');
+      const ogTitleTag = children.find((child: unknown) => child?.props?.property === 'og:title');
       expect(ogTitleTag).toBeDefined();
 
       const ogDescriptionTag = children.find(
-        (child: any) => child?.props?.property === 'og:description'
+        (child: unknown) => child?.props?.property === 'og:description'
       );
       expect(ogDescriptionTag).toBeDefined();
 
-      const ogImageTag = children.find((child: any) => child?.props?.property === 'og:image');
+      const ogImageTag = children.find((child: unknown) => child?.props?.property === 'og:image');
       expect(ogImageTag).toBeDefined();
 
-      const ogTypeTag = children.find((child: any) => child?.props?.property === 'og:type');
+      const ogTypeTag = children.find((child: unknown) => child?.props?.property === 'og:type');
       expect(ogTypeTag).toBeDefined();
     });
 
@@ -189,21 +215,28 @@ describe('SEO Component', () => {
         <SEO title="Twitter Test" description="Twitter Description" ogImage="/twitter-image.png" />
       );
 
-      const children = (require('react-helmet-async').Helmet as any).lastChildren;
+      const children = (require('react-helmet-async').Helmet as MockedHelmet)
+        .lastChildren as React.ReactElement[];
 
       // Check for Twitter Card tags
-      const twitterCardTag = children.find((child: any) => child?.props?.name === 'twitter:card');
+      const twitterCardTag = children.find(
+        (child: unknown) => child?.props?.name === 'twitter:card'
+      );
       expect(twitterCardTag).toBeDefined();
 
-      const twitterTitleTag = children.find((child: any) => child?.props?.name === 'twitter:title');
+      const twitterTitleTag = children.find(
+        (child: unknown) => child?.props?.name === 'twitter:title'
+      );
       expect(twitterTitleTag).toBeDefined();
 
       const twitterDescriptionTag = children.find(
-        (child: any) => child?.props?.name === 'twitter:description'
+        (child: unknown) => child?.props?.name === 'twitter:description'
       );
       expect(twitterDescriptionTag).toBeDefined();
 
-      const twitterImageTag = children.find((child: any) => child?.props?.name === 'twitter:image');
+      const twitterImageTag = children.find(
+        (child: unknown) => child?.props?.name === 'twitter:image'
+      );
       expect(twitterImageTag).toBeDefined();
     });
 
@@ -212,9 +245,10 @@ describe('SEO Component', () => {
 
       renderWithProviders(<SEO canonical={canonicalUrl} />);
 
-      const children = (require('react-helmet-async').Helmet as any).lastChildren;
+      const children = (require('react-helmet-async').Helmet as MockedHelmet)
+        .lastChildren as React.ReactElement[];
 
-      const canonicalLink = children.find((child: any) => child?.props?.rel === 'canonical');
+      const canonicalLink = children.find((child: unknown) => child?.props?.rel === 'canonical');
       expect(canonicalLink).toBeDefined();
       expect(canonicalLink.props.href).toBe(canonicalUrl);
     });
@@ -224,9 +258,10 @@ describe('SEO Component', () => {
 
       renderWithProviders(<SEO canonical={canonicalUrl} />);
 
-      const children = (require('react-helmet-async').Helmet as any).lastChildren;
+      const children = (require('react-helmet-async').Helmet as MockedHelmet)
+        .lastChildren as React.ReactElement[];
 
-      const ogUrlTag = children.find((child: any) => child?.props?.property === 'og:url');
+      const ogUrlTag = children.find((child: unknown) => child?.props?.property === 'og:url');
       expect(ogUrlTag).toBeDefined();
       expect(ogUrlTag.props.content).toBe(canonicalUrl);
     });
@@ -234,28 +269,32 @@ describe('SEO Component', () => {
     it('should set html lang attribute', () => {
       renderWithProviders(<SEO />);
 
-      const children = (require('react-helmet-async').Helmet as any).lastChildren;
+      const children = (require('react-helmet-async').Helmet as MockedHelmet)
+        .lastChildren as React.ReactElement[];
 
-      const htmlLangTag = children.find((child: any) => child?.props?.lang === 'ko');
+      const htmlLangTag = children.find((child: unknown) => child?.props?.lang === 'ko');
       expect(htmlLangTag).toBeDefined();
     });
 
     it('should include PWA meta tags', () => {
       renderWithProviders(<SEO />);
 
-      const children = (require('react-helmet-async').Helmet as any).lastChildren;
+      const children = (require('react-helmet-async').Helmet as MockedHelmet)
+        .lastChildren as React.ReactElement[];
 
       // Check for PWA-related meta tags
-      const appNameTag = children.find((child: any) => child?.props?.name === 'application-name');
+      const appNameTag = children.find(
+        (child: unknown) => child?.props?.name === 'application-name'
+      );
       expect(appNameTag).toBeDefined();
 
       const appleMobileCapableTag = children.find(
-        (child: any) => child?.props?.name === 'apple-mobile-web-app-capable'
+        (child: unknown) => child?.props?.name === 'apple-mobile-web-app-capable'
       );
       expect(appleMobileCapableTag).toBeDefined();
 
       const mobileWebAppCapableTag = children.find(
-        (child: any) => child?.props?.name === 'mobile-web-app-capable'
+        (child: unknown) => child?.props?.name === 'mobile-web-app-capable'
       );
       expect(mobileWebAppCapableTag).toBeDefined();
     });
@@ -263,21 +302,22 @@ describe('SEO Component', () => {
     it('should include additional meta tags', () => {
       renderWithProviders(<SEO />);
 
-      const children = (require('react-helmet-async').Helmet as any).lastChildren;
+      const children = (require('react-helmet-async').Helmet as MockedHelmet)
+        .lastChildren as React.ReactElement[];
 
       // Check for additional meta tags
-      const robotsTag = children.find((child: any) => child?.props?.name === 'robots');
+      const robotsTag = children.find((child: unknown) => child?.props?.name === 'robots');
       expect(robotsTag).toBeDefined();
 
-      const themeColorTag = children.find((child: any) => child?.props?.name === 'theme-color');
+      const themeColorTag = children.find((child: unknown) => child?.props?.name === 'theme-color');
       expect(themeColorTag).toBeDefined();
 
       const formatDetectionTag = children.find(
-        (child: any) => child?.props?.name === 'format-detection'
+        (child: unknown) => child?.props?.name === 'format-detection'
       );
       expect(formatDetectionTag).toBeDefined();
 
-      const googleTag = children.find((child: any) => child?.props?.name === 'google');
+      const googleTag = children.find((child: unknown) => child?.props?.name === 'google');
       expect(googleTag).toBeDefined();
     });
   });

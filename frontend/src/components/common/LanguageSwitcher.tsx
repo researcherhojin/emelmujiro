@@ -33,25 +33,30 @@ const LanguageSwitcher: React.FC = memo(() => {
     };
   }, []);
 
-  const handleLanguageChange = useCallback(async (languageCode: string) => {
-    try {
-      await i18n.changeLanguage(languageCode);
-      setIsOpen(false);
-      
-      // Store language preference
-      localStorage.setItem('i18nextLng', languageCode);
-      
-      // Update HTML lang attribute
-      document.documentElement.lang = languageCode;
-      
-      // Dispatch custom event for other components that might need to react
-      window.dispatchEvent(new CustomEvent('languageChanged', { 
-        detail: { language: languageCode } 
-      }));
-    } catch (error) {
-      console.error('Failed to change language:', error);
-    }
-  }, [i18n]);
+  const handleLanguageChange = useCallback(
+    async (languageCode: string) => {
+      try {
+        await i18n.changeLanguage(languageCode);
+        setIsOpen(false);
+
+        // Store language preference
+        localStorage.setItem('i18nextLng', languageCode);
+
+        // Update HTML lang attribute
+        document.documentElement.lang = languageCode;
+
+        // Dispatch custom event for other components that might need to react
+        window.dispatchEvent(
+          new CustomEvent('languageChanged', {
+            detail: { language: languageCode },
+          })
+        );
+      } catch (error) {
+        console.error('Failed to change language:', error);
+      }
+    },
+    [i18n]
+  );
 
   const toggleDropdown = useCallback(() => {
     setIsOpen(prev => !prev);
@@ -66,12 +71,15 @@ const LanguageSwitcher: React.FC = memo(() => {
     }
   }, []);
 
-  const handleLanguageKeyDown = useCallback((event: React.KeyboardEvent, languageCode: string) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      handleLanguageChange(languageCode);
-    }
-  }, [handleLanguageChange]);
+  const handleLanguageKeyDown = useCallback(
+    (event: React.KeyboardEvent, languageCode: string) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        handleLanguageChange(languageCode);
+      }
+    },
+    [handleLanguageChange]
+  );
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
@@ -87,8 +95,8 @@ const LanguageSwitcher: React.FC = memo(() => {
         <Globe className="w-4 h-4 mr-2" />
         <span className="mr-1">{currentLanguage.flag}</span>
         <span className="hidden sm:inline">{currentLanguage.name}</span>
-        <ChevronDown 
-          className={`ml-2 w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} 
+        <ChevronDown
+          className={`ml-2 w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -99,9 +107,9 @@ const LanguageSwitcher: React.FC = memo(() => {
           aria-label={t('accessibility.languageSelector')}
         >
           <div className="py-1">
-            {languages.map((language) => {
+            {languages.map(language => {
               const isSelected = language.code === i18n.language;
-              
+
               return (
                 <button
                   key={language.code}
@@ -112,7 +120,7 @@ const LanguageSwitcher: React.FC = memo(() => {
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700 hover:text-gray-900 dark:hover:text-white'
                   }`}
                   onClick={() => handleLanguageChange(language.code)}
-                  onKeyDown={(e) => handleLanguageKeyDown(e, language.code)}
+                  onKeyDown={e => handleLanguageKeyDown(e, language.code)}
                   role="option"
                   aria-selected={isSelected}
                   tabIndex={0}
@@ -122,8 +130,16 @@ const LanguageSwitcher: React.FC = memo(() => {
                     <span>{language.name}</span>
                     {isSelected && (
                       <span className="ml-auto">
-                        <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        <svg
+                          className="w-4 h-4 text-gray-600 dark:text-gray-400"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                       </span>
                     )}
