@@ -8,12 +8,13 @@ interface SkeletonProps {
   circle?: boolean;
 }
 
-const Skeleton: React.FC<SkeletonProps> = ({
+const Skeleton: React.FC<SkeletonProps & { 'data-testid'?: string }> = ({
   className = '',
   width,
   height,
   rounded = true,
   circle = false,
+  'data-testid': dataTestId,
 }) => {
   const baseClasses = 'animate-pulse bg-gray-200';
   const shapeClasses = circle ? 'rounded-full' : rounded ? 'rounded' : '';
@@ -22,12 +23,21 @@ const Skeleton: React.FC<SkeletonProps> = ({
   if (width) styles.width = width;
   if (height) styles.height = height;
 
-  return <div className={`${baseClasses} ${shapeClasses} ${className}`} style={styles} />;
+  return (
+    <div
+      className={`${baseClasses} ${shapeClasses} ${className}`}
+      style={styles}
+      data-testid={dataTestId}
+    />
+  );
 };
 
 // Card Skeleton for blog posts, services, etc.
 export const SkeletonCard: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`space-y-4 p-6 bg-white rounded-lg border ${className}`}>
+  <div
+    className={`space-y-4 p-6 bg-white rounded-lg border ${className}`}
+    data-testid="skeleton-card"
+  >
     <Skeleton height={200} className="w-full" />
     <div className="space-y-2">
       <Skeleton height={24} className="w-3/4" />
@@ -50,7 +60,7 @@ export const SkeletonText: React.FC<{
   lines?: number;
   className?: string;
 }> = ({ lines = 3, className = '' }) => (
-  <div className={`space-y-2 ${className}`}>
+  <div className={`space-y-2 ${className}`} data-testid="skeleton-text">
     {Array.from({ length: lines }).map((_, index) => (
       <Skeleton key={index} height={16} className={index === lines - 1 ? 'w-3/4' : 'w-full'} />
     ))}
@@ -59,7 +69,7 @@ export const SkeletonText: React.FC<{
 
 // List Item Skeleton
 export const SkeletonListItem: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`flex items-center space-x-4 p-4 ${className}`}>
+  <div className={`flex items-center space-x-4 p-4 ${className}`} data-testid="skeleton-list-item">
     <Skeleton circle width={48} height={48} />
     <div className="flex-1 space-y-2">
       <Skeleton height={18} className="w-1/3" />
@@ -71,7 +81,7 @@ export const SkeletonListItem: React.FC<{ className?: string }> = ({ className =
 
 // Hero Section Skeleton
 export const SkeletonHero: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`py-20 px-4 ${className}`}>
+  <div className={`py-20 px-4 ${className}`} data-testid="skeleton-hero">
     <div className="max-w-4xl mx-auto text-center space-y-8">
       <div className="space-y-4">
         <Skeleton height={48} className="w-3/4 mx-auto" />
@@ -92,7 +102,7 @@ export const SkeletonHero: React.FC<{ className?: string }> = ({ className = '' 
 
 // Services Section Skeleton
 export const SkeletonServices: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`py-16 ${className}`}>
+  <div className={`py-16 ${className}`} data-testid="skeleton-services">
     <div className="max-w-6xl mx-auto px-4">
       {/* Title */}
       <div className="text-center mb-16 space-y-4">
@@ -130,7 +140,10 @@ export const SkeletonBlogList: React.FC<{ count?: number; className?: string }> 
   count = 6,
   className = '',
 }) => (
-  <div className={`grid md:grid-cols-2 lg:grid-cols-3 gap-8 ${className}`}>
+  <div
+    className={`grid md:grid-cols-2 lg:grid-cols-3 gap-8 ${className}`}
+    data-testid="skeleton-blog-list"
+  >
     {Array.from({ length: count }).map((_, index) => (
       <SkeletonCard key={index} />
     ))}
@@ -139,7 +152,7 @@ export const SkeletonBlogList: React.FC<{ count?: number; className?: string }> 
 
 // Navigation Skeleton
 export const SkeletonNav: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <nav className={`flex items-center justify-between p-4 ${className}`}>
+  <nav className={`flex items-center justify-between p-4 ${className}`} data-testid="skeleton-nav">
     <Skeleton width={120} height={32} />
     <div className="flex items-center space-x-6">
       {Array.from({ length: 4 }).map((_, index) => (
@@ -152,7 +165,7 @@ export const SkeletonNav: React.FC<{ className?: string }> = ({ className = '' }
 
 // Form Skeleton
 export const SkeletonForm: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`space-y-6 ${className}`}>
+  <div className={`space-y-6 ${className}`} data-testid="skeleton-form">
     <div className="space-y-2">
       <Skeleton height={20} width={80} />
       <Skeleton height={44} className="w-full" />

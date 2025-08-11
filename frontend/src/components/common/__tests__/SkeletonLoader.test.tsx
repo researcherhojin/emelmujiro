@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import Skeleton, {
   SkeletonCard,
   SkeletonText,
@@ -78,141 +78,188 @@ describe('Skeleton Component', () => {
 
   describe('SkeletonCard Component', () => {
     it('renders card skeleton structure', () => {
-      const { container } = render(<SkeletonCard />);
+      render(<SkeletonCard />);
 
-      const card = container.querySelector('.space-y-4.p-6.bg-white.rounded-lg.border');
+      const card = screen.getByTestId('skeleton-card');
       expect(card).toBeInTheDocument();
+      expect(card).toHaveClass('space-y-4', 'p-6', 'bg-white', 'rounded-lg', 'border');
     });
 
     it('renders image placeholder', () => {
-      const { container } = render(<SkeletonCard />);
+      render(<SkeletonCard />);
 
-      const imagePlaceholder = container.querySelector('.w-full[style*="height: 200px"]');
+      const card = screen.getByTestId('skeleton-card');
+      const skeletons = within(card).getAllByRole('generic');
+      const imagePlaceholder = skeletons.find(el => el.style.height === '200px');
       expect(imagePlaceholder).toBeInTheDocument();
     });
 
     it('renders title and subtitle placeholders', () => {
-      const { container } = render(<SkeletonCard />);
+      render(<SkeletonCard />);
 
-      const titlePlaceholder = container.querySelector('.w-3\\/4[style*="height: 24px"]');
-      const subtitlePlaceholder = container.querySelector('.w-1\\/2[style*="height: 16px"]');
+      const card = screen.getByTestId('skeleton-card');
+      const skeletons = within(card).getAllByRole('generic');
+
+      const titlePlaceholder = skeletons.find(el => el.style.height === '24px');
+      const subtitlePlaceholder = skeletons.find(el => el.style.height === '16px');
 
       expect(titlePlaceholder).toBeInTheDocument();
       expect(subtitlePlaceholder).toBeInTheDocument();
     });
 
     it('renders content text placeholders', () => {
-      const { container } = render(<SkeletonCard />);
+      render(<SkeletonCard />);
 
-      const textPlaceholders = container.querySelectorAll('[style*="height: 14px"]');
+      const card = screen.getByTestId('skeleton-card');
+      const skeletons = within(card).getAllByRole('generic');
+      const textPlaceholders = skeletons.filter(el => el.style.height === '14px');
       expect(textPlaceholders.length).toBeGreaterThanOrEqual(3);
     });
 
     it('renders footer elements', () => {
-      const { container } = render(<SkeletonCard />);
+      render(<SkeletonCard />);
 
-      const footer = container.querySelector('.flex.justify-between.items-center.pt-4');
-      expect(footer).toBeInTheDocument();
+      const card = screen.getByTestId('skeleton-card');
+      const skeletons = within(card).getAllByRole('generic');
 
-      const footerElements = footer?.children;
-      expect(footerElements?.length).toBe(2);
+      // Footer should have two elements with specific dimensions
+      const footerElements = skeletons.filter(
+        el =>
+          (el.style.height === '20px' && el.style.width === '80px') ||
+          (el.style.height === '16px' && el.style.width === '120px')
+      );
+      expect(footerElements.length).toBe(2);
     });
 
     it('applies custom className to card', () => {
-      const { container } = render(<SkeletonCard className="custom-card" />);
+      render(<SkeletonCard className="custom-card" />);
 
-      const card = container.querySelector('.custom-card');
+      const card = screen.getByTestId('skeleton-card');
       expect(card).toBeInTheDocument();
-      expect(card).toHaveClass('space-y-4', 'p-6', 'bg-white', 'rounded-lg', 'border');
+      expect(card).toHaveClass(
+        'custom-card',
+        'space-y-4',
+        'p-6',
+        'bg-white',
+        'rounded-lg',
+        'border'
+      );
     });
   });
 
   describe('SkeletonText Component', () => {
     it('renders default number of lines', () => {
-      const { container } = render(<SkeletonText />);
+      render(<SkeletonText />);
 
-      const textLines = container.querySelectorAll('[style*="height: 16px"]');
+      const textContainer = screen.getByTestId('skeleton-text');
+      const textLines = within(textContainer)
+        .getAllByRole('generic')
+        .filter(el => el.style.height === '16px');
       expect(textLines.length).toBe(3);
     });
 
     it('renders custom number of lines', () => {
-      const { container } = render(<SkeletonText lines={5} />);
+      render(<SkeletonText lines={5} />);
 
-      const textLines = container.querySelectorAll('[style*="height: 16px"]');
+      const textContainer = screen.getByTestId('skeleton-text');
+      const textLines = within(textContainer)
+        .getAllByRole('generic')
+        .filter(el => el.style.height === '16px');
       expect(textLines.length).toBe(5);
     });
 
     it('renders single line correctly', () => {
-      const { container } = render(<SkeletonText lines={1} />);
+      render(<SkeletonText lines={1} />);
 
-      const textLines = container.querySelectorAll('[style*="height: 16px"]');
+      const textContainer = screen.getByTestId('skeleton-text');
+      const textLines = within(textContainer)
+        .getAllByRole('generic')
+        .filter(el => el.style.height === '16px');
       expect(textLines.length).toBe(1);
     });
 
     it('makes last line shorter', () => {
-      const { container } = render(<SkeletonText lines={3} />);
+      render(<SkeletonText lines={3} />);
 
-      const textLines = container.querySelectorAll('[style*="height: 16px"]');
+      const textContainer = screen.getByTestId('skeleton-text');
+      const textLines = within(textContainer)
+        .getAllByRole('generic')
+        .filter(el => el.style.height === '16px');
       const lastLine = textLines[textLines.length - 1];
 
       expect(lastLine).toHaveClass('w-3/4');
     });
 
     it('applies custom className', () => {
-      const { container } = render(<SkeletonText className="custom-text" />);
+      render(<SkeletonText className="custom-text" />);
 
-      const textContainer = container.querySelector('.custom-text');
+      const textContainer = screen.getByTestId('skeleton-text');
       expect(textContainer).toBeInTheDocument();
-      expect(textContainer).toHaveClass('space-y-2');
+      expect(textContainer).toHaveClass('custom-text', 'space-y-2');
     });
 
     it('handles zero lines gracefully', () => {
-      const { container } = render(<SkeletonText lines={0} />);
+      render(<SkeletonText lines={0} />);
 
-      const textLines = container.querySelectorAll('[style*="height: 16px"]');
+      const textContainer = screen.getByTestId('skeleton-text');
+      const textLines = within(textContainer)
+        .queryAllByRole('generic')
+        .filter(el => el.style.height === '16px');
       expect(textLines.length).toBe(0);
     });
   });
 
   describe('SkeletonListItem Component', () => {
     it('renders list item structure', () => {
-      const { container } = render(<SkeletonListItem />);
+      render(<SkeletonListItem />);
 
-      const listItem = container.querySelector('.flex.items-center.space-x-4.p-4');
+      const listItem = screen.getByTestId('skeleton-list-item');
       expect(listItem).toBeInTheDocument();
+      expect(listItem).toHaveClass('flex', 'items-center', 'space-x-4', 'p-4');
     });
 
     it('renders circular avatar placeholder', () => {
-      const { container } = render(<SkeletonListItem />);
+      render(<SkeletonListItem />);
 
-      const avatar = container.querySelector(
-        '.rounded-full[style*="width: 48px"][style*="height: 48px"]'
+      const listItem = screen.getByTestId('skeleton-list-item');
+      const skeletons = within(listItem).getAllByRole('generic');
+      const avatar = skeletons.find(
+        el =>
+          el.style.width === '48px' &&
+          el.style.height === '48px' &&
+          el.classList.contains('rounded-full')
       );
       expect(avatar).toBeInTheDocument();
     });
 
     it('renders content area with text placeholders', () => {
-      const { container } = render(<SkeletonListItem />);
+      render(<SkeletonListItem />);
 
-      const contentArea = container.querySelector('.flex-1.space-y-2');
-      expect(contentArea).toBeInTheDocument();
-
-      const textPlaceholders = contentArea?.querySelectorAll('.animate-pulse.bg-gray-200');
-      expect(textPlaceholders?.length).toBeGreaterThanOrEqual(2);
+      const listItem = screen.getByTestId('skeleton-list-item');
+      const skeletons = within(listItem).getAllByRole('generic');
+      const textPlaceholders = skeletons.filter(
+        el => el.classList.contains('animate-pulse') && el.classList.contains('bg-gray-200')
+      );
+      expect(textPlaceholders.length).toBeGreaterThanOrEqual(2);
     });
 
     it('renders action button placeholder', () => {
-      const { container } = render(<SkeletonListItem />);
+      render(<SkeletonListItem />);
 
-      const actionButton = container.querySelector('[style*="height: 32px"][style*="width: 80px"]');
+      const listItem = screen.getByTestId('skeleton-list-item');
+      const skeletons = within(listItem).getAllByRole('generic');
+      const actionButton = skeletons.find(
+        el => el.style.height === '32px' && el.style.width === '80px'
+      );
       expect(actionButton).toBeInTheDocument();
     });
 
     it('applies custom className', () => {
-      const { container } = render(<SkeletonListItem className="custom-item" />);
+      render(<SkeletonListItem className="custom-item" />);
 
-      const listItem = container.querySelector('.custom-item');
+      const listItem = screen.getByTestId('skeleton-list-item');
       expect(listItem).toBeInTheDocument();
+      expect(listItem).toHaveClass('custom-item');
     });
   });
 
