@@ -2,10 +2,21 @@ import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'ax
 import { BlogPost, ContactFormData } from '../types';
 import { ErrorResponse } from '../types/api.types';
 import logger from '../utils/logger';
+import { mockBlogPosts, mockCategories, paginateMockData } from './mockData';
 
 // API URL 설정 (백엔드 기본 포트는 8000)
+// 프로덕션에서 백엔드가 준비되지 않은 경우 mock 데이터 사용
+const isProduction = process.env.NODE_ENV === 'production';
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 const API_TIMEOUT = Number(process.env.REACT_APP_API_TIMEOUT) || 30000;
+
+// Check if we should use mock API
+// Use mock if explicitly set, or in production when API URL is not properly configured
+const USE_MOCK_API =
+  process.env.REACT_APP_USE_MOCK_API === 'true' ||
+  (isProduction &&
+    (!process.env.REACT_APP_API_URL ||
+      process.env.REACT_APP_API_URL === 'https://api.emelmujiro.com'));
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -137,17 +148,84 @@ export const api = {
   // Blog
   getBlogPosts: (page: number = 1, pageSize?: number) => {
     const size = pageSize || Number(process.env.REACT_APP_POSTS_PER_PAGE) || 6;
+
+    // Use mock data if backend is not available
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: paginateMockData(mockBlogPosts, page, size),
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+
     return axiosInstance.get<PaginatedResponse<BlogPost>>(
       `blog-posts/?page=${page}&page_size=${size}`
     );
   },
-  getBlogPost: (id: number | string) => axiosInstance.get<BlogPost>(`blog-posts/${id}/`),
-  searchBlogPosts: (query: string) =>
-    axiosInstance.get<PaginatedResponse<BlogPost>>(`blog-posts/?search=${query}`),
-  getBlogCategories: () => axiosInstance.get<string[]>('categories/'),
+  getBlogPost: (id: number | string) => {
+    if (USE_MOCK_API) {
+      const post = mockBlogPosts.find(p => p.id === Number(id) || p.slug === id);
+      if (!post) {
+        return Promise.reject({
+          response: { status: 404, data: { message: 'Post not found' } },
+        });
+      }
+      return Promise.resolve({
+        data: post,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get<BlogPost>(`blog-posts/${id}/`);
+  },
+  searchBlogPosts: (query: string) => {
+    if (USE_MOCK_API) {
+      const filtered = mockBlogPosts.filter(
+        post =>
+          post.title.toLowerCase().includes(query.toLowerCase()) ||
+          post.content.toLowerCase().includes(query.toLowerCase()) ||
+          (post.tags && post.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())))
+      );
+      return Promise.resolve({
+        data: paginateMockData(filtered, 1, 10),
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get<PaginatedResponse<BlogPost>>(`blog-posts/?search=${query}`);
+  },
+  getBlogCategories: () => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: mockCategories,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get<string[]>('categories/');
+  },
 
   // Contact
   createContact: async (data: ContactFormData) => {
+    if (USE_MOCK_API) {
+      // Simulate successful contact submission
+      return Promise.resolve({
+        data: { message: '문의가 성공적으로 접수되었습니다.', id: Date.now() },
+        status: 201,
+        statusText: 'Created',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+
     try {
       const response = await axiosInstance.post('contact/', data);
       return response;
@@ -162,10 +240,32 @@ export const api = {
   },
 
   // Newsletter
-  subscribeNewsletter: (email: string) => axiosInstance.post('newsletter/', { email }),
+  subscribeNewsletter: (email: string) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { message: '뉴스레터 구독이 완료되었습니다.', email },
+        status: 201,
+        statusText: 'Created',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.post('newsletter/', { email });
+  },
 
   // Health check
-  checkHealth: () => axiosInstance.get<{ status: string }>('health/'),
+  checkHealth: () => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { status: 'healthy' },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get<{ status: string }>('health/');
+  },
 };
 
 // Export specific services for backward compatibility

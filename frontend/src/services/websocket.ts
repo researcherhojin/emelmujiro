@@ -11,7 +11,7 @@ export interface WebSocketCallbacks {
   onOpen?: () => void;
   onClose?: () => void;
   onError?: (error: Event) => void;
-  onMessage?: (message: any) => void;
+  onMessage?: (message: { type: string; data?: unknown; messageId?: string }) => void;
   onReconnect?: () => void;
   onReconnectFailed?: () => void;
   onTypingStart?: () => void;
@@ -57,7 +57,7 @@ export class ChatWebSocketService {
     });
   }
 
-  private simulateConnection(resolve: () => void, reject: (error: any) => void) {
+  private simulateConnection(resolve: () => void, _reject: (error: any) => void) {
     // Simulate connection delay
     setTimeout(
       () => {
@@ -81,7 +81,7 @@ export class ChatWebSocketService {
     ); // Random delay 1-3 seconds
   }
 
-  private createRealConnection(resolve: () => void, reject: (error: any) => void) {
+  private createRealConnection(resolve: () => void, reject: (error: unknown) => void) {
     this.ws = new WebSocket(this.config.url);
 
     this.ws.onopen = () => {

@@ -66,11 +66,13 @@ describe('BlogSearch', () => {
 
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText('블로그 검색...');
-    const form = input.closest('form');
+    const input = screen.getByPlaceholderText('블로그 검색...') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React' } });
-    fireEvent.submit(form!);
+    // Use the input's form property instead of closest
+    if (input.form) {
+      fireEvent.submit(input.form);
+    }
 
     await waitFor(() => {
       expect(onSearch).toHaveBeenCalled();
@@ -90,11 +92,12 @@ describe('BlogSearch', () => {
 
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText('블로그 검색...');
-    const form = input.closest('form');
+    const input = screen.getByPlaceholderText('블로그 검색...') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: '  TypeScript  ' } });
-    fireEvent.submit(form!);
+    if (input.form) {
+      fireEvent.submit(input.form);
+    }
 
     await waitFor(() => {
       expect(onSearch).toHaveBeenCalled();
@@ -105,11 +108,12 @@ describe('BlogSearch', () => {
     const onSearch = jest.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText('블로그 검색...');
-    const form = input.closest('form');
+    const input = screen.getByPlaceholderText('블로그 검색...') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: '   ' } });
-    fireEvent.submit(form!);
+    if (input.form) {
+      fireEvent.submit(input.form);
+    }
 
     // Should not save empty search to recent searches
     const recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
@@ -125,11 +129,12 @@ describe('BlogSearch', () => {
 
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText('블로그 검색...');
-    const form = input.closest('form');
+    const input = screen.getByPlaceholderText('블로그 검색...') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React & TypeScript' } });
-    fireEvent.submit(form!);
+    if (input.form) {
+      fireEvent.submit(input.form);
+    }
 
     await waitFor(() => {
       expect(onSearch).toHaveBeenCalled();

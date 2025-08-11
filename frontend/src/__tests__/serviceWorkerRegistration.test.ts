@@ -7,9 +7,24 @@
 const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation();
 const mockConsoleError = jest.spyOn(console, 'error').mockImplementation();
 
-// Mock fetch globally
-const mockFetch = jest.fn();
-global.fetch = mockFetch;
+// Mock fetch globally with proper promise return
+const mockFetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    status: 200,
+    headers: {
+      get: jest.fn(header => {
+        if (header === 'content-type') {
+          return 'application/javascript';
+        }
+        return null;
+      }),
+    },
+    json: async () => ({}),
+    text: async () => '',
+  } as any)
+);
+global.fetch = mockFetch as any;
 
 // Mock environment variable
 const originalEnv = process.env.PUBLIC_URL;
@@ -28,6 +43,24 @@ describe('serviceWorkerRegistration', () => {
 
     // Clear all mocks
     jest.clearAllMocks();
+
+    // Reset fetch mock to default behavior
+    mockFetch.mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        headers: {
+          get: jest.fn(header => {
+            if (header === 'content-type') {
+              return 'application/javascript';
+            }
+            return null;
+          }),
+        },
+        json: async () => ({}),
+        text: async () => '',
+      } as any)
+    );
     mockFetch.mockClear();
 
     // Set up mock environment
