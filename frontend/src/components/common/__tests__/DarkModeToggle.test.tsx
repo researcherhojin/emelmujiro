@@ -70,23 +70,23 @@ describe('DarkModeToggle', () => {
 
   it('shows correct icons for light mode', () => {
     mockUIContextValue.theme = 'light';
-    const { container } = render(<DarkModeToggle />);
+    render(<DarkModeToggle />);
 
-    // In light mode, should have SVG icons present
+    // In light mode, should have toggle button present
     const toggleButton = screen.getByRole('button');
     expect(toggleButton).toBeInTheDocument();
-    // Icons are rendered within the button
-    expect(container.firstChild).toBeInTheDocument();
+    // Button should have proper attributes for light mode
+    expect(toggleButton).toHaveAttribute('aria-label', 'Switch to dark mode');
   });
 
   it('shows correct icons for dark mode', () => {
     mockUIContextValue.theme = 'dark';
-    const { container } = render(<DarkModeToggle />);
+    render(<DarkModeToggle />);
 
-    // Icons should still be present regardless of theme
+    // In dark mode, should have toggle button present
     const toggleButton = screen.getByRole('button');
     expect(toggleButton).toBeInTheDocument();
-    // Icons are rendered within the button
-    expect(container.firstChild).toBeInTheDocument();
+    // Button should have proper attributes for dark mode
+    expect(toggleButton).toHaveAttribute('aria-label', 'Switch to light mode');
   });
 });

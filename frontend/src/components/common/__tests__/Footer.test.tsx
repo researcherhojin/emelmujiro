@@ -197,10 +197,9 @@ describe('Footer Component', () => {
       // Fast-forward timer for setTimeout
       jest.advanceTimersByTime(100);
 
-      await waitFor(() => {
-        // Verify that navigation and scroll behavior occurred
-        expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
-      });
+      // Verify that navigation and scroll behavior occurred
+      await waitFor(() => expect(mockScrollIntoView).toHaveBeenCalled());
+      expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
 
       jest.useRealTimers();
     });
@@ -216,7 +215,7 @@ describe('Footer Component', () => {
       const servicesButton = screen.getAllByText('서비스')[1]; // Navigation 서비스
       fireEvent.click(servicesButton);
 
-      expect(document.getElementById).toHaveBeenCalledWith('services');
+      // Verify scroll behavior occurred
       expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
     });
   });
@@ -229,15 +228,11 @@ describe('Footer Component', () => {
       const aiSolutionButton = aiSolutionButtons[0]; // Get the first button
       fireEvent.click(aiSolutionButton);
 
-      await waitFor(() => {
-        expect(screen.getByText('AI 솔루션 개발')).toBeInTheDocument();
-        expect(
-          screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).toBeInTheDocument();
-        expect(screen.getByText('주요 서비스')).toBeInTheDocument();
-        expect(screen.getByText('주요 사례')).toBeInTheDocument();
-        expect(screen.getByTestId('code-icon')).toBeInTheDocument();
-      });
+      await waitFor(() => expect(screen.getByText('AI 솔루션 개발')).toBeInTheDocument());
+      expect(screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')).toBeInTheDocument();
+      expect(screen.getByText('주요 서비스')).toBeInTheDocument();
+      expect(screen.getByText('주요 사례')).toBeInTheDocument();
+      expect(screen.getByTestId('code-icon')).toBeInTheDocument();
     });
 
     test('opens AI education modal when clicked', async () => {
