@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { render } from '../../../test-utils/renderWithProviders';
+import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { Helmet } from 'react-helmet-async';
 import SEO from '../SEO';
 

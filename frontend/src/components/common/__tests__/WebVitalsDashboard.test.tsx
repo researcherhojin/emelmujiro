@@ -567,7 +567,7 @@ describe('WebVitalsDashboard', () => {
 
       // Mock console to not have log method
       const originalConsole = global.console;
-      global.console = {} as Console;
+      global.console = {} as typeof console;
 
       render(<WebVitalsDashboard />);
 

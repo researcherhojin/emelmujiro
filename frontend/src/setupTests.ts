@@ -48,14 +48,27 @@ global.IntersectionObserver = MockIntersectionObserver as unknown as typeof Inte
 // Mock scrollTo
 window.scrollTo = jest.fn();
 
-// Mock Service Worker
+// Mock Service Worker with complete API
+const mockServiceWorkerRegistration = {
+  installing: null,
+  waiting: null,
+  active: null,
+  onupdatefound: null,
+  unregister: jest.fn().mockResolvedValue(true),
+  pushManager: {
+    getSubscription: jest.fn().mockResolvedValue(null),
+    subscribe: jest.fn().mockResolvedValue({}),
+  },
+};
+
 Object.defineProperty(navigator, 'serviceWorker', {
   writable: true,
   value: {
-    register: jest.fn(() => Promise.resolve()),
-    ready: Promise.resolve({
-      unregister: jest.fn(() => Promise.resolve()),
-    }),
+    register: jest.fn().mockResolvedValue(mockServiceWorkerRegistration),
+    ready: Promise.resolve(mockServiceWorkerRegistration),
+    controller: null,
+    getRegistration: jest.fn().mockResolvedValue(mockServiceWorkerRegistration),
+    getRegistrations: jest.fn().mockResolvedValue([]),
   },
 });
 

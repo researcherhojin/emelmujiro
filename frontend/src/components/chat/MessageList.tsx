@@ -18,7 +18,6 @@ import { useTranslation } from 'react-i18next';
 
 const MessageList: React.FC = () => {
   const { t } = useTranslation();
-  const { } = useUI();
   const { messages, markAsRead, sendMessage } = useChatContext();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);

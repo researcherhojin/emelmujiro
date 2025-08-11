@@ -6,7 +6,7 @@ import DarkModeToggle from '../DarkModeToggle';
 
 // Mock UI Context
 const mockToggleTheme = jest.fn();
-let mockUIContextValue = {
+const mockUIContextValue = {
   theme: 'light' as 'light' | 'dark',
   toggleTheme: mockToggleTheme,
   setTheme: jest.fn(),
