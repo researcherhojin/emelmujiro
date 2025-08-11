@@ -1,0 +1,83 @@
+{
+  "title": "About Us",
+  "subtitle": "Emelmujiro - Creating the future with innovative technology",
+  "mission": {
+    "title": "Our Mission",
+    "content": "We support our clients' business success using AI and cutting-edge technology, and nurture IT professionals through practical education."
+  },
+  "vision": {
+    "title": "Vision",
+    "content": "To become a leading company that creates a better digital world through the convergence of technology and education."
+  },
+  "values": {
+    "title": "Core Values",
+    "items": [
+      {
+        "title": "Innovation",
+        "description": "Providing creative solutions using cutting-edge technology"
+      },
+      {
+        "title": "Quality",
+        "description": "Highest quality service for customer satisfaction"
+      },
+      {
+        "title": "Growth",
+        "description": "Growing together through continuous learning and development"
+      },
+      {
+        "title": "Communication",
+        "description": "Transparent and smooth communication"
+      }
+    ]
+  },
+  "history": {
+    "title": "Company History",
+    "timeline": [
+      {
+        "year": "2023",
+        "title": "Emelmujiro Founded",
+        "description": "Started as a company specializing in AI and software development"
+      },
+      {
+        "year": "2024",
+        "title": "Education Business Expansion",
+        "description": "Launched corporate and individual education programs"
+      }
+    ]
+  },
+  "team": {
+    "title": "Team Introduction",
+    "description": "Experts from various fields work together",
+    "roles": [
+      "AI/ML Engineers",
+      "Full-stack Developers",
+      "Cloud Architects",
+      "Education Specialists"
+    ]
+  },
+  "achievements": {
+    "title": "Key Achievements",
+    "items": [
+      {
+        "number": "50+",
+        "title": "Projects Completed",
+        "description": "Successful project execution in various fields"
+      },
+      {
+        "number": "100+",
+        "title": "Students Graduated",
+        "description": "Training professionals through practical education"
+      },
+      {
+        "number": "95%",
+        "title": "Customer Satisfaction",
+        "description": "Achieving customer satisfaction with high-quality services"
+      }
+    ]
+  },
+  "contact": {
+    "title": "Want to work with us?",
+    "description": "Contact us anytime. We'll respond with the best service.",
+    "button": "Contact Us"
+  }
+}

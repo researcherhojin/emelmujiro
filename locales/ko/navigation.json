@@ -1,0 +1,22 @@
+{
+  "links": {
+    "home": "홈",
+    "about": "회사소개",
+    "services": "서비스",
+    "blog": "블로그",
+    "contact": "문의하기",
+    "profile": "대표 프로필",
+    "portfolio": "포트폴리오"
+  },
+  "sections": {
+    "hero": "메인",
+    "intro": "소개",
+    "services": "서비스",
+    "partners": "파트너",
+    "cta": "문의"
+  },
+  "company": {
+    "name": "에멜무지로",
+    "fullName": "에멜무지로 - AI 기반 소프트웨어 개발 및 IT 교육 전문가"
+  }
+}

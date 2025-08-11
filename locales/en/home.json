@@ -1,0 +1,70 @@
+{
+  "hero": {
+    "title": "Expert AI Group with Practical Experience",
+    "subtitle": "From corporate AI training to startup tech consulting,",
+    "description": "We accelerate business growth with customized solutions.",
+    "cta": {
+      "primary": "Start Your Project",
+      "secondary": "About Us"
+    }
+  },
+  "quickIntro": {
+    "title": "Digital Innovation with Emelmujiro",
+    "description": "Providing the best technology solutions based on over 10 years of experience",
+    "features": [
+      {
+        "title": "AI/ML Solutions",
+        "description": "Custom solution development using cutting-edge artificial intelligence technology"
+      },
+      {
+        "title": "Education Programs",
+        "description": "Systematic IT education programs focused on practical skills"
+      },
+      {
+        "title": "Consulting",
+        "description": "Professional consulting services for corporate digital transformation"
+      }
+    ]
+  },
+  "services": {
+    "title": "Core Services",
+    "subtitle": "Supporting business growth with innovative technology",
+    "items": [
+      {
+        "title": "AI/ML Development",
+        "description": "Machine learning and deep learning model development and optimization",
+        "features": ["Natural Language Processing", "Computer Vision", "Recommendation Systems", "Predictive Modeling"]
+      },
+      {
+        "title": "Web/Mobile Development",
+        "description": "Modern and scalable application development",
+        "features": ["React/Vue.js", "Node.js/Python", "Mobile Apps", "API Development"]
+      },
+      {
+        "title": "Cloud Solutions",
+        "description": "AWS, GCP, Azure-based infrastructure construction",
+        "features": ["Migration", "DevOps", "Monitoring", "Security"]
+      },
+      {
+        "title": "Education & Training",
+        "description": "Practical technology education programs",
+        "features": ["Corporate Training", "Personal Coaching", "Workshops", "Mentoring"]
+      }
+    ]
+  },
+  "partners": {
+    "title": "Our Partners",
+    "subtitle": "We have grown through collaboration with various companies"
+  },
+  "cta": {
+    "title": "Ready to start your project?",
+    "description": "Consult with experts and receive customized solutions",
+    "button": "Apply for Free Consultation"
+  },
+  "statistics": {
+    "projects": "Completed Projects",
+    "clients": "Satisfied Clients",
+    "experience": "Years of Experience",
+    "technologies": "Technology Stack"
+  }
+}
