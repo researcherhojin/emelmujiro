@@ -57,7 +57,7 @@ export class ChatWebSocketService {
     });
   }
 
-  private simulateConnection(resolve: () => void, _reject: (error: any) => void) {
+  private simulateConnection(resolve: () => void, _reject: (error: unknown) => void) {
     // Simulate connection delay
     setTimeout(
       () => {
@@ -96,7 +96,7 @@ export class ChatWebSocketService {
       resolve();
     };
 
-    this.ws.onclose = event => {
+    this.ws.onclose = _event => {
       this.isConnecting = false;
       this.stopHeartbeat();
 
@@ -181,18 +181,19 @@ export class ChatWebSocketService {
     }
   }
 
-  send(data: any): boolean {
+  send(data: unknown): boolean {
     if (process.env.NODE_ENV === 'development') {
       // In development mode, just simulate sending
-      console.log('Simulated WebSocket send:', data);
+      // Simulated WebSocket send in development
 
       // Simulate message delivery confirmation
       setTimeout(
         () => {
-          if (data.type === 'message' && this.callbacks.onMessage) {
+          const messageData = data as Record<string, any>;
+          if (messageData.type === 'message' && this.callbacks.onMessage) {
             this.callbacks.onMessage({
               type: 'message_delivered',
-              messageId: data.data?.id,
+              messageId: messageData.data?.id,
             });
           }
         },
@@ -215,11 +216,15 @@ export class ChatWebSocketService {
     }
   }
 
-  private handleMessage(data: any) {
+  private handleMessage(data: Record<string, unknown>) {
     switch (data.type) {
       case 'message':
         if (this.callbacks.onMessage) {
-          this.callbacks.onMessage(data);
+          this.callbacks.onMessage({
+            type: data.type as string,
+            data: data.data,
+            messageId: data.messageId as string | undefined,
+          });
         }
         break;
 
@@ -240,7 +245,7 @@ export class ChatWebSocketService {
         break;
 
       default:
-        console.log('Unknown message type:', data.type);
+      // Unknown message type - silently ignore
     }
   }
 
@@ -250,7 +255,7 @@ export class ChatWebSocketService {
         this.send({ type: 'ping' });
       } else if (process.env.NODE_ENV === 'development') {
         // Simulate heartbeat in development
-        console.log('Simulated heartbeat');
+        // Simulated heartbeat in development
       }
     }, this.config.heartbeatInterval);
   }

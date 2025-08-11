@@ -12,11 +12,7 @@ interface InstallPromptProps {
   className?: string;
 }
 
-const InstallPrompt: React.FC<InstallPromptProps> = ({ 
-  onInstall, 
-  onDismiss, 
-  className = '' 
-}) => {
+const InstallPrompt: React.FC<InstallPromptProps> = ({ onInstall, onDismiss, className = '' }) => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
@@ -32,15 +28,15 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({
     const handleBeforeInstallPrompt = (e: Event) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      
+
       const beforeInstallPromptEvent = e as BeforeInstallPromptEvent;
       setDeferredPrompt(beforeInstallPromptEvent);
-      
+
       // Check if user has dismissed the prompt recently
       const dismissed = localStorage.getItem('install-prompt-dismissed');
       const dismissedTime = dismissed ? parseInt(dismissed) : 0;
       const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
-      
+
       // Show prompt if not dismissed recently or if it's been more than 7 days
       if (!dismissed || daysSinceDismissed > 7) {
         setIsVisible(true);
@@ -48,10 +44,10 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({
     };
 
     const handleAppInstalled = () => {
-      console.log('PWA was installed');
+      // PWA was installed
       setIsVisible(false);
       setDeferredPrompt(null);
-      
+
       if (onInstall) {
         onInstall();
       }
@@ -76,21 +72,21 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({
     try {
       // Show the install prompt
       await deferredPrompt.prompt();
-      
+
       // Wait for the user to respond to the prompt
       const { outcome } = await deferredPrompt.userChoice;
-      
+
       if (outcome === 'accepted') {
-        console.log('User accepted the A2HS prompt');
+        // User accepted the A2HS prompt
         setIsVisible(false);
         if (onInstall) {
           onInstall();
         }
       } else {
-        console.log('User dismissed the A2HS prompt');
+        // User dismissed the A2HS prompt
         handleDismiss();
       }
-      
+
       setDeferredPrompt(null);
     } catch (error) {
       console.error('Error during installation:', error);
@@ -102,7 +98,7 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({
   const handleDismiss = () => {
     localStorage.setItem('install-prompt-dismissed', Date.now().toString());
     setIsVisible(false);
-    
+
     if (onDismiss) {
       onDismiss();
     }
@@ -110,7 +106,7 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({
 
   const handleRemindLater = () => {
     // Set reminder for 24 hours later
-    const reminderTime = Date.now() + (24 * 60 * 60 * 1000);
+    const reminderTime = Date.now() + 24 * 60 * 60 * 1000;
     localStorage.setItem('install-prompt-dismissed', reminderTime.toString());
     setIsVisible(false);
   };
@@ -119,23 +115,28 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({
     return null;
   }
 
-  const deviceIcon = deviceType === 'mobile' ? 
-    <Smartphone className="w-6 h-6 text-blue-600 dark:text-blue-400" /> : 
-    <Monitor className="w-6 h-6 text-blue-600 dark:text-blue-400" />;
+  const deviceIcon =
+    deviceType === 'mobile' ? (
+      <Smartphone className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+    ) : (
+      <Monitor className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+    );
 
   const deviceText = deviceType === 'mobile' ? '홈 화면' : '데스크톱';
 
   return (
-    <div className={`fixed bottom-4 left-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl 
+    <div
+      className={`fixed bottom-4 left-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl 
                      p-6 max-w-sm border border-gray-200 dark:border-gray-700 
-                     animate-slide-up ${className}`}>
+                     animate-slide-up ${className}`}
+    >
       <div className="flex items-start space-x-4">
         <div className="flex-shrink-0">
           <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
             {deviceIcon}
           </div>
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
@@ -149,12 +150,12 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({
               <X className="w-4 h-4" />
             </button>
           </div>
-          
+
           <p className="text-xs text-gray-600 dark:text-gray-300 mb-4">
-            에멜무지로를 {deviceText}에 설치하여 더 빠르고 편리하게 이용하세요. 
-            오프라인에서도 사용할 수 있습니다.
+            에멜무지로를 {deviceText}에 설치하여 더 빠르고 편리하게 이용하세요. 오프라인에서도
+            사용할 수 있습니다.
           </p>
-          
+
           {/* Benefits list */}
           <div className="mb-4">
             <ul className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
@@ -172,7 +173,7 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({
               </li>
             </ul>
           </div>
-          
+
           <div className="flex space-x-2">
             <button
               onClick={handleInstallClick}
@@ -185,7 +186,7 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({
               <Download className="w-3 h-3" />
               <span>{isInstalling ? '설치 중...' : '설치'}</span>
             </button>
-            
+
             <button
               onClick={handleRemindLater}
               className="px-3 py-2 text-xs text-gray-600 dark:text-gray-300 

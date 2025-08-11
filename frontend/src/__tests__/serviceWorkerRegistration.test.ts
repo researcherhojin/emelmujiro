@@ -406,10 +406,8 @@ describe('serviceWorkerRegistration', () => {
       // Mock successful fetch response
       mockFetch.mockResolvedValue({
         status: 200,
-        headers: {
-          get: (header: string) => (header === 'content-type' ? 'application/javascript' : null),
-        },
-      });
+        headers: createMockHeaders(),
+      } as unknown as MockResponse);
 
       const { register } = await import('../serviceWorkerRegistration');
       register();
@@ -450,12 +448,12 @@ describe('serviceWorkerRegistration', () => {
       });
 
       // Mock 404 response
+      const mock404Headers = createMockHeaders();
+      mock404Headers.get = jest.fn(() => null);
       mockFetch.mockResolvedValue({
         status: 404,
-        headers: {
-          get: () => null,
-        },
-      });
+        headers: mock404Headers,
+      } as unknown as MockResponse);
 
       const { register } = await import('../serviceWorkerRegistration');
       register();
@@ -504,7 +502,7 @@ describe('serviceWorkerRegistration', () => {
       mockFetch.mockResolvedValue({
         status: 200,
         headers: mockHtmlHeaders,
-      } as any);
+      } as unknown as MockResponse);
 
       const { register } = await import('../serviceWorkerRegistration');
       register();
@@ -637,7 +635,7 @@ describe('serviceWorkerRegistration', () => {
           mockFetch.mockResolvedValue({
             status: 200,
             headers: createMockHeaders(),
-          } as any);
+          } as unknown as MockResponse);
         }
 
         const { register } = await import('../serviceWorkerRegistration');

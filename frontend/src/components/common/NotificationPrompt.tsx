@@ -6,8 +6,7 @@ import {
   subscribeToPushNotifications,
 } from '../../utils/pushNotifications';
 
-// Type for notification permission
-type NotificationPermissionType = 'default' | 'denied' | 'granted';
+// Type for notification permission (removed - unused)
 
 interface NotificationPromptProps {
   onClose?: () => void;
