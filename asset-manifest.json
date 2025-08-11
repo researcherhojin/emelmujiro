@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/emelmujiro/static/css/main.5eed95a0.css",
-    "main.js": "/emelmujiro/static/js/main.0ffdd30c.js",
+    "main.css": "/emelmujiro/static/css/main.518ab90f.css",
+    "main.js": "/emelmujiro/static/js/main.459d5299.js",
     "static/js/832.04970e4c.chunk.js": "/emelmujiro/static/js/832.04970e4c.chunk.js",
     "static/js/467.57e1978d.chunk.js": "/emelmujiro/static/js/467.57e1978d.chunk.js",
     "static/js/639.97b220c6.chunk.js": "/emelmujiro/static/js/639.97b220c6.chunk.js",
@@ -19,9 +19,9 @@
     "static/js/295.fe3263f9.chunk.js": "/emelmujiro/static/js/295.fe3263f9.chunk.js",
     "static/js/159.1436cace.chunk.js": "/emelmujiro/static/js/159.1436cace.chunk.js",
     "static/js/38.aacca0d8.chunk.js": "/emelmujiro/static/js/38.aacca0d8.chunk.js",
-    "static/js/517.a0756c0e.chunk.js": "/emelmujiro/static/js/517.a0756c0e.chunk.js",
+    "static/js/517.ca76bb91.chunk.js": "/emelmujiro/static/js/517.ca76bb91.chunk.js",
     "static/js/95.cc97493f.chunk.js": "/emelmujiro/static/js/95.cc97493f.chunk.js",
-    "static/js/917.3bf7ccca.chunk.js": "/emelmujiro/static/js/917.3bf7ccca.chunk.js",
+    "static/js/917.c780fef5.chunk.js": "/emelmujiro/static/js/917.c780fef5.chunk.js",
     "static/js/55.415d8c85.chunk.js": "/emelmujiro/static/js/55.415d8c85.chunk.js",
     "static/js/549.048f635a.chunk.js": "/emelmujiro/static/js/549.048f635a.chunk.js",
     "static/js/62.37ac9e54.chunk.js": "/emelmujiro/static/js/62.37ac9e54.chunk.js",
@@ -46,7 +46,7 @@
     "static/media/hyundaiconstruction.svg": "/emelmujiro/static/media/hyundaiconstruction.7d7f9feb0e41aa66cb89d93ef8f4105e.svg"
   },
   "entrypoints": [
-    "static/css/main.5eed95a0.css",
-    "static/js/main.0ffdd30c.js"
+    "static/css/main.518ab90f.css",
+    "static/js/main.459d5299.js"
   ]
 }

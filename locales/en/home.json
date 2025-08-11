@@ -33,7 +33,12 @@
       {
         "title": "AI/ML Development",
         "description": "Machine learning and deep learning model development and optimization",
-        "features": ["Natural Language Processing", "Computer Vision", "Recommendation Systems", "Predictive Modeling"]
+        "features": [
+          "Natural Language Processing",
+          "Computer Vision",
+          "Recommendation Systems",
+          "Predictive Modeling"
+        ]
       },
       {
         "title": "Web/Mobile Development",

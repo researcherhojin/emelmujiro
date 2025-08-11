@@ -377,7 +377,8 @@ self.addEventListener('push', event => {
   const options = createNotificationOptions(data, notificationType);
 
   event.waitUntil(
-    self.registration.showNotification(options.title, options)
+    self.registration
+      .showNotification(options.title, options)
       .then(() => {
         // Update app badge if supported
         if ('setAppBadge' in navigator) {
@@ -484,11 +485,11 @@ function createNotificationOptions(data, type) {
 // Enhanced notification click handler with action support
 self.addEventListener('notificationclick', event => {
   console.log('[Service Worker] Notification clicked', event.action);
-  
+
   const notification = event.notification;
   const action = event.action;
   const data = notification.data || {};
-  
+
   // Handle different actions
   if (action === 'dismiss') {
     notification.close();
@@ -512,27 +513,30 @@ self.addEventListener('notificationclick', event => {
   }
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-      // Check if there's already a window/tab open with the same origin
-      const existingClient = windowClients.find(client => {
-        const clientUrl = new URL(client.url);
-        const targetUrl = new URL(urlToOpen, self.location.origin);
-        return clientUrl.origin === targetUrl.origin;
-      });
+    clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then(windowClients => {
+        // Check if there's already a window/tab open with the same origin
+        const existingClient = windowClients.find(client => {
+          const clientUrl = new URL(client.url);
+          const targetUrl = new URL(urlToOpen, self.location.origin);
+          return clientUrl.origin === targetUrl.origin;
+        });
 
-      if (existingClient) {
-        // Navigate existing client to the target URL and focus
-        existingClient.navigate(urlToOpen);
-        return existingClient.focus();
-      } else {
-        // Open new window if not found
-        if (clients.openWindow) {
-          return clients.openWindow(urlToOpen);
+        if (existingClient) {
+          // Navigate existing client to the target URL and focus
+          existingClient.navigate(urlToOpen);
+          return existingClient.focus();
+        } else {
+          // Open new window if not found
+          if (clients.openWindow) {
+            return clients.openWindow(urlToOpen);
+          }
         }
-      }
-    }).catch(error => {
-      console.error('[Service Worker] Failed to handle notification click:', error);
-    })
+      })
+      .catch(error => {
+        console.error('[Service Worker] Failed to handle notification click:', error);
+      })
   );
 });
 
@@ -560,14 +564,14 @@ function shouldCacheDynamically(url) {
 // Check if cached response is expired
 function isExpired(response, maxAge) {
   if (!response) return true;
-  
+
   const dateHeader = response.headers.get('date');
   if (!dateHeader) return false;
-  
+
   const responseTime = new Date(dateHeader).getTime();
   const now = Date.now();
-  
-  return (now - responseTime) > maxAge;
+
+  return now - responseTime > maxAge;
 }
 
 async function limitCacheSize(cacheName, maxSize) {
@@ -616,7 +620,7 @@ async function removePendingForm(formId) {
 self.addEventListener('online', () => {
   console.log('[Service Worker] Network status: online');
   isOnline = true;
-  
+
   // Notify all clients about network status change
   self.clients.matchAll().then(clients => {
     clients.forEach(client => {
@@ -631,7 +635,7 @@ self.addEventListener('online', () => {
 self.addEventListener('offline', () => {
   console.log('[Service Worker] Network status: offline');
   isOnline = false;
-  
+
   // Notify all clients about network status change
   self.clients.matchAll().then(clients => {
     clients.forEach(client => {
@@ -663,9 +667,7 @@ self.addEventListener('message', event => {
       break;
 
     case 'CACHE_URLS':
-      event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => cache.addAll(data.urls))
-      );
+      event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(data.urls)));
       break;
 
     case 'PRELOAD_BLOG_POSTS':
@@ -677,9 +679,11 @@ self.addEventListener('message', event => {
       break;
 
     case 'GET_CACHE_STATUS':
-      event.waitUntil(getCacheStatus().then(status => {
-        event.ports[0].postMessage(status);
-      }));
+      event.waitUntil(
+        getCacheStatus().then(status => {
+          event.ports[0].postMessage(status);
+        })
+      );
       break;
 
     case 'REGISTER_PERIODIC_SYNC':
@@ -701,7 +705,7 @@ async function preloadBlogPosts(posts) {
   if (!Array.isArray(posts)) return;
 
   const cache = await caches.open(BLOG_CACHE_NAME);
-  
+
   for (const post of posts) {
     try {
       if (post.url) {
@@ -763,7 +767,7 @@ self.addEventListener('sync', event => {
 async function performPeriodicSync() {
   try {
     console.log('[Service Worker] Performing periodic sync...');
-    
+
     // Update blog posts cache
     const blogResponse = await fetch('/api/blog-posts/');
     if (blogResponse.ok) {
@@ -774,7 +778,7 @@ async function performPeriodicSync() {
     // Update other critical content
     const criticalUrls = ['/emelmujiro/', '/emelmujiro/manifest.json'];
     const cache = await caches.open(CACHE_NAME);
-    
+
     for (const url of criticalUrls) {
       try {
         const response = await fetch(url);
@@ -797,15 +801,15 @@ async function performPeriodicSync() {
 async function syncFailedRequests() {
   try {
     const syncData = await getSyncDataFromIDB('sync-failed-request');
-    
+
     if (syncData && syncData.data) {
       const { url, options } = syncData.data;
-      
+
       const response = await fetch(url, options);
       if (response.ok) {
         // Remove from sync queue on success
         await clearSyncDataFromIDB('sync-failed-request');
-        
+
         // Show success notification
         self.registration.showNotification('요청 완료', {
           body: '오프라인에서 실패한 요청이 성공적으로 처리되었습니다.',
@@ -826,7 +830,7 @@ async function getSyncDataFromIDB(tag) {
   const cache = await caches.open('sync-data');
   const request = new Request(`/sync-data/${tag}`);
   const response = await cache.match(request);
-  
+
   if (response) {
     return await response.json();
   }
