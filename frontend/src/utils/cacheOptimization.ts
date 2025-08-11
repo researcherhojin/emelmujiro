@@ -119,7 +119,7 @@ class LRUCache<T> {
 }
 
 // API response cache
-export const apiCache = new LRUCache<any>({
+export const apiCache = new LRUCache<unknown>({
   maxAge: 5 * 60 * 1000, // 5 minutes
   maxEntries: 100,
 });
@@ -144,7 +144,7 @@ export class StorageCache {
     this.storageType = storageType;
   }
 
-  set(key: string, data: any, expiresIn?: number): boolean {
+  set<T>(key: string, data: T, expiresIn?: number): boolean {
     try {
       const storage = window[this.storageType];
       const item = {
@@ -267,9 +267,9 @@ export const observeCachePerformance = () => {
       entries.forEach(entry => {
         if (entry.entryType === 'resource') {
           const resourceEntry = entry as PerformanceResourceTiming;
-          // Log cache hit/miss information
+          // Track cache hit/miss information
           if (resourceEntry.transferSize === 0 && resourceEntry.decodedBodySize > 0) {
-            console.log('Cache hit for:', entry.name);
+            // Cache hit detected for resource
           }
         }
       });

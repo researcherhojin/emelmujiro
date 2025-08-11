@@ -8,7 +8,6 @@ import {
   clearMetrics,
   getMetricsSummary,
   PerformanceMonitor,
-  WebVitalsData,
 } from '../performanceMonitoring';
 
 // Mock web-vitals library

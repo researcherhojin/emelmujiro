@@ -122,7 +122,6 @@ describe('pushNotifications', () => {
     mockRegistration.pushManager.getSubscription.mockResolvedValue(null);
     mockRegistration.pushManager.subscribe.mockResolvedValue(mockSubscription);
     mockRegistration.showNotification.mockResolvedValue(undefined);
-    mockSubscription.unsubscribe.mockResolvedValue(true);
   });
 
   afterEach(() => {
@@ -320,8 +319,11 @@ describe('pushNotifications', () => {
 
     it('should handle unsubscribe errors', async () => {
       const error = new Error('Unsubscribe failed');
-      mockRegistration.pushManager.getSubscription.mockResolvedValue(mockSubscription);
-      mockSubscription.unsubscribe.mockRejectedValue(error);
+      const mockSubscriptionWithError = {
+        ...mockSubscription,
+        unsubscribe: jest.fn().mockRejectedValue(error),
+      };
+      mockRegistration.pushManager.getSubscription.mockResolvedValue(mockSubscriptionWithError);
 
       await expect(unsubscribeFromPushNotifications()).rejects.toThrow('Unsubscribe failed');
       expect(mockLogger.error).toHaveBeenCalledWith(

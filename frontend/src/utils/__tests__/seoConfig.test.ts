@@ -204,19 +204,18 @@ describe('seoConfig', () => {
       const structuredData = generateStructuredData('breadcrumb', customData);
 
       // Type narrowing for breadcrumb
-      if (structuredData['@type'] === 'BreadcrumbList') {
-        expect((structuredData as any).itemListElement).toHaveLength(3);
-        expect((structuredData as any).itemListElement[1]).toEqual({
-          position: 2,
-          name: '회사소개',
-          item: 'https://example.com/about',
-        });
-        expect((structuredData as any).itemListElement[2]).toEqual({
-          position: 3,
-          name: '팀',
-          item: 'https://example.com/team',
-        });
-      }
+      expect(structuredData['@type']).toBe('BreadcrumbList');
+      expect((structuredData as any).itemListElement).toHaveLength(3);
+      expect((structuredData as any).itemListElement[1]).toEqual({
+        position: 2,
+        name: '회사소개',
+        item: 'https://example.com/about',
+      });
+      expect((structuredData as any).itemListElement[2]).toEqual({
+        position: 3,
+        name: '팀',
+        item: 'https://example.com/team',
+      });
     });
 
     it('should generate person structured data', () => {
@@ -244,10 +243,9 @@ describe('seoConfig', () => {
       const structuredData = generateStructuredData('person', customData);
 
       // Type narrowing for person
-      if (structuredData['@type'] === 'Person') {
-        expect((structuredData as any).email).toBe('test@example.com');
-        expect((structuredData as any).telephone).toBe('+82-10-1234-5678');
-      }
+      expect(structuredData['@type']).toBe('Person');
+      expect((structuredData as any).email).toBe('test@example.com');
+      expect((structuredData as any).telephone).toBe('+82-10-1234-5678');
     });
 
     it('should generate article structured data', () => {
@@ -301,12 +299,11 @@ describe('seoConfig', () => {
       const structuredData = generateStructuredData('article', articleData);
 
       // Type narrowing for article
-      if (structuredData['@type'] === 'Article') {
-        expect((structuredData as any).author).toEqual({
-          '@type': 'Person',
-          name: '이호진',
-        });
-      }
+      expect(structuredData['@type']).toBe('Article');
+      expect((structuredData as any).author).toEqual({
+        '@type': 'Person',
+        name: '이호진',
+      });
     });
 
     it('should use publishedDate for modifiedDate if not provided', () => {
@@ -318,9 +315,8 @@ describe('seoConfig', () => {
       const structuredData = generateStructuredData('article', articleData);
 
       // Type narrowing for article
-      if (structuredData['@type'] === 'Article') {
-        expect((structuredData as any).dateModified).toBe('2024-01-01');
-      }
+      expect(structuredData['@type']).toBe('Article');
+      expect((structuredData as any).dateModified).toBe('2024-01-01');
     });
 
     it('should use base URL for mainEntityOfPage if no URL provided', () => {
@@ -331,12 +327,11 @@ describe('seoConfig', () => {
       const structuredData = generateStructuredData('article', articleData);
 
       // Type narrowing for article
-      if (structuredData['@type'] === 'Article') {
-        expect((structuredData as any).mainEntityOfPage).toEqual({
-          '@type': 'WebPage',
-          '@id': 'https://researcherhojin.github.io/emelmujiro',
-        });
-      }
+      expect(structuredData['@type']).toBe('Article');
+      expect((structuredData as any).mainEntityOfPage).toEqual({
+        '@type': 'WebPage',
+        '@id': 'https://researcherhojin.github.io/emelmujiro',
+      });
     });
   });
 
@@ -409,9 +404,8 @@ describe('seoConfig', () => {
       expect(canonicalUrl).toBe(`${baseUrl}/#/about`);
 
       // Type narrowing for organization structured data
-      if (organizationData['@type'] === 'Organization') {
-        expect((organizationData as any).url).toBe(baseUrl);
-      }
+      expect(organizationData['@type']).toBe('Organization');
+      expect((organizationData as any).url).toBe(baseUrl);
     });
 
     it('should handle complex article structured data', () => {
@@ -430,16 +424,13 @@ describe('seoConfig', () => {
       const structuredData = generateStructuredData('article', complexArticleData);
 
       // Type guard to ensure it's an article type
-      if (structuredData['@type'] === 'Article') {
-        expect((structuredData as any).headline).toBe(complexArticleData.title);
-        expect((structuredData as any).description).toBe(complexArticleData.description);
-        expect((structuredData as any).author.name).toBe(complexArticleData.author);
-        expect((structuredData as any).datePublished).toBe(complexArticleData.publishedDate);
-        expect((structuredData as any).dateModified).toBe(complexArticleData.modifiedDate);
-        expect((structuredData as any).mainEntityOfPage['@id']).toBe(complexArticleData.url);
-      } else {
-        throw new Error('Expected Article structured data');
-      }
+      expect(structuredData['@type']).toBe('Article');
+      expect((structuredData as any).headline).toBe(complexArticleData.title);
+      expect((structuredData as any).description).toBe(complexArticleData.description);
+      expect((structuredData as any).author.name).toBe(complexArticleData.author);
+      expect((structuredData as any).datePublished).toBe(complexArticleData.publishedDate);
+      expect((structuredData as any).dateModified).toBe(complexArticleData.modifiedDate);
+      expect((structuredData as any).mainEntityOfPage['@id']).toBe(complexArticleData.url);
     });
   });
 });
