@@ -20,19 +20,21 @@ interface MockResponse {
   text: () => Promise<string>;
 }
 
+const createMockHeaders = (): MockHeaders => ({
+  get: jest.fn((header: string) => {
+    if (header === 'content-type') {
+      return 'application/javascript';
+    }
+    return null;
+  }),
+});
+
 const mockFetch = jest.fn(
   (): Promise<MockResponse> =>
     Promise.resolve({
       ok: true,
       status: 200,
-      headers: {
-        get: jest.fn((header: string) => {
-          if (header === 'content-type') {
-            return 'application/javascript';
-          }
-          return null;
-        }),
-      },
+      headers: createMockHeaders(),
       json: async () => ({}),
       text: async () => '',
     })
@@ -63,14 +65,7 @@ describe('serviceWorkerRegistration', () => {
         Promise.resolve({
           ok: true,
           status: 200,
-          headers: {
-            get: jest.fn((header: string) => {
-              if (header === 'content-type') {
-                return 'application/javascript';
-              }
-              return null;
-            }),
-          },
+          headers: createMockHeaders(),
           json: async () => ({}),
           text: async () => '',
         })
@@ -499,12 +494,17 @@ describe('serviceWorkerRegistration', () => {
       });
 
       // Mock HTML response instead of JS
+      const mockHtmlHeaders = createMockHeaders();
+      mockHtmlHeaders.get = jest.fn((header: string) => {
+        if (header === 'content-type') {
+          return 'text/html';
+        }
+        return null;
+      });
       mockFetch.mockResolvedValue({
         status: 200,
-        headers: {
-          get: (header: string) => (header === 'content-type' ? 'text/html' : null),
-        },
-      });
+        headers: mockHtmlHeaders,
+      } as any);
 
       const { register } = await import('../serviceWorkerRegistration');
       register();
@@ -636,11 +636,8 @@ describe('serviceWorkerRegistration', () => {
           // For localhost, mock fetch
           mockFetch.mockResolvedValue({
             status: 200,
-            headers: {
-              get: (header: string) =>
-                header === 'content-type' ? 'application/javascript' : null,
-            },
-          });
+            headers: createMockHeaders(),
+          } as any);
         }
 
         const { register } = await import('../serviceWorkerRegistration');

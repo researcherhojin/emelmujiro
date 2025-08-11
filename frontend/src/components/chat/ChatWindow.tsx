@@ -80,7 +80,7 @@ const ChatWindow: React.FC = () => {
         content: message,
         sender: 'user',
       });
-    } catch (_error) {
+    } catch {
       showNotification('error', t('chat.error.sendFailed', '메시지 전송에 실패했습니다.'));
       setInputValue(message); // Restore message on error
     }
@@ -136,7 +136,7 @@ const ChatWindow: React.FC = () => {
         file: file,
         sender: 'user',
       });
-    } catch (_error) {
+    } catch {
       showNotification('error', t('chat.error.uploadFailed', '파일 업로드에 실패했습니다.'));
     }
 
@@ -168,7 +168,7 @@ const ChatWindow: React.FC = () => {
       URL.revokeObjectURL(url);
 
       showNotification('success', t('chat.exportSuccess', '채팅 기록을 다운로드했습니다.'));
-    } catch (_error) {
+    } catch {
       showNotification('error', t('chat.error.exportFailed', '채팅 기록 내보내기에 실패했습니다.'));
     }
   };

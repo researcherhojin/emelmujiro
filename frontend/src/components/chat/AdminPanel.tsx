@@ -47,7 +47,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       // In a real app, this would save to backend
       localStorage.setItem('chat-admin-settings', JSON.stringify(editingSettings));
       showNotification('success', t('chat.admin.settingsSaved', '설정이 저장되었습니다.'));
-    } catch (_error) {
+    } catch {
       showNotification('error', t('chat.admin.settingsSaveFailed', '설정 저장에 실패했습니다.'));
     }
   };

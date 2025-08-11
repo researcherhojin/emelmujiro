@@ -11,7 +11,6 @@ import {
   FileAudio,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useChatContext } from '../../contexts/ChatContext';
 import { useUI } from '../../contexts/UIContext';
 
 interface FileUploadProps {
@@ -22,7 +21,6 @@ interface FileUploadProps {
 const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
   const { t } = useTranslation();
   const { showNotification } = useUI();
-  const { settings } = useChatContext();
   const [isDragActive, setIsDragActive] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -201,6 +199,14 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
       {/* Upload Area */}
       {!selectedFile && (
         <div
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleBrowseClick();
+            }
+          }}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
