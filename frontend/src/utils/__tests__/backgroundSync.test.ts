@@ -49,7 +49,7 @@ const mockRequest = {
   error: null as Error | null,
   onsuccess: null as (() => void) | null,
   onerror: null as (() => void) | null,
-  onupgradeneeded: null as ((event?: any) => void) | null,
+  onupgradeneeded: null as ((event?: unknown) => void) | null,
 };
 
 const mockPutRequest = {

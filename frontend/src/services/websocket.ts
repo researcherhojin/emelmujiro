@@ -189,11 +189,11 @@ export class ChatWebSocketService {
       // Simulate message delivery confirmation
       setTimeout(
         () => {
-          const messageData = data as Record<string, any>;
+          const messageData = data as Record<string, unknown>;
           if (messageData.type === 'message' && this.callbacks.onMessage) {
             this.callbacks.onMessage({
               type: 'message_delivered',
-              messageId: messageData.data?.id,
+              messageId: (messageData.data as Record<string, unknown>)?.id as string,
             });
           }
         },
