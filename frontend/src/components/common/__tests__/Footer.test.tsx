@@ -291,7 +291,7 @@ describe('Footer Component', () => {
       });
 
       // Close modal
-      const closeButton = screen.getByTestId('x-icon').parentElement as HTMLButtonElement;
+      const closeButton = screen.getByTestId('x-icon');
       fireEvent.click(closeButton);
 
       await waitFor(() => {
@@ -370,9 +370,9 @@ describe('Footer Component', () => {
         ).toBeInTheDocument();
       });
 
-      // Click backdrop
-      const backdrop = document.querySelector('.fixed.inset-0.bg-gray-500') as HTMLElement;
-      fireEvent.click(backdrop);
+      // Click backdrop to close modal
+      const modal = screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.');
+      fireEvent.click(modal);
 
       await waitFor(() => {
         expect(
@@ -394,9 +394,9 @@ describe('Footer Component', () => {
         ).toBeInTheDocument();
       });
 
-      // Press Escape on backdrop
-      const backdrop = document.querySelector('.fixed.inset-0.bg-gray-500') as HTMLElement;
-      fireEvent.keyDown(backdrop, { key: 'Escape' });
+      // Press Escape to close modal
+      const modal = screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.');
+      fireEvent.keyDown(modal, { key: 'Escape' });
 
       await waitFor(() => {
         expect(

@@ -158,6 +158,7 @@ describe('BlogContext', () => {
       results: [],
     };
 
+    // @ts-ignore - Mock implementation type mismatch is expected in test
     mockedApi.getBlogPosts.mockImplementation(
       () =>
         new Promise(resolve =>
