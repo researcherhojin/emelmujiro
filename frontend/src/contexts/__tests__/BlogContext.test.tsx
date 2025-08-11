@@ -158,9 +158,8 @@ describe('BlogContext', () => {
       results: [],
     };
 
-    // @ts-ignore - Mock implementation type mismatch is expected in test
     mockedApi.getBlogPosts.mockImplementation(
-      () =>
+      (_page = 1, _pageSize?: number) =>
         new Promise(resolve =>
           setTimeout(
             () =>
