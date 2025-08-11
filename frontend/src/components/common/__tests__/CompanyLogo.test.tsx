@@ -21,7 +21,7 @@ describe('CompanyLogo', () => {
     const textElement = screen.getByText('테스트회사');
     expect(textElement).toBeInTheDocument();
     // The component with medium size should be rendered
-    expect(textElement.parentElement).toBeInTheDocument();
+    expect(textElement).toHaveStyle('color: #000000');
   });
 
   it('applies small size correctly', () => {
@@ -30,7 +30,7 @@ describe('CompanyLogo', () => {
     const textElement = screen.getByText('테스트회사');
     expect(textElement).toBeInTheDocument();
     // The component with small size should be rendered
-    expect(textElement.parentElement).toBeInTheDocument();
+    expect(textElement).toHaveStyle('color: #000000');
   });
 
   it('applies large size correctly', () => {
@@ -39,7 +39,7 @@ describe('CompanyLogo', () => {
     const textElement = screen.getByText('테스트회사');
     expect(textElement).toBeInTheDocument();
     // The component with large size should be rendered
-    expect(textElement.parentElement).toBeInTheDocument();
+    expect(textElement).toHaveStyle('color: #000000');
   });
 
   it('applies custom color to text', () => {
