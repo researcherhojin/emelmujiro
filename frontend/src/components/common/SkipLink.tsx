@@ -18,7 +18,10 @@ const SkipLink: React.FC = () => {
           const mainContent = document.getElementById('main-content');
           if (mainContent) {
             mainContent.focus();
-            mainContent.scrollIntoView({ behavior: 'smooth' });
+            // Check if scrollIntoView exists (may not exist in test environment)
+            if (typeof mainContent.scrollIntoView === 'function') {
+              mainContent.scrollIntoView({ behavior: 'smooth' });
+            }
           }
         }
       }}

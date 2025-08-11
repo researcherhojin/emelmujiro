@@ -5,6 +5,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import SkipLink from '../SkipLink';
 
+// Mock scrollIntoView globally for JSDOM
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = jest.fn();
+}
+
 describe('SkipLink Component', () => {
   let mockScrollIntoView: jest.Mock;
   let mockMainContent: HTMLElement;
