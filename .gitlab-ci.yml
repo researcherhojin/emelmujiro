@@ -10,7 +10,7 @@ stages:
 
 variables:
   DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_CERTDIR: /certs
   NODE_VERSION: "20"
   PYTHON_VERSION: "3.11"
   POSTGRES_DB: test_db
@@ -87,8 +87,9 @@ build:docker:
 test:frontend:
   stage: test
   image: node:${NODE_VERSION}-alpine
-  needs: ["build:frontend"]
-  coverage: '/Lines\s*:\s*(\d+\.\d+)%/'
+  needs:
+    - build:frontend
+  coverage: /Lines\s*:\s*(\d+\.\d+)%/
   script:
     - cd frontend
     - npm ci --cache .npm --prefer-offline
@@ -108,12 +109,13 @@ test:frontend:
 test:backend:
   stage: test
   image: python:${PYTHON_VERSION}-slim
-  needs: ["build:backend"]
+  needs:
+    - build:backend
   services:
     - postgres:15-alpine
   variables:
-    DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
-  coverage: '/TOTAL.*\s+(\d+%)$/'
+    DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+  coverage: /TOTAL.*\s+(\d+%)$/
   script:
     - cd backend
     - source .venv/bin/activate
@@ -136,7 +138,9 @@ test:backend:
 test:e2e:
   stage: test
   image: mcr.microsoft.com/playwright:v1.40.0-focal
-  needs: ["build:frontend", "build:backend"]
+  needs:
+    - build:frontend
+    - build:backend
   services:
     - postgres:15-alpine
   script:
@@ -184,7 +188,8 @@ security:container-scanning:
   stage: security
   include:
     - template: Security/Container-Scanning.gitlab-ci.yml
-  needs: ["build:docker"]
+  needs:
+    - build:docker
   variables:
     CS_IMAGE: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA
   only:
@@ -207,7 +212,10 @@ security:secrets-detection:
 deploy:staging:
   stage: deploy
   image: alpine:latest
-  needs: ["test:frontend", "test:backend", "security:sast"]
+  needs:
+    - test:frontend
+    - test:backend
+    - security:sast
   environment:
     name: staging
     url: https://staging.emelmujiro.com
@@ -226,7 +234,10 @@ deploy:staging:
 deploy:production:
   stage: deploy
   image: alpine:latest
-  needs: ["test:frontend", "test:backend", "security:sast"]
+  needs:
+    - test:frontend
+    - test:backend
+    - security:sast
   environment:
     name: production
     url: https://emelmujiro.com
@@ -269,7 +280,8 @@ cleanup:old-images:
 
 pages:
   stage: deploy
-  needs: ["test:frontend"]
+  needs:
+    - test:frontend
   script:
     - mkdir -p public
     - cp -r frontend/coverage/lcov-report/* public/

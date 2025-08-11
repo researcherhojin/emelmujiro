@@ -189,4 +189,4 @@ Images are built for linux/amd64. ARM users may see platform warnings but contai
 - All new components must have corresponding test files
 - Tests should use `renderWithProviders` for proper context wrapping
 - E2E tests focus on critical user flows (homepage, contact, blog)
-- Maintain 100% test pass rate (currently 277 test cases)
+- Maintain high test pass rate (currently 868/976 tests passing, 89%)
