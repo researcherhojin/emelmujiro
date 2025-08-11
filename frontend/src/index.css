@@ -1,11 +1,15 @@
-/* Tailwind CSS Directives */
+/**
+ * Tailwind CSS Directives
+ * @tailwind, @layer, and @apply are PostCSS directives, not standard CSS
+ * These are processed by PostCSS and Tailwind CSS at build time
+ */
+
 /* stylelint-disable at-rule-no-unknown */
-/* @tailwind and @apply directives are processed by PostCSS */
-/* CSS language server: ignore unknown at-rule warnings for Tailwind directives */
-/* css-ignore-start */
+/* postcss-lit-disable */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* postcss-lit-enable */
 /* stylelint-enable at-rule-no-unknown */
 
 /* CSS Variables for consistent theming */
@@ -214,4 +218,4 @@
   }
 }
 
-/* css-ignore-end */
+/* End of Tailwind CSS utilities */

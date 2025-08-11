@@ -1,0 +1,10 @@
+{
+  "atRules": {
+    "tailwind": true,
+    "apply": true,
+    "layer": true,
+    "responsive": true,
+    "screen": true,
+    "variants": true
+  }
+}

@@ -11,7 +11,7 @@ import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 export default [
   // Base configuration
   js.configs.recommended,
-  
+
   // Global ignores
   {
     ignores: [
@@ -25,10 +25,10 @@ export default [
       '*.config.mjs',
       '.lighthouserc.js',
       'e2e/**/*.js',
-      'e2e/**/*.ts'
-    ]
+      'e2e/**/*.ts',
+    ],
   },
-  
+
   // Main configuration for all files
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
@@ -38,26 +38,26 @@ export default [
       parser: typescriptParser,
       parserOptions: {
         ecmaFeatures: {
-          jsx: true
-        }
+          jsx: true,
+        },
       },
       globals: {
         ...globals.browser,
         ...globals.es2021,
         ...globals.node,
-        React: 'readonly'
-      }
+        React: 'readonly',
+      },
     },
     plugins: {
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
       '@typescript-eslint': typescriptPlugin,
-      'jsx-a11y': jsxA11yPlugin
+      'jsx-a11y': jsxA11yPlugin,
     },
     settings: {
       react: {
-        version: 'detect'
-      }
+        version: 'detect',
+      },
     },
     rules: {
       // General rules
@@ -66,38 +66,41 @@ export default [
       'prefer-const': 'error',
       'no-var': 'error',
       'no-unused-vars': 'off',
-      
+
       // TypeScript rules
-      '@typescript-eslint/no-unused-vars': ['warn', { 
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_'
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
-      
+
       // React rules
       'react/prop-types': 'off',
       'react/jsx-uses-react': 'off',
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-vars': 'error',
-      
+
       // React Hooks rules
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      
+
       // JSX A11y rules
       'jsx-a11y/alt-text': 'warn',
       'jsx-a11y/anchor-is-valid': 'warn',
       'jsx-a11y/click-events-have-key-events': 'warn',
-      'jsx-a11y/no-static-element-interactions': 'warn'
-    }
+      'jsx-a11y/no-static-element-interactions': 'warn',
+    },
   },
-  
+
   // Test files configuration
   {
     files: ['**/__tests__/**/*', '**/*.test.*', '**/__mocks__/**/*', '**/*.spec.*'],
     plugins: {
       'testing-library': testingLibraryPlugin,
-      jest: jestPlugin
+      jest: jestPlugin,
     },
     languageOptions: {
       globals: {
@@ -110,8 +113,8 @@ export default [
         beforeEach: 'readonly',
         afterEach: 'readonly',
         beforeAll: 'readonly',
-        afterAll: 'readonly'
-      }
+        afterAll: 'readonly',
+      },
     },
     rules: {
       // Relax rules for test files
@@ -122,7 +125,7 @@ export default [
       'jest/no-conditional-expect': 'warn',
       '@typescript-eslint/no-unused-vars': 'warn',
       'jsx-a11y/alt-text': 'warn',
-      'no-console': 'off'
-    }
-  }
+      'no-console': 'off',
+    },
+  },
 ];

@@ -201,11 +201,6 @@ global.cancelAnimationFrame = jest.fn((id: number) =>
 ) as unknown as typeof cancelAnimationFrame;
 
 // Mock Notification API
-interface MockNotification {
-  permission: NotificationPermission;
-  requestPermission: () => Promise<NotificationPermission>;
-}
-
 global.Notification = {
   permission: 'default' as NotificationPermission,
   requestPermission: jest.fn().mockResolvedValue('granted' as NotificationPermission),
@@ -225,7 +220,7 @@ Object.defineProperty(navigator, 'language', {
 // Mock window.gtag for Google Analytics
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
