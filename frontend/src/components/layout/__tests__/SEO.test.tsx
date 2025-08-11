@@ -30,6 +30,7 @@ jest.mock('react-helmet-async', () => ({
   Helmet: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="helmet-mock">{children}</div>
   ),
+  HelmetProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 describe('SEO Component', () => {

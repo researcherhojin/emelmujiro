@@ -6,30 +6,20 @@ import { BlogProvider } from '../contexts/BlogContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { UIProvider } from '../contexts/UIContext';
 import { FormProvider } from '../contexts/FormContext';
-// ChatProvider is optional - some tests may not need it
-let ChatProvider: React.FC<{ children: React.ReactNode }> | undefined;
-try {
-  ChatProvider = require('../contexts/ChatContext').ChatProvider;
-} catch {
-  // ChatProvider not available in this test environment
-  ChatProvider = undefined;
-}
+// ChatProvider is disabled in test environment
+// ChatProvider has complex dependencies (WebSocket, timers) that cause issues in tests
+// Tests that specifically need ChatProvider should import it directly
 
 // Custom render function with all providers
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
-  let content = <Router>{children}</Router>;
-
-  // Wrap with ChatProvider if available
-  if (ChatProvider) {
-    content = <ChatProvider>{content}</ChatProvider>;
-  }
-
   return (
     <HelmetProvider>
       <UIProvider>
         <AuthProvider>
           <BlogProvider>
-            <FormProvider>{content}</FormProvider>
+            <FormProvider>
+              <Router>{children}</Router>
+            </FormProvider>
           </BlogProvider>
         </AuthProvider>
       </UIProvider>
