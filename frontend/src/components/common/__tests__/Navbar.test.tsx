@@ -56,8 +56,13 @@ describe('Navbar Component', () => {
   test('logo navigates to home', () => {
     renderWithProviders(<Navbar />);
 
-    const logo = screen.getByRole('link', { name: '에멜무지로' });
-    expect(logo).toHaveAttribute('href', '/');
+    // The logo text comes from translation, so we need to find it by text first
+    const logoText = screen.getByText('에멜무지로');
+    expect(logoText).toBeInTheDocument();
+
+    // The logo should be within a link element
+    const logoLink = logoText.closest('a');
+    expect(logoLink).toHaveAttribute('href', '#/');
   });
 
   test('applies scroll styles', () => {
