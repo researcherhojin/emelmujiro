@@ -597,12 +597,16 @@ if (mockRegistrationWithSuccess.onupdatefound) {
         // Wait for async operations
         await new Promise(resolve => setTimeout(resolve, 0));
 
+        // Test expectations based on whether it's localhost or not
+        const fetchWasCalled = mockFetch.mock.calls.length > 0;
+        const registerWasCalled = mockRegister.mock.calls.length > 0;
+        
         if (expected) {
           // Should call fetch for validation on localhost
-          expect(mockFetch).toHaveBeenCalled();
+          expect(fetchWasCalled).toBe(true);
         } else {
           // Should call register directly for non-localhost
-          expect(mockRegister).toHaveBeenCalled();
+          expect(registerWasCalled).toBe(true);
         }
       });
     });
