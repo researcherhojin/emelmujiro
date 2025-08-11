@@ -32,11 +32,16 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   useEffect(() => {
     // Check WebP support
     const checkWebPSupport = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1;
-      canvas.height = 1;
-      const isSupported = canvas.toDataURL('image/webp').indexOf('image/webp') === 5;
-      setIsWebPSupported(isSupported);
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        const isSupported = canvas.toDataURL('image/webp').indexOf('image/webp') === 5;
+        setIsWebPSupported(isSupported);
+      } catch {
+        // If canvas operations fail, default to no WebP support
+        setIsWebPSupported(false);
+      }
     };
 
     checkWebPSupport();
