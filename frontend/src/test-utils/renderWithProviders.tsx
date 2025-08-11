@@ -6,6 +6,7 @@ import { BlogProvider } from '../contexts/BlogContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { UIProvider } from '../contexts/UIContext';
 import { FormProvider } from '../contexts/FormContext';
+import { ChatProvider } from '../contexts/ChatContext';
 
 // Custom render function with all providers
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
@@ -15,7 +16,9 @@ const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
         <AuthProvider>
           <BlogProvider>
             <FormProvider>
-              <Router>{children}</Router>
+              <ChatProvider>
+                <Router>{children}</Router>
+              </ChatProvider>
             </FormProvider>
           </BlogProvider>
         </AuthProvider>

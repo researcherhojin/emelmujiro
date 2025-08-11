@@ -2,7 +2,6 @@ import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils';
 import ChatWidget from '../ChatWidget';
-import { ChatProvider } from '../../../contexts/ChatContext';
 
 // Mock framer-motion to avoid animation issues in tests
 jest.mock('framer-motion', () => ({
@@ -17,30 +16,40 @@ jest.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: { children?: React.ReactNode }) => children,
 }));
 
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <ChatProvider>{children}</ChatProvider>;
-};
-
 describe('ChatWidget', () => {
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
+    // Mock timers to handle the 2-second delay
+    jest.useFakeTimers();
   });
 
-  it('renders chat button initially', () => {
-    renderWithProviders(<ChatWidget />, {
-      wrapper: TestWrapper,
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
+  it('renders chat button initially', async () => {
+    renderWithProviders(<ChatWidget />);
+
+    // Fast-forward the 2-second timer to make the widget visible
+    await waitFor(() => {
+      jest.advanceTimersByTime(2000);
     });
 
     // Should show chat button initially
-    const chatButton = screen.getByRole('button', { name: /채팅 열기|open chat/i });
+    const chatButton = await screen.findByRole('button', { name: /채팅 열기|open chat/i });
     expect(chatButton).toBeInTheDocument();
   });
 
   it('opens chat window when button is clicked', async () => {
-    renderWithProviders(<ChatWidget />, {
-      wrapper: TestWrapper,
-    });
+    renderWithProviders(<ChatWidget />);
+
+    // Fast-forward the 2-second timer to make the widget visible
+    jest.advanceTimersByTime(2000);
+
+    // Fast-forward the 2-second timer to make the widget visible
+    jest.advanceTimersByTime(2000);
 
     const chatButton = screen.getByRole('button', { name: /채팅 열기|open chat/i });
     fireEvent.click(chatButton);
@@ -52,9 +61,10 @@ describe('ChatWidget', () => {
   });
 
   it('shows welcome message when chat is opened for first time', async () => {
-    renderWithProviders(<ChatWidget />, {
-      wrapper: TestWrapper,
-    });
+    renderWithProviders(<ChatWidget />);
+
+    // Fast-forward the 2-second timer to make the widget visible
+    jest.advanceTimersByTime(2000);
 
     const chatButton = screen.getByRole('button', { name: /채팅 열기|open chat/i });
     fireEvent.click(chatButton);
@@ -66,9 +76,10 @@ describe('ChatWidget', () => {
   });
 
   it('can minimize and maximize chat window', async () => {
-    renderWithProviders(<ChatWidget />, {
-      wrapper: TestWrapper,
-    });
+    renderWithProviders(<ChatWidget />);
+
+    // Fast-forward the 2-second timer to make the widget visible
+    jest.advanceTimersByTime(2000);
 
     // Open chat
     const chatButton = screen.getByRole('button', { name: /채팅 열기|open chat/i });
@@ -97,9 +108,10 @@ describe('ChatWidget', () => {
   });
 
   it('closes chat window when close button is clicked', async () => {
-    renderWithProviders(<ChatWidget />, {
-      wrapper: TestWrapper,
-    });
+    renderWithProviders(<ChatWidget />);
+
+    // Fast-forward the 2-second timer to make the widget visible
+    jest.advanceTimersByTime(2000);
 
     // Open chat
     const chatButton = screen.getByRole('button', { name: /채팅 열기|open chat/i });
@@ -120,9 +132,10 @@ describe('ChatWidget', () => {
   });
 
   it('shows connection status indicator', () => {
-    renderWithProviders(<ChatWidget />, {
-      wrapper: TestWrapper,
-    });
+    renderWithProviders(<ChatWidget />);
+
+    // Fast-forward the 2-second timer to make the widget visible
+    jest.advanceTimersByTime(2000);
 
     const chatButton = screen.getByRole('button', { name: /채팅 열기|open chat/i });
 
@@ -132,9 +145,10 @@ describe('ChatWidget', () => {
   });
 
   it('supports keyboard navigation', async () => {
-    renderWithProviders(<ChatWidget />, {
-      wrapper: TestWrapper,
-    });
+    renderWithProviders(<ChatWidget />);
+
+    // Fast-forward the 2-second timer to make the widget visible
+    jest.advanceTimersByTime(2000);
 
     const chatButton = screen.getByRole('button', { name: /채팅 열기|open chat/i });
 
@@ -151,9 +165,10 @@ describe('ChatWidget', () => {
   });
 
   it('displays business hours information', async () => {
-    renderWithProviders(<ChatWidget />, {
-      wrapper: TestWrapper,
-    });
+    renderWithProviders(<ChatWidget />);
+
+    // Fast-forward the 2-second timer to make the widget visible
+    jest.advanceTimersByTime(2000);
 
     const chatButton = screen.getByRole('button', { name: /채팅 열기|open chat/i });
     fireEvent.click(chatButton);
@@ -167,9 +182,10 @@ describe('ChatWidget', () => {
   });
 
   it('shows hover tooltip with quick info', async () => {
-    renderWithProviders(<ChatWidget />, {
-      wrapper: TestWrapper,
-    });
+    renderWithProviders(<ChatWidget />);
+
+    // Fast-forward the 2-second timer to make the widget visible
+    jest.advanceTimersByTime(2000);
 
     const chatButton = screen.getByRole('button', { name: /채팅 열기|open chat/i });
 
