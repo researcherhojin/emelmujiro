@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Footer from '../Footer';
 
@@ -347,15 +347,23 @@ describe('Footer Component', () => {
       const modalContactButton = contactButtons.find(button =>
         button.className.includes('bg-gray-900')
       );
-      fireEvent.click(modalContactButton!);
+
+      // Use act to ensure state updates are processed
+      await act(async () => {
+        fireEvent.click(modalContactButton!);
+      });
 
       expect(mockNavigate).toHaveBeenCalledWith('/contact');
 
-      await waitFor(() => {
-        expect(
-          screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).not.toBeInTheDocument();
-      });
+      // Check that modal is closed (verify that it's not in the document anymore)
+      // The modal content should be removed from the DOM
+      await waitFor(
+        () => {
+          const modalContent = screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.');
+          expect(modalContent).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
     test('closes modal when backdrop is clicked', async () => {

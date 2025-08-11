@@ -591,8 +591,7 @@ describe('Skeleton Component', () => {
         rerender(<SkeletonText lines={i} />);
       }
 
-      // Should render without errors
-      render(<SkeletonText lines={10} />);
+      // Verify the last render (lines=10)
       const textContainer = screen.getByTestId('skeleton-text');
       const textLines = within(textContainer)
         .getAllByRole('generic')
