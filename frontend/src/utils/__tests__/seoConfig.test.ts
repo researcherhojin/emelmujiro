@@ -205,12 +205,15 @@ describe('seoConfig', () => {
 
       // Type narrowing for breadcrumb
       expect(structuredData['@type']).toBe('BreadcrumbList');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).itemListElement).toHaveLength(3);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).itemListElement[1]).toEqual({
         position: 2,
         name: '회사소개',
         item: 'https://example.com/about',
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).itemListElement[2]).toEqual({
         position: 3,
         name: '팀',
@@ -244,7 +247,9 @@ describe('seoConfig', () => {
 
       // Type narrowing for person
       expect(structuredData['@type']).toBe('Person');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).email).toBe('test@example.com');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).telephone).toBe('+82-10-1234-5678');
     });
 
@@ -300,6 +305,7 @@ describe('seoConfig', () => {
 
       // Type narrowing for article
       expect(structuredData['@type']).toBe('Article');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).author).toEqual({
         '@type': 'Person',
         name: '이호진',
@@ -316,6 +322,7 @@ describe('seoConfig', () => {
 
       // Type narrowing for article
       expect(structuredData['@type']).toBe('Article');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).dateModified).toBe('2024-01-01');
     });
 
@@ -328,6 +335,7 @@ describe('seoConfig', () => {
 
       // Type narrowing for article
       expect(structuredData['@type']).toBe('Article');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).mainEntityOfPage).toEqual({
         '@type': 'WebPage',
         '@id': 'https://researcherhojin.github.io/emelmujiro',
@@ -405,6 +413,7 @@ describe('seoConfig', () => {
 
       // Type narrowing for organization structured data
       expect(organizationData['@type']).toBe('Organization');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((organizationData as any).url).toBe(baseUrl);
     });
 
@@ -425,11 +434,17 @@ describe('seoConfig', () => {
 
       // Type guard to ensure it's an article type
       expect(structuredData['@type']).toBe('Article');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).headline).toBe(complexArticleData.title);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).description).toBe(complexArticleData.description);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).author.name).toBe(complexArticleData.author);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).datePublished).toBe(complexArticleData.publishedDate);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).dateModified).toBe(complexArticleData.modifiedDate);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).mainEntityOfPage['@id']).toBe(complexArticleData.url);
     });
   });

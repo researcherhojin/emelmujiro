@@ -404,6 +404,7 @@ describe('performanceMonitoring', () => {
       startTime: number;
       name: string;
       entryType: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       toJSON: () => any;
     }
 
@@ -441,10 +442,12 @@ describe('performanceMonitoring', () => {
       mockPerformance = {
         getEntriesByType: jest.fn().mockReturnValue([]),
       };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global as any).performance = mockPerformance;
     });
 
     afterEach(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const g = global as any;
       delete g.PerformanceObserver;
       delete g.performance;
@@ -534,6 +537,7 @@ describe('performanceMonitoring', () => {
     });
 
     it('should handle missing PerformanceObserver', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const g = global as any;
       delete g.PerformanceObserver;
 
@@ -541,6 +545,7 @@ describe('performanceMonitoring', () => {
     });
 
     it('should handle missing performance API', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const g = global as any;
       delete g.performance;
 
@@ -548,6 +553,7 @@ describe('performanceMonitoring', () => {
     });
 
     it('should handle performance API without getEntriesByType', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global as any).performance = {};
 
       expect(() => PerformanceMonitor()).not.toThrow();
