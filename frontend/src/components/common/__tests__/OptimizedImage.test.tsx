@@ -250,10 +250,13 @@ describe('OptimizedImage', () => {
 
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
-      const srcSet = image.getAttribute('srcset');
-      expect(srcSet).not.toContain('1024w'); // Larger than 2x400
-      expect(srcSet).not.toContain('1280w'); // Larger than 2x400
+      expect(image).toBeInTheDocument();
     });
+
+    const image = screen.getByTestId('lazy-image');
+    const srcSet = image.getAttribute('srcset');
+    expect(srcSet).not.toContain('1024w'); // Larger than 2x400
+    expect(srcSet).not.toContain('1280w'); // Larger than 2x400
   });
 
   it('uses custom srcSet when provided', () => {
@@ -323,11 +326,14 @@ describe('OptimizedImage', () => {
 
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
-      const src = image.getAttribute('src');
-      expect(src).toContain('w=1200'); // 400 * 3
-      expect(src).toContain('h=900'); // 300 * 3
-      expect(src).toContain('q=85'); // High DPI quality
+      expect(image).toBeInTheDocument();
     });
+
+    const image = screen.getByTestId('lazy-image');
+    const src = image.getAttribute('src');
+    expect(src).toContain('w=1200'); // 400 * 3
+    expect(src).toContain('h=900'); // 300 * 3
+    expect(src).toContain('q=85'); // High DPI quality
   });
 
   it('handles missing devicePixelRatio', async () => {
@@ -347,10 +353,13 @@ describe('OptimizedImage', () => {
 
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
-      const src = image.getAttribute('src');
-      expect(src).toContain('w=400'); // Default to 1x
-      expect(src).toContain('h=300'); // Default to 1x
+      expect(image).toBeInTheDocument();
     });
+
+    const image = screen.getByTestId('lazy-image');
+    const src = image.getAttribute('src');
+    expect(src).toContain('w=400'); // Default to 1x
+    expect(src).toContain('h=300'); // Default to 1x
   });
 
   it('does not generate srcSet for non-Unsplash images', () => {
@@ -389,18 +398,21 @@ describe('OptimizedImage', () => {
 
     await waitFor(() => {
       const image = screen.getByAltText('Test image');
-      expect(image.tagName).toBe('IMG');
-      expect(image).toHaveClass('eager-image');
-      expect(image).toHaveAttribute('loading', 'eager');
-      expect(image).toHaveAttribute('width', '800');
-      expect(image).toHaveAttribute('height', '600');
-
-      const src = image.getAttribute('src');
-      expect(src).toContain('fm=webp');
-
-      const srcSet = image.getAttribute('srcset');
-      expect(srcSet).toContain('320w');
+      expect(image).toBeInTheDocument();
     });
+
+    const image = screen.getByAltText('Test image');
+    expect(image.tagName).toBe('IMG');
+    expect(image).toHaveClass('eager-image');
+    expect(image).toHaveAttribute('loading', 'eager');
+    expect(image).toHaveAttribute('width', '800');
+    expect(image).toHaveAttribute('height', '600');
+
+    const src = image.getAttribute('src');
+    expect(src).toContain('fm=webp');
+
+    const srcSet = image.getAttribute('srcset');
+    expect(srcSet).toContain('320w');
   });
 
   it('handles empty alt text', () => {
@@ -427,11 +439,14 @@ describe('OptimizedImage', () => {
 
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
-      const src = image.getAttribute('src');
-      expect(src).toContain('w=800'); // 200 * 4
-      expect(src).toContain('h=600'); // 150 * 4
-      expect(src).toContain('q=85'); // High DPI quality
+      expect(image).toBeInTheDocument();
     });
+
+    const image = screen.getByTestId('lazy-image');
+    const src = image.getAttribute('src');
+    expect(src).toContain('w=800'); // 200 * 4
+    expect(src).toContain('h=600'); // 150 * 4
+    expect(src).toContain('q=85'); // High DPI quality
   });
 
   it('updates image source when WebP support changes', async () => {
@@ -447,9 +462,12 @@ describe('OptimizedImage', () => {
     // Initial render with WebP support
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
-      const src = image.getAttribute('src');
-      expect(src).toContain('fm=webp');
+      expect(image).toBeInTheDocument();
     });
+
+    const image1 = screen.getByTestId('lazy-image');
+    const src1 = image1.getAttribute('src');
+    expect(src1).toContain('fm=webp');
 
     // Change WebP support
     (mockCanvas.toDataURL as jest.Mock).mockReturnValue('data:image/png;base64,test');
@@ -465,9 +483,12 @@ describe('OptimizedImage', () => {
 
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
-      const src = image.getAttribute('src');
-      expect(src).toContain('fm=auto');
+      expect(image).toBeInTheDocument();
     });
+
+    const image2 = screen.getByTestId('lazy-image');
+    const src2 = image2.getAttribute('src');
+    expect(src2).toContain('fm=auto');
   });
 
   it('handles canvas creation failure gracefully', async () => {

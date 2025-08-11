@@ -348,7 +348,7 @@ describe('NotificationPermission', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
-    const { container } = renderWithSelectiveProviders(<NotificationPermission />);
+    renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
       jest.advanceTimersByTime(10000);
