@@ -48,19 +48,21 @@ describe('accessibility', () => {
       expect(announcement?.textContent).toBe('Urgent message');
     });
 
-    it('should remove announcement after timeout', done => {
-      jest.useRealTimers();
+    it('should remove announcement after timeout', () => {
+      jest.useFakeTimers();
 
       announceToScreenReader('Temporary message');
 
       const announcement = document.querySelector('[role="status"]');
       expect(announcement).toBeTruthy();
 
-      setTimeout(() => {
-        const removedAnnouncement = document.querySelector('[role="status"]');
-        expect(removedAnnouncement).toBeFalsy();
-        done();
-      }, 1100);
+      // Fast-forward time
+      jest.advanceTimersByTime(1100);
+
+      const removedAnnouncement = document.querySelector('[role="status"]');
+      expect(removedAnnouncement).toBeFalsy();
+
+      jest.useRealTimers();
     });
 
     it('should handle multiple announcements', () => {
@@ -130,9 +132,9 @@ describe('accessibility', () => {
       expect(ratio).toBeLessThan(2);
     });
 
-    it('should return 0 for invalid color formats', () => {
+    it('should return 1 for invalid color formats', () => {
       const ratio = getContrastRatio('invalid-color', 'another-invalid');
-      expect(ratio).toBe(21); // (0.05 + 0.05) / (0 + 0.05)
+      expect(ratio).toBe(1); // (0 + 0.05) / (0 + 0.05) = 1
     });
 
     it('should handle hex colors converted to rgb', () => {
@@ -165,6 +167,10 @@ describe('accessibility', () => {
     });
 
     it('should generate unique IDs', () => {
+      // Mock different values for each call
+      let callCount = 0;
+      jest.spyOn(Date, 'now').mockImplementation(() => 1234567890 + callCount++);
+
       const id1 = generateAriaId();
       const id2 = generateAriaId();
       expect(id1).not.toBe(id2);

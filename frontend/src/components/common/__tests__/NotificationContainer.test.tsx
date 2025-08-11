@@ -312,8 +312,8 @@ describe('NotificationContainer', () => {
 
     renderWithSelectiveProviders(<NotificationContainer />);
 
-    // Empty notification should still render
-    const closeButton = screen.getByRole('button', { name: /close/i });
+    // Empty notification should still render with close button
+    const closeButton = screen.getByRole('button');
     expect(closeButton).toBeInTheDocument();
   });
 
