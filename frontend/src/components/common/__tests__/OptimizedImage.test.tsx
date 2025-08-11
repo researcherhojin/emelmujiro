@@ -418,7 +418,7 @@ describe('OptimizedImage', () => {
   it('handles empty alt text', () => {
     render(<OptimizedImage src="/test-image.jpg" alt="" />);
 
-    const image = screen.getByRole('img');
+    const image = screen.getByTestId('lazy-image');
     expect(image).toHaveAttribute('alt', '');
   });
 

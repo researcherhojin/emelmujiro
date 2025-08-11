@@ -1,4 +1,4 @@
-import { screen, fireEvent, within } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import Navbar from '../Navbar';
 
@@ -66,8 +66,10 @@ describe('Navbar Component', () => {
       screen.queryByText('회사소개', { selector: '.md\\:hidden button' })
     ).not.toBeInTheDocument();
 
-    // Click mobile menu button
-    const menuButton = screen.getByLabelText('메뉴 토글');
+    // Click mobile menu button - find by aria-label
+    const menuButton = screen.getByRole('button', {
+      name: /accessibility.menu/i,
+    });
     fireEvent.click(menuButton);
 
     // Mobile menu should now be visible

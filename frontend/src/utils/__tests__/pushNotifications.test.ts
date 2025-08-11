@@ -456,7 +456,7 @@ describe('pushNotifications', () => {
 
       expect(mockRegistration.pushManager.subscribe).toHaveBeenCalledWith({
         userVisibleOnly: true,
-        applicationServerKey: expect.any(ArrayBuffer),
+        applicationServerKey: expect.any(Uint8Array),
       });
     });
   });

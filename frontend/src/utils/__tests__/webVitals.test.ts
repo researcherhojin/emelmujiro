@@ -13,15 +13,15 @@ const mockOnINP = jest.fn();
 
 jest.mock('web-vitals', () => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onCLS: (callback: any) => mockOnCLS(callback),
+  onCLS: jest.fn((callback: any) => mockOnCLS(callback)),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onFCP: (callback: any) => mockOnFCP(callback),
+  onFCP: jest.fn((callback: any) => mockOnFCP(callback)),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onLCP: (callback: any) => mockOnLCP(callback),
+  onLCP: jest.fn((callback: any) => mockOnLCP(callback)),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onTTFB: (callback: any) => mockOnTTFB(callback),
+  onTTFB: jest.fn((callback: any) => mockOnTTFB(callback)),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onINP: (callback: any) => mockOnINP(callback),
+  onINP: jest.fn((callback: any) => mockOnINP(callback)),
 }));
 
 describe('webVitals', () => {
@@ -50,8 +50,9 @@ describe('webVitals', () => {
 
       measureWebVitals(mockCallback);
 
-      // Wait for dynamic import to resolve
-      await new Promise(resolve => setTimeout(resolve, 0));
+      // Wait for dynamic import to resolve and microtasks to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+      await Promise.resolve();
 
       expect(mockOnCLS).toHaveBeenCalledWith(expect.any(Function));
       expect(mockOnFCP).toHaveBeenCalledWith(expect.any(Function));
@@ -113,8 +114,9 @@ describe('webVitals', () => {
 
       measureWebVitals(mockCallback);
 
-      // Wait for dynamic import to resolve
-      await new Promise(resolve => setTimeout(resolve, 0));
+      // Wait for dynamic import to resolve and microtasks to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+      await Promise.resolve();
 
       expect(mockOnCLS).toHaveBeenCalledWith(expect.any(Function));
 
@@ -128,8 +130,9 @@ describe('webVitals', () => {
 
       measureWebVitals(mockCallback);
 
-      // Wait for dynamic import to resolve
-      await new Promise(resolve => setTimeout(resolve, 0));
+      // Wait for dynamic import to resolve and microtasks to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+      await Promise.resolve();
 
       expect(mockOnFCP).toHaveBeenCalledWith(expect.any(Function));
     });
@@ -385,8 +388,9 @@ describe('webVitals', () => {
       measureWebVitals(mockCallback);
       logPerformanceMetrics({ enableLogging: false });
 
-      // Wait for dynamic import to resolve
-      await new Promise(resolve => setTimeout(resolve, 0));
+      // Wait for dynamic import to resolve and microtasks to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
+      await Promise.resolve();
 
       expect(mockOnCLS).toHaveBeenCalledWith(expect.any(Function));
       // logPerformanceMetrics doesn't add listeners when disabled

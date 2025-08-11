@@ -354,13 +354,11 @@ describe('Footer Component', () => {
 
       // Check that modal is closed (verify that it's not in the document anymore)
       // The modal content should be removed from the DOM
-      await waitFor(
-        () => {
-          const modalContent = screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.');
-          expect(modalContent).not.toBeInTheDocument();
-        },
-        { timeout: 3000 }
-      );
+      await waitFor(() => {
+        expect(
+          screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+        ).not.toBeInTheDocument();
+      });
     });
 
     test('closes modal when backdrop is clicked', async () => {
