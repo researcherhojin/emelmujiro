@@ -8,23 +8,36 @@ const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation();
 const mockConsoleError = jest.spyOn(console, 'error').mockImplementation();
 
 // Mock fetch globally with proper promise return
-const mockFetch = jest.fn(() =>
-  Promise.resolve({
-    ok: true,
-    status: 200,
-    headers: {
-      get: jest.fn(header => {
-        if (header === 'content-type') {
-          return 'application/javascript';
-        }
-        return null;
-      }),
-    },
-    json: async () => ({}),
-    text: async () => '',
-  } as any)
+interface MockHeaders {
+  get: jest.Mock<string | null, [string]>;
+}
+
+interface MockResponse {
+  ok: boolean;
+  status: number;
+  headers: MockHeaders;
+  json: () => Promise<Record<string, unknown>>;
+  text: () => Promise<string>;
+}
+
+const mockFetch = jest.fn(
+  (): Promise<MockResponse> =>
+    Promise.resolve({
+      ok: true,
+      status: 200,
+      headers: {
+        get: jest.fn((header: string) => {
+          if (header === 'content-type') {
+            return 'application/javascript';
+          }
+          return null;
+        }),
+      },
+      json: async () => ({}),
+      text: async () => '',
+    })
 );
-global.fetch = mockFetch as any;
+global.fetch = mockFetch as unknown as typeof fetch;
 
 // Mock environment variable
 const originalEnv = process.env.PUBLIC_URL;
@@ -45,21 +58,22 @@ describe('serviceWorkerRegistration', () => {
     jest.clearAllMocks();
 
     // Reset fetch mock to default behavior
-    mockFetch.mockImplementation(() =>
-      Promise.resolve({
-        ok: true,
-        status: 200,
-        headers: {
-          get: jest.fn(header => {
-            if (header === 'content-type') {
-              return 'application/javascript';
-            }
-            return null;
-          }),
-        },
-        json: async () => ({}),
-        text: async () => '',
-      } as any)
+    mockFetch.mockImplementation(
+      (): Promise<MockResponse> =>
+        Promise.resolve({
+          ok: true,
+          status: 200,
+          headers: {
+            get: jest.fn((header: string) => {
+              if (header === 'content-type') {
+                return 'application/javascript';
+              }
+              return null;
+            }),
+          },
+          json: async () => ({}),
+          text: async () => '',
+        })
     );
     mockFetch.mockClear();
 

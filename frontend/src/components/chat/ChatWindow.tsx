@@ -1,14 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Send, 
-  Paperclip, 
-  Smile,
-  Download,
-  AlertCircle,
-  CheckCircle,
-  Clock
-} from 'lucide-react';
+import { Send, Paperclip, Smile, Download, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { useUI } from '../../contexts/UIContext';
 import { useChatContext } from '../../contexts/ChatContext';
 import MessageList from './MessageList';
@@ -37,7 +29,7 @@ const ChatWindow: React.FC = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   // const [showFileUpload, setShowFileUpload] = useState(false); // Commented out - not used
   const [isComposing, setIsComposing] = useState(false);
-  
+
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -86,9 +78,9 @@ const ChatWindow: React.FC = () => {
       await sendMessage({
         type: 'text',
         content: message,
-        sender: 'user'
+        sender: 'user',
       });
-    } catch (error) {
+    } catch (_error) {
       showNotification('error', t('chat.error.sendFailed', '메시지 전송에 실패했습니다.'));
       setInputValue(message); // Restore message on error
     }
@@ -130,7 +122,10 @@ const ChatWindow: React.FC = () => {
     const maxSize = 10 * 1024 * 1024; // 10MB limit
 
     if (file.size > maxSize) {
-      showNotification('error', t('chat.error.fileTooLarge', '파일 크기가 너무 큽니다. (최대 10MB)'));
+      showNotification(
+        'error',
+        t('chat.error.fileTooLarge', '파일 크기가 너무 큽니다. (최대 10MB)')
+      );
       return;
     }
 
@@ -139,9 +134,9 @@ const ChatWindow: React.FC = () => {
         type: 'file',
         content: file.name,
         file: file,
-        sender: 'user'
+        sender: 'user',
       });
-    } catch (error) {
+    } catch (_error) {
       showNotification('error', t('chat.error.uploadFailed', '파일 업로드에 실패했습니다.'));
     }
 
@@ -158,8 +153,8 @@ const ChatWindow: React.FC = () => {
         messages: messages,
         participantInfo: {
           user: 'Customer',
-          agent: agentAvailable ? 'Support Agent' : 'Chatbot'
-        }
+          agent: agentAvailable ? 'Support Agent' : 'Chatbot',
+        },
       };
 
       const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
@@ -173,7 +168,7 @@ const ChatWindow: React.FC = () => {
       URL.revokeObjectURL(url);
 
       showNotification('success', t('chat.exportSuccess', '채팅 기록을 다운로드했습니다.'));
-    } catch (error) {
+    } catch (_error) {
       showNotification('error', t('chat.error.exportFailed', '채팅 기록 내보내기에 실패했습니다.'));
     }
   };
@@ -212,7 +207,7 @@ const ChatWindow: React.FC = () => {
       {/* Messages Area */}
       <div className="flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900 relative">
         <MessageList />
-        
+
         {/* Typing Indicator */}
         <AnimatePresence>
           {isTyping && (
@@ -260,10 +255,10 @@ const ChatWindow: React.FC = () => {
             <textarea
               ref={inputRef}
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={e => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder={
-                isConnected 
+                isConnected
                   ? t('chat.placeholder.connected', '메시지를 입력하세요...')
                   : t('chat.placeholder.disconnected', '연결 중...')
               }
@@ -283,7 +278,7 @@ const ChatWindow: React.FC = () => {
               rows={1}
               maxLength={1000}
             />
-            
+
             {/* Character Count */}
             {inputValue.length > 800 && (
               <div className="absolute -top-6 right-0 text-xs text-gray-500">
@@ -335,7 +330,7 @@ const ChatWindow: React.FC = () => {
               )}
             </span>
           </div>
-          
+
           <button
             onClick={handleExportChat}
             disabled={messages.length === 0}
@@ -351,10 +346,7 @@ const ChatWindow: React.FC = () => {
       {/* Emoji Picker */}
       <AnimatePresence>
         {showEmojiPicker && (
-          <EmojiPicker
-            onSelect={handleEmojiSelect}
-            onClose={() => setShowEmojiPicker(false)}
-          />
+          <EmojiPicker onSelect={handleEmojiSelect} onClose={() => setShowEmojiPicker(false)} />
         )}
       </AnimatePresence>
 

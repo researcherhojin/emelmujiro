@@ -146,7 +146,7 @@ export const api = {
   createProject: (data: Partial<Project>) => axiosInstance.post<Project>('projects/', data),
 
   // Blog
-  getBlogPosts: (page: number = 1, pageSize?: number) => {
+  getBlogPosts: (page: number = 1, pageSize?: number): Promise<any> => {
     const size = pageSize || Number(process.env.REACT_APP_POSTS_PER_PAGE) || 6;
 
     // Use mock data if backend is not available

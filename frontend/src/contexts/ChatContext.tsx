@@ -435,9 +435,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
         onMessage: data => {
           if (data.type === 'message' && data.data) {
+            const messageData = data.data as any;
             const message: ChatMessage = {
-              ...data.data,
-              timestamp: new Date(data.data.timestamp),
+              ...messageData,
+              timestamp: messageData.timestamp ? new Date(messageData.timestamp) : new Date(),
             };
 
             setMessages(prev => [...prev, message]);

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Settings, 
-  MessageSquare, 
-  User, 
+import {
+  Settings,
+  MessageSquare,
+  User,
   Clock,
   Save,
   Plus,
@@ -13,7 +13,7 @@ import {
   X,
   Users,
   BarChart3,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import { useChatContext } from '../../contexts/ChatContext';
 import { useUI } from '../../contexts/UIContext';
@@ -28,7 +28,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
   const { showNotification } = useUI();
   const { settings, messages, businessHours, connectionId } = useChatContext();
-  
+
   const [activeTab, setActiveTab] = useState<'settings' | 'canned' | 'stats' | 'users'>('settings');
   const [editingSettings, setEditingSettings] = useState(settings);
   const [newCannedResponse, setNewCannedResponse] = useState('');
@@ -47,7 +47,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
       // In a real app, this would save to backend
       localStorage.setItem('chat-admin-settings', JSON.stringify(editingSettings));
       showNotification('success', t('chat.admin.settingsSaved', '설정이 저장되었습니다.'));
-    } catch (error) {
+    } catch (_error) {
       showNotification('error', t('chat.admin.settingsSaveFailed', '설정 저장에 실패했습니다.'));
     }
   };
@@ -56,7 +56,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
     if (newCannedResponse.trim()) {
       setEditingSettings(prev => ({
         ...prev,
-        cannedResponses: [...prev.cannedResponses, newCannedResponse.trim()]
+        cannedResponses: [...prev.cannedResponses, newCannedResponse.trim()],
       }));
       setNewCannedResponse('');
     }
@@ -73,7 +73,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
         ...prev,
         cannedResponses: prev.cannedResponses.map((response, index) =>
           index === editingCannedIndex ? editingCannedValue.trim() : response
-        )
+        ),
       }));
       setEditingCannedIndex(null);
       setEditingCannedValue('');
@@ -83,7 +83,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const handleDeleteCannedResponse = (index: number) => {
     setEditingSettings(prev => ({
       ...prev,
-      cannedResponses: prev.cannedResponses.filter((_, i) => i !== index)
+      cannedResponses: prev.cannedResponses.filter((_, i) => i !== index),
     }));
   };
 
@@ -92,7 +92,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
     const userMessages = messages.filter(m => m.sender === 'user').length;
     const agentMessages = messages.filter(m => m.sender === 'agent').length;
     const systemMessages = messages.filter(m => m.sender === 'system').length;
-    
+
     const today = new Date().toDateString();
     const todayMessages = messages.filter(m => m.timestamp.toDateString() === today).length;
 
@@ -123,7 +123,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
         className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
       >
         {/* Header */}
@@ -154,7 +154,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
 
         {/* Tabs */}
         <div className="flex border-b border-gray-200 dark:border-gray-700">
-          {tabs.map((tab) => {
+          {tabs.map(tab => {
             const IconComponent = tab.icon;
             return (
               <button
@@ -186,7 +186,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                   </label>
                   <textarea
                     value={editingSettings.welcomeMessage}
-                    onChange={(e) => setEditingSettings(prev => ({ ...prev, welcomeMessage: e.target.value }))}
+                    onChange={e =>
+                      setEditingSettings(prev => ({ ...prev, welcomeMessage: e.target.value }))
+                    }
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     rows={3}
                   />
@@ -200,7 +202,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                   <input
                     type="number"
                     value={editingSettings.maxMessageLength}
-                    onChange={(e) => setEditingSettings(prev => ({ ...prev, maxMessageLength: parseInt(e.target.value) }))}
+                    onChange={e =>
+                      setEditingSettings(prev => ({
+                        ...prev,
+                        maxMessageLength: parseInt(e.target.value),
+                      }))
+                    }
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     min="100"
                     max="5000"
@@ -213,13 +220,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                   {t('chat.admin.features', '기능 설정')}
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <label className="flex items-center space-x-3">
                     <input
                       type="checkbox"
                       checked={editingSettings.allowFileUpload}
-                      onChange={(e) => setEditingSettings(prev => ({ ...prev, allowFileUpload: e.target.checked }))}
+                      onChange={e =>
+                        setEditingSettings(prev => ({ ...prev, allowFileUpload: e.target.checked }))
+                      }
                       className="w-4 h-4 text-blue-600 rounded"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300">
@@ -231,7 +240,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                     <input
                       type="checkbox"
                       checked={editingSettings.allowEmoji}
-                      onChange={(e) => setEditingSettings(prev => ({ ...prev, allowEmoji: e.target.checked }))}
+                      onChange={e =>
+                        setEditingSettings(prev => ({ ...prev, allowEmoji: e.target.checked }))
+                      }
                       className="w-4 h-4 text-blue-600 rounded"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300">
@@ -243,7 +254,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                     <input
                       type="checkbox"
                       checked={editingSettings.soundEnabled}
-                      onChange={(e) => setEditingSettings(prev => ({ ...prev, soundEnabled: e.target.checked }))}
+                      onChange={e =>
+                        setEditingSettings(prev => ({ ...prev, soundEnabled: e.target.checked }))
+                      }
                       className="w-4 h-4 text-blue-600 rounded"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300">
@@ -278,10 +291,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 <input
                   type="text"
                   value={newCannedResponse}
-                  onChange={(e) => setNewCannedResponse(e.target.value)}
+                  onChange={e => setNewCannedResponse(e.target.value)}
                   placeholder={t('chat.admin.addCannedResponse', '새 자동 응답 추가...')}
                   className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddCannedResponse()}
+                  onKeyPress={e => e.key === 'Enter' && handleAddCannedResponse()}
                 />
                 <button
                   onClick={handleAddCannedResponse}
@@ -305,9 +318,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                         <input
                           type="text"
                           value={editingCannedValue}
-                          onChange={(e) => setEditingCannedValue(e.target.value)}
+                          onChange={e => setEditingCannedValue(e.target.value)}
                           className="flex-1 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                          onKeyPress={(e) => e.key === 'Enter' && handleSaveCannedResponse()}
+                          onKeyPress={e => e.key === 'Enter' && handleSaveCannedResponse()}
                         />
                         <button
                           onClick={handleSaveCannedResponse}
@@ -327,9 +340,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                       </>
                     ) : (
                       <>
-                        <span className="flex-1 text-gray-900 dark:text-white">
-                          {response}
-                        </span>
+                        <span className="flex-1 text-gray-900 dark:text-white">{response}</span>
                         <button
                           onClick={() => handleEditCannedResponse(index)}
                           className="text-blue-600 hover:text-blue-700 p-1"
@@ -392,7 +403,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                   <div className="flex items-center space-x-2">
                     <Clock className="w-5 h-5 text-purple-600" />
                     <div>
-                      <div className="text-2xl font-bold text-purple-600">{stats.averageResponseTime}</div>
+                      <div className="text-2xl font-bold text-purple-600">
+                        {stats.averageResponseTime}
+                      </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">
                         {t('chat.admin.avgResponseTime', '평균 응답시간')}
                       </div>
@@ -404,7 +417,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                   <div className="flex items-center space-x-2">
                     <BarChart3 className="w-5 h-5 text-amber-600" />
                     <div>
-                      <div className="text-2xl font-bold text-amber-600">{stats.satisfactionRating}</div>
+                      <div className="text-2xl font-bold text-amber-600">
+                        {stats.satisfactionRating}
+                      </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">
                         {t('chat.admin.satisfaction', '만족도')}
                       </div>
@@ -420,17 +435,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 </h4>
                 <div className="flex items-center space-x-4 text-sm">
                   <div className="flex items-center space-x-2">
-                    <div className={`w-3 h-3 rounded-full ${businessHours.isOpen ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <div
+                      className={`w-3 h-3 rounded-full ${businessHours.isOpen ? 'bg-green-500' : 'bg-red-500'}`}
+                    />
                     <span className="text-gray-600 dark:text-gray-400">
-                      {businessHours.isOpen 
+                      {businessHours.isOpen
                         ? t('chat.admin.currentlyOpen', '현재 운영 중')
-                        : t('chat.admin.currentlyClosed', '현재 운영 종료')
-                      }
+                        : t('chat.admin.currentlyClosed', '현재 운영 종료')}
                     </span>
                   </div>
-                  <div className="text-gray-600 dark:text-gray-400">
-                    {businessHours.hours}
-                  </div>
+                  <div className="text-gray-600 dark:text-gray-400">{businessHours.hours}</div>
                 </div>
               </div>
             </div>
@@ -445,7 +459,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 </h3>
                 <div className="flex items-center space-x-2 text-sm text-gray-500">
                   <Users className="w-4 h-4" />
-                  <span>{connectionId ? '1' : '0'} {t('chat.admin.online', '온라인')}</span>
+                  <span>
+                    {connectionId ? '1' : '0'} {t('chat.admin.online', '온라인')}
+                  </span>
                 </div>
               </div>
 
