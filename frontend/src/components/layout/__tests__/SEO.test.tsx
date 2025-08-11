@@ -192,21 +192,27 @@ describe('SEO Component', () => {
       );
 
       const children = (require('react-helmet-async').Helmet as MockedHelmet)
-        .lastChildren as React.ReactElement[];
+        .lastChildren as MockedHelmetElement[];
 
       // Check for OG tags
-      const ogTitleTag = children.find((child: unknown) => child?.props?.property === 'og:title');
+      const ogTitleTag = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.props?.property === 'og:title'
+      );
       expect(ogTitleTag).toBeDefined();
 
       const ogDescriptionTag = children.find(
-        (child: unknown) => child?.props?.property === 'og:description'
+        (child: unknown) => (child as MockedHelmetElement)?.props?.property === 'og:description'
       );
       expect(ogDescriptionTag).toBeDefined();
 
-      const ogImageTag = children.find((child: unknown) => child?.props?.property === 'og:image');
+      const ogImageTag = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.props?.property === 'og:image'
+      );
       expect(ogImageTag).toBeDefined();
 
-      const ogTypeTag = children.find((child: unknown) => child?.props?.property === 'og:type');
+      const ogTypeTag = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.props?.property === 'og:type'
+      );
       expect(ogTypeTag).toBeDefined();
     });
 
@@ -216,26 +222,26 @@ describe('SEO Component', () => {
       );
 
       const children = (require('react-helmet-async').Helmet as MockedHelmet)
-        .lastChildren as React.ReactElement[];
+        .lastChildren as MockedHelmetElement[];
 
       // Check for Twitter Card tags
       const twitterCardTag = children.find(
-        (child: unknown) => child?.props?.name === 'twitter:card'
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'twitter:card'
       );
       expect(twitterCardTag).toBeDefined();
 
       const twitterTitleTag = children.find(
-        (child: unknown) => child?.props?.name === 'twitter:title'
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'twitter:title'
       );
       expect(twitterTitleTag).toBeDefined();
 
       const twitterDescriptionTag = children.find(
-        (child: unknown) => child?.props?.name === 'twitter:description'
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'twitter:description'
       );
       expect(twitterDescriptionTag).toBeDefined();
 
       const twitterImageTag = children.find(
-        (child: unknown) => child?.props?.name === 'twitter:image'
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'twitter:image'
       );
       expect(twitterImageTag).toBeDefined();
     });
@@ -246,11 +252,13 @@ describe('SEO Component', () => {
       renderWithProviders(<SEO canonical={canonicalUrl} />);
 
       const children = (require('react-helmet-async').Helmet as MockedHelmet)
-        .lastChildren as React.ReactElement[];
+        .lastChildren as MockedHelmetElement[];
 
-      const canonicalLink = children.find((child: unknown) => child?.props?.rel === 'canonical');
+      const canonicalLink = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.props?.rel === 'canonical'
+      );
       expect(canonicalLink).toBeDefined();
-      expect(canonicalLink.props.href).toBe(canonicalUrl);
+      expect((canonicalLink as MockedHelmetElement)?.props?.href).toBe(canonicalUrl);
     });
 
     it('should include OG URL when canonical is provided', () => {
@@ -259,20 +267,24 @@ describe('SEO Component', () => {
       renderWithProviders(<SEO canonical={canonicalUrl} />);
 
       const children = (require('react-helmet-async').Helmet as MockedHelmet)
-        .lastChildren as React.ReactElement[];
+        .lastChildren as MockedHelmetElement[];
 
-      const ogUrlTag = children.find((child: unknown) => child?.props?.property === 'og:url');
+      const ogUrlTag = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.props?.property === 'og:url'
+      );
       expect(ogUrlTag).toBeDefined();
-      expect(ogUrlTag.props.content).toBe(canonicalUrl);
+      expect((ogUrlTag as MockedHelmetElement)?.props?.content).toBe(canonicalUrl);
     });
 
     it('should set html lang attribute', () => {
       renderWithProviders(<SEO />);
 
       const children = (require('react-helmet-async').Helmet as MockedHelmet)
-        .lastChildren as React.ReactElement[];
+        .lastChildren as MockedHelmetElement[];
 
-      const htmlLangTag = children.find((child: unknown) => child?.props?.lang === 'ko');
+      const htmlLangTag = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.props?.lang === 'ko'
+      );
       expect(htmlLangTag).toBeDefined();
     });
 
@@ -280,21 +292,22 @@ describe('SEO Component', () => {
       renderWithProviders(<SEO />);
 
       const children = (require('react-helmet-async').Helmet as MockedHelmet)
-        .lastChildren as React.ReactElement[];
+        .lastChildren as MockedHelmetElement[];
 
       // Check for PWA-related meta tags
       const appNameTag = children.find(
-        (child: unknown) => child?.props?.name === 'application-name'
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'application-name'
       );
       expect(appNameTag).toBeDefined();
 
       const appleMobileCapableTag = children.find(
-        (child: unknown) => child?.props?.name === 'apple-mobile-web-app-capable'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'apple-mobile-web-app-capable'
       );
       expect(appleMobileCapableTag).toBeDefined();
 
       const mobileWebAppCapableTag = children.find(
-        (child: unknown) => child?.props?.name === 'mobile-web-app-capable'
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'mobile-web-app-capable'
       );
       expect(mobileWebAppCapableTag).toBeDefined();
     });
@@ -303,21 +316,27 @@ describe('SEO Component', () => {
       renderWithProviders(<SEO />);
 
       const children = (require('react-helmet-async').Helmet as MockedHelmet)
-        .lastChildren as React.ReactElement[];
+        .lastChildren as MockedHelmetElement[];
 
       // Check for additional meta tags
-      const robotsTag = children.find((child: unknown) => child?.props?.name === 'robots');
+      const robotsTag = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'robots'
+      );
       expect(robotsTag).toBeDefined();
 
-      const themeColorTag = children.find((child: unknown) => child?.props?.name === 'theme-color');
+      const themeColorTag = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'theme-color'
+      );
       expect(themeColorTag).toBeDefined();
 
       const formatDetectionTag = children.find(
-        (child: unknown) => child?.props?.name === 'format-detection'
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'format-detection'
       );
       expect(formatDetectionTag).toBeDefined();
 
-      const googleTag = children.find((child: unknown) => child?.props?.name === 'google');
+      const googleTag = children.find(
+        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'google'
+      );
       expect(googleTag).toBeDefined();
     });
   });
