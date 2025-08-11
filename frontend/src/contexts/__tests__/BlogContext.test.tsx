@@ -100,7 +100,7 @@ describe('BlogContext', () => {
       results: mockPosts,
     };
 
-    mockedApi.getBlogPosts.mockResolvedValue({
+    (mockedApi.getBlogPosts as any).mockResolvedValue({
       data: mockResponse,
       status: 200,
       statusText: 'OK',
@@ -129,7 +129,7 @@ describe('BlogContext', () => {
 
   test('handles fetch error', async () => {
     const errorMessage = 'Failed to fetch posts';
-    mockedApi.getBlogPosts.mockRejectedValue(new Error(errorMessage));
+    (mockedApi.getBlogPosts as any).mockRejectedValue(new Error(errorMessage));
 
     render(
       <BlogProvider>
@@ -158,7 +158,7 @@ describe('BlogContext', () => {
       results: [],
     };
 
-    mockedApi.getBlogPosts.mockImplementation(
+    (mockedApi.getBlogPosts as any).mockImplementation(
       (_page?: number, _pageSize?: number) =>
         new Promise(resolve =>
           setTimeout(
@@ -196,7 +196,7 @@ describe('BlogContext', () => {
 
   test('throws error when used outside provider', () => {
     // Suppress console error for this test
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => {
       render(<TestComponent />);
