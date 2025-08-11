@@ -41,11 +41,13 @@ export const measureWebVitals = (
               timestamp: Date.now(),
               url: window.location.href,
               userAgent: navigator.userAgent,
-              connection: (navigator as Navigator & { connection?: { effectiveType?: string } }).connection?.effectiveType || 'unknown',
+              connection:
+                (navigator as Navigator & { connection?: { effectiveType?: string } }).connection
+                  ?.effectiveType || 'unknown',
             };
 
             if (config.enableLogging) {
-              console.log('Web Vital:', enhancedMetric);
+              console.warn('Web Vital:', enhancedMetric);
             }
 
             onPerfEntry(enhancedMetric);
@@ -72,7 +74,10 @@ export const measureWebVitals = (
 };
 
 // Send metrics to analytics endpoint
-const sendToAnalytics = async (metric: any, endpoint: string): Promise<void> => {
+const sendToAnalytics = async (
+  metric: Record<string, unknown>,
+  endpoint: string
+): Promise<void> => {
   try {
     await fetch(endpoint, {
       method: 'POST',
@@ -115,7 +120,7 @@ export const logPerformanceMetrics = (config: WebVitalsConfig = {}): void => {
               }
             });
 
-            console.log('Performance Metrics:', metrics);
+            console.warn('Performance Metrics:', metrics);
 
             // Store metrics with timestamp
             const metricsWithTimestamp = {

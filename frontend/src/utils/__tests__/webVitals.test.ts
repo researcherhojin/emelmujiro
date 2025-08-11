@@ -12,32 +12,17 @@ const mockOnTTFB = jest.fn();
 const mockOnINP = jest.fn();
 
 jest.mock('web-vitals', () => ({
-  onCLS: jest.fn(),
-  onFCP: jest.fn(),
-  onLCP: jest.fn(),
-  onTTFB: jest.fn(),
-  onINP: jest.fn(),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onCLS: (callback: any) => mockOnCLS(callback),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onFCP: (callback: any) => mockOnFCP(callback),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onLCP: (callback: any) => mockOnLCP(callback),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onTTFB: (callback: any) => mockOnTTFB(callback),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onINP: (callback: any) => mockOnINP(callback),
 }));
-
-// Mock the dynamic import
-const mockWebVitals = {
-  onCLS: mockOnCLS,
-  onFCP: mockOnFCP,
-  onLCP: mockOnLCP,
-  onTTFB: mockOnTTFB,
-  onINP: mockOnINP,
-};
-
-// Override the dynamic import to return our mock
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const originalImport = (global as any).import;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(global as any).import = jest.fn().mockImplementation((moduleName: string) => {
-  if (moduleName === 'web-vitals') {
-    return Promise.resolve(mockWebVitals);
-  }
-  return originalImport(moduleName);
-});
 
 describe('webVitals', () => {
   beforeEach(() => {
@@ -56,8 +41,7 @@ describe('webVitals', () => {
   });
 
   afterEach(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (global as any).import = originalImport;
+    jest.clearAllMocks();
   });
 
   describe('measureWebVitals', () => {
@@ -69,11 +53,11 @@ describe('webVitals', () => {
       // Wait for dynamic import to resolve
       await new Promise(resolve => setTimeout(resolve, 0));
 
-      expect(mockOnCLS).toHaveBeenCalledWith(mockCallback);
-      expect(mockOnFCP).toHaveBeenCalledWith(mockCallback);
-      expect(mockOnLCP).toHaveBeenCalledWith(mockCallback);
-      expect(mockOnTTFB).toHaveBeenCalledWith(mockCallback);
-      expect(mockOnINP).toHaveBeenCalledWith(mockCallback);
+      expect(mockOnCLS).toHaveBeenCalledWith(expect.any(Function));
+      expect(mockOnFCP).toHaveBeenCalledWith(expect.any(Function));
+      expect(mockOnLCP).toHaveBeenCalledWith(expect.any(Function));
+      expect(mockOnTTFB).toHaveBeenCalledWith(expect.any(Function));
+      expect(mockOnINP).toHaveBeenCalledWith(expect.any(Function));
     });
 
     it('should not call web vitals functions when callback is null', () => {
@@ -132,7 +116,7 @@ describe('webVitals', () => {
       // Wait for dynamic import to resolve
       await new Promise(resolve => setTimeout(resolve, 0));
 
-      expect(mockOnCLS).toHaveBeenCalledWith(mockCallback);
+      expect(mockOnCLS).toHaveBeenCalledWith(expect.any(Function));
 
       spy.mockRestore();
     });
@@ -147,7 +131,7 @@ describe('webVitals', () => {
       // Wait for dynamic import to resolve
       await new Promise(resolve => setTimeout(resolve, 0));
 
-      expect(mockOnFCP).toHaveBeenCalledWith(mockCallback);
+      expect(mockOnFCP).toHaveBeenCalledWith(expect.any(Function));
     });
   });
 
@@ -202,7 +186,7 @@ describe('webVitals', () => {
     it('should not add event listener in development when logging disabled', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
 
-      logPerformanceMetrics();
+      logPerformanceMetrics({ enableLogging: false });
 
       expect(addEventListenerSpy).not.toHaveBeenCalled();
     });
@@ -211,10 +195,10 @@ describe('webVitals', () => {
       // This test verifies the structure even though logging is disabled by default
       process.env = { ...process.env, NODE_ENV: 'development' };
 
-      logPerformanceMetrics();
+      logPerformanceMetrics({ enableLogging: true });
 
-      // Since enablePerformanceLogging is false by default, no listener is added
-      expect(addEventListenerSpy).not.toHaveBeenCalled();
+      // Since enablePerformanceLogging is true, listener is added
+      expect(addEventListenerSpy).toHaveBeenCalledWith('load', expect.any(Function));
     });
 
     // Test the internal logic by mocking the condition
@@ -222,7 +206,7 @@ describe('webVitals', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
 
       // Mock the internal enablePerformanceLogging to true for this test
-      const _originalLogPerformanceMetrics = logPerformanceMetrics;
+      // const _originalLogPerformanceMetrics = logPerformanceMetrics;
 
       // Create a version with logging enabled for testing
       const testLogPerformanceMetrics = () => {
@@ -368,7 +352,7 @@ describe('webVitals', () => {
                     totalLoadTime: perfData.loadEventEnd - perfData.fetchStart,
                   };
                   window.localStorage.setItem('performanceMetrics', JSON.stringify(metrics));
-                } catch (error) {
+                } catch {
                   // Handle localStorage errors gracefully
                 }
               }
@@ -399,13 +383,13 @@ describe('webVitals', () => {
       const mockCallback = jest.fn();
 
       measureWebVitals(mockCallback);
-      logPerformanceMetrics();
+      logPerformanceMetrics({ enableLogging: false });
 
       // Wait for dynamic import to resolve
       await new Promise(resolve => setTimeout(resolve, 0));
 
-      expect(mockOnCLS).toHaveBeenCalledWith(mockCallback);
-      // logPerformanceMetrics doesn't add listeners in test environment
+      expect(mockOnCLS).toHaveBeenCalledWith(expect.any(Function));
+      // logPerformanceMetrics doesn't add listeners when disabled
     });
 
     it('should handle multiple callback registrations', async () => {
@@ -419,8 +403,8 @@ describe('webVitals', () => {
       await new Promise(resolve => setTimeout(resolve, 0));
 
       expect(mockOnCLS).toHaveBeenCalledTimes(2);
-      expect(mockOnCLS).toHaveBeenCalledWith(mockCallback1);
-      expect(mockOnCLS).toHaveBeenCalledWith(mockCallback2);
+      expect(mockOnCLS).toHaveBeenNthCalledWith(1, expect.any(Function));
+      expect(mockOnCLS).toHaveBeenNthCalledWith(2, expect.any(Function));
     });
   });
 
