@@ -2,7 +2,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BlogProvider, useBlog } from '../BlogContext';
 import { api } from '../../services/api';
 import { PaginatedResponse, BlogPost } from '../../types';
-import { InternalAxiosRequestConfig } from 'axios';
+import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 // Mock the api
 jest.mock('../../services/api', () => ({
@@ -151,23 +151,25 @@ describe('BlogContext', () => {
   });
 
   test('sets loading state during fetch', async () => {
+    const mockResponse: PaginatedResponse<BlogPost> = {
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    };
+
     mockedApi.getBlogPosts.mockImplementation(
-      (_page?: number, _pageSize?: number) =>
+      () =>
         new Promise(resolve =>
           setTimeout(
             () =>
               resolve({
-                data: {
-                  count: 0,
-                  next: null,
-                  previous: null,
-                  results: [],
-                },
+                data: mockResponse,
                 status: 200,
                 statusText: 'OK',
                 headers: {},
                 config: {} as InternalAxiosRequestConfig,
-              }),
+              } as AxiosResponse<PaginatedResponse<BlogPost>>),
             100
           )
         )
