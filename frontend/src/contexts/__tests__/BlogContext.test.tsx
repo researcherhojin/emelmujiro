@@ -151,15 +151,8 @@ describe('BlogContext', () => {
   });
 
   test('sets loading state during fetch', async () => {
-    const mockResponse: PaginatedResponse<BlogPost> = {
-      count: 0,
-      next: null,
-      previous: null,
-      results: [],
-    };
-
     mockedApi.getBlogPosts.mockImplementation(
-      (page?: number, pageSize?: number) =>
+      () =>
         new Promise(resolve =>
           setTimeout(
             () =>
