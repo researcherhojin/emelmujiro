@@ -100,6 +100,7 @@ describe('BlogContext', () => {
       results: mockPosts,
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (mockedApi.getBlogPosts as any).mockResolvedValue({
       data: mockResponse,
       status: 200,
@@ -129,6 +130,7 @@ describe('BlogContext', () => {
 
   test('handles fetch error', async () => {
     const errorMessage = 'Failed to fetch posts';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (mockedApi.getBlogPosts as any).mockRejectedValue(new Error(errorMessage));
 
     render(
@@ -158,6 +160,7 @@ describe('BlogContext', () => {
       results: [],
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (mockedApi.getBlogPosts as any).mockImplementation(
       (_page?: number, _pageSize?: number) =>
         new Promise(resolve =>

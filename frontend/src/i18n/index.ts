@@ -21,9 +21,7 @@ let i18nInstance = i18n;
 
 if (!isTest) {
   // Use HTTP backend and language detection in non-test environments
-  i18nInstance = i18nInstance
-    .use(Backend)
-    .use(LanguageDetector);
+  i18nInstance = i18nInstance.use(Backend).use(LanguageDetector);
 }
 
 i18nInstance
@@ -42,19 +40,15 @@ i18nInstance
     },
 
     // Language detection options (only for non-test environments)
-    ...(isTest ? {} : {
-      detection: {
-        order: [
-          'localStorage',
-          'navigator',
-          'htmlTag',
-          'path',
-          'subdomain',
-        ],
-        caches: ['localStorage'],
-        lookupLocalStorage: 'i18nextLng',
-      },
-    }),
+    ...(isTest
+      ? {}
+      : {
+          detection: {
+            order: ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+            caches: ['localStorage'],
+            lookupLocalStorage: 'i18nextLng',
+          },
+        }),
 
     // Support for namespaces
     ns: ['common', 'navigation', 'home', 'about', 'contact', 'blog', 'profile'],
@@ -72,12 +66,14 @@ i18nInstance
     contextSeparator: '_',
 
     // Backend options (only for non-test environments)
-    ...(isTest ? {} : {
-      backend: {
-        loadPath: '/emelmujiro/locales/{{lng}}/{{ns}}.json',
-        addPath: '/emelmujiro/locales/{{lng}}/{{ns}}.json',
-      },
-    }),
+    ...(isTest
+      ? {}
+      : {
+          backend: {
+            loadPath: '/emelmujiro/locales/{{lng}}/{{ns}}.json',
+            addPath: '/emelmujiro/locales/{{lng}}/{{ns}}.json',
+          },
+        }),
 
     // Supported languages
     supportedLngs: ['ko', 'en'],
@@ -85,7 +81,7 @@ i18nInstance
 
     // Clean code
     cleanCode: true,
-    
+
     // React options
     react: {
       bindI18n: 'languageChanged',
