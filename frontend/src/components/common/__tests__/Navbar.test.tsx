@@ -1,4 +1,4 @@
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, within } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import Navbar from '../Navbar';
 
@@ -8,6 +8,28 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
   useLocation: () => ({ pathname: '/' }),
+}));
+
+// Mock i18n translations
+jest.mock('react-i18next', () => ({
+  ...jest.requireActual('react-i18next'),
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'company.name': '에멜무지로',
+        'links.about': '회사소개',
+        'links.services': '서비스',
+        'links.blog': '블로그',
+        'links.profile': '대표 프로필',
+        'actions.contact': '문의하기',
+      };
+      return translations[key] || key;
+    },
+    i18n: {
+      changeLanguage: jest.fn(),
+      language: 'ko',
+    },
+  }),
 }));
 
 describe('Navbar Component', () => {
@@ -24,8 +46,8 @@ describe('Navbar Component', () => {
     renderWithProviders(<Navbar />);
     expect(screen.getByRole('button', { name: '회사소개' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '서비스' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '블로그' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '대표 프로필' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '문의하기' })).toBeInTheDocument();
   });
 
   test('navigates on menu item click', () => {
@@ -56,12 +78,11 @@ describe('Navbar Component', () => {
   test('logo navigates to home', () => {
     renderWithProviders(<Navbar />);
 
-    // The logo text comes from translation, so we need to find it by text first
-    const logoText = screen.getByText('에멜무지로');
-    expect(logoText).toBeInTheDocument();
+    // Find all links and check for the logo link
+    const links = screen.getAllByRole('link');
+    const logoLink = links.find(link => link.textContent === '에멜무지로');
 
-    // The logo should be within a link element
-    const logoLink = logoText.closest('a');
+    expect(logoLink).toBeInTheDocument();
     expect(logoLink).toHaveAttribute('href', '#/');
   });
 
