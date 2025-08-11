@@ -14,7 +14,7 @@ djangorestframework-simplejwt==5.5.1
 ipython==8.29.0
 
 # API 문서화
-drf-yasg==1.21.7
+drf-yasg==1.21.10
 
 # 프로덕션 의존성 (선택사항)
 gunicorn==23.0.0
