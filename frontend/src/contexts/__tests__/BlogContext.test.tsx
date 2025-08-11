@@ -159,7 +159,7 @@ describe('BlogContext', () => {
     };
 
     mockedApi.getBlogPosts.mockImplementation(
-      (_page?: number, _pageSize?: number) =>
+      () =>
         new Promise(resolve =>
           setTimeout(
             () =>
