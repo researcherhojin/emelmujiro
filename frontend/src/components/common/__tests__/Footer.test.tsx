@@ -228,8 +228,9 @@ describe('Footer Component', () => {
       const aiSolutionButton = aiSolutionButtons[0]; // Get the first button
       fireEvent.click(aiSolutionButton);
 
-      await waitFor(() => expect(screen.getByText('AI 솔루션 개발')).toBeInTheDocument());
-      expect(screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')).toBeInTheDocument()
+      );
       expect(screen.getByText('주요 서비스')).toBeInTheDocument();
       expect(screen.getByText('주요 사례')).toBeInTheDocument();
       expect(screen.getByTestId('code-icon')).toBeInTheDocument();
@@ -281,8 +282,8 @@ describe('Footer Component', () => {
       renderWithRouter(<Footer />);
 
       // Open modal
-      const aiSolutionButton = screen.getByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButton);
+      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+      fireEvent.click(aiSolutionButtons[0]);
 
       await waitFor(() => {
         expect(
@@ -305,8 +306,8 @@ describe('Footer Component', () => {
       renderWithRouter(<Footer />);
 
       // Open modal
-      const aiSolutionButton = screen.getByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButton);
+      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+      fireEvent.click(aiSolutionButtons[0]);
 
       await waitFor(() => {
         expect(
@@ -332,8 +333,8 @@ describe('Footer Component', () => {
       renderWithRouter(<Footer />);
 
       // Open modal
-      const aiSolutionButton = screen.getByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButton);
+      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+      fireEvent.click(aiSolutionButtons[0]);
 
       await waitFor(() => {
         expect(
@@ -361,8 +362,8 @@ describe('Footer Component', () => {
       renderWithRouter(<Footer />);
 
       // Open modal
-      const aiSolutionButton = screen.getByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButton);
+      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+      fireEvent.click(aiSolutionButtons[0]);
 
       await waitFor(() => {
         expect(
@@ -371,8 +372,8 @@ describe('Footer Component', () => {
       });
 
       // Click backdrop to close modal
-      const modal = screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.');
-      fireEvent.click(modal);
+      const backdrop = screen.getByLabelText('Close modal');
+      fireEvent.click(backdrop);
 
       await waitFor(() => {
         expect(
@@ -385,8 +386,8 @@ describe('Footer Component', () => {
       renderWithRouter(<Footer />);
 
       // Open modal
-      const aiSolutionButton = screen.getByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButton);
+      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+      fireEvent.click(aiSolutionButtons[0]);
 
       await waitFor(() => {
         expect(
@@ -395,8 +396,8 @@ describe('Footer Component', () => {
       });
 
       // Press Escape to close modal
-      const modal = screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.');
-      fireEvent.keyDown(modal, { key: 'Escape' });
+      const backdrop = screen.getByLabelText('Close modal');
+      fireEvent.keyDown(backdrop, { key: 'Escape' });
 
       await waitFor(() => {
         expect(
@@ -489,14 +490,17 @@ describe('Footer Component', () => {
       renderWithRouter(<Footer />);
 
       // Open modal
-      const aiSolutionButton = screen.getByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButton);
+      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+      fireEvent.click(aiSolutionButtons[0]);
 
       await waitFor(() => {
-        const backdrop = document.querySelector('[aria-label="Close modal"]');
-        expect(backdrop).toHaveAttribute('role', 'button');
-        expect(backdrop).toHaveAttribute('tabIndex', '0');
+        const backdrop = screen.getByLabelText('Close modal');
+        expect(backdrop).toBeInTheDocument();
       });
+
+      const backdrop = screen.getByLabelText('Close modal');
+      expect(backdrop).toHaveAttribute('role', 'button');
+      expect(backdrop).toHaveAttribute('tabIndex', '0');
     });
 
     test('all buttons are accessible', () => {

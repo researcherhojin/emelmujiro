@@ -5,7 +5,7 @@ coverage:
   precision: 2
   round: down
   range: "60...90"
-  
+
   status:
     project:
       default:
@@ -18,24 +18,24 @@ coverage:
         paths:
           - frontend/src
           - backend
-        
+
     patch:
       default:
         target: 60%
         threshold: 5%
         base: auto
-        
+
 comment:
   layout: "reach,diff,flags,files,footer"
   behavior: default
   require_changes: false
-  
+
 flags:
   frontend:
     paths:
       - frontend/src
     carryforward: true
-    
+
   backend:
     paths:
       - backend

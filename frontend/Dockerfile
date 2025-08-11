@@ -1,5 +1,8 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:20.18.0-alpine3.21 AS builder
+
+# Update packages for security
+RUN apk update && apk upgrade
 
 WORKDIR /app
 
@@ -28,13 +31,29 @@ RUN if [ -f yarn.lock ]; then \
     fi
 
 # Production stage
-FROM nginx:alpine
+FROM nginx:1.27.2-alpine3.21
+
+# Update packages for security
+RUN apk update && apk upgrade
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nginx && \
+    adduser -S -D -H -u 1001 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx
 
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy built files from builder stage
 COPY --from=builder /app/build /usr/share/nginx/html
+
+# Set proper permissions
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    chown -R nginx:nginx /etc/nginx/conf.d
+
+# Switch to non-root user
+USER nginx
 
 # Expose port
 EXPOSE 80
