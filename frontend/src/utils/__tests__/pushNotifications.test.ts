@@ -34,10 +34,20 @@ global.fetch = mockFetch;
 const mockSubscription = {
   unsubscribe: jest.fn(),
   endpoint: 'https://test-endpoint.com',
+  expirationTime: null,
+  options: {
+    userVisibleOnly: true,
+    applicationServerKey: null,
+  },
   keys: {
     p256dh: 'test-p256dh',
     auth: 'test-auth',
   },
+  getKey: jest.fn().mockImplementation((name: string) => {
+    if (name === 'p256dh') return 'test-p256dh';
+    if (name === 'auth') return 'test-auth';
+    return null;
+  }),
   toJSON: jest.fn().mockReturnValue({
     endpoint: 'https://test-endpoint.com',
     keys: {
@@ -45,7 +55,7 @@ const mockSubscription = {
       auth: 'test-auth',
     },
   }),
-};
+} as PushSubscription;
 
 // Mock service worker registration
 const mockRegistration = {
@@ -78,11 +88,16 @@ describe('pushNotifications', () => {
     });
 
     // Setup Notification mock
+    const mockNotification = {
+      requestPermission: jest.fn(),
+    };
+    Object.defineProperty(mockNotification, 'permission', {
+      value: 'default',
+      writable: true,
+      configurable: true,
+    });
     Object.defineProperty(global, 'Notification', {
-      value: {
-        permission: 'default',
-        requestPermission: jest.fn(),
-      },
+      value: mockNotification,
       writable: true,
     });
 
@@ -151,7 +166,11 @@ describe('pushNotifications', () => {
 
   describe('isPushNotificationEnabled', () => {
     it('should return true when push notifications are supported and permission granted', () => {
-      global.Notification.permission = 'granted';
+      Object.defineProperty(global.Notification, 'permission', {
+        value: 'granted',
+        writable: true,
+        configurable: true,
+      });
       expect(isPushNotificationEnabled()).toBe(true);
     });
 
@@ -165,19 +184,27 @@ describe('pushNotifications', () => {
     });
 
     it('should return false when permission is denied', () => {
-      global.Notification.permission = 'denied';
+      Object.defineProperty(global.Notification, 'permission', {
+        value: 'denied',
+        writable: true,
+        configurable: true,
+      });
       expect(isPushNotificationEnabled()).toBe(false);
     });
 
     it('should return false when permission is default', () => {
-      global.Notification.permission = 'default';
+      Object.defineProperty(global.Notification, 'permission', {
+        value: 'default',
+        writable: true,
+        configurable: true,
+      });
       expect(isPushNotificationEnabled()).toBe(false);
     });
   });
 
   describe('requestNotificationPermission', () => {
     it('should request permission and return true when granted', async () => {
-      global.Notification.requestPermission.mockResolvedValue('granted');
+      (global.Notification.requestPermission as jest.Mock).mockResolvedValue('granted');
 
       const result = await requestNotificationPermission();
 
@@ -186,7 +213,7 @@ describe('pushNotifications', () => {
     });
 
     it('should return false when permission is denied', async () => {
-      global.Notification.requestPermission.mockResolvedValue('denied');
+      (global.Notification.requestPermission as jest.Mock).mockResolvedValue('denied');
 
       const result = await requestNotificationPermission();
 
@@ -210,7 +237,11 @@ describe('pushNotifications', () => {
 
   describe('subscribeToPushNotifications', () => {
     beforeEach(() => {
-      global.Notification.permission = 'granted';
+      Object.defineProperty(global.Notification, 'permission', {
+        value: 'granted',
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('should subscribe successfully when no existing subscription', async () => {
@@ -245,7 +276,11 @@ describe('pushNotifications', () => {
     });
 
     it('should throw error when permission not granted', async () => {
-      global.Notification.permission = 'denied';
+      Object.defineProperty(global.Notification, 'permission', {
+        value: 'denied',
+        writable: true,
+        configurable: true,
+      });
 
       await expect(subscribeToPushNotifications()).rejects.toThrow(
         'Notification permission not granted'
@@ -336,7 +371,11 @@ describe('pushNotifications', () => {
 
   describe('showNotification', () => {
     beforeEach(() => {
-      global.Notification.permission = 'granted';
+      Object.defineProperty(global.Notification, 'permission', {
+        value: 'granted',
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('should show notification with default options', async () => {
@@ -380,7 +419,11 @@ describe('pushNotifications', () => {
     });
 
     it('should not show notification when push notifications are not enabled', async () => {
-      global.Notification.permission = 'denied';
+      Object.defineProperty(global.Notification, 'permission', {
+        value: 'denied',
+        writable: true,
+        configurable: true,
+      });
 
       await showNotification('Test notification');
 
@@ -400,7 +443,11 @@ describe('pushNotifications', () => {
   describe('urlBase64ToUint8Array', () => {
     // Test the internal urlBase64ToUint8Array function through public API
     it('should correctly decode VAPID key during subscription', async () => {
-      global.Notification.permission = 'granted';
+      Object.defineProperty(global.Notification, 'permission', {
+        value: 'granted',
+        writable: true,
+        configurable: true,
+      });
 
       // The function is tested indirectly through subscribeToPushNotifications
       await subscribeToPushNotifications();
@@ -425,7 +472,11 @@ describe('pushNotifications', () => {
 
     it('should use environment VAPID key when available', async () => {
       process.env.REACT_APP_VAPID_PUBLIC_KEY = 'test-vapid-key';
-      global.Notification.permission = 'granted';
+      Object.defineProperty(global.Notification, 'permission', {
+        value: 'granted',
+        writable: true,
+        configurable: true,
+      });
 
       await subscribeToPushNotifications();
 
@@ -434,7 +485,11 @@ describe('pushNotifications', () => {
 
     it('should use default VAPID key when environment variable not set', async () => {
       delete process.env.REACT_APP_VAPID_PUBLIC_KEY;
-      global.Notification.permission = 'granted';
+      Object.defineProperty(global.Notification, 'permission', {
+        value: 'granted',
+        writable: true,
+        configurable: true,
+      });
 
       await subscribeToPushNotifications();
 

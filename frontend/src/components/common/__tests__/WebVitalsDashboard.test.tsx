@@ -52,7 +52,10 @@ describe('WebVitalsDashboard', () => {
 
   afterEach(() => {
     // Restore original environment
-    process.env = { ...process.env, NODE_ENV: originalEnv || 'test' };
+    process.env = {
+      ...process.env,
+      NODE_ENV: (originalEnv || 'test') as 'development' | 'production' | 'test',
+    };
 
     // Restore original gtag
     Object.defineProperty(window, 'gtag', {

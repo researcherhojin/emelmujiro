@@ -44,13 +44,13 @@ describe('serviceWorkerRegistration', () => {
       installing: null,
       waiting: null,
       active: mockServiceWorker as ServiceWorker,
-      onupdatefound: null,
+      onupdatefound: null as any,
       unregister: jest.fn().mockResolvedValue(true),
       pushManager: {
         getSubscription: jest.fn().mockResolvedValue(null),
         subscribe: jest.fn().mockResolvedValue({}),
       } as unknown as PushManager,
-    };
+    } as any;
 
     // Mock window.location
     Object.defineProperty(window, 'location', {
@@ -240,8 +240,8 @@ describe('serviceWorkerRegistration', () => {
       const mockRegistrationWithUpdate = {
         ...mockServiceWorkerRegistration,
         installing: mockInstallingWorker,
-        onupdatefound: null,
-      };
+        onupdatefound: null as any,
+      } as any;
 
       const mockRegister = jest.fn().mockResolvedValue(mockRegistrationWithUpdate);
 
@@ -273,14 +273,15 @@ describe('serviceWorkerRegistration', () => {
 
       // Simulate update found
       if (mockRegistrationWithUpdate.onupdatefound) {
-if (mockRegistrationWithUpdate.onupdatefound) {
         mockRegistrationWithUpdate.onupdatefound();
-      }
 
         // Simulate installing worker state change to installed
         mockInstallingWorker.state = 'installed';
         if (mockInstallingWorker.onstatechange) {
-          mockInstallingWorker.onstatechange?.call(mockInstallingWorker as ServiceWorker, new Event('statechange'));
+          mockInstallingWorker.onstatechange?.call(
+            mockInstallingWorker as ServiceWorker,
+            new Event('statechange')
+          );
         }
       }
 
@@ -297,8 +298,8 @@ if (mockRegistrationWithUpdate.onupdatefound) {
       const mockRegistrationWithSuccess = {
         ...mockServiceWorkerRegistration,
         installing: mockInstallingWorker,
-        onupdatefound: null,
-      };
+        onupdatefound: null as any,
+      } as any;
 
       const mockRegister = jest.fn().mockResolvedValue(mockRegistrationWithSuccess);
 
@@ -330,14 +331,15 @@ if (mockRegistrationWithUpdate.onupdatefound) {
 
       // Simulate update found
       if (mockRegistrationWithSuccess.onupdatefound) {
-if (mockRegistrationWithSuccess.onupdatefound) {
         mockRegistrationWithSuccess.onupdatefound();
-      }
 
         // Simulate installing worker state change to installed
         mockInstallingWorker.state = 'installed';
         if (mockInstallingWorker.onstatechange) {
-          mockInstallingWorker.onstatechange?.call(mockInstallingWorker as ServiceWorker, new Event('statechange'));
+          mockInstallingWorker.onstatechange?.call(
+            mockInstallingWorker as ServiceWorker,
+            new Event('statechange')
+          );
         }
       }
 
@@ -600,7 +602,7 @@ if (mockRegistrationWithSuccess.onupdatefound) {
         // Test expectations based on whether it's localhost or not
         const fetchWasCalled = mockFetch.mock.calls.length > 0;
         const registerWasCalled = mockRegister.mock.calls.length > 0;
-        
+
         if (expected) {
           // Should call fetch for validation on localhost
           expect(fetchWasCalled).toBe(true);
@@ -617,8 +619,8 @@ if (mockRegistrationWithSuccess.onupdatefound) {
       const mockRegistrationNullInstalling = {
         ...mockServiceWorkerRegistration,
         installing: null,
-        onupdatefound: null,
-      };
+        onupdatefound: null as any,
+      } as any;
 
       const mockRegister = jest.fn().mockResolvedValue(mockRegistrationNullInstalling);
 
@@ -649,9 +651,7 @@ if (mockRegistrationWithSuccess.onupdatefound) {
 
       // Simulate update found with null installing worker
       if (mockRegistrationNullInstalling.onupdatefound) {
-if (mockRegistrationNullInstalling.onupdatefound) {
         mockRegistrationNullInstalling.onupdatefound();
-      }
       }
 
       // Should not throw or cause errors
@@ -668,8 +668,8 @@ if (mockRegistrationNullInstalling.onupdatefound) {
       const mockRegistrationWithInstalling = {
         ...mockServiceWorkerRegistration,
         installing: mockInstallingWorker,
-        onupdatefound: null,
-      };
+        onupdatefound: null as any,
+      } as any;
 
       const mockRegister = jest.fn().mockResolvedValue(mockRegistrationWithInstalling);
 
@@ -701,13 +701,14 @@ if (mockRegistrationNullInstalling.onupdatefound) {
 
       // Simulate update found
       if (mockRegistrationWithInstalling.onupdatefound) {
-if (mockRegistrationWithInstalling.onupdatefound) {
         mockRegistrationWithInstalling.onupdatefound();
-      }
 
         // Keep worker in installing state (not installed)
         if (mockInstallingWorker.onstatechange) {
-          mockInstallingWorker.onstatechange?.call(mockInstallingWorker as ServiceWorker, new Event('statechange'));
+          mockInstallingWorker.onstatechange?.call(
+            mockInstallingWorker as ServiceWorker,
+            new Event('statechange')
+          );
         }
       }
 

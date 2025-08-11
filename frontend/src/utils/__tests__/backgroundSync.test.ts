@@ -46,7 +46,7 @@ const mockTransaction = {
 
 const mockRequest = {
   result: mockDatabase,
-  error: null,
+  error: null as any,
   onsuccess: null as any,
   onerror: null as any,
   onupgradeneeded: null as any,
@@ -59,16 +59,16 @@ const mockPutRequest = {
 };
 
 const mockGetRequest = {
-  result: null,
+  result: null as any,
   onsuccess: null as any,
   onerror: null as any,
-  error: null,
+  error: null as any,
 };
 
 const mockDeleteRequest = {
   onsuccess: null as any,
   onerror: null as any,
-  error: null,
+  error: null as any,
 };
 
 // Mock service worker registration

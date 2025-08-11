@@ -197,11 +197,19 @@ describe('performanceMonitoring', () => {
     const originalNodeEnv = process.env.NODE_ENV;
 
     afterEach(() => {
-      process.env.NODE_ENV = originalNodeEnv;
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: originalNodeEnv,
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('should send metrics to Google Analytics in production', async () => {
-      process.env.NODE_ENV = 'production';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        writable: true,
+        configurable: true,
+      });
       (window as any).gtag = mockGtag;
 
       initWebVitals();
@@ -223,7 +231,11 @@ describe('performanceMonitoring', () => {
     });
 
     it('should not send to Google Analytics if gtag not available', async () => {
-      process.env.NODE_ENV = 'production';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        writable: true,
+        configurable: true,
+      });
 
       initWebVitals();
       const lcpCallback = mockOnLCP.mock.calls[0][0];
@@ -240,7 +252,11 @@ describe('performanceMonitoring', () => {
     });
 
     it('should handle analytics errors gracefully', async () => {
-      process.env.NODE_ENV = 'production';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        writable: true,
+        configurable: true,
+      });
       (window as any).gtag = () => {
         throw new Error('Analytics error');
       };
@@ -260,7 +276,11 @@ describe('performanceMonitoring', () => {
     });
 
     it('should not send analytics in development', async () => {
-      process.env.NODE_ENV = 'development';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'development',
+        writable: true,
+        configurable: true,
+      });
       (window as any).gtag = mockGtag;
 
       initWebVitals();
@@ -379,7 +399,8 @@ describe('performanceMonitoring', () => {
       global.PerformanceObserver = jest.fn().mockImplementation(callback => {
         mockPerformanceObserver.callback = callback;
         return mockPerformanceObserver;
-      });
+      }) as any;
+      (global.PerformanceObserver as any).supportedEntryTypes = ['longtask', 'resource'];
 
       // Mock performance API
       mockPerformance = {
@@ -464,7 +485,8 @@ describe('performanceMonitoring', () => {
     it('should handle PerformanceObserver errors gracefully', () => {
       global.PerformanceObserver = jest.fn().mockImplementation(() => {
         throw new Error('PerformanceObserver error');
-      });
+      }) as any;
+      (global.PerformanceObserver as any).supportedEntryTypes = ['longtask', 'resource'];
 
       expect(() => PerformanceMonitor()).not.toThrow();
     });
