@@ -41,20 +41,40 @@
     <!-- <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" /> -->
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
 
-    <!-- Fonts -->
+    <!-- Resource hints for better performance -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <link rel="dns-prefetch" href="https://api.github.com" />
+
+    <!-- Prefetch critical resources -->
+    <link rel="prefetch" href="%PUBLIC_URL%/offline.html" />
+    <link rel="prefetch" href="%PUBLIC_URL%/manifest.json" />
+
+    <!-- Preload critical images -->
+    <link rel="preload" href="%PUBLIC_URL%/logo192.png" as="image" type="image/png" />
+    <link rel="preload" href="%PUBLIC_URL%/logo512.png" as="image" type="image/png" />
+
+    <!-- Fonts with optimized loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <!-- Pretendard 폰트 -->
+    <!-- Pretendard 폰트 - 지연 로드 최적화 -->
     <link
-      rel="stylesheet"
+      rel="preload"
       as="style"
-      crossorigin
+      onload="this.onload=null;this.rel='stylesheet'"
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+      />
+    </noscript>
 
     <!-- 기타 -->
     <meta name="format-detection" content="telephone=no" />
@@ -64,10 +84,155 @@
     <link rel="canonical" href="https://researcherhojin.github.io/emelmujiro/" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
+    <!-- Critical CSS inline for above-the-fold content -->
+    <style>
+      /* Critical CSS for faster first paint */
+      body {
+        font-family:
+          'Pretendard',
+          -apple-system,
+          BlinkMacSystemFont,
+          system-ui,
+          sans-serif;
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .min-h-screen {
+        min-height: 100vh;
+      }
+      .flex {
+        display: flex;
+      }
+      .items-center {
+        align-items: center;
+      }
+      .bg-white {
+        background-color: white;
+      }
+      .text-4xl {
+        font-size: 2.25rem;
+      }
+      .font-black {
+        font-weight: 900;
+      }
+      .text-gray-900 {
+        color: rgb(17 24 39);
+      }
+    </style>
+
     <title>에멜무지로 | AI 기반 소프트웨어 개발 및 IT 교육 전문가</title>
   </head>
   <body>
     <noscript>자바스크립트를 활성화해주세요.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Loading skeleton for better perceived performance -->
+      <div class="min-h-screen flex items-center justify-center bg-white">
+        <div class="animate-pulse">
+          <div class="h-8 bg-gray-200 rounded w-48 mb-4"></div>
+          <div class="h-4 bg-gray-200 rounded w-32"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preload critical resources and performance optimizations -->
+    <script>
+      // Performance timing
+      window.performanceStart = Date.now();
+
+      // Service Worker registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('%PUBLIC_URL%/service-worker-enhanced.js')
+            .then(registration => {
+              console.log('SW registered:', registration);
+            })
+            .catch(error => {
+              console.log('SW registration failed:', error);
+            });
+        });
+      }
+
+      // Font loading optimization with font-display: swap
+      if (window.FontFace) {
+        const pretendardFont = new FontFace(
+          'Pretendard',
+          'url(https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-regular.woff2) format("woff2")',
+          { display: 'swap' }
+        );
+        pretendardFont
+          .load()
+          .then(() => {
+            document.fonts.add(pretendardFont);
+            document.documentElement.classList.add('fonts-loaded');
+          })
+          .catch(() => {
+            // Fallback to system fonts
+            document.documentElement.classList.add('fonts-failed');
+          });
+      }
+
+      // Critical image preloading
+      if (window.requestIdleCallback) {
+        requestIdleCallback(() => {
+          const criticalImages = ['%PUBLIC_URL%/logo192.png', '%PUBLIC_URL%/logo512.png'];
+
+          criticalImages.forEach(src => {
+            const img = new Image();
+            img.src = src;
+          });
+        });
+      }
+
+      // Network status detection
+      if ('connection' in navigator) {
+        const connection = navigator.connection;
+        if (connection && connection.effectiveType) {
+          document.documentElement.setAttribute('data-connection', connection.effectiveType);
+
+          // Adjust loading strategy based on connection
+          if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
+            document.documentElement.classList.add('slow-connection');
+          }
+        }
+      }
+
+      // Performance observer for Web Vitals
+      if ('PerformanceObserver' in window) {
+        try {
+          const observer = new PerformanceObserver(list => {
+            for (const entry of list.getEntries()) {
+              if (entry.name === 'first-contentful-paint') {
+                console.log('FCP:', entry.startTime);
+              } else if (entry.name === 'largest-contentful-paint') {
+                console.log('LCP:', entry.startTime);
+              }
+            }
+          });
+
+          observer.observe({ entryTypes: ['paint', 'largest-contentful-paint'] });
+        } catch (e) {
+          // Performance observer not supported
+        }
+      }
+
+      // Theme detection and initialization
+      const savedTheme = localStorage.getItem('theme');
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+      const theme = savedTheme || systemTheme;
+
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+
+      // Update theme color meta tag
+      const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeColorMeta) {
+        themeColorMeta.content = theme === 'dark' ? '#1F2937' : '#111827';
+      }
+    </script>
   </body>
 </html>

@@ -1,0 +1,133 @@
+{
+  "title": "Contact Us",
+  "subtitle": "If you'd like to discuss your project, please feel free to contact us anytime",
+  "form": {
+    "name": {
+      "label": "Name",
+      "placeholder": "Please enter your name",
+      "error": "Please enter your name"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "Please enter your email",
+      "error": "Please enter a valid email address"
+    },
+    "company": {
+      "label": "Company",
+      "placeholder": "Please enter your company name (optional)"
+    },
+    "phone": {
+      "label": "Phone",
+      "placeholder": "Please enter your phone number (optional)"
+    },
+    "subject": {
+      "label": "Subject",
+      "placeholder": "Please enter the inquiry subject",
+      "error": "Please enter the inquiry subject"
+    },
+    "message": {
+      "label": "Message",
+      "placeholder": "Please describe your inquiry in detail",
+      "error": "Please enter your inquiry message",
+      "minLength": "Please enter at least 10 characters"
+    },
+    "projectType": {
+      "label": "Project Type",
+      "placeholder": "Please select a project type",
+      "options": {
+        "web": "Web Development",
+        "mobile": "Mobile App",
+        "ai": "AI/ML Solution",
+        "cloud": "Cloud Solution",
+        "education": "Education/Consulting",
+        "other": "Other"
+      }
+    },
+    "budget": {
+      "label": "Estimated Budget",
+      "placeholder": "Please select a budget range (optional)",
+      "options": {
+        "small": "Under $100K",
+        "medium": "$100K - $500K",
+        "large": "$500K - $1M",
+        "enterprise": "Over $1M",
+        "discuss": "To be discussed"
+      }
+    },
+    "timeline": {
+      "label": "Desired Timeline",
+      "placeholder": "Please select your desired completion timeline (optional)",
+      "options": {
+        "urgent": "Within 1 month",
+        "fast": "1-3 months",
+        "normal": "3-6 months",
+        "flexible": "6+ months",
+        "discuss": "To be discussed"
+      }
+    },
+    "privacy": {
+      "label": "I agree to the Privacy Policy",
+      "error": "Please agree to the Privacy Policy",
+      "link": "View Privacy Policy"
+    },
+    "marketing": {
+      "label": "I agree to receive marketing information (optional)"
+    },
+    "submit": "Send Inquiry",
+    "submitting": "Sending...",
+    "success": {
+      "title": "Your inquiry has been sent successfully!",
+      "message": "We will respond as soon as possible. Thank you."
+    },
+    "error": {
+      "title": "Failed to send inquiry",
+      "message": "Please try again later or contact us directly."
+    }
+  },
+  "info": {
+    "title": "Contact Information",
+    "description": "You can also contact us through other methods",
+    "email": {
+      "title": "Email",
+      "value": "contact@emelmujiro.com",
+      "description": "Response within 24 hours"
+    },
+    "phone": {
+      "title": "Phone",
+      "value": "+82-10-1234-5678",
+      "description": "Weekdays 09:00-18:00"
+    },
+    "address": {
+      "title": "Address",
+      "value": "Gangnam-gu, Seoul",
+      "description": "Visit consultation available (appointment required)"
+    },
+    "hours": {
+      "title": "Business Hours",
+      "weekdays": "Weekdays: 09:00 - 18:00",
+      "weekend": "Weekend: 10:00 - 16:00",
+      "closed": "Closed on public holidays"
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "question": "How can I get a project quote?",
+        "answer": "If you fill out the inquiry form, we will provide an initial quote within 24 hours. For an accurate quote, please provide detailed requirements."
+      },
+      {
+        "question": "How long does development take?",
+        "answer": "It depends on the scale and complexity of the project, but typically web projects take 4-12 weeks and AI projects take 8-16 weeks."
+      },
+      {
+        "question": "Do you provide maintenance services?",
+        "answer": "Yes, we provide 6 months of free maintenance after development completion, and paid maintenance services are available afterwards."
+      },
+      {
+        "question": "Is remote development possible?",
+        "answer": "Yes, remote development is possible. We share progress and receive feedback through regular video conferences."
+      }
+    ]
+  }
+}

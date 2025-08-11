@@ -46,13 +46,13 @@ const Button: React.FC<ButtonProps> = props => {
   } = props;
   // 스타일 변형
   const variants = {
-    primary: 'bg-gray-900 text-white hover:bg-gray-800 focus:ring-gray-900',
+    primary: 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 focus:ring-gray-900 dark:focus:ring-gray-100',
     secondary:
-      'bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400',
+      'bg-white dark:bg-dark-800 border-2 border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700 hover:border-gray-400 dark:hover:border-dark-500',
     outline:
-      'bg-transparent border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-600',
+      'bg-transparent border-2 border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100 hover:bg-gray-900 dark:hover:bg-gray-100 hover:text-white dark:hover:text-gray-900',
+    ghost: 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800',
+    danger: 'bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800 focus:ring-red-600 dark:focus:ring-red-500',
   };
 
   // 크기 변형

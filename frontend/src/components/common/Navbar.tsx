@@ -1,6 +1,9 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import DarkModeToggle from './DarkModeToggle';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface NavItem {
   label: string;
@@ -12,6 +15,7 @@ const Navbar: React.FC = memo(() => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation('navigation');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,10 +27,10 @@ const Navbar: React.FC = memo(() => {
   }, []);
 
   const navItems: NavItem[] = [
-    { label: '회사소개', path: '/about' },
-    { label: '서비스', path: '/#services' },
-    { label: '블로그', path: '/blog' },
-    { label: '대표 프로필', path: '/profile' },
+    { label: t('links.about'), path: '/about' },
+    { label: t('links.services'), path: '/#services' },
+    { label: t('links.blog'), path: '/blog' },
+    { label: t('links.profile'), path: '/profile' },
   ];
 
   const handleNavigation = useCallback(
@@ -83,8 +87,8 @@ const Navbar: React.FC = memo(() => {
     <nav
       className={`fixed w-full z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-white shadow-lg border-b border-gray-200'
-          : 'bg-white/98 backdrop-blur-sm shadow-sm border-b border-gray-100'
+          ? 'bg-white dark:bg-dark-900 shadow-lg border-b border-gray-200 dark:border-dark-700'
+          : 'bg-white/98 dark:bg-dark-900/95 backdrop-blur-sm shadow-sm border-b border-gray-100 dark:border-dark-800'
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -92,51 +96,61 @@ const Navbar: React.FC = memo(() => {
           {/* Logo */}
           <Link
             to="/"
-            className="text-2xl font-black text-gray-900 hover:text-gray-700 transition-colors tracking-tight select-none"
+            className="text-2xl font-black text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors tracking-tight select-none"
           >
-            에멜무지로
+            {t('company.name')}
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-12">
+          <div className="hidden md:flex items-center space-x-8">
             {navItems.map(item => (
               <button
                 key={item.path}
                 onClick={() => handleNavigation(item.path)}
                 className={`text-base font-medium transition-all duration-200 relative ${
                   isActive(item.path)
-                    ? 'text-gray-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 after:rounded-full'
-                    : 'text-gray-600 hover:text-gray-900 hover:after:absolute hover:after:bottom-0 hover:after:left-0 hover:after:w-full hover:after:h-0.5 hover:after:bg-gray-300 hover:after:rounded-full'
+                    ? 'text-gray-900 dark:text-white after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:rounded-full'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:after:absolute hover:after:bottom-0 hover:after:left-0 hover:after:w-full hover:after:h-0.5 hover:after:bg-gray-300 dark:hover:after:bg-gray-600 hover:after:rounded-full'
                 }`}
               >
                 {item.label}
               </button>
             ))}
 
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+            
+            {/* Dark Mode Toggle */}
+            <DarkModeToggle />
+            
             <button
               onClick={handleContactClick}
-              className="px-6 py-3 bg-gray-900 text-white text-base font-semibold 
-                                rounded-lg hover:bg-gray-800 transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-100"
+              className="px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-base font-semibold 
+                                rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-100"
             >
-              문의하기
+              {t('links.contact')}
             </button>
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={toggleMenu}
-            className="md:hidden inline-flex items-center justify-center p-2 text-gray-700 
-                            hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200 active:scale-95"
-            aria-label="메뉴 토글"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="md:hidden flex items-center space-x-3">
+            <LanguageSwitcher />
+            <DarkModeToggle />
+            <button
+              onClick={toggleMenu}
+              className="inline-flex items-center justify-center p-2 text-gray-700 dark:text-gray-300 
+                              hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-800 rounded-lg transition-all duration-200 active:scale-95"
+              aria-label={t('accessibility.menu', { ns: 'common' })}
+            >
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+        <div className="md:hidden bg-white dark:bg-dark-900 border-t border-gray-200 dark:border-dark-700 shadow-lg">
           <div className="px-4 py-6 space-y-2">
             {navItems.map(item => (
               <button
@@ -145,8 +159,8 @@ const Navbar: React.FC = memo(() => {
                 className={`block w-full text-left px-4 py-3 text-base font-medium 
                                     transition-colors ${
                                       isActive(item.path)
-                                        ? 'text-gray-900 bg-gray-50'
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                        ? 'text-gray-900 dark:text-white bg-gray-50 dark:bg-dark-800'
+                                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-dark-800'
                                     }`}
               >
                 {item.label}
@@ -156,10 +170,10 @@ const Navbar: React.FC = memo(() => {
             <div className="pt-4">
               <button
                 onClick={handleContactClick}
-                className="w-full px-4 py-4 bg-gray-900 text-white text-base 
-                                    font-semibold rounded-lg hover:bg-gray-800 transition-all shadow-md active:scale-95"
+                className="w-full px-4 py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-base 
+                                    font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all shadow-md active:scale-95"
               >
-                문의하기
+                {t('links.contact')}
               </button>
             </div>
           </div>

@@ -4,7 +4,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-import { initWebVitals, PerformanceMonitor } from './utils/performanceMonitoring';
+import { initPerformanceMonitoring, checkPerformanceBudget } from './utils/webVitals';
+import { initializeCacheOptimization } from './utils/cacheOptimization';
 
 const rootElement = document.getElementById('root');
 
@@ -36,8 +37,16 @@ serviceWorkerRegistration.register({
   },
 });
 
-// Initialize Web Vitals monitoring
-initWebVitals();
+// Initialize cache optimization
+initializeCacheOptimization();
 
-// Start performance monitoring
-PerformanceMonitor();
+// Initialize enhanced performance monitoring
+initPerformanceMonitoring({
+  enableLogging: process.env.NODE_ENV === 'development',
+  sampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1, // 10% sampling in production
+});
+
+// Check performance budgets
+if (process.env.NODE_ENV === 'development') {
+  checkPerformanceBudget();
+}

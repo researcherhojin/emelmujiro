@@ -59,6 +59,10 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     if (savedTheme === 'light' || savedTheme === 'dark') {
       return savedTheme;
     }
+    // If no saved preference, check system preference
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
     return 'light';
   });
   const [isGlobalLoading, setGlobalLoading] = useState(false);
@@ -69,13 +73,56 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   // Apply theme to document root
   useEffect(() => {
     const root = document.documentElement;
+    
+    // Add transition class temporarily to prevent jarring transitions on initial load
+    root.style.setProperty('--theme-transition', 'none');
+    
     if (theme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
     localStorage.setItem('theme', theme);
+    
+    // Update meta theme-color for PWA
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
+    }
+    
+    // Re-enable transitions after a brief moment
+    setTimeout(() => {
+      root.style.removeProperty('--theme-transition');
+    }, 100);
   }, [theme]);
+
+  // Listen for system theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      const savedTheme = localStorage.getItem('theme');
+      // Only apply system theme if user hasn't set a preference
+      if (!savedTheme) {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    };
+    
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleSystemThemeChange);
+    } else {
+      // Fallback for older browsers
+      mediaQuery.addListener(handleSystemThemeChange);
+    }
+    
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleSystemThemeChange);
+      } else {
+        mediaQuery.removeListener(handleSystemThemeChange);
+      }
+    };
+  }, []);
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'light' ? 'dark' : 'light'));

@@ -40,11 +40,61 @@
       "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
     },
     {
+      "name": "블로그",
+      "short_name": "블로그",
+      "description": "최신 기술 블로그 글 보기",
+      "url": "/emelmujiro/#/blog",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    },
+    {
       "name": "회사소개",
       "short_name": "소개",
       "description": "에멜무지로 회사 소개",
       "url": "/emelmujiro/#/about",
       "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "대표 프로필",
+      "short_name": "프로필",
+      "description": "대표 이력 및 전문 분야",
+      "url": "/emelmujiro/#/profile",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
     }
-  ]
+  ],
+  "share_target": {
+    "action": "/emelmujiro/#/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "screenshots": [
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "form_factor": "wide"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "form_factor": "narrow"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+emelmujiro",
+      "url": "/emelmujiro/#/%s"
+    }
+  ],
+  "related_applications": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
 }

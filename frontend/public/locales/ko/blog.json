@@ -1,0 +1,102 @@
+{
+  "title": "블로그",
+  "subtitle": "최신 기술 트렌드와 인사이트를 공유합니다",
+  "search": {
+    "placeholder": "검색어를 입력하세요...",
+    "button": "검색",
+    "noResults": "검색 결과가 없습니다",
+    "resultsCount": "{{count}}개의 결과를 찾았습니다"
+  },
+  "categories": {
+    "all": "전체",
+    "ai": "인공지능",
+    "web": "웹 개발",
+    "mobile": "모바일",
+    "cloud": "클라우드",
+    "education": "교육",
+    "tech": "기술 트렌드",
+    "business": "비즈니스"
+  },
+  "filters": {
+    "category": "카테고리",
+    "date": "날짜",
+    "author": "작성자",
+    "tags": "태그"
+  },
+  "sort": {
+    "latest": "최신순",
+    "oldest": "오래된순",
+    "popular": "인기순",
+    "views": "조회순"
+  },
+  "post": {
+    "readTime": "읽는 시간: {{minutes}}분",
+    "publishedDate": "{{date}}에 발행됨",
+    "updatedDate": "{{date}}에 업데이트됨",
+    "author": "작성자: {{name}}",
+    "views": "조회수 {{count}}회",
+    "likes": "좋아요 {{count}}개",
+    "comments": "댓글 {{count}}개",
+    "tags": "태그",
+    "share": "공유하기",
+    "edit": "수정",
+    "delete": "삭제",
+    "relatedPosts": "관련 글",
+    "tableOfContents": "목차"
+  },
+  "comments": {
+    "title": "댓글",
+    "writeComment": "댓글 작성",
+    "placeholder": "댓글을 입력하세요...",
+    "submit": "댓글 등록",
+    "reply": "답글",
+    "edit": "수정",
+    "delete": "삭제",
+    "like": "좋아요",
+    "report": "신고",
+    "noComments": "아직 댓글이 없습니다. 첫 번째 댓글을 남겨보세요!",
+    "loading": "댓글을 불러오는 중...",
+    "error": "댓글을 불러올 수 없습니다",
+    "loginRequired": "댓글을 작성하려면 로그인이 필요합니다"
+  },
+  "editor": {
+    "title": "글 작성",
+    "titlePlaceholder": "제목을 입력하세요",
+    "contentPlaceholder": "내용을 입력하세요",
+    "category": "카테고리",
+    "tags": "태그",
+    "tagsPlaceholder": "태그를 입력하고 Enter를 눌러주세요",
+    "featuredImage": "대표 이미지",
+    "excerpt": "요약",
+    "excerptPlaceholder": "글의 요약을 입력하세요",
+    "publish": "발행",
+    "saveDraft": "임시저장",
+    "preview": "미리보기",
+    "cancel": "취소",
+    "uploading": "업로드 중...",
+    "uploadError": "업로드 실패",
+    "validation": {
+      "titleRequired": "제목을 입력해주세요",
+      "contentRequired": "내용을 입력해주세요",
+      "categoryRequired": "카테고리를 선택해주세요",
+      "titleTooLong": "제목이 너무 깁니다",
+      "contentTooShort": "내용이 너무 짧습니다"
+    }
+  },
+  "actions": {
+    "loadMore": "더 보기",
+    "goBack": "뒤로 가기",
+    "refresh": "새로고침",
+    "copyLink": "링크 복사",
+    "copySuccess": "링크가 복사되었습니다"
+  },
+  "newsletter": {
+    "title": "뉴스레터 구독",
+    "description": "최신 글을 이메일로 받아보세요",
+    "emailPlaceholder": "이메일 주소",
+    "subscribe": "구독하기",
+    "subscribing": "구독 중...",
+    "success": "구독해주셔서 감사합니다!",
+    "error": "구독에 실패했습니다. 다시 시도해주세요."
+  }
+}

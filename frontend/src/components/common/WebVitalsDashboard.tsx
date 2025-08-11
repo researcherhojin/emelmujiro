@@ -238,18 +238,3 @@ const WebVitalsDashboard: React.FC = memo(() => {
 WebVitalsDashboard.displayName = 'WebVitalsDashboard';
 
 export default WebVitalsDashboard;
-
-// Type declarations for gtag (if using Google Analytics)
-declare global {
-  interface Window {
-    gtag?: (
-      command: string,
-      action: string,
-      parameters: {
-        metric_name: string;
-        metric_value: number;
-        metric_rating: string;
-      }
-    ) => void;
-  }
-}

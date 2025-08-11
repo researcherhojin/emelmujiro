@@ -1,0 +1,209 @@
+{
+  "buttons": {
+    "submit": "제출",
+    "cancel": "취소",
+    "save": "저장",
+    "edit": "편집",
+    "delete": "삭제",
+    "confirm": "확인",
+    "close": "닫기",
+    "back": "뒤로",
+    "next": "다음",
+    "previous": "이전",
+    "more": "더보기",
+    "less": "접기",
+    "search": "검색",
+    "filter": "필터",
+    "sort": "정렬",
+    "refresh": "새로고침",
+    "login": "로그인",
+    "logout": "로그아웃",
+    "register": "회원가입",
+    "contact": "문의하기",
+    "download": "다운로드",
+    "upload": "업로드",
+    "share": "공유",
+    "copy": "복사",
+    "like": "좋아요",
+    "comment": "댓글",
+    "subscribe": "구독"
+  },
+  "messages": {
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다",
+    "success": "성공했습니다",
+    "warning": "주의",
+    "info": "정보",
+    "noData": "데이터가 없습니다",
+    "notFound": "찾을 수 없습니다",
+    "unauthorized": "권한이 없습니다",
+    "serverError": "서버 오류가 발생했습니다",
+    "networkError": "네트워크 오류가 발생했습니다",
+    "tryAgain": "다시 시도해 주세요",
+    "comingSoon": "곧 출시예정",
+    "offline": "오프라인 상태입니다",
+    "online": "온라인 상태입니다"
+  },
+  "forms": {
+    "required": "필수 항목입니다",
+    "invalid": "유효하지 않습니다",
+    "tooShort": "너무 짧습니다",
+    "tooLong": "너무 깁니다",
+    "invalidEmail": "유효하지 않은 이메일 주소입니다",
+    "invalidPhone": "유효하지 않은 전화번호입니다",
+    "invalidUrl": "유효하지 않은 URL입니다",
+    "passwordMismatch": "비밀번호가 일치하지 않습니다",
+    "weakPassword": "비밀번호가 너무 약합니다",
+    "minLength": "최소 {{count}}자 이상 입력해주세요",
+    "maxLength": "최대 {{count}}자까지 입력 가능합니다"
+  },
+  "time": {
+    "now": "방금",
+    "minuteAgo": "{{count}}분 전",
+    "hourAgo": "{{count}}시간 전",
+    "dayAgo": "{{count}}일 전",
+    "weekAgo": "{{count}}주 전",
+    "monthAgo": "{{count}}개월 전",
+    "yearAgo": "{{count}}년 전",
+    "today": "오늘",
+    "yesterday": "어제",
+    "tomorrow": "내일"
+  },
+  "units": {
+    "year": "년",
+    "month": "월",
+    "week": "주",
+    "day": "일",
+    "hour": "시간",
+    "minute": "분",
+    "second": "초"
+  },
+  "languages": {
+    "ko": "한국어",
+    "en": "English"
+  },
+  "accessibility": {
+    "skipToMain": "본문으로 이동",
+    "menu": "메뉴",
+    "closeMenu": "메뉴 닫기",
+    "openMenu": "메뉴 열기",
+    "search": "검색",
+    "languageSelector": "언어 선택",
+    "darkMode": "다크 모드",
+    "lightMode": "라이트 모드"
+  },
+  "chat": {
+    "title": "고객 지원",
+    "open": "채팅 열기",
+    "close": "채팅 닫기",
+    "minimize": "최소화",
+    "maximize": "최대화",
+    "send": "전송",
+    "typing": "입력 중...",
+    "retry": "다시 시도",
+    "export": "내보내기",
+    "exportTranscript": "대화 내용 내보내기",
+    "exportSuccess": "채팅 기록을 다운로드했습니다",
+    "downloadFile": "파일 다운로드",
+    "attachFile": "파일 첨부",
+    "addEmoji": "이모지 추가",
+    "businessHours": "운영시간",
+    "scrollToBottom": "최신 메시지로 이동",
+    "status": {
+      "online": "온라인",
+      "offline": "오프라인",
+      "afterHours": "운영시간 외",
+      "busy": "상담 중",
+      "connected": "연결됨",
+      "connecting": "연결 중..."
+    },
+    "connectionStatus": {
+      "reconnecting": "연결 중... 메시지는 연결 후 전송됩니다"
+    },
+    "afterHours": {
+      "title": "운영시간 외입니다",
+      "message": "운영시간"
+    },
+    "placeholder": {
+      "connected": "메시지를 입력하세요...",
+      "disconnected": "연결 중..."
+    },
+    "quickInfo": {
+      "available": "지금 채팅하세요!",
+      "unavailable": "메시지를 남겨주세요"
+    },
+    "quickReplies": {
+      "title": "빠른 답변을 선택하세요",
+      "service": "서비스 문의",
+      "technical": "기술 지원",
+      "pricing": "요금 문의",
+      "contact": "연락처 문의",
+      "or": "또는 직접 메시지를 입력하세요"
+    },
+    "emptyState": {
+      "title": "대화를 시작해보세요",
+      "subtitle": "궁금한 것이 있으시면 언제든 물어보세요!"
+    },
+    "emoji": {
+      "title": "이모지 선택",
+      "search": "이모지 검색...",
+      "smileys": "표정",
+      "gestures": "제스처",
+      "objects": "사물",
+      "symbols": "기호",
+      "tip": "이모지를 클릭하여 추가하세요"
+    },
+    "fileUpload": {
+      "title": "파일 업로드",
+      "dragDrop": "파일을 끌어다 놓거나",
+      "dropHere": "여기에 파일을 놓아주세요",
+      "browse": "파일 선택",
+      "upload": "업로드",
+      "uploading": "업로드 중...",
+      "completed": "업로드 완료",
+      "success": "파일이 성공적으로 업로드되었습니다",
+      "failed": "파일 업로드에 실패했습니다",
+      "invalidType": "지원하지 않는 파일 형식입니다",
+      "fileTooLarge": "파일 크기가 너무 큽니다",
+      "allowedTypes": "지원 파일 형식:",
+      "formats": "이미지, PDF, 문서, 동영상, 음성파일"
+    },
+    "error": {
+      "sendFailed": "메시지 전송에 실패했습니다",
+      "uploadFailed": "파일 업로드에 실패했습니다",
+      "exportFailed": "채팅 기록 내보내기에 실패했습니다"
+    },
+    "admin": {
+      "title": "채팅 관리자 패널",
+      "connected": "연결됨",
+      "settings": "설정",
+      "cannedResponses": "자동 응답",
+      "statistics": "통계",
+      "users": "사용자",
+      "welcomeMessage": "환영 메시지",
+      "maxMessageLength": "최대 메시지 길이",
+      "features": "기능 설정",
+      "allowFileUpload": "파일 업로드 허용",
+      "allowEmoji": "이모지 사용 허용",
+      "soundEnabled": "알림음 활성화",
+      "saveSettings": "설정 저장",
+      "settingsSaved": "설정이 저장되었습니다",
+      "settingsSaveFailed": "설정 저장에 실패했습니다",
+      "addCannedResponse": "새 자동 응답 추가...",
+      "add": "추가",
+      "totalMessages": "총 메시지",
+      "userMessages": "사용자 메시지",
+      "avgResponseTime": "평균 응답시간",
+      "satisfaction": "만족도",
+      "businessHours": "운영 현황",
+      "currentlyOpen": "현재 운영 중",
+      "currentlyClosed": "현재 운영 종료",
+      "activeUsers": "활성 사용자",
+      "online": "온라인",
+      "anonymousUser": "익명 사용자",
+      "connectionId": "연결 ID",
+      "noActiveUsers": "현재 활성 사용자가 없습니다",
+      "refresh": "새로고침"
+    }
+  }
+}

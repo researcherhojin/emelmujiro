@@ -1,7 +1,77 @@
 # https://www.robotstxt.org/robotstxt.html
+# Robots.txt for Emelmujiro (에멜무지로)
+# AI Education and Consulting Company
+
+# Allow all web crawlers
 User-agent: *
 Allow: /
+Allow: /static/
+Allow: /assets/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.webp
+
+# Disallow admin and API paths (even though they don't exist in static site)
 Disallow: /api/
 Disallow: /admin/
+Disallow: /_next/
+Disallow: /node_modules/
+Disallow: /test-results/
+Disallow: /coverage/
+Disallow: /build/
+Disallow: /src/
+Disallow: /.git/
+Disallow: /*.test.*
+Disallow: /*/__tests__/
+Disallow: /*.map
 
+# Allow important files for SEO
+Allow: /robots.txt
+Allow: /sitemap.xml
+Allow: /manifest.json
+Allow: /favicon.ico
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+# Social media crawlers
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# Sitemap location
 Sitemap: https://researcherhojin.github.io/emelmujiro/sitemap.xml
+
+# Host specification
+Host: https://researcherhojin.github.io

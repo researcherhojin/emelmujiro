@@ -1,0 +1,70 @@
+{
+  "hero": {
+    "title": "실무에 강한 AI 전문가 그룹",
+    "subtitle": "대기업 AI 교육부터 스타트업 기술 컨설팅까지,",
+    "description": "맞춤형 솔루션으로 비즈니스 성장을 가속화합니다.",
+    "cta": {
+      "primary": "프로젝트 문의하기",
+      "secondary": "회사 소개"
+    }
+  },
+  "quickIntro": {
+    "title": "에멜무지로와 함께하는 디지털 혁신",
+    "description": "10년 이상의 경험을 바탕으로 최고의 기술 솔루션을 제공합니다",
+    "features": [
+      {
+        "title": "AI/ML 솔루션",
+        "description": "최신 인공지능 기술을 활용한 맞춤형 솔루션 개발"
+      },
+      {
+        "title": "교육 프로그램",
+        "description": "실무 중심의 체계적인 IT 교육 프로그램 제공"
+      },
+      {
+        "title": "컨설팅",
+        "description": "기업의 디지털 전환을 위한 전문 컨설팅 서비스"
+      }
+    ]
+  },
+  "services": {
+    "title": "주요 서비스",
+    "subtitle": "혁신적인 기술로 비즈니스 성장을 지원합니다",
+    "items": [
+      {
+        "title": "AI/ML 개발",
+        "description": "머신러닝, 딥러닝 모델 개발 및 최적화",
+        "features": ["자연어 처리", "컴퓨터 비전", "추천 시스템", "예측 모델링"]
+      },
+      {
+        "title": "웹/모바일 개발",
+        "description": "현대적이고 확장 가능한 애플리케이션 개발",
+        "features": ["React/Vue.js", "Node.js/Python", "모바일 앱", "API 개발"]
+      },
+      {
+        "title": "클라우드 솔루션",
+        "description": "AWS, GCP, Azure 기반 인프라 구축",
+        "features": ["마이그레이션", "DevOps", "모니터링", "보안"]
+      },
+      {
+        "title": "교육 & 트레이닝",
+        "description": "실무 중심의 기술 교육 프로그램",
+        "features": ["기업 교육", "개인 코칭", "워크샵", "멘토링"]
+      }
+    ]
+  },
+  "partners": {
+    "title": "함께하는 파트너들",
+    "subtitle": "다양한 기업과의 협력을 통해 성장해왔습니다"
+  },
+  "cta": {
+    "title": "프로젝트를 시작할 준비가 되셨나요?",
+    "description": "전문가와 상담하고 맞춤형 솔루션을 받아보세요",
+    "button": "무료 상담 신청"
+  },
+  "statistics": {
+    "projects": "완료된 프로젝트",
+    "clients": "만족한 고객",
+    "experience": "년의 경험",
+    "technologies": "기술 스택"
+  }
+}

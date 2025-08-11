@@ -1,0 +1,177 @@
+{
+  "title": "대표 프로필",
+  "name": "이호진",
+  "title_position": "대표이사 / AI 엔지니어",
+  "intro": "10년 이상의 소프트웨어 개발 경험과 AI 전문성을 바탕으로 혁신적인 솔루션을 제공합니다.",
+  "sections": {
+    "about": {
+      "title": "소개",
+      "description": "서울대학교에서 컴퓨터공학을 전공하고, 네이버, 카카오 등 대기업에서 다양한 프로젝트를 수행했습니다. 현재는 AI와 머신러닝 분야에 전문성을 집중하며, 기업들의 디지털 전환을 돕고 있습니다."
+    },
+    "experience": {
+      "title": "경력",
+      "items": [
+        {
+          "company": "에멜무지로",
+          "position": "대표이사 / AI 엔지니어",
+          "period": "2023년 - 현재",
+          "description": "AI 기반 소프트웨어 개발 및 IT 교육 전문 회사 설립 및 운영"
+        },
+        {
+          "company": "네이버",
+          "position": "시니어 소프트웨어 엔지니어",
+          "period": "2020년 - 2023년",
+          "description": "AI 플랫폼 개발 및 머신러닝 모델 최적화"
+        },
+        {
+          "company": "카카오",
+          "position": "소프트웨어 엔지니어",
+          "period": "2018년 - 2020년",
+          "description": "모바일 플랫폼 개발 및 데이터 분석 시스템 구축"
+        }
+      ]
+    },
+    "education": {
+      "title": "학력",
+      "items": [
+        {
+          "school": "서울대학교",
+          "degree": "컴퓨터공학과 석사",
+          "period": "2016년 - 2018년",
+          "description": "인공지능 및 머신러닝 연구"
+        },
+        {
+          "school": "서울대학교",
+          "degree": "컴퓨터공학과 학사",
+          "period": "2012년 - 2016년",
+          "description": "소프트웨어공학 및 알고리즘 연구"
+        }
+      ]
+    },
+    "skills": {
+      "title": "전문 기술",
+      "categories": [
+        {
+          "name": "프로그래밍 언어",
+          "skills": ["Python", "JavaScript", "TypeScript", "Java", "Go", "Rust"]
+        },
+        {
+          "name": "AI/ML 프레임워크",
+          "skills": ["TensorFlow", "PyTorch", "Keras", "Scikit-learn", "Hugging Face"]
+        },
+        {
+          "name": "웹 프레임워크",
+          "skills": ["React", "Vue.js", "Node.js", "Django", "FastAPI", "Express"]
+        },
+        {
+          "name": "클라우드 플랫폼",
+          "skills": ["AWS", "Google Cloud", "Azure", "Docker", "Kubernetes"]
+        },
+        {
+          "name": "데이터베이스",
+          "skills": ["PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch"]
+        }
+      ]
+    },
+    "achievements": {
+      "title": "주요 성과",
+      "items": [
+        {
+          "title": "AI 기반 추천 시스템 개발",
+          "description": "대형 이커머스 플랫폼을 위한 개인화 추천 엔진 개발로 전환율 30% 향상",
+          "year": "2023"
+        },
+        {
+          "title": "자연어 처리 모델 최적화",
+          "description": "BERT 기반 감정분석 모델 개발 및 추론 속도 50% 개선",
+          "year": "2022"
+        },
+        {
+          "title": "기업 교육 프로그램 런칭",
+          "description": "100명 이상의 개발자를 대상으로 AI/ML 교육 프로그램 성공적으로 진행",
+          "year": "2023"
+        }
+      ]
+    },
+    "certifications": {
+      "title": "자격증",
+      "items": [
+        {
+          "name": "AWS Certified Solutions Architect",
+          "issuer": "Amazon Web Services",
+          "year": "2022"
+        },
+        {
+          "name": "Google Cloud Professional ML Engineer",
+          "issuer": "Google Cloud",
+          "year": "2021"
+        },
+        {
+          "name": "TensorFlow Developer Certificate",
+          "issuer": "TensorFlow",
+          "year": "2020"
+        }
+      ]
+    },
+    "projects": {
+      "title": "주요 프로젝트",
+      "items": [
+        {
+          "name": "AI 기반 고객 서비스 챗봇",
+          "description": "자연어 처리 기술을 활용한 지능형 고객 서비스 시스템",
+          "technologies": ["Python", "TensorFlow", "BERT", "FastAPI", "React"],
+          "year": "2023"
+        },
+        {
+          "name": "실시간 데이터 분석 플랫폼",
+          "description": "대용량 실시간 데이터 처리 및 시각화 플랫폼 구축",
+          "technologies": ["Python", "Apache Kafka", "Elasticsearch", "Grafana", "Docker"],
+          "year": "2022"
+        },
+        {
+          "name": "이커머스 추천 엔진",
+          "description": "머신러닝 기반 개인화 상품 추천 시스템 개발",
+          "technologies": ["Python", "PyTorch", "Redis", "PostgreSQL", "Kubernetes"],
+          "year": "2021"
+        }
+      ]
+    },
+    "publications": {
+      "title": "논문 및 발표",
+      "items": [
+        {
+          "title": "Deep Learning Approaches for Recommendation Systems",
+          "venue": "ICML 2023",
+          "year": "2023"
+        },
+        {
+          "title": "Optimizing BERT for Korean Language Processing",
+          "venue": "ACL 2022",
+          "year": "2022"
+        }
+      ]
+    }
+  },
+  "contact": {
+    "title": "연락하기",
+    "description": "협업이나 프로젝트 문의가 있으시면 언제든 연락주세요",
+    "email": "hojin@emelmujiro.com",
+    "linkedin": "linkedin.com/in/hojinlee",
+    "github": "github.com/hojinlee"
+  },
+  "testimonials": {
+    "title": "고객 후기",
+    "items": [
+      {
+        "name": "김철수",
+        "company": "테크 스타트업 CEO",
+        "content": "호진님의 AI 전문성 덕분에 우리 제품의 핵심 기능을 성공적으로 구현할 수 있었습니다."
+      },
+      {
+        "name": "박영희",
+        "company": "대기업 개발팀 리더",
+        "content": "체계적인 교육 프로그램과 실무 중심의 접근법이 매우 인상적이었습니다."
+      }
+    ]
+  }
+}

@@ -2,6 +2,7 @@
 export { default as Button } from './Button';
 export { default as Card } from './Card';
 export { default as CompanyLogo } from './CompanyLogo';
+export { default as DarkModeToggle } from './DarkModeToggle';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as ErrorMessage } from './ErrorMessage';
 export { default as Footer } from './Footer';

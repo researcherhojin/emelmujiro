@@ -1,0 +1,106 @@
+{
+  "title": "Blog",
+  "subtitle": "Sharing the latest technology trends and insights",
+  "search": {
+    "placeholder": "Enter search terms...",
+    "button": "Search",
+    "noResults": "No search results found",
+    "resultsCount": "Found {{count}} result",
+    "resultsCount_plural": "Found {{count}} results"
+  },
+  "categories": {
+    "all": "All",
+    "ai": "Artificial Intelligence",
+    "web": "Web Development",
+    "mobile": "Mobile",
+    "cloud": "Cloud",
+    "education": "Education",
+    "tech": "Tech Trends",
+    "business": "Business"
+  },
+  "filters": {
+    "category": "Category",
+    "date": "Date",
+    "author": "Author",
+    "tags": "Tags"
+  },
+  "sort": {
+    "latest": "Latest",
+    "oldest": "Oldest",
+    "popular": "Popular",
+    "views": "Most Viewed"
+  },
+  "post": {
+    "readTime": "{{minutes}} min read",
+    "publishedDate": "Published on {{date}}",
+    "updatedDate": "Updated on {{date}}",
+    "author": "By {{name}}",
+    "views": "{{count}} view",
+    "views_plural": "{{count}} views",
+    "likes": "{{count}} like",
+    "likes_plural": "{{count}} likes",
+    "comments": "{{count}} comment",
+    "comments_plural": "{{count}} comments",
+    "tags": "Tags",
+    "share": "Share",
+    "edit": "Edit",
+    "delete": "Delete",
+    "relatedPosts": "Related Posts",
+    "tableOfContents": "Table of Contents"
+  },
+  "comments": {
+    "title": "Comments",
+    "writeComment": "Write a comment",
+    "placeholder": "Enter your comment...",
+    "submit": "Post Comment",
+    "reply": "Reply",
+    "edit": "Edit",
+    "delete": "Delete",
+    "like": "Like",
+    "report": "Report",
+    "noComments": "No comments yet. Be the first to leave a comment!",
+    "loading": "Loading comments...",
+    "error": "Unable to load comments",
+    "loginRequired": "Please log in to write a comment"
+  },
+  "editor": {
+    "title": "Write Post",
+    "titlePlaceholder": "Enter title",
+    "contentPlaceholder": "Enter content",
+    "category": "Category",
+    "tags": "Tags",
+    "tagsPlaceholder": "Enter tags and press Enter",
+    "featuredImage": "Featured Image",
+    "excerpt": "Excerpt",
+    "excerptPlaceholder": "Enter post excerpt",
+    "publish": "Publish",
+    "saveDraft": "Save Draft",
+    "preview": "Preview",
+    "cancel": "Cancel",
+    "uploading": "Uploading...",
+    "uploadError": "Upload failed",
+    "validation": {
+      "titleRequired": "Please enter a title",
+      "contentRequired": "Please enter content",
+      "categoryRequired": "Please select a category",
+      "titleTooLong": "Title is too long",
+      "contentTooShort": "Content is too short"
+    }
+  },
+  "actions": {
+    "loadMore": "Load More",
+    "goBack": "Go Back",
+    "refresh": "Refresh",
+    "copyLink": "Copy Link",
+    "copySuccess": "Link copied successfully"
+  },
+  "newsletter": {
+    "title": "Newsletter Subscription",
+    "description": "Get the latest posts via email",
+    "emailPlaceholder": "Email address",
+    "subscribe": "Subscribe",
+    "subscribing": "Subscribing...",
+    "success": "Thank you for subscribing!",
+    "error": "Subscription failed. Please try again."
+  }
+}

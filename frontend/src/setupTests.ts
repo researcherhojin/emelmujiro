@@ -155,3 +155,100 @@ afterAll(() => {
   console.error = originalError;
   console.warn = originalWarn;
 });
+
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+  key: jest.fn(),
+  length: 0,
+};
+global.localStorage = localStorageMock as Storage;
+
+// Mock sessionStorage
+global.sessionStorage = localStorageMock as Storage;
+
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  observe = jest.fn();
+  unobserve = jest.fn();
+  disconnect = jest.fn();
+};
+
+// Mock requestAnimationFrame
+global.requestAnimationFrame = jest.fn((cb: FrameRequestCallback) => setTimeout(cb, 0)) as unknown as typeof requestAnimationFrame;
+global.cancelAnimationFrame = jest.fn((id: number) => clearTimeout(id)) as unknown as typeof cancelAnimationFrame;
+
+// Mock Notification API
+interface MockNotification {
+  permission: NotificationPermission;
+  requestPermission: () => Promise<NotificationPermission>;
+}
+
+global.Notification = {
+  permission: 'default' as NotificationPermission,
+  requestPermission: jest.fn().mockResolvedValue('granted' as NotificationPermission),
+} as unknown as typeof Notification;
+
+// Mock navigator properties
+Object.defineProperty(navigator, 'onLine', {
+  writable: true,
+  value: true,
+});
+
+Object.defineProperty(navigator, 'language', {
+  writable: true,
+  value: 'ko-KR',
+});
+
+// Mock window.gtag for Google Analytics
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
+
+(global as typeof globalThis & { gtag?: jest.Mock }).gtag = jest.fn();
+
+// Mock fetch if not available
+if (!global.fetch) {
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    json: jest.fn().mockResolvedValue({}),
+    text: jest.fn().mockResolvedValue(''),
+    headers: new Headers(),
+    status: 200,
+    statusText: 'OK',
+  });
+}
+
+// Mock performance API
+if (!global.performance) {
+  const mockPerformance: Partial<Performance> = {
+    now: jest.fn(() => Date.now()),
+    mark: jest.fn(),
+    measure: jest.fn(),
+    getEntriesByType: jest.fn(() => []),
+    getEntriesByName: jest.fn(() => []),
+  };
+  global.performance = mockPerformance as Performance;
+}
+
+// Mock document.documentElement.lang
+Object.defineProperty(document.documentElement, 'lang', {
+  writable: true,
+  value: 'ko',
+});
+
+// Mock window.innerWidth and innerHeight
+Object.defineProperty(window, 'innerWidth', {
+  writable: true,
+  value: 1024,
+});
+
+Object.defineProperty(window, 'innerHeight', {
+  writable: true,
+  value: 768,
+});

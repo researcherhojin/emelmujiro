@@ -1,0 +1,177 @@
+{
+  "title": "CEO Profile",
+  "name": "Hojin Lee",
+  "title_position": "CEO / AI Engineer",
+  "intro": "Providing innovative solutions based on over 10 years of software development experience and AI expertise.",
+  "sections": {
+    "about": {
+      "title": "About",
+      "description": "Graduated from Seoul National University with a degree in Computer Engineering and worked on various projects at major companies like Naver and Kakao. Currently focusing on AI and machine learning expertise, helping companies with digital transformation."
+    },
+    "experience": {
+      "title": "Experience",
+      "items": [
+        {
+          "company": "Emelmujiro",
+          "position": "CEO / AI Engineer",
+          "period": "2023 - Present",
+          "description": "Founded and operates AI-based software development and IT education company"
+        },
+        {
+          "company": "Naver",
+          "position": "Senior Software Engineer",
+          "period": "2020 - 2023",
+          "description": "AI platform development and machine learning model optimization"
+        },
+        {
+          "company": "Kakao",
+          "position": "Software Engineer",
+          "period": "2018 - 2020",
+          "description": "Mobile platform development and data analysis system construction"
+        }
+      ]
+    },
+    "education": {
+      "title": "Education",
+      "items": [
+        {
+          "school": "Seoul National University",
+          "degree": "Master's in Computer Engineering",
+          "period": "2016 - 2018",
+          "description": "Research in Artificial Intelligence and Machine Learning"
+        },
+        {
+          "school": "Seoul National University",
+          "degree": "Bachelor's in Computer Engineering",
+          "period": "2012 - 2016",
+          "description": "Research in Software Engineering and Algorithms"
+        }
+      ]
+    },
+    "skills": {
+      "title": "Technical Skills",
+      "categories": [
+        {
+          "name": "Programming Languages",
+          "skills": ["Python", "JavaScript", "TypeScript", "Java", "Go", "Rust"]
+        },
+        {
+          "name": "AI/ML Frameworks",
+          "skills": ["TensorFlow", "PyTorch", "Keras", "Scikit-learn", "Hugging Face"]
+        },
+        {
+          "name": "Web Frameworks",
+          "skills": ["React", "Vue.js", "Node.js", "Django", "FastAPI", "Express"]
+        },
+        {
+          "name": "Cloud Platforms",
+          "skills": ["AWS", "Google Cloud", "Azure", "Docker", "Kubernetes"]
+        },
+        {
+          "name": "Databases",
+          "skills": ["PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch"]
+        }
+      ]
+    },
+    "achievements": {
+      "title": "Key Achievements",
+      "items": [
+        {
+          "title": "AI-based Recommendation System Development",
+          "description": "Developed personalized recommendation engine for large e-commerce platform, improving conversion rate by 30%",
+          "year": "2023"
+        },
+        {
+          "title": "Natural Language Processing Model Optimization",
+          "description": "Developed BERT-based sentiment analysis model and improved inference speed by 50%",
+          "year": "2022"
+        },
+        {
+          "title": "Corporate Education Program Launch",
+          "description": "Successfully conducted AI/ML education program for over 100 developers",
+          "year": "2023"
+        }
+      ]
+    },
+    "certifications": {
+      "title": "Certifications",
+      "items": [
+        {
+          "name": "AWS Certified Solutions Architect",
+          "issuer": "Amazon Web Services",
+          "year": "2022"
+        },
+        {
+          "name": "Google Cloud Professional ML Engineer",
+          "issuer": "Google Cloud",
+          "year": "2021"
+        },
+        {
+          "name": "TensorFlow Developer Certificate",
+          "issuer": "TensorFlow",
+          "year": "2020"
+        }
+      ]
+    },
+    "projects": {
+      "title": "Key Projects",
+      "items": [
+        {
+          "name": "AI-based Customer Service Chatbot",
+          "description": "Intelligent customer service system using natural language processing technology",
+          "technologies": ["Python", "TensorFlow", "BERT", "FastAPI", "React"],
+          "year": "2023"
+        },
+        {
+          "name": "Real-time Data Analytics Platform",
+          "description": "Built large-scale real-time data processing and visualization platform",
+          "technologies": ["Python", "Apache Kafka", "Elasticsearch", "Grafana", "Docker"],
+          "year": "2022"
+        },
+        {
+          "name": "E-commerce Recommendation Engine",
+          "description": "Developed machine learning-based personalized product recommendation system",
+          "technologies": ["Python", "PyTorch", "Redis", "PostgreSQL", "Kubernetes"],
+          "year": "2021"
+        }
+      ]
+    },
+    "publications": {
+      "title": "Publications & Presentations",
+      "items": [
+        {
+          "title": "Deep Learning Approaches for Recommendation Systems",
+          "venue": "ICML 2023",
+          "year": "2023"
+        },
+        {
+          "title": "Optimizing BERT for Korean Language Processing",
+          "venue": "ACL 2022",
+          "year": "2022"
+        }
+      ]
+    }
+  },
+  "contact": {
+    "title": "Contact Me",
+    "description": "Feel free to reach out for collaboration or project inquiries",
+    "email": "hojin@emelmujiro.com",
+    "linkedin": "linkedin.com/in/hojinlee",
+    "github": "github.com/hojinlee"
+  },
+  "testimonials": {
+    "title": "Client Testimonials",
+    "items": [
+      {
+        "name": "Chulsoo Kim",
+        "company": "Tech Startup CEO",
+        "content": "Thanks to Hojin's AI expertise, we were able to successfully implement our product's core features."
+      },
+      {
+        "name": "Younghee Park",
+        "company": "Enterprise Development Team Leader",
+        "content": "The systematic education program and practical approach were very impressive."
+      }
+    ]
+  }
+}

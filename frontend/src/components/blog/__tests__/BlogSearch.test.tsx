@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import BlogSearch from '../BlogSearch';
 import { BlogProvider } from '../../../contexts/BlogContext';
 
@@ -36,12 +37,14 @@ const _mockPosts = [
 const renderWithProviders = (component: React.ReactElement) => {
   return render(
     <MemoryRouter>
-      <BlogProvider>{component}</BlogProvider>
+      <HelmetProvider>
+        <BlogProvider>{component}</BlogProvider>
+      </HelmetProvider>
     </MemoryRouter>
   );
 };
 
-describe.skip('BlogSearch', () => {
+describe('BlogSearch', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
@@ -55,12 +58,19 @@ describe.skip('BlogSearch', () => {
 
   it('handles search submission', async () => {
     const onSearch = jest.fn();
+    const { api } = require('../../../services/api');
+    // Mock API response
+    api.searchBlogPosts.mockResolvedValueOnce({
+      data: { results: [] },
+    });
+
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText('블로그 검색...');
+    const form = input.closest('form');
 
     fireEvent.change(input, { target: { value: 'React' } });
-    fireEvent.keyPress(input, { key: 'Enter', code: 13, charCode: 13 });
+    fireEvent.submit(form!);
 
     await waitFor(() => {
       expect(onSearch).toHaveBeenCalled();
@@ -73,12 +83,18 @@ describe.skip('BlogSearch', () => {
 
   it('trims whitespace from search query', async () => {
     const onSearch = jest.fn();
+    const { api } = require('../../../services/api');
+    api.searchBlogPosts.mockResolvedValueOnce({
+      data: { results: [] },
+    });
+
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText('블로그 검색...');
+    const form = input.closest('form');
 
     fireEvent.change(input, { target: { value: '  TypeScript  ' } });
-    fireEvent.keyPress(input, { key: 'Enter', code: 13, charCode: 13 });
+    fireEvent.submit(form!);
 
     await waitFor(() => {
       expect(onSearch).toHaveBeenCalled();
@@ -90,9 +106,10 @@ describe.skip('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText('블로그 검색...');
+    const form = input.closest('form');
 
     fireEvent.change(input, { target: { value: '   ' } });
-    fireEvent.keyPress(input, { key: 'Enter', code: 13, charCode: 13 });
+    fireEvent.submit(form!);
 
     // Should not save empty search to recent searches
     const recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
@@ -101,12 +118,18 @@ describe.skip('BlogSearch', () => {
 
   it('handles search with special characters', async () => {
     const onSearch = jest.fn();
+    const { api } = require('../../../services/api');
+    api.searchBlogPosts.mockResolvedValueOnce({
+      data: { results: [] },
+    });
+
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText('블로그 검색...');
+    const form = input.closest('form');
 
     fireEvent.change(input, { target: { value: 'React & TypeScript' } });
-    fireEvent.keyPress(input, { key: 'Enter', code: 13, charCode: 13 });
+    fireEvent.submit(form!);
 
     await waitFor(() => {
       expect(onSearch).toHaveBeenCalled();
@@ -127,8 +150,8 @@ describe.skip('BlogSearch', () => {
     fireEvent.change(input, { target: { value: 'React' } });
     expect(input).toHaveValue('React');
 
-    // Clear button should appear
-    const clearButton = screen.getByRole('button');
+    // Clear button should appear - get by aria-label or test-id if needed
+    const clearButton = screen.getByRole('button', { name: '' });
     fireEvent.click(clearButton);
 
     // Search should be cleared
@@ -137,6 +160,12 @@ describe.skip('BlogSearch', () => {
 
   it('filters posts based on search term', async () => {
     const onSearch = jest.fn();
+    const { api } = require('../../../services/api');
+    const mockResults = [{ id: '1', title: 'React Tutorial', content: 'Learn React' }];
+    api.searchBlogPosts.mockResolvedValueOnce({
+      data: { results: mockResults },
+    });
+
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText('블로그 검색...');
@@ -150,7 +179,7 @@ describe.skip('BlogSearch', () => {
     const lastCall = onSearch.mock.calls[onSearch.mock.calls.length - 1];
     const results = lastCall[0];
     // Should find posts containing 'React'
-    expect(results.length).toBeGreaterThan(0);
+    expect(results).toEqual(mockResults);
   });
 
   it('shows recent searches when focused', async () => {
@@ -174,6 +203,12 @@ describe.skip('BlogSearch', () => {
 
   it('shows search results count', async () => {
     const onSearch = jest.fn();
+    const { api } = require('../../../services/api');
+    const mockResults = [{ id: '1', title: 'React Tutorial' }];
+    api.searchBlogPosts.mockResolvedValueOnce({
+      data: { results: mockResults },
+    });
+
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText('블로그 검색...');

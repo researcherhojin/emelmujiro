@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { STATISTICS } from '../../constants';
 import { Button } from '../common';
 
@@ -11,22 +12,24 @@ interface StatItemProps {
 
 const StatItem: React.FC<StatItemProps> = memo(({ value, label }) => (
   <div>
-    <div className="text-4xl sm:text-5xl font-black text-black mb-2 tracking-tight">{value}</div>
-    <div className="text-base sm:text-lg text-gray-600 font-medium">{label}</div>
+    <div className="text-4xl sm:text-5xl font-black text-black dark:text-white mb-2 tracking-tight">{value}</div>
+    <div className="text-base sm:text-lg text-gray-600 dark:text-gray-400 font-medium">{label}</div>
   </div>
 ));
 
 StatItem.displayName = 'StatItem';
 
 const HeroSection: React.FC = memo(() => {
+  const { t } = useTranslation('home');
+  
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-white">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-white dark:bg-dark-950">
       {/* Clean geometric background */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-1/2 h-full bg-gray-50"></div>
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-white"></div>
+        <div className="absolute top-0 left-0 w-1/2 h-full bg-gray-50 dark:bg-dark-900"></div>
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-white dark:bg-dark-950"></div>
         {/* Subtle accent line */}
-        <div className="absolute top-1/4 left-0 right-0 h-px bg-gray-200"></div>
+        <div className="absolute top-1/4 left-0 right-0 h-px bg-gray-200 dark:bg-dark-700"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-0">
@@ -40,25 +43,22 @@ const HeroSection: React.FC = memo(() => {
           >
             {/* Simple text badge */}
             <div className="inline-block mb-6">
-              <span className="text-sm font-medium text-gray-500 tracking-wide uppercase">
+              <span className="text-sm font-medium text-gray-500 dark:text-gray-400 tracking-wide uppercase">
                 AI Education & Consulting
               </span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 sm:mb-8 text-gray-900 leading-[1.1]">
-              <span className="block">실무에 강한</span>
-              <span className="block text-black mt-1 relative">
-                AI 전문가 그룹
-                <div className="absolute -bottom-2 left-0 w-20 h-1.5 bg-gray-900 rounded-full"></div>
-              </span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 sm:mb-8 text-gray-900 dark:text-white leading-[1.1] relative">
+              {t('hero.title')}
+              <div className="absolute -bottom-2 left-0 w-20 h-1.5 bg-gray-900 dark:bg-gray-100 rounded-full"></div>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-700 mb-8 sm:mb-10 leading-relaxed max-w-2xl">
-              대기업 AI 교육부터 스타트업 기술 컨설팅까지,
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl">
+              {t('hero.subtitle')}
               <br />
-              맞춤형 솔루션으로 비즈니스 성장을 가속화합니다.
+              {t('hero.description')}
             </p>
 
             {/* CTA Buttons */}
@@ -69,11 +69,11 @@ const HeroSection: React.FC = memo(() => {
                 size="lg"
                 icon={<ArrowRight className="w-4 h-4" />}
               >
-                프로젝트 문의하기
+                {t('hero.cta.primary')}
               </Button>
 
               <Button to="/about" variant="secondary" size="lg">
-                회사 소개
+                {t('hero.cta.secondary')}
               </Button>
             </div>
 
@@ -90,13 +90,13 @@ const HeroSection: React.FC = memo(() => {
           >
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-6 sm:p-8 lg:p-12 border border-gray-200">
               <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-                <StatItem value={STATISTICS.education.totalStudentsText} label="교육 수료생" />
-                <StatItem value={STATISTICS.projects.totalProjectsText} label="프로젝트 완료" />
+                <StatItem value={STATISTICS.education.totalStudentsText} label={t('statistics.clients')} />
+                <StatItem value={STATISTICS.projects.totalProjectsText} label={t('statistics.projects')} />
                 <StatItem
                   value={`${STATISTICS.experience.totalCompaniesWorkedWith}+`}
-                  label="파트너 기업"
+                  label={t('statistics.experience')}
                 />
-                <StatItem value={`${STATISTICS.education.satisfactionRate}%`} label="고객 만족도" />
+                <StatItem value={`${STATISTICS.education.satisfactionRate}%`} label={t('statistics.technologies')} />
               </div>
 
               {/* Achievement badge */}

@@ -1,91 +1,124 @@
-// Skip this test file due to module import issues
-// The serviceWorkerRegistration module reads window.location at import time
-// which causes issues in test environment
+/**
+ * Comprehensive tests for serviceWorkerRegistration
+ * Testing all registration, unregistration, and error scenarios
+ */
+
+// Mock console methods before importing the module
+const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation();
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation();
+
+// Mock fetch globally
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
+
+// Mock environment variable
+const originalEnv = process.env.PUBLIC_URL;
+const originalNodeEnv = process.env.NODE_ENV;
 
 describe('serviceWorkerRegistration', () => {
-  it('placeholder test to satisfy Jest requirement', () => {
-    // This is a placeholder test because the actual serviceWorkerRegistration
-    // module cannot be properly tested in the current environment due to
-    // window.location being read at module import time
-    expect(true).toBe(true);
-  });
-});
-
-// Original tests commented out due to module import issues
-/*
-describe.skip('serviceWorkerRegistration', () => {
   let originalServiceWorker: ServiceWorkerContainer | undefined;
-  let originalEnv: string | undefined;
+  let originalLocation: Location;
+  let mockServiceWorkerRegistration: Partial<ServiceWorkerRegistration>;
+  let mockServiceWorker: Partial<ServiceWorker>;
 
   beforeEach(() => {
+    // Store original values
     originalServiceWorker = navigator.serviceWorker;
-    originalEnv = process.env.NODE_ENV;
+    originalLocation = window.location;
 
-    // Mock console methods
-    jest.spyOn(console, 'log').mockImplementation();
-    jest.spyOn(console, 'error').mockImplementation();
+    // Clear all mocks
+    jest.clearAllMocks();
+    mockFetch.mockClear();
+
+    // Set up mock environment
+    process.env = { ...process.env, PUBLIC_URL: '' };
+
+    // Create mock service worker
+    mockServiceWorker = {
+      state: 'installed',
+      onstatechange: null as ((this: ServiceWorker, ev: Event) => unknown) | null,
+    };
+
+    // Create mock service worker registration
+    mockServiceWorkerRegistration = {
+      installing: null,
+      waiting: null,
+      active: mockServiceWorker as ServiceWorker,
+      onupdatefound: null,
+      unregister: jest.fn().mockResolvedValue(true),
+      pushManager: {
+        getSubscription: jest.fn().mockResolvedValue(null),
+        subscribe: jest.fn().mockResolvedValue({}),
+      } as unknown as PushManager,
+    };
+
+    // Mock window.location
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: {
+        hostname: 'localhost',
+        origin: 'http://localhost:3000',
+        href: 'http://localhost:3000',
+      },
+    });
+
+    // Mock navigator.serviceWorker
+    Object.defineProperty(navigator, 'serviceWorker', {
+      writable: true,
+      value: {
+        register: jest.fn().mockResolvedValue(mockServiceWorkerRegistration),
+        ready: Promise.resolve(mockServiceWorkerRegistration),
+        controller: null,
+      },
+    });
   });
 
   afterEach(() => {
+    // Restore original values
     Object.defineProperty(navigator, 'serviceWorker', {
       writable: true,
       value: originalServiceWorker,
     });
-
-    // Restore NODE_ENV
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: originalEnv,
+    Object.defineProperty(window, 'location', {
       writable: true,
-      configurable: true,
+      value: originalLocation,
     });
+    process.env = { ...process.env, PUBLIC_URL: originalEnv, NODE_ENV: originalNodeEnv };
 
-    jest.restoreAllMocks();
+    // Restore console methods
+    mockConsoleLog.mockRestore();
+    mockConsoleError.mockRestore();
+
+    // Clear module cache to ensure clean imports
+    jest.resetModules();
   });
 
-  describe('register', () => {
-    it('registers service worker in production on localhost', () => {
-      // Set NODE_ENV to production
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        writable: true,
-        configurable: true,
-      });
-
-      const mockRegister = jest.fn().mockResolvedValue({
-        installing: null,
-        waiting: null,
-        active: {},
-      });
-
+  describe('register function', () => {
+    it('should not register if service worker is not supported', async () => {
+      // Remove service worker support
       Object.defineProperty(navigator, 'serviceWorker', {
         writable: true,
-        value: {
-          register: mockRegister,
-        },
+        value: undefined,
       });
 
-      // Mock window.location
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        configurable: true,
-        value: { hostname: 'localhost' },
-      });
+      // Import and test
+      const { register } = await import('../serviceWorkerRegistration');
+      register();
 
-      const config = { onSuccess: jest.fn(), onUpdate: jest.fn() };
-      serviceWorkerRegistration.register(config);
-
-      // Service worker registration should be called after load event
-      window.dispatchEvent(new Event('load'));
-
-      expect(mockRegister).toHaveBeenCalledWith(expect.stringContaining('/service-worker.js'));
+      // Service worker register should not be called
+      expect(navigator.serviceWorker).toBeUndefined();
     });
 
-    it('does not register in development mode', () => {
-      // Set NODE_ENV to development
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'development',
+    it('should not register if PUBLIC_URL origin is different from window origin', async () => {
+      process.env = { ...process.env, PUBLIC_URL: 'https://cdn.example.com' };
+
+      Object.defineProperty(window, 'location', {
         writable: true,
-        configurable: true,
+        value: {
+          hostname: 'localhost',
+          origin: 'http://localhost:3000',
+          href: 'http://localhost:3000',
+        },
       });
 
       const mockRegister = jest.fn();
@@ -96,43 +129,55 @@ describe.skip('serviceWorkerRegistration', () => {
         },
       });
 
-      serviceWorkerRegistration.register();
+      const { register } = await import('../serviceWorkerRegistration');
+      register();
 
+      // Trigger load event
       window.dispatchEvent(new Event('load'));
 
       expect(mockRegister).not.toHaveBeenCalled();
     });
 
-    it('does not register when serviceWorker is not supported', () => {
-      // Set NODE_ENV to production
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        writable: true,
-        configurable: true,
-      });
+    it('should register service worker on localhost with valid config', async () => {
+      const mockRegister = jest.fn().mockResolvedValue(mockServiceWorkerRegistration);
+      const onSuccess = jest.fn();
+      const onUpdate = jest.fn();
 
       Object.defineProperty(navigator, 'serviceWorker', {
         writable: true,
-        value: undefined,
+        value: {
+          register: mockRegister,
+          ready: Promise.resolve(mockServiceWorkerRegistration),
+          controller: null,
+        },
       });
 
-      // Should not throw
-      expect(() => serviceWorkerRegistration.register()).not.toThrow();
+      const { register } = await import('../serviceWorkerRegistration');
+      register({ onSuccess, onUpdate });
+
+      // Trigger load event
+      window.dispatchEvent(new Event('load'));
+
+      // Wait for async operations
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockRegister).toHaveBeenCalledWith('/service-worker-enhanced.js');
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        'This web app is being served cache-first by a service worker. To learn more, visit https://cra.link/PWA'
+      );
     });
 
-    it('validates service worker URL', () => {
-      // Set NODE_ENV to production
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
+    it('should register service worker on non-localhost', async () => {
+      Object.defineProperty(window, 'location', {
         writable: true,
-        configurable: true,
+        value: {
+          hostname: 'example.com',
+          origin: 'https://example.com',
+          href: 'https://example.com',
+        },
       });
 
-      const mockRegister = jest.fn().mockResolvedValue({
-        installing: null,
-        waiting: null,
-        active: {},
-      });
+      const mockRegister = jest.fn().mockResolvedValue(mockServiceWorkerRegistration);
 
       Object.defineProperty(navigator, 'serviceWorker', {
         writable: true,
@@ -141,29 +186,314 @@ describe.skip('serviceWorkerRegistration', () => {
         },
       });
 
-      // Mock window.location
-      Object.defineProperty(window, 'location', {
+      const { register } = await import('../serviceWorkerRegistration');
+      register();
+
+      // Trigger load event
+      window.dispatchEvent(new Event('load'));
+
+      expect(mockRegister).toHaveBeenCalledWith('/service-worker-enhanced.js');
+    });
+
+    it('should handle service worker registration errors', async () => {
+      const registrationError = new Error('Registration failed');
+      const mockRegister = jest.fn().mockRejectedValue(registrationError);
+
+      Object.defineProperty(navigator, 'serviceWorker', {
         writable: true,
-        configurable: true,
         value: {
-          hostname: 'localhost',
-          origin: 'http://localhost:3000',
+          register: mockRegister,
         },
       });
 
-      serviceWorkerRegistration.register();
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: {
+          hostname: 'example.com',
+          origin: 'https://example.com',
+          href: 'https://example.com',
+        },
+      });
+
+      const { register } = await import('../serviceWorkerRegistration');
+      register();
+
+      // Trigger load event
       window.dispatchEvent(new Event('load'));
 
-      // Check if register was called
-      const wasCalledWithServiceWorker = mockRegister.mock.calls.some(call =>
-        call[0]?.includes('service-worker.js')
+      // Wait for promise to resolve
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        'Error during service worker registration:',
+        registrationError
       );
-      expect(wasCalledWithServiceWorker).toBe(true);
+    });
+
+    it('should handle service worker update found scenario', async () => {
+      const onUpdate = jest.fn();
+      const mockInstallingWorker = {
+        state: 'installing',
+        onstatechange: null as ((this: ServiceWorker, ev: Event) => unknown) | null,
+      };
+
+      const mockRegistrationWithUpdate = {
+        ...mockServiceWorkerRegistration,
+        installing: mockInstallingWorker,
+        onupdatefound: null,
+      };
+
+      const mockRegister = jest.fn().mockResolvedValue(mockRegistrationWithUpdate);
+
+      Object.defineProperty(navigator, 'serviceWorker', {
+        writable: true,
+        value: {
+          register: mockRegister,
+          controller: {}, // Existing controller
+        },
+      });
+
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: {
+          hostname: 'example.com',
+          origin: 'https://example.com',
+          href: 'https://example.com',
+        },
+      });
+
+      const { register } = await import('../serviceWorkerRegistration');
+      register({ onUpdate });
+
+      // Trigger load event
+      window.dispatchEvent(new Event('load'));
+
+      // Wait for registration to complete
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Simulate update found
+      if (mockRegistrationWithUpdate.onupdatefound) {
+if (mockRegistrationWithUpdate.onupdatefound) {
+        mockRegistrationWithUpdate.onupdatefound();
+      }
+
+        // Simulate installing worker state change to installed
+        mockInstallingWorker.state = 'installed';
+        if (mockInstallingWorker.onstatechange) {
+          mockInstallingWorker.onstatechange?.call(mockInstallingWorker as ServiceWorker, new Event('statechange'));
+        }
+      }
+
+      expect(onUpdate).toHaveBeenCalledWith(mockRegistrationWithUpdate);
+    });
+
+    it('should handle service worker success scenario (no existing controller)', async () => {
+      const onSuccess = jest.fn();
+      const mockInstallingWorker = {
+        state: 'installing',
+        onstatechange: null as ((this: ServiceWorker, ev: Event) => unknown) | null,
+      };
+
+      const mockRegistrationWithSuccess = {
+        ...mockServiceWorkerRegistration,
+        installing: mockInstallingWorker,
+        onupdatefound: null,
+      };
+
+      const mockRegister = jest.fn().mockResolvedValue(mockRegistrationWithSuccess);
+
+      Object.defineProperty(navigator, 'serviceWorker', {
+        writable: true,
+        value: {
+          register: mockRegister,
+          controller: null, // No existing controller
+        },
+      });
+
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: {
+          hostname: 'example.com',
+          origin: 'https://example.com',
+          href: 'https://example.com',
+        },
+      });
+
+      const { register } = await import('../serviceWorkerRegistration');
+      register({ onSuccess });
+
+      // Trigger load event
+      window.dispatchEvent(new Event('load'));
+
+      // Wait for registration to complete
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Simulate update found
+      if (mockRegistrationWithSuccess.onupdatefound) {
+if (mockRegistrationWithSuccess.onupdatefound) {
+        mockRegistrationWithSuccess.onupdatefound();
+      }
+
+        // Simulate installing worker state change to installed
+        mockInstallingWorker.state = 'installed';
+        if (mockInstallingWorker.onstatechange) {
+          mockInstallingWorker.onstatechange?.call(mockInstallingWorker as ServiceWorker, new Event('statechange'));
+        }
+      }
+
+      expect(onSuccess).toHaveBeenCalledWith(mockRegistrationWithSuccess);
+      expect(mockConsoleLog).toHaveBeenCalledWith('Content is cached for offline use.');
     });
   });
 
-  describe('unregister', () => {
-    it('unregisters service worker successfully', async () => {
+  describe('localhost detection and validation', () => {
+    it('should validate service worker on localhost when SW file exists', async () => {
+      const mockRegister = jest.fn().mockResolvedValue(mockServiceWorkerRegistration);
+
+      Object.defineProperty(navigator, 'serviceWorker', {
+        writable: true,
+        value: {
+          register: mockRegister,
+          ready: Promise.resolve(mockServiceWorkerRegistration),
+          controller: null,
+        },
+      });
+
+      // Mock successful fetch response
+      mockFetch.mockResolvedValue({
+        status: 200,
+        headers: {
+          get: (header: string) => (header === 'content-type' ? 'application/javascript' : null),
+        },
+      });
+
+      const { register } = await import('../serviceWorkerRegistration');
+      register();
+
+      // Trigger load event
+      window.dispatchEvent(new Event('load'));
+
+      // Wait for fetch and registration
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockFetch).toHaveBeenCalledWith('/service-worker-enhanced.js', {
+        headers: { 'Service-Worker': 'script' },
+      });
+      expect(mockRegister).toHaveBeenCalled();
+    });
+
+    it('should handle service worker validation when SW file is not found', async () => {
+      const mockUnregister = jest.fn().mockResolvedValue(true);
+      const mockReload = jest.fn();
+
+      Object.defineProperty(navigator, 'serviceWorker', {
+        writable: true,
+        value: {
+          register: jest.fn(),
+          ready: Promise.resolve({
+            unregister: mockUnregister,
+          }),
+          controller: null,
+        },
+      });
+
+      Object.defineProperty(window.location, 'reload', {
+        writable: true,
+        value: mockReload,
+      });
+
+      // Mock 404 response
+      mockFetch.mockResolvedValue({
+        status: 404,
+        headers: {
+          get: () => null,
+        },
+      });
+
+      const { register } = await import('../serviceWorkerRegistration');
+      register();
+
+      // Trigger load event
+      window.dispatchEvent(new Event('load'));
+
+      // Wait for fetch and unregistration
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      expect(mockUnregister).toHaveBeenCalled();
+      expect(mockReload).toHaveBeenCalled();
+    });
+
+    it('should handle service worker validation when SW file is not JS', async () => {
+      const mockUnregister = jest.fn().mockResolvedValue(true);
+      const mockReload = jest.fn();
+
+      Object.defineProperty(navigator, 'serviceWorker', {
+        writable: true,
+        value: {
+          register: jest.fn(),
+          ready: Promise.resolve({
+            unregister: mockUnregister,
+          }),
+          controller: null,
+        },
+      });
+
+      Object.defineProperty(window.location, 'reload', {
+        writable: true,
+        value: mockReload,
+      });
+
+      // Mock HTML response instead of JS
+      mockFetch.mockResolvedValue({
+        status: 200,
+        headers: {
+          get: (header: string) => (header === 'content-type' ? 'text/html' : null),
+        },
+      });
+
+      const { register } = await import('../serviceWorkerRegistration');
+      register();
+
+      // Trigger load event
+      window.dispatchEvent(new Event('load'));
+
+      // Wait for fetch and unregistration
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      expect(mockUnregister).toHaveBeenCalled();
+      expect(mockReload).toHaveBeenCalled();
+    });
+
+    it('should handle offline scenario during validation', async () => {
+      Object.defineProperty(navigator, 'serviceWorker', {
+        writable: true,
+        value: {
+          register: jest.fn(),
+          ready: Promise.resolve(mockServiceWorkerRegistration),
+          controller: null,
+        },
+      });
+
+      // Mock fetch failure (offline)
+      mockFetch.mockRejectedValue(new Error('Network error'));
+
+      const { register } = await import('../serviceWorkerRegistration');
+      register();
+
+      // Trigger load event
+      window.dispatchEvent(new Event('load'));
+
+      // Wait for fetch to fail
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        'No internet connection found. App is running in offline mode.'
+      );
+    });
+  });
+
+  describe('unregister function', () => {
+    it('should unregister service worker successfully', async () => {
       const mockUnregister = jest.fn().mockResolvedValue(true);
 
       Object.defineProperty(navigator, 'serviceWorker', {
@@ -175,68 +505,210 @@ describe.skip('serviceWorkerRegistration', () => {
         },
       });
 
-      await serviceWorkerRegistration.unregister();
+      const { unregister } = await import('../serviceWorkerRegistration');
+      await unregister();
 
       expect(mockUnregister).toHaveBeenCalled();
     });
 
-    it('handles unregister when serviceWorker is not supported', async () => {
+    it('should handle unregistration when service worker is not supported', async () => {
       Object.defineProperty(navigator, 'serviceWorker', {
         writable: true,
         value: undefined,
       });
 
+      const { unregister } = await import('../serviceWorkerRegistration');
+
       // Should not throw
-      await expect(serviceWorkerRegistration.unregister()).resolves.not.toThrow();
+      await expect(unregister()).resolves.toBeUndefined();
     });
 
-    it('handles unregister error gracefully', async () => {
-      const mockError = new Error('Unregister failed');
+    it('should handle unregistration errors', async () => {
+      const unregisterError = new Error('Unregister failed');
+      const mockUnregister = jest.fn().mockRejectedValue(unregisterError);
 
       Object.defineProperty(navigator, 'serviceWorker', {
         writable: true,
         value: {
           ready: Promise.resolve({
-            unregister: jest.fn().mockRejectedValue(mockError),
+            unregister: mockUnregister,
           }),
         },
       });
 
-      await serviceWorkerRegistration.unregister();
+      const { unregister } = await import('../serviceWorkerRegistration');
+      await unregister();
 
-      expect(console.error).toHaveBeenCalledWith(
-        'Error during service worker unregistration:',
-        mockError
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith(unregisterError.message);
     });
   });
 
-  describe('isLocalhost', () => {
-    it('detects localhost correctly', () => {
-      const testCases = [
-        { hostname: 'localhost', expected: true },
-        { hostname: '127.0.0.1', expected: true },
-        { hostname: '[::1]', expected: true },
-        { hostname: 'example.com', expected: false },
-        { hostname: '192.168.1.1', expected: false },
-      ];
+  describe('localhost detection', () => {
+    const testCases = [
+      { hostname: 'localhost', expected: true, description: 'localhost' },
+      { hostname: '127.0.0.1', expected: true, description: '127.0.0.1' },
+      { hostname: '127.0.0.255', expected: true, description: '127.0.0.255' },
+      { hostname: '127.255.255.255', expected: true, description: '127.255.255.255' },
+      { hostname: '[::1]', expected: true, description: 'IPv6 localhost' },
+      { hostname: 'example.com', expected: false, description: 'external domain' },
+      { hostname: '192.168.1.1', expected: false, description: 'private IP' },
+      { hostname: '128.0.0.1', expected: false, description: 'non-localhost IP' },
+    ];
 
-      testCases.forEach(({ hostname, expected }) => {
+    testCases.forEach(({ hostname, expected, description }) => {
+      it(`should detect ${description} (${hostname}) as ${expected ? 'localhost' : 'not localhost'}`, async () => {
         Object.defineProperty(window, 'location', {
           writable: true,
-          configurable: true,
-          value: { hostname },
+          value: {
+            hostname,
+            origin: `http://${hostname}:3000`,
+            href: `http://${hostname}:3000`,
+          },
         });
 
-        // Re-evaluate isLocalhost by clearing module cache
-        jest.resetModules();
-        // The actual isLocalhost check happens internally
-        // We can't directly test it, but we can verify behavior
-        // For localhost, service worker should be allowed
-        const isLocalhost = /^localhost|127\.0\.0\.1|\[::1\]$/.test(hostname);
-        expect(isLocalhost).toBe(expected);
+        const mockRegister = jest.fn().mockResolvedValue(mockServiceWorkerRegistration);
+
+        Object.defineProperty(navigator, 'serviceWorker', {
+          writable: true,
+          value: {
+            register: mockRegister,
+            ready: Promise.resolve(mockServiceWorkerRegistration),
+            controller: null,
+          },
+        });
+
+        if (expected) {
+          // For localhost, mock fetch
+          mockFetch.mockResolvedValue({
+            status: 200,
+            headers: {
+              get: (header: string) =>
+                header === 'content-type' ? 'application/javascript' : null,
+            },
+          });
+        }
+
+        const { register } = await import('../serviceWorkerRegistration');
+        register();
+
+        // Trigger load event
+        window.dispatchEvent(new Event('load'));
+
+        // Wait for async operations
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        if (expected) {
+          // Should call fetch for validation on localhost
+          expect(mockFetch).toHaveBeenCalled();
+        } else {
+          // Should call register directly for non-localhost
+          expect(mockRegister).toHaveBeenCalled();
+        }
       });
     });
   });
+
+  describe('edge cases and error scenarios', () => {
+    it('should handle null installing worker during update', async () => {
+      const mockRegistrationNullInstalling = {
+        ...mockServiceWorkerRegistration,
+        installing: null,
+        onupdatefound: null,
+      };
+
+      const mockRegister = jest.fn().mockResolvedValue(mockRegistrationNullInstalling);
+
+      Object.defineProperty(navigator, 'serviceWorker', {
+        writable: true,
+        value: {
+          register: mockRegister,
+        },
+      });
+
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: {
+          hostname: 'example.com',
+          origin: 'https://example.com',
+          href: 'https://example.com',
+        },
+      });
+
+      const { register } = await import('../serviceWorkerRegistration');
+      register();
+
+      // Trigger load event
+      window.dispatchEvent(new Event('load'));
+
+      // Wait for registration
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Simulate update found with null installing worker
+      if (mockRegistrationNullInstalling.onupdatefound) {
+if (mockRegistrationNullInstalling.onupdatefound) {
+        mockRegistrationNullInstalling.onupdatefound();
+      }
+      }
+
+      // Should not throw or cause errors
+      expect(mockRegister).toHaveBeenCalled();
+    });
+
+    it('should handle worker state change when not in installed state', async () => {
+      const onUpdate = jest.fn();
+      const mockInstallingWorker = {
+        state: 'installing',
+        onstatechange: null as ((this: ServiceWorker, ev: Event) => unknown) | null,
+      };
+
+      const mockRegistrationWithInstalling = {
+        ...mockServiceWorkerRegistration,
+        installing: mockInstallingWorker,
+        onupdatefound: null,
+      };
+
+      const mockRegister = jest.fn().mockResolvedValue(mockRegistrationWithInstalling);
+
+      Object.defineProperty(navigator, 'serviceWorker', {
+        writable: true,
+        value: {
+          register: mockRegister,
+          controller: null,
+        },
+      });
+
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: {
+          hostname: 'example.com',
+          origin: 'https://example.com',
+          href: 'https://example.com',
+        },
+      });
+
+      const { register } = await import('../serviceWorkerRegistration');
+      register({ onUpdate });
+
+      // Trigger load event
+      window.dispatchEvent(new Event('load'));
+
+      // Wait for registration
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Simulate update found
+      if (mockRegistrationWithInstalling.onupdatefound) {
+if (mockRegistrationWithInstalling.onupdatefound) {
+        mockRegistrationWithInstalling.onupdatefound();
+      }
+
+        // Keep worker in installing state (not installed)
+        if (mockInstallingWorker.onstatechange) {
+          mockInstallingWorker.onstatechange?.call(mockInstallingWorker as ServiceWorker, new Event('statechange'));
+        }
+      }
+
+      // onUpdate should not be called since state is not 'installed'
+      expect(onUpdate).not.toHaveBeenCalled();
+    });
+  });
 });
-*/

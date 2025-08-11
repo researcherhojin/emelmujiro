@@ -1,0 +1,22 @@
+{
+  "links": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "blog": "Blog",
+    "contact": "Contact Us",
+    "profile": "CEO Profile",
+    "portfolio": "Portfolio"
+  },
+  "sections": {
+    "hero": "Home",
+    "intro": "Introduction",
+    "services": "Services",
+    "partners": "Partners",
+    "cta": "Contact"
+  },
+  "company": {
+    "name": "Emelmujiro",
+    "fullName": "Emelmujiro - AI-based Software Development and IT Education Expert"
+  }
+}

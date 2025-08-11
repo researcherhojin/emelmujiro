@@ -1,0 +1,444 @@
+/**
+ * @jest-environment jsdom
+ */
+
+import {
+  isPushNotificationSupported,
+  isPushNotificationEnabled,
+  requestNotificationPermission,
+  subscribeToPushNotifications,
+  unsubscribeFromPushNotifications,
+  sendSubscriptionToServer,
+  showNotification,
+} from '../pushNotifications';
+
+// Mock logger
+jest.mock('../logger', () => ({
+  __esModule: true,
+  default: {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+  },
+}));
+
+import logger from '../logger';
+const mockLogger = logger as jest.Mocked<typeof logger>;
+
+// Mock fetch
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
+
+// Mock subscription object
+const mockSubscription = {
+  unsubscribe: jest.fn(),
+  endpoint: 'https://test-endpoint.com',
+  keys: {
+    p256dh: 'test-p256dh',
+    auth: 'test-auth',
+  },
+  toJSON: jest.fn().mockReturnValue({
+    endpoint: 'https://test-endpoint.com',
+    keys: {
+      p256dh: 'test-p256dh',
+      auth: 'test-auth',
+    },
+  }),
+};
+
+// Mock service worker registration
+const mockRegistration = {
+  pushManager: {
+    getSubscription: jest.fn(),
+    subscribe: jest.fn(),
+  },
+  showNotification: jest.fn(),
+};
+
+// Mock navigator
+const mockNavigator = {
+  serviceWorker: {
+    ready: Promise.resolve(mockRegistration),
+  },
+};
+
+describe('pushNotifications', () => {
+  const originalNavigator = global.navigator;
+  const originalNotification = global.Notification;
+  const originalWindow = global.window;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    // Setup navigator mock
+    Object.defineProperty(global, 'navigator', {
+      value: mockNavigator,
+      writable: true,
+    });
+
+    // Setup Notification mock
+    Object.defineProperty(global, 'Notification', {
+      value: {
+        permission: 'default',
+        requestPermission: jest.fn(),
+      },
+      writable: true,
+    });
+
+    // Setup window mock
+    Object.defineProperty(global, 'window', {
+      value: {
+        ...originalWindow,
+        atob: jest.fn().mockImplementation(str => {
+          // Simple mock of atob for base64 decode
+          return Buffer.from(str, 'base64').toString('binary');
+        }),
+        PushManager: class MockPushManager {},
+      },
+      writable: true,
+    });
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ success: true }),
+    });
+
+    mockRegistration.pushManager.getSubscription.mockResolvedValue(null);
+    mockRegistration.pushManager.subscribe.mockResolvedValue(mockSubscription);
+    mockRegistration.showNotification.mockResolvedValue(undefined);
+    mockSubscription.unsubscribe.mockResolvedValue(true);
+  });
+
+  afterEach(() => {
+    Object.defineProperty(global, 'navigator', {
+      value: originalNavigator,
+      writable: true,
+    });
+    Object.defineProperty(global, 'Notification', {
+      value: originalNotification,
+      writable: true,
+    });
+    Object.defineProperty(global, 'window', {
+      value: originalWindow,
+      writable: true,
+    });
+  });
+
+  describe('isPushNotificationSupported', () => {
+    it('should return true when both serviceWorker and PushManager are supported', () => {
+      expect(isPushNotificationSupported()).toBe(true);
+    });
+
+    it('should return false when serviceWorker is not supported', () => {
+      Object.defineProperty(global, 'navigator', {
+        value: {},
+        writable: true,
+      });
+
+      expect(isPushNotificationSupported()).toBe(false);
+    });
+
+    it('should return false when PushManager is not supported', () => {
+      Object.defineProperty(global, 'window', {
+        value: {},
+        writable: true,
+      });
+
+      expect(isPushNotificationSupported()).toBe(false);
+    });
+  });
+
+  describe('isPushNotificationEnabled', () => {
+    it('should return true when push notifications are supported and permission granted', () => {
+      global.Notification.permission = 'granted';
+      expect(isPushNotificationEnabled()).toBe(true);
+    });
+
+    it('should return false when push notifications are not supported', () => {
+      Object.defineProperty(global, 'navigator', {
+        value: {},
+        writable: true,
+      });
+
+      expect(isPushNotificationEnabled()).toBe(false);
+    });
+
+    it('should return false when permission is denied', () => {
+      global.Notification.permission = 'denied';
+      expect(isPushNotificationEnabled()).toBe(false);
+    });
+
+    it('should return false when permission is default', () => {
+      global.Notification.permission = 'default';
+      expect(isPushNotificationEnabled()).toBe(false);
+    });
+  });
+
+  describe('requestNotificationPermission', () => {
+    it('should request permission and return true when granted', async () => {
+      global.Notification.requestPermission.mockResolvedValue('granted');
+
+      const result = await requestNotificationPermission();
+
+      expect(global.Notification.requestPermission).toHaveBeenCalled();
+      expect(result).toBe(true);
+    });
+
+    it('should return false when permission is denied', async () => {
+      global.Notification.requestPermission.mockResolvedValue('denied');
+
+      const result = await requestNotificationPermission();
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false when push notifications are not supported', async () => {
+      Object.defineProperty(global, 'navigator', {
+        value: {},
+        writable: true,
+      });
+
+      const result = await requestNotificationPermission();
+
+      expect(result).toBe(false);
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Push notifications are not supported in this browser'
+      );
+    });
+  });
+
+  describe('subscribeToPushNotifications', () => {
+    beforeEach(() => {
+      global.Notification.permission = 'granted';
+    });
+
+    it('should subscribe successfully when no existing subscription', async () => {
+      const result = await subscribeToPushNotifications();
+
+      expect(mockRegistration.pushManager.getSubscription).toHaveBeenCalled();
+      expect(mockRegistration.pushManager.subscribe).toHaveBeenCalledWith({
+        userVisibleOnly: true,
+        applicationServerKey: expect.any(ArrayBuffer),
+      });
+      expect(result).toBe(mockSubscription);
+    });
+
+    it('should return existing subscription when already subscribed', async () => {
+      mockRegistration.pushManager.getSubscription.mockResolvedValue(mockSubscription);
+
+      const result = await subscribeToPushNotifications();
+
+      expect(mockRegistration.pushManager.subscribe).not.toHaveBeenCalled();
+      expect(result).toBe(mockSubscription);
+    });
+
+    it('should throw error when push notifications not supported', async () => {
+      Object.defineProperty(global, 'navigator', {
+        value: {},
+        writable: true,
+      });
+
+      await expect(subscribeToPushNotifications()).rejects.toThrow(
+        'Push notifications are not supported'
+      );
+    });
+
+    it('should throw error when permission not granted', async () => {
+      global.Notification.permission = 'denied';
+
+      await expect(subscribeToPushNotifications()).rejects.toThrow(
+        'Notification permission not granted'
+      );
+    });
+
+    it('should handle subscription errors', async () => {
+      const error = new Error('Subscription failed');
+      mockRegistration.pushManager.subscribe.mockRejectedValue(error);
+
+      await expect(subscribeToPushNotifications()).rejects.toThrow('Subscription failed');
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to subscribe to push notifications:',
+        error
+      );
+    });
+  });
+
+  describe('unsubscribeFromPushNotifications', () => {
+    it('should unsubscribe successfully when subscription exists', async () => {
+      mockRegistration.pushManager.getSubscription.mockResolvedValue(mockSubscription);
+
+      const result = await unsubscribeFromPushNotifications();
+
+      expect(mockSubscription.unsubscribe).toHaveBeenCalled();
+      expect(result).toBe(true);
+    });
+
+    it('should return false when no subscription exists', async () => {
+      mockRegistration.pushManager.getSubscription.mockResolvedValue(null);
+
+      const result = await unsubscribeFromPushNotifications();
+
+      expect(mockSubscription.unsubscribe).not.toHaveBeenCalled();
+      expect(result).toBe(false);
+    });
+
+    it('should handle unsubscribe errors', async () => {
+      const error = new Error('Unsubscribe failed');
+      mockRegistration.pushManager.getSubscription.mockResolvedValue(mockSubscription);
+      mockSubscription.unsubscribe.mockRejectedValue(error);
+
+      await expect(unsubscribeFromPushNotifications()).rejects.toThrow('Unsubscribe failed');
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to unsubscribe from push notifications:',
+        error
+      );
+    });
+  });
+
+  describe('sendSubscriptionToServer', () => {
+    it('should send subscription to server successfully', async () => {
+      const result = await sendSubscriptionToServer(mockSubscription);
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/notifications/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(mockSubscription),
+      });
+      expect(result).toEqual({ success: true });
+    });
+
+    it('should throw error when server response is not ok', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+
+      await expect(sendSubscriptionToServer(mockSubscription)).rejects.toThrow(
+        'Failed to send subscription to server'
+      );
+    });
+
+    it('should handle fetch errors', async () => {
+      const error = new Error('Network error');
+      mockFetch.mockRejectedValue(error);
+
+      await expect(sendSubscriptionToServer(mockSubscription)).rejects.toThrow('Network error');
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to send subscription to server:',
+        error
+      );
+    });
+  });
+
+  describe('showNotification', () => {
+    beforeEach(() => {
+      global.Notification.permission = 'granted';
+    });
+
+    it('should show notification with default options', async () => {
+      await showNotification('Test notification');
+
+      expect(mockRegistration.showNotification).toHaveBeenCalledWith(
+        'Test notification',
+        expect.objectContaining({
+          icon: '/logo192.png',
+          badge: '/logo192.png',
+          vibrate: [200, 100, 200],
+          tag: 'emelmujiro-notification',
+          renotify: true,
+          requireInteraction: false,
+        })
+      );
+    });
+
+    it('should show notification with custom options', async () => {
+      const customOptions = {
+        icon: '/custom-icon.png',
+        body: 'Custom notification body',
+        tag: 'custom-tag',
+        requireInteraction: true,
+      };
+
+      await showNotification('Test notification', customOptions);
+
+      expect(mockRegistration.showNotification).toHaveBeenCalledWith(
+        'Test notification',
+        expect.objectContaining({
+          icon: '/custom-icon.png',
+          body: 'Custom notification body',
+          tag: 'custom-tag',
+          requireInteraction: true,
+          badge: '/logo192.png',
+          vibrate: [200, 100, 200],
+          renotify: true,
+        })
+      );
+    });
+
+    it('should not show notification when push notifications are not enabled', async () => {
+      global.Notification.permission = 'denied';
+
+      await showNotification('Test notification');
+
+      expect(mockRegistration.showNotification).not.toHaveBeenCalled();
+      expect(mockLogger.info).toHaveBeenCalledWith('Push notifications are not enabled');
+    });
+
+    it('should handle notification errors', async () => {
+      const error = new Error('Notification failed');
+      mockRegistration.showNotification.mockRejectedValue(error);
+
+      await expect(showNotification('Test notification')).rejects.toThrow('Notification failed');
+      expect(mockLogger.error).toHaveBeenCalledWith('Failed to show notification:', error);
+    });
+  });
+
+  describe('urlBase64ToUint8Array', () => {
+    // Test the internal urlBase64ToUint8Array function through public API
+    it('should correctly decode VAPID key during subscription', async () => {
+      global.Notification.permission = 'granted';
+
+      // The function is tested indirectly through subscribeToPushNotifications
+      await subscribeToPushNotifications();
+
+      expect(mockRegistration.pushManager.subscribe).toHaveBeenCalledWith({
+        userVisibleOnly: true,
+        applicationServerKey: expect.any(ArrayBuffer),
+      });
+    });
+  });
+
+  describe('environment variable handling', () => {
+    const originalEnv = process.env.REACT_APP_VAPID_PUBLIC_KEY;
+
+    afterEach(() => {
+      if (originalEnv) {
+        process.env.REACT_APP_VAPID_PUBLIC_KEY = originalEnv;
+      } else {
+        delete process.env.REACT_APP_VAPID_PUBLIC_KEY;
+      }
+    });
+
+    it('should use environment VAPID key when available', async () => {
+      process.env.REACT_APP_VAPID_PUBLIC_KEY = 'test-vapid-key';
+      global.Notification.permission = 'granted';
+
+      await subscribeToPushNotifications();
+
+      expect(mockRegistration.pushManager.subscribe).toHaveBeenCalled();
+    });
+
+    it('should use default VAPID key when environment variable not set', async () => {
+      delete process.env.REACT_APP_VAPID_PUBLIC_KEY;
+      global.Notification.permission = 'granted';
+
+      await subscribeToPushNotifications();
+
+      expect(mockRegistration.pushManager.subscribe).toHaveBeenCalled();
+    });
+  });
+});

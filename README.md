@@ -59,7 +59,7 @@ npm run validate   # 린트 + 타입 체크 + 테스트
 
 ### Frontend
 
-- **React** 18.2.0 + **TypeScript** 5.9.2 - 100% TypeScript 전환 완료
+- **React** 18.2.0 + **TypeScript** 5.9.2 - 100% TypeScript 전환 완료 (strict typing 적용)
 - **Tailwind CSS** 3.3.5 - 유틸리티 기반 스타일링
 - **Framer Motion** 11.15.0 - 애니메이션
 - **React Router** 6.20.0 (HashRouter) - SPA 라우팅
@@ -82,9 +82,9 @@ npm run validate   # 린트 + 타입 체크 + 테스트
   - pr-checks.yml: PR 검증, 번들 크기 체크
   - Dependabot 자동 의존성 업데이트
 - **GitHub Pages** - 정적 호스팅
-- **Jest** + **React Testing Library** - 371개 테스트 케이스 (93% 통과율)
+- **Jest** + **React Testing Library** - 587개 테스트 케이스 (86.4% 통과율)
 - **Playwright** - E2E 테스트 (3개 핵심 스위트: homepage, blog, contact)
-- **Codecov** - 코드 커버리지 50.29% 달성
+- **Codecov** - 코드 커버리지 41.34% 달성
 - **ESLint 9** + **TypeScript ESLint** - 최신 flat config 형식
 - **Prettier** - 코드 포맷팅 자동화
 - **Husky** + **Lint-staged** - Git 훅 자동화
@@ -98,7 +98,7 @@ npm run validate   # 린트 + 타입 체크 + 테스트
 
 - **CI/CD 파이프라인**: ![CI Status](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)
 - **코드 품질**: ESLint 0 errors, TypeScript 0 errors
-- **테스트 통과율**: 93% (346/371 tests)
+- **테스트 통과율**: 86.4% (507/587 tests)
 - **테스트 커버리지**: 50.29% (Statements)
 - **의존성 관리**: Dependabot 자동 업데이트 활성화
 - **보안 스캔**: 취약점 0건 (Critical/High)
@@ -167,10 +167,10 @@ emelmujiro/
 │   └── package.json
 ├── backend/                    # Django REST API
 │   ├── api/                    # API 앱
-│   │   ├── auth.py            # JWT 인증 엔드포인트
-│   │   ├── swagger.py         # Swagger 문서 설정
-│   │   ├── views.py           # REST API 뷰
-│   │   └── urls.py            # API 라우팅
+│   │   ├── auth.py             # JWT 인증 엔드포인트
+│   │   ├── swagger.py          # Swagger 문서 설정
+│   │   ├── views.py            # REST API 뷰
+│   │   └── urls.py             # API 라우팅
 │   ├── config/                 # Django 설정
 │   └── requirements.txt        # Python 의존성
 ├── .github/
@@ -312,7 +312,7 @@ npm run build
 
 ### 테스트 현황
 
-- **단위 테스트**: 42개 파일, 371개 테스트 케이스 (93% 통과) ✅
+- **단위 테스트**: 61개 파일, 587개 테스트 케이스 (86.4% 통과) ✅
 - **E2E 테스트**: 3개 핵심 스위트 (Playwright) ✅
   - homepage.spec.ts: 홈페이지 네비게이션 및 반응형 테스트
   - blog.spec.ts: 블로그 기능 (검색, 페이지네이션, 댓글)
@@ -352,18 +352,21 @@ npm run build
 ### 🚀 다음 단계 로드맵
 
 #### 즉시 시작 가능한 작업
+
 - TypeScript strict mode 완전 적용
 - 코드 커버리지 80% 달성
 - Web Vitals 대시보드 UI 구축
 - Visual regression 테스트 도입
 
 #### 백엔드 강화
+
 - Frontend와 Backend API 실제 연동
 - WebSocket 실시간 통신 구현
 - Redis 캐싱 레이어 추가
 - 파일 업로드/다운로드 기능
 
 #### 사용자 경험 개선
+
 - 다국어 지원 (i18n)
 - Google Analytics 4 통합
 - AI 챗봇 상담 기능
@@ -408,7 +411,6 @@ npm run build
   - 자동 의존성 업데이트 구성 (npm, pip, GitHub Actions)
   - 주요 버전 업데이트 자동 제외 규칙 추가
   - 13개+ Dependabot PR 검토 및 병합 완료
-  
 - **GitHub Actions 워크플로우 완전 개편**
   - `main-ci-cd.yml`: 통합 CI/CD 파이프라인 구축
     - 코드 품질 검사 (ESLint, TypeScript, Black, Flake8)
