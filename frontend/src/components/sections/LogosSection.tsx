@@ -1,5 +1,4 @@
 import React, { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { PARTNER_COMPANIES } from '../../constants';
 
 interface Company {
@@ -15,14 +14,13 @@ interface LogoItemProps {
 
 const LogoItem: React.FC<LogoItemProps> = memo(({ company, index }) => (
   <div key={index} className="flex-shrink-0 px-8">
-    <div className="flex flex-col items-center justify-center w-32 h-32">
+    <div className="flex items-center justify-center w-40 h-24 group">
       <img
         src={company.logo}
-        alt={`${company.name} 로고 - ${company.description || 'AI 파트너 기업'}`}
-        className="h-16 w-auto object-contain mb-2 hover:scale-110 transition-transform duration-300"
+        alt={`${company.name} 로고`}
+        className="h-12 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
         loading="lazy"
       />
-      <span className="text-sm text-gray-600 text-center whitespace-nowrap">{company.name}</span>
     </div>
   </div>
 ));
@@ -46,20 +44,19 @@ const LogosSection: React.FC = memo(() => {
   }, [partnerCompanies]);
 
   return (
-    <section id="partners" className="py-24 bg-white overflow-hidden">
+    <section
+      id="partners"
+      className="py-32 bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300"
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
-        >
-          <h2 className="text-3xl font-semibold text-gray-900 mb-4">함께한 기업 및 기관</h2>
-          <p className="text-lg text-gray-600">
-            다양한 분야의 선도 기업들과 AI 프로젝트를 진행했습니다
-          </p>
-        </motion.div>
+        <div className="mb-20 text-center">
+          <h2 className="text-sm font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase mb-4">
+            TRUSTED BY
+          </h2>
+          <h3 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-6">
+            함께한 기업 및 기관
+          </h3>
+        </div>
       </div>
 
       {/* Infinite sliding container */}
