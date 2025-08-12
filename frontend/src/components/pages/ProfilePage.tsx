@@ -111,12 +111,12 @@ const ProfilePage: React.FC = memo(() => {
     {
       id: 'nano-ai',
       title: '산업전문인력 AI역량강화 교육',
-      period: '2025',
+      period: '2025.06 ~ 2025.08',
       description:
         '나노융합산업연구조합 협력 · 나노소재 빅데이터 활용 AI융합전문가 교육 · 제조라인 고장예측 및 신소재 구조분석',
       category: 'enterprise',
       tags: ['빅데이터', '제조 AI', '시뮬레이션', '산업 AI'],
-      highlight: true,
+      highlight: false,
     },
     {
       id: 'teacher-training',
