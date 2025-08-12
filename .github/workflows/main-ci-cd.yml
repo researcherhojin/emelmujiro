@@ -422,10 +422,11 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
+        if: vars.DOCKER_USERNAME != '' && secrets.DOCKER_PASSWORD != ''
         uses: docker/login-action@v3
         with:
-          username: ${{ vars.DOCKER_USERNAME || 'skip' }}
-          password: ${{ secrets.DOCKER_PASSWORD || 'skip' }}
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
         continue-on-error: true
 
       - name: Build and push Frontend Docker image
@@ -543,13 +544,20 @@ jobs:
           npm run build
           # GitHub Pages 404 처리를 위한 index.html 복사
           cp build/index.html build/404.html
+          # CNAME 파일 생성 (custom domain 사용 시)
+          # echo "emelmujiro.com" > build/CNAME
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./frontend/build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/build
-          cname: emelmujiro.com # Replace with your domain
+        id: deployment
+        uses: actions/deploy-pages@v4
 
       - name: Deploy backend to production
         run: |
