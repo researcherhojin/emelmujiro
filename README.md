@@ -13,7 +13,7 @@ AI 교육 및 컨설팅 전문 기업 에멜무지로의 공식 웹사이트입�
 ### 필수 요구사항
 
 - Node.js 18.x 이상
-- npm 9.x 이상
+- npm 9.x 이상 또는 yarn 1.22.x 이상
 - Git
 
 ### 설치 및 실행
@@ -144,41 +144,41 @@ npm run validate   # 린트 + 타입 체크 + 테스트
 
 ```
 emelmujiro/
-├── frontend/                   # React 애플리케이션
-│   ├── public/                 # 정적 파일
+├── frontend/                           # React 애플리케이션
+│   ├── public/                         # 정적 파일
 │   │   ├── index.html
-│   │   ├── manifest.json       # PWA 설정
+│   │   ├── manifest.json               # PWA 설정
 │   │   ├── service-worker-enhanced.js  # 고급 서비스 워커
-│   │   └── offline.html        # 오프라인 페이지
+│   │   └── offline.html                # 오프라인 페이지
 │   ├── src/
-│   │   ├── components/         # React 컴포넌트
-│   │   │   ├── blog/           # 블로그 관련 (10개)
-│   │   │   ├── common/         # 공통 컴포넌트 (30개+)
-│   │   │   ├── layout/         # 레이아웃 (3개)
-│   │   │   ├── pages/          # 페이지 (8개)
-│   │   │   └── sections/       # 섹션 컴포넌트 (10개)
-│   │   ├── contexts/           # Context API (4개)
-│   │   ├── hooks/              # 커스텀 훅
-│   │   ├── services/           # API 서비스
-│   │   ├── types/              # TypeScript 타입 정의
-│   │   └── utils/              # 유틸리티 함수
-│   ├── e2e/                    # Playwright E2E 테스트
-│   ├── codecov.yml             # Codecov 설정
+│   │   ├── components/                 # React 컴포넌트
+│   │   │   ├── blog/                   # 블로그 관련 (10개)
+│   │   │   ├── common/                 # 공통 컴포넌트 (30개+)
+│   │   │   ├── layout/                 # 레이아웃 (3개)
+│   │   │   ├── pages/                  # 페이지 (8개)
+│   │   │   └── sections/               # 섹션 컴포넌트 (10개)
+│   │   ├── contexts/                   # Context API (4개)
+│   │   ├── hooks/                      # 커스텀 훅
+│   │   ├── services/                   # API 서비스
+│   │   ├── types/                      # TypeScript 타입 정의
+│   │   └── utils/                      # 유틸리티 함수
+│   ├── e2e/                            # Playwright E2E 테스트
+│   ├── codecov.yml                     # Codecov 설정
 │   └── package.json
-├── backend/                    # Django REST API
-│   ├── api/                    # API 앱
-│   │   ├── auth.py             # JWT 인증 엔드포인트
-│   │   ├── swagger.py          # Swagger 문서 설정
-│   │   ├── views.py            # REST API 뷰
-│   │   └── urls.py             # API 라우팅
-│   ├── config/                 # Django 설정
-│   └── requirements.txt        # Python 의존성
+├── backend/                            # Django REST API
+│   ├── api/                            # API 앱
+│   │   ├── auth.py                     # JWT 인증 엔드포인트
+│   │   ├── swagger.py                  # Swagger 문서 설정
+│   │   ├── views.py                    # REST API 뷰
+│   │   └── urls.py                     # API 라우팅
+│   ├── config/                         # Django 설정
+│   └── requirements.txt                # Python 의존성
 ├── .github/
-│   ├── workflows/              # GitHub Actions
-│   │   ├── main-ci-cd.yml      # 통합 CI/CD 파이프라인
-│   │   ├── pr-checks.yml       # PR 검증 워크플로우
-│   │   └── deploy-gh-pages.yml # GitHub Pages 배포
-│   └── dependabot.yml          # 자동 의존성 업데이트
+│   ├── workflows/                      # GitHub Actions
+│   │   ├── main-ci-cd.yml              # 통합 CI/CD 파이프라인
+│   │   ├── pr-checks.yml               # PR 검증 워크플로우
+│   │   └── deploy-gh-pages.yml         # GitHub Pages 배포
+│   └── dependabot.yml                  # 자동 의존성 업데이트
 └── README.md
 ```
 
@@ -231,27 +231,27 @@ DATABASE_URL=sqlite:///db.sqlite3
 
 ```bash
 # 개발
-npm run dev              # Frontend + Backend
-npm start                # Frontend만
+npm run dev                 # Frontend + Backend
+npm start                   # Frontend만
 python manage.py runserver  # Backend API (backend 디렉토리에서)
 
 # 빌드 & 배포
-npm run build            # 프로덕션 빌드
-npm run deploy           # GitHub Pages 배포
+npm run build               # 프로덕션 빌드
+npm run deploy              # GitHub Pages 배포
 
 # 테스트
-npm test                 # 단위 테스트 (277개 테스트)
-npm run test:e2e         # E2E 테스트 (Playwright)
-npm run test:coverage    # 커버리지 리포트 (Codecov 통합)
+npm test                    # 단위 테스트 (277개 테스트)
+npm run test:e2e            # E2E 테스트 (Playwright)
+npm run test:coverage       # 커버리지 리포트 (Codecov 통합)
 
 # 코드 품질
-npm run lint             # ESLint 검사
-npm run type-check       # TypeScript 타입 검사
-npm run validate         # lint + type-check + test
+npm run lint                # ESLint 검사
+npm run type-check          # TypeScript 타입 검사
+npm run validate            # lint + type-check + test
 
 # 성능 분석
-npm run lighthouse       # Lighthouse CI 실행
-npm run analyze:bundle   # 번들 크기 분석
+npm run lighthouse          # Lighthouse CI 실행
+npm run analyze:bundle      # 번들 크기 분석
 ```
 
 ## 🚀 배포
@@ -373,6 +373,33 @@ npm run build
 - 온라인 교육 플랫폼 연동
 
 ## 🔄 최근 업데이트 (2025.08)
+
+### Phase 21: 프로필 페이지 UX/UI 개선 및 가독성 향상 (2025.08.13)
+
+#### ✅ 완료된 작업
+
+- **프로필 페이지 디자인 리팩토링**
+  - 경력/학력/프로젝트 섹션 레이아웃 개선
+  - 모바일 반응형 디자인 최적화
+  - 타임라인 UI 현대적으로 개선 (그라디언트 라인, 개선된 도트)
+  - 카드 디자인 간소화 (rounded-3xl → rounded-2xl, 그림자 효과 추가)
+  - 텍스트 계층구조 개선 (제목/부제목/본문 크기 조정)
+  - "현재 재직중" 뱃지 색상 변경 (회색 → 녹색)
+  
+- **콘텐츠 업데이트**
+  - 엘리스 경력 기간 수정 (2023.05 ~ 2024.09)
+  - AI 엔지니어 심화 부트캠프 기간 수정 (2024 ~ 2025)
+  - 기술 스택 키워드 범용화
+    - YOLO/RT-DETR → Object Detection
+    - SAM/Mask2Former → Segmentation  
+    - ChatGPT → 생성형 AI
+  - 프로젝트 카드 태그 색상 통일 (모두 회색으로)
+  - 태그 정렬 순서 개선 (영어 → 한글)
+
+- **코드 품질 개선**
+  - JSX 구조 오류 수정
+  - TypeScript 타입 안정성 유지
+  - 컴포넌트 재사용성 향상
 
 ### Phase 20: CI/CD 테스트 완전 안정화 및 CSS 최적화 (2025.08.11)
 
