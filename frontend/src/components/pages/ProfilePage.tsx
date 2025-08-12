@@ -70,8 +70,19 @@ const ProfilePage: React.FC = memo(() => {
       period: '2022.10 ~ 2024.09',
       company: 'Cobslab',
       position: '책임 연구원 / 전문 강사',
-      description:
-        '삼성전자, LG전자, 현대건설, 카카오 등 대기업 AI/ML 교육 · 누적 1,000명+ 교육생 배출',
+      description: '대기업/정부기관 Python, 데이터 분석, ML/DL 강의 개발 및 연구',
+    },
+    {
+      period: '2022.06',
+      company: '코코넛사일로',
+      position: '연구원',
+      description: 'Data Lab · 데이터 바우처 지원사업 프로토타입 개발',
+    },
+    {
+      period: '2021.05 ~ 2021.08',
+      company: '서울시 청년청',
+      position: 'Front-End Developer',
+      description: '사회적 기업 과제 수행 · 웹 프론트엔드 개발',
     },
     {
       period: '2022.04 ~ 2023.02',
@@ -87,7 +98,7 @@ const ProfilePage: React.FC = memo(() => {
       period: '2024.09 ~ 2026.06\n(예정)',
       school: '한양대학교',
       degree: '인공지능융합대학원 인공지능시스템학과 석사과정',
-      description: '지도교수: 조동현 교수',
+      description: 'Computer Vision · 지도교수: 조동현 교수',
     },
     {
       period: '2013.03 ~ 2021.02',
@@ -105,7 +116,7 @@ const ProfilePage: React.FC = memo(() => {
       description:
         '멋쟁이사자처럼 AI 엔지니어 심화 부트캠프 이미지처리 과정 · 객체 탐지, 세그멘테이션, 멀티태스킹 실전 프로젝트',
       category: 'bootcamp',
-      tags: ['Object Detection', 'Segmentation', 'PyTorch', 'Computer Vision'],
+      tags: ['Computer Vision', 'Object Detection', 'PyTorch', 'Segmentation'].sort(),
       highlight: true,
     },
     {
@@ -115,7 +126,7 @@ const ProfilePage: React.FC = memo(() => {
       description:
         '나노융합산업연구조합 협력 · 나노소재 빅데이터 활용 AI융합전문가 교육 · 제조라인 고장예측 및 신소재 구조분석',
       category: 'enterprise',
-      tags: ['빅데이터', '제조 AI', '시뮬레이션', '산업 AI'],
+      tags: ['빅데이터', '산업 AI', '시뮬레이션', '제조 AI'].sort(),
       highlight: false,
     },
     {
@@ -125,7 +136,7 @@ const ProfilePage: React.FC = memo(() => {
       description:
         '한국과학창의재단 찾아가는 학교 컨설팅 · 초중고 교사 및 학부모 대상 ChatGPT 활용 교육',
       category: 'education',
-      tags: ['생성형 AI', '교육 혁신', 'AI 리터러시', 'ChatGPT'],
+      tags: ['AI 리터러시', 'ChatGPT', '교육 혁신', '생성형 AI'].sort(),
     },
     {
       id: 'startup-station',
@@ -134,7 +145,7 @@ const ProfilePage: React.FC = memo(() => {
       description:
         '멋쟁이사자처럼 테킷 스타트업 스테이션 7~10기 운영 · 예비 IT창업자 대상 개발 역량 강화',
       category: 'startup',
-      tags: ['창업 교육', '멘토링', '풀스택', 'MVP 개발'],
+      tags: ['MVP 개발', '멘토링', '창업 교육', '풀스택'].sort(),
     },
     {
       id: 'samsung-spotfire',
@@ -143,7 +154,7 @@ const ProfilePage: React.FC = memo(() => {
       description:
         '삼성전자 임직원 대상 Spotfire 데이터 분석 및 시각화 교육 · 실무 데이터 활용 대시보드 구축',
       category: 'enterprise',
-      tags: ['데이터 분석', 'Spotfire', '시각화', 'BI'],
+      tags: ['BI', 'Spotfire', '데이터 분석', '시각화'].sort(),
     },
     {
       id: 'lg-data-science',
@@ -151,7 +162,7 @@ const ProfilePage: React.FC = memo(() => {
       period: '2023',
       description: 'Data Science 프로젝트 기획부터 개발까지 메인 강사 · 머신러닝 모델 개발 및 배포',
       category: 'enterprise',
-      tags: ['Data Science', 'ML', '프로젝트', '실무 교육'],
+      tags: ['Data Science', 'ML', '실무 교육', '프로젝트'].sort(),
     },
     {
       id: 'hyundai-ml',
@@ -160,7 +171,7 @@ const ProfilePage: React.FC = memo(() => {
       description:
         '현대건설 시니어 대상 머신러닝/딥러닝 교육 · YOLO 기반 건설 현장 안전 관리 시스템',
       category: 'enterprise',
-      tags: ['Deep Learning', 'YOLO', '안전 관리', 'Computer Vision'],
+      tags: ['Computer Vision', 'Deep Learning', 'YOLO', '안전 관리'].sort(),
     },
     {
       id: 'keti-nano',
@@ -169,7 +180,7 @@ const ProfilePage: React.FC = memo(() => {
       description:
         '한국전자기술연구원 나노소재 빅데이터 활용 AI융합 전문가 과정 · 도메인 지식 기반 AI 도입',
       category: 'research',
-      tags: ['나노소재', '빅데이터', 'AI 융합', '연구'],
+      tags: ['AI 융합', '나노소재', '빅데이터', '연구'].sort(),
     },
     {
       id: 'seoul-ai',
@@ -177,7 +188,7 @@ const ProfilePage: React.FC = memo(() => {
       period: '2022',
       description: '서울시립대 캠퍼스타운형 취업사관학교 AI 과정 · 대학생 대상 실무 중심 AI 교육',
       category: 'education',
-      tags: ['AI 교육', '취업 연계', '실무 프로젝트'],
+      tags: ['AI 교육', '실무 프로젝트', '취업 연계'].sort(),
     },
     {
       id: 'open-source',
@@ -185,7 +196,7 @@ const ProfilePage: React.FC = memo(() => {
       period: '2022',
       description: '2022 오픈소스 컨트리뷰션 아카데미 · Visual Python ML/Statistics 모듈 개발',
       category: 'research',
-      tags: ['오픈소스', 'Python', 'ML', '시각화'],
+      tags: ['ML', 'Python', '시각화', '오픈소스'].sort(),
     },
   ];
 
@@ -193,7 +204,7 @@ const ProfilePage: React.FC = memo(() => {
     totalProjects: '50+',
     totalStudents: '1,000+',
     partnerCompanies: '30+',
-    yearsOfExperience: '3+',
+    yearsOfExperience: '4+',
   };
 
   const projectCategories = [

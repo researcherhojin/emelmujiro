@@ -60,8 +60,8 @@ describe('ProfilePage Component', () => {
 
       expect(screen.getByText('50+')).toBeInTheDocument(); // Total projects
       expect(screen.getByText('1,000+')).toBeInTheDocument(); // Total students
-      expect(screen.getByText('15+')).toBeInTheDocument(); // Partner companies
-      expect(screen.getByText('3+')).toBeInTheDocument(); // Years of experience
+      expect(screen.getByText('30+')).toBeInTheDocument(); // Partner companies
+      expect(screen.getByText('4+')).toBeInTheDocument(); // Years of experience
     });
   });
 
@@ -172,7 +172,7 @@ describe('ProfilePage Component', () => {
 
       // Check that statistics are displayed
       expect(screen.getByText('50+')).toBeInTheDocument();
-      expect(screen.getByText('15+')).toBeInTheDocument();
+      expect(screen.getByText('30+')).toBeInTheDocument();
       expect(screen.getByText('1,000+')).toBeInTheDocument();
     });
   });
