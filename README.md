@@ -59,12 +59,14 @@ npm run validate   # 린트 + 타입 체크 + 테스트
 
 ### Frontend
 
-- **React** 18.2.0 + **TypeScript** 5.9.2 - 100% TypeScript 전환 완료 (strict typing 적용)
+- **React** 18.3.1 + **TypeScript** 5.9.2 - 100% TypeScript 전환 완료 (strict typing 적용)
 - **Tailwind CSS** 3.3.5 - 유틸리티 기반 스타일링
 - **Framer Motion** 11.15.0 - 애니메이션
 - **React Router** 6.20.0 (HashRouter) - SPA 라우팅
-- **Context API** - 상태 관리 (Auth, Blog, UI, Form)
+- **Context API** - 상태 관리 (Auth, Blog, UI, Form, Chat)
 - **React Markdown** 9.0.3 + **Remark GFM** 4.0.0 - 마크다운 렌더링
+- **i18next** 25.3.4 - 다국어 지원 (한국어/영어)
+- **Socket.io Client** - 실시간 채팅 시스템
 
 ### Backend
 
@@ -82,8 +84,8 @@ npm run validate   # 린트 + 타입 체크 + 테스트
   - pr-checks.yml: PR 검증, 번들 크기 체크
   - Dependabot 자동 의존성 업데이트
 - **GitHub Pages** - 정적 호스팅
-- **Jest** + **React Testing Library** - 976개 테스트 케이스 (89% 통과율)
-- **Playwright** - E2E 테스트 (3개 핵심 스위트: homepage, blog, contact)
+- **Jest** + **React Testing Library** - 971개 테스트 케이스 (89% 통과율, 863개 통과)
+- **Playwright** - E2E 테스트 (6개 스위트: homepage, blog, contact, auth, accessibility, pwa)
 - **Codecov** - 코드 커버리지 50.29% 달성
 - **ESLint 9** + **TypeScript ESLint** - 최신 flat config 형식
 - **Prettier** - 코드 포맷팅 자동화
@@ -98,25 +100,29 @@ npm run validate   # 린트 + 타입 체크 + 테스트
 
 - **CI/CD 파이프라인**: ![CI Status](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)
 - **코드 품질**: ESLint 0 errors, TypeScript 0 errors
-- **테스트 통과율**: 89% (868/976 tests, 108 skipped)
+- **테스트 통과율**: 89% (863/971 tests, 108 skipped)
 - **테스트 커버리지**: 50.29% (Statements)
 - **의존성 관리**: Dependabot 자동 업데이트 활성화
 - **보안 스캔**: 취약점 0건 (Critical/High)
 - **빌드 시간**: ~45초
 - **번들 크기**: ~500KB (gzipped)
+- **컴포넌트 수**: 70+ (모두 TypeScript)
 
 ## 🎯 주요 기능
 
 ### 핵심 기능
 
 - ✅ **완전 반응형 디자인** - 모든 디바이스 최적화
-- ✅ **PWA 지원** - 오프라인 작동, 앱 설치 가능, Background Sync
-- ✅ **블로그 시스템** - 마크다운 지원, 검색, 댓글, 좋아요
+- ✅ **PWA 지원** - 오프라인 작동, 앱 설치 가능, Background Sync, Push Notifications
+- ✅ **실시간 채팅 시스템** - WebSocket 기반, 관리자 패널, 이모지, 파일 업로드
+- ✅ **블로그 시스템** - 마크다운 지원, 검색, 댓글, 좋아요, 캐싱 최적화
 - ✅ **문의 폼** - 백그라운드 동기화, 오프라인 지원
 - ✅ **다크 모드** - 시스템 설정 연동
+- ✅ **다국어 지원** - i18next 기반 한국어/영어 전환
 - ✅ **WCAG 2.1 AA 준수** - 완전한 접근성 지원
 - ✅ **JWT 인증 시스템** - 회원가입, 로그인, 토큰 갱신
 - ✅ **API 문서화** - Swagger UI 자동 생성 (/api/docs/)
+- ✅ **성능 모니터링** - Web Vitals 실시간 대시보드
 
 ### 블로그 기능
 
@@ -152,16 +158,17 @@ emelmujiro/
 │   │   └── offline.html                # 오프라인 페이지
 │   ├── src/
 │   │   ├── components/                 # React 컴포넌트
-│   │   │   ├── blog/                   # 블로그 관련 (10개)
-│   │   │   ├── common/                 # 공통 컴포넌트 (30개+)
-│   │   │   ├── layout/                 # 레이아웃 (3개)
-│   │   │   ├── pages/                  # 페이지 (8개)
-│   │   │   └── sections/               # 섹션 컴포넌트 (10개)
-│   │   ├── contexts/                   # Context API (4개)
-│   │   ├── hooks/                      # 커스텀 훅
-│   │   ├── services/                   # API 서비스
+│   │   │   ├── blog/                   # 블로그 관련 (7개)
+│   │   │   ├── chat/                   # 채팅 시스템 (9개)
+│   │   │   ├── common/                 # 공통 컴포넌트 (26개)
+│   │   │   ├── layout/                 # 레이아웃 (2개)
+│   │   │   ├── pages/                  # 페이지 (4개)
+│   │   │   └── sections/               # 섹션 컴포넌트 (9개)
+│   │   ├── contexts/                   # Context API (5개)
+│   │   ├── hooks/                      # 커스텀 훅 (2개)
+│   │   ├── services/                   # API 서비스 (API, WebSocket)
 │   │   ├── types/                      # TypeScript 타입 정의
-│   │   └── utils/                      # 유틸리티 함수
+│   │   └── utils/                      # 유틸리티 함수 (14개+)
 │   ├── e2e/                            # Playwright E2E 테스트
 │   ├── codecov.yml                     # Codecov 설정
 │   └── package.json
@@ -312,18 +319,21 @@ npm run build
 
 ### 테스트 현황
 
-- **단위 테스트**: 61개 파일, 976개 테스트 케이스 (89% 통과, 108개 스킵) ✅
-- **E2E 테스트**: 3개 핵심 스위트 (Playwright) ✅
+- **단위 테스트**: 61개 파일, 971개 테스트 케이스 (89% 통과, 863개 통과, 108개 스킵) ✅
+- **E2E 테스트**: 6개 스위트 (Playwright) ✅
   - homepage.spec.ts: 홈페이지 네비게이션 및 반응형 테스트
   - blog.spec.ts: 블로그 기능 (검색, 페이지네이션, 댓글)
   - contact.spec.ts: 문의 폼 검증 및 제출
+  - auth.spec.ts: 인증 흐름 테스트
+  - accessibility.spec.ts: 접근성 검증
+  - pwa.spec.ts: PWA 기능 테스트
 - **코드 커버리지**: 50.29% 달성 ✅
   - Statements: 50.29%
   - Branches: 40.75%
   - Functions: 47.97%
   - Lines: 51.33%
 - **TypeScript 커버리지**: 100% (120개+ TS/TSX 파일)
-- **컴포넌트 수**: 60개+ (모두 TypeScript)
+- **컴포넌트 수**: 70개+ (모두 TypeScript)
 - **테스트 유틸리티**: 커스텀 render 함수, mock 데이터 팩토리
 - **CI/CD 상태**: ![CI Status](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)
 - **의존성 업데이트**: Dependabot 자동 관리
@@ -586,23 +596,37 @@ npm run build
 
 ## 🚧 향후 개선 사항
 
+### 즉시 해결 필요 (1주 이내)
+
+1. **테스트 안정화**
+   - [ ] 스킵된 테스트 5개 수정 (webVitals, SEO, ChatWidget 등)
+   - [ ] Dynamic import 모킹 문제 해결
+   - [ ] React.memo 테스트 환경 개선
+   - [ ] Timer 관련 테스트 문제 수정
+
+2. **코드 일관성 개선**
+   - [ ] 68개 console.log를 logger 유틸리티로 교체
+   - [ ] 모든 컴포넌트에 i18n 적용
+   - [ ] Error boundaries 추가
+
 ### 단기 목표 (1-2주)
 
-1. **코드 품질 개선**
+3. **코드 품질 개선**
    - [ ] TypeScript strict mode 완전 적용
    - [ ] 사용하지 않는 의존성 제거
    - [ ] 번들 크기 최적화 (현재 약 500KB)
-   - [ ] React Router v7 업그레이드
+   - [ ] Framer Motion v12 업그레이드 검토
 
-2. **테스트 커버리지 향상**
+4. **테스트 커버리지 향상**
    - [x] ~~코드 커버리지 측정 도구 설정~~ ✅ Codecov 통합 완료
-   - [ ] 목표: Line Coverage 80% 이상 (현재 60% 기준선)
+   - [ ] 목표: Line Coverage 80% 이상 (현재 50.29%)
    - [x] ~~E2E 테스트 시나리오 확대 (Playwright)~~ ✅ 6개 스위트 구현
    - [ ] Visual regression 테스트 도입
+   - [ ] 채팅 시스템 E2E 테스트 추가
 
 ### 중기 목표 (1-2개월)
 
-3. **성능 최적화**
+5. **성능 최적화**
    - [ ] React.lazy 추가 적용 (현재 3개 → 10개+)
    - [ ] Virtual scrolling 도입 (블로그 목록)
    - [ ] 이미지 최적화 (WebP 자동 변환, CDN 적용)
@@ -610,33 +634,35 @@ npm run build
    - [ ] Web Vitals 대시보드 UI 구축
    - [ ] Bundle Analyzer 정기 실행 자동화
 
-4. **백엔드 통합**
+6. **백엔드 통합**
    - [x] ~~Django REST API 구현~~ ✅ 완료
    - [x] ~~JWT 기반 인증 시스템~~ ✅ simplejwt 구현
    - [x] ~~API 문서화~~ ✅ Swagger/OpenAPI 자동 생성
-   - [ ] 실시간 알림 (WebSocket/SSE)
+   - [ ] 실제 백엔드 API 연결 (현재 Mock API 사용)
+   - [ ] WebSocket 서버 구현 (채팅 시스템용)
    - [ ] 파일 업로드 기능 (이미지, 문서)
    - [ ] 검색 엔진 최적화 (Elasticsearch)
    - [ ] Redis 캐싱 레이어
 
 ### 장기 목표 (3-6개월)
 
-5. **기능 확장**
-   - [ ] 다국어 지원 (i18n) - 한국어/영어
+7. **기능 확장**
+   - [x] ~~다국어 지원 (i18n) - 한국어/영어~~ ✅ 인프라 구축 완료 (적용 필요)
+   - [x] ~~실시간 채팅 시스템~~ ✅ 프론트엔드 구현 완료
    - [ ] 관리자 대시보드 (통계, 사용자 관리)
    - [ ] Google Analytics 4 통합
-   - [ ] AI 챗봇 상담 기능
+   - [ ] AI 챗봇 상담 기능 강화
    - [ ] 온라인 교육 플랫폼 통합
    - [ ] 결제 시스템 연동 (토스페이먼츠)
 
-6. **개발자 경험**
+8. **개발자 경험**
    - [ ] Storybook 도입 (컴포넌트 문서화)
    - [ ] API 문서 자동 생성 (Swagger)
    - [ ] Monorepo 구조 전환 (Turborepo)
    - [ ] Feature Flag 시스템
    - [ ] A/B 테스팅 인프라
 
-7. **인프라 고도화**
+9. **인프라 고도화**
    - [ ] Kubernetes 배포 준비
    - [ ] CDN 적용 (CloudFlare)
    - [ ] 모니터링 시스템 (Sentry, Datadog)
