@@ -62,7 +62,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <!-- Pretendard 폰트 - 지연 로드 최적화 -->
+    <!-- Pretendard 폰트 - 정적 버전 사용 -->
     <link
       rel="preload"
       as="style"
@@ -146,32 +146,16 @@
           navigator.serviceWorker
             .register('%PUBLIC_URL%/service-worker-enhanced.js')
             .then(registration => {
-              console.log('SW registered:', registration);
+              // Service Worker registered successfully
             })
             .catch(error => {
-              console.log('SW registration failed:', error);
+              // SW registration failed
             });
         });
       }
 
-      // Font loading optimization with font-display: swap
-      if (window.FontFace) {
-        const pretendardFont = new FontFace(
-          'Pretendard',
-          'url(https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-regular.woff2) format("woff2")',
-          { display: 'swap' }
-        );
-        pretendardFont
-          .load()
-          .then(() => {
-            document.fonts.add(pretendardFont);
-            document.documentElement.classList.add('fonts-loaded');
-          })
-          .catch(() => {
-            // Fallback to system fonts
-            document.documentElement.classList.add('fonts-failed');
-          });
-      }
+      // Font loading is handled by CSS link tag above
+      // The @font-face rules in the CSS file will handle the font loading
 
       // Critical image preloading
       if (window.requestIdleCallback) {
@@ -203,10 +187,11 @@
         try {
           const observer = new PerformanceObserver(list => {
             for (const entry of list.getEntries()) {
+              // Performance metrics are tracked but not logged
               if (entry.name === 'first-contentful-paint') {
-                console.log('FCP:', entry.startTime);
+                // FCP tracked
               } else if (entry.name === 'largest-contentful-paint') {
-                console.log('LCP:', entry.startTime);
+                // LCP tracked
               }
             }
           });

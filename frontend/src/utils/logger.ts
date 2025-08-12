@@ -18,7 +18,7 @@ class Logger {
     this.isDevelopment = process.env.NODE_ENV === 'development';
     this.config = {
       enableInProduction: false,
-      logLevel: 'debug',
+      logLevel: 'warn', // Only show warnings and errors by default
       ...config,
     };
   }

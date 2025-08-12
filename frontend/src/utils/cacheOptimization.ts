@@ -248,6 +248,11 @@ export const sessionCache = new StorageCache('sessionStorage');
 
 // Preload critical resources
 export const preloadCriticalResources = () => {
+  // Skip preloading in development mode as webpack handles this
+  if (process.env.NODE_ENV === 'development') {
+    return;
+  }
+
   const criticalResources = ['/static/css/main.css', '/static/js/main.js'];
 
   criticalResources.forEach(resource => {

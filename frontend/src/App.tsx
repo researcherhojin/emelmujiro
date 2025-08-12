@@ -20,7 +20,6 @@ const WebVitalsDashboard = lazy(() => import('./components/common/WebVitalsDashb
 
 // Main page components - lazy load for better performance
 const HeroSection = lazy(() => import('./components/sections/HeroSection'));
-const QuickIntroSection = lazy(() => import('./components/sections/QuickIntroSection'));
 const ServicesSection = lazy(() => import('./components/sections/ServicesSection'));
 const LogosSection = lazy(() => import('./components/sections/LogosSection'));
 const CTASection = lazy(() => import('./components/sections/CTASection'));
@@ -79,9 +78,6 @@ const HomePage: React.FC = memo(() => {
             <HeroSection />
           </div>
 
-          {/* Quick Company Introduction */}
-          <QuickIntroSection />
-
           {/* Services Section */}
           <div id="services">
             <ServicesSection />
@@ -137,32 +133,24 @@ const AppLayout: React.FC = memo(() => {
 
 AppLayout.displayName = 'AppLayout';
 
-// Create router with v7 future flags
-const router = createHashRouter(
-  [
-    {
-      path: '/',
-      element: <AppLayout />,
-      children: [
-        { index: true, element: <HomePage /> },
-        { path: 'about', element: <AboutPage /> },
-        { path: 'contact', element: <ContactPage /> },
-        { path: 'profile', element: <ProfilePage /> },
-        { path: 'share', element: <SharePage /> },
-        { path: 'blog', element: <BlogListPage /> },
-        { path: 'blog/new', element: <BlogEditor /> },
-        { path: 'blog/:id', element: <BlogDetail /> },
-        { path: '*', element: <NotFound /> },
-      ],
-    },
-  ],
+// Create router
+const router = createHashRouter([
   {
-    future: {
-      // React Router v7 future flags - currently available flags only
-      // More flags will be available as React Router updates
-    },
-  }
-);
+    path: '/',
+    element: <AppLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: 'about', element: <AboutPage /> },
+      { path: 'contact', element: <ContactPage /> },
+      { path: 'profile', element: <ProfilePage /> },
+      { path: 'share', element: <SharePage /> },
+      { path: 'blog', element: <BlogListPage /> },
+      { path: 'blog/new', element: <BlogEditor /> },
+      { path: 'blog/:id', element: <BlogDetail /> },
+      { path: '*', element: <NotFound /> },
+    ],
+  },
+]);
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -172,24 +160,8 @@ const App: React.FC = () => {
     // Initialize blog cache
     initBlogCache();
 
-    // Register service worker if not already registered
-    if ('serviceWorker' in navigator && navigator.serviceWorker?.register) {
-      const registerPromise = navigator.serviceWorker.register(
-        '/emelmujiro/service-worker-enhanced.js'
-      );
-
-      if (registerPromise && typeof registerPromise.then === 'function') {
-        registerPromise
-          .then(registration => {
-            // Service Worker registered successfully
-            // eslint-disable-next-line no-console
-            console.info('Service Worker registered successfully:', registration);
-          })
-          .catch(error => {
-            console.error('Service Worker registration failed:', error);
-          });
-      }
-    }
+    // Service worker registration is already handled in index.html
+    // No need to register again here
   }, []);
 
   return (

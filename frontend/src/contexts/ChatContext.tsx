@@ -134,6 +134,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   // Messages
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isInitialMount, setIsInitialMount] = useState(true);
 
   // Agent Info
   const [agentAvailable] = useState(true);
@@ -154,10 +155,30 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     loadPersistedData();
     updateBusinessHours();
 
+    // Mark as not initial mount after a short delay
+    const timer = setTimeout(() => {
+      setIsInitialMount(false);
+    }, 100);
+
+    // Track user interaction
+    const handleUserInteraction = () => {
+      document.body.setAttribute('data-user-interacted', 'true');
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+    };
+
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
+
     // Update business hours every minute
     const interval = setInterval(updateBusinessHours, 60000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timer);
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+    };
   }, []);
 
   // Auto-connect when chat opens
@@ -170,16 +191,28 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   // Play sound for new messages (except user messages)
   useEffect(() => {
+    // Skip sound on initial mount and when no user interaction has occurred
+    if (isInitialMount) {
+      return;
+    }
+
+    if (messages.length === 0) return;
+
+    // Only play sound for new messages after user has interacted with the page
+    const hasUserInteracted = document.body.getAttribute('data-user-interacted') === 'true';
+    if (!hasUserInteracted) return;
+
     const lastMessage = messages[messages.length - 1];
     if (
       lastMessage &&
       lastMessage.sender !== 'user' &&
       settings.soundEnabled &&
-      !isOpen // Only play sound when chat is closed
+      !isOpen && // Only play sound when chat is closed
+      document.visibilityState === 'visible' // Only play when tab is visible
     ) {
       playNotificationSound();
     }
-  }, [messages, settings.soundEnabled, isOpen]);
+  }, [messages, settings.soundEnabled, isOpen, isInitialMount]);
 
   const loadPersistedData = () => {
     try {
@@ -220,12 +253,21 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   const playNotificationSound = () => {
     try {
+      // Only play sound if document is visible
+      if (document.hidden) return;
+
       // Create a simple notification sound using Web Audio API
       interface WindowWithWebkit extends Window {
         webkitAudioContext?: typeof AudioContext;
       }
       const audioContext = new (window.AudioContext ||
         (window as WindowWithWebkit).webkitAudioContext)();
+
+      // Resume context if suspended (for autoplay policy)
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
 
@@ -241,7 +283,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.5);
     } catch (error) {
-      console.warn('Could not play notification sound:', error);
+      // Silently fail for autoplay restrictions
+      if (error instanceof Error && !error.message.includes('user gesture')) {
+        console.warn('Could not play notification sound:', error);
+      }
     }
   };
 
@@ -252,6 +297,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const openChat = () => {
     setIsOpen(true);
     setIsMinimized(false);
+    setIsInitialMount(false); // Reset initial mount flag when chat opens
 
     // Send welcome message if no messages exist
     if (messages.length === 0) {
