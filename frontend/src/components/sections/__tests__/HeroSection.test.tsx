@@ -50,10 +50,11 @@ describe('HeroSection Component', () => {
     expect(screen.getByText(/대기업 AI 교육부터 스타트업 기술 컨설팅까지/)).toBeInTheDocument();
   });
 
-  test('renders call to action buttons', () => {
+  test('renders call to action button', () => {
     renderWithRouter(<HeroSection />);
 
-    expect(screen.getByText('프로젝트 문의하기')).toBeInTheDocument();
-    expect(screen.getByText('회사 소개')).toBeInTheDocument();
+    // HeroSection now only has one CTA button with an arrow
+    const ctaButton = screen.getByText(/프로젝트 문의하기/);
+    expect(ctaButton).toBeInTheDocument();
   });
 });
