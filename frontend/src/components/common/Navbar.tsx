@@ -3,7 +3,6 @@ import { Menu, X } from 'lucide-react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DarkModeToggle from './DarkModeToggle';
-import LanguageSwitcher from './LanguageSwitcher';
 
 interface NavItem {
   label: string;
@@ -28,7 +27,6 @@ const Navbar: React.FC = memo(() => {
 
   const navItems: NavItem[] = [
     { label: t('links.about'), path: '/about' },
-    { label: t('links.services'), path: '/#services' },
     { label: t('links.blog'), path: '/blog' },
     { label: t('links.profile'), path: '/profile' },
   ];
@@ -87,8 +85,8 @@ const Navbar: React.FC = memo(() => {
     <nav
       className={`fixed w-full z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-white dark:bg-dark-900 shadow-lg border-b border-gray-200 dark:border-dark-700'
-          : 'bg-white/98 dark:bg-dark-900/95 backdrop-blur-sm shadow-sm border-b border-gray-100 dark:border-dark-800'
+          ? 'bg-white dark:bg-gray-900 shadow-md border-b border-gray-200 dark:border-gray-800'
+          : 'bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800'
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -96,7 +94,8 @@ const Navbar: React.FC = memo(() => {
           {/* Logo */}
           <Link
             to="/"
-            className="text-2xl font-black text-gray-900 dark:text-white hover:text-gray-700 dark:hover:text-gray-300 transition-colors tracking-tight select-none"
+            className="text-2xl font-black text-gray-900 dark:text-white hover:text-gray-800 dark:hover:text-gray-100 transition-colors tracking-tight select-none focus:outline-none border-none bg-transparent"
+            style={{ outline: 'none', boxShadow: 'none' }}
           >
             {t('company.name')}
           </Link>
@@ -107,26 +106,31 @@ const Navbar: React.FC = memo(() => {
               <button
                 key={item.path}
                 onClick={() => handleNavigation(item.path)}
-                className={`text-base font-medium transition-all duration-200 relative ${
+                className={`text-base font-semibold transition-colors duration-200 relative focus:outline-none border-none bg-transparent ${
                   isActive(item.path)
-                    ? 'text-gray-900 dark:text-white after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900 dark:after:bg-white after:rounded-full'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:after:absolute hover:after:bottom-0 hover:after:left-0 hover:after:w-full hover:after:h-0.5 hover:after:bg-gray-300 dark:hover:after:bg-gray-600 hover:after:rounded-full'
+                    ? 'text-gray-900 dark:text-white'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                 }`}
+                style={{ outline: 'none', boxShadow: 'none' }}
               >
-                {item.label}
+                <span className="relative">
+                  {item.label}
+                  <span
+                    className={`absolute -bottom-2 left-0 right-0 h-[2px] bg-gray-900 dark:bg-white transition-transform duration-200 origin-left ${
+                      isActive(item.path) ? 'scale-x-100' : 'scale-x-0 hover:scale-x-100'
+                    }`}
+                  />
+                </span>
               </button>
             ))}
 
-            {/* Language Switcher */}
-            <LanguageSwitcher />
-            
             {/* Dark Mode Toggle */}
             <DarkModeToggle />
-            
+
             <button
               onClick={handleContactClick}
-              className="px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-base font-semibold 
-                                rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-100"
+              className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-base font-bold 
+                                rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-all"
             >
               {t('links.contact')}
             </button>
@@ -134,12 +138,11 @@ const Navbar: React.FC = memo(() => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-3">
-            <LanguageSwitcher />
             <DarkModeToggle />
             <button
               onClick={toggleMenu}
               className="inline-flex items-center justify-center p-2 text-gray-700 dark:text-gray-300 
-                              hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-800 rounded-lg transition-all duration-200 active:scale-95"
+                              hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
               aria-label={t('accessibility.menu', { ns: 'common' })}
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -157,7 +160,7 @@ const Navbar: React.FC = memo(() => {
                 key={item.path}
                 onClick={() => handleNavigation(item.path)}
                 className={`block w-full text-left px-4 py-3 text-base font-medium 
-                                    transition-colors ${
+                                    transition-colors focus:outline-none ${
                                       isActive(item.path)
                                         ? 'text-gray-900 dark:text-white bg-gray-50 dark:bg-dark-800'
                                         : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-dark-800'

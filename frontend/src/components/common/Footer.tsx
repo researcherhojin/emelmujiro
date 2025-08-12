@@ -253,7 +253,7 @@ const Footer: React.FC = memo(() => {
 
   return (
     <>
-      <footer className="bg-white dark:bg-dark-900 border-t border-gray-100 dark:border-dark-800">
+      <footer className="bg-gray-50 dark:bg-dark-950 border-t border-gray-200 dark:border-dark-800 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {/* Services */}
@@ -263,7 +263,8 @@ const Footer: React.FC = memo(() => {
                 <li>
                   <button
                     onClick={() => handleServiceClick('ai-solution')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm text-left block w-full"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
+                    style={{ outline: 'none', boxShadow: 'none' }}
                   >
                     AI 솔루션 개발
                   </button>
@@ -271,7 +272,8 @@ const Footer: React.FC = memo(() => {
                 <li>
                   <button
                     onClick={() => handleServiceClick('ai-education')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm text-left block w-full"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
+                    style={{ outline: 'none', boxShadow: 'none' }}
                   >
                     AI 교육 & 강의
                   </button>
@@ -279,7 +281,8 @@ const Footer: React.FC = memo(() => {
                 <li>
                   <button
                     onClick={() => handleServiceClick('ai-consulting')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm text-left block w-full"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
+                    style={{ outline: 'none', boxShadow: 'none' }}
                   >
                     AI 전략 컨설팅
                   </button>
@@ -287,7 +290,8 @@ const Footer: React.FC = memo(() => {
                 <li>
                   <button
                     onClick={() => handleServiceClick('data-analysis')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm text-left block w-full"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
+                    style={{ outline: 'none', boxShadow: 'none' }}
                   >
                     데이터 분석
                   </button>
@@ -302,7 +306,8 @@ const Footer: React.FC = memo(() => {
                 <li>
                   <button
                     onClick={() => scrollToSection('hero')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm text-left block w-full"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
+                    style={{ outline: 'none', boxShadow: 'none' }}
                   >
                     홈
                   </button>
@@ -310,7 +315,8 @@ const Footer: React.FC = memo(() => {
                 <li>
                   <button
                     onClick={() => scrollToSection('services')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm text-left block w-full"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
+                    style={{ outline: 'none', boxShadow: 'none' }}
                   >
                     서비스
                   </button>
@@ -318,7 +324,8 @@ const Footer: React.FC = memo(() => {
                 <li>
                   <button
                     onClick={() => handleNavigate('/profile')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm text-left block w-full"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
+                    style={{ outline: 'none', boxShadow: 'none' }}
                   >
                     대표 프로필
                   </button>
@@ -326,7 +333,8 @@ const Footer: React.FC = memo(() => {
                 <li>
                   <button
                     onClick={() => handleNavigate('/contact')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm text-left block w-full"
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
+                    style={{ outline: 'none', boxShadow: 'none' }}
                   >
                     문의하기
                   </button>
@@ -357,7 +365,7 @@ const Footer: React.FC = memo(() => {
               </p>
               <button
                 onClick={() => handleNavigate('/contact')}
-                className="inline-flex items-center px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-base font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-sm hover:shadow-md"
+                className="inline-flex items-center px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-base font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 문의하기
                 <ExternalLink className="ml-2 w-3 h-3 flex-shrink-0" />

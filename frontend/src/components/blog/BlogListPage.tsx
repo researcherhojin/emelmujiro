@@ -1,191 +1,49 @@
-import React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { PlusCircle } from 'lucide-react';
-import BlogCard from './BlogCard';
-import BlogSearch from './BlogSearch';
-import UnifiedLoading from '../common/UnifiedLoading';
-import ErrorBoundary from '../common/ErrorBoundary';
-import SEO from '../layout/SEO';
-import { useBlog } from '../../contexts/BlogContext';
-import type { BlogPost } from '../../types';
+import { Construction, ArrowRight } from 'lucide-react';
+import SEOHelmet from '../common/SEOHelmet';
 
 const BlogListPage: React.FC = memo(() => {
   const navigate = useNavigate();
-  const { posts, loading, error, totalPages, currentPage, fetchPosts } = useBlog();
-  const [filter, setFilter] = useState('All');
-  const [categories, setCategories] = useState<string[]>(['All']);
-  const [searchResults, setSearchResults] = useState<BlogPost[] | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    fetchPosts(currentPage);
-    // Check admin mode
-    const adminMode = localStorage.getItem('adminMode') === 'true';
-    setIsAdmin(adminMode);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
-
-  // Extract categories from posts
-  useEffect(() => {
-    if (posts.length > 0) {
-      const categories = posts
-        .map(post => post.category)
-        .filter((category): category is string => Boolean(category));
-      const uniqueCategories: string[] = ['All', ...Array.from(new Set(categories))];
-      setCategories(uniqueCategories);
-    }
-  }, [posts]);
-
-  const handleSearch = useCallback((results: BlogPost[]) => {
-    setSearchResults(results);
-  }, []);
-
-  const handleFilterChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilter(e.target.value);
-  }, []);
-
-  // Use search results if available, otherwise use filtered posts
-  const displayPosts = searchResults !== null ? searchResults : posts;
-  const filteredPosts =
-    filter === 'All' ? displayPosts : displayPosts.filter(post => post.category === filter);
-
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      fetchPosts(newPage);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    },
-    [fetchPosts]
-  );
-
-  const handleNewPost = useCallback(() => {
-    navigate('/blog/new');
-  }, [navigate]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <UnifiedLoading
-            variant="skeleton-blog"
-            className="mt-8"
-            message="블로그 포스트를 불러오는 중입니다..."
-          />
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50 pt-20">
-        <SEO
-          title="블로그 | 에멜무지로"
-          description="AI와 IT 관련 최신 소식과 인사이트를 공유합니다"
-          keywords="블로그, AI, IT, 에멜무지로"
-        />
+    <>
+      <SEOHelmet
+        title="블로그 | 에멜무지로"
+        description="AI와 IT 관련 최신 소식과 인사이트를 공유합니다"
+        url="https://researcherhojin.github.io/emelmujiro/blog"
+      />
 
-        <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center">
+        <div className="max-w-2xl mx-auto px-4 text-center">
           <div className="mb-8">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-3xl font-bold" id="blog-title">
-                블로그
-              </h1>
-              {isAdmin && (
-                <button
-                  onClick={handleNewPost}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  aria-label="새 블로그 글 작성"
-                >
-                  <PlusCircle className="w-5 h-5 mr-2" aria-hidden="true" />
-                  글쓰기
-                </button>
-              )}
-            </div>
-
-            {/* Search Bar */}
-            <div className="mb-6">
-              <BlogSearch onSearch={handleSearch} />
-            </div>
-
-            {/* Filter */}
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">
-                {searchResults !== null &&
-                  searchResults.length !== posts.length &&
-                  `검색 결과: ${searchResults.length}개`}
-              </span>
-              <div className="relative">
-                <select
-                  value={filter}
-                  onChange={handleFilterChange}
-                  className="appearance-none bg-white border border-gray-200 px-4 py-2 pr-8 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <svg
-                    className="fill-current h-4 w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+            <Construction className="w-24 h-24 mx-auto text-gray-400 dark:text-gray-600 animate-pulse" />
           </div>
 
-          {error ? (
-            <div className="text-center py-12 text-red-600">{error}</div>
-          ) : (
-            <>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredPosts.map((post, index) => (
-                  <motion.div
-                    key={post.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                  >
-                    <BlogCard post={post} />
-                  </motion.div>
-                ))}
-              </div>
+          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6">
+            블로그 준비 중
+          </h1>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex justify-center mt-12 space-x-2">
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handlePageChange(index + 1)}
-                      className={`px-4 py-2 rounded-lg transition-colors ${
-                        currentPage === index + 1
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-white text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                </div>
-              )}
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
+            더 나은 콘텐츠로 곧 찾아뵙겠습니다
+          </p>
 
-              {filteredPosts.length === 0 && (
-                <div className="text-center py-12 text-gray-500">
-                  해당 카테고리에 게시물이 없습니다.
-                </div>
-              )}
-            </>
-          )}
+          <p className="text-base text-gray-500 dark:text-gray-500 mb-12">
+            현재 백엔드 시스템을 구축 중입니다.
+            <br />
+            양질의 AI 인사이트와 기술 트렌드를 준비하고 있으니 조금만 기다려주세요.
+          </p>
+
+          <button
+            onClick={() => navigate('/')}
+            className="inline-flex items-center px-8 py-4 text-base font-bold text-white bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all rounded-xl"
+          >
+            메인으로 돌아가기
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </button>
         </div>
       </div>
-    </ErrorBoundary>
+    </>
   );
 });
 

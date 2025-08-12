@@ -8,35 +8,41 @@ const DarkModeToggle: React.FC = memo(() => {
   return (
     <button
       onClick={toggleTheme}
-      className="relative flex items-center justify-center w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full p-1 
-                 transition-all duration-300 ease-in-out hover:bg-gray-400 dark:hover:bg-gray-500 
-                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 
-                 dark:focus:ring-offset-gray-800"
+      className="relative p-2 rounded-lg bg-gray-100 dark:bg-dark-800 hover:bg-gray-200 dark:hover:bg-dark-700
+                 transition-all duration-200 ease-in-out group
+                 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 
+                 dark:focus:ring-offset-dark-900"
       aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
       title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
     >
-      {/* Toggle slider */}
-      <div
-        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-300 ease-in-out flex items-center justify-center
-                   ${theme === 'dark' ? 'translate-x-5' : 'translate-x-0'}`}
-      >
-        {theme === 'light' ? (
-          <Sun className="w-3 h-3 text-yellow-500 transition-all duration-200" strokeWidth={2.5} />
-        ) : (
-          <Moon className="w-3 h-3 text-blue-500 transition-all duration-200" strokeWidth={2.5} />
-        )}
+      <div className="relative w-5 h-5">
+        {/* Sun icon for light mode */}
+        <Sun
+          className={`absolute inset-0 w-5 h-5 text-amber-500 transition-all duration-300 transform
+                     ${
+                       theme === 'light'
+                         ? 'opacity-100 rotate-0 scale-100'
+                         : 'opacity-0 rotate-90 scale-0'
+                     }`}
+          strokeWidth={2}
+        />
+
+        {/* Moon icon for dark mode */}
+        <Moon
+          className={`absolute inset-0 w-5 h-5 text-blue-400 transition-all duration-300 transform
+                     ${
+                       theme === 'dark'
+                         ? 'opacity-100 rotate-0 scale-100'
+                         : 'opacity-0 -rotate-90 scale-0'
+                     }`}
+          strokeWidth={2}
+        />
       </div>
 
-      {/* Background icons */}
-      <Sun
-        className={`absolute left-1.5 w-3 h-3 text-yellow-400 transition-opacity duration-200 
-                   ${theme === 'light' ? 'opacity-0' : 'opacity-100'}`}
-        strokeWidth={2}
-      />
-      <Moon
-        className={`absolute right-1.5 w-3 h-3 text-blue-400 transition-opacity duration-200 
-                   ${theme === 'dark' ? 'opacity-0' : 'opacity-100'}`}
-        strokeWidth={2}
+      {/* Hover effect indicator */}
+      <div
+        className="absolute inset-0 rounded-lg bg-gradient-to-r from-amber-400/20 to-blue-400/20 
+                      opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
       />
     </button>
   );
