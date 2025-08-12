@@ -26,10 +26,22 @@ interface ProjectStats {
   yearsOfExperience: string;
 }
 
+interface Project {
+  id: string;
+  title: string;
+  period: string;
+  description: string;
+  category: 'enterprise' | 'bootcamp' | 'education' | 'startup' | 'research';
+  tags: string[];
+  highlight?: boolean;
+}
+
 type TabType = 'career' | 'education' | 'projects';
+type ProjectCategory = 'all' | 'enterprise' | 'bootcamp' | 'education' | 'startup' | 'research';
 
 const ProfilePage: React.FC = memo(() => {
   const [activeTab, setActiveTab] = useState<TabType>('career');
+  const [projectFilter, setProjectFilter] = useState<ProjectCategory>('all');
   const navigate = useNavigate();
 
   const careerData: CareerItem[] = [
@@ -85,12 +97,133 @@ const ProfilePage: React.FC = memo(() => {
     },
   ];
 
+  const projects: Project[] = [
+    {
+      id: 'ai-bootcamp',
+      title: 'AI 엔지니어 심화 부트캠프',
+      period: '2024 ~ 2025',
+      description:
+        '멋쟁이사자처럼 AI 엔지니어 심화 부트캠프 이미지처리 과정 · 객체 탐지, 세그멘테이션, 멀티태스킹 실전 프로젝트',
+      category: 'bootcamp',
+      tags: ['Object Detection', 'Segmentation', 'PyTorch', 'Computer Vision'],
+      highlight: true,
+    },
+    {
+      id: 'nano-ai',
+      title: '산업전문인력 AI역량강화 교육',
+      period: '2025',
+      description:
+        '나노융합산업연구조합 협력 · 나노소재 빅데이터 활용 AI융합전문가 교육 · 제조라인 고장예측 및 신소재 구조분석',
+      category: 'enterprise',
+      tags: ['빅데이터', '제조 AI', '시뮬레이션', '산업 AI'],
+      highlight: true,
+    },
+    {
+      id: 'teacher-training',
+      title: '생성형 AI 교육자 연수',
+      period: '2024 ~ 2025',
+      description:
+        '한국과학창의재단 찾아가는 학교 컨설팅 · 초중고 교사 및 학부모 대상 ChatGPT 활용 교육',
+      category: 'education',
+      tags: ['생성형 AI', '교육 혁신', 'AI 리터러시', 'ChatGPT'],
+    },
+    {
+      id: 'startup-station',
+      title: '테킷 스타트업 스테이션',
+      period: '2023 ~ 2025',
+      description:
+        '멋쟁이사자처럼 테킷 스타트업 스테이션 7~10기 운영 · 예비 IT창업자 대상 개발 역량 강화',
+      category: 'startup',
+      tags: ['창업 교육', '멘토링', '풀스택', 'MVP 개발'],
+    },
+    {
+      id: 'samsung-spotfire',
+      title: '삼성전자 Spotfire 데이터 분석',
+      period: '2023 ~ 2024',
+      description:
+        '삼성전자 임직원 대상 Spotfire 데이터 분석 및 시각화 교육 · 실무 데이터 활용 대시보드 구축',
+      category: 'enterprise',
+      tags: ['데이터 분석', 'Spotfire', '시각화', 'BI'],
+    },
+    {
+      id: 'lg-data-science',
+      title: 'LG전자 Data Science 프로젝트',
+      period: '2023',
+      description: 'Data Science 프로젝트 기획부터 개발까지 메인 강사 · 머신러닝 모델 개발 및 배포',
+      category: 'enterprise',
+      tags: ['Data Science', 'ML', '프로젝트', '실무 교육'],
+    },
+    {
+      id: 'hyundai-ml',
+      title: '현대건설 ML/DL 과정',
+      period: '2023',
+      description:
+        '현대건설 시니어 대상 머신러닝/딥러닝 교육 · YOLO 기반 건설 현장 안전 관리 시스템',
+      category: 'enterprise',
+      tags: ['Deep Learning', 'YOLO', '안전 관리', 'Computer Vision'],
+    },
+    {
+      id: 'keti-nano',
+      title: 'KETI 나노소재 AI 전문가 과정',
+      period: '2022',
+      description:
+        '한국전자기술연구원 나노소재 빅데이터 활용 AI융합 전문가 과정 · 도메인 지식 기반 AI 도입',
+      category: 'research',
+      tags: ['나노소재', '빅데이터', 'AI 융합', '연구'],
+    },
+    {
+      id: 'seoul-ai',
+      title: '서울시립대 AI 취업사관학교',
+      period: '2022',
+      description: '서울시립대 캠퍼스타운형 취업사관학교 AI 과정 · 대학생 대상 실무 중심 AI 교육',
+      category: 'education',
+      tags: ['AI 교육', '취업 연계', '실무 프로젝트'],
+    },
+    {
+      id: 'open-source',
+      title: 'Visual Python 오픈소스 개발',
+      period: '2022',
+      description: '2022 오픈소스 컨트리뷰션 아카데미 · Visual Python ML/Statistics 모듈 개발',
+      category: 'research',
+      tags: ['오픈소스', 'Python', 'ML', '시각화'],
+    },
+  ];
+
   const projectStats: ProjectStats = {
     totalProjects: '50+',
     totalStudents: '1,000+',
-    partnerCompanies: '15+',
+    partnerCompanies: '30+',
     yearsOfExperience: '3+',
   };
+
+  const projectCategories = [
+    { id: 'all', label: '전체', count: projects.length },
+    {
+      id: 'enterprise',
+      label: '기업 교육',
+      count: projects.filter(p => p.category === 'enterprise').length,
+    },
+    {
+      id: 'bootcamp',
+      label: '부트캠프',
+      count: projects.filter(p => p.category === 'bootcamp').length,
+    },
+    {
+      id: 'education',
+      label: '교육 혁신',
+      count: projects.filter(p => p.category === 'education').length,
+    },
+    {
+      id: 'startup',
+      label: '스타트업',
+      count: projects.filter(p => p.category === 'startup').length,
+    },
+    {
+      id: 'research',
+      label: '연구/개발',
+      count: projects.filter(p => p.category === 'research').length,
+    },
+  ];
 
   const handleBackClick = useCallback(() => {
     navigate('/');
@@ -99,6 +232,15 @@ const ProfilePage: React.FC = memo(() => {
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
   }, []);
+
+  const handleProjectFilterChange = useCallback((filter: ProjectCategory) => {
+    setProjectFilter(filter);
+  }, []);
+
+  const filteredProjects =
+    projectFilter === 'all'
+      ? projects
+      : projects.filter(project => project.category === projectFilter);
 
   return (
     <>
@@ -367,170 +509,80 @@ const ProfilePage: React.FC = memo(() => {
 
             {activeTab === 'projects' && (
               <div className="space-y-8">
-                <div className="text-center mb-12">
-                  <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-6">
                     주요 프로젝트
                   </h2>
+
+                  {/* 카테고리 필터 버튼들 */}
+                  <div className="flex flex-wrap justify-center gap-2 mb-8">
+                    {projectCategories.map(category => (
+                      <button
+                        key={category.id}
+                        onClick={() => handleProjectFilterChange(category.id as ProjectCategory)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                          projectFilter === category.id
+                            ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        {category.label}
+                        <span className="ml-1 text-xs">({category.count})</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="grid gap-6">
-                  <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
-                        AI 엔지니어 심화 부트캠프
-                      </h3>
-                      <span className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
-                        2024 ~ 2025
-                      </span>
+                  {filteredProjects.map(project => (
+                    <div
+                      key={project.id}
+                      className={`group bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border ${
+                        project.highlight
+                          ? 'border-gray-300 dark:border-gray-600 ring-2 ring-gray-200 dark:ring-gray-700'
+                          : 'border-gray-200 dark:border-gray-700'
+                      } hover:shadow-lg transition-all`}
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
+                            {project.title}
+                          </h3>
+                          {project.highlight && (
+                            <span className="inline-block mt-1 px-2 py-1 text-xs font-bold bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">
+                              진행중
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
+                          {project.period}
+                        </span>
+                      </div>
+                      <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+                        {project.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {project.tags.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                      멋쟁이사자처럼 AI 엔지니어 심화 부트캠프 이미지처리 과정 · 객체 탐지,
-                      세그멘테이션, 멀티태스킹 실전 프로젝트 · 공공 데이터 활용 AI 서비스 개발
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        Object Detection
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        Segmentation
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        PyTorch
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
-                        산업전문인력 AI역량강화 교육
-                      </h3>
-                      <span className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
-                        2025
-                      </span>
-                    </div>
-                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                      나노융합산업연구조합 협력 · 나노소재 빅데이터 활용 AI융합전문가 교육 ·
-                      제조라인 고장예측 및 신소재 구조분석 시뮬레이션 실습
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        빅데이터
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        제조 AI
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        시뮬레이션
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
-                        생성형 AI 교육자 연수
-                      </h3>
-                      <span className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
-                        2024 ~ 2025
-                      </span>
-                    </div>
-                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                      한국과학창의재단 찾아가는 학교 컨설팅 · 초중고 교사 및 학부모 대상 ChatGPT
-                      활용 교육 · 교육 현장 AI 도구 활용법 및 평가계획 설계 실습
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        생성형 AI
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        교육 혁신
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        AI 리터러시
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
-                        스타트업 스테이션
-                      </h3>
-                      <span className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
-                        2023 ~ 2025
-                      </span>
-                    </div>
-                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                      멋쟁이사자처럼 테킷 스타트업 스테이션 6~10기 운영 · 예비 IT창업자 대상 개발
-                      역량 강화 · 창업 특강 및 1:1 멘토링 · DSC공유대학 AI+X 서비스 분석
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        Full Stack
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        멘토링
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        창업 교육
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
-                        대기업 AI/데이터 교육
-                      </h3>
-                      <span className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
-                        2022 ~ 현재
-                      </span>
-                    </div>
-                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                      삼성전자 Spotfire 데이터 분석 · LG전자 Data Science 프로젝트 · 현대건설 ML/DL
-                      과정 · SKT Computer Vision · 카카오 외 대기업 교육 (누적 1,000명+)
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        Data Science
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        ML/DL
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        Spotfire
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
-                        주요 활동 및 수상
-                      </h3>
-                      <span className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
-                        2022 ~ 2023
-                      </span>
-                    </div>
-                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                      오픈소스 컨트리뷰션 아카데미 Visual Python 개발 · 네이버 부스트코스 리드부스터
-                      및 코딩코치 · KURLY HACK FESTA 2022 본선 진출 · 스마트농업 AI 경진대회 본선
-                      진출 · 기상-AI 해커톤 2등 수상
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        Open Source
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        Hackathon
-                      </span>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">
-                        멘토링
-                      </span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
+
+                {/* 프로젝트가 없을 때 메시지 */}
+                {filteredProjects.length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      해당 카테고리에 프로젝트가 없습니다.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
