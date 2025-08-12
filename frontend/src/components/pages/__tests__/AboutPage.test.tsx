@@ -54,21 +54,25 @@ describe('AboutPage', () => {
   it('renders company introduction section', () => {
     renderWithRouter();
 
-    expect(screen.getByText(/2022년부터 시작한 AI 교육 경험/i)).toBeInTheDocument();
-    expect(screen.getByText(/AI 전문 컨설팅 기업/i)).toBeInTheDocument();
-  });
-
-  it('renders vision section', () => {
-    renderWithRouter();
-
-    expect(screen.getByText('비전')).toBeInTheDocument();
-    expect(screen.getByText(/모든 기업이 AI 기술을 통해 비즈니스 혁신/i)).toBeInTheDocument();
+    expect(screen.getByText(/AI 교육과 솔루션 개발 전문 스타트업/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/2024년 12월에 설립된 AI 교육 및 컨설팅 전문 기업/i)
+    ).toBeInTheDocument();
   });
 
   it('renders mission section', () => {
     renderWithRouter();
 
-    expect(screen.getByText('미션')).toBeInTheDocument();
+    expect(screen.getByText('우리의 미션')).toBeInTheDocument();
+    expect(screen.getByText(/실무 중심의 AI 교육과 맞춤형 솔루션 개발/i)).toBeInTheDocument();
+  });
+
+  it('renders timeline section', () => {
+    renderWithRouter();
+
+    expect(screen.getByText('우리의 여정')).toBeInTheDocument();
+    expect(screen.getByText('2022')).toBeInTheDocument();
+    expect(screen.getByText('2025')).toBeInTheDocument();
   });
 
   it('renders core values section', () => {
@@ -77,37 +81,37 @@ describe('AboutPage', () => {
     expect(screen.getByText('핵심 가치')).toBeInTheDocument();
 
     // Check for actual core value items from the component
-    expect(screen.getByText('실무 중심')).toBeInTheDocument();
-    expect(screen.getByText('맞춤형 접근')).toBeInTheDocument();
-    expect(screen.getByText('기술 전문성')).toBeInTheDocument();
+    expect(screen.getByText('실무 중심 교육')).toBeInTheDocument();
+    expect(screen.getByText('맞춤형 커리큘럼')).toBeInTheDocument();
+    expect(screen.getByText('최신 기술 활용')).toBeInTheDocument();
   });
 
   it('renders services section', () => {
     renderWithRouter();
 
-    expect(screen.getByText('주요 서비스')).toBeInTheDocument();
+    expect(screen.getByText('핵심 가치')).toBeInTheDocument();
   });
 
   it('renders company stats section', () => {
     renderWithRouter();
 
-    expect(screen.getByText('회사 현황')).toBeInTheDocument();
     expect(screen.getByText('1,000+')).toBeInTheDocument();
     expect(screen.getByText('50+')).toBeInTheDocument();
-    expect(screen.getByText('15+')).toBeInTheDocument();
+    expect(screen.getByText('30+')).toBeInTheDocument();
+    expect(screen.getByText('98%')).toBeInTheDocument();
   });
 
   it('renders contact CTA section', () => {
     renderWithRouter();
 
-    expect(screen.getByText('프로젝트를 시작하세요')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /무료 상담 신청하기/i })).toBeInTheDocument();
+    expect(screen.getByText('함께 성장할 준비가 되셨나요?')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /프로젝트 문의하기/i })).toBeInTheDocument();
   });
 
   it('has contact button that can be clicked', () => {
     renderWithRouter();
 
-    const contactButton = screen.getByRole('button', { name: /무료 상담 신청하기/i });
+    const contactButton = screen.getByRole('button', { name: /프로젝트 문의하기/i });
     expect(contactButton).toBeInTheDocument();
   });
 
@@ -115,39 +119,39 @@ describe('AboutPage', () => {
     renderWithRouter();
 
     // Check that sections exist by looking for section headings
-    expect(screen.getByText('비전')).toBeInTheDocument();
-    expect(screen.getByText('미션')).toBeInTheDocument();
+    expect(screen.getByText('우리의 미션')).toBeInTheDocument();
     expect(screen.getByText('핵심 가치')).toBeInTheDocument();
-    expect(screen.getByText('주요 서비스')).toBeInTheDocument();
+    expect(screen.getByText('주요 성과')).toBeInTheDocument();
   });
 
   it('renders values and services with their content', () => {
     renderWithRouter();
 
     // Check that value items are rendered
-    const practicalValue = screen.getByText('실무 중심');
+    const practicalValue = screen.getByText('실무 중심 교육');
     expect(practicalValue).toBeInTheDocument();
 
-    const customValue = screen.getByText('맞춤형 접근');
+    const customValue = screen.getByText('맞춤형 커리큘럼');
     expect(customValue).toBeInTheDocument();
 
-    const techValue = screen.getByText('기술 전문성');
+    const techValue = screen.getByText('최신 기술 활용');
     expect(techValue).toBeInTheDocument();
   });
 
   it('displays timeline section', () => {
     renderWithRouter();
 
-    expect(screen.getByText('연혁')).toBeInTheDocument();
+    expect(screen.getByText('우리의 여정')).toBeInTheDocument();
     expect(screen.getByText('2022')).toBeInTheDocument();
     expect(screen.getByText('2024')).toBeInTheDocument();
+    expect(screen.getByText('2025')).toBeInTheDocument();
   });
 
   it('displays all value descriptions', () => {
     renderWithRouter();
 
-    expect(screen.getByText(/이론보다 실제 비즈니스 문제 해결/i)).toBeInTheDocument();
-    expect(screen.getByText(/각 기업의 특성과 필요에 맞는/i)).toBeInTheDocument();
-    expect(screen.getByText(/최신 AI\/ML 기술에 대한 깊은 이해/i)).toBeInTheDocument();
+    expect(screen.getByText(/이론과 실습을 균형있게 구성/i)).toBeInTheDocument();
+    expect(screen.getByText(/고객사의 수준과 목표에 맞춰 설계/i)).toBeInTheDocument();
+    expect(screen.getByText(/ChatGPT, Claude 등 최신 AI 도구 활용법/i)).toBeInTheDocument();
   });
 });

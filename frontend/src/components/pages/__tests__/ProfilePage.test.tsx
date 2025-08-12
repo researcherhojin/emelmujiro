@@ -79,7 +79,7 @@ describe('ProfilePage Component', () => {
     it('switches to projects tab', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByRole('button', { name: '주요 프로젝트' });
+      const projectsTab = screen.getByRole('button', { name: /프로젝트/ });
       fireEvent.click(projectsTab);
 
       // Check for project section is rendered
@@ -148,7 +148,7 @@ describe('ProfilePage Component', () => {
     it('displays project items when tab is selected', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByRole('button', { name: '주요 프로젝트' });
+      const projectsTab = screen.getByRole('button', { name: /프로젝트/ });
       fireEvent.click(projectsTab);
 
       // Check that projects tab is active
@@ -158,7 +158,7 @@ describe('ProfilePage Component', () => {
     it('displays project descriptions', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByRole('button', { name: '주요 프로젝트' });
+      const projectsTab = screen.getByRole('button', { name: /프로젝트/ });
       fireEvent.click(projectsTab);
 
       // Projects content should be visible

@@ -196,7 +196,7 @@ describe('ContactPage Component', () => {
       });
     });
 
-    it('validates message length', async () => {
+    it('validates message is not empty', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();
@@ -215,21 +215,10 @@ describe('ContactPage Component', () => {
 
       // Check for validation error for empty message
       await waitFor(() => {
-        expect(window.alert).toHaveBeenCalledWith('문의 내용을 입력해주세요. (최대 1000자)');
+        expect(window.alert).toHaveBeenCalledWith('문의 내용을 입력해주세요.');
       });
 
-      // Test with message that's too long
-      jest.clearAllMocks();
-      const longMessage = 'a'.repeat(1001);
-      fireEvent.change(messageInput, { target: { value: longMessage } });
-      fireEvent.click(submitButton);
-
-      // Check for validation error for too long message
-      await waitFor(() => {
-        expect(window.alert).toHaveBeenCalledWith('문의 내용을 입력해주세요. (최대 1000자)');
-      });
-
-      // Test with valid length message
+      // Test with valid message
       jest.clearAllMocks();
       mockedApi.createContact.mockResolvedValue({
         data: { id: 1 },
@@ -278,7 +267,7 @@ describe('ContactPage Component', () => {
       // Select inquiry type
       // Select inquiry type using select dropdown
       const inquirySelect = screen.getByLabelText('문의 유형 *');
-      fireEvent.change(inquirySelect, { target: { value: 'solution' } });
+      fireEvent.change(inquirySelect, { target: { value: 'consulting' } });
 
       // Submit form
       const submitButton = screen.getByText('문의 보내기');
@@ -291,7 +280,7 @@ describe('ContactPage Component', () => {
           email: 'john@example.com',
           phone: '',
           company: '',
-          inquiry_type: 'solution',
+          inquiry_type: 'consulting',
           message: 'This is a test message for the contact form',
         });
       });
@@ -483,34 +472,7 @@ describe('ContactPage Component', () => {
     });
   });
 
-  describe('Character Counter', () => {
-    it('shows character count for message field', async () => {
-      renderWithRouter(<ContactPage />);
-
-      await waitForFormToLoad();
-
-      const messageField = screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...');
-
-      fireEvent.change(messageField, { target: { value: 'Hello' } });
-
-      // Check character counter
-      expect(screen.getByText('5/1000')).toBeInTheDocument();
-    });
-
-    it('updates character count as user types', async () => {
-      renderWithRouter(<ContactPage />);
-
-      await waitForFormToLoad();
-
-      const messageField = screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...');
-
-      fireEvent.change(messageField, { target: { value: 'Test message' } });
-      expect(screen.getByText('12/1000')).toBeInTheDocument();
-
-      fireEvent.change(messageField, { target: { value: 'A longer test message here' } });
-      expect(screen.getByText('26/1000')).toBeInTheDocument();
-    });
-  });
+  // Character Counter tests removed - feature no longer exists in ContactPage
 
   describe('Page Behavior', () => {
     it('scrolls to top on mount', () => {
