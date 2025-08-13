@@ -125,7 +125,7 @@ APPEND_SLASH = True  # URL 끝에 슬래시 자동 추가
 # CORS 설정
 CORS_ALLOWED_ORIGINS = os.environ.get(
     "CORS_ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000,http://192.168.0.80:3000",
+    "http://localhost:3000,http://127.0.0.1:3000,http://192.168.0.80:3000,https://researcherhojin.github.io",
 ).split(",")
 
 CORS_ALLOW_CREDENTIALS = True
