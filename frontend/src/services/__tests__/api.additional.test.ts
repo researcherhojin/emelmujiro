@@ -60,11 +60,7 @@ describe('API Service - Additional Tests', () => {
 
       (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
 
-      try {
-        await api.getBlogPosts(1);
-      } catch (error) {
-        expect(error).toEqual(mockError);
-      }
+      await expect(api.getBlogPosts(1)).rejects.toEqual(mockError);
     });
 
     it('should handle 404 errors', async () => {
@@ -90,11 +86,7 @@ describe('API Service - Additional Tests', () => {
 
       (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
 
-      try {
-        await api.getBlogPost(999);
-      } catch (error) {
-        expect(error).toEqual(mockError);
-      }
+      await expect(api.getBlogPost(999)).rejects.toEqual(mockError);
     });
 
     it('should handle 500 server errors', async () => {
@@ -120,15 +112,13 @@ describe('API Service - Additional Tests', () => {
 
       (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
 
-      try {
-        await api.createContact({
+      await expect(
+        api.createContact({
           name: 'Test',
           email: 'test@test.com',
           message: 'Test message',
-        });
-      } catch (error) {
-        expect(error).toEqual(mockError);
-      }
+        })
+      ).rejects.toEqual(mockError);
     });
   });
 
@@ -147,7 +137,7 @@ describe('API Service - Additional Tests', () => {
           request: {
             use: jest.fn(successFn => {
               // Simulate interceptor behavior
-              const config: any = { headers: {} };
+              const config = { headers: {} as Record<string, string> };
               successFn(config);
               expect(config.headers.Authorization).toBe(`Bearer ${mockToken}`);
             }),
@@ -190,11 +180,7 @@ describe('API Service - Additional Tests', () => {
 
       (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
 
-      try {
-        await api.getBlogPosts(1);
-      } catch (error) {
-        expect(error).toEqual(mockError);
-      }
+      await expect(api.getBlogPosts(1)).rejects.toEqual(mockError);
     });
   });
 
@@ -314,11 +300,13 @@ describe('API Service - Additional Tests', () => {
 
       (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
 
-      try {
-        await api.createContact(invalidData as any);
-      } catch (error: any) {
-        expect(error.response.status).toBe(400);
-      }
+      await expect(
+        api.createContact(invalidData as Parameters<typeof api.createContact>[0])
+      ).rejects.toMatchObject({
+        response: {
+          status: 400,
+        },
+      });
     });
 
     it.skip('should handle successful contact form submission', async () => {

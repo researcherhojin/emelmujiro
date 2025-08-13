@@ -1,3 +1,13 @@
+// Clear module cache before importing to ensure fresh instance
+jest.resetModules();
+
+// Set NODE_ENV before importing Logger
+Object.defineProperty(process.env, 'NODE_ENV', {
+  value: 'development',
+  writable: true,
+  configurable: true,
+});
+
 import Logger from '../logger';
 
 describe('Logger', () => {
@@ -92,6 +102,9 @@ describe('Logger', () => {
 
   describe('performance measurement', () => {
     it('should measure time between operations', () => {
+      // Ensure NODE_ENV is development
+      expect(process.env.NODE_ENV).toBe('development');
+
       Logger.time('operation');
       // Simulate some operation
       Logger.timeEnd('operation');
@@ -105,6 +118,39 @@ describe('Logger', () => {
       // Should not throw when ending a non-existent timer
       expect(() => Logger.timeEnd('non-existent')).not.toThrow();
       expect(consoleTimeEndSpy).toHaveBeenCalledWith('non-existent');
+    });
+
+    it('should not call console methods in production', () => {
+      // Save original env
+      const originalEnv = process.env.NODE_ENV;
+
+      // Temporarily set to production
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        writable: true,
+        configurable: true,
+      });
+
+      // Clear previous calls
+      consoleTimeSpy.mockClear();
+      consoleTimeEndSpy.mockClear();
+
+      // Create new Logger instance for production
+      const ProdLogger = new (require('../logger').default.constructor)();
+
+      ProdLogger.time('prod-operation');
+      ProdLogger.timeEnd('prod-operation');
+
+      // Should not have been called in production
+      expect(consoleTimeSpy).not.toHaveBeenCalled();
+      expect(consoleTimeEndSpy).not.toHaveBeenCalled();
+
+      // Restore env
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: originalEnv,
+        writable: true,
+        configurable: true,
+      });
     });
   });
 });

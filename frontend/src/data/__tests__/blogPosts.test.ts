@@ -59,14 +59,15 @@ describe('blogPosts data', () => {
     });
 
     it('should filter by tags', () => {
-      const tag = blogPosts.find(p => p.tags.length > 0)?.tags[0];
-      // Skip test if no posts have tags
-      if (!tag) {
-        expect(true).toBe(true);
-        return;
+      const postsWithTags = blogPosts.filter(p => p.tags.length > 0);
+      // If no posts have tags, just check that filtering works
+      if (postsWithTags.length === 0) {
+        expect(blogPosts.filter(p => p.tags.includes('non-existent-tag'))).toEqual([]);
+      } else {
+        const tag = postsWithTags[0].tags[0];
+        const taggedPosts = blogPosts.filter(p => p.tags.includes(tag));
+        expect(taggedPosts.length).toBeGreaterThan(0);
       }
-      const taggedPosts = blogPosts.filter(p => p.tags.includes(tag));
-      expect(taggedPosts.length).toBeGreaterThan(0);
     });
   });
 
@@ -83,14 +84,15 @@ describe('blogPosts data', () => {
     });
 
     it('should find posts by tag', () => {
-      const tag = blogPosts.find(p => p.tags.length > 0)?.tags[0];
-      // Skip test if no posts have tags
-      if (!tag) {
-        expect(true).toBe(true);
-        return;
+      const postsWithTags = blogPosts.filter(p => p.tags.length > 0);
+      // If no posts have tags, verify empty search returns empty
+      if (postsWithTags.length === 0) {
+        expect(blogPosts.filter(p => p.tags.includes('non-existent-tag'))).toEqual([]);
+      } else {
+        const tag = postsWithTags[0].tags[0];
+        const results = blogPosts.filter(p => p.tags.includes(tag));
+        expect(results.length).toBeGreaterThan(0);
       }
-      const results = blogPosts.filter(p => p.tags.includes(tag));
-      expect(results.length).toBeGreaterThan(0);
     });
   });
 
