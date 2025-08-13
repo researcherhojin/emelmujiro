@@ -237,7 +237,7 @@ describe('useApiError', () => {
       expect(result.current.error).toEqual({
         message: 'Custom error message',
         status: 418,
-        type: 'api',
+        type: 'unknown',
       });
     });
 

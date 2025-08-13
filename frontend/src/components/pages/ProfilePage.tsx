@@ -412,7 +412,7 @@ const ProfilePage: React.FC = memo(() => {
                               </p>
                             </div>
                             {item.current && (
-                              <span className="flex-shrink-0 ml-4 inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                              <span className="flex-shrink-0 ml-4 inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 dark:bg-green-900 text-black dark:text-white">
                                 <Clock className="w-3 h-3 mr-1" />
                                 재직중
                               </span>
