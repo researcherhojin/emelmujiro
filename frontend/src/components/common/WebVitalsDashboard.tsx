@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState, memo, useRef } from 'react';
 import { onCLS, onFCP, onLCP, onTTFB, onINP, Metric } from 'web-vitals';
 
 interface VitalMetric {
@@ -94,8 +94,13 @@ const WebVitalsDashboard: React.FC = memo(() => {
     INP: null,
   });
   const [isVisible, setIsVisible] = useState(false);
+  const metricsInitialized = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate initialization in StrictMode
+    if (metricsInitialized.current) return;
+    metricsInitialized.current = true;
+
     const handleMetric = (metric: Metric) => {
       const vitalMetric: VitalMetric = {
         name: metric.name,
@@ -110,10 +115,11 @@ const WebVitalsDashboard: React.FC = memo(() => {
       }));
 
       // Log to console for debugging (development only)
+      // Use debug level logging to reduce console noise
       // eslint-disable-next-line no-console
-      if (process.env.NODE_ENV === 'development' && console.log) {
+      if (process.env.NODE_ENV === 'development' && console.debug) {
         // eslint-disable-next-line no-console
-        console.log(`Web Vital [${metric.name}]:`, {
+        console.debug(`Web Vital [${metric.name}]:`, {
           value: formatMetricValue(metric.name, metric.value),
           rating: vitalMetric.rating,
           raw: metric,

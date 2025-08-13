@@ -178,18 +178,24 @@ export const initPerformanceMonitoring = (config: WebVitalsConfig = {}): void =>
 
 // Get performance budget alerts
 export const checkPerformanceBudget = (): void => {
+  // Different budgets for development and production
+  const isDevelopment = process.env.NODE_ENV === 'development';
   const budgets = {
-    FCP: 1800, // First Contentful Paint should be under 1.8s
-    LCP: 2500, // Largest Contentful Paint should be under 2.5s
+    FCP: isDevelopment ? 3000 : 1800, // First Contentful Paint: 3s dev / 1.8s prod
+    LCP: isDevelopment ? 4000 : 2500, // Largest Contentful Paint: 4s dev / 2.5s prod
     FID: 100, // First Input Delay should be under 100ms
     CLS: 0.1, // Cumulative Layout Shift should be under 0.1
-    TTFB: 600, // Time to First Byte should be under 600ms
+    TTFB: isDevelopment ? 2000 : 600, // Time to First Byte: 2s dev / 600ms prod
   };
 
   measureWebVitals(metric => {
     const budget = budgets[metric.name as keyof typeof budgets];
     if (budget && metric.value > budget) {
-      console.warn(`Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`);
+      // Only log as warning in development, error in production
+      const logMethod = isDevelopment ? 'warn' : 'error';
+      console[logMethod](
+        `Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`
+      );
     }
   });
 };

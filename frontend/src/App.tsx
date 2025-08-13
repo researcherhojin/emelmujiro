@@ -133,37 +133,48 @@ const AppLayout: React.FC = memo(() => {
 
 AppLayout.displayName = 'AppLayout';
 
-// Create router
-const router = createHashRouter([
+// Create router with v7 future flags
+const router = createHashRouter(
+  [
+    {
+      path: '/',
+      element: <AppLayout />,
+      children: [
+        { index: true, element: <HomePage /> },
+        { path: 'about', element: <AboutPage /> },
+        { path: 'contact', element: <ContactPage /> },
+        { path: 'profile', element: <ProfilePage /> },
+        { path: 'share', element: <SharePage /> },
+        { path: 'blog', element: <BlogListPage /> },
+        { path: 'blog/new', element: <BlogEditor /> },
+        { path: 'blog/:id', element: <BlogDetail /> },
+        { path: '*', element: <NotFound /> },
+      ],
+    },
+  ],
   {
-    path: '/',
-    element: <AppLayout />,
-    children: [
-      { index: true, element: <HomePage /> },
-      { path: 'about', element: <AboutPage /> },
-      { path: 'contact', element: <ContactPage /> },
-      { path: 'profile', element: <ProfilePage /> },
-      { path: 'share', element: <SharePage /> },
-      { path: 'blog', element: <BlogListPage /> },
-      { path: 'blog/new', element: <BlogEditor /> },
-      { path: 'blog/:id', element: <BlogDetail /> },
-      { path: '*', element: <NotFound /> },
-    ],
-  },
-]);
+    future: {
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+      v7_fetcherPersist: true,
+      v7_normalizeFormMethod: true,
+      v7_partialHydration: true,
+      v7_skipActionErrorRevalidation: true,
+    },
+  }
+);
+
+// Initialize once outside of component to prevent duplicate calls in StrictMode
+let pwaInitialized = false;
+if (!pwaInitialized) {
+  pwaInitialized = true;
+  // Initialize PWA features
+  initializePWA();
+  // Initialize blog cache
+  initBlogCache();
+}
 
 const App: React.FC = () => {
-  useEffect(() => {
-    // Initialize PWA features
-    initializePWA();
-
-    // Initialize blog cache
-    initBlogCache();
-
-    // Service worker registration is already handled in index.html
-    // No need to register again here
-  }, []);
-
   return (
     <HelmetProvider>
       <ErrorBoundary>
