@@ -44,7 +44,7 @@ describe('API Service - Additional Tests', () => {
   describe('Error Handling', () => {
     it('should handle network errors', async () => {
       const mockError = new Error('Network Error');
-      (mockError as any).code = 'ECONNABORTED';
+      (mockError as Error & { code?: string }).code = 'ECONNABORTED';
 
       const mockInstance = {
         get: jest.fn().mockRejectedValue(mockError),
@@ -393,11 +393,11 @@ describe('API Service - Additional Tests', () => {
 
       (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
 
-      try {
-        await api.subscribeNewsletter(email);
-      } catch (error: any) {
-        expect(error.response.status).toBe(409);
-      }
+      await expect(api.subscribeNewsletter(email)).rejects.toMatchObject({
+        response: {
+          status: 409,
+        },
+      });
     });
   });
 });

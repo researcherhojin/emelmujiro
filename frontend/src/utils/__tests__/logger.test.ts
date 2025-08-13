@@ -102,12 +102,12 @@ describe('Logger', () => {
 
   describe('performance measurement', () => {
     it('should measure time between operations', () => {
-      // Ensure NODE_ENV is development
-      expect(process.env.NODE_ENV).toBe('development');
+      // Import the individual functions which are bound to the logger instance
+      const { time, timeEnd } = require('../logger');
 
-      Logger.time('operation');
+      time('operation');
       // Simulate some operation
-      Logger.timeEnd('operation');
+      timeEnd('operation');
 
       // time and timeEnd should have been called
       expect(consoleTimeSpy).toHaveBeenCalledWith('operation');
@@ -115,8 +115,10 @@ describe('Logger', () => {
     });
 
     it('should handle missing time labels', () => {
+      const { timeEnd } = require('../logger');
+
       // Should not throw when ending a non-existent timer
-      expect(() => Logger.timeEnd('non-existent')).not.toThrow();
+      expect(() => timeEnd('non-existent')).not.toThrow();
       expect(consoleTimeEndSpy).toHaveBeenCalledWith('non-existent');
     });
 

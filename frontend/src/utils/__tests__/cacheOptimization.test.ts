@@ -101,7 +101,7 @@ describe('preloadCriticalResources', () => {
   afterEach(() => {
     // Restore original env
     Object.keys(process.env).forEach(key => {
-      delete (process.env as any)[key];
+      delete process.env[key];
     });
     Object.assign(process.env, originalEnv);
     jest.restoreAllMocks();

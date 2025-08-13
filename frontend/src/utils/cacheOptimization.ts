@@ -271,7 +271,7 @@ export const preloadCriticalResources = () => {
       })
       .catch(() => {
         // Resource not found, skip preloading
-        console.debug(`Skipping preload for ${resource} - resource not found`);
+        // Silently skip - resource not found
       });
   });
 };

@@ -60,14 +60,18 @@ describe('blogPosts data', () => {
 
     it('should filter by tags', () => {
       const postsWithTags = blogPosts.filter(p => p.tags.length > 0);
-      // If no posts have tags, just check that filtering works
-      if (postsWithTags.length === 0) {
-        expect(blogPosts.filter(p => p.tags.includes('non-existent-tag'))).toEqual([]);
-      } else {
-        const tag = postsWithTags[0].tags[0];
-        const taggedPosts = blogPosts.filter(p => p.tags.includes(tag));
-        expect(taggedPosts.length).toBeGreaterThan(0);
-      }
+      const nonExistentResults = blogPosts.filter(p => p.tags.includes('non-existent-tag-xyz-123'));
+
+      // Always test that non-existent tag returns empty
+      expect(nonExistentResults).toEqual([]);
+
+      // If posts have tags, test filtering works
+      const hasTaggedPosts = postsWithTags.length > 0;
+      const tagToTest = hasTaggedPosts ? postsWithTags[0].tags[0] : 'test-tag';
+      const taggedPosts = blogPosts.filter(p => p.tags.includes(tagToTest));
+
+      // This will be 0 if no posts have tags, which is correct
+      expect(taggedPosts.length).toBeGreaterThanOrEqual(hasTaggedPosts ? 1 : 0);
     });
   });
 
@@ -85,14 +89,18 @@ describe('blogPosts data', () => {
 
     it('should find posts by tag', () => {
       const postsWithTags = blogPosts.filter(p => p.tags.length > 0);
-      // If no posts have tags, verify empty search returns empty
-      if (postsWithTags.length === 0) {
-        expect(blogPosts.filter(p => p.tags.includes('non-existent-tag'))).toEqual([]);
-      } else {
-        const tag = postsWithTags[0].tags[0];
-        const results = blogPosts.filter(p => p.tags.includes(tag));
-        expect(results.length).toBeGreaterThan(0);
-      }
+      const nonExistentResults = blogPosts.filter(p => p.tags.includes('non-existent-tag-xyz-123'));
+
+      // Always test that non-existent tag returns empty
+      expect(nonExistentResults).toEqual([]);
+
+      // Test actual tag search
+      const hasTaggedPosts = postsWithTags.length > 0;
+      const tagToSearch = hasTaggedPosts ? postsWithTags[0].tags[0] : 'search-tag';
+      const searchResults = blogPosts.filter(p => p.tags.includes(tagToSearch));
+
+      // Verify results match expectation
+      expect(searchResults.length).toBeGreaterThanOrEqual(hasTaggedPosts ? 1 : 0);
     });
   });
 

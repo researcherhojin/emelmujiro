@@ -159,7 +159,7 @@ export const initPerformanceMonitoring = (config: WebVitalsConfig = {}): void =>
         list.getEntries().forEach(entry => {
           // Only log really long tasks (> 100ms) to reduce noise
           if (entry.duration > 100) {
-            console.debug('Long task detected:', {
+            console.warn('Long task detected:', {
               duration: entry.duration,
               startTime: entry.startTime,
             });
