@@ -14,8 +14,8 @@ describe('CareerSummarySection', () => {
   it('displays years of experience', () => {
     renderWithProviders(<CareerSummarySection />);
 
-    // Check for experience years - updated to match actual content
-    // Multiple elements contain "4년", so use getAllByText
+    // Check for experience years - the component has "4년" in multiple places
+    // Including in the stats and description
     const yearElements = screen.getAllByText(/4년/);
     expect(yearElements.length).toBeGreaterThan(0);
     expect(yearElements[0]).toBeInTheDocument();
@@ -27,7 +27,9 @@ describe('CareerSummarySection', () => {
     // Check for achievement numbers in the rendered content
     expect(screen.getByText('50+')).toBeInTheDocument();
     expect(screen.getByText('15+')).toBeInTheDocument();
-    expect(screen.getByText('4년')).toBeInTheDocument();
+    // Multiple "4년" texts exist, use getAllByText
+    const yearElements = screen.getAllByText('4년');
+    expect(yearElements.length).toBeGreaterThan(0);
   });
 
   it('displays company count', () => {

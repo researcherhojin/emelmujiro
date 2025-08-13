@@ -75,10 +75,10 @@ describe('EducationSection', () => {
   it('shows graduation periods', () => {
     renderWithProviders(<EducationSection />);
 
-    // Check for period-related content
-    const periodText = screen.queryByText(/2024|2023|2022/);
-    if (periodText) {
-      expect(periodText).toBeInTheDocument();
+    // Check for period-related content - use queryAllByText since multiple periods exist
+    const periodTexts = screen.queryAllByText(/2024|2023|2022/);
+    if (periodTexts.length > 0) {
+      expect(periodTexts[0]).toBeInTheDocument();
     } else {
       // Fallback: check for education section
       expect(screen.getByText(/실전 AI 교육/)).toBeInTheDocument();
@@ -89,9 +89,10 @@ describe('EducationSection', () => {
     renderWithProviders(<EducationSection />);
 
     // Check for AI/ML related content that exists in the component
-    const researchText = screen.queryByText(/AI|ML|DL|딥러닝|생성형/);
-    if (researchText) {
-      expect(researchText).toBeInTheDocument();
+    // Multiple elements contain these terms, so use queryAllByText
+    const researchTexts = screen.queryAllByText(/AI|ML|DL|딥러닝|생성형/);
+    if (researchTexts.length > 0) {
+      expect(researchTexts[0]).toBeInTheDocument();
     } else {
       // Fallback to checking for education section
       expect(screen.getByText(/실전 AI 교육/)).toBeInTheDocument();
@@ -157,9 +158,10 @@ describe('EducationSection', () => {
     renderWithProviders(<EducationSection />);
 
     // Check for education focus areas that actually exist
-    const focusArea = screen.queryByText(/AI|ML|딥러닝|생성형/);
-    if (focusArea) {
-      expect(focusArea).toBeInTheDocument();
+    // Multiple elements contain these terms, so use queryAllByText
+    const focusAreas = screen.queryAllByText(/AI|ML|딥러닝|생성형/);
+    if (focusAreas.length > 0) {
+      expect(focusAreas[0]).toBeInTheDocument();
     } else {
       // Fallback check
       expect(screen.getByText(/실전 AI 교육/)).toBeInTheDocument();
@@ -179,9 +181,10 @@ describe('EducationSection', () => {
     renderWithProviders(<EducationSection />);
 
     // Check for status or education-related content
-    const statusText = screen.queryByText(/실전|실무|현장/);
-    if (statusText) {
-      expect(statusText).toBeInTheDocument();
+    // Multiple elements might contain "실전" or "실무", use getAllByText
+    const statusTexts = screen.queryAllByText(/실전|실무|현장/);
+    if (statusTexts.length > 0) {
+      expect(statusTexts[0]).toBeInTheDocument();
     } else {
       // Fallback check
       expect(screen.getByText(/실전 AI 교육/)).toBeInTheDocument();
