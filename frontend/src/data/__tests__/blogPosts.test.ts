@@ -59,16 +59,16 @@ describe('blogPosts data', () => {
     });
 
     it('should filter by tags', () => {
-      const postsWithTags = blogPosts.filter(p => p.tags.length > 0);
-      const nonExistentResults = blogPosts.filter(p => p.tags.includes('non-existent-tag-xyz-123'));
+      const postsWithTags = blogPosts.filter(p => p.tags && p.tags.length > 0);
+      const nonExistentResults = blogPosts.filter(p => p.tags && p.tags.includes('non-existent-tag-xyz-123'));
 
       // Always test that non-existent tag returns empty
       expect(nonExistentResults).toEqual([]);
 
       // If posts have tags, test filtering works
       const hasTaggedPosts = postsWithTags.length > 0;
-      const tagToTest = hasTaggedPosts ? postsWithTags[0].tags[0] : 'test-tag';
-      const taggedPosts = blogPosts.filter(p => p.tags.includes(tagToTest));
+      const tagToTest = hasTaggedPosts ? postsWithTags[0].tags?.[0] || 'test-tag' : 'test-tag';
+      const taggedPosts = blogPosts.filter(p => p.tags && p.tags.includes(tagToTest));
 
       // This will be 0 if no posts have tags, which is correct
       expect(taggedPosts.length).toBeGreaterThanOrEqual(hasTaggedPosts ? 1 : 0);
@@ -88,16 +88,16 @@ describe('blogPosts data', () => {
     });
 
     it('should find posts by tag', () => {
-      const postsWithTags = blogPosts.filter(p => p.tags.length > 0);
-      const nonExistentResults = blogPosts.filter(p => p.tags.includes('non-existent-tag-xyz-123'));
+      const postsWithTags = blogPosts.filter(p => p.tags && p.tags.length > 0);
+      const nonExistentResults = blogPosts.filter(p => p.tags && p.tags.includes('non-existent-tag-xyz-123'));
 
       // Always test that non-existent tag returns empty
       expect(nonExistentResults).toEqual([]);
 
       // Test actual tag search
       const hasTaggedPosts = postsWithTags.length > 0;
-      const tagToSearch = hasTaggedPosts ? postsWithTags[0].tags[0] : 'search-tag';
-      const searchResults = blogPosts.filter(p => p.tags.includes(tagToSearch));
+      const tagToSearch = hasTaggedPosts ? postsWithTags[0].tags?.[0] || 'search-tag' : 'search-tag';
+      const searchResults = blogPosts.filter(p => p.tags && p.tags.includes(tagToSearch));
 
       // Verify results match expectation
       expect(searchResults.length).toBeGreaterThanOrEqual(hasTaggedPosts ? 1 : 0);
@@ -112,7 +112,7 @@ describe('blogPosts data', () => {
     });
 
     it('should extract unique tags', () => {
-      const allTags = blogPosts.flatMap(p => p.tags);
+      const allTags = blogPosts.flatMap(p => p.tags || []);
       const uniqueTags = Array.from(new Set(allTags));
       expect(uniqueTags.length).toBeGreaterThan(0);
     });
@@ -122,15 +122,15 @@ describe('blogPosts data', () => {
     it('should have valid date formats', () => {
       blogPosts.forEach(post => {
         expect(post.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-        const date = new Date(post.date);
+        const date = new Date(post.date!);
         expect(date.toString()).not.toBe('Invalid Date');
       });
     });
 
     it('should have valid created_at and updated_at timestamps', () => {
       blogPosts.forEach(post => {
-        const createdAt = new Date(post.created_at);
-        const updatedAt = new Date(post.updated_at);
+        const createdAt = new Date(post.created_at!);
+        const updatedAt = new Date(post.updated_at!);
         expect(createdAt.toString()).not.toBe('Invalid Date');
         expect(updatedAt.toString()).not.toBe('Invalid Date');
         expect(updatedAt.getTime()).toBeGreaterThanOrEqual(createdAt.getTime());
@@ -144,7 +144,7 @@ describe('blogPosts data', () => {
         expect(post.excerpt.trim()).not.toBe('');
         expect(post.content.trim()).not.toBe('');
         expect(post.author.trim()).not.toBe('');
-        expect(post.category.trim()).not.toBe('');
+        expect(post.category?.trim()).not.toBe('');
       });
     });
 

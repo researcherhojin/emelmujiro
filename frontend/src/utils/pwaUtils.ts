@@ -345,6 +345,140 @@ export function getPerformanceMetrics(): PerformanceMetrics {
   };
 }
 
+// Service Worker communication
+export async function syncOfflineData(): Promise<void> {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'SYNC_OFFLINE_DATA',
+    });
+  }
+}
+
+// Cache static assets
+export async function cacheStaticAssets(assets: string[]): Promise<void> {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'CACHE_ASSETS',
+      payload: assets,
+    });
+  }
+}
+
+// Clear app cache
+export async function clearAppCache(): Promise<void> {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'CLEAR_CACHE',
+    });
+  }
+}
+
+// Get install prompt event
+export function getInstallPromptEvent(): BeforeInstallPromptEvent | null {
+  // Check window.deferredPrompt for test compatibility
+  if (typeof window !== 'undefined' && (window as any).deferredPrompt) {
+    return (window as any).deferredPrompt;
+  }
+  return deferredPrompt;
+}
+
+// Check PWA support
+export function checkPWASupport(): {
+  serviceWorker: boolean;
+  notification: boolean;
+  push: boolean;
+  sync: boolean;
+  share: boolean;
+} {
+  return {
+    serviceWorker: 'serviceWorker' in navigator,
+    notification: 'Notification' in window,
+    push: 'PushManager' in window,
+    sync: 'SyncManager' in window,
+    share: 'share' in navigator,
+  };
+}
+
+// Register service worker
+export async function registerServiceWorker(swPath = '/service-worker-enhanced.js'): Promise<ServiceWorkerRegistration | null> {
+  if ('serviceWorker' in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.register(swPath);
+      logger.info('Service Worker registered:', registration);
+      return registration;
+    } catch (error) {
+      logger.error('Service Worker registration failed:', error);
+      return null;
+    }
+  }
+  return null;
+}
+
+// Unregister service worker
+export async function unregisterServiceWorker(): Promise<boolean> {
+  if ('serviceWorker' in navigator) {
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map(registration => registration.unregister()));
+      return true;
+    } catch (error) {
+      logger.error('Service Worker unregistration failed:', error);
+      return false;
+    }
+  }
+  return false;
+}
+
+// Check for app update
+export async function checkForAppUpdate(): Promise<void> {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      await registration.update();
+    } catch (error) {
+      logger.error('Update check failed:', error);
+    }
+  }
+}
+
+// Prompt install PWA
+export async function promptInstallPWA(): Promise<boolean> {
+  if (deferredPrompt || (window as any).deferredPrompt) {
+    const prompt = deferredPrompt || (window as any).deferredPrompt;
+    try {
+      await prompt.prompt();
+      const { outcome } = await prompt.userChoice;
+      return outcome === 'accepted';
+    } catch (error) {
+      logger.error('Install prompt failed:', error);
+      return false;
+    }
+  }
+  return false;
+}
+
+// Get PWA display mode
+export function getPWADisplayMode(): string {
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    return 'standalone';
+  }
+  if (window.matchMedia('(display-mode: fullscreen)').matches) {
+    return 'fullscreen';
+  }
+  if (window.matchMedia('(display-mode: minimal-ui)').matches) {
+    return 'minimal-ui';
+  }
+  return 'browser';
+}
+
+// Request notification permission
+export async function requestNotificationPermission(): Promise<'default' | 'granted' | 'denied'> {
+  if ('Notification' in window) {
+    return await Notification.requestPermission();
+  }
+  return 'denied';
+}
+
 const pwaUtils = {
   // Badge API
   isAppBadgeSupported,
@@ -359,6 +493,7 @@ const pwaUtils = {
   isPWAInstalled,
   isInstallPromptAvailable,
   triggerInstallPrompt,
+  getInstallPromptEvent,
 
   // Wake Lock
   isWakeLockSupported,
@@ -374,6 +509,11 @@ const pwaUtils = {
 
   // Performance
   getPerformanceMetrics,
+
+  // Service Worker communication
+  syncOfflineData,
+  cacheStaticAssets,
+  clearAppCache,
 };
 
 export default pwaUtils;

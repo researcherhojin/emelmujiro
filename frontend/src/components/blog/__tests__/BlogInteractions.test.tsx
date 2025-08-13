@@ -51,6 +51,7 @@ const mockPost: BlogPost = {
   tags: ['test'],
   image_url: 'https://example.com/test.jpg',
   date: '2024-01-01',
+  publishedAt: '2024-01-01',
 };
 
 describe('BlogInteractions Component', () => {

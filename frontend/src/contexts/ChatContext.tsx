@@ -8,7 +8,7 @@ import React, {
   ReactNode,
 } from 'react';
 import { useUI } from './UIContext';
-import { ChatWebSocketService, createChatWebSocket } from '../services/websocket';
+import { ChatWebSocketService } from '../services/websocket';
 
 export type MessageType = 'text' | 'image' | 'file' | 'system';
 export type MessageSender = 'user' | 'agent' | 'system';
@@ -450,7 +450,14 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     }
 
     try {
-      wsRef.current = createChatWebSocket({
+      wsRef.current = new ChatWebSocketService(
+        {
+          url: process.env.REACT_APP_WS_URL || 'ws://localhost:8000/ws/chat/',
+          reconnectInterval: 3000,
+          maxReconnectAttempts: 5,
+          heartbeatInterval: 30000,
+        },
+        {
         onOpen: () => {
           setIsConnected(true);
           setConnectionId(`conn_${Date.now()}`);
@@ -473,13 +480,13 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
           setConnectionId(null);
         },
 
-        onError: error => {
+        onError: (error: Event) => {
           console.error('WebSocket error:', error);
           setIsConnected(false);
           showNotification('error', '채팅 서비스 연결에 실패했습니다.');
         },
 
-        onMessage: data => {
+        onMessage: (data: { type: string; data?: unknown; messageId?: string }) => {
           if (data.type === 'message' && data.data) {
             const messageData = data.data as Partial<ChatMessage> & { timestamp?: string | Date };
             const message: ChatMessage = {
@@ -520,9 +527,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
         onReconnectFailed: () => {
           showNotification('error', '채팅 서비스 재연결에 실패했습니다.');
         },
-      });
+        }
+      );
 
-      wsRef.current.connect().catch(error => {
+      wsRef.current!.connect().catch((error: unknown) => {
         console.error('Connection failed:', error);
         setIsConnected(false);
       });

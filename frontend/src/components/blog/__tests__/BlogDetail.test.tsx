@@ -89,6 +89,7 @@ const testPost: BlogPost = {
   tags: ['test', 'react'],
   image_url: 'https://example.com/image.jpg',
   date: '2024-01-01',
+  publishedAt: '2024-01-01',
 };
 
 const renderWithRouter = (component: React.ReactElement) => {

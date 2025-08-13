@@ -45,7 +45,7 @@ global.fetch = mockFetch as unknown as typeof fetch;
 const originalEnv = process.env.PUBLIC_URL;
 const originalNodeEnv = process.env.NODE_ENV;
 
-describe.skip('serviceWorkerRegistration', () => {
+describe('serviceWorkerRegistration', () => {
   let originalServiceWorker: ServiceWorkerContainer | undefined;
   let originalLocation: Location;
   let mockServiceWorkerRegistration: Partial<ServiceWorkerRegistration>;

@@ -10,6 +10,7 @@ const mockPost: BlogPost = {
   content: 'Test content',
   excerpt: 'This is a test excerpt',
   author: 'Test Author',
+  publishedAt: '2024-01-01',
   created_at: '2024-01-01',
   updated_at: '2024-01-01',
   published: true,

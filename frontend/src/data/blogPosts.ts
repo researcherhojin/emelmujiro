@@ -1,21 +1,6 @@
 // 임시 블로그 데이터 (나중에 API 연결 가능)
 import logger from '../utils/logger';
-
-export interface BlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  author: string;
-  date: string;
-  created_at: string;
-  updated_at: string;
-  published: boolean;
-  category: string;
-  tags: string[];
-  image_url: string;
-}
+import { BlogPost } from '../types';
 
 export const blogPosts: BlogPost[] = [
   {
@@ -36,6 +21,7 @@ export const blogPosts: BlogPost[] = [
 ### 미래 전망
 앞으로 AI는 더욱 정교해지고 인간과 자연스럽게 협업하는 시대가 올 것입니다. 윤리적인 AI 개발과 규제가 중요한 과제가 될 것입니다.`,
     author: '이호진',
+    publishedAt: '2024-01-15',
     date: '2024-01-15',
     created_at: '2024-01-15T09:00:00Z',
     updated_at: '2024-01-15T09:00:00Z',
@@ -69,6 +55,7 @@ export const blogPosts: BlogPost[] = [
 - 백준, 프로그래머스 (알고리즘 연습)
 - GitHub (포트폴리오 관리)`,
     author: '이호진',
+    publishedAt: '2024-01-10',
     date: '2024-01-10',
     created_at: '2024-01-10T09:00:00Z',
     updated_at: '2024-01-10T09:00:00Z',
@@ -103,6 +90,7 @@ export const blogPosts: BlogPost[] = [
 - **Vue 3**: Composition API 성숙
 - **Svelte/SvelteKit**: 빠른 성장세`,
     author: '이호진',
+    publishedAt: '2024-01-05',
     date: '2024-01-05',
     created_at: '2024-01-05T09:00:00Z',
     updated_at: '2024-01-05T09:00:00Z',
@@ -133,6 +121,7 @@ export const blogPosts: BlogPost[] = [
 - **단점**: 복잡성, 큰 번들 크기
 - **적합한 경우**: 엔터프라이즈 앱, 대규모 팀`,
     author: '이호진',
+    publishedAt: '2024-01-20',
     date: '2024-01-20',
     created_at: '2024-01-20T09:00:00Z',
     updated_at: '2024-01-20T09:00:00Z',
@@ -168,6 +157,7 @@ export const blogPosts: BlogPost[] = [
 - 빠른 배포 사이클
 - 장애 격리`,
     author: '이호진',
+    publishedAt: '2024-01-18',
     date: '2024-01-18',
     created_at: '2024-01-18T09:00:00Z',
     updated_at: '2024-01-18T09:00:00Z',
@@ -209,6 +199,7 @@ function greetUser(user: User): string {
 3. 제네릭
 4. 고급 타입`,
     author: '이호진',
+    publishedAt: '2024-01-12',
     date: '2024-01-12',
     created_at: '2024-01-12T09:00:00Z',
     updated_at: '2024-01-12T09:00:00Z',
@@ -235,8 +226,8 @@ export const getBlogPosts = (): Promise<BlogPost[]> => {
 
     // Sort by date (newest first) - properly handle date comparison
     uniquePosts.sort((a, b) => {
-      const dateA = new Date(b.created_at).getTime();
-      const dateB = new Date(a.created_at).getTime();
+      const dateA = new Date(b.created_at || b.date || '').getTime();
+      const dateB = new Date(a.created_at || a.date || '').getTime();
       return dateA - dateB;
     });
 

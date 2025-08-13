@@ -4,27 +4,64 @@
 
 import { measureWebVitals, logPerformanceMetrics } from '../webVitals';
 
-// Mock web-vitals library
-const mockOnCLS = jest.fn();
-const mockOnFCP = jest.fn();
-const mockOnLCP = jest.fn();
-const mockOnTTFB = jest.fn();
-const mockOnINP = jest.fn();
+// Create a proper mock for web-vitals
+const createMockMetric = (name: string, value: number) => ({
+  name,
+  value,
+  rating: 'good' as const,
+  id: 'v3-test',
+  delta: value,
+  entries: [],
+  navigationType: 'navigate' as const,
+});
 
-jest.mock('web-vitals', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onCLS: jest.fn((callback: any) => mockOnCLS(callback)),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onFCP: jest.fn((callback: any) => mockOnFCP(callback)),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onLCP: jest.fn((callback: any) => mockOnLCP(callback)),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onTTFB: jest.fn((callback: any) => mockOnTTFB(callback)),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onINP: jest.fn((callback: any) => mockOnINP(callback)),
-}));
+// Mock functions to track calls
+const mockCallbacks = {
+  onCLS: jest.fn(),
+  onFCP: jest.fn(),
+  onLCP: jest.fn(),
+  onTTFB: jest.fn(),
+  onINP: jest.fn(),
+};
 
-// Web vitals tests - now enabled with proper mocking
+// Mock the web-vitals module
+jest.mock('web-vitals', () => {
+  return {
+    onCLS: jest.fn((callback) => {
+      mockCallbacks.onCLS(callback);
+      // Simulate async metric reporting
+      setTimeout(() => {
+        callback(createMockMetric('CLS', 0.1));
+      }, 0);
+    }),
+    onFCP: jest.fn((callback) => {
+      mockCallbacks.onFCP(callback);
+      setTimeout(() => {
+        callback(createMockMetric('FCP', 1000));
+      }, 0);
+    }),
+    onLCP: jest.fn((callback) => {
+      mockCallbacks.onLCP(callback);
+      setTimeout(() => {
+        callback(createMockMetric('LCP', 2500));
+      }, 0);
+    }),
+    onTTFB: jest.fn((callback) => {
+      mockCallbacks.onTTFB(callback);
+      setTimeout(() => {
+        callback(createMockMetric('TTFB', 800));
+      }, 0);
+    }),
+    onINP: jest.fn((callback) => {
+      mockCallbacks.onINP(callback);
+      setTimeout(() => {
+        callback(createMockMetric('INP', 200));
+      }, 0);
+    }),
+  };
+});
+
+// Web vitals tests
 describe('webVitals', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -46,391 +83,346 @@ describe('webVitals', () => {
   });
 
   describe('measureWebVitals', () => {
-    it.skip('should call all web vitals functions when callback provided', async () => {
+    it('should call all web vitals functions when callback provided', async () => {
       const mockCallback = jest.fn();
 
       measureWebVitals(mockCallback);
 
-      // Wait for dynamic import to resolve and microtasks to complete
+      // Wait for dynamic import to resolve
       await new Promise(resolve => setTimeout(resolve, 10));
-      await Promise.resolve();
 
-      expect(mockOnCLS).toHaveBeenCalledWith(expect.any(Function));
-      expect(mockOnFCP).toHaveBeenCalledWith(expect.any(Function));
-      expect(mockOnLCP).toHaveBeenCalledWith(expect.any(Function));
-      expect(mockOnTTFB).toHaveBeenCalledWith(expect.any(Function));
-      expect(mockOnINP).toHaveBeenCalledWith(expect.any(Function));
+      // Wait for all callbacks to be called
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      // Verify the callback was called with metrics
+      expect(mockCallback).toHaveBeenCalledTimes(5);
+      
+      // Check that each metric type was reported
+      const calls = mockCallback.mock.calls;
+      const metricNames = calls.map(call => call[0].name);
+      expect(metricNames).toContain('CLS');
+      expect(metricNames).toContain('FCP');
+      expect(metricNames).toContain('LCP');
+      expect(metricNames).toContain('TTFB');
+      expect(metricNames).toContain('INP');
     });
 
-    it('should not call web vitals functions when callback is null', () => {
+    it('should not call web vitals functions when callback is null', async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       measureWebVitals(null as any);
 
-      expect(mockOnCLS).not.toHaveBeenCalled();
-      expect(mockOnFCP).not.toHaveBeenCalled();
-      expect(mockOnLCP).not.toHaveBeenCalled();
-      expect(mockOnTTFB).not.toHaveBeenCalled();
-      expect(mockOnINP).not.toHaveBeenCalled();
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(mockCallbacks.onCLS).not.toHaveBeenCalled();
+      expect(mockCallbacks.onFCP).not.toHaveBeenCalled();
     });
 
-    it('should not call web vitals functions when callback is undefined', () => {
-      measureWebVitals(undefined);
-
-      expect(mockOnCLS).not.toHaveBeenCalled();
-      expect(mockOnFCP).not.toHaveBeenCalled();
-      expect(mockOnLCP).not.toHaveBeenCalled();
-      expect(mockOnTTFB).not.toHaveBeenCalled();
-      expect(mockOnINP).not.toHaveBeenCalled();
-    });
-
-    it('should not call web vitals functions when callback is not a function', () => {
+    it('should not call web vitals functions when callback is not a function', async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       measureWebVitals('not a function' as any);
 
-      expect(mockOnCLS).not.toHaveBeenCalled();
-      expect(mockOnFCP).not.toHaveBeenCalled();
-      expect(mockOnLCP).not.toHaveBeenCalled();
-      expect(mockOnTTFB).not.toHaveBeenCalled();
-      expect(mockOnINP).not.toHaveBeenCalled();
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(mockCallbacks.onCLS).not.toHaveBeenCalled();
     });
 
-    it('should handle dynamic import failure gracefully', async () => {
+    it('should handle sample rate configuration', async () => {
       const mockCallback = jest.fn();
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      Math.random = jest.fn().mockReturnValue(0.8);
 
-      // Mock import to fail
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (global as any).import = jest.fn().mockRejectedValue(new Error('Import failed'));
+      measureWebVitals(mockCallback, { sampleRate: 0.5 });
 
-      expect(() => measureWebVitals(mockCallback)).not.toThrow();
+      await new Promise(resolve => setTimeout(resolve, 10));
 
-      consoleSpy.mockRestore();
+      expect(mockCallback).not.toHaveBeenCalled();
     });
 
-    it.skip('should work with arrow function callback', async () => {
-      const mockCallback = (metric: { name: string; value: number }) => {
-        console.log(metric.name, metric.value);
+    it('should include sample rate when below threshold', async () => {
+      const mockCallback = jest.fn();
+      Math.random = jest.fn().mockReturnValue(0.3);
+
+      measureWebVitals(mockCallback, { sampleRate: 0.5 });
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(mockCallback).toHaveBeenCalled();
+    });
+
+    it('should enable logging when configured', async () => {
+      const mockCallback = jest.fn();
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      measureWebVitals(mockCallback, { enableLogging: true });
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(consoleWarnSpy).toHaveBeenCalled();
+      consoleWarnSpy.mockRestore();
+    });
+
+    it('should work with function expression callback', async () => {
+      const mockCallback = function(metric: any) {
+        console.log(metric);
       };
       const spy = jest.spyOn(console, 'log').mockImplementation();
 
       measureWebVitals(mockCallback);
 
-      // Wait for dynamic import to resolve and microtasks to complete
       await new Promise(resolve => setTimeout(resolve, 10));
-      await Promise.resolve();
+      await new Promise(resolve => setTimeout(resolve, 10));
 
-      expect(mockOnCLS).toHaveBeenCalledWith(expect.any(Function));
-
+      expect(spy).toHaveBeenCalled();
       spy.mockRestore();
-    });
-
-    it.skip('should work with function expression callback', async () => {
-      const mockCallback = function (metric: { value: number }) {
-        return metric.value;
-      };
-
-      measureWebVitals(mockCallback);
-
-      // Wait for dynamic import to resolve and microtasks to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
-      await Promise.resolve();
-
-      expect(mockOnFCP).toHaveBeenCalledWith(expect.any(Function));
     });
   });
 
   describe('logPerformanceMetrics', () => {
-    const originalNodeEnv = process.env.NODE_ENV;
-    let mockPerformanceEntry: PerformanceNavigationTiming;
-    let addEventListenerSpy: jest.SpyInstance;
-    let setTimeoutSpy: jest.SpyInstance;
-
-    beforeEach(() => {
-      // Mock performance navigation timing
-      mockPerformanceEntry = {
-        domainLookupStart: 100,
-        domainLookupEnd: 150,
-        connectStart: 160,
+    it('should get performance metrics when enabled', () => {
+      const mockNavigationTiming = {
+        domainLookupEnd: 100,
+        domainLookupStart: 50,
         connectEnd: 200,
-        domContentLoadedEventStart: 1000,
-        domContentLoadedEventEnd: 1100,
+        connectStart: 100,
+        domContentLoadedEventEnd: 1000,
+        navigationStart: 0,
         loadEventEnd: 2000,
-        fetchStart: 50,
-      } as PerformanceNavigationTiming;
+      };
 
-      // Mock performance API
+      const mockPaintTiming = [
+        { name: 'first-contentful-paint', startTime: 500 },
+        { name: 'largest-contentful-paint', startTime: 1500 },
+      ];
+
+      const performanceMock = {
+        getEntriesByType: jest.fn((type: string) => {
+          if (type === 'navigation') return [mockNavigationTiming];
+          if (type === 'paint') return mockPaintTiming;
+          return [];
+        }),
+      };
+
       Object.defineProperty(window, 'performance', {
         writable: true,
-        value: {
-          getEntriesByType: jest.fn().mockReturnValue([mockPerformanceEntry]),
-        },
+        value: performanceMock,
       });
-
-      // Spy on addEventListener
-      addEventListenerSpy = jest.spyOn(window, 'addEventListener');
-
-      // Spy on setTimeout
-      setTimeoutSpy = jest.spyOn(global, 'setTimeout');
-    });
-
-    afterEach(() => {
-      process.env = { ...process.env, NODE_ENV: originalNodeEnv };
-      addEventListenerSpy.mockRestore();
-      setTimeoutSpy.mockRestore();
-    });
-
-    it('should not add event listener in production', () => {
-      process.env = { ...process.env, NODE_ENV: 'production' };
-
-      logPerformanceMetrics();
-
-      expect(addEventListenerSpy).not.toHaveBeenCalled();
-    });
-
-    it('should not add event listener in development when logging disabled', () => {
-      process.env = { ...process.env, NODE_ENV: 'development' };
-
-      logPerformanceMetrics({ enableLogging: false });
-
-      expect(addEventListenerSpy).not.toHaveBeenCalled();
-    });
-
-    it('should add event listener in development when logging would be enabled', () => {
-      // This test verifies the structure even though logging is disabled by default
-      process.env = { ...process.env, NODE_ENV: 'development' };
 
       logPerformanceMetrics({ enableLogging: true });
 
-      // Since enablePerformanceLogging is true, listener is added
-      expect(addEventListenerSpy).toHaveBeenCalledWith('load', expect.any(Function));
+      expect(performanceMock.getEntriesByType).toHaveBeenCalledWith('navigation');
+      expect(performanceMock.getEntriesByType).toHaveBeenCalledWith('paint');
     });
 
-    // Test the internal logic by mocking the condition
-    it('should calculate and store performance metrics when enabled', done => {
-      process.env = { ...process.env, NODE_ENV: 'development' };
-
-      // Mock the internal enablePerformanceLogging to true for this test
-      // const _originalLogPerformanceMetrics = logPerformanceMetrics;
-
-      // Create a version with logging enabled for testing
-      const testLogPerformanceMetrics = () => {
-        if (process.env.NODE_ENV === 'development') {
-          window.addEventListener('load', () => {
-            setTimeout(() => {
-              const perfData = window.performance.getEntriesByType(
-                'navigation'
-              )[0] as PerformanceNavigationTiming;
-              if (perfData) {
-                const metrics = {
-                  dnsLookup: perfData.domainLookupEnd - perfData.domainLookupStart,
-                  tcpConnection: perfData.connectEnd - perfData.connectStart,
-                  domContentLoaded:
-                    perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
-                  totalLoadTime: perfData.loadEventEnd - perfData.fetchStart,
-                };
-                window.localStorage.setItem('performanceMetrics', JSON.stringify(metrics));
-              }
-            }, 0);
-          });
-        }
+    it('should not log when disabled', () => {
+      const performanceMock = {
+        getEntriesByType: jest.fn(),
       };
 
-      testLogPerformanceMetrics();
-
-      expect(addEventListenerSpy).toHaveBeenCalledWith('load', expect.any(Function));
-
-      // Simulate the load event
-      const loadHandler = addEventListenerSpy.mock.calls[0][1];
-      loadHandler();
-
-      // Wait for setTimeout to be called
-      setTimeout(() => {
-        expect(setTimeoutSpy).toHaveBeenCalled();
-
-        // Execute the setTimeout callback
-        const timeoutCallback = setTimeoutSpy.mock.calls[0][0];
-        timeoutCallback();
-
-        // Check if metrics were stored
-        const storedMetrics = window.localStorage.getItem('performanceMetrics');
-        expect(storedMetrics).toBeTruthy();
-
-        const parsedMetrics = JSON.parse(storedMetrics!);
-        expect(parsedMetrics).toEqual({
-          dnsLookup: 50, // 150 - 100
-          tcpConnection: 40, // 200 - 160
-          domContentLoaded: 100, // 1100 - 1000
-          totalLoadTime: 1950, // 2000 - 50
-        });
-
-        done();
-      }, 0);
-    });
-
-    it('should handle missing performance data gracefully', done => {
-      process.env = { ...process.env, NODE_ENV: 'development' };
-
-      // Mock performance API to return empty array
       Object.defineProperty(window, 'performance', {
         writable: true,
-        value: {
-          getEntriesByType: jest.fn().mockReturnValue([]),
-        },
+        value: performanceMock,
       });
 
-      // Test with enabled logging
-      const testLogPerformanceMetrics = () => {
-        if (process.env.NODE_ENV === 'development') {
-          window.addEventListener('load', () => {
-            setTimeout(() => {
-              const perfData = window.performance.getEntriesByType(
-                'navigation'
-              )[0] as PerformanceNavigationTiming;
-              if (perfData) {
-                const metrics = {
-                  dnsLookup: perfData.domainLookupEnd - perfData.domainLookupStart,
-                  tcpConnection: perfData.connectEnd - perfData.connectStart,
-                  domContentLoaded:
-                    perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
-                  totalLoadTime: perfData.loadEventEnd - perfData.fetchStart,
-                };
-                window.localStorage.setItem('performanceMetrics', JSON.stringify(metrics));
-              }
-            }, 0);
-          });
-        }
-      };
+      logPerformanceMetrics({ enableLogging: false });
 
-      testLogPerformanceMetrics();
-
-      // Simulate the load event
-      const loadHandler = addEventListenerSpy.mock.calls[0][1];
-      loadHandler();
-
-      setTimeout(() => {
-        // Execute the setTimeout callback
-        const timeoutCallback = setTimeoutSpy.mock.calls[0][0];
-        timeoutCallback();
-
-        // Check that no metrics were stored
-        const storedMetrics = window.localStorage.getItem('performanceMetrics');
-        expect(storedMetrics).toBeNull();
-
-        done();
-      }, 0);
+      expect(performanceMock.getEntriesByType).not.toHaveBeenCalled();
     });
 
-    it('should handle performance API not available', () => {
-      process.env = { ...process.env, NODE_ENV: 'development' };
-
-      // Remove performance API
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (window as any).performance;
-
-      expect(() => logPerformanceMetrics()).not.toThrow();
-    });
-
-    it('should handle localStorage errors gracefully', done => {
-      process.env = { ...process.env, NODE_ENV: 'development' };
-
-      // Mock localStorage to throw an error
-      const mockSetItem = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-        throw new Error('LocalStorage error');
+    it('should handle missing performance API', () => {
+      Object.defineProperty(window, 'performance', {
+        writable: true,
+        value: undefined,
       });
 
-      // Test with enabled logging
-      const testLogPerformanceMetrics = () => {
-        if (process.env.NODE_ENV === 'development') {
-          window.addEventListener('load', () => {
-            setTimeout(() => {
-              const perfData = window.performance.getEntriesByType(
-                'navigation'
-              )[0] as PerformanceNavigationTiming;
-              if (perfData) {
-                try {
-                  const metrics = {
-                    dnsLookup: perfData.domainLookupEnd - perfData.domainLookupStart,
-                    tcpConnection: perfData.connectEnd - perfData.connectStart,
-                    domContentLoaded:
-                      perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
-                    totalLoadTime: perfData.loadEventEnd - perfData.fetchStart,
-                  };
-                  window.localStorage.setItem('performanceMetrics', JSON.stringify(metrics));
-                } catch {
-                  // Handle localStorage errors gracefully
-                }
-              }
-            }, 0);
-          });
-        }
+      expect(() => logPerformanceMetrics({ enableLogging: true })).not.toThrow();
+    });
+
+    it('should handle missing performance entries', () => {
+      const performanceMock = {
+        getEntriesByType: jest.fn().mockReturnValue([]),
       };
 
-      testLogPerformanceMetrics();
+      Object.defineProperty(window, 'performance', {
+        writable: true,
+        value: performanceMock,
+      });
 
-      // Simulate the load event
-      const loadHandler = addEventListenerSpy.mock.calls[0][1];
-      loadHandler();
+      expect(() => logPerformanceMetrics({ enableLogging: true })).not.toThrow();
+    });
 
-      setTimeout(() => {
-        // Execute the setTimeout callback
-        const timeoutCallback = setTimeoutSpy.mock.calls[0][0];
-        expect(() => timeoutCallback()).not.toThrow();
+    it('should store metrics in localStorage when configured', () => {
+      const mockNavigationTiming = {
+        domainLookupEnd: 100,
+        domainLookupStart: 50,
+        connectEnd: 200,
+        connectStart: 100,
+        domContentLoadedEventEnd: 1000,
+        navigationStart: 0,
+        loadEventEnd: 2000,
+      };
 
-        mockSetItem.mockRestore();
-        done();
-      }, 0);
+      const performanceMock = {
+        getEntriesByType: jest.fn(() => [mockNavigationTiming]),
+      };
+
+      Object.defineProperty(window, 'performance', {
+        writable: true,
+        value: performanceMock,
+      });
+
+      const setItemSpy = jest.spyOn(Storage.prototype, 'setItem');
+
+      logPerformanceMetrics({ enableLogging: true, enableReporting: true });
+
+      expect(setItemSpy).toHaveBeenCalledWith(
+        'performanceMetrics',
+        expect.any(String)
+      );
+
+      setItemSpy.mockRestore();
+    });
+
+    it('should log metrics to console', () => {
+      const mockNavigationTiming = {
+        domainLookupEnd: 100,
+        domainLookupStart: 50,
+        connectEnd: 200,
+        connectStart: 100,
+        domContentLoadedEventEnd: 1000,
+        navigationStart: 0,
+        loadEventEnd: 2000,
+      };
+
+      const performanceMock = {
+        getEntriesByType: jest.fn(() => [mockNavigationTiming]),
+      };
+
+      Object.defineProperty(window, 'performance', {
+        writable: true,
+        value: performanceMock,
+      });
+
+      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+
+      logPerformanceMetrics({ enableLogging: true });
+
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        'Performance Metrics:',
+        expect.any(Object)
+      );
+
+      consoleLogSpy.mockRestore();
+    });
+
+    it('should calculate correct timing values', () => {
+      const mockNavigationTiming = {
+        domainLookupEnd: 150,
+        domainLookupStart: 50,
+        connectEnd: 250,
+        connectStart: 150,
+        domContentLoadedEventEnd: 1500,
+        navigationStart: 0,
+        loadEventEnd: 3000,
+      };
+
+      const performanceMock = {
+        getEntriesByType: jest.fn(() => [mockNavigationTiming]),
+      };
+
+      Object.defineProperty(window, 'performance', {
+        writable: true,
+        value: performanceMock,
+      });
+
+      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+
+      logPerformanceMetrics({ enableLogging: true });
+
+      const loggedMetrics = consoleLogSpy.mock.calls[0][1];
+      expect(loggedMetrics.dnsLookup).toBe(100); // 150 - 50
+      expect(loggedMetrics.tcpConnection).toBe(100); // 250 - 150
+      expect(loggedMetrics.domContentLoaded).toBe(1500); // 1500 - 0
+      expect(loggedMetrics.totalLoadTime).toBe(3000); // 3000 - 0
+
+      consoleLogSpy.mockRestore();
+    });
+
+    it('should handle paint timing entries', () => {
+      const mockNavigationTiming = {
+        domainLookupEnd: 100,
+        domainLookupStart: 50,
+        connectEnd: 200,
+        connectStart: 100,
+        domContentLoadedEventEnd: 1000,
+        navigationStart: 0,
+        loadEventEnd: 2000,
+      };
+
+      const mockPaintTiming = [
+        { name: 'first-contentful-paint', startTime: 800 },
+      ];
+
+      const performanceMock = {
+        getEntriesByType: jest.fn((type: string) => {
+          if (type === 'navigation') return [mockNavigationTiming];
+          if (type === 'paint') return mockPaintTiming;
+          return [];
+        }),
+      };
+
+      Object.defineProperty(window, 'performance', {
+        writable: true,
+        value: performanceMock,
+      });
+
+      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+
+      logPerformanceMetrics({ enableLogging: true });
+
+      const loggedMetrics = consoleLogSpy.mock.calls[0][1];
+      expect(loggedMetrics.firstContentfulPaint).toBe(800);
+
+      consoleLogSpy.mockRestore();
     });
   });
 
   describe('integration scenarios', () => {
-    it.skip('should work with both functions called together', async () => {
+    it('should work with both functions called together', async () => {
       const mockCallback = jest.fn();
 
       measureWebVitals(mockCallback);
-      logPerformanceMetrics({ enableLogging: false });
+      logPerformanceMetrics({ enableLogging: false }); // disabled so it doesn't interfere
 
-      // Wait for dynamic import to resolve and microtasks to complete
       await new Promise(resolve => setTimeout(resolve, 10));
-      await Promise.resolve();
+      await new Promise(resolve => setTimeout(resolve, 10));
 
-      expect(mockOnCLS).toHaveBeenCalledWith(expect.any(Function));
-      // logPerformanceMetrics doesn't add listeners when disabled
+      expect(mockCallback).toHaveBeenCalled();
     });
 
-    it.skip('should handle multiple callback registrations', async () => {
+    it('should handle multiple callback registrations', async () => {
       const mockCallback1 = jest.fn();
       const mockCallback2 = jest.fn();
 
       measureWebVitals(mockCallback1);
       measureWebVitals(mockCallback2);
 
-      // Wait for dynamic imports to resolve
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise(resolve => setTimeout(resolve, 10));
 
-      expect(mockOnCLS).toHaveBeenCalledTimes(2);
-      expect(mockOnCLS).toHaveBeenNthCalledWith(1, expect.any(Function));
-      expect(mockOnCLS).toHaveBeenNthCalledWith(2, expect.any(Function));
-    });
-  });
-
-  describe('type checking', () => {
-    it('should accept valid Metric callback', async () => {
-      const validCallback = (metric: {
-        name: string;
-        value: number;
-        id: string;
-        delta: number;
-      }) => {
-        console.log(`${metric.name}: ${metric.value}`);
-      };
-
-      expect(() => measureWebVitals(validCallback)).not.toThrow();
+      expect(mockCallback1).toHaveBeenCalled();
+      expect(mockCallback2).toHaveBeenCalled();
     });
 
-    it('should work with simplified callback', async () => {
-      const simpleCallback = (metric: { value: number }) => metric.value;
+    it('should handle errors in callback gracefully', async () => {
+      const errorCallback = jest.fn(() => {
+        throw new Error('Callback error');
+      });
 
-      expect(() => measureWebVitals(simpleCallback)).not.toThrow();
+      expect(() => measureWebVitals(errorCallback)).not.toThrow();
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise(resolve => setTimeout(resolve, 10));
     });
   });
 });

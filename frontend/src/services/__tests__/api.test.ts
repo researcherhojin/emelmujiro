@@ -48,6 +48,7 @@ describe('API Service', () => {
           created_at: '2024-01-01',
           updated_at: '2024-01-01',
           published: true,
+          publishedAt: '2024-01-01',
         },
       ];
 
@@ -82,6 +83,7 @@ describe('API Service', () => {
         created_at: '2024-01-01',
         updated_at: '2024-01-01',
         published: true,
+        publishedAt: '2024-01-01',
       };
 
       mockAxiosInstance.get.mockResolvedValue({

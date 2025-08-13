@@ -57,9 +57,11 @@ const mockPosts = [
   {
     id: 1,
     title: 'First Blog Post',
+    slug: 'first-blog-post',
     content: 'This is the content of the first post',
     excerpt: 'First post excerpt',
     author: 'Test Author',
+    publishedAt: '2024-01-15',
     category: 'Technology',
     date: '2024-01-15',
     published: true,
@@ -67,9 +69,11 @@ const mockPosts = [
   {
     id: 2,
     title: 'Second Blog Post',
+    slug: 'second-blog-post',
     content: 'This is the content of the second post',
     excerpt: 'Second post excerpt',
     author: 'Test Author',
+    publishedAt: '2024-01-10',
     category: 'AI',
     date: '2024-01-10',
     published: true,

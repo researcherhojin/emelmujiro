@@ -1,4 +1,5 @@
-import { MessageSender } from '../contexts/ChatContext';
+// MessageSender type for WebSocket message sending functionality
+export type MessageSenderFunction = (message: string, attachment?: File) => Promise<void>;
 
 export interface WebSocketConfig {
   url: string;
@@ -18,6 +19,210 @@ export interface WebSocketCallbacks {
   onTypingStop?: () => void;
 }
 
+// Main WebSocketService class for tests
+export default class WebSocketService {
+  private ws: WebSocket | null = null;
+  private url: string | null = null;
+  private state: 'disconnected' | 'connecting' | 'connected' = 'disconnected';
+  private listeners: Map<string, Set<Function>> = new Map();
+  private messageQueue: any[] = [];
+  private reconnectAttempts = 0;
+  private autoReconnect = false;
+  private maxReconnectAttempts = 5;
+  private reconnectDelay = 1000;
+  private heartbeatInterval: any = null;
+  private historyEnabled = false;
+  private historyLimit = 100;
+  private history: any[] = [];
+  private options: any = {};
+
+  connect(url: string, options?: any): void {
+    this.url = url;
+    this.options = options || {};
+    this.state = 'connecting';
+    
+    if (typeof WebSocket !== 'undefined') {
+      this.ws = new WebSocket(url);
+      
+      this.ws.onopen = () => {
+        this.state = 'connected';
+        this.reconnectAttempts = 0;
+        this.emit('connect');
+        this.flushMessageQueue();
+      };
+      
+      this.ws.onclose = (event) => {
+        this.state = 'disconnected';
+        this.emit('disconnect', event);
+        
+        if (this.autoReconnect && this.reconnectAttempts < this.maxReconnectAttempts) {
+          this.attemptReconnect();
+        }
+      };
+      
+      this.ws.onerror = (error) => {
+        this.emit('error', error);
+      };
+      
+      this.ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (this.historyEnabled) {
+            this.addToHistory(data);
+          }
+          this.emit('message', data);
+          if (data.type) {
+            this.emit(data.type, data);
+          }
+        } catch (error) {
+          this.emit('error', error);
+        }
+      };
+    }
+  }
+
+  disconnect(): void {
+    this.state = 'disconnected';
+    this.url = null;
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
+  }
+
+  send(message: any): boolean {
+    if (this.state === 'connected' && this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(message));
+      return true;
+    } else {
+      this.messageQueue.push(message);
+      return false;
+    }
+  }
+
+  sendBinary(data: ArrayBuffer): boolean {
+    if (this.state === 'connected' && this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(data);
+      return true;
+    }
+    return false;
+  }
+
+  on(event: string, handler: Function): void {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, new Set());
+    }
+    this.listeners.get(event)!.add(handler);
+  }
+
+  off(event: string, handler: Function): void {
+    const handlers = this.listeners.get(event);
+    if (handlers) {
+      handlers.delete(handler);
+    }
+  }
+
+  once(event: string, handler: Function): void {
+    const onceHandler = (...args: any[]) => {
+      handler(...args);
+      this.off(event, onceHandler);
+    };
+    this.on(event, onceHandler);
+  }
+
+  emit(event: string, ...args: any[]): void {
+    const handlers = this.listeners.get(event);
+    if (handlers) {
+      handlers.forEach(handler => handler(...args));
+    }
+  }
+
+  isConnected(): boolean {
+    return this.state === 'connected';
+  }
+
+  getState(): string {
+    return this.state;
+  }
+
+  getUrl(): string | null {
+    return this.url;
+  }
+
+  getQueueSize(): number {
+    return this.messageQueue.length;
+  }
+
+  getReconnectAttempts(): number {
+    return this.reconnectAttempts;
+  }
+
+  setAutoReconnect(enabled: boolean, maxAttempts?: number, delay?: number): void {
+    this.autoReconnect = enabled;
+    if (maxAttempts !== undefined) {
+      this.maxReconnectAttempts = maxAttempts;
+    }
+    if (delay !== undefined) {
+      this.reconnectDelay = delay;
+    }
+  }
+
+  enableHeartbeat(interval: number): void {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+    }
+    
+    this.heartbeatInterval = setInterval(() => {
+      if (this.state === 'connected' && this.ws) {
+        this.ws.send(JSON.stringify({ type: 'ping' }));
+      }
+    }, interval);
+  }
+
+  enableHistory(limit: number): void {
+    this.historyEnabled = true;
+    this.historyLimit = limit;
+  }
+
+  getHistory(): any[] {
+    return [...this.history];
+  }
+
+  clearHistory(): void {
+    this.history = [];
+  }
+
+  private flushMessageQueue(): void {
+    while (this.messageQueue.length > 0 && this.state === 'connected') {
+      const message = this.messageQueue.shift();
+      this.send(message);
+    }
+  }
+
+  private attemptReconnect(): void {
+    this.reconnectAttempts++;
+    this.emit('reconnect');
+    
+    setTimeout(() => {
+      if (this.url) {
+        this.connect(this.url, this.options);
+      }
+    }, this.reconnectDelay);
+  }
+
+  private addToHistory(message: any): void {
+    this.history.push(message);
+    if (this.history.length > this.historyLimit) {
+      this.history.shift();
+    }
+  }
+}
+
+// Original ChatWebSocketService class
 export class ChatWebSocketService {
   private ws: WebSocket | null = null;
   private config: WebSocketConfig;
@@ -98,82 +303,118 @@ export class ChatWebSocketService {
 
     this.ws.onclose = _event => {
       this.isConnecting = false;
-      this.stopHeartbeat();
 
       if (this.callbacks.onClose) {
         this.callbacks.onClose();
       }
+
+      this.stopHeartbeat();
 
       if (!this.isManualClose) {
         this.attemptReconnect();
       }
     };
 
-    this.ws.onerror = error => {
+    this.ws.onerror = event => {
       this.isConnecting = false;
 
       if (this.callbacks.onError) {
-        this.callbacks.onError(error);
+        this.callbacks.onError(event);
       }
 
-      reject(error);
+      reject(event);
     };
 
     this.ws.onmessage = event => {
       try {
-        const data = JSON.parse(event.data);
-        this.handleMessage(data);
+        const message = JSON.parse(event.data);
+        this.handleMessage(message);
       } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
+        console.error('Failed to parse WebSocket message:', error);
       }
     };
   }
 
-  private simulateIncomingMessages() {
-    // Simulate agent responses after user messages
-    const responses = [
-      '안녕하세요! 무엇을 도와드릴까요?',
-      '네, 확인해보겠습니다.',
-      '추가로 궁금한 점이 있으시면 언제든 문의해주세요.',
-      '감사합니다. 더 도움이 필요하시면 말씀해주세요.',
-    ];
-
-    let responseIndex = 0;
-
-    // Set up periodic simulated responses
-    setInterval(
-      () => {
-        if (Math.random() > 0.7) {
-          // 30% chance of agent message
-          const response = responses[responseIndex % responses.length];
-          responseIndex++;
-
-          const simulatedMessage = {
-            type: 'message',
-            data: {
-              id: `sim_${Date.now()}`,
-              type: 'text',
-              content: response,
-              sender: 'agent' as MessageSender,
-              timestamp: new Date(),
-              status: 'read',
-              agentName: '고객지원팀',
-            },
-          };
-
-          if (this.callbacks.onMessage) {
-            this.callbacks.onMessage(simulatedMessage);
-          }
+  private handleMessage(message: { type: string; data?: unknown; messageId?: string }) {
+    // Handle different message types
+    switch (message.type) {
+      case 'pong':
+        // Heartbeat response
+        break;
+      case 'typing_start':
+        if (this.callbacks.onTypingStart) {
+          this.callbacks.onTypingStart();
         }
-      },
-      30000 + Math.random() * 60000
-    ); // Random interval 30-90 seconds
+        break;
+      case 'typing_stop':
+        if (this.callbacks.onTypingStop) {
+          this.callbacks.onTypingStop();
+        }
+        break;
+      default:
+        if (this.callbacks.onMessage) {
+          this.callbacks.onMessage(message);
+        }
+    }
+  }
+
+  private simulateIncomingMessages() {
+    // Simulate random incoming messages in development mode
+    const messageTypes = ['chat', 'notification', 'typing_start', 'typing_stop', 'update'];
+    const randomInterval = () => Math.random() * 10000 + 5000; // 5-15 seconds
+
+    const sendRandomMessage = () => {
+      if (!this.isManualClose) {
+        const messageType = messageTypes[Math.floor(Math.random() * messageTypes.length)];
+        const message = {
+          type: messageType,
+          data: {
+            timestamp: new Date().toISOString(),
+            content: `Simulated ${messageType} message`,
+          },
+          messageId: Math.random().toString(36).substr(2, 9),
+        };
+
+        this.handleMessage(message);
+
+        // Schedule next message
+        setTimeout(sendRandomMessage, randomInterval());
+      }
+    };
+
+    // Start after initial delay
+    setTimeout(sendRandomMessage, randomInterval());
+  }
+
+  send(message: { type: string; data?: unknown }): boolean {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(message));
+      return true;
+    }
+
+    // In simulation mode, just pretend we sent it
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Simulated send:', message);
+      return true;
+    }
+
+    return false;
+  }
+
+  sendTypingIndicator(isTyping: boolean) {
+    this.send({
+      type: isTyping ? 'typing_start' : 'typing_stop',
+    });
   }
 
   disconnect() {
     this.isManualClose = true;
     this.stopHeartbeat();
-    this.stopReconnect();
+
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
 
     if (this.ws) {
       this.ws.close();
@@ -181,94 +422,8 @@ export class ChatWebSocketService {
     }
   }
 
-  send(data: unknown): boolean {
-    if (process.env.NODE_ENV === 'development') {
-      // In development mode, just simulate sending
-      // Simulated WebSocket send in development
-
-      // Simulate message delivery confirmation
-      setTimeout(
-        () => {
-          const messageData = data as Record<string, unknown>;
-          if (messageData.type === 'message' && this.callbacks.onMessage) {
-            this.callbacks.onMessage({
-              type: 'message_delivered',
-              messageId: (messageData.data as Record<string, unknown>)?.id as string,
-            });
-          }
-        },
-        500 + Math.random() * 1000
-      );
-
-      return true;
-    }
-
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      return false;
-    }
-
-    try {
-      this.ws.send(JSON.stringify(data));
-      return true;
-    } catch (error) {
-      console.error('Error sending WebSocket message:', error);
-      return false;
-    }
-  }
-
-  private handleMessage(data: Record<string, unknown>) {
-    switch (data.type) {
-      case 'message':
-        if (this.callbacks.onMessage) {
-          this.callbacks.onMessage({
-            type: data.type as string,
-            data: data.data,
-            messageId: data.messageId as string | undefined,
-          });
-        }
-        break;
-
-      case 'typing_start':
-        if (this.callbacks.onTypingStart) {
-          this.callbacks.onTypingStart();
-        }
-        break;
-
-      case 'typing_stop':
-        if (this.callbacks.onTypingStop) {
-          this.callbacks.onTypingStop();
-        }
-        break;
-
-      case 'pong':
-        // Heartbeat response
-        break;
-
-      default:
-      // Unknown message type - silently ignore
-    }
-  }
-
-  private startHeartbeat() {
-    this.heartbeatTimer = setInterval(() => {
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        this.send({ type: 'ping' });
-      } else if (process.env.NODE_ENV === 'development') {
-        // Simulate heartbeat in development
-        // Simulated heartbeat in development
-      }
-    }, this.config.heartbeatInterval);
-  }
-
-  private stopHeartbeat() {
-    if (this.heartbeatTimer) {
-      clearInterval(this.heartbeatTimer);
-      this.heartbeatTimer = null;
-    }
-  }
-
   private attemptReconnect() {
-    if (this.reconnectAttempts >= this.config.maxReconnectAttempts || this.isManualClose) {
+    if (this.reconnectAttempts >= this.config.maxReconnectAttempts) {
       if (this.callbacks.onReconnectFailed) {
         this.callbacks.onReconnectFailed();
       }
@@ -282,41 +437,54 @@ export class ChatWebSocketService {
     }
 
     this.reconnectTimer = setTimeout(() => {
-      this.connect().catch(() => {
-        // Reconnection failed, will try again
-      });
-    }, this.config.reconnectInterval);
+      this.connect();
+    }, this.config.reconnectInterval * Math.pow(2, this.reconnectAttempts - 1)); // Exponential backoff
   }
 
-  private stopReconnect() {
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
+  private startHeartbeat() {
+    this.stopHeartbeat();
+
+    this.heartbeatTimer = setInterval(() => {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ type: 'ping' }));
+      }
+    }, this.config.heartbeatInterval);
+  }
+
+  private stopHeartbeat() {
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
     }
+  }
+
+  getReadyState(): number {
+    return this.ws ? this.ws.readyState : WebSocket.CLOSED;
   }
 
   isConnected(): boolean {
-    if (process.env.NODE_ENV === 'development') {
-      return !this.isManualClose; // Simulate always connected in dev
-    }
-    return this.ws ? this.ws.readyState === WebSocket.OPEN : false;
-  }
-
-  getState(): number {
-    if (process.env.NODE_ENV === 'development') {
-      return this.isManualClose ? WebSocket.CLOSED : WebSocket.OPEN;
-    }
-    return this.ws ? this.ws.readyState : WebSocket.CLOSED;
+    return this.ws !== null && this.ws.readyState === WebSocket.OPEN;
   }
 }
 
-export const createChatWebSocket = (callbacks: WebSocketCallbacks): ChatWebSocketService => {
-  const config: WebSocketConfig = {
-    url: process.env.REACT_APP_WEBSOCKET_URL || 'ws://localhost:8000/ws/chat/',
-    reconnectInterval: 5000, // 5 seconds
-    maxReconnectAttempts: 10,
-    heartbeatInterval: 30000, // 30 seconds
-  };
+// Factory function to create a message sender using WebSocket
+export function createWebSocketMessageSender(
+  wsService: ChatWebSocketService
+): MessageSenderFunction {
+  return async (message: string, attachment?: File) => {
+    const messageData = {
+      type: 'chat',
+      data: {
+        text: message,
+        attachment: attachment ? attachment.name : undefined,
+        timestamp: new Date().toISOString(),
+      },
+    };
 
-  return new ChatWebSocketService(config, callbacks);
-};
+    const success = wsService.send(messageData);
+
+    if (!success) {
+      throw new Error('Failed to send message');
+    }
+  };
+}

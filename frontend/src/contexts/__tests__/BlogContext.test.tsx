@@ -75,6 +75,7 @@ describe('BlogContext', () => {
         category: 'Test',
         tags: ['test'],
         image_url: 'https://example.com/image1.jpg',
+        publishedAt: '2024-01-01',
       },
       {
         id: 2,
@@ -90,6 +91,7 @@ describe('BlogContext', () => {
         category: 'Test',
         tags: ['test'],
         image_url: 'https://example.com/image2.jpg',
+        publishedAt: '2024-01-02',
       },
     ];
 

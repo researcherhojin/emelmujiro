@@ -172,3 +172,76 @@ export const formatList = (items: string[], language: string): string => {
     return `${otherItems.join(', ')}, and ${lastItem}`;
   }
 };
+
+/**
+ * Format ordinal numbers (1st, 2nd, 3rd, etc.)
+ */
+export const formatOrdinal = (number: number, language: string): string => {
+  if (language === 'ko') {
+    // Korean ordinal format: "1번째", "2번째", etc.
+    return `${number}번째`;
+  } else {
+    // English ordinal format
+    const j = number % 10;
+    const k = number % 100;
+    
+    if (j === 1 && k !== 11) {
+      return `${number}st`;
+    }
+    if (j === 2 && k !== 12) {
+      return `${number}nd`;
+    }
+    if (j === 3 && k !== 13) {
+      return `${number}rd`;
+    }
+    return `${number}th`;
+  }
+};
+
+/**
+ * Format plural forms
+ */
+export const formatPlural = (
+  count: number,
+  singular: string,
+  plural: string,
+  _language?: string
+): string => {
+  // In Korean, plural forms don't change like in English
+  // For both Korean and English, we use the same logic here
+  return count === 1 ? `${count} ${singular}` : `${count} ${plural}`;
+};
+
+// Test helper functions that accept locale strings
+// These are for testing purposes when i18n instance is not available
+export const formatTime = (date: Date | string, locale: string): string => {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  const options: Intl.DateTimeFormatOptions = {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: locale === 'en',
+  };
+  return new Intl.DateTimeFormat(locale === 'ko' ? 'ko-KR' : 'en-US', options).format(dateObj);
+};
+
+export const formatDateRange = (startDate: Date | string, endDate: Date | string, locale: string): string => {
+  const start = typeof startDate === 'string' ? new Date(startDate) : startDate;
+  const end = typeof endDate === 'string' ? new Date(endDate) : endDate;
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  };
+  const fullLocale = locale === 'ko' ? 'ko-KR' : 'en-US';
+  const formatter = new Intl.DateTimeFormat(fullLocale, options);
+  return `${formatter.format(start)} - ${formatter.format(end)}`;
+};
+
+export const formatCardNumber = (cardNumber: string): string => {
+  // Remove all non-digit characters
+  const cleaned = cardNumber.replace(/\D/g, '');
+  
+  // Add spaces every 4 digits
+  const groups = cleaned.match(/.{1,4}/g) || [];
+  return groups.join(' ');
+};

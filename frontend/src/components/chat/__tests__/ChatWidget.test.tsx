@@ -17,9 +17,8 @@ jest.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: { children?: React.ReactNode }) => children,
 }));
 
-// TODO: ChatWidget tests need to be updated to match the actual component implementation
-// The component uses translation keys and has timing issues that need to be resolved
-describe.skip('ChatWidget', () => {
+// ChatWidget tests updated to match the actual component implementation
+describe('ChatWidget', () => {
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
@@ -248,7 +247,8 @@ describe.skip('ChatWidget', () => {
     });
 
     // Remove hover
-    // fireEvent.mouseLeave(chatButton);
+    const chatButton = screen.getByRole('button', { name: /chat|채팅|message|메시지/i });
+    fireEvent.mouseLeave(chatButton);
 
     await waitFor(() => {
       expect(

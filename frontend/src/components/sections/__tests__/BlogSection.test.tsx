@@ -3,22 +3,8 @@ import { BrowserRouter } from 'react-router-dom';
 import BlogSection from '../BlogSection';
 import React from 'react';
 
-// Define BlogPost type to match BlogSection's interface
-interface BlogPost {
-  id: string | number;
-  title: string;
-  content: string;
-  summary?: string;
-  excerpt?: string;
-  author: string;
-  created_at: string;
-  updated_at?: string;
-  image?: string;
-  tags?: string[];
-  views?: number;
-  likes?: number;
-  category?: string;
-}
+// Import BlogPost type from types
+import { BlogPost } from '../../../types';
 
 // Define type for motion component props
 type MotionComponentProps = {
@@ -78,37 +64,45 @@ describe('BlogSection Component', () => {
     {
       id: 1,
       title: 'AI Trend 1',
+      slug: 'ai-trend-1',
       excerpt: 'First AI trend post',
       content: '',
       author: 'Test',
-      image: 'https://example.com/img1.jpg',
+      publishedAt: '2024-01-01',
+      imageUrl: 'https://example.com/img1.jpg',
       created_at: '2024-01-01',
     },
     {
       id: 2,
       title: 'AI Trend 2',
+      slug: 'ai-trend-2',
       excerpt: 'Second AI trend post',
       content: '',
       author: 'Test',
-      image: 'https://example.com/img2.jpg',
+      publishedAt: '2024-01-01',
+      imageUrl: 'https://example.com/img2.jpg',
       created_at: '2024-01-01',
     },
     {
       id: 3,
       title: 'AI Trend 3',
+      slug: 'ai-trend-3',
       excerpt: 'Third AI trend post',
       content: '',
       author: 'Test',
-      image: 'https://example.com/img3.jpg',
+      publishedAt: '2024-01-01',
+      imageUrl: 'https://example.com/img3.jpg',
       created_at: '2024-01-01',
     },
     {
       id: 4,
       title: 'AI Trend 4',
+      slug: 'ai-trend-4',
       excerpt: 'Fourth AI trend post',
       content: '',
       author: 'Test',
-      image: 'https://example.com/img4.jpg',
+      publishedAt: '2024-01-01',
+      imageUrl: 'https://example.com/img4.jpg',
       created_at: '2024-01-01',
     },
   ];
@@ -236,13 +230,15 @@ describe('BlogSection Component', () => {
 
     it('handles posts with missing properties', () => {
       const incompletePosts: Partial<BlogPost>[] = [
-        { id: 1, title: 'Only title', content: '', author: 'Test', created_at: '2024-01-01' },
+        { id: 1, title: 'Only title', slug: 'only-title', content: '', author: 'Test', publishedAt: '2024-01-01', created_at: '2024-01-01' },
         {
           id: 2,
           excerpt: 'Only excerpt',
           title: 'Test',
+          slug: 'test',
           content: '',
           author: 'Test',
+          publishedAt: '2024-01-01',
           created_at: '2024-01-01',
         },
       ];
