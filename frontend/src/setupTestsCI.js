@@ -1,3 +1,4 @@
+/* eslint-disable */
 // CI-specific test setup
 if (process.env.CI === 'true') {
   // Reduce default timeout for all tests in CI
@@ -40,10 +41,6 @@ if (process.env.CI === 'true') {
     unobserve: jest.fn(),
     disconnect: jest.fn(),
   }));
-  
-  // Mock timers for faster execution
-  jest.useFakeTimers('modern');
-  jest.setSystemTime(new Date('2024-01-01'));
   
   // Disable console output in CI
   global.console = {
