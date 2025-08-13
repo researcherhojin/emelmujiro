@@ -17,16 +17,19 @@ describe('StorageCache', () => {
       expect(result).toEqual(testData);
     });
 
-    it('should return null for expired items', () => {
+    it('should return null for expired items', done => {
       const cache = new StorageCache('localStorage');
       const testData = { name: 'test' };
 
-      // Set with 0ms TTL (immediately expired)
-      cache.set('test-key', testData, 0);
+      // Set with 1ms TTL (expires very quickly)
+      cache.set('test-key', testData, 1);
 
-      // Wait a bit to ensure expiration
-      const result = cache.get('test-key');
-      expect(result).toBeNull();
+      // Wait 10ms to ensure expiration
+      setTimeout(() => {
+        const result = cache.get('test-key');
+        expect(result).toBeNull();
+        done();
+      }, 10);
     });
 
     it('should remove items', () => {

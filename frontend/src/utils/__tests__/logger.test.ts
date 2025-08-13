@@ -8,6 +8,8 @@ describe('Logger', () => {
   let consoleGroupSpy: jest.SpyInstance;
   let consoleGroupEndSpy: jest.SpyInstance;
   let consoleTableSpy: jest.SpyInstance;
+  let consoleTimeSpy: jest.SpyInstance;
+  let consoleTimeEndSpy: jest.SpyInstance;
   let originalEnv: string | undefined;
 
   beforeEach(() => {
@@ -27,6 +29,8 @@ describe('Logger', () => {
     consoleGroupSpy = jest.spyOn(console, 'group').mockImplementation();
     consoleGroupEndSpy = jest.spyOn(console, 'groupEnd').mockImplementation();
     consoleTableSpy = jest.spyOn(console, 'table').mockImplementation();
+    consoleTimeSpy = jest.spyOn(console, 'time').mockImplementation();
+    consoleTimeEndSpy = jest.spyOn(console, 'timeEnd').mockImplementation();
   });
 
   afterEach(() => {
@@ -92,13 +96,15 @@ describe('Logger', () => {
       // Simulate some operation
       Logger.timeEnd('operation');
 
-      // timeEnd logs the elapsed time
-      expect(consoleLogSpy).toHaveBeenCalled();
+      // time and timeEnd should have been called
+      expect(consoleTimeSpy).toHaveBeenCalledWith('operation');
+      expect(consoleTimeEndSpy).toHaveBeenCalledWith('operation');
     });
 
     it('should handle missing time labels', () => {
       // Should not throw when ending a non-existent timer
       expect(() => Logger.timeEnd('non-existent')).not.toThrow();
+      expect(consoleTimeEndSpy).toHaveBeenCalledWith('non-existent');
     });
   });
 });

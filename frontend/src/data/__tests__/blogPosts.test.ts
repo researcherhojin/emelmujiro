@@ -1,4 +1,4 @@
-import { blogPosts, type BlogPost } from '../blogPosts';
+import { blogPosts } from '../blogPosts';
 
 describe('blogPosts data', () => {
   describe('Blog Posts Array', () => {
@@ -60,10 +60,13 @@ describe('blogPosts data', () => {
 
     it('should filter by tags', () => {
       const tag = blogPosts.find(p => p.tags.length > 0)?.tags[0];
-      if (tag) {
-        const taggedPosts = blogPosts.filter(p => p.tags.includes(tag));
-        expect(taggedPosts.length).toBeGreaterThan(0);
+      // Skip test if no posts have tags
+      if (!tag) {
+        expect(true).toBe(true);
+        return;
       }
+      const taggedPosts = blogPosts.filter(p => p.tags.includes(tag));
+      expect(taggedPosts.length).toBeGreaterThan(0);
     });
   });
 
@@ -81,10 +84,13 @@ describe('blogPosts data', () => {
 
     it('should find posts by tag', () => {
       const tag = blogPosts.find(p => p.tags.length > 0)?.tags[0];
-      if (tag) {
-        const results = blogPosts.filter(p => p.tags.includes(tag));
-        expect(results.length).toBeGreaterThan(0);
+      // Skip test if no posts have tags
+      if (!tag) {
+        expect(true).toBe(true);
+        return;
       }
+      const results = blogPosts.filter(p => p.tags.includes(tag));
+      expect(results.length).toBeGreaterThan(0);
     });
   });
 
@@ -134,9 +140,11 @@ describe('blogPosts data', () => {
 
     it('should have valid image URLs', () => {
       blogPosts.forEach(post => {
-        if (post.image_url) {
-          expect(post.image_url).toMatch(/^https?:\/\/.+/);
+        // Only check if image_url exists
+        if (!post.image_url) {
+          return;
         }
+        expect(post.image_url).toMatch(/^https?:\/\/.+/);
       });
     });
   });

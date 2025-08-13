@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { AxiosError } from 'axios';
+import { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useApiError } from '../useApiError';
 
 describe('useApiError', () => {
@@ -76,7 +76,7 @@ describe('useApiError', () => {
           data: { message: 'Invalid input' },
           statusText: 'Bad Request',
           headers: {},
-          config: {} as any,
+          config: {} as InternalAxiosRequestConfig,
         },
       };
 
@@ -101,7 +101,7 @@ describe('useApiError', () => {
           data: {},
           statusText: 'Unauthorized',
           headers: {},
-          config: {} as any,
+          config: {} as InternalAxiosRequestConfig,
         },
       };
 
@@ -126,7 +126,7 @@ describe('useApiError', () => {
           data: {},
           statusText: 'Forbidden',
           headers: {},
-          config: {} as any,
+          config: {} as InternalAxiosRequestConfig,
         },
       };
 
@@ -151,7 +151,7 @@ describe('useApiError', () => {
           data: {},
           statusText: 'Not Found',
           headers: {},
-          config: {} as any,
+          config: {} as InternalAxiosRequestConfig,
         },
       };
 
@@ -176,7 +176,7 @@ describe('useApiError', () => {
           data: {},
           statusText: 'Too Many Requests',
           headers: {},
-          config: {} as any,
+          config: {} as InternalAxiosRequestConfig,
         },
       };
 
@@ -201,7 +201,7 @@ describe('useApiError', () => {
           data: {},
           statusText: 'Internal Server Error',
           headers: {},
-          config: {} as any,
+          config: {} as InternalAxiosRequestConfig,
         },
       };
 
@@ -226,7 +226,7 @@ describe('useApiError', () => {
           data: { message: 'Custom error message' },
           statusText: 'I am a teapot',
           headers: {},
-          config: {} as any,
+          config: {} as InternalAxiosRequestConfig,
         },
       };
 
