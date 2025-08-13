@@ -5,6 +5,11 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+// Import CI-specific setup if in CI environment
+if (process.env.CI === 'true') {
+  require('./setupTestsCI');
+}
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
