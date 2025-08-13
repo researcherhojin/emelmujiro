@@ -1,0 +1,250 @@
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import SharePage from '../SharePage';
+
+// Mock lucide-react icons
+jest.mock('lucide-react', () => ({
+  Share2: ({ className }: any) => (
+    <div data-testid="share-icon" className={className}>
+      Share
+    </div>
+  ),
+  MessageCircle: ({ className }: any) => (
+    <div data-testid="message-icon" className={className}>
+      Message
+    </div>
+  ),
+  Mail: ({ className }: any) => (
+    <div data-testid="mail-icon" className={className}>
+      Mail
+    </div>
+  ),
+  ExternalLink: ({ className }: any) => (
+    <div data-testid="link-icon" className={className}>
+      Link
+    </div>
+  ),
+}));
+
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+  useLocation: () => ({
+    search: mockSearchParams,
+  }),
+}));
+
+let mockSearchParams = '';
+
+describe('SharePage', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSearchParams = '';
+    localStorage.clear();
+    jest.spyOn(window, 'alert').mockImplementation(() => {});
+    jest.spyOn(window, 'open').mockImplementation(() => null);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const renderSharePage = (searchParams = '') => {
+    mockSearchParams = searchParams;
+    return render(
+      <MemoryRouter initialEntries={[`/share${searchParams}`]}>
+        <Routes>
+          <Route path="/share" element={<SharePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+  };
+
+  it('shows loading state initially', () => {
+    renderSharePage();
+    expect(screen.getByText('공유된 콘텐츠를 처리하는 중...')).toBeInTheDocument();
+  });
+
+  it('displays empty state when no content is shared', async () => {
+    renderSharePage();
+
+    await waitFor(() => {
+      expect(screen.getByText('공유할 콘텐츠가 없습니다')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('홈으로 돌아가기')).toBeInTheDocument();
+  });
+
+  it('displays shared title correctly', async () => {
+    renderSharePage('?title=테스트 제목');
+
+    await waitFor(() => {
+      expect(screen.getByText('테스트 제목')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('제목')).toBeInTheDocument();
+  });
+
+  it('displays shared text correctly', async () => {
+    renderSharePage('?text=테스트 내용입니다');
+
+    await waitFor(() => {
+      expect(screen.getByText('테스트 내용입니다')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('내용')).toBeInTheDocument();
+  });
+
+  it('displays shared URL correctly', async () => {
+    renderSharePage('?url=https://example.com');
+
+    await waitFor(() => {
+      expect(screen.getByText('https://example.com')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('링크')).toBeInTheDocument();
+  });
+
+  it('displays all shared parameters together', async () => {
+    renderSharePage('?title=제목&text=내용&url=https://test.com');
+
+    await waitFor(() => {
+      expect(screen.getByText('제목')).toBeInTheDocument();
+      expect(screen.getByText('내용')).toBeInTheDocument();
+      expect(screen.getByText('https://test.com')).toBeInTheDocument();
+    });
+  });
+
+  it('navigates to contact page when inquiry button is clicked', async () => {
+    renderSharePage('?title=테스트');
+
+    await waitFor(() => {
+      expect(screen.getByText('문의하기')).toBeInTheDocument();
+    });
+
+    const inquiryButton = screen.getByText('문의하기').closest('button');
+    fireEvent.click(inquiryButton!);
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      '/contact',
+      expect.objectContaining({
+        state: expect.objectContaining({
+          subject: '테스트',
+        }),
+      })
+    );
+  });
+
+  it('opens URL in new window when view content is clicked', async () => {
+    renderSharePage('?url=https://example.com');
+
+    await waitFor(() => {
+      expect(screen.getByText('원본 보기')).toBeInTheDocument();
+    });
+
+    const viewButton = screen.getByText('원본 보기').closest('button');
+    fireEvent.click(viewButton!);
+
+    expect(window.open).toHaveBeenCalledWith(
+      'https://example.com',
+      '_blank',
+      'noopener,noreferrer'
+    );
+  });
+
+  it('saves content to localStorage when save button is clicked', async () => {
+    renderSharePage('?title=저장할 제목&text=저장할 내용');
+
+    await waitFor(() => {
+      expect(screen.getByText('나중에 보기')).toBeInTheDocument();
+    });
+
+    const saveButton = screen.getByText('나중에 보기').closest('button');
+    fireEvent.click(saveButton!);
+
+    const savedContent = JSON.parse(localStorage.getItem('saved-content') || '[]');
+    expect(savedContent).toHaveLength(1);
+    expect(savedContent[0].title).toBe('저장할 제목');
+    expect(savedContent[0].text).toBe('저장할 내용');
+
+    expect(window.alert).toHaveBeenCalledWith('콘텐츠가 저장되었습니다!');
+    expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
+
+  it('limits saved items to 50', async () => {
+    // Pre-populate localStorage with 50 items
+    const existingItems = Array.from({ length: 50 }, (_, i) => ({
+      title: `Item ${i}`,
+      id: String(i),
+      savedAt: new Date().toISOString(),
+    }));
+    localStorage.setItem('saved-content', JSON.stringify(existingItems));
+
+    renderSharePage('?title=New Item');
+
+    await waitFor(() => {
+      expect(screen.getByText('나중에 보기')).toBeInTheDocument();
+    });
+
+    const saveButton = screen.getByText('나중에 보기').closest('button');
+    fireEvent.click(saveButton!);
+
+    const savedContent = JSON.parse(localStorage.getItem('saved-content') || '[]');
+    expect(savedContent).toHaveLength(50);
+    expect(savedContent[0].title).toBe('New Item');
+  });
+
+  it('navigates to home when home button is clicked in empty state', async () => {
+    renderSharePage();
+
+    await waitFor(() => {
+      expect(screen.getByText('홈으로 돌아가기')).toBeInTheDocument();
+    });
+
+    const homeButton = screen.getByText('홈으로 돌아가기');
+    fireEvent.click(homeButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
+
+  it('shows all action buttons when content is present', async () => {
+    renderSharePage('?title=Test&url=https://test.com');
+
+    await waitFor(() => {
+      expect(screen.getByText('문의하기')).toBeInTheDocument();
+      expect(screen.getByText('원본 보기')).toBeInTheDocument();
+      expect(screen.getByText('나중에 보기')).toBeInTheDocument();
+    });
+  });
+
+  it('does not show view content button when no URL is present', async () => {
+    renderSharePage('?title=Test&text=Content');
+
+    await waitFor(() => {
+      expect(screen.getByText('문의하기')).toBeInTheDocument();
+      expect(screen.queryByText('원본 보기')).not.toBeInTheDocument();
+    });
+  });
+
+  it('handles special characters in shared content', async () => {
+    const specialTitle = encodeURIComponent('제목 & <특수문자>');
+    renderSharePage(`?title=${specialTitle}`);
+
+    await waitFor(() => {
+      expect(screen.getByText('제목 & <특수문자>')).toBeInTheDocument();
+    });
+  });
+
+  it('handles very long content gracefully', async () => {
+    const longText = 'A'.repeat(1000);
+    renderSharePage(`?text=${longText}`);
+
+    await waitFor(() => {
+      const textElement = screen.getByText(longText);
+      expect(textElement).toBeInTheDocument();
+      expect(textElement).toHaveClass('whitespace-pre-wrap');
+    });
+  });
+});
