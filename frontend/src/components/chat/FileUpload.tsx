@@ -201,6 +201,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
         <div
           role="button"
           tabIndex={0}
+          data-testid="drop-zone"
           onKeyDown={e => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
@@ -330,6 +331,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
         onChange={handleFileInputChange}
         accept={allowedTypes.join(',')}
         className="hidden"
+        data-testid="file-input"
       />
     </motion.div>
   );
