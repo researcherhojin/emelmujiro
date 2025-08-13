@@ -125,9 +125,9 @@ describe('SharePage', () => {
       expect(screen.getByText('문의하기')).toBeInTheDocument();
     });
 
-    const buttons = screen.getAllByRole('button');
-    const inquiryButton = buttons.find(btn => btn.textContent === '문의하기');
-    expect(inquiryButton).toBeDefined();
+    // Find the button that contains the text '문의하기'
+    const inquiryButton = screen.getByText('문의하기').closest('button');
+    expect(inquiryButton).toBeTruthy();
     fireEvent.click(inquiryButton!);
 
     expect(mockNavigate).toHaveBeenCalledWith(
@@ -147,8 +147,9 @@ describe('SharePage', () => {
       expect(screen.getByText('원본 보기')).toBeInTheDocument();
     });
 
-    const viewButton = screen.getByRole('button', { name: /원본 보기/i });
-    fireEvent.click(viewButton);
+    const viewButton = screen.getByText('원본 보기').closest('button');
+    expect(viewButton).toBeTruthy();
+    fireEvent.click(viewButton!);
 
     expect(window.open).toHaveBeenCalledWith(
       'https://example.com',
@@ -164,8 +165,9 @@ describe('SharePage', () => {
       expect(screen.getByText('나중에 보기')).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByRole('button', { name: /나중에 보기/i });
-    fireEvent.click(saveButton);
+    const saveButton = screen.getByText('나중에 보기').closest('button');
+    expect(saveButton).toBeTruthy();
+    fireEvent.click(saveButton!);
 
     const savedContent = JSON.parse(localStorage.getItem('saved-content') || '[]');
     expect(savedContent).toHaveLength(1);
@@ -191,8 +193,9 @@ describe('SharePage', () => {
       expect(screen.getByText('나중에 보기')).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByRole('button', { name: /나중에 보기/i });
-    fireEvent.click(saveButton);
+    const saveButton = screen.getByText('나중에 보기').closest('button');
+    expect(saveButton).toBeTruthy();
+    fireEvent.click(saveButton!);
 
     const savedContent = JSON.parse(localStorage.getItem('saved-content') || '[]');
     expect(savedContent).toHaveLength(50);
