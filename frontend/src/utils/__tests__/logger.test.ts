@@ -8,8 +8,18 @@ describe('Logger', () => {
   let consoleGroupSpy: jest.SpyInstance;
   let consoleGroupEndSpy: jest.SpyInstance;
   let consoleTableSpy: jest.SpyInstance;
+  let originalEnv: string | undefined;
 
   beforeEach(() => {
+    // Save original NODE_ENV
+    originalEnv = process.env.NODE_ENV;
+    // Set to development for tests
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'development',
+      writable: true,
+      configurable: true,
+    });
+
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
     consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
     consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
@@ -20,6 +30,14 @@ describe('Logger', () => {
   });
 
   afterEach(() => {
+    // Restore original NODE_ENV
+    if (originalEnv !== undefined) {
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: originalEnv,
+        writable: true,
+        configurable: true,
+      });
+    }
     jest.restoreAllMocks();
   });
 

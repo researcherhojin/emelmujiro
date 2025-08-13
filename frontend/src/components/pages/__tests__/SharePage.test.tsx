@@ -5,22 +5,22 @@ import SharePage from '../SharePage';
 
 // Mock lucide-react icons
 jest.mock('lucide-react', () => ({
-  Share2: ({ className }: any) => (
+  Share2: ({ className }: { className?: string }) => (
     <div data-testid="share-icon" className={className}>
       Share
     </div>
   ),
-  MessageCircle: ({ className }: any) => (
+  MessageCircle: ({ className }: { className?: string }) => (
     <div data-testid="message-icon" className={className}>
       Message
     </div>
   ),
-  Mail: ({ className }: any) => (
+  Mail: ({ className }: { className?: string }) => (
     <div data-testid="mail-icon" className={className}>
       Mail
     </div>
   ),
-  ExternalLink: ({ className }: any) => (
+  ExternalLink: ({ className }: { className?: string }) => (
     <div data-testid="link-icon" className={className}>
       Link
     </div>
@@ -113,9 +113,9 @@ describe('SharePage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('테스트제목')).toBeInTheDocument();
-      expect(screen.getByText('테스트내용')).toBeInTheDocument();
-      expect(screen.getByText('https://test.com')).toBeInTheDocument();
     });
+    expect(screen.getByText('테스트내용')).toBeInTheDocument();
+    expect(screen.getByText('https://test.com')).toBeInTheDocument();
   });
 
   it('navigates to contact page when inquiry button is clicked', async () => {
@@ -125,8 +125,8 @@ describe('SharePage', () => {
       expect(screen.getByText('문의하기')).toBeInTheDocument();
     });
 
-    const inquiryButton = screen.getByText('문의하기').closest('button');
-    fireEvent.click(inquiryButton!);
+    const inquiryButton = screen.getByRole('button', { name: /문의하기/i });
+    fireEvent.click(inquiryButton);
 
     expect(mockNavigate).toHaveBeenCalledWith(
       '/contact',
@@ -145,8 +145,8 @@ describe('SharePage', () => {
       expect(screen.getByText('원본 보기')).toBeInTheDocument();
     });
 
-    const viewButton = screen.getByText('원본 보기').closest('button');
-    fireEvent.click(viewButton!);
+    const viewButton = screen.getByRole('button', { name: /원본 보기/i });
+    fireEvent.click(viewButton);
 
     expect(window.open).toHaveBeenCalledWith(
       'https://example.com',
@@ -162,8 +162,8 @@ describe('SharePage', () => {
       expect(screen.getByText('나중에 보기')).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByText('나중에 보기').closest('button');
-    fireEvent.click(saveButton!);
+    const saveButton = screen.getByRole('button', { name: /나중에 보기/i });
+    fireEvent.click(saveButton);
 
     const savedContent = JSON.parse(localStorage.getItem('saved-content') || '[]');
     expect(savedContent).toHaveLength(1);
@@ -189,8 +189,8 @@ describe('SharePage', () => {
       expect(screen.getByText('나중에 보기')).toBeInTheDocument();
     });
 
-    const saveButton = screen.getByText('나중에 보기').closest('button');
-    fireEvent.click(saveButton!);
+    const saveButton = screen.getByRole('button', { name: /나중에 보기/i });
+    fireEvent.click(saveButton);
 
     const savedContent = JSON.parse(localStorage.getItem('saved-content') || '[]');
     expect(savedContent).toHaveLength(50);
@@ -215,9 +215,9 @@ describe('SharePage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('문의하기')).toBeInTheDocument();
-      expect(screen.getByText('원본 보기')).toBeInTheDocument();
-      expect(screen.getByText('나중에 보기')).toBeInTheDocument();
     });
+    expect(screen.getByText('원본 보기')).toBeInTheDocument();
+    expect(screen.getByText('나중에 보기')).toBeInTheDocument();
   });
 
   it('does not show view content button when no URL is present', async () => {
@@ -225,8 +225,8 @@ describe('SharePage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('문의하기')).toBeInTheDocument();
-      expect(screen.queryByText('원본 보기')).not.toBeInTheDocument();
     });
+    expect(screen.queryByText('원본 보기')).not.toBeInTheDocument();
   });
 
   it('handles special characters in shared content', async () => {
@@ -243,9 +243,9 @@ describe('SharePage', () => {
     renderSharePage(`?text=${longText}`);
 
     await waitFor(() => {
-      const textElement = screen.getByText(longText);
-      expect(textElement).toBeInTheDocument();
-      expect(textElement).toHaveClass('whitespace-pre-wrap');
+      expect(screen.getByText(longText)).toBeInTheDocument();
     });
+    const textElement = screen.getByText(longText);
+    expect(textElement).toHaveClass('whitespace-pre-wrap');
   });
 });

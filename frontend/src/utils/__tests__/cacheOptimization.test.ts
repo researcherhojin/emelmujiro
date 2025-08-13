@@ -29,11 +29,11 @@ describe('StorageCache', () => {
       expect(result).toBeNull();
     });
 
-    it('should delete items', () => {
+    it('should remove items', () => {
       const cache = new StorageCache('localStorage');
       cache.set('test-key', 'test-value', 1000);
 
-      cache.delete('test-key');
+      cache.remove('test-key');
       const result = cache.get('test-key');
 
       expect(result).toBeNull();
@@ -85,10 +85,10 @@ describe('StorageCache', () => {
 });
 
 describe('preloadCriticalResources', () => {
-  let originalEnv: string | undefined;
+  let originalEnv: typeof process.env;
 
   beforeEach(() => {
-    originalEnv = process.env.NODE_ENV;
+    originalEnv = { ...process.env };
     // Clear any existing link elements
     document.head.innerHTML = '';
     // Mock fetch
@@ -96,20 +96,33 @@ describe('preloadCriticalResources', () => {
   });
 
   afterEach(() => {
-    process.env.NODE_ENV = originalEnv;
+    // Restore original env
+    Object.keys(process.env).forEach(key => {
+      delete (process.env as any)[key];
+    });
+    Object.assign(process.env, originalEnv);
     jest.restoreAllMocks();
   });
 
   it('should skip preloading in development mode', () => {
-    process.env.NODE_ENV = 'development';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'development',
+      writable: true,
+    });
     preloadCriticalResources();
 
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it('should attempt to preload resources in production', async () => {
-    process.env.NODE_ENV = 'production';
-    process.env.PUBLIC_URL = '/emelmujiro';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'production',
+      writable: true,
+    });
+    Object.defineProperty(process.env, 'PUBLIC_URL', {
+      value: '/emelmujiro',
+      writable: true,
+    });
 
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
@@ -126,7 +139,10 @@ describe('preloadCriticalResources', () => {
   });
 
   it('should handle fetch errors gracefully', async () => {
-    process.env.NODE_ENV = 'production';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'production',
+      writable: true,
+    });
 
     (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
 

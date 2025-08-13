@@ -248,12 +248,15 @@ describe('MessageList', () => {
     const retryButtons = screen.getAllByText('RefreshCw');
     expect(retryButtons).toHaveLength(1);
 
-    // Click the retry button's parent button element
-    const retryButtonParent = retryButtons[0].parentElement;
-    expect(retryButtonParent).not.toBeNull();
-    expect(retryButtonParent?.tagName).toBe('BUTTON');
+    // Find the actual button element that contains the RefreshCw icon
+    // In the component, RefreshCw is likely rendered inside a button
+    const allButtons = screen.getAllByRole('button');
+    const retryButton = allButtons.find(button => button.textContent?.includes('RefreshCw'));
 
-    fireEvent.click(retryButtonParent as HTMLElement);
+    expect(retryButton).toBeDefined();
+    if (retryButton) {
+      fireEvent.click(retryButton);
+    }
 
     // Should call retry/sendMessage function with the message object
     expect(mockRetry).toHaveBeenCalledWith(

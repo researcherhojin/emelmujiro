@@ -384,11 +384,10 @@ describe('WebVitalsDashboard', () => {
 
       expect(screen.getByText('Performance Summary')).toBeInTheDocument();
       // Check that the summary contains the correct values
-      // The text is split across elements, so we need to check for the container
-      const summary = screen.getByText('Performance Summary').parentElement;
-      expect(summary).toHaveTextContent('Good:');
-      expect(summary).toHaveTextContent('Needs Improvement:');
-      expect(summary).toHaveTextContent('Poor:');
+      // Using getByText to find specific text content
+      expect(screen.getByText(/Good:/)).toBeInTheDocument();
+      expect(screen.getByText(/Needs Improvement:/)).toBeInTheDocument();
+      expect(screen.getByText(/Poor:/)).toBeInTheDocument();
     });
 
     test('displays tips and instructions', () => {
