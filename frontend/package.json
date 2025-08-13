@@ -64,8 +64,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run generate:sitemap && react-scripts build",
     "test": "react-scripts test",
+    "generate:sitemap": "node scripts/generate-sitemap.js",
     "analyze:bundle": "source-map-explorer 'build/static/js/*.js'",
     "test:coverage": "react-scripts test --coverage --watchAll=false",
     "test:e2e": "playwright test",
