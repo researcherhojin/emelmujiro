@@ -101,7 +101,7 @@ describe('API Service - Additional Tests', () => {
       });
 
       try {
-        await api.submitContactForm({
+        await api.createContact({
           name: 'Test',
           email: 'test@test.com',
           message: 'Test message',
@@ -117,7 +117,7 @@ describe('API Service - Additional Tests', () => {
       const mockToken = 'test-token-123';
       localStorage.setItem('authToken', mockToken);
 
-      const mockInterceptor = jest.fn(config => {
+      const mockInterceptor = jest.fn((config: any) => {
         if (localStorage.getItem('authToken')) {
           config.headers = config.headers || {};
           config.headers.Authorization = `Bearer ${localStorage.getItem('authToken')}`;
@@ -135,7 +135,7 @@ describe('API Service - Additional Tests', () => {
           request: {
             use: jest.fn(successFn => {
               // Simulate interceptor behavior
-              const config = { headers: {} };
+              const config: any = { headers: {} };
               successFn(config);
               expect(config.headers.Authorization).toBe(`Bearer ${mockToken}`);
             }),
@@ -196,6 +196,7 @@ describe('API Service - Additional Tests', () => {
     });
 
     it('should use mock data in production without API URL', async () => {
+      // @ts-ignore
       process.env.NODE_ENV = 'production';
       process.env.REACT_APP_API_URL = '';
 
@@ -268,7 +269,7 @@ describe('API Service - Additional Tests', () => {
         },
       });
 
-      const result = await api.getCategories();
+      const result = await api.getBlogCategories();
       expect(result.data).toEqual(mockCategories);
     });
 
@@ -289,7 +290,7 @@ describe('API Service - Additional Tests', () => {
         },
       });
 
-      const result = await api.getBlogPosts(1, 'tech');
+      const result = await api.searchBlogPosts('tech');
       expect(result.data).toEqual(mockPosts);
     });
   });
@@ -320,7 +321,7 @@ describe('API Service - Additional Tests', () => {
       });
 
       try {
-        await api.submitContactForm(invalidData as any);
+        await api.createContact(invalidData as any);
       } catch (error: any) {
         expect(error.response.status).toBe(400);
       }
@@ -348,7 +349,7 @@ describe('API Service - Additional Tests', () => {
         },
       });
 
-      const result = await api.submitContactForm(formData);
+      const result = await api.createContact(formData);
       expect(result.data.success).toBe(true);
     });
   });
