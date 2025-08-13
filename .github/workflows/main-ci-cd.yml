@@ -186,9 +186,10 @@ jobs:
       - name: Run unit tests
         run: |
           cd frontend
-          CI=true npm test -- --watchAll=false --coverage --passWithNoTests
+          NODE_OPTIONS="--max-old-space-size=4096" CI=true npm test -- --watchAll=false --coverage --passWithNoTests --maxWorkers=2
         env:
           CI: true
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v5
