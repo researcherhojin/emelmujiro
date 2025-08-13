@@ -151,5 +151,13 @@ const logger = new Logger({
 
 export default logger;
 
-// 개별 함수로도 export
-export const { debug, info, warn, error, group, groupEnd, table, time, timeEnd } = logger;
+// 개별 함수로도 export (바인딩 필요)
+export const debug = logger.debug.bind(logger);
+export const info = logger.info.bind(logger);
+export const warn = logger.warn.bind(logger);
+export const error = logger.error.bind(logger);
+export const group = logger.group.bind(logger);
+export const groupEnd = logger.groupEnd.bind(logger);
+export const table = logger.table.bind(logger);
+export const time = logger.time.bind(logger);
+export const timeEnd = logger.timeEnd.bind(logger);

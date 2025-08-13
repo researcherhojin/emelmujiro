@@ -195,10 +195,13 @@ export const checkPerformanceBudget = (): void => {
     const budget = budgets[metric.name as keyof typeof budgets];
     if (budget && metric.value > budget) {
       // Only log as warning in development, error in production
-      const logMethod = isDevelopment ? 'warn' : 'error';
-      console[logMethod](
-        `Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`
-      );
+      if (isDevelopment) {
+        console.warn(`Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`);
+      } else {
+        console.error(
+          `Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`
+        );
+      }
     }
   });
 };

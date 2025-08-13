@@ -82,6 +82,9 @@ describe('Logger', () => {
 
   describe('special logging methods', () => {
     it('should create log groups', () => {
+      // Verify we're in development mode
+      expect(process.env.NODE_ENV).toBe('development');
+
       Logger.group('Group Title');
       Logger.info('Inside group');
       Logger.groupEnd();
@@ -91,6 +94,9 @@ describe('Logger', () => {
     });
 
     it('should log tables', () => {
+      // Verify we're in development mode
+      expect(process.env.NODE_ENV).toBe('development');
+
       const data = [
         { id: 1, name: 'Item 1' },
         { id: 2, name: 'Item 2' },
