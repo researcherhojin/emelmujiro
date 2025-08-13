@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
 
 // Performance monitoring hook
 export function usePerformanceMonitor() {
@@ -30,8 +30,12 @@ export function usePerformanceMonitor() {
     // First Input Delay
     const fidObserver = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        const inputDelay = entry.processingStart - entry.startTime;
-        metricsRef.current.fid = inputDelay;
+        // Cast to PerformanceEventTiming for FID
+        const eventEntry = entry as PerformanceEventTiming;
+        if (eventEntry.processingStart) {
+          const inputDelay = eventEntry.processingStart - eventEntry.startTime;
+          metricsRef.current.fid = inputDelay;
+        }
       }
     });
 
@@ -103,7 +107,7 @@ export function useLazyImage(src: string, placeholder?: string) {
 
 // Debounce hook for performance
 export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = React.useState<T>(value);
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -124,7 +128,7 @@ export function useVirtualScroll(
   itemHeight: number,
   containerHeight: number
 ) {
-  const [scrollTop, setScrollTop] = React.useState(0);
+  const [scrollTop, setScrollTop] = useState(0);
 
   const startIndex = Math.floor(scrollTop / itemHeight);
   const endIndex = Math.ceil((scrollTop + containerHeight) / itemHeight);
