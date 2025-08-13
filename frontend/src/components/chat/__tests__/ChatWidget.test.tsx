@@ -1,6 +1,7 @@
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils';
+import { ChatProvider } from '../../../contexts/ChatContext';
 import ChatWidget from '../ChatWidget';
 
 // Mock framer-motion to avoid animation issues in tests
@@ -16,8 +17,7 @@ jest.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: { children?: React.ReactNode }) => children,
 }));
 
-// TODO: Fix timer-related issues in ChatWidget tests
-describe.skip('ChatWidget', () => {
+describe('ChatWidget', () => {
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();
@@ -31,7 +31,11 @@ describe.skip('ChatWidget', () => {
   });
 
   it('renders chat button initially', () => {
-    renderWithProviders(<ChatWidget />);
+    renderWithProviders(
+      <ChatProvider>
+        <ChatWidget />
+      </ChatProvider>
+    );
 
     // Advance timers to show the widget
     jest.advanceTimersByTime(2000);
@@ -42,7 +46,11 @@ describe.skip('ChatWidget', () => {
   });
 
   it('opens chat window when button is clicked', async () => {
-    renderWithProviders(<ChatWidget />);
+    renderWithProviders(
+      <ChatProvider>
+        <ChatWidget />
+      </ChatProvider>
+    );
 
     // Advance timers to show the widget
     jest.advanceTimersByTime(2000);
@@ -57,7 +65,11 @@ describe.skip('ChatWidget', () => {
   });
 
   it('shows welcome message when chat is opened for first time', async () => {
-    renderWithProviders(<ChatWidget />);
+    renderWithProviders(
+      <ChatProvider>
+        <ChatWidget />
+      </ChatProvider>
+    );
 
     // Advance timers to show the widget
     jest.advanceTimersByTime(2000);
@@ -132,7 +144,11 @@ describe.skip('ChatWidget', () => {
   });
 
   it('shows connection status indicator', async () => {
-    renderWithProviders(<ChatWidget />);
+    renderWithProviders(
+      <ChatProvider>
+        <ChatWidget />
+      </ChatProvider>
+    );
 
     // Advance timers to show the widget
     jest.advanceTimersByTime(2000);
@@ -145,7 +161,11 @@ describe.skip('ChatWidget', () => {
   });
 
   it('supports keyboard navigation', async () => {
-    renderWithProviders(<ChatWidget />);
+    renderWithProviders(
+      <ChatProvider>
+        <ChatWidget />
+      </ChatProvider>
+    );
 
     // Advance timers to show the widget
     jest.advanceTimersByTime(2000);
@@ -165,7 +185,11 @@ describe.skip('ChatWidget', () => {
   });
 
   it('displays business hours information', async () => {
-    renderWithProviders(<ChatWidget />);
+    renderWithProviders(
+      <ChatProvider>
+        <ChatWidget />
+      </ChatProvider>
+    );
 
     // Advance timers to show the widget
     jest.advanceTimersByTime(2000);
@@ -182,7 +206,11 @@ describe.skip('ChatWidget', () => {
   });
 
   it('shows hover tooltip with quick info', async () => {
-    renderWithProviders(<ChatWidget />);
+    renderWithProviders(
+      <ChatProvider>
+        <ChatWidget />
+      </ChatProvider>
+    );
 
     // Advance timers to show the widget
     jest.advanceTimersByTime(2000);

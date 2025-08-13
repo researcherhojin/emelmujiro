@@ -343,9 +343,9 @@ describe('SEO Component', () => {
   });
 
   describe('Component behavior', () => {
-    it.skip('should be memoized', () => {
-      // TODO: Fix React.memo testing in test environment
-      // React.memo doesn't work as expected in test environment
+    it('should be memoized', () => {
+      // Note: React.memo testing has limitations in test environment
+      // This test verifies the component is wrapped with memo
       const { rerender } = renderWithProviders(<SEO title="Test" />);
 
       const firstRenderCalls = (require('react-helmet-async').Helmet as jest.Mock).mock.calls
@@ -462,9 +462,9 @@ describe('SEO Component', () => {
   });
 
   describe('Performance', () => {
-    it.skip('should not re-render with same props due to memoization', () => {
-      // TODO: Fix React.memo testing in test environment
-      // React.memo doesn't work as expected in test environment
+    it('should not re-render with same props due to memoization', () => {
+      // Note: React.memo testing has limitations in test environment
+      // This test verifies memoization behavior
       const props = {
         title: 'Performance Test',
         description: 'Testing performance',

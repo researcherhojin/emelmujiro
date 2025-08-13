@@ -60,8 +60,7 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
-// TODO: Fix notification API mocking issues
-describe.skip('NotificationPermission', () => {
+describe('NotificationPermission', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
