@@ -91,9 +91,9 @@ const AdminDashboard: React.FC = () => {
     // Implementation pending
   };
 
-  const handleEditContent = (id: string | number) => {
+  const handleEditContent = (_id: string | number) => {
     // Navigate to content edit page
-    // Implementation pending - id: id
+    // Implementation pending
   };
 
   const handleDeleteContent = (id: string | number) => {
@@ -103,9 +103,9 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const handleViewContent = (id: string | number) => {
+  const handleViewContent = (_id: string | number) => {
     // Navigate to content view page
-    // Implementation pending - id: id
+    // Implementation pending
   };
 
   const renderSidebar = () => (
