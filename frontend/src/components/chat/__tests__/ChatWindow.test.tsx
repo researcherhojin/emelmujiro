@@ -165,6 +165,11 @@ const createMockChatContext = (overrides = {}) => ({
 describe('ChatWindow', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('should render chat window with header', () => {

@@ -133,36 +133,24 @@ const AppLayout: React.FC = memo(() => {
 
 AppLayout.displayName = 'AppLayout';
 
-// Create router with v7 future flags
-const router = createHashRouter(
-  [
-    {
-      path: '/',
-      element: <AppLayout />,
-      children: [
-        { index: true, element: <HomePage /> },
-        { path: 'about', element: <AboutPage /> },
-        { path: 'contact', element: <ContactPage /> },
-        { path: 'profile', element: <ProfilePage /> },
-        { path: 'share', element: <SharePage /> },
-        { path: 'blog', element: <BlogListPage /> },
-        { path: 'blog/new', element: <BlogEditor /> },
-        { path: 'blog/:id', element: <BlogDetail /> },
-        { path: '*', element: <NotFound /> },
-      ],
-    },
-  ],
+// Create router
+const router = createHashRouter([
   {
-    future: {
-      v7_startTransition: true,
-      v7_relativeSplatPath: true,
-      v7_fetcherPersist: true,
-      v7_normalizeFormMethod: true,
-      v7_partialHydration: true,
-      v7_skipActionErrorRevalidation: true,
-    },
-  }
-);
+    path: '/',
+    element: <AppLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: 'about', element: <AboutPage /> },
+      { path: 'contact', element: <ContactPage /> },
+      { path: 'profile', element: <ProfilePage /> },
+      { path: 'share', element: <SharePage /> },
+      { path: 'blog', element: <BlogListPage /> },
+      { path: 'blog/new', element: <BlogEditor /> },
+      { path: 'blog/:id', element: <BlogDetail /> },
+      { path: '*', element: <NotFound /> },
+    ],
+  },
+]);
 
 // Initialize once outside of component to prevent duplicate calls in StrictMode
 let pwaInitialized = false;
