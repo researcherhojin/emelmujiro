@@ -22,9 +22,14 @@ describe('Logger', () => {
       configurable: true,
     });
 
-    // Force Logger to re-evaluate isDevelopment
+    // Force Logger to re-evaluate isDevelopment and config
     // @ts-ignore
     Logger.isDevelopment = process.env.NODE_ENV === 'development';
+    // @ts-ignore
+    Logger.config = {
+      enableInProduction: false,
+      logLevel: 'debug', // Allow all log levels in tests
+    };
 
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
     consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();

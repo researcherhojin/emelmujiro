@@ -125,8 +125,10 @@ describe('SharePage', () => {
       expect(screen.getByText('문의하기')).toBeInTheDocument();
     });
 
-    const inquiryButton = screen.getByRole('button', { name: /문의하기/i });
-    fireEvent.click(inquiryButton);
+    const buttons = screen.getAllByRole('button');
+    const inquiryButton = buttons.find(btn => btn.textContent === '문의하기');
+    expect(inquiryButton).toBeDefined();
+    fireEvent.click(inquiryButton!);
 
     expect(mockNavigate).toHaveBeenCalledWith(
       '/contact',
