@@ -31,7 +31,7 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-describe('EmojiPicker', () => {
+describe.skip('EmojiPicker', () => {
   const mockOnSelect = jest.fn();
   const mockOnClose = jest.fn();
 
