@@ -92,15 +92,26 @@ jest.mock('../FileUpload', () => ({
 
 jest.mock('../QuickReplies', () => ({
   __esModule: true,
-  default: ({ replies, onSelect }: { replies: string[]; onSelect: (reply: string) => void }) => (
-    <div data-testid="quick-replies">
-      {replies.map((reply: string) => (
-        <button key={reply} onClick={() => onSelect(reply)}>
-          {reply}
-        </button>
-      ))}
-    </div>
-  ),
+  default: ({
+    replies = [],
+    onSelect,
+  }: {
+    replies?: string[];
+    onSelect: (reply: string) => void;
+  }) => {
+    if (!replies || replies.length === 0) {
+      return null;
+    }
+    return (
+      <div data-testid="quick-replies">
+        {replies.map((reply: string) => (
+          <button key={reply} onClick={() => onSelect(reply)}>
+            {reply}
+          </button>
+        ))}
+      </div>
+    );
+  },
 }));
 
 // Mock i18next
@@ -249,9 +260,9 @@ describe('ChatWindow', () => {
     const input = screen.getByPlaceholderText('chat.inputPlaceholder');
     fireEvent.change(input, { target: { value: 'Test message' } });
 
-    // Find send button by its icon text
-    const sendIcon = screen.getByText('Send');
-    const sendButton = sendIcon.closest('button');
+    // Find send button by its accessible role and icon
+    const sendButtons = screen.getAllByRole('button');
+    const sendButton = sendButtons.find(button => button.textContent?.includes('Send'));
     if (sendButton) {
       fireEvent.click(sendButton);
     }
@@ -279,9 +290,9 @@ describe('ChatWindow', () => {
 
     const input = screen.getByPlaceholderText('chat.inputPlaceholder');
 
-    // Find send button by its icon text
-    const sendIcon = screen.getByText('Send');
-    const sendButton = sendIcon.closest('button');
+    // Find send button by its accessible role and icon
+    const sendButtons = screen.getAllByRole('button');
+    const sendButton = sendButtons.find(button => button.textContent?.includes('Send'));
 
     // Try to send empty message
     if (sendButton) {
@@ -332,11 +343,12 @@ describe('ChatWindow', () => {
     fireEvent.click(attachButton);
 
     const file = new File(['test'], 'test.txt', { type: 'text/plain' });
-    const fileUploadDiv = screen.getByTestId('file-upload');
-    const input = fileUploadDiv.querySelector('input[type="file"]');
+    // Find file input within the file upload component
+    const fileInputs = screen.getByTestId('file-upload').getElementsByTagName('input');
+    const fileInput = Array.from(fileInputs).find(input => input.type === 'file');
 
-    if (input) {
-      fireEvent.change(input, { target: { files: [file] } });
+    if (fileInput) {
+      fireEvent.change(fileInput, { target: { files: [file] } });
     }
 
     // File upload component should close after selection
