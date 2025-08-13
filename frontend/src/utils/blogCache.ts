@@ -23,7 +23,9 @@ const MAX_CACHED_POSTS = 50;
 
 // Check if blog caching is available
 export function isBlogCacheAvailable(): boolean {
-  return typeof Storage !== 'undefined' && 'serviceWorker' in navigator;
+  // Only check for localStorage support, not ServiceWorker
+  // ServiceWorker registration happens asynchronously later
+  return typeof Storage !== 'undefined';
 }
 
 // Cache a blog post for offline reading
@@ -229,5 +231,12 @@ export function initBlogCache(): void {
   if (isBlogCacheAvailable()) {
     cleanupBlogCache();
     logger.info('Blog cache initialized');
+  } else {
+    // Log why cache is not available for debugging
+    if (typeof Storage === 'undefined') {
+      logger.warn('Blog cache not available: localStorage not supported');
+    } else if (!('serviceWorker' in navigator)) {
+      logger.warn('Blog cache not available: ServiceWorker not supported');
+    }
   }
 }
