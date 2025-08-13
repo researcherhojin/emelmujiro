@@ -62,6 +62,7 @@ const BlogEditor: React.FC = () => {
         excerpt: formData.excerpt || formData.content.substring(0, 150) + '...',
         content: formData.content,
         author: formData.author,
+        publishedAt: new Date().toISOString().split('T')[0],
         category: formData.category || '일반',
         tags: formData.tags ? formData.tags.split(',').map(tag => tag.trim()) : [],
         image_url:

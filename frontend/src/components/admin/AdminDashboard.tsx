@@ -13,7 +13,7 @@ import {
   Trash2,
   Eye,
 } from 'lucide-react';
-import { api } from '../../services/api';
+// import { api } from '../../services/api'; // Currently using mock data
 
 interface DashboardStats {
   totalUsers: number;
@@ -88,25 +88,24 @@ const AdminDashboard: React.FC = () => {
 
   const handleCreateContent = () => {
     // Navigate to content creation page
-    console.log('Create new content');
+    // Implementation pending
   };
 
   const handleEditContent = (id: string | number) => {
     // Navigate to content edit page
-    console.log('Edit content:', id);
+    // Implementation pending - id: id
   };
 
   const handleDeleteContent = (id: string | number) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
       // Delete content
-      console.log('Delete content:', id);
       setContentItems(contentItems.filter(item => item.id !== id));
     }
   };
 
   const handleViewContent = (id: string | number) => {
     // Navigate to content view page
-    console.log('View content:', id);
+    // Implementation pending - id: id
   };
 
   const renderSidebar = () => (

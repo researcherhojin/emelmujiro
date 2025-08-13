@@ -3,22 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import BlogCard from '../blog/BlogCard';
 import { ArrowRight, Loader2, BookOpen } from 'lucide-react';
-
-interface BlogPost {
-  id: string | number;
-  title: string;
-  content: string;
-  summary?: string;
-  excerpt?: string;
-  author: string;
-  created_at: string;
-  updated_at?: string;
-  image?: string;
-  tags?: string[];
-  views?: number;
-  likes?: number;
-  category?: string;
-}
+import { BlogPost } from '../../types';
 
 interface BlogSectionProps {
   posts: BlogPost[];

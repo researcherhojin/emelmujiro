@@ -151,3 +151,24 @@ export const formatPhoneNumber = (phoneNumber: string, i18n: i18n): string => {
 
   return phoneNumber; // Return original if no pattern matches
 };
+
+/**
+ * Format list of items according to current locale
+ */
+export const formatList = (items: string[], language: string): string => {
+  if (items.length === 0) return '';
+  if (items.length === 1) return items[0];
+
+  if (language === 'ko') {
+    // Korean format: "사과, 바나나, 오렌지"
+    return items.join(', ');
+  } else {
+    // English format: "apple, banana, and orange"
+    if (items.length === 2) {
+      return items.join(' and ');
+    }
+    const lastItem = items[items.length - 1];
+    const otherItems = items.slice(0, -1);
+    return `${otherItems.join(', ')}, and ${lastItem}`;
+  }
+};
