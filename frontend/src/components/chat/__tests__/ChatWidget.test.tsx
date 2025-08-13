@@ -220,7 +220,7 @@ describe.skip('ChatWidget', () => {
     await waitFor(() => {
       // Should show business hours or status
       // Business hours should be visible somewhere in the widget
-      const widget = screen.queryByRole('dialog') || screen.getByText('chat.title').closest('div');
+      const widget = screen.queryByRole('dialog') || screen.queryByText('chat.title');
       expect(widget).toBeInTheDocument();
     });
   });

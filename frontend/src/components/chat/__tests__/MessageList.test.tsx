@@ -249,18 +249,20 @@ describe('MessageList', () => {
     expect(retryButtons).toHaveLength(1);
 
     // Click the retry button's parent button element
-    const retryButton = retryButtons[0].closest('button');
-    if (retryButton) {
-      fireEvent.click(retryButton);
-      // Should call retry/sendMessage function with the message object
-      expect(mockRetry).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'text',
-          content: 'Failed message',
-          sender: 'user',
-        })
-      );
-    }
+    const retryButtonParent = retryButtons[0].parentElement;
+    expect(retryButtonParent).not.toBeNull();
+    expect(retryButtonParent?.tagName).toBe('BUTTON');
+
+    fireEvent.click(retryButtonParent as HTMLElement);
+
+    // Should call retry/sendMessage function with the message object
+    expect(mockRetry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'text',
+        content: 'Failed message',
+        sender: 'user',
+      })
+    );
   });
 
   it('should display timestamps', () => {
