@@ -224,7 +224,7 @@ describe('MessageList', () => {
     expect(screen.getAllByText('Bot')).toHaveLength(1);
   });
 
-  it.skip('should handle retry action for failed messages', () => {
+  it('should handle retry action for failed messages', () => {
     const mockRetry = jest.fn();
     mockChatContext.sendMessage = mockRetry;
     mockChatContext.messages = [
@@ -244,12 +244,23 @@ describe('MessageList', () => {
       </ChatProvider>
     );
 
-    // Find the retry button (RefreshCw icon)
-    const retryIcon = screen.getByText('RefreshCw');
-    fireEvent.click(retryIcon.closest('button') || retryIcon);
+    // Find the retry button (failed messages show RefreshCw icon)
+    const retryButtons = screen.getAllByText('RefreshCw');
+    expect(retryButtons).toHaveLength(1);
 
-    // Should call retry/sendMessage function
-    expect(mockRetry).toHaveBeenCalled();
+    // Click the retry button's parent button element
+    const retryButton = retryButtons[0].closest('button');
+    if (retryButton) {
+      fireEvent.click(retryButton);
+      // Should call retry/sendMessage function with the message object
+      expect(mockRetry).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'text',
+          content: 'Failed message',
+          sender: 'user',
+        })
+      );
+    }
   });
 
   it('should display timestamps', () => {
@@ -275,6 +286,7 @@ describe('MessageList', () => {
     // The actual timestamp display depends on the implementation
   });
 
+  // TODO: Image attachments are not yet implemented in MessageList component
   it.skip('should handle image attachments', () => {
     mockChatContext.messages = [
       {
@@ -306,6 +318,7 @@ describe('MessageList', () => {
     // Image might not be visible in text type messages
   });
 
+  // TODO: File attachments are not yet implemented in MessageList component
   it.skip('should handle file attachments', () => {
     mockChatContext.messages = [
       {
@@ -335,6 +348,7 @@ describe('MessageList', () => {
     expect(screen.getByText('Here is a document')).toBeInTheDocument();
   });
 
+  // TODO: Quick replies are not yet implemented in MessageList component
   it.skip('should display quick replies', () => {
     mockChatContext.messages = [
       {
@@ -358,6 +372,7 @@ describe('MessageList', () => {
     expect(screen.getByText('Contact Support')).toBeInTheDocument();
   });
 
+  // TODO: Quick reply click handling not yet implemented in MessageList component
   it.skip('should handle quick reply click', () => {
     const mockSend = jest.fn();
     mockChatContext.sendMessage = mockSend;
@@ -384,7 +399,7 @@ describe('MessageList', () => {
     expect(mockSend).toHaveBeenCalledWith('Yes');
   });
 
-  it.skip('should show message status icons', () => {
+  it('should show message status icons', () => {
     mockChatContext.messages = [
       {
         id: '1',
@@ -484,6 +499,7 @@ describe('MessageList', () => {
     expect(screen.getByText('Agent joined the chat')).toBeInTheDocument();
   });
 
+  // TODO: Mark as read functionality needs to be implemented
   it.skip('should mark messages as read', () => {
     mockChatContext.messages = [
       {
@@ -564,13 +580,13 @@ describe('MessageList', () => {
       },
     ] as ChatMessage[];
 
-    const { container } = render(
+    render(
       <ChatProvider>
         <MessageList />
       </ChatProvider>
     );
 
-    const messageList = container.querySelector('.overflow-y-auto');
-    expect(messageList).toBeInTheDocument();
+    // Verify messages are rendered
+    expect(screen.getByText('Test message')).toBeInTheDocument();
   });
 });

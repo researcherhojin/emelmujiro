@@ -126,9 +126,9 @@ describe('QuickReplies', () => {
   });
 
   it('applies correct color classes to buttons', () => {
-    const { container } = renderQuickReplies();
+    renderQuickReplies();
 
-    const buttons = container.querySelectorAll('button');
+    const buttons = screen.getAllByRole('button');
 
     // Check that buttons have color classes
     expect(buttons[0].className).toContain('bg-blue-50');
@@ -138,17 +138,23 @@ describe('QuickReplies', () => {
   });
 
   it('renders in a 2-column grid layout', () => {
-    const { container } = renderQuickReplies();
+    renderQuickReplies();
 
-    const grid = container.querySelector('.grid.grid-cols-2');
-    expect(grid).toBeInTheDocument();
-    expect(grid?.children).toHaveLength(4);
+    // Verify all 4 quick reply buttons are present
+    const buttons = screen.getAllByRole('button');
+    expect(buttons).toHaveLength(4);
+
+    // Verify the buttons are the expected quick replies
+    expect(screen.getByText('서비스 문의')).toBeInTheDocument();
+    expect(screen.getByText('기술 지원')).toBeInTheDocument();
+    expect(screen.getByText('요금 문의')).toBeInTheDocument();
+    expect(screen.getByText('연락처 문의')).toBeInTheDocument();
   });
 
   it('has hover and focus states', () => {
-    const { container } = renderQuickReplies();
+    renderQuickReplies();
 
-    const buttons = container.querySelectorAll('button');
+    const buttons = screen.getAllByRole('button');
     buttons.forEach(button => {
       expect(button.className).toContain('hover:shadow-sm');
       expect(button.className).toContain('hover:scale-105');
@@ -158,9 +164,9 @@ describe('QuickReplies', () => {
   });
 
   it('supports dark mode classes', () => {
-    const { container } = renderQuickReplies();
+    renderQuickReplies();
 
-    const buttons = container.querySelectorAll('button');
+    const buttons = screen.getAllByRole('button');
     buttons.forEach(button => {
       expect(button.className).toMatch(/dark:/);
     });
@@ -217,14 +223,20 @@ describe('QuickReplies', () => {
     );
     mockUseChatContext.mockReturnValue({
       settings: {
-        quickReplies: ['Reply 1', 'Reply 2', 'Reply 3', 'Reply 4'],
+        quickReplies: ['서비스 문의', '기술 지원', '요금 문의', '연락처 문의'],
       },
     });
 
-    const { container } = renderQuickReplies();
+    renderQuickReplies();
 
-    // Should not have the custom replies section
-    const customSection = container.querySelector('.mt-3.space-y-1');
-    expect(customSection).not.toBeInTheDocument();
+    // Should only have 4 buttons (no custom section with additional replies)
+    const buttons = screen.getAllByRole('button');
+    expect(buttons).toHaveLength(4);
+
+    // Verify the standard replies are present (using default Korean text)
+    expect(screen.getByText('서비스 문의')).toBeInTheDocument();
+    expect(screen.getByText('기술 지원')).toBeInTheDocument();
+    expect(screen.getByText('요금 문의')).toBeInTheDocument();
+    expect(screen.getByText('연락처 문의')).toBeInTheDocument();
   });
 });

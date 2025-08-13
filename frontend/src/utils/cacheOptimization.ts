@@ -253,14 +253,26 @@ export const preloadCriticalResources = () => {
     return;
   }
 
-  const criticalResources = ['/static/css/main.css', '/static/js/main.js'];
+  // For GitHub Pages deployment, use the correct path
+  const basePath = process.env.PUBLIC_URL || '';
+  const criticalResources = [`${basePath}/static/css/main.css`, `${basePath}/static/js/main.js`];
 
   criticalResources.forEach(resource => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = resource.endsWith('.css') ? 'style' : 'script';
-    link.href = resource;
-    document.head.appendChild(link);
+    // Check if resource exists before trying to preload
+    fetch(resource, { method: 'HEAD' })
+      .then(response => {
+        if (response.ok) {
+          const link = document.createElement('link');
+          link.rel = 'preload';
+          link.as = resource.endsWith('.css') ? 'style' : 'script';
+          link.href = resource;
+          document.head.appendChild(link);
+        }
+      })
+      .catch(() => {
+        // Resource not found, skip preloading
+        console.debug(`Skipping preload for ${resource} - resource not found`);
+      });
   });
 };
 

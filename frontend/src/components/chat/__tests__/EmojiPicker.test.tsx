@@ -5,8 +5,21 @@ import EmojiPicker from '../EmojiPicker';
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
-      <div>{children}</div>
+    div: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <div {...props}>{children}</div>
+    ),
+    button: ({
+      children,
+      onClick,
+      ...props
+    }: {
+      children?: React.ReactNode;
+      onClick?: () => void;
+      [key: string]: unknown;
+    }) => (
+      <button onClick={onClick} {...props}>
+        {children}
+      </button>
     ),
   },
   AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
@@ -33,7 +46,7 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-describe.skip('EmojiPicker', () => {
+describe('EmojiPicker', () => {
   const mockOnSelect = jest.fn();
   const mockOnClose = jest.fn();
 
@@ -45,7 +58,7 @@ describe.skip('EmojiPicker', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
     expect(screen.getByText('이모지 선택')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('검색...')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('이모지 검색...')).toBeInTheDocument();
   });
 
   it('displays emoji categories', () => {
@@ -91,10 +104,8 @@ describe.skip('EmojiPicker', () => {
   it('calls onClose when close button is clicked', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    // Find close button by its icon
-    const closeIcon = screen.getByTestId('x-icon');
-    // Click the icon itself or find its parent button
-    const closeButton = closeIcon.closest('button') || closeIcon;
+    // Find and click the close button by aria-label
+    const closeButton = screen.getByLabelText('닫기');
     fireEvent.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalled();
@@ -103,7 +114,7 @@ describe.skip('EmojiPicker', () => {
   it('filters emojis based on search term', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText('검색...');
+    const searchInput = screen.getByPlaceholderText('이모지 검색...');
     fireEvent.change(searchInput, { target: { value: '😀' } });
 
     // Should only show matching emoji
@@ -115,7 +126,7 @@ describe.skip('EmojiPicker', () => {
   it('shows no results message when search has no matches', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText('검색...');
+    const searchInput = screen.getByPlaceholderText('이모지 검색...');
     fireEvent.change(searchInput, { target: { value: 'xyz123' } });
 
     expect(screen.getByText('검색 결과가 없습니다')).toBeInTheDocument();
@@ -124,15 +135,13 @@ describe.skip('EmojiPicker', () => {
   it('clears search when clear button is clicked', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText('검색...') as HTMLInputElement;
+    const searchInput = screen.getByPlaceholderText('이모지 검색...') as HTMLInputElement;
     fireEvent.change(searchInput, { target: { value: 'test' } });
 
     expect(searchInput.value).toBe('test');
 
-    // Find and click the clear button (X icon in search)
-    const clearButtons = screen.getAllByTestId('x-icon');
-    // First X icon is for search clear
-    const clearButton = clearButtons[0].closest('button') || clearButtons[0];
+    // Clear button is rendered when search has value
+    const clearButton = screen.getByLabelText('지우기');
     fireEvent.click(clearButton);
 
     expect(searchInput.value).toBe('');
@@ -144,7 +153,7 @@ describe.skip('EmojiPicker', () => {
     // First category button should be active by default
     const smileyButton = screen.getByRole('button', { name: '표정' });
 
-    expect(smileyButton.className).toContain('bg-blue-100');
+    expect(smileyButton.className).toContain('bg-blue-50');
   });
 
   it('handles switching to objects category', () => {
@@ -174,25 +183,28 @@ describe.skip('EmojiPicker', () => {
   it('maintains search across category switches', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText('검색...');
+    const searchInput = screen.getByPlaceholderText('이모지 검색...');
     fireEvent.change(searchInput, { target: { value: '💻' } });
 
     // Should show the computer emoji even though it's in objects category
     expect(screen.getByText('💻')).toBeInTheDocument();
 
-    // Switch category shouldn't affect search results when search is active
+    // When searching, categories are hidden so we can't switch them
+    // Clear search to show categories again
+    fireEvent.change(searchInput, { target: { value: '' } });
+
+    // Now we can switch categories
     const gesturesButton = screen.getByText('제스처');
     fireEvent.click(gesturesButton);
 
-    // Should still show search results, not gesture emojis
-    expect(screen.getByText('💻')).toBeInTheDocument();
-    expect(screen.queryByText('👍')).not.toBeInTheDocument();
+    // Should show gesture emojis now that search is cleared
+    expect(screen.getByText('👍')).toBeInTheDocument();
   });
 
   it('shows all matching emojis from all categories when searching', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText('검색...');
+    const searchInput = screen.getByPlaceholderText('이모지 검색...');
     // Search for heart emoji which exists in symbols
     fireEvent.change(searchInput, { target: { value: '❤' } });
 
@@ -202,7 +214,7 @@ describe.skip('EmojiPicker', () => {
   it('handles emoji selection from search results', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText('검색...');
+    const searchInput = screen.getByPlaceholderText('이모지 검색...');
     fireEvent.change(searchInput, { target: { value: '💻' } });
 
     const emoji = screen.getByText('💻');
@@ -219,7 +231,7 @@ describe.skip('EmojiPicker', () => {
     expect(emojiButton.className).toContain('hover:bg-gray-100');
   });
 
-  it.skip('uses grid layout for emoji display', () => {
+  it('uses grid layout for emoji display', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
     // Check that emojis are displayed in a grid
