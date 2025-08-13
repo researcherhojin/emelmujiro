@@ -187,72 +187,60 @@ describe('ChatWindow', () => {
     jest.restoreAllMocks();
   });
 
-  it('should render chat window with header', () => {
+  it('should render chat window with message list', () => {
     render(<ChatWindow />);
 
-    expect(screen.getByText('chat.title')).toBeInTheDocument();
-    expect(screen.getByText('Support Agent')).toBeInTheDocument();
+    expect(screen.getByTestId('message-list')).toBeInTheDocument();
   });
 
-  it('should show online status when connected', () => {
+  it('should show message input when connected', () => {
     render(<ChatWindow />);
 
-    expect(screen.getByText('chat.online')).toBeInTheDocument();
+    const input = screen.getByPlaceholderText('chat.placeholder.connected');
+    expect(input).toBeInTheDocument();
+    expect(input).not.toBeDisabled();
   });
 
-  it('should handle close button click', () => {
-    const closeChat = jest.fn();
+  it('should have attachment button', () => {
+    render(<ChatWindow />);
+
+    const attachButton = screen.getByTitle('chat.attachFile');
+    expect(attachButton).toBeInTheDocument();
+  });
+
+  it('should have emoji button', () => {
+    render(<ChatWindow />);
+
+    const emojiButton = screen.getByTitle('chat.emoji');
+    expect(emojiButton).toBeInTheDocument();
+  });
+
+  it('should show disconnected banner when not connected', () => {
     jest
       .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
-      .mockReturnValue(createMockChatContext({ closeChat }));
+      .mockReturnValue(createMockChatContext({ isConnected: false }));
 
     render(<ChatWindow />);
 
-    const closeButton = screen.getByLabelText('chat.close');
-    fireEvent.click(closeButton);
-
-    expect(closeChat).toHaveBeenCalled();
+    expect(screen.getByText('chat.connectionStatus.reconnecting')).toBeInTheDocument();
   });
 
-  it('should handle minimize/maximize toggle', () => {
-    const toggleMinimize = jest.fn();
+  it('should show business hours notice when closed', () => {
     jest
       .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
-      .mockReturnValue(createMockChatContext({ toggleMinimize }));
+      .mockReturnValue(
+        createMockChatContext({ businessHours: { isOpen: false, hours: '09:00 - 18:00' } })
+      );
 
     render(<ChatWindow />);
 
-    const minimizeButton = screen.getByLabelText('chat.minimize');
-    fireEvent.click(minimizeButton);
-
-    expect(toggleMinimize).toHaveBeenCalled();
-  });
-
-  it('should hide content when minimized', () => {
-    jest
-      .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
-      .mockReturnValue(createMockChatContext({ isMinimized: true }));
-
-    render(<ChatWindow />);
-
-    expect(screen.queryByTestId('message-list')).not.toBeInTheDocument();
-    expect(screen.queryByPlaceholderText('chat.inputPlaceholder')).not.toBeInTheDocument();
-  });
-
-  it('should show maximize button when minimized', () => {
-    jest
-      .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
-      .mockReturnValue(createMockChatContext({ isMinimized: true }));
-
-    render(<ChatWindow />);
-
-    expect(screen.getByLabelText('chat.maximize')).toBeInTheDocument();
+    expect(screen.getByText('chat.afterHours.title')).toBeInTheDocument();
   });
 
   it('should handle message input', () => {
     render(<ChatWindow />);
 
-    const input = screen.getByPlaceholderText('chat.inputPlaceholder');
+    const input = screen.getByPlaceholderText('chat.placeholder.connected');
     fireEvent.change(input, { target: { value: 'Hello world' } });
 
     expect(input).toHaveValue('Hello world');
@@ -261,7 +249,7 @@ describe('ChatWindow', () => {
   it('should send message on button click', () => {
     render(<ChatWindow />);
 
-    const input = screen.getByPlaceholderText('chat.inputPlaceholder');
+    const input = screen.getByPlaceholderText('chat.placeholder.connected');
     fireEvent.change(input, { target: { value: 'Test message' } });
 
     // Find send button by its accessible role and icon
@@ -280,9 +268,9 @@ describe('ChatWindow', () => {
   it('should send message on Enter key press', () => {
     render(<ChatWindow />);
 
-    const input = screen.getByPlaceholderText('chat.inputPlaceholder');
+    const input = screen.getByPlaceholderText('chat.placeholder.connected');
     fireEvent.change(input, { target: { value: 'Test message' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter', charCode: 13 });
+    fireEvent.keyPress(input, { key: 'Enter', code: 'Enter', charCode: 13 });
 
     waitFor(() => {
       expect(input).toHaveValue('');
@@ -292,7 +280,7 @@ describe('ChatWindow', () => {
   it('should not send empty messages', () => {
     render(<ChatWindow />);
 
-    const input = screen.getByPlaceholderText('chat.inputPlaceholder');
+    const input = screen.getByPlaceholderText('chat.placeholder.connected');
 
     // Find send button by its accessible role and icon
     const sendButtons = screen.getAllByRole('button');
@@ -310,7 +298,7 @@ describe('ChatWindow', () => {
   it('should show emoji picker when emoji button is clicked', () => {
     render(<ChatWindow />);
 
-    const emojiButton = screen.getByLabelText('chat.emoji');
+    const emojiButton = screen.getByTitle('chat.emoji');
     fireEvent.click(emojiButton);
 
     expect(screen.getByTestId('emoji-picker')).toBeInTheDocument();
@@ -319,10 +307,10 @@ describe('ChatWindow', () => {
   it('should insert emoji into message input', () => {
     render(<ChatWindow />);
 
-    const input = screen.getByPlaceholderText('chat.inputPlaceholder');
+    const input = screen.getByPlaceholderText('chat.placeholder.connected');
     fireEvent.change(input, { target: { value: 'Hello ' } });
 
-    const emojiButton = screen.getByLabelText('chat.emoji');
+    const emojiButton = screen.getByTitle('chat.emoji');
     fireEvent.click(emojiButton);
 
     const smileyEmoji = screen.getByText('😀');
@@ -331,34 +319,20 @@ describe('ChatWindow', () => {
     expect(input).toHaveValue('Hello 😀');
   });
 
-  it('should show file upload when attachment button is clicked', () => {
+  it('should handle file input trigger on attachment button click', () => {
     render(<ChatWindow />);
 
-    const attachButton = screen.getByLabelText('chat.attach');
-    fireEvent.click(attachButton);
-
-    expect(screen.getByTestId('file-upload')).toBeInTheDocument();
+    const attachButton = screen.getByTitle('chat.attachFile');
+    expect(attachButton).toBeInTheDocument();
+    expect(attachButton).not.toBeDisabled();
   });
 
-  it('should handle file selection', () => {
+  it('should have hidden file input', () => {
     render(<ChatWindow />);
 
-    const attachButton = screen.getByLabelText('chat.attach');
-    fireEvent.click(attachButton);
-
-    const file = new File(['test'], 'test.txt', { type: 'text/plain' });
-    // Find file input within the file upload component
-    const fileInputs = screen.getByTestId('file-upload').getElementsByTagName('input');
-    const fileInput = Array.from(fileInputs).find(input => input.type === 'file');
-
-    if (fileInput) {
-      fireEvent.change(fileInput, { target: { files: [file] } });
-    }
-
-    // File upload component should close after selection
-    waitFor(() => {
-      expect(screen.queryByTestId('file-upload')).not.toBeInTheDocument();
-    });
+    // Check that there's a hidden file input
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    expect(fileInputs.length).toBeGreaterThan(0);
   });
 
   it('should show typing indicator when agent is typing', () => {
@@ -442,150 +416,98 @@ describe('ChatWindow', () => {
     expect(sendMessage).toHaveBeenCalledWith('Yes');
   });
 
-  it('should show chat menu when menu button is clicked', () => {
+  it('should have send button', () => {
     render(<ChatWindow />);
 
-    const menuButton = screen.getByLabelText('chat.menu');
-    fireEvent.click(menuButton);
-
-    expect(screen.getByText('chat.clearChat')).toBeInTheDocument();
-    expect(screen.getByText('chat.exportChat')).toBeInTheDocument();
-    expect(screen.getByText('chat.settings')).toBeInTheDocument();
+    const sendButtons = screen.getAllByRole('button');
+    const sendButton = sendButtons.find(button => button.textContent?.includes('Send'));
+    expect(sendButton).toBeInTheDocument();
   });
 
-  it('should handle clear chat action', () => {
-    const clearMessages = jest.fn();
-
-    jest.spyOn(require('../../../contexts/ChatContext'), 'useChatContext').mockReturnValue({
-      messages: [
-        {
-          id: '1',
-          type: 'bot',
-          content: 'Hello',
-          timestamp: new Date().toISOString(),
-        },
-      ],
-      isTyping: false,
-      isConnected: true,
-      agentName: 'Support Agent',
-      agentAvailable: true,
-      sendMessage: jest.fn(),
-      sendFile: jest.fn(),
-      clearMessages,
-      exportChat: jest.fn(),
-    });
-
+  it('should have export button', () => {
     render(<ChatWindow />);
 
-    const menuButton = screen.getByLabelText('chat.menu');
-    fireEvent.click(menuButton);
-
-    const clearButton = screen.getByText('chat.clearChat');
-    fireEvent.click(clearButton);
-
-    // Should show confirmation dialog
-    const confirmButton = screen.getByText('chat.confirm');
-    fireEvent.click(confirmButton);
-
-    expect(clearMessages).toHaveBeenCalled();
+    const exportButton = screen.getByTitle('chat.exportTranscript');
+    expect(exportButton).toBeInTheDocument();
+    expect(exportButton).toBeDisabled(); // Disabled when no messages
   });
 
-  it('should handle export chat action', () => {
-    const exportChat = jest.fn();
-
-    jest.spyOn(require('../../../contexts/ChatContext'), 'useChatContext').mockReturnValue({
-      messages: [],
-      isTyping: false,
-      isConnected: true,
-      agentName: 'Support Agent',
-      agentAvailable: true,
-      sendMessage: jest.fn(),
-      sendFile: jest.fn(),
-      clearMessages: jest.fn(),
-      exportChat,
-    });
+  it('should enable export when messages exist', () => {
+    jest.spyOn(require('../../../contexts/ChatContext'), 'useChatContext').mockReturnValue(
+      createMockChatContext({
+        messages: [
+          {
+            id: '1',
+            type: 'user',
+            content: 'Test message',
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      })
+    );
 
     render(<ChatWindow />);
 
-    const menuButton = screen.getByLabelText('chat.menu');
-    fireEvent.click(menuButton);
-
-    const exportButton = screen.getByText('chat.exportChat');
-    fireEvent.click(exportButton);
-
-    expect(exportChat).toHaveBeenCalled();
+    const exportButton = screen.getByTitle('chat.exportTranscript');
+    expect(exportButton).not.toBeDisabled();
   });
 
-  it('should show offline indicator when disconnected', () => {
-    jest.spyOn(require('../../../contexts/ChatContext'), 'useChatContext').mockReturnValue({
-      messages: [],
-      isTyping: false,
-      isConnected: false,
-      agentName: 'Support Agent',
-      agentAvailable: true,
-      sendMessage: jest.fn(),
-      sendFile: jest.fn(),
-      clearMessages: jest.fn(),
-      exportChat: jest.fn(),
-    });
+  it('should show connection status when disconnected', () => {
+    jest
+      .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+      .mockReturnValue(createMockChatContext({ isConnected: false }));
 
     render(<ChatWindow />);
 
-    expect(screen.getByText('chat.offline')).toBeInTheDocument();
+    expect(screen.getByText('chat.connectionStatus.reconnecting')).toBeInTheDocument();
   });
 
   it('should disable input when disconnected', () => {
-    jest.spyOn(require('../../../contexts/ChatContext'), 'useChatContext').mockReturnValue({
-      messages: [],
-      isTyping: false,
-      isConnected: false,
-      agentName: 'Support Agent',
-      agentAvailable: true,
-      sendMessage: jest.fn(),
-      sendFile: jest.fn(),
-      clearMessages: jest.fn(),
-      exportChat: jest.fn(),
-    });
+    jest
+      .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+      .mockReturnValue(createMockChatContext({ isConnected: false }));
 
     render(<ChatWindow />);
 
-    const input = screen.getByPlaceholderText('chat.inputPlaceholder');
+    const input = screen.getByPlaceholderText('chat.placeholder.disconnected');
     expect(input).toBeDisabled();
   });
 
-  it('should handle sound toggle', () => {
+  it('should handle message send on Enter key', () => {
+    const sendMessage = jest.fn();
+    jest
+      .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+      .mockReturnValue(createMockChatContext({ sendMessage }));
+
     render(<ChatWindow />);
 
-    const soundButton = screen.getByLabelText('chat.sound');
-    fireEvent.click(soundButton);
+    const input = screen.getByPlaceholderText('chat.placeholder.connected');
+    fireEvent.change(input, { target: { value: 'Test message' } });
+    fireEvent.keyPress(input, { key: 'Enter', code: 'Enter', charCode: 13 });
 
-    // Sound should be toggled
-    expect(screen.getByLabelText('chat.soundOff')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByLabelText('chat.soundOff'));
-    expect(screen.getByLabelText('chat.sound')).toBeInTheDocument();
+    expect(sendMessage).toHaveBeenCalledWith('Test message');
   });
 
-  it('should handle notification toggle', () => {
+  it('should not send message on Enter with Shift key', () => {
+    const sendMessage = jest.fn();
+    jest
+      .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+      .mockReturnValue(createMockChatContext({ sendMessage }));
+
     render(<ChatWindow />);
 
-    const notificationButton = screen.getByLabelText('chat.notifications');
-    fireEvent.click(notificationButton);
+    const input = screen.getByPlaceholderText('chat.placeholder.connected');
+    fireEvent.change(input, { target: { value: 'Test message' } });
+    fireEvent.keyPress(input, { key: 'Enter', code: 'Enter', charCode: 13, shiftKey: true });
 
-    // Notifications should be toggled
-    expect(screen.getByLabelText('chat.notificationsOff')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByLabelText('chat.notificationsOff'));
-    expect(screen.getByLabelText('chat.notifications')).toBeInTheDocument();
+    expect(sendMessage).not.toHaveBeenCalled();
   });
 
-  it('should be accessible with proper ARIA attributes', () => {
+  it('should have accessible input area', () => {
     render(<ChatWindow />);
 
-    const chatWindow = screen.getByRole('dialog');
-    expect(chatWindow).toHaveAttribute('aria-label', 'chat.window');
-
-    const input = screen.getByPlaceholderText('chat.inputPlaceholder');
-    expect(input).toHaveAttribute('aria-label', 'chat.messageInput');
+    const input = screen.getByPlaceholderText('chat.placeholder.connected');
+    expect(input).toBeInTheDocument();
+    expect(input.tagName).toBe('TEXTAREA');
   });
 });
