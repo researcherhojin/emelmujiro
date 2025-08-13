@@ -153,7 +153,7 @@ def update_user(request):
     Update user information
     """
     user = request.user
-    
+
     # Update allowed fields
     if 'first_name' in request.data:
         user.first_name = request.data['first_name']
@@ -167,9 +167,9 @@ def update_user(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
         user.email = request.data['email']
-    
+
     user.save()
-    
+
     return Response(UserSerializer(user).data)
 
 
@@ -182,31 +182,31 @@ def change_password(request):
     user = request.user
     old_password = request.data.get('old_password')
     new_password = request.data.get('new_password')
-    
+
     if not old_password or not new_password:
         return Response(
             {'error': 'Both old and new passwords are required'},
             status=status.HTTP_400_BAD_REQUEST
         )
-    
+
     if not user.check_password(old_password):
         return Response(
             {'error': 'Invalid old password'},
             status=status.HTTP_400_BAD_REQUEST
         )
-    
+
     if len(new_password) < 8:
         return Response(
             {'error': 'Password must be at least 8 characters'},
             status=status.HTTP_400_BAD_REQUEST
         )
-    
+
     user.set_password(new_password)
     user.save()
-    
+
     # Generate new tokens
     refresh = RefreshToken.for_user(user)
-    
+
     return Response({
         'success': 'Password changed successfully',
         'refresh': str(refresh),

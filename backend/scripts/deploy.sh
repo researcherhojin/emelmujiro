@@ -50,4 +50,4 @@ if command -v gunicorn &> /dev/null; then
 else
     echo "개발 서버로 시작... (프로덕션에서는 Gunicorn 사용 권장)"
     python manage.py runserver 0.0.0.0:8000
-fi 
+fi

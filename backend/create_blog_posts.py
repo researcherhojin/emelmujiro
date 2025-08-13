@@ -153,22 +153,22 @@ print(result)
 class ChatSession:
     def __init__(self, system_prompt="You are a helpful assistant."):
         self.messages = [{"role": "system", "content": system_prompt}]
-    
+
     def add_message(self, role, content):
         self.messages.append({"role": role, "content": content})
-    
+
     def get_response(self, user_input):
         self.add_message("user", user_input)
-        
+
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=self.messages,
             temperature=0.7
         )
-        
+
         assistant_response = response.choices[0].message.content
         self.add_message("assistant", assistant_response)
-        
+
         return assistant_response
 
 # 사용 예제
@@ -203,24 +203,24 @@ def chat_with_functions(user_input):
             }
         }
     ]
-    
+
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": user_input}],
         functions=functions,
         function_call="auto"
     )
-    
+
     message = response.choices[0].message
-    
+
     if message.function_call:
         function_name = message.function_call.name
         function_args = json.loads(message.function_call.arguments)
-        
+
         if function_name == "get_weather":
             result = get_weather(function_args["location"])
             return result
-    
+
     return message.content
 
 # 사용 예제
@@ -240,7 +240,7 @@ class CustomerServiceBot:
         회사명: 에멜무지로
         주요 서비스: AI 솔루션 개발, IT 교육
         """
-        
+
     def handle_inquiry(self, inquiry):
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -263,13 +263,13 @@ def review_code(code_snippet, language="python"):
     prompt = f"""
     다음 {language} 코드를 리뷰해주세요.
     개선점, 버그, 최적화 가능한 부분을 찾아주세요.
-    
+
     코드:
     ```{language}
     {code_snippet}
     ```
     """
-    
+
     response = client.chat.completions.create(
         model="gpt-4",  # 코드 리뷰는 GPT-4가 더 정확
         messages=[
@@ -278,7 +278,7 @@ def review_code(code_snippet, language="python"):
         ],
         temperature=0.2
     )
-    
+
     return response.choices[0].message.content
 ```
 
@@ -302,7 +302,7 @@ def safe_chat(prompt, max_tokens=500):
     token_count = count_tokens(prompt)
     if token_count > max_tokens:
         return "입력이 너무 깁니다."
-    
+
     return chat_with_gpt(prompt, max_tokens=max_tokens)
 ```
 
@@ -314,20 +314,20 @@ import json
 class CachedChat:
     def __init__(self):
         self.cache = {}
-    
+
     def get_cache_key(self, prompt):
         return hashlib.md5(prompt.encode()).hexdigest()
-    
+
     def chat(self, prompt):
         cache_key = self.get_cache_key(prompt)
-        
+
         if cache_key in self.cache:
             print("캐시에서 응답 반환")
             return self.cache[cache_key]
-        
+
         response = chat_with_gpt(prompt)
         self.cache[cache_key] = response
-        
+
         return response
 ```
 
@@ -380,23 +380,23 @@ AI는 각 학생의 학습 패턴을 분석하여 최적의 학습 경로를 제
 class AITutor:
     def analyze_student_response(self, question, student_answer):
         """학생의 답변을 분석하고 맞춤형 피드백 제공"""
-        
+
         # 정답 여부 확인
         is_correct = self.check_answer(question, student_answer)
-        
+
         # 오답 패턴 분석
         if not is_correct:
             error_type = self.identify_error_type(student_answer)
             feedback = self.generate_feedback(error_type)
             hint = self.provide_hint(question, error_type)
-            
+
             return {
                 "correct": False,
                 "feedback": feedback,
                 "hint": hint,
                 "next_step": self.recommend_next_step(error_type)
             }
-        
+
         return {
             "correct": True,
             "feedback": "잘했습니다!",
@@ -417,7 +417,7 @@ class AITutor:
 ```python
 def ai_essay_evaluation(essay_text):
     """AI를 활용한 에세이 자동 평가"""
-    
+
     evaluation_criteria = {
         "grammar": check_grammar(essay_text),
         "coherence": analyze_coherence(essay_text),
@@ -425,10 +425,10 @@ def ai_essay_evaluation(essay_text):
         "argument_strength": evaluate_arguments(essay_text),
         "originality": check_originality(essay_text)
     }
-    
+
     feedback = generate_detailed_feedback(evaluation_criteria)
     suggestions = provide_improvement_suggestions(evaluation_criteria)
-    
+
     return {
         "score": calculate_overall_score(evaluation_criteria),
         "feedback": feedback,
@@ -462,14 +462,14 @@ def ai_essay_evaluation(essay_text):
 # GitHub Copilot을 활용한 코딩 교육
 def teach_recursion():
     """재귀 함수 교육 예제"""
-    
+
     # AI가 자동으로 예제 코드 생성
     def factorial(n):
         # Copilot이 자동 완성
         if n <= 1:
             return 1
         return n * factorial(n - 1)
-    
+
     # AI가 설명 생성
     explanation = """
     재귀 함수는 자기 자신을 호출하는 함수입니다.
@@ -480,7 +480,7 @@ def teach_recursion():
                  = 5 * 4 * 3 * 2 * 1
                  = 120
     """
-    
+
     return explanation
 ```
 
@@ -531,39 +531,39 @@ class EmelMujiroAIEducation:
     def __init__(self):
         self.student_profiles = {}
         self.learning_paths = {}
-        
+
     def create_personalized_curriculum(self, student_id):
         """학생별 맞춤 커리큘럼 생성"""
-        
+
         # 학생 프로필 분석
         profile = self.analyze_student_profile(student_id)
-        
+
         # 학습 목표 설정
         goals = self.set_learning_goals(profile)
-        
+
         # AI 기반 커리큘럼 생성
         curriculum = self.generate_curriculum(profile, goals)
-        
+
         # 적응형 학습 경로 설정
         learning_path = self.create_adaptive_path(curriculum)
-        
+
         return learning_path
-    
+
     def provide_real_time_assistance(self, student_id, question):
         """실시간 AI 튜터링"""
-        
+
         # 질문 분석
         question_analysis = self.analyze_question(question)
-        
+
         # 학생 수준 파악
         student_level = self.get_student_level(student_id)
-        
+
         # 맞춤형 답변 생성
         response = self.generate_adaptive_response(
-            question_analysis, 
+            question_analysis,
             student_level
         )
-        
+
         return response
 ```
 
@@ -630,23 +630,23 @@ class DocumentProcessor:
             length_function=len,
             separators=["\n\n", "\n", " ", ""]
         )
-    
+
     def load_pdf(self, pdf_path):
         """PDF 문서 로딩"""
         loader = PyPDFLoader(pdf_path)
         documents = loader.load()
         return self.text_splitter.split_documents(documents)
-    
+
     def load_text(self, text_path):
         """텍스트 파일 로딩"""
         loader = TextLoader(text_path, encoding='utf-8')
         documents = loader.load()
         return self.text_splitter.split_documents(documents)
-    
+
     def load_multiple_documents(self, file_paths):
         """여러 문서 동시 로딩"""
         all_chunks = []
-        
+
         for file_path in file_paths:
             if file_path.endswith('.pdf'):
                 chunks = self.load_pdf(file_path)
@@ -654,9 +654,9 @@ class DocumentProcessor:
                 chunks = self.load_text(file_path)
             else:
                 continue
-            
+
             all_chunks.extend(chunks)
-        
+
         return all_chunks
 
 # 사용 예제
@@ -679,7 +679,7 @@ class VectorStoreManager:
     def __init__(self, persist_directory="./chroma_db"):
         self.embeddings = OpenAIEmbeddings()
         self.persist_directory = persist_directory
-        
+
     def create_chroma_store(self, documents):
         """Chroma 벡터 스토어 생성"""
         vectorstore = Chroma.from_documents(
@@ -689,7 +689,7 @@ class VectorStoreManager:
         )
         vectorstore.persist()
         return vectorstore
-    
+
     def create_faiss_store(self, documents):
         """FAISS 벡터 스토어 생성"""
         vectorstore = FAISS.from_documents(
@@ -699,14 +699,14 @@ class VectorStoreManager:
         # FAISS 인덱스 저장
         vectorstore.save_local("faiss_index")
         return vectorstore
-    
+
     def load_chroma_store(self):
         """저장된 Chroma 스토어 로드"""
         return Chroma(
             persist_directory=self.persist_directory,
             embedding_function=self.embeddings
         )
-    
+
     def similarity_search(self, vectorstore, query, k=4):
         """유사도 검색"""
         return vectorstore.similarity_search(query, k=k)
@@ -732,28 +732,28 @@ class IntelligentChatbot:
             temperature=0.3,
             max_tokens=1000
         )
-        
+
         # 대화 메모리 설정
         self.memory = ConversationBufferMemory(
             memory_key="chat_history",
             return_messages=True,
             output_key="answer"
         )
-        
+
         # 커스텀 프롬프트 템플릿
         self.qa_prompt = PromptTemplate(
             template="""당신은 도움이 되는 AI 어시스턴트입니다.
             주어진 컨텍스트를 바탕으로 질문에 답변해주세요.
             만약 답을 모르겠다면, 모른다고 정직하게 답변하세요.
-            
+
             컨텍스트: {context}
-            
+
             질문: {question}
-            
+
             답변:""",
             input_variables=["context", "question"]
         )
-        
+
         # 대화 체인 생성
         self.qa_chain = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
@@ -764,20 +764,20 @@ class IntelligentChatbot:
             return_source_documents=True,
             combine_docs_chain_kwargs={"prompt": self.qa_prompt}
         )
-    
+
     def chat(self, question):
         """사용자 질문에 답변"""
         result = self.qa_chain({"question": question})
-        
+
         return {
             "answer": result["answer"],
             "source_documents": result.get("source_documents", [])
         }
-    
+
     def clear_history(self):
         """대화 기록 초기화"""
         self.memory.clear()
-    
+
     def get_chat_history(self):
         """대화 기록 조회"""
         return self.memory.chat_memory.messages
@@ -806,7 +806,7 @@ class SmartAgent:
     def __init__(self, vectorstore):
         self.llm = ChatOpenAI(temperature=0.3)
         self.vectorstore = vectorstore
-        
+
         # 도구 정의
         self.tools = [
             Tool(
@@ -825,7 +825,7 @@ class SmartAgent:
                 description="백과사전 정보를 검색합니다"
             )
         ]
-        
+
         # 에이전트 초기화
         self.agent = initialize_agent(
             self.tools,
@@ -834,12 +834,12 @@ class SmartAgent:
             verbose=True,
             max_iterations=3
         )
-    
+
     def search_knowledge_base(self, query):
         """내부 지식 베이스 검색"""
         docs = self.vectorstore.similarity_search(query, k=2)
         return "\n".join([doc.page_content for doc in docs])
-    
+
     def ask(self, question):
         """에이전트에게 질문"""
         return self.agent.run(question)
@@ -858,20 +858,20 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 class StreamingChatbot:
     def __init__(self, vectorstore):
         self.vectorstore = vectorstore
-        
+
         # 스트리밍 콜백 설정
         self.streaming_llm = ChatOpenAI(
             temperature=0.3,
             streaming=True,
             callbacks=[StreamingStdOutCallbackHandler()]
         )
-        
+
         self.qa_chain = ConversationalRetrievalChain.from_llm(
             llm=self.streaming_llm,
             retriever=vectorstore.as_retriever(),
             return_source_documents=True
         )
-    
+
     def stream_chat(self, question):
         """스트리밍 방식으로 답변"""
         # 답변이 실시간으로 출력됨
@@ -895,31 +895,31 @@ class CachedChatbot:
     def __init__(self, vectorstore):
         self.vectorstore = vectorstore
         self.cache = {}
-        
+
     def get_cache_key(self, question):
         """질문의 해시값을 캐시 키로 사용"""
         return hashlib.md5(question.encode()).hexdigest()
-    
+
     @lru_cache(maxsize=100)
     def search_similar_docs(self, question):
         """문서 검색 결과 캐싱"""
         return self.vectorstore.similarity_search(question)
-    
+
     def chat_with_cache(self, question):
         """캐싱을 활용한 답변"""
         cache_key = self.get_cache_key(question)
-        
+
         if cache_key in self.cache:
             print("캐시에서 답변 반환")
             return self.cache[cache_key]
-        
+
         # 실제 처리
         docs = self.search_similar_docs(question)
         answer = self.generate_answer(question, docs)
-        
+
         # 캐시에 저장
         self.cache[cache_key] = answer
-        
+
         return answer
 ```
 
@@ -929,27 +929,27 @@ class CachedChatbot:
 class OptimizedVectorStore:
     def __init__(self):
         self.embeddings = OpenAIEmbeddings()
-        
+
     def create_indexed_store(self, documents):
         """인덱싱된 벡터 스토어 생성"""
         # FAISS 인덱스 타입 설정
         import faiss
-        
+
         # 문서를 임베딩으로 변환
         texts = [doc.page_content for doc in documents]
         embeddings = self.embeddings.embed_documents(texts)
-        
+
         # FAISS 인덱스 생성 (IVF)
         dimension = len(embeddings[0])
         nlist = 100  # 클러스터 수
-        
+
         quantizer = faiss.IndexFlatL2(dimension)
         index = faiss.IndexIVFFlat(quantizer, dimension, nlist)
-        
+
         # 인덱스 훈련
         index.train(np.array(embeddings).astype('float32'))
         index.add(np.array(embeddings).astype('float32'))
-        
+
         return index
 ```
 
@@ -1039,33 +1039,33 @@ AI 시스템은 학습 데이터에 내재된 편향을 그대로 학습합니�
 class FairAI:
     def __init__(self):
         self.bias_metrics = {}
-        
+
     def detect_bias(self, predictions, sensitive_attributes):
         """편향성 탐지"""
         # 민감한 속성별 예측 결과 분석
         for attribute in sensitive_attributes:
             group_predictions = self.group_by_attribute(predictions, attribute)
-            
+
             # 그룹 간 차이 계산
             disparity = self.calculate_disparity(group_predictions)
-            
+
             if disparity > 0.2:  # 20% 이상 차이
                 self.bias_metrics[attribute] = disparity
                 self.flag_bias_alert(attribute, disparity)
-        
+
         return self.bias_metrics
-    
+
     def mitigate_bias(self, model, data):
         """편향성 완화"""
         # 1. 데이터 재균형
         balanced_data = self.rebalance_data(data)
-        
+
         # 2. 공정성 제약 추가
         fair_model = self.add_fairness_constraints(model)
-        
+
         # 3. 적대적 디바이싱
         debiased_model = self.adversarial_debiasing(fair_model)
-        
+
         return debiased_model
 ```
 
@@ -1087,7 +1087,7 @@ class PrivacyPreservingAI:
         noise_scale = 1.0 / epsilon
         noisy_data = data + np.random.laplace(0, noise_scale, data.shape)
         return noisy_data
-    
+
     def federated_learning(self, local_models):
         """연합 학습: 데이터는 로컬에 유지"""
         # 각 디바이스에서 로컬 학습
@@ -1095,19 +1095,19 @@ class PrivacyPreservingAI:
         for model in local_models:
             update = model.train_on_local_data()
             local_updates.append(update)
-        
+
         # 중앙 서버에서 모델 업데이트만 집계
         global_model = self.aggregate_updates(local_updates)
-        
+
         return global_model
-    
+
     def homomorphic_encryption(self, data):
         """동형 암호화: 암호화된 상태에서 연산"""
         encrypted_data = self.encrypt(data)
-        
+
         # 암호화된 데이터로 직접 연산
         encrypted_result = self.compute_on_encrypted(encrypted_data)
-        
+
         return encrypted_result
 ```
 
@@ -1121,47 +1121,47 @@ class ExplainableAI:
     def lime_explanation(self, model, instance):
         """LIME을 사용한 로컬 설명"""
         from lime import lime_tabular
-        
+
         explainer = lime_tabular.LimeTabularExplainer(
             training_data=self.training_data,
             mode='classification'
         )
-        
+
         explanation = explainer.explain_instance(
             instance,
             model.predict_proba,
             num_features=10
         )
-        
+
         return explanation.as_list()
-    
+
     def shap_values(self, model, data):
         """SHAP을 사용한 특성 중요도 분석"""
         import shap
-        
+
         explainer = shap.Explainer(model, data)
         shap_values = explainer(data)
-        
+
         # 특성별 중요도 시각화
         shap.summary_plot(shap_values, data)
-        
+
         return shap_values
-    
+
     def generate_explanation_report(self, prediction):
         """사용자 친화적 설명 생성"""
         report = f"""
         예측 결과: {prediction['result']}
-        
+
         주요 영향 요인:
         1. {prediction['top_factors'][0]}: {prediction['impacts'][0]}%
         2. {prediction['top_factors'][1]}: {prediction['impacts'][1]}%
         3. {prediction['top_factors'][2]}: {prediction['impacts'][2]}%
-        
+
         신뢰도: {prediction['confidence']}%
-        
+
         이 결정은 {len(prediction['data_points'])}개의 데이터를 기반으로 했습니다.
         """
-        
+
         return report
 ```
 
@@ -1175,25 +1175,25 @@ class HumanInTheLoop:
     def __init__(self, confidence_threshold=0.8):
         self.confidence_threshold = confidence_threshold
         self.human_reviews = []
-        
+
     def make_decision(self, ai_prediction):
         """AI 예측에 대한 인간 검토 필요 여부 판단"""
-        
+
         if ai_prediction['confidence'] < self.confidence_threshold:
             # 신뢰도가 낮으면 인간 검토 요청
             return self.request_human_review(ai_prediction)
-        
+
         if ai_prediction['impact'] == 'high':
             # 중요한 결정은 항상 인간 검토
             return self.request_human_review(ai_prediction)
-        
+
         if ai_prediction['category'] in ['medical', 'legal', 'financial']:
             # 민감한 분야는 인간 승인 필요
             return self.request_human_approval(ai_prediction)
-        
+
         # 그 외의 경우 AI 결정 수용
         return self.accept_ai_decision(ai_prediction)
-    
+
     def request_human_review(self, prediction):
         """인간 검토 요청"""
         review_request = {
@@ -1202,7 +1202,7 @@ class HumanInTheLoop:
             'reason': self.determine_review_reason(prediction),
             'priority': self.calculate_priority(prediction)
         }
-        
+
         self.human_reviews.append(review_request)
         return self.wait_for_human_decision(review_request)
 ```
@@ -1217,7 +1217,7 @@ class AIAccountability:
     def __init__(self):
         self.decision_log = []
         self.audit_trail = []
-        
+
     def log_decision(self, decision):
         """모든 AI 결정 기록"""
         log_entry = {
@@ -1233,26 +1233,26 @@ class AIAccountability:
                 'data_provider': self.data_provider_info
             }
         }
-        
+
         self.decision_log.append(log_entry)
         self.create_audit_entry(log_entry)
-        
+
         return log_entry['id']
-    
+
     def assign_liability(self, incident):
         """책임 소재 판단"""
         # 사고 원인 분석
         root_cause = self.analyze_incident(incident)
-        
+
         liability_matrix = {
             'data_error': 'data_provider',
             'model_error': 'developer',
             'deployment_error': 'operator',
             'misuse': 'user'
         }
-        
+
         responsible_party = liability_matrix.get(root_cause, 'shared')
-        
+
         return {
             'incident': incident,
             'root_cause': root_cause,
@@ -1274,18 +1274,18 @@ class HumanCentricAI:
         'justice': '공정한 이익 분배',
         'explicability': '설명 가능하고 이해 가능'
     }
-    
+
     def evaluate_ethical_compliance(self, ai_system):
         """AI 시스템의 윤리적 준수 평가"""
         scores = {}
-        
+
         for principle, description in self.principles.items():
             score = self.assess_principle(ai_system, principle)
             scores[principle] = score
-            
+
             if score < 0.7:  # 70% 미만이면 경고
                 self.raise_ethical_concern(principle, score)
-        
+
         return scores
 ```
 
@@ -1295,16 +1295,16 @@ class HumanCentricAI:
 ```python
 def calculate_carbon_footprint(model_training):
     """AI 모델 훈련의 탄소 발자국 계산"""
-    
+
     # GPU 사용 시간과 전력 소비
     gpu_hours = model_training['gpu_hours']
     power_consumption = model_training['watts_per_gpu']
-    
+
     # 전력원별 탄소 배출량
     carbon_intensity = get_regional_carbon_intensity()
-    
+
     total_emissions = gpu_hours * power_consumption * carbon_intensity
-    
+
     return {
         'total_co2_kg': total_emissions,
         'equivalent_to': f"{total_emissions / 2.4}km 자동차 운행",
@@ -1369,24 +1369,24 @@ class AIEthicsChecklist:
                 '사고 대응 계획 수립'
             ]
         }
-    
+
     def audit(self, ai_system):
         """AI 시스템 윤리 감사"""
         audit_results = {}
-        
+
         for category, items in self.checklist.items():
             category_score = 0
-            
+
             for item in items:
                 if self.check_compliance(ai_system, item):
                     category_score += 1
-            
+
             audit_results[category] = {
                 'score': category_score / len(items),
-                'missing': [item for item in items 
+                'missing': [item for item in items
                            if not self.check_compliance(ai_system, item)]
             }
-        
+
         return audit_results
 ```
 
@@ -1430,14 +1430,14 @@ for i, post_data in enumerate(blog_posts_data):
         post = BlogPost.objects.create(
             **post_data
         )
-        
+
         # 생성 시간을 과거로 조정 (더 자연스럽게)
         days_ago = (len(blog_posts_data) - i) * 3
         post.created_at = timezone.now() - timedelta(days=days_ago)
         post.updated_at = post.created_at + timedelta(hours=2)
         post.date = post.created_at
         post.save()
-        
+
         print(f"Created post: {post.title}")
     else:
         print(f"Post already exists: {post_data['title']}")

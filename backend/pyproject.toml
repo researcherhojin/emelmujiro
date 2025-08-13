@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "emelmujiro-backend"
 version = "0.1.0"
@@ -27,6 +31,9 @@ dev = [
     "flake8>=7.0.0",
     "pytest>=8.0.0",
     "pytest-django>=4.8.0",
+    "ruff>=0.1.0",
+    "mypy>=1.8.0",
+    "pre-commit>=3.6.0",
 ]
 
 [tool.black]
@@ -53,5 +60,61 @@ profile = "black"
 line_length = 120
 skip = ["migrations"]
 skip_glob = ["*/migrations/*"]
-known_django = ["django"]
+known_django = ["django", "rest_framework"]
 sections = ["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+default_section = "THIRDPARTY"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade
+]
+ignore = [
+    "E203",  # whitespace before ':'
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+    "B905",  # zip() without explicit strict parameter
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    "venv",
+    ".venv",
+    "migrations",
+]
+
+[tool.mypy]
+python_version = "3.10"
+check_untyped_defs = true
+ignore_missing_imports = true
+warn_return_any = true
+warn_unused_configs = true
+exclude = [
+    "migrations/",
+    "venv/",
+    ".venv/",
+]
+
+[tool.setuptools]
+packages = ["api", "config"]
+py-modules = []
+
+[tool.setuptools.package-find]
+where = ["."]
+include = ["api*", "config*"]
+exclude = ["tests*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py", "*_test.py", "*_tests.py"]
+addopts = "-vv --tb=short --strict-markers"
+testpaths = ["tests", "api/tests"]

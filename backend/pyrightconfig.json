@@ -1,17 +1,23 @@
 {
-  "include": [
-    "."
-  ],
+  "include": ["."],
   "exclude": [
     "**/node_modules",
     "**/__pycache__",
-    "**/venv"
+    "**/venv",
+    "**/.venv",
+    "**/migrations",
+    "**/staticfiles",
+    "**/media",
+    "**/build",
+    "**/dist"
   ],
-  "venvPath": ".",
-  "venv": "venv",
-  "pythonVersion": "3.12",
-  "typeCheckingMode": "basic",
-  "reportMissingImports": false,
+  "venvPath": "../",
+  "venv": ".venv",
+  "pythonVersion": "3.10",
+  "pythonPlatform": "All",
+  "typeCheckingMode": "standard",
+  "useLibraryCodeForTypes": true,
+  "reportMissingImports": "warning",
   "reportMissingTypeStubs": false,
   "reportGeneralTypeIssues": "warning",
   "reportUnusedImport": true,
@@ -51,5 +57,6 @@
   "reportSelfClsParameterName": "warning",
   "reportUnusedExpression": "warning",
   "reportMatchNotExhaustive": "warning",
-  "reportShadowedImports": "warning"
+  "reportShadowedImports": "warning",
+  "reportPrivateImportUsage": "warning"
 }

@@ -47,12 +47,14 @@ const pages = [
 
 async function generateSitemap() {
   const sitemap = new SitemapStream({ hostname });
-  const writeStream = createWriteStream(path.join(__dirname, 'public', 'sitemap.xml'));
+  const writeStream = createWriteStream(
+    path.join(__dirname, 'public', 'sitemap.xml')
+  );
 
   sitemap.pipe(writeStream);
 
   // 페이지 추가
-  pages.forEach(page => {
+  pages.forEach((page) => {
     sitemap.write({
       url: page.url,
       changefreq: page.changefreq,

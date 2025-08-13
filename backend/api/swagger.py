@@ -8,25 +8,25 @@ schema_view = get_schema_view(
         default_version='v1',
         description="""
         # Emelmujiro API Documentation
-        
+
         ## Overview
         AI 교육 및 컨설팅 전문 기업 에멜무지로의 REST API입니다.
-        
+
         ## Authentication
         이 API는 JWT (JSON Web Token) 인증을 사용합니다.
-        
+
         ### 인증 과정:
         1. `/api/auth/register/` 또는 `/api/auth/login/`을 통해 토큰을 받습니다.
         2. 받은 `access` 토큰을 헤더에 포함시킵니다: `Authorization: Bearer <access_token>`
         3. `access` 토큰이 만료되면 `refresh` 토큰으로 새 토큰을 받습니다.
-        
+
         ## Rate Limiting
         - 인증된 사용자: 1000 requests/hour
         - 비인증 사용자: 100 requests/hour
-        
+
         ## Response Format
         모든 응답은 JSON 형식입니다.
-        
+
         ### Success Response
         ```json
         {
@@ -34,7 +34,7 @@ schema_view = get_schema_view(
             "message": "Success"
         }
         ```
-        
+
         ### Error Response
         ```json
         {

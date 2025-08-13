@@ -41,6 +41,14 @@ htmlcov/
 .tox/
 .hypothesis/
 .pytest_cache/
+venv/
+.venv/
+env/
+ENV/
+mypy_cache/
+.mypy_cache/
+.ruff_cache/
+pyrightconfig.json
 
 # Django
 backend/staticfiles/
@@ -64,10 +72,10 @@ frontend/coverage/
 
 # IDE
 .idea/
-.vscode/
 *.swp
 *.swo
 *~
+*.sublime-*
 
 # OS
 .DS_Store
@@ -81,3 +89,19 @@ Thumbs.db
 
 # Claude settings
 .claude
+# Setup and temporary files
+complete_setup.sh
+setup_*.sh
+test_format.*
+*.backup
+*.bak
+*.tmp
+*.temp
+
+# Pre-commit
+.pre-commit-config.yaml
+
+# Local configuration
+.prettierrc.local
+.eslintrc.local.json
+.flake8.local

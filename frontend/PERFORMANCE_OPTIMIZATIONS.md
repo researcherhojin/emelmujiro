@@ -106,7 +106,9 @@ Performance budgets configured for:
 // App.tsx - Enhanced lazy loading
 const SEOHelmet = lazy(() => import('./components/common/SEOHelmet'));
 const StructuredData = lazy(() => import('./components/common/StructuredData'));
-const WebVitalsDashboard = lazy(() => import('./components/common/WebVitalsDashboard'));
+const WebVitalsDashboard = lazy(
+  () => import('./components/common/WebVitalsDashboard')
+);
 ```
 
 ### Cache Implementation
@@ -173,7 +175,7 @@ initPerformanceMonitoring({
 
 ## Build Results
 
-✅ Build successful with 4KB reduction in main bundle  
+✅ Build successful with 4KB reduction in main bundle
 ✅ All optimizations applied without breaking existing functionality
 ✅ Performance monitoring active in development mode
 ✅ Production build optimized with 10% sampling for metrics

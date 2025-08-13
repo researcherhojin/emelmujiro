@@ -11,4 +11,4 @@ REACT_APP_SITE_URL=https://yourdomain.com
 REACT_APP_CONTACT_EMAIL=researcherhojin@gmail.com
 
 # 개발 모드 설정
-REACT_APP_DEBUG=true 
+REACT_APP_DEBUG=true

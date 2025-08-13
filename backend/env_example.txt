@@ -35,4 +35,4 @@ CSRF_COOKIE_AGE=3600
 ADMIN_EMAIL=researcherhojin@gmail.com
 
 # 외부 API (필요시)
-GITHUB_API_TOKEN=your-github-token 
+GITHUB_API_TOKEN=your-github-token

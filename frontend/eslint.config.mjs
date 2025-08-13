@@ -97,7 +97,12 @@ export default [
 
   // Test files configuration
   {
-    files: ['**/__tests__/**/*', '**/*.test.*', '**/__mocks__/**/*', '**/*.spec.*'],
+    files: [
+      '**/__tests__/**/*',
+      '**/*.test.*',
+      '**/__mocks__/**/*',
+      '**/*.spec.*',
+    ],
     plugins: {
       'testing-library': testingLibraryPlugin,
       jest: jestPlugin,
