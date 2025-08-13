@@ -5,19 +5,21 @@ import EmojiPicker from '../EmojiPicker';
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    div: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <div>{children}</div>
+    ),
   },
-  AnimatePresence: ({ children }: any) => children,
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock lucide-react icons
 jest.mock('lucide-react', () => ({
-  Search: ({ className }: any) => (
+  Search: ({ className }: { className?: string }) => (
     <div data-testid="search-icon" className={className}>
       Search
     </div>
   ),
-  X: ({ className }: any) => (
+  X: ({ className }: { className?: string }) => (
     <div data-testid="x-icon" className={className}>
       X
     </div>
@@ -133,13 +135,12 @@ describe.skip('EmojiPicker', () => {
   });
 
   it('highlights active category', () => {
-    const { container } = render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
+    render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
     // First category button should be active by default
-    const categoryButtons = container.querySelectorAll('button');
-    const smileyButton = Array.from(categoryButtons).find(btn => btn.textContent?.includes('표정'));
+    const smileyButton = screen.getByRole('button', { name: '표정' });
 
-    expect(smileyButton?.className).toContain('bg-blue-100');
+    expect(smileyButton.className).toContain('bg-blue-100');
   });
 
   it('handles switching to objects category', () => {
@@ -207,16 +208,19 @@ describe.skip('EmojiPicker', () => {
   });
 
   it('applies hover effect to emoji buttons', () => {
-    const { container } = render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
+    render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const emojiButtons = container.querySelectorAll('.hover\\:bg-gray-100');
-    expect(emojiButtons.length).toBeGreaterThan(0);
+    // Check that emoji buttons exist
+    const emojiButton = screen.getByText('😀');
+    expect(emojiButton.className).toContain('hover:bg-gray-100');
   });
 
   it('uses grid layout for emoji display', () => {
-    const { container } = render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
+    render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const emojiGrid = container.querySelector('.grid.grid-cols-8');
-    expect(emojiGrid).toBeInTheDocument();
+    // Check that emojis are displayed in a grid
+    const emoji = screen.getByText('😀');
+    const emojiContainer = emoji.parentElement?.parentElement;
+    expect(emojiContainer?.className).toContain('grid');
   });
 });

@@ -129,12 +129,38 @@ jest.mock('../../../contexts/ChatContext', () => ({
     isConnected: true,
     agentName: 'Support Agent',
     agentAvailable: true,
+    businessHours: { isOpen: true, openTime: '09:00', closeTime: '18:00' },
     sendMessage: jest.fn(),
     sendFile: jest.fn(),
     clearMessages: jest.fn(),
     exportChat: jest.fn(),
+    startTyping: jest.fn(),
+    stopTyping: jest.fn(),
+    closeChat: jest.fn(),
+    toggleMinimize: jest.fn(),
+    isMinimized: false,
   }),
 }));
+
+// Helper to create complete mock context
+const createMockChatContext = (overrides = {}) => ({
+  messages: [],
+  isTyping: false,
+  isConnected: true,
+  agentName: 'Support Agent',
+  agentAvailable: true,
+  businessHours: { isOpen: true, openTime: '09:00', closeTime: '18:00' },
+  sendMessage: jest.fn(),
+  sendFile: jest.fn(),
+  clearMessages: jest.fn(),
+  exportChat: jest.fn(),
+  startTyping: jest.fn(),
+  stopTyping: jest.fn(),
+  closeChat: jest.fn(),
+  toggleMinimize: jest.fn(),
+  isMinimized: false,
+  ...overrides,
+});
 
 describe('ChatWindow', () => {
   beforeEach(() => {
@@ -156,18 +182,9 @@ describe('ChatWindow', () => {
 
   it('should handle close button click', () => {
     const closeChat = jest.fn();
-    jest.spyOn(require('../../../contexts/ChatContext'), 'useChatContext').mockReturnValue({
-      messages: [],
-      isTyping: false,
-      isConnected: true,
-      agentName: 'Support Agent',
-      agentAvailable: true,
-      sendMessage: jest.fn(),
-      sendFile: jest.fn(),
-      clearMessages: jest.fn(),
-      exportChat: jest.fn(),
-      closeChat,
-    });
+    jest
+      .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+      .mockReturnValue(createMockChatContext({ closeChat }));
 
     render(<ChatWindow />);
 
@@ -179,18 +196,9 @@ describe('ChatWindow', () => {
 
   it('should handle minimize/maximize toggle', () => {
     const toggleMinimize = jest.fn();
-    jest.spyOn(require('../../../contexts/ChatContext'), 'useChatContext').mockReturnValue({
-      messages: [],
-      isTyping: false,
-      isConnected: true,
-      agentName: 'Support Agent',
-      agentAvailable: true,
-      sendMessage: jest.fn(),
-      sendFile: jest.fn(),
-      clearMessages: jest.fn(),
-      exportChat: jest.fn(),
-      toggleMinimize,
-    });
+    jest
+      .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+      .mockReturnValue(createMockChatContext({ toggleMinimize }));
 
     render(<ChatWindow />);
 
@@ -201,18 +209,9 @@ describe('ChatWindow', () => {
   });
 
   it('should hide content when minimized', () => {
-    jest.spyOn(require('../../../contexts/ChatContext'), 'useChatContext').mockReturnValue({
-      messages: [],
-      isTyping: false,
-      isConnected: true,
-      agentName: 'Support Agent',
-      agentAvailable: true,
-      sendMessage: jest.fn(),
-      sendFile: jest.fn(),
-      clearMessages: jest.fn(),
-      exportChat: jest.fn(),
-      isMinimized: true,
-    });
+    jest
+      .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+      .mockReturnValue(createMockChatContext({ isMinimized: true }));
 
     render(<ChatWindow />);
 
@@ -221,18 +220,9 @@ describe('ChatWindow', () => {
   });
 
   it('should show maximize button when minimized', () => {
-    jest.spyOn(require('../../../contexts/ChatContext'), 'useChatContext').mockReturnValue({
-      messages: [],
-      isTyping: false,
-      isConnected: true,
-      agentName: 'Support Agent',
-      agentAvailable: true,
-      sendMessage: jest.fn(),
-      sendFile: jest.fn(),
-      clearMessages: jest.fn(),
-      exportChat: jest.fn(),
-      isMinimized: true,
-    });
+    jest
+      .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+      .mockReturnValue(createMockChatContext({ isMinimized: true }));
 
     render(<ChatWindow />);
 
@@ -249,12 +239,14 @@ describe('ChatWindow', () => {
   });
 
   it('should send message on button click', () => {
-    const { container } = render(<ChatWindow />);
+    render(<ChatWindow />);
 
     const input = screen.getByPlaceholderText('chat.inputPlaceholder');
     fireEvent.change(input, { target: { value: 'Test message' } });
 
-    const sendButton = container.querySelector('button[type="submit"]');
+    // Find send button by its icon text
+    const sendIcon = screen.getByText('Send');
+    const sendButton = sendIcon.closest('button');
     if (sendButton) {
       fireEvent.click(sendButton);
     }
@@ -278,10 +270,13 @@ describe('ChatWindow', () => {
   });
 
   it('should not send empty messages', () => {
-    const { container } = render(<ChatWindow />);
+    render(<ChatWindow />);
 
     const input = screen.getByPlaceholderText('chat.inputPlaceholder');
-    const sendButton = container.querySelector('button[type="submit"]');
+
+    // Find send button by its icon text
+    const sendIcon = screen.getByText('Send');
+    const sendButton = sendIcon.closest('button');
 
     // Try to send empty message
     if (sendButton) {
@@ -332,7 +327,8 @@ describe('ChatWindow', () => {
     fireEvent.click(attachButton);
 
     const file = new File(['test'], 'test.txt', { type: 'text/plain' });
-    const input = screen.getByTestId('file-upload').querySelector('input[type="file"]');
+    const fileUploadDiv = screen.getByTestId('file-upload');
+    const input = fileUploadDiv.querySelector('input[type="file"]');
 
     if (input) {
       fireEvent.change(input, { target: { files: [file] } });
