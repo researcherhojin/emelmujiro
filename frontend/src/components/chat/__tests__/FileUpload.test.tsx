@@ -5,54 +5,59 @@ import FileUpload from '../FileUpload';
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    button: ({ children, onClick, ...props }: any) => (
-      <button onClick={onClick} {...props}>
-        {children}
-      </button>
+    div: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <div>{children}</div>
     ),
+    button: ({
+      children,
+      onClick,
+    }: {
+      children?: React.ReactNode;
+      onClick?: () => void;
+      [key: string]: unknown;
+    }) => <button onClick={onClick}>{children}</button>,
   },
-  AnimatePresence: ({ children }: any) => children,
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock lucide-react icons
 jest.mock('lucide-react', () => ({
-  Upload: ({ className }: any) => (
+  Upload: ({ className }: { className?: string }) => (
     <div data-testid="upload-icon" className={className}>
       Upload
     </div>
   ),
-  File: ({ className }: any) => (
+  File: ({ className }: { className?: string }) => (
     <div data-testid="file-icon" className={className}>
       File
     </div>
   ),
-  X: ({ className }: any) => (
+  X: ({ className }: { className?: string }) => (
     <div data-testid="x-icon" className={className}>
       X
     </div>
   ),
-  CheckCircle: ({ className }: any) => (
+  CheckCircle: ({ className }: { className?: string }) => (
     <div data-testid="check-icon" className={className}>
       Check
     </div>
   ),
-  FileText: ({ className }: any) => (
+  FileText: ({ className }: { className?: string }) => (
     <div data-testid="filetext-icon" className={className}>
       FileText
     </div>
   ),
-  FileImage: ({ className }: any) => (
+  FileImage: ({ className }: { className?: string }) => (
     <div data-testid="fileimage-icon" className={className}>
       FileImage
     </div>
   ),
-  FileVideo: ({ className }: any) => (
+  FileVideo: ({ className }: { className?: string }) => (
     <div data-testid="filevideo-icon" className={className}>
       FileVideo
     </div>
   ),
-  FileAudio: ({ className }: any) => (
+  FileAudio: ({ className }: { className?: string }) => (
     <div data-testid="fileaudio-icon" className={className}>
       FileAudio
     </div>

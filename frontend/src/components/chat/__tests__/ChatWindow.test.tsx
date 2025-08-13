@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ChatWindow from '../ChatWindow';
 
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
@@ -39,6 +38,9 @@ jest.mock('lucide-react', () => ({
   VolumeX: () => <span>VolumeX</span>,
   Bell: () => <span>Bell</span>,
   BellOff: () => <span>BellOff</span>,
+  AlertCircle: () => <span>AlertCircle</span>,
+  CheckCircle: () => <span>CheckCircle</span>,
+  Clock: () => <span>Clock</span>,
 }));
 
 // Mock child components
@@ -49,6 +51,11 @@ jest.mock('../MessageList', () => ({
       <div>Mock Message List</div>
     </div>
   ),
+}));
+
+jest.mock('../TypingIndicator', () => ({
+  __esModule: true,
+  default: () => <div data-testid="typing-indicator">Typing...</div>,
 }));
 
 jest.mock('../EmojiPicker', () => ({
@@ -69,23 +76,17 @@ jest.mock('../EmojiPicker', () => ({
 
 jest.mock('../FileUpload', () => ({
   __esModule: true,
-  default: ({
-    onFileSelect,
-    onClose,
-  }: {
-    onFileSelect: (file: File) => void;
-    onClose: () => void;
-  }) => (
+  default: ({ onUpload, onClose }: { onUpload?: (file: File) => void; onClose?: () => void }) => (
     <div data-testid="file-upload">
       <input
         type="file"
         onChange={e => {
-          if (e.target.files?.[0]) {
-            onFileSelect(e.target.files[0]);
+          if (e.target.files?.[0] && onUpload) {
+            onUpload(e.target.files[0]);
           }
         }}
       />
-      <button onClick={onClose}>Close</button>
+      {onClose && <button onClick={onClose}>Close</button>}
     </div>
   ),
 }));
@@ -152,6 +153,9 @@ jest.mock('../../../contexts/ChatContext', () => ({
     isMinimized: false,
   }),
 }));
+
+// Import ChatWindow after all mocks are defined
+import ChatWindow from '../ChatWindow';
 
 // Helper to create complete mock context
 const createMockChatContext = (overrides = {}) => ({
