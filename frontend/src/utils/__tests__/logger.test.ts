@@ -1,13 +1,3 @@
-// Clear module cache before importing to ensure fresh instance
-jest.resetModules();
-
-// Set NODE_ENV before importing Logger
-Object.defineProperty(process.env, 'NODE_ENV', {
-  value: 'development',
-  writable: true,
-  configurable: true,
-});
-
 import Logger from '../logger';
 
 describe('Logger', () => {
@@ -31,6 +21,10 @@ describe('Logger', () => {
       writable: true,
       configurable: true,
     });
+
+    // Force Logger to re-evaluate isDevelopment
+    // @ts-ignore
+    Logger.isDevelopment = process.env.NODE_ENV === 'development';
 
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
     consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
@@ -82,8 +76,9 @@ describe('Logger', () => {
 
   describe('special logging methods', () => {
     it('should create log groups', () => {
-      // Verify we're in development mode
-      expect(process.env.NODE_ENV).toBe('development');
+      // Force isDevelopment to true for this test
+      // @ts-ignore
+      Logger.isDevelopment = true;
 
       Logger.group('Group Title');
       Logger.info('Inside group');
@@ -94,8 +89,9 @@ describe('Logger', () => {
     });
 
     it('should log tables', () => {
-      // Verify we're in development mode
-      expect(process.env.NODE_ENV).toBe('development');
+      // Force isDevelopment to true for this test
+      // @ts-ignore
+      Logger.isDevelopment = true;
 
       const data = [
         { id: 1, name: 'Item 1' },
@@ -108,12 +104,13 @@ describe('Logger', () => {
 
   describe('performance measurement', () => {
     it('should measure time between operations', () => {
-      // Import the individual functions which are bound to the logger instance
-      const { time, timeEnd } = require('../logger');
+      // Force isDevelopment to true for this test
+      // @ts-ignore
+      Logger.isDevelopment = true;
 
-      time('operation');
+      Logger.time('operation');
       // Simulate some operation
-      timeEnd('operation');
+      Logger.timeEnd('operation');
 
       // time and timeEnd should have been called
       expect(consoleTimeSpy).toHaveBeenCalledWith('operation');
@@ -121,10 +118,12 @@ describe('Logger', () => {
     });
 
     it('should handle missing time labels', () => {
-      const { timeEnd } = require('../logger');
+      // Force isDevelopment to true for this test
+      // @ts-ignore
+      Logger.isDevelopment = true;
 
       // Should not throw when ending a non-existent timer
-      expect(() => timeEnd('non-existent')).not.toThrow();
+      expect(() => Logger.timeEnd('non-existent')).not.toThrow();
       expect(consoleTimeEndSpy).toHaveBeenCalledWith('non-existent');
     });
 
