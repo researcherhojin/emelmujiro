@@ -53,7 +53,10 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = memo(({ stat, index }) => (
-  <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+  <div
+    key={index}
+    className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+  >
     <div
       className={`flex items-center justify-center w-12 h-12 rounded-lg bg-gray-100 mb-4 mx-auto ${stat.color}`}
     >
@@ -74,7 +77,10 @@ interface GoalCardProps {
 }
 
 const GoalCard: React.FC<GoalCardProps> = memo(({ goal, index }) => (
-  <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+  <div
+    key={index}
+    className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+  >
     <div className="flex items-start space-x-4">
       <div className="flex-shrink-0 bg-gray-50 rounded-lg p-3">{goal.icon}</div>
       <div>
@@ -93,9 +99,14 @@ interface WorkStyleCardProps {
 }
 
 const WorkStyleCard: React.FC<WorkStyleCardProps> = memo(({ style, index }) => (
-  <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+  <div
+    key={index}
+    className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+  >
     <div className="flex items-start space-x-4">
-      <div className="flex-shrink-0 bg-gray-50 rounded-lg p-3">{style.icon}</div>
+      <div className="flex-shrink-0 bg-gray-50 rounded-lg p-3">
+        {style.icon}
+      </div>
       <div>
         <h4 className="text-xl font-bold text-gray-900 mb-2">{style.title}</h4>
         <p className="text-gray-600 leading-relaxed">{style.description}</p>
@@ -111,21 +122,28 @@ interface SkillGroupCardProps {
   index: number;
 }
 
-const SkillGroupCard: React.FC<SkillGroupCardProps> = memo(({ skillGroup, index }) => (
-  <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-    <h4 className="text-xl font-bold text-gray-900 mb-4">{skillGroup.category}</h4>
-    <div className="flex flex-wrap gap-2">
-      {skillGroup.items.map((skill, skillIndex) => (
-        <span
-          key={skillIndex}
-          className={`px-3 py-1 rounded-full text-sm font-medium ${skillGroup.color}`}
-        >
-          {skill}
-        </span>
-      ))}
+const SkillGroupCard: React.FC<SkillGroupCardProps> = memo(
+  ({ skillGroup, index }) => (
+    <div
+      key={index}
+      className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+    >
+      <h4 className="text-xl font-bold text-gray-900 mb-4">
+        {skillGroup.category}
+      </h4>
+      <div className="flex flex-wrap gap-2">
+        {skillGroup.items.map((skill, skillIndex) => (
+          <span
+            key={skillIndex}
+            className={`px-3 py-1 rounded-full text-sm font-medium ${skillGroup.color}`}
+          >
+            {skill}
+          </span>
+        ))}
+      </div>
     </div>
-  </div>
-));
+  )
+);
 
 SkillGroupCard.displayName = 'SkillGroupCard';
 
@@ -134,22 +152,32 @@ interface CertificationCardProps {
   index: number;
 }
 
-const CertificationCard: React.FC<CertificationCardProps> = memo(({ cert, index }) => (
-  <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-    <div className="flex items-start space-x-4">
-      <div className="flex-shrink-0 bg-green-50 rounded-lg p-3">
-        <Award className="w-6 h-6 text-green-600" />
-      </div>
-      <div>
-        <h4 className="text-lg font-bold text-gray-900 mb-1">{cert.name}</h4>
-        <p className="text-gray-600">
-          {cert.issuer && <span>{cert.issuer}</span>}
-          {cert.score && <span className="text-gray-700 font-semibold"> • {cert.score}</span>}
-        </p>
+const CertificationCard: React.FC<CertificationCardProps> = memo(
+  ({ cert, index }) => (
+    <div
+      key={index}
+      className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+    >
+      <div className="flex items-start space-x-4">
+        <div className="flex-shrink-0 bg-green-50 rounded-lg p-3">
+          <Award className="w-6 h-6 text-green-600" />
+        </div>
+        <div>
+          <h4 className="text-lg font-bold text-gray-900 mb-1">{cert.name}</h4>
+          <p className="text-gray-600">
+            {cert.issuer && <span>{cert.issuer}</span>}
+            {cert.score && (
+              <span className="text-gray-700 font-semibold">
+                {' '}
+                • {cert.score}
+              </span>
+            )}
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-));
+  )
+);
 
 CertificationCard.displayName = 'CertificationCard';
 
@@ -185,7 +213,8 @@ const AboutSection: React.FC = memo(() => {
     {
       icon: <Target className="w-8 h-8 text-gray-700" />,
       title: '대체 불가능한 경쟁력 구축',
-      description: 'AI Researcher로써 지속적인 연구와 혁신을 통해 독보적인 전문성을 쌓고 있습니다.',
+      description:
+        'AI Researcher로써 지속적인 연구와 혁신을 통해 독보적인 전문성을 쌓고 있습니다.',
     },
     {
       icon: <Heart className="w-8 h-8 text-red-600" />,
@@ -199,17 +228,20 @@ const AboutSection: React.FC = memo(() => {
     {
       icon: <Users className="w-8 h-8 text-green-600" />,
       title: '소통과 협업',
-      description: '다양한 사람들과의 원활한 소통을 통해 시너지를 만들어내는 것을 즐깁니다.',
+      description:
+        '다양한 사람들과의 원활한 소통을 통해 시너지를 만들어내는 것을 즐깁니다.',
     },
     {
       icon: <Brain className="w-8 h-8 text-gray-700" />,
       title: '창의적 문제 해결',
-      description: '창의적인 아이디어로 문제를 해결하며 성장하는 과정에서 보람을 느낍니다.',
+      description:
+        '창의적인 아이디어로 문제를 해결하며 성장하는 과정에서 보람을 느낍니다.',
     },
     {
       icon: <TrendingUp className="w-8 h-8 text-gray-700" />,
       title: '트렌드 선도',
-      description: '인공지능 트렌드를 빠르게 캐치하고 새로운 지식을 적극적으로 공유합니다.',
+      description:
+        '인공지능 트렌드를 빠르게 캐치하고 새로운 지식을 적극적으로 공유합니다.',
     },
   ];
 
@@ -231,7 +263,14 @@ const AboutSection: React.FC = memo(() => {
     },
     {
       category: 'ML / DL / Data Engineering',
-      items: ['PyTorch', 'TensorFlow', 'LangChain', 'Scikit-Learn', 'Huggingface', 'Spotfire'],
+      items: [
+        'PyTorch',
+        'TensorFlow',
+        'LangChain',
+        'Scikit-Learn',
+        'Huggingface',
+        'Spotfire',
+      ],
       color: 'bg-green-100 text-green-800',
     },
     {
@@ -259,11 +298,17 @@ const AboutSection: React.FC = memo(() => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">About Me</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            About Me
+          </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            삼성전자, SK, LG 등 다수의 대기업 및 공공기관에서 Deep Learning과 LLM 교육과 연구를
-            수행하는
-            <span className="font-semibold text-gray-900"> 에멜무지로 대표 이호진</span>입니다.
+            삼성전자, SK, LG 등 다수의 대기업 및 공공기관에서 Deep Learning과
+            LLM 교육과 연구를 수행하는
+            <span className="font-semibold text-gray-900">
+              {' '}
+              에멜무지로 대표 이호진
+            </span>
+            입니다.
           </p>
         </motion.div>
 
@@ -332,7 +377,11 @@ const AboutSection: React.FC = memo(() => {
           </h3>
           <div className="grid md:grid-cols-3 gap-8">
             {skills.map((skillGroup, index) => (
-              <SkillGroupCard key={index} skillGroup={skillGroup} index={index} />
+              <SkillGroupCard
+                key={index}
+                skillGroup={skillGroup}
+                index={index}
+              />
             ))}
           </div>
         </motion.div>
@@ -367,8 +416,9 @@ const AboutSection: React.FC = memo(() => {
             "비전공자도 쉽게 입문할 수 있는 실무 중심의 AI 교육을 추구합니다"
           </h3>
           <p className="text-lg md:text-xl opacity-90 leading-relaxed max-w-4xl mx-auto">
-            복잡한 AI 기술을 누구나 이해할 수 있도록 쉽게 풀어내고, 실제 업무에 바로 적용할 수 있는
-            실용적인 교육을 제공하는 것이 저의 목표입니다. 함께 AI의 무한한 가능성을 탐험해보세요.
+            복잡한 AI 기술을 누구나 이해할 수 있도록 쉽게 풀어내고, 실제 업무에
+            바로 적용할 수 있는 실용적인 교육을 제공하는 것이 저의 목표입니다.
+            함께 AI의 무한한 가능성을 탐험해보세요.
           </p>
         </motion.div>
       </div>

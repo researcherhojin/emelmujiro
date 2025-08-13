@@ -1,12 +1,16 @@
 import React from 'react';
 
 // Mock HelmetProvider
-export const HelmetProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const HelmetProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return <>{children}</>;
 };
 
 // Mock Helmet
-export const Helmet: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+export const Helmet: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => {
   return <>{children}</>;
 };
 

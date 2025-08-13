@@ -1,4 +1,8 @@
-import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  AxiosInstance,
+  AxiosError,
+  InternalAxiosRequestConfig,
+} from 'axios';
 import { BlogPost, ContactFormData } from '../types';
 import { ErrorResponse } from '../types/api.types';
 import logger from '../utils/logger';
@@ -52,7 +56,11 @@ interface CustomAxiosError extends AxiosError {
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Security: Always use HTTPS in production
-    if (process.env.NODE_ENV === 'production' && config.url && config.url.startsWith('http://')) {
+    if (
+      process.env.NODE_ENV === 'production' &&
+      config.url &&
+      config.url.startsWith('http://')
+    ) {
       logger.warn('Insecure HTTP detected in production, upgrading to HTTPS');
       config.url = config.url.replace('http://', 'https://');
     }
@@ -61,7 +69,9 @@ axiosInstance.interceptors.request.use(
       config.baseURL &&
       config.baseURL.startsWith('http://')
     ) {
-      logger.warn('Insecure HTTP in baseURL detected in production, upgrading to HTTPS');
+      logger.warn(
+        'Insecure HTTP in baseURL detected in production, upgrading to HTTPS'
+      );
       config.baseURL = config.baseURL.replace('http://', 'https://');
     }
 
@@ -83,7 +93,7 @@ axiosInstance.interceptors.request.use(
 
 // Response interceptor
 axiosInstance.interceptors.response.use(
-  response => {
+  (response) => {
     // Development logging can be enabled if needed
     return response;
   },
@@ -143,7 +153,8 @@ interface Project {
 export const api = {
   // Projects
   getProjects: () => axiosInstance.get<Project[]>('projects/'),
-  createProject: (data: Partial<Project>) => axiosInstance.post<Project>('projects/', data),
+  createProject: (data: Partial<Project>) =>
+    axiosInstance.post<Project>('projects/', data),
 
   // Blog
   getBlogPosts: (page: number = 1, pageSize?: number) => {
@@ -166,7 +177,9 @@ export const api = {
   },
   getBlogPost: (id: number | string) => {
     if (USE_MOCK_API) {
-      const post = mockBlogPosts.find(p => p.id === Number(id) || p.slug === id);
+      const post = mockBlogPosts.find(
+        (p) => p.id === Number(id) || p.slug === id
+      );
       if (!post) {
         return Promise.reject({
           response: { status: 404, data: { message: 'Post not found' } },
@@ -185,10 +198,13 @@ export const api = {
   searchBlogPosts: (query: string) => {
     if (USE_MOCK_API) {
       const filtered = mockBlogPosts.filter(
-        post =>
+        (post) =>
           post.title.toLowerCase().includes(query.toLowerCase()) ||
           post.content.toLowerCase().includes(query.toLowerCase()) ||
-          (post.tags && post.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())))
+          (post.tags &&
+            post.tags.some((tag) =>
+              tag.toLowerCase().includes(query.toLowerCase())
+            ))
       );
       return Promise.resolve({
         data: paginateMockData(filtered, 1, 10),
@@ -198,7 +214,9 @@ export const api = {
         config: {} as InternalAxiosRequestConfig,
       });
     }
-    return axiosInstance.get<PaginatedResponse<BlogPost>>(`blog-posts/?search=${query}`);
+    return axiosInstance.get<PaginatedResponse<BlogPost>>(
+      `blog-posts/?search=${query}`
+    );
   },
   getBlogCategories: () => {
     if (USE_MOCK_API) {
@@ -233,7 +251,8 @@ export const api = {
       // Add specific handling for contact errors
       const axiosError = error as CustomAxiosError;
       if (axiosError.response?.status === 429) {
-        axiosError.userMessage = '너무 많은 문의를 보내셨습니다. 1시간 후에 다시 시도해주세요.';
+        axiosError.userMessage =
+          '너무 많은 문의를 보내셨습니다. 1시간 후에 다시 시도해주세요.';
       }
       throw axiosError;
     }
@@ -274,10 +293,12 @@ export const blogService = {
   getPost: api.getBlogPost,
   searchPosts: api.searchBlogPosts,
   getCategories: api.getBlogCategories,
-  createPost: (data: Partial<BlogPost>) => axiosInstance.post<BlogPost>('blog-posts/', data),
+  createPost: (data: Partial<BlogPost>) =>
+    axiosInstance.post<BlogPost>('blog-posts/', data),
   updatePost: (id: number | string, data: Partial<BlogPost>) =>
     axiosInstance.put<BlogPost>(`blog-posts/${id}/`, data),
-  deletePost: (id: number | string) => axiosInstance.delete(`blog-posts/${id}/`),
+  deletePost: (id: number | string) =>
+    axiosInstance.delete(`blog-posts/${id}/`),
 };
 
 // Export axios instance for custom requests

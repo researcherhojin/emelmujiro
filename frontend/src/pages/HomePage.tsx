@@ -4,7 +4,9 @@ import { PageLoading } from '../components/common/UnifiedLoading';
 
 // Lazy load sections for better performance
 const HeroSection = lazy(() => import('../components/sections/HeroSection'));
-const ServicesSection = lazy(() => import('../components/sections/ServicesSection'));
+const ServicesSection = lazy(
+  () => import('../components/sections/ServicesSection')
+);
 const LogosSection = lazy(() => import('../components/sections/LogosSection'));
 const CTASection = lazy(() => import('../components/sections/CTASection'));
 

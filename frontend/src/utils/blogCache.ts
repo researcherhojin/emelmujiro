@@ -44,10 +44,10 @@ export async function cacheBlogPost(post: BlogPost): Promise<boolean> {
 
     // Store in localStorage
     const existingCache = getCachedPosts();
-    const updatedCache = [cachedPost, ...existingCache.filter(p => p.id !== post.id)].slice(
-      0,
-      MAX_CACHED_POSTS
-    );
+    const updatedCache = [
+      cachedPost,
+      ...existingCache.filter((p) => p.id !== post.id),
+    ].slice(0, MAX_CACHED_POSTS);
 
     localStorage.setItem(CACHE_KEY, JSON.stringify(updatedCache));
 
@@ -82,7 +82,7 @@ export function getCachedPosts(): CachedBlogPost[] {
     const now = Date.now();
 
     // Filter out expired posts
-    return posts.filter(post => {
+    return posts.filter((post) => {
       const isExpired = now - post.cachedAt > CACHE_EXPIRY;
       return !isExpired;
     });
@@ -95,7 +95,7 @@ export function getCachedPosts(): CachedBlogPost[] {
 // Get a specific cached blog post
 export function getCachedPost(postId: string): CachedBlogPost | null {
   const cachedPosts = getCachedPosts();
-  const post = cachedPosts.find(p => p.id === postId);
+  const post = cachedPosts.find((p) => p.id === postId);
 
   if (post) {
     // Update last accessed time
@@ -110,7 +110,7 @@ export function getCachedPost(postId: string): CachedBlogPost | null {
 export function updateLastAccessedTime(postId: string): void {
   try {
     const cachedPosts = getCachedPosts();
-    const updatedPosts = cachedPosts.map(post =>
+    const updatedPosts = cachedPosts.map((post) =>
       post.id === postId ? { ...post, lastAccessed: Date.now() } : post
     );
 
@@ -124,7 +124,7 @@ export function updateLastAccessedTime(postId: string): void {
 export function removeCachedPost(postId: string): boolean {
   try {
     const cachedPosts = getCachedPosts();
-    const updatedPosts = cachedPosts.filter(post => post.id !== postId);
+    const updatedPosts = cachedPosts.filter((post) => post.id !== postId);
 
     // Check if any post was actually removed
     if (cachedPosts.length === updatedPosts.length) {
@@ -196,7 +196,9 @@ export function isBlogPostCached(postId: string): boolean {
 // Get cached posts sorted by last accessed (most recent first)
 export function getRecentlyAccessedPosts(limit: number = 10): CachedBlogPost[] {
   const cachedPosts = getCachedPosts();
-  return cachedPosts.sort((a, b) => b.lastAccessed - a.lastAccessed).slice(0, limit);
+  return cachedPosts
+    .sort((a, b) => b.lastAccessed - a.lastAccessed)
+    .slice(0, limit);
 }
 
 // Clean up old cached posts based on usage
@@ -205,7 +207,9 @@ export function cleanupBlogCache(): void {
   const now = Date.now();
 
   // Remove posts older than cache expiry
-  const validPosts = cachedPosts.filter(post => now - post.cachedAt <= CACHE_EXPIRY);
+  const validPosts = cachedPosts.filter(
+    (post) => now - post.cachedAt <= CACHE_EXPIRY
+  );
 
   // If still over limit, remove least recently accessed
   let finalPosts = validPosts;

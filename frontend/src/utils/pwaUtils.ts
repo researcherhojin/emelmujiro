@@ -140,7 +140,8 @@ export function isPWAInstalled(): boolean {
     return (
       (standaloneMatch && standaloneMatch.matches) ||
       (fullscreenMatch && fullscreenMatch.matches) ||
-      (window.navigator as Navigator & { standalone?: boolean }).standalone === true
+      (window.navigator as Navigator & { standalone?: boolean }).standalone ===
+        true
     );
   } catch {
     // If matchMedia throws an error, return false
@@ -155,7 +156,7 @@ export function isInstallPromptAvailable(): boolean {
 
 // Initialize PWA install prompt
 export function initializeInstallPrompt(): void {
-  window.addEventListener('beforeinstallprompt', e => {
+  window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e as BeforeInstallPromptEvent;
 
@@ -177,7 +178,9 @@ export function initializeInstallPrompt(): void {
 }
 
 // Trigger install prompt
-export async function triggerInstallPrompt(): Promise<'accepted' | 'dismissed' | 'not-available'> {
+export async function triggerInstallPrompt(): Promise<
+  'accepted' | 'dismissed' | 'not-available'
+> {
   if (!deferredPrompt) {
     return 'not-available';
   }
@@ -223,13 +226,17 @@ export async function requestWakeLock(): Promise<boolean> {
         request: (type: string) => Promise<WakeLockSentinel>;
       };
     };
-    wakeLock = (await (navigator as NavigatorWithWakeLock).wakeLock?.request('screen')) || null;
+    wakeLock =
+      (await (navigator as NavigatorWithWakeLock).wakeLock?.request(
+        'screen'
+      )) || null;
 
     if (wakeLock) {
       // WakeLockSentinel has onrelease event handler, not addEventListener
-      (wakeLock as WakeLockSentinel & { onrelease?: () => void }).onrelease = () => {
-        logger.info('Screen wake lock released');
-      };
+      (wakeLock as WakeLockSentinel & { onrelease?: () => void }).onrelease =
+        () => {
+          logger.info('Screen wake lock released');
+        };
 
       logger.info('Screen wake lock acquired');
       return true;
@@ -288,7 +295,8 @@ export function getDeviceCapabilities(): DeviceCapabilities {
     supportsWebShare: isWebShareSupported(),
     supportsWakeLock: isWakeLockSupported(),
     supportsNotifications: 'Notification' in window,
-    supportsBackgroundSync: 'serviceWorker' in navigator && 'SyncManager' in window,
+    supportsBackgroundSync:
+      'serviceWorker' in navigator && 'SyncManager' in window,
     isInstalled: isPWAInstalled(),
     installPromptAvailable: isInstallPromptAvailable(),
     isOnline: navigator.onLine,
@@ -330,15 +338,21 @@ export interface PerformanceMetrics {
 
 // Get performance metrics
 export function getPerformanceMetrics(): PerformanceMetrics {
-  const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+  const navigation = performance.getEntriesByType(
+    'navigation'
+  )[0] as PerformanceNavigationTiming;
   const paint = performance.getEntriesByType('paint');
 
-  const firstPaint = paint.find(entry => entry.name === 'first-paint');
-  const firstContentfulPaint = paint.find(entry => entry.name === 'first-contentful-paint');
+  const firstPaint = paint.find((entry) => entry.name === 'first-paint');
+  const firstContentfulPaint = paint.find(
+    (entry) => entry.name === 'first-contentful-paint'
+  );
 
   return {
     loadTime: navigation.loadEventEnd - navigation.loadEventStart,
-    domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+    domContentLoaded:
+      navigation.domContentLoadedEventEnd -
+      navigation.domContentLoadedEventStart,
     firstPaint: firstPaint?.startTime,
     firstContentfulPaint: firstContentfulPaint?.startTime,
     // LCP would be tracked separately via PerformanceObserver
@@ -400,7 +414,9 @@ export function checkPWASupport(): {
 }
 
 // Register service worker
-export async function registerServiceWorker(swPath = '/service-worker-enhanced.js'): Promise<ServiceWorkerRegistration | null> {
+export async function registerServiceWorker(
+  swPath = '/service-worker-enhanced.js'
+): Promise<ServiceWorkerRegistration | null> {
   if ('serviceWorker' in navigator) {
     try {
       const registration = await navigator.serviceWorker.register(swPath);
@@ -419,7 +435,9 @@ export async function unregisterServiceWorker(): Promise<boolean> {
   if ('serviceWorker' in navigator) {
     try {
       const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map(registration => registration.unregister()));
+      await Promise.all(
+        registrations.map((registration) => registration.unregister())
+      );
       return true;
     } catch (error) {
       logger.error('Service Worker unregistration failed:', error);
@@ -472,7 +490,9 @@ export function getPWADisplayMode(): string {
 }
 
 // Request notification permission
-export async function requestNotificationPermission(): Promise<'default' | 'granted' | 'denied'> {
+export async function requestNotificationPermission(): Promise<
+  'default' | 'granted' | 'denied'
+> {
   if ('Notification' in window) {
     return await Notification.requestPermission();
   }

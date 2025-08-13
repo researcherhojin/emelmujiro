@@ -1,5 +1,10 @@
 import React, { lazy, Suspense, useEffect, memo } from 'react';
-import { createHashRouter, RouterProvider, useLocation, Outlet } from 'react-router-dom';
+import {
+  createHashRouter,
+  RouterProvider,
+  useLocation,
+  Outlet,
+} from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { BlogProvider } from './contexts/BlogContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -16,11 +21,15 @@ import './i18n';
 // Lazy load even more components for better code splitting
 const SEOHelmet = lazy(() => import('./components/common/SEOHelmet'));
 const StructuredData = lazy(() => import('./components/common/StructuredData'));
-const WebVitalsDashboard = lazy(() => import('./components/common/WebVitalsDashboard'));
+const WebVitalsDashboard = lazy(
+  () => import('./components/common/WebVitalsDashboard')
+);
 
 // Main page components - lazy load for better performance
 const HeroSection = lazy(() => import('./components/sections/HeroSection'));
-const ServicesSection = lazy(() => import('./components/sections/ServicesSection'));
+const ServicesSection = lazy(
+  () => import('./components/sections/ServicesSection')
+);
 const LogosSection = lazy(() => import('./components/sections/LogosSection'));
 const CTASection = lazy(() => import('./components/sections/CTASection'));
 
@@ -35,8 +44,12 @@ const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
 const NotFound = lazy(() => import('./components/common/NotFound'));
 
 // PWA Components
-const OfflineIndicator = lazy(() => import('./components/common/OfflineIndicator'));
-const NotificationPrompt = lazy(() => import('./components/common/NotificationPrompt'));
+const OfflineIndicator = lazy(
+  () => import('./components/common/OfflineIndicator')
+);
+const NotificationPrompt = lazy(
+  () => import('./components/common/NotificationPrompt')
+);
 const InstallPrompt = lazy(() => import('./components/common/InstallPrompt'));
 
 // Chat Components

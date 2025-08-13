@@ -15,7 +15,10 @@ describe('CareerSummarySection', () => {
     renderWithProviders(<CareerSummarySection />);
 
     // Check for experience years - updated to match actual content
-    expect(screen.getByText(/4년/)).toBeInTheDocument();
+    // Multiple elements contain "4년", so use getAllByText
+    const yearElements = screen.getAllByText(/4년/);
+    expect(yearElements.length).toBeGreaterThan(0);
+    expect(yearElements[0]).toBeInTheDocument();
   });
 
   it('shows key achievements', () => {

@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useCallback, memo, ChangeEvent, FormEvent } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  memo,
+  ChangeEvent,
+  FormEvent,
+} from 'react';
 import {
   ArrowLeft,
   Mail,
@@ -14,7 +21,12 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { registerBackgroundSync, SYNC_TAGS } from '../../utils/backgroundSync';
-import { escapeHtml, isValidEmail, isValidPhone, isWithinLength } from '../../utils/security';
+import {
+  escapeHtml,
+  isValidEmail,
+  isValidPhone,
+  isWithinLength,
+} from '../../utils/security';
 import SEOHelmet from '../common/SEOHelmet';
 import Loading from '../common/Loading';
 import logger from '../../utils/logger';
@@ -35,25 +47,29 @@ interface ContactIconProps {
   link?: string;
 }
 
-const ContactIcon: React.FC<ContactIconProps> = memo(({ icon, title, value, link }) => (
-  <div className="flex items-center space-x-4">
-    <div className="text-gray-600 dark:text-gray-400">{icon}</div>
-    <div>
-      <div className="text-sm text-gray-500 dark:text-gray-400">{title}</div>
-      {link ? (
-        <a
-          href={link}
-          className="text-lg font-medium text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-          aria-label={`${title}: ${value}`}
-        >
-          {value}
-        </a>
-      ) : (
-        <div className="text-lg font-medium text-gray-900 dark:text-white">{value}</div>
-      )}
+const ContactIcon: React.FC<ContactIconProps> = memo(
+  ({ icon, title, value, link }) => (
+    <div className="flex items-center space-x-4">
+      <div className="text-gray-600 dark:text-gray-400">{icon}</div>
+      <div>
+        <div className="text-sm text-gray-500 dark:text-gray-400">{title}</div>
+        {link ? (
+          <a
+            href={link}
+            className="text-lg font-medium text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            aria-label={`${title}: ${value}`}
+          >
+            {value}
+          </a>
+        ) : (
+          <div className="text-lg font-medium text-gray-900 dark:text-white">
+            {value}
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-));
+  )
+);
 
 ContactIcon.displayName = 'ContactIcon';
 
@@ -93,9 +109,11 @@ const ContactPage: React.FC = memo(() => {
   }, []);
 
   const handleInputChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    (
+      e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    ) => {
       const { name, value } = e.target;
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     },
     []
   );
@@ -166,7 +184,9 @@ const ContactPage: React.FC = memo(() => {
             await api.createContact(apiData);
 
             // Success - show success message
-            alert('문의가 성공적으로 전송되었습니다. 빠른 시일 내에 답변드리겠습니다.');
+            alert(
+              '문의가 성공적으로 전송되었습니다. 빠른 시일 내에 답변드리겠습니다.'
+            );
 
             // Clear form
             setFormData({
@@ -277,7 +297,8 @@ ${escapeHtml(formData.message)}
               <div className="flex items-center">
                 <WifiOff className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2" />
                 <p className="text-yellow-800 dark:text-yellow-200">
-                  현재 오프라인 상태입니다. 인터넷 연결이 복구되면 자동으로 문의가 전송됩니다.
+                  현재 오프라인 상태입니다. 인터넷 연결이 복구되면 자동으로
+                  문의가 전송됩니다.
                 </p>
               </div>
             </div>
@@ -287,7 +308,9 @@ ${escapeHtml(formData.message)}
             {/* Contact Info */}
             <div className="lg:col-span-1 space-y-8">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">문의하기</h1>
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                  문의하기
+                </h1>
                 <p className="text-lg text-gray-600 dark:text-gray-300">
                   프로젝트에 대해 상담하고 싶으신가요?
                   <br />
@@ -309,7 +332,13 @@ ${escapeHtml(formData.message)}
                   link="tel:010-7279-0380"
                 />
                 <ContactIcon
-                  icon={isOnline ? <Wifi className="w-5 h-5" /> : <WifiOff className="w-5 h-5" />}
+                  icon={
+                    isOnline ? (
+                      <Wifi className="w-5 h-5" />
+                    ) : (
+                      <WifiOff className="w-5 h-5" />
+                    )
+                  }
                   title="연결 상태"
                   value={isOnline ? '온라인' : '오프라인'}
                 />

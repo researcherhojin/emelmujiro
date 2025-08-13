@@ -16,7 +16,9 @@ const HeroSection: React.FC = memo(() => {
 
             {/* Main Headline - Typography focused */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-8 sm:mb-10 leading-[1.1] sm:leading-[1.05] tracking-tight">
-              <span className="block text-gray-900 dark:text-white">실무에 강한</span>
+              <span className="block text-gray-900 dark:text-white">
+                실무에 강한
+              </span>
               <span className="block text-gray-900 dark:text-white mt-2 sm:mt-3">
                 AI 전문가 그룹
               </span>
@@ -92,7 +94,8 @@ const HeroSection: React.FC = memo(() => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="hidden sm:inline">Since 2022 • </span>4년의 검증된 전문성
+                <span className="hidden sm:inline">Since 2022 • </span>4년의
+                검증된 전문성
               </span>
             </div>
           </div>

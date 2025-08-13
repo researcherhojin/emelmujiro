@@ -27,12 +27,14 @@
   /* Transitions */
   --transition-default: all 0.3s ease;
   --transition-fast: all 0.2s ease;
-  --transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  --transition-theme:
+    background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 
   /* Typography */
   --font-family-primary:
-    'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue',
-    'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+    'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR',
+    'Malgun Gothic', sans-serif;
   --letter-spacing-tight: -0.025em;
   --letter-spacing-tighter: -0.03em;
   --line-height-base: 1.7;

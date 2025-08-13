@@ -7,7 +7,9 @@ import { BlogProvider } from '../../../contexts/BlogContext';
 // Mock the api module
 jest.mock('../../../services/api', () => ({
   api: {
-    searchBlogPosts: jest.fn(() => Promise.reject(new Error('API not available'))),
+    searchBlogPosts: jest.fn(() =>
+      Promise.reject(new Error('API not available'))
+    ),
   },
 }));
 
@@ -66,7 +68,9 @@ describe('BlogSearch', () => {
 
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText('블로그 검색...') as HTMLInputElement;
+    const input = screen.getByPlaceholderText(
+      '블로그 검색...'
+    ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React' } });
     // Use the input's form property instead of closest
@@ -79,7 +83,9 @@ describe('BlogSearch', () => {
     });
 
     // Check localStorage for recent searches
-    const recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+    const recentSearches = JSON.parse(
+      localStorage.getItem('recentSearches') || '[]'
+    );
     expect(recentSearches).toContain('React');
   });
 
@@ -92,7 +98,9 @@ describe('BlogSearch', () => {
 
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText('블로그 검색...') as HTMLInputElement;
+    const input = screen.getByPlaceholderText(
+      '블로그 검색...'
+    ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: '  TypeScript  ' } });
     if (input.form) {
@@ -108,7 +116,9 @@ describe('BlogSearch', () => {
     const onSearch = jest.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText('블로그 검색...') as HTMLInputElement;
+    const input = screen.getByPlaceholderText(
+      '블로그 검색...'
+    ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: '   ' } });
     if (input.form) {
@@ -116,7 +126,9 @@ describe('BlogSearch', () => {
     }
 
     // Should not save empty search to recent searches
-    const recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+    const recentSearches = JSON.parse(
+      localStorage.getItem('recentSearches') || '[]'
+    );
     expect(recentSearches).toHaveLength(0);
   });
 
@@ -129,7 +141,9 @@ describe('BlogSearch', () => {
 
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText('블로그 검색...') as HTMLInputElement;
+    const input = screen.getByPlaceholderText(
+      '블로그 검색...'
+    ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React & TypeScript' } });
     if (input.form) {
@@ -141,7 +155,9 @@ describe('BlogSearch', () => {
     });
 
     // Check localStorage for recent searches
-    const recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+    const recentSearches = JSON.parse(
+      localStorage.getItem('recentSearches') || '[]'
+    );
     expect(recentSearches).toContain('React & TypeScript');
   });
 
@@ -166,7 +182,9 @@ describe('BlogSearch', () => {
   it('filters posts based on search term', async () => {
     const onSearch = jest.fn();
     const { api } = require('../../../services/api');
-    const mockResults = [{ id: '1', title: 'React Tutorial', content: 'Learn React' }];
+    const mockResults = [
+      { id: '1', title: 'React Tutorial', content: 'Learn React' },
+    ];
     api.searchBlogPosts.mockResolvedValueOnce({
       data: { results: mockResults },
     });
@@ -189,7 +207,10 @@ describe('BlogSearch', () => {
 
   it('shows recent searches when focused', async () => {
     // Set up recent searches in localStorage
-    localStorage.setItem('recentSearches', JSON.stringify(['React', 'TypeScript']));
+    localStorage.setItem(
+      'recentSearches',
+      JSON.stringify(['React', 'TypeScript'])
+    );
 
     renderWithProviders(<BlogSearch />);
 

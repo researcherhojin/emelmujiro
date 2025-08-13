@@ -69,7 +69,9 @@ describe('API Service', () => {
 
       const response = await api.getBlogPosts(1);
       expect(response.data.results).toEqual(mockPosts);
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('blog-posts/?page=1&page_size=6');
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith(
+        'blog-posts/?page=1&page_size=6'
+      );
     });
 
     it('should fetch a single blog post', async () => {
@@ -118,7 +120,9 @@ describe('API Service', () => {
 
       const response = await api.searchBlogPosts(searchQuery);
       expect(response.data.results).toEqual(mockResults);
-      expect(mockAxiosInstance.get).toHaveBeenCalledWith('blog-posts/?search=test');
+      expect(mockAxiosInstance.get).toHaveBeenCalledWith(
+        'blog-posts/?search=test'
+      );
     });
   });
 
@@ -140,7 +144,10 @@ describe('API Service', () => {
 
       const response = await api.createContact(contactData);
       expect(response.status).toBe(201);
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('contact/', contactData);
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith(
+        'contact/',
+        contactData
+      );
     });
   });
 
@@ -158,7 +165,9 @@ describe('API Service', () => {
 
       const response = await api.subscribeNewsletter(email);
       expect(response.data).toEqual({ email, subscribed: true });
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('newsletter/', { email });
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith('newsletter/', {
+        email,
+      });
     });
   });
 
@@ -203,7 +212,10 @@ describe('API Service', () => {
 
       const response = await api.createProject(newProject);
       expect(response.data).toEqual({ id: 1, ...newProject });
-      expect(mockAxiosInstance.post).toHaveBeenCalledWith('projects/', newProject);
+      expect(mockAxiosInstance.post).toHaveBeenCalledWith(
+        'projects/',
+        newProject
+      );
     });
   });
 

@@ -22,7 +22,9 @@ describe('reportWebVitals', () => {
 
   it('does not throw when called with non-function values', () => {
     expect(() =>
-      reportWebVitals('string' as unknown as Parameters<typeof reportWebVitals>[0])
+      reportWebVitals(
+        'string' as unknown as Parameters<typeof reportWebVitals>[0]
+      )
     ).not.toThrow();
     expect(() =>
       reportWebVitals(123 as unknown as Parameters<typeof reportWebVitals>[0])

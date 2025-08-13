@@ -1,7 +1,8 @@
 // Push Notification utilities
 import logger from './logger';
 
-const PUBLIC_VAPID_KEY = process.env.REACT_APP_VAPID_PUBLIC_KEY || 'YOUR_PUBLIC_VAPID_KEY';
+const PUBLIC_VAPID_KEY =
+  process.env.REACT_APP_VAPID_PUBLIC_KEY || 'YOUR_PUBLIC_VAPID_KEY';
 
 interface NotificationOptions {
   icon?: string;
@@ -71,7 +72,9 @@ export async function subscribeToPushNotifications(): Promise<PushSubscription> 
       // Subscribe to push notifications
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY) as unknown as ArrayBuffer,
+        applicationServerKey: urlBase64ToUint8Array(
+          PUBLIC_VAPID_KEY
+        ) as unknown as ArrayBuffer,
       });
     }
 
@@ -101,7 +104,9 @@ export async function unsubscribeFromPushNotifications(): Promise<boolean> {
 }
 
 // Send subscription to server
-export async function sendSubscriptionToServer(subscription: PushSubscription): Promise<unknown> {
+export async function sendSubscriptionToServer(
+  subscription: PushSubscription
+): Promise<unknown> {
   try {
     const response = await fetch('/api/notifications/subscribe', {
       method: 'POST',

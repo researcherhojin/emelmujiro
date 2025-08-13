@@ -241,7 +241,9 @@ describe('blogCache', () => {
       const result = clearBlogCache();
 
       expect(result).toBe(true);
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('emelmujiro-blog-cache');
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
+        'emelmujiro-blog-cache'
+      );
     });
   });
 
@@ -373,7 +375,9 @@ describe('blogCache', () => {
       initBlogCache();
 
       // Should check if cache exists
-      expect(localStorageMock.getItem).toHaveBeenCalledWith('emelmujiro-blog-cache');
+      expect(localStorageMock.getItem).toHaveBeenCalledWith(
+        'emelmujiro-blog-cache'
+      );
     });
 
     it('should create empty cache if none exists', () => {
@@ -381,7 +385,10 @@ describe('blogCache', () => {
 
       initBlogCache();
 
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('emelmujiro-blog-cache', '[]');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'emelmujiro-blog-cache',
+        '[]'
+      );
     });
   });
 });

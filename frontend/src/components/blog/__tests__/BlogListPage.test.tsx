@@ -27,13 +27,17 @@ describe('BlogListPage', () => {
     renderWithProviders(<BlogListPage />);
 
     expect(screen.getByText('블로그 준비 중')).toBeInTheDocument();
-    expect(screen.getByText('더 나은 콘텐츠로 곧 찾아뵙겠습니다')).toBeInTheDocument();
+    expect(
+      screen.getByText('더 나은 콘텐츠로 곧 찾아뵙겠습니다')
+    ).toBeInTheDocument();
   });
 
   it('shows information about backend system construction', () => {
     renderWithProviders(<BlogListPage />);
 
-    expect(screen.getByText(/현재 백엔드 시스템을 구축 중입니다/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/현재 백엔드 시스템을 구축 중입니다/)
+    ).toBeInTheDocument();
   });
 
   it('renders the back to main button', () => {

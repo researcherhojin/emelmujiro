@@ -36,7 +36,9 @@ const LoadingState: React.FC = memo(() => (
     <div className="max-w-6xl mx-auto px-4">
       <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4">
         <Loader2 className="w-12 h-12 text-gray-700 animate-spin" />
-        <p className="text-gray-500 animate-pulse">최신 AI 트렌드를 불러오는 중...</p>
+        <p className="text-gray-500 animate-pulse">
+          최신 AI 트렌드를 불러오는 중...
+        </p>
       </div>
     </div>
   </section>
@@ -66,7 +68,9 @@ ErrorState.displayName = 'ErrorState';
 const EmptyState: React.FC = memo(() => (
   <div className="bg-gray-50 rounded-xl p-12 border border-gray-100 text-center max-w-2xl mx-auto">
     <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-    <p className="text-lg text-gray-600 mb-2">곧 새로운 AI 트렌드로 찾아뵙겠습니다</p>
+    <p className="text-lg text-gray-600 mb-2">
+      곧 새로운 AI 트렌드로 찾아뵙겠습니다
+    </p>
     <p className="text-gray-500">생성형 AI와 최신 기술 동향을 준비 중입니다</p>
   </div>
 ));
@@ -107,7 +111,9 @@ const BlogSection: React.FC<BlogSectionProps> = memo(
               <BookOpen className="w-6 h-6 text-gray-700" />
               <h2 className="text-4xl font-bold text-gray-900">AI 트렌드</h2>
             </div>
-            <p className="text-xl text-gray-600">최신 AI 기술 동향과 실제 도입 사례를 공유합니다</p>
+            <p className="text-xl text-gray-600">
+              최신 AI 기술 동향과 실제 도입 사례를 공유합니다
+            </p>
           </motion.div>
 
           {/* Content */}
@@ -138,7 +144,7 @@ const BlogSection: React.FC<BlogSectionProps> = memo(
                   <button
                     onClick={handleViewAllClick}
                     className="group inline-flex items-center px-8 py-4 rounded-lg
-                                             bg-white text-gray-700 hover:text-gray-900 
+                                             bg-white text-gray-700 hover:text-gray-900
                                              font-semibold shadow-sm hover:shadow-md
                                              border border-gray-200 hover:border-gray-300
                                              transition-all duration-200"

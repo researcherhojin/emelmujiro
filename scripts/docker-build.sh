@@ -38,15 +38,15 @@ build_image() {
     local dockerfile=$2
     local context=$3
     local image_name="${REGISTRY}/${NAMESPACE}/${service}:${TAG}"
-    
+
     print_status "Building ${service} image..."
-    
+
     # Build arguments
     BUILD_ARGS=""
     if [ "$BUILD_CACHE" = "true" ]; then
         BUILD_ARGS="$BUILD_ARGS --cache-from ${REGISTRY}/${NAMESPACE}/${service}:latest"
     fi
-    
+
     # Multi-platform build if buildx is available
     if docker buildx version &> /dev/null; then
         print_status "Using Docker Buildx for multi-platform build"
@@ -66,10 +66,10 @@ build_image() {
             ${BUILD_ARGS} \
             ${context}
     fi
-    
+
     if [ $? -eq 0 ]; then
         print_status "${service} image built successfully: ${image_name}"
-        
+
         # Push if requested
         if [ "$PUSH" = "true" ]; then
             print_status "Pushing ${service} image to registry..."

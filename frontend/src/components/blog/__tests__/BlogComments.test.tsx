@@ -74,7 +74,9 @@ describe('BlogComments', () => {
 
     // Fill and submit form
     fireEvent.change(nameInput, { target: { value: 'Test User' } });
-    fireEvent.change(contentInput, { target: { value: 'Test comment content' } });
+    fireEvent.change(contentInput, {
+      target: { value: 'Test comment content' },
+    });
     fireEvent.click(submitButton);
 
     // Check if new comment appears
@@ -136,7 +138,9 @@ describe('BlogComments', () => {
     // 첫 번째 댓글의 likes는 2
     const likeButtons = screen.getAllByRole('button');
     // Find the button that contains the likes count
-    const firstLikeButton = likeButtons.find(button => button.textContent?.includes('2'));
+    const firstLikeButton = likeButtons.find((button) =>
+      button.textContent?.includes('2')
+    );
 
     // Click like button
     expect(firstLikeButton).toBeDefined();
@@ -160,6 +164,8 @@ describe('BlogComments', () => {
     expect(replyInput).toBeInTheDocument();
 
     // Reply submit button should be visible
-    expect(screen.getByRole('button', { name: /답글 작성/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /답글 작성/i })
+    ).toBeInTheDocument();
   });
 });

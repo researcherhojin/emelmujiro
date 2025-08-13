@@ -19,7 +19,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post }) => {
   return (
     <motion.article
       whileHover={{ y: -5 }}
-      className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg 
+      className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg
                      transition-all duration-300 h-full flex flex-col"
     >
       <Link to={`/blog/${id}`} className="block flex-grow">
@@ -55,7 +55,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post }) => {
           </div>
 
           <h3
-            className="text-xl font-bold text-gray-900 mb-3 
+            className="text-xl font-bold text-gray-900 mb-3
                                  line-clamp-2 hover:text-indigo-600 transition-colors"
           >
             {title}
@@ -65,8 +65,8 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post }) => {
 
           <div className="mt-auto">
             <span
-              className="text-indigo-600 text-sm font-medium 
-                                     hover:text-indigo-700 transition-colors 
+              className="text-indigo-600 text-sm font-medium
+                                     hover:text-indigo-700 transition-colors
                                      inline-flex items-center group"
             >
               자세히 보기

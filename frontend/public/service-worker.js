@@ -24,11 +24,11 @@ const DYNAMIC_CACHE_PATTERNS = [
 ];
 
 // Service Worker 설치
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then(cache => {
+      .then((cache) => {
         console.log('캐시 열기 완료');
         return cache.addAll(urlsToCache);
       })
@@ -37,13 +37,13 @@ self.addEventListener('install', event => {
 });
 
 // Service Worker 활성화
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then(cacheNames => {
+      .then((cacheNames) => {
         return Promise.all(
-          cacheNames.map(cacheName => {
+          cacheNames.map((cacheName) => {
             if (cacheName !== CACHE_NAME) {
               console.log('이전 캐시 삭제:', cacheName);
               return caches.delete(cacheName);
@@ -56,7 +56,7 @@ self.addEventListener('activate', event => {
 });
 
 // 네트워크 요청 가로채기
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
@@ -133,11 +133,11 @@ async function cacheFirst(request) {
 
 // 동적 캐싱 여부 확인
 function shouldCacheDynamically(url) {
-  return DYNAMIC_CACHE_PATTERNS.some(pattern => pattern.test(url));
+  return DYNAMIC_CACHE_PATTERNS.some((pattern) => pattern.test(url));
 }
 
 // 푸시 알림 처리
-self.addEventListener('push', event => {
+self.addEventListener('push', (event) => {
   if (event.data) {
     const data = event.data.json();
     const options = {
@@ -161,14 +161,14 @@ self.addEventListener('push', event => {
 });
 
 // 알림 클릭 처리
-self.addEventListener('notificationclick', event => {
+self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
   const url = event.notification.data.url || '/emelmujiro/';
 
   if (event.action === 'view' || !event.action) {
     event.waitUntil(
-      clients.matchAll({ type: 'window' }).then(clientList => {
+      clients.matchAll({ type: 'window' }).then((clientList) => {
         // 이미 열린 창이 있으면 포커스
         for (const client of clientList) {
           if (client.url.includes('/emelmujiro') && 'focus' in client) {
@@ -185,7 +185,7 @@ self.addEventListener('notificationclick', event => {
 });
 
 // 백그라운드 동기화 처리
-self.addEventListener('sync', event => {
+self.addEventListener('sync', (event) => {
   console.log('Background sync event:', event.tag);
 
   if (event.tag === 'sync-contact-form') {

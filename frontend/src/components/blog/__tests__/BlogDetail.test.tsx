@@ -68,7 +68,9 @@ jest.mock('../../../contexts/BlogContext', () => ({
     totalPages: 1,
     currentPage: 1,
   }),
-  BlogProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  BlogProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
 let mockPost: BlogPost | null = null;
@@ -114,7 +116,9 @@ describe('BlogDetail Component', () => {
   it('renders loading state', () => {
     mockLoading = true;
     renderWithRouter(<BlogDetail />);
-    expect(screen.getByText('블로그 포스트를 불러오는 중입니다...')).toBeInTheDocument();
+    expect(
+      screen.getByText('블로그 포스트를 불러오는 중입니다...')
+    ).toBeInTheDocument();
   });
 
   it('renders error state for 404', () => {

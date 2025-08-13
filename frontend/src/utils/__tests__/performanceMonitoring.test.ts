@@ -311,7 +311,10 @@ describe('performanceMonitoring', () => {
 
       await lcpCallback(mockMetric);
 
-      expect(mockConsoleError).toHaveBeenCalledWith('Failed to send metrics:', expect.any(Error));
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        'Failed to send metrics:',
+        expect.any(Error)
+      );
     });
 
     it('should not send analytics in development', async () => {
@@ -513,13 +516,19 @@ describe('performanceMonitoring', () => {
       global.PerformanceObserver = jest
         .fn()
         .mockImplementation(
-          (callback: (list: { getEntries: () => MockPerformanceEntry[] }) => void) => {
+          (
+            callback: (list: {
+              getEntries: () => MockPerformanceEntry[];
+            }) => void
+          ) => {
             mockPerformanceObserver.callback = callback;
             return mockPerformanceObserver;
           }
         ) as unknown as typeof PerformanceObserver;
       (
-        global.PerformanceObserver as typeof PerformanceObserver & { supportedEntryTypes: string[] }
+        global.PerformanceObserver as typeof PerformanceObserver & {
+          supportedEntryTypes: string[];
+        }
       ).supportedEntryTypes = ['longtask', 'resource'];
 
       // Mock performance API
@@ -540,7 +549,9 @@ describe('performanceMonitoring', () => {
     it('should set up long task observer', () => {
       PerformanceMonitor();
 
-      expect(global.PerformanceObserver).toHaveBeenCalledWith(expect.any(Function));
+      expect(global.PerformanceObserver).toHaveBeenCalledWith(
+        expect.any(Function)
+      );
       expect(mockPerformanceObserver.observe).toHaveBeenCalledWith({
         entryTypes: ['longtask'],
       });
@@ -584,7 +595,10 @@ describe('performanceMonitoring', () => {
         getEntries: () => [mockEntry],
       });
 
-      expect(mockConsoleWarn).not.toHaveBeenCalledWith('Long task detected:', expect.anything());
+      expect(mockConsoleWarn).not.toHaveBeenCalledWith(
+        'Long task detected:',
+        expect.anything()
+      );
     });
 
     it('should monitor slow resources', () => {
@@ -602,11 +616,16 @@ describe('performanceMonitoring', () => {
         responseEnd: 200,
       };
 
-      mockPerformance.getEntriesByType.mockReturnValue([slowResource, fastResource]);
+      mockPerformance.getEntriesByType.mockReturnValue([
+        slowResource,
+        fastResource,
+      ]);
 
       PerformanceMonitor();
 
-      expect(mockConsoleWarn).toHaveBeenCalledWith('Slow resources detected:', [slowResource]);
+      expect(mockConsoleWarn).toHaveBeenCalledWith('Slow resources detected:', [
+        slowResource,
+      ]);
     });
 
     it('should handle PerformanceObserver errors gracefully', () => {
@@ -614,7 +633,9 @@ describe('performanceMonitoring', () => {
         throw new Error('PerformanceObserver error');
       }) as unknown as typeof PerformanceObserver;
       (
-        global.PerformanceObserver as typeof PerformanceObserver & { supportedEntryTypes: string[] }
+        global.PerformanceObserver as typeof PerformanceObserver & {
+          supportedEntryTypes: string[];
+        }
       ).supportedEntryTypes = ['longtask', 'resource'];
 
       expect(() => PerformanceMonitor()).not.toThrow();

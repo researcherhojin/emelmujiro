@@ -99,7 +99,10 @@ describe('AuthContext', () => {
       email: 'test@example.com',
       password: 'password',
     });
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('authToken', 'fake-token');
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+      'authToken',
+      'fake-token'
+    );
   });
 
   test('handles logout', async () => {
@@ -139,7 +142,9 @@ describe('AuthContext', () => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
     });
 
-    expect(screen.getByTestId('user')).toHaveTextContent('existing@example.com');
+    expect(screen.getByTestId('user')).toHaveTextContent(
+      'existing@example.com'
+    );
 
     expect(mockLocalStorage.getItem).toHaveBeenCalledWith('authToken');
     expect(mockedAxios.get).toHaveBeenCalledWith('/auth/me/');
@@ -202,7 +207,10 @@ describe('AuthContext', () => {
 
     expect(screen.getByTestId('user')).toHaveTextContent('no-user');
 
-    expect(mockLocalStorage.setItem).not.toHaveBeenCalledWith('authToken', expect.any(String));
+    expect(mockLocalStorage.setItem).not.toHaveBeenCalledWith(
+      'authToken',
+      expect.any(String)
+    );
   });
 
   test('throws error when used outside provider', () => {

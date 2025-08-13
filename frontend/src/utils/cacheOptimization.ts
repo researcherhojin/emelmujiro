@@ -255,12 +255,15 @@ export const preloadCriticalResources = () => {
 
   // For GitHub Pages deployment, use the correct path
   const basePath = process.env.PUBLIC_URL || '';
-  const criticalResources = [`${basePath}/static/css/main.css`, `${basePath}/static/js/main.js`];
+  const criticalResources = [
+    `${basePath}/static/css/main.css`,
+    `${basePath}/static/js/main.js`,
+  ];
 
-  criticalResources.forEach(resource => {
+  criticalResources.forEach((resource) => {
     // Check if resource exists before trying to preload
     fetch(resource, { method: 'HEAD' })
-      .then(response => {
+      .then((response) => {
         if (response.ok) {
           const link = document.createElement('link');
           link.rel = 'preload';
@@ -279,13 +282,16 @@ export const preloadCriticalResources = () => {
 // Performance observer for monitoring cache efficiency
 export const observeCachePerformance = () => {
   if ('PerformanceObserver' in window) {
-    const observer = new PerformanceObserver(list => {
+    const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         if (entry.entryType === 'resource') {
           const resourceEntry = entry as PerformanceResourceTiming;
           // Track cache hit/miss information
-          if (resourceEntry.transferSize === 0 && resourceEntry.decodedBodySize > 0) {
+          if (
+            resourceEntry.transferSize === 0 &&
+            resourceEntry.decodedBodySize > 0
+          ) {
             // Cache hit detected for resource
           }
         }

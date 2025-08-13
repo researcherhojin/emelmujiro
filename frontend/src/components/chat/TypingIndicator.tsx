@@ -12,7 +12,7 @@ const TypingIndicator: React.FC = () => {
       <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
         <Bot className="w-4 h-4" />
       </div>
-      
+
       {/* Typing Animation */}
       <div className="bg-gray-200 dark:bg-gray-700 rounded-2xl rounded-bl-md px-4 py-3 flex items-center space-x-1">
         <div className="flex space-x-1">
@@ -28,7 +28,7 @@ const TypingIndicator: React.FC = () => {
                 duration: 1.4,
                 repeat: Infinity,
                 delay: index * 0.2,
-                ease: "easeInOut",
+                ease: 'easeInOut',
               }}
             />
           ))}

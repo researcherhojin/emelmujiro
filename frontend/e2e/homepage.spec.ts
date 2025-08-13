@@ -26,7 +26,9 @@ test.describe('Homepage', () => {
     const heroSection = page.locator('section').first();
 
     // Check for CTA buttons
-    const ctaButton = heroSection.getByRole('link', { name: /시작하기|자세히 보기/i });
+    const ctaButton = heroSection.getByRole('link', {
+      name: /시작하기|자세히 보기/i,
+    });
     await expect(ctaButton).toBeVisible();
   });
 
@@ -35,7 +37,9 @@ test.describe('Homepage', () => {
     await page.evaluate(() => window.scrollTo(0, 500));
 
     // Check for feature cards
-    const featureSection = page.locator('section').filter({ hasText: /AI 교육|컨설팅|솔루션/i });
+    const featureSection = page
+      .locator('section')
+      .filter({ hasText: /AI 교육|컨설팅|솔루션/i });
     await expect(featureSection).toBeVisible();
   });
 

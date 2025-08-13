@@ -19,7 +19,7 @@ const ContactPage: React.FC = memo(() => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     },
     []
   );
@@ -33,7 +33,9 @@ const ContactPage: React.FC = memo(() => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white px-4 py-24">
       <div className="w-full max-w-md bg-black border border-white/20 rounded-2xl shadow-xl p-8">
-        <h1 className="text-2xl font-bold mb-8 text-white text-center">Contact</h1>
+        <h1 className="text-2xl font-bold mb-8 text-white text-center">
+          Contact
+        </h1>
         {submitted ? (
           <div className="text-center py-12">
             <p className="text-lg font-semibold text-white mb-4">
@@ -44,7 +46,10 @@ const ContactPage: React.FC = memo(() => {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
                 이름
               </label>
               <input
@@ -59,7 +64,10 @@ const ContactPage: React.FC = memo(() => {
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
                 이메일
               </label>
               <input
@@ -74,7 +82,10 @@ const ContactPage: React.FC = memo(() => {
               />
             </div>
             <div>
-              <label htmlFor="company" className="block text-sm font-medium text-gray-300 mb-1">
+              <label
+                htmlFor="company"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
                 회사명
               </label>
               <input
@@ -88,7 +99,10 @@ const ContactPage: React.FC = memo(() => {
               />
             </div>
             <div>
-              <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">
+              <label
+                htmlFor="message"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
                 문의 내용
               </label>
               <textarea

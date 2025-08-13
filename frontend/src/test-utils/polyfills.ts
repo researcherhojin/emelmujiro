@@ -13,7 +13,8 @@ declare global {
 if (typeof global !== 'undefined') {
   global.TextEncoder = TextEncoder as unknown as typeof globalThis.TextEncoder;
   global.TextDecoder = TextDecoder as unknown as typeof globalThis.TextDecoder;
-  global.TransformStream = TransformStream as unknown as typeof globalThis.TransformStream;
+  global.TransformStream =
+    TransformStream as unknown as typeof globalThis.TransformStream;
 }
 
 export {};

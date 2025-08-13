@@ -51,7 +51,8 @@ export interface MockEvent {
   };
 }
 
-export interface ExtendedServiceWorkerRegistration extends ServiceWorkerRegistration {
+export interface ExtendedServiceWorkerRegistration
+  extends ServiceWorkerRegistration {
   sync?: {
     register: (tag: string) => Promise<void>;
     getTags: () => Promise<string[]>;

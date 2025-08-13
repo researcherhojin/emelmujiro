@@ -1,28 +1,35 @@
-Django==5.1.10
+# Core Django
+Django==5.1.4
 djangorestframework==3.16.1
 django-cors-headers==4.7.0
-python-dotenv==1.1.1
-requests==2.32.4
-Pillow==11.3.0
 
-# 보안 관련
-django-ratelimit==4.1.0
-django-extensions==4.1
-djangorestframework-simplejwt==5.5.1
-
-# 개발 도구
-ipython==8.29.0
-
-# API 문서화
-drf-yasg==1.21.10
-
-# 프로덕션 의존성 (선택사항)
-gunicorn==23.0.0
+# Database
 psycopg2-binary==2.9.10
+
+# Environment & Configuration
+python-dotenv==1.1.1
 whitenoise==6.9.0
 
-# WebSocket 지원
+# API Documentation
+drf-yasg==1.21.10
+
+# Authentication & Security
+djangorestframework-simplejwt==5.5.1
+django-ratelimit==4.1.0
+
+# Utils
+requests==2.32.4
+Pillow==11.3.0
+django-extensions==4.1.0
+
+# WebSocket support
 channels==4.1.0
 channels-redis==4.2.0
 daphne==4.1.0
 redis==5.0.1
+
+# Development
+ipython==8.29.0
+
+# Production
+gunicorn==23.0.0

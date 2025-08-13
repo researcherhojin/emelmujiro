@@ -1,5 +1,12 @@
 import React, { useState, memo, useCallback } from 'react';
-import { ChevronDown, Calendar, Building, Award, BookOpen, LucideIcon } from 'lucide-react';
+import {
+  ChevronDown,
+  Calendar,
+  Building,
+  Award,
+  BookOpen,
+  LucideIcon,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Activity {
@@ -45,7 +52,9 @@ const ActivityItem: React.FC<ActivityItemProps> = memo(
     <div key={index} className="border-l-4 border-gray-200 pl-4">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="font-medium text-gray-900 text-sm mb-1">{activity.title}</div>
+          <div className="font-medium text-gray-900 text-sm mb-1">
+            {activity.title}
+          </div>
           <div className="flex items-center gap-2">
             <span
               className={`px-2 py-1 text-xs rounded-full ${getActivityTypeColor(activity.type)}`}
@@ -153,7 +162,9 @@ const YearCard: React.FC<YearCardProps> = memo(
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-              <span className="text-xl font-bold text-gray-900">{year.slice(-2)}</span>
+              <span className="text-xl font-bold text-gray-900">
+                {year.slice(-2)}
+              </span>
             </div>
             <div>
               <h3 className="text-2xl font-bold text-gray-900">{year}년</h3>
@@ -166,8 +177,11 @@ const YearCard: React.FC<YearCardProps> = memo(
                 {Object.keys(yearData.months).length}개월 활동
               </div>
               <div className="text-sm text-gray-500">
-                {Object.values(yearData.months).reduce((acc, month) => acc + month.length, 0)}개
-                프로젝트
+                {Object.values(yearData.months).reduce(
+                  (acc, month) => acc + month.length,
+                  0
+                )}
+                개 프로젝트
               </div>
             </div>
             <ChevronDown
@@ -272,7 +286,11 @@ const CareerSection: React.FC = memo(() => {
       type: 'current',
       months: {
         '1월': [
-          { title: '멋쟁이사자처럼 산업전문인력 AI역량강화 교육', type: '강의', status: '진행중' },
+          {
+            title: '멋쟁이사자처럼 산업전문인력 AI역량강화 교육',
+            type: '강의',
+            status: '진행중',
+          },
           { title: 'AI 컨설팅 사업 확장', type: '사업', status: '진행중' },
         ],
       },
@@ -295,19 +313,39 @@ const CareerSection: React.FC = memo(() => {
           { title: '대학원 첫 학기 완료', type: '학업', status: '완료' },
         ],
         '11월': [
-          { title: '테킷 스타트업 스테이션 9기 강의', type: '강의', status: '완료' },
+          {
+            title: '테킷 스타트업 스테이션 9기 강의',
+            type: '강의',
+            status: '완료',
+          },
           { title: 'AI 프로젝트 컨설팅', type: '컨설팅', status: '완료' },
         ],
         '10월': [
-          { title: '엘리스-삼성전자 Spotfire 교육', type: '강의', status: '완료' },
+          {
+            title: '엘리스-삼성전자 Spotfire 교육',
+            type: '강의',
+            status: '완료',
+          },
           { title: '한양대 중간고사', type: '학업', status: '완료' },
         ],
         '9월': [
-          { title: '한양대학교 인공지능융합대학원 입학', type: '학업', status: '완료' },
-          { title: '테킷 스타트업 스테이션 8기 강의', type: '강의', status: '완료' },
+          {
+            title: '한양대학교 인공지능융합대학원 입학',
+            type: '학업',
+            status: '완료',
+          },
+          {
+            title: '테킷 스타트업 스테이션 8기 강의',
+            type: '강의',
+            status: '완료',
+          },
         ],
         '8월': [
-          { title: '심화 기업 연계형 실전 프로젝트 중심 AI과정', type: '강의', status: '완료' },
+          {
+            title: '심화 기업 연계형 실전 프로젝트 중심 AI과정',
+            type: '강의',
+            status: '완료',
+          },
           { title: '대학원 입학 준비', type: '준비', status: '완료' },
         ],
         '7월': [
@@ -335,7 +373,11 @@ const CareerSection: React.FC = memo(() => {
             type: '강의',
             status: '완료',
           },
-          { title: '기상-AI 청년 부스트캠프 멘토', type: '멘토링', status: '완료' },
+          {
+            title: '기상-AI 청년 부스트캠프 멘토',
+            type: '멘토링',
+            status: '완료',
+          },
         ],
         '10월': [
           { title: '테킷 스타트업 스테이션 7기', type: '강의', status: '완료' },
@@ -350,7 +392,11 @@ const CareerSection: React.FC = memo(() => {
           { title: '고급 AI 교육과정 설계', type: '기획', status: '완료' },
         ],
         '8월': [
-          { title: '카카오 - SKT 컴퓨터비전 (with OpenCV)', type: '강의', status: '완료' },
+          {
+            title: '카카오 - SKT 컴퓨터비전 (with OpenCV)',
+            type: '강의',
+            status: '완료',
+          },
           { title: '여름 집중 부트캠프', type: '강의', status: '완료' },
         ],
         '7월': [
@@ -373,23 +419,47 @@ const CareerSection: React.FC = memo(() => {
           { title: '2023년 교육 계획 수립', type: '기획', status: '완료' },
         ],
         '11월': [
-          { title: '네이버 커넥트재단 HTML/CSS 코칭스터디 리드', type: '멘토링', status: '완료' },
+          {
+            title: '네이버 커넥트재단 HTML/CSS 코칭스터디 리드',
+            type: '멘토링',
+            status: '완료',
+          },
           { title: '교육 방법론 연구', type: '연구', status: '완료' },
         ],
         '10월': [
-          { title: 'Cobslab 책임연구원 역할 시작', type: '취업', status: '완료' },
+          {
+            title: 'Cobslab 책임연구원 역할 시작',
+            type: '취업',
+            status: '완료',
+          },
           { title: '모두의연구소 강의 마무리', type: '강의', status: '완료' },
         ],
         '9월': [
-          { title: 'KURLY HACK FESTA 2022 참가', type: '공모전', status: '완료' },
-          { title: '오픈소스 컨트리뷰션 아카데미', type: '활동', status: '완료' },
+          {
+            title: 'KURLY HACK FESTA 2022 참가',
+            type: '공모전',
+            status: '완료',
+          },
+          {
+            title: '오픈소스 컨트리뷰션 아카데미',
+            type: '활동',
+            status: '완료',
+          },
         ],
         '8월': [
-          { title: '서울시립대 캠퍼스타운형 취업사관학교', type: '강의', status: '완료' },
+          {
+            title: '서울시립대 캠퍼스타운형 취업사관학교',
+            type: '강의',
+            status: '완료',
+          },
           { title: '서울대 사범대 파이썬 특강', type: '강의', status: '완료' },
         ],
         '7월': [
-          { title: '서울특별시 교육청 교원 직무연수', type: '강의', status: '완료' },
+          {
+            title: '서울특별시 교육청 교원 직무연수',
+            type: '강의',
+            status: '완료',
+          },
           { title: '교원 대상 AI 교육', type: '강의', status: '완료' },
         ],
       },
@@ -403,14 +473,14 @@ const CareerSection: React.FC = memo(() => {
   ];
 
   const toggleYear = useCallback((year: string) => {
-    setExpandedYears(prev =>
-      prev.includes(year) ? prev.filter(y => y !== year) : [...prev, year]
+    setExpandedYears((prev) =>
+      prev.includes(year) ? prev.filter((y) => y !== year) : [...prev, year]
     );
     setActiveMonth(null);
   }, []);
 
   const toggleMonth = useCallback((month: string) => {
-    setActiveMonth(prev => (prev === month ? null : month));
+    setActiveMonth((prev) => (prev === month ? null : month));
   }, []);
 
   const getActivityTypeColor = useCallback((type: string): string => {
@@ -442,7 +512,8 @@ const CareerSection: React.FC = memo(() => {
           </h2>
           <p className="text-xl text-gray-600 leading-relaxed">
             AI 교육과 비즈니스 개발 분야에서 쌓아온{' '}
-            <strong className="text-gray-900">4년간의 경험</strong>을 연도별로 소개합니다.
+            <strong className="text-gray-900">4년간의 경험</strong>을 연도별로
+            소개합니다.
           </p>
         </div>
 

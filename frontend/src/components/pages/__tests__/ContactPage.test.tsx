@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import ContactPage from '../ContactPage';
@@ -12,9 +18,8 @@ jest.mock('../../../services/api');
 jest.mock('../../../utils/backgroundSync');
 
 const mockedApi = api as jest.Mocked<typeof api>;
-const mockedRegisterBackgroundSync = registerBackgroundSync as jest.MockedFunction<
-  typeof registerBackgroundSync
->;
+const mockedRegisterBackgroundSync =
+  registerBackgroundSync as jest.MockedFunction<typeof registerBackgroundSync>;
 
 jest.mock('../../../utils/logger', () => ({
   debug: jest.fn(),
@@ -44,7 +49,9 @@ type MotionComponentProps = {
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: MotionComponentProps) => <div {...props}>{children}</div>,
+    div: ({ children, ...props }: MotionComponentProps) => (
+      <div {...props}>{children}</div>
+    ),
     section: ({ children, ...props }: MotionComponentProps) => (
       <section {...props}>{children}</section>
     ),
@@ -52,7 +59,9 @@ jest.mock('framer-motion', () => ({
       <button {...props}>{children}</button>
     ),
   },
-  AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
 const mockNavigate = jest.fn();
@@ -105,9 +114,13 @@ describe('ContactPage Component', () => {
 
     // Check form fields
     expect(screen.getByPlaceholderText('홍길동')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('example@email.com')).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText('example@email.com')
+    ).toBeInTheDocument();
     expect(screen.getByPlaceholderText('010-1234-5678')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('회사명 또는 기관명')).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText('회사명 또는 기관명')
+    ).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...')
     ).toBeInTheDocument();
@@ -124,7 +137,9 @@ describe('ContactPage Component', () => {
 
       // Check for validation errors
       await waitFor(() => {
-        expect(window.alert).toHaveBeenCalledWith('이름을 올바르게 입력해주세요. (최대 50자)');
+        expect(window.alert).toHaveBeenCalledWith(
+          '이름을 올바르게 입력해주세요. (최대 50자)'
+        );
       });
     });
 
@@ -135,7 +150,9 @@ describe('ContactPage Component', () => {
 
       const nameInput = screen.getByPlaceholderText('홍길동');
       const emailInput = screen.getByPlaceholderText('example@email.com');
-      const messageInput = screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...');
+      const messageInput = screen.getByPlaceholderText(
+        '프로젝트에 대해 자세히 설명해주세요...'
+      );
 
       // Fill form with invalid email
       fireEvent.change(nameInput, { target: { value: 'John Doe' } });
@@ -147,7 +164,9 @@ describe('ContactPage Component', () => {
 
       // Check for validation error
       await waitFor(() => {
-        expect(window.alert).toHaveBeenCalledWith('올바른 이메일 주소를 입력해주세요.');
+        expect(window.alert).toHaveBeenCalledWith(
+          '올바른 이메일 주소를 입력해주세요.'
+        );
       });
 
       // Test with valid email
@@ -167,7 +186,9 @@ describe('ContactPage Component', () => {
 
       // Should not show email validation error
       await waitFor(() => {
-        expect(window.alert).not.toHaveBeenCalledWith('올바른 이메일 주소를 입력해주세요.');
+        expect(window.alert).not.toHaveBeenCalledWith(
+          '올바른 이메일 주소를 입력해주세요.'
+        );
       });
     });
 
@@ -179,7 +200,9 @@ describe('ContactPage Component', () => {
       const nameInput = screen.getByPlaceholderText('홍길동');
       const emailInput = screen.getByPlaceholderText('example@email.com');
       const phoneInput = screen.getByPlaceholderText('010-1234-5678');
-      const messageInput = screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...');
+      const messageInput = screen.getByPlaceholderText(
+        '프로젝트에 대해 자세히 설명해주세요...'
+      );
 
       // Fill form with invalid phone
       fireEvent.change(nameInput, { target: { value: 'John Doe' } });
@@ -192,7 +215,9 @@ describe('ContactPage Component', () => {
 
       // Check for validation error
       await waitFor(() => {
-        expect(window.alert).toHaveBeenCalledWith('올바른 전화번호를 입력해주세요.');
+        expect(window.alert).toHaveBeenCalledWith(
+          '올바른 전화번호를 입력해주세요.'
+        );
       });
     });
 
@@ -203,7 +228,9 @@ describe('ContactPage Component', () => {
 
       const nameInput = screen.getByPlaceholderText('홍길동');
       const emailInput = screen.getByPlaceholderText('example@email.com');
-      const messageInput = screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...');
+      const messageInput = screen.getByPlaceholderText(
+        '프로젝트에 대해 자세히 설명해주세요...'
+      );
 
       // Fill form with empty message
       fireEvent.change(nameInput, { target: { value: 'John Doe' } });
@@ -227,7 +254,9 @@ describe('ContactPage Component', () => {
         headers: {},
         config: {} as InternalAxiosRequestConfig,
       });
-      fireEvent.change(messageInput, { target: { value: 'This is a valid message' } });
+      fireEvent.change(messageInput, {
+        target: { value: 'This is a valid message' },
+      });
       fireEvent.click(submitButton);
 
       // Should show success message
@@ -260,9 +289,12 @@ describe('ContactPage Component', () => {
       fireEvent.change(screen.getByPlaceholderText('example@email.com'), {
         target: { value: 'john@example.com' },
       });
-      fireEvent.change(screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'), {
-        target: { value: 'This is a test message for the contact form' },
-      });
+      fireEvent.change(
+        screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'),
+        {
+          target: { value: 'This is a test message for the contact form' },
+        }
+      );
 
       // Select inquiry type
       // Select inquiry type using select dropdown
@@ -321,9 +353,12 @@ describe('ContactPage Component', () => {
       fireEvent.change(screen.getByPlaceholderText('example@email.com'), {
         target: { value: 'john@example.com' },
       });
-      fireEvent.change(screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'), {
-        target: { value: 'Test message' },
-      });
+      fireEvent.change(
+        screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'),
+        {
+          target: { value: 'Test message' },
+        }
+      );
 
       // Submit form
       const submitButton = screen.getByText('문의 보내기');
@@ -343,7 +378,9 @@ describe('ContactPage Component', () => {
 
       // Verify offline message appears in the UI
       await waitFor(() => {
-        expect(screen.getByText(/현재 오프라인 상태입니다/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/현재 오프라인 상태입니다/)
+        ).toBeInTheDocument();
       });
     });
 
@@ -380,9 +417,12 @@ describe('ContactPage Component', () => {
       fireEvent.change(screen.getByPlaceholderText('example@email.com'), {
         target: { value: 'john@example.com' },
       });
-      fireEvent.change(screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'), {
-        target: { value: 'Test message' },
-      });
+      fireEvent.change(
+        screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'),
+        {
+          target: { value: 'Test message' },
+        }
+      );
 
       // Submit form
       const submitButton = screen.getByText('문의 보내기');
@@ -395,7 +435,9 @@ describe('ContactPage Component', () => {
 
       // Verify fallback to mailto (window.location.href is set to mailto link)
       await waitFor(() => {
-        expect(hrefSetter).toHaveBeenCalledWith(expect.stringContaining('mailto:'));
+        expect(hrefSetter).toHaveBeenCalledWith(
+          expect.stringContaining('mailto:')
+        );
       });
 
       // Restore original location
@@ -488,8 +530,14 @@ describe('ContactPage Component', () => {
 
       unmount();
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('online', expect.any(Function));
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('offline', expect.any(Function));
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'online',
+        expect.any(Function)
+      );
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'offline',
+        expect.any(Function)
+      );
 
       removeEventListenerSpy.mockRestore();
     });

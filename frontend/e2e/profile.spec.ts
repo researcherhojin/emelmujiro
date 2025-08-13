@@ -37,7 +37,9 @@ test.describe('Profile Page', () => {
 
   test('should show experience timeline', async ({ page }) => {
     // Check for experience section
-    const experienceSection = page.locator('[data-testid="experience-section"]');
+    const experienceSection = page.locator(
+      '[data-testid="experience-section"]'
+    );
     await expect(experienceSection).toBeVisible();
 
     // Check for timeline items
@@ -80,8 +82,10 @@ test.describe('Profile Page', () => {
 
   test('should display certifications', async ({ page }) => {
     // Check for certifications section
-    const certificationsSection = page.locator('[data-testid="certifications-section"]');
-    
+    const certificationsSection = page.locator(
+      '[data-testid="certifications-section"]'
+    );
+
     if (await certificationsSection.isVisible()) {
       // Check for certification items
       const certItems = page.locator('[data-testid="certification-item"]');
@@ -91,8 +95,10 @@ test.describe('Profile Page', () => {
 
   test('should have download resume button', async ({ page }) => {
     // Check for download button
-    const downloadButton = page.locator('button:has-text("이력서 다운로드"), a:has-text("이력서 다운로드")');
-    
+    const downloadButton = page.locator(
+      'button:has-text("이력서 다운로드"), a:has-text("이력서 다운로드")'
+    );
+
     if (await downloadButton.isVisible()) {
       await expect(downloadButton).toBeEnabled();
     }
@@ -101,7 +107,7 @@ test.describe('Profile Page', () => {
   test('should be responsive', async ({ page }) => {
     // Test mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
-    
+
     // Check that content is still visible
     const heading = page.locator('h1');
     await expect(heading).toBeVisible();
@@ -116,18 +122,26 @@ test.describe('Profile Page', () => {
 
   test('should have proper SEO meta tags', async ({ page }) => {
     // Check meta description
-    const metaDescription = await page.getAttribute('meta[name="description"]', 'content');
+    const metaDescription = await page.getAttribute(
+      'meta[name="description"]',
+      'content'
+    );
     expect(metaDescription).toBeTruthy();
 
     // Check Open Graph tags
-    const ogTitle = await page.getAttribute('meta[property="og:title"]', 'content');
+    const ogTitle = await page.getAttribute(
+      'meta[property="og:title"]',
+      'content'
+    );
     expect(ogTitle).toBeTruthy();
   });
 
   test('should navigate to contact page from CTA', async ({ page }) => {
     // Find and click contact CTA
-    const contactCTA = page.locator('a:has-text("문의하기"), button:has-text("문의하기")').first();
-    
+    const contactCTA = page
+      .locator('a:has-text("문의하기"), button:has-text("문의하기")')
+      .first();
+
     if (await contactCTA.isVisible()) {
       await contactCTA.click();
       await expect(page).toHaveURL(/#\/contact/);

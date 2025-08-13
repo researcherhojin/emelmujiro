@@ -37,13 +37,17 @@ describe('seoConfig', () => {
 
     it('should have configuration for all pages', () => {
       const pages = ['home', 'about', 'profile', 'contact', 'blog'];
-      pages.forEach(page => {
+      pages.forEach((page) => {
         expect(SEO_CONFIG.pages).toHaveProperty(page);
-        expect(SEO_CONFIG.pages[page as keyof typeof SEO_CONFIG.pages]).toHaveProperty('title');
-        expect(SEO_CONFIG.pages[page as keyof typeof SEO_CONFIG.pages]).toHaveProperty(
-          'description'
-        );
-        expect(SEO_CONFIG.pages[page as keyof typeof SEO_CONFIG.pages]).toHaveProperty('keywords');
+        expect(
+          SEO_CONFIG.pages[page as keyof typeof SEO_CONFIG.pages]
+        ).toHaveProperty('title');
+        expect(
+          SEO_CONFIG.pages[page as keyof typeof SEO_CONFIG.pages]
+        ).toHaveProperty('description');
+        expect(
+          SEO_CONFIG.pages[page as keyof typeof SEO_CONFIG.pages]
+        ).toHaveProperty('keywords');
       });
     });
   });
@@ -113,7 +117,9 @@ describe('seoConfig', () => {
     it('should generate correct OpenGraph URL for non-home pages', () => {
       const metaTags = generateMetaTags('about');
 
-      expect(metaTags.openGraph.url).toBe('https://researcherhojin.github.io/emelmujiro/#/about');
+      expect(metaTags.openGraph.url).toBe(
+        'https://researcherhojin.github.io/emelmujiro/#/about'
+      );
     });
 
     it('should generate correct Twitter Card tags', () => {
@@ -170,7 +176,8 @@ describe('seoConfig', () => {
         },
         potentialAction: {
           '@type': 'SearchAction',
-          target: 'https://researcherhojin.github.io/emelmujiro/search?q={search_term_string}',
+          target:
+            'https://researcherhojin.github.io/emelmujiro/search?q={search_term_string}',
           'query-input': 'required name=search_term_string',
         },
       });
@@ -345,17 +352,23 @@ describe('seoConfig', () => {
 
     it('should generate canonical URL for specific path', () => {
       const canonicalUrl = generateCanonicalUrl('/#/about');
-      expect(canonicalUrl).toBe('https://researcherhojin.github.io/emelmujiro/#/about');
+      expect(canonicalUrl).toBe(
+        'https://researcherhojin.github.io/emelmujiro/#/about'
+      );
     });
 
     it('should generate canonical URL for path without leading slash', () => {
       const canonicalUrl = generateCanonicalUrl('contact');
-      expect(canonicalUrl).toBe('https://researcherhojin.github.io/emelmujiro/contact');
+      expect(canonicalUrl).toBe(
+        'https://researcherhojin.github.io/emelmujiro/contact'
+      );
     });
 
     it('should generate canonical URL for path with query parameters', () => {
       const canonicalUrl = generateCanonicalUrl('/#/blog?category=ai');
-      expect(canonicalUrl).toBe('https://researcherhojin.github.io/emelmujiro/#/blog?category=ai');
+      expect(canonicalUrl).toBe(
+        'https://researcherhojin.github.io/emelmujiro/#/blog?category=ai'
+      );
     });
   });
 
@@ -364,7 +377,11 @@ describe('seoConfig', () => {
       const alternateLinks = generateAlternateLinks();
 
       expect(alternateLinks).toEqual([
-        { rel: 'alternate', hreflang: 'ko', href: 'https://researcherhojin.github.io/emelmujiro' },
+        {
+          rel: 'alternate',
+          hreflang: 'ko',
+          href: 'https://researcherhojin.github.io/emelmujiro',
+        },
         {
           rel: 'alternate',
           hreflang: 'x-default',
@@ -384,7 +401,7 @@ describe('seoConfig', () => {
         'blog',
       ];
 
-      pageTypes.forEach(pageType => {
+      pageTypes.forEach((pageType) => {
         const metaTags = generateMetaTags(pageType);
 
         expect(metaTags.title).toContain('에멜무지로');
@@ -414,32 +431,45 @@ describe('seoConfig', () => {
     it('should handle complex article structured data', () => {
       const complexArticleData = {
         title: 'AI 기술의 미래: 딥러닝에서 생성형 AI까지',
-        description: '인공지능 기술의 발전 과정과 미래 전망을 살펴보는 종합 가이드',
+        description:
+          '인공지능 기술의 발전 과정과 미래 전망을 살펴보는 종합 가이드',
         author: '이호진 박사',
         publishedDate: '2024-03-15T09:00:00Z',
         modifiedDate: '2024-03-20T14:30:00Z',
         url: 'https://researcherhojin.github.io/emelmujiro/#/blog/ai-future-guide',
-        image: 'https://researcherhojin.github.io/emelmujiro/images/ai-future.jpg',
+        image:
+          'https://researcherhojin.github.io/emelmujiro/images/ai-future.jpg',
         category: 'AI Technology',
         tags: ['AI', 'Deep Learning', 'Generative AI', 'Future Technology'],
       };
 
-      const structuredData = generateStructuredData('article', complexArticleData);
+      const structuredData = generateStructuredData(
+        'article',
+        complexArticleData
+      );
 
       // Type guard to ensure it's an article type
       expect(structuredData['@type']).toBe('Article');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).headline).toBe(complexArticleData.title);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((structuredData as any).description).toBe(complexArticleData.description);
+      expect((structuredData as any).description).toBe(
+        complexArticleData.description
+      );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((structuredData as any).author).toBe(complexArticleData.author);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((structuredData as any).datePublished).toBe(complexArticleData.publishedDate);
+      expect((structuredData as any).datePublished).toBe(
+        complexArticleData.publishedDate
+      );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((structuredData as any).dateModified).toBe(complexArticleData.modifiedDate);
+      expect((structuredData as any).dateModified).toBe(
+        complexArticleData.modifiedDate
+      );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((structuredData as any).mainEntityOfPage['@id']).toBe(complexArticleData.url);
+      expect((structuredData as any).mainEntityOfPage['@id']).toBe(
+        complexArticleData.url
+      );
     });
   });
 });

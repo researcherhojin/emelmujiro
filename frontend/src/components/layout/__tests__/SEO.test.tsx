@@ -30,7 +30,9 @@ jest.mock('react-helmet-async', () => ({
   Helmet: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="helmet-mock">{children}</div>
   ),
-  HelmetProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  HelmetProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
 describe('SEO Component', () => {
@@ -132,9 +134,13 @@ describe('SEO Component', () => {
     });
 
     it('should render with different page types', () => {
-      const pageTypes: Array<'website' | 'article' | 'profile'> = ['website', 'article', 'profile'];
+      const pageTypes: Array<'website' | 'article' | 'profile'> = [
+        'website',
+        'article',
+        'profile',
+      ];
 
-      pageTypes.forEach(type => {
+      pageTypes.forEach((type) => {
         renderWithProviders(<SEO type={type} />);
         expect(require('react-helmet-async').Helmet).toHaveBeenCalled();
       });
@@ -150,8 +156,13 @@ describe('SEO Component', () => {
       // Mock Helmet to capture the actual children structure
       require('react-helmet-async').Helmet = jest.fn(({ children }) => {
         // Store the children for inspection
-        (require('react-helmet-async').Helmet as MockedHelmet).lastChildren = children;
-        return React.createElement('div', { 'data-testid': 'helmet-mock' }, children);
+        (require('react-helmet-async').Helmet as MockedHelmet).lastChildren =
+          children;
+        return React.createElement(
+          'div',
+          { 'data-testid': 'helmet-mock' },
+          children
+        );
       });
     });
 
@@ -161,7 +172,11 @@ describe('SEO Component', () => {
 
     it('should include all basic meta tags', () => {
       renderWithProviders(
-        <SEO title="Test Title" description="Test Description" keywords="test, keywords" />
+        <SEO
+          title="Test Title"
+          description="Test Description"
+          keywords="test, keywords"
+        />
       );
 
       const children = (require('react-helmet-async').Helmet as MockedHelmet)
@@ -176,20 +191,27 @@ describe('SEO Component', () => {
 
       // Check for description meta tag
       const descriptionTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'description'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'description'
       );
       expect(descriptionTag).toBeDefined();
 
       // Check for keywords meta tag
       const keywordsTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'keywords'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'keywords'
       );
       expect(keywordsTag).toBeDefined();
     });
 
     it('should include Open Graph meta tags', () => {
       renderWithProviders(
-        <SEO title="OG Test" description="OG Description" ogImage="/test-og.png" type="article" />
+        <SEO
+          title="OG Test"
+          description="OG Description"
+          ogImage="/test-og.png"
+          type="article"
+        />
       );
 
       const children = (require('react-helmet-async').Helmet as MockedHelmet)
@@ -197,29 +219,37 @@ describe('SEO Component', () => {
 
       // Check for OG tags
       const ogTitleTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.property === 'og:title'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.property === 'og:title'
       );
       expect(ogTitleTag).toBeDefined();
 
       const ogDescriptionTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.property === 'og:description'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.property === 'og:description'
       );
       expect(ogDescriptionTag).toBeDefined();
 
       const ogImageTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.property === 'og:image'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.property === 'og:image'
       );
       expect(ogImageTag).toBeDefined();
 
       const ogTypeTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.property === 'og:type'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.property === 'og:type'
       );
       expect(ogTypeTag).toBeDefined();
     });
 
     it('should include Twitter Card meta tags', () => {
       renderWithProviders(
-        <SEO title="Twitter Test" description="Twitter Description" ogImage="/twitter-image.png" />
+        <SEO
+          title="Twitter Test"
+          description="Twitter Description"
+          ogImage="/twitter-image.png"
+        />
       );
 
       const children = (require('react-helmet-async').Helmet as MockedHelmet)
@@ -227,22 +257,26 @@ describe('SEO Component', () => {
 
       // Check for Twitter Card tags
       const twitterCardTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'twitter:card'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'twitter:card'
       );
       expect(twitterCardTag).toBeDefined();
 
       const twitterTitleTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'twitter:title'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'twitter:title'
       );
       expect(twitterTitleTag).toBeDefined();
 
       const twitterDescriptionTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'twitter:description'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'twitter:description'
       );
       expect(twitterDescriptionTag).toBeDefined();
 
       const twitterImageTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'twitter:image'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'twitter:image'
       );
       expect(twitterImageTag).toBeDefined();
     });
@@ -256,10 +290,13 @@ describe('SEO Component', () => {
         .lastChildren as MockedHelmetElement[];
 
       const canonicalLink = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.rel === 'canonical'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.rel === 'canonical'
       );
       expect(canonicalLink).toBeDefined();
-      expect((canonicalLink as MockedHelmetElement)?.props?.href).toBe(canonicalUrl);
+      expect((canonicalLink as MockedHelmetElement)?.props?.href).toBe(
+        canonicalUrl
+      );
     });
 
     it('should include OG URL when canonical is provided', () => {
@@ -271,10 +308,13 @@ describe('SEO Component', () => {
         .lastChildren as MockedHelmetElement[];
 
       const ogUrlTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.property === 'og:url'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.property === 'og:url'
       );
       expect(ogUrlTag).toBeDefined();
-      expect((ogUrlTag as MockedHelmetElement)?.props?.content).toBe(canonicalUrl);
+      expect((ogUrlTag as MockedHelmetElement)?.props?.content).toBe(
+        canonicalUrl
+      );
     });
 
     it('should set html lang attribute', () => {
@@ -297,18 +337,22 @@ describe('SEO Component', () => {
 
       // Check for PWA-related meta tags
       const appNameTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'application-name'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'application-name'
       );
       expect(appNameTag).toBeDefined();
 
       const appleMobileCapableTag = children.find(
         (child: unknown) =>
-          (child as MockedHelmetElement)?.props?.name === 'apple-mobile-web-app-capable'
+          (child as MockedHelmetElement)?.props?.name ===
+          'apple-mobile-web-app-capable'
       );
       expect(appleMobileCapableTag).toBeDefined();
 
       const mobileWebAppCapableTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'mobile-web-app-capable'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name ===
+          'mobile-web-app-capable'
       );
       expect(mobileWebAppCapableTag).toBeDefined();
     });
@@ -321,22 +365,26 @@ describe('SEO Component', () => {
 
       // Check for additional meta tags
       const robotsTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'robots'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'robots'
       );
       expect(robotsTag).toBeDefined();
 
       const themeColorTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'theme-color'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'theme-color'
       );
       expect(themeColorTag).toBeDefined();
 
       const formatDetectionTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'format-detection'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'format-detection'
       );
       expect(formatDetectionTag).toBeDefined();
 
       const googleTag = children.find(
-        (child: unknown) => (child as MockedHelmetElement)?.props?.name === 'google'
+        (child: unknown) =>
+          (child as MockedHelmetElement)?.props?.name === 'google'
       );
       expect(googleTag).toBeDefined();
     });
@@ -349,15 +397,17 @@ describe('SEO Component', () => {
       // This test is skipped due to environment limitations
       const { rerender } = renderWithProviders(<SEO title="Test" />);
 
-      const firstRenderCalls = (require('react-helmet-async').Helmet as jest.Mock).mock.calls
-        .length;
+      const firstRenderCalls = (
+        require('react-helmet-async').Helmet as jest.Mock
+      ).mock.calls.length;
 
       // Re-render with same props
       rerender(<SEO title="Test" />);
 
       // Should not cause additional render due to memoization
-      const secondRenderCalls = (require('react-helmet-async').Helmet as jest.Mock).mock.calls
-        .length;
+      const secondRenderCalls = (
+        require('react-helmet-async').Helmet as jest.Mock
+      ).mock.calls.length;
       expect(secondRenderCalls).toBe(firstRenderCalls);
     });
 
@@ -379,7 +429,9 @@ describe('SEO Component', () => {
   describe('Edge cases', () => {
     it('should handle empty string props', () => {
       expect(() => {
-        renderWithProviders(<SEO title="" description="" keywords="" ogImage="" canonical="" />);
+        renderWithProviders(
+          <SEO title="" description="" keywords="" ogImage="" canonical="" />
+        );
       }).not.toThrow();
     });
 
@@ -478,14 +530,16 @@ describe('SEO Component', () => {
 
       const { rerender } = renderWithProviders(<SEO {...props} />);
 
-      const initialCallCount = (require('react-helmet-async').Helmet as jest.Mock).mock.calls
-        .length;
+      const initialCallCount = (
+        require('react-helmet-async').Helmet as jest.Mock
+      ).mock.calls.length;
 
       // Re-render with identical props
       rerender(<SEO {...props} />);
 
-      const afterReRenderCallCount = (require('react-helmet-async').Helmet as jest.Mock).mock.calls
-        .length;
+      const afterReRenderCallCount = (
+        require('react-helmet-async').Helmet as jest.Mock
+      ).mock.calls.length;
 
       // Should be the same due to memoization
       expect(afterReRenderCallCount).toBe(initialCallCount);

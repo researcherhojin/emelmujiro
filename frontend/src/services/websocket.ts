@@ -1,5 +1,8 @@
 // MessageSender type for WebSocket message sending functionality
-export type MessageSenderFunction = (message: string, attachment?: File) => Promise<void>;
+export type MessageSenderFunction = (
+  message: string,
+  attachment?: File
+) => Promise<void>;
 
 export interface WebSocketConfig {
   url: string;
@@ -12,7 +15,11 @@ export interface WebSocketCallbacks {
   onOpen?: () => void;
   onClose?: () => void;
   onError?: (error: Event) => void;
-  onMessage?: (message: { type: string; data?: unknown; messageId?: string }) => void;
+  onMessage?: (message: {
+    type: string;
+    data?: unknown;
+    messageId?: string;
+  }) => void;
   onReconnect?: () => void;
   onReconnectFailed?: () => void;
   onTypingStart?: () => void;
@@ -40,30 +47,33 @@ export default class WebSocketService {
     this.url = url;
     this.options = options || {};
     this.state = 'connecting';
-    
+
     if (typeof WebSocket !== 'undefined') {
       this.ws = new WebSocket(url);
-      
+
       this.ws.onopen = () => {
         this.state = 'connected';
         this.reconnectAttempts = 0;
         this.emit('connect');
         this.flushMessageQueue();
       };
-      
+
       this.ws.onclose = (event) => {
         this.state = 'disconnected';
         this.emit('disconnect', event);
-        
-        if (this.autoReconnect && this.reconnectAttempts < this.maxReconnectAttempts) {
+
+        if (
+          this.autoReconnect &&
+          this.reconnectAttempts < this.maxReconnectAttempts
+        ) {
           this.attemptReconnect();
         }
       };
-      
+
       this.ws.onerror = (error) => {
         this.emit('error', error);
       };
-      
+
       this.ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
@@ -95,7 +105,11 @@ export default class WebSocketService {
   }
 
   send(message: any): boolean {
-    if (this.state === 'connected' && this.ws && this.ws.readyState === WebSocket.OPEN) {
+    if (
+      this.state === 'connected' &&
+      this.ws &&
+      this.ws.readyState === WebSocket.OPEN
+    ) {
       this.ws.send(JSON.stringify(message));
       return true;
     } else {
@@ -105,7 +119,11 @@ export default class WebSocketService {
   }
 
   sendBinary(data: ArrayBuffer): boolean {
-    if (this.state === 'connected' && this.ws && this.ws.readyState === WebSocket.OPEN) {
+    if (
+      this.state === 'connected' &&
+      this.ws &&
+      this.ws.readyState === WebSocket.OPEN
+    ) {
       this.ws.send(data);
       return true;
     }
@@ -137,7 +155,7 @@ export default class WebSocketService {
   emit(event: string, ...args: any[]): void {
     const handlers = this.listeners.get(event);
     if (handlers) {
-      handlers.forEach(handler => handler(...args));
+      handlers.forEach((handler) => handler(...args));
     }
   }
 
@@ -161,7 +179,11 @@ export default class WebSocketService {
     return this.reconnectAttempts;
   }
 
-  setAutoReconnect(enabled: boolean, maxAttempts?: number, delay?: number): void {
+  setAutoReconnect(
+    enabled: boolean,
+    maxAttempts?: number,
+    delay?: number
+  ): void {
     this.autoReconnect = enabled;
     if (maxAttempts !== undefined) {
       this.maxReconnectAttempts = maxAttempts;
@@ -175,7 +197,7 @@ export default class WebSocketService {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
     }
-    
+
     this.heartbeatInterval = setInterval(() => {
       if (this.state === 'connected' && this.ws) {
         this.ws.send(JSON.stringify({ type: 'ping' }));
@@ -206,7 +228,7 @@ export default class WebSocketService {
   private attemptReconnect(): void {
     this.reconnectAttempts++;
     this.emit('reconnect');
-    
+
     setTimeout(() => {
       if (this.url) {
         this.connect(this.url, this.options);
@@ -239,7 +261,10 @@ export class ChatWebSocketService {
   }
 
   connect(): Promise<void> {
-    if (this.isConnecting || (this.ws && this.ws.readyState === WebSocket.OPEN)) {
+    if (
+      this.isConnecting ||
+      (this.ws && this.ws.readyState === WebSocket.OPEN)
+    ) {
       return Promise.resolve();
     }
 
@@ -250,7 +275,10 @@ export class ChatWebSocketService {
       try {
         // For demo purposes, we'll simulate WebSocket behavior
         // In production, replace with actual WebSocket URL
-        if (process.env.NODE_ENV === 'development' || !this.config.url.startsWith('ws')) {
+        if (
+          process.env.NODE_ENV === 'development' ||
+          !this.config.url.startsWith('ws')
+        ) {
           this.simulateConnection(resolve, reject);
         } else {
           this.createRealConnection(resolve, reject);
@@ -262,7 +290,10 @@ export class ChatWebSocketService {
     });
   }
 
-  private simulateConnection(resolve: () => void, _reject: (error: unknown) => void) {
+  private simulateConnection(
+    resolve: () => void,
+    _reject: (error: unknown) => void
+  ) {
     // Simulate connection delay
     setTimeout(
       () => {
@@ -286,7 +317,10 @@ export class ChatWebSocketService {
     ); // Random delay 1-3 seconds
   }
 
-  private createRealConnection(resolve: () => void, reject: (error: unknown) => void) {
+  private createRealConnection(
+    resolve: () => void,
+    reject: (error: unknown) => void
+  ) {
     this.ws = new WebSocket(this.config.url);
 
     this.ws.onopen = () => {
@@ -301,7 +335,7 @@ export class ChatWebSocketService {
       resolve();
     };
 
-    this.ws.onclose = _event => {
+    this.ws.onclose = (_event) => {
       this.isConnecting = false;
 
       if (this.callbacks.onClose) {
@@ -315,7 +349,7 @@ export class ChatWebSocketService {
       }
     };
 
-    this.ws.onerror = event => {
+    this.ws.onerror = (event) => {
       this.isConnecting = false;
 
       if (this.callbacks.onError) {
@@ -325,7 +359,7 @@ export class ChatWebSocketService {
       reject(event);
     };
 
-    this.ws.onmessage = event => {
+    this.ws.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
         this.handleMessage(message);
@@ -335,7 +369,11 @@ export class ChatWebSocketService {
     };
   }
 
-  private handleMessage(message: { type: string; data?: unknown; messageId?: string }) {
+  private handleMessage(message: {
+    type: string;
+    data?: unknown;
+    messageId?: string;
+  }) {
     // Handle different message types
     switch (message.type) {
       case 'pong':
@@ -360,12 +398,19 @@ export class ChatWebSocketService {
 
   private simulateIncomingMessages() {
     // Simulate random incoming messages in development mode
-    const messageTypes = ['chat', 'notification', 'typing_start', 'typing_stop', 'update'];
+    const messageTypes = [
+      'chat',
+      'notification',
+      'typing_start',
+      'typing_stop',
+      'update',
+    ];
     const randomInterval = () => Math.random() * 10000 + 5000; // 5-15 seconds
 
     const sendRandomMessage = () => {
       if (!this.isManualClose) {
-        const messageType = messageTypes[Math.floor(Math.random() * messageTypes.length)];
+        const messageType =
+          messageTypes[Math.floor(Math.random() * messageTypes.length)];
         const message = {
           type: messageType,
           data: {
@@ -436,9 +481,12 @@ export class ChatWebSocketService {
       this.callbacks.onReconnect();
     }
 
-    this.reconnectTimer = setTimeout(() => {
-      this.connect();
-    }, this.config.reconnectInterval * Math.pow(2, this.reconnectAttempts - 1)); // Exponential backoff
+    this.reconnectTimer = setTimeout(
+      () => {
+        this.connect();
+      },
+      this.config.reconnectInterval * Math.pow(2, this.reconnectAttempts - 1)
+    ); // Exponential backoff
   }
 
   private startHeartbeat() {

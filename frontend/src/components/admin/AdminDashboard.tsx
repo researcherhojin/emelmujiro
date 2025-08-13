@@ -99,7 +99,7 @@ const AdminDashboard: React.FC = () => {
   const handleDeleteContent = (id: string | number) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
       // Delete content
-      setContentItems(contentItems.filter(item => item.id !== id));
+      setContentItems(contentItems.filter((item) => item.id !== id));
     }
   };
 
@@ -121,14 +121,16 @@ const AdminDashboard: React.FC = () => {
           { id: 'messages', label: '메시지', icon: MessageSquare },
           { id: 'analytics', label: '분석', icon: BarChart3 },
           { id: 'settings', label: '설정', icon: Settings },
-        ].map(item => {
+        ].map((item) => {
           const Icon = item.icon;
           return (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={`w-full px-6 py-3 flex items-center space-x-3 hover:bg-gray-800 transition-colors ${
-                activeTab === item.id ? 'bg-gray-800 border-l-4 border-blue-500' : ''
+                activeTab === item.id
+                  ? 'bg-gray-800 border-l-4 border-blue-500'
+                  : ''
               }`}
             >
               <Icon className="w-5 h-5" />
@@ -151,11 +153,31 @@ const AdminDashboard: React.FC = () => {
       <h1 className="text-3xl font-bold mb-8">대시보드 개요</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
-          { label: '총 사용자', value: stats.totalUsers, icon: Users, color: 'blue' },
-          { label: '총 게시물', value: stats.totalPosts, icon: FileText, color: 'green' },
-          { label: '총 메시지', value: stats.totalMessages, icon: MessageSquare, color: 'purple' },
-          { label: '총 조회수', value: stats.totalViews, icon: Eye, color: 'orange' },
-        ].map(stat => {
+          {
+            label: '총 사용자',
+            value: stats.totalUsers,
+            icon: Users,
+            color: 'blue',
+          },
+          {
+            label: '총 게시물',
+            value: stats.totalPosts,
+            icon: FileText,
+            color: 'green',
+          },
+          {
+            label: '총 메시지',
+            value: stats.totalMessages,
+            icon: MessageSquare,
+            color: 'purple',
+          },
+          {
+            label: '총 조회수',
+            value: stats.totalViews,
+            icon: Eye,
+            color: 'orange',
+          },
+        ].map((stat) => {
           const Icon = stat.icon;
           return (
             <div key={stat.label} className="bg-white rounded-lg shadow-md p-6">
@@ -165,7 +187,9 @@ const AdminDashboard: React.FC = () => {
                 </div>
                 <span className="text-sm text-gray-500">+12%</span>
               </div>
-              <h3 className="text-2xl font-bold mb-1">{stat.value.toLocaleString()}</h3>
+              <h3 className="text-2xl font-bold mb-1">
+                {stat.value.toLocaleString()}
+              </h3>
               <p className="text-gray-600">{stat.label}</p>
             </div>
           );
@@ -238,10 +262,12 @@ const AdminDashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {contentItems.map(item => (
+              {contentItems.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{item.title}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {item.title}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">

@@ -12,7 +12,15 @@ interface SkillCategoryInfo {
 export const SKILLS: Record<string, SkillCategory> = {
   ai: {
     title: 'AI/ML',
-    items: ['TensorFlow', 'PyTorch', 'Scikit-learn', 'Keras', 'OpenCV', 'NLP', 'Computer Vision'],
+    items: [
+      'TensorFlow',
+      'PyTorch',
+      'Scikit-learn',
+      'Keras',
+      'OpenCV',
+      'NLP',
+      'Computer Vision',
+    ],
   },
 
   languages: {
@@ -43,7 +51,7 @@ export const SKILLS: Record<string, SkillCategory> = {
 
 // 모든 스킬을 플랫 배열로 가져오기
 export const getAllSkills = (): string[] => {
-  return Object.values(SKILLS).flatMap(category => category.items);
+  return Object.values(SKILLS).flatMap((category) => category.items);
 };
 
 // 카테고리별 스킬 가져오기

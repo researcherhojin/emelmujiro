@@ -95,7 +95,9 @@ const filterMotionProps = (props: MotionProps) => {
 };
 
 export const motion = {
-  div: ({ children, ...props }: MotionProps) => <div {...filterMotionProps(props)}>{children}</div>,
+  div: ({ children, ...props }: MotionProps) => (
+    <div {...filterMotionProps(props)}>{children}</div>
+  ),
   section: ({ children, ...props }: MotionProps) => (
     <section {...filterMotionProps(props)}>{children}</section>
   ),
@@ -105,19 +107,33 @@ export const motion = {
   span: ({ children, ...props }: MotionProps) => (
     <span {...filterMotionProps(props)}>{children}</span>
   ),
-  h1: ({ children, ...props }: MotionProps) => <h1 {...filterMotionProps(props)}>{children}</h1>,
-  h2: ({ children, ...props }: MotionProps) => <h2 {...filterMotionProps(props)}>{children}</h2>,
-  h3: ({ children, ...props }: MotionProps) => <h3 {...filterMotionProps(props)}>{children}</h3>,
-  p: ({ children, ...props }: MotionProps) => <p {...filterMotionProps(props)}>{children}</p>,
+  h1: ({ children, ...props }: MotionProps) => (
+    <h1 {...filterMotionProps(props)}>{children}</h1>
+  ),
+  h2: ({ children, ...props }: MotionProps) => (
+    <h2 {...filterMotionProps(props)}>{children}</h2>
+  ),
+  h3: ({ children, ...props }: MotionProps) => (
+    <h3 {...filterMotionProps(props)}>{children}</h3>
+  ),
+  p: ({ children, ...props }: MotionProps) => (
+    <p {...filterMotionProps(props)}>{children}</p>
+  ),
   img: (props: MotionProps) => <img alt="" {...filterMotionProps(props)} />,
-  a: ({ children, ...props }: MotionProps) => <a {...filterMotionProps(props)}>{children}</a>,
+  a: ({ children, ...props }: MotionProps) => (
+    <a {...filterMotionProps(props)}>{children}</a>
+  ),
   article: ({ children, ...props }: MotionProps) => (
     <article {...filterMotionProps(props)}>{children}</article>
   ),
-  ul: ({ children, ...props }: MotionProps) => <ul {...filterMotionProps(props)}>{children}</ul>,
-  li: ({ children, ...props }: MotionProps) => <li {...filterMotionProps(props)}>{children}</li>,
+  ul: ({ children, ...props }: MotionProps) => (
+    <ul {...filterMotionProps(props)}>{children}</ul>
+  ),
+  li: ({ children, ...props }: MotionProps) => (
+    <li {...filterMotionProps(props)}>{children}</li>
+  ),
 };
 
-export const AnimatePresence: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <>{children}</>
-);
+export const AnimatePresence: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => <>{children}</>;

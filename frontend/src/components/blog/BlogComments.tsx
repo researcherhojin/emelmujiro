@@ -109,7 +109,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
       likedBy: [],
     };
 
-    const updatedComments = comments.map(comment => {
+    const updatedComments = comments.map((comment) => {
       if (comment.id === commentId) {
         return {
           ...comment,
@@ -125,10 +125,14 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
   };
 
   // Toggle like on comment
-  const toggleLike = (commentId: string, isReply: boolean = false, parentId?: string) => {
+  const toggleLike = (
+    commentId: string,
+    isReply: boolean = false,
+    parentId?: string
+  ) => {
     const userId = getUserId();
 
-    const updatedComments = comments.map(comment => {
+    const updatedComments = comments.map((comment) => {
       if (!isReply && comment.id === commentId) {
         const likedBy = comment.likedBy || [];
         const isLiked = likedBy.includes(userId);
@@ -136,12 +140,14 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
         return {
           ...comment,
           likes: isLiked ? comment.likes - 1 : comment.likes + 1,
-          likedBy: isLiked ? likedBy.filter(id => id !== userId) : [...likedBy, userId],
+          likedBy: isLiked
+            ? likedBy.filter((id) => id !== userId)
+            : [...likedBy, userId],
         };
       } else if (isReply && comment.id === parentId) {
         return {
           ...comment,
-          replies: comment.replies?.map(reply => {
+          replies: comment.replies?.map((reply) => {
             if (reply.id === commentId) {
               const likedBy = reply.likedBy || [];
               const isLiked = likedBy.includes(userId);
@@ -149,7 +155,9 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
               return {
                 ...reply,
                 likes: isLiked ? reply.likes - 1 : reply.likes + 1,
-                likedBy: isLiked ? likedBy.filter(id => id !== userId) : [...likedBy, userId],
+                likedBy: isLiked
+                  ? likedBy.filter((id) => id !== userId)
+                  : [...likedBy, userId],
               };
             }
             return reply;
@@ -193,12 +201,15 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
       </h3>
 
       {/* Comment form */}
-      <form onSubmit={handleSubmitComment} className="mb-8 p-4 bg-gray-50 rounded-lg">
+      <form
+        onSubmit={handleSubmitComment}
+        className="mb-8 p-4 bg-gray-50 rounded-lg"
+      >
         <div className="mb-4">
           <input
             type="text"
             value={authorName}
-            onChange={e => setAuthorName(e.target.value)}
+            onChange={(e) => setAuthorName(e.target.value)}
             placeholder="이름"
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
@@ -207,7 +218,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
         <div className="mb-4">
           <textarea
             value={newComment}
-            onChange={e => setNewComment(e.target.value)}
+            onChange={(e) => setNewComment(e.target.value)}
             placeholder="댓글을 작성해주세요..."
             rows={3}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -225,7 +236,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
 
       {/* Comments list */}
       <div className="space-y-6">
-        {comments.map(comment => (
+        {comments.map((comment) => (
           <div key={comment.id} className="bg-white p-4 rounded-lg border">
             <div className="flex items-start justify-between">
               <div className="flex-1">
@@ -234,7 +245,9 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
                   <span className="font-medium">{comment.author}</span>
                   <span className="mx-2 text-gray-300">•</span>
                   <Calendar className="w-4 h-4 mr-1 text-gray-500" />
-                  <span className="text-sm text-gray-500">{formatDate(comment.date)}</span>
+                  <span className="text-sm text-gray-500">
+                    {formatDate(comment.date)}
+                  </span>
                 </div>
                 <p className="text-gray-700 mb-3">{comment.content}</p>
                 <div className="flex items-center space-x-4">
@@ -262,7 +275,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
                   <div className="mt-4 ml-4 p-3 bg-gray-50 rounded">
                     <textarea
                       value={replyContent}
-                      onChange={e => setReplyContent(e.target.value)}
+                      onChange={(e) => setReplyContent(e.target.value)}
                       placeholder="답글을 작성해주세요..."
                       rows={2}
                       className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
@@ -290,15 +303,21 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
                 {/* Replies */}
                 {comment.replies && comment.replies.length > 0 && (
                   <div className="mt-4 ml-8 space-y-3">
-                    {comment.replies.map(reply => (
+                    {comment.replies.map((reply) => (
                       <div key={reply.id} className="bg-gray-50 p-3 rounded">
                         <div className="flex items-center mb-1">
                           <User className="w-3 h-3 mr-1 text-gray-500" />
-                          <span className="font-medium text-sm">{reply.author}</span>
+                          <span className="font-medium text-sm">
+                            {reply.author}
+                          </span>
                           <span className="mx-2 text-gray-300">•</span>
-                          <span className="text-xs text-gray-500">{formatDate(reply.date)}</span>
+                          <span className="text-xs text-gray-500">
+                            {formatDate(reply.date)}
+                          </span>
                         </div>
-                        <p className="text-sm text-gray-700 mb-2">{reply.content}</p>
+                        <p className="text-sm text-gray-700 mb-2">
+                          {reply.content}
+                        </p>
                         <button
                           onClick={() => toggleLike(reply.id, true, comment.id)}
                           className={`flex items-center space-x-1 text-xs ${

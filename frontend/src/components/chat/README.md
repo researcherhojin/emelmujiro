@@ -5,6 +5,7 @@ A comprehensive real-time customer support chat system built with React, TypeScr
 ## Features
 
 ### Core Features
+
 - **Floating Chat Button**: Fixed position button in bottom-right corner with status indicators
 - **Expandable Chat Window**: Full-featured chat interface with header, messages, and input
 - **Minimize/Maximize**: Collapsible chat window functionality
@@ -13,6 +14,7 @@ A comprehensive real-time customer support chat system built with React, TypeScr
 - **Business Hours**: Automatic business hours detection and display
 
 ### User Experience
+
 - **Smooth Animations**: Powered by Framer Motion for fluid transitions
 - **Dark Mode Support**: Seamless integration with application theme
 - **Mobile Responsive**: Optimized for mobile and desktop devices
@@ -20,6 +22,7 @@ A comprehensive real-time customer support chat system built with React, TypeScr
 - **Multi-language**: Korean/English localization support
 
 ### Chat Interface
+
 - **Message Types**: Support for text, images, files, and system messages
 - **Message Status**: Sent, delivered, read indicators for user messages
 - **Typing Indicator**: Real-time typing status display
@@ -27,12 +30,14 @@ A comprehensive real-time customer support chat system built with React, TypeScr
 - **Message Timestamps**: Relative and absolute time formatting
 
 ### Interactive Features
+
 - **Quick Replies**: Pre-defined response buttons for common inquiries
 - **Emoji Picker**: Rich emoji selector with categories and search
 - **File Upload**: Drag-and-drop file upload with preview and validation
 - **Sound Notifications**: Audio alerts for new messages (when chat is closed)
 
 ### Technical Features
+
 - **WebSocket Connection**: Real-time communication with fallback to polling
 - **Offline Support**: Message queuing and offline indicators
 - **Auto-reconnection**: Automatic reconnection with retry logic
@@ -40,6 +45,7 @@ A comprehensive real-time customer support chat system built with React, TypeScr
 - **Export Function**: Download chat transcripts as JSON
 
 ### Admin Features
+
 - **Admin Panel**: Comprehensive management interface (Ctrl+Shift+A)
 - **Settings Management**: Configure welcome messages, file uploads, emoji support
 - **Canned Responses**: Manage pre-written responses for agents
@@ -67,14 +73,9 @@ Access chat functionality throughout the application:
 import { useChatContext } from './contexts/ChatContext';
 
 const MyComponent = () => {
-  const { 
-    isOpen, 
-    messages, 
-    sendMessage, 
-    openChat, 
-    isConnected 
-  } = useChatContext();
-  
+  const { isOpen, messages, sendMessage, openChat, isConnected } =
+    useChatContext();
+
   // Your component logic
 };
 ```
@@ -99,7 +100,7 @@ const handleSendMessage = async () => {
   await sendMessage({
     type: 'text',
     content: 'Hello, I need help!',
-    sender: 'user'
+    sender: 'user',
   });
 };
 ```
@@ -118,6 +119,7 @@ REACT_APP_WEBSOCKET_URL=ws://localhost:8000/ws/chat/
 ### Business Hours
 
 Business hours are automatically calculated based on Korean Standard Time (KST):
+
 - **Days**: Monday - Friday
 - **Hours**: 09:00 - 18:00 KST
 - **Timezone**: Asia/Seoul
@@ -133,13 +135,14 @@ const defaultSettings = {
   allowFileUpload: true,
   allowEmoji: true,
   soundEnabled: true,
-  maxMessageLength: 1000
+  maxMessageLength: 1000,
 };
 ```
 
 ## Admin Panel
 
 Access the admin panel using the keyboard shortcut:
+
 - **Windows/Linux**: `Ctrl + Shift + A`
 - **Mac**: `Cmd + Shift + A`
 - **Close**: `Escape`

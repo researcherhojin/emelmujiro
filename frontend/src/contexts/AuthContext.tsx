@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import axiosInstance from '../services/api';
 
 interface User {
@@ -53,7 +59,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axiosInstance.post('/auth/login/', { email, password });
+      const response = await axiosInstance.post('/auth/login/', {
+        email,
+        password,
+      });
       const { token, user } = response.data;
 
       localStorage.setItem('authToken', token);
@@ -87,7 +96,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(user);
     } catch (err) {
       const error = err as Error & { userMessage?: string };
-      setError(error.userMessage || error.message || '회원가입에 실패했습니다.');
+      setError(
+        error.userMessage || error.message || '회원가입에 실패했습니다.'
+      );
       throw err;
     } finally {
       setLoading(false);

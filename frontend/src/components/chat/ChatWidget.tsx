@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Minimize2, Maximize2, Clock, Users } from 'lucide-react';
+import {
+  MessageCircle,
+  X,
+  Minimize2,
+  Maximize2,
+  Clock,
+  Users,
+} from 'lucide-react';
 import { useUI } from '../../contexts/UIContext';
 import { useChatContext } from '../../contexts/ChatContext';
 import ChatWindow from './ChatWindow';
@@ -26,7 +33,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ className }) => {
     toggleMinimize,
     markAllAsRead,
   } = useChatContext();
-  
+
   const [isVisible, setIsVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
@@ -61,7 +68,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ className }) => {
   // Handle click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (widgetRef.current && !widgetRef.current.contains(event.target as Node)) {
+      if (
+        widgetRef.current &&
+        !widgetRef.current.contains(event.target as Node)
+      ) {
         if (isOpen && !isMinimized) {
           // Don't auto-close, just minimize instead
           toggleMinimize();
@@ -71,9 +81,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ className }) => {
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      return () =>
+        document.removeEventListener('mousedown', handleClickOutside);
     }
-    
+
     // Return undefined for the case when isOpen is false
     return undefined;
   }, [isOpen, isMinimized, toggleMinimize]);
@@ -123,7 +134,9 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ className }) => {
     <div
       ref={widgetRef}
       className={`fixed bottom-4 right-4 z-50 font-sans ${className}`}
-      style={{ fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif' }}
+      style={{
+        fontFamily: 'Pretendard, -apple-system, BlinkMacSystemFont, sans-serif',
+      }}
     >
       <AnimatePresence>
         {isOpen && (
@@ -134,15 +147,17 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ className }) => {
             transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
             className={`mb-4 ${isMinimized ? 'pointer-events-none' : ''}`}
           >
-            <div className={`
-              bg-white dark:bg-gray-800 
-              border border-gray-200 dark:border-gray-700 
-              rounded-lg shadow-2xl 
-              w-80 h-96 
+            <div
+              className={`
+              bg-white dark:bg-gray-800
+              border border-gray-200 dark:border-gray-700
+              rounded-lg shadow-2xl
+              w-80 h-96
               flex flex-col
               ${isMinimized ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}
               transition-all duration-300
-            `}>
+            `}
+            >
               {/* Chat Header */}
               <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-500 to-blue-600 rounded-t-lg">
                 <div className="flex items-center space-x-3">
@@ -150,13 +165,15 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ className }) => {
                     <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                       <Users className="w-6 h-6 text-blue-600" />
                     </div>
-                    <div 
+                    <div
                       className="absolute -bottom-1 -right-1 w-4 h-4 border-2 border-white rounded-full"
                       style={{ backgroundColor: getStatusColor() }}
                     />
                   </div>
                   <div className="text-white">
-                    <h3 className="font-semibold text-sm">{t('chat.title', '고객 지원')}</h3>
+                    <h3 className="font-semibold text-sm">
+                      {t('chat.title', '고객 지원')}
+                    </h3>
                     <p className="text-xs opacity-90">{getStatusText()}</p>
                   </div>
                 </div>
@@ -164,7 +181,9 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ className }) => {
                   <button
                     onClick={toggleMinimize}
                     className="p-1 rounded-full hover:bg-white/20 transition-colors"
-                    aria-label={isMinimized ? t('chat.maximize') : t('chat.minimize')}
+                    aria-label={
+                      isMinimized ? t('chat.maximize') : t('chat.minimize')
+                    }
                   >
                     {isMinimized ? (
                       <Maximize2 className="w-4 h-4 text-white" />
@@ -210,7 +229,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ className }) => {
         tabIndex={0}
       >
         {/* Connection Status Indicator */}
-        <div 
+        <div
           className="absolute -top-1 -right-1 w-4 h-4 border-2 border-white rounded-full animate-pulse"
           style={{ backgroundColor: getStatusColor() }}
         />
@@ -265,14 +284,15 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ className }) => {
               <span>
                 {agentAvailable && businessHours.isOpen
                   ? t('chat.quickInfo.available', '지금 채팅하세요!')
-                  : t('chat.quickInfo.unavailable', '메시지를 남겨주세요')
-                }
+                  : t('chat.quickInfo.unavailable', '메시지를 남겨주세요')}
               </span>
             </div>
             {!businessHours.isOpen && (
               <div className="flex items-center space-x-2 mt-1 text-xs opacity-80">
                 <Clock className="w-3 h-3" />
-                <span>{t('chat.businessHours', `운영시간: ${businessHours.hours}`)}</span>
+                <span>
+                  {t('chat.businessHours', `운영시간: ${businessHours.hours}`)}
+                </span>
               </div>
             )}
             <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-4 border-l-gray-900 dark:border-l-gray-100 border-y-4 border-y-transparent" />

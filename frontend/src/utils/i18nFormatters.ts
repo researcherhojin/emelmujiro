@@ -11,9 +11,14 @@ export const formatNumber = (number: number, i18n: i18n): string => {
 /**
  * Format currency according to current locale
  */
-export const formatCurrency = (amount: number, i18n: i18n, currency = 'KRW'): string => {
+export const formatCurrency = (
+  amount: number,
+  i18n: i18n,
+  currency = 'KRW'
+): string => {
   const locale = i18n.language === 'ko' ? 'ko-KR' : 'en-US';
-  const currencyCode = i18n.language === 'ko' ? 'KRW' : currency === 'KRW' ? 'USD' : currency;
+  const currencyCode =
+    i18n.language === 'ko' ? 'KRW' : currency === 'KRW' ? 'USD' : currency;
 
   return new Intl.NumberFormat(locale, {
     style: 'currency',
@@ -38,7 +43,9 @@ export const formatDate = (
     day: 'numeric',
   };
 
-  return new Intl.DateTimeFormat(locale, options || defaultOptions).format(dateObj);
+  return new Intl.DateTimeFormat(locale, options || defaultOptions).format(
+    dateObj
+  );
 };
 
 /**
@@ -78,7 +85,9 @@ export const formatRelativeTime = (date: Date | string, i18n: i18n): string => {
 export const formatFileSize = (bytes: number, i18n: i18n): string => {
   const locale = i18n.language === 'ko' ? 'ko-KR' : 'en-US';
   const sizes =
-    i18n.language === 'ko' ? ['바이트', 'KB', 'MB', 'GB', 'TB'] : ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    i18n.language === 'ko'
+      ? ['바이트', 'KB', 'MB', 'GB', 'TB']
+      : ['Bytes', 'KB', 'MB', 'GB', 'TB'];
 
   if (bytes === 0) return `0 ${sizes[0]}`;
 
@@ -184,7 +193,7 @@ export const formatOrdinal = (number: number, language: string): string => {
     // English ordinal format
     const j = number % 10;
     const k = number % 100;
-    
+
     if (j === 1 && k !== 11) {
       return `${number}st`;
     }
@@ -221,10 +230,17 @@ export const formatTime = (date: Date | string, locale: string): string => {
     minute: '2-digit',
     hour12: locale === 'en',
   };
-  return new Intl.DateTimeFormat(locale === 'ko' ? 'ko-KR' : 'en-US', options).format(dateObj);
+  return new Intl.DateTimeFormat(
+    locale === 'ko' ? 'ko-KR' : 'en-US',
+    options
+  ).format(dateObj);
 };
 
-export const formatDateRange = (startDate: Date | string, endDate: Date | string, locale: string): string => {
+export const formatDateRange = (
+  startDate: Date | string,
+  endDate: Date | string,
+  locale: string
+): string => {
   const start = typeof startDate === 'string' ? new Date(startDate) : startDate;
   const end = typeof endDate === 'string' ? new Date(endDate) : endDate;
   const options: Intl.DateTimeFormatOptions = {
@@ -240,7 +256,7 @@ export const formatDateRange = (startDate: Date | string, endDate: Date | string
 export const formatCardNumber = (cardNumber: string): string => {
   // Remove all non-digit characters
   const cleaned = cardNumber.replace(/\D/g, '');
-  
+
   // Add spaces every 4 digits
   const groups = cleaned.match(/.{1,4}/g) || [];
   return groups.join(' ');

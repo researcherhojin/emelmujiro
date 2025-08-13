@@ -44,7 +44,9 @@ describe('ProfilePage Component', () => {
       renderWithRouter(<ProfilePage />);
 
       // Check for the presence of key sections instead
-      expect(screen.getByRole('heading', { level: 1, name: '이호진' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { level: 1, name: '이호진' })
+      ).toBeInTheDocument();
     });
 
     it('renders all navigation tabs', () => {

@@ -36,7 +36,10 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
   const saveToRecentSearches = (term: string) => {
     if (!term.trim()) return;
 
-    const updated = [term, ...recentSearches.filter(s => s !== term)].slice(0, 5);
+    const updated = [term, ...recentSearches.filter((s) => s !== term)].slice(
+      0,
+      5
+    );
     setRecentSearches(updated);
     localStorage.setItem('recentSearches', JSON.stringify(updated));
   };
@@ -66,12 +69,13 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
       // Fallback to local search
       const lowerTerm = term.toLowerCase();
       const results = posts.filter(
-        post =>
+        (post) =>
           post.title.toLowerCase().includes(lowerTerm) ||
           post.content.toLowerCase().includes(lowerTerm) ||
           (post.excerpt && post.excerpt.toLowerCase().includes(lowerTerm)) ||
           (post.category && post.category.toLowerCase().includes(lowerTerm)) ||
-          (post.tags && post.tags.some(tag => tag.toLowerCase().includes(lowerTerm)))
+          (post.tags &&
+            post.tags.some((tag) => tag.toLowerCase().includes(lowerTerm)))
       );
 
       setSearchResults(results);

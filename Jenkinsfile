@@ -3,7 +3,7 @@
 
 pipeline {
     agent any
-    
+
     environment {
         NODE_VERSION = '20'
         PYTHON_VERSION = '3.11'
@@ -11,14 +11,14 @@ pipeline {
         SLACK_WEBHOOK = credentials('slack-webhook')
         AWS_CREDENTIALS = credentials('aws-credentials')
     }
-    
+
     options {
         timestamps()
         timeout(time: 1, unit: 'HOURS')
         buildDiscarder(logRotator(numToKeepStr: '10'))
         disableConcurrentBuilds()
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
@@ -29,7 +29,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Setup') {
             parallel {
                 stage('Setup Frontend') {
@@ -42,7 +42,7 @@ pipeline {
                         }
                     }
                 }
-                
+
                 stage('Setup Backend') {
                     steps {
                         dir('backend') {
@@ -58,7 +58,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Code Quality') {
             parallel {
                 stage('Frontend Lint') {
@@ -68,7 +68,7 @@ pipeline {
                         }
                     }
                 }
-                
+
                 stage('Backend Lint') {
                     steps {
                         dir('backend') {
@@ -80,13 +80,13 @@ pipeline {
                         }
                     }
                 }
-                
+
                 stage('Security Scan') {
                     steps {
                         sh '''
                             # Frontend security audit
                             cd frontend && npm audit --audit-level=high
-                            
+
                             # Backend security audit
                             cd ../backend
                             . venv/bin/activate
@@ -96,7 +96,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Test') {
             parallel {
                 stage('Frontend Tests') {
@@ -120,7 +120,7 @@ pipeline {
                         }
                     }
                 }
-                
+
                 stage('Backend Tests') {
                     steps {
                         dir('backend') {
@@ -145,7 +145,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Build') {
             parallel {
                 stage('Build Frontend') {
@@ -156,14 +156,14 @@ pipeline {
                         }
                     }
                 }
-                
+
                 stage('Build Docker Images') {
                     steps {
                         script {
                             docker.withRegistry('https://registry.hub.docker.com', 'docker-credentials') {
                                 def frontendImage = docker.build("emelmujiro/frontend:${env.GIT_COMMIT_SHORT}", "./frontend")
                                 def backendImage = docker.build("emelmujiro/backend:${env.GIT_COMMIT_SHORT}", "./backend")
-                                
+
                                 if (env.GIT_BRANCH == 'main' || env.GIT_BRANCH == 'develop') {
                                     frontendImage.push()
                                     frontendImage.push('latest')
@@ -176,7 +176,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Performance Test') {
             when {
                 branch 'main'
@@ -201,7 +201,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Deploy') {
             when {
                 anyOf {
@@ -231,7 +231,7 @@ pipeline {
                         }
                     }
                 }
-                
+
                 stage('Deploy to Production') {
                     when {
                         branch 'main'
@@ -268,7 +268,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Smoke Tests') {
             when {
                 anyOf {
@@ -287,7 +287,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             cleanWs()

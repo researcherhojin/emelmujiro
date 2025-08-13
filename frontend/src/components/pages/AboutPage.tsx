@@ -28,12 +28,14 @@ const AboutPage: React.FC = memo(() => {
     {
       year: '2023',
       title: '교육 확대',
-      description: '삼성전자, 현대건설, LG전자, 카카오 등 대기업 AI/ML 교육 프로젝트 수행',
+      description:
+        '삼성전자, 현대건설, LG전자, 카카오 등 대기업 AI/ML 교육 프로젝트 수행',
     },
     {
       year: '2024',
       title: '전문화 및 창업',
-      description: '멋쟁이사자처럼 AI 과정 전문 강사 활동, 12월 에멜무지로 설립',
+      description:
+        '멋쟁이사자처럼 AI 과정 전문 강사 활동, 12월 에멜무지로 설립',
     },
     {
       year: '2025',
@@ -45,12 +47,14 @@ const AboutPage: React.FC = memo(() => {
   const companyValues: CompanyValue[] = [
     {
       title: '실무 중심 교육',
-      description: '이론과 실습을 균형있게 구성하여 현업에서 바로 활용 가능한 실무 적용 교육',
+      description:
+        '이론과 실습을 균형있게 구성하여 현업에서 바로 활용 가능한 실무 적용 교육',
       icon: Target,
     },
     {
       title: '맞춤형 커리큘럼',
-      description: '고객사의 수준과 목표에 맞춰 설계된 단계별 맞춤 교육 프로그램',
+      description:
+        '고객사의 수준과 목표에 맞춰 설계된 단계별 맞춤 교육 프로그램',
       icon: Users,
     },
     {
@@ -95,11 +99,13 @@ const AboutPage: React.FC = memo(() => {
                 우리의 미션
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl mx-auto">
-                에멜무지로는 2024년 12월에 설립된 AI 교육 및 컨설팅 전문 기업입니다.
+                에멜무지로는 2024년 12월에 설립된 AI 교육 및 컨설팅 전문
+                기업입니다.
                 <br />
                 실무 중심의 AI 교육과 맞춤형 솔루션 개발을 통해
                 <br />
-                고객사의 디지털 혁신을 지원하고 함께 성장하는 파트너가 되겠습니다.
+                고객사의 디지털 혁신을 지원하고 함께 성장하는 파트너가
+                되겠습니다.
               </p>
             </div>
           </div>
@@ -126,7 +132,10 @@ const AboutPage: React.FC = memo(() => {
 
               <div className="space-y-12">
                 {timeline.map((item, index) => (
-                  <div key={index} className="flex gap-8 md:gap-12 items-start group relative">
+                  <div
+                    key={index}
+                    className="flex gap-8 md:gap-12 items-start group relative"
+                  >
                     {/* Year */}
                     <div className="flex-shrink-0 w-[100px] md:w-[100px] text-right">
                       <div className="text-2xl md:text-3xl font-black text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
@@ -206,19 +215,29 @@ const AboutPage: React.FC = memo(() => {
             </h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
               <div>
-                <div className="text-5xl font-black text-gray-900 dark:text-white mb-2">1,000+</div>
+                <div className="text-5xl font-black text-gray-900 dark:text-white mb-2">
+                  1,000+
+                </div>
                 <p className="text-gray-600 dark:text-gray-400">누적 수강생</p>
               </div>
               <div>
-                <div className="text-5xl font-black text-gray-900 dark:text-white mb-2">50+</div>
-                <p className="text-gray-600 dark:text-gray-400">완료 프로젝트</p>
+                <div className="text-5xl font-black text-gray-900 dark:text-white mb-2">
+                  50+
+                </div>
+                <p className="text-gray-600 dark:text-gray-400">
+                  완료 프로젝트
+                </p>
               </div>
               <div>
-                <div className="text-5xl font-black text-gray-900 dark:text-white mb-2">30+</div>
+                <div className="text-5xl font-black text-gray-900 dark:text-white mb-2">
+                  30+
+                </div>
                 <p className="text-gray-600 dark:text-gray-400">협력사 기업</p>
               </div>
               <div>
-                <div className="text-5xl font-black text-gray-900 dark:text-white mb-2">98%</div>
+                <div className="text-5xl font-black text-gray-900 dark:text-white mb-2">
+                  98%
+                </div>
                 <p className="text-gray-600 dark:text-gray-400">고객 만족도</p>
               </div>
             </div>

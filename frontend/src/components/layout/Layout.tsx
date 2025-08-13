@@ -19,7 +19,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     {
       key: '/',
       handler: () => {
-        const searchInput = document.querySelector<HTMLInputElement>('input[type="search"]');
+        const searchInput = document.querySelector<HTMLInputElement>(
+          'input[type="search"]'
+        );
         if (searchInput) {
           searchInput.focus();
           announceToScreenReader('Search input focused');

@@ -42,7 +42,7 @@ describe('HomePage', () => {
 
   it('renders all sections after loading', async () => {
     renderWithProviders(<HomePage />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('hero-section')).toBeInTheDocument();
       expect(screen.getByTestId('services-section')).toBeInTheDocument();
@@ -53,7 +53,7 @@ describe('HomePage', () => {
 
   it('shows loading state initially', () => {
     renderWithProviders(<HomePage />);
-    
+
     // Should show loading component initially
     const loadingElement = screen.queryByText(/loading/i);
     if (loadingElement) {
@@ -63,7 +63,7 @@ describe('HomePage', () => {
 
   it('renders sections in correct order', async () => {
     const { container } = renderWithProviders(<HomePage />);
-    
+
     await waitFor(() => {
       const sections = container.querySelectorAll('[data-testid]');
       expect(sections[0]).toHaveAttribute('data-testid', 'hero-section');
@@ -75,16 +75,19 @@ describe('HomePage', () => {
 
   it('handles suspense fallback correctly', async () => {
     renderWithProviders(<HomePage />);
-    
+
     // Wait for all sections to load
-    await waitFor(() => {
-      expect(screen.getByTestId('hero-section')).toBeInTheDocument();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('hero-section')).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 
   it('passes correct props to SEOHead', () => {
     renderWithProviders(<HomePage />);
-    
+
     // SEOHead should be called with correct props
     // Since it's mocked, we just verify the component renders
     expect(document.body).toBeInTheDocument();
@@ -92,7 +95,7 @@ describe('HomePage', () => {
 
   it('renders with React.Suspense wrapper', async () => {
     renderWithProviders(<HomePage />);
-    
+
     // All lazy loaded components should eventually render
     await waitFor(() => {
       expect(screen.getByTestId('hero-section')).toBeInTheDocument();
@@ -102,7 +105,7 @@ describe('HomePage', () => {
 
   it('includes structured data for SEO', () => {
     renderWithProviders(<HomePage />);
-    
+
     // HomePage should include structured data
     // This is handled by SEOHead component
     expect(document.body).toBeInTheDocument();
@@ -111,25 +114,25 @@ describe('HomePage', () => {
   it('handles error boundary gracefully', () => {
     // Mock console.error to avoid noise in test output
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+
     // Force an error in a section
     jest.mock('../../components/sections/HeroSection', () => {
       return function HeroSection() {
         throw new Error('Test error');
       };
     });
-    
+
     renderWithProviders(<HomePage />);
-    
+
     // Should still render other content
     expect(document.body).toBeInTheDocument();
-    
+
     consoleSpy.mockRestore();
   });
 
   it('applies correct page layout', () => {
     const { container } = renderWithProviders(<HomePage />);
-    
+
     // Check if the page has proper structure
     expect(container.firstChild).toBeInTheDocument();
   });

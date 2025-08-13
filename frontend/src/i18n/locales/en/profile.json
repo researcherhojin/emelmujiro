@@ -57,11 +57,24 @@
         },
         {
           "name": "AI/ML Frameworks",
-          "skills": ["TensorFlow", "PyTorch", "Keras", "Scikit-learn", "Hugging Face"]
+          "skills": [
+            "TensorFlow",
+            "PyTorch",
+            "Keras",
+            "Scikit-learn",
+            "Hugging Face"
+          ]
         },
         {
           "name": "Web Frameworks",
-          "skills": ["React", "Vue.js", "Node.js", "Django", "FastAPI", "Express"]
+          "skills": [
+            "React",
+            "Vue.js",
+            "Node.js",
+            "Django",
+            "FastAPI",
+            "Express"
+          ]
         },
         {
           "name": "Cloud Platforms",
@@ -125,13 +138,25 @@
         {
           "name": "Real-time Data Analytics Platform",
           "description": "Built large-scale real-time data processing and visualization platform",
-          "technologies": ["Python", "Apache Kafka", "Elasticsearch", "Grafana", "Docker"],
+          "technologies": [
+            "Python",
+            "Apache Kafka",
+            "Elasticsearch",
+            "Grafana",
+            "Docker"
+          ],
           "year": "2022"
         },
         {
           "name": "E-commerce Recommendation Engine",
           "description": "Developed machine learning-based personalized product recommendation system",
-          "technologies": ["Python", "PyTorch", "Redis", "PostgreSQL", "Kubernetes"],
+          "technologies": [
+            "Python",
+            "PyTorch",
+            "Redis",
+            "PostgreSQL",
+            "Kubernetes"
+          ],
           "year": "2021"
         }
       ]

@@ -13,7 +13,9 @@ test.describe('Contact Page', () => {
     const nameInput = page.getByLabel(/이름|name/i);
     const emailInput = page.getByLabel(/이메일|email/i);
     const messageInput = page.getByLabel(/메시지|message/i);
-    const submitButton = page.getByRole('button', { name: /전송|send|submit/i });
+    const submitButton = page.getByRole('button', {
+      name: /전송|send|submit/i,
+    });
 
     await expect(nameInput).toBeVisible();
     await expect(emailInput).toBeVisible();
@@ -23,11 +25,15 @@ test.describe('Contact Page', () => {
 
   test('form validation works', async ({ page }) => {
     // Try to submit empty form
-    const submitButton = page.getByRole('button', { name: /전송|send|submit/i });
+    const submitButton = page.getByRole('button', {
+      name: /전송|send|submit/i,
+    });
     await submitButton.click();
 
     // Check for validation messages
-    const validationMessage = page.locator('.error-message, [role="alert"]').first();
+    const validationMessage = page
+      .locator('.error-message, [role="alert"]')
+      .first();
 
     if (await validationMessage.isVisible()) {
       await expect(validationMessage).toContainText(/필수|required/i);
@@ -40,11 +46,15 @@ test.describe('Contact Page', () => {
     await emailInput.fill('invalid-email');
 
     // Try to submit
-    const submitButton = page.getByRole('button', { name: /전송|send|submit/i });
+    const submitButton = page.getByRole('button', {
+      name: /전송|send|submit/i,
+    });
     await submitButton.click();
 
     // Check for email validation error
-    const emailError = page.locator('[data-testid="email-error"], .email-error');
+    const emailError = page.locator(
+      '[data-testid="email-error"], .email-error'
+    );
 
     if (await emailError.isVisible()) {
       await expect(emailError).toContainText(/유효|valid|올바른/i);
@@ -58,14 +68,18 @@ test.describe('Contact Page', () => {
     await page.getByLabel(/메시지|message/i).fill('테스트 메시지입니다.');
 
     // Submit form
-    const submitButton = page.getByRole('button', { name: /전송|send|submit/i });
+    const submitButton = page.getByRole('button', {
+      name: /전송|send|submit/i,
+    });
     await submitButton.click();
 
     // Wait for submission
     await page.waitForTimeout(1000);
 
     // Check for success message
-    const successMessage = page.locator('[data-testid="success-message"], .success-message');
+    const successMessage = page.locator(
+      '[data-testid="success-message"], .success-message'
+    );
 
     if (await successMessage.isVisible()) {
       await expect(successMessage).toContainText(/감사|성공|thank|success/i);
@@ -93,11 +107,14 @@ test.describe('Contact Page', () => {
 
   test('displays office location/map', async ({ page }) => {
     // Check for map or address
-    const mapSection = page.locator('[data-testid="map"], .map-container, iframe[src*="maps"]');
+    const mapSection = page.locator(
+      '[data-testid="map"], .map-container, iframe[src*="maps"]'
+    );
     const addressSection = page.locator('[data-testid="address"], .address');
 
     // Either map or address should be visible
-    const hasLocationInfo = (await mapSection.isVisible()) || (await addressSection.isVisible());
+    const hasLocationInfo =
+      (await mapSection.isVisible()) || (await addressSection.isVisible());
     expect(hasLocationInfo).toBeTruthy();
   });
 
@@ -107,7 +124,9 @@ test.describe('Contact Page', () => {
 
     if (await newsletterForm.isVisible()) {
       const emailInput = newsletterForm.getByPlaceholder(/이메일|email/i);
-      const subscribeButton = newsletterForm.getByRole('button', { name: /구독|subscribe/i });
+      const subscribeButton = newsletterForm.getByRole('button', {
+        name: /구독|subscribe/i,
+      });
 
       // Fill email
       await emailInput.fill('newsletter@example.com');
@@ -128,7 +147,9 @@ test.describe('Contact Page', () => {
 
   test('social media links', async ({ page }) => {
     // Check for social media links
-    const socialLinks = page.locator('[data-testid="social-links"] a, .social-links a');
+    const socialLinks = page.locator(
+      '[data-testid="social-links"] a, .social-links a'
+    );
 
     if ((await socialLinks.count()) > 0) {
       // Check each link has proper attributes

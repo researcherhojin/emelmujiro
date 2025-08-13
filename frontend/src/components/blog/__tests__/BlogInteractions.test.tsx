@@ -393,7 +393,9 @@ describe('BlogInteractions Component', () => {
       fireEvent.click(copyButton);
 
       await waitFor(() => {
-        expect(mockWriteText).toHaveBeenCalledWith(expect.stringContaining('/blog/1'));
+        expect(mockWriteText).toHaveBeenCalledWith(
+          expect.stringContaining('/blog/1')
+        );
       });
 
       // The clipboard write might succeed but the UI update might not happen in tests

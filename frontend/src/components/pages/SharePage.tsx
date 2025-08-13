@@ -56,7 +56,9 @@ const SharePage: React.FC = () => {
 
   const handleSaveForLater = () => {
     // Save to local storage or favorites
-    const savedItems = JSON.parse(localStorage.getItem('saved-content') || '[]');
+    const savedItems = JSON.parse(
+      localStorage.getItem('saved-content') || '[]'
+    );
     const newItem = {
       ...sharedContent,
       savedAt: new Date().toISOString(),
@@ -64,7 +66,10 @@ const SharePage: React.FC = () => {
     };
 
     savedItems.unshift(newItem);
-    localStorage.setItem('saved-content', JSON.stringify(savedItems.slice(0, 50))); // Keep only 50 items
+    localStorage.setItem(
+      'saved-content',
+      JSON.stringify(savedItems.slice(0, 50))
+    ); // Keep only 50 items
 
     // Show success message and redirect
     alert('콘텐츠가 저장되었습니다!');
@@ -76,13 +81,16 @@ const SharePage: React.FC = () => {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">공유된 콘텐츠를 처리하는 중...</p>
+          <p className="text-gray-600 dark:text-gray-300">
+            공유된 콘텐츠를 처리하는 중...
+          </p>
         </div>
       </div>
     );
   }
 
-  const hasContent = sharedContent.title || sharedContent.text || sharedContent.url;
+  const hasContent =
+    sharedContent.title || sharedContent.text || sharedContent.url;
 
   if (!hasContent) {
     return (
@@ -114,7 +122,9 @@ const SharePage: React.FC = () => {
           <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
             <Share2 className="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">콘텐츠 공유</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            콘텐츠 공유
+          </h1>
           <p className="text-gray-600 dark:text-gray-300">
             공유된 콘텐츠를 어떻게 활용하시겠습니까?
           </p>
@@ -171,7 +181,7 @@ const SharePage: React.FC = () => {
         <div className="grid gap-4 md:grid-cols-2">
           <button
             onClick={handleSendInquiry}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg font-medium 
+            className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg font-medium
                        transition-colors flex items-center justify-center space-x-2"
           >
             <MessageCircle className="w-5 h-5" />
@@ -181,7 +191,7 @@ const SharePage: React.FC = () => {
           {sharedContent.url && (
             <button
               onClick={handleViewContent}
-              className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg font-medium 
+              className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg font-medium
                          transition-colors flex items-center justify-center space-x-2"
             >
               <ExternalLink className="w-5 h-5" />
@@ -191,7 +201,7 @@ const SharePage: React.FC = () => {
 
           <button
             onClick={handleSaveForLater}
-            className="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-lg font-medium 
+            className="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-lg font-medium
                        transition-colors flex items-center justify-center space-x-2"
           >
             <Mail className="w-5 h-5" />
@@ -200,7 +210,7 @@ const SharePage: React.FC = () => {
 
           <button
             onClick={() => navigate('/')}
-            className="bg-gray-600 hover:bg-gray-700 text-white p-4 rounded-lg font-medium 
+            className="bg-gray-600 hover:bg-gray-700 text-white p-4 rounded-lg font-medium
                        transition-colors flex items-center justify-center space-x-2"
           >
             <span>홈으로 이동</span>
@@ -209,7 +219,9 @@ const SharePage: React.FC = () => {
 
         {/* Additional Options */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">다른 옵션이 필요하시나요?</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            다른 옵션이 필요하시나요?
+          </p>
           <div className="flex flex-wrap justify-center gap-4">
             <button
               onClick={() => navigate('/blog')}

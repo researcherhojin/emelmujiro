@@ -42,8 +42,11 @@ export const measureWebVitals = (
               url: window.location.href,
               userAgent: navigator.userAgent,
               connection:
-                (navigator as Navigator & { connection?: { effectiveType?: string } }).connection
-                  ?.effectiveType || 'unknown',
+                (
+                  navigator as Navigator & {
+                    connection?: { effectiveType?: string };
+                  }
+                ).connection?.effectiveType || 'unknown',
             };
 
             if (config.enableLogging) {
@@ -67,7 +70,7 @@ export const measureWebVitals = (
           console.warn('Web Vitals measurement failed:', error);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.warn('Failed to load web-vitals library:', error);
       });
   }
@@ -93,7 +96,8 @@ const sendToAnalytics = async (
 
 // Enhanced performance monitoring
 export const logPerformanceMetrics = (config: WebVitalsConfig = {}): void => {
-  const enablePerformanceLogging = config.enableLogging ?? process.env.NODE_ENV === 'development';
+  const enablePerformanceLogging =
+    config.enableLogging ?? process.env.NODE_ENV === 'development';
 
   if (enablePerformanceLogging) {
     window.addEventListener('load', () => {
@@ -108,13 +112,14 @@ export const logPerformanceMetrics = (config: WebVitalsConfig = {}): void => {
               dnsLookup: perfData.domainLookupEnd - perfData.domainLookupStart,
               tcpConnection: perfData.connectEnd - perfData.connectStart,
               domContentLoaded:
-                perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
+                perfData.domContentLoadedEventEnd -
+                perfData.domContentLoadedEventStart,
               totalLoadTime: perfData.loadEventEnd - perfData.fetchStart,
             };
 
             // Get paint timings
             const paintEntries = window.performance.getEntriesByType('paint');
-            paintEntries.forEach(entry => {
+            paintEntries.forEach((entry) => {
               if (entry.name === 'first-contentful-paint') {
                 metrics.firstContentfulPaint = entry.startTime;
               }
@@ -129,7 +134,10 @@ export const logPerformanceMetrics = (config: WebVitalsConfig = {}): void => {
               url: window.location.href,
             };
 
-            window.localStorage.setItem('performanceMetrics', JSON.stringify(metricsWithTimestamp));
+            window.localStorage.setItem(
+              'performanceMetrics',
+              JSON.stringify(metricsWithTimestamp)
+            );
 
             // Report to analytics if configured
             if (config.enableReporting && config.reportingEndpoint) {
@@ -145,7 +153,9 @@ export const logPerformanceMetrics = (config: WebVitalsConfig = {}): void => {
 };
 
 // Initialize comprehensive performance monitoring
-export const initPerformanceMonitoring = (config: WebVitalsConfig = {}): void => {
+export const initPerformanceMonitoring = (
+  config: WebVitalsConfig = {}
+): void => {
   // Start Web Vitals monitoring
   measureWebVitals(undefined, config);
 
@@ -155,8 +165,8 @@ export const initPerformanceMonitoring = (config: WebVitalsConfig = {}): void =>
   // Monitor long tasks
   if ('PerformanceObserver' in window && config.enableLogging) {
     try {
-      const longTaskObserver = new PerformanceObserver(list => {
-        list.getEntries().forEach(entry => {
+      const longTaskObserver = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
           // Only log really long tasks (> 100ms) to reduce noise
           if (entry.duration > 100) {
             console.warn('Long task detected:', {
@@ -191,12 +201,14 @@ export const checkPerformanceBudget = (): void => {
     TTFB: isDevelopment ? 2000 : 600, // Time to First Byte: 2s dev / 600ms prod
   };
 
-  measureWebVitals(metric => {
+  measureWebVitals((metric) => {
     const budget = budgets[metric.name as keyof typeof budgets];
     if (budget && metric.value > budget) {
       // Only log as warning in development, error in production
       if (isDevelopment) {
-        console.warn(`Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`);
+        console.warn(
+          `Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`
+        );
       } else {
         console.error(
           `Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`

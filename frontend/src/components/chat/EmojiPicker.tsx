@@ -208,8 +208,8 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
 
   const filteredEmojis = searchTerm
     ? Object.values(emojiCategories)
-        .flatMap(category => category.emojis)
-        .filter(emoji => emoji.includes(searchTerm))
+        .flatMap((category) => category.emojis)
+        .filter((emoji) => emoji.includes(searchTerm))
     : emojiCategories[activeCategory as keyof typeof emojiCategories].emojis;
 
   const handleEmojiSelect = (emoji: string) => {
@@ -244,7 +244,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
           <input
             type="text"
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={t('chat.emoji.search', '이모지 검색...')}
             className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
           />

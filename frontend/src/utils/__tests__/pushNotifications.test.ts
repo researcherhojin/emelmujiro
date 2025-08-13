@@ -105,7 +105,7 @@ describe('pushNotifications', () => {
     Object.defineProperty(global, 'window', {
       value: {
         ...originalWindow,
-        atob: jest.fn().mockImplementation(str => {
+        atob: jest.fn().mockImplementation((str) => {
           // Simple mock of atob for base64 decode
           return Buffer.from(str, 'base64').toString('binary');
         }),
@@ -203,7 +203,9 @@ describe('pushNotifications', () => {
 
   describe('requestNotificationPermission', () => {
     it('should request permission and return true when granted', async () => {
-      (global.Notification.requestPermission as jest.Mock).mockResolvedValue('granted');
+      (global.Notification.requestPermission as jest.Mock).mockResolvedValue(
+        'granted'
+      );
 
       const result = await requestNotificationPermission();
 
@@ -212,7 +214,9 @@ describe('pushNotifications', () => {
     });
 
     it('should return false when permission is denied', async () => {
-      (global.Notification.requestPermission as jest.Mock).mockResolvedValue('denied');
+      (global.Notification.requestPermission as jest.Mock).mockResolvedValue(
+        'denied'
+      );
 
       const result = await requestNotificationPermission();
 
@@ -255,7 +259,9 @@ describe('pushNotifications', () => {
     });
 
     it('should return existing subscription when already subscribed', async () => {
-      mockRegistration.pushManager.getSubscription.mockResolvedValue(mockSubscription);
+      mockRegistration.pushManager.getSubscription.mockResolvedValue(
+        mockSubscription
+      );
 
       const result = await subscribeToPushNotifications();
 
@@ -290,7 +296,9 @@ describe('pushNotifications', () => {
       const error = new Error('Subscription failed');
       mockRegistration.pushManager.subscribe.mockRejectedValue(error);
 
-      await expect(subscribeToPushNotifications()).rejects.toThrow('Subscription failed');
+      await expect(subscribeToPushNotifications()).rejects.toThrow(
+        'Subscription failed'
+      );
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Failed to subscribe to push notifications:',
         error
@@ -300,7 +308,9 @@ describe('pushNotifications', () => {
 
   describe('unsubscribeFromPushNotifications', () => {
     it('should unsubscribe successfully when subscription exists', async () => {
-      mockRegistration.pushManager.getSubscription.mockResolvedValue(mockSubscription);
+      mockRegistration.pushManager.getSubscription.mockResolvedValue(
+        mockSubscription
+      );
 
       const result = await unsubscribeFromPushNotifications();
 
@@ -323,9 +333,13 @@ describe('pushNotifications', () => {
         ...mockSubscription,
         unsubscribe: jest.fn().mockRejectedValue(error),
       };
-      mockRegistration.pushManager.getSubscription.mockResolvedValue(mockSubscriptionWithError);
+      mockRegistration.pushManager.getSubscription.mockResolvedValue(
+        mockSubscriptionWithError
+      );
 
-      await expect(unsubscribeFromPushNotifications()).rejects.toThrow('Unsubscribe failed');
+      await expect(unsubscribeFromPushNotifications()).rejects.toThrow(
+        'Unsubscribe failed'
+      );
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Failed to unsubscribe from push notifications:',
         error
@@ -363,7 +377,9 @@ describe('pushNotifications', () => {
       const error = new Error('Network error');
       mockFetch.mockRejectedValue(error);
 
-      await expect(sendSubscriptionToServer(mockSubscription)).rejects.toThrow('Network error');
+      await expect(sendSubscriptionToServer(mockSubscription)).rejects.toThrow(
+        'Network error'
+      );
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Failed to send subscription to server:',
         error
@@ -430,15 +446,22 @@ describe('pushNotifications', () => {
       await showNotification('Test notification');
 
       expect(mockRegistration.showNotification).not.toHaveBeenCalled();
-      expect(mockLogger.info).toHaveBeenCalledWith('Push notifications are not enabled');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Push notifications are not enabled'
+      );
     });
 
     it('should handle notification errors', async () => {
       const error = new Error('Notification failed');
       mockRegistration.showNotification.mockRejectedValue(error);
 
-      await expect(showNotification('Test notification')).rejects.toThrow('Notification failed');
-      expect(mockLogger.error).toHaveBeenCalledWith('Failed to show notification:', error);
+      await expect(showNotification('Test notification')).rejects.toThrow(
+        'Notification failed'
+      );
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to show notification:',
+        error
+      );
     });
   });
 

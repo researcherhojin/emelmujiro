@@ -17,7 +17,7 @@ describe('StorageCache', () => {
       expect(result).toEqual(testData);
     });
 
-    it('should return null for expired items', done => {
+    it('should return null for expired items', (done) => {
       const cache = new StorageCache('localStorage');
       const testData = { name: 'test' };
 
@@ -100,7 +100,7 @@ describe('preloadCriticalResources', () => {
 
   afterEach(() => {
     // Restore original env
-    Object.keys(process.env).forEach(key => {
+    Object.keys(process.env).forEach((key) => {
       delete process.env[key];
     });
     Object.assign(process.env, originalEnv);
@@ -134,11 +134,14 @@ describe('preloadCriticalResources', () => {
     preloadCriticalResources();
 
     // Wait for async operations
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
-    expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/static/css/main.css'), {
-      method: 'HEAD',
-    });
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/static/css/main.css'),
+      {
+        method: 'HEAD',
+      }
+    );
   });
 
   it('should handle fetch errors gracefully', async () => {
@@ -153,6 +156,6 @@ describe('preloadCriticalResources', () => {
     expect(() => preloadCriticalResources()).not.toThrow();
 
     // Wait for async operations
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
   });
 });

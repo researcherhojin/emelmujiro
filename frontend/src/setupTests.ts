@@ -35,7 +35,8 @@ class MockIntersectionObserver implements IntersectionObserver {
     public callback: IntersectionObserverCallback,
     public options?: IntersectionObserverInit
   ) {
-    this.root = (options?.root instanceof Element ? options.root : null) || null;
+    this.root =
+      (options?.root instanceof Element ? options.root : null) || null;
     this.rootMargin = options?.rootMargin || '0px';
     this.thresholds = Array.isArray(options?.threshold)
       ? options.threshold
@@ -48,7 +49,8 @@ class MockIntersectionObserver implements IntersectionObserver {
   takeRecords = jest.fn(() => []);
 }
 
-global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
+global.IntersectionObserver =
+  MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
 // Mock scrollTo
 window.scrollTo = jest.fn();
@@ -74,7 +76,9 @@ Object.defineProperty(navigator, 'serviceWorker', {
     register: jest.fn(() => Promise.resolve(mockServiceWorkerRegistration)),
     ready: mockReady,
     controller: null,
-    getRegistration: jest.fn(() => Promise.resolve(mockServiceWorkerRegistration)),
+    getRegistration: jest.fn(() =>
+      Promise.resolve(mockServiceWorkerRegistration)
+    ),
     getRegistrations: jest.fn(() => Promise.resolve([])),
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
@@ -165,7 +169,10 @@ beforeAll(() => {
 
   console.warn = jest.fn((...args) => {
     const message = args[0]?.toString() || '';
-    if (message.includes('componentWillReceiveProps') || message.includes('componentWillUpdate')) {
+    if (
+      message.includes('componentWillReceiveProps') ||
+      message.includes('componentWillUpdate')
+    ) {
       return;
     }
     originalWarn.apply(console, args);
@@ -209,7 +216,9 @@ global.cancelAnimationFrame = jest.fn((id: number) =>
 // Mock Notification API
 global.Notification = {
   permission: 'default' as NotificationPermission,
-  requestPermission: jest.fn().mockResolvedValue('granted' as NotificationPermission),
+  requestPermission: jest
+    .fn()
+    .mockResolvedValue('granted' as NotificationPermission),
 } as unknown as typeof Notification;
 
 // Mock navigator properties

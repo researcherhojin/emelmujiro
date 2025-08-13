@@ -47,7 +47,8 @@ export const buttons = {
   // Variants
   primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
   secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
-  outline: 'border-2 border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500',
+  outline:
+    'border-2 border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500',
   ghost: 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
   danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
   success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
@@ -81,7 +82,8 @@ export const forms = {
     'block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white',
 
   // Checkbox & Radio
-  checkbox: 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded',
+  checkbox:
+    'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded',
   radio: 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300',
 
   // Label
@@ -102,7 +104,8 @@ export const cards = {
   base: 'bg-white rounded-lg shadow-md overflow-hidden',
   bordered: 'bg-white rounded-lg border border-gray-200',
   elevated: 'bg-white rounded-lg shadow-lg',
-  interactive: 'bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer',
+  interactive:
+    'bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer',
 
   // Padding variants
   noPadding: '',
@@ -111,7 +114,8 @@ export const cards = {
   lg: 'p-8',
 
   // Special cards
-  gradient: 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-lg p-6',
+  gradient:
+    'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-lg p-6',
   dark: 'bg-gray-900 text-white rounded-lg p-6',
 } as const;
 

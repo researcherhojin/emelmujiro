@@ -97,7 +97,9 @@ test.describe('Blog', () => {
 
     // Scroll to comments section
     await page.evaluate(() => {
-      const commentsSection = document.querySelector('[data-testid="comments-section"]');
+      const commentsSection = document.querySelector(
+        '[data-testid="comments-section"]'
+      );
       if (commentsSection) {
         commentsSection.scrollIntoView();
       }
@@ -110,7 +112,9 @@ test.describe('Blog', () => {
       // Check form elements
       const nameInput = commentForm.getByPlaceholder(/이름|name/i);
       const commentInput = commentForm.getByPlaceholder(/댓글|comment/i);
-      const submitButton = commentForm.getByRole('button', { name: /작성|submit/i });
+      const submitButton = commentForm.getByRole('button', {
+        name: /작성|submit/i,
+      });
 
       await expect(nameInput).toBeVisible();
       await expect(commentInput).toBeVisible();

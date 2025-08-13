@@ -28,7 +28,8 @@ export const blogPosts: BlogPost[] = [
     published: true,
     category: 'AI',
     tags: ['인공지능', '머신러닝', '딥러닝', 'ChatGPT'],
-    image_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
+    image_url:
+      'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop',
   },
   {
     id: 2,
@@ -62,7 +63,8 @@ export const blogPosts: BlogPost[] = [
     published: true,
     category: '교육',
     tags: ['프로그래밍', '코딩', '학습법', '초보자'],
-    image_url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop',
+    image_url:
+      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop',
   },
   {
     id: 3,
@@ -97,7 +99,8 @@ export const blogPosts: BlogPost[] = [
     published: true,
     category: '웹개발',
     tags: ['웹개발', '프론트엔드', 'React', '트렌드'],
-    image_url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',
+    image_url:
+      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',
   },
   {
     id: 4,
@@ -128,7 +131,8 @@ export const blogPosts: BlogPost[] = [
     published: true,
     category: '프론트엔드',
     tags: ['React', 'Vue', 'Angular', '프레임워크'],
-    image_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop',
+    image_url:
+      'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop',
   },
   {
     id: 5,
@@ -164,7 +168,8 @@ export const blogPosts: BlogPost[] = [
     published: true,
     category: 'DevOps',
     tags: ['클라우드', '쿠버네티스', '도커', '마이크로서비스'],
-    image_url: 'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=400&h=300&fit=crop',
+    image_url:
+      'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=400&h=300&fit=crop',
   },
   {
     id: 6,
@@ -206,7 +211,8 @@ function greetUser(user: User): string {
     published: true,
     category: '프로그래밍',
     tags: ['TypeScript', 'JavaScript', '타입스크립트'],
-    image_url: 'https://images.unsplash.com/photo-1619410283995-43d9134e7656?w=400&h=300&fit=crop',
+    image_url:
+      'https://images.unsplash.com/photo-1619410283995-43d9134e7656?w=400&h=300&fit=crop',
   },
 ];
 
@@ -214,14 +220,16 @@ export const getBlogPosts = (): Promise<BlogPost[]> => {
   try {
     // Get custom posts from localStorage
     const customPostsData = localStorage.getItem('customBlogPosts');
-    const customPosts: BlogPost[] = customPostsData ? JSON.parse(customPostsData) : [];
+    const customPosts: BlogPost[] = customPostsData
+      ? JSON.parse(customPostsData)
+      : [];
 
     // Merge with default posts (custom posts first for visibility)
     const allPosts = [...customPosts, ...blogPosts];
 
     // Remove duplicates based on ID
     const uniquePosts = allPosts.filter(
-      (post, index, self) => index === self.findIndex(p => p.id === post.id)
+      (post, index, self) => index === self.findIndex((p) => p.id === post.id)
     );
 
     // Sort by date (newest first) - properly handle date comparison
@@ -238,26 +246,30 @@ export const getBlogPosts = (): Promise<BlogPost[]> => {
   }
 };
 
-export const getBlogPost = (id: string | number): Promise<BlogPost | undefined> => {
+export const getBlogPost = (
+  id: string | number
+): Promise<BlogPost | undefined> => {
   const parsedId = typeof id === 'string' ? parseInt(id) : id;
 
   try {
     // First check custom posts
     const customPostsData = localStorage.getItem('customBlogPosts');
-    const customPosts: BlogPost[] = customPostsData ? JSON.parse(customPostsData) : [];
-    const customPost = customPosts.find(p => p.id === parsedId);
+    const customPosts: BlogPost[] = customPostsData
+      ? JSON.parse(customPostsData)
+      : [];
+    const customPost = customPosts.find((p) => p.id === parsedId);
 
     if (customPost) {
       return Promise.resolve(customPost);
     }
 
     // Then check default posts
-    const post = blogPosts.find(p => p.id === parsedId);
+    const post = blogPosts.find((p) => p.id === parsedId);
     return Promise.resolve(post);
   } catch (error) {
     logger.error('Error loading blog post:', error);
     // Fallback to default posts
-    const post = blogPosts.find(p => p.id === parsedId);
+    const post = blogPosts.find((p) => p.id === parsedId);
     return Promise.resolve(post);
   }
 };

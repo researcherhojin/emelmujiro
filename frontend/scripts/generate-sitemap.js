@@ -25,7 +25,7 @@ const mockBlogPosts = [
 
 // Generate dynamic routes for blog posts
 const generateBlogRoutes = () => {
-  return mockBlogPosts.map(post => ({
+  return mockBlogPosts.map((post) => ({
     url: `/#/blog/${post.slug}`,
     changefreq: 'weekly',
     priority: 0.7,
@@ -37,7 +37,7 @@ const generateBlogRoutes = () => {
 const generateSitemap = () => {
   const blogRoutes = generateBlogRoutes();
   const allRoutes = [...staticRoutes, ...blogRoutes];
-  
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -45,7 +45,7 @@ const generateSitemap = () => {
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 ${allRoutes
   .map(
-    route => `  <url>
+    (route) => `  <url>
     <loc>${SITE_URL}${route.url}</loc>
     <changefreq>${route.changefreq}</changefreq>
     <priority>${route.priority}</priority>
@@ -110,13 +110,13 @@ const main = () => {
     const sitemapPath = path.join(__dirname, '../public/sitemap.xml');
     fs.writeFileSync(sitemapPath, sitemap);
     console.log('✅ Sitemap generated successfully at:', sitemapPath);
-    
+
     // Generate robots.txt
     const robotsTxt = generateRobotsTxt();
     const robotsPath = path.join(__dirname, '../public/robots.txt');
     fs.writeFileSync(robotsPath, robotsTxt);
     console.log('✅ Robots.txt generated successfully at:', robotsPath);
-    
+
     // Generate sitemap index for large sites (future-proofing)
     const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -125,17 +125,24 @@ const main = () => {
     <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
   </sitemap>
 </sitemapindex>`;
-    
-    const sitemapIndexPath = path.join(__dirname, '../public/sitemap-index.xml');
+
+    const sitemapIndexPath = path.join(
+      __dirname,
+      '../public/sitemap-index.xml'
+    );
     fs.writeFileSync(sitemapIndexPath, sitemapIndex);
-    console.log('✅ Sitemap index generated successfully at:', sitemapIndexPath);
-    
+    console.log(
+      '✅ Sitemap index generated successfully at:',
+      sitemapIndexPath
+    );
+
     // Log statistics
     console.log(`\n📊 Statistics:`);
     console.log(`   - Static routes: ${staticRoutes.length}`);
     console.log(`   - Blog routes: ${mockBlogPosts.length}`);
-    console.log(`   - Total URLs: ${staticRoutes.length + mockBlogPosts.length}`);
-    
+    console.log(
+      `   - Total URLs: ${staticRoutes.length + mockBlogPosts.length}`
+    );
   } catch (error) {
     console.error('❌ Error generating sitemap:', error);
     process.exit(1);

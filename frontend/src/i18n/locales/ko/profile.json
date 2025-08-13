@@ -57,11 +57,24 @@
         },
         {
           "name": "AI/ML 프레임워크",
-          "skills": ["TensorFlow", "PyTorch", "Keras", "Scikit-learn", "Hugging Face"]
+          "skills": [
+            "TensorFlow",
+            "PyTorch",
+            "Keras",
+            "Scikit-learn",
+            "Hugging Face"
+          ]
         },
         {
           "name": "웹 프레임워크",
-          "skills": ["React", "Vue.js", "Node.js", "Django", "FastAPI", "Express"]
+          "skills": [
+            "React",
+            "Vue.js",
+            "Node.js",
+            "Django",
+            "FastAPI",
+            "Express"
+          ]
         },
         {
           "name": "클라우드 플랫폼",
@@ -125,13 +138,25 @@
         {
           "name": "실시간 데이터 분석 플랫폼",
           "description": "대용량 실시간 데이터 처리 및 시각화 플랫폼 구축",
-          "technologies": ["Python", "Apache Kafka", "Elasticsearch", "Grafana", "Docker"],
+          "technologies": [
+            "Python",
+            "Apache Kafka",
+            "Elasticsearch",
+            "Grafana",
+            "Docker"
+          ],
           "year": "2022"
         },
         {
           "name": "이커머스 추천 엔진",
           "description": "머신러닝 기반 개인화 상품 추천 시스템 개발",
-          "technologies": ["Python", "PyTorch", "Redis", "PostgreSQL", "Kubernetes"],
+          "technologies": [
+            "Python",
+            "PyTorch",
+            "Redis",
+            "PostgreSQL",
+            "Kubernetes"
+          ],
           "year": "2021"
         }
       ]

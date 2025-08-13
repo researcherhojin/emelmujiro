@@ -5,31 +5,61 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#111827" />
-    <meta name="google-site-verification" content="q26utft2YbTNn8QiE1VnDKErPj7LtQ4MzYALyQbx37Y" />
+    <meta
+      name="google-site-verification"
+      content="q26utft2YbTNn8QiE1VnDKErPj7LtQ4MzYALyQbx37Y"
+    />
 
     <!-- 기본 메타 태그 -->
-    <meta name="description" content="AI 기반 소프트웨어 개발 및 IT 교육 전문가 | 에멜무지로" />
-    <meta name="keywords" content="AI, 소프트웨어 개발, IT 교육, 프로그래밍, 머신러닝, 딥러닝" />
+    <meta
+      name="description"
+      content="AI 기반 소프트웨어 개발 및 IT 교육 전문가 | 에멜무지로"
+    />
+    <meta
+      name="keywords"
+      content="AI, 소프트웨어 개발, IT 교육, 프로그래밍, 머신러닝, 딥러닝"
+    />
     <meta name="author" content="이호진" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://researcherhojin.github.io/emelmujiro/" />
-    <meta property="og:title" content="에멜무지로 | AI 기반 소프트웨어 개발 및 IT 교육" />
-    <meta property="og:description" content="최신 기술로 비즈니스의 미래를 설계합니다" />
+    <meta
+      property="og:url"
+      content="https://researcherhojin.github.io/emelmujiro/"
+    />
+    <meta
+      property="og:title"
+      content="에멜무지로 | AI 기반 소프트웨어 개발 및 IT 교육"
+    />
+    <meta
+      property="og:description"
+      content="최신 기술로 비즈니스의 미래를 설계합니다"
+    />
     <meta property="og:image" content="%PUBLIC_URL%/og-image.png" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://researcherhojin.github.io/emelmujiro/" />
-    <meta name="twitter:title" content="에멜무지로 | AI 기반 소프트웨어 개발 및 IT 교육" />
-    <meta name="twitter:description" content="최신 기술로 비즈니스의 미래를 설계합니다" />
+    <meta
+      name="twitter:url"
+      content="https://researcherhojin.github.io/emelmujiro/"
+    />
+    <meta
+      name="twitter:title"
+      content="에멜무지로 | AI 기반 소프트웨어 개발 및 IT 교육"
+    />
+    <meta
+      name="twitter:description"
+      content="최신 기술로 비즈니스의 미래를 설계합니다"
+    />
     <meta name="twitter:image" content="%PUBLIC_URL%/og-image.png" />
 
     <!-- PWA 지원 -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="에멜무지로" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
 
@@ -39,7 +69,10 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <!-- X-Frame-Options는 HTTP 헤더로만 설정 가능, meta 태그에서는 제거 -->
     <!-- <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" /> -->
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta
+      http-equiv="Referrer-Policy"
+      content="strict-origin-when-cross-origin"
+    />
 
     <!-- Resource hints for better performance -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
@@ -52,8 +85,18 @@
     <link rel="prefetch" href="%PUBLIC_URL%/manifest.json" />
 
     <!-- Preload critical images -->
-    <link rel="preload" href="%PUBLIC_URL%/logo192.png" as="image" type="image/png" />
-    <link rel="preload" href="%PUBLIC_URL%/logo512.png" as="image" type="image/png" />
+    <link
+      rel="preload"
+      href="%PUBLIC_URL%/logo192.png"
+      as="image"
+      type="image/png"
+    />
+    <link
+      rel="preload"
+      href="%PUBLIC_URL%/logo512.png"
+      as="image"
+      type="image/png"
+    />
 
     <!-- Fonts with optimized loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -81,7 +124,10 @@
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
     <meta name="robots" content="index,follow" />
     <meta name="googlebot" content="index,follow" />
-    <link rel="canonical" href="https://researcherhojin.github.io/emelmujiro/" />
+    <link
+      rel="canonical"
+      href="https://researcherhojin.github.io/emelmujiro/"
+    />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
     <!-- Critical CSS inline for above-the-fold content -->
@@ -145,10 +191,10 @@
         window.addEventListener('load', () => {
           navigator.serviceWorker
             .register('%PUBLIC_URL%/service-worker-enhanced.js')
-            .then(registration => {
+            .then((registration) => {
               // Service Worker registered successfully
             })
-            .catch(error => {
+            .catch((error) => {
               // SW registration failed
             });
         });
@@ -160,9 +206,12 @@
       // Critical image preloading
       if (window.requestIdleCallback) {
         requestIdleCallback(() => {
-          const criticalImages = ['%PUBLIC_URL%/logo192.png', '%PUBLIC_URL%/logo512.png'];
+          const criticalImages = [
+            '%PUBLIC_URL%/logo192.png',
+            '%PUBLIC_URL%/logo512.png',
+          ];
 
-          criticalImages.forEach(src => {
+          criticalImages.forEach((src) => {
             const img = new Image();
             img.src = src;
           });
@@ -173,10 +222,16 @@
       if ('connection' in navigator) {
         const connection = navigator.connection;
         if (connection && connection.effectiveType) {
-          document.documentElement.setAttribute('data-connection', connection.effectiveType);
+          document.documentElement.setAttribute(
+            'data-connection',
+            connection.effectiveType
+          );
 
           // Adjust loading strategy based on connection
-          if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') {
+          if (
+            connection.effectiveType === 'slow-2g' ||
+            connection.effectiveType === '2g'
+          ) {
             document.documentElement.classList.add('slow-connection');
           }
         }
@@ -185,7 +240,7 @@
       // Performance observer for Web Vitals
       if ('PerformanceObserver' in window) {
         try {
-          const observer = new PerformanceObserver(list => {
+          const observer = new PerformanceObserver((list) => {
             for (const entry of list.getEntries()) {
               // Performance metrics are tracked but not logged
               if (entry.name === 'first-contentful-paint') {
@@ -196,7 +251,9 @@
             }
           });
 
-          observer.observe({ entryTypes: ['paint', 'largest-contentful-paint'] });
+          observer.observe({
+            entryTypes: ['paint', 'largest-contentful-paint'],
+          });
         } catch (e) {
           // Performance observer not supported
         }
@@ -204,7 +261,8 @@
 
       // Theme detection and initialization
       const savedTheme = localStorage.getItem('theme');
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
+        .matches
         ? 'dark'
         : 'light';
       const theme = savedTheme || systemTheme;

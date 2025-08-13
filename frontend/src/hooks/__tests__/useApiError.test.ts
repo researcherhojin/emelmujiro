@@ -381,7 +381,9 @@ describe('useApiError', () => {
       const mockAsyncFn = jest.fn().mockResolvedValue('success');
 
       await act(async () => {
-        await result.current.executeApiCall(mockAsyncFn, { showLoading: false });
+        await result.current.executeApiCall(mockAsyncFn, {
+          showLoading: false,
+        });
       });
 
       // Loading should remain false throughout

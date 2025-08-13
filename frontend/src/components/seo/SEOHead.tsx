@@ -54,7 +54,10 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       email: 'contact@emelmujiro.com',
       availableLanguage: ['Korean', 'English'],
     },
-    sameAs: ['https://github.com/researcherhojin', 'https://linkedin.com/in/hojinahn'],
+    sameAs: [
+      'https://github.com/researcherhojin',
+      'https://linkedin.com/in/hojinahn',
+    ],
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'KR',
@@ -125,8 +128,12 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       {type === 'article' && (
         <>
           <meta property="article:author" content={author} />
-          {publishedTime && <meta property="article:published_time" content={publishedTime} />}
-          {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+          {publishedTime && (
+            <meta property="article:published_time" content={publishedTime} />
+          )}
+          {modifiedTime && (
+            <meta property="article:modified_time" content={modifiedTime} />
+          )}
           {section && <meta property="article:section" content={section} />}
           {tags.map((tag, index) => (
             <meta key={index} property="article:tag" content={tag} />
@@ -153,11 +160,17 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <meta httpEquiv="x-ua-compatible" content="ie=edge" />
 
       {/* Structured Data */}
-      <script type="application/ld+json">{JSON.stringify(finalStructuredData)}</script>
+      <script type="application/ld+json">
+        {JSON.stringify(finalStructuredData)}
+      </script>
 
       {/* Preconnect to external domains */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossOrigin="anonymous"
+      />
       <link rel="preconnect" href="https://www.googletagmanager.com" />
 
       {/* DNS Prefetch */}

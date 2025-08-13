@@ -13,8 +13,9 @@
 
       body {
         font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-          'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+          sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -243,9 +244,16 @@
       </div>
 
       <h1 id="offline-title">오프라인 상태입니다</h1>
-      <p>인터넷 연결이 끊어진 것 같습니다. 연결 상태를 확인하고 다시 시도해주세요.</p>
+      <p>
+        인터넷 연결이 끊어진 것 같습니다. 연결 상태를 확인하고 다시
+        시도해주세요.
+      </p>
 
-      <button class="retry-button" onclick="window.location.reload()" aria-label="페이지 새로고침">
+      <button
+        class="retry-button"
+        onclick="window.location.reload()"
+        aria-label="페이지 새로고침"
+      >
         다시 시도
       </button>
 
@@ -277,7 +285,7 @@
       });
 
       // Keyboard navigation
-      document.addEventListener('keydown', e => {
+      document.addEventListener('keydown', (e) => {
         if (e.key === 'r' && (e.ctrlKey || e.metaKey)) {
           e.preventDefault();
           window.location.reload();

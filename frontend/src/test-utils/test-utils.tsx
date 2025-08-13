@@ -14,7 +14,10 @@ interface AllProvidersProps {
 }
 
 // Create a wrapper component with all providers
-export const AllProviders: React.FC<AllProvidersProps> = ({ children, routerProps = {} }) => {
+export const AllProviders: React.FC<AllProvidersProps> = ({
+  children,
+  routerProps = {},
+}) => {
   return (
     <MemoryRouter {...routerProps}>
       <HelmetProvider>
@@ -36,11 +39,16 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 }
 
 // Custom render function that includes all providers
-export const renderWithProviders = (ui: ReactElement, options?: CustomRenderOptions) => {
+export const renderWithProviders = (
+  ui: ReactElement,
+  options?: CustomRenderOptions
+) => {
   const { routerProps, ...renderOptions } = options || {};
 
   return render(ui, {
-    wrapper: ({ children }) => <AllProviders routerProps={routerProps}>{children}</AllProviders>,
+    wrapper: ({ children }) => (
+      <AllProviders routerProps={routerProps}>{children}</AllProviders>
+    ),
     ...renderOptions,
   });
 };
@@ -205,7 +213,8 @@ export const mockErrorResponse = (status: number, message: string) => ({
 });
 
 // Wait utilities
-export const waitForLoadingToFinish = () => new Promise(resolve => setTimeout(resolve, 0));
+export const waitForLoadingToFinish = () =>
+  new Promise((resolve) => setTimeout(resolve, 0));
 
 // Custom matchers
 export const expectToHaveBeenCalledWithPartial = (
@@ -214,7 +223,9 @@ export const expectToHaveBeenCalledWithPartial = (
 ) => {
   const calls = mock.mock.calls;
   const hasMatchingCall = calls.some((call: unknown[]) =>
-    Object.keys(partial).every(key => (call[0] as Record<string, unknown>)[key] === partial[key])
+    Object.keys(partial).every(
+      (key) => (call[0] as Record<string, unknown>)[key] === partial[key]
+    )
   );
   // This function should return boolean for assertion
   return hasMatchingCall;

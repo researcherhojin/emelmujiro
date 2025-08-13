@@ -176,7 +176,9 @@ describe('backgroundSync', () => {
 
       expect(mockRegistration.sync.register).toHaveBeenCalledWith('test-sync');
       expect(result).toBe(true);
-      expect(mockLogger.info).toHaveBeenCalledWith('Background sync registered: test-sync');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Background sync registered: test-sync'
+      );
     });
 
     it('should register sync successfully with data', async () => {
@@ -218,7 +220,10 @@ describe('backgroundSync', () => {
       const result = await registerBackgroundSync('test-sync');
 
       expect(result).toBe(false);
-      expect(mockLogger.error).toHaveBeenCalledWith('Failed to register background sync:', error);
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to register background sync:',
+        error
+      );
     });
 
     it('should handle IndexedDB storage errors', async () => {
@@ -281,7 +286,9 @@ describe('backgroundSync', () => {
         mockGetRequest.onerror?.();
       }, 0);
 
-      await expect(getSyncData('test-sync')).rejects.toThrow('Get operation failed');
+      await expect(getSyncData('test-sync')).rejects.toThrow(
+        'Get operation failed'
+      );
     });
 
     it('should return undefined when data not found', async () => {
@@ -324,7 +331,9 @@ describe('backgroundSync', () => {
         mockRequest.onerror?.();
       }, 0);
 
-      await expect(clearSyncData('test-sync')).rejects.toThrow('Database error');
+      await expect(clearSyncData('test-sync')).rejects.toThrow(
+        'Database error'
+      );
     });
 
     it('should handle delete operation errors', async () => {
@@ -338,14 +347,19 @@ describe('backgroundSync', () => {
         mockDeleteRequest.onerror?.();
       }, 0);
 
-      await expect(clearSyncData('test-sync')).rejects.toThrow('Delete operation failed');
+      await expect(clearSyncData('test-sync')).rejects.toThrow(
+        'Delete operation failed'
+      );
     });
   });
 
   describe('queueFailedRequest', () => {
     it('should queue failed request with correct data structure', async () => {
       const url = '/api/test';
-      const options = { method: 'POST', body: JSON.stringify({ test: 'data' }) };
+      const options = {
+        method: 'POST',
+        body: JSON.stringify({ test: 'data' }),
+      };
 
       // Mock the registerBackgroundSync call
       const originalDateNow = Date.now;
@@ -363,7 +377,9 @@ describe('backgroundSync', () => {
 
       await queueFailedRequest(url, options);
 
-      expect(mockRegistration.sync.register).toHaveBeenCalledWith('sync-failed-request');
+      expect(mockRegistration.sync.register).toHaveBeenCalledWith(
+        'sync-failed-request'
+      );
 
       // Restore Date.now
       Date.now = originalDateNow;

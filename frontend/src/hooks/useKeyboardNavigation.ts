@@ -17,10 +17,13 @@ export const useKeyboardNavigation = (shortcuts: KeyboardShortcut[]) => {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       for (const shortcut of shortcuts) {
-        const matchesKey = event.key === shortcut.key || event.code === shortcut.key;
+        const matchesKey =
+          event.key === shortcut.key || event.code === shortcut.key;
         const matchesCtrl = shortcut.ctrlKey ? event.ctrlKey : !event.ctrlKey;
         const matchesAlt = shortcut.altKey ? event.altKey : !event.altKey;
-        const matchesShift = shortcut.shiftKey ? event.shiftKey : !event.shiftKey;
+        const matchesShift = shortcut.shiftKey
+          ? event.shiftKey
+          : !event.shiftKey;
 
         if (matchesKey && matchesCtrl && matchesAlt && matchesShift) {
           event.preventDefault();
@@ -51,7 +54,10 @@ export const commonShortcuts = {
  * Hook for focus trap - keeps focus within a container
  * Useful for modals and dropdown menus
  */
-export const useFocusTrap = (containerRef: React.RefObject<HTMLElement>, isActive: boolean) => {
+export const useFocusTrap = (
+  containerRef: React.RefObject<HTMLElement>,
+  isActive: boolean
+) => {
   useEffect(() => {
     if (!isActive || !containerRef.current) return;
 

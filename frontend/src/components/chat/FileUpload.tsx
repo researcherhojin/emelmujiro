@@ -48,7 +48,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
     if (type.startsWith('image/')) return FileImage;
     if (type.startsWith('video/')) return FileVideo;
     if (type.startsWith('audio/')) return FileAudio;
-    if (type === 'application/pdf' || type.includes('document')) return FileText;
+    if (type === 'application/pdf' || type.includes('document'))
+      return FileText;
 
     return File;
   };
@@ -129,7 +130,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
 
       // Simulate upload progress
       const interval = setInterval(() => {
-        setUploadProgress(prev => {
+        setUploadProgress((prev) => {
           if (prev === null) return 0;
           if (prev >= 100) {
             clearInterval(interval);
@@ -140,7 +141,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
       }, 100);
 
       // Wait for "upload" to complete
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      await new Promise((resolve) => setTimeout(resolve, 1200));
 
       onUpload(selectedFile);
       setSelectedFile(null);
@@ -157,7 +158,10 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
     } catch (error) {
       console.error('Upload error:', error);
       setUploadProgress(null);
-      showNotification('error', t('chat.fileUpload.failed', '파일 업로드에 실패했습니다.'));
+      showNotification(
+        'error',
+        t('chat.fileUpload.failed', '파일 업로드에 실패했습니다.')
+      );
     }
   };
 
@@ -202,7 +206,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
           role="button"
           tabIndex={0}
           data-testid="drop-zone"
-          onKeyDown={e => {
+          onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               handleBrowseClick();
@@ -285,7 +289,11 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
 
       {/* Upload Progress */}
       {uploadProgress !== null && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="space-y-3"
+        >
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
               {uploadProgress === 100 ? (
@@ -319,8 +327,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
           {t('chat.fileUpload.allowedTypes', '지원 파일 형식:')}
         </p>
         <p className="text-xs text-gray-600 dark:text-gray-300">
-          {t('chat.fileUpload.formats', '이미지, PDF, 문서, 동영상, 음성파일')} (최대{' '}
-          {formatFileSize(maxFileSize)})
+          {t('chat.fileUpload.formats', '이미지, PDF, 문서, 동영상, 음성파일')}{' '}
+          (최대 {formatFileSize(maxFileSize)})
         </p>
       </div>
 

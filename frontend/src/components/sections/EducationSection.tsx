@@ -57,8 +57,13 @@ interface CourseCardProps {
 }
 
 const CourseCard: React.FC<CourseCardProps> = memo(({ course, index }) => (
-  <div key={index} className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors">
-    <h4 className="font-semibold text-lg text-gray-900 mb-2">{course.company}</h4>
+  <div
+    key={index}
+    className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors"
+  >
+    <h4 className="font-semibold text-lg text-gray-900 mb-2">
+      {course.company}
+    </h4>
     <div className="space-y-2 text-sm text-gray-600">
       <p>{course.course}</p>
       <p>{course.period}</p>
@@ -89,14 +94,22 @@ const EducationSection: React.FC = memo(() => {
       icon: <BookOpen className="w-8 h-8 text-gray-700 mb-4" />,
       title: 'AI 기술 심화 과정',
       description: 'Computer Vision과 딥러닝 중심의 전문가 양성 과정',
-      highlights: ['YOLO 기반 객체 인식 실습', 'Vision AI 알고리즘 구현', 'AI 프로젝트 실전 구축'],
+      highlights: [
+        'YOLO 기반 객체 인식 실습',
+        'Vision AI 알고리즘 구현',
+        'AI 프로젝트 실전 구축',
+      ],
     },
     {
       id: 3,
       icon: <Users className="w-8 h-8 text-gray-700 mb-4" />,
       title: '생성형 AI 활용 과정',
       description: '최신 생성형 AI 기술의 비즈니스 적용 교육',
-      highlights: ['LLM 기반 서비스 설계', '업무 자동화 프로세스', 'AI 도입 전략 수립'],
+      highlights: [
+        'LLM 기반 서비스 설계',
+        '업무 자동화 프로세스',
+        'AI 도입 전략 수립',
+      ],
     },
   ];
 
@@ -136,7 +149,9 @@ const EducationSection: React.FC = memo(() => {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <h2 className="text-4xl font-bold mb-6 text-gray-900">실전 AI 교육</h2>
+          <h2 className="text-4xl font-bold mb-6 text-gray-900">
+            실전 AI 교육
+          </h2>
           <p className="text-xl text-gray-600">
             현장에서 바로 활용할 수 있는 실무 중심 교육을 제공합니다
           </p>
@@ -157,7 +172,9 @@ const EducationSection: React.FC = memo(() => {
           viewport={{ once: true }}
           className="mb-20"
         >
-          <h3 className="text-2xl font-bold text-center mb-12">최근 진행 과정</h3>
+          <h3 className="text-2xl font-bold text-center mb-12">
+            최근 진행 과정
+          </h3>
           <div className="grid md:grid-cols-3 gap-6">
             {recentCourses.map((course, index) => (
               <CourseCard key={index} course={course} index={index} />
@@ -176,7 +193,7 @@ const EducationSection: React.FC = memo(() => {
           >
             <button
               onClick={handleConsultationClick}
-              className="bg-gray-900 text-white px-8 py-4 rounded-lg flex items-center 
+              className="bg-gray-900 text-white px-8 py-4 rounded-lg flex items-center
                                      hover:bg-gray-800 transition-colors shadow-md hover:shadow-lg"
             >
               <CalendarCheck className="w-5 h-5 mr-2" />

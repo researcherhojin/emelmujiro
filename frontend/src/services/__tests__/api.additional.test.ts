@@ -42,7 +42,7 @@ describe('API Service - Additional Tests', () => {
   });
 
   describe('Error Handling', () => {
-    it.skip('should handle network errors', async () => {
+    it('should handle network errors', async () => {
       const mockError = new Error('Network Error');
       (mockError as Error & { code?: string }).code = 'ECONNABORTED';
 
@@ -63,7 +63,7 @@ describe('API Service - Additional Tests', () => {
       await expect(api.getBlogPosts(1)).rejects.toEqual(mockError);
     });
 
-    it.skip('should handle 404 errors', async () => {
+    it('should handle 404 errors', async () => {
       const mockError = {
         response: {
           status: 404,
@@ -89,7 +89,7 @@ describe('API Service - Additional Tests', () => {
       await expect(api.getBlogPost(999)).rejects.toEqual(mockError);
     });
 
-    it.skip('should handle 500 server errors', async () => {
+    it('should handle 500 server errors', async () => {
       const mockError = {
         response: {
           status: 500,
@@ -135,7 +135,7 @@ describe('API Service - Additional Tests', () => {
         delete: jest.fn(),
         interceptors: {
           request: {
-            use: jest.fn(successFn => {
+            use: jest.fn((successFn) => {
               // Simulate interceptor behavior
               const config = { headers: {} as Record<string, string> };
               successFn(config);
@@ -151,7 +151,7 @@ describe('API Service - Additional Tests', () => {
       await api.getBlogPosts(1);
     });
 
-    it.skip('should handle token refresh on 401', async () => {
+    it('should handle token refresh on 401', async () => {
       // Skip this test as USE_MOCK_API is true and doesn't call axios
       const mockError = {
         response: {
@@ -163,7 +163,10 @@ describe('API Service - Additional Tests', () => {
       };
 
       const mockInstance = {
-        get: jest.fn().mockRejectedValueOnce(mockError).mockResolvedValueOnce({ data: [] }),
+        get: jest
+          .fn()
+          .mockRejectedValueOnce(mockError)
+          .mockResolvedValueOnce({ data: [] }),
         post: jest.fn(),
         put: jest.fn(),
         patch: jest.fn(),
@@ -186,7 +189,7 @@ describe('API Service - Additional Tests', () => {
   });
 
   describe('Mock API Mode', () => {
-    it.skip('should use mock data when USE_MOCK_API is true', async () => {
+    it('should use mock data when USE_MOCK_API is true', async () => {
       process.env.REACT_APP_USE_MOCK_API = 'true';
 
       // Since api is already imported, we need to work with the existing instance
@@ -195,7 +198,7 @@ describe('API Service - Additional Tests', () => {
       expect(Array.isArray(result.data.results)).toBe(true);
     });
 
-    it.skip('should use mock data in production without API URL', async () => {
+    it('should use mock data in production without API URL', async () => {
       // @ts-ignore
       process.env.NODE_ENV = 'production';
       process.env.REACT_APP_API_URL = '';
@@ -207,21 +210,21 @@ describe('API Service - Additional Tests', () => {
   });
 
   describe('Request Configuration', () => {
-    it.skip('should set correct timeout', () => {
+    it('should set correct timeout', () => {
       // Skip since we can't re-import the module after it's already loaded
     });
 
-    it.skip('should set withCredentials for CORS', () => {
+    it('should set withCredentials for CORS', () => {
       // Skip since we can't re-import the module after it's already loaded
     });
 
-    it.skip('should set correct content type', () => {
+    it('should set correct content type', () => {
       // Skip since we can't re-import the module after it's already loaded
     });
   });
 
   describe('Blog Categories', () => {
-    it.skip('should fetch blog categories', async () => {
+    it('should fetch blog categories', async () => {
       const mockCategories = [
         { id: 1, name: 'Tech', slug: 'tech' },
         { id: 2, name: 'Business', slug: 'business' },
@@ -249,7 +252,7 @@ describe('API Service - Additional Tests', () => {
       expect(Array.isArray(result.data)).toBe(true);
     });
 
-    it.skip('should filter posts by category', async () => {
+    it('should filter posts by category', async () => {
       const mockPosts = {
         results: [{ id: 1, title: 'Tech Post', category: 'tech' }],
       };
@@ -275,7 +278,7 @@ describe('API Service - Additional Tests', () => {
   });
 
   describe('Contact Form', () => {
-    it.skip('should validate contact form data', async () => {
+    it('should validate contact form data', async () => {
       // Skip this test as USE_MOCK_API is true and always returns success
       const invalidData = {
         name: '',
@@ -303,7 +306,9 @@ describe('API Service - Additional Tests', () => {
       (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
 
       await expect(
-        api.createContact(invalidData as Parameters<typeof api.createContact>[0])
+        api.createContact(
+          invalidData as Parameters<typeof api.createContact>[0]
+        )
       ).rejects.toMatchObject({
         response: {
           status: 400,
@@ -311,7 +316,7 @@ describe('API Service - Additional Tests', () => {
       });
     });
 
-    it.skip('should handle successful contact form submission', async () => {
+    it('should handle successful contact form submission', async () => {
       const formData = {
         name: 'John Doe',
         email: 'john@example.com',
@@ -346,7 +351,7 @@ describe('API Service - Additional Tests', () => {
   });
 
   describe('Newsletter', () => {
-    it.skip('should subscribe to newsletter', async () => {
+    it('should subscribe to newsletter', async () => {
       const email = 'test@example.com';
 
       const mockInstance = {
@@ -373,7 +378,7 @@ describe('API Service - Additional Tests', () => {
       expect(result.data.success).toBe(true);
     });
 
-    it.skip('should handle duplicate newsletter subscription', async () => {
+    it('should handle duplicate newsletter subscription', async () => {
       // Skip this test as USE_MOCK_API is true and always returns success
       const email = 'existing@example.com';
 

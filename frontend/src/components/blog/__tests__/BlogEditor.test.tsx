@@ -64,7 +64,9 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
       expect(screen.getByText('블로그 글쓰기')).toBeInTheDocument();
-      expect(screen.queryByText('관리자 모드가 필요합니다')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('관리자 모드가 필요합니다')
+      ).not.toBeInTheDocument();
     });
 
     it('activates admin mode via URL parameter', () => {
@@ -112,7 +114,9 @@ describe('BlogEditor Component', () => {
       expect(titleInput.value).toBe('Test Title');
 
       // Find content textarea by placeholder text
-      const contentTextarea = screen.getByPlaceholderText(/## 제목/) as HTMLTextAreaElement;
+      const contentTextarea = screen.getByPlaceholderText(
+        /## 제목/
+      ) as HTMLTextAreaElement;
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
       expect(contentTextarea.value).toBe('Test Content');
     });
@@ -136,17 +140,25 @@ describe('BlogEditor Component', () => {
 
       // Initially preview is shown
       expect(screen.getByTestId('markdown-preview')).toBeInTheDocument();
-      expect(screen.getByTestId('markdown-preview')).toHaveTextContent('*내용을 입력하세요...*');
+      expect(screen.getByTestId('markdown-preview')).toHaveTextContent(
+        '*내용을 입력하세요...*'
+      );
     });
 
     it('displays content in preview mode', () => {
       renderWithRouter(<BlogEditor />);
 
-      const contentTextarea = screen.getByPlaceholderText(/## 제목/) as HTMLTextAreaElement;
-      fireEvent.change(contentTextarea, { target: { value: '# Test Markdown' } });
+      const contentTextarea = screen.getByPlaceholderText(
+        /## 제목/
+      ) as HTMLTextAreaElement;
+      fireEvent.change(contentTextarea, {
+        target: { value: '# Test Markdown' },
+      });
 
       // Preview is already shown by default
-      expect(screen.getByTestId('markdown-preview')).toHaveTextContent('# Test Markdown');
+      expect(screen.getByTestId('markdown-preview')).toHaveTextContent(
+        '# Test Markdown'
+      );
     });
   });
 
@@ -181,7 +193,9 @@ describe('BlogEditor Component', () => {
       const titleInput = screen.getByPlaceholderText(
         '포스트 제목을 입력하세요'
       ) as HTMLInputElement;
-      const contentTextarea = screen.getByPlaceholderText(/## 제목/) as HTMLTextAreaElement;
+      const contentTextarea = screen.getByPlaceholderText(
+        /## 제목/
+      ) as HTMLTextAreaElement;
       const categorySelect = screen.getByRole('combobox') as HTMLSelectElement;
 
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
@@ -196,7 +210,9 @@ describe('BlogEditor Component', () => {
       fireEvent.click(saveButton);
 
       // Check localStorage - should have the new post
-      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
+      const savedPosts = JSON.parse(
+        localStorage.getItem('customBlogPosts') || '[]'
+      ) as BlogPost[];
       expect(savedPosts.length).toBe(1);
       const lastPost = savedPosts[0];
       expect(lastPost?.title).toBe('Test Post');
@@ -220,7 +236,9 @@ describe('BlogEditor Component', () => {
       const titleInput = screen.getByPlaceholderText(
         '포스트 제목을 입력하세요'
       ) as HTMLInputElement;
-      const contentTextarea = screen.getByPlaceholderText(/## 제목/) as HTMLTextAreaElement;
+      const contentTextarea = screen.getByPlaceholderText(
+        /## 제목/
+      ) as HTMLTextAreaElement;
 
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
@@ -231,7 +249,9 @@ describe('BlogEditor Component', () => {
 
       fireEvent.click(saveButton);
 
-      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
+      const savedPosts = JSON.parse(
+        localStorage.getItem('customBlogPosts') || '[]'
+      ) as BlogPost[];
       expect(savedPosts.length).toBe(1);
       const lastPost = savedPosts[0];
       expect(lastPost?.id).toBeDefined();
@@ -257,7 +277,9 @@ describe('BlogEditor Component', () => {
 
       // Mock createElement and click
       const linkElement = document.createElement('a');
-      const createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(linkElement);
+      const createElementSpy = jest
+        .spyOn(document, 'createElement')
+        .mockReturnValue(linkElement);
       const clickSpy = jest.spyOn(linkElement, 'click').mockImplementation();
 
       const exportButton = screen.getByRole('button', { name: /내보내기/ });
@@ -276,7 +298,11 @@ describe('BlogEditor Component', () => {
       renderWithRouter(<BlogEditor />);
 
       const file = new File(
-        [JSON.stringify([{ id: 1, title: 'Imported Post', content: 'Imported Content' }])],
+        [
+          JSON.stringify([
+            { id: 1, title: 'Imported Post', content: 'Imported Content' },
+          ]),
+        ],
         'posts.json',
         { type: 'application/json' }
       );
@@ -284,21 +310,31 @@ describe('BlogEditor Component', () => {
       // We need to interact with the file input directly
       // For file inputs, we still need direct access as Testing Library doesn't provide a good alternative
       // eslint-disable-next-line testing-library/no-node-access
-      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      const fileInput = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement;
 
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
 
       fireEvent.change(fileInput, { target: { files: [file] } });
 
       await waitFor(() => {
-        const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]');
+        const savedPosts = JSON.parse(
+          localStorage.getItem('customBlogPosts') || '[]'
+        );
         // Check that the imported post was added
-        const importedPost = savedPosts.find((p: BlogPost) => p.title === 'Imported Post');
+        const importedPost = savedPosts.find(
+          (p: BlogPost) => p.title === 'Imported Post'
+        );
         expect(importedPost).toBeDefined();
       });
 
-      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
-      const importedPost = savedPosts.find((p: BlogPost) => p.title === 'Imported Post');
+      const savedPosts = JSON.parse(
+        localStorage.getItem('customBlogPosts') || '[]'
+      ) as BlogPost[];
+      const importedPost = savedPosts.find(
+        (p: BlogPost) => p.title === 'Imported Post'
+      );
       expect(importedPost?.content).toBe('Imported Content');
 
       expect(alertSpy).toHaveBeenCalledWith('1개의 포스트를 가져왔습니다!');
@@ -310,12 +346,16 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
 
-      const invalidFile = new File(['invalid json'], 'posts.json', { type: 'application/json' });
+      const invalidFile = new File(['invalid json'], 'posts.json', {
+        type: 'application/json',
+      });
 
       // We need to interact with the file input directly
       // For file inputs, we still need direct access as Testing Library doesn't provide a good alternative
       // eslint-disable-next-line testing-library/no-node-access
-      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      const fileInput = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement;
 
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
 

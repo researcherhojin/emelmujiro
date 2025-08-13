@@ -50,7 +50,10 @@ const sendToAnalytics = async (metric: WebVitalsData) => {
 };
 
 // Get rating based on thresholds
-const getRating = (name: string, value: number): 'good' | 'needs-improvement' | 'poor' => {
+const getRating = (
+  name: string,
+  value: number
+): 'good' | 'needs-improvement' | 'poor' => {
   const threshold = THRESHOLDS[name as keyof typeof THRESHOLDS];
   if (!threshold) return 'good';
 
@@ -106,7 +109,7 @@ interface MetricSummary {
 export const getMetricsSummary = () => {
   const summary: Record<string, MetricSummary> = {};
 
-  metricsStore.forEach(metric => {
+  metricsStore.forEach((metric) => {
     if (!summary[metric.name]) {
       summary[metric.name] = {
         values: [],
@@ -119,9 +122,10 @@ export const getMetricsSummary = () => {
   });
 
   // Calculate averages and percentiles
-  Object.keys(summary).forEach(key => {
+  Object.keys(summary).forEach((key) => {
     const values = summary[key].values.sort((a: number, b: number) => a - b);
-    summary[key].average = values.reduce((a: number, b: number) => a + b, 0) / values.length;
+    summary[key].average =
+      values.reduce((a: number, b: number) => a + b, 0) / values.length;
     summary[key].median = values[Math.floor(values.length / 2)];
     summary[key].p75 = values[Math.floor(values.length * 0.75)];
     summary[key].p95 = values[Math.floor(values.length * 0.95)];
@@ -135,7 +139,7 @@ export const PerformanceMonitor = () => {
   // Monitor long tasks
   if ('PerformanceObserver' in window) {
     try {
-      const observer = new PerformanceObserver(list => {
+      const observer = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           // Long task detected
           if (entry.duration > 50) {
@@ -156,8 +160,10 @@ export const PerformanceMonitor = () => {
 
   // Monitor resource timing
   if ('performance' in window && 'getEntriesByType' in performance) {
-    const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
-    const slowResources = resources.filter(r => r.duration > 1000);
+    const resources = performance.getEntriesByType(
+      'resource'
+    ) as PerformanceResourceTiming[];
+    const slowResources = resources.filter((r) => r.duration > 1000);
 
     if (slowResources.length > 0) {
       console.warn('Slow resources detected:', slowResources);

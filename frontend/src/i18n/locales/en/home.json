@@ -43,7 +43,12 @@
       {
         "title": "Web/Mobile Development",
         "description": "Modern and scalable application development",
-        "features": ["React/Vue.js", "Node.js/Python", "Mobile Apps", "API Development"]
+        "features": [
+          "React/Vue.js",
+          "Node.js/Python",
+          "Mobile Apps",
+          "API Development"
+        ]
       },
       {
         "title": "Cloud Solutions",
@@ -53,7 +58,12 @@
       {
         "title": "Education & Training",
         "description": "Practical technology education programs",
-        "features": ["Corporate Training", "Personal Coaching", "Workshops", "Mentoring"]
+        "features": [
+          "Corporate Training",
+          "Personal Coaching",
+          "Workshops",
+          "Mentoring"
+        ]
       }
     ]
   },
