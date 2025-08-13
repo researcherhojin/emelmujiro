@@ -114,7 +114,7 @@ describe('API Service Comprehensive Tests', () => {
       
       try {
         await blogService.getPosts();
-        fail('Should have thrown an error');
+        throw new Error('Should have thrown an error');
       } catch (error: any) {
         expect(error.message).toContain('Network Error');
       }
@@ -125,7 +125,7 @@ describe('API Service Comprehensive Tests', () => {
       
       try {
         await blogService.getPosts();
-        fail('Should have thrown an error');
+        throw new Error('Should have thrown an error');
       } catch (error: any) {
         expect(error.code).toBe('ECONNABORTED');
       }
