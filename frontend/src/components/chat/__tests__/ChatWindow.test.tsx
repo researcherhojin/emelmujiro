@@ -6,11 +6,17 @@ import ChatWindow from '../ChatWindow';
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-    textarea: ({ children, ...props }: any) => <textarea {...props}>{children}</textarea>,
+    div: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <div>{children}</div>
+    ),
+    button: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <button>{children}</button>
+    ),
+    textarea: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <textarea>{children}</textarea>
+    ),
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock lucide-react icons
@@ -38,19 +44,22 @@ jest.mock('lucide-react', () => ({
 // Mock child components
 jest.mock('../MessageList', () => ({
   __esModule: true,
-  default: ({ messages, isTyping, onRetry, onImageClick, onQuickReply, onFeedback }: any) => (
+  default: () => (
     <div data-testid="message-list">
-      {messages.map((msg: any) => (
-        <div key={msg.id}>{msg.content}</div>
-      ))}
-      {isTyping && <div>Typing...</div>}
+      <div>Mock Message List</div>
     </div>
   ),
 }));
 
 jest.mock('../EmojiPicker', () => ({
   __esModule: true,
-  default: ({ onEmojiSelect, onClose }: any) => (
+  default: ({
+    onEmojiSelect,
+    onClose,
+  }: {
+    onEmojiSelect: (emoji: string) => void;
+    onClose: () => void;
+  }) => (
     <div data-testid="emoji-picker">
       <button onClick={() => onEmojiSelect('😀')}>😀</button>
       <button onClick={onClose}>Close</button>
@@ -60,7 +69,13 @@ jest.mock('../EmojiPicker', () => ({
 
 jest.mock('../FileUpload', () => ({
   __esModule: true,
-  default: ({ onFileSelect, onClose, maxFileSize, acceptedTypes }: any) => (
+  default: ({
+    onFileSelect,
+    onClose,
+  }: {
+    onFileSelect: (file: File) => void;
+    onClose: () => void;
+  }) => (
     <div data-testid="file-upload">
       <input
         type="file"
@@ -69,7 +84,6 @@ jest.mock('../FileUpload', () => ({
             onFileSelect(e.target.files[0]);
           }
         }}
-        accept={acceptedTypes?.join(',')}
       />
       <button onClick={onClose}>Close</button>
     </div>
@@ -78,7 +92,7 @@ jest.mock('../FileUpload', () => ({
 
 jest.mock('../QuickReplies', () => ({
   __esModule: true,
-  default: ({ replies, onSelect }: any) => (
+  default: ({ replies, onSelect }: { replies: string[]; onSelect: (reply: string) => void }) => (
     <div data-testid="quick-replies">
       {replies.map((reply: string) => (
         <button key={reply} onClick={() => onSelect(reply)}>

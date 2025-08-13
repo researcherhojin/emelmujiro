@@ -124,6 +124,11 @@ export function removeCachedPost(postId: string): boolean {
     const cachedPosts = getCachedPosts();
     const updatedPosts = cachedPosts.filter(post => post.id !== postId);
 
+    // Check if any post was actually removed
+    if (cachedPosts.length === updatedPosts.length) {
+      return false; // No post was removed
+    }
+
     localStorage.setItem(CACHE_KEY, JSON.stringify(updatedPosts));
     logger.info(`Removed cached post: ${postId}`);
     return true;
