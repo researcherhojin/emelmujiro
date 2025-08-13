@@ -19,4 +19,10 @@ drf-yasg==1.21.10
 # 프로덕션 의존성 (선택사항)
 gunicorn==23.0.0
 psycopg2-binary==2.9.10
-whitenoise==6.9.0 
+whitenoise==6.9.0
+
+# WebSocket 지원
+channels==4.1.0
+channels-redis==4.2.0
+daphne==4.1.0
+redis==5.0.1 

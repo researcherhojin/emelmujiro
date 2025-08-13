@@ -42,6 +42,9 @@ const InstallPrompt = lazy(() => import('./components/common/InstallPrompt'));
 // Chat Components
 const ChatWidget = lazy(() => import('./components/chat/ChatWidget'));
 
+// Admin Components
+const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
+
 // ScrollToTop component to handle page navigation
 const ScrollToTop: React.FC = memo(() => {
   const { pathname } = useLocation();
@@ -147,6 +150,7 @@ const router = createHashRouter([
       { path: 'blog', element: <BlogListPage /> },
       { path: 'blog/new', element: <BlogEditor /> },
       { path: 'blog/:id', element: <BlogDetail /> },
+      { path: 'admin', element: <AdminDashboard /> },
       { path: '*', element: <NotFound /> },
     ],
   },

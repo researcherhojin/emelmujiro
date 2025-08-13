@@ -2,12 +2,14 @@
 export interface BlogPost {
   id: string | number;
   title: string;
-  slug?: string;
+  slug: string;
   content: string;
-  excerpt?: string;
+  excerpt: string;
   author: string;
+  publishedAt: string;
   category?: string;
   tags?: string[];
+  imageUrl?: string;
   image_url?: string;
   date?: string;
   created_at?: string;
@@ -15,6 +17,7 @@ export interface BlogPost {
   published?: boolean;
   views?: number;
   likes?: number;
+  readTime?: number;
 }
 
 export interface ApiResponse<T> {
@@ -67,6 +70,37 @@ export interface ContactFormData {
   name: string;
   email: string;
   message: string;
+  phone?: string;
+  company?: string;
+  subject?: string;
+}
+
+// User Types
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatar?: string;
+  role: 'admin' | 'user' | 'moderator';
+  isActive: boolean;
+  createdAt: string;
+  lastLogin?: string;
+}
+
+// Project Types
+export interface Project {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string;
+  technologies: string[];
+  githubUrl?: string;
+  liveUrl?: string;
+  category: string;
+  featured?: boolean;
+  completedAt: string;
 }
 
 // Navigation Types

@@ -28,6 +28,7 @@ if "test" in sys.argv:
 CUSTOM_APPS = [
     "rest_framework",
     "corsheaders",
+    "channels",
     "api",
 ]
 
@@ -76,6 +77,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = "config.asgi.application"
+
+# Channels configuration
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 DATABASES = {
     "default": {
