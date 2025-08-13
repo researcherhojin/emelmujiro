@@ -5,7 +5,17 @@ import QuickReplies from '../QuickReplies';
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    button: ({ children, onClick, className, ...props }: any) => (
+    button: ({
+      children,
+      onClick,
+      className,
+      ...props
+    }: {
+      children?: React.ReactNode;
+      onClick?: () => void;
+      className?: string;
+      [key: string]: unknown;
+    }) => (
       <button onClick={onClick} className={className} {...props}>
         {children}
       </button>
@@ -15,22 +25,22 @@ jest.mock('framer-motion', () => ({
 
 // Mock lucide-react icons
 jest.mock('lucide-react', () => ({
-  MessageSquare: ({ className }: any) => (
+  MessageSquare: ({ className }: { className?: string }) => (
     <div data-testid="message-icon" className={className}>
       Message
     </div>
   ),
-  Phone: ({ className }: any) => (
+  Phone: ({ className }: { className?: string }) => (
     <div data-testid="phone-icon" className={className}>
       Phone
     </div>
   ),
-  HelpCircle: ({ className }: any) => (
+  HelpCircle: ({ className }: { className?: string }) => (
     <div data-testid="help-icon" className={className}>
       Help
     </div>
   ),
-  Settings: ({ className }: any) => (
+  Settings: ({ className }: { className?: string }) => (
     <div data-testid="settings-icon" className={className}>
       Settings
     </div>
@@ -51,7 +61,7 @@ jest.mock('../../../contexts/ChatContext', () => ({
       quickReplies: [],
     },
   }),
-  ChatProvider: ({ children }: any) => children,
+  ChatProvider: ({ children }: { children?: React.ReactNode }) => children,
 }));
 
 describe('QuickReplies', () => {
