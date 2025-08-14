@@ -19,7 +19,7 @@ interface SEOHeadProps {
 const SEOHead: React.FC<SEOHeadProps> = ({
   title = 'Emelmujiro - AI 교육 & 컨설팅',
   description = 'AI 기술 교육과 컨설팅을 제공하는 전문 기업입니다. 머신러닝, 딥러닝, 데이터 분석 교육 및 기업 AI 전환 컨설팅 서비스를 제공합니다.',
-  keywords = 'AI교육, 머신러닝, 딥러닝, 데이터분석, AI컨설팅, 기업교육, Python, TensorFlow, 인공지능',
+  keywords = 'AI교육, 머신러닝, 딥러닝, 데이터분석, AI컨설팅, 기업교육, Python, TensorFlow, PyTorch, 인공지능',
   image = 'https://researcherhojin.github.io/emelmujiro/og-image.png',
   url = 'https://researcherhojin.github.io/emelmujiro',
   type = 'website',
@@ -51,7 +51,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      email: 'contact@emelmujiro.com',
+      email: 'researcherhojin@gmail.com',
       availableLanguage: ['Korean', 'English'],
     },
     sameAs: [
