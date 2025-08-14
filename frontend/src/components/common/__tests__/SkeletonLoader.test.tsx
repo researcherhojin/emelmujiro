@@ -27,7 +27,12 @@ describe('Skeleton Component', () => {
       render(<Skeleton className="custom-class" data-testid="skeleton" />);
 
       const skeleton = screen.getByTestId('skeleton');
-      expect(skeleton).toHaveClass('custom-class', 'animate-pulse', 'bg-gray-200', 'rounded');
+      expect(skeleton).toHaveClass(
+        'custom-class',
+        'animate-pulse',
+        'bg-gray-200',
+        'rounded'
+      );
     });
 
     it('applies custom width and height', () => {
@@ -82,7 +87,13 @@ describe('Skeleton Component', () => {
 
       const card = screen.getByTestId('skeleton-card');
       expect(card).toBeInTheDocument();
-      expect(card).toHaveClass('space-y-4', 'p-6', 'bg-white', 'rounded-lg', 'border');
+      expect(card).toHaveClass(
+        'space-y-4',
+        'p-6',
+        'bg-white',
+        'rounded-lg',
+        'border'
+      );
     });
 
     it('renders image placeholder', () => {
@@ -90,7 +101,9 @@ describe('Skeleton Component', () => {
 
       const card = screen.getByTestId('skeleton-card');
       const skeletons = within(card).getAllByRole('generic');
-      const imagePlaceholder = skeletons.find(el => el.style.height === '200px');
+      const imagePlaceholder = skeletons.find(
+        (el) => el.style.height === '200px'
+      );
       expect(imagePlaceholder).toBeInTheDocument();
     });
 
@@ -100,8 +113,12 @@ describe('Skeleton Component', () => {
       const card = screen.getByTestId('skeleton-card');
       const skeletons = within(card).getAllByRole('generic');
 
-      const titlePlaceholder = skeletons.find(el => el.style.height === '24px');
-      const subtitlePlaceholder = skeletons.find(el => el.style.height === '16px');
+      const titlePlaceholder = skeletons.find(
+        (el) => el.style.height === '24px'
+      );
+      const subtitlePlaceholder = skeletons.find(
+        (el) => el.style.height === '16px'
+      );
 
       expect(titlePlaceholder).toBeInTheDocument();
       expect(subtitlePlaceholder).toBeInTheDocument();
@@ -112,7 +129,9 @@ describe('Skeleton Component', () => {
 
       const card = screen.getByTestId('skeleton-card');
       const skeletons = within(card).getAllByRole('generic');
-      const textPlaceholders = skeletons.filter(el => el.style.height === '14px');
+      const textPlaceholders = skeletons.filter(
+        (el) => el.style.height === '14px'
+      );
       expect(textPlaceholders.length).toBeGreaterThanOrEqual(3);
     });
 
@@ -124,7 +143,7 @@ describe('Skeleton Component', () => {
 
       // Footer should have two elements with specific dimensions
       const footerElements = skeletons.filter(
-        el =>
+        (el) =>
           (el.style.height === '20px' && el.style.width === '80px') ||
           (el.style.height === '16px' && el.style.width === '120px')
       );
@@ -154,7 +173,7 @@ describe('Skeleton Component', () => {
       const textContainer = screen.getByTestId('skeleton-text');
       const textLines = within(textContainer)
         .getAllByRole('generic')
-        .filter(el => el.style.height === '16px');
+        .filter((el) => el.style.height === '16px');
       expect(textLines.length).toBe(3);
     });
 
@@ -164,7 +183,7 @@ describe('Skeleton Component', () => {
       const textContainer = screen.getByTestId('skeleton-text');
       const textLines = within(textContainer)
         .getAllByRole('generic')
-        .filter(el => el.style.height === '16px');
+        .filter((el) => el.style.height === '16px');
       expect(textLines.length).toBe(5);
     });
 
@@ -174,7 +193,7 @@ describe('Skeleton Component', () => {
       const textContainer = screen.getByTestId('skeleton-text');
       const textLines = within(textContainer)
         .getAllByRole('generic')
-        .filter(el => el.style.height === '16px');
+        .filter((el) => el.style.height === '16px');
       expect(textLines.length).toBe(1);
     });
 
@@ -184,7 +203,7 @@ describe('Skeleton Component', () => {
       const textContainer = screen.getByTestId('skeleton-text');
       const textLines = within(textContainer)
         .getAllByRole('generic')
-        .filter(el => el.style.height === '16px');
+        .filter((el) => el.style.height === '16px');
       const lastLine = textLines[textLines.length - 1];
 
       expect(lastLine).toHaveClass('w-3/4');
@@ -204,7 +223,7 @@ describe('Skeleton Component', () => {
       const textContainer = screen.getByTestId('skeleton-text');
       const textLines = within(textContainer)
         .queryAllByRole('generic')
-        .filter(el => el.style.height === '16px');
+        .filter((el) => el.style.height === '16px');
       expect(textLines.length).toBe(0);
     });
   });
@@ -224,7 +243,7 @@ describe('Skeleton Component', () => {
       const listItem = screen.getByTestId('skeleton-list-item');
       const skeletons = within(listItem).getAllByRole('generic');
       const avatar = skeletons.find(
-        el =>
+        (el) =>
           el.style.width === '48px' &&
           el.style.height === '48px' &&
           el.classList.contains('rounded-full')
@@ -238,7 +257,9 @@ describe('Skeleton Component', () => {
       const listItem = screen.getByTestId('skeleton-list-item');
       const skeletons = within(listItem).getAllByRole('generic');
       const textPlaceholders = skeletons.filter(
-        el => el.classList.contains('animate-pulse') && el.classList.contains('bg-gray-200')
+        (el) =>
+          el.classList.contains('animate-pulse') &&
+          el.classList.contains('bg-gray-200')
       );
       expect(textPlaceholders.length).toBeGreaterThanOrEqual(2);
     });
@@ -249,7 +270,7 @@ describe('Skeleton Component', () => {
       const listItem = screen.getByTestId('skeleton-list-item');
       const skeletons = within(listItem).getAllByRole('generic');
       const actionButton = skeletons.find(
-        el => el.style.height === '32px' && el.style.width === '80px'
+        (el) => el.style.height === '32px' && el.style.width === '80px'
       );
       expect(actionButton).toBeInTheDocument();
     });
@@ -279,7 +300,9 @@ describe('Skeleton Component', () => {
       const skeletons = within(hero).getAllByRole('generic');
       // Title lines have 48px height and are wider (w-3/4 or w-2/3)
       // Filter out CTA buttons which also have 48px height but specific widths (120px, 140px)
-      const titleLines = skeletons.filter(el => el.style.height === '48px' && !el.style.width);
+      const titleLines = skeletons.filter(
+        (el) => el.style.height === '48px' && !el.style.width
+      );
       expect(titleLines.length).toBe(2);
     });
 
@@ -288,7 +311,9 @@ describe('Skeleton Component', () => {
 
       const hero = screen.getByTestId('skeleton-hero');
       const skeletons = within(hero).getAllByRole('generic');
-      const descriptionLines = skeletons.filter(el => el.style.height === '20px');
+      const descriptionLines = skeletons.filter(
+        (el) => el.style.height === '20px'
+      );
       expect(descriptionLines.length).toBeGreaterThanOrEqual(3);
     });
 
@@ -300,8 +325,9 @@ describe('Skeleton Component', () => {
       // There are title placeholders (48px) and CTA buttons (48px)
       // CTA buttons also have width specified
       const ctaButtons = skeletons.filter(
-        el =>
-          el.style.height === '48px' && (el.style.width === '120px' || el.style.width === '140px')
+        (el) =>
+          el.style.height === '48px' &&
+          (el.style.width === '120px' || el.style.width === '140px')
       );
       expect(ctaButtons.length).toBe(2);
     });
@@ -330,8 +356,12 @@ describe('Skeleton Component', () => {
       const services = screen.getByTestId('skeleton-services');
       const skeletons = within(services).getAllByRole('generic');
 
-      const titlePlaceholder = skeletons.find(el => el.style.height === '40px');
-      const subtitlePlaceholder = skeletons.find(el => el.style.height === '24px');
+      const titlePlaceholder = skeletons.find(
+        (el) => el.style.height === '40px'
+      );
+      const subtitlePlaceholder = skeletons.find(
+        (el) => el.style.height === '24px'
+      );
 
       expect(titlePlaceholder).toBeInTheDocument();
       expect(subtitlePlaceholder).toBeInTheDocument();
@@ -343,7 +373,9 @@ describe('Skeleton Component', () => {
       const services = screen.getByTestId('skeleton-services');
       // Service cards have icons (48x48), titles (28px height), and other elements
       const skeletons = within(services).getAllByRole('generic');
-      const icons = skeletons.filter(el => el.style.width === '48px' && el.style.height === '48px');
+      const icons = skeletons.filter(
+        (el) => el.style.width === '48px' && el.style.height === '48px'
+      );
       // Should have 3 service cards, each with an icon
       expect(icons.length).toBe(3);
     });
@@ -355,10 +387,12 @@ describe('Skeleton Component', () => {
       const skeletons = within(services).getAllByRole('generic');
 
       // Each card should have: 1 icon (48x48), 1 title (28px height), 1 divider (4px height)
-      const icons = skeletons.filter(el => el.style.width === '48px' && el.style.height === '48px');
-      const titles = skeletons.filter(el => el.style.height === '28px');
+      const icons = skeletons.filter(
+        (el) => el.style.width === '48px' && el.style.height === '48px'
+      );
+      const titles = skeletons.filter((el) => el.style.height === '28px');
       const dividers = skeletons.filter(
-        el => el.style.height === '4px' && el.style.width === '48px'
+        (el) => el.style.height === '4px' && el.style.width === '48px'
       );
 
       expect(icons.length).toBe(3);
@@ -440,7 +474,9 @@ describe('Skeleton Component', () => {
 
       const nav = screen.getByTestId('skeleton-nav');
       const skeletons = within(nav).getAllByRole('generic');
-      const logo = skeletons.find(el => el.style.width === '120px' && el.style.height === '32px');
+      const logo = skeletons.find(
+        (el) => el.style.width === '120px' && el.style.height === '32px'
+      );
       expect(logo).toBeInTheDocument();
     });
 
@@ -450,7 +486,7 @@ describe('Skeleton Component', () => {
       const nav = screen.getByTestId('skeleton-nav');
       const skeletons = within(nav).getAllByRole('generic');
       const menuItems = skeletons.filter(
-        el => el.style.width === '80px' && el.style.height === '20px'
+        (el) => el.style.width === '80px' && el.style.height === '20px'
       );
       expect(menuItems.length).toBe(4);
     });
@@ -461,7 +497,7 @@ describe('Skeleton Component', () => {
       const nav = screen.getByTestId('skeleton-nav');
       const skeletons = within(nav).getAllByRole('generic');
       const actionButton = skeletons.find(
-        el => el.style.width === '100px' && el.style.height === '36px'
+        (el) => el.style.width === '100px' && el.style.height === '36px'
       );
       expect(actionButton).toBeInTheDocument();
     });
@@ -471,7 +507,13 @@ describe('Skeleton Component', () => {
 
       const nav = screen.getByTestId('skeleton-nav');
       expect(nav).toBeInTheDocument();
-      expect(nav).toHaveClass('custom-nav', 'flex', 'items-center', 'justify-between', 'p-4');
+      expect(nav).toHaveClass(
+        'custom-nav',
+        'flex',
+        'items-center',
+        'justify-between',
+        'p-4'
+      );
     });
   });
 
@@ -491,9 +533,9 @@ describe('Skeleton Component', () => {
       const skeletons = within(form).getAllByRole('generic');
 
       // Should have 3 labels (20px height) and 3 inputs (2x44px, 1x120px)
-      const labels = skeletons.filter(el => el.style.height === '20px');
+      const labels = skeletons.filter((el) => el.style.height === '20px');
       const inputs = skeletons.filter(
-        el => el.style.height === '44px' || el.style.height === '120px'
+        (el) => el.style.height === '44px' || el.style.height === '120px'
       );
 
       expect(labels.length).toBe(3);
@@ -505,7 +547,7 @@ describe('Skeleton Component', () => {
 
       const form = screen.getByTestId('skeleton-form');
       const skeletons = within(form).getAllByRole('generic');
-      const textarea = skeletons.find(el => el.style.height === '120px');
+      const textarea = skeletons.find((el) => el.style.height === '120px');
       expect(textarea).toBeInTheDocument();
     });
 
@@ -515,7 +557,7 @@ describe('Skeleton Component', () => {
       const form = screen.getByTestId('skeleton-form');
       const skeletons = within(form).getAllByRole('generic');
       const submitButton = skeletons.find(
-        el => el.style.height === '48px' && el.style.width === '120px'
+        (el) => el.style.height === '48px' && el.style.width === '120px'
       );
       expect(submitButton).toBeInTheDocument();
     });
@@ -542,7 +584,9 @@ describe('Skeleton Component', () => {
 
       const container = screen.getByTestId('skeleton-container');
       const skeletons = within(container).getAllByRole('generic');
-      const animatedElements = skeletons.filter(el => el.classList.contains('animate-pulse'));
+      const animatedElements = skeletons.filter((el) =>
+        el.classList.contains('animate-pulse')
+      );
       expect(animatedElements.length).toBeGreaterThan(5);
     });
 
@@ -597,7 +641,7 @@ describe('Skeleton Component', () => {
       const textContainer = screen.getByTestId('skeleton-text');
       const textLines = within(textContainer)
         .getAllByRole('generic')
-        .filter(el => el.style.height === '16px');
+        .filter((el) => el.style.height === '16px');
       expect(textLines.length).toBe(10);
     });
   });
@@ -614,7 +658,9 @@ describe('Skeleton Component', () => {
 
       const container = screen.getByTestId('visual-container');
       const skeletons = within(container).getAllByRole('generic');
-      const grayElements = skeletons.filter(el => el.classList.contains('bg-gray-200'));
+      const grayElements = skeletons.filter((el) =>
+        el.classList.contains('bg-gray-200')
+      );
       expect(grayElements.length).toBeGreaterThan(5);
     });
 

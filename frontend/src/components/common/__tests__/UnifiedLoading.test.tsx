@@ -4,7 +4,11 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import UnifiedLoading, { PageLoading, InlineLoading, ButtonLoading } from '../UnifiedLoading';
+import UnifiedLoading, {
+  PageLoading,
+  InlineLoading,
+  ButtonLoading,
+} from '../UnifiedLoading';
 import type { LoadingVariant } from '../UnifiedLoading';
 
 // Mock framer-motion
@@ -168,7 +172,7 @@ describe('UnifiedLoading Component', () => {
 
       const elements = screen.getAllByRole('generic');
       const spinner = elements.find(
-        el => el.classList.contains('w-4') && el.classList.contains('h-4')
+        (el) => el.classList.contains('w-4') && el.classList.contains('h-4')
       );
       expect(spinner).toBeInTheDocument();
     });
@@ -221,7 +225,9 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('passes className to skeleton components', () => {
-      render(<UnifiedLoading variant="skeleton-hero" className="custom-skeleton" />);
+      render(
+        <UnifiedLoading variant="skeleton-hero" className="custom-skeleton" />
+      );
 
       const skeletonHero = screen.getByTestId('skeleton-hero');
       expect(skeletonHero).toHaveClass('custom-skeleton');
@@ -234,7 +240,12 @@ describe('UnifiedLoading Component', () => {
 
       const dotsContainer = screen.getByTestId('loading-dots');
       expect(dotsContainer).toBeInTheDocument();
-      expect(dotsContainer).toHaveClass('flex', 'items-center', 'justify-center', 'space-x-2');
+      expect(dotsContainer).toHaveClass(
+        'flex',
+        'items-center',
+        'justify-center',
+        'space-x-2'
+      );
 
       // The dots are rendered by framer-motion which is mocked
       // We verify the container exists with correct classes
@@ -281,7 +292,12 @@ describe('UnifiedLoading Component', () => {
 
       const pulseContainer = screen.getByTestId('loading-pulse');
       expect(pulseContainer).toBeInTheDocument();
-      expect(pulseContainer).toHaveClass('flex', 'flex-col', 'items-center', 'justify-center');
+      expect(pulseContainer).toHaveClass(
+        'flex',
+        'flex-col',
+        'items-center',
+        'justify-center'
+      );
 
       const pulseElement = screen.getByTestId('pulse-element');
       expect(pulseElement).toBeInTheDocument();
@@ -327,7 +343,7 @@ describe('UnifiedLoading Component', () => {
         render(<UnifiedLoading size={size} />);
 
         const spinner = screen.getByTestId('spinner-element');
-        expectedClasses[index].split(' ').forEach(className => {
+        expectedClasses[index].split(' ').forEach((className) => {
           expect(spinner).toHaveClass(className);
         });
       });
@@ -337,7 +353,7 @@ describe('UnifiedLoading Component', () => {
   describe('Color Options', () => {
     const colors = ['indigo', 'blue', 'gray', 'green'] as const;
 
-    colors.forEach(color => {
+    colors.forEach((color) => {
       it(`renders ${color} color correctly`, () => {
         render(<UnifiedLoading color={color} />);
 
@@ -483,7 +499,7 @@ describe('UnifiedLoading Component', () => {
 
       const messages = screen.queryAllByText(/./); // Query for any text
       // Filter to only p elements
-      const paragraphs = messages.filter(el => el.tagName === 'P');
+      const paragraphs = messages.filter((el) => el.tagName === 'P');
       expect(paragraphs.length).toBe(0);
     });
 
@@ -557,7 +573,7 @@ describe('UnifiedLoading Component', () => {
       const variants = ['spinner', 'dots', 'pulse', 'skeleton-hero'] as const;
       const { rerender } = render(<UnifiedLoading variant="spinner" />);
 
-      variants.forEach(variant => {
+      variants.forEach((variant) => {
         rerender(<UnifiedLoading variant={variant} />);
       });
 
@@ -583,7 +599,9 @@ describe('UnifiedLoading Component', () => {
 
   describe('Edge Cases', () => {
     it('handles undefined variant gracefully', () => {
-      render(<UnifiedLoading variant={undefined as unknown as LoadingVariant} />);
+      render(
+        <UnifiedLoading variant={undefined as unknown as LoadingVariant} />
+      );
 
       // Should default to spinner
       const spinner = screen.getByTestId('spinner-element');
@@ -591,7 +609,11 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('handles invalid variant gracefully', () => {
-      render(<UnifiedLoading variant={'invalid-variant' as unknown as LoadingVariant} />);
+      render(
+        <UnifiedLoading
+          variant={'invalid-variant' as unknown as LoadingVariant}
+        />
+      );
 
       // Should default to spinner
       const spinner = screen.getByTestId('spinner-element');
@@ -605,7 +627,11 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('handles undefined size gracefully', () => {
-      render(<UnifiedLoading size={undefined as unknown as 'sm' | 'md' | 'lg' | 'xl'} />);
+      render(
+        <UnifiedLoading
+          size={undefined as unknown as 'sm' | 'md' | 'lg' | 'xl'}
+        />
+      );
 
       // Should default to md size
       const spinner = screen.getByTestId('spinner-element');
@@ -619,7 +645,11 @@ describe('UnifiedLoading Component', () => {
 
       const animatedElement = screen.getByTestId('spinner-element');
       expect(animatedElement).toBeInTheDocument();
-      expect(animatedElement).toHaveClass('border-4', 'border-t-transparent', 'rounded-full');
+      expect(animatedElement).toHaveClass(
+        'border-4',
+        'border-t-transparent',
+        'rounded-full'
+      );
     });
 
     it('applies correct layout classes to fullscreen wrapper', () => {

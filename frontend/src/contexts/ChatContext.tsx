@@ -12,7 +12,12 @@ import { ChatWebSocketService } from '../services/websocket';
 
 export type MessageType = 'text' | 'image' | 'file' | 'system';
 export type MessageSender = 'user' | 'agent' | 'system';
-export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
+export type MessageStatus =
+  | 'sending'
+  | 'sent'
+  | 'delivered'
+  | 'read'
+  | 'failed';
 
 export interface ChatMessage {
   id: string;
@@ -66,7 +71,9 @@ interface ChatContextType {
   openChat: () => void;
   closeChat: () => void;
   toggleMinimize: () => void;
-  sendMessage: (message: Omit<ChatMessage, 'id' | 'timestamp' | 'status'>) => Promise<void>;
+  sendMessage: (
+    message: Omit<ChatMessage, 'id' | 'timestamp' | 'status'>
+  ) => Promise<void>;
   markAsRead: (messageId: string) => void;
   markAllAsRead: () => void;
   startTyping: () => void;
@@ -140,7 +147,9 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const [agentAvailable] = useState(true);
   const [agentName] = useState('고객지원팀');
   const [agentAvatar] = useState<string>();
-  const [businessHours, setBusinessHours] = useState<BusinessHours>(getDefaultBusinessHours);
+  const [businessHours, setBusinessHours] = useState<BusinessHours>(
+    getDefaultBusinessHours
+  );
 
   // Settings
   const [settings] = useState<ChatSettings>(defaultSettings);
@@ -199,7 +208,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     if (messages.length === 0) return;
 
     // Only play sound for new messages after user has interacted with the page
-    const hasUserInteracted = document.body.getAttribute('data-user-interacted') === 'true';
+    const hasUserInteracted =
+      document.body.getAttribute('data-user-interacted') === 'true';
     if (!hasUserInteracted) return;
 
     const lastMessage = messages[messages.length - 1];
@@ -278,7 +288,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       oscillator.type = 'sine';
 
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContext.currentTime + 0.5
+      );
 
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.5);
@@ -320,10 +333,12 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   };
 
   const toggleMinimize = () => {
-    setIsMinimized(prev => !prev);
+    setIsMinimized((prev) => !prev);
   };
 
-  const sendMessage = async (messageData: Omit<ChatMessage, 'id' | 'timestamp' | 'status'>) => {
+  const sendMessage = async (
+    messageData: Omit<ChatMessage, 'id' | 'timestamp' | 'status'>
+  ) => {
     const message: ChatMessage = {
       ...messageData,
       id: generateMessageId(),
@@ -332,7 +347,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     };
 
     // Add message to local state immediately
-    setMessages(prev => [...prev, message]);
+    setMessages((prev) => [...prev, message]);
 
     try {
       if (isConnected && wsRef.current?.isConnected()) {
@@ -344,8 +359,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
         if (success) {
           // Update status to sent
-          setMessages(prev =>
-            prev.map(msg => (msg.id === message.id ? { ...msg, status: 'sent' } : msg))
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === message.id ? { ...msg, status: 'sent' } : msg
+            )
           );
         } else {
           throw new Error('Failed to send message via WebSocket');
@@ -364,31 +381,37 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
             timestamp: new Date(),
             status: 'read',
           };
-          setMessages(prev => [...prev, autoReply]);
+          setMessages((prev) => [...prev, autoReply]);
         }, 1000);
       }
     } catch (error) {
       // Update message status to failed
-      setMessages(prev =>
-        prev.map(msg => (msg.id === message.id ? { ...msg, status: 'failed' } : msg))
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === message.id ? { ...msg, status: 'failed' } : msg
+        )
       );
       throw error;
     }
   };
 
   const markAsRead = (messageId: string) => {
-    setMessages(prev =>
-      prev.map(msg =>
-        msg.id === messageId && msg.sender !== 'user' ? { ...msg, status: 'read' } : msg
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === messageId && msg.sender !== 'user'
+          ? { ...msg, status: 'read' }
+          : msg
       )
     );
 
-    setUnreadCount(prev => Math.max(0, prev - 1));
+    setUnreadCount((prev) => Math.max(0, prev - 1));
   };
 
   const markAllAsRead = () => {
-    setMessages(prev =>
-      prev.map(msg => (msg.sender !== 'user' ? { ...msg, status: 'read' } : msg))
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.sender !== 'user' ? { ...msg, status: 'read' } : msg
+      )
     );
     setUnreadCount(0);
   };
@@ -458,75 +481,89 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
           heartbeatInterval: 30000,
         },
         {
-        onOpen: () => {
-          setIsConnected(true);
-          setConnectionId(`conn_${Date.now()}`);
+          onOpen: () => {
+            setIsConnected(true);
+            setConnectionId(`conn_${Date.now()}`);
 
-          // Send queued messages
-          if (messageQueueRef.current.length > 0) {
-            messageQueueRef.current.forEach(message => {
-              setMessages(prev =>
-                prev.map(msg => (msg.id === message.id ? { ...msg, status: 'sent' } : msg))
-              );
-            });
-            messageQueueRef.current = [];
-          }
-
-          showNotification('success', '채팅 서비스에 연결되었습니다.');
-        },
-
-        onClose: () => {
-          setIsConnected(false);
-          setConnectionId(null);
-        },
-
-        onError: (error: Event) => {
-          console.error('WebSocket error:', error);
-          setIsConnected(false);
-          showNotification('error', '채팅 서비스 연결에 실패했습니다.');
-        },
-
-        onMessage: (data: { type: string; data?: unknown; messageId?: string }) => {
-          if (data.type === 'message' && data.data) {
-            const messageData = data.data as Partial<ChatMessage> & { timestamp?: string | Date };
-            const message: ChatMessage = {
-              ...messageData,
-              id: messageData.id || generateMessageId(),
-              type: messageData.type || 'text',
-              content: messageData.content || '',
-              sender: messageData.sender || 'agent',
-              status: messageData.status || 'delivered',
-              timestamp: messageData.timestamp ? new Date(messageData.timestamp) : new Date(),
-            };
-
-            setMessages(prev => [...prev, message]);
-
-            // Update unread count if chat is closed
-            if (!isOpen && message.sender !== 'user') {
-              setUnreadCount(prev => prev + 1);
+            // Send queued messages
+            if (messageQueueRef.current.length > 0) {
+              messageQueueRef.current.forEach((message) => {
+                setMessages((prev) =>
+                  prev.map((msg) =>
+                    msg.id === message.id ? { ...msg, status: 'sent' } : msg
+                  )
+                );
+              });
+              messageQueueRef.current = [];
             }
-          } else if (data.type === 'message_delivered' && data.messageId) {
-            setMessages(prev =>
-              prev.map(msg => (msg.id === data.messageId ? { ...msg, status: 'delivered' } : msg))
-            );
-          }
-        },
 
-        onTypingStart: () => {
-          setIsTyping(true);
-        },
+            showNotification('success', '채팅 서비스에 연결되었습니다.');
+          },
 
-        onTypingStop: () => {
-          setIsTyping(false);
-        },
+          onClose: () => {
+            setIsConnected(false);
+            setConnectionId(null);
+          },
 
-        onReconnect: () => {
-          showNotification('info', '채팅 서비스에 재연결 중입니다...');
-        },
+          onError: (error: Event) => {
+            console.error('WebSocket error:', error);
+            setIsConnected(false);
+            showNotification('error', '채팅 서비스 연결에 실패했습니다.');
+          },
 
-        onReconnectFailed: () => {
-          showNotification('error', '채팅 서비스 재연결에 실패했습니다.');
-        },
+          onMessage: (data: {
+            type: string;
+            data?: unknown;
+            messageId?: string;
+          }) => {
+            if (data.type === 'message' && data.data) {
+              const messageData = data.data as Partial<ChatMessage> & {
+                timestamp?: string | Date;
+              };
+              const message: ChatMessage = {
+                ...messageData,
+                id: messageData.id || generateMessageId(),
+                type: messageData.type || 'text',
+                content: messageData.content || '',
+                sender: messageData.sender || 'agent',
+                status: messageData.status || 'delivered',
+                timestamp: messageData.timestamp
+                  ? new Date(messageData.timestamp)
+                  : new Date(),
+              };
+
+              setMessages((prev) => [...prev, message]);
+
+              // Update unread count if chat is closed
+              if (!isOpen && message.sender !== 'user') {
+                setUnreadCount((prev) => prev + 1);
+              }
+            } else if (data.type === 'message_delivered' && data.messageId) {
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === data.messageId
+                    ? { ...msg, status: 'delivered' }
+                    : msg
+                )
+              );
+            }
+          },
+
+          onTypingStart: () => {
+            setIsTyping(true);
+          },
+
+          onTypingStop: () => {
+            setIsTyping(false);
+          },
+
+          onReconnect: () => {
+            showNotification('info', '채팅 서비스에 재연결 중입니다...');
+          },
+
+          onReconnectFailed: () => {
+            showNotification('error', '채팅 서비스 재연결에 실패했습니다.');
+          },
         }
       );
 

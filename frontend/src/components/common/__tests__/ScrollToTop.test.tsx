@@ -14,7 +14,9 @@ interface MotionButtonProps {
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    button: ({ children, ...props }: MotionButtonProps) => <button {...props}>{children}</button>,
+    button: ({ children, ...props }: MotionButtonProps) => (
+      <button {...props}>{children}</button>
+    ),
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
 }));
@@ -84,7 +86,10 @@ describe('ScrollToTop', () => {
 
     unmount();
 
-    expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      'scroll',
+      expect.any(Function)
+    );
 
     removeEventListenerSpy.mockRestore();
   });
@@ -110,6 +115,8 @@ describe('ScrollToTop', () => {
     fireEvent.scroll(window);
 
     // Button should be hidden
-    expect(screen.queryByRole('button', { name: /위로/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /위로/i })
+    ).not.toBeInTheDocument();
   });
 });

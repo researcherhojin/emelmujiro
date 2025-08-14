@@ -47,7 +47,9 @@ describe('HeroSection Component', () => {
   test('renders subheading', () => {
     renderWithRouter(<HeroSection />);
 
-    expect(screen.getByText(/대기업 AI 교육부터 스타트업 기술 컨설팅까지/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/대기업 AI 교육부터 스타트업 기술 컨설팅까지/)
+    ).toBeInTheDocument();
   });
 
   test('renders call to action button', () => {

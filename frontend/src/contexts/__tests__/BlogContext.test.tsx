@@ -26,7 +26,8 @@ const mockedApi = api as jest.Mocked<typeof api>;
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
-  const { posts, loading, error, currentPage, totalPages, fetchPosts } = useBlog();
+  const { posts, loading, error, currentPage, totalPages, fetchPosts } =
+    useBlog();
 
   return (
     <div>
@@ -165,7 +166,7 @@ describe('BlogContext', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (mockedApi.getBlogPosts as any).mockImplementation(
       (_page?: number, _pageSize?: number) =>
-        new Promise(resolve =>
+        new Promise((resolve) =>
           setTimeout(
             () =>
               resolve({
@@ -201,7 +202,9 @@ describe('BlogContext', () => {
 
   test('throws error when used outside provider', () => {
     // Suppress console error for this test
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
 
     expect(() => {
       render(<TestComponent />);

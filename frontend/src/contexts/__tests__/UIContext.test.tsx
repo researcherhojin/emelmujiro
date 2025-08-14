@@ -3,8 +3,14 @@ import { UIProvider, useUI } from '../UIContext';
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
-  const { theme, isSidebarOpen, isGlobalLoading, toggleTheme, toggleSidebar, setGlobalLoading } =
-    useUI();
+  const {
+    theme,
+    isSidebarOpen,
+    isGlobalLoading,
+    toggleTheme,
+    toggleSidebar,
+    setGlobalLoading,
+  } = useUI();
 
   return (
     <div>
@@ -32,7 +38,7 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 // Mock matchMedia - make sure it returns the mock object properly
-const mockMatchMedia = jest.fn().mockImplementation(query => ({
+const mockMatchMedia = jest.fn().mockImplementation((query) => ({
   matches: false,
   media: query,
   onchange: null,

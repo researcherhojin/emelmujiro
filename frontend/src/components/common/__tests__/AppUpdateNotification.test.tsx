@@ -3,7 +3,13 @@ import AppUpdateNotification from '../AppUpdateNotification';
 
 // Type definitions for mock objects
 interface MockServiceWorker {
-  state: 'parsed' | 'installing' | 'installed' | 'activating' | 'activated' | 'redundant';
+  state:
+    | 'parsed'
+    | 'installing'
+    | 'installed'
+    | 'activating'
+    | 'activated'
+    | 'redundant';
   postMessage: jest.Mock;
   onstatechange: ((this: ServiceWorker, ev: Event) => void) | null;
 }
@@ -112,12 +118,14 @@ describe('AppUpdateNotification', () => {
     fireEvent.click(updateButton);
 
     // Should post message to waiting worker
-    expect(mockWaitingWorker.postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' });
+    expect(mockWaitingWorker.postMessage).toHaveBeenCalledWith({
+      type: 'SKIP_WAITING',
+    });
 
     // Simulate controller change
     const controllerChangeHandler = (
       navigator.serviceWorker.addEventListener as jest.Mock
-    ).mock.calls.find(call => call[0] === 'controllerchange');
+    ).mock.calls.find((call) => call[0] === 'controllerchange');
 
     // Assert controller change handler exists before using it
     expect(controllerChangeHandler).toBeDefined();
@@ -150,7 +158,9 @@ describe('AppUpdateNotification', () => {
     fireEvent.click(dismissButton);
 
     // Notification should be hidden
-    expect(screen.queryByText(/새로운 버전이 있습니다/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/새로운 버전이 있습니다/i)
+    ).not.toBeInTheDocument();
   });
 
   it('cleans up event listener on unmount', () => {

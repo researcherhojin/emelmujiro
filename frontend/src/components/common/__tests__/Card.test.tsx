@@ -137,7 +137,9 @@ describe('Card Component', () => {
       expect(screen.getByText('Title')).toBeInTheDocument();
       expect(screen.getByText('Paragraph 1')).toBeInTheDocument();
       expect(screen.getByText('Paragraph 2')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Action' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Action' })
+      ).toBeInTheDocument();
     });
   });
 });

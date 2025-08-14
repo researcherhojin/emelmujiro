@@ -15,7 +15,9 @@ describe('ServicesSection Component', () => {
 
   test('renders section subtitle', () => {
     renderWithRouter(<ServicesSection />);
-    expect(screen.getByText(/기업의 AI 도입을 위한 단계별 솔루션/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/기업의 AI 도입을 위한 단계별 솔루션/)
+    ).toBeInTheDocument();
   });
 
   test('renders all service cards', () => {
@@ -30,9 +32,15 @@ describe('ServicesSection Component', () => {
   test('renders service descriptions', () => {
     renderWithRouter(<ServicesSection />);
 
-    expect(screen.getByText(/비즈니스 문제를 위한 AI 솔루션 개발/)).toBeInTheDocument();
-    expect(screen.getByText(/실무자를 위한 체계적인 AI 역량 강화/)).toBeInTheDocument();
-    expect(screen.getByText(/최신 언어 모델 기반 비즈니스 혁신/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/비즈니스 문제를 위한 AI 솔루션 개발/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/실무자를 위한 체계적인 AI 역량 강화/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/최신 언어 모델 기반 비즈니스 혁신/)
+    ).toBeInTheDocument();
   });
 
   test('renders service details', () => {
@@ -56,8 +64,14 @@ describe('ServicesSection Component', () => {
     renderWithRouter(<ServicesSection />);
 
     // Check that service descriptions are present
-    expect(screen.getByText(/비즈니스 문제를 위한 AI 솔루션 개발/)).toBeInTheDocument();
-    expect(screen.getByText(/실무자를 위한 체계적인 AI 역량 강화/)).toBeInTheDocument();
-    expect(screen.getByText(/최신 언어 모델 기반 비즈니스 혁신/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/비즈니스 문제를 위한 AI 솔루션 개발/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/실무자를 위한 체계적인 AI 역량 강화/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/최신 언어 모델 기반 비즈니스 혁신/)
+    ).toBeInTheDocument();
   });
 });

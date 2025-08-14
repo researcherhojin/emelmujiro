@@ -49,8 +49,8 @@ const LazyImage: React.FC<LazyImageProps> = ({
     }
 
     const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
+      (entries) => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setImageSrc(src);
             observer.unobserve(entry.target);
@@ -106,8 +106,15 @@ const LazyImage: React.FC<LazyImageProps> = ({
 
       {/* Error state */}
       {hasError && (
-        <div className={`flex items-center justify-center bg-gray-100 text-gray-400 ${className}`}>
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div
+          className={`flex items-center justify-center bg-gray-100 text-gray-400 ${className}`}
+        >
+          <svg
+            className="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

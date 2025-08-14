@@ -11,13 +11,21 @@ import NotificationContainer from '../NotificationContainer';
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+    div: ({
+      children,
+      ...props
+    }: {
+      children: React.ReactNode;
+      [key: string]: unknown;
+    }) => (
       <div data-testid="motion-div" {...props}>
         {children}
       </div>
     ),
   },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 // Mock lucide-react icons
@@ -96,9 +104,15 @@ describe('NotificationContainer', () => {
 
     renderWithSelectiveProviders(<NotificationContainer />);
 
-    expect(screen.getByText('Operation completed successfully!')).toBeInTheDocument();
+    expect(
+      screen.getByText('Operation completed successfully!')
+    ).toBeInTheDocument();
     expect(screen.getByTestId('check-circle-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('check-circle-icon')).toHaveClass('w-5', 'h-5', 'text-green-500');
+    expect(screen.getByTestId('check-circle-icon')).toHaveClass(
+      'w-5',
+      'h-5',
+      'text-green-500'
+    );
     expect(screen.getByTestId('x-icon')).toBeInTheDocument();
   });
 
@@ -115,7 +129,11 @@ describe('NotificationContainer', () => {
 
     expect(screen.getByText('Something went wrong!')).toBeInTheDocument();
     expect(screen.getByTestId('alert-circle-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('alert-circle-icon')).toHaveClass('w-5', 'h-5', 'text-red-500');
+    expect(screen.getByTestId('alert-circle-icon')).toHaveClass(
+      'w-5',
+      'h-5',
+      'text-red-500'
+    );
   });
 
   it('renders single warning notification', () => {
@@ -131,7 +149,11 @@ describe('NotificationContainer', () => {
 
     expect(screen.getByText('Please be careful!')).toBeInTheDocument();
     expect(screen.getByTestId('alert-triangle-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('alert-triangle-icon')).toHaveClass('w-5', 'h-5', 'text-yellow-500');
+    expect(screen.getByTestId('alert-triangle-icon')).toHaveClass(
+      'w-5',
+      'h-5',
+      'text-yellow-500'
+    );
   });
 
   it('renders info notification (default type)', () => {
@@ -147,7 +169,11 @@ describe('NotificationContainer', () => {
 
     expect(screen.getByText('Here is some information')).toBeInTheDocument();
     expect(screen.getByTestId('info-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('info-icon')).toHaveClass('w-5', 'h-5', 'text-blue-500');
+    expect(screen.getByTestId('info-icon')).toHaveClass(
+      'w-5',
+      'h-5',
+      'text-blue-500'
+    );
   });
 
   it('renders notification with unknown type as info', () => {
@@ -163,7 +189,11 @@ describe('NotificationContainer', () => {
 
     expect(screen.getByText('Unknown type notification')).toBeInTheDocument();
     expect(screen.getByTestId('info-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('info-icon')).toHaveClass('w-5', 'h-5', 'text-blue-500');
+    expect(screen.getByTestId('info-icon')).toHaveClass(
+      'w-5',
+      'h-5',
+      'text-blue-500'
+    );
   });
 
   it('renders multiple notifications', () => {
@@ -295,7 +325,11 @@ describe('NotificationContainer', () => {
     renderWithSelectiveProviders(<NotificationContainer />);
 
     const closeButton = screen.getByRole('button');
-    expect(closeButton).toHaveClass('text-gray-400', 'hover:text-gray-600', 'transition-colors');
+    expect(closeButton).toHaveClass(
+      'text-gray-400',
+      'hover:text-gray-600',
+      'transition-colors'
+    );
 
     // Check that X icon is inside the button
     expect(closeButton).toContainElement(screen.getByTestId('x-icon'));
@@ -376,14 +410,20 @@ describe('NotificationContainer', () => {
       { id: '1', type: 'info', message: 'First notification' } as Notification,
     ];
 
-    const { rerender } = renderWithSelectiveProviders(<NotificationContainer />);
+    const { rerender } = renderWithSelectiveProviders(
+      <NotificationContainer />
+    );
 
     expect(screen.getByText('First notification')).toBeInTheDocument();
 
     // Add another notification
     mockUIContext.notifications = [
       { id: '1', type: 'info', message: 'First notification' } as Notification,
-      { id: '2', type: 'success', message: 'Second notification' } as Notification,
+      {
+        id: '2',
+        type: 'success',
+        message: 'Second notification',
+      } as Notification,
     ];
 
     rerender(<NotificationContainer />);
@@ -393,7 +433,11 @@ describe('NotificationContainer', () => {
 
     // Remove first notification
     mockUIContext.notifications = [
-      { id: '2', type: 'success', message: 'Second notification' } as Notification,
+      {
+        id: '2',
+        type: 'success',
+        message: 'Second notification',
+      } as Notification,
     ];
 
     rerender(<NotificationContainer />);

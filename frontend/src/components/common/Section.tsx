@@ -49,13 +49,15 @@ const Section: React.FC<SectionProps> = memo(
       <section
         id={id}
         className={`
-                ${bgColors[bgColor]} 
-                ${paddings[padding]} 
+                ${bgColors[bgColor]}
+                ${paddings[padding]}
                 relative overflow-hidden
                 ${className}
             `}
       >
-        <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 ${containerClassName}`}>
+        <div
+          className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 ${containerClassName}`}
+        >
           {(title || subtitle) && (
             <div className={`mb-12 sm:mb-16 ${centered ? 'text-center' : ''}`}>
               {subtitle && (

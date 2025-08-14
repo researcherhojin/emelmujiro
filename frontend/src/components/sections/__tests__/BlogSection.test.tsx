@@ -43,7 +43,11 @@ jest.mock('lucide-react', () => ({
 }));
 
 jest.mock('../../blog/BlogCard', () => {
-  return function BlogCard({ post }: { post: { title: string; excerpt: string } }) {
+  return function BlogCard({
+    post,
+  }: {
+    post: { title: string; excerpt: string };
+  }) {
     return (
       <div data-testid="blog-card">
         <h3>{post.title}</h3>
@@ -117,14 +121,18 @@ describe('BlogSection Component', () => {
 
   describe('Normal State', () => {
     it('renders section with correct ID', () => {
-      renderWithRouter(<BlogSection posts={mockPosts} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={mockPosts} isLoading={false} error={null} />
+      );
 
       // Check for blog section content instead of ID
       expect(screen.getByText('AI 트렌드')).toBeInTheDocument();
     });
 
     it('displays section header', () => {
-      renderWithRouter(<BlogSection posts={mockPosts} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={mockPosts} isLoading={false} error={null} />
+      );
 
       expect(screen.getByText('AI 트렌드')).toBeInTheDocument();
       expect(
@@ -133,7 +141,9 @@ describe('BlogSection Component', () => {
     });
 
     it('displays only first 3 posts', () => {
-      renderWithRouter(<BlogSection posts={mockPosts} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={mockPosts} isLoading={false} error={null} />
+      );
 
       const blogCards = screen.getAllByTestId('blog-card');
       expect(blogCards).toHaveLength(3);
@@ -145,16 +155,24 @@ describe('BlogSection Component', () => {
     });
 
     it('shows "view all" button when more than 3 posts', () => {
-      renderWithRouter(<BlogSection posts={mockPosts} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={mockPosts} isLoading={false} error={null} />
+      );
 
-      const viewAllButton = screen.getByRole('button', { name: '블로그 전체 글 보기' });
+      const viewAllButton = screen.getByRole('button', {
+        name: '블로그 전체 글 보기',
+      });
       expect(viewAllButton).toBeInTheDocument();
     });
 
     it('navigates to blog page when "view all" button is clicked', () => {
-      renderWithRouter(<BlogSection posts={mockPosts} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={mockPosts} isLoading={false} error={null} />
+      );
 
-      const viewAllButton = screen.getByRole('button', { name: '블로그 전체 글 보기' });
+      const viewAllButton = screen.getByRole('button', {
+        name: '블로그 전체 글 보기',
+      });
       fireEvent.click(viewAllButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('/blog');
@@ -162,7 +180,9 @@ describe('BlogSection Component', () => {
 
     it('does not show "view all" button when 3 or fewer posts', () => {
       const threePosts = mockPosts.slice(0, 3);
-      renderWithRouter(<BlogSection posts={threePosts} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={threePosts} isLoading={false} error={null} />
+      );
 
       expect(screen.queryByText('전체 트렌드 보기')).not.toBeInTheDocument();
     });
@@ -170,14 +190,20 @@ describe('BlogSection Component', () => {
 
   describe('Loading State', () => {
     it('displays loading spinner and message', () => {
-      renderWithRouter(<BlogSection posts={[]} isLoading={true} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={[]} isLoading={true} error={null} />
+      );
 
       expect(screen.getByTestId('loader')).toBeInTheDocument();
-      expect(screen.getByText('최신 AI 트렌드를 불러오는 중...')).toBeInTheDocument();
+      expect(
+        screen.getByText('최신 AI 트렌드를 불러오는 중...')
+      ).toBeInTheDocument();
     });
 
     it('does not display posts when loading', () => {
-      renderWithRouter(<BlogSection posts={mockPosts} isLoading={true} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={mockPosts} isLoading={true} error={null} />
+      );
 
       expect(screen.queryByTestId('blog-card')).not.toBeInTheDocument();
     });
@@ -186,14 +212,22 @@ describe('BlogSection Component', () => {
   describe('Error State', () => {
     it('displays error message', () => {
       const errorMessage = '네트워크 오류가 발생했습니다';
-      renderWithRouter(<BlogSection posts={[]} isLoading={false} error={errorMessage} />);
+      renderWithRouter(
+        <BlogSection posts={[]} isLoading={false} error={errorMessage} />
+      );
 
       expect(screen.getByText(errorMessage)).toBeInTheDocument();
       expect(screen.getByText('⚠️')).toBeInTheDocument();
     });
 
     it('does not display posts when error occurs', () => {
-      renderWithRouter(<BlogSection posts={mockPosts} isLoading={false} error="Error occurred" />);
+      renderWithRouter(
+        <BlogSection
+          posts={mockPosts}
+          isLoading={false}
+          error="Error occurred"
+        />
+      );
 
       expect(screen.queryByTestId('blog-card')).not.toBeInTheDocument();
     });
@@ -201,14 +235,22 @@ describe('BlogSection Component', () => {
 
   describe('Empty State', () => {
     it('displays empty state message when no posts', () => {
-      renderWithRouter(<BlogSection posts={[]} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={[]} isLoading={false} error={null} />
+      );
 
-      expect(screen.getByText('곧 새로운 AI 트렌드로 찾아뵙겠습니다')).toBeInTheDocument();
-      expect(screen.getByText('생성형 AI와 최신 기술 동향을 준비 중입니다')).toBeInTheDocument();
+      expect(
+        screen.getByText('곧 새로운 AI 트렌드로 찾아뵙겠습니다')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('생성형 AI와 최신 기술 동향을 준비 중입니다')
+      ).toBeInTheDocument();
     });
 
     it('displays empty state icon', () => {
-      renderWithRouter(<BlogSection posts={[]} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={[]} isLoading={false} error={null} />
+      );
 
       const bookIcons = screen.getAllByTestId('book-open');
       expect(bookIcons.length).toBeGreaterThan(0);
@@ -217,20 +259,34 @@ describe('BlogSection Component', () => {
 
   describe('Edge Cases', () => {
     it('handles empty posts array', () => {
-      renderWithRouter(<BlogSection posts={[]} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={[]} isLoading={false} error={null} />
+      );
 
-      expect(screen.getByText('곧 새로운 AI 트렌드로 찾아뵙겠습니다')).toBeInTheDocument();
+      expect(
+        screen.getByText('곧 새로운 AI 트렌드로 찾아뵙겠습니다')
+      ).toBeInTheDocument();
     });
 
     it('handles empty posts with loading state', () => {
-      renderWithRouter(<BlogSection posts={[]} isLoading={true} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={[]} isLoading={true} error={null} />
+      );
 
       expect(screen.getByTestId('loader')).toBeInTheDocument();
     });
 
     it('handles posts with missing properties', () => {
       const incompletePosts: Partial<BlogPost>[] = [
-        { id: 1, title: 'Only title', slug: 'only-title', content: '', author: 'Test', publishedAt: '2024-01-01', created_at: '2024-01-01' },
+        {
+          id: 1,
+          title: 'Only title',
+          slug: 'only-title',
+          content: '',
+          author: 'Test',
+          publishedAt: '2024-01-01',
+          created_at: '2024-01-01',
+        },
         {
           id: 2,
           excerpt: 'Only excerpt',
@@ -244,7 +300,11 @@ describe('BlogSection Component', () => {
       ];
 
       renderWithRouter(
-        <BlogSection posts={incompletePosts as BlogPost[]} isLoading={false} error={null} />
+        <BlogSection
+          posts={incompletePosts as BlogPost[]}
+          isLoading={false}
+          error={null}
+        />
       );
 
       const blogCards = screen.getAllByTestId('blog-card');
@@ -254,7 +314,9 @@ describe('BlogSection Component', () => {
 
   describe('Styling and Layout', () => {
     it('applies correct section styling', () => {
-      renderWithRouter(<BlogSection posts={mockPosts} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={mockPosts} isLoading={false} error={null} />
+      );
 
       // Check for content presence instead of CSS classes
       expect(screen.getByText('AI 트렌드')).toBeInTheDocument();
@@ -264,7 +326,9 @@ describe('BlogSection Component', () => {
     });
 
     it('applies grid layout for posts', () => {
-      renderWithRouter(<BlogSection posts={mockPosts} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={mockPosts} isLoading={false} error={null} />
+      );
 
       // BlogSection only displays first 3 posts, not all posts
       const blogCards = screen.getAllByTestId('blog-card');
@@ -272,14 +336,18 @@ describe('BlogSection Component', () => {
     });
 
     it('shows loading state', () => {
-      renderWithRouter(<BlogSection posts={[]} isLoading={true} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={[]} isLoading={true} error={null} />
+      );
 
       // Check that loader is displayed
       expect(screen.getByTestId('loader')).toBeInTheDocument();
     });
 
     it('displays error message', () => {
-      renderWithRouter(<BlogSection posts={[]} isLoading={false} error="Test error" />);
+      renderWithRouter(
+        <BlogSection posts={[]} isLoading={false} error="Test error" />
+      );
 
       // Check that error message is displayed
       expect(screen.getByText('Test error')).toBeInTheDocument();
@@ -288,14 +356,18 @@ describe('BlogSection Component', () => {
 
   describe('Accessibility', () => {
     it('has proper heading hierarchy', () => {
-      renderWithRouter(<BlogSection posts={mockPosts} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={mockPosts} isLoading={false} error={null} />
+      );
 
       const heading = screen.getByRole('heading', { level: 2 });
       expect(heading).toHaveTextContent('AI 트렌드');
     });
 
     it('has proper aria-label for navigation button', () => {
-      renderWithRouter(<BlogSection posts={mockPosts} isLoading={false} error={null} />);
+      renderWithRouter(
+        <BlogSection posts={mockPosts} isLoading={false} error={null} />
+      );
 
       const button = screen.getByLabelText('블로그 전체 글 보기');
       expect(button).toBeInTheDocument();

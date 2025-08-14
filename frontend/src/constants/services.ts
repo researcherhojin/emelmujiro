@@ -39,7 +39,7 @@ export const SERVICES: Service[] = [
 ];
 
 export const getServiceById = (id: string): Service | undefined => {
-  return SERVICES.find(service => service.id === id);
+  return SERVICES.find((service) => service.id === id);
 };
 
 export const getServiceIcon = (iconName: string): string => {

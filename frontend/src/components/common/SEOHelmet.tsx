@@ -34,7 +34,10 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     lang = 'ko',
     alternateLanguages = [
       { lang: 'ko', url: 'https://researcherhojin.github.io/emelmujiro' },
-      { lang: 'en', url: 'https://researcherhojin.github.io/emelmujiro?lang=en' },
+      {
+        lang: 'en',
+        url: 'https://researcherhojin.github.io/emelmujiro?lang=en',
+      },
     ],
     publishedTime,
     modifiedTime,
@@ -73,7 +76,12 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         {/* Language and hreflang */}
         <html lang={lang} />
         {alternateLanguages?.map(({ lang: langCode, url: langUrl }) => (
-          <link key={langCode} rel="alternate" hrefLang={langCode} href={langUrl} />
+          <link
+            key={langCode}
+            rel="alternate"
+            hrefLang={langCode}
+            href={langUrl}
+          />
         ))}
         <link rel="alternate" hrefLang="x-default" href={url} />
 
@@ -94,31 +102,52 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         {/* Additional Open Graph Tags */}
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="에멜무지로 - AI 교육 및 컨설팅 전문 기업" />
+        <meta
+          property="og:image:alt"
+          content="에멜무지로 - AI 교육 및 컨설팅 전문 기업"
+        />
 
         {/* Twitter additional tags */}
-        <meta name="twitter:image:alt" content="에멜무지로 - AI 교육 및 컨설팅 전문 기업" />
+        <meta
+          name="twitter:image:alt"
+          content="에멜무지로 - AI 교육 및 컨설팅 전문 기업"
+        />
 
         {/* Article specific meta tags */}
         {type === 'article' && article && (
           <>
-            <meta property="article:author" content={article.author || author} />
+            <meta
+              property="article:author"
+              content={article.author || author}
+            />
             {article.publishedTime && (
-              <meta property="article:published_time" content={article.publishedTime} />
+              <meta
+                property="article:published_time"
+                content={article.publishedTime}
+              />
             )}
             {article.modifiedTime && (
-              <meta property="article:modified_time" content={article.modifiedTime} />
+              <meta
+                property="article:modified_time"
+                content={article.modifiedTime}
+              />
             )}
-            {article.section && <meta property="article:section" content={article.section} />}
-            {article.tags?.map(tag => (
+            {article.section && (
+              <meta property="article:section" content={article.section} />
+            )}
+            {article.tags?.map((tag) => (
               <meta key={tag} property="article:tag" content={tag} />
             ))}
           </>
         )}
 
         {/* Publication dates for any content */}
-        {publishedTime && <meta name="article:published_time" content={publishedTime} />}
-        {modifiedTime && <meta name="article:modified_time" content={modifiedTime} />}
+        {publishedTime && (
+          <meta name="article:published_time" content={publishedTime} />
+        )}
+        {modifiedTime && (
+          <meta name="article:modified_time" content={modifiedTime} />
+        )}
 
         {/* 언어 설정 */}
         <meta httpEquiv="content-language" content={lang} />
@@ -148,7 +177,10 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
               addressCountry: 'KR',
               addressLocality: '서울',
             },
-            sameAs: ['https://github.com/researcherhojin', 'https://emelmujiro.com'],
+            sameAs: [
+              'https://github.com/researcherhojin',
+              'https://emelmujiro.com',
+            ],
             foundingDate: '2022',
             areaServed: '대한민국',
             serviceType: ['AI 컨설팅', '기업 교육', 'LLM 솔루션 개발'],

@@ -79,7 +79,8 @@ describe('Index', () => {
     // Test the core behavior without importing the actual index file
     // since it has complex dependencies that are hard to mock
 
-    const MockApp = () => React.createElement('div', { 'data-testid': 'mock-app' }, 'Mock App');
+    const MockApp = () =>
+      React.createElement('div', { 'data-testid': 'mock-app' }, 'Mock App');
 
     // Simulate what index.tsx does
     const root = ReactDOM.createRoot(rootElement);
@@ -117,7 +118,9 @@ describe('Index', () => {
 
   it('initializes performance monitoring', () => {
     const { initPerformanceMonitoring } = require('../utils/webVitals');
-    const { initializeCacheOptimization } = require('../utils/cacheOptimization');
+    const {
+      initializeCacheOptimization,
+    } = require('../utils/cacheOptimization');
 
     jest.isolateModules(() => {
       require('../index');
@@ -130,14 +133,19 @@ describe('Index', () => {
   it('renders App component in StrictMode with HelmetProvider', () => {
     // Test the core rendering structure without importing the actual index file
 
-    const MockApp = () => React.createElement('div', { 'data-testid': 'mock-app' }, 'Mock App');
+    const MockApp = () =>
+      React.createElement('div', { 'data-testid': 'mock-app' }, 'Mock App');
 
     // Simulate what index.tsx does
     const root = ReactDOM.createRoot(rootElement);
     const renderElement = React.createElement(
       React.StrictMode,
       {},
-      React.createElement('div', { 'data-testid': 'helmet-provider' }, React.createElement(MockApp))
+      React.createElement(
+        'div',
+        { 'data-testid': 'helmet-provider' },
+        React.createElement(MockApp)
+      )
     );
     root.render(renderElement);
 

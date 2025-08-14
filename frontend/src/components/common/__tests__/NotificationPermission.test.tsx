@@ -89,7 +89,9 @@ describe('NotificationPermission', () => {
       jest.advanceTimersByTime(10000);
     });
 
-    expect(screen.queryByText('알림을 받아보시겠습니까?')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('알림을 받아보시겠습니까?')
+    ).not.toBeInTheDocument();
   });
 
   it('does not render banner when push notifications are already enabled', () => {
@@ -103,7 +105,9 @@ describe('NotificationPermission', () => {
       jest.advanceTimersByTime(10000);
     });
 
-    expect(screen.queryByText('알림을 받아보시겠습니까?')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('알림을 받아보시겠습니까?')
+    ).not.toBeInTheDocument();
   });
 
   it('renders banner after delay when conditions are met', () => {
@@ -113,7 +117,9 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     // Should not be visible initially
-    expect(screen.queryByText('알림을 받아보시겠습니까?')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('알림을 받아보시겠습니까?')
+    ).not.toBeInTheDocument();
 
     // Fast forward past the delay
     act(() => {
@@ -135,7 +141,9 @@ describe('NotificationPermission', () => {
 
     expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
     expect(
-      screen.getByText('새로운 AI 교육 프로그램과 특별 이벤트 소식을 가장 먼저 받아보세요.')
+      screen.getByText(
+        '새로운 AI 교육 프로그램과 특별 이벤트 소식을 가장 먼저 받아보세요.'
+      )
     ).toBeInTheDocument();
     expect(screen.getByText('알림 받기')).toBeInTheDocument();
     expect(screen.getByText('나중에')).toBeInTheDocument();
@@ -175,7 +183,9 @@ describe('NotificationPermission', () => {
 
     // Banner should be hidden
     await waitFor(() => {
-      expect(screen.queryByText('알림을 받아보시겠습니까?')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('알림을 받아보시겠습니까?')
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -281,7 +291,9 @@ describe('NotificationPermission', () => {
     const laterButton = screen.getByText('나중에');
     fireEvent.click(laterButton);
 
-    expect(screen.queryByText('알림을 받아보시겠습니까?')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('알림을 받아보시겠습니까?')
+    ).not.toBeInTheDocument();
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
       'notificationBannerDismissed',
       expect.any(String)
@@ -303,7 +315,9 @@ describe('NotificationPermission', () => {
     const closeButton = screen.getByRole('button', { name: '닫기' });
     fireEvent.click(closeButton);
 
-    expect(screen.queryByText('알림을 받아보시겠습니까?')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('알림을 받아보시겠습니까?')
+    ).not.toBeInTheDocument();
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
       'notificationBannerDismissed',
       expect.any(String)
@@ -312,7 +326,7 @@ describe('NotificationPermission', () => {
 
   it('disables enable button during subscription process', async () => {
     let resolvePermission: (value: boolean) => void;
-    const permissionPromise = new Promise<boolean>(resolve => {
+    const permissionPromise = new Promise<boolean>((resolve) => {
       resolvePermission = resolve;
     });
 
@@ -425,7 +439,12 @@ describe('NotificationPermission', () => {
     });
 
     const titleElement = screen.getByText('알림을 받아보시겠습니까?');
-    expect(titleElement).toHaveClass('text-sm', 'font-semibold', 'text-gray-900', 'mb-1');
+    expect(titleElement).toHaveClass(
+      'text-sm',
+      'font-semibold',
+      'text-gray-900',
+      'mb-1'
+    );
 
     const descriptionElement = screen.getByText(
       '새로운 AI 교육 프로그램과 특별 이벤트 소식을 가장 먼저 받아보세요.'
@@ -458,7 +477,9 @@ describe('NotificationPermission', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
-    const { unmount } = renderWithSelectiveProviders(<NotificationPermission />);
+    const { unmount } = renderWithSelectiveProviders(
+      <NotificationPermission />
+    );
 
     // Spy on clearTimeout
     const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
@@ -473,7 +494,9 @@ describe('NotificationPermission', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
-    const { rerender } = renderWithSelectiveProviders(<NotificationPermission />);
+    const { rerender } = renderWithSelectiveProviders(
+      <NotificationPermission />
+    );
 
     // Spy on setTimeout
     const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
@@ -496,7 +519,9 @@ describe('NotificationPermission', () => {
       jest.advanceTimersByTime(10000);
     });
 
-    expect(screen.queryByText('알림을 받아보시겠습니까?')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('알림을 받아보시겠습니까?')
+    ).not.toBeInTheDocument();
   });
 
   it('handles Bell icon rendering correctly', () => {

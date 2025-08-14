@@ -161,9 +161,13 @@ describe('CompanyLogo', () => {
   it('applies white background to all logos', () => {
     const testCases = ['삼성전자', 'SK', 'LG', '테스트회사'];
 
-    testCases.forEach(company => {
-      const { unmount } = render(<CompanyLogo name={company} color="#000000" />);
-      const textElement = screen.getByText(company === '삼성전자' ? 'SAMSUNG' : company);
+    testCases.forEach((company) => {
+      const { unmount } = render(
+        <CompanyLogo name={company} color="#000000" />
+      );
+      const textElement = screen.getByText(
+        company === '삼성전자' ? 'SAMSUNG' : company
+      );
       expect(textElement).toBeInTheDocument();
       unmount();
     });
@@ -246,13 +250,29 @@ describe('CompanyLogo', () => {
 
   it('applies correct font styles for each company', () => {
     const companies = [
-      { name: '삼성전자', expectedText: 'SAMSUNG', expectedFont: ['font-bold', 'tracking-wider'] },
-      { name: 'SK', expectedText: 'SK', expectedFont: ['font-black', 'italic'] },
+      {
+        name: '삼성전자',
+        expectedText: 'SAMSUNG',
+        expectedFont: ['font-bold', 'tracking-wider'],
+      },
+      {
+        name: 'SK',
+        expectedText: 'SK',
+        expectedFont: ['font-black', 'italic'],
+      },
       { name: 'LG', expectedText: 'LG', expectedFont: ['font-bold'] },
-      { name: '한국전력공사', expectedText: 'KEPCO', expectedFont: ['font-semibold'] },
+      {
+        name: '한국전력공사',
+        expectedText: 'KEPCO',
+        expectedFont: ['font-semibold'],
+      },
       { name: '국민은행', expectedText: 'KB', expectedFont: ['font-bold'] },
       { name: 'CJ', expectedText: 'CJ', expectedFont: ['font-black'] },
-      { name: '현대자동차', expectedText: 'HYUNDAI', expectedFont: ['font-bold', 'italic'] },
+      {
+        name: '현대자동차',
+        expectedText: 'HYUNDAI',
+        expectedFont: ['font-bold', 'italic'],
+      },
       { name: '포스코', expectedText: 'POSCO', expectedFont: ['font-bold'] },
       { name: 'KT', expectedText: 'KT', expectedFont: ['font-black'] },
       { name: '네이버', expectedText: 'NAVER', expectedFont: ['font-bold'] },
@@ -264,7 +284,7 @@ describe('CompanyLogo', () => {
       const textElement = screen.getByText(expectedText);
       expect(textElement).toBeInTheDocument();
 
-      expectedFont.forEach(fontClass => {
+      expectedFont.forEach((fontClass) => {
         expect(textElement).toHaveClass(fontClass);
       });
     });
@@ -280,7 +300,9 @@ describe('CompanyLogo', () => {
   });
 
   it('uses memo to optimize re-renders', () => {
-    const { rerender } = render(<CompanyLogo name="테스트회사" color="#000000" />);
+    const { rerender } = render(
+      <CompanyLogo name="테스트회사" color="#000000" />
+    );
 
     // Rerender with same props should use memoized version
     rerender(<CompanyLogo name="테스트회사" color="#000000" />);

@@ -33,7 +33,9 @@ describe('ErrorMessage Component', () => {
 
   test('does not render close button when onClose not provided', () => {
     render(<ErrorMessage message="Error" />);
-    expect(screen.queryByRole('button', { name: '닫기' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: '닫기' })
+    ).not.toBeInTheDocument();
   });
 
   test('applies error styling', () => {

@@ -43,7 +43,7 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
           <div
             className="fixed inset-0 bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-80 transition-opacity"
             onClick={onClose}
-            onKeyDown={e => {
+            onKeyDown={(e) => {
               if (e.key === 'Escape') {
                 onClose();
               }
@@ -84,7 +84,9 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
                     {service.details.map((detail, index) => (
                       <li key={index} className="flex items-start">
                         <div className="w-1.5 h-1.5 bg-gray-500 dark:bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{detail}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                          {detail}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -96,7 +98,10 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
                   </h4>
                   <ul className="space-y-1">
                     {service.cases.map((caseItem, index) => (
-                      <li key={index} className="text-sm text-gray-600 dark:text-gray-400">
+                      <li
+                        key={index}
+                        className="text-sm text-gray-600 dark:text-gray-400"
+                      >
                         • {caseItem}
                       </li>
                     ))}
@@ -133,7 +138,9 @@ ServiceModal.displayName = 'ServiceModal';
 const Footer: React.FC = memo(() => {
   const navigate = useNavigate();
   const [isServiceModalOpen, setIsServiceModalOpen] = useState<boolean>(false);
-  const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceDetail | null>(
+    null
+  );
 
   const currentYear = new Date().getFullYear();
 
@@ -187,12 +194,17 @@ const Footer: React.FC = memo(() => {
           'AI 프로젝트 관리 및 PMO',
           'AI 성과 측정 및 ROI 분석',
         ],
-        cases: ['대기업 AI 전략 컨설팅', '공공기관 AI 도입 지원', '스타트업 AI 기술 자문'],
+        cases: [
+          '대기업 AI 전략 컨설팅',
+          '공공기관 AI 도입 지원',
+          '스타트업 AI 기술 자문',
+        ],
       },
       'data-analysis': {
         title: '데이터 분석',
         icon: Database,
-        description: '비즈니스 인사이트 도출을 위한 데이터 분석 서비스를 제공합니다.',
+        description:
+          '비즈니스 인사이트 도출을 위한 데이터 분석 서비스를 제공합니다.',
         details: [
           '비즈니스 데이터 분석 및 시각화',
           '통계적 분석 및 가설 검증',
@@ -201,7 +213,11 @@ const Footer: React.FC = memo(() => {
           'A/B 테스트 설계 및 분석',
           '데이터 품질 관리 및 정제',
         ],
-        cases: ['이커머스 고객 분석', '제조업 품질 데이터 분석', '금융 리스크 분석'],
+        cases: [
+          '이커머스 고객 분석',
+          '제조업 품질 데이터 분석',
+          '금융 리스크 분석',
+        ],
       },
     }),
     []
@@ -258,7 +274,9 @@ const Footer: React.FC = memo(() => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {/* Services */}
             <div className="col-span-1">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">서비스</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                서비스
+              </h3>
               <ul className="space-y-3">
                 <li>
                   <button
@@ -301,7 +319,9 @@ const Footer: React.FC = memo(() => {
 
             {/* Navigation */}
             <div className="col-span-1">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">메뉴</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                메뉴
+              </h3>
               <ul className="space-y-3">
                 <li>
                   <button
@@ -344,7 +364,9 @@ const Footer: React.FC = memo(() => {
 
             {/* Company Info */}
             <div className="col-span-1">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">에멜무지로</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                에멜무지로
+              </h3>
               <div className="space-y-3">
                 <div className="flex items-start text-base text-gray-700 dark:text-gray-300">
                   <Mail className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
@@ -359,7 +381,9 @@ const Footer: React.FC = memo(() => {
 
             {/* Contact CTA */}
             <div className="col-span-1">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">문의하기</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                문의하기
+              </h3>
               <p className="text-gray-700 dark:text-gray-300 text-base mb-6 leading-relaxed">
                 AI 프로젝트 도입을 계획 중이시나요?
               </p>

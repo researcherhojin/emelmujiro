@@ -10,9 +10,11 @@ const DarkModeToggle: React.FC = memo(() => {
       onClick={toggleTheme}
       className="relative p-2 rounded-lg bg-gray-100 dark:bg-dark-800 hover:bg-gray-200 dark:hover:bg-dark-700
                  transition-all duration-200 ease-in-out group
-                 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 
+                 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
                  dark:focus:ring-offset-dark-900"
-      aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+      aria-label={
+        theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
+      }
       title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
     >
       <div className="relative w-5 h-5">
@@ -41,7 +43,7 @@ const DarkModeToggle: React.FC = memo(() => {
 
       {/* Hover effect indicator */}
       <div
-        className="absolute inset-0 rounded-lg bg-gradient-to-r from-amber-400/20 to-blue-400/20 
+        className="absolute inset-0 rounded-lg bg-gradient-to-r from-amber-400/20 to-blue-400/20
                       opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
       />
     </button>

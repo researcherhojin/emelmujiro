@@ -78,7 +78,7 @@ const Navbar: React.FC = memo(() => {
   }, [navigate]);
 
   const toggleMenu = useCallback(() => {
-    setIsOpen(prev => !prev);
+    setIsOpen((prev) => !prev);
   }, []);
 
   return (
@@ -102,7 +102,7 @@ const Navbar: React.FC = memo(() => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map(item => (
+            {navItems.map((item) => (
               <button
                 key={item.path}
                 onClick={() => handleNavigation(item.path)}
@@ -117,7 +117,9 @@ const Navbar: React.FC = memo(() => {
                   {item.label}
                   <span
                     className={`absolute -bottom-2 left-0 right-0 h-[2px] bg-gray-900 dark:bg-white transition-transform duration-200 origin-left ${
-                      isActive(item.path) ? 'scale-x-100' : 'scale-x-0 hover:scale-x-100'
+                      isActive(item.path)
+                        ? 'scale-x-100'
+                        : 'scale-x-0 hover:scale-x-100'
                     }`}
                   />
                 </span>
@@ -129,7 +131,7 @@ const Navbar: React.FC = memo(() => {
 
             <button
               onClick={handleContactClick}
-              className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-base font-bold 
+              className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-base font-bold
                                 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-all"
             >
               {t('links.contact')}
@@ -141,11 +143,15 @@ const Navbar: React.FC = memo(() => {
             <DarkModeToggle />
             <button
               onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 text-gray-700 dark:text-gray-300 
+              className="inline-flex items-center justify-center p-2 text-gray-700 dark:text-gray-300
                               hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
               aria-label={t('accessibility.menu', { ns: 'common' })}
             >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -155,11 +161,11 @@ const Navbar: React.FC = memo(() => {
       {isOpen && (
         <div className="md:hidden bg-white dark:bg-dark-900 border-t border-gray-200 dark:border-dark-700 shadow-lg">
           <div className="px-4 py-6 space-y-2">
-            {navItems.map(item => (
+            {navItems.map((item) => (
               <button
                 key={item.path}
                 onClick={() => handleNavigation(item.path)}
-                className={`block w-full text-left px-4 py-3 text-base font-medium 
+                className={`block w-full text-left px-4 py-3 text-base font-medium
                                     transition-colors focus:outline-none ${
                                       isActive(item.path)
                                         ? 'text-gray-900 dark:text-white bg-gray-50 dark:bg-dark-800'
@@ -173,7 +179,7 @@ const Navbar: React.FC = memo(() => {
             <div className="pt-4">
               <button
                 onClick={handleContactClick}
-                className="w-full px-4 py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-base 
+                className="w-full px-4 py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-base
                                     font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all shadow-md active:scale-95"
               >
                 {t('links.contact')}

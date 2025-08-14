@@ -5,9 +5,13 @@ import React from 'react';
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: { children?: React.ReactNode; className?: string }) => (
-      <div {...props}>{children}</div>
-    ),
+    div: ({
+      children,
+      ...props
+    }: {
+      children?: React.ReactNode;
+      className?: string;
+    }) => <div {...props}>{children}</div>,
   },
 }));
 

@@ -1,5 +1,9 @@
 import React from 'react';
-import { render, screen, waitFor } from '../../../test-utils/renderWithProviders';
+import {
+  render,
+  screen,
+  waitFor,
+} from '../../../test-utils/renderWithProviders';
 import userEvent from '@testing-library/user-event';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../LanguageSwitcher';
@@ -9,7 +13,9 @@ jest.mock('react-i18next', () => ({
   useTranslation: jest.fn(),
 }));
 
-const mockUseTranslation = useTranslation as jest.MockedFunction<typeof useTranslation>;
+const mockUseTranslation = useTranslation as jest.MockedFunction<
+  typeof useTranslation
+>;
 
 describe('LanguageSwitcher', () => {
   const mockChangeLanguage = jest.fn();
@@ -215,7 +221,9 @@ describe('LanguageSwitcher', () => {
 
   it('handles language change errors gracefully', async () => {
     const user = userEvent.setup();
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
     mockChangeLanguage.mockRejectedValue(new Error('Language change failed'));
 
     render(<LanguageSwitcher />);
@@ -227,7 +235,10 @@ describe('LanguageSwitcher', () => {
     await user.click(englishOption);
 
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to change language:', expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to change language:',
+        expect.any(Error)
+      );
     });
 
     consoleSpy.mockRestore();

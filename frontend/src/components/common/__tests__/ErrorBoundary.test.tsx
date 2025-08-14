@@ -50,8 +50,12 @@ describe('ErrorBoundary Component', () => {
     );
 
     expect(screen.getByText('문제가 발생했습니다')).toBeInTheDocument();
-    expect(screen.getByText(/페이지를 불러오는 도중 오류가 발생했습니다/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '다시 시도' })).toBeInTheDocument();
+    expect(
+      screen.getByText(/페이지를 불러오는 도중 오류가 발생했습니다/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: '다시 시도' })
+    ).toBeInTheDocument();
   });
 
   it('logs error to console', () => {
@@ -65,7 +69,10 @@ describe('ErrorBoundary Component', () => {
 
     // Check that logger.error was called with the error
     expect(logger.error).toHaveBeenCalled();
-    expect(logger.error).toHaveBeenCalledWith('Error caught by boundary:', expect.any(Error));
+    expect(logger.error).toHaveBeenCalledWith(
+      'Error caught by boundary:',
+      expect.any(Error)
+    );
     expect(logger.debug).toHaveBeenCalled();
   });
 
@@ -105,7 +112,9 @@ describe('ErrorBoundary Component', () => {
     const errorTitle = screen.getByText('문제가 발생했습니다');
     expect(errorTitle).toHaveClass('text-2xl', 'font-bold', 'text-red-600');
 
-    const errorMessage = screen.getByText(/페이지를 불러오는 도중 오류가 발생했습니다/);
+    const errorMessage = screen.getByText(
+      /페이지를 불러오는 도중 오류가 발생했습니다/
+    );
     expect(errorMessage).toHaveClass('text-gray-500');
 
     const reloadButton = screen.getByRole('button', { name: '다시 시도' });

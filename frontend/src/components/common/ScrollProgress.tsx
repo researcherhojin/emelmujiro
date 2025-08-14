@@ -5,7 +5,8 @@ const ScrollProgress: React.FC = memo(() => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const totalScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
       const currentScroll = window.scrollY;
       setScrollProgress((currentScroll / totalScroll) * 100);
     };
@@ -15,7 +16,10 @@ const ScrollProgress: React.FC = memo(() => {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 w-full h-1 z-50" data-testid="scroll-progress-container">
+    <div
+      className="fixed top-0 left-0 w-full h-1 z-50"
+      data-testid="scroll-progress-container"
+    >
       <div
         className="h-full bg-indigo-600 transition-all duration-200"
         style={{ width: `${scrollProgress}%` }}

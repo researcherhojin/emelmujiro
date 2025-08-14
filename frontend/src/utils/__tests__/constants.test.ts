@@ -24,7 +24,9 @@ describe('constants', () => {
     it('should have MAX_PAGE_SIZE defined', () => {
       expect(constants.MAX_PAGE_SIZE).toBeDefined();
       expect(typeof constants.MAX_PAGE_SIZE).toBe('number');
-      expect(constants.MAX_PAGE_SIZE).toBeGreaterThanOrEqual(constants.DEFAULT_PAGE_SIZE);
+      expect(constants.MAX_PAGE_SIZE).toBeGreaterThanOrEqual(
+        constants.DEFAULT_PAGE_SIZE
+      );
     });
   });
 

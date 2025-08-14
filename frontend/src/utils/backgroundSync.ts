@@ -29,14 +29,18 @@ export function isBackgroundSyncSupported(): boolean {
 }
 
 // Register a sync event
-export async function registerBackgroundSync(tag: string, data: unknown = null): Promise<boolean> {
+export async function registerBackgroundSync(
+  tag: string,
+  data: unknown = null
+): Promise<boolean> {
   if (!isBackgroundSyncSupported()) {
     logger.info('Background sync is not supported in this browser');
     return false;
   }
 
   try {
-    const registration = (await navigator.serviceWorker.ready) as ExtendedServiceWorkerRegistration;
+    const registration = (await navigator.serviceWorker
+      .ready) as ExtendedServiceWorkerRegistration;
 
     // Store data in IndexedDB if provided
     if (data) {
@@ -72,7 +76,7 @@ async function storeSyncData(tag: string, data: unknown): Promise<void> {
       putRequest.onerror = () => reject(putRequest.error);
     };
 
-    request.onupgradeneeded = event => {
+    request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       if (!db.objectStoreNames.contains('sync-data')) {
         db.createObjectStore('sync-data', { keyPath: 'tag' });
@@ -131,7 +135,10 @@ export const SYNC_TAGS = {
 export type SyncTag = (typeof SYNC_TAGS)[keyof typeof SYNC_TAGS];
 
 // Queue failed API requests for retry
-export async function queueFailedRequest(url: string, options: RequestOptions): Promise<void> {
+export async function queueFailedRequest(
+  url: string,
+  options: RequestOptions
+): Promise<void> {
   const syncData: SyncRequest = {
     url,
     options,

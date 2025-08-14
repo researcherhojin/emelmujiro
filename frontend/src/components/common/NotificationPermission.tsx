@@ -68,7 +68,7 @@ const NotificationPermission: React.FC = memo(() => {
 
   return (
     <div
-      className="fixed bottom-20 left-4 right-4 md:left-auto md:right-4 md:w-96 z-40 
+      className="fixed bottom-20 left-4 right-4 md:left-auto md:right-4 md:w-96 z-40
       bg-white border border-gray-200 rounded-lg shadow-lg p-4 animate-fade-in"
     >
       <div className="flex items-start justify-between">
@@ -77,7 +77,9 @@ const NotificationPermission: React.FC = memo(() => {
             <Bell className="w-6 h-6 text-gray-900" />
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 mb-1">알림을 받아보시겠습니까?</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-1">
+              알림을 받아보시겠습니까?
+            </h3>
             <p className="text-sm text-gray-600 mb-3">
               새로운 AI 교육 프로그램과 특별 이벤트 소식을 가장 먼저 받아보세요.
             </p>

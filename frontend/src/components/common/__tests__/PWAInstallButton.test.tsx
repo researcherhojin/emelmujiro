@@ -4,7 +4,7 @@ import PWAInstallButton from '../PWAInstallButton';
 describe('PWAInstallButton Component', () => {
   beforeEach(() => {
     // Mock window.matchMedia
-    window.matchMedia = jest.fn().mockImplementation(query => ({
+    window.matchMedia = jest.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -23,7 +23,7 @@ describe('PWAInstallButton Component', () => {
 
   test('does not render when PWA is already installed', () => {
     // Mock as standalone (already installed)
-    window.matchMedia = jest.fn().mockImplementation(query => ({
+    window.matchMedia = jest.fn().mockImplementation((query) => ({
       matches: query === '(display-mode: standalone)',
       media: query,
       onchange: null,

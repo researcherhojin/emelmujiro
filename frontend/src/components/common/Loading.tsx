@@ -18,7 +18,12 @@ interface LoadingProps {
 }
 
 const Loading: React.FC<LoadingProps> = memo(
-  ({ message = 'Loading...', isFullScreen = false, type = 'spinner', className = '' }) => {
+  ({
+    message = 'Loading...',
+    isFullScreen = false,
+    type = 'spinner',
+    className = '',
+  }) => {
     // Render skeleton loaders based on type
     switch (type) {
       case 'hero':

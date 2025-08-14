@@ -163,16 +163,18 @@ export const PARTNER_COMPANIES: PartnerCompany[] = [
 ];
 
 // 카테고리별 회사 필터링
-export const getCompaniesByCategory = (category: CompanyCategory): PartnerCompany[] => {
-  return PARTNER_COMPANIES.filter(company => company.category === category);
+export const getCompaniesByCategory = (
+  category: CompanyCategory
+): PartnerCompany[] => {
+  return PARTNER_COMPANIES.filter((company) => company.category === category);
 };
 
 // 회사 이름 목록만 가져오기
 export const getCompanyNames = (): string[] => {
-  return PARTNER_COMPANIES.map(company => company.name);
+  return PARTNER_COMPANIES.map((company) => company.name);
 };
 
 // ID로 회사 정보 가져오기
 export const getCompanyById = (id: string): PartnerCompany | undefined => {
-  return PARTNER_COMPANIES.find(company => company.id === id);
+  return PARTNER_COMPANIES.find((company) => company.id === id);
 };

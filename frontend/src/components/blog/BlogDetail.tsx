@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import Loading from '../common/Loading';
+import { PageLoading } from '../common/UnifiedLoading';
 import ErrorBoundary from '../common/ErrorBoundary';
 import SEO from '../layout/SEO';
 import BlogInteractions from './BlogInteractions';
@@ -31,7 +31,7 @@ const BlogDetailPage: React.FC = memo(() => {
   }, [id]);
 
   if (loading) {
-    return <Loading message="블로그 포스트를 불러오는 중입니다..." />;
+    return <PageLoading message="블로그 포스트를 불러오는 중입니다..." />;
   }
 
   if (error && error.includes('404')) {

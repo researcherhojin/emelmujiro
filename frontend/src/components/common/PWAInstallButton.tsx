@@ -7,7 +7,8 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const PWAInstallButton: React.FC = memo(() => {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallButton, setShowInstallButton] = useState<boolean>(false);
   const [isInstalled, setIsInstalled] = useState<boolean>(false);
 
@@ -42,7 +43,10 @@ const PWAInstallButton: React.FC = memo(() => {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
@@ -76,7 +80,7 @@ const PWAInstallButton: React.FC = memo(() => {
     <div className="fixed bottom-4 right-4 z-50 animate-fade-in">
       <button
         onClick={handleInstallClick}
-        className="bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg 
+        className="bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg
                     hover:bg-gray-800 transition-all duration-200 flex items-center gap-2
                     hover:scale-105 active:scale-95"
         aria-label="앱 설치하기"

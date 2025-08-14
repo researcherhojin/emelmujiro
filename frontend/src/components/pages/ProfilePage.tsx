@@ -1,5 +1,12 @@
 import React, { useState, memo, useCallback } from 'react';
-import { Building, Award, Clock, Briefcase, GraduationCap, Code } from 'lucide-react';
+import {
+  Building,
+  Award,
+  Clock,
+  Briefcase,
+  GraduationCap,
+  Code,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
@@ -37,7 +44,13 @@ interface Project {
 }
 
 type TabType = 'career' | 'education' | 'projects';
-type ProjectCategory = 'all' | 'enterprise' | 'bootcamp' | 'education' | 'startup' | 'research';
+type ProjectCategory =
+  | 'all'
+  | 'enterprise'
+  | 'bootcamp'
+  | 'education'
+  | 'startup'
+  | 'research';
 
 const ProfilePage: React.FC = memo(() => {
   const [activeTab, setActiveTab] = useState<TabType>('career');
@@ -49,7 +62,8 @@ const ProfilePage: React.FC = memo(() => {
       period: '2024.12 ~ 현재',
       company: '에멜무지로',
       position: '대표',
-      description: 'AI 교육 및 컨설팅 전문 기업 창업 · 기업 맞춤형 AI 솔루션 개발',
+      description:
+        'AI 교육 및 컨설팅 전문 기업 창업 · 기업 맞춤형 AI 솔루션 개발',
       current: true,
     },
     {
@@ -64,13 +78,15 @@ const ProfilePage: React.FC = memo(() => {
       period: '2023.05 ~ 2024.09',
       company: '엘리스',
       position: 'AI/데이터분석 전문 강사',
-      description: '삼성전자 Spotfire 데이터 분석 · Python/ML 기초 교육 · 현대건설 ML/DL 과정',
+      description:
+        '삼성전자 Spotfire 데이터 분석 · Python/ML 기초 교육 · 현대건설 ML/DL 과정',
     },
     {
       period: '2022.10 ~ 2024.09',
       company: 'Cobslab',
       position: '책임 연구원 / 전문 강사',
-      description: '대기업/정부기관 Python, 데이터 분석, ML/DL 강의 개발 및 연구',
+      description:
+        '대기업/정부기관 Python, 데이터 분석, ML/DL 강의 개발 및 연구',
     },
     {
       period: '2022.06',
@@ -116,7 +132,12 @@ const ProfilePage: React.FC = memo(() => {
       description:
         '멋쟁이사자처럼 AI 엔지니어 심화 부트캠프 이미지처리 과정 · 객체 탐지, 세그멘테이션, 멀티태스킹 실전 프로젝트',
       category: 'bootcamp',
-      tags: ['Computer Vision', 'Object Detection', 'PyTorch', 'Segmentation'].sort(),
+      tags: [
+        'Computer Vision',
+        'Object Detection',
+        'PyTorch',
+        'Segmentation',
+      ].sort(),
       highlight: true,
     },
     {
@@ -160,7 +181,8 @@ const ProfilePage: React.FC = memo(() => {
       id: 'lg-data-science',
       title: 'LG전자 Data Science 프로젝트',
       period: '2023',
-      description: 'Data Science 프로젝트 기획부터 개발까지 메인 강사 · 머신러닝 모델 개발 및 배포',
+      description:
+        'Data Science 프로젝트 기획부터 개발까지 메인 강사 · 머신러닝 모델 개발 및 배포',
       category: 'enterprise',
       tags: ['Data Science', 'ML', '실무 교육', '프로젝트'].sort(),
     },
@@ -186,7 +208,8 @@ const ProfilePage: React.FC = memo(() => {
       id: 'seoul-ai',
       title: '서울시립대 AI 취업사관학교',
       period: '2022',
-      description: '서울시립대 캠퍼스타운형 취업사관학교 AI 과정 · 대학생 대상 실무 중심 AI 교육',
+      description:
+        '서울시립대 캠퍼스타운형 취업사관학교 AI 과정 · 대학생 대상 실무 중심 AI 교육',
       category: 'education',
       tags: ['AI 교육', '실무 프로젝트', '취업 연계'].sort(),
     },
@@ -194,7 +217,8 @@ const ProfilePage: React.FC = memo(() => {
       id: 'open-source',
       title: 'Visual Python 오픈소스 개발',
       period: '2022',
-      description: '2022 오픈소스 컨트리뷰션 아카데미 · Visual Python ML/Statistics 모듈 개발',
+      description:
+        '2022 오픈소스 컨트리뷰션 아카데미 · Visual Python ML/Statistics 모듈 개발',
       category: 'research',
       tags: ['ML', 'Python', '시각화', '오픈소스'].sort(),
     },
@@ -212,27 +236,27 @@ const ProfilePage: React.FC = memo(() => {
     {
       id: 'enterprise',
       label: '기업 교육',
-      count: projects.filter(p => p.category === 'enterprise').length,
+      count: projects.filter((p) => p.category === 'enterprise').length,
     },
     {
       id: 'bootcamp',
       label: '부트캠프',
-      count: projects.filter(p => p.category === 'bootcamp').length,
+      count: projects.filter((p) => p.category === 'bootcamp').length,
     },
     {
       id: 'education',
       label: '교육 혁신',
-      count: projects.filter(p => p.category === 'education').length,
+      count: projects.filter((p) => p.category === 'education').length,
     },
     {
       id: 'startup',
       label: '스타트업',
-      count: projects.filter(p => p.category === 'startup').length,
+      count: projects.filter((p) => p.category === 'startup').length,
     },
     {
       id: 'research',
       label: '연구/개발',
-      count: projects.filter(p => p.category === 'research').length,
+      count: projects.filter((p) => p.category === 'research').length,
     },
   ];
 
@@ -251,7 +275,7 @@ const ProfilePage: React.FC = memo(() => {
   const filteredProjects =
     projectFilter === 'all'
       ? projects
-      : projects.filter(project => project.category === projectFilter);
+      : projects.filter((project) => project.category === projectFilter);
 
   return (
     <>
@@ -309,13 +333,17 @@ const ProfilePage: React.FC = memo(() => {
                 <div className="text-5xl font-black text-gray-900 dark:text-white mb-3">
                   {projectStats.partnerCompanies}
                 </div>
-                <p className="text-base font-medium text-gray-600 dark:text-gray-400">협력 기업</p>
+                <p className="text-base font-medium text-gray-600 dark:text-gray-400">
+                  협력 기업
+                </p>
               </div>
               <div className="text-center bg-gray-50 dark:bg-gray-800 rounded-3xl p-8 border-2 border-gray-100 dark:border-gray-700">
                 <div className="text-5xl font-black text-gray-900 dark:text-white mb-3">
                   {projectStats.yearsOfExperience}
                 </div>
-                <p className="text-base font-medium text-gray-600 dark:text-gray-400">교육 경력</p>
+                <p className="text-base font-medium text-gray-600 dark:text-gray-400">
+                  교육 경력
+                </p>
               </div>
             </div>
           </div>
@@ -484,8 +512,12 @@ const ProfilePage: React.FC = memo(() => {
                   <div className="grid md:grid-cols-2 gap-8">
                     <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
                       <Award className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors mb-4" />
-                      <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">ADsP</h4>
-                      <p className="text-gray-600 dark:text-gray-400">데이터 분석 준전문가</p>
+                      <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                        ADsP
+                      </h4>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        데이터 분석 준전문가
+                      </p>
                       <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
                         한국데이터산업진흥원 (2025.03)
                       </p>
@@ -501,15 +533,25 @@ const ProfilePage: React.FC = memo(() => {
                           <span className="text-gray-600 dark:text-gray-400">
                             정보기술전략·계획
                           </span>
-                          <span className="font-bold text-gray-900 dark:text-white">57점</span>
+                          <span className="font-bold text-gray-900 dark:text-white">
+                            57점
+                          </span>
                         </li>
                         <li className="flex justify-between text-sm">
-                          <span className="text-gray-600 dark:text-gray-400">정보기술개발</span>
-                          <span className="font-bold text-gray-900 dark:text-white">57점</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            정보기술개발
+                          </span>
+                          <span className="font-bold text-gray-900 dark:text-white">
+                            57점
+                          </span>
                         </li>
                         <li className="flex justify-between text-sm">
-                          <span className="text-gray-600 dark:text-gray-400">인공지능</span>
-                          <span className="font-bold text-gray-900 dark:text-white">57점</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            인공지능
+                          </span>
+                          <span className="font-bold text-gray-900 dark:text-white">
+                            57점
+                          </span>
                         </li>
                       </ul>
                     </div>
@@ -527,10 +569,14 @@ const ProfilePage: React.FC = memo(() => {
 
                   {/* 카테고리 필터 버튼들 */}
                   <div className="flex flex-wrap justify-center gap-2 mb-8">
-                    {projectCategories.map(category => (
+                    {projectCategories.map((category) => (
                       <button
                         key={category.id}
-                        onClick={() => handleProjectFilterChange(category.id as ProjectCategory)}
+                        onClick={() =>
+                          handleProjectFilterChange(
+                            category.id as ProjectCategory
+                          )
+                        }
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                           projectFilter === category.id
                             ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
@@ -545,7 +591,7 @@ const ProfilePage: React.FC = memo(() => {
                 </div>
 
                 <div className="grid gap-6">
-                  {filteredProjects.map(project => (
+                  {filteredProjects.map((project) => (
                     <div
                       key={project.id}
                       className={`group bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border ${

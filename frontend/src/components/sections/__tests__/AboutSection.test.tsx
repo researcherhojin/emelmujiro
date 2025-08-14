@@ -72,7 +72,9 @@ jest.mock('lucide-react', () => ({
   Brain: () => <div data-testid="brain-icon">Brain</div>,
   TrendingUp: () => <div data-testid="trendingup-icon">TrendingUp</div>,
   Code: () => <div data-testid="code-icon">Code</div>,
-  GraduationCap: () => <div data-testid="graduationcap-icon">GraduationCap</div>,
+  GraduationCap: () => (
+    <div data-testid="graduationcap-icon">GraduationCap</div>
+  ),
   Star: () => <div data-testid="star-icon">Star</div>,
   Zap: () => <div data-testid="zap-icon">Zap</div>,
 }));
@@ -94,10 +96,14 @@ describe('AboutSection Component', () => {
 
     // Check statistics display - using Korean text from component
     expect(screen.getByText('교육 경력')).toBeInTheDocument();
-    expect(screen.getByText(`${STATISTICS.experience.yearsInEducation}년+`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`${STATISTICS.experience.yearsInEducation}년+`)
+    ).toBeInTheDocument();
 
     expect(screen.getByText('교육 수료생')).toBeInTheDocument();
-    expect(screen.getByText(`${STATISTICS.education.totalStudentsText}`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`${STATISTICS.education.totalStudentsText}`)
+    ).toBeInTheDocument();
 
     expect(screen.getByText('협력 기업')).toBeInTheDocument();
     expect(
@@ -105,7 +111,9 @@ describe('AboutSection Component', () => {
     ).toBeInTheDocument();
 
     expect(screen.getByText('강의 프로젝트')).toBeInTheDocument();
-    expect(screen.getByText(`${STATISTICS.projects.totalProjectsText}`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`${STATISTICS.projects.totalProjectsText}`)
+    ).toBeInTheDocument();
   });
 
   it('displays profile statistics icons', () => {
@@ -158,7 +166,9 @@ describe('AboutSection Component', () => {
   it('displays certifications section', () => {
     render(<AboutSection />);
 
-    expect(screen.getByText('Certifications & Achievements')).toBeInTheDocument();
+    expect(
+      screen.getByText('Certifications & Achievements')
+    ).toBeInTheDocument();
     expect(screen.getByTestId('graduationcap-icon')).toBeInTheDocument();
   });
 
@@ -182,19 +192,29 @@ describe('AboutSection Component', () => {
     render(<AboutSection />);
 
     // Check for main heading
-    expect(screen.getByRole('heading', { name: 'About Me' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'About Me' })
+    ).toBeInTheDocument();
 
     // Check for section headings
-    expect(screen.getByRole('heading', { name: /Goals & Values/ })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /Work Style/ })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /Technical Skills/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /Goals & Values/ })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /Work Style/ })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /Technical Skills/ })
+    ).toBeInTheDocument();
   });
 
   it('displays motivational quote', () => {
     render(<AboutSection />);
 
     // Check for the quote at the bottom of the section
-    expect(screen.getByText(/비전공자도 쉽게 입문할 수 있는/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/비전공자도 쉽게 입문할 수 있는/)
+    ).toBeInTheDocument();
   });
 
   it('displays Star and Zap icons in section headers', () => {
@@ -207,11 +227,11 @@ describe('AboutSection Component', () => {
   it('renders all sections in correct order', () => {
     render(<AboutSection />);
     const headings = screen.getAllByRole('heading');
-    const headingTexts = headings.map(h => h.textContent);
+    const headingTexts = headings.map((h) => h.textContent);
 
     // Find main section headings (h2 and h3 with icons)
     const mainHeadings = headingTexts.filter(
-      text =>
+      (text) =>
         text?.includes('About Me') ||
         text?.includes('Goals & Values') ||
         text?.includes('Work Style') ||

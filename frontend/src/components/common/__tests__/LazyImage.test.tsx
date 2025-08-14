@@ -24,18 +24,23 @@ describe('LazyImage Component', () => {
   it('creates IntersectionObserver on mount', () => {
     // Mock to capture the IntersectionObserver instance
     const mockObserve = jest.fn();
-    global.IntersectionObserver = jest.fn().mockImplementation((_callback, _options) => ({
-      observe: mockObserve,
-      unobserve: jest.fn(),
-      disconnect: jest.fn(),
-    }));
+    global.IntersectionObserver = jest
+      .fn()
+      .mockImplementation((_callback, _options) => ({
+        observe: mockObserve,
+        unobserve: jest.fn(),
+        disconnect: jest.fn(),
+      }));
 
     render(<LazyImage src="test.jpg" alt="Test image" />);
 
-    expect(global.IntersectionObserver).toHaveBeenCalledWith(expect.any(Function), {
-      threshold: 0.1,
-      rootMargin: '50px',
-    });
+    expect(global.IntersectionObserver).toHaveBeenCalledWith(
+      expect.any(Function),
+      {
+        threshold: 0.1,
+        rootMargin: '50px',
+      }
+    );
     expect(mockObserve).toHaveBeenCalled();
   });
 
@@ -49,7 +54,14 @@ describe('LazyImage Component', () => {
   });
 
   it('renders with custom className', () => {
-    render(<LazyImage src="test.jpg" alt="Test image" priority={true} className="custom-class" />);
+    render(
+      <LazyImage
+        src="test.jpg"
+        alt="Test image"
+        priority={true}
+        className="custom-class"
+      />
+    );
 
     const img = screen.getByAltText('Test image');
     expect(img).toHaveClass('custom-class');

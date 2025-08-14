@@ -149,7 +149,15 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
           department: '축산생명공학과',
         },
       ],
-      knowsAbout: ['AI', 'Machine Learning', 'Deep Learning', 'Python', 'Django', 'React', '교육'],
+      knowsAbout: [
+        'AI',
+        'Machine Learning',
+        'Deep Learning',
+        'Python',
+        'Django',
+        'React',
+        '교육',
+      ],
     };
 
     const localBusinessSchema = {
@@ -157,7 +165,8 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       '@type': 'LocalBusiness',
       '@id': 'https://researcherhojin.github.io/emelmujiro/#business',
       name: '에멜무지로',
-      description: 'AI 교육 및 컨설팅 전문 기업. 맞춤형 AI 솔루션과 교육 프로그램을 제공합니다.',
+      description:
+        'AI 교육 및 컨설팅 전문 기업. 맞춤형 AI 솔루션과 교육 프로그램을 제공합니다.',
       url: 'https://researcherhojin.github.io/emelmujiro',
       telephone: '+82-10-7279-0380',
       email: 'researcherhojin@gmail.com',
@@ -203,7 +212,9 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       '@context': 'https://schema.org',
       '@type': 'Service',
       name: service?.name || 'AI 컨설팅 서비스',
-      description: service?.description || 'AI 기술을 활용한 기업 맞춤형 솔루션 개발 및 교육',
+      description:
+        service?.description ||
+        'AI 기술을 활용한 기업 맞춤형 솔루션 개발 및 교육',
       provider: {
         '@type': 'Organization',
         name: '에멜무지로',
@@ -241,7 +252,9 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
           '@type': 'Article',
           headline: article.title,
           description: article.description,
-          image: article.image || 'https://researcherhojin.github.io/emelmujiro/og-image.png',
+          image:
+            article.image ||
+            'https://researcherhojin.github.io/emelmujiro/og-image.png',
           author: {
             '@type': 'Person',
             name: article.author || '이호진',
@@ -297,7 +310,9 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
 
     return (
       <Helmet>
-        <script type="application/ld+json">{JSON.stringify(selectedSchema)}</script>
+        <script type="application/ld+json">
+          {JSON.stringify(selectedSchema)}
+        </script>
       </Helmet>
     );
   }

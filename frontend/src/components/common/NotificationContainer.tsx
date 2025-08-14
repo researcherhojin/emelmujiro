@@ -37,7 +37,7 @@ const NotificationContainer: React.FC = () => {
   return (
     <div className="fixed top-20 right-4 z-50 space-y-2 max-w-sm">
       <AnimatePresence>
-        {notifications.map(notification => (
+        {notifications.map((notification) => (
           <motion.div
             key={notification.id}
             initial={{ opacity: 0, x: 100 }}
@@ -47,7 +47,9 @@ const NotificationContainer: React.FC = () => {
             className={`p-4 rounded-lg shadow-lg border ${getBgColor(notification.type)} flex items-start space-x-3`}
           >
             {getIcon(notification.type)}
-            <p className="flex-1 text-sm text-gray-700">{notification.message}</p>
+            <p className="flex-1 text-sm text-gray-700">
+              {notification.message}
+            </p>
             <button
               onClick={() => removeNotification(notification.id)}
               className="text-gray-400 hover:text-gray-600 transition-colors"

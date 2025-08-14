@@ -12,7 +12,10 @@ interface SkeletonItemProps {
   animate?: boolean;
 }
 
-const SkeletonItem: React.FC<SkeletonItemProps> = ({ className = '', animate = true }) => (
+const SkeletonItem: React.FC<SkeletonItemProps> = ({
+  className = '',
+  animate = true,
+}) => (
   <div
     className={`bg-gray-200 dark:bg-gray-700 rounded ${
       animate ? 'animate-pulse' : ''
@@ -20,7 +23,9 @@ const SkeletonItem: React.FC<SkeletonItemProps> = ({ className = '', animate = t
   />
 );
 
-const BlogPostSkeleton: React.FC<{ animate?: boolean }> = ({ animate = true }) => (
+const BlogPostSkeleton: React.FC<{ animate?: boolean }> = ({
+  animate = true,
+}) => (
   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
     <div className="space-y-4">
       {/* Title */}
@@ -71,10 +76,15 @@ const CardSkeleton: React.FC<{ animate?: boolean }> = ({ animate = true }) => (
   </div>
 );
 
-const ListItemSkeleton: React.FC<{ animate?: boolean }> = ({ animate = true }) => (
+const ListItemSkeleton: React.FC<{ animate?: boolean }> = ({
+  animate = true,
+}) => (
   <div className="flex items-center space-x-4 p-4">
     {/* Avatar/Icon */}
-    <SkeletonItem className="h-10 w-10 rounded-full flex-shrink-0" animate={animate} />
+    <SkeletonItem
+      className="h-10 w-10 rounded-full flex-shrink-0"
+      animate={animate}
+    />
 
     <div className="flex-1 space-y-2">
       {/* Title */}
@@ -89,11 +99,16 @@ const ListItemSkeleton: React.FC<{ animate?: boolean }> = ({ animate = true }) =
   </div>
 );
 
-const ProfileSkeleton: React.FC<{ animate?: boolean }> = ({ animate = true }) => (
+const ProfileSkeleton: React.FC<{ animate?: boolean }> = ({
+  animate = true,
+}) => (
   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
     <div className="text-center space-y-6">
       {/* Profile image */}
-      <SkeletonItem className="h-32 w-32 rounded-full mx-auto" animate={animate} />
+      <SkeletonItem
+        className="h-32 w-32 rounded-full mx-auto"
+        animate={animate}
+      />
 
       {/* Name */}
       <SkeletonItem className="h-8 w-48 mx-auto" animate={animate} />
@@ -141,7 +156,7 @@ const HeroSkeleton: React.FC<{ animate?: boolean }> = ({ animate = true }) => (
 
       {/* Stats or features */}
       <div className="flex justify-center space-x-12 mt-12">
-        {[1, 2, 3].map(i => (
+        {[1, 2, 3].map((i) => (
           <div key={i} className="text-center space-y-2">
             <SkeletonItem className="h-8 w-16 mx-auto" animate={animate} />
             <SkeletonItem className="h-4 w-20 mx-auto" animate={animate} />

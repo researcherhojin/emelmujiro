@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 
 type Theme = 'light' | 'dark';
 type NotificationType = 'success' | 'error' | 'warning' | 'info';
@@ -28,7 +34,11 @@ interface UIContextType {
 
   // Notifications
   notifications: Notification[];
-  showNotification: (type: NotificationType, message: string, duration?: number) => void;
+  showNotification: (
+    type: NotificationType,
+    message: string,
+    duration?: number
+  ) => void;
   removeNotification: (id: string) => void;
 
   // Modals
@@ -90,7 +100,10 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     // Update meta theme-color for PWA
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
+      metaThemeColor.setAttribute(
+        'content',
+        theme === 'dark' ? '#0f172a' : '#ffffff'
+      );
     }
 
     // Re-enable transitions after a brief moment
@@ -137,14 +150,18 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
-  const showNotification = (type: NotificationType, message: string, duration: number = 5000) => {
+  const showNotification = (
+    type: NotificationType,
+    message: string,
+    duration: number = 5000
+  ) => {
     const id = Date.now().toString();
     const notification: Notification = { id, type, message, duration };
 
-    setNotifications(prev => [...prev, notification]);
+    setNotifications((prev) => [...prev, notification]);
 
     if (duration > 0) {
       setTimeout(() => {
@@ -154,7 +171,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   };
 
   const removeNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
   const openModal = (
@@ -163,12 +180,12 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   ): string => {
     const id = Date.now().toString();
     const modal: Modal = { id, component, props };
-    setModals(prev => [...prev, modal]);
+    setModals((prev) => [...prev, modal]);
     return id;
   };
 
   const closeModal = (id: string) => {
-    setModals(prev => prev.filter(m => m.id !== id));
+    setModals((prev) => prev.filter((m) => m.id !== id));
   };
 
   const closeAllModals = () => {
@@ -176,7 +193,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   };
 
   const toggleSidebar = () => {
-    setSidebarOpen(prev => !prev);
+    setSidebarOpen((prev) => !prev);
   };
 
   const value: UIContextType = {

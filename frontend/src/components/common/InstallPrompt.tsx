@@ -12,17 +12,23 @@ interface InstallPromptProps {
   className?: string;
 }
 
-const InstallPrompt: React.FC<InstallPromptProps> = ({ onInstall, onDismiss, className = '' }) => {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+const InstallPrompt: React.FC<InstallPromptProps> = ({
+  onInstall,
+  onDismiss,
+  className = '',
+}) => {
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
   const [deviceType, setDeviceType] = useState<'mobile' | 'desktop'>('desktop');
 
   useEffect(() => {
     // Detect device type
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
     setDeviceType(isMobile ? 'mobile' : 'desktop');
 
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -35,7 +41,8 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({ onInstall, onDismiss, cla
       // Check if user has dismissed the prompt recently
       const dismissed = localStorage.getItem('install-prompt-dismissed');
       const dismissedTime = dismissed ? parseInt(dismissed) : 0;
-      const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
+      const daysSinceDismissed =
+        (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
 
       // Show prompt if not dismissed recently or if it's been more than 7 days
       if (!dismissed || daysSinceDismissed > 7) {
@@ -57,7 +64,10 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({ onInstall, onDismiss, cla
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, [onInstall]);
@@ -126,8 +136,8 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({ onInstall, onDismiss, cla
 
   return (
     <div
-      className={`fixed bottom-4 left-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl 
-                     p-6 max-w-sm border border-gray-200 dark:border-gray-700 
+      className={`fixed bottom-4 left-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl
+                     p-6 max-w-sm border border-gray-200 dark:border-gray-700
                      animate-slide-up ${className}`}
     >
       <div className="flex items-start space-x-4">
@@ -152,8 +162,8 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({ onInstall, onDismiss, cla
           </div>
 
           <p className="text-xs text-gray-600 dark:text-gray-300 mb-4">
-            에멜무지로를 {deviceText}에 설치하여 더 빠르고 편리하게 이용하세요. 오프라인에서도
-            사용할 수 있습니다.
+            에멜무지로를 {deviceText}에 설치하여 더 빠르고 편리하게 이용하세요.
+            오프라인에서도 사용할 수 있습니다.
           </p>
 
           {/* Benefits list */}
@@ -178,8 +188,8 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({ onInstall, onDismiss, cla
             <button
               onClick={handleInstallClick}
               disabled={isInstalling}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 
-                         text-white py-2 px-3 rounded text-xs font-medium 
+              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400
+                         text-white py-2 px-3 rounded text-xs font-medium
                          transition-colors duration-200 disabled:cursor-not-allowed
                          flex items-center justify-center space-x-1"
             >
@@ -189,7 +199,7 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({ onInstall, onDismiss, cla
 
             <button
               onClick={handleRemindLater}
-              className="px-3 py-2 text-xs text-gray-600 dark:text-gray-300 
+              className="px-3 py-2 text-xs text-gray-600 dark:text-gray-300
                          hover:text-gray-800 dark:hover:text-gray-100
                          transition-colors duration-200"
             >

@@ -34,7 +34,7 @@ interface ButtonElementProps
 
 type ButtonProps = LinkButtonProps | ExternalLinkProps | ButtonElementProps;
 
-const Button: React.FC<ButtonProps> = props => {
+const Button: React.FC<ButtonProps> = (props) => {
   const {
     children,
     variant = 'primary',
@@ -85,7 +85,9 @@ const Button: React.FC<ButtonProps> = props => {
   // 아이콘 렌더링
   const renderIcon = () => {
     if (!icon) return null;
-    return <span className={iconPosition === 'left' ? 'mr-2' : 'ml-2'}>{icon}</span>;
+    return (
+      <span className={iconPosition === 'left' ? 'mr-2' : 'ml-2'}>{icon}</span>
+    );
   };
 
   // 콘텐츠 렌더링
@@ -109,7 +111,12 @@ const Button: React.FC<ButtonProps> = props => {
   // 외부 링크로 렌더링
   if ('href' in props && props.href) {
     return (
-      <a href={props.href} className={baseClasses} target="_blank" rel="noopener noreferrer">
+      <a
+        href={props.href}
+        className={baseClasses}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         {content}
       </a>
     );
@@ -131,7 +138,12 @@ const Button: React.FC<ButtonProps> = props => {
     ...buttonProps
   } = props as ButtonElementProps;
   return (
-    <button className={baseClasses} onClick={onClick} disabled={disabled} {...buttonProps}>
+    <button
+      className={baseClasses}
+      onClick={onClick}
+      disabled={disabled}
+      {...buttonProps}
+    >
       {content}
     </button>
   );

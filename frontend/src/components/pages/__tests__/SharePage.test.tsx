@@ -65,7 +65,9 @@ describe('SharePage', () => {
   it.skip('shows loading state initially', () => {
     // Loading state is too brief to test reliably
     renderSharePage();
-    expect(screen.getByText('공유된 콘텐츠를 처리하는 중...')).toBeInTheDocument();
+    expect(
+      screen.getByText('공유된 콘텐츠를 처리하는 중...')
+    ).toBeInTheDocument();
   });
 
   it('displays empty state when no content is shared', async () => {
@@ -127,7 +129,9 @@ describe('SharePage', () => {
 
     // Click the button with '문의하기' text
     const buttons = screen.getAllByRole('button');
-    const inquiryButton = buttons.find(btn => btn.textContent?.includes('문의하기'));
+    const inquiryButton = buttons.find((btn) =>
+      btn.textContent?.includes('문의하기')
+    );
     expect(inquiryButton).toBeDefined();
     if (inquiryButton) fireEvent.click(inquiryButton);
 
@@ -149,7 +153,9 @@ describe('SharePage', () => {
     });
 
     const buttons = screen.getAllByRole('button');
-    const viewButton = buttons.find(btn => btn.textContent?.includes('원본 보기'));
+    const viewButton = buttons.find((btn) =>
+      btn.textContent?.includes('원본 보기')
+    );
     expect(viewButton).toBeDefined();
     if (viewButton) fireEvent.click(viewButton);
 
@@ -168,11 +174,15 @@ describe('SharePage', () => {
     });
 
     const buttons = screen.getAllByRole('button');
-    const saveButton = buttons.find(btn => btn.textContent?.includes('나중에 보기'));
+    const saveButton = buttons.find((btn) =>
+      btn.textContent?.includes('나중에 보기')
+    );
     expect(saveButton).toBeDefined();
     if (saveButton) fireEvent.click(saveButton);
 
-    const savedContent = JSON.parse(localStorage.getItem('saved-content') || '[]');
+    const savedContent = JSON.parse(
+      localStorage.getItem('saved-content') || '[]'
+    );
     expect(savedContent).toHaveLength(1);
     expect(savedContent[0].title).toBe('저장할 제목');
     expect(savedContent[0].text).toBe('저장할 내용');
@@ -197,11 +207,15 @@ describe('SharePage', () => {
     });
 
     const buttons = screen.getAllByRole('button');
-    const saveButton = buttons.find(btn => btn.textContent?.includes('나중에 보기'));
+    const saveButton = buttons.find((btn) =>
+      btn.textContent?.includes('나중에 보기')
+    );
     expect(saveButton).toBeDefined();
     if (saveButton) fireEvent.click(saveButton);
 
-    const savedContent = JSON.parse(localStorage.getItem('saved-content') || '[]');
+    const savedContent = JSON.parse(
+      localStorage.getItem('saved-content') || '[]'
+    );
     expect(savedContent).toHaveLength(50);
     expect(savedContent[0].title).toBe('New Item');
   });

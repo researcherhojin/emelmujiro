@@ -13,25 +13,31 @@ const OfflineIndicator: React.FC = memo(() => {
     syncStatus: 'idle',
     pendingRequests: 0,
   });
-  const [showIndicator, setShowIndicator] = useState<boolean>(!navigator.onLine);
+  const [showIndicator, setShowIndicator] = useState<boolean>(
+    !navigator.onLine
+  );
 
   useEffect(() => {
     const handleOnline = () => {
-      setState(prev => ({ ...prev, isOnline: true, syncStatus: 'syncing' }));
+      setState((prev) => ({ ...prev, isOnline: true, syncStatus: 'syncing' }));
       setShowIndicator(true);
 
       // Simulate sync process
       setTimeout(() => {
-        setState(prev => ({ ...prev, syncStatus: 'success', pendingRequests: 0 }));
+        setState((prev) => ({
+          ...prev,
+          syncStatus: 'success',
+          pendingRequests: 0,
+        }));
         setTimeout(() => {
-          setState(prev => ({ ...prev, syncStatus: 'idle' }));
+          setState((prev) => ({ ...prev, syncStatus: 'idle' }));
           setShowIndicator(false);
         }, 2000);
       }, 1500);
     };
 
     const handleOffline = () => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isOnline: false,
         syncStatus: 'idle',
@@ -53,20 +59,20 @@ const OfflineIndicator: React.FC = memo(() => {
           }
           break;
         case 'SYNC_STATUS':
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             syncStatus: data?.status || 'idle',
             pendingRequests: data?.pendingCount || 0,
           }));
           break;
         case 'BACKGROUND_SYNC_COMPLETE':
-          setState(prev => ({
+          setState((prev) => ({
             ...prev,
             syncStatus: 'success',
             pendingRequests: Math.max(0, prev.pendingRequests - 1),
           }));
           setTimeout(() => {
-            setState(prev => ({ ...prev, syncStatus: 'idle' }));
+            setState((prev) => ({ ...prev, syncStatus: 'idle' }));
           }, 2000);
           break;
       }
@@ -77,12 +83,15 @@ const OfflineIndicator: React.FC = memo(() => {
 
     // Listen to service worker messages
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+      navigator.serviceWorker.addEventListener(
+        'message',
+        handleServiceWorkerMessage
+      );
     }
 
     // Check initial state
     if (!navigator.onLine) {
-      setState(prev => ({ ...prev, isOnline: false }));
+      setState((prev) => ({ ...prev, isOnline: false }));
       setShowIndicator(true);
     }
 
@@ -90,7 +99,10 @@ const OfflineIndicator: React.FC = memo(() => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
+        navigator.serviceWorker.removeEventListener(
+          'message',
+          handleServiceWorkerMessage
+        );
       }
     };
   }, []);
@@ -158,7 +170,7 @@ const OfflineIndicator: React.FC = memo(() => {
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 ${content.bgColor} text-white rounded-lg shadow-lg 
+      className={`fixed top-4 right-4 z-50 ${content.bgColor} text-white rounded-lg shadow-lg
                   p-4 max-w-sm transition-all duration-300 animate-fade-in`}
       role="alert"
       aria-live="polite"
@@ -202,7 +214,7 @@ const OfflineIndicator: React.FC = memo(() => {
         <div className="mt-3 pt-3 border-t border-white/20 flex space-x-2">
           <button
             onClick={handleRetry}
-            className="flex-1 bg-white/10 hover:bg-white/20 text-xs py-2 px-3 rounded 
+            className="flex-1 bg-white/10 hover:bg-white/20 text-xs py-2 px-3 rounded
                        transition-colors duration-200 font-medium"
             aria-label="연결 상태 다시 확인"
           >
@@ -211,7 +223,7 @@ const OfflineIndicator: React.FC = memo(() => {
           {!state.isOnline && (
             <button
               onClick={() => setShowIndicator(false)}
-              className="bg-white/10 hover:bg-white/20 text-xs py-2 px-3 rounded 
+              className="bg-white/10 hover:bg-white/20 text-xs py-2 px-3 rounded
                          transition-colors duration-200"
               aria-label="알림 숨기기"
             >

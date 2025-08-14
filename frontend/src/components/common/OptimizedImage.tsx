@@ -36,7 +36,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         const canvas = document.createElement('canvas');
         canvas.width = 1;
         canvas.height = 1;
-        const isSupported = canvas.toDataURL('image/webp').indexOf('image/webp') === 5;
+        const isSupported =
+          canvas.toDataURL('image/webp').indexOf('image/webp') === 5;
         setIsWebPSupported(isSupported);
       } catch {
         // If canvas operations fail, default to no WebP support
@@ -76,8 +77,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
     const widths = [320, 640, 768, 1024, 1280, 1536];
     return widths
-      .filter(w => w <= width * 2)
-      .map(w => `${src}&w=${w} ${w}w`)
+      .filter((w) => w <= width * 2)
+      .map((w) => `${src}&w=${w} ${w}w`)
       .join(', ');
   };
 

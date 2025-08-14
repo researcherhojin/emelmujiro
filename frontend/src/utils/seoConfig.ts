@@ -29,22 +29,26 @@ export const SEO_CONFIG = {
       title: '회사소개',
       description:
         '에멜무지로는 2022년부터 축적한 AI 교육 노하우와 실무 프로젝트 경험을 바탕으로 맞춤형 AI 솔루션을 제공합니다.',
-      keywords: 'AI 회사, AI 전문기업, AI 교육기관, AI 컨설팅 회사, 에멜무지로 소개',
+      keywords:
+        'AI 회사, AI 전문기업, AI 교육기관, AI 컨설팅 회사, 에멜무지로 소개',
     },
     profile: {
       title: '대표 프로필',
       description:
         '이호진 대표 - AI 연구자 및 교육자. 한양대학교 인공지능융합대학원 석사, 다년간의 AI 프로젝트 경험 보유',
-      keywords: '이호진, AI 전문가, AI 교육자, AI 연구자, 한양대학교, 인공지능 전문가',
+      keywords:
+        '이호진, AI 전문가, AI 교육자, AI 연구자, 한양대학교, 인공지능 전문가',
     },
     contact: {
       title: '문의하기',
-      description: 'AI 도입 컨설팅, 맞춤형 교육, 솔루션 개발 문의는 에멜무지로에게 연락주세요.',
+      description:
+        'AI 도입 컨설팅, 맞춤형 교육, 솔루션 개발 문의는 에멜무지로에게 연락주세요.',
       keywords: 'AI 상담, AI 문의, 컨설팅 문의, 교육 문의, 연락처',
     },
     blog: {
       title: '블로그',
-      description: 'AI 기술 동향, 실무 사례, 교육 콘텐츠를 공유하는 에멜무지로 블로그',
+      description:
+        'AI 기술 동향, 실무 사례, 교육 콘텐츠를 공유하는 에멜무지로 블로그',
       keywords: 'AI 블로그, AI 기술, AI 트렌드, AI 사례, AI 교육 자료',
     },
   },
@@ -113,8 +117,10 @@ export function generateStructuredData(
       description: SEO_CONFIG.site.description,
       sameAs: [
         `https://github.com/${SEO_CONFIG.social.github}`,
-        SEO_CONFIG.social.linkedin && `https://linkedin.com/company/${SEO_CONFIG.social.linkedin}`,
-        SEO_CONFIG.social.facebook && `https://facebook.com/${SEO_CONFIG.social.facebook}`,
+        SEO_CONFIG.social.linkedin &&
+          `https://linkedin.com/company/${SEO_CONFIG.social.linkedin}`,
+        SEO_CONFIG.social.facebook &&
+          `https://facebook.com/${SEO_CONFIG.social.facebook}`,
       ].filter(Boolean),
       contactPoint: {
         '@type': 'ContactPoint',

@@ -30,7 +30,7 @@ describe('SkipLink Component', () => {
     document.body.appendChild(mockMainContent);
 
     // Mock getElementById - We're testing component behavior, not DOM API
-    jest.spyOn(document, 'getElementById').mockImplementation(id => {
+    jest.spyOn(document, 'getElementById').mockImplementation((id) => {
       if (id === 'main-content') {
         return mockMainContent;
       }
@@ -47,7 +47,9 @@ describe('SkipLink Component', () => {
     it('renders skip link with correct text', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toBeInTheDocument();
       expect(skipLink).toHaveTextContent('Skip to main content');
     });
@@ -55,21 +57,27 @@ describe('SkipLink Component', () => {
     it('has correct href attribute pointing to main content', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toHaveAttribute('href', '#main-content');
     });
 
     it('is initially visually hidden', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toHaveClass('sr-only');
     });
 
     it('becomes visible on focus', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toHaveClass('focus:not-sr-only');
     });
   });
@@ -78,28 +86,47 @@ describe('SkipLink Component', () => {
     it('applies correct accessibility classes', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toHaveClass('sr-only', 'focus:not-sr-only');
     });
 
     it('applies correct positioning classes', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
-      expect(skipLink).toHaveClass('focus:absolute', 'focus:top-4', 'focus:left-4', 'focus:z-50');
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
+      expect(skipLink).toHaveClass(
+        'focus:absolute',
+        'focus:top-4',
+        'focus:left-4',
+        'focus:z-50'
+      );
     });
 
     it('applies correct visual styling classes', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
-      expect(skipLink).toHaveClass('bg-blue-600', 'text-white', 'px-4', 'py-2', 'rounded-md');
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
+      expect(skipLink).toHaveClass(
+        'bg-blue-600',
+        'text-white',
+        'px-4',
+        'py-2',
+        'rounded-md'
+      );
     });
 
     it('applies correct focus styles', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toHaveClass(
         'focus:outline-none',
         'focus:ring-2',
@@ -113,7 +140,9 @@ describe('SkipLink Component', () => {
     it('handles Enter key press correctly', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Simulate Enter key press
       fireEvent.keyDown(skipLink, { key: 'Enter' });
@@ -126,7 +155,9 @@ describe('SkipLink Component', () => {
     it('prevents default behavior on Enter key press', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       fireEvent.keyDown(skipLink, { key: 'Enter' });
 
@@ -139,12 +170,14 @@ describe('SkipLink Component', () => {
     it('ignores other key presses', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Test various keys that should not trigger the action
       const keys = ['Space', 'Tab', 'Escape', 'ArrowDown', 'ArrowUp'];
 
-      keys.forEach(key => {
+      keys.forEach((key) => {
         fireEvent.keyDown(skipLink, { key });
       });
 
@@ -156,7 +189,9 @@ describe('SkipLink Component', () => {
     it('handles case-sensitive key comparison', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Test different cases of 'enter'
       fireEvent.keyDown(skipLink, { key: 'enter' }); // lowercase
@@ -175,7 +210,9 @@ describe('SkipLink Component', () => {
     it('finds and focuses main content element', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       fireEvent.keyDown(skipLink, { key: 'Enter' });
 
       // Verify that main content was focused
@@ -185,7 +222,9 @@ describe('SkipLink Component', () => {
     it('scrolls to main content with smooth behavior', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       fireEvent.keyDown(skipLink, { key: 'Enter' });
 
       expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
@@ -197,7 +236,9 @@ describe('SkipLink Component', () => {
 
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Should not throw error when element is not found
       expect(() => {
@@ -210,11 +251,15 @@ describe('SkipLink Component', () => {
       const elementWithoutFocus = document.createElement('div');
       elementWithoutFocus.id = 'main-content';
 
-      jest.spyOn(document, 'getElementById').mockReturnValue(elementWithoutFocus);
+      jest
+        .spyOn(document, 'getElementById')
+        .mockReturnValue(elementWithoutFocus);
 
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Should not throw error
       expect(() => {
@@ -228,11 +273,15 @@ describe('SkipLink Component', () => {
       elementWithoutScroll.id = 'main-content';
       elementWithoutScroll.focus = jest.fn();
 
-      jest.spyOn(document, 'getElementById').mockReturnValue(elementWithoutScroll);
+      jest
+        .spyOn(document, 'getElementById')
+        .mockReturnValue(elementWithoutScroll);
 
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Should not throw error
       expect(() => {
@@ -248,7 +297,9 @@ describe('SkipLink Component', () => {
       // Skip links should be the first focusable element on the page
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toBeInTheDocument();
       expect(skipLink).toHaveAttribute('href', '#main-content');
     });
@@ -256,7 +307,9 @@ describe('SkipLink Component', () => {
     it('provides clear and descriptive link text', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toHaveTextContent('Skip to main content');
 
       // Text should be meaningful and descriptive
@@ -268,7 +321,9 @@ describe('SkipLink Component', () => {
     it('is keyboard accessible', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Should be focusable
       skipLink.focus();
@@ -282,7 +337,9 @@ describe('SkipLink Component', () => {
     it('has sufficient color contrast', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Blue background with white text should provide good contrast
       expect(skipLink).toHaveClass('bg-blue-600', 'text-white');
@@ -291,7 +348,9 @@ describe('SkipLink Component', () => {
     it('has visible focus indicator', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       expect(skipLink).toHaveClass(
         'focus:ring-2',
@@ -306,7 +365,9 @@ describe('SkipLink Component', () => {
     it('is available to screen readers when focused', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Should have sr-only class but become visible on focus
       expect(skipLink).toHaveClass('sr-only', 'focus:not-sr-only');
@@ -323,7 +384,9 @@ describe('SkipLink Component', () => {
       render(<SkipLink />);
 
       // Should be found by accessible name
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toBeInTheDocument();
     });
   });
@@ -332,28 +395,36 @@ describe('SkipLink Component', () => {
     it('appears above other content when focused', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toHaveClass('focus:z-50');
     });
 
     it('has proper spacing and padding', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toHaveClass('px-4', 'py-2');
     });
 
     it('has rounded corners for better appearance', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toHaveClass('rounded-md');
     });
 
     it('is positioned consistently', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toHaveClass('focus:top-4', 'focus:left-4');
     });
   });
@@ -362,7 +433,9 @@ describe('SkipLink Component', () => {
     it('completes full navigation flow successfully', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // 1. User tabs to skip link
       skipLink.focus();
@@ -379,7 +452,9 @@ describe('SkipLink Component', () => {
     it('works with multiple interactions', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Multiple Enter presses should all work
       fireEvent.keyDown(skipLink, { key: 'Enter' });
@@ -395,7 +470,9 @@ describe('SkipLink Component', () => {
     it('handles rapid key presses', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Simulate rapid Enter key presses
       for (let i = 0; i < 10; i++) {
@@ -409,7 +486,9 @@ describe('SkipLink Component', () => {
     it('handles mixed keyboard inputs', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Mix of different keys
       fireEvent.keyDown(skipLink, { key: 'Tab' });
@@ -425,7 +504,9 @@ describe('SkipLink Component', () => {
     it('maintains functionality when DOM changes', () => {
       render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Remove and re-add main content
       document.body.removeChild(mockMainContent);
@@ -452,14 +533,18 @@ describe('SkipLink Component', () => {
       rerender(<SkipLink />);
 
       // Should still be rendered correctly
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
       expect(skipLink).toBeInTheDocument();
     });
 
     it('handles event listeners efficiently', () => {
       const { unmount } = render(<SkipLink />);
 
-      const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+      const skipLink = screen.getByRole('link', {
+        name: /skip to main content/i,
+      });
 
       // Test that event handler works
       fireEvent.keyDown(skipLink, { key: 'Enter' });

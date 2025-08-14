@@ -56,7 +56,9 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
     };
 
     // 전체 화면 래퍼
-    const FullScreenWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const FullScreenWrapper: React.FC<{ children: React.ReactNode }> = ({
+      children,
+    }) => {
       if (fullScreen || variant === 'page') {
         return (
           <div
@@ -94,7 +96,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
             className={`flex items-center justify-center space-x-2 ${className}`}
             data-testid="loading-dots"
           >
-            {[0, 1, 2].map(index => (
+            {[0, 1, 2].map((index) => (
               <motion.div
                 key={index}
                 className={`w-3 h-3 bg-${color}-600 rounded-full`}
@@ -146,7 +148,10 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
     // 인라인 로딩
     if (variant === 'inline') {
       return (
-        <span className={`inline-flex items-center ${className}`} data-testid="loading-inline">
+        <span
+          className={`inline-flex items-center ${className}`}
+          data-testid="loading-inline"
+        >
           <motion.span
             className={`inline-block w-4 h-4 border-2 ${colorClasses[color as keyof typeof colorClasses] || colorClasses.indigo} border-t-transparent rounded-full`}
             data-testid="inline-spinner"
@@ -157,7 +162,9 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
               ease: 'linear',
             }}
           />
-          {message && <span className="ml-2 text-sm text-gray-600">{message}</span>}
+          {message && (
+            <span className="ml-2 text-sm text-gray-600">{message}</span>
+          )}
         </span>
       );
     }

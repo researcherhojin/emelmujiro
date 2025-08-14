@@ -55,7 +55,9 @@ describe('OptimizedImage', () => {
       });
 
     // Default to WebP support
-    (mockCanvas.toDataURL as jest.Mock).mockReturnValue('data:image/webp;base64,test');
+    (mockCanvas.toDataURL as jest.Mock).mockReturnValue(
+      'data:image/webp;base64,test'
+    );
   });
 
   afterEach(() => {
@@ -84,7 +86,9 @@ describe('OptimizedImage', () => {
   });
 
   it('renders regular img element when loading is eager', () => {
-    render(<OptimizedImage src="/test-image.jpg" alt="Test image" loading="eager" />);
+    render(
+      <OptimizedImage src="/test-image.jpg" alt="Test image" loading="eager" />
+    );
 
     const image = screen.getByAltText('Test image');
     expect(image).toBeInTheDocument();
@@ -93,14 +97,27 @@ describe('OptimizedImage', () => {
   });
 
   it('applies custom className', () => {
-    render(<OptimizedImage src="/test-image.jpg" alt="Test image" className="custom-class" />);
+    render(
+      <OptimizedImage
+        src="/test-image.jpg"
+        alt="Test image"
+        className="custom-class"
+      />
+    );
 
     const image = screen.getByTestId('lazy-image');
     expect(image).toHaveClass('custom-class');
   });
 
   it('applies width and height attributes', () => {
-    render(<OptimizedImage src="/test-image.jpg" alt="Test image" width={800} height={600} />);
+    render(
+      <OptimizedImage
+        src="/test-image.jpg"
+        alt="Test image"
+        width={800}
+        height={600}
+      />
+    );
 
     const image = screen.getByTestId('lazy-image');
     expect(image).toHaveAttribute('width', '800');
@@ -108,9 +125,16 @@ describe('OptimizedImage', () => {
   });
 
   it('detects WebP support correctly', async () => {
-    (mockCanvas.toDataURL as jest.Mock).mockReturnValue('data:image/webp;base64,test');
+    (mockCanvas.toDataURL as jest.Mock).mockReturnValue(
+      'data:image/webp;base64,test'
+    );
 
-    render(<OptimizedImage src="https://images.unsplash.com/test-image.jpg" alt="Test image" />);
+    render(
+      <OptimizedImage
+        src="https://images.unsplash.com/test-image.jpg"
+        alt="Test image"
+      />
+    );
 
     await waitFor(() => {
       expect(mockCanvas.toDataURL).toHaveBeenCalledWith('image/webp');
@@ -118,9 +142,16 @@ describe('OptimizedImage', () => {
   });
 
   it('handles no WebP support', async () => {
-    (mockCanvas.toDataURL as jest.Mock).mockReturnValue('data:image/png;base64,test');
+    (mockCanvas.toDataURL as jest.Mock).mockReturnValue(
+      'data:image/png;base64,test'
+    );
 
-    render(<OptimizedImage src="https://images.unsplash.com/test-image.jpg" alt="Test image" />);
+    render(
+      <OptimizedImage
+        src="https://images.unsplash.com/test-image.jpg"
+        alt="Test image"
+      />
+    );
 
     await waitFor(() => {
       const image = screen.getByTestId('lazy-image');
@@ -129,7 +160,9 @@ describe('OptimizedImage', () => {
   });
 
   it('optimizes Unsplash images with WebP support', async () => {
-    (mockCanvas.toDataURL as jest.Mock).mockReturnValue('data:image/webp;base64,test');
+    (mockCanvas.toDataURL as jest.Mock).mockReturnValue(
+      'data:image/webp;base64,test'
+    );
     Object.defineProperty(window, 'devicePixelRatio', {
       writable: true,
       value: 2,
@@ -158,7 +191,9 @@ describe('OptimizedImage', () => {
   });
 
   it('optimizes Unsplash images without WebP support', async () => {
-    (mockCanvas.toDataURL as jest.Mock).mockReturnValue('data:image/png;base64,test');
+    (mockCanvas.toDataURL as jest.Mock).mockReturnValue(
+      'data:image/png;base64,test'
+    );
     Object.defineProperty(window, 'devicePixelRatio', {
       writable: true,
       value: 1,
@@ -185,7 +220,9 @@ describe('OptimizedImage', () => {
   });
 
   it('optimizes Pexels images', async () => {
-    (mockCanvas.toDataURL as jest.Mock).mockReturnValue('data:image/webp;base64,test');
+    (mockCanvas.toDataURL as jest.Mock).mockReturnValue(
+      'data:image/webp;base64,test'
+    );
 
     render(
       <OptimizedImage
@@ -262,7 +299,13 @@ describe('OptimizedImage', () => {
   it('uses custom srcSet when provided', () => {
     const customSrcSet = 'image-small.jpg 320w, image-large.jpg 800w';
 
-    render(<OptimizedImage src="/test-image.jpg" alt="Test image" srcSet={customSrcSet} />);
+    render(
+      <OptimizedImage
+        src="/test-image.jpg"
+        alt="Test image"
+        srcSet={customSrcSet}
+      />
+    );
 
     const image = screen.getByTestId('lazy-image');
     expect(image).toHaveAttribute('srcset', customSrcSet);
@@ -281,7 +324,13 @@ describe('OptimizedImage', () => {
   it('uses custom sizes when provided', () => {
     const customSizes = '(max-width: 768px) 100vw, 50vw';
 
-    render(<OptimizedImage src="/test-image.jpg" alt="Test image" sizes={customSizes} />);
+    render(
+      <OptimizedImage
+        src="/test-image.jpg"
+        alt="Test image"
+        sizes={customSizes}
+      />
+    );
 
     const image = screen.getByTestId('lazy-image');
     expect(image).toHaveAttribute('sizes', customSizes);
@@ -290,7 +339,13 @@ describe('OptimizedImage', () => {
   it('calls onLoad callback', () => {
     const onLoadMock = jest.fn();
 
-    render(<OptimizedImage src="/test-image.jpg" alt="Test image" onLoad={onLoadMock} />);
+    render(
+      <OptimizedImage
+        src="/test-image.jpg"
+        alt="Test image"
+        onLoad={onLoadMock}
+      />
+    );
 
     const image = screen.getByTestId('lazy-image');
     fireEvent.load(image);
@@ -301,7 +356,13 @@ describe('OptimizedImage', () => {
   it('calls onError callback', () => {
     const onErrorMock = jest.fn();
 
-    render(<OptimizedImage src="/test-image.jpg" alt="Test image" onError={onErrorMock} />);
+    render(
+      <OptimizedImage
+        src="/test-image.jpg"
+        alt="Test image"
+        onError={onErrorMock}
+      />
+    );
 
     const image = screen.getByTestId('lazy-image');
     fireEvent.error(image);
@@ -363,7 +424,14 @@ describe('OptimizedImage', () => {
   });
 
   it('does not generate srcSet for non-Unsplash images', () => {
-    render(<OptimizedImage src="/local-image.jpg" alt="Test image" width={800} height={600} />);
+    render(
+      <OptimizedImage
+        src="/local-image.jpg"
+        alt="Test image"
+        width={800}
+        height={600}
+      />
+    );
 
     const image = screen.getByTestId('lazy-image');
     expect(image).not.toHaveAttribute('srcset');
@@ -383,7 +451,9 @@ describe('OptimizedImage', () => {
   });
 
   it('renders eager loading image with all optimizations', async () => {
-    (mockCanvas.toDataURL as jest.Mock).mockReturnValue('data:image/webp;base64,test');
+    (mockCanvas.toDataURL as jest.Mock).mockReturnValue(
+      'data:image/webp;base64,test'
+    );
 
     render(
       <OptimizedImage
@@ -470,7 +540,9 @@ describe('OptimizedImage', () => {
     expect(src1).toContain('fm=webp');
 
     // Change WebP support
-    (mockCanvas.toDataURL as jest.Mock).mockReturnValue('data:image/png;base64,test');
+    (mockCanvas.toDataURL as jest.Mock).mockReturnValue(
+      'data:image/png;base64,test'
+    );
 
     rerender(
       <OptimizedImage
@@ -502,7 +574,10 @@ describe('OptimizedImage', () => {
         throw new Error('Canvas creation failed');
       }
       // 다른 요소들은 정상적으로 생성
-      const element = document.createElementNS('http://www.w3.org/1999/xhtml', tagName);
+      const element = document.createElementNS(
+        'http://www.w3.org/1999/xhtml',
+        tagName
+      );
       return element;
     });
 

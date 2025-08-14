@@ -26,13 +26,18 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(({ service }) => {
         </span>
       </div>
 
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{service.title}</h3>
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+        {service.title}
+      </h3>
       <p className="text-base leading-relaxed text-gray-600 dark:text-gray-400 mb-6">
         {service.description}
       </p>
       <ul className="space-y-3">
         {service.details.map((detail, idx) => (
-          <li key={idx} className="text-sm text-gray-500 dark:text-gray-400 flex items-start">
+          <li
+            key={idx}
+            className="text-sm text-gray-500 dark:text-gray-400 flex items-start"
+          >
             <span className="mr-2 text-gray-400 mt-1">•</span>
             <span>{detail}</span>
           </li>
@@ -50,14 +55,22 @@ const ServicesSection: React.FC = memo(() => {
       number: '01',
       title: 'AI 컨설팅',
       description: '비즈니스 문제를 위한 AI 솔루션 개발',
-      details: ['MLOps 구축 및 최적화', '모델 개발 및 성능 향상', 'AI 도입 전략 수립'],
+      details: [
+        'MLOps 구축 및 최적화',
+        '모델 개발 및 성능 향상',
+        'AI 도입 전략 수립',
+      ],
       icon: Code2,
     },
     {
       number: '02',
       title: '기업 AI 교육',
       description: '실무자를 위한 체계적인 AI 역량 강화',
-      details: ['맞춤형 커리큘럼 설계', '실습 중심 교육 진행', '1:1 멘토링 지원'],
+      details: [
+        '맞춤형 커리큘럼 설계',
+        '실습 중심 교육 진행',
+        '1:1 멘토링 지원',
+      ],
       icon: GraduationCap,
     },
     {
@@ -71,7 +84,11 @@ const ServicesSection: React.FC = memo(() => {
       number: '04',
       title: '데이터 분석',
       description: '데이터 기반 의사결정 지원 시스템',
-      details: ['비즈니스 인텔리전스 도구 구축', '예측 모델 개발', '데이터 파이프라인 최적화'],
+      details: [
+        '비즈니스 인텔리전스 도구 구축',
+        '예측 모델 개발',
+        '데이터 파이프라인 최적화',
+      ],
       icon: Database,
     },
   ];
@@ -92,7 +109,7 @@ const ServicesSection: React.FC = memo(() => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {services.map(service => (
+          {services.map((service) => (
             <ServiceCard key={service.number} service={service} />
           ))}
         </div>

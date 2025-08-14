@@ -28,7 +28,9 @@ const NotFound: React.FC = memo(() => {
       <main className="min-h-screen flex flex-col items-center justify-center bg-white px-4 sm:px-6 lg:px-8">
         {/* Error Code */}
         <div className="text-center mb-8">
-          <h1 className="text-8xl sm:text-9xl font-black text-gray-900 mb-4 tracking-tight">404</h1>
+          <h1 className="text-8xl sm:text-9xl font-black text-gray-900 mb-4 tracking-tight">
+            404
+          </h1>
           <div className="w-24 h-1 bg-gray-900 mx-auto mb-8 rounded-full"></div>
         </div>
 
@@ -38,10 +40,12 @@ const NotFound: React.FC = memo(() => {
             페이지를 찾을 수 없습니다
           </h2>
           <p className="text-lg text-gray-600 mb-6">
-            죄송합니다. 요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.
+            죄송합니다. 요청하신 페이지가 존재하지 않거나 이동되었을 수
+            있습니다.
           </p>
           <p className="text-base text-gray-500">
-            URL을 다시 확인하시거나, 아래 버튼을 통해 다른 페이지로 이동해보세요.
+            URL을 다시 확인하시거나, 아래 버튼을 통해 다른 페이지로
+            이동해보세요.
           </p>
         </div>
 
@@ -68,8 +72,13 @@ const NotFound: React.FC = memo(() => {
 
         {/* Helpful Links */}
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">주요 페이지 바로가기</h3>
-          <nav className="flex flex-wrap justify-center gap-4" aria-label="주요 페이지 링크">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            주요 페이지 바로가기
+          </h3>
+          <nav
+            className="flex flex-wrap justify-center gap-4"
+            aria-label="주요 페이지 링크"
+          >
             <button
               onClick={() => navigate('/about')}
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"

@@ -66,7 +66,14 @@ describe('ScrollProgress', () => {
 
       // Check that the container has the correct classes
       const container = screen.getByTestId('scroll-progress-container');
-      expect(container).toHaveClass('fixed', 'top-0', 'left-0', 'w-full', 'h-1', 'z-50');
+      expect(container).toHaveClass(
+        'fixed',
+        'top-0',
+        'left-0',
+        'w-full',
+        'h-1',
+        'z-50'
+      );
     });
 
     test('renders progress bar with initial 0% width', () => {
@@ -82,14 +89,26 @@ describe('ScrollProgress', () => {
 
       // Verify the container has the correct classes
       const container = screen.getByTestId('scroll-progress-container');
-      expect(container).toHaveClass('fixed', 'top-0', 'left-0', 'w-full', 'h-1', 'z-50');
+      expect(container).toHaveClass(
+        'fixed',
+        'top-0',
+        'left-0',
+        'w-full',
+        'h-1',
+        'z-50'
+      );
     });
 
     test('applies correct CSS classes to progress bar', () => {
       render(<ScrollProgress />);
 
       const progressBar = screen.getByRole('progressbar');
-      expect(progressBar).toHaveClass('h-full', 'bg-indigo-600', 'transition-all', 'duration-200');
+      expect(progressBar).toHaveClass(
+        'h-full',
+        'bg-indigo-600',
+        'transition-all',
+        'duration-200'
+      );
     });
   });
 
@@ -245,7 +264,10 @@ describe('ScrollProgress', () => {
     test('adds scroll event listener on mount', () => {
       render(<ScrollProgress />);
 
-      expect(window.addEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
+      expect(window.addEventListener).toHaveBeenCalledWith(
+        'scroll',
+        expect.any(Function)
+      );
     });
 
     test('removes scroll event listener on unmount', () => {
@@ -253,7 +275,10 @@ describe('ScrollProgress', () => {
 
       unmount();
 
-      expect(window.removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
+      expect(window.removeEventListener).toHaveBeenCalledWith(
+        'scroll',
+        expect.any(Function)
+      );
     });
 
     test('updates progress on scroll events', () => {
@@ -402,7 +427,7 @@ describe('ScrollProgress', () => {
       // Test multiple progress values
       const testValues = [10, 25, 50, 75, 90];
 
-      testValues.forEach(percentage => {
+      testValues.forEach((percentage) => {
         const scrollValue = (percentage / 100) * 1200; // 1200 is total scrollable height
         Object.defineProperty(window, 'scrollY', { value: scrollValue });
 
@@ -438,13 +463,19 @@ describe('ScrollProgress', () => {
       const { unmount } = render(<ScrollProgress />);
 
       // Verify event listener is added
-      expect(window.addEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
+      expect(window.addEventListener).toHaveBeenCalledWith(
+        'scroll',
+        expect.any(Function)
+      );
 
       // Unmount component
       unmount();
 
       // Verify event listener is removed
-      expect(window.removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
+      expect(window.removeEventListener).toHaveBeenCalledWith(
+        'scroll',
+        expect.any(Function)
+      );
     });
   });
 });

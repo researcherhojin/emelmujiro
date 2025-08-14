@@ -14,7 +14,6 @@ import { useChatContext } from '../../contexts/ChatContext';
 import MessageList from './MessageList';
 import QuickReplies from './QuickReplies';
 import TypingIndicator from './TypingIndicator';
-// import FileUpload from './FileUpload'; // Commented out - not used
 import EmojiPicker from './EmojiPicker';
 import { useTranslation } from 'react-i18next';
 
@@ -35,7 +34,6 @@ const ChatWindow: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [showQuickReplies, setShowQuickReplies] = useState(true);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  // const [showFileUpload, setShowFileUpload] = useState(false); // Commented out - not used
   const [isComposing, setIsComposing] = useState(false);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);

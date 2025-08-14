@@ -80,7 +80,7 @@ describe('accessibility', () => {
     it('should return true when user prefers reduced motion', () => {
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: jest.fn().mockImplementation(query => ({
+        value: jest.fn().mockImplementation((query) => ({
           matches: query === '(prefers-reduced-motion: reduce)',
           media: query,
           onchange: null,
@@ -98,7 +98,7 @@ describe('accessibility', () => {
     it('should return false when user does not prefer reduced motion', () => {
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: jest.fn().mockImplementation(query => ({
+        value: jest.fn().mockImplementation((query) => ({
           matches: false,
           media: query,
           onchange: null,
@@ -122,12 +122,18 @@ describe('accessibility', () => {
     });
 
     it('should calculate contrast ratio for same colors', () => {
-      const ratio = getContrastRatio('rgb(128, 128, 128)', 'rgb(128, 128, 128)');
+      const ratio = getContrastRatio(
+        'rgb(128, 128, 128)',
+        'rgb(128, 128, 128)'
+      );
       expect(ratio).toBe(1);
     });
 
     it('should handle colors with low contrast', () => {
-      const ratio = getContrastRatio('rgb(200, 200, 200)', 'rgb(220, 220, 220)');
+      const ratio = getContrastRatio(
+        'rgb(200, 200, 200)',
+        'rgb(220, 220, 220)'
+      );
       expect(ratio).toBeGreaterThan(1);
       expect(ratio).toBeLessThan(2);
     });
@@ -169,7 +175,9 @@ describe('accessibility', () => {
     it('should generate unique IDs', () => {
       // Mock different values for each call
       let callCount = 0;
-      jest.spyOn(Date, 'now').mockImplementation(() => 1234567890 + callCount++);
+      jest
+        .spyOn(Date, 'now')
+        .mockImplementation(() => 1234567890 + callCount++);
 
       const id1 = generateAriaId();
       const id2 = generateAriaId();
@@ -513,7 +521,7 @@ describe('accessibility', () => {
       expect(isVisibleToScreenReader(legend)).toBe(true);
     });
 
-    it('should handle accessibility announcements with focus management', done => {
+    it('should handle accessibility announcements with focus management', (done) => {
       const button = document.createElement('button');
       button.textContent = 'Test';
       document.body.appendChild(button);

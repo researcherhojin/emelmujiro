@@ -18,11 +18,15 @@ const LanguageSwitcher: React.FC = memo(() => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const currentLanguage =
+    languages.find((lang) => lang.code === i18n.language) || languages[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -59,7 +63,7 @@ const LanguageSwitcher: React.FC = memo(() => {
   );
 
   const toggleDropdown = useCallback(() => {
-    setIsOpen(prev => !prev);
+    setIsOpen((prev) => !prev);
   }, []);
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
@@ -67,7 +71,7 @@ const LanguageSwitcher: React.FC = memo(() => {
       setIsOpen(false);
     } else if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      setIsOpen(prev => !prev);
+      setIsOpen((prev) => !prev);
     }
   }, []);
 
@@ -107,7 +111,7 @@ const LanguageSwitcher: React.FC = memo(() => {
           aria-label={t('accessibility.languageSelector')}
         >
           <div className="py-1">
-            {languages.map(language => {
+            {languages.map((language) => {
               const isSelected = language.code === i18n.language;
 
               return (
@@ -120,7 +124,7 @@ const LanguageSwitcher: React.FC = memo(() => {
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700 hover:text-gray-900 dark:hover:text-white'
                   }`}
                   onClick={() => handleLanguageChange(language.code)}
-                  onKeyDown={e => handleLanguageKeyDown(e, language.code)}
+                  onKeyDown={(e) => handleLanguageKeyDown(e, language.code)}
                   role="option"
                   aria-selected={isSelected}
                   tabIndex={0}

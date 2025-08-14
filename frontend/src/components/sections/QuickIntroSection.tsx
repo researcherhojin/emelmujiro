@@ -38,7 +38,7 @@ const QuickIntroSection: React.FC = memo(() => {
             </h2>
 
             <div className="space-y-8">
-              {differentiators.map(item => (
+              {differentiators.map((item) => (
                 <div key={item.number} className="flex gap-6 items-start">
                   <span className="text-sm font-medium text-gray-400 dark:text-gray-600">
                     {item.number}
@@ -47,7 +47,9 @@ const QuickIntroSection: React.FC = memo(() => {
                     <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
                       {item.title}
                     </h3>
-                    <p className="text-base text-gray-600 dark:text-gray-400">{item.description}</p>
+                    <p className="text-base text-gray-600 dark:text-gray-400">
+                      {item.description}
+                    </p>
                   </div>
                 </div>
               ))}

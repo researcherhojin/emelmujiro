@@ -45,17 +45,18 @@ interface FormProviderProps {
 }
 
 export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
-  const [contactForm, setContactForm] = useState<ContactFormState>(initialContactForm);
+  const [contactForm, setContactForm] =
+    useState<ContactFormState>(initialContactForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [formErrors, setFormErrors] = useState<Partial<ContactFormState>>({});
 
   const updateContactForm = (field: keyof ContactFormState, value: string) => {
-    setContactForm(prev => ({ ...prev, [field]: value }));
+    setContactForm((prev) => ({ ...prev, [field]: value }));
     // Clear error for this field when user starts typing
     if (formErrors[field]) {
-      setFormErrors(prev => {
+      setFormErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[field];
         return newErrors;
@@ -128,7 +129,9 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
       setSubmitSuccess(true);
 
       // Store in localStorage for offline support
-      const savedContacts = JSON.parse(localStorage.getItem('savedContacts') || '[]');
+      const savedContacts = JSON.parse(
+        localStorage.getItem('savedContacts') || '[]'
+      );
       savedContacts.push({
         ...contactForm,
         timestamp: new Date().toISOString(),
@@ -142,18 +145,27 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
       }, 2000);
     } catch (error) {
       const err = error as Error & { userMessage?: string };
-      setSubmitError(err.userMessage || err.message || '문의 전송에 실패했습니다.');
+      setSubmitError(
+        err.userMessage || err.message || '문의 전송에 실패했습니다.'
+      );
 
       // Save to localStorage for later sync if offline
       if (!navigator.onLine) {
-        const pendingContacts = JSON.parse(localStorage.getItem('pendingContacts') || '[]');
+        const pendingContacts = JSON.parse(
+          localStorage.getItem('pendingContacts') || '[]'
+        );
         pendingContacts.push({
           ...contactForm,
           timestamp: new Date().toISOString(),
           synced: false,
         });
-        localStorage.setItem('pendingContacts', JSON.stringify(pendingContacts));
-        setSubmitError('오프라인 상태입니다. 연결이 복구되면 자동으로 전송됩니다.');
+        localStorage.setItem(
+          'pendingContacts',
+          JSON.stringify(pendingContacts)
+        );
+        setSubmitError(
+          '오프라인 상태입니다. 연결이 복구되면 자동으로 전송됩니다.'
+        );
       }
     } finally {
       setIsSubmitting(false);
