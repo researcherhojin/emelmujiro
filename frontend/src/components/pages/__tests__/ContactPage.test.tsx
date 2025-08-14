@@ -28,6 +28,14 @@ jest.mock('../../../utils/logger', () => ({
   error: jest.fn(),
 }));
 
+// Mock UnifiedLoading components
+jest.mock('../../common/UnifiedLoading', () => ({
+  PageLoading: () => <div data-testid="page-loading">Loading...</div>,
+  InlineLoading: () => <div data-testid="inline-loading">Loading...</div>,
+  ButtonLoading: () => <div data-testid="button-loading">Loading...</div>,
+  default: () => <div data-testid="unified-loading">Loading...</div>,
+}));
+
 // Mock SEOHelmet to prevent react-helmet-async errors
 jest.mock('../../common/SEOHelmet', () => {
   return function MockSEOHelmet() {
