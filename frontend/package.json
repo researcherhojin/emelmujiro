@@ -57,15 +57,10 @@
     "gh-pages": "^6.3.0",
     "globals": "^16.3.0",
     "husky": "^9.1.7",
-    "imagemin-cli": "^8.0.0",
-    "imagemin-mozjpeg": "^10.0.0",
-    "imagemin-pngquant": "^10.0.0",
-    "imagemin-svgo": "^11.0.1",
     "lint-staged": "^15.5.2",
     "msw": "^2.10.4",
     "react-router-sitemap": "^1.2.0",
     "react-scripts": "^5.0.1",
-    "sharp-cli": "^5.2.0",
     "sitemap": "^8.0.0",
     "source-map-explorer": "^2.5.3",
     "tailwindcss": "^3.3.5",
@@ -135,6 +130,13 @@
     "src/**/*.{json,css,md}": [
       "prettier --write"
     ]
+  },
+  "optionalDependencies": {
+    "imagemin-cli": "^8.0.0",
+    "imagemin-mozjpeg": "^10.0.0",
+    "imagemin-pngquant": "^10.0.0",
+    "imagemin-svgo": "^11.0.1",
+    "sharp-cli": "^5.2.0"
   },
   "proxy": "http://127.0.0.1:8000"
 }

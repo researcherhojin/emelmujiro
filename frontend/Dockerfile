@@ -1,8 +1,9 @@
 # Build stage
 FROM node:22-alpine AS builder
 
-# Update packages for security
-RUN apk update && apk upgrade
+# Update packages for security and install minimal build tools
+RUN apk update && apk upgrade && \
+    apk add --no-cache python3 make g++
 
 WORKDIR /app
 
@@ -10,12 +11,13 @@ WORKDIR /app
 COPY package.json yarn.lock* package-lock.json* ./
 
 # Install dependencies - use yarn if yarn.lock exists, otherwise npm
+# Skip optional dependencies in Docker build
 RUN if [ -f yarn.lock ]; then \
-      yarn install; \
+      yarn install --ignore-optional; \
     elif [ -f package-lock.json ]; then \
-      npm ci; \
+      npm ci --omit=optional; \
     else \
-      npm install; \
+      npm install --omit=optional; \
     fi
 
 # Copy source code

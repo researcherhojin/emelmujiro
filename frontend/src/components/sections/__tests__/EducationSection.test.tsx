@@ -22,9 +22,19 @@ describe('EducationSection', () => {
 
     // Check that at least some education content exists
     // Either specific degree texts or general education content
-    const hasEducationContent =
-      degreeTexts.length > 0 ||
-      screen.queryByText(/교육|학습|Education|Learning/i) !== null;
+    let hasEducationContent = degreeTexts.length > 0;
+
+    // If no degree texts found, check for general education content
+    if (!hasEducationContent) {
+      try {
+        const educationElements = screen.queryAllByText(
+          /교육|학습|Education|Learning/i
+        );
+        hasEducationContent = educationElements.length > 0;
+      } catch {
+        hasEducationContent = false;
+      }
+    }
 
     expect(hasEducationContent).toBe(true);
   });
