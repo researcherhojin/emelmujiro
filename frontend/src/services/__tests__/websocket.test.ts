@@ -463,7 +463,7 @@ if (process.env.CI === 'true') {
 
           const history = wsService.getHistory();
           expect(history).toHaveLength(3);
-          expect(history[0].text).toBe('Message 2');
+          expect((history[0] as any).text).toBe('Message 2');
         });
 
         it('should clear history', async () => {

@@ -34,7 +34,7 @@ export default class WebSocketService {
   private ws: WebSocket | null = null;
   private url: string | null = null;
   private state: 'disconnected' | 'connecting' | 'connected' = 'disconnected';
-  private listeners: Map<string, Set<Function>> = new Map();
+  private listeners: Map<string, Set<(...args: unknown[]) => void>> = new Map();
   private messageQueue: WebSocketMessage[] = [];
   private reconnectAttempts = 0;
   private autoReconnect = false;
@@ -107,7 +107,7 @@ export default class WebSocketService {
     }
   }
 
-  send(message: any): boolean {
+  send(message: WebSocketMessage): boolean {
     if (
       this.state === 'connected' &&
       this.ws &&
@@ -133,29 +133,29 @@ export default class WebSocketService {
     return false;
   }
 
-  on(event: string, handler: Function): void {
+  on(event: string, handler: (...args: unknown[]) => void): void {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
     this.listeners.get(event)!.add(handler);
   }
 
-  off(event: string, handler: Function): void {
+  off(event: string, handler: (...args: unknown[]) => void): void {
     const handlers = this.listeners.get(event);
     if (handlers) {
       handlers.delete(handler);
     }
   }
 
-  once(event: string, handler: Function): void {
-    const onceHandler = (...args: any[]) => {
+  once(event: string, handler: (...args: unknown[]) => void): void {
+    const onceHandler = (...args: unknown[]) => {
       handler(...args);
       this.off(event, onceHandler);
     };
     this.on(event, onceHandler);
   }
 
-  emit(event: string, ...args: any[]): void {
+  emit(event: string, ...args: unknown[]): void {
     const handlers = this.listeners.get(event);
     if (handlers) {
       handlers.forEach((handler) => handler(...args));
@@ -213,7 +213,7 @@ export default class WebSocketService {
     this.historyLimit = limit;
   }
 
-  getHistory(): any[] {
+  getHistory(): WebSocketMessage[] {
     return [...this.history];
   }
 
@@ -224,7 +224,9 @@ export default class WebSocketService {
   private flushMessageQueue(): void {
     while (this.messageQueue.length > 0 && this.state === 'connected') {
       const message = this.messageQueue.shift();
-      this.send(message);
+      if (message) {
+        this.send(message);
+      }
     }
   }
 
@@ -239,7 +241,7 @@ export default class WebSocketService {
     }, this.reconnectDelay);
   }
 
-  private addToHistory(message: any): void {
+  private addToHistory(message: WebSocketMessage): void {
     this.history.push(message);
     if (this.history.length > this.historyLimit) {
       this.history.shift();
