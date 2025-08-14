@@ -1,5 +1,18 @@
-const TerserPlugin = require('terser-webpack-plugin');
-const CompressionPlugin = require('compression-webpack-plugin');
+// Optional plugins - will be loaded only if available
+let TerserPlugin;
+let CompressionPlugin;
+
+try {
+  TerserPlugin = require('terser-webpack-plugin');
+} catch (e) {
+  console.log('TerserPlugin not found, using default optimization');
+}
+
+try {
+  CompressionPlugin = require('compression-webpack-plugin');
+} catch (e) {
+  console.log('CompressionPlugin not found, skipping compression');
+}
 
 module.exports = {
   webpack: {
@@ -65,43 +78,47 @@ module.exports = {
             },
           },
           minimize: true,
-          minimizer: [
-            new TerserPlugin({
-              terserOptions: {
-                parse: {
-                  ecma: 8,
-                },
-                compress: {
-                  ecma: 5,
-                  warnings: false,
-                  comparisons: false,
-                  inline: 2,
-                  drop_console: true,
-                  drop_debugger: true,
-                  pure_funcs: ['console.log', 'console.debug'],
-                },
-                mangle: {
-                  safari10: true,
-                },
-                output: {
-                  ecma: 5,
-                  comments: false,
-                  ascii_only: true,
-                },
-              },
-            }),
-          ],
+          minimizer: TerserPlugin
+            ? [
+                new TerserPlugin({
+                  terserOptions: {
+                    parse: {
+                      ecma: 8,
+                    },
+                    compress: {
+                      ecma: 5,
+                      warnings: false,
+                      comparisons: false,
+                      inline: 2,
+                      drop_console: true,
+                      drop_debugger: true,
+                      pure_funcs: ['console.log', 'console.debug'],
+                    },
+                    mangle: {
+                      safari10: true,
+                    },
+                    output: {
+                      ecma: 5,
+                      comments: false,
+                      ascii_only: true,
+                    },
+                  },
+                }),
+              ]
+            : [],
         };
 
-        // Add compression plugin
-        webpackConfig.plugins.push(
-          new CompressionPlugin({
-            algorithm: 'gzip',
-            test: /\.(js|css|html|svg)$/,
-            threshold: 8192,
-            minRatio: 0.8,
-          })
-        );
+        // Add compression plugin if available
+        if (CompressionPlugin) {
+          webpackConfig.plugins.push(
+            new CompressionPlugin({
+              algorithm: 'gzip',
+              test: /\.(js|css|html|svg)$/,
+              threshold: 8192,
+              minRatio: 0.8,
+            })
+          );
+        }
       }
 
       // Module resolution optimizations
