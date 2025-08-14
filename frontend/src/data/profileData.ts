@@ -61,6 +61,13 @@ export const careerData: CareerItem[] = [
     description: '대기업/정부기관 Python, 데이터 분석, ML/DL 강의 개발 및 연구',
   },
   {
+    period: '2022.04 ~ 2023.02',
+    company: '모두의연구소 / 한글과컴퓨터',
+    position: 'AI 교육 강사',
+    description:
+      '서울대, 서울시립대 AI 교육 · SKT Computer Vision · KETI 나노소재 AI융합 전문가 과정',
+  },
+  {
     period: '2022.06',
     company: '코코넛사일로',
     position: '연구원',
@@ -71,13 +78,6 @@ export const careerData: CareerItem[] = [
     company: '서울시 청년청',
     position: 'Front-End Developer',
     description: '사회적 기업 과제 수행 · 웹 프론트엔드 개발',
-  },
-  {
-    period: '2022.04 ~ 2023.02',
-    company: '모두의연구소 / 한글과컴퓨터',
-    position: 'AI 교육 강사',
-    description:
-      '서울대, 서울시립대 AI 교육 · SKT Computer Vision · KETI 나노소재 AI융합 전문가 과정',
   },
 ];
 

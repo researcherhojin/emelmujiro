@@ -16,10 +16,6 @@ import {
   projects,
   projectStats,
   projectCategories,
-  type CareerItem,
-  type EducationItem,
-  type ProjectStats,
-  type Project,
 } from '../../data/profileData';
 
 type TabType = 'career' | 'education' | 'projects';
