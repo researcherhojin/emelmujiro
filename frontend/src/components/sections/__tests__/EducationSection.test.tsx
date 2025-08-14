@@ -5,10 +5,7 @@ import EducationSection from '../EducationSection';
 
 describe('EducationSection', () => {
   it('renders education section with title', () => {
-    const { container } = renderWithProviders(<EducationSection />);
-
-    // Check if the component renders without error
-    expect(container.firstChild).toBeInTheDocument();
+    renderWithProviders(<EducationSection />);
 
     // Look for education section title
     const educationText = screen.queryByText(/실전 AI 교육/);
@@ -16,60 +13,51 @@ describe('EducationSection', () => {
   });
 
   it('displays all education entries', () => {
-    const { container } = renderWithProviders(<EducationSection />);
+    renderWithProviders(<EducationSection />);
 
     // Look for degree-related content
     const degreeTexts = screen.queryAllByText(
       /박사|석사|학사|PhD|Master|Bachelor|학위/i
     );
 
-    // If specific degrees aren't found, check for general education structure
-    if (degreeTexts.length === 0) {
-      const educationItems = container.querySelectorAll(
-        '[class*="education"], [class*="degree"], .space-y-8 > div, .grid > div'
-      );
-      expect(educationItems.length).toBeGreaterThanOrEqual(0);
-    } else {
-      expect(degreeTexts.length).toBeGreaterThan(0);
-    }
+    // Check that at least some education content exists
+    // Either specific degree texts or general education content
+    const hasEducationContent =
+      degreeTexts.length > 0 ||
+      screen.queryByText(/교육|학습|Education|Learning/i) !== null;
+
+    expect(hasEducationContent).toBe(true);
   });
 
   it('shows university name for all entries', () => {
-    const { container } = renderWithProviders(<EducationSection />);
+    renderWithProviders(<EducationSection />);
 
     // Look for university or school names
     const universityTexts = screen.queryAllByText(
       /대학교|대학|University|College|학교/i
     );
 
-    // If specific universities aren't found, check for institution structure
-    if (universityTexts.length === 0) {
-      const institutionElements = container.querySelectorAll(
-        'h3, .font-bold, [class*="institution"]'
-      );
-      expect(institutionElements.length).toBeGreaterThanOrEqual(0);
-    } else {
-      expect(universityTexts.length).toBeGreaterThan(0);
-    }
+    // Check that at least some institution content exists
+    const hasInstitutionContent =
+      universityTexts.length > 0 || screen.queryAllByRole('heading').length > 0;
+
+    expect(hasInstitutionContent).toBe(true);
   });
 
   it('displays department information', () => {
-    const { container } = renderWithProviders(<EducationSection />);
+    renderWithProviders(<EducationSection />);
 
     // Look for department or major information
     const deptTexts = screen.queryAllByText(
       /전기|전자|공학|전공|Engineering|Computer|Science/i
     );
 
-    // If specific departments aren't found, check for academic program structure
-    if (deptTexts.length === 0) {
-      const deptElements = container.querySelectorAll(
-        '.text-gray-600, [class*="department"], [class*="major"]'
-      );
-      expect(deptElements.length).toBeGreaterThanOrEqual(0);
-    } else {
-      expect(deptTexts.length).toBeGreaterThan(0);
-    }
+    // Check that at least some department content exists
+    const hasDeptContent =
+      deptTexts.length > 0 ||
+      screen.queryByText(/학과|Department|Major/i) !== null;
+
+    expect(hasDeptContent).toBe(true);
   });
 
   it('shows graduation periods', () => {

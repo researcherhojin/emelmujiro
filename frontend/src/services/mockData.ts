@@ -112,14 +112,14 @@ export const mockBlogPosts: BlogPost[] = [
   },
 ];
 
-// Mock categories
+// Mock categories with id, name, and slug
 export const mockCategories = [
-  'AI Technology',
-  'Machine Learning',
-  'Digital Transformation',
-  'AI Application',
-  'Data Science',
-  'Education',
+  { id: 1, name: 'AI Technology', slug: 'ai-technology' },
+  { id: 2, name: 'Machine Learning', slug: 'machine-learning' },
+  { id: 3, name: 'Digital Transformation', slug: 'digital-transformation' },
+  { id: 4, name: 'AI Application', slug: 'ai-application' },
+  { id: 5, name: 'Data Science', slug: 'data-science' },
+  { id: 6, name: 'Education', slug: 'education' },
 ];
 
 // Helper function to paginate data
@@ -128,10 +128,19 @@ export function paginateMockData<T>(data: T[], page: number, pageSize: number) {
   const endIndex = startIndex + pageSize;
   const paginatedData = data.slice(startIndex, endIndex);
 
+  // Add createdAt field for blog posts
+  const resultsWithCreatedAt = paginatedData.map((item) => {
+    const itemWithCreatedAt = item as any;
+    if (itemWithCreatedAt.created_at && !itemWithCreatedAt.createdAt) {
+      return { ...itemWithCreatedAt, createdAt: itemWithCreatedAt.created_at };
+    }
+    return item;
+  });
+
   return {
     count: data.length,
     next: endIndex < data.length ? page + 1 : null,
     previous: page > 1 ? page - 1 : null,
-    results: paginatedData,
+    results: resultsWithCreatedAt,
   };
 }

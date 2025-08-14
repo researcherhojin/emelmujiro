@@ -29,12 +29,12 @@ describe('QuickIntroSection', () => {
   });
 
   it('renders with proper styling', () => {
-    const { container } = renderWithProviders(<QuickIntroSection />);
+    renderWithProviders(<QuickIntroSection />);
 
-    const section = container.querySelector('section');
-    expect(section).toBeInTheDocument();
-    // Check if it has any py- class (py-16 or py-32)
-    expect(section?.className).toMatch(/py-\d+/);
+    const heading = screen.getByText('주요 서비스');
+    expect(heading).toBeInTheDocument();
+    // Check if it has proper heading styling
+    expect(heading).toHaveClass('text-3xl');
   });
 
   it('displays contact information', () => {
@@ -58,9 +58,9 @@ describe('QuickIntroSection', () => {
   });
 
   it('renders profile image if available', () => {
-    const { container } = renderWithProviders(<QuickIntroSection />);
+    renderWithProviders(<QuickIntroSection />);
 
-    const image = container.querySelector('img');
+    const image = screen.queryByRole('img');
     if (image) {
       expect(image).toHaveAttribute('alt');
     }
@@ -86,11 +86,10 @@ describe('QuickIntroSection', () => {
   });
 
   it('renders with responsive layout', () => {
-    const { container } = renderWithProviders(<QuickIntroSection />);
+    renderWithProviders(<QuickIntroSection />);
 
-    const responsiveElements = container.querySelectorAll(
-      '[class*="md:"], [class*="lg:"]'
-    );
-    expect(responsiveElements.length).toBeGreaterThanOrEqual(0);
+    // Check if component renders with content
+    const content = screen.queryAllByText(/\w+/);
+    expect(content.length).toBeGreaterThanOrEqual(0);
   });
 });

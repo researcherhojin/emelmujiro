@@ -23,7 +23,7 @@ export const ENV = {
 } as const;
 
 // Type-safe environment getter
-export function getEnvVar(key: keyof typeof ENV): any {
+export function getEnvVar<K extends keyof typeof ENV>(key: K): (typeof ENV)[K] {
   return ENV[key];
 }
 

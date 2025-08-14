@@ -25,11 +25,11 @@ describe('AdminDashboard', () => {
 
     await waitFor(() => {
       expect(screen.getByText('대시보드 개요')).toBeInTheDocument();
-      expect(screen.getByText('총 사용자')).toBeInTheDocument();
-      expect(screen.getByText('총 게시물')).toBeInTheDocument();
-      expect(screen.getByText('총 메시지')).toBeInTheDocument();
-      expect(screen.getByText('총 조회수')).toBeInTheDocument();
     });
+    expect(screen.getByText('총 사용자')).toBeInTheDocument();
+    expect(screen.getByText('총 게시물')).toBeInTheDocument();
+    expect(screen.getByText('총 메시지')).toBeInTheDocument();
+    expect(screen.getByText('총 조회수')).toBeInTheDocument();
   });
 
   it('displays stats after loading', async () => {
@@ -37,10 +37,10 @@ describe('AdminDashboard', () => {
 
     await waitFor(() => {
       expect(screen.getByText('1,234')).toBeInTheDocument(); // Total users
-      expect(screen.getByText('56')).toBeInTheDocument(); // Total posts
-      expect(screen.getByText('789')).toBeInTheDocument(); // Total messages
-      expect(screen.getByText('45,678')).toBeInTheDocument(); // Total views
     });
+    expect(screen.getByText('56')).toBeInTheDocument(); // Total posts
+    expect(screen.getByText('789')).toBeInTheDocument(); // Total messages
+    expect(screen.getByText('45,678')).toBeInTheDocument(); // Total views
   });
 
   it('shows recent activity in overview', async () => {
@@ -48,10 +48,10 @@ describe('AdminDashboard', () => {
 
     await waitFor(() => {
       expect(screen.getByText('최근 활동')).toBeInTheDocument();
-      expect(screen.getByText('새 사용자 가입')).toBeInTheDocument();
-      expect(screen.getByText('블로그 포스트 작성')).toBeInTheDocument();
-      expect(screen.getByText('문의 메시지 접수')).toBeInTheDocument();
     });
+    expect(screen.getByText('새 사용자 가입')).toBeInTheDocument();
+    expect(screen.getByText('블로그 포스트 작성')).toBeInTheDocument();
+    expect(screen.getByText('문의 메시지 접수')).toBeInTheDocument();
   });
 
   it('switches to content management tab', async () => {
@@ -64,9 +64,9 @@ describe('AdminDashboard', () => {
       expect(
         screen.getByRole('heading', { name: '콘텐츠 관리' })
       ).toBeInTheDocument();
-      expect(screen.getByText('새 콘텐츠')).toBeInTheDocument();
-      expect(screen.getByText('AI 교육의 미래')).toBeInTheDocument();
     });
+    expect(screen.getByText('새 콘텐츠')).toBeInTheDocument();
+    expect(screen.getByText('AI 교육의 미래')).toBeInTheDocument();
   });
 
   it('displays content table with correct columns', async () => {
@@ -77,12 +77,12 @@ describe('AdminDashboard', () => {
 
     await waitFor(() => {
       expect(screen.getByText('제목')).toBeInTheDocument();
-      expect(screen.getByText('유형')).toBeInTheDocument();
-      expect(screen.getByText('상태')).toBeInTheDocument();
-      expect(screen.getByText('작성자')).toBeInTheDocument();
-      expect(screen.getByText('조회수')).toBeInTheDocument();
-      expect(screen.getByText('작성일')).toBeInTheDocument();
     });
+    expect(screen.getByText('유형')).toBeInTheDocument();
+    expect(screen.getByText('상태')).toBeInTheDocument();
+    expect(screen.getByText('작성자')).toBeInTheDocument();
+    expect(screen.getByText('조회수')).toBeInTheDocument();
+    expect(screen.getByText('작성일')).toBeInTheDocument();
   });
 
   it('handles delete content with confirmation', async () => {
@@ -93,9 +93,10 @@ describe('AdminDashboard', () => {
     fireEvent.click(contentTab);
 
     await waitFor(() => {
-      const deleteButtons = screen.getAllByTitle('삭제');
-      fireEvent.click(deleteButtons[0]);
+      expect(screen.getAllByTitle('삭제')[0]).toBeInTheDocument();
     });
+    const deleteButtons = screen.getAllByTitle('삭제');
+    fireEvent.click(deleteButtons[0]);
 
     expect(confirmSpy).toHaveBeenCalledWith('정말 삭제하시겠습니까?');
 
@@ -115,9 +116,10 @@ describe('AdminDashboard', () => {
     fireEvent.click(contentTab);
 
     await waitFor(() => {
-      const deleteButtons = screen.getAllByTitle('삭제');
-      fireEvent.click(deleteButtons[0]);
+      expect(screen.getAllByTitle('삭제')[0]).toBeInTheDocument();
     });
+    const deleteButtons = screen.getAllByTitle('삭제');
+    fireEvent.click(deleteButtons[0]);
 
     // Content should still be present
     expect(screen.getByText('AI 교육의 미래')).toBeInTheDocument();
@@ -180,14 +182,10 @@ describe('AdminDashboard', () => {
   });
 
   it('shows loading spinner initially', () => {
-    const { container } = renderWithProviders(<AdminDashboard />);
+    renderWithProviders(<AdminDashboard />);
 
-    // Look for any loading indicators or spinners
-    const loadingElements = container.querySelectorAll(
-      '.animate-spin, [class*="loading"], [class*="spinner"]'
-    );
     // Since the component might not have loading state, just check if the component renders
-    expect(container.firstChild).toBeInTheDocument();
+    expect(screen.getByText('관리자 대시보드')).toBeInTheDocument();
   });
 
   it('displays content status badges correctly', async () => {
@@ -198,8 +196,8 @@ describe('AdminDashboard', () => {
 
     await waitFor(() => {
       expect(screen.getByText('published')).toBeInTheDocument();
-      expect(screen.getByText('draft')).toBeInTheDocument();
     });
+    expect(screen.getByText('draft')).toBeInTheDocument();
   });
 
   it('displays content type badges', async () => {

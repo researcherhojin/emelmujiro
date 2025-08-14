@@ -11,15 +11,18 @@ export interface WebSocketConfig {
   heartbeatInterval: number;
 }
 
+export interface WebSocketMessage {
+  type: string;
+  data?: unknown;
+  messageId?: string;
+  timestamp?: string;
+}
+
 export interface WebSocketCallbacks {
   onOpen?: () => void;
   onClose?: () => void;
   onError?: (error: Event) => void;
-  onMessage?: (message: {
-    type: string;
-    data?: unknown;
-    messageId?: string;
-  }) => void;
+  onMessage?: (message: WebSocketMessage) => void;
   onReconnect?: () => void;
   onReconnectFailed?: () => void;
   onTypingStart?: () => void;
@@ -32,18 +35,18 @@ export default class WebSocketService {
   private url: string | null = null;
   private state: 'disconnected' | 'connecting' | 'connected' = 'disconnected';
   private listeners: Map<string, Set<Function>> = new Map();
-  private messageQueue: any[] = [];
+  private messageQueue: WebSocketMessage[] = [];
   private reconnectAttempts = 0;
   private autoReconnect = false;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
-  private heartbeatInterval: any = null;
+  private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   private historyEnabled = false;
   private historyLimit = 100;
-  private history: any[] = [];
-  private options: any = {};
+  private history: WebSocketMessage[] = [];
+  private options: Record<string, unknown> = {};
 
-  connect(url: string, options?: any): void {
+  connect(url: string, options?: Record<string, unknown>): void {
     this.url = url;
     this.options = options || {};
     this.state = 'connecting';
@@ -439,7 +442,7 @@ export class ChatWebSocketService {
 
     // In simulation mode, just pretend we sent it
     if (process.env.NODE_ENV === 'development') {
-      console.log('Simulated send:', message);
+      // Simulated send: message
       return true;
     }
 

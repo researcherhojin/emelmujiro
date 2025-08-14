@@ -378,6 +378,7 @@ npm run deploy
 ### Phase 1: 인프라 강화 (2025 Q1)
 
 #### 1. 백엔드 API 실제 배포 🚀
+
 - [ ] AWS/Vercel/Railway 중 선택하여 백엔드 배포
 - [ ] PostgreSQL 프로덕션 DB 설정
 - [ ] Redis 캐싱 레이어 구현
@@ -385,6 +386,7 @@ npm run deploy
 - [ ] WebSocket 서버 배포 (실시간 채팅)
 
 #### 2. 인증 시스템 완성 🔐
+
 - [ ] JWT 토큰 갱신 로직 개선
 - [ ] OAuth 2.0 소셜 로그인 (Google, GitHub, Kakao)
 - [ ] 2FA (Two-Factor Authentication) 구현
@@ -392,6 +394,7 @@ npm run deploy
 - [ ] 세션 관리 대시보드
 
 #### 3. 모니터링 & 분석 📊
+
 - [ ] Sentry 에러 트래킹 통합
 - [ ] Google Analytics 4 설정
 - [ ] 사용자 행동 분석 (Hotjar/Clarity)
@@ -401,6 +404,7 @@ npm run deploy
 ### Phase 2: 기능 확장 (2025 Q2)
 
 #### 1. CMS 시스템 구축 📝
+
 - [ ] 관리자 대시보드 UI
 - [ ] 블로그 포스트 CRUD API 연동
 - [ ] 이미지 업로드 시스템 (S3/Cloudinary)
@@ -409,6 +413,7 @@ npm run deploy
 - [ ] 댓글 시스템 백엔드 연동
 
 #### 2. AI 기능 통합 🤖
+
 - [ ] OpenAI API 연동
 - [ ] 챗봇 고도화 (컨텍스트 유지)
 - [ ] 자동 번역 시스템
@@ -416,6 +421,7 @@ npm run deploy
 - [ ] 스마트 검색 기능
 
 #### 3. 사용자 경험 개선 ✨
+
 - [ ] 다크모드 시스템 설정 저장
 - [ ] 알림 시스템 (Push Notifications)
 - [ ] 오프라인 동기화 개선
@@ -425,6 +431,7 @@ npm run deploy
 ### Phase 3: 성능 최적화 (2025 Q2)
 
 #### 1. 극한의 성능 최적화 ⚡
+
 - [ ] Next.js 마이그레이션 검토 (SSR/SSG)
 - [ ] Edge Functions 활용
 - [ ] 이미지 CDN 최적화
@@ -432,6 +439,7 @@ npm run deploy
 - [ ] Preact 전환 검토 (번들 크기 감소)
 
 #### 2. 테스트 자동화 강화 🧪
+
 - [ ] E2E 테스트 확대 (20+ 시나리오)
 - [ ] Visual Regression Testing
 - [ ] 성능 회귀 테스트
@@ -441,6 +449,7 @@ npm run deploy
 ## 🔧 기술 부채 해결 계획
 
 ### 높은 우선순위 🔴
+
 1. **남은 8개 테스트 실패 수정**
    - MessageList.test.tsx 타임아웃 이슈
    - 비동기 렌더링 문제 해결
@@ -454,6 +463,7 @@ npm run deploy
    - 보안 패치 적용
 
 ### 중간 우선순위 🟡
+
 1. **코드 리팩토링**
    - 중복 코드 제거
    - 컴포넌트 분리 (30줄 이상)
@@ -470,6 +480,7 @@ npm run deploy
    - 컴포넌트 JSDoc 추가
 
 ### 낮은 우선순위 🟢
+
 1. **개발 경험 개선**
    - Hot Module Replacement 최적화
    - VS Code 스니펫 추가
@@ -483,16 +494,19 @@ npm run deploy
 ## 💡 실험적 기능 (연구 중)
 
 ### 1. Web3 통합 검토 🌐
+
 - 블록체인 기반 인증
 - NFT 증명서 발급
 - 스마트 컨트랙트 연동
 
 ### 2. AR/VR 경험 🥽
+
 - WebXR API 활용
 - 3D 프레젠테이션
 - 가상 교육 공간
 
 ### 3. Edge Computing 🌍
+
 - Cloudflare Workers
 - 지역별 최적화
 - 실시간 데이터 처리
@@ -500,6 +514,7 @@ npm run deploy
 ## 📋 체크리스트 (즉시 실행 가능)
 
 ### 이번 주 할 일
+
 - [ ] 백엔드 배포 플랫폼 선정
 - [ ] 실패하는 8개 테스트 수정
 - [ ] Sentry 계정 생성 및 설정
@@ -507,6 +522,7 @@ npm run deploy
 - [ ] Google Search Console 등록
 
 ### 이번 달 목표
+
 - [ ] 백엔드 API 실제 배포 완료
 - [ ] JWT 인증 시스템 완성
 - [ ] 테스트 커버리지 90% 달성
@@ -516,6 +532,7 @@ npm run deploy
 ## 🤝 기여 가이드라인
 
 ### 개발 프로세스
+
 1. Issue 생성 또는 선택
 2. Feature 브랜치 생성 (`feature/issue-번호`)
 3. 변경사항 구현
@@ -525,6 +542,7 @@ npm run deploy
 7. Merge
 
 ### 코드 스타일
+
 - TypeScript strict mode 준수
 - ESLint 규칙 통과
 - Prettier 포맷팅
@@ -532,6 +550,7 @@ npm run deploy
 - 의미있는 커밋 메시지
 
 ### PR 체크리스트
+
 - [ ] 테스트 추가/수정
 - [ ] TypeScript 타입 체크 통과
 - [ ] ESLint 에러 없음

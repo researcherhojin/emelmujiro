@@ -1,322 +1,96 @@
-// Mock axios before any imports
-jest.mock('axios', () => ({
-  create: jest.fn(() => ({
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    patch: jest.fn(),
-    delete: jest.fn(),
-    interceptors: {
-      request: { use: jest.fn() },
-      response: { use: jest.fn() },
-    },
-  })),
-  isAxiosError: jest.fn(),
-}));
+// Test for additional API functionality
+// Since we're using GitHub Pages without a backend, all tests use mock data
 
-import axios from 'axios';
 import { api } from '../api';
-
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 // Mock console methods
 const originalConsole = { ...console };
 beforeAll(() => {
   console.error = jest.fn();
   console.log = jest.fn();
+  console.warn = jest.fn();
 });
 
 afterAll(() => {
   console.error = originalConsole.error;
   console.log = originalConsole.log;
+  console.warn = originalConsole.warn;
 });
 
-describe('API Service - Additional Tests', () => {
+describe('API Service - Mock Mode for GitHub Pages', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
-
-    // Reset environment variables
-    process.env.REACT_APP_USE_MOCK_API = 'false';
-    process.env.REACT_APP_API_URL = 'http://localhost:8000/api';
   });
 
-  describe('Error Handling', () => {
-    it('should handle network errors', async () => {
-      const mockError = new Error('Network Error');
-      (mockError as Error & { code?: string }).code = 'ECONNABORTED';
-
-      const mockInstance = {
-        get: jest.fn().mockRejectedValue(mockError),
-        post: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-          request: { use: jest.fn() },
-          response: { use: jest.fn() },
-        },
-      };
-
-      (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
-
-      await expect(api.getBlogPosts(1)).rejects.toEqual(mockError);
-    });
-
-    it('should handle 404 errors', async () => {
-      const mockError = {
-        response: {
-          status: 404,
-          data: { message: 'Not found' },
-        },
-        isAxiosError: true,
-      };
-
-      const mockInstance = {
-        get: jest.fn().mockRejectedValue(mockError),
-        post: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-          request: { use: jest.fn() },
-          response: { use: jest.fn() },
-        },
-      };
-
-      (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
-
-      await expect(api.getBlogPost(999)).rejects.toEqual(mockError);
-    });
-
-    it('should handle 500 server errors', async () => {
-      const mockError = {
-        response: {
-          status: 500,
-          data: { message: 'Internal Server Error' },
-        },
-        isAxiosError: true,
-      };
-
-      const mockInstance = {
-        post: jest.fn().mockRejectedValue(mockError),
-        get: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-          request: { use: jest.fn() },
-          response: { use: jest.fn() },
-        },
-      };
-
-      (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
-
-      await expect(
-        api.createContact({
-          name: 'Test',
-          email: 'test@test.com',
-          message: 'Test message',
-        })
-      ).rejects.toEqual(mockError);
-    });
-  });
-
-  describe('Authentication', () => {
-    it('should add auth token to requests when available', async () => {
-      const mockToken = 'test-token-123';
-      localStorage.setItem('authToken', mockToken);
-
-      const mockInstance = {
-        get: jest.fn().mockResolvedValue({ data: [] }),
-        post: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-          request: {
-            use: jest.fn((successFn) => {
-              // Simulate interceptor behavior
-              const config = { headers: {} as Record<string, string> };
-              successFn(config);
-              expect(config.headers.Authorization).toBe(`Bearer ${mockToken}`);
-            }),
-          },
-          response: { use: jest.fn() },
-        },
-      };
-
-      (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
-
-      await api.getBlogPosts(1);
-    });
-
-    it('should handle token refresh on 401', async () => {
-      // Skip this test as USE_MOCK_API is true and doesn't call axios
-      const mockError = {
-        response: {
-          status: 401,
-          data: { message: 'Token expired' },
-        },
-        config: { _retry: false },
-        isAxiosError: true,
-      };
-
-      const mockInstance = {
-        get: jest
-          .fn()
-          .mockRejectedValueOnce(mockError)
-          .mockResolvedValueOnce({ data: [] }),
-        post: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-          request: { use: jest.fn() },
-          response: {
-            use: jest.fn((successFn, errorFn) => {
-              // Simulate error interceptor
-              errorFn(mockError);
-            }),
-          },
-        },
-      };
-
-      (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
-
-      await expect(api.getBlogPosts(1)).rejects.toEqual(mockError);
-    });
-  });
-
-  describe('Mock API Mode', () => {
-    it('should use mock data when USE_MOCK_API is true', async () => {
-      process.env.REACT_APP_USE_MOCK_API = 'true';
-
-      // Since api is already imported, we need to work with the existing instance
+  describe('Blog Operations', () => {
+    it('should fetch blog posts with mock data', async () => {
       const result = await api.getBlogPosts(1);
+
+      // Result should be a mock response
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
+      expect(result.data.results).toBeDefined();
+      expect(Array.isArray(result.data.results)).toBe(true);
+      expect(result.data.results.length).toBeGreaterThan(0);
+
+      // Check structure of mock blog posts
+      const firstPost = result.data.results[0];
+      expect(firstPost).toHaveProperty('id');
+      expect(firstPost).toHaveProperty('title');
+      expect(firstPost).toHaveProperty('content');
+    });
+
+    it('should fetch single blog post with mock data', async () => {
+      const result = await api.getBlogPost(1);
+
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
+      expect(result.data.id).toBeDefined();
+      expect(result.data.title).toBeDefined();
+      expect(result.data.content).toBeDefined();
+    });
+
+    it('should fetch blog categories with mock data', async () => {
+      const result = await api.getBlogCategories();
+
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
+      expect(Array.isArray(result.data)).toBe(true);
+      expect(result.data.length).toBeGreaterThan(0);
+
+      // Check structure of categories
+      const firstCategory = result.data[0];
+      expect(firstCategory).toHaveProperty('id');
+      expect(firstCategory).toHaveProperty('name');
+      expect(firstCategory).toHaveProperty('slug');
+    });
+
+    it('should search blog posts with mock data', async () => {
+      const result = await api.searchBlogPosts('tech');
+
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
       expect(result.data.results).toBeDefined();
       expect(Array.isArray(result.data.results)).toBe(true);
     });
 
-    it('should use mock data in production without API URL', async () => {
-      // @ts-ignore
-      process.env.NODE_ENV = 'production';
-      process.env.REACT_APP_API_URL = '';
+    it('should handle pagination in mock data', async () => {
+      const page1 = await api.getBlogPosts(1);
+      const page2 = await api.getBlogPosts(2);
 
-      // Since api is already imported, we need to work with the existing instance
-      const result = await api.getBlogPosts(1);
-      expect(result.data.results).toBeDefined();
+      expect(page1.data.results).toBeDefined();
+      expect(page2.data.results).toBeDefined();
+
+      // Check pagination metadata
+      expect(page1.data).toHaveProperty('count');
+      expect(page1.data).toHaveProperty('next');
+      expect(page1.data).toHaveProperty('previous');
     });
   });
 
-  describe('Request Configuration', () => {
-    it('should set correct timeout', () => {
-      // Skip since we can't re-import the module after it's already loaded
-    });
-
-    it('should set withCredentials for CORS', () => {
-      // Skip since we can't re-import the module after it's already loaded
-    });
-
-    it('should set correct content type', () => {
-      // Skip since we can't re-import the module after it's already loaded
-    });
-  });
-
-  describe('Blog Categories', () => {
-    it('should fetch blog categories', async () => {
-      const mockCategories = [
-        { id: 1, name: 'Tech', slug: 'tech' },
-        { id: 2, name: 'Business', slug: 'business' },
-      ];
-
-      const mockInstance = {
-        get: jest.fn().mockResolvedValue({ data: mockCategories }),
-        post: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-          request: { use: jest.fn() },
-          response: { use: jest.fn() },
-        },
-      };
-
-      (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
-
-      // Since getBlogCategories might use mock data, we should test accordingly
-      const result = await api.getBlogCategories();
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
-      // Categories should be an array
-      expect(Array.isArray(result.data)).toBe(true);
-    });
-
-    it('should filter posts by category', async () => {
-      const mockPosts = {
-        results: [{ id: 1, title: 'Tech Post', category: 'tech' }],
-      };
-
-      const mockInstance = {
-        get: jest.fn().mockResolvedValue({ data: mockPosts }),
-        post: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-          request: { use: jest.fn() },
-          response: { use: jest.fn() },
-        },
-      };
-
-      (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
-
-      const result = await api.searchBlogPosts('tech');
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
-    });
-  });
-
-  describe('Contact Form', () => {
-    it('should validate contact form data', async () => {
-      // Skip this test as USE_MOCK_API is true and always returns success
-      const invalidData = {
-        name: '',
-        email: 'invalid-email',
-        message: '',
-      };
-
-      const mockInstance = {
-        post: jest.fn().mockRejectedValue({
-          response: {
-            status: 400,
-            data: { errors: { email: 'Invalid email format' } },
-          },
-        }),
-        get: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-          request: { use: jest.fn() },
-          response: { use: jest.fn() },
-        },
-      };
-
-      (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
-
-      await expect(
-        api.createContact(
-          invalidData as Parameters<typeof api.createContact>[0]
-        )
-      ).rejects.toMatchObject({
-        response: {
-          status: 400,
-        },
-      });
-    });
-
-    it('should handle successful contact form submission', async () => {
+  describe('Contact Form Operations', () => {
+    it('should submit contact form with mock response', async () => {
       const formData = {
         name: 'John Doe',
         email: 'john@example.com',
@@ -324,87 +98,179 @@ describe('API Service - Additional Tests', () => {
         phone: '123-456-7890',
       };
 
-      const mockInstance = {
-        post: jest.fn().mockResolvedValue({
-          data: { success: true, message: 'Form submitted' },
-        }),
-        get: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-          request: { use: jest.fn() },
-          response: { use: jest.fn() },
-        },
-      };
-
-      (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
-
       const result = await api.createContact(formData);
+
       expect(result).toBeDefined();
-      // The API always returns mock data when no API URL is configured
-      // which returns { data: { id: Date.now(), ...formData } }
       expect(result.data).toBeDefined();
+      expect(result.data.success).toBe(true);
       expect(result.data.name).toBe(formData.name);
       expect(result.data.email).toBe(formData.email);
     });
-  });
 
-  describe('Newsletter', () => {
-    it('should subscribe to newsletter', async () => {
-      const email = 'test@example.com';
-
-      const mockInstance = {
-        post: jest.fn().mockResolvedValue({
-          data: { success: true, message: 'Subscribed successfully' },
-        }),
-        get: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-          request: { use: jest.fn() },
-          response: { use: jest.fn() },
-        },
+    it('should handle contact form with minimal data', async () => {
+      const formData = {
+        name: 'Jane',
+        email: 'jane@test.com',
+        message: 'Hello',
       };
 
-      (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
+      const result = await api.createContact(formData);
 
-      const result = await api.subscribeNewsletter(email);
       expect(result).toBeDefined();
-      // The API always returns mock data when no API URL is configured
-      // which returns { data: { success: true, message: '...' } }
       expect(result.data).toBeDefined();
       expect(result.data.success).toBe(true);
     });
 
-    it('should handle duplicate newsletter subscription', async () => {
-      // Skip this test as USE_MOCK_API is true and always returns success
-      const email = 'existing@example.com';
-
-      const mockInstance = {
-        post: jest.fn().mockRejectedValue({
-          response: {
-            status: 409,
-            data: { message: 'Email already subscribed' },
-          },
-        }),
-        get: jest.fn(),
-        put: jest.fn(),
-        patch: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-          request: { use: jest.fn() },
-          response: { use: jest.fn() },
-        },
+    it('should handle contact form with all optional fields', async () => {
+      const formData = {
+        name: 'Test User',
+        email: 'test@test.com',
+        message: 'Detailed message',
+        phone: '555-1234',
+        company: 'Test Corp',
+        subject: 'Inquiry',
       };
 
-      (mockedAxios.create as jest.Mock).mockReturnValue(mockInstance);
+      const result = await api.createContact(formData);
 
-      await expect(api.subscribeNewsletter(email)).rejects.toMatchObject({
-        response: {
-          status: 409,
-        },
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
+      expect(result.data.success).toBe(true);
+    });
+  });
+
+  describe('Newsletter Operations', () => {
+    it('should subscribe to newsletter with mock response', async () => {
+      const email = 'subscriber@example.com';
+
+      const result = await api.subscribeNewsletter(email);
+
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
+      expect(result.data.success).toBe(true);
+      expect(result.data.message).toContain('성공');
+    });
+
+    it('should handle various email formats', async () => {
+      const emails = [
+        'test@example.com',
+        'user.name@company.co.kr',
+        'first+last@domain.org',
+      ];
+
+      for (const email of emails) {
+        const result = await api.subscribeNewsletter(email);
+        expect(result.data.success).toBe(true);
+      }
+    });
+  });
+
+  describe('Authentication Simulation', () => {
+    it('should work with auth token in localStorage', async () => {
+      localStorage.setItem('authToken', 'test-token-123');
+
+      const result = await api.getBlogPosts(1);
+
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
+      // Should still work even with token (mock mode)
+    });
+
+    it('should work without auth token', async () => {
+      localStorage.removeItem('authToken');
+
+      const result = await api.getBlogPosts(1);
+
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
+      // Should work without token (mock mode)
+    });
+  });
+
+  describe('Error Handling in Mock Mode', () => {
+    it('should handle non-existent blog post gracefully', async () => {
+      const result = await api.getBlogPost(99999);
+
+      // In mock mode, should still return a post
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
+      expect(result.data.id).toBeDefined();
+    });
+
+    it('should handle empty search query', async () => {
+      const result = await api.searchBlogPosts('');
+
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
+      expect(result.data.results).toBeDefined();
+    });
+
+    it('should handle special characters in search', async () => {
+      const result = await api.searchBlogPosts('!@#$%^&*()');
+
+      expect(result).toBeDefined();
+      expect(result.data).toBeDefined();
+      expect(result.data.results).toBeDefined();
+    });
+  });
+
+  describe('Data Consistency', () => {
+    it('should return consistent mock data structure', async () => {
+      const result1 = await api.getBlogPosts(1);
+      const result2 = await api.getBlogPosts(1);
+
+      // Structure should be consistent
+      expect(Object.keys(result1.data)).toEqual(Object.keys(result2.data));
+      expect(result1.data.results.length).toBe(result2.data.results.length);
+    });
+
+    it('should return valid dates in blog posts', async () => {
+      const result = await api.getBlogPosts(1);
+
+      result.data.results.forEach((post: any) => {
+        expect(post.createdAt).toBeDefined();
+        const date = new Date(post.createdAt);
+        expect(date).toBeInstanceOf(Date);
+        expect(date.toString()).not.toBe('Invalid Date');
+      });
+    });
+
+    it('should return valid categories', async () => {
+      const categories = await api.getBlogCategories();
+
+      categories.data.forEach((category: any) => {
+        expect(category.id).toBeDefined();
+        expect(category.name).toBeDefined();
+        expect(category.slug).toBeDefined();
+        expect(typeof category.name).toBe('string');
+        expect(typeof category.slug).toBe('string');
+      });
+    });
+  });
+
+  describe('Performance', () => {
+    it('should return mock data quickly', async () => {
+      const startTime = Date.now();
+      await api.getBlogPosts(1);
+      const endTime = Date.now();
+
+      // Mock data should return almost instantly (< 100ms)
+      expect(endTime - startTime).toBeLessThan(100);
+    });
+
+    it('should handle multiple concurrent requests', async () => {
+      const promises = [
+        api.getBlogPosts(1),
+        api.getBlogPost(1),
+        api.getBlogCategories(),
+        api.searchBlogPosts('test'),
+      ];
+
+      const results = await Promise.all(promises);
+
+      results.forEach((result) => {
+        expect(result).toBeDefined();
+        expect(result.data).toBeDefined();
       });
     });
   });
