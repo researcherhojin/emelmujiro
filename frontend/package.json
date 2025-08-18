@@ -133,7 +133,7 @@
     ]
   },
   "optionalDependencies": {
-    "imagemin-cli": "^3.0.0",
+    "imagemin-cli": "^8.0.0",
     "imagemin-mozjpeg": "^7.0.0",
     "imagemin-pngquant": "^5.0.1",
     "imagemin-svgo": "^11.0.1",
