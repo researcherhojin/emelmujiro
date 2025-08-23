@@ -9,7 +9,10 @@ import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import ContactPage from '../ContactPage';
 import { api } from '../../../services/api';
-import { registerBackgroundSync } from '../../../utils/backgroundSync';
+import {
+  registerBackgroundSync,
+  SYNC_TAGS,
+} from '../../../utils/backgroundSync';
 import { InternalAxiosRequestConfig } from 'axios';
 import React from 'react';
 
@@ -123,14 +126,12 @@ describe('ContactPage Component', () => {
     // Check form fields
     expect(screen.getByPlaceholderText('홍길동')).toBeInTheDocument();
     expect(
-      screen.getByPlaceholderText('example@email.com')
+      screen.getByPlaceholderText('example@company.com')
     ).toBeInTheDocument();
     expect(screen.getByPlaceholderText('010-1234-5678')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('에멜무지로')).toBeInTheDocument();
     expect(
-      screen.getByPlaceholderText('회사명 또는 기관명')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...')
+      screen.getByPlaceholderText('문의하실 내용을 자유롭게 작성해주세요.')
     ).toBeInTheDocument();
   });
 
@@ -140,13 +141,13 @@ describe('ContactPage Component', () => {
 
       await waitForFormToLoad();
 
-      const submitButton = screen.getByText('문의 보내기');
+      const submitButton = screen.getByText('문의 전송');
       fireEvent.click(submitButton);
 
       // Check for validation errors
       await waitFor(() => {
         expect(window.alert).toHaveBeenCalledWith(
-          '이름을 올바르게 입력해주세요. (최대 50자)'
+          '필수 항목을 모두 입력해주세요.'
         );
       });
     });
@@ -157,9 +158,9 @@ describe('ContactPage Component', () => {
       await waitForFormToLoad();
 
       const nameInput = screen.getByPlaceholderText('홍길동');
-      const emailInput = screen.getByPlaceholderText('example@email.com');
+      const emailInput = screen.getByPlaceholderText('example@company.com');
       const messageInput = screen.getByPlaceholderText(
-        '프로젝트에 대해 자세히 설명해주세요...'
+        '문의하실 내용을 자유롭게 작성해주세요.'
       );
 
       // Fill form with invalid email
@@ -167,13 +168,13 @@ describe('ContactPage Component', () => {
       fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
       fireEvent.change(messageInput, { target: { value: 'Test message' } });
 
-      const submitButton = screen.getByText('문의 보내기');
+      const submitButton = screen.getByText('문의 전송');
       fireEvent.click(submitButton);
 
       // Check for validation error
       await waitFor(() => {
         expect(window.alert).toHaveBeenCalledWith(
-          '올바른 이메일 주소를 입력해주세요.'
+          '올바른 이메일 형식을 입력해주세요.'
         );
       });
 
@@ -206,10 +207,10 @@ describe('ContactPage Component', () => {
       await waitForFormToLoad();
 
       const nameInput = screen.getByPlaceholderText('홍길동');
-      const emailInput = screen.getByPlaceholderText('example@email.com');
+      const emailInput = screen.getByPlaceholderText('example@company.com');
       const phoneInput = screen.getByPlaceholderText('010-1234-5678');
       const messageInput = screen.getByPlaceholderText(
-        '프로젝트에 대해 자세히 설명해주세요...'
+        '문의하실 내용을 자유롭게 작성해주세요.'
       );
 
       // Fill form with invalid phone
@@ -218,13 +219,13 @@ describe('ContactPage Component', () => {
       fireEvent.change(phoneInput, { target: { value: '123' } });
       fireEvent.change(messageInput, { target: { value: 'Test message' } });
 
-      const submitButton = screen.getByText('문의 보내기');
+      const submitButton = screen.getByText('문의 전송');
       fireEvent.click(submitButton);
 
       // Check for validation error
       await waitFor(() => {
         expect(window.alert).toHaveBeenCalledWith(
-          '올바른 전화번호를 입력해주세요.'
+          '올바른 전화번호 형식을 입력해주세요. (예: 010-1234-5678)'
         );
       });
     });
@@ -235,9 +236,9 @@ describe('ContactPage Component', () => {
       await waitForFormToLoad();
 
       const nameInput = screen.getByPlaceholderText('홍길동');
-      const emailInput = screen.getByPlaceholderText('example@email.com');
+      const emailInput = screen.getByPlaceholderText('example@company.com');
       const messageInput = screen.getByPlaceholderText(
-        '프로젝트에 대해 자세히 설명해주세요...'
+        '문의하실 내용을 자유롭게 작성해주세요.'
       );
 
       // Fill form with empty message
@@ -245,12 +246,14 @@ describe('ContactPage Component', () => {
       fireEvent.change(emailInput, { target: { value: 'test@email.com' } });
       fireEvent.change(messageInput, { target: { value: '' } });
 
-      const submitButton = screen.getByText('문의 보내기');
+      const submitButton = screen.getByText('문의 전송');
       fireEvent.click(submitButton);
 
       // Check for validation error for empty message
       await waitFor(() => {
-        expect(window.alert).toHaveBeenCalledWith('문의 내용을 입력해주세요.');
+        expect(window.alert).toHaveBeenCalledWith(
+          '필수 항목을 모두 입력해주세요.'
+        );
       });
 
       // Test with valid message
@@ -294,11 +297,11 @@ describe('ContactPage Component', () => {
       fireEvent.change(screen.getByPlaceholderText('홍길동'), {
         target: { value: 'John Doe' },
       });
-      fireEvent.change(screen.getByPlaceholderText('example@email.com'), {
+      fireEvent.change(screen.getByPlaceholderText('example@company.com'), {
         target: { value: 'john@example.com' },
       });
       fireEvent.change(
-        screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'),
+        screen.getByPlaceholderText('문의하실 내용을 자유롭게 작성해주세요.'),
         {
           target: { value: 'This is a test message for the contact form' },
         }
@@ -310,7 +313,7 @@ describe('ContactPage Component', () => {
       fireEvent.change(inquirySelect, { target: { value: 'consulting' } });
 
       // Submit form
-      const submitButton = screen.getByText('문의 보내기');
+      const submitButton = screen.getByText('문의 전송');
       fireEvent.click(submitButton);
 
       // Verify API was called
@@ -320,7 +323,7 @@ describe('ContactPage Component', () => {
           email: 'john@example.com',
           phone: '',
           company: '',
-          inquiry_type: 'consulting',
+          inquiryType: 'consulting',
           message: 'This is a test message for the contact form',
         });
       });
@@ -358,37 +361,38 @@ describe('ContactPage Component', () => {
       fireEvent.change(screen.getByPlaceholderText('홍길동'), {
         target: { value: 'John Doe' },
       });
-      fireEvent.change(screen.getByPlaceholderText('example@email.com'), {
+      fireEvent.change(screen.getByPlaceholderText('example@company.com'), {
         target: { value: 'john@example.com' },
       });
       fireEvent.change(
-        screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'),
+        screen.getByPlaceholderText('문의하실 내용을 자유롭게 작성해주세요.'),
         {
           target: { value: 'Test message' },
         }
       );
 
       // Submit form
-      const submitButton = screen.getByText('문의 보내기');
+      const submitButton = screen.getByText('문의 전송');
       fireEvent.click(submitButton);
 
-      // Verify background sync was registered with correct tag
+      // Verify background sync was registered
       await waitFor(() => {
         expect(registerBackgroundSync).toHaveBeenCalledWith(
-          'sync-contact-form',
-          expect.objectContaining({
-            name: 'John Doe',
-            email: 'john@example.com',
-            message: 'Test message',
-          })
+          'sync-contact-form'
         );
       });
 
-      // Verify offline message appears in the UI
+      // Verify data was stored in localStorage
+      const storedData = JSON.parse(
+        localStorage.getItem('pendingContact') || '{}'
+      );
+      expect(storedData.name).toBe('John Doe');
+      expect(storedData.email).toBe('john@example.com');
+      expect(storedData.message).toBe('Test message');
+
+      // Verify offline message appears
       await waitFor(() => {
-        expect(
-          screen.getByText(/현재 오프라인 상태입니다/)
-        ).toBeInTheDocument();
+        expect(screen.getByText('오프라인 저장됨')).toBeInTheDocument();
       });
     });
 
@@ -422,18 +426,18 @@ describe('ContactPage Component', () => {
       fireEvent.change(screen.getByPlaceholderText('홍길동'), {
         target: { value: 'John Doe' },
       });
-      fireEvent.change(screen.getByPlaceholderText('example@email.com'), {
+      fireEvent.change(screen.getByPlaceholderText('example@company.com'), {
         target: { value: 'john@example.com' },
       });
       fireEvent.change(
-        screen.getByPlaceholderText('프로젝트에 대해 자세히 설명해주세요...'),
+        screen.getByPlaceholderText('문의하실 내용을 자유롭게 작성해주세요.'),
         {
           target: { value: 'Test message' },
         }
       );
 
       // Submit form
-      const submitButton = screen.getByText('문의 보내기');
+      const submitButton = screen.getByText('문의 전송');
       fireEvent.click(submitButton);
 
       // Verify that API was called and failed

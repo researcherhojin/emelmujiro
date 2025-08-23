@@ -73,6 +73,7 @@ export interface ContactFormData {
   phone?: string;
   company?: string;
   subject?: string;
+  inquiryType?: 'consulting' | 'education' | 'llm' | 'data';
 }
 
 // User Types
