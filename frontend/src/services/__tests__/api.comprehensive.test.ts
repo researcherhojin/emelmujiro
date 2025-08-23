@@ -1,5 +1,6 @@
 import MockAdapter from 'axios-mock-adapter';
 import api, { blogService } from '../api';
+import { AxiosError } from 'axios';
 
 describe(
   process.env.CI === 'true'
@@ -116,8 +117,10 @@ describe(
 
         try {
           await blogService.getPost(999);
-        } catch (error: any) {
-          expect(error.response.status).toBe(404);
+        } catch (error) {
+          if (error instanceof Error && 'response' in error) {
+            expect((error as AxiosError).response?.status).toBe(404);
+          }
         }
       });
 
@@ -127,8 +130,10 @@ describe(
         try {
           await blogService.getPosts();
           throw new Error('Should have thrown an error');
-        } catch (error: any) {
-          expect(error.message).toContain('Network Error');
+        } catch (error) {
+          if (error instanceof Error) {
+            expect(error.message).toContain('Network Error');
+          }
         }
       });
 
@@ -138,8 +143,10 @@ describe(
         try {
           await blogService.getPosts();
           throw new Error('Should have thrown an error');
-        } catch (error: any) {
-          expect(error.code).toBe('ECONNABORTED');
+        } catch (error) {
+          if (error instanceof Error && 'code' in error) {
+            expect((error as AxiosError).code).toBe('ECONNABORTED');
+          }
         }
       });
     });

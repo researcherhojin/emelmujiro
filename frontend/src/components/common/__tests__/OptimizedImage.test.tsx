@@ -9,8 +9,9 @@ import OptimizedImage from '../OptimizedImage';
 
 // Mock LazyImage component
 jest.mock('../LazyImage', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return function MockLazyImage(props: any) {
+  return function MockLazyImage(
+    props: React.ImgHTMLAttributes<HTMLImageElement> & { loading?: string }
+  ) {
     return (
       <img
         data-testid="lazy-image"

@@ -172,7 +172,10 @@ describe(
       });
 
       it('should work with function expression callback', async () => {
-        const mockCallback = function (metric: any) {
+        const mockCallback = function (metric: {
+          name: string;
+          value: number;
+        }) {
           console.log(metric);
         };
         const spy = jest.spyOn(console, 'log').mockImplementation();

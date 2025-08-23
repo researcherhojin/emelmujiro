@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import {
   render,
   screen,
@@ -13,15 +13,26 @@ import ChatWindow from '../ChatWindow';
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    button: ({ children, ...props }: any) => (
+    div: ({
+      children,
+      ...props
+    }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => (
+      <div {...props}>{children}</div>
+    ),
+    button: ({
+      children,
+      ...props
+    }: PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement>>) => (
       <button {...props}>{children}</button>
     ),
-    textarea: ({ children, ...props }: any) => (
-      <textarea {...props}>{children}</textarea>
-    ),
+    textarea: ({
+      children,
+      ...props
+    }: PropsWithChildren<
+      React.TextareaHTMLAttributes<HTMLTextAreaElement>
+    >) => <textarea {...props}>{children}</textarea>,
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: PropsWithChildren) => <>{children}</>,
 }));
 
 // Mock lucide-react
@@ -59,9 +70,15 @@ jest.mock('../../../contexts/ChatContext', () => ({
 // Mock child components
 jest.mock('../MessageList', () => ({
   __esModule: true,
-  default: ({ messages, onDeleteMessage }: any) => (
+  default: ({
+    messages,
+    onDeleteMessage,
+  }: {
+    messages?: Array<{ id: string; text?: string; content?: string }>;
+    onDeleteMessage?: (id: string) => void;
+  }) => (
     <div data-testid="message-list">
-      {messages?.map((msg: any) => (
+      {messages?.map((msg) => (
         <div key={msg.id} data-testid={`message-${msg.id}`}>
           {msg.text || msg.content}
           <button onClick={() => onDeleteMessage?.(msg.id)}>Delete</button>
@@ -73,7 +90,7 @@ jest.mock('../MessageList', () => ({
 
 jest.mock('../TypingIndicator', () => ({
   __esModule: true,
-  default: ({ isTyping }: any) =>
+  default: ({ isTyping }: { isTyping?: boolean }) =>
     isTyping ? (
       <div data-testid="typing-indicator">Someone is typing...</div>
     ) : null,
@@ -81,7 +98,13 @@ jest.mock('../TypingIndicator', () => ({
 
 jest.mock('../QuickReplies', () => ({
   __esModule: true,
-  default: ({ replies, onSelect }: any) => (
+  default: ({
+    replies,
+    onSelect,
+  }: {
+    replies?: string[];
+    onSelect?: (reply: string) => void;
+  }) => (
     <div data-testid="quick-replies">
       {replies?.map((reply: string, index: number) => (
         <button key={index} onClick={() => onSelect?.(reply)}>
@@ -94,7 +117,7 @@ jest.mock('../QuickReplies', () => ({
 
 jest.mock('../EmojiPicker', () => ({
   __esModule: true,
-  default: ({ onEmojiSelect }: any) => (
+  default: ({ onEmojiSelect }: { onEmojiSelect?: (emoji: string) => void }) => (
     <div data-testid="emoji-picker">
       <button onClick={() => onEmojiSelect?.('😊')}>😊</button>
       <button onClick={() => onEmojiSelect?.('👍')}>👍</button>
@@ -104,14 +127,18 @@ jest.mock('../EmojiPicker', () => ({
 
 jest.mock('../FileUpload', () => ({
   __esModule: true,
-  default: ({ onFileSelect }: any) => (
+  default: ({
+    onFileSelect,
+  }: {
+    onFileSelect?: (files: FileList | null) => void;
+  }) => (
     <div data-testid="file-upload">
       <input
         type="file"
         data-testid="file-input"
         onChange={(e) => {
           if (e.target.files?.[0]) {
-            onFileSelect?.(e.target.files[0]);
+            onFileSelect?.(e.target.files);
           }
         }}
       />

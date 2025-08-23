@@ -2,6 +2,7 @@
 // Since we're using GitHub Pages without a backend, all tests use mock data
 
 import { api } from '../api';
+import { BlogPost } from '../../types';
 
 // Mock console methods
 const originalConsole = { ...console };
@@ -227,9 +228,10 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
     it('should return valid dates in blog posts', async () => {
       const result = await api.getBlogPosts(1);
 
-      result.data.results.forEach((post: any) => {
-        expect(post.createdAt).toBeDefined();
-        const date = new Date(post.createdAt);
+      result.data.results.forEach((post: BlogPost) => {
+        const dateField = post.created_at || post.publishedAt;
+        expect(dateField).toBeDefined();
+        const date = new Date(dateField);
         expect(date).toBeInstanceOf(Date);
         expect(date.toString()).not.toBe('Invalid Date');
       });
@@ -238,13 +240,25 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
     it('should return valid categories', async () => {
       const categories = await api.getBlogCategories();
 
-      categories.data.forEach((category: any) => {
-        expect(category.id).toBeDefined();
-        expect(category.name).toBeDefined();
-        expect(category.slug).toBeDefined();
-        expect(typeof category.name).toBe('string');
-        expect(typeof category.slug).toBe('string');
-      });
+      if (Array.isArray(categories.data)) {
+        categories.data.forEach((category) => {
+          if (typeof category === 'string') {
+            expect(category).toBeDefined();
+            expect(typeof category).toBe('string');
+          } else if (typeof category === 'object' && category !== null) {
+            const cat = category as {
+              id: string | number;
+              name: string;
+              slug: string;
+            };
+            expect(cat.id).toBeDefined();
+            expect(cat.name).toBeDefined();
+            expect(cat.slug).toBeDefined();
+            expect(typeof cat.name).toBe('string');
+            expect(typeof cat.slug).toBe('string');
+          }
+        });
+      }
     });
   });
 

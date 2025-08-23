@@ -314,7 +314,7 @@ describe(
       // The actual timestamp display depends on the implementation
     });
 
-    // TODO: Image attachments are not yet implemented in MessageList component
+    // NOTE: Image attachments feature pending implementation in MessageList component
     it.skip('should handle image attachments', () => {
       mockChatContext.messages = [
         {
@@ -346,7 +346,7 @@ describe(
       // Image might not be visible in text type messages
     });
 
-    // TODO: File attachments are not yet implemented in MessageList component
+    // NOTE: File attachments feature pending implementation in MessageList component
     it.skip('should handle file attachments', () => {
       mockChatContext.messages = [
         {
@@ -376,7 +376,7 @@ describe(
       expect(screen.getByText('Here is a document')).toBeInTheDocument();
     });
 
-    // TODO: Quick replies are not yet implemented in MessageList component
+    // NOTE: Quick replies feature pending implementation in MessageList component
     it.skip('should display quick replies', () => {
       mockChatContext.messages = [
         {
@@ -400,7 +400,7 @@ describe(
       expect(screen.getByText('Contact Support')).toBeInTheDocument();
     });
 
-    // TODO: Quick reply click handling not yet implemented in MessageList component
+    // NOTE: Quick reply click handling pending implementation in MessageList component
     it.skip('should handle quick reply click', () => {
       const mockSend = jest.fn();
       mockChatContext.sendMessage = mockSend;
@@ -527,7 +527,7 @@ describe(
       expect(screen.getByText('Agent joined the chat')).toBeInTheDocument();
     });
 
-    // TODO: Mark as read functionality needs to be implemented
+    // NOTE: Mark as read functionality pending implementation
     it.skip('should mark messages as read', () => {
       mockChatContext.messages = [
         {

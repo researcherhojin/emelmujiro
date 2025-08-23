@@ -364,8 +364,8 @@ describe('Footer Component', () => {
 
       expect(mockNavigate).toHaveBeenCalledWith('/contact');
 
-      // TODO: Fix modal closing animation timing in tests
-      // The modal should close after navigation but animation timing makes this test flaky
+      // NOTE: Modal closing animation timing is flaky in tests
+      // Consider adding waitFor or adjusting timing for more reliable tests
     });
 
     test('closes modal when backdrop is clicked', async () => {
