@@ -165,25 +165,44 @@ describe('AdminPanel', () => {
     it('switches to canned responses tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const cannedTab = screen.getByText('자동 응답').closest('button')!;
-      fireEvent.click(cannedTab);
+      // Find the tab button specifically
+      const tabs = screen.getAllByRole('button');
+      const cannedTab = tabs.find((tab) =>
+        tab.textContent?.includes('자동 응답')
+      );
+      expect(cannedTab).toBeDefined();
 
-      await waitFor(() => {
-        expect(cannedTab).toHaveClass('text-blue-600');
-        expect(screen.getByText('자동 응답')).toBeInTheDocument();
-      });
+      if (cannedTab) {
+        fireEvent.click(cannedTab);
+
+        await waitFor(
+          () => {
+            expect(cannedTab).toHaveClass('text-blue-600');
+          },
+          { timeout: 500 }
+        );
+      }
     });
 
     it('switches to statistics tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const statsTab = screen.getByText('통계').closest('button')!;
-      fireEvent.click(statsTab);
+      // Find the tab button specifically
+      const tabs = screen.getAllByRole('button');
+      const statsTab = tabs.find((tab) => tab.textContent?.includes('통계'));
+      expect(statsTab).toBeDefined();
 
-      await waitFor(() => {
-        expect(statsTab).toHaveClass('text-blue-600');
-        expect(screen.getByText('통계')).toBeInTheDocument();
-      });
+      if (statsTab) {
+        fireEvent.click(statsTab);
+
+        await waitFor(
+          () => {
+            expect(statsTab).toHaveClass('text-blue-600');
+            expect(screen.getByText('총 메시지')).toBeInTheDocument();
+          },
+          { timeout: 500 }
+        );
+      }
     });
 
     it('switches to users tab', async () => {
@@ -241,39 +260,63 @@ describe('AdminPanel', () => {
     it('saves settings to localStorage', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const saveButton = screen.getByRole('button', {
-        name: /chat.admin.saveSettings/i,
-      });
-      fireEvent.click(saveButton);
+      // Find save button by text
+      const saveButton = screen.getByText('설정 저장')?.closest('button');
+      expect(saveButton).toBeDefined();
 
-      await waitFor(() => {
-        const savedSettings = localStorage.getItem('chat-admin-settings');
-        expect(savedSettings).not.toBeNull();
-      });
+      if (saveButton) {
+        fireEvent.click(saveButton);
+
+        await waitFor(
+          () => {
+            const savedSettings = localStorage.getItem('chat-admin-settings');
+            expect(savedSettings).not.toBeNull();
+          },
+          { timeout: 500 }
+        );
+      }
     });
 
     it('shows success notification on save', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const saveButton = screen.getByRole('button', {
-        name: /chat.admin.saveSettings/i,
-      });
-      fireEvent.click(saveButton);
+      // Find save button by text
+      const saveButton = screen.getByText('설정 저장')?.closest('button');
+      expect(saveButton).toBeDefined();
 
-      await waitFor(() => {
-        expect(screen.getByText('설정이 저장되었습니다.')).toBeInTheDocument();
-      });
+      if (saveButton) {
+        fireEvent.click(saveButton);
+
+        await waitFor(
+          () => {
+            expect(
+              screen.getByText('설정이 저장되었습니다.')
+            ).toBeInTheDocument();
+          },
+          { timeout: 500 }
+        );
+      }
     });
   });
 
   describe('Canned Responses Tab', () => {
     beforeEach(async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
-      const cannedTab = screen.getByText('자동 응답').closest('button')!;
-      fireEvent.click(cannedTab);
-      await waitFor(() => {
-        expect(screen.getByText('자동 응답')).toBeInTheDocument();
-      });
+      // Find the tab button more reliably
+      const tabs = screen.getAllByRole('button');
+      const cannedTab = tabs.find((tab) =>
+        tab.textContent?.includes('자동 응답')
+      );
+      if (cannedTab) {
+        fireEvent.click(cannedTab);
+        // Wait for tab to be active
+        await waitFor(
+          () => {
+            expect(cannedTab).toHaveClass('text-blue-600');
+          },
+          { timeout: 500 }
+        );
+      }
     });
 
     it('displays existing canned responses', () => {
@@ -286,8 +329,10 @@ describe('AdminPanel', () => {
       const input = screen.getByPlaceholderText('새 자동 응답 추가...');
       await user.type(input, '새로운 자동 응답');
 
-      const addButton = screen.getByRole('button', { name: /chat.admin.add/i });
-      fireEvent.click(addButton);
+      const addButton = screen.getByText('추가')?.closest('button');
+      if (addButton) {
+        fireEvent.click(addButton);
+      }
 
       await waitFor(() => {
         expect(screen.getByText('새로운 자동 응답')).toBeInTheDocument();

@@ -1,4 +1,4 @@
-import React, { memo, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   Upload,

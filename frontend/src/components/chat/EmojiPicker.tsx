@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
