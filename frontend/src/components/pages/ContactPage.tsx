@@ -168,7 +168,7 @@ const ContactPage: React.FC = memo(() => {
             logger.error('Failed to register background sync:', error);
           }
         } else {
-          // Online submission - Try API first, fallback to mailto
+          // Online submission - GitHub Pages uses mock API, fallback to mailto
           try {
             // Prepare data for API
             const apiData = {
@@ -180,33 +180,82 @@ const ContactPage: React.FC = memo(() => {
               message: formData.message,
             };
 
-            // Try to submit via API
-            await api.createContact(apiData);
+            // Try to submit via API (will use mock in production)
+            const response = await api.createContact(apiData);
 
-            // Success - show success message
-            alert(
-              '문의가 성공적으로 전송되었습니다. 빠른 시일 내에 답변드리겠습니다.'
-            );
+            // For GitHub Pages deployment, always use mailto as primary method
+            if (process.env.NODE_ENV === 'production') {
+              const inquiryTypeMap = {
+                consulting: 'AI 컨설팅',
+                education: '기업 AI 교육',
+                llm: 'LLM 솔루션',
+                data: '데이터 분석',
+              };
+              const subject = `[${inquiryTypeMap[formData.inquiryType]} 문의] ${formData.company || '개인'} - ${formData.name}`;
 
-            // Clear form
-            setFormData({
-              name: '',
-              email: '',
-              phone: '',
-              company: '',
-              inquiryType: 'consulting',
-              message: '',
-            });
+              const body = `
+안녕하세요. 에멜무지로 문의드립니다.
 
-            // Navigate to home after success
-            setTimeout(() => navigate('/'), 2000);
+■ 문의자 정보
+- 이름: ${formData.name}
+- 이메일: ${formData.email}
+- 전화번호: ${formData.phone || '미제공'}
+- 회사/기관: ${formData.company || '개인'}
+
+■ 문의 유형: ${inquiryTypeMap[formData.inquiryType]}
+
+■ 문의 내용:
+${formData.message}
+
+감사합니다.
+              `.trim();
+
+              const mailtoLink = `mailto:${process.env.REACT_APP_CONTACT_EMAIL || 'researcherhojin@gmail.com'}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+              // Show success message before opening mailto
+              alert(
+                '문의 양식이 준비되었습니다. 이메일 클라이언트가 열립니다.'
+              );
+
+              // Clear form first
+              setFormData({
+                name: '',
+                email: '',
+                phone: '',
+                company: '',
+                inquiryType: 'consulting',
+                message: '',
+              });
+
+              // Open mailto link
+              window.location.href = mailtoLink;
+            } else {
+              // Development environment - API success
+              alert(
+                '문의가 성공적으로 전송되었습니다. 빠른 시일 내에 답변드리겠습니다.'
+              );
+
+              // Clear form
+              setFormData({
+                name: '',
+                email: '',
+                phone: '',
+                company: '',
+                inquiryType: 'consulting',
+                message: '',
+              });
+
+              // Navigate to home after success
+              setTimeout(() => navigate('/'), 2000);
+            }
           } catch (error) {
-            // If API fails, fallback to mailto
+            // If there's an error, log it but still try mailto
             logger.warn(
-              'API 전송 실패, mailto로 폴백:',
+              '문의 처리 중 오류:',
               error instanceof Error ? error.message : 'Unknown error'
             );
 
+            // Fallback to mailto without escapeHtml (which might be causing issues)
             const inquiryTypeMap = {
               consulting: 'AI 컨설팅',
               education: '기업 AI 교육',
@@ -219,25 +268,18 @@ const ContactPage: React.FC = memo(() => {
 안녕하세요. 에멜무지로 문의드립니다.
 
 ■ 문의자 정보
-- 이름: ${escapeHtml(formData.name)}
-- 이메일: ${escapeHtml(formData.email)}
-- 전화번호: ${escapeHtml(formData.phone) || '미제공'}
-- 회사/기관: ${escapeHtml(formData.company) || '개인'}
+- 이름: ${formData.name}
+- 이메일: ${formData.email}
+- 전화번호: ${formData.phone || '미제공'}
+- 회사/기관: ${formData.company || '개인'}
 
-■ 문의 유형: ${
-              {
-                consulting: 'AI 컨설팅',
-                education: '기업 AI 교육',
-                llm: 'LLM 솔루션',
-                data: '데이터 분석',
-              }[formData.inquiryType]
-            }
+■ 문의 유형: ${inquiryTypeMap[formData.inquiryType]}
 
 ■ 문의 내용:
-${escapeHtml(formData.message)}
+${formData.message}
 
 감사합니다.
-          `.trim();
+            `.trim();
 
             const mailtoLink = `mailto:${process.env.REACT_APP_CONTACT_EMAIL || 'researcherhojin@gmail.com'}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.location.href = mailtoLink;

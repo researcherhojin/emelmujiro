@@ -1,4 +1,6 @@
 // MessageSender type for WebSocket message sending functionality
+import logger from '../utils/logger';
+
 export type MessageSenderFunction = (
   message: string,
   attachment?: File
@@ -369,7 +371,7 @@ export class ChatWebSocketService {
         const message = JSON.parse(event.data);
         this.handleMessage(message);
       } catch (error) {
-        console.error('Failed to parse WebSocket message:', error);
+        logger.error('Failed to parse WebSocket message:', error);
       }
     };
   }

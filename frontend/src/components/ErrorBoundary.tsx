@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home, Mail } from 'lucide-react';
+import logger from '../utils/logger';
 
 interface Props {
   children: ReactNode;
@@ -35,7 +36,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // 에러 로깅
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    logger.error('ErrorBoundary caught an error:', error);
 
     // 상태 업데이트
     this.setState((prevState) => ({
@@ -92,7 +93,7 @@ class ErrorBoundary extends Component<Props, State> {
         });
       }
     } catch (reportError) {
-      console.error('Failed to report error:', reportError);
+      logger.error('Failed to report error:', reportError);
     }
   };
 

@@ -16,12 +16,11 @@ const API_TIMEOUT = Number(process.env.REACT_APP_API_TIMEOUT) || 30000;
 
 // Check if we should use mock API
 // Use mock if explicitly set, in test environment, or in production when API URL is not properly configured
+// GitHub Pages deployment doesn't have backend, so always use mock in production
 const USE_MOCK_API =
   process.env.REACT_APP_USE_MOCK_API === 'true' ||
   process.env.NODE_ENV === 'test' ||
-  (isProduction &&
-    (!process.env.REACT_APP_API_URL ||
-      process.env.REACT_APP_API_URL === 'https://api.emelmujiro.com'));
+  isProduction; // Always use mock in production for GitHub Pages
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,

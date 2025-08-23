@@ -1,4 +1,6 @@
 // Environment configuration with type safety
+import logger from '../utils/logger';
+
 export const ENV = {
   isDevelopment: process.env.NODE_ENV === 'development',
   isProduction: process.env.NODE_ENV === 'production',
@@ -33,7 +35,7 @@ export function validateEnv(): void {
   const missing = required.filter((key) => !ENV[key as keyof typeof ENV]);
 
   if (missing.length > 0 && !ENV.isTest) {
-    console.warn(`Missing environment variables: ${missing.join(', ')}`);
+    logger.warn(`Missing environment variables: ${missing.join(', ')}`);
   }
 }
 
