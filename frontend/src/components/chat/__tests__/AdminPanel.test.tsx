@@ -1,432 +1,600 @@
 import React from 'react';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 import AdminPanel from '../AdminPanel';
-import { renderWithProviders } from '../../../test-utils';
-import * as ChatContext from '../../../contexts/ChatContext';
+import { ChatProvider } from '../../../contexts/ChatContext';
+import { UIProvider } from '../../../contexts/UIContext';
 
-// Mock fetch
-global.fetch = jest.fn();
-
-// Mock the chat context
-jest.mock('../../../contexts/ChatContext', () => ({
-  ...jest.requireActual('../../../contexts/ChatContext'),
-  useChatContext: jest.fn(),
+// Mock framer-motion
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({
+      children,
+      ...props
+    }: React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => (
+      <div {...props}>{children}</div>
+    ),
+    button: ({
+      children,
+      ...props
+    }: React.PropsWithChildren<
+      React.ButtonHTMLAttributes<HTMLButtonElement>
+    >) => <button {...props}>{children}</button>,
+  },
+  AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }));
 
-// Skip in CI to prevent timeout issues
-describe(
-  process.env.CI === 'true' ? 'AdminPanel (skipped in CI)' : 'AdminPanel',
-  () => {
-    if (process.env.CI === 'true') {
-      it('skipped in CI', () => {
-        expect(true).toBe(true);
-      });
-      return;
-    }
-    const mockOnClose = jest.fn();
-    const defaultMockContext = {
-      settings: {
-        welcomeMessage: 'Welcome!',
-        responseTimeout: 30,
-        cannedResponses: [],
-        enableTypingIndicator: true,
-      },
-      messages: [],
-      businessHours: {},
-      connectionId: 'test-connection',
-    };
+// Mock react-i18next
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, defaultValue?: string) => key,
+    i18n: {
+      changeLanguage: jest.fn(),
+      language: 'ko',
+    },
+  }),
+}));
 
-    beforeEach(() => {
-      jest.clearAllMocks();
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          success: true,
-          data: [],
-        }),
-      });
+// Helper function to render with providers
+const renderWithProviders = (component: React.ReactElement) => {
+  return render(
+    <UIProvider>
+      <ChatProvider>{component}</ChatProvider>
+    </UIProvider>
+  );
+};
 
-      // Set up the mock context
-      (ChatContext.useChatContext as jest.Mock).mockReturnValue(
-        defaultMockContext
+// Mock localStorage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    store,
+    getItem: jest.fn((key: string) => store[key] || null),
+    setItem: jest.fn((key: string, value: string) => {
+      store[key] = value;
+    }),
+    removeItem: jest.fn((key: string) => {
+      delete store[key];
+    }),
+    clear: jest.fn(() => {
+      store = {};
+    }),
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+  writable: true,
+});
+
+// Mock crypto for UUID generation
+Object.defineProperty(global, 'crypto', {
+  value: {
+    randomUUID: jest.fn(() => 'test-uuid-' + Math.random()),
+  },
+});
+
+describe('AdminPanel', () => {
+  const mockOnClose = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localStorage.clear();
+  });
+
+  describe('Rendering', () => {
+    it('renders when open', () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      expect(screen.getByText('chat.admin.title')).toBeInTheDocument();
+      expect(screen.getByText('chat.admin.settings')).toBeInTheDocument();
+      expect(
+        screen.getByText('chat.admin.cannedResponses')
+      ).toBeInTheDocument();
+      expect(screen.getByText('chat.admin.statistics')).toBeInTheDocument();
+      expect(screen.getByText('chat.admin.users')).toBeInTheDocument();
+    });
+
+    it('does not render content when closed', () => {
+      const { container } = renderWithProviders(
+        <AdminPanel isOpen={false} onClose={mockOnClose} />
       );
+
+      const panel = container.querySelector('[role="dialog"]');
+      expect(panel).toBeNull();
     });
 
-    it('should render admin panel when open', () => {
+    it('renders all navigation tabs', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
-      expect(screen.getByText(/설정/i)).toBeInTheDocument();
+
+      // Tabs are rendered as buttons with text
+      expect(screen.getByText('chat.admin.settings')).toBeInTheDocument();
+      expect(
+        screen.getByText('chat.admin.cannedResponses')
+      ).toBeInTheDocument();
+      expect(screen.getByText('chat.admin.statistics')).toBeInTheDocument();
+      expect(screen.getByText('chat.admin.users')).toBeInTheDocument();
+    });
+  });
+
+  describe('Tab Navigation', () => {
+    it('displays settings tab by default', () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      // Check if settings tab is selected (has blue-600 class)
+      const settingsButton = screen
+        .getByText('chat.admin.settings')
+        .closest('button');
+      expect(settingsButton).toHaveClass('text-blue-600');
+      expect(screen.getByText('chat.admin.welcomeMessage')).toBeInTheDocument();
     });
 
-    it('should handle tab switching', () => {
+    it('switches to canned responses tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const statsTab = screen.getByText(/Statistics/i);
+      const cannedTab = screen
+        .getByText('chat.admin.cannedResponses')
+        .closest('button')!;
+      fireEvent.click(cannedTab);
+
+      await waitFor(() => {
+        expect(cannedTab).toHaveClass('text-blue-600');
+        expect(
+          screen.getByText('chat.admin.cannedResponses')
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('switches to statistics tab', async () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      const statsTab = screen
+        .getByText('chat.admin.statistics')
+        .closest('button')!;
       fireEvent.click(statsTab);
-      expect(screen.getByText(/Chat Statistics/i)).toBeInTheDocument();
-
-      const settingsTab = screen.getByText(/Settings/i);
-      fireEvent.click(settingsTab);
-      expect(screen.getByText(/Chat Settings/i)).toBeInTheDocument();
-
-      const moderationTab = screen.getByText(/Moderation/i);
-      fireEvent.click(moderationTab);
-      expect(screen.getByText(/Content Moderation/i)).toBeInTheDocument();
-    });
-
-    it('should handle chat history loading', async () => {
-      const mockChats = [
-        {
-          id: '1',
-          userName: 'User 1',
-          messages: [
-            {
-              id: '1',
-              text: 'Hello',
-              timestamp: new Date().toISOString(),
-              sender: 'user',
-            },
-          ],
-          timestamp: new Date().toISOString(),
-        },
-      ];
-
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: mockChats }),
-      });
-
-      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       await waitFor(() => {
-        expect(screen.getByText('User 1')).toBeInTheDocument();
+        expect(statsTab).toHaveClass('text-blue-600');
+        expect(screen.getByText('chat.admin.statistics')).toBeInTheDocument();
       });
     });
 
-    it('should handle message export', async () => {
-      const mockChats = [
-        {
-          id: '1',
-          userName: 'User 1',
-          messages: [
-            {
-              id: '1',
-              text: 'Hello',
-              timestamp: new Date().toISOString(),
-              sender: 'user',
-            },
-          ],
-          timestamp: new Date().toISOString(),
-        },
-      ];
-
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: mockChats }),
-      });
-
+    it('switches to users tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      const usersTab = screen.getByText('chat.admin.users').closest('button')!;
+      fireEvent.click(usersTab);
 
       await waitFor(() => {
-        expect(screen.getByText('User 1')).toBeInTheDocument();
+        expect(usersTab).toHaveClass('text-blue-600');
+        expect(screen.getByText('chat.admin.activeUsers')).toBeInTheDocument();
       });
-
-      const exportButton = screen.getByText(/Export Messages/i);
-      fireEvent.click(exportButton);
-
-      // Check that download was triggered (we can't actually test download)
-      expect(exportButton).toBeInTheDocument();
     });
+  });
 
-    it('should handle settings update', async () => {
+  describe('Settings Tab', () => {
+    it('displays all settings fields', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Switch to settings tab
-      const settingsTab = screen.getByText(/Settings/i);
-      fireEvent.click(settingsTab);
+      expect(screen.getByLabelText('자동 환영 메시지')).toBeInTheDocument();
+      expect(screen.getByLabelText('오프라인 메시지')).toBeInTheDocument();
+      expect(screen.getByLabelText('응답 시간 (초)')).toBeInTheDocument();
+      expect(screen.getByLabelText('업무 시간')).toBeInTheDocument();
+    });
 
-      // Find and toggle auto-reply
-      const autoReplyToggle = screen.getByLabelText(/Enable Auto-Reply/i);
-      fireEvent.click(autoReplyToggle);
+    it('allows editing welcome message', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Save settings
-      const saveButton = screen.getByText(/Save Settings/i);
+      const welcomeInput = screen.getByLabelText(
+        '자동 환영 메시지'
+      ) as HTMLInputElement;
+      await user.clear(welcomeInput);
+      await user.type(welcomeInput, '새로운 환영 메시지입니다');
+
+      expect(welcomeInput.value).toBe('새로운 환영 메시지입니다');
+    });
+
+    it('allows editing offline message', async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      const offlineInput = screen.getByLabelText(
+        '오프라인 메시지'
+      ) as HTMLInputElement;
+      await user.clear(offlineInput);
+      await user.type(offlineInput, '현재 오프라인입니다');
+
+      expect(offlineInput.value).toBe('현재 오프라인입니다');
+    });
+
+    it('saves settings to localStorage', async () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      const saveButton = screen.getByRole('button', {
+        name: /chat.admin.saveSettings/i,
+      });
       fireEvent.click(saveButton);
 
       await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/api/chat/settings'),
-          expect.objectContaining({
-            method: 'POST',
-          })
-        );
+        const savedSettings = localStorage.getItem('chat-admin-settings');
+        expect(savedSettings).not.toBeNull();
       });
     });
 
-    it('should handle chat deletion', async () => {
-      const mockChats = [
-        {
-          id: '1',
-          userName: 'User 1',
-          messages: [
-            {
-              id: '1',
-              text: 'Hello',
-              timestamp: new Date().toISOString(),
-              sender: 'user',
-            },
-          ],
-          timestamp: new Date().toISOString(),
-        },
-      ];
-
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: mockChats }),
-      });
-
+    it('shows success notification on save', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      await waitFor(() => {
-        expect(screen.getByText('User 1')).toBeInTheDocument();
+      const saveButton = screen.getByRole('button', {
+        name: /chat.admin.saveSettings/i,
       });
-
-      // Find and click delete button
-      const deleteButtons = screen.getAllByText(/Delete/i);
-      fireEvent.click(deleteButtons[0]);
+      fireEvent.click(saveButton);
 
       await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/api/chat/history/1'),
-          expect.objectContaining({
-            method: 'DELETE',
-          })
-        );
+        expect(
+          screen.getByText('chat.admin.settingsSaved')
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Canned Responses Tab', () => {
+    beforeEach(async () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+      const cannedTab = screen
+        .getByText('chat.admin.cannedResponses')
+        .closest('button')!;
+      fireEvent.click(cannedTab);
+      await waitFor(() => {
+        expect(
+          screen.getByText('chat.admin.cannedResponses')
+        ).toBeInTheDocument();
       });
     });
 
-    it('should display statistics', async () => {
-      const mockStats = {
-        totalChats: 100,
-        activeChats: 10,
-        avgResponseTime: 2.5,
-        totalMessages: 500,
-      };
-
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: mockStats }),
-      });
-
-      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
-
-      // Switch to statistics tab
-      const statsTab = screen.getByText(/Statistics/i);
-      fireEvent.click(statsTab);
-
-      await waitFor(() => {
-        expect(screen.getByText(/Total Chats/i)).toBeInTheDocument();
-        expect(screen.getByText(/100/)).toBeInTheDocument();
-        expect(screen.getByText(/Active Chats/i)).toBeInTheDocument();
-        expect(screen.getByText(/10/)).toBeInTheDocument();
-      });
+    it('displays existing canned responses', () => {
+      expect(screen.getByText(/안녕하세요/)).toBeInTheDocument();
     });
 
-    it('should handle banned words management', async () => {
-      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+    it('allows adding new canned response', async () => {
+      const user = userEvent.setup();
 
-      // Switch to moderation tab
-      const moderationTab = screen.getByText(/Moderation/i);
-      fireEvent.click(moderationTab);
+      const input = screen.getByPlaceholderText('새 자동 응답 추가...');
+      await user.type(input, '새로운 자동 응답');
 
-      // Add banned word
-      const input = screen.getByPlaceholderText(/Add banned word/i);
-      fireEvent.change(input, { target: { value: 'badword' } });
-
-      const addButton = screen.getByText(/Add/i);
+      const addButton = screen.getByRole('button', { name: /chat.admin.add/i });
       fireEvent.click(addButton);
 
       await waitFor(() => {
-        expect(screen.getByText('badword')).toBeInTheDocument();
-      });
-
-      // Remove banned word
-      const removeButton = screen.getByLabelText(/Remove badword/i);
-      fireEvent.click(removeButton);
-
-      await waitFor(() => {
-        expect(screen.queryByText('badword')).not.toBeInTheDocument();
+        expect(screen.getByText('새로운 자동 응답')).toBeInTheDocument();
       });
     });
 
-    it('should handle error states', async () => {
-      (global.fetch as jest.Mock).mockRejectedValueOnce(
-        new Error('Network error')
+    it('allows editing canned response', async () => {
+      const user = userEvent.setup();
+
+      const editButtons = screen.getAllByTitle('수정');
+      fireEvent.click(editButtons[0]);
+
+      const editInput = screen.getByDisplayValue(/안녕하세요/);
+      await user.clear(editInput);
+      await user.type(editInput, '수정된 응답');
+
+      const saveButton = screen.getByTitle('저장');
+      fireEvent.click(saveButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('수정된 응답')).toBeInTheDocument();
+      });
+    });
+
+    it('allows deleting canned response', async () => {
+      const deleteButtons = screen.getAllByTitle('삭제');
+      const initialResponseCount = deleteButtons.length;
+
+      fireEvent.click(deleteButtons[0]);
+
+      await waitFor(() => {
+        const updatedDeleteButtons = screen.getAllByTitle('삭제');
+        expect(updatedDeleteButtons.length).toBe(initialResponseCount - 1);
+      });
+    });
+
+    it('cancels editing when cancel button is clicked', async () => {
+      const user = userEvent.setup();
+
+      const editButtons = screen.getAllByTitle('수정');
+      fireEvent.click(editButtons[0]);
+
+      const editInput = screen.getByDisplayValue(/안녕하세요/);
+      await user.clear(editInput);
+      await user.type(editInput, '수정된 응답');
+
+      const cancelButton = screen.getByTitle('취소');
+      fireEvent.click(cancelButton);
+
+      expect(screen.queryByDisplayValue('수정된 응답')).not.toBeInTheDocument();
+      expect(screen.getByText(/안녕하세요/)).toBeInTheDocument();
+    });
+
+    it('does not add empty canned response', async () => {
+      const addButton = screen.getByRole('button', { name: /chat.admin.add/i });
+      const initialResponseCount = screen.getAllByTitle('삭제').length;
+
+      fireEvent.click(addButton);
+
+      await waitFor(() => {
+        const updatedResponseCount = screen.getAllByTitle('삭제').length;
+        expect(updatedResponseCount).toBe(initialResponseCount);
+      });
+    });
+  });
+
+  describe('Statistics Tab', () => {
+    beforeEach(async () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+      const statsTab = screen
+        .getByText('chat.admin.statistics')
+        .closest('button')!;
+      fireEvent.click(statsTab);
+      await waitFor(() => {
+        expect(screen.getByText('chat.admin.statistics')).toBeInTheDocument();
+      });
+    });
+
+    it('displays total messages count', () => {
+      expect(screen.getByText('chat.admin.totalMessages')).toBeInTheDocument();
+      expect(screen.getByTestId('total-messages-count')).toBeInTheDocument();
+    });
+
+    it('displays active users count', () => {
+      expect(screen.getByText('chat.admin.activeUsers')).toBeInTheDocument();
+      expect(screen.getByTestId('active-users-count')).toBeInTheDocument();
+    });
+
+    it('displays average response time', () => {
+      expect(
+        screen.getByText('chat.admin.avgResponseTime')
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('avg-response-time')).toBeInTheDocument();
+    });
+
+    it('displays satisfaction rate', () => {
+      expect(screen.getByText('chat.admin.satisfaction')).toBeInTheDocument();
+      expect(screen.getByTestId('satisfaction-rate')).toBeInTheDocument();
+    });
+
+    it('has refresh statistics button', () => {
+      const refreshButton = screen.getByRole('button', {
+        name: /통계 새로고침/i,
+      });
+      expect(refreshButton).toBeInTheDocument();
+    });
+
+    it('refreshes statistics when button clicked', async () => {
+      const refreshButton = screen.getByRole('button', {
+        name: /통계 새로고침/i,
+      });
+      fireEvent.click(refreshButton);
+
+      // Check for loading or updated state
+      await waitFor(() => {
+        expect(screen.getByTestId('total-messages-count')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Users Tab', () => {
+    beforeEach(async () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+      const usersTab = screen.getByText('chat.admin.users').closest('button')!;
+      fireEvent.click(usersTab);
+      await waitFor(() => {
+        expect(screen.getByText('chat.admin.activeUsers')).toBeInTheDocument();
+      });
+    });
+
+    it('displays active users list', () => {
+      expect(screen.getByText('chat.admin.activeUsers')).toBeInTheDocument();
+      expect(screen.getByTestId('active-users-list')).toBeInTheDocument();
+    });
+
+    it('shows user status indicators', () => {
+      const onlineIndicators = screen.getAllByTestId('user-status-online');
+      const offlineIndicators = screen.getAllByTestId('user-status-offline');
+
+      expect(
+        onlineIndicators.length + offlineIndicators.length
+      ).toBeGreaterThan(0);
+    });
+
+    it('displays user connection time', () => {
+      expect(screen.getByText(/연결 시간:/)).toBeInTheDocument();
+    });
+
+    it('displays user last seen time', () => {
+      expect(screen.getByText(/마지막 활동:/)).toBeInTheDocument();
+    });
+
+    it('allows blocking a user', async () => {
+      const blockButtons = screen.getAllByRole('button', { name: /차단/i });
+      if (blockButtons.length > 0) {
+        fireEvent.click(blockButtons[0]);
+
+        await waitFor(() => {
+          expect(
+            screen.getByText('사용자가 차단되었습니다.')
+          ).toBeInTheDocument();
+        });
+      }
+    });
+  });
+
+  describe('Business Hours', () => {
+    it('displays business hours in settings', () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      expect(screen.getByLabelText('업무 시간')).toBeInTheDocument();
+      expect(screen.getByText(/월-금/)).toBeInTheDocument();
+      expect(screen.getByText(/09:00 - 18:00/)).toBeInTheDocument();
+    });
+
+    it('allows toggling business hours', async () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      const toggleButton = screen.getByRole('switch', {
+        name: /업무 시간 사용/i,
+      });
+      fireEvent.click(toggleButton);
+
+      await waitFor(() => {
+        expect(toggleButton).toHaveAttribute('aria-checked', 'false');
+      });
+    });
+  });
+
+  describe('Close Functionality', () => {
+    it('calls onClose when close button is clicked', () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      // Find the X close button (usually the last button in the header)
+      const buttons = screen.getAllByRole('button');
+      const closeButton = buttons.find((btn) => btn.querySelector('svg'));
+      fireEvent.click(closeButton!);
+
+      expect(mockOnClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls onClose when clicking outside panel', () => {
+      const { container } = renderWithProviders(
+        <AdminPanel isOpen={true} onClose={mockOnClose} />
       );
 
-      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
-
-      await waitFor(() => {
-        expect(
-          screen.getByText(/Failed to load chat history/i)
-        ).toBeInTheDocument();
-      });
+      const backdrop = container.querySelector('.backdrop');
+      if (backdrop) {
+        fireEvent.click(backdrop);
+        expect(mockOnClose).toHaveBeenCalledTimes(1);
+      }
     });
 
-    it('should handle empty chat history', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: [] }),
-      });
-
+    it('does not close when clicking inside panel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText(/No chat history available/i)
-        ).toBeInTheDocument();
-      });
+      const panel = screen.getByRole('dialog');
+      fireEvent.click(panel);
+
+      expect(mockOnClose).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Keyboard Navigation', () => {
+    it('closes panel on Escape key', () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      fireEvent.keyDown(document, { key: 'Escape' });
+
+      expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
-    it('should handle search functionality', async () => {
-      const mockChats = [
-        {
-          id: '1',
-          userName: 'John Doe',
-          messages: [
-            {
-              id: '1',
-              text: 'Hello',
-              timestamp: new Date().toISOString(),
-              sender: 'user',
-            },
-          ],
-          timestamp: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          userName: 'Jane Smith',
-          messages: [
-            {
-              id: '2',
-              text: 'Hi there',
-              timestamp: new Date().toISOString(),
-              sender: 'user',
-            },
-          ],
-          timestamp: new Date().toISOString(),
-        },
-      ];
-
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: mockChats }),
-      });
-
+    it('navigates tabs with arrow keys', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
-        expect(screen.getByText('Jane Smith')).toBeInTheDocument();
-      });
+      const settingsTab = screen
+        .getByText('chat.admin.settings')
+        .closest('button')!;
+      settingsTab.focus();
 
-      // Search for John
-      const searchInput = screen.getByPlaceholderText(/Search chats/i);
-      fireEvent.change(searchInput, { target: { value: 'John' } });
+      fireEvent.keyDown(settingsTab, { key: 'ArrowRight' });
 
-      await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
-        expect(screen.queryByText('Jane Smith')).not.toBeInTheDocument();
-      });
+      const cannedTab = screen
+        .getByText('chat.admin.cannedResponses')
+        .closest('button')!;
+      expect(document.activeElement).toBe(cannedTab);
     });
+  });
 
-    it('should handle response time threshold setting', async () => {
+  describe('Error Handling', () => {
+    it('shows error notification when save fails', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Switch to settings tab
-      const settingsTab = screen.getByText(/Settings/i);
-      fireEvent.click(settingsTab);
+      // Wait for component to fully render
+      await waitFor(() => {
+        expect(screen.getByText('chat.admin.title')).toBeInTheDocument();
+      });
 
-      // Update response time threshold
-      const thresholdInput = screen.getByLabelText(/Response Time Threshold/i);
-      fireEvent.change(thresholdInput, { target: { value: '5' } });
+      // Override the setItem mock to throw an error only for admin settings
+      const originalSetItem = localStorageMock.setItem;
+      localStorageMock.setItem = jest.fn((key: string, value: string) => {
+        if (key === 'adminSettings') {
+          throw new Error('Storage error');
+        }
+        localStorageMock.store[key] = value;
+      });
 
-      const saveButton = screen.getByText(/Save Settings/i);
+      const saveButton = screen.getByRole('button', {
+        name: /chat.admin.saveSettings/i,
+      });
       fireEvent.click(saveButton);
 
       await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/api/chat/settings'),
-          expect.objectContaining({
-            body: expect.stringContaining('"responseTimeThreshold":5'),
-          })
+        expect(
+          screen.getByText('chat.admin.settingsSaveFailed')
+        ).toBeInTheDocument();
+      });
+
+      // Reset the mock
+      localStorageMock.setItem = originalSetItem;
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('has proper ARIA labels', () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      expect(screen.getByRole('dialog')).toHaveAttribute(
+        'aria-label',
+        '관리자 패널'
+      );
+      expect(screen.getByRole('tablist')).toBeInTheDocument();
+      expect(screen.getAllByRole('tab')).toHaveLength(4);
+    });
+
+    it('maintains focus trap within panel', () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      const firstTab = screen
+        .getByText('chat.admin.settings')
+        .closest('button')!;
+      const buttons = screen.getAllByRole('button');
+      const lastButton = buttons[buttons.length - 1];
+
+      firstTab.focus();
+      expect(document.activeElement).toBe(firstTab);
+
+      // Tab through all focusable elements
+      fireEvent.keyDown(document.activeElement!, {
+        key: 'Tab',
+        shiftKey: true,
+      });
+      expect(document.activeElement).toBe(lastButton);
+    });
+
+    it('announces tab changes to screen readers', async () => {
+      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
+
+      const cannedTab = screen
+        .getByText('chat.admin.cannedResponses')
+        .closest('button')!;
+      fireEvent.click(cannedTab);
+
+      await waitFor(() => {
+        expect(cannedTab).toHaveAttribute('aria-selected', 'true');
+        expect(screen.getByRole('tabpanel')).toHaveAttribute(
+          'aria-labelledby',
+          cannedTab.id
         );
       });
     });
-
-    it('should handle welcome message update', async () => {
-      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
-
-      // Switch to settings tab
-      const settingsTab = screen.getByText(/Settings/i);
-      fireEvent.click(settingsTab);
-
-      // Update welcome message
-      const welcomeInput = screen.getByLabelText(/Welcome Message/i);
-      fireEvent.change(welcomeInput, {
-        target: { value: 'Welcome to our chat!' },
-      });
-
-      const saveButton = screen.getByText(/Save Settings/i);
-      fireEvent.click(saveButton);
-
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining('/api/chat/settings'),
-          expect.objectContaining({
-            body: expect.stringContaining('Welcome to our chat!'),
-          })
-        );
-      });
-    });
-
-    it('should handle chat export in different formats', async () => {
-      const mockChats = [
-        {
-          id: '1',
-          userName: 'User 1',
-          messages: [
-            {
-              id: '1',
-              text: 'Hello',
-              timestamp: new Date().toISOString(),
-              sender: 'user',
-            },
-          ],
-          timestamp: new Date().toISOString(),
-        },
-      ];
-
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ data: mockChats }),
-      });
-
-      renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
-
-      await waitFor(() => {
-        expect(screen.getByText('User 1')).toBeInTheDocument();
-      });
-
-      // Test CSV export
-      const csvButton = screen.getByText(/Export as CSV/i);
-      fireEvent.click(csvButton);
-
-      // Test JSON export
-      const jsonButton = screen.getByText(/Export as JSON/i);
-      fireEvent.click(jsonButton);
-
-      expect(csvButton).toBeInTheDocument();
-      expect(jsonButton).toBeInTheDocument();
-    });
-  }
-);
+  });
+});
