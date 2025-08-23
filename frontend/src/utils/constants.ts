@@ -1,152 +1,111 @@
-// API Configuration
-export const API_URL =
-  process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
-export const API_TIMEOUT = 30000; // 30 seconds
+/**
+ * Application-wide constants
+ */
 
-// Pagination
-export const DEFAULT_PAGE_SIZE = 10;
-export const MAX_PAGE_SIZE = 100;
-
-// Storage Keys
-export const LOCAL_STORAGE_KEYS = {
-  AUTH_TOKEN: 'authToken',
-  USER_PREFERENCES: 'userPreferences',
-  THEME: 'theme',
-  LANGUAGE: 'language',
-  SAVED_CONTENT: 'saved-content',
-  OFFLINE_DATA: 'offlineData',
+// Inquiry type mappings
+export const INQUIRY_TYPE_MAP = {
+  consulting: 'AI 컨설팅',
+  education: '기업 AI 교육',
+  llm: 'LLM 솔루션',
+  data: '데이터 분석',
 } as const;
 
-export const SESSION_STORAGE_KEYS = {
-  TEMP_DATA: 'tempData',
-  FORM_DRAFT: 'formDraft',
-  SCROLL_POSITION: 'scrollPosition',
+// Contact information
+export const CONTACT_EMAIL =
+  process.env.REACT_APP_CONTACT_EMAIL || 'researcherhojin@gmail.com';
+
+// Form limits
+export const FORM_LIMITS = {
+  name: { min: 2, max: 50 },
+  email: { min: 5, max: 100 },
+  phone: { min: 10, max: 20 },
+  company: { min: 0, max: 100 },
+  message: { min: 10, max: 1000 },
 } as const;
 
-// Routes
-export const ROUTES = {
-  HOME: '/',
-  ABOUT: '/about',
-  CONTACT: '/contact',
-  BLOG: '/blog',
-  BLOG_POST: '/blog/:slug',
-  PROFILE: '/profile',
-  SHARE: '/share',
-  LOGIN: '/login',
-  REGISTER: '/register',
-  DASHBOARD: '/dashboard',
-  SETTINGS: '/settings',
+// Business hours
+export const BUSINESS_HOURS = {
+  weekdays: '09:00 - 18:00',
+  weekends: '휴무',
 } as const;
 
-// Validation Rules
-export const VALIDATION_RULES = {
-  email: {
-    pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-    message: '올바른 이메일 주소를 입력해주세요',
+// Response times
+export const RESPONSE_TIME = '24시간 이내';
+
+// Service categories
+export const SERVICE_CATEGORIES = [
+  {
+    id: 'consulting',
+    name: 'AI 컨설팅',
+    description: '비즈니스 맞춤형 AI 솔루션 제공',
+    features: ['AI 도입 전략 수립', '기술 검토 및 평가', 'ROI 분석'],
   },
-  phone: {
-    pattern: /^(010|011|016|017|018|019)-?\d{3,4}-?\d{4}$/,
-    message: '올바른 전화번호를 입력해주세요',
+  {
+    id: 'education',
+    name: '기업 AI 교육',
+    description: '실무 중심의 AI 교육 프로그램',
+    features: ['맞춤형 커리큘럼', '실습 위주 교육', '사후 멘토링'],
   },
-  password: {
-    minLength: 8,
-    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/,
-    message: '비밀번호는 8자 이상, 대소문자와 숫자를 포함해야 합니다',
+  {
+    id: 'llm',
+    name: 'LLM 솔루션',
+    description: '대규모 언어 모델 구축 및 최적화',
+    features: ['커스텀 LLM 개발', 'Fine-tuning', 'API 통합'],
   },
-} as const;
+  {
+    id: 'data',
+    name: '데이터 분석',
+    description: '데이터 기반 인사이트 도출',
+    features: ['데이터 파이프라인', '예측 모델링', '시각화 대시보드'],
+  },
+] as const;
 
-// Error Messages
-export const ERROR_MESSAGES = {
-  NETWORK_ERROR: '네트워크 연결을 확인해주세요',
-  VALIDATION_ERROR: '입력값을 확인해주세요',
-  SERVER_ERROR: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요',
-  UNAUTHORIZED: '인증이 필요합니다',
-  FORBIDDEN: '권한이 없습니다',
-  NOT_FOUND: '요청한 리소스를 찾을 수 없습니다',
-} as const;
-
-// Feature Flags
-export const FEATURE_FLAGS = {
-  ENABLE_DARK_MODE: true,
-  ENABLE_PWA: true,
-  ENABLE_CHAT: true,
-  ENABLE_ANALYTICS: false,
-  ENABLE_NOTIFICATIONS: true,
-  ENABLE_OFFLINE_MODE: true,
-} as const;
-
-// Date Formats
-export const DATE_FORMATS = {
-  SHORT: 'YYYY-MM-DD',
-  LONG: 'YYYY년 MM월 DD일',
-  WITH_TIME: 'YYYY-MM-DD HH:mm:ss',
-  RELATIVE: 'relative',
-} as const;
-
-// Breakpoints (in pixels)
-export const BREAKPOINTS = {
-  MOBILE: 640,
-  TABLET: 768,
-  DESKTOP: 1024,
-  WIDE: 1280,
-} as const;
-
-// Limits
-export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-export const MAX_MESSAGE_LENGTH = 1000;
-export const DEBOUNCE_DELAY = 300; // milliseconds
-export const THROTTLE_DELAY = 1000; // milliseconds
-
-// Social Media Links
-export const SOCIAL_LINKS = {
-  GITHUB: 'https://github.com/researcherhojin',
-  LINKEDIN: 'https://linkedin.com/in/hojinahn',
-  TWITTER: 'https://twitter.com',
-  FACEBOOK: 'https://facebook.com',
-} as const;
-
-// Animation Durations (in milliseconds)
+// Animation durations (ms)
 export const ANIMATION_DURATION = {
-  SHORT: 200,
-  MEDIUM: 400,
-  LONG: 600,
+  fast: 200,
+  normal: 300,
+  slow: 500,
 } as const;
 
-// Cache Configuration
-export const CACHE_CONFIG = {
-  DEFAULT_TTL: 5 * 60 * 1000, // 5 minutes
-  MAX_CACHE_SIZE: 50,
-  CACHE_VERSION: 'v1',
+// Breakpoints
+export const BREAKPOINTS = {
+  xs: 320,
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  '2xl': 1536,
 } as const;
 
-// Supported Languages
-export const SUPPORTED_LANGUAGES = [
+// API endpoints
+export const API_ENDPOINTS = {
+  blog: '/api/blog',
+  contact: '/api/contact',
+  newsletter: '/api/newsletter',
+  auth: '/api/auth',
+} as const;
+
+// Storage keys
+export const STORAGE_KEYS = {
+  authToken: 'authToken',
+  userPreferences: 'userPreferences',
+  theme: 'theme',
+  language: 'language',
+  pendingContact: 'pendingContact',
+  notificationDismissed: 'notificationBannerDismissed',
+} as const;
+
+// Supported languages
+export const LANGUAGES = [
   { code: 'ko', name: '한국어' },
   { code: 'en', name: 'English' },
 ] as const;
 
-// File Types
-export const ALLOWED_FILE_TYPES = {
-  IMAGE: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-  DOCUMENT: ['application/pdf', 'application/msword', 'text/plain'],
-  VIDEO: ['video/mp4', 'video/webm'],
-} as const;
-
-// Status Codes
-export const STATUS_CODES = {
-  SUCCESS: 200,
-  CREATED: 201,
-  NO_CONTENT: 204,
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  SERVER_ERROR: 500,
-} as const;
-
-// PWA Configuration
-export const PWA_CONFIG = {
-  SERVICE_WORKER_PATH: '/service-worker-enhanced.js',
-  CACHE_NAME: 'emelmujiro-v1',
-  OFFLINE_PAGE: '/offline.html',
+// Default meta tags
+export const DEFAULT_META = {
+  title: '에멜무지로 - AI 기반 소프트웨어 개발 및 IT 교육 전문가',
+  description:
+    'AI 기술을 활용한 맞춤형 솔루션 개발, 기업 교육, LLM 구축 등 종합 IT 서비스를 제공합니다.',
+  keywords: 'AI, 인공지능, 머신러닝, 딥러닝, LLM, 기업교육, IT컨설팅',
+  ogImage: '/og-image.png',
 } as const;

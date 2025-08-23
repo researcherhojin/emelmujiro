@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Bot } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

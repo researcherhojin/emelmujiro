@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageCircle,
@@ -18,7 +18,7 @@ interface ChatWidgetProps {
   className?: string;
 }
 
-const ChatWidget: React.FC<ChatWidgetProps> = ({ className }) => {
+const ChatWidget: React.FC<ChatWidgetProps> = memo(({ className }) => {
   const { t } = useTranslation();
   const { theme } = useUI();
   const {
@@ -311,6 +311,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ className }) => {
       </AnimatePresence>
     </div>
   );
-};
+});
+
+ChatWidget.displayName = 'ChatWidget';
 
 export default ChatWidget;

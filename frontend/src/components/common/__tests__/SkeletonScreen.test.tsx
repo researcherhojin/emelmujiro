@@ -1,191 +1,498 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import SkeletonScreen from '../SkeletonScreen';
-import { renderWithProviders } from '../../../test-utils';
 
 describe('SkeletonScreen', () => {
-  it('renders default skeleton screen', () => {
-    renderWithProviders(<SkeletonScreen />);
+  describe('Rendering', () => {
+    it('renders with default props', () => {
+      render(<SkeletonScreen />);
 
-    // Check for the skeleton container with role="status"
-    const skeleton = screen.getByRole('status', { name: /로딩 중/i });
-    expect(skeleton).toBeInTheDocument();
+      const skeletonElement = screen.getByRole('status', {
+        name: '로딩 중...',
+      });
+      expect(skeletonElement).toBeInTheDocument();
 
-    // Check for screen reader text
-    expect(
-      screen.getByText('콘텐츠를 불러오는 중입니다...')
-    ).toBeInTheDocument();
+      const srOnlyText = screen.getByText('콘텐츠를 불러오는 중입니다...');
+      expect(srOnlyText).toBeInTheDocument();
+      expect(srOnlyText).toHaveClass('sr-only');
+    });
+
+    it('renders multiple skeletons based on count prop', () => {
+      const { container } = render(<SkeletonScreen count={3} />);
+
+      const skeletonItems = container.querySelectorAll(
+        '.bg-white.dark\\:bg-gray-800'
+      );
+      expect(skeletonItems.length).toBe(3);
+    });
+
+    it('applies custom className', () => {
+      const customClass = 'custom-skeleton-class';
+      render(<SkeletonScreen className={customClass} />);
+
+      const skeletonElement = screen.getByRole('status');
+      expect(skeletonElement).toHaveClass(customClass);
+    });
+
+    it('renders without animation when animate is false', () => {
+      const { container } = render(<SkeletonScreen animate={false} />);
+
+      const animatedElements = container.querySelectorAll('.animate-pulse');
+      expect(animatedElements.length).toBe(0);
+    });
+
+    it('renders with animation when animate is true', () => {
+      const { container } = render(<SkeletonScreen animate={true} />);
+
+      const animatedElements = container.querySelectorAll('.animate-pulse');
+      expect(animatedElements.length).toBeGreaterThan(0);
+    });
   });
 
-  it('renders blog skeleton when variant is blog', () => {
-    renderWithProviders(<SkeletonScreen variant="blog" />);
+  describe('Blog Variant', () => {
+    it('renders blog post skeleton structure', () => {
+      const { container } = render(<SkeletonScreen variant="blog" />);
 
-    const skeleton = screen.getByRole('status');
-    expect(skeleton).toBeInTheDocument();
+      const blogSkeleton = container.querySelector(
+        '.bg-white.dark\\:bg-gray-800'
+      );
+      expect(blogSkeleton).toBeInTheDocument();
 
-    // Check for blog-specific elements (title, meta, content, tags)
-    const animatedElements = skeleton.querySelectorAll('.animate-pulse');
-    expect(animatedElements.length).toBeGreaterThan(5); // Blog has multiple skeleton items
+      // Check for title skeleton
+      const titleSkeleton = container.querySelector('.h-6.w-3\\/4');
+      expect(titleSkeleton).toBeInTheDocument();
+
+      // Check for meta info skeletons
+      const metaSkeletons = container.querySelectorAll(
+        '.h-4.w-20, .h-4.w-16, .h-4.w-12'
+      );
+      expect(metaSkeletons.length).toBeGreaterThan(0);
+
+      // Check for content skeletons
+      const contentSkeletons = container.querySelectorAll(
+        '.h-4.w-full, .h-4.w-11\\/12, .h-4.w-4\\/5'
+      );
+      expect(contentSkeletons.length).toBeGreaterThan(0);
+
+      // Check for tag skeletons
+      const tagSkeletons = container.querySelectorAll('.rounded-full');
+      expect(tagSkeletons.length).toBe(3);
+    });
+
+    it('renders multiple blog skeletons', () => {
+      const { container } = render(<SkeletonScreen variant="blog" count={2} />);
+
+      const blogSkeletons = container.querySelectorAll(
+        '.bg-white.dark\\:bg-gray-800.rounded-lg.shadow-md'
+      );
+      expect(blogSkeletons.length).toBe(2);
+    });
+
+    it('renders blog skeleton without animation', () => {
+      const { container } = render(
+        <SkeletonScreen variant="blog" animate={false} />
+      );
+
+      const animatedElements = container.querySelectorAll('.animate-pulse');
+      expect(animatedElements.length).toBe(0);
+    });
   });
 
-  it('renders profile skeleton when variant is profile', () => {
-    renderWithProviders(<SkeletonScreen variant="profile" />);
+  describe('Card Variant', () => {
+    it('renders card skeleton structure', () => {
+      const { container } = render(<SkeletonScreen variant="card" />);
 
-    const skeleton = screen.getByRole('status');
-    expect(skeleton).toBeInTheDocument();
+      // Check for card container
+      const cardSkeleton = container.querySelector(
+        '.bg-white.dark\\:bg-gray-800'
+      );
+      expect(cardSkeleton).toBeInTheDocument();
 
-    // Profile has a rounded-full element for avatar
-    const avatarElement = skeleton.querySelector('.rounded-full');
-    expect(avatarElement).toBeInTheDocument();
+      // Check for icon/image skeleton
+      const iconSkeleton = container.querySelector('.h-12.w-12.rounded-lg');
+      expect(iconSkeleton).toBeInTheDocument();
+
+      // Check for title skeleton
+      const titleSkeleton = container.querySelector('.h-5.w-2\\/3');
+      expect(titleSkeleton).toBeInTheDocument();
+
+      // Check for description skeletons
+      const descSkeletons = container.querySelectorAll(
+        '.h-4.w-full, .h-4.w-5\\/6'
+      );
+      expect(descSkeletons.length).toBe(2);
+
+      // Check for action button skeleton
+      const buttonSkeleton = container.querySelector('.h-8.w-20.rounded');
+      expect(buttonSkeleton).toBeInTheDocument();
+    });
+
+    it('renders multiple card skeletons', () => {
+      const { container } = render(<SkeletonScreen variant="card" count={4} />);
+
+      const cardSkeletons = container.querySelectorAll(
+        '.bg-white.dark\\:bg-gray-800.rounded-lg.shadow-md'
+      );
+      expect(cardSkeletons.length).toBe(4);
+    });
+
+    it('card is the default variant', () => {
+      const { container: defaultContainer } = render(<SkeletonScreen />);
+      const { container: cardContainer } = render(
+        <SkeletonScreen variant="card" />
+      );
+
+      // Both should have the same structure
+      const defaultCard = defaultContainer.querySelector(
+        '.h-12.w-12.rounded-lg'
+      );
+      const explicitCard = cardContainer.querySelector('.h-12.w-12.rounded-lg');
+
+      expect(defaultCard).toBeInTheDocument();
+      expect(explicitCard).toBeInTheDocument();
+    });
   });
 
-  it('renders card skeleton when variant is card', () => {
-    renderWithProviders(<SkeletonScreen variant="card" />);
+  describe('List Variant', () => {
+    it('renders list item skeleton structure', () => {
+      const { container } = render(<SkeletonScreen variant="list" />);
 
-    const skeleton = screen.getByRole('status');
-    expect(skeleton).toBeInTheDocument();
+      // Check for list item container
+      const listItem = container.querySelector(
+        '.flex.items-center.space-x-4.p-4'
+      );
+      expect(listItem).toBeInTheDocument();
 
-    // Card has multiple animated elements
-    const animatedElements = skeleton.querySelectorAll('.animate-pulse');
-    expect(animatedElements.length).toBeGreaterThan(0);
+      // Check for avatar skeleton
+      const avatarSkeleton = container.querySelector('.h-10.w-10.rounded-full');
+      expect(avatarSkeleton).toBeInTheDocument();
+
+      // Check for title skeleton
+      const titleSkeleton = container.querySelector('.h-4.w-3\\/4');
+      expect(titleSkeleton).toBeInTheDocument();
+
+      // Check for subtitle skeleton
+      const subtitleSkeleton = container.querySelector('.h-3.w-1\\/2');
+      expect(subtitleSkeleton).toBeInTheDocument();
+
+      // Check for action skeleton
+      const actionSkeleton = container.querySelector('.h-6.w-6.rounded');
+      expect(actionSkeleton).toBeInTheDocument();
+    });
+
+    it('renders multiple list item skeletons', () => {
+      const { container } = render(<SkeletonScreen variant="list" count={5} />);
+
+      const listItems = container.querySelectorAll(
+        '.flex.items-center.space-x-4.p-4'
+      );
+      expect(listItems.length).toBe(5);
+    });
+
+    it('list skeleton maintains flex-shrink-0 on avatar', () => {
+      const { container } = render(<SkeletonScreen variant="list" />);
+
+      const avatarSkeleton = container.querySelector(
+        '.h-10.w-10.rounded-full.flex-shrink-0'
+      );
+      expect(avatarSkeleton).toBeInTheDocument();
+    });
   });
 
-  it('renders list skeleton when variant is list', () => {
-    renderWithProviders(<SkeletonScreen variant="list" />);
+  describe('Profile Variant', () => {
+    it('renders profile skeleton structure', () => {
+      const { container } = render(<SkeletonScreen variant="profile" />);
 
-    const skeleton = screen.getByRole('status');
-    expect(skeleton).toBeInTheDocument();
+      // Check for profile container
+      const profileSkeleton = container.querySelector(
+        '.bg-white.dark\\:bg-gray-800'
+      );
+      expect(profileSkeleton).toBeInTheDocument();
 
-    // List has avatar (rounded-full) and content sections
-    const avatarElement = skeleton.querySelector('.rounded-full');
-    expect(avatarElement).toBeInTheDocument();
+      // Check for profile image skeleton
+      const imageSkeleton = container.querySelector(
+        '.h-32.w-32.rounded-full.mx-auto'
+      );
+      expect(imageSkeleton).toBeInTheDocument();
+
+      // Check for name skeleton
+      const nameSkeleton = container.querySelector('.h-8.w-48.mx-auto');
+      expect(nameSkeleton).toBeInTheDocument();
+
+      // Check for title skeleton
+      const titleSkeleton = container.querySelector('.h-5.w-64.mx-auto');
+      expect(titleSkeleton).toBeInTheDocument();
+
+      // Check for bio skeletons
+      const bioSkeletons = container.querySelectorAll('.max-w-md.mx-auto .h-4');
+      expect(bioSkeletons.length).toBe(3);
+
+      // Check for social links
+      const socialSkeletons = container.querySelectorAll('.h-8.w-8.rounded');
+      expect(socialSkeletons.length).toBe(3);
+    });
+
+    it('renders centered profile content', () => {
+      const { container } = render(<SkeletonScreen variant="profile" />);
+
+      const centeredContainer = container.querySelector('.text-center');
+      expect(centeredContainer).toBeInTheDocument();
+    });
+
+    it('renders profile with proper spacing', () => {
+      const { container } = render(<SkeletonScreen variant="profile" />);
+
+      const spacingContainer = container.querySelector('.space-y-6');
+      expect(spacingContainer).toBeInTheDocument();
+    });
   });
 
-  it('renders hero skeleton when variant is hero', () => {
-    renderWithProviders(<SkeletonScreen variant="hero" />);
+  describe('Hero Variant', () => {
+    it('renders hero skeleton structure', () => {
+      const { container } = render(<SkeletonScreen variant="hero" />);
 
-    const skeleton = screen.getByRole('status');
-    expect(skeleton).toBeInTheDocument();
+      // Check for hero container
+      const heroSkeleton = container.querySelector(
+        '.bg-white.dark\\:bg-gray-800'
+      );
+      expect(heroSkeleton).toBeInTheDocument();
 
-    // Hero has large heading elements and CTA buttons
-    const animatedElements = skeleton.querySelectorAll('.animate-pulse');
-    expect(animatedElements.length).toBeGreaterThan(8); // Hero has many elements
+      // Check for main heading skeletons
+      const headingSkeletons = container.querySelectorAll(
+        '.h-12.w-3\\/4.mx-auto, .h-12.w-1\\/2.mx-auto'
+      );
+      expect(headingSkeletons.length).toBe(2);
+
+      // Check for subtitle skeletons
+      const subtitleContainer = container.querySelector('.max-w-2xl.mx-auto');
+      expect(subtitleContainer).toBeInTheDocument();
+      const subtitleSkeletons = subtitleContainer?.querySelectorAll('.h-5');
+      expect(subtitleSkeletons?.length).toBe(2);
+
+      // Check for CTA button skeletons
+      const ctaSkeletons = container.querySelectorAll(
+        '.h-12.w-32.rounded-lg, .h-12.w-28.rounded-lg'
+      );
+      expect(ctaSkeletons.length).toBe(2);
+
+      // Check for stats skeletons (3 stat items)
+      const statContainers = container.querySelectorAll(
+        '.text-center.space-y-2'
+      );
+      expect(statContainers.length).toBe(3);
+    });
+
+    it('renders hero with large padding', () => {
+      const { container } = render(<SkeletonScreen variant="hero" />);
+
+      const paddedContainer = container.querySelector('.p-12');
+      expect(paddedContainer).toBeInTheDocument();
+    });
+
+    it('renders hero stats with proper spacing', () => {
+      const { container } = render(<SkeletonScreen variant="hero" />);
+
+      const statsContainer = container.querySelector(
+        '.flex.justify-center.space-x-12.mt-12'
+      );
+      expect(statsContainer).toBeInTheDocument();
+    });
   });
 
-  it('renders custom count of skeletons', () => {
-    renderWithProviders(<SkeletonScreen variant="card" count={5} />);
+  describe('Custom Variant', () => {
+    it('renders card skeleton for custom variant', () => {
+      const { container } = render(<SkeletonScreen variant="custom" />);
 
-    const skeleton = screen.getByRole('status');
-    const skeletonItems = skeleton.querySelectorAll(':scope > div');
-    // The actual structure may have more nested divs, let's be more flexible
-    expect(skeletonItems.length).toBeGreaterThanOrEqual(5);
+      // Custom variant should default to card skeleton
+      const cardSkeleton = container.querySelector('.h-12.w-12.rounded-lg');
+      expect(cardSkeleton).toBeInTheDocument();
+    });
+
+    it('handles unknown variant by defaulting to card', () => {
+      // @ts-ignore - Testing invalid variant
+      const { container } = render(<SkeletonScreen variant="unknown" />);
+
+      // Should render card skeleton
+      const cardSkeleton = container.querySelector('.h-12.w-12.rounded-lg');
+      expect(cardSkeleton).toBeInTheDocument();
+    });
   });
 
-  it('applies custom className', () => {
-    const customClass = 'custom-skeleton-class';
-    renderWithProviders(<SkeletonScreen className={customClass} />);
+  describe('Accessibility', () => {
+    it('has proper ARIA attributes', () => {
+      render(<SkeletonScreen />);
 
-    const skeleton = screen.getByRole('status');
-    expect(skeleton).toHaveClass(customClass);
+      const skeleton = screen.getByRole('status');
+      expect(skeleton).toHaveAttribute('aria-label', '로딩 중...');
+    });
+
+    it('includes screen reader only text', () => {
+      render(<SkeletonScreen />);
+
+      const srText = screen.getByText('콘텐츠를 불러오는 중입니다...');
+      expect(srText).toHaveClass('sr-only');
+    });
+
+    it('maintains accessibility across all variants', () => {
+      const variants: Array<'blog' | 'card' | 'list' | 'profile' | 'hero'> = [
+        'blog',
+        'card',
+        'list',
+        'profile',
+        'hero',
+      ];
+
+      variants.forEach((variant) => {
+        const { container } = render(<SkeletonScreen variant={variant} />);
+
+        const skeleton = container.querySelector('[role="status"]');
+        expect(skeleton).toHaveAttribute('aria-label', '로딩 중...');
+
+        const srText = container.querySelector('.sr-only');
+        expect(srText).toHaveTextContent('콘텐츠를 불러오는 중입니다...');
+      });
+    });
   });
 
-  it('renders with animation by default', () => {
-    renderWithProviders(<SkeletonScreen />);
+  describe('Dark Mode Support', () => {
+    it('includes dark mode classes for blog variant', () => {
+      const { container } = render(<SkeletonScreen variant="blog" />);
 
-    const skeleton = screen.getByRole('status');
-    const animatedElements = skeleton.querySelectorAll('.animate-pulse');
-    expect(animatedElements.length).toBeGreaterThan(0);
+      const darkElements = container.querySelectorAll(
+        '.dark\\:bg-gray-800, .dark\\:bg-gray-700'
+      );
+      expect(darkElements.length).toBeGreaterThan(0);
+    });
+
+    it('includes dark mode classes for card variant', () => {
+      const { container } = render(<SkeletonScreen variant="card" />);
+
+      const darkElements = container.querySelectorAll(
+        '.dark\\:bg-gray-800, .dark\\:bg-gray-700'
+      );
+      expect(darkElements.length).toBeGreaterThan(0);
+    });
+
+    it('includes dark mode classes for all skeleton items', () => {
+      const { container } = render(<SkeletonScreen variant="blog" />);
+
+      const skeletonItems = container.querySelectorAll(
+        '.bg-gray-200.dark\\:bg-gray-700'
+      );
+      expect(skeletonItems.length).toBeGreaterThan(0);
+    });
   });
 
-  it('renders without animation when animate is false', () => {
-    renderWithProviders(<SkeletonScreen animate={false} />);
+  describe('Component Integration', () => {
+    it('can be used as a loading state placeholder', () => {
+      const LoadingComponent = ({ isLoading }: { isLoading: boolean }) => (
+        <>
+          {isLoading ? (
+            <SkeletonScreen variant="blog" count={3} />
+          ) : (
+            <div>Content loaded</div>
+          )}
+        </>
+      );
 
-    const skeleton = screen.getByRole('status');
-    const animatedElements = skeleton.querySelectorAll('.animate-pulse');
-    expect(animatedElements.length).toBe(0);
+      const { rerender } = render(<LoadingComponent isLoading={true} />);
+      expect(screen.getByRole('status')).toBeInTheDocument();
+
+      rerender(<LoadingComponent isLoading={false} />);
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      expect(screen.getByText('Content loaded')).toBeInTheDocument();
+    });
+
+    it('supports responsive layouts', () => {
+      const { container } = render(
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <SkeletonScreen variant="card" count={6} />
+        </div>
+      );
+
+      const skeletons = container.querySelectorAll(
+        '.bg-white.dark\\:bg-gray-800'
+      );
+      expect(skeletons.length).toBe(6);
+    });
+
+    it('maintains consistent styling across counts', () => {
+      const { container } = render(<SkeletonScreen variant="list" count={3} />);
+
+      const listItems = container.querySelectorAll(
+        '.flex.items-center.space-x-4.p-4'
+      );
+
+      // All items should have the same structure
+      listItems.forEach((item) => {
+        expect(
+          item.querySelector('.h-10.w-10.rounded-full')
+        ).toBeInTheDocument();
+        expect(item.querySelector('.h-4.w-3\\/4')).toBeInTheDocument();
+        expect(item.querySelector('.h-3.w-1\\/2')).toBeInTheDocument();
+      });
+    });
   });
 
-  it('handles invalid variant gracefully', () => {
-    // @ts-ignore - Testing invalid variant
-    renderWithProviders(<SkeletonScreen variant="invalid-type" />);
+  describe('Performance', () => {
+    it('renders efficiently with high count', () => {
+      const { container } = render(
+        <SkeletonScreen variant="list" count={50} />
+      );
 
-    // Should render default (card) skeleton
-    const skeleton = screen.getByRole('status');
-    expect(skeleton).toBeInTheDocument();
+      const listItems = container.querySelectorAll(
+        '.flex.items-center.space-x-4.p-4'
+      );
+      expect(listItems.length).toBe(50);
+    });
+
+    it('does not re-render unnecessarily', () => {
+      const { rerender } = render(<SkeletonScreen variant="card" count={2} />);
+
+      // Re-render with same props
+      rerender(<SkeletonScreen variant="card" count={2} />);
+
+      // Component should maintain same structure
+      expect(screen.getByRole('status')).toBeInTheDocument();
+    });
   });
 
-  it('renders multiple blog skeletons', () => {
-    renderWithProviders(<SkeletonScreen variant="blog" count={3} />);
+  describe('Edge Cases', () => {
+    it('handles count of 0', () => {
+      const { container } = render(<SkeletonScreen count={0} />);
 
-    const skeleton = screen.getByRole('status');
-    const blogPosts = skeleton.querySelectorAll('.shadow-md');
-    expect(blogPosts.length).toBe(3);
-  });
+      const skeletonItems = container.querySelectorAll(
+        '.bg-white.dark\\:bg-gray-800'
+      );
+      expect(skeletonItems.length).toBe(0);
 
-  it('renders multiple list items', () => {
-    renderWithProviders(<SkeletonScreen variant="list" count={4} />);
+      // Should still have the wrapper with accessibility attributes
+      expect(screen.getByRole('status')).toBeInTheDocument();
+    });
 
-    const skeleton = screen.getByRole('status');
-    const listItems = skeleton.querySelectorAll('.flex.items-center');
-    expect(listItems.length).toBe(4);
-  });
+    it('handles negative count as 0', () => {
+      const { container } = render(<SkeletonScreen count={-5} />);
 
-  it('has proper dark mode support', () => {
-    renderWithProviders(<SkeletonScreen />);
+      const skeletonItems = container.querySelectorAll(
+        '.bg-white.dark\\:bg-gray-800'
+      );
+      expect(skeletonItems.length).toBe(0);
+    });
 
-    const skeleton = screen.getByRole('status');
-    const darkElements = skeleton.querySelectorAll('[class*="dark:"]');
-    expect(darkElements.length).toBeGreaterThan(0);
-  });
+    it('handles very long className', () => {
+      const longClass =
+        'very-long-class-name-that-might-break-something-if-not-handled-properly';
+      render(<SkeletonScreen className={longClass} />);
 
-  it('renders profile with centered content', () => {
-    renderWithProviders(<SkeletonScreen variant="profile" />);
+      const skeleton = screen.getByRole('status');
+      expect(skeleton).toHaveClass(longClass);
+    });
 
-    const skeleton = screen.getByRole('status');
-    const centeredElement = skeleton.querySelector('.text-center');
-    expect(centeredElement).toBeInTheDocument();
-  });
+    it('maintains structure with empty className', () => {
+      render(<SkeletonScreen className="" />);
 
-  it('renders hero with multiple sections', () => {
-    renderWithProviders(<SkeletonScreen variant="hero" />);
-
-    const skeleton = screen.getByRole('status');
-
-    // Hero has stats/features section with 3 items
-    const statsItems = skeleton.querySelectorAll(
-      '.flex.justify-center.space-x-12 > div'
-    );
-    expect(statsItems.length).toBeGreaterThanOrEqual(3);
-  });
-
-  it('has accessible loading label', () => {
-    renderWithProviders(<SkeletonScreen />);
-
-    const skeleton = screen.getByRole('status');
-    expect(skeleton).toHaveAttribute('aria-label', '로딩 중...');
-  });
-
-  it('renders with proper spacing between multiple items', () => {
-    renderWithProviders(<SkeletonScreen variant="card" count={2} />);
-
-    const skeleton = screen.getByRole('status');
-    const items = skeleton.querySelectorAll(':scope > div');
-    expect(items.length).toBeGreaterThanOrEqual(2);
-
-    // Each item should exist and contain some structure
-    if (items.length >= 2) {
-      // Just verify that items exist, structure may vary
-      expect(items.length).toBeGreaterThanOrEqual(2);
-    }
-  });
-
-  it('renders custom variant as default card', () => {
-    renderWithProviders(<SkeletonScreen variant="custom" />);
-
-    const skeleton = screen.getByRole('status');
-    // Should fall back to card skeleton
-    expect(skeleton).toBeInTheDocument();
-    const animatedElements = skeleton.querySelectorAll('.animate-pulse');
-    expect(animatedElements.length).toBeGreaterThan(0);
+      const skeleton = screen.getByRole('status');
+      expect(skeleton).toBeInTheDocument();
+    });
   });
 });

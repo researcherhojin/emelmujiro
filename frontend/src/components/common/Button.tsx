@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 
 interface BaseButtonProps {
@@ -34,7 +34,7 @@ interface ButtonElementProps
 
 type ButtonProps = LinkButtonProps | ExternalLinkProps | ButtonElementProps;
 
-const Button: React.FC<ButtonProps> = (props) => {
+const Button: React.FC<ButtonProps> = memo((props) => {
   const {
     children,
     variant = 'primary',
@@ -147,6 +147,8 @@ const Button: React.FC<ButtonProps> = (props) => {
       {content}
     </button>
   );
-};
+});
+
+Button.displayName = 'Button';
 
 export default Button;

@@ -555,4 +555,448 @@ describe('NotificationPermission', () => {
   it('maintains component display name', () => {
     expect(NotificationPermission.displayName).toBe('NotificationPermission');
   });
+
+  describe('localStorage interaction', () => {
+    it('stores dismissal in localStorage when dismissed', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const laterButton = screen.getByText('나중에');
+      fireEvent.click(laterButton);
+
+      // Should store dismissal in localStorage
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'notificationBannerDismissed',
+        expect.any(String)
+      );
+    });
+
+    it('stores dismissal timestamp when dismissed via X button', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const closeButton = screen.getByRole('button', { name: '닫기' });
+      fireEvent.click(closeButton);
+
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'notificationBannerDismissed',
+        expect.stringMatching(/^\d+$/)
+      );
+    });
+
+    it('stores dismissal timestamp when dismissed via "나중에" button', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const laterButton = screen.getByText('나중에');
+      fireEvent.click(laterButton);
+
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'notificationBannerDismissed',
+        expect.stringMatching(/^\d+$/)
+      );
+    });
+  });
+
+  describe('Notification API interaction', () => {
+    it('creates success notification when permissions granted', async () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+      mockRequestNotificationPermission.mockResolvedValue(true);
+      mockSubscribeToPushNotifications.mockResolvedValue({});
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const enableButton = screen.getByText('알림 받기');
+      fireEvent.click(enableButton);
+
+      await waitFor(() => {
+        expect(mockNotification).toHaveBeenCalledWith(
+          '알림 활성화 완료!',
+          expect.objectContaining({
+            body: '이제 에멜무지로의 중요한 소식을 받아보실 수 있습니다.',
+            icon: '/logo192.png',
+          })
+        );
+      });
+    });
+
+    it('does not create notification when permission denied', async () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+      mockRequestNotificationPermission.mockResolvedValue(false);
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const enableButton = screen.getByText('알림 받기');
+      fireEvent.click(enableButton);
+
+      await waitFor(() => {
+        expect(mockRequestNotificationPermission).toHaveBeenCalled();
+      });
+
+      expect(mockNotification).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Animation and styling', () => {
+    it('applies fade-in animation class to banner', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      const { container } = renderWithSelectiveProviders(
+        <NotificationPermission />
+      );
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const banner = container.querySelector('.animate-fade-in');
+      expect(banner).toBeInTheDocument();
+    });
+
+    it('applies correct positioning classes for desktop', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      const { container } = renderWithSelectiveProviders(
+        <NotificationPermission />
+      );
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const banner = container.querySelector(
+        '.md\\:left-auto.md\\:right-4.md\\:w-96'
+      );
+      expect(banner).toBeInTheDocument();
+    });
+
+    it('applies correct positioning classes for mobile', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      const { container } = renderWithSelectiveProviders(
+        <NotificationPermission />
+      );
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const banner = container.querySelector('.left-4.right-4');
+      expect(banner).toBeInTheDocument();
+    });
+
+    it('applies correct z-index for overlay', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      const { container } = renderWithSelectiveProviders(
+        <NotificationPermission />
+      );
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const banner = container.querySelector('.z-40');
+      expect(banner).toBeInTheDocument();
+    });
+  });
+
+  describe('Timer management', () => {
+    it('does not create timer when notifications are supported', () => {
+      mockIsPushNotificationSupported.mockReturnValue(false);
+
+      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+      setTimeoutSpy.mockClear();
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      expect(setTimeoutSpy).not.toHaveBeenCalled();
+      setTimeoutSpy.mockRestore();
+    });
+
+    it('creates timer with correct delay when conditions met', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+      setTimeoutSpy.mockClear();
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 10000);
+      setTimeoutSpy.mockRestore();
+    });
+
+    it('cleans up timer on unmount before it fires', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
+
+      const { unmount } = renderWithSelectiveProviders(
+        <NotificationPermission />
+      );
+
+      // Unmount before timer fires
+      unmount();
+
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+      clearTimeoutSpy.mockRestore();
+    });
+  });
+
+  describe('Error boundaries', () => {
+    it('handles Notification constructor error gracefully', async () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+      mockRequestNotificationPermission.mockResolvedValue(true);
+      mockSubscribeToPushNotifications.mockResolvedValue({});
+
+      // Make Notification constructor throw
+      mockNotification.mockImplementation(() => {
+        throw new Error('Notification not supported');
+      });
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const enableButton = screen.getByText('알림 받기');
+      fireEvent.click(enableButton);
+
+      // Should handle error gracefully and still hide banner
+      await waitFor(() => {
+        expect(
+          screen.queryByText('알림을 받아보시겠습니까?')
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it('handles subscription error and stays functional', async () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+      mockRequestNotificationPermission.mockResolvedValue(true);
+      mockSubscribeToPushNotifications.mockRejectedValue(
+        new Error('Network error')
+      );
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const enableButton = screen.getByText('알림 받기');
+      fireEvent.click(enableButton);
+
+      await waitFor(() => {
+        expect(mockLoggerError).toHaveBeenCalled();
+      });
+
+      // Banner should still be visible after error
+      expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
+
+      // User should be able to dismiss it
+      const laterButton = screen.getByText('나중에');
+      fireEvent.click(laterButton);
+
+      expect(
+        screen.queryByText('알림을 받아보시겠습니까?')
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Concurrent operations', () => {
+    it('prevents multiple simultaneous subscription attempts', async () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      let resolvePermission: (value: boolean) => void;
+      const permissionPromise = new Promise<boolean>((resolve) => {
+        resolvePermission = resolve;
+      });
+      mockRequestNotificationPermission.mockReturnValue(permissionPromise);
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const enableButton = screen.getByText('알림 받기');
+
+      // Click multiple times
+      fireEvent.click(enableButton);
+      fireEvent.click(enableButton);
+      fireEvent.click(enableButton);
+
+      // Should only call once
+      expect(mockRequestNotificationPermission).toHaveBeenCalledTimes(1);
+
+      act(() => {
+        resolvePermission!(true);
+      });
+
+      await waitFor(() => {
+        expect(screen.queryByText('설정 중...')).not.toBeInTheDocument();
+      });
+    });
+
+    it('handles rapid dismiss clicks correctly', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const laterButton = screen.getByText('나중에');
+
+      // Click multiple times rapidly
+      fireEvent.click(laterButton);
+      fireEvent.click(laterButton);
+      fireEvent.click(laterButton);
+
+      // Should only set localStorage once
+      expect(localStorageMock.setItem).toHaveBeenCalledTimes(1);
+
+      // Banner should be hidden
+      expect(
+        screen.queryByText('알림을 받아보시겠습니까?')
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Component lifecycle', () => {
+    it('handles props changes correctly with memo', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      const { rerender } = renderWithSelectiveProviders(
+        <NotificationPermission />
+      );
+
+      // Component has no props, so re-rendering should not cause issues
+      rerender(<NotificationPermission />);
+      rerender(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      // Should still show banner only once
+      expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
+    });
+
+    it('handles multiple mount/unmount cycles', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      const { unmount } = renderWithSelectiveProviders(
+        <NotificationPermission />
+      );
+      unmount();
+
+      // Mount again
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      // Should work correctly after remounting
+      expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
+    });
+  });
+
+  describe('Button states and interactions', () => {
+    it('ensures enable button is properly disabled during loading', () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+      mockRequestNotificationPermission.mockReturnValue(new Promise(() => {})); // Never resolves
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const enableButton = screen.getByText('알림 받기');
+      fireEvent.click(enableButton);
+
+      const loadingButton = screen.getByText('설정 중...');
+      expect(loadingButton).toBeDisabled();
+      expect(loadingButton.closest('button')).toHaveAttribute('disabled');
+    });
+
+    it('maintains button functionality after error', async () => {
+      mockIsPushNotificationSupported.mockReturnValue(true);
+      mockIsPushNotificationEnabled.mockReturnValue(false);
+
+      // First attempt fails
+      mockRequestNotificationPermission.mockRejectedValueOnce(
+        new Error('Failed')
+      );
+
+      renderWithSelectiveProviders(<NotificationPermission />);
+
+      act(() => {
+        jest.advanceTimersByTime(10000);
+      });
+
+      const enableButton = screen.getByText('알림 받기');
+      fireEvent.click(enableButton);
+
+      await waitFor(() => {
+        expect(mockLoggerError).toHaveBeenCalled();
+      });
+
+      // Button should be enabled again
+      expect(screen.getByText('알림 받기')).not.toBeDisabled();
+
+      // Second attempt succeeds
+      mockRequestNotificationPermission.mockResolvedValueOnce(true);
+      fireEvent.click(screen.getByText('알림 받기'));
+
+      await waitFor(() => {
+        expect(mockRequestNotificationPermission).toHaveBeenCalledTimes(2);
+      });
+    });
+  });
 });

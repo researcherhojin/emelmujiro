@@ -16,6 +16,9 @@ import { PageLoading } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { initializePWA } from './utils/pwaUtils';
 import { initBlogCache } from './utils/blogCache';
+import performanceMonitor, {
+  markPerformance,
+} from './utils/performanceMonitor';
 import './i18n';
 
 // Lazy load even more components for better code splitting
@@ -173,10 +176,26 @@ const router = createHashRouter([
 let pwaInitialized = false;
 if (!pwaInitialized) {
   pwaInitialized = true;
+  // Mark app initialization
+  markPerformance('app-init-start');
+
   // Initialize PWA features
   initializePWA();
   // Initialize blog cache
   initBlogCache();
+
+  // Mark app initialization complete
+  markPerformance('app-init-end');
+
+  // Report performance metrics after page load
+  if (typeof window !== 'undefined') {
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        performanceMonitor.reportMetrics();
+        performanceMonitor.checkPerformanceBudgets();
+      }, 2000);
+    });
+  }
 }
 
 const App: React.FC = () => {
