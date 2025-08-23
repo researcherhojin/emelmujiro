@@ -330,14 +330,29 @@ export function initializePWA(): void {
 // Performance utilities
 export interface PerformanceMetrics {
   loadTime: number;
-  domContentLoaded: number;
+  domContentLoaded?: number;
   firstPaint?: number;
   firstContentfulPaint?: number;
   largestContentfulPaint?: number;
+  ttfb: number;
+  fcp: number;
+  lcp: number;
+  fid: number;
+  cls: number;
 }
 
 // Get performance metrics
 export function getPerformanceMetrics(): PerformanceMetrics {
+  if (!performance.getEntriesByType) {
+    return {
+      ttfb: 0,
+      fcp: 0,
+      lcp: 0,
+      fid: 0,
+      cls: 0,
+      loadTime: 0,
+    };
+  }
   const navigation = performance.getEntriesByType(
     'navigation'
   )[0] as PerformanceNavigationTiming;
@@ -355,7 +370,11 @@ export function getPerformanceMetrics(): PerformanceMetrics {
       navigation.domContentLoadedEventStart,
     firstPaint: firstPaint?.startTime,
     firstContentfulPaint: firstContentfulPaint?.startTime,
-    // LCP would be tracked separately via PerformanceObserver
+    ttfb: navigation.responseStart - navigation.requestStart,
+    fcp: firstContentfulPaint?.startTime || 0,
+    lcp: 0, // LCP would be tracked separately via PerformanceObserver
+    fid: 0, // FID would be tracked separately via PerformanceObserver
+    cls: 0, // CLS would be tracked separately via PerformanceObserver
   };
 }
 

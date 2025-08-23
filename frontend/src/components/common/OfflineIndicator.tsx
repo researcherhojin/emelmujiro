@@ -82,7 +82,10 @@ const OfflineIndicator: React.FC = memo(() => {
     window.addEventListener('offline', handleOffline);
 
     // Listen to service worker messages
-    if ('serviceWorker' in navigator) {
+    if (
+      'serviceWorker' in navigator &&
+      navigator.serviceWorker.addEventListener
+    ) {
       navigator.serviceWorker.addEventListener(
         'message',
         handleServiceWorkerMessage
@@ -98,7 +101,10 @@ const OfflineIndicator: React.FC = memo(() => {
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      if ('serviceWorker' in navigator) {
+      if (
+        'serviceWorker' in navigator &&
+        navigator.serviceWorker.removeEventListener
+      ) {
         navigator.serviceWorker.removeEventListener(
           'message',
           handleServiceWorkerMessage
