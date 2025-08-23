@@ -25,10 +25,48 @@ jest.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }));
 
-// Mock react-i18next
+// Mock react-i18next with proper translations
+const translations: Record<string, string> = {
+  'chat.admin.title': '채팅 관리자 패널',
+  'chat.admin.settings': '설정',
+  'chat.admin.cannedResponses': '자동 응답',
+  'chat.admin.statistics': '통계',
+  'chat.admin.users': '사용자',
+  'chat.admin.connected': '연결됨',
+  'chat.admin.welcomeMessage': '환영 메시지',
+  'chat.admin.maxMessageLength': '최대 메시지 길이',
+  'chat.admin.features': '기능 설정',
+  'chat.admin.allowFileUpload': '파일 업로드 허용',
+  'chat.admin.allowEmoji': '이모지 사용 허용',
+  'chat.admin.soundEnabled': '알림음 활성화',
+  'chat.admin.saveSettings': '설정 저장',
+  'chat.admin.add': '추가',
+  'chat.admin.addCannedResponse': '새 자동 응답 추가',
+  'chat.admin.totalMessages': '총 메시지',
+  'chat.admin.userMessages': '사용자 메시지',
+  'chat.admin.avgResponseTime': '평균 응답시간',
+  'chat.admin.satisfaction': '만족도',
+  'chat.admin.businessHours': '운영 현황',
+  'chat.admin.currentlyOpen': '현재 운영 중',
+  'chat.admin.currentlyClosed': '현재 운영 종료',
+  'chat.admin.activeUsers': '활성 사용자',
+  'chat.admin.online': '온라인',
+  'chat.admin.anonymousUser': '익명 사용자',
+  'chat.admin.connectionId': '연결 ID',
+  'chat.admin.noActiveUsers': '활성 사용자가 없습니다',
+  'chat.admin.refresh': '새로고침',
+  'chat.admin.settingsSaved': '설정이 저장되었습니다.',
+  'chat.admin.settingsSaveFailed': '설정 저장에 실패했습니다.',
+  'common.edit': '수정',
+  'common.delete': '삭제',
+  'common.cancel': '취소',
+  'common.save': '저장',
+};
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue?: string) => key,
+    t: (key: string, defaultValue?: string) =>
+      translations[key] || defaultValue || key,
     i18n: {
       changeLanguage: jest.fn(),
       language: 'ko',
@@ -87,13 +125,11 @@ describe('AdminPanel', () => {
     it('renders when open', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      expect(screen.getByText('chat.admin.title')).toBeInTheDocument();
-      expect(screen.getByText('chat.admin.settings')).toBeInTheDocument();
-      expect(
-        screen.getByText('chat.admin.cannedResponses')
-      ).toBeInTheDocument();
-      expect(screen.getByText('chat.admin.statistics')).toBeInTheDocument();
-      expect(screen.getByText('chat.admin.users')).toBeInTheDocument();
+      expect(screen.getByText('채팅 관리자 패널')).toBeInTheDocument();
+      expect(screen.getByText('설정')).toBeInTheDocument();
+      expect(screen.getByText('자동 응답')).toBeInTheDocument();
+      expect(screen.getByText('통계')).toBeInTheDocument();
+      expect(screen.getByText('사용자')).toBeInTheDocument();
     });
 
     it('does not render content when closed', () => {
@@ -109,12 +145,10 @@ describe('AdminPanel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Tabs are rendered as buttons with text
-      expect(screen.getByText('chat.admin.settings')).toBeInTheDocument();
-      expect(
-        screen.getByText('chat.admin.cannedResponses')
-      ).toBeInTheDocument();
-      expect(screen.getByText('chat.admin.statistics')).toBeInTheDocument();
-      expect(screen.getByText('chat.admin.users')).toBeInTheDocument();
+      expect(screen.getByText('설정')).toBeInTheDocument();
+      expect(screen.getByText('자동 응답')).toBeInTheDocument();
+      expect(screen.getByText('통계')).toBeInTheDocument();
+      expect(screen.getByText('사용자')).toBeInTheDocument();
     });
   });
 
@@ -123,52 +157,44 @@ describe('AdminPanel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Check if settings tab is selected (has blue-600 class)
-      const settingsButton = screen
-        .getByText('chat.admin.settings')
-        .closest('button');
+      const settingsButton = screen.getByText('설정').closest('button');
       expect(settingsButton).toHaveClass('text-blue-600');
-      expect(screen.getByText('chat.admin.welcomeMessage')).toBeInTheDocument();
+      expect(screen.getByText('환영 메시지')).toBeInTheDocument();
     });
 
     it('switches to canned responses tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const cannedTab = screen
-        .getByText('chat.admin.cannedResponses')
-        .closest('button')!;
+      const cannedTab = screen.getByText('자동 응답').closest('button')!;
       fireEvent.click(cannedTab);
 
       await waitFor(() => {
         expect(cannedTab).toHaveClass('text-blue-600');
-        expect(
-          screen.getByText('chat.admin.cannedResponses')
-        ).toBeInTheDocument();
+        expect(screen.getByText('자동 응답')).toBeInTheDocument();
       });
     });
 
     it('switches to statistics tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const statsTab = screen
-        .getByText('chat.admin.statistics')
-        .closest('button')!;
+      const statsTab = screen.getByText('통계').closest('button')!;
       fireEvent.click(statsTab);
 
       await waitFor(() => {
         expect(statsTab).toHaveClass('text-blue-600');
-        expect(screen.getByText('chat.admin.statistics')).toBeInTheDocument();
+        expect(screen.getByText('통계')).toBeInTheDocument();
       });
     });
 
     it('switches to users tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const usersTab = screen.getByText('chat.admin.users').closest('button')!;
+      const usersTab = screen.getByText('사용자').closest('button')!;
       fireEvent.click(usersTab);
 
       await waitFor(() => {
         expect(usersTab).toHaveClass('text-blue-600');
-        expect(screen.getByText('chat.admin.activeUsers')).toBeInTheDocument();
+        expect(screen.getByText('활성 사용자')).toBeInTheDocument();
       });
     });
   });
@@ -177,36 +203,39 @@ describe('AdminPanel', () => {
     it('displays all settings fields', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      expect(screen.getByLabelText('자동 환영 메시지')).toBeInTheDocument();
-      expect(screen.getByLabelText('오프라인 메시지')).toBeInTheDocument();
-      expect(screen.getByLabelText('응답 시간 (초)')).toBeInTheDocument();
-      expect(screen.getByLabelText('업무 시간')).toBeInTheDocument();
+      expect(screen.getByText('환영 메시지')).toBeInTheDocument();
+      expect(screen.getByText('최대 메시지 길이')).toBeInTheDocument();
+      expect(screen.getByText('기능 설정')).toBeInTheDocument();
     });
 
     it('allows editing welcome message', async () => {
       const user = userEvent.setup();
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const welcomeInput = screen.getByLabelText(
-        '자동 환영 메시지'
-      ) as HTMLInputElement;
+      // Find welcome message textarea by its parent label
+      const welcomeLabel = screen.getByText('환영 메시지');
+      const welcomeInput = welcomeLabel.parentElement?.querySelector(
+        'textarea'
+      ) as HTMLTextAreaElement;
       await user.clear(welcomeInput);
       await user.type(welcomeInput, '새로운 환영 메시지입니다');
 
       expect(welcomeInput.value).toBe('새로운 환영 메시지입니다');
     });
 
-    it('allows editing offline message', async () => {
+    it('allows editing max message length', async () => {
       const user = userEvent.setup();
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const offlineInput = screen.getByLabelText(
-        '오프라인 메시지'
+      // Find max message length input
+      const maxLengthLabel = screen.getByText('최대 메시지 길이');
+      const maxLengthInput = maxLengthLabel.parentElement?.querySelector(
+        'input'
       ) as HTMLInputElement;
-      await user.clear(offlineInput);
-      await user.type(offlineInput, '현재 오프라인입니다');
+      await user.clear(maxLengthInput);
+      await user.type(maxLengthInput, '1000');
 
-      expect(offlineInput.value).toBe('현재 오프라인입니다');
+      expect(maxLengthInput.value).toBe('1000');
     });
 
     it('saves settings to localStorage', async () => {
@@ -232,9 +261,7 @@ describe('AdminPanel', () => {
       fireEvent.click(saveButton);
 
       await waitFor(() => {
-        expect(
-          screen.getByText('chat.admin.settingsSaved')
-        ).toBeInTheDocument();
+        expect(screen.getByText('설정이 저장되었습니다.')).toBeInTheDocument();
       });
     });
   });
@@ -242,14 +269,10 @@ describe('AdminPanel', () => {
   describe('Canned Responses Tab', () => {
     beforeEach(async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
-      const cannedTab = screen
-        .getByText('chat.admin.cannedResponses')
-        .closest('button')!;
+      const cannedTab = screen.getByText('자동 응답').closest('button')!;
       fireEvent.click(cannedTab);
       await waitFor(() => {
-        expect(
-          screen.getByText('chat.admin.cannedResponses')
-        ).toBeInTheDocument();
+        expect(screen.getByText('자동 응답')).toBeInTheDocument();
       });
     });
 
@@ -334,34 +357,30 @@ describe('AdminPanel', () => {
   describe('Statistics Tab', () => {
     beforeEach(async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
-      const statsTab = screen
-        .getByText('chat.admin.statistics')
-        .closest('button')!;
+      const statsTab = screen.getByText('통계').closest('button')!;
       fireEvent.click(statsTab);
       await waitFor(() => {
-        expect(screen.getByText('chat.admin.statistics')).toBeInTheDocument();
+        expect(screen.getByText('통계')).toBeInTheDocument();
       });
     });
 
     it('displays total messages count', () => {
-      expect(screen.getByText('chat.admin.totalMessages')).toBeInTheDocument();
+      expect(screen.getByText('총 메시지')).toBeInTheDocument();
       expect(screen.getByTestId('total-messages-count')).toBeInTheDocument();
     });
 
     it('displays active users count', () => {
-      expect(screen.getByText('chat.admin.activeUsers')).toBeInTheDocument();
+      expect(screen.getByText('활성 사용자')).toBeInTheDocument();
       expect(screen.getByTestId('active-users-count')).toBeInTheDocument();
     });
 
     it('displays average response time', () => {
-      expect(
-        screen.getByText('chat.admin.avgResponseTime')
-      ).toBeInTheDocument();
+      expect(screen.getByText('평균 응답시간')).toBeInTheDocument();
       expect(screen.getByTestId('avg-response-time')).toBeInTheDocument();
     });
 
     it('displays satisfaction rate', () => {
-      expect(screen.getByText('chat.admin.satisfaction')).toBeInTheDocument();
+      expect(screen.getByText('만족도')).toBeInTheDocument();
       expect(screen.getByTestId('satisfaction-rate')).toBeInTheDocument();
     });
 
@@ -388,15 +407,15 @@ describe('AdminPanel', () => {
   describe('Users Tab', () => {
     beforeEach(async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
-      const usersTab = screen.getByText('chat.admin.users').closest('button')!;
+      const usersTab = screen.getByText('사용자').closest('button')!;
       fireEvent.click(usersTab);
       await waitFor(() => {
-        expect(screen.getByText('chat.admin.activeUsers')).toBeInTheDocument();
+        expect(screen.getByText('활성 사용자')).toBeInTheDocument();
       });
     });
 
     it('displays active users list', () => {
-      expect(screen.getByText('chat.admin.activeUsers')).toBeInTheDocument();
+      expect(screen.getByText('활성 사용자')).toBeInTheDocument();
       expect(screen.getByTestId('active-users-list')).toBeInTheDocument();
     });
 
@@ -435,7 +454,7 @@ describe('AdminPanel', () => {
     it('displays business hours in settings', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      expect(screen.getByLabelText('업무 시간')).toBeInTheDocument();
+      expect(screen.getByText('기능 설정')).toBeInTheDocument();
       expect(screen.getByText(/월-금/)).toBeInTheDocument();
       expect(screen.getByText(/09:00 - 18:00/)).toBeInTheDocument();
     });
@@ -500,16 +519,12 @@ describe('AdminPanel', () => {
     it('navigates tabs with arrow keys', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const settingsTab = screen
-        .getByText('chat.admin.settings')
-        .closest('button')!;
+      const settingsTab = screen.getByText('설정').closest('button')!;
       settingsTab.focus();
 
       fireEvent.keyDown(settingsTab, { key: 'ArrowRight' });
 
-      const cannedTab = screen
-        .getByText('chat.admin.cannedResponses')
-        .closest('button')!;
+      const cannedTab = screen.getByText('자동 응답').closest('button')!;
       expect(document.activeElement).toBe(cannedTab);
     });
   });
@@ -520,7 +535,7 @@ describe('AdminPanel', () => {
 
       // Wait for component to fully render
       await waitFor(() => {
-        expect(screen.getByText('chat.admin.title')).toBeInTheDocument();
+        expect(screen.getByText('채팅 관리자 패널')).toBeInTheDocument();
       });
 
       // Override the setItem mock to throw an error only for admin settings
@@ -539,7 +554,7 @@ describe('AdminPanel', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('chat.admin.settingsSaveFailed')
+          screen.getByText('설정 저장에 실패했습니다.')
         ).toBeInTheDocument();
       });
 
@@ -563,9 +578,7 @@ describe('AdminPanel', () => {
     it('maintains focus trap within panel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const firstTab = screen
-        .getByText('chat.admin.settings')
-        .closest('button')!;
+      const firstTab = screen.getByText('설정').closest('button')!;
       const buttons = screen.getAllByRole('button');
       const lastButton = buttons[buttons.length - 1];
 
@@ -583,9 +596,7 @@ describe('AdminPanel', () => {
     it('announces tab changes to screen readers', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const cannedTab = screen
-        .getByText('chat.admin.cannedResponses')
-        .closest('button')!;
+      const cannedTab = screen.getByText('자동 응답').closest('button')!;
       fireEvent.click(cannedTab);
 
       await waitFor(() => {

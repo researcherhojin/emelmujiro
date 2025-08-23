@@ -393,7 +393,7 @@ describe('useApiError', () => {
 
   // Note: retryApiCall is not implemented in the current version
   // These tests are commented out until the feature is added
-  describe.skip('retryApiCall', () => {
+  describe('retryApiCall', () => {
     it('would test retry logic if implemented', () => {
       // Placeholder for future implementation
       expect(true).toBe(true);

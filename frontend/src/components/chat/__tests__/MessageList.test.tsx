@@ -314,8 +314,8 @@ describe(
       // The actual timestamp display depends on the implementation
     });
 
-    // NOTE: Image attachments feature pending implementation in MessageList component
-    it.skip('should handle image attachments', () => {
+    // Image attachments test - activating to verify current behavior
+    it('should handle image attachments', () => {
       mockChatContext.messages = [
         {
           id: '1',
@@ -347,7 +347,7 @@ describe(
     });
 
     // NOTE: File attachments feature pending implementation in MessageList component
-    it.skip('should handle file attachments', () => {
+    it('should handle file attachments', () => {
       mockChatContext.messages = [
         {
           id: '1',
@@ -377,7 +377,7 @@ describe(
     });
 
     // NOTE: Quick replies feature pending implementation in MessageList component
-    it.skip('should display quick replies', () => {
+    it('should display quick replies', () => {
       mockChatContext.messages = [
         {
           id: '1',
@@ -401,7 +401,7 @@ describe(
     });
 
     // NOTE: Quick reply click handling pending implementation in MessageList component
-    it.skip('should handle quick reply click', () => {
+    it('should handle quick reply click', () => {
       const mockSend = jest.fn();
       mockChatContext.sendMessage = mockSend;
       mockChatContext.messages = [
@@ -528,7 +528,7 @@ describe(
     });
 
     // NOTE: Mark as read functionality pending implementation
-    it.skip('should mark messages as read', () => {
+    it('should mark messages as read', () => {
       mockChatContext.messages = [
         {
           id: '1',
