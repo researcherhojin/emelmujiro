@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, Phone, HelpCircle, Settings } from 'lucide-react';
 import { useChatContext } from '../../contexts/ChatContext';
