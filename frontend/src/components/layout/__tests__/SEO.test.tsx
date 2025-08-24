@@ -15,6 +15,8 @@ interface HelmetProps {
   rel?: string;
   href?: string;
   lang?: string;
+  charset?: string;
+  charSet?: string;
 }
 
 interface MockedHelmetElement extends React.ReactElement {
