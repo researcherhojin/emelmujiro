@@ -127,8 +127,8 @@ export function useDebounce<T>(value: T, delay: number): T {
 }
 
 // Virtual scrolling helper
-export function useVirtualScroll(
-  items: any[],
+export function useVirtualScroll<T>(
+  items: T[],
   itemHeight: number,
   containerHeight: number
 ) {

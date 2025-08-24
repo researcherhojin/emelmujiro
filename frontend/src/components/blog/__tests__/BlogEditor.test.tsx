@@ -309,7 +309,6 @@ describe('BlogEditor Component', () => {
 
       // We need to interact with the file input directly
       // For file inputs, we still need direct access as Testing Library doesn't provide a good alternative
-      // eslint-disable-next-line testing-library/no-node-access
       const fileInput = document.querySelector(
         'input[type="file"]'
       ) as HTMLInputElement;
@@ -352,7 +351,6 @@ describe('BlogEditor Component', () => {
 
       // We need to interact with the file input directly
       // For file inputs, we still need direct access as Testing Library doesn't provide a good alternative
-      // eslint-disable-next-line testing-library/no-node-access
       const fileInput = document.querySelector(
         'input[type="file"]'
       ) as HTMLInputElement;

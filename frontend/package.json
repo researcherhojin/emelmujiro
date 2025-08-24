@@ -139,6 +139,8 @@
   "overrides": {
     "nth-check": "^2.1.1",
     "postcss": "^8.4.31",
-    "svgo": "^3.0.0"
+    "svgo": "^3.0.0",
+    "webpack-dev-server": "^5.2.1",
+    "css-select": "^5.1.0"
   }
 }

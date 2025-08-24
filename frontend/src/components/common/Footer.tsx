@@ -123,13 +123,10 @@ const Footer: React.FC = memo(() => {
 
   const currentYear = new Date().getFullYear();
 
-  const handleServiceClick = useCallback(
-    (serviceKey: string) => {
-      setSelectedService(services[serviceKey]);
-      setIsServiceModalOpen(true);
-    },
-    [services]
-  );
+  const handleServiceClick = useCallback((serviceKey: string) => {
+    setSelectedService(services[serviceKey]);
+    setIsServiceModalOpen(true);
+  }, []);
 
   const handleNavigate = useCallback(
     (path: string) => {
