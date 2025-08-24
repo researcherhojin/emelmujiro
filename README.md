@@ -101,7 +101,7 @@ python manage.py runserver
 
 ### DevOps & Testing
 
-- **CI/CD**: GitHub Actions (완전 자동화된 파이프라인)
+- **CI/CD**: GitHub Actions (완전 자동화된 파이프라인) - [상세 문서](CI-CD-README.md)
 - **Testing**: Jest + React Testing Library (99.1% 통과율)
 - **E2E**: Playwright (주요 플로우 테스트)
 - **Security**: 9개 npm 취약점 (react-scripts 의존성)
@@ -228,6 +228,39 @@ emelmujiro/
 - [ ] **마이크로 프론트엔드** - 모듈별 독립 배포
 - [ ] **AI 기능 통합** - ChatGPT/Claude API 직접 연동
 
+## 🚀 배포 체크리스트
+
+프로덕션 배포 전 확인사항:
+
+### 필수 확인
+
+- ✅ TypeScript 컴파일 에러 없음
+- ✅ ESLint 에러 없음 (현재 27개 경고)
+- ✅ 모든 테스트 통과 (99.1%)
+- ✅ 빌드 성공 (`npm run build`)
+- ✅ 환경변수 설정 확인
+
+### 성능 최적화
+
+- ✅ 번들 사이즈: 450KB (gzipped)
+- ✅ Code Splitting: 19개 청크로 분할
+- ✅ 이미지 최적화: WebP 지원, Lazy Loading
+- ✅ Service Worker: PWA 및 오프라인 지원
+- ✅ Web Vitals 모니터링 활성화
+
+### 배포 프로세스
+
+```bash
+# 1. 테스트 실행
+npm test
+
+# 2. 빌드 생성
+npm run build
+
+# 3. GitHub Pages 배포
+npm run deploy
+```
+
 ## 🤝 기여하기
 
 프로젝트에 기여하고 싶으신가요?
@@ -243,6 +276,14 @@ emelmujiro/
 ## 📜 라이선스
 
 이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
+
+## 📚 추가 문서
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) - 기여 가이드 및 개발 규칙
+- [CI-CD-README.md](CI-CD-README.md) - CI/CD 파이프라인 상세 문서
+- [VITE_MIGRATION.md](VITE_MIGRATION.md) - Vite 마이그레이션 가이드
+- [CLAUDE.md](CLAUDE.md) - AI 도구 사용 가이드
+- [UV_GUIDE.md](UV_GUIDE.md) - Python 패키지 관리 가이드
 
 ## 📞 문의
 
