@@ -60,7 +60,7 @@ describe('BlogSearch', () => {
 
   it('handles search submission', async () => {
     const onSearch = jest.fn();
-    const { api } = require('../../../services/api');
+    const { api } = jest.requireMock('../../../services/api');
     // Mock API response
     api.searchBlogPosts.mockResolvedValueOnce({
       data: { results: [] },
@@ -91,7 +91,7 @@ describe('BlogSearch', () => {
 
   it('trims whitespace from search query', async () => {
     const onSearch = jest.fn();
-    const { api } = require('../../../services/api');
+    const { api } = jest.requireMock('../../../services/api');
     api.searchBlogPosts.mockResolvedValueOnce({
       data: { results: [] },
     });
@@ -134,7 +134,7 @@ describe('BlogSearch', () => {
 
   it('handles search with special characters', async () => {
     const onSearch = jest.fn();
-    const { api } = require('../../../services/api');
+    const { api } = jest.requireMock('../../../services/api');
     api.searchBlogPosts.mockResolvedValueOnce({
       data: { results: [] },
     });
@@ -181,7 +181,7 @@ describe('BlogSearch', () => {
 
   it('filters posts based on search term', async () => {
     const onSearch = jest.fn();
-    const { api } = require('../../../services/api');
+    const { api } = jest.requireMock('../../../services/api');
     const mockResults = [
       { id: '1', title: 'React Tutorial', content: 'Learn React' },
     ];
@@ -229,7 +229,7 @@ describe('BlogSearch', () => {
 
   it('shows search results count', async () => {
     const onSearch = jest.fn();
-    const { api } = require('../../../services/api');
+    const { api } = jest.requireMock('../../../services/api');
     const mockResults = [{ id: '1', title: 'React Tutorial' }];
     api.searchBlogPosts.mockResolvedValueOnce({
       data: { results: mockResults },

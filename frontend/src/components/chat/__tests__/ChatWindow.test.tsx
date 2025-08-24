@@ -242,8 +242,9 @@ describe(
     });
 
     it('should show disconnected banner when not connected', () => {
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       jest
-        .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+        .spyOn(ChatContext, 'useChatContext')
         .mockReturnValue(createMockChatContext({ isConnected: false }));
 
       render(<ChatWindow />);
@@ -254,13 +255,12 @@ describe(
     });
 
     it('should show business hours notice when closed', () => {
-      jest
-        .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
-        .mockReturnValue(
-          createMockChatContext({
-            businessHours: { isOpen: false, hours: '09:00 - 18:00' },
-          })
-        );
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
+      jest.spyOn(ChatContext, 'useChatContext').mockReturnValue(
+        createMockChatContext({
+          businessHours: { isOpen: false, hours: '09:00 - 18:00' },
+        })
+      );
 
       render(<ChatWindow />);
 
@@ -372,8 +372,9 @@ describe(
     });
 
     it('should show typing indicator when agent is typing', () => {
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       jest
-        .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+        .spyOn(ChatContext, 'useChatContext')
         .mockReturnValue(createMockChatContext({ isTyping: true }));
 
       render(<ChatWindow />);
@@ -382,13 +383,12 @@ describe(
     });
 
     it('should show quick replies when no messages', () => {
-      jest
-        .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
-        .mockReturnValue(
-          createMockChatContext({
-            messages: [],
-          })
-        );
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
+      jest.spyOn(ChatContext, 'useChatContext').mockReturnValue(
+        createMockChatContext({
+          messages: [],
+        })
+      );
 
       render(<ChatWindow />);
 
@@ -400,14 +400,13 @@ describe(
     it('should handle quick reply selection', () => {
       const sendMessage = jest.fn();
 
-      jest
-        .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
-        .mockReturnValue(
-          createMockChatContext({
-            messages: [],
-            sendMessage,
-          })
-        );
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
+      jest.spyOn(ChatContext, 'useChatContext').mockReturnValue(
+        createMockChatContext({
+          messages: [],
+          sendMessage,
+        })
+      );
 
       render(<ChatWindow />);
 
@@ -447,20 +446,19 @@ describe(
     });
 
     it('should enable export when messages exist', () => {
-      jest
-        .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
-        .mockReturnValue(
-          createMockChatContext({
-            messages: [
-              {
-                id: '1',
-                type: 'user',
-                content: 'Test message',
-                timestamp: new Date().toISOString(),
-              },
-            ],
-          })
-        );
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
+      jest.spyOn(ChatContext, 'useChatContext').mockReturnValue(
+        createMockChatContext({
+          messages: [
+            {
+              id: '1',
+              type: 'user',
+              content: 'Test message',
+              timestamp: new Date().toISOString(),
+            },
+          ],
+        })
+      );
 
       render(<ChatWindow />);
 
@@ -469,8 +467,9 @@ describe(
     });
 
     it('should show connection status when disconnected', () => {
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       jest
-        .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+        .spyOn(ChatContext, 'useChatContext')
         .mockReturnValue(createMockChatContext({ isConnected: false }));
 
       render(<ChatWindow />);
@@ -481,8 +480,9 @@ describe(
     });
 
     it('should disable input when disconnected', () => {
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       jest
-        .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+        .spyOn(ChatContext, 'useChatContext')
         .mockReturnValue(createMockChatContext({ isConnected: false }));
 
       render(<ChatWindow />);
@@ -495,8 +495,9 @@ describe(
 
     it('should handle message send on Enter key', () => {
       const sendMessage = jest.fn();
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       jest
-        .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+        .spyOn(ChatContext, 'useChatContext')
         .mockReturnValue(createMockChatContext({ sendMessage }));
 
       render(<ChatWindow />);
@@ -516,8 +517,9 @@ describe(
 
     it('should not send message on Enter with Shift key', () => {
       const sendMessage = jest.fn();
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       jest
-        .spyOn(require('../../../contexts/ChatContext'), 'useChatContext')
+        .spyOn(ChatContext, 'useChatContext')
         .mockReturnValue(createMockChatContext({ sendMessage }));
 
       render(<ChatWindow />);

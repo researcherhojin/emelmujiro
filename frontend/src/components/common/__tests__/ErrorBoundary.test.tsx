@@ -59,7 +59,7 @@ describe('ErrorBoundary Component', () => {
   });
 
   it('logs error to console', () => {
-    const logger = require('../../../utils/logger');
+    const logger = jest.requireMock('../../../utils/logger');
 
     render(
       <ErrorBoundary>

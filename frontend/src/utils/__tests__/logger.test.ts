@@ -159,8 +159,9 @@ describe('Logger', () => {
       consoleTimeSpy.mockClear();
       consoleTimeEndSpy.mockClear();
 
-      // Create new Logger instance for production
-      const ProdLogger = new (require('../logger').default.constructor)();
+      // Import Logger dynamically to ensure it reads the production environment
+      jest.resetModules();
+      const { default: ProdLogger } = jest.requireActual('../logger');
 
       ProdLogger.time('prod-operation');
       ProdLogger.timeEnd('prod-operation');
@@ -175,6 +176,9 @@ describe('Logger', () => {
         writable: true,
         configurable: true,
       });
+
+      // Reset modules to restore normal Logger
+      jest.resetModules();
     });
   });
 });

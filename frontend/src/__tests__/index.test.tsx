@@ -102,12 +102,11 @@ describe('Index', () => {
   });
 
   it('registers service worker', () => {
-    const { register } = require('../serviceWorkerRegistration');
-
     jest.isolateModules(() => {
-      require('../index');
+      jest.requireActual('../index');
     });
 
+    const { register } = jest.requireMock('../serviceWorkerRegistration');
     expect(register).toHaveBeenCalled();
 
     // Check that the onUpdate and onSuccess callbacks were provided
@@ -117,14 +116,15 @@ describe('Index', () => {
   });
 
   it('initializes performance monitoring', () => {
-    const { initPerformanceMonitoring } = require('../utils/webVitals');
-    const {
-      initializeCacheOptimization,
-    } = require('../utils/cacheOptimization');
-
     jest.isolateModules(() => {
-      require('../index');
+      jest.requireActual('../index');
     });
+
+    const { initPerformanceMonitoring } =
+      jest.requireMock('../utils/webVitals');
+    const { initializeCacheOptimization } = jest.requireMock(
+      '../utils/cacheOptimization'
+    );
 
     expect(initPerformanceMonitoring).toHaveBeenCalled();
     expect(initializeCacheOptimization).toHaveBeenCalled();
@@ -168,18 +168,19 @@ describe('Index', () => {
     // Should throw an error
     expect(() => {
       jest.isolateModules(() => {
-        require('../index');
+        jest.requireActual('../index');
       });
     }).toThrow('Failed to find the root element');
   });
 
   it('handles service worker update callback', () => {
     const mockConfirm = jest.spyOn(window, 'confirm').mockReturnValue(true);
-    const { register } = require('../serviceWorkerRegistration');
 
     jest.isolateModules(() => {
-      require('../index');
+      jest.requireActual('../index');
     });
+
+    const { register } = jest.requireMock('../serviceWorkerRegistration');
 
     // Get the onUpdate callback
     const registerCall = register.mock.calls[0][0];
@@ -198,11 +199,12 @@ describe('Index', () => {
 
   it('handles service worker update cancellation', () => {
     const mockConfirm = jest.spyOn(window, 'confirm').mockReturnValue(false);
-    const { register } = require('../serviceWorkerRegistration');
 
     jest.isolateModules(() => {
-      require('../index');
+      jest.requireActual('../index');
     });
+
+    const { register } = jest.requireMock('../serviceWorkerRegistration');
 
     // Get the onUpdate callback
     const registerCall = register.mock.calls[0][0];

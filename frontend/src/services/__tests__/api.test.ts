@@ -3,31 +3,26 @@ import { BlogPost, ContactFormData } from '../../types';
 import { InternalAxiosRequestConfig } from 'axios';
 
 // Mock axios
-jest.mock('axios', () => {
-  const mockAxiosInstance = {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    patch: jest.fn(),
-    delete: jest.fn(),
-    interceptors: {
-      request: {
-        use: jest.fn(),
-      },
-      response: {
-        use: jest.fn(),
-      },
+const mockAxiosInstance = {
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  patch: jest.fn(),
+  delete: jest.fn(),
+  interceptors: {
+    request: {
+      use: jest.fn(),
     },
-  };
+    response: {
+      use: jest.fn(),
+    },
+  },
+};
 
-  return {
-    create: jest.fn(() => mockAxiosInstance),
-    isAxiosError: jest.fn(),
-  };
-});
-
-// Get the mocked instance for use in tests
-const mockAxiosInstance = (require('axios').create as jest.Mock)();
+jest.mock('axios', () => ({
+  create: jest.fn(() => mockAxiosInstance),
+  isAxiosError: jest.fn(),
+}));
 
 // Note: When USE_MOCK_API is true, the API service returns mock data
 // These tests verify the mock data structure rather than axios behavior

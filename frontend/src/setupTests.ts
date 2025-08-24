@@ -6,9 +6,8 @@
 import '@testing-library/jest-dom';
 
 // Import CI-specific setup if in CI environment
-if (process.env.CI === 'true') {
-  require('./setupTestsCI');
-}
+// Note: Dynamic imports are not supported in test setup files
+// CI-specific setup should be handled differently in Vite
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {

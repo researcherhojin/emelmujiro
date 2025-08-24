@@ -204,7 +204,7 @@ describe('ChatWindow - Advanced Tests', () => {
     jest.clearAllMocks();
     localStorage.clear();
     // Mock ChatContext with default values
-    const ChatContext = require('../../../contexts/ChatContext');
+    const ChatContext = jest.requireMock('../../../contexts/ChatContext');
     (ChatContext.useChatContext as jest.Mock).mockReturnValue(
       mockChatContextValue
     );
@@ -221,7 +221,7 @@ describe('ChatWindow - Advanced Tests', () => {
     });
 
     it('should render with minimized state', () => {
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         isMinimized: true,
@@ -234,7 +234,7 @@ describe('ChatWindow - Advanced Tests', () => {
 
     it('should call closeChat when close button clicked', () => {
       const closeChat = jest.fn();
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         closeChat,
@@ -252,7 +252,7 @@ describe('ChatWindow - Advanced Tests', () => {
   describe('Message Sending', () => {
     it('should send message on form submit', async () => {
       const sendMessage = jest.fn();
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         sendMessage,
@@ -279,7 +279,7 @@ describe('ChatWindow - Advanced Tests', () => {
 
     it('should send message on Enter key', async () => {
       const sendMessage = jest.fn();
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         sendMessage,
@@ -301,7 +301,7 @@ describe('ChatWindow - Advanced Tests', () => {
 
     it('should not send empty messages', async () => {
       const sendMessage = jest.fn();
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         sendMessage,
@@ -319,7 +319,7 @@ describe('ChatWindow - Advanced Tests', () => {
 
     it('should handle Shift+Enter for new line', async () => {
       const sendMessage = jest.fn();
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         sendMessage,
@@ -340,7 +340,7 @@ describe('ChatWindow - Advanced Tests', () => {
   describe('Window Controls', () => {
     it('should toggle minimize state', () => {
       const toggleMinimize = jest.fn();
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         toggleMinimize,
@@ -358,7 +358,7 @@ describe('ChatWindow - Advanced Tests', () => {
   describe('Quick Replies', () => {
     it('should show and use quick replies', async () => {
       const sendMessage = jest.fn();
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         messages: [],
@@ -402,7 +402,7 @@ describe('ChatWindow - Advanced Tests', () => {
   describe('File Upload', () => {
     it('should handle file selection', async () => {
       const sendFile = jest.fn();
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         sendFile,
@@ -437,7 +437,7 @@ describe('ChatWindow - Advanced Tests', () => {
   describe('Settings and Options', () => {
     it('should export chat history', async () => {
       const exportChat = jest.fn();
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         exportChat,
@@ -454,7 +454,7 @@ describe('ChatWindow - Advanced Tests', () => {
 
     it('should clear chat history', async () => {
       const clearMessages = jest.fn();
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         clearMessages,
@@ -475,7 +475,7 @@ describe('ChatWindow - Advanced Tests', () => {
 
   describe('Typing Indicator', () => {
     it('should show typing indicator when someone is typing', () => {
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         isTyping: true,
@@ -487,7 +487,7 @@ describe('ChatWindow - Advanced Tests', () => {
     });
 
     it('should not show typing indicator when no one is typing', () => {
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         isTyping: false,
@@ -524,7 +524,7 @@ describe('ChatWindow - Advanced Tests', () => {
 
     it('should support keyboard navigation', async () => {
       const closeChat = jest.fn();
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         closeChat,
@@ -546,7 +546,7 @@ describe('ChatWindow - Advanced Tests', () => {
   describe('Error Handling', () => {
     it('should handle send message errors gracefully', async () => {
       const sendMessage = jest.fn().mockRejectedValue(new Error('Send failed'));
-      const ChatContext = require('../../../contexts/ChatContext');
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
       (ChatContext.useChatContext as jest.Mock).mockReturnValue({
         ...mockChatContextValue,
         sendMessage,

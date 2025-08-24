@@ -185,10 +185,8 @@ describe(
 
     it('renders custom quick replies when available', () => {
       // Mock ChatContext with custom quick replies
-      const mockUseChatContext = jest.spyOn(
-        require('../../../contexts/ChatContext'),
-        'useChatContext'
-      );
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
+      const mockUseChatContext = jest.spyOn(ChatContext, 'useChatContext');
       mockUseChatContext.mockReturnValue({
         settings: {
           quickReplies: [
@@ -209,10 +207,8 @@ describe(
     });
 
     it('handles custom reply selection', () => {
-      const mockUseChatContext = jest.spyOn(
-        require('../../../contexts/ChatContext'),
-        'useChatContext'
-      );
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
+      const mockUseChatContext = jest.spyOn(ChatContext, 'useChatContext');
       mockUseChatContext.mockReturnValue({
         settings: {
           quickReplies: [
@@ -234,10 +230,8 @@ describe(
     });
 
     it('does not render custom section when only 4 or fewer replies', () => {
-      const mockUseChatContext = jest.spyOn(
-        require('../../../contexts/ChatContext'),
-        'useChatContext'
-      );
+      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
+      const mockUseChatContext = jest.spyOn(ChatContext, 'useChatContext');
       mockUseChatContext.mockReturnValue({
         settings: {
           quickReplies: [
