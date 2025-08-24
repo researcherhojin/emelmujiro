@@ -182,6 +182,7 @@ npm audit --json
 ```
 
 현재 알려진 이슈:
+
 - react-scripts 내부 의존성 취약점 9개 (Vite 마이그레이션으로 해결 예정)
 
 ## 📝 문서화
