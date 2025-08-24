@@ -46,8 +46,11 @@ class ErrorBoundary extends Component<Props, State> {
     }));
 
     // Sentry로 에러 전송 (Sentry가 설정된 경우)
-    if ((window as any).Sentry) {
-      (window as any).Sentry.captureException(error, {
+    const sentryWindow = window as Window & {
+      Sentry?: { captureException: (error: Error, context?: unknown) => void };
+    };
+    if (sentryWindow.Sentry) {
+      sentryWindow.Sentry.captureException(error, {
         contexts: {
           react: {
             componentStack: errorInfo.componentStack,

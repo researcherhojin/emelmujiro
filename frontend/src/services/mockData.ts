@@ -130,7 +130,10 @@ export function paginateMockData<T>(data: T[], page: number, pageSize: number) {
 
   // Add createdAt field for blog posts
   const resultsWithCreatedAt = paginatedData.map((item) => {
-    const itemWithCreatedAt = item as any;
+    const itemWithCreatedAt = item as T & {
+      created_at?: string;
+      createdAt?: string;
+    };
     if (itemWithCreatedAt.created_at && !itemWithCreatedAt.createdAt) {
       return { ...itemWithCreatedAt, createdAt: itemWithCreatedAt.created_at };
     }

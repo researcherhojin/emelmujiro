@@ -18,7 +18,7 @@ interface MetaTagsProps {
   canonical?: string;
   locale?: string;
   alternateLocales?: { lang: string; url: string }[];
-  jsonLd?: Record<string, any>;
+  jsonLd?: Record<string, unknown>;
 }
 
 const MetaTags: React.FC<MetaTagsProps> = ({

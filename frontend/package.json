@@ -133,11 +133,12 @@
     ]
   },
   "optionalDependencies": {
-    "imagemin-cli": "^3.0.0",
-    "imagemin-mozjpeg": "^7.0.0",
-    "imagemin-pngquant": "^5.0.1",
-    "imagemin-svgo": "^11.0.1",
     "sharp-cli": "^5.2.0"
   },
-  "proxy": "http://127.0.0.1:8000"
+  "proxy": "http://127.0.0.1:8000",
+  "overrides": {
+    "nth-check": "^2.1.1",
+    "postcss": "^8.4.31",
+    "svgo": "^3.0.0"
+  }
 }
