@@ -18,7 +18,7 @@ djangorestframework-simplejwt==5.5.1
 django-ratelimit==4.1.0
 
 # Utils
-requests==2.32.4
+requests==2.32.5
 Pillow==11.3.0
 django-extensions==4.1.0
 
