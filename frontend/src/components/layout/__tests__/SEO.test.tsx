@@ -6,6 +6,7 @@ import { vi, type MockInstance } from 'vitest';
 import React from 'react';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import SEO from '../SEO';
 
 // Type for mocked Helmet

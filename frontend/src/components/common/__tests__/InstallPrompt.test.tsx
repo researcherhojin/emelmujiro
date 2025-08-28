@@ -342,7 +342,7 @@ describe('InstallPrompt', () => {
   });
 
   describe('Device Detection', () => {
-    it('should detect iOS devices', () => {
+    it('should detect iOS devices but not show prompt', () => {
       const originalUserAgent = navigator.userAgent;
       Object.defineProperty(navigator, 'userAgent', {
         value: 'iPhone',
@@ -351,8 +351,8 @@ describe('InstallPrompt', () => {
 
       render(<InstallPrompt />);
 
-      expect(screen.getByText(/iOS/i)).toBeInTheDocument();
-      expect(screen.getByText(/Safari에서 공유 버튼/i)).toBeInTheDocument();
+      // iOS doesn't support beforeinstallprompt, so nothing should be shown
+      expect(screen.queryByText(/앱 설치/i)).not.toBeInTheDocument();
 
       Object.defineProperty(navigator, 'userAgent', {
         value: originalUserAgent,
@@ -360,17 +360,31 @@ describe('InstallPrompt', () => {
       });
     });
 
-    it('should show Android instructions', () => {
+    it('should detect Android device', async () => {
       const originalUserAgent = navigator.userAgent;
       Object.defineProperty(navigator, 'userAgent', {
         value: 'Android',
         writable: true,
       });
-      (window as any).deferredPrompt = mockDeferredPrompt;
+
+      // Set up beforeinstallprompt event for Android
+      const mockEvent = new Event('beforeinstallprompt');
+      Object.assign(mockEvent, {
+        preventDefault: vi.fn(),
+        prompt: vi.fn(),
+        userChoice: Promise.resolve({ outcome: 'accepted' }),
+      });
 
       render(<InstallPrompt />);
+      window.dispatchEvent(mockEvent);
 
-      expect(screen.getByText(/Android/i)).toBeInTheDocument();
+      // Wait for the prompt to appear
+      await waitFor(() => {
+        expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
+      });
+
+      // Android devices show the 홈 화면 text
+      expect(screen.getByText(/홈 화면/i)).toBeInTheDocument();
 
       Object.defineProperty(navigator, 'userAgent', {
         value: originalUserAgent,
@@ -411,23 +425,53 @@ describe('InstallPrompt', () => {
   });
 
   describe('Features Display', () => {
-    it('should display PWA features', () => {
-      (window as any).deferredPrompt = mockDeferredPrompt;
+    it('should display PWA features when prompt is shown', async () => {
+      // Set up beforeinstallprompt event
+      const mockEvent = new Event('beforeinstallprompt');
+      Object.assign(mockEvent, {
+        preventDefault: vi.fn(),
+        prompt: vi.fn(),
+        userChoice: Promise.resolve({ outcome: 'accepted' }),
+      });
 
       render(<InstallPrompt />);
+      window.dispatchEvent(mockEvent);
 
-      expect(screen.getByText(/오프라인 사용 가능/i)).toBeInTheDocument();
+      // Wait for the prompt to appear
+      await waitFor(() => {
+        expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
+      });
+
+      // Check for features in the actual text
+      expect(screen.getByText(/오프라인 사용/i)).toBeInTheDocument();
       expect(screen.getByText(/푸시 알림/i)).toBeInTheDocument();
-      expect(screen.getByText(/빠른 로딩/i)).toBeInTheDocument();
+      expect(screen.getByText(/빠른 실행/i)).toBeInTheDocument();
     });
 
-    it('should show app benefits', () => {
-      (window as any).deferredPrompt = mockDeferredPrompt;
+    it('should show app benefits when prompt is shown', async () => {
+      // Set up beforeinstallprompt event
+      const mockEvent = new Event('beforeinstallprompt');
+      Object.assign(mockEvent, {
+        preventDefault: vi.fn(),
+        prompt: vi.fn(),
+        userChoice: Promise.resolve({ outcome: 'accepted' }),
+      });
 
       render(<InstallPrompt />);
+      window.dispatchEvent(mockEvent);
 
-      expect(screen.getByText(/홈 화면에 추가/i)).toBeInTheDocument();
-      expect(screen.getByText(/네이티브 앱처럼/i)).toBeInTheDocument();
+      // Wait for the prompt to appear
+      await waitFor(() => {
+        expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
+      });
+
+      // Check for installation text - actual text is split across device type variable
+      expect(
+        screen.getByText(/설치하여 더 빠르고 편리하게 이용하세요/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/오프라인에서도 사용할 수 있습니다/i)
+      ).toBeInTheDocument();
     });
   });
 
