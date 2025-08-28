@@ -4,10 +4,14 @@
  */
 
 import { vi } from 'vitest';
-import { screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  screen,
+  fireEvent,
+  waitFor as originalWaitFor,
+  act,
+} from '@testing-library/react';
 import { renderWithSelectiveProviders } from '../../../test-utils/test-utils';
 import NotificationPermission from '../NotificationPermission';
-import * as logger from '../../../utils/logger';
 
 // Mock push notification utilities
 const mockIsPushNotificationSupported = vi.fn();
@@ -24,10 +28,17 @@ vi.mock('../../../utils/pushNotifications', () => ({
 
 // Mock logger
 vi.mock('../../../utils/logger', () => ({
-  error: vi.fn(),
+  default: {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+  },
 }));
 
-const mockLoggerError = logger.error as any;
+// Import logger after mocking to get mocked version
+import logger from '../../../utils/logger';
+const mockLoggerError = vi.mocked(logger.error);
 
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
@@ -62,6 +73,25 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 describe('NotificationPermission', () => {
+  // Custom waitFor that works with fake timers
+  const waitFor = async (
+    callback: () => void | Promise<void>,
+    options = {}
+  ) => {
+    // For async tests, use real timers temporarily
+    vi.useRealTimers();
+
+    const result = await originalWaitFor(callback, {
+      timeout: 1000,
+      ...options,
+    });
+
+    // Restore fake timers after wait
+    vi.useFakeTimers();
+
+    return result;
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
@@ -76,7 +106,12 @@ describe('NotificationPermission', () => {
   });
 
   afterEach(() => {
-    vi.runOnlyPendingTimers();
+    // Check if timers are mocked before trying to run them
+    try {
+      vi.runOnlyPendingTimers();
+    } catch {
+      // Timers might already be real, that's ok
+    }
     vi.useRealTimers();
   });
 
@@ -782,7 +817,7 @@ describe('NotificationPermission', () => {
   });
 
   describe('Error boundaries', () => {
-    it.skip('handles Notification constructor error gracefully', async () => {
+    it('handles Notification constructor error gracefully', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
       mockRequestNotificationPermission.mockResolvedValue(true);
@@ -810,7 +845,7 @@ describe('NotificationPermission', () => {
       });
     });
 
-    it.skip('handles subscription error and stays functional', async () => {
+    it('handles subscription error and stays functional', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
       mockRequestNotificationPermission.mockResolvedValue(true);
@@ -845,7 +880,7 @@ describe('NotificationPermission', () => {
   });
 
   describe('Concurrent operations', () => {
-    it.skip('prevents multiple simultaneous subscription attempts', async () => {
+    it('prevents multiple simultaneous subscription attempts', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -969,7 +1004,7 @@ describe('NotificationPermission', () => {
       expect(loadingButton.closest('button')).toHaveAttribute('disabled');
     });
 
-    it.skip('maintains button functionality after error', async () => {
+    it('maintains button functionality after error', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 

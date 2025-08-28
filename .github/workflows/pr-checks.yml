@@ -94,6 +94,7 @@ jobs:
   affected-tests:
     name: Test Affected Code
     runs-on: ubuntu-latest
+    timeout-minutes: 15  # Add timeout to prevent long hangs
     needs: quick-checks
 
     steps:
@@ -125,7 +126,8 @@ jobs:
           else
             npm ci --prefer-offline --no-audit
           fi
-          CI=true npm test -- --run --passWithNoTests
+          CI=true npm test -- --run --passWithNoTests --maxWorkers=2
+        timeout-minutes: 10  # Individual test step timeout
 
       - name: Setup Python
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')

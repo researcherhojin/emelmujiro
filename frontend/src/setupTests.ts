@@ -5,25 +5,290 @@ import { vi } from 'vitest';
 import { beforeAll, afterAll } from 'vitest';
 import React from 'react';
 
-// Mock lucide-react icons - create a Proxy to handle any icon dynamically
+// Mock lucide-react icons - comprehensive mock for all icons
 vi.mock('lucide-react', () => {
-  return new Proxy(
-    {},
-    {
-      get: (target, prop) => {
-        // Return a mock component for any icon name
-        if (typeof prop === 'string') {
-          return () => React.createElement('div', null, prop);
-        }
-        return undefined;
-      },
-    }
-  );
+  // Create a generic icon component factory
+  const createIcon = (name: string) => {
+    const Component = React.forwardRef((props: any, ref: any) => {
+      return React.createElement(
+        'svg',
+        {
+          ...props,
+          ref,
+          'data-testid': `icon-${name}`,
+          'aria-label': name,
+        },
+        React.createElement('title', null, name)
+      );
+    });
+    Component.displayName = name;
+    return Component;
+  };
+
+  // Create LucideIcon type mock
+  const LucideIcon = createIcon('LucideIcon');
+
+  // Common icons that might be used
+  const iconNames = [
+    'Code',
+    'GraduationCap',
+    'BarChart3',
+    'Database',
+    'CheckCircle',
+    'XCircle',
+    'AlertCircle',
+    'InfoIcon',
+    'ChevronDown',
+    'ChevronUp',
+    'ChevronLeft',
+    'ChevronRight',
+    'Menu',
+    'X',
+    'Search',
+    'Plus',
+    'Minus',
+    'Edit',
+    'Trash',
+    'Settings',
+    'User',
+    'Users',
+    'Home',
+    'Mail',
+    'Phone',
+    'Calendar',
+    'Clock',
+    'Download',
+    'Upload',
+    'File',
+    'Folder',
+    'Heart',
+    'Star',
+    'Globe',
+    'Link',
+    'Copy',
+    'Check',
+    'Save',
+    'RefreshCw',
+    'MoreVertical',
+    'MoreHorizontal',
+    'Eye',
+    'EyeOff',
+    'Lock',
+    'Unlock',
+    'Key',
+    'Shield',
+    'AlertTriangle',
+    'HelpCircle',
+    'MessageSquare',
+    'Send',
+    'Paperclip',
+    'Image',
+    'Video',
+    'Mic',
+    'Play',
+    'Pause',
+    'SkipForward',
+    'SkipBack',
+    'Volume2',
+    'VolumeX',
+    'Wifi',
+    'WifiOff',
+    'Bluetooth',
+    'Battery',
+    'BatteryLow',
+    'Power',
+    'Zap',
+    'Cloud',
+    'Sun',
+    'Moon',
+    'Droplet',
+    'Wind',
+    'Loader',
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'CornerUpRight',
+    'Hash',
+    'AtSign',
+    'DollarSign',
+    'Percent',
+    'Filter',
+    'SortAsc',
+    'BookOpen',
+    'Book',
+    'Bookmark',
+    'Award',
+    'Flag',
+    'MapPin',
+    'Navigation',
+    'Compass',
+    'Map',
+    'Move',
+    'Maximize',
+    'Minimize',
+    'LogIn',
+    'LogOut',
+    'UserPlus',
+    'UserMinus',
+    'UserCheck',
+    'UserX',
+    'Bell',
+    'BellOff',
+    'Inbox',
+    'Archive',
+    'Package',
+    'ShoppingCart',
+    'CreditCard',
+    'Gift',
+    'Briefcase',
+    'Coffee',
+    'Camera',
+    'Layers',
+    'Layout',
+    'Grid',
+    'List',
+    'AlignLeft',
+    'AlignCenter',
+    'AlignRight',
+    'Bold',
+    'Italic',
+    'Underline',
+    'Link2',
+    'Unlink',
+    'Type',
+    'FileText',
+    'FilePlus',
+    'FileMinus',
+    'FolderPlus',
+    'FolderMinus',
+    'Printer',
+    'Monitor',
+    'Smartphone',
+    'Tablet',
+    'Laptop',
+    'HardDrive',
+    'Server',
+    'Cpu',
+    'Activity',
+    'BarChart',
+    'BarChart2',
+    'PieChart',
+    'TrendingUp',
+    'TrendingDown',
+    'Target',
+    'Award',
+    'ThumbsUp',
+    'ThumbsDown',
+    'ExternalLink',
+    'Github',
+    'Linkedin',
+    'Twitter',
+    'Facebook',
+    'Instagram',
+    'LayoutDashboard',
+    'Trash2',
+    'FileCode',
+    'Languages',
+    'UserCircle',
+    'Bot',
+    'MessageCircle',
+    'ArrowUpRight',
+    'Building2',
+    'GraduationCap2',
+    'Sparkles',
+    'Brain',
+    'Rocket',
+    'ChartBar',
+    'Share2',
+    'Copy2',
+    'AlertOctagon',
+    'Info',
+    'CheckCircle2',
+    'XCircle2',
+    'ArrowRight2',
+    'ArrowLeft2',
+    'Construction',
+    'Building',
+    'CalendarCheck',
+    'Code2',
+    'Lightbulb',
+  ];
+
+  // Create all icon exports
+  const icons: Record<string, any> = {
+    LucideIcon,
+  };
+
+  iconNames.forEach((name) => {
+    icons[name] = createIcon(name);
+  });
+
+  // Return a Proxy that creates any icon on demand
+  return new Proxy(icons, {
+    get: (target, prop) => {
+      // Handle special module exports
+      if (prop === '__esModule') return true;
+      if (prop === 'default') return {};
+
+      // Return existing icon if available
+      if (prop in target) {
+        return target[prop as string];
+      }
+
+      // Return a mock component for any icon name
+      if (typeof prop === 'string') {
+        return createIcon(prop);
+      }
+
+      return undefined;
+    },
+  });
 });
 
 // Import CI-specific setup if in CI environment
 // Note: Dynamic imports are not supported in test setup files
 // CI-specific setup should be handled differently in Vite
+
+// Mock react-helmet-async to prevent classList errors
+vi.mock('react-helmet-async', () => {
+  const React = require('react');
+
+  // Mock Helmet component that just renders children without DOM manipulation
+  const Helmet = ({ children }: { children?: React.ReactNode }) => {
+    // Don't render anything to DOM, just return null
+    // This prevents any classList manipulation errors
+    return null;
+  };
+
+  // Mock HelmetProvider
+  const HelmetProvider = ({ children }: { children: React.ReactNode }) => {
+    return React.createElement(React.Fragment, null, children);
+  };
+
+  // Mock HelmetData class
+  class HelmetData {
+    context = {
+      helmet: {
+        title: { toComponent: () => null },
+        meta: { toComponent: () => null },
+        link: { toComponent: () => null },
+        script: { toComponent: () => null },
+        style: { toComponent: () => null },
+        base: { toComponent: () => null },
+        noscript: { toComponent: () => null },
+        htmlAttributes: { toComponent: () => null },
+        bodyAttributes: { toComponent: () => null },
+      },
+    };
+  }
+
+  return {
+    Helmet,
+    HelmetProvider,
+    HelmetData,
+  };
+});
 
 // Mock window dialog methods
 window.alert = vi.fn();
@@ -122,46 +387,100 @@ if (!navigator.serviceWorker.ready || !navigator.serviceWorker.ready.then) {
 }
 
 // Mock classList - ensure it's always available
-// Ensure document elements have classList
-if (!document.documentElement.classList) {
-  const mockClassList = {
-    add: vi.fn(),
-    remove: vi.fn(),
-    contains: vi.fn(() => false),
-    toggle: vi.fn(),
-    replace: vi.fn(),
-    item: vi.fn(),
-    toString: vi.fn(() => ''),
-    length: 0,
-    value: '',
-  };
+// Create a proper classList mock
+const createClassListMock = () => ({
+  add: vi.fn(),
+  remove: vi.fn(),
+  contains: vi.fn(() => false),
+  toggle: vi.fn(),
+  replace: vi.fn(),
+  item: vi.fn(),
+  toString: vi.fn(() => ''),
+  length: 0,
+  value: '',
+  forEach: vi.fn(),
+  entries: vi.fn(),
+  keys: vi.fn(),
+  values: vi.fn(),
+});
 
-  Object.defineProperty(document.documentElement, 'classList', {
-    value: mockClassList,
-    writable: true,
-    configurable: true,
-  });
+// Always ensure classList is available on document elements
+const documentElementClassList = createClassListMock();
+const documentBodyClassList = createClassListMock();
+
+Object.defineProperty(document.documentElement, 'classList', {
+  get() {
+    return documentElementClassList;
+  },
+  set() {
+    /* ignore */
+  },
+  configurable: true,
+});
+
+Object.defineProperty(document.body, 'classList', {
+  get() {
+    return documentBodyClassList;
+  },
+  set() {
+    /* ignore */
+  },
+  configurable: true,
+});
+
+// Ensure style property exists
+if (!document.documentElement.style) {
+  document.documentElement.style = {
+    setProperty: vi.fn(),
+    removeProperty: vi.fn(),
+    getPropertyValue: vi.fn(() => ''),
+  } as any;
 }
 
-if (!document.body.classList) {
-  const mockClassList = {
-    add: vi.fn(),
-    remove: vi.fn(),
-    contains: vi.fn(() => false),
-    toggle: vi.fn(),
-    replace: vi.fn(),
-    item: vi.fn(),
-    toString: vi.fn(() => ''),
-    length: 0,
-    value: '',
-  };
+// Also ensure classList is available on any created elements
+const originalCreateElement = document.createElement.bind(document);
+document.createElement = function (tagName: string) {
+  const element = originalCreateElement(tagName);
+  if (!element.classList) {
+    Object.defineProperty(element, 'classList', {
+      value: createClassListMock(),
+      writable: true,
+      configurable: true,
+    });
+  }
+  return element;
+};
 
-  Object.defineProperty(document.body, 'classList', {
-    value: mockClassList,
-    writable: true,
-    configurable: true,
-  });
-}
+// Patch Element prototype to ensure classList is always available
+const ensureClassList = (element: any) => {
+  if (element && !element.classList) {
+    Object.defineProperty(element, 'classList', {
+      value: createClassListMock(),
+      writable: true,
+      configurable: true,
+    });
+  }
+  return element;
+};
+
+// Override querySelector methods to ensure classList
+const originalQuerySelector = document.querySelector.bind(document);
+document.querySelector = function (selector: string) {
+  return ensureClassList(originalQuerySelector(selector));
+};
+
+const originalQuerySelectorAll = document.querySelectorAll.bind(document);
+document.querySelectorAll = function (selector: string) {
+  const elements = originalQuerySelectorAll(selector);
+  elements.forEach(ensureClassList);
+  return elements;
+};
+
+// Ensure classList for getElementById
+const originalGetElementById = document.getElementById.bind(document);
+document.getElementById = function (id: string) {
+  return ensureClassList(originalGetElementById(id));
+};
 
 // Mock localStorage
 const localStorageMock = (() => {

@@ -364,11 +364,16 @@ describe(
       it('should detect badge support', () => {
         Object.defineProperty(navigator, 'setAppBadge', {
           writable: true,
+          configurable: true,
           value: vi.fn(),
         });
         expect(isAppBadgeSupported()).toBe(true);
 
-        delete (navigator as any).setAppBadge;
+        Object.defineProperty(navigator, 'setAppBadge', {
+          writable: true,
+          configurable: true,
+          value: undefined,
+        });
         expect(isAppBadgeSupported()).toBe(false);
       });
     });
@@ -378,6 +383,7 @@ describe(
         const mockSetAppBadge = vi.fn().mockResolvedValue(undefined);
         Object.defineProperty(navigator, 'setAppBadge', {
           writable: true,
+          configurable: true,
           value: mockSetAppBadge,
         });
 
@@ -387,7 +393,11 @@ describe(
       });
 
       it('should return false when not supported', async () => {
-        delete (navigator as any).setAppBadge;
+        Object.defineProperty(navigator, 'setAppBadge', {
+          writable: true,
+          configurable: true,
+          value: undefined,
+        });
         const result = await setAppBadge(5);
         expect(result).toBe(false);
       });
@@ -396,6 +406,7 @@ describe(
         const mockSetAppBadge = vi.fn().mockRejectedValue(new Error('Failed'));
         Object.defineProperty(navigator, 'setAppBadge', {
           writable: true,
+          configurable: true,
           value: mockSetAppBadge,
         });
 
@@ -409,6 +420,7 @@ describe(
         const mockClearAppBadge = vi.fn().mockResolvedValue(undefined);
         Object.defineProperty(navigator, 'clearAppBadge', {
           writable: true,
+          configurable: true,
           value: mockClearAppBadge,
         });
 
@@ -418,7 +430,11 @@ describe(
       });
 
       it('should return false when not supported', async () => {
-        delete (navigator as any).clearAppBadge;
+        Object.defineProperty(navigator, 'clearAppBadge', {
+          writable: true,
+          configurable: true,
+          value: undefined,
+        });
         const result = await clearAppBadge();
         expect(result).toBe(false);
       });
@@ -428,11 +444,16 @@ describe(
       it('should detect share support', () => {
         Object.defineProperty(navigator, 'share', {
           writable: true,
+          configurable: true,
           value: vi.fn(),
         });
         expect(isWebShareSupported()).toBe(true);
 
-        delete (navigator as any).share;
+        Object.defineProperty(navigator, 'share', {
+          writable: true,
+          configurable: true,
+          value: undefined,
+        });
         expect(isWebShareSupported()).toBe(false);
       });
     });
@@ -442,6 +463,7 @@ describe(
         const mockShare = vi.fn().mockResolvedValue(undefined);
         Object.defineProperty(navigator, 'share', {
           writable: true,
+          configurable: true,
           value: mockShare,
         });
 
@@ -459,6 +481,7 @@ describe(
         const mockShare = vi.fn().mockRejectedValue(new Error('AbortError'));
         Object.defineProperty(navigator, 'share', {
           writable: true,
+          configurable: true,
           value: mockShare,
         });
 
@@ -467,10 +490,15 @@ describe(
       });
 
       it('should fallback to clipboard when share not supported', async () => {
-        delete (navigator as any).share;
+        Object.defineProperty(navigator, 'share', {
+          writable: true,
+          configurable: true,
+          value: undefined,
+        });
         const mockWriteText = vi.fn().mockResolvedValue(undefined);
         Object.defineProperty(navigator, 'clipboard', {
           writable: true,
+          configurable: true,
           value: { writeText: mockWriteText },
         });
 
@@ -487,11 +515,16 @@ describe(
       it('should detect wake lock support', () => {
         Object.defineProperty(navigator, 'wakeLock', {
           writable: true,
+          configurable: true,
           value: { request: vi.fn() },
         });
         expect(isWakeLockSupported()).toBe(true);
 
-        delete (navigator as any).wakeLock;
+        Object.defineProperty(navigator, 'wakeLock', {
+          writable: true,
+          configurable: true,
+          value: undefined,
+        });
         expect(isWakeLockSupported()).toBe(false);
       });
     });
@@ -506,6 +539,7 @@ describe(
         const mockRequest = vi.fn().mockResolvedValue(mockWakeLock);
         Object.defineProperty(navigator, 'wakeLock', {
           writable: true,
+          configurable: true,
           value: { request: mockRequest },
         });
 
@@ -515,7 +549,11 @@ describe(
       });
 
       it('should return false when not supported', async () => {
-        delete (navigator as any).wakeLock;
+        Object.defineProperty(navigator, 'wakeLock', {
+          writable: true,
+          configurable: true,
+          value: undefined,
+        });
         const result = await requestWakeLock();
         expect(result).toBe(false);
       });
@@ -564,11 +602,19 @@ describe(
 
     describe('triggerInstallPrompt', () => {
       it('should trigger install prompt when available', async () => {
+        // Initialize install prompt handler
+        initializeInstallPrompt();
+
         const mockEvent = {
+          preventDefault: vi.fn(),
           prompt: vi.fn().mockResolvedValue(undefined),
-          userChoice: Promise.resolve({ outcome: 'accepted' }),
+          userChoice: Promise.resolve({ outcome: 'accepted' as const }),
         };
-        (window as any).deferredPrompt = mockEvent;
+
+        // Trigger the beforeinstallprompt event
+        const event = new Event('beforeinstallprompt');
+        Object.assign(event, mockEvent);
+        window.dispatchEvent(event);
 
         const result = await triggerInstallPrompt();
         expect(mockEvent.prompt).toHaveBeenCalled();
@@ -576,17 +622,25 @@ describe(
       });
 
       it('should return not-available when no prompt', async () => {
-        (window as any).deferredPrompt = null;
+        // Ensure no prompt is set
         const result = await triggerInstallPrompt();
         expect(result).toBe('not-available');
       });
 
       it('should handle errors', async () => {
+        // Initialize install prompt handler
+        initializeInstallPrompt();
+
         const mockEvent = {
+          preventDefault: vi.fn(),
           prompt: vi.fn().mockRejectedValue(new Error('Failed')),
-          userChoice: Promise.resolve({ outcome: 'dismissed' }),
+          userChoice: Promise.resolve({ outcome: 'dismissed' as const }),
         };
-        (window as any).deferredPrompt = mockEvent;
+
+        // Trigger the beforeinstallprompt event
+        const event = new Event('beforeinstallprompt');
+        Object.assign(event, mockEvent);
+        window.dispatchEvent(event);
 
         const result = await triggerInstallPrompt();
         expect(result).toBe('dismissed');
@@ -602,6 +656,7 @@ describe(
         const mockRequest = vi.fn().mockResolvedValue(mockWakeLock);
         Object.defineProperty(navigator, 'wakeLock', {
           writable: true,
+          configurable: true,
           value: { request: mockRequest },
         });
         await requestWakeLock();
@@ -617,11 +672,20 @@ describe(
 
     describe('isInstallPromptAvailable', () => {
       it('should check install prompt availability', () => {
-        (window as any).deferredPrompt = { prompt: vi.fn() };
-        expect(isInstallPromptAvailable()).toBe(true);
-
-        (window as any).deferredPrompt = null;
+        // Initially should be false
         expect(isInstallPromptAvailable()).toBe(false);
+
+        // Initialize and trigger install prompt
+        initializeInstallPrompt();
+        const mockEvent = {
+          preventDefault: vi.fn(),
+          prompt: vi.fn(),
+        };
+        const event = new Event('beforeinstallprompt');
+        Object.assign(event, mockEvent);
+        window.dispatchEvent(event);
+
+        expect(isInstallPromptAvailable()).toBe(true);
       });
     });
 
@@ -711,24 +775,46 @@ describe(
       });
 
       it('should handle cache clear failure', async () => {
-        mockServiceWorker.postMessage.mockImplementation(() => {
-          throw new Error('Clear failed');
+        // Temporarily remove service worker controller
+        const originalController = navigator.serviceWorker.controller;
+        Object.defineProperty(navigator.serviceWorker, 'controller', {
+          writable: true,
+          configurable: true,
+          value: null,
         });
 
         await expect(clearAppCache()).resolves.toBeUndefined();
+
+        // Restore controller
+        Object.defineProperty(navigator.serviceWorker, 'controller', {
+          writable: true,
+          configurable: true,
+          value: originalController,
+        });
       });
     });
 
     describe('getInstallPromptEvent', () => {
       it('should return install prompt event', () => {
-        const mockEvent = { prompt: vi.fn() };
-        (window as any).deferredPrompt = mockEvent;
+        // Initialize and trigger install prompt
+        initializeInstallPrompt();
+        const mockEvent = {
+          preventDefault: vi.fn(),
+          prompt: vi.fn(),
+        };
+        const event = new Event('beforeinstallprompt');
+        Object.assign(event, mockEvent);
+        window.dispatchEvent(event);
 
-        expect(getInstallPromptEvent()).toBe(mockEvent);
+        const result = getInstallPromptEvent();
+        expect(result).toBeTruthy();
+        expect(result?.prompt).toBeDefined();
       });
 
       it('should return null when no event', () => {
-        (window as any).deferredPrompt = null;
+        // Clear any existing prompt by triggering appinstalled
+        initializeInstallPrompt();
+        window.dispatchEvent(new Event('appinstalled'));
 
         expect(getInstallPromptEvent()).toBe(null);
       });

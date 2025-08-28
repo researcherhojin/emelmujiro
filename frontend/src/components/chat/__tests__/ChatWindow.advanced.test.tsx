@@ -54,6 +54,9 @@ vi.mock('lucide-react', () => ({
   VolumeX: () => <span>VolumeX</span>,
   Bell: () => <span>Bell</span>,
   BellOff: () => <span>BellOff</span>,
+  AlertCircle: () => <span>AlertCircle</span>,
+  CheckCircle: () => <span>CheckCircle</span>,
+  Clock: () => <span>Clock</span>,
 }));
 
 // Mock contexts
@@ -164,15 +167,7 @@ import { useChatContext } from '../../../contexts/ChatContext';
 
 const mockUseChatContext = useChatContext as ReturnType<typeof vi.fn>;
 
-describe('ChatWindow - Advanced Tests', () => {
-  // Skip tests in CI environment due to component differences
-  if (process.env.CI === 'true') {
-    it('skipped in CI', () => {
-      expect(true).toBe(true);
-    });
-    return;
-  }
-
+describe('ChatWindowAdvanced', () => {
   // Mock ChatContext values
   const mockChatContextValue = {
     messages: [
@@ -425,7 +420,6 @@ describe('ChatWindow - Advanced Tests', () => {
 
       // Voice recording might not be implemented yet
       // Skip this test for now
-      expect(true).toBe(true);
     });
   });
 

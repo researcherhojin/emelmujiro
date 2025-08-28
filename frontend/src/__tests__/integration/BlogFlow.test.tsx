@@ -83,104 +83,88 @@ const mockPosts = [
   },
 ];
 
-describe(
-  process.env.CI === 'true'
-    ? 'Blog Flow Integration Tests (skipped in CI)'
-    : 'Blog Flow Integration Tests',
-  () => {
-    if (process.env.CI === 'true') {
-      it('skipped in CI', () => {
-        expect(true).toBe(true);
-      });
-      return;
-    }
+describe('Blog Flow Integration Tests', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Mock successful blog posts fetch
+    mockedBlogService.getPosts.mockResolvedValue({
+      data: {
+        count: mockPosts.length,
+        next: null,
+        previous: null,
+        results: mockPosts,
+      },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as InternalAxiosRequestConfig,
+    });
+  });
 
-    beforeEach(() => {
-      vi.clearAllMocks();
-      // Mock successful blog posts fetch
-      mockedBlogService.getPosts.mockResolvedValue({
-        data: {
-          count: mockPosts.length,
-          next: null,
-          previous: null,
-          results: mockPosts,
-        },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
+  test('app renders without crashing', async () => {
+    render(<App />);
+
+    // Wait for the app to render
+    await waitFor(
+      () => {
+        // App should render without crashing
+      },
+      { timeout: 3000 }
+    );
+  });
+
+  test('handles navigation when available', async () => {
+    render(<App />);
+
+    // Wait for initial render
+    await waitFor(() => {
+      // Check if any links are rendered
+      const links = screen.queryAllByRole('link');
+      expect(links.length >= 0).toBe(true);
+    });
+  });
+
+  test('displays content based on route', async () => {
+    render(<App />);
+
+    // Wait for content to load
+    await waitFor(() => {
+      // App renders successfully
+    });
+  });
+
+  test('handles errors gracefully', async () => {
+    // Mock an error response
+    mockedBlogService.getPosts.mockRejectedValue(new Error('Network error'));
+
+    render(<App />);
+
+    // Wait for render
+    await waitFor(() => {
+      // App should still render even with errors
+    });
+  });
+
+  test('renders with mobile viewport', async () => {
+    // Mock mobile viewport
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 375,
     });
 
-    test('app renders without crashing', async () => {
-      render(<App />);
+    render(<App />);
 
-      // Wait for the app to render
-      await waitFor(
-        () => {
-          // App should render without crashing
-          expect(true).toBe(true);
-        },
-        { timeout: 3000 }
-      );
+    // Wait for render
+    await waitFor(() => {
+      // App should render in mobile view
     });
+  });
 
-    test('handles navigation when available', async () => {
-      render(<App />);
-
-      // Wait for initial render
-      await waitFor(() => {
-        // Check if any links are rendered
-        const links = screen.queryAllByRole('link');
-        expect(links.length >= 0).toBe(true);
-      });
-    });
-
-    test('displays content based on route', async () => {
-      render(<App />);
-
-      // Wait for content to load
-      await waitFor(() => {
-        // App renders successfully
-        expect(true).toBe(true);
-      });
-    });
-
-    test('handles errors gracefully', async () => {
-      // Mock an error response
-      mockedBlogService.getPosts.mockRejectedValue(new Error('Network error'));
-
-      render(<App />);
-
-      // Wait for render
-      await waitFor(() => {
-        // App should still render even with errors
-        expect(true).toBe(true);
-      });
-    });
-
-    test('renders with mobile viewport', async () => {
-      // Mock mobile viewport
-      Object.defineProperty(window, 'innerWidth', {
-        writable: true,
-        configurable: true,
-        value: 375,
-      });
-
-      render(<App />);
-
-      // Wait for render
-      await waitFor(() => {
-        // App should render in mobile view
-        expect(true).toBe(true);
-      });
-    });
-
-    test('mocked blog service is configured correctly', () => {
-      // Verify mocks are set up
-      expect(mockedBlogService.getPosts).toBeDefined();
-      expect(mockedBlogService.getPost).toBeDefined();
-      expect(mockedBlogService.searchPosts).toBeDefined();
-    });
-  }
-);
+  test('mocked blog service is configured correctly', () => {
+    // Verify mocks are set up
+    expect(mockedBlogService.getPosts).toBeDefined();
+    expect(mockedBlogService.getPost).toBeDefined();
+    expect(mockedBlogService.searchPosts).toBeDefined();
+  });
+});

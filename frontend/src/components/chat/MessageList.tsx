@@ -247,6 +247,7 @@ const MessageList: React.FC = () => {
       timestamp: Date;
       agentName?: string;
       file?: File | { url: string };
+      quickReplies?: string[];
     },
     _index: number
   ) => {
@@ -343,6 +344,30 @@ const MessageList: React.FC = () => {
               </span>
               {isUser && getStatusIcon(message.status)}
             </div>
+
+            {/* Quick Replies */}
+            {!isUser &&
+              message.quickReplies &&
+              message.quickReplies.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {message.quickReplies.map((reply, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        // Send quick reply as a message
+                        sendMessage({
+                          type: 'text',
+                          content: reply,
+                          sender: 'user',
+                        });
+                      }}
+                      className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
+                    >
+                      {reply}
+                    </button>
+                  ))}
+                </div>
+              )}
           </div>
         </div>
       </motion.div>

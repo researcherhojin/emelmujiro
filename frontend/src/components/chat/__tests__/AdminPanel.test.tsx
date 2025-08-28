@@ -392,7 +392,7 @@ describe('AdminPanel', () => {
       }
     });
 
-    it.skip('displays existing canned responses', async () => {
+    it('displays existing canned responses', async () => {
       // The component starts with default canned responses from settings
       // Check that the canned responses section is shown
       await waitFor(
@@ -403,7 +403,7 @@ describe('AdminPanel', () => {
       );
     });
 
-    it.skip('allows adding new canned response', async () => {
+    it('allows adding new canned response', async () => {
       const user = userEvent.setup();
 
       const input = screen.getByPlaceholderText('새 자동 응답 추가...');
@@ -419,7 +419,7 @@ describe('AdminPanel', () => {
       });
     });
 
-    it.skip('allows editing canned response', async () => {
+    it('allows editing canned response', async () => {
       const user = userEvent.setup();
 
       // Since no canned responses exist by default, add one first
@@ -437,7 +437,7 @@ describe('AdminPanel', () => {
       });
     });
 
-    it.skip('allows deleting canned response', async () => {
+    it('allows deleting canned response', async () => {
       // First add a response
       const user = userEvent.setup();
       const input = screen.getByPlaceholderText('새 자동 응답 추가...');
@@ -464,7 +464,7 @@ describe('AdminPanel', () => {
       expect(true).toBe(true);
     });
 
-    it.skip('does not add empty canned response', async () => {
+    it('does not add empty canned response', async () => {
       const input = screen.getByPlaceholderText('새 자동 응답 추가...');
       const addButton = screen.getByText('추가')?.closest('button');
 
@@ -511,7 +511,7 @@ describe('AdminPanel', () => {
       expect(screen.getByTestId('total-messages-count')).toBeInTheDocument();
     });
 
-    it.skip('displays active users count', () => {
+    it('displays active users count', () => {
       expect(screen.getByText('활성 사용자')).toBeInTheDocument();
       expect(screen.getByTestId('active-users-count')).toBeInTheDocument();
     });
@@ -568,7 +568,7 @@ describe('AdminPanel', () => {
       }
     });
 
-    it.skip('displays active users list', async () => {
+    it('displays active users list', async () => {
       await waitFor(
         () => {
           expect(screen.getByText('활성 사용자')).toBeInTheDocument();
@@ -579,7 +579,7 @@ describe('AdminPanel', () => {
       expect(list).toBeInTheDocument();
     });
 
-    it.skip('shows user status indicators', async () => {
+    it('shows user status indicators', async () => {
       await waitFor(
         () => {
           const onlineIndicators =
@@ -595,15 +595,15 @@ describe('AdminPanel', () => {
       );
     });
 
-    it.skip('displays user connection time', () => {
+    it('displays user connection time', () => {
       expect(screen.getByText(/연결 시간:/)).toBeInTheDocument();
     });
 
-    it.skip('displays user last seen time', () => {
+    it('displays user last seen time', () => {
       expect(screen.getByText(/마지막 활동:/)).toBeInTheDocument();
     });
 
-    it.skip('allows blocking a user', async () => {
+    it('allows blocking a user', async () => {
       const blockButtons = screen.getAllByRole('button', { name: /차단/i });
       if (blockButtons.length > 0) {
         fireEvent.click(blockButtons[0]);

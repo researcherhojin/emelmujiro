@@ -311,7 +311,9 @@ describe('Footer Component', () => {
         await waitFor(
           () =>
             expect(
-              screen.getByText('빅데이터 분석과 인사이트 도출을 지원합니다.')
+              screen.getByText(
+                '비즈니스 인사이트 도출을 위한 데이터 분석 서비스를 제공합니다.'
+              )
             ).toBeInTheDocument(),
           { timeout: 3000 }
         );

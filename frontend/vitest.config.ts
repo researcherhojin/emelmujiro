@@ -11,6 +11,14 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
     css: true,
+    testTimeout: 10000, // 10 seconds timeout for each test
+    hookTimeout: 10000, // 10 seconds timeout for hooks
+    pool: 'forks', // Use forks pool for better isolation
+    poolOptions: {
+      forks: {
+        maxForks: process.env.CI ? 2 : undefined, // Limit parallel execution in CI
+      },
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

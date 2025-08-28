@@ -115,12 +115,12 @@ describe('API Service', () => {
   });
 
   describe('Interceptors', () => {
-    it.skip('should setup request interceptor', async () => {
+    it('should setup request interceptor', async () => {
       await import('../api');
       expect(mockRequestUse).toHaveBeenCalled();
     });
 
-    it.skip('should setup response interceptor', async () => {
+    it('should setup response interceptor', async () => {
       await import('../api');
       expect(mockResponseUse).toHaveBeenCalled();
     });
