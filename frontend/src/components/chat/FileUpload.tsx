@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUI } from '../../contexts/UIContext';
+import logger from '../../utils/logger';
 
 interface FileUploadProps {
   onUpload: (file: File) => void;
@@ -156,7 +157,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
         onClose();
       }
     } catch (error) {
-      console.error('Upload error:', error);
+      logger.error('Upload error:', error);
       setUploadProgress(null);
       showNotification(
         'error',

@@ -9,7 +9,10 @@ import React from 'react';
 vi.mock('lucide-react', () => {
   // Create a generic icon component factory
   const createIcon = (name: string) => {
-    const Component = React.forwardRef((props: any, ref: any) => {
+    const Component = React.forwardRef<
+      SVGSVGElement,
+      React.SVGProps<SVGSVGElement>
+    >((props, ref) => {
       return React.createElement(
         'svg',
         {
@@ -216,7 +219,12 @@ vi.mock('lucide-react', () => {
   ];
 
   // Create all icon exports
-  const icons: Record<string, any> = {
+  const icons: Record<
+    string,
+    React.ForwardRefExoticComponent<
+      React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>
+    >
+  > = {
     LucideIcon,
   };
 
@@ -255,6 +263,7 @@ vi.mock('react-helmet-async', () => {
   const React = require('react');
 
   // Mock Helmet component that just renders children without DOM manipulation
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const Helmet = ({ children }: { children?: React.ReactNode }) => {
     // Don't render anything to DOM, just return null
     // This prevents any classList manipulation errors
@@ -430,11 +439,15 @@ Object.defineProperty(document.body, 'classList', {
 
 // Ensure style property exists
 if (!document.documentElement.style) {
-  document.documentElement.style = {
-    setProperty: vi.fn(),
-    removeProperty: vi.fn(),
-    getPropertyValue: vi.fn(() => ''),
-  } as any;
+  Object.defineProperty(document.documentElement, 'style', {
+    value: {
+      setProperty: vi.fn(),
+      removeProperty: vi.fn(),
+      getPropertyValue: vi.fn(() => ''),
+    },
+    writable: true,
+    configurable: true,
+  });
 }
 
 // Also ensure classList is available on any created elements
@@ -452,7 +465,7 @@ document.createElement = function (tagName: string) {
 };
 
 // Patch Element prototype to ensure classList is always available
-const ensureClassList = (element: any) => {
+const ensureClassList = (element: Element | HTMLElement | null): void => {
   if (element && !element.classList) {
     Object.defineProperty(element, 'classList', {
       value: createClassListMock(),
@@ -460,26 +473,33 @@ const ensureClassList = (element: any) => {
       configurable: true,
     });
   }
-  return element;
 };
 
 // Override querySelector methods to ensure classList
 const originalQuerySelector = document.querySelector.bind(document);
 document.querySelector = function (selector: string) {
-  return ensureClassList(originalQuerySelector(selector));
+  const element = originalQuerySelector(selector);
+  if (element) {
+    ensureClassList(element);
+  }
+  return element;
 };
 
 const originalQuerySelectorAll = document.querySelectorAll.bind(document);
 document.querySelectorAll = function (selector: string) {
   const elements = originalQuerySelectorAll(selector);
-  elements.forEach(ensureClassList);
+  elements.forEach((element) => ensureClassList(element));
   return elements;
 };
 
 // Ensure classList for getElementById
 const originalGetElementById = document.getElementById.bind(document);
-document.getElementById = function (id: string) {
-  return ensureClassList(originalGetElementById(id));
+document.getElementById = function (id: string): HTMLElement | null {
+  const element = originalGetElementById(id);
+  if (element) {
+    ensureClassList(element);
+  }
+  return element;
 };
 
 // Mock localStorage

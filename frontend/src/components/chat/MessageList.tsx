@@ -14,6 +14,7 @@ import {
 import { useChatContext } from '../../contexts/ChatContext';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import logger from '../../utils/logger';
 
 const MessageList: React.FC = () => {
   const { t } = useTranslation();
@@ -92,7 +93,7 @@ const MessageList: React.FC = () => {
         file: message.file,
       });
     } catch (error) {
-      console.error('Failed to retry message:', error);
+      logger.error('Failed to retry message:', error);
     }
   };
 
