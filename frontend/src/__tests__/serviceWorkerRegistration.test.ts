@@ -3,13 +3,17 @@
  * Testing all registration, unregistration, and error scenarios
  */
 
+import { vi } from 'vitest';
+
 // Mock console methods before importing the module
-const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation();
-const mockConsoleError = jest.spyOn(console, 'error').mockImplementation();
+const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
+const mockConsoleError = vi
+  .spyOn(console, 'error')
+  .mockImplementation(() => {});
 
 // Mock fetch globally with proper promise return
 interface MockHeaders {
-  get: jest.Mock<string | null, [string]>;
+  get: (header: string) => string | null;
 }
 
 interface MockResponse {
@@ -21,7 +25,7 @@ interface MockResponse {
 }
 
 const createMockHeaders = (): MockHeaders => ({
-  get: jest.fn((header: string) => {
+  get: vi.fn((header: string) => {
     if (header === 'content-type') {
       return 'application/javascript';
     }
@@ -29,7 +33,7 @@ const createMockHeaders = (): MockHeaders => ({
   }),
 });
 
-const mockFetch = jest.fn(
+const mockFetch = vi.fn(
   (): Promise<MockResponse> =>
     Promise.resolve({
       ok: true,
@@ -68,7 +72,7 @@ describe(
       originalLocation = window.location;
 
       // Clear all mocks
-      jest.clearAllMocks();
+      vi.clearAllMocks();
 
       // Reset fetch mock to default behavior
       mockFetch.mockImplementation(
@@ -100,10 +104,10 @@ describe(
         waiting: null,
         active: mockServiceWorker as ServiceWorker,
         onupdatefound: null as ((event?: Event) => void) | null,
-        unregister: jest.fn().mockResolvedValue(true),
+        unregister: vi.fn().mockResolvedValue(true),
         pushManager: {
-          getSubscription: jest.fn().mockResolvedValue(null),
-          subscribe: jest.fn().mockResolvedValue({}),
+          getSubscription: vi.fn().mockResolvedValue(null),
+          subscribe: vi.fn().mockResolvedValue({}),
         } as unknown as PushManager,
       } as unknown as ServiceWorkerRegistration;
 
@@ -121,7 +125,7 @@ describe(
       Object.defineProperty(navigator, 'serviceWorker', {
         writable: true,
         value: {
-          register: jest.fn().mockResolvedValue(mockServiceWorkerRegistration),
+          register: vi.fn().mockResolvedValue(mockServiceWorkerRegistration),
           ready: Promise.resolve(mockServiceWorkerRegistration),
           controller: null,
         },
@@ -142,14 +146,14 @@ describe(
         ...process.env,
         PUBLIC_URL: originalEnv,
         NODE_ENV: originalNodeEnv,
-      };
+      } as any;
 
       // Restore console methods
       mockConsoleLog.mockRestore();
       mockConsoleError.mockRestore();
 
       // Clear module cache to ensure clean imports
-      jest.resetModules();
+      vi.resetModules();
     });
 
     describe('register function', () => {
@@ -180,7 +184,7 @@ describe(
           },
         });
 
-        const mockRegister = jest.fn();
+        const mockRegister = vi.fn();
         Object.defineProperty(navigator, 'serviceWorker', {
           writable: true,
           value: {
@@ -200,11 +204,11 @@ describe(
       });
 
       it('should register service worker on localhost with valid config', async () => {
-        const mockRegister = jest
+        const mockRegister = vi
           .fn()
           .mockResolvedValue(mockServiceWorkerRegistration);
-        const onSuccess = jest.fn();
-        const onUpdate = jest.fn();
+        const onSuccess = vi.fn();
+        const onUpdate = vi.fn();
 
         Object.defineProperty(navigator, 'serviceWorker', {
           writable: true,
@@ -242,7 +246,7 @@ describe(
           },
         });
 
-        const mockRegister = jest
+        const mockRegister = vi
           .fn()
           .mockResolvedValue(mockServiceWorkerRegistration);
 
@@ -268,7 +272,7 @@ describe(
 
       it('should handle service worker registration errors', async () => {
         const registrationError = new Error('Registration failed');
-        const mockRegister = jest.fn().mockRejectedValue(registrationError);
+        const mockRegister = vi.fn().mockRejectedValue(registrationError);
 
         Object.defineProperty(navigator, 'serviceWorker', {
           writable: true,
@@ -304,21 +308,20 @@ describe(
       });
 
       it('should handle service worker update found scenario', async () => {
-        const onUpdate = jest.fn();
+        const onUpdate = vi.fn();
         const mockInstallingWorker = {
           state: 'installing',
           onstatechange: null as
             | ((this: ServiceWorker, ev: Event) => unknown)
             | null,
         };
-
         const mockRegistrationWithUpdate = {
           ...mockServiceWorkerRegistration,
           installing: mockInstallingWorker,
           onupdatefound: null as ((event?: Event) => void) | null,
         } as unknown as ServiceWorkerRegistration;
 
-        const mockRegister = jest
+        const mockRegister = vi
           .fn()
           .mockResolvedValue(mockRegistrationWithUpdate);
 
@@ -366,21 +369,20 @@ describe(
       });
 
       it('should handle service worker success scenario (no existing controller)', async () => {
-        const onSuccess = jest.fn();
+        const onSuccess = vi.fn();
         const mockInstallingWorker = {
           state: 'installing',
           onstatechange: null as
             | ((this: ServiceWorker, ev: Event) => unknown)
             | null,
         };
-
         const mockRegistrationWithSuccess = {
           ...mockServiceWorkerRegistration,
           installing: mockInstallingWorker,
           onupdatefound: null as ((event?: Event) => void) | null,
         } as unknown as ServiceWorkerRegistration;
 
-        const mockRegister = jest
+        const mockRegister = vi
           .fn()
           .mockResolvedValue(mockRegistrationWithSuccess);
 
@@ -433,7 +435,7 @@ describe(
 
     describe('localhost detection and validation', () => {
       it('should validate service worker on localhost when SW file exists', async () => {
-        const mockRegister = jest
+        const mockRegister = vi
           .fn()
           .mockResolvedValue(mockServiceWorkerRegistration);
 
@@ -468,13 +470,13 @@ describe(
       });
 
       it('should handle service worker validation when SW file is not found', async () => {
-        const mockUnregister = jest.fn().mockResolvedValue(true);
-        const mockReload = jest.fn();
+        const mockUnregister = vi.fn().mockResolvedValue(true);
+        const mockReload = vi.fn();
 
         Object.defineProperty(navigator, 'serviceWorker', {
           writable: true,
           value: {
-            register: jest.fn(),
+            register: vi.fn(),
             ready: Promise.resolve({
               unregister: mockUnregister,
             }),
@@ -492,7 +494,7 @@ describe(
 
         // Mock 404 response
         const mock404Headers = createMockHeaders();
-        mock404Headers.get = jest.fn((_name: string): string | null => null);
+        mock404Headers.get = vi.fn((_name: string): string | null => null);
         mockFetch.mockResolvedValue({
           status: 404,
           headers: mock404Headers,
@@ -512,13 +514,13 @@ describe(
       });
 
       it('should handle service worker validation when SW file is not JS', async () => {
-        const mockUnregister = jest.fn().mockResolvedValue(true);
-        const mockReload = jest.fn();
+        const mockUnregister = vi.fn().mockResolvedValue(true);
+        const mockReload = vi.fn();
 
         Object.defineProperty(navigator, 'serviceWorker', {
           writable: true,
           value: {
-            register: jest.fn(),
+            register: vi.fn(),
             ready: Promise.resolve({
               unregister: mockUnregister,
             }),
@@ -536,7 +538,7 @@ describe(
 
         // Mock HTML response instead of JS
         const mockHtmlHeaders = createMockHeaders();
-        mockHtmlHeaders.get = jest.fn((header: string) => {
+        mockHtmlHeaders.get = vi.fn((header: string) => {
           if (header === 'content-type') {
             return 'text/html';
           }
@@ -564,7 +566,7 @@ describe(
         Object.defineProperty(navigator, 'serviceWorker', {
           writable: true,
           value: {
-            register: jest.fn(),
+            register: vi.fn(),
             ready: Promise.resolve(mockServiceWorkerRegistration),
             controller: null,
           },
@@ -590,7 +592,7 @@ describe(
 
     describe('unregister function', () => {
       it('should unregister service worker successfully', async () => {
-        const mockUnregister = jest.fn().mockResolvedValue(true);
+        const mockUnregister = vi.fn().mockResolvedValue(true);
 
         Object.defineProperty(navigator, 'serviceWorker', {
           writable: true,
@@ -621,7 +623,7 @@ describe(
 
       it('should handle unregistration errors', async () => {
         const unregisterError = new Error('Unregister failed');
-        const mockUnregister = jest.fn().mockRejectedValue(unregisterError);
+        const mockUnregister = vi.fn().mockRejectedValue(unregisterError);
 
         Object.defineProperty(navigator, 'serviceWorker', {
           writable: true,
@@ -674,7 +676,7 @@ describe(
             },
           });
 
-          const mockRegister = jest
+          const mockRegister = vi
             .fn()
             .mockResolvedValue(mockServiceWorkerRegistration);
 
@@ -722,7 +724,7 @@ describe(
           onupdatefound: null as ((event?: Event) => void) | null,
         } as unknown as ServiceWorkerRegistration;
 
-        const mockRegister = jest
+        const mockRegister = vi
           .fn()
           .mockResolvedValue(mockRegistrationNullInstalling);
 
@@ -765,21 +767,20 @@ describe(
       });
 
       it('should handle worker state change when not in installed state', async () => {
-        const onUpdate = jest.fn();
+        const onUpdate = vi.fn();
         const mockInstallingWorker = {
           state: 'installing',
           onstatechange: null as
             | ((this: ServiceWorker, ev: Event) => unknown)
             | null,
         };
-
         const mockRegistrationWithInstalling = {
           ...mockServiceWorkerRegistration,
           installing: mockInstallingWorker,
           onupdatefound: null as ((event?: Event) => void) | null,
         } as unknown as ServiceWorkerRegistration;
 
-        const mockRegister = jest
+        const mockRegister = vi
           .fn()
           .mockResolvedValue(mockRegistrationWithInstalling);
 

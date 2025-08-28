@@ -1,4 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
+import { vi } from 'vitest';
 import { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { useApiError } from '../useApiError';
 
@@ -78,7 +79,7 @@ describe('useApiError', () => {
           headers: {},
           config: {} as InternalAxiosRequestConfig,
         },
-      };
+      } as Partial<AxiosError>;
 
       act(() => {
         result.current.handleError(axiosError);
@@ -103,7 +104,7 @@ describe('useApiError', () => {
           headers: {},
           config: {} as InternalAxiosRequestConfig,
         },
-      };
+      } as Partial<AxiosError>;
 
       act(() => {
         result.current.handleError(axiosError);
@@ -128,7 +129,7 @@ describe('useApiError', () => {
           headers: {},
           config: {} as InternalAxiosRequestConfig,
         },
-      };
+      } as Partial<AxiosError>;
 
       act(() => {
         result.current.handleError(axiosError);
@@ -153,7 +154,7 @@ describe('useApiError', () => {
           headers: {},
           config: {} as InternalAxiosRequestConfig,
         },
-      };
+      } as Partial<AxiosError>;
 
       act(() => {
         result.current.handleError(axiosError);
@@ -178,7 +179,7 @@ describe('useApiError', () => {
           headers: {},
           config: {} as InternalAxiosRequestConfig,
         },
-      };
+      } as Partial<AxiosError>;
 
       act(() => {
         result.current.handleError(axiosError);
@@ -203,7 +204,7 @@ describe('useApiError', () => {
           headers: {},
           config: {} as InternalAxiosRequestConfig,
         },
-      };
+      } as Partial<AxiosError>;
 
       act(() => {
         result.current.handleError(axiosError);
@@ -228,7 +229,7 @@ describe('useApiError', () => {
           headers: {},
           config: {} as InternalAxiosRequestConfig,
         },
-      };
+      } as Partial<AxiosError>;
 
       act(() => {
         result.current.handleError(axiosError);
@@ -314,7 +315,7 @@ describe('useApiError', () => {
     it('should execute async function successfully', async () => {
       const { result } = renderHook(() => useApiError());
 
-      const mockAsyncFn = jest.fn().mockResolvedValue('success');
+      const mockAsyncFn = vi.fn().mockResolvedValue('success');
 
       await act(async () => {
         const data = await result.current.executeApiCall(mockAsyncFn);
@@ -330,7 +331,7 @@ describe('useApiError', () => {
       const { result } = renderHook(() => useApiError());
 
       const testError = new Error('Async error');
-      const mockAsyncFn = jest.fn().mockRejectedValue(testError);
+      const mockAsyncFn = vi.fn().mockRejectedValue(testError);
 
       await act(async () => {
         const data = await result.current.executeApiCall(mockAsyncFn);
@@ -347,8 +348,8 @@ describe('useApiError', () => {
     it('should call onSuccess callback when provided', async () => {
       const { result } = renderHook(() => useApiError());
 
-      const mockAsyncFn = jest.fn().mockResolvedValue('success');
-      const onSuccess = jest.fn();
+      const mockAsyncFn = vi.fn().mockResolvedValue('success');
+      const onSuccess = vi.fn();
 
       await act(async () => {
         await result.current.executeApiCall(mockAsyncFn, { onSuccess });
@@ -362,8 +363,8 @@ describe('useApiError', () => {
       const { result } = renderHook(() => useApiError());
 
       const testError = new Error('Test error');
-      const mockAsyncFn = jest.fn().mockRejectedValue(testError);
-      const onError = jest.fn();
+      const mockAsyncFn = vi.fn().mockRejectedValue(testError);
+      const onError = vi.fn();
 
       await act(async () => {
         await result.current.executeApiCall(mockAsyncFn, { onError });
@@ -378,7 +379,7 @@ describe('useApiError', () => {
     it('should not show loading when showLoading is false', async () => {
       const { result } = renderHook(() => useApiError());
 
-      const mockAsyncFn = jest.fn().mockResolvedValue('success');
+      const mockAsyncFn = vi.fn().mockResolvedValue('success');
 
       await act(async () => {
         await result.current.executeApiCall(mockAsyncFn, {

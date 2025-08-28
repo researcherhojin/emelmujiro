@@ -1,8 +1,9 @@
 import reportWebVitals from '../reportWebVitals';
+import { vi } from 'vitest';
 
 describe('reportWebVitals', () => {
   it('does not throw when called with a valid function', () => {
-    const onPerfEntry = jest.fn();
+    const onPerfEntry = vi.fn();
     expect(() => reportWebVitals(onPerfEntry)).not.toThrow();
   });
 

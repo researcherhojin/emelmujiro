@@ -1,9 +1,10 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import FileUpload from '../FileUpload';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -26,7 +27,7 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   Upload: ({ className }: { className?: string }) => (
     <div data-testid="upload-icon" className={className}>
       Upload
@@ -70,15 +71,15 @@ jest.mock('lucide-react', () => ({
 }));
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, defaultValue: string) => defaultValue,
   }),
 }));
 
 // Mock UIContext
-const mockShowNotification = jest.fn();
-jest.mock('../../../contexts/UIContext', () => ({
+const mockShowNotification = vi.fn();
+vi.mock('../../../contexts/UIContext', () => ({
   useUI: () => ({
     showNotification: mockShowNotification,
   }),
@@ -94,11 +95,11 @@ describe(
       return;
     }
 
-    const mockOnUpload = jest.fn();
-    const mockOnClose = jest.fn();
+    const mockOnUpload = vi.fn();
+    const mockOnClose = vi.fn();
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('renders file upload component', () => {
@@ -383,7 +384,7 @@ describe(
       const dropZone = screen.getByTestId('drop-zone');
 
       const event = new Event('dragover', { bubbles: true });
-      Object.defineProperty(event, 'preventDefault', { value: jest.fn() });
+      Object.defineProperty(event, 'preventDefault', { value: vi.fn() });
 
       fireEvent(dropZone, event);
       expect(event.preventDefault).toHaveBeenCalled();

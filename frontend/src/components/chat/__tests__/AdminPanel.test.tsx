@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
@@ -7,7 +8,7 @@ import { ChatProvider } from '../../../contexts/ChatContext';
 import { UIProvider } from '../../../contexts/UIContext';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -26,7 +27,7 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   X: ({ className }: { className?: string }) => (
     <span data-testid="icon-x" className={className}></span>
   ),
@@ -106,12 +107,12 @@ const translations: Record<string, string> = {
   'common.save': '저장',
 };
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, defaultValue?: string) =>
       translations[key] || defaultValue || key,
     i18n: {
-      changeLanguage: jest.fn(),
+      changeLanguage: vi.fn(),
       language: 'ko',
     },
   }),
@@ -136,7 +137,7 @@ const mockChatContext = {
   connectionId: null,
 };
 
-jest.mock('../../../contexts/ChatContext', () => ({
+vi.mock('../../../contexts/ChatContext', () => ({
   useChatContext: () => mockChatContext,
   ChatProvider: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }));
@@ -146,7 +147,7 @@ let mockNotifications: Array<{ id: string; type: string; message: string }> =
   [];
 
 // Mock UIContext
-jest.mock('../../../contexts/UIContext', () => ({
+vi.mock('../../../contexts/UIContext', () => ({
   useUI: () => ({
     showNotification: (type: string, message: string) => {
       mockNotifications.push({ id: Date.now().toString(), type, message });
@@ -167,14 +168,14 @@ const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
     store,
-    getItem: jest.fn((key: string) => store[key] || null),
-    setItem: jest.fn((key: string, value: string) => {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
       store[key] = value;
     }),
-    removeItem: jest.fn((key: string) => {
+    removeItem: vi.fn((key: string) => {
       delete store[key];
     }),
-    clear: jest.fn(() => {
+    clear: vi.fn(() => {
       store = {};
     }),
   };
@@ -188,15 +189,15 @@ Object.defineProperty(window, 'localStorage', {
 // Mock crypto for UUID generation
 Object.defineProperty(global, 'crypto', {
   value: {
-    randomUUID: jest.fn(() => 'test-uuid-' + Math.random()),
+    randomUUID: vi.fn(() => 'test-uuid-' + Math.random()),
   },
 });
 
 describe('AdminPanel', () => {
-  const mockOnClose = jest.fn();
+  const mockOnClose = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     localStorage.clear();
   });
 

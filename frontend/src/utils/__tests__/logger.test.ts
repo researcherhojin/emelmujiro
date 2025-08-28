@@ -1,26 +1,23 @@
+import { vi } from 'vitest';
 import Logger from '../logger';
 
 describe('Logger', () => {
-  let consoleLogSpy: jest.SpyInstance;
-  let consoleInfoSpy: jest.SpyInstance;
-  let consoleWarnSpy: jest.SpyInstance;
-  let consoleErrorSpy: jest.SpyInstance;
-  let consoleGroupSpy: jest.SpyInstance;
-  let consoleGroupEndSpy: jest.SpyInstance;
-  let consoleTableSpy: jest.SpyInstance;
-  let consoleTimeSpy: jest.SpyInstance;
-  let consoleTimeEndSpy: jest.SpyInstance;
+  let consoleLogSpy: ReturnType<typeof vi.spyOn>;
+  let consoleInfoSpy: ReturnType<typeof vi.spyOn>;
+  let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+  let consoleGroupSpy: ReturnType<typeof vi.spyOn>;
+  let consoleGroupEndSpy: ReturnType<typeof vi.spyOn>;
+  let consoleTableSpy: ReturnType<typeof vi.spyOn>;
+  let consoleTimeSpy: ReturnType<typeof vi.spyOn>;
+  let consoleTimeEndSpy: ReturnType<typeof vi.spyOn>;
   let originalEnv: string | undefined;
 
   beforeEach(() => {
     // Save original NODE_ENV
     originalEnv = process.env.NODE_ENV;
     // Set to development for tests
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'development',
-      writable: true,
-      configurable: true,
-    });
+    (process.env as any).NODE_ENV = 'development';
 
     // Force Logger to re-evaluate isDevelopment and config
     // @ts-ignore
@@ -31,27 +28,29 @@ describe('Logger', () => {
       logLevel: 'debug', // Allow all log levels in tests
     };
 
-    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
-    consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
-    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-    consoleGroupSpy = jest.spyOn(console, 'group').mockImplementation();
-    consoleGroupEndSpy = jest.spyOn(console, 'groupEnd').mockImplementation();
-    consoleTableSpy = jest.spyOn(console, 'table').mockImplementation();
-    consoleTimeSpy = jest.spyOn(console, 'time').mockImplementation();
-    consoleTimeEndSpy = jest.spyOn(console, 'timeEnd').mockImplementation();
+    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    consoleGroupSpy = vi.spyOn(console, 'group').mockImplementation(() => {});
+    consoleGroupEndSpy = vi
+      .spyOn(console, 'groupEnd')
+      .mockImplementation(() => {});
+    consoleTableSpy = vi.spyOn(console, 'table').mockImplementation(() => {});
+    consoleTimeSpy = vi.spyOn(console, 'time').mockImplementation(() => {});
+    consoleTimeEndSpy = vi
+      .spyOn(console, 'timeEnd')
+      .mockImplementation(() => {});
   });
 
   afterEach(() => {
     // Restore original NODE_ENV
     if (originalEnv !== undefined) {
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: originalEnv,
-        writable: true,
-        configurable: true,
-      });
+      (process.env as any).NODE_ENV = originalEnv;
+    } else {
+      delete (process.env as any).NODE_ENV;
     }
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('log levels', () => {
@@ -144,24 +143,20 @@ describe('Logger', () => {
       expect(consoleTimeEndSpy).toHaveBeenCalledWith('non-existent');
     });
 
-    it('should not call console methods in production', () => {
+    it('should not call console methods in production', async () => {
       // Save original env
       const originalEnv = process.env.NODE_ENV;
 
       // Temporarily set to production
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        writable: true,
-        configurable: true,
-      });
+      (process.env as any).NODE_ENV = 'production';
 
       // Clear previous calls
       consoleTimeSpy.mockClear();
       consoleTimeEndSpy.mockClear();
 
       // Import Logger dynamically to ensure it reads the production environment
-      jest.resetModules();
-      const { default: ProdLogger } = jest.requireActual('../logger');
+      vi.resetModules();
+      const { default: ProdLogger } = await import('../logger');
 
       ProdLogger.time('prod-operation');
       ProdLogger.timeEnd('prod-operation');
@@ -171,14 +166,10 @@ describe('Logger', () => {
       expect(consoleTimeEndSpy).not.toHaveBeenCalled();
 
       // Restore env
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: originalEnv,
-        writable: true,
-        configurable: true,
-      });
+      (process.env as any).NODE_ENV = originalEnv;
 
       // Reset modules to restore normal Logger
-      jest.resetModules();
+      vi.resetModules();
     });
   });
 });

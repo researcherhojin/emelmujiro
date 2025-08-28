@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { StorageCache, preloadCriticalResources } from '../cacheOptimization';
 
 describe('StorageCache', () => {
@@ -17,7 +18,7 @@ describe('StorageCache', () => {
       expect(result).toEqual(testData);
     });
 
-    it('should return null for expired items', (done) => {
+    it('should return null for expired items', async () => {
       const cache = new StorageCache('localStorage');
       const testData = { name: 'test' };
 
@@ -25,11 +26,10 @@ describe('StorageCache', () => {
       cache.set('test-key', testData, 1);
 
       // Wait 10ms to ensure expiration
-      setTimeout(() => {
-        const result = cache.get('test-key');
-        expect(result).toBeNull();
-        done();
-      }, 10);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      const result = cache.get('test-key');
+      expect(result).toBeNull();
     });
 
     it('should remove items', () => {
@@ -95,7 +95,7 @@ describe('preloadCriticalResources', () => {
     // Clear any existing link elements
     document.head.innerHTML = '';
     // Mock fetch
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
   });
 
   afterEach(() => {
@@ -104,30 +104,21 @@ describe('preloadCriticalResources', () => {
       delete process.env[key];
     });
     Object.assign(process.env, originalEnv);
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should skip preloading in development mode', () => {
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'development',
-      writable: true,
-    });
+    (process.env as any).NODE_ENV = 'development';
     preloadCriticalResources();
 
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it('should attempt to preload resources in production', async () => {
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'production',
-      writable: true,
-    });
-    Object.defineProperty(process.env, 'PUBLIC_URL', {
-      value: '/emelmujiro',
-      writable: true,
-    });
+    (process.env as any).NODE_ENV = 'production';
+    (process.env as any).PUBLIC_URL = '/emelmujiro';
 
-    (global.fetch as jest.Mock).mockResolvedValue({
+    (global.fetch as any).mockResolvedValue({
       ok: true,
     });
 
@@ -145,12 +136,9 @@ describe('preloadCriticalResources', () => {
   });
 
   it('should handle fetch errors gracefully', async () => {
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'production',
-      writable: true,
-    });
+    (process.env as any).NODE_ENV = 'production';
 
-    (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+    (global.fetch as any).mockRejectedValue(new Error('Network error'));
 
     // Should not throw
     expect(() => preloadCriticalResources()).not.toThrow();

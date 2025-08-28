@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 
+import { vi, type MockInstance } from 'vitest';
 import React from 'react';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import { screen } from '@testing-library/react';
@@ -23,7 +24,7 @@ interface MockedHelmetElement extends React.ReactElement {
   props: HelmetProps;
 }
 
-type MockedHelmet = jest.Mock & {
+type MockedHelmet = MockInstance & {
   lastChildren?: React.ReactNode;
 };
 
@@ -31,12 +32,10 @@ type MockedHelmet = jest.Mock & {
 let mockHelmetComponent: MockedHelmet;
 
 // Mock react-helmet-async
-jest.mock('react-helmet-async', () => {
-  mockHelmetComponent = jest.fn(
-    ({ children }: { children: React.ReactNode }) => (
-      <div data-testid="helmet-mock">{children}</div>
-    )
-  ) as MockedHelmet;
+vi.mock('react-helmet-async', () => {
+  mockHelmetComponent = vi.fn(({ children }: { children: React.ReactNode }) => (
+    <div data-testid="helmet-mock">{children}</div>
+  )) as MockedHelmet;
 
   return {
     Helmet: mockHelmetComponent,
@@ -51,7 +50,7 @@ import * as helmetAsync from 'react-helmet-async';
 
 describe('SEO Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Default props behavior', () => {
@@ -149,7 +148,7 @@ describe('SEO Component', () => {
       const pageTypes = ['website', 'article', 'profile'] as const;
 
       pageTypes.forEach((type) => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         renderWithProviders(<SEO type={type} />);
         expect(mockHelmetComponent).toHaveBeenCalled();
       });
@@ -163,15 +162,18 @@ describe('SEO Component', () => {
       originalHelmet = helmetAsync.Helmet;
 
       // Mock Helmet to capture the actual children structure
-      (helmetAsync.Helmet as MockedHelmet) = jest.fn(({ children }) => {
-        // Store the children for inspection
-        (helmetAsync.Helmet as MockedHelmet).lastChildren = children;
-        return React.createElement(
-          'div',
-          { 'data-testid': 'helmet-mock' },
-          children
-        );
-      }) as MockedHelmet;
+      (helmetAsync.Helmet as unknown as MockedHelmet) = vi.fn(
+        ({ children }) => {
+          // Store the children for inspection
+          (helmetAsync.Helmet as unknown as MockedHelmet).lastChildren =
+            children;
+          return React.createElement(
+            'div',
+            { 'data-testid': 'helmet-mock' },
+            children
+          );
+        }
+      ) as MockedHelmet;
     });
 
     afterEach(() => {
@@ -187,23 +189,25 @@ describe('SEO Component', () => {
         />
       );
 
-      const children = (helmetAsync.Helmet as MockedHelmet)
+      const children = (helmetAsync.Helmet as unknown as MockedHelmet)
         .lastChildren as MockedHelmetElement[];
       expect(Array.isArray(children)).toBe(true);
 
       // Find meta tags
       const metaTags = children.filter(
-        (child) => child && child.type === 'meta'
+        (child: any) => child && child.type === 'meta'
       );
 
       // Check for essential meta tags
       const descriptionTag = metaTags.find(
-        (tag) => tag.props.name === 'description'
+        (tag: any) => tag.props.name === 'description'
       );
       expect(descriptionTag).toBeDefined();
       expect(descriptionTag?.props.content).toBe('Test Description');
 
-      const keywordsTag = metaTags.find((tag) => tag.props.name === 'keywords');
+      const keywordsTag = metaTags.find(
+        (tag: any) => tag.props.name === 'keywords'
+      );
       expect(keywordsTag).toBeDefined();
       expect(keywordsTag?.props.content).toBe('test, keywords');
     });
@@ -218,28 +222,28 @@ describe('SEO Component', () => {
         />
       );
 
-      const children = (helmetAsync.Helmet as MockedHelmet)
+      const children = (helmetAsync.Helmet as unknown as MockedHelmet)
         .lastChildren as MockedHelmetElement[];
 
       const metaTags = children.filter(
-        (child) => child && child.type === 'meta'
+        (child: any) => child && child.type === 'meta'
       );
 
       // Check for OG tags
       const ogTitleTag = metaTags.find(
-        (tag) => tag.props.property === 'og:title'
+        (tag: any) => tag.props.property === 'og:title'
       );
       expect(ogTitleTag).toBeDefined();
       expect(ogTitleTag?.props.content).toBe('OG Test Title');
 
       const ogDescTag = metaTags.find(
-        (tag) => tag.props.property === 'og:description'
+        (tag: any) => tag.props.property === 'og:description'
       );
       expect(ogDescTag).toBeDefined();
       expect(ogDescTag?.props.content).toBe('OG Test Description');
 
       const ogImageTag = metaTags.find(
-        (tag) => tag.props.property === 'og:image'
+        (tag: any) => tag.props.property === 'og:image'
       );
       expect(ogImageTag).toBeDefined();
       expect(ogImageTag?.props.content).toBe(
@@ -247,7 +251,7 @@ describe('SEO Component', () => {
       );
 
       const ogTypeTag = metaTags.find(
-        (tag) => tag.props.property === 'og:type'
+        (tag: any) => tag.props.property === 'og:type'
       );
       expect(ogTypeTag).toBeDefined();
       expect(ogTypeTag?.props.content).toBe('article');
@@ -262,34 +266,34 @@ describe('SEO Component', () => {
         />
       );
 
-      const children = (helmetAsync.Helmet as MockedHelmet)
+      const children = (helmetAsync.Helmet as unknown as MockedHelmet)
         .lastChildren as MockedHelmetElement[];
 
       const metaTags = children.filter(
-        (child) => child && child.type === 'meta'
+        (child: any) => child && child.type === 'meta'
       );
 
       // Check for Twitter Card tags
       const twitterCardTag = metaTags.find(
-        (tag) => tag.props.name === 'twitter:card'
+        (tag: any) => tag.props.name === 'twitter:card'
       );
       expect(twitterCardTag).toBeDefined();
       expect(twitterCardTag?.props.content).toBe('summary_large_image');
 
       const twitterTitleTag = metaTags.find(
-        (tag) => tag.props.name === 'twitter:title'
+        (tag: any) => tag.props.name === 'twitter:title'
       );
       expect(twitterTitleTag).toBeDefined();
       expect(twitterTitleTag?.props.content).toBe('Twitter Test Title');
 
       const twitterDescTag = metaTags.find(
-        (tag) => tag.props.name === 'twitter:description'
+        (tag: any) => tag.props.name === 'twitter:description'
       );
       expect(twitterDescTag).toBeDefined();
       expect(twitterDescTag?.props.content).toBe('Twitter Test Description');
 
       const twitterImageTag = metaTags.find(
-        (tag) => tag.props.name === 'twitter:image'
+        (tag: any) => tag.props.name === 'twitter:image'
       );
       expect(twitterImageTag).toBeDefined();
       expect(twitterImageTag?.props.content).toBe(
@@ -302,15 +306,15 @@ describe('SEO Component', () => {
 
       renderWithProviders(<SEO canonical={canonicalUrl} />);
 
-      const children = (helmetAsync.Helmet as MockedHelmet)
+      const children = (helmetAsync.Helmet as unknown as MockedHelmet)
         .lastChildren as MockedHelmetElement[];
 
       const linkTags = children.filter(
-        (child) => child && child.type === 'link'
+        (child: any) => child && child.type === 'link'
       );
 
       const canonicalTag = linkTags.find(
-        (tag) => tag.props.rel === 'canonical'
+        (tag: any) => tag.props.rel === 'canonical'
       );
       expect(canonicalTag).toBeDefined();
       expect(canonicalTag?.props.href).toBe(canonicalUrl);
@@ -321,15 +325,15 @@ describe('SEO Component', () => {
 
       renderWithProviders(<SEO canonical={canonicalUrl} />);
 
-      const children = (helmetAsync.Helmet as MockedHelmet)
+      const children = (helmetAsync.Helmet as unknown as MockedHelmet)
         .lastChildren as MockedHelmetElement[];
 
       const linkTags = children.filter(
-        (child) => child && child.type === 'link'
+        (child: any) => child && child.type === 'link'
       );
 
       const canonicalTag = linkTags.find(
-        (tag) => tag.props.rel === 'canonical'
+        (tag: any) => tag.props.rel === 'canonical'
       );
       expect(canonicalTag?.props.href).toBe(canonicalUrl);
     });
@@ -337,14 +341,16 @@ describe('SEO Component', () => {
     it('should include viewport meta tag', () => {
       renderWithProviders(<SEO />);
 
-      const children = (helmetAsync.Helmet as MockedHelmet)
+      const children = (helmetAsync.Helmet as unknown as MockedHelmet)
         .lastChildren as MockedHelmetElement[];
 
       const metaTags = children.filter(
-        (child) => child && child.type === 'meta'
+        (child: any) => child && child.type === 'meta'
       );
 
-      const viewportTag = metaTags.find((tag) => tag.props.name === 'viewport');
+      const viewportTag = metaTags.find(
+        (tag: any) => tag.props.name === 'viewport'
+      );
       expect(viewportTag).toBeDefined();
       expect(viewportTag?.props.content).toBe(
         'width=device-width, initial-scale=1'
@@ -354,15 +360,15 @@ describe('SEO Component', () => {
     it('should include charset meta tag', () => {
       renderWithProviders(<SEO />);
 
-      const children = (helmetAsync.Helmet as MockedHelmet)
+      const children = (helmetAsync.Helmet as unknown as MockedHelmet)
         .lastChildren as MockedHelmetElement[];
 
       const metaTags = children.filter(
-        (child) => child && child.type === 'meta'
+        (child: any) => child && child.type === 'meta'
       );
 
       const charsetTag = metaTags.find(
-        (tag) => 'charSet' in tag.props || tag.props.charset
+        (tag: any) => 'charSet' in tag.props || tag.props.charset
       );
       expect(charsetTag).toBeDefined();
     });
@@ -370,7 +376,7 @@ describe('SEO Component', () => {
     it('should support multilingual titles with htmlAttributes', () => {
       renderWithProviders(<SEO />);
 
-      const children = (helmetAsync.Helmet as MockedHelmet)
+      const children = (helmetAsync.Helmet as unknown as MockedHelmet)
         .lastChildren as MockedHelmetElement[];
 
       // Look for htmlAttributes prop (React.Fragment or direct element)
@@ -391,20 +397,18 @@ describe('SEO Component', () => {
 
   describe('Component updates', () => {
     it('should update when props change', () => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
 
       const { rerender } = renderWithProviders(<SEO title="First Title" />);
 
-      const firstRenderCalls = (mockHelmetComponent as jest.Mock).mock.calls
-        .length;
+      const firstRenderCalls = (mockHelmetComponent as any).mock.calls.length;
 
       rerender(<SEO title="Second Title" />);
 
       // Since React may batch updates or optimize re-renders,
       // we just check if it was called rather than exact call count
       // so we expect the calls to increase
-      const secondRenderCalls = (mockHelmetComponent as jest.Mock).mock.calls
-        .length;
+      const secondRenderCalls = (mockHelmetComponent as any).mock.calls.length;
 
       expect(secondRenderCalls).toBeGreaterThanOrEqual(firstRenderCalls);
     });
@@ -414,7 +418,7 @@ describe('SEO Component', () => {
         <SEO title="Title" keywords="test, keywords" />
       );
 
-      jest.clearAllMocks();
+      vi.clearAllMocks();
 
       rerender(<SEO title="Second Title" />);
 
@@ -459,17 +463,16 @@ describe('SEO Component', () => {
 
   describe('Performance considerations', () => {
     it('should not re-render unnecessarily with same props', () => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
 
       const { rerender } = renderWithProviders(<SEO title="Same Title" />);
 
-      const initialCallCount = (mockHelmetComponent as jest.Mock).mock.calls
-        .length;
+      const initialCallCount = (mockHelmetComponent as any).mock.calls.length;
 
       rerender(<SEO title="Same Title" />);
 
-      const afterReRenderCallCount = (mockHelmetComponent as jest.Mock).mock
-        .calls.length;
+      const afterReRenderCallCount = (mockHelmetComponent as any).mock.calls
+        .length;
 
       // React.memo might prevent re-render with same props
       // so we just verify it doesn't fail

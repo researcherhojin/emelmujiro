@@ -132,7 +132,7 @@ describe('CareerSection', () => {
   it('handles animation on scroll', () => {
     renderWithProviders(<CareerSection />);
 
-    // Check for animated elements (motion divs or career cards)
+    // Check for animated elements (motion divs or career cards),
     const careerCards = screen.queryAllByRole('button');
     expect(careerCards.length).toBeGreaterThan(0);
   });

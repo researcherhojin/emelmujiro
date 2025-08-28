@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 
+import { vi } from 'vitest';
 import {
   initWebVitals,
   getMetrics,
@@ -19,13 +20,13 @@ type MetricCallback = (metric: {
 }) => void | Promise<void>;
 
 // Mock web-vitals library
-const mockOnCLS = jest.fn();
-const mockOnFCP = jest.fn();
-const mockOnLCP = jest.fn();
-const mockOnTTFB = jest.fn();
-const mockOnINP = jest.fn();
+const mockOnCLS = vi.fn();
+const mockOnFCP = vi.fn();
+const mockOnLCP = vi.fn();
+const mockOnTTFB = vi.fn();
+const mockOnINP = vi.fn();
 
-jest.mock('web-vitals', () => ({
+vi.mock('web-vitals', () => ({
   onCLS: (callback: MetricCallback) => mockOnCLS(callback),
   onFCP: (callback: MetricCallback) => mockOnFCP(callback),
   onLCP: (callback: MetricCallback) => mockOnLCP(callback),
@@ -36,15 +37,15 @@ jest.mock('web-vitals', () => ({
 // Mock console methods
 const originalConsoleError = console.error;
 const originalConsoleWarn = console.warn;
-const mockConsoleError = jest.fn();
-const mockConsoleWarn = jest.fn();
+const mockConsoleError = vi.fn();
+const mockConsoleWarn = vi.fn();
 
 // Mock global fetch
-const mockFetch = jest.fn();
+const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 // Mock gtag
-const mockGtag = jest.fn();
+const mockGtag = vi.fn();
 
 // Type for window with gtag
 interface WindowWithGtag extends Window {
@@ -53,7 +54,7 @@ interface WindowWithGtag extends Window {
 
 describe('performanceMonitoring', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     clearMetrics();
     console.error = mockConsoleError;
     console.warn = mockConsoleWarn;
@@ -123,7 +124,6 @@ describe('performanceMonitoring', () => {
         navigationType: 'navigate' as const,
         rating: 'needs-improvement' as const,
       };
-
       await clsCallback(mockMetric);
 
       const metrics = getMetrics();
@@ -145,7 +145,6 @@ describe('performanceMonitoring', () => {
         navigationType: 'navigate' as const,
         rating: 'poor' as const,
       };
-
       await inpCallback(mockMetric);
 
       const metrics = getMetrics();
@@ -167,7 +166,6 @@ describe('performanceMonitoring', () => {
         navigationType: 'navigate' as const,
         rating: 'good' as const,
       };
-
       await fcpCallback(mockMetric);
 
       const metrics = getMetrics();
@@ -189,7 +187,6 @@ describe('performanceMonitoring', () => {
         navigationType: 'navigate' as const,
         rating: 'needs-improvement' as const,
       };
-
       await ttfbCallback(mockMetric);
 
       const metrics = getMetrics();
@@ -211,7 +208,6 @@ describe('performanceMonitoring', () => {
         navigationType: 'navigate' as const,
         rating: 'good' as const,
       };
-
       await clsCallback(mockMetric);
 
       const metrics = getMetrics();
@@ -227,19 +223,11 @@ describe('performanceMonitoring', () => {
     const originalNodeEnv = process.env.NODE_ENV;
 
     afterEach(() => {
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: originalNodeEnv,
-        writable: true,
-        configurable: true,
-      });
+      (process.env as any).NODE_ENV = originalNodeEnv;
     });
 
     it('should send metrics to Google Analytics in production', async () => {
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        writable: true,
-        configurable: true,
-      });
+      (process.env as any).NODE_ENV = 'production';
       (window as WindowWithGtag).gtag = mockGtag;
 
       initWebVitals();
@@ -253,7 +241,6 @@ describe('performanceMonitoring', () => {
         navigationType: 'navigate' as const,
         rating: 'good' as const,
       };
-
       await lcpCallback(mockMetric);
 
       expect(mockGtag).toHaveBeenCalledWith('event', 'LCP', {
@@ -264,11 +251,7 @@ describe('performanceMonitoring', () => {
     });
 
     it('should not send to Google Analytics if gtag not available', async () => {
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        writable: true,
-        configurable: true,
-      });
+      (process.env as any).NODE_ENV = 'production';
 
       initWebVitals();
       const lcpCallback = mockOnLCP.mock.calls[0][0];
@@ -281,19 +264,14 @@ describe('performanceMonitoring', () => {
         navigationType: 'navigate' as const,
         rating: 'good' as const,
       };
-
       await lcpCallback(mockMetric);
 
       expect(mockGtag).not.toHaveBeenCalled();
     });
 
     it('should handle analytics errors gracefully', async () => {
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        writable: true,
-        configurable: true,
-      });
-      (window as WindowWithGtag).gtag = jest.fn(() => {
+      (process.env as any).NODE_ENV = 'production';
+      (window as WindowWithGtag).gtag = vi.fn(() => {
         throw new Error('Analytics error');
       });
 
@@ -308,7 +286,6 @@ describe('performanceMonitoring', () => {
         navigationType: 'navigate' as const,
         rating: 'good' as const,
       };
-
       await lcpCallback(mockMetric);
 
       expect(mockConsoleError).toHaveBeenCalledWith(
@@ -318,11 +295,7 @@ describe('performanceMonitoring', () => {
     });
 
     it('should not send analytics in development', async () => {
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'development',
-        writable: true,
-        configurable: true,
-      });
+      (process.env as any).NODE_ENV = 'development';
       (window as WindowWithGtag).gtag = mockGtag;
 
       initWebVitals();
@@ -336,7 +309,6 @@ describe('performanceMonitoring', () => {
         navigationType: 'navigate' as const,
         rating: 'good' as const,
       };
-
       await lcpCallback(mockMetric);
 
       expect(mockGtag).not.toHaveBeenCalled();
@@ -495,24 +467,30 @@ describe('performanceMonitoring', () => {
     }
 
     interface MockPerformanceObserver {
-      observe: jest.Mock;
+      observe: any;
       callback?: (list: { getEntries: () => MockPerformanceEntry[] }) => void;
     }
 
     interface MockPerformance {
-      getEntriesByType: jest.Mock;
+      getEntriesByType: any;
     }
 
     let mockPerformanceObserver: MockPerformanceObserver;
     let mockPerformance: MockPerformance;
 
     beforeEach(() => {
+      // Initialize mockPerformance first to avoid usage before assignment
+      mockPerformance = {
+        getEntriesByType: vi.fn().mockReturnValue([]) as any,
+      };
+      (global as any).performance = mockPerformance;
+
       // Mock PerformanceObserver
       mockPerformanceObserver = {
-        observe: jest.fn(),
+        observe: vi.fn() as any,
       };
 
-      global.PerformanceObserver = jest
+      global.PerformanceObserver = vi
         .fn()
         .mockImplementation(
           (
@@ -529,12 +507,6 @@ describe('performanceMonitoring', () => {
           supportedEntryTypes: string[];
         }
       ).supportedEntryTypes = ['longtask', 'resource'];
-
-      // Mock performance API
-      mockPerformance = {
-        getEntriesByType: jest.fn().mockReturnValue([]),
-      };
-      (global as any).performance = mockPerformance;
     });
 
     afterEach(() => {
@@ -604,14 +576,14 @@ describe('performanceMonitoring', () => {
         duration: 1500,
         startTime: 0,
         responseEnd: 1500,
-      };
+      } as any;
 
       const fastResource = {
         name: 'fast-script.js',
         duration: 200,
         startTime: 0,
         responseEnd: 200,
-      };
+      } as any;
 
       mockPerformance.getEntriesByType.mockReturnValue([
         slowResource,
@@ -626,7 +598,7 @@ describe('performanceMonitoring', () => {
     });
 
     it('should handle PerformanceObserver errors gracefully', () => {
-      global.PerformanceObserver = jest.fn().mockImplementation(() => {
+      global.PerformanceObserver = vi.fn().mockImplementation(() => {
         throw new Error('PerformanceObserver error');
       }) as unknown as typeof PerformanceObserver;
       (

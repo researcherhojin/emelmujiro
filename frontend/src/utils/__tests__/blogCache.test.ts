@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import {
   getCachedPosts,
   getCachedPost,
@@ -16,16 +17,15 @@ import {
 // Mock localStorage
 const localStorageMock = (() => {
   let store: { [key: string]: string } = {};
-
   return {
-    getItem: jest.fn((key: string) => store[key] || null),
-    setItem: jest.fn((key: string, value: string) => {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
       store[key] = value;
     }),
-    removeItem: jest.fn((key: string) => {
+    removeItem: vi.fn((key: string) => {
       delete store[key];
     }),
-    clear: jest.fn(() => {
+    clear: vi.fn(() => {
       store = {};
     }),
   };
@@ -38,10 +38,10 @@ Object.defineProperty(window, 'localStorage', {
 // Mock navigator.serviceWorker
 Object.defineProperty(navigator, 'serviceWorker', {
   value: {
-    register: jest.fn(),
+    register: vi.fn(),
     ready: Promise.resolve({
       sync: {
-        register: jest.fn(),
+        register: vi.fn(),
       },
     }),
   },
@@ -50,7 +50,7 @@ Object.defineProperty(navigator, 'serviceWorker', {
 
 describe('blogCache', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     localStorageMock.clear();
   });
 
@@ -155,7 +155,6 @@ describe('blogCache', () => {
         cachedAt: Date.now(),
         lastAccessed: Date.now(),
       };
-
       localStorageMock.getItem.mockReturnValue(JSON.stringify([mockPost]));
 
       const result = getCachedPost('1');
@@ -172,7 +171,6 @@ describe('blogCache', () => {
         cachedAt: Date.now() - 1000,
         lastAccessed: Date.now() - 1000,
       };
-
       localStorageMock.getItem.mockReturnValue(JSON.stringify([mockPost]));
 
       updateLastAccessedTime('1');
@@ -286,7 +284,6 @@ describe('blogCache', () => {
         cachedAt: Date.now(),
         lastAccessed: Date.now(),
       };
-
       localStorageMock.getItem.mockReturnValue(JSON.stringify([mockPost]));
 
       expect(isBlogPostCached('1')).toBe(true);

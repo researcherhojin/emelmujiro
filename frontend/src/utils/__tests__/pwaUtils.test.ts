@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 
+import { vi } from 'vitest';
 import {
   checkPWASupport,
   registerServiceWorker,
@@ -34,10 +35,10 @@ import {
 
 // Mock service worker
 const mockServiceWorker = {
-  postMessage: jest.fn(),
+  postMessage: vi.fn(),
   state: 'activated',
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
 };
 
 const mockRegistration = {
@@ -46,9 +47,9 @@ const mockRegistration = {
   active: mockServiceWorker,
   scope: '/',
   updatefound: null,
-  update: jest.fn(),
-  unregister: jest.fn(),
-  showNotification: jest.fn(),
+  update: vi.fn(),
+  unregister: vi.fn(),
+  showNotification: vi.fn(),
   onupdatefound: null,
 };
 
@@ -56,20 +57,20 @@ const mockRegistration = {
 Object.defineProperty(navigator, 'serviceWorker', {
   writable: true,
   value: {
-    register: jest.fn().mockResolvedValue(mockRegistration),
+    register: vi.fn().mockResolvedValue(mockRegistration),
     ready: Promise.resolve(mockRegistration),
     controller: mockServiceWorker,
-    getRegistrations: jest.fn().mockResolvedValue([mockRegistration]),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
+    getRegistrations: vi.fn().mockResolvedValue([mockRegistration]),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
   },
 });
 
 // Mock Notification API
 Object.defineProperty(window, 'Notification', {
   writable: true,
-  value: jest.fn().mockImplementation(() => ({
-    close: jest.fn(),
+  value: vi.fn().mockImplementation(() => ({
+    close: vi.fn(),
   })),
 });
 
@@ -81,7 +82,7 @@ Object.defineProperty(window.Notification, 'permission', {
 
 Object.defineProperty(window.Notification, 'requestPermission', {
   writable: true,
-  value: jest.fn().mockResolvedValue('granted'),
+  value: vi.fn().mockResolvedValue('granted'),
 });
 
 // Mock online/offline events
@@ -107,7 +108,7 @@ describe(
     let originalServiceWorker: typeof navigator.serviceWorker | undefined;
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       localStorage.clear();
       sessionStorage.clear();
       isOnline = true;
@@ -118,12 +119,12 @@ describe(
       Object.defineProperty(navigator, 'serviceWorker', {
         writable: true,
         value: {
-          register: jest.fn().mockResolvedValue(mockRegistration),
+          register: vi.fn().mockResolvedValue(mockRegistration),
           ready: Promise.resolve(mockRegistration),
           controller: mockServiceWorker,
-          getRegistrations: jest.fn().mockResolvedValue([mockRegistration]),
-          addEventListener: jest.fn(),
-          removeEventListener: jest.fn(),
+          getRegistrations: vi.fn().mockResolvedValue([mockRegistration]),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
         },
       });
     });
@@ -182,7 +183,7 @@ describe(
       });
 
       it('should handle registration failure', async () => {
-        const mockRegisterFail = jest
+        const mockRegisterFail = vi
           .fn()
           .mockRejectedValue(new Error('Registration failed'));
         Object.defineProperty(navigator, 'serviceWorker', {
@@ -233,7 +234,7 @@ describe(
       });
 
       it('should handle no registrations', async () => {
-        navigator.serviceWorker.getRegistrations = jest
+        navigator.serviceWorker.getRegistrations = vi
           .fn()
           .mockResolvedValue([]);
 
@@ -258,10 +259,9 @@ describe(
     describe('promptInstallPWA', () => {
       it('should prompt for installation when event is available', async () => {
         const mockEvent = {
-          prompt: jest.fn(),
+          prompt: vi.fn(),
           userChoice: Promise.resolve({ outcome: 'accepted' }),
         };
-
         // Set the install prompt event
         (window as any).deferredPrompt = mockEvent;
 
@@ -279,7 +279,7 @@ describe(
 
       it('should handle user dismissal', async () => {
         const mockEvent = {
-          prompt: jest.fn(),
+          prompt: vi.fn(),
           userChoice: Promise.resolve({ outcome: 'dismissed' }),
         };
 
@@ -292,22 +292,22 @@ describe(
 
     describe('getPWADisplayMode', () => {
       it('should detect standalone mode', () => {
-        window.matchMedia = jest.fn().mockImplementation((query) => ({
+        window.matchMedia = vi.fn().mockImplementation((query) => ({
           matches: query === '(display-mode: standalone)',
           media: query,
-          addListener: jest.fn(),
-          removeListener: jest.fn(),
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
         }));
 
         expect(getPWADisplayMode()).toBe('standalone');
       });
 
       it('should detect browser mode', () => {
-        window.matchMedia = jest.fn().mockImplementation(() => ({
+        window.matchMedia = vi.fn().mockImplementation(() => ({
           matches: false,
           media: '',
-          addListener: jest.fn(),
-          removeListener: jest.fn(),
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
         }));
 
         expect(getPWADisplayMode()).toBe('browser');
@@ -316,22 +316,22 @@ describe(
 
     describe('isPWAInstalled', () => {
       it('should detect PWA installation', () => {
-        window.matchMedia = jest.fn().mockImplementation((query) => ({
+        window.matchMedia = vi.fn().mockImplementation((query) => ({
           matches: query === '(display-mode: standalone)',
           media: query,
-          addListener: jest.fn(),
-          removeListener: jest.fn(),
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
         }));
 
         expect(isPWAInstalled()).toBe(true);
       });
 
       it('should detect non-installed state', () => {
-        window.matchMedia = jest.fn().mockImplementation(() => ({
+        window.matchMedia = vi.fn().mockImplementation(() => ({
           matches: false,
           media: '',
-          addListener: jest.fn(),
-          removeListener: jest.fn(),
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
         }));
 
         expect(isPWAInstalled()).toBe(false);
@@ -341,7 +341,7 @@ describe(
     describe('requestNotificationPermission', () => {
       it('should request notification permission', async () => {
         // Ensure Notification.requestPermission returns the value
-        window.Notification.requestPermission = jest
+        window.Notification.requestPermission = vi
           .fn()
           .mockResolvedValue('granted');
 
@@ -351,7 +351,7 @@ describe(
       });
 
       it('should handle permission denial', async () => {
-        window.Notification.requestPermission = jest
+        window.Notification.requestPermission = vi
           .fn()
           .mockResolvedValue('denied');
 
@@ -364,7 +364,7 @@ describe(
       it('should detect badge support', () => {
         Object.defineProperty(navigator, 'setAppBadge', {
           writable: true,
-          value: jest.fn(),
+          value: vi.fn(),
         });
         expect(isAppBadgeSupported()).toBe(true);
 
@@ -375,7 +375,7 @@ describe(
 
     describe('setAppBadge', () => {
       it('should set app badge when supported', async () => {
-        const mockSetAppBadge = jest.fn().mockResolvedValue(undefined);
+        const mockSetAppBadge = vi.fn().mockResolvedValue(undefined);
         Object.defineProperty(navigator, 'setAppBadge', {
           writable: true,
           value: mockSetAppBadge,
@@ -393,9 +393,7 @@ describe(
       });
 
       it('should handle errors gracefully', async () => {
-        const mockSetAppBadge = jest
-          .fn()
-          .mockRejectedValue(new Error('Failed'));
+        const mockSetAppBadge = vi.fn().mockRejectedValue(new Error('Failed'));
         Object.defineProperty(navigator, 'setAppBadge', {
           writable: true,
           value: mockSetAppBadge,
@@ -408,7 +406,7 @@ describe(
 
     describe('clearAppBadge', () => {
       it('should clear app badge when supported', async () => {
-        const mockClearAppBadge = jest.fn().mockResolvedValue(undefined);
+        const mockClearAppBadge = vi.fn().mockResolvedValue(undefined);
         Object.defineProperty(navigator, 'clearAppBadge', {
           writable: true,
           value: mockClearAppBadge,
@@ -430,7 +428,7 @@ describe(
       it('should detect share support', () => {
         Object.defineProperty(navigator, 'share', {
           writable: true,
-          value: jest.fn(),
+          value: vi.fn(),
         });
         expect(isWebShareSupported()).toBe(true);
 
@@ -441,7 +439,7 @@ describe(
 
     describe('shareContent', () => {
       it('should share content when supported', async () => {
-        const mockShare = jest.fn().mockResolvedValue(undefined);
+        const mockShare = vi.fn().mockResolvedValue(undefined);
         Object.defineProperty(navigator, 'share', {
           writable: true,
           value: mockShare,
@@ -458,7 +456,7 @@ describe(
       });
 
       it('should handle share cancellation', async () => {
-        const mockShare = jest.fn().mockRejectedValue(new Error('AbortError'));
+        const mockShare = vi.fn().mockRejectedValue(new Error('AbortError'));
         Object.defineProperty(navigator, 'share', {
           writable: true,
           value: mockShare,
@@ -470,7 +468,7 @@ describe(
 
       it('should fallback to clipboard when share not supported', async () => {
         delete (navigator as any).share;
-        const mockWriteText = jest.fn().mockResolvedValue(undefined);
+        const mockWriteText = vi.fn().mockResolvedValue(undefined);
         Object.defineProperty(navigator, 'clipboard', {
           writable: true,
           value: { writeText: mockWriteText },
@@ -489,7 +487,7 @@ describe(
       it('should detect wake lock support', () => {
         Object.defineProperty(navigator, 'wakeLock', {
           writable: true,
-          value: { request: jest.fn() },
+          value: { request: vi.fn() },
         });
         expect(isWakeLockSupported()).toBe(true);
 
@@ -501,11 +499,11 @@ describe(
     describe('requestWakeLock', () => {
       it('should request wake lock when supported', async () => {
         const mockWakeLock = {
-          release: jest.fn(),
+          release: vi.fn(),
           released: false,
           type: 'screen',
         };
-        const mockRequest = jest.fn().mockResolvedValue(mockWakeLock);
+        const mockRequest = vi.fn().mockResolvedValue(mockWakeLock);
         Object.defineProperty(navigator, 'wakeLock', {
           writable: true,
           value: { request: mockRequest },
@@ -535,7 +533,7 @@ describe(
 
     describe('initializePWA', () => {
       it('should initialize PWA features', () => {
-        const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+        const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
         initializePWA();
         expect(addEventListenerSpy).toHaveBeenCalledWith(
           'beforeinstallprompt',
@@ -552,14 +550,11 @@ describe(
           domContentLoadedEventEnd: 800,
           domContentLoadedEventStart: 700,
         };
-
-        jest
-          .spyOn(performance, 'getEntriesByType')
-          .mockImplementation((type) => {
-            if (type === 'navigation') return [mockNavTiming as any];
-            if (type === 'paint') return [];
-            return [];
-          });
+        vi.spyOn(performance, 'getEntriesByType').mockImplementation((type) => {
+          if (type === 'navigation') return [mockNavTiming as any];
+          if (type === 'paint') return [];
+          return [];
+        });
 
         const metrics = getPerformanceMetrics();
         expect(metrics.loadTime).toBe(100);
@@ -570,7 +565,7 @@ describe(
     describe('triggerInstallPrompt', () => {
       it('should trigger install prompt when available', async () => {
         const mockEvent = {
-          prompt: jest.fn().mockResolvedValue(undefined),
+          prompt: vi.fn().mockResolvedValue(undefined),
           userChoice: Promise.resolve({ outcome: 'accepted' }),
         };
         (window as any).deferredPrompt = mockEvent;
@@ -588,7 +583,7 @@ describe(
 
       it('should handle errors', async () => {
         const mockEvent = {
-          prompt: jest.fn().mockRejectedValue(new Error('Failed')),
+          prompt: vi.fn().mockRejectedValue(new Error('Failed')),
           userChoice: Promise.resolve({ outcome: 'dismissed' }),
         };
         (window as any).deferredPrompt = mockEvent;
@@ -600,16 +595,15 @@ describe(
 
     describe('releaseWakeLock', () => {
       it('should release wake lock', async () => {
-        const mockRelease = jest.fn().mockResolvedValue(undefined);
+        const mockRelease = vi.fn().mockResolvedValue(undefined);
         const mockWakeLock = { release: mockRelease };
 
         // Simulate having an active wake lock
-        const mockRequest = jest.fn().mockResolvedValue(mockWakeLock);
+        const mockRequest = vi.fn().mockResolvedValue(mockWakeLock);
         Object.defineProperty(navigator, 'wakeLock', {
           writable: true,
           value: { request: mockRequest },
         });
-
         await requestWakeLock();
         const result = await releaseWakeLock();
         expect(result).toBe(true);
@@ -623,7 +617,7 @@ describe(
 
     describe('isInstallPromptAvailable', () => {
       it('should check install prompt availability', () => {
-        (window as any).deferredPrompt = { prompt: jest.fn() };
+        (window as any).deferredPrompt = { prompt: vi.fn() };
         expect(isInstallPromptAvailable()).toBe(true);
 
         (window as any).deferredPrompt = null;
@@ -633,11 +627,11 @@ describe(
 
     describe('isPWAMode', () => {
       it('should detect PWA mode', () => {
-        window.matchMedia = jest.fn().mockImplementation((query) => ({
+        window.matchMedia = vi.fn().mockImplementation((query) => ({
           matches: query === '(display-mode: standalone)',
           media: query,
-          addListener: jest.fn(),
-          removeListener: jest.fn(),
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
         }));
 
         expect(isPWAMode()).toBe(true);
@@ -646,7 +640,7 @@ describe(
 
     describe('initializeInstallPrompt', () => {
       it('should setup install prompt listeners', () => {
-        const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+        const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
         initializeInstallPrompt();
         expect(addEventListenerSpy).toHaveBeenCalledWith(
           'beforeinstallprompt',
@@ -661,7 +655,7 @@ describe(
       it('should handle beforeinstallprompt event', () => {
         initializeInstallPrompt();
         const event = new Event('beforeinstallprompt');
-        event.preventDefault = jest.fn();
+        event.preventDefault = vi.fn();
 
         window.dispatchEvent(event);
         expect(event.preventDefault).toHaveBeenCalled();
@@ -727,7 +721,7 @@ describe(
 
     describe('getInstallPromptEvent', () => {
       it('should return install prompt event', () => {
-        const mockEvent = { prompt: jest.fn() };
+        const mockEvent = { prompt: vi.fn() };
         (window as any).deferredPrompt = mockEvent;
 
         expect(getInstallPromptEvent()).toBe(mockEvent);

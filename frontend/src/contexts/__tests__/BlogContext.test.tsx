@@ -1,28 +1,29 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { BlogProvider, useBlog } from '../BlogContext';
 import { api } from '../../services/api';
 import { PaginatedResponse, BlogPost } from '../../types';
 import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 // Mock the api
-jest.mock('../../services/api', () => ({
+vi.mock('../../services/api', () => ({
   api: {
-    getBlogPosts: jest.fn(),
-    getBlogPost: jest.fn(),
-    createBlogPost: jest.fn(),
-    updateBlogPost: jest.fn(),
-    deleteBlogPost: jest.fn(),
-    searchBlogPosts: jest.fn(),
+    getBlogPosts: vi.fn(),
+    getBlogPost: vi.fn(),
+    createBlogPost: vi.fn(),
+    updateBlogPost: vi.fn(),
+    deleteBlogPost: vi.fn(),
+    searchBlogPosts: vi.fn(),
   },
 }));
 
 // Mock local blog posts - these should also fail to trigger the error message
-jest.mock('../../data/blogPosts', () => ({
-  getBlogPosts: jest.fn().mockRejectedValue(new Error('No local posts')),
-  getBlogPostById: jest.fn().mockRejectedValue(new Error('No local post')),
+vi.mock('../../data/blogPosts', () => ({
+  getBlogPosts: vi.fn().mockRejectedValue(new Error('No local posts')),
+  getBlogPostById: vi.fn().mockRejectedValue(new Error('No local post')),
 }));
 
-const mockedApi = api as jest.Mocked<typeof api>;
+const mockedApi = api as any;
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
@@ -43,7 +44,7 @@ const TestComponent: React.FC = () => {
 
 describe('BlogContext', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('provides initial state', () => {
@@ -199,9 +200,7 @@ describe('BlogContext', () => {
 
   test('throws error when used outside provider', () => {
     // Suppress console error for this test
-    const consoleSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => {
       render(<TestComponent />);

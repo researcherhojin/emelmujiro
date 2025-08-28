@@ -11,7 +11,6 @@ describe('constants', () => {
       expect(constants.INQUIRY_TYPE_MAP.data).toBe('데이터 분석');
     });
   });
-
   describe('Contact Information', () => {
     it('should have CONTACT_EMAIL defined', () => {
       expect(constants.CONTACT_EMAIL).toBeDefined();
@@ -19,7 +18,6 @@ describe('constants', () => {
       expect(constants.CONTACT_EMAIL).toContain('@');
     });
   });
-
   describe('Form Limits', () => {
     it('should have FORM_LIMITS defined', () => {
       expect(constants.FORM_LIMITS).toBeDefined();
@@ -44,7 +42,6 @@ describe('constants', () => {
       );
     });
   });
-
   describe('Business Hours', () => {
     it('should have BUSINESS_HOURS defined', () => {
       expect(constants.BUSINESS_HOURS).toBeDefined();
@@ -53,14 +50,12 @@ describe('constants', () => {
       expect(constants.BUSINESS_HOURS.weekends).toBeDefined();
     });
   });
-
   describe('Response Time', () => {
     it('should have RESPONSE_TIME defined', () => {
       expect(constants.RESPONSE_TIME).toBeDefined();
       expect(typeof constants.RESPONSE_TIME).toBe('string');
     });
   });
-
   describe('Service Categories', () => {
     it('should have SERVICE_CATEGORIES defined', () => {
       expect(constants.SERVICE_CATEGORIES).toBeDefined();
@@ -78,7 +73,6 @@ describe('constants', () => {
       });
     });
   });
-
   describe('Animation Duration', () => {
     it('should have ANIMATION_DURATION defined', () => {
       expect(constants.ANIMATION_DURATION).toBeDefined();
@@ -97,7 +91,6 @@ describe('constants', () => {
       );
     });
   });
-
   describe('Breakpoints', () => {
     it('should have BREAKPOINTS defined', () => {
       expect(constants.BREAKPOINTS).toBeDefined();
@@ -116,7 +109,6 @@ describe('constants', () => {
       expect(constants.BREAKPOINTS.lg).toBeLessThan(constants.BREAKPOINTS.xl);
     });
   });
-
   describe('API Endpoints', () => {
     it('should have API_ENDPOINTS defined', () => {
       expect(constants.API_ENDPOINTS).toBeDefined();
@@ -134,7 +126,6 @@ describe('constants', () => {
       });
     });
   });
-
   describe('Storage Keys', () => {
     it('should have STORAGE_KEYS defined', () => {
       expect(constants.STORAGE_KEYS).toBeDefined();
@@ -151,7 +142,6 @@ describe('constants', () => {
       expect(uniqueValues.size).toBe(values.length);
     });
   });
-
   describe('Languages', () => {
     it('should have LANGUAGES defined', () => {
       expect(constants.LANGUAGES).toBeDefined();
@@ -174,7 +164,6 @@ describe('constants', () => {
       expect(codes).toContain('en');
     });
   });
-
   describe('Default Meta', () => {
     it('should have DEFAULT_META defined', () => {
       expect(constants.DEFAULT_META).toBeDefined();

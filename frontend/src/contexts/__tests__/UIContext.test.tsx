@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { UIProvider, useUI } from '../UIContext';
 
 // Test component to consume the context
@@ -27,26 +28,25 @@ const TestComponent: React.FC = () => {
 
 // Mock localStorage
 const mockLocalStorage = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
 };
-
 Object.defineProperty(window, 'localStorage', {
   value: mockLocalStorage,
 });
 
 // Mock matchMedia - make sure it returns the mock object properly
-const mockMatchMedia = jest.fn().mockImplementation((query) => ({
+const mockMatchMedia = vi.fn().mockImplementation((query) => ({
   matches: false,
   media: query,
   onchange: null,
-  addListener: jest.fn(),
-  removeListener: jest.fn(),
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
-  dispatchEvent: jest.fn(),
+  addListener: vi.fn(),
+  removeListener: vi.fn(),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  dispatchEvent: vi.fn(),
 }));
 
 Object.defineProperty(window, 'matchMedia', {
@@ -56,7 +56,7 @@ Object.defineProperty(window, 'matchMedia', {
 
 describe('UIContext', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockLocalStorage.getItem.mockReturnValue(null);
   });
 
@@ -157,7 +157,7 @@ describe('UIContext', () => {
   });
 
   test('throws error when used outside provider', () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => {
       render(<TestComponent />);

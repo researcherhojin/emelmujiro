@@ -126,8 +126,12 @@ class PerformanceMonitor {
       const observer = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           // Only count layout shifts without recent user input
-          if (!(entry as any).hadRecentInput) {
-            clsValue += (entry as any).value;
+          const layoutShiftEntry = entry as PerformanceEntry & {
+            hadRecentInput?: boolean;
+            value?: number;
+          };
+          if (!layoutShiftEntry.hadRecentInput && layoutShiftEntry.value) {
+            clsValue += layoutShiftEntry.value;
             clsEntries.push(entry);
           }
         }
@@ -232,10 +236,10 @@ class PerformanceMonitor {
     logger.info('Performance Metrics:', metrics);
 
     // Send to analytics (if available)
-    if (typeof window !== 'undefined' && (window as any).gtag) {
+    if (typeof window !== 'undefined' && window.gtag) {
       Object.entries(metrics).forEach(([key, value]) => {
-        if (value !== undefined) {
-          (window as any).gtag('event', 'performance', {
+        if (value !== undefined && window.gtag) {
+          window.gtag('event', 'performance', {
             metric_name: key,
             value: Math.round(value),
             metric_value: value,

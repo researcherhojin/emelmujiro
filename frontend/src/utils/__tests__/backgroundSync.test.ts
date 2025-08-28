@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 
+import { vi } from 'vitest';
 import {
   isBackgroundSyncSupported,
   registerBackgroundSync,
@@ -12,36 +13,36 @@ import {
 } from '../backgroundSync';
 
 // Mock logger
-jest.mock('../logger', () => ({
+vi.mock('../logger', () => ({
   __esModule: true,
   default: {
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn(),
+    info: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn(),
   },
 }));
 
 import logger from '../logger';
-const mockLogger = logger as jest.Mocked<typeof logger>;
+const mockLogger = logger as any;
 
 // Mock IndexedDB
 const mockObjectStore = {
-  put: jest.fn(),
-  get: jest.fn(),
-  delete: jest.fn(),
+  put: vi.fn(),
+  get: vi.fn(),
+  delete: vi.fn(),
 };
 
 const mockTransaction = {
-  objectStore: jest.fn().mockReturnValue(mockObjectStore),
+  objectStore: vi.fn().mockReturnValue(mockObjectStore),
 };
 
 const mockDatabase = {
-  transaction: jest.fn().mockReturnValue(mockTransaction),
+  transaction: vi.fn().mockReturnValue(mockTransaction),
   objectStoreNames: {
-    contains: jest.fn(),
+    contains: vi.fn(),
   },
-  createObjectStore: jest.fn(),
+  createObjectStore: vi.fn(),
 };
 
 const mockRequest = {
@@ -74,7 +75,7 @@ const mockDeleteRequest = {
 // Mock service worker registration
 const mockRegistration = {
   sync: {
-    register: jest.fn(),
+    register: vi.fn(),
   },
 };
 
@@ -91,7 +92,7 @@ describe('backgroundSync', () => {
   const originalIndexedDB = global.indexedDB;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Setup navigator mock
     Object.defineProperty(global, 'navigator', {
@@ -99,7 +100,7 @@ describe('backgroundSync', () => {
       writable: true,
     });
 
-    // Setup window mock with SyncManager
+    // Setup window mock
     Object.defineProperty(global, 'window', {
       value: {
         ...originalWindow,
@@ -111,7 +112,7 @@ describe('backgroundSync', () => {
     // Setup IndexedDB mock
     Object.defineProperty(global, 'indexedDB', {
       value: {
-        open: jest.fn().mockReturnValue(mockRequest),
+        open: vi.fn().mockReturnValue(mockRequest),
       },
       writable: true,
     });
@@ -364,7 +365,7 @@ describe('backgroundSync', () => {
       // Mock the registerBackgroundSync call
       const originalDateNow = Date.now;
       const mockTimestamp = 1234567890;
-      Date.now = jest.fn().mockReturnValue(mockTimestamp);
+      Date.now = vi.fn().mockReturnValue(mockTimestamp);
 
       // Mock successful IndexedDB operations
       setTimeout(() => {

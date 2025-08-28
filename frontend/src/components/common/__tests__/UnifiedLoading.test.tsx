@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+import { vi } from 'vitest';
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
@@ -12,7 +13,7 @@ import UnifiedLoading, {
 import type { LoadingVariant } from '../UnifiedLoading';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -51,7 +52,7 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock SkeletonLoader components
-jest.mock('../SkeletonLoader', () => ({
+vi.mock('../SkeletonLoader', () => ({
   SkeletonHero: ({ className }: { className?: string }) => (
     <div data-testid="skeleton-hero" className={className}>
       Skeleton Hero

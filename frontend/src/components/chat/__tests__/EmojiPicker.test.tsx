@@ -1,9 +1,10 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import EmojiPicker from '../EmojiPicker';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -32,7 +33,7 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   Search: ({ className }: { className?: string }) => (
     <div data-testid="search-icon" className={className}>
       Search
@@ -46,7 +47,7 @@ jest.mock('lucide-react', () => ({
 }));
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, defaultValue: string) => defaultValue,
   }),
@@ -62,11 +63,11 @@ describe(
       return;
     }
 
-    const mockOnSelect = jest.fn();
-    const mockOnClose = jest.fn();
+    const mockOnSelect = vi.fn();
+    const mockOnClose = vi.fn();
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it('renders emoji picker component', () => {

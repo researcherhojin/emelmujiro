@@ -298,8 +298,8 @@ describe('Skeleton Component', () => {
 
       const hero = screen.getByTestId('skeleton-hero');
       const skeletons = within(hero).getAllByRole('generic');
-      // Title lines have 48px height and are wider (w-3/4 or w-2/3)
-      // Filter out CTA buttons which also have 48px height but specific widths (120px, 140px)
+      // Title lines have 48px height and are wider (w-3/4 or w-2/3),
+      // Filter out CTA buttons which also have 48px height but specific widths (120px, 140px),
       const titleLines = skeletons.filter(
         (el) => el.style.height === '48px' && !el.style.width
       );
@@ -322,7 +322,7 @@ describe('Skeleton Component', () => {
 
       const hero = screen.getByTestId('skeleton-hero');
       const skeletons = within(hero).getAllByRole('generic');
-      // There are title placeholders (48px) and CTA buttons (48px)
+      // There are title placeholders (48px) and CTA buttons (48px),
       // CTA buttons also have width specified
       const ctaButtons = skeletons.filter(
         (el) =>
@@ -386,7 +386,7 @@ describe('Skeleton Component', () => {
       const services = screen.getByTestId('skeleton-services');
       const skeletons = within(services).getAllByRole('generic');
 
-      // Each card should have: 1 icon (48x48), 1 title (28px height), 1 divider (4px height)
+      // Each card should have: 1 icon (48x48), 1 title (28px height), 1 divider (4px height),
       const icons = skeletons.filter(
         (el) => el.style.width === '48px' && el.style.height === '48px'
       );
@@ -532,7 +532,7 @@ describe('Skeleton Component', () => {
       const form = screen.getByTestId('skeleton-form');
       const skeletons = within(form).getAllByRole('generic');
 
-      // Should have 3 labels (20px height) and 3 inputs (2x44px, 1x120px)
+      // Should have 3 labels (20px height) and 3 inputs (2x44px, 1x120px),
       const labels = skeletons.filter((el) => el.style.height === '20px');
       const inputs = skeletons.filter(
         (el) => el.style.height === '44px' || el.style.height === '120px'
@@ -625,7 +625,7 @@ describe('Skeleton Component', () => {
       const endTime = performance.now();
       const renderTime = endTime - startTime;
 
-      // Should render reasonably quickly (under 100ms typically)
+      // Should render reasonably quickly (under 100ms typically),
       expect(renderTime).toBeLessThan(200);
     });
 
@@ -637,7 +637,7 @@ describe('Skeleton Component', () => {
         rerender(<SkeletonText lines={i} />);
       }
 
-      // Verify the last render (lines=10)
+      // Verify the last render (lines=10),
       const textContainer = screen.getByTestId('skeleton-text');
       const textLines = within(textContainer)
         .getAllByRole('generic')

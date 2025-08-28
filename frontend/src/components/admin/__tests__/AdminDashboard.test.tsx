@@ -1,11 +1,12 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils';
 import AdminDashboard from '../AdminDashboard';
 
 describe('AdminDashboard', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders admin dashboard with sidebar', () => {
@@ -86,7 +87,7 @@ describe('AdminDashboard', () => {
   });
 
   it('handles delete content with confirmation', async () => {
-    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
     renderWithProviders(<AdminDashboard />);
 
     const contentTab = screen.getByRole('button', { name: /콘텐츠 관리/i });
@@ -109,7 +110,7 @@ describe('AdminDashboard', () => {
   });
 
   it('cancels delete when user declines confirmation', async () => {
-    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(false);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
     renderWithProviders(<AdminDashboard />);
 
     const contentTab = screen.getByRole('button', { name: /콘텐츠 관리/i });

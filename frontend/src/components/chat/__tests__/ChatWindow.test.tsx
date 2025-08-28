@@ -1,9 +1,10 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -30,7 +31,7 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   X: () => <span>X</span>,
   Minimize2: () => <span>Minimize2</span>,
   Maximize2: () => <span>Maximize2</span>,
@@ -55,7 +56,7 @@ jest.mock('lucide-react', () => ({
 }));
 
 // Mock child components
-jest.mock('../MessageList', () => ({
+vi.mock('../MessageList', () => ({
   __esModule: true,
   default: () => (
     <div data-testid="message-list">
@@ -64,12 +65,12 @@ jest.mock('../MessageList', () => ({
   ),
 }));
 
-jest.mock('../TypingIndicator', () => ({
+vi.mock('../TypingIndicator', () => ({
   __esModule: true,
   default: () => <div data-testid="typing-indicator">Typing...</div>,
 }));
 
-jest.mock('../EmojiPicker', () => ({
+vi.mock('../EmojiPicker', () => ({
   __esModule: true,
   default: ({
     onSelect,
@@ -85,7 +86,7 @@ jest.mock('../EmojiPicker', () => ({
   ),
 }));
 
-jest.mock('../FileUpload', () => ({
+vi.mock('../FileUpload', () => ({
   __esModule: true,
   default: ({
     onUpload,
@@ -108,7 +109,7 @@ jest.mock('../FileUpload', () => ({
   ),
 }));
 
-jest.mock('../QuickReplies', () => ({
+vi.mock('../QuickReplies', () => ({
   __esModule: true,
   default: ({
     replies = [],
@@ -133,46 +134,33 @@ jest.mock('../QuickReplies', () => ({
 }));
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: {
-      changeLanguage: jest.fn(),
+      changeLanguage: vi.fn(),
       language: 'ko',
     },
   }),
 }));
 
 // Mock contexts
-jest.mock('../../../contexts/UIContext', () => ({
+vi.mock('../../../contexts/UIContext', () => ({
   useUI: () => ({
     theme: 'light',
-    showNotification: jest.fn(),
+    showNotification: vi.fn(),
   }),
 }));
 
-jest.mock('../../../contexts/ChatContext', () => ({
-  useChatContext: () => ({
-    messages: [],
-    isTyping: false,
-    isConnected: true,
-    agentName: 'Support Agent',
-    agentAvailable: true,
-    businessHours: { isOpen: true, openTime: '09:00', closeTime: '18:00' },
-    sendMessage: jest.fn(),
-    sendFile: jest.fn(),
-    clearMessages: jest.fn(),
-    exportChat: jest.fn(),
-    startTyping: jest.fn(),
-    stopTyping: jest.fn(),
-    closeChat: jest.fn(),
-    toggleMinimize: jest.fn(),
-    isMinimized: false,
-  }),
+vi.mock('../../../contexts/ChatContext', () => ({
+  useChatContext: vi.fn(),
 }));
 
 // Import ChatWindow after all mocks are defined
 import ChatWindow from '../ChatWindow';
+import { useChatContext } from '../../../contexts/ChatContext';
+
+const mockUseChatContext = useChatContext as ReturnType<typeof vi.fn>;
 
 // Helper to create complete mock context
 const createMockChatContext = (overrides = {}) => ({
@@ -182,14 +170,14 @@ const createMockChatContext = (overrides = {}) => ({
   agentName: 'Support Agent',
   agentAvailable: true,
   businessHours: { isOpen: true, openTime: '09:00', closeTime: '18:00' },
-  sendMessage: jest.fn(),
-  sendFile: jest.fn(),
-  clearMessages: jest.fn(),
-  exportChat: jest.fn(),
-  startTyping: jest.fn(),
-  stopTyping: jest.fn(),
-  closeChat: jest.fn(),
-  toggleMinimize: jest.fn(),
+  sendMessage: vi.fn(),
+  sendFile: vi.fn(),
+  clearMessages: vi.fn(),
+  exportChat: vi.fn(),
+  startTyping: vi.fn(),
+  stopTyping: vi.fn(),
+  closeChat: vi.fn(),
+  toggleMinimize: vi.fn(),
   isMinimized: false,
   ...overrides,
 });
@@ -205,12 +193,14 @@ describe(
     }
 
     beforeEach(() => {
-      jest.clearAllMocks();
-      jest.restoreAllMocks();
+      vi.clearAllMocks();
+      vi.restoreAllMocks();
+      // Set default mock return value
+      mockUseChatContext.mockReturnValue(createMockChatContext());
     });
 
     afterEach(() => {
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
     });
 
     it('should render chat window with message list', () => {
@@ -242,10 +232,9 @@ describe(
     });
 
     it('should show disconnected banner when not connected', () => {
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      jest
-        .spyOn(ChatContext, 'useChatContext')
-        .mockReturnValue(createMockChatContext({ isConnected: false }));
+      mockUseChatContext.mockReturnValue(
+        createMockChatContext({ isConnected: false })
+      );
 
       render(<ChatWindow />);
 
@@ -255,8 +244,7 @@ describe(
     });
 
     it('should show business hours notice when closed', () => {
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      jest.spyOn(ChatContext, 'useChatContext').mockReturnValue(
+      mockUseChatContext.mockReturnValue(
         createMockChatContext({
           businessHours: { isOpen: false, hours: '09:00 - 18:00' },
         })
@@ -372,10 +360,9 @@ describe(
     });
 
     it('should show typing indicator when agent is typing', () => {
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      jest
-        .spyOn(ChatContext, 'useChatContext')
-        .mockReturnValue(createMockChatContext({ isTyping: true }));
+      mockUseChatContext.mockReturnValue(
+        createMockChatContext({ isTyping: true })
+      );
 
       render(<ChatWindow />);
 
@@ -383,8 +370,7 @@ describe(
     });
 
     it('should show quick replies when no messages', () => {
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      jest.spyOn(ChatContext, 'useChatContext').mockReturnValue(
+      mockUseChatContext.mockReturnValue(
         createMockChatContext({
           messages: [],
         })
@@ -398,10 +384,9 @@ describe(
     });
 
     it('should handle quick reply selection', () => {
-      const sendMessage = jest.fn();
+      const sendMessage = vi.fn();
 
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      jest.spyOn(ChatContext, 'useChatContext').mockReturnValue(
+      mockUseChatContext.mockReturnValue(
         createMockChatContext({
           messages: [],
           sendMessage,
@@ -446,8 +431,7 @@ describe(
     });
 
     it('should enable export when messages exist', () => {
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      jest.spyOn(ChatContext, 'useChatContext').mockReturnValue(
+      mockUseChatContext.mockReturnValue(
         createMockChatContext({
           messages: [
             {
@@ -467,10 +451,9 @@ describe(
     });
 
     it('should show connection status when disconnected', () => {
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      jest
-        .spyOn(ChatContext, 'useChatContext')
-        .mockReturnValue(createMockChatContext({ isConnected: false }));
+      mockUseChatContext.mockReturnValue(
+        createMockChatContext({ isConnected: false })
+      );
 
       render(<ChatWindow />);
 
@@ -480,10 +463,9 @@ describe(
     });
 
     it('should disable input when disconnected', () => {
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      jest
-        .spyOn(ChatContext, 'useChatContext')
-        .mockReturnValue(createMockChatContext({ isConnected: false }));
+      mockUseChatContext.mockReturnValue(
+        createMockChatContext({ isConnected: false })
+      );
 
       render(<ChatWindow />);
 
@@ -494,11 +476,10 @@ describe(
     });
 
     it('should handle message send on Enter key', () => {
-      const sendMessage = jest.fn();
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      jest
-        .spyOn(ChatContext, 'useChatContext')
-        .mockReturnValue(createMockChatContext({ sendMessage }));
+      const sendMessage = vi.fn();
+      mockUseChatContext.mockReturnValue(
+        createMockChatContext({ sendMessage })
+      );
 
       render(<ChatWindow />);
 
@@ -516,11 +497,10 @@ describe(
     });
 
     it('should not send message on Enter with Shift key', () => {
-      const sendMessage = jest.fn();
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      jest
-        .spyOn(ChatContext, 'useChatContext')
-        .mockReturnValue(createMockChatContext({ sendMessage }));
+      const sendMessage = vi.fn();
+      mockUseChatContext.mockReturnValue(
+        createMockChatContext({ sendMessage })
+      );
 
       render(<ChatWindow />);
 

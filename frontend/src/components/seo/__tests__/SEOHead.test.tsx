@@ -1,10 +1,10 @@
 import React from 'react';
-import { waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import { renderWithProviders } from '../../../test-utils';
 import SEOHead from '../SEOHead';
 
 // Mock react-helmet-async
-jest.mock('react-helmet-async', () => ({
+vi.mock('react-helmet-async', () => ({
   Helmet: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="helmet">{children}</div>
   ),
@@ -15,7 +15,7 @@ jest.mock('react-helmet-async', () => ({
 
 describe('SEOHead', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders with default props', () => {
@@ -173,7 +173,7 @@ describe('SEOHead', () => {
     expect(mobileCapable?.getAttribute('content')).toBe('yes');
 
     const themeColor = helmet.querySelector('meta[name="theme-color"]');
-    // Check if a theme color meta tag exists (the value might vary based on environment)
+    // Check if a theme color meta tag exists (the value might vary based on environment),
     expect(themeColor).toBeTruthy();
     expect(themeColor?.getAttribute('content')).toMatch(/^#[0-9a-fA-F]{6}$/);
   });

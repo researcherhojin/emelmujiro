@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import {
   formatNumber,
   formatCurrency,
@@ -18,7 +19,7 @@ import {
 // Mock i18n object
 const mockI18n = (language: string) => ({
   language,
-  t: jest.fn((key: string) => {
+  t: vi.fn((key: string) => {
     if (key === 'time.now') return 'now';
     return key;
   }),

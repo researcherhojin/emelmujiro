@@ -1,4 +1,5 @@
 import WebSocketService from '../websocket';
+import { vi } from 'vitest';
 
 // Skip all tests in this file in CI environment to prevent timeout issues
 if (process.env.CI === 'true') {
@@ -58,7 +59,7 @@ if (process.env.CI === 'true') {
 
       beforeEach(() => {
         wsService = new WebSocketService();
-        jest.clearAllMocks();
+        vi.clearAllMocks();
       });
 
       afterEach(() => {
@@ -67,7 +68,7 @@ if (process.env.CI === 'true') {
 
       describe('Connection Management', () => {
         it('should connect to WebSocket server', async () => {
-          const onConnect = jest.fn();
+          const onConnect = vi.fn();
           wsService.on('connect', onConnect);
 
           wsService.connect('ws://localhost:8000/ws/chat/');
@@ -92,7 +93,7 @@ if (process.env.CI === 'true') {
         });
 
         it('should handle reconnection', async () => {
-          const onReconnect = jest.fn();
+          const onReconnect = vi.fn();
           wsService.on('reconnect', onReconnect);
 
           wsService.connect('ws://localhost:8000/ws/chat/');
@@ -180,7 +181,7 @@ if (process.env.CI === 'true') {
         });
 
         it('should handle incoming messages', async () => {
-          const onMessage = jest.fn();
+          const onMessage = vi.fn();
           wsService.on('message', onMessage);
 
           wsService.connect('ws://localhost:8000/ws/chat/');
@@ -193,15 +194,14 @@ if (process.env.CI === 'true') {
             });
             ws.onmessage(event);
           }
-
           expect(onMessage).toHaveBeenCalledWith(
             expect.objectContaining({ type: 'chat', text: 'Hello' })
           );
         });
 
         it('should handle different message types', async () => {
-          const onChat = jest.fn();
-          const onNotification = jest.fn();
+          const onChat = vi.fn();
+          const onNotification = vi.fn();
 
           wsService.on('chat', onChat);
           wsService.on('notification', onNotification);
@@ -232,7 +232,7 @@ if (process.env.CI === 'true') {
         });
 
         it('should handle malformed messages', async () => {
-          const onError = jest.fn();
+          const onError = vi.fn();
           wsService.on('error', onError);
 
           wsService.connect('ws://localhost:8000/ws/chat/');
@@ -253,7 +253,7 @@ if (process.env.CI === 'true') {
 
       describe('Event System', () => {
         it('should register event listeners', () => {
-          const handler = jest.fn();
+          const handler = vi.fn();
           wsService.on('test', handler);
 
           wsService.emit('test', { data: 'test' });
@@ -261,7 +261,7 @@ if (process.env.CI === 'true') {
         });
 
         it('should unregister event listeners', () => {
-          const handler = jest.fn();
+          const handler = vi.fn();
           wsService.on('test', handler);
           wsService.off('test', handler);
 
@@ -270,8 +270,8 @@ if (process.env.CI === 'true') {
         });
 
         it('should handle multiple listeners for same event', () => {
-          const handler1 = jest.fn();
-          const handler2 = jest.fn();
+          const handler1 = vi.fn();
+          const handler2 = vi.fn();
 
           wsService.on('test', handler1);
           wsService.on('test', handler2);
@@ -283,7 +283,7 @@ if (process.env.CI === 'true') {
         });
 
         it('should support once listeners', () => {
-          const handler = jest.fn();
+          const handler = vi.fn();
           wsService.once('test', handler);
 
           wsService.emit('test', { data: 'first' });
@@ -326,7 +326,7 @@ if (process.env.CI === 'true') {
 
       describe('Error Handling', () => {
         it('should handle connection errors', async () => {
-          const onError = jest.fn();
+          const onError = vi.fn();
           wsService.on('error', onError);
 
           wsService.connect('ws://localhost:8000/ws/chat/');
@@ -353,7 +353,7 @@ if (process.env.CI === 'true') {
         });
 
         it('should handle reconnection errors', async () => {
-          const onError = jest.fn();
+          const onError = vi.fn();
           wsService.on('error', onError);
 
           // Force connection to fail
@@ -380,7 +380,7 @@ if (process.env.CI === 'true') {
 
           await new Promise((resolve) => setTimeout(resolve, 10));
 
-          const sendSpy = jest.spyOn((wsService as any).ws, 'send');
+          const sendSpy = vi.spyOn((wsService as any).ws, 'send');
 
           await new Promise((resolve) => setTimeout(resolve, 150));
 
@@ -395,7 +395,7 @@ if (process.env.CI === 'true') {
 
           wsService.disconnect();
 
-          const sendSpy = jest.spyOn(MockWebSocket.prototype, 'send');
+          const sendSpy = vi.spyOn(MockWebSocket.prototype, 'send');
 
           await new Promise((resolve) => setTimeout(resolve, 150));
 
@@ -403,7 +403,7 @@ if (process.env.CI === 'true') {
         });
 
         it('should handle pong messages', async () => {
-          const onPong = jest.fn();
+          const onPong = vi.fn();
           wsService.on('pong', onPong);
 
           wsService.connect('ws://localhost:8000/ws/chat/');
@@ -488,7 +488,7 @@ if (process.env.CI === 'true') {
 
       describe('Binary Data', () => {
         it('should handle binary messages', async () => {
-          const onBinary = jest.fn();
+          const onBinary = vi.fn();
           wsService.on('binary', onBinary);
 
           wsService.connect('ws://localhost:8000/ws/chat/');
@@ -519,4 +519,4 @@ if (process.env.CI === 'true') {
       });
     }
   );
-} // End of else block for CI skip
+}

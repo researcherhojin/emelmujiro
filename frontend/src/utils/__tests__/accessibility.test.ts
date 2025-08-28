@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 
+import { vi } from 'vitest';
 import {
   announceToScreenReader,
   prefersReducedMotion,
@@ -19,12 +20,12 @@ describe('accessibility', () => {
     document.body.innerHTML = '';
 
     // Reset Date.now for consistent testing
-    jest.spyOn(Date, 'now').mockReturnValue(1234567890);
-    jest.spyOn(Math, 'random').mockReturnValue(0.123456789);
+    vi.spyOn(Date, 'now').mockReturnValue(1234567890);
+    vi.spyOn(Math, 'random').mockReturnValue(0.123456789);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('announceToScreenReader', () => {
@@ -49,7 +50,7 @@ describe('accessibility', () => {
     });
 
     it('should remove announcement after timeout', () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
 
       announceToScreenReader('Temporary message');
 
@@ -57,12 +58,12 @@ describe('accessibility', () => {
       expect(announcement).toBeTruthy();
 
       // Fast-forward time
-      jest.advanceTimersByTime(1100);
+      vi.advanceTimersByTime(1100);
 
       const removedAnnouncement = document.querySelector('[role="status"]');
       expect(removedAnnouncement).toBeFalsy();
 
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it('should handle multiple announcements', () => {
@@ -80,15 +81,15 @@ describe('accessibility', () => {
     it('should return true when user prefers reduced motion', () => {
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: jest.fn().mockImplementation((query) => ({
+        value: vi.fn().mockImplementation((query) => ({
           matches: query === '(prefers-reduced-motion: reduce)',
           media: query,
           onchange: null,
-          addListener: jest.fn(),
-          removeListener: jest.fn(),
-          addEventListener: jest.fn(),
-          removeEventListener: jest.fn(),
-          dispatchEvent: jest.fn(),
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          dispatchEvent: vi.fn(),
         })),
       });
 
@@ -98,15 +99,15 @@ describe('accessibility', () => {
     it('should return false when user does not prefer reduced motion', () => {
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: jest.fn().mockImplementation((query) => ({
+        value: vi.fn().mockImplementation((query) => ({
           matches: false,
           media: query,
           onchange: null,
-          addListener: jest.fn(),
-          removeListener: jest.fn(),
-          addEventListener: jest.fn(),
-          removeEventListener: jest.fn(),
-          dispatchEvent: jest.fn(),
+          addListener: vi.fn(),
+          removeListener: vi.fn(),
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          dispatchEvent: vi.fn(),
         })),
       });
 
@@ -116,7 +117,7 @@ describe('accessibility', () => {
 
   describe('getContrastRatio', () => {
     it('should calculate contrast ratio for valid RGB colors', () => {
-      // Black vs White should have high contrast (21:1)
+      // Black vs White should have high contrast (21:1),
       const ratio = getContrastRatio('rgb(0, 0, 0)', 'rgb(255, 255, 255)');
       expect(ratio).toBeCloseTo(21, 0);
     });
@@ -175,9 +176,7 @@ describe('accessibility', () => {
     it('should generate unique IDs', () => {
       // Mock different values for each call
       let callCount = 0;
-      jest
-        .spyOn(Date, 'now')
-        .mockImplementation(() => 1234567890 + callCount++);
+      vi.spyOn(Date, 'now').mockImplementation(() => 1234567890 + callCount++);
 
       const id1 = generateAriaId();
       const id2 = generateAriaId();
@@ -305,15 +304,15 @@ describe('accessibility', () => {
 
   describe('debounceForA11y', () => {
     beforeEach(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it('should debounce function calls', () => {
-      const mockFn = jest.fn();
+      const mockFn = vi.fn();
       const debouncedFn = debounceForA11y(mockFn, 100);
 
       debouncedFn('arg1', 'arg2');
@@ -322,46 +321,46 @@ describe('accessibility', () => {
 
       expect(mockFn).not.toHaveBeenCalled();
 
-      jest.advanceTimersByTime(100);
+      vi.advanceTimersByTime(100);
 
       expect(mockFn).toHaveBeenCalledTimes(1);
       expect(mockFn).toHaveBeenCalledWith('arg5', 'arg6');
     });
 
     it('should reset timer on subsequent calls', () => {
-      const mockFn = jest.fn();
+      const mockFn = vi.fn();
       const debouncedFn = debounceForA11y(mockFn, 100);
 
       debouncedFn('first');
-      jest.advanceTimersByTime(50);
+      vi.advanceTimersByTime(50);
 
       debouncedFn('second');
-      jest.advanceTimersByTime(50);
+      vi.advanceTimersByTime(50);
 
       expect(mockFn).not.toHaveBeenCalled();
 
-      jest.advanceTimersByTime(50);
+      vi.advanceTimersByTime(50);
       expect(mockFn).toHaveBeenCalledWith('second');
     });
 
     it('should handle functions with no arguments', () => {
-      const mockFn = jest.fn();
+      const mockFn = vi.fn();
       const debouncedFn = debounceForA11y(mockFn, 50);
 
       debouncedFn();
-      jest.advanceTimersByTime(50);
+      vi.advanceTimersByTime(50);
 
       expect(mockFn).toHaveBeenCalledTimes(1);
       expect(mockFn).toHaveBeenCalledWith();
     });
 
     it('should preserve function return type', () => {
-      const mockFn = jest.fn().mockReturnValue('test');
+      const mockFn = vi.fn().mockReturnValue('test');
       const debouncedFn = debounceForA11y(mockFn, 50);
 
       // Note: debounced functions don't return values immediately
       debouncedFn();
-      jest.advanceTimersByTime(50);
+      vi.advanceTimersByTime(50);
 
       expect(mockFn).toHaveBeenCalled();
     });
@@ -521,7 +520,7 @@ describe('accessibility', () => {
       expect(isVisibleToScreenReader(legend)).toBe(true);
     });
 
-    it('should handle accessibility announcements with focus management', (done) => {
+    it('should handle accessibility announcements with focus management', async () => {
       const button = document.createElement('button');
       button.textContent = 'Test';
       document.body.appendChild(button);
@@ -531,14 +530,13 @@ describe('accessibility', () => {
 
       announceToScreenReader('Form submitted successfully');
 
-      setTimeout(() => {
-        manageFocus.restore(savedFocus);
-        expect(document.activeElement).toBe(button);
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
-        const announcement = document.querySelector('[role="status"]');
-        expect(announcement?.textContent).toBe('Form submitted successfully');
-        done();
-      }, 50);
+      manageFocus.restore(savedFocus);
+      expect(document.activeElement).toBe(button);
+
+      const announcement = document.querySelector('[role="status"]');
+      expect(announcement?.textContent).toBe('Form submitted successfully');
     });
   });
 });

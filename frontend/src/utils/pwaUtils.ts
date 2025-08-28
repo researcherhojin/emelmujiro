@@ -409,8 +409,14 @@ export async function clearAppCache(): Promise<void> {
 // Get install prompt event
 export function getInstallPromptEvent(): BeforeInstallPromptEvent | null {
   // Check window.deferredPrompt for test compatibility
-  if (typeof window !== 'undefined' && (window as any).deferredPrompt) {
-    return (window as any).deferredPrompt;
+  if (
+    typeof window !== 'undefined' &&
+    'deferredPrompt' in window &&
+    (window as Window & { deferredPrompt?: BeforeInstallPromptEvent })
+      .deferredPrompt
+  ) {
+    return (window as Window & { deferredPrompt?: BeforeInstallPromptEvent })
+      .deferredPrompt as BeforeInstallPromptEvent;
   }
   return deferredPrompt;
 }
@@ -480,8 +486,14 @@ export async function checkForAppUpdate(): Promise<void> {
 
 // Prompt install PWA
 export async function promptInstallPWA(): Promise<boolean> {
-  if (deferredPrompt || (window as any).deferredPrompt) {
-    const prompt = deferredPrompt || (window as any).deferredPrompt;
+  const windowWithPrompt = window as Window & {
+    deferredPrompt?: BeforeInstallPromptEvent;
+  };
+  if (deferredPrompt || windowWithPrompt.deferredPrompt) {
+    const prompt = deferredPrompt || windowWithPrompt.deferredPrompt;
+    if (!prompt) {
+      return false;
+    }
     try {
       await prompt.prompt();
       const { outcome } = await prompt.userChoice;

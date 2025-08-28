@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 
+import { vi } from 'vitest';
 import {
   isPushNotificationSupported,
   isPushNotificationEnabled,
@@ -13,26 +14,26 @@ import {
 } from '../pushNotifications';
 
 // Mock logger
-jest.mock('../logger', () => ({
+vi.mock('../logger', () => ({
   __esModule: true,
   default: {
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn(),
+    info: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn(),
   },
 }));
 
 import logger from '../logger';
-const mockLogger = logger as jest.Mocked<typeof logger>;
+const mockLogger = logger as any;
 
 // Mock fetch
-const mockFetch = jest.fn();
+const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 // Mock subscription object
 const mockSubscription = {
-  unsubscribe: jest.fn().mockResolvedValue(true),
+  unsubscribe: vi.fn().mockResolvedValue(true),
   endpoint: 'https://test-endpoint.com',
   expirationTime: null,
   options: {
@@ -43,12 +44,12 @@ const mockSubscription = {
     p256dh: 'test-p256dh',
     auth: 'test-auth',
   },
-  getKey: jest.fn().mockImplementation((name: string) => {
+  getKey: vi.fn().mockImplementation((name: string) => {
     if (name === 'p256dh') return 'test-p256dh';
     if (name === 'auth') return 'test-auth';
     return null;
   }),
-  toJSON: jest.fn().mockReturnValue({
+  toJSON: vi.fn().mockReturnValue({
     endpoint: 'https://test-endpoint.com',
     keys: {
       p256dh: 'test-p256dh',
@@ -60,10 +61,10 @@ const mockSubscription = {
 // Mock service worker registration
 const mockRegistration = {
   pushManager: {
-    getSubscription: jest.fn(),
-    subscribe: jest.fn(),
+    getSubscription: vi.fn(),
+    subscribe: vi.fn(),
   },
-  showNotification: jest.fn(),
+  showNotification: vi.fn(),
 };
 
 // Mock navigator
@@ -79,7 +80,7 @@ describe('pushNotifications', () => {
   const originalWindow = global.window;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Setup navigator mock
     Object.defineProperty(global, 'navigator', {
@@ -89,7 +90,7 @@ describe('pushNotifications', () => {
 
     // Setup Notification mock
     const mockNotification = {
-      requestPermission: jest.fn(),
+      requestPermission: vi.fn(),
     };
     Object.defineProperty(mockNotification, 'permission', {
       value: 'default',
@@ -105,7 +106,7 @@ describe('pushNotifications', () => {
     Object.defineProperty(global, 'window', {
       value: {
         ...originalWindow,
-        atob: jest.fn().mockImplementation((str) => {
+        atob: vi.fn().mockImplementation((str) => {
           // Simple mock of atob for base64 decode
           return Buffer.from(str, 'base64').toString('binary');
         }),
@@ -203,9 +204,9 @@ describe('pushNotifications', () => {
 
   describe('requestNotificationPermission', () => {
     it('should request permission and return true when granted', async () => {
-      (global.Notification.requestPermission as jest.Mock).mockResolvedValue(
-        'granted'
-      );
+      (
+        global.Notification.requestPermission as ReturnType<typeof vi.fn>
+      ).mockResolvedValue('granted');
 
       const result = await requestNotificationPermission();
 
@@ -214,9 +215,9 @@ describe('pushNotifications', () => {
     });
 
     it('should return false when permission is denied', async () => {
-      (global.Notification.requestPermission as jest.Mock).mockResolvedValue(
-        'denied'
-      );
+      (
+        global.Notification.requestPermission as ReturnType<typeof vi.fn>
+      ).mockResolvedValue('denied');
 
       const result = await requestNotificationPermission();
 
@@ -331,7 +332,7 @@ describe('pushNotifications', () => {
       const error = new Error('Unsubscribe failed');
       const mockSubscriptionWithError = {
         ...mockSubscription,
-        unsubscribe: jest.fn().mockRejectedValue(error),
+        unsubscribe: vi.fn().mockRejectedValue(error),
       };
       mockRegistration.pushManager.getSubscription.mockResolvedValue(
         mockSubscriptionWithError
@@ -419,7 +420,6 @@ describe('pushNotifications', () => {
         tag: 'custom-tag',
         requireInteraction: true,
       };
-
       await showNotification('Test notification', customOptions);
 
       expect(mockRegistration.showNotification).toHaveBeenCalledWith(

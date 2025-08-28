@@ -1,27 +1,31 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import ProfilePage from '../ProfilePage';
 
 // Mock useNavigate
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}));
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await import('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 // Mock SEOHelmet
-jest.mock('../../common/SEOHelmet', () => {
-  return function MockSEOHelmet() {
+vi.mock('../../common/SEOHelmet', () => ({
+  default: function MockSEOHelmet() {
     return null;
-  };
-});
+  },
+}));
 
 // Mock StructuredData
-jest.mock('../../common/StructuredData', () => {
-  return function MockStructuredData() {
+vi.mock('../../common/StructuredData', () => ({
+  default: function MockStructuredData() {
     return null;
-  };
-});
+  },
+}));
 
 describe('ProfilePage Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {

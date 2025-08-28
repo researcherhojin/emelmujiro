@@ -1,11 +1,12 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils';
 import { ChatProvider } from '../../../contexts/ChatContext';
 import ChatWidget from '../ChatWidget';
 
 // Mock framer-motion to avoid animation issues in tests
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -40,12 +41,12 @@ describe(
       // Clear localStorage before each test
       localStorage.clear();
       // Use fake timers
-      jest.useFakeTimers();
+      vi.useFakeTimers();
     });
 
     afterEach(() => {
-      jest.runOnlyPendingTimers();
-      jest.useRealTimers();
+      vi.runOnlyPendingTimers();
+      vi.useRealTimers();
     });
 
     it('renders chat button initially', async () => {
@@ -56,7 +57,7 @@ describe(
       );
 
       // Advance timers to show the widget
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
 
       // Should show chat button initially
       await waitFor(() => {
@@ -73,7 +74,7 @@ describe(
       );
 
       // Advance timers to show the widget
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
 
       const chatButton = screen.getByRole('button', { name: 'chat.open' });
       fireEvent.click(chatButton);
@@ -92,7 +93,7 @@ describe(
       );
 
       // Advance timers to show the widget
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
 
       const chatButton = screen.getByRole('button', { name: 'chat.open' });
       fireEvent.click(chatButton);
@@ -113,7 +114,7 @@ describe(
       );
 
       // Fast-forward the 2-second timer to make the widget visible
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
 
       // Open chat
       const chatButton = await screen.findByRole('button', {
@@ -155,7 +156,7 @@ describe(
       );
 
       // Fast-forward the 2-second timer to make the widget visible
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
 
       // Open chat
       const chatButton = await screen.findByRole('button', {
@@ -168,7 +169,7 @@ describe(
       });
 
       // Close chat
-      // Find close button (usually the X button)
+      // Find close button (usually the X button),
       const allButtons = screen.getAllByRole('button');
       const closeButton = allButtons[allButtons.length - 1]; // Usually the last button
       fireEvent.click(closeButton);
@@ -187,7 +188,7 @@ describe(
       );
 
       // Advance timers to show the widget
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
 
       await waitFor(() => {
         const chatButton = screen.getByRole('button', { name: 'chat.open' });
@@ -205,7 +206,7 @@ describe(
       );
 
       // Advance timers to show the widget
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
 
       await waitFor(() => {
         const chatButton = screen.getByRole('button', { name: 'chat.open' });
@@ -230,7 +231,7 @@ describe(
       );
 
       // Advance timers to show the widget
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
 
       await waitFor(() => {
         const chatButton = screen.getByRole('button', { name: 'chat.open' });
@@ -254,7 +255,7 @@ describe(
       );
 
       // Advance timers to show the widget
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
 
       await waitFor(() => {
         const chatButton = screen.getByRole('button', { name: 'chat.open' });

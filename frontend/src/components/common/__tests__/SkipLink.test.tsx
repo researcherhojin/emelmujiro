@@ -2,21 +2,22 @@
  * @jest-environment jsdom
  */
 
+import { vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import SkipLink from '../SkipLink';
 
 // Mock scrollIntoView globally for JSDOM
 if (!Element.prototype.scrollIntoView) {
-  Element.prototype.scrollIntoView = jest.fn();
+  Element.prototype.scrollIntoView = vi.fn();
 }
 
 describe('SkipLink Component', () => {
-  let mockScrollIntoView: jest.Mock;
+  let mockScrollIntoView: any;
   let mockMainContent: HTMLElement;
 
   beforeEach(() => {
     // Mock scrollIntoView
-    mockScrollIntoView = jest.fn();
+    mockScrollIntoView = vi.fn();
 
     // Create mock main content element
     mockMainContent = document.createElement('div');
@@ -24,13 +25,13 @@ describe('SkipLink Component', () => {
     mockMainContent.scrollIntoView = mockScrollIntoView;
 
     // Mock focus method for main content
-    mockMainContent.focus = jest.fn();
+    mockMainContent.focus = vi.fn();
 
     // Add to document
     document.body.appendChild(mockMainContent);
 
     // Mock getElementById - We're testing component behavior, not DOM API
-    jest.spyOn(document, 'getElementById').mockImplementation((id) => {
+    vi.spyOn(document, 'getElementById').mockImplementation((id) => {
       if (id === 'main-content') {
         return mockMainContent;
       }
@@ -39,7 +40,7 @@ describe('SkipLink Component', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     document.body.removeChild(mockMainContent);
   });
 
@@ -232,7 +233,7 @@ describe('SkipLink Component', () => {
 
     it('handles missing main content element gracefully', () => {
       // Mock getElementById to return null
-      jest.spyOn(document, 'getElementById').mockReturnValue(null);
+      vi.spyOn(document, 'getElementById').mockReturnValue(null);
 
       render(<SkipLink />);
 
@@ -251,9 +252,7 @@ describe('SkipLink Component', () => {
       const elementWithoutFocus = document.createElement('div');
       elementWithoutFocus.id = 'main-content';
 
-      jest
-        .spyOn(document, 'getElementById')
-        .mockReturnValue(elementWithoutFocus);
+      vi.spyOn(document, 'getElementById').mockReturnValue(elementWithoutFocus);
 
       render(<SkipLink />);
 
@@ -271,11 +270,11 @@ describe('SkipLink Component', () => {
       // Create element without scrollIntoView method
       const elementWithoutScroll = document.createElement('div');
       elementWithoutScroll.id = 'main-content';
-      elementWithoutScroll.focus = jest.fn();
+      elementWithoutScroll.focus = vi.fn();
 
-      jest
-        .spyOn(document, 'getElementById')
-        .mockReturnValue(elementWithoutScroll);
+      vi.spyOn(document, 'getElementById').mockReturnValue(
+        elementWithoutScroll
+      );
 
       render(<SkipLink />);
 

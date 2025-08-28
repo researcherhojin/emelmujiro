@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import ErrorMessage from '../ErrorMessage';
 
 describe('ErrorMessage Component', () => {
@@ -14,7 +15,7 @@ describe('ErrorMessage Component', () => {
   });
 
   test('renders close button when onClose provided', () => {
-    const handleClose = jest.fn();
+    const handleClose = vi.fn();
     render(<ErrorMessage message="Error" onClose={handleClose} />);
 
     const closeButton = screen.getByRole('button', { name: '닫기' });
@@ -22,7 +23,7 @@ describe('ErrorMessage Component', () => {
   });
 
   test('calls onClose when close button clicked', () => {
-    const handleClose = jest.fn();
+    const handleClose = vi.fn();
     render(<ErrorMessage message="Error" onClose={handleClose} />);
 
     const closeButton = screen.getByRole('button', { name: '닫기' });

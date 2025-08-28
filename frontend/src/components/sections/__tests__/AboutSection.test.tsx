@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import AboutSection from '../AboutSection';
 import { STATISTICS } from '../../../constants';
 import React from 'react';
@@ -11,7 +12,7 @@ type MotionComponentProps = {
 };
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -62,7 +63,7 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   Award: () => <div data-testid="award-icon">Award</div>,
   Users: () => <div data-testid="users-icon">Users</div>,
   Briefcase: () => <div data-testid="briefcase-icon">Briefcase</div>,
@@ -229,7 +230,7 @@ describe('AboutSection Component', () => {
     const headings = screen.getAllByRole('heading');
     const headingTexts = headings.map((h) => h.textContent);
 
-    // Find main section headings (h2 and h3 with icons)
+    // Find main section headings (h2 and h3 with icons),
     const mainHeadings = headingTexts.filter(
       (text) =>
         text?.includes('About Me') ||

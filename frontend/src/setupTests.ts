@@ -1,26 +1,55 @@
 /* eslint-disable no-undef */
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
+// Vitest setup file
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
+import { beforeAll, afterAll } from 'vitest';
+import React from 'react';
+
+// Mock lucide-react icons - create a Proxy to handle any icon dynamically
+vi.mock('lucide-react', () => {
+  return new Proxy(
+    {},
+    {
+      get: (target, prop) => {
+        // Return a mock component for any icon name
+        if (typeof prop === 'string') {
+          return () => React.createElement('div', null, prop);
+        }
+        return undefined;
+      },
+    }
+  );
+});
 
 // Import CI-specific setup if in CI environment
 // Note: Dynamic imports are not supported in test setup files
 // CI-specific setup should be handled differently in Vite
 
+// Mock window dialog methods
+window.alert = vi.fn();
+window.confirm = vi.fn(() => true);
+window.prompt = vi.fn(() => null);
+
+// Mock CSS.supports for CSS parsing errors
+if (!window.CSS) {
+  window.CSS = {} as any;
+}
+if (!window.CSS.supports) {
+  window.CSS.supports = vi.fn(() => false);
+}
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation((query: string) => ({
+  value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: jest.fn(), // deprecated
-    removeListener: jest.fn(), // deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
   })),
 });
 
@@ -42,17 +71,17 @@ class MockIntersectionObserver implements IntersectionObserver {
       : [options?.threshold || 0];
   }
 
-  observe = jest.fn();
-  unobserve = jest.fn();
-  disconnect = jest.fn();
-  takeRecords = jest.fn(() => []);
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+  takeRecords = vi.fn(() => []);
 }
 
 global.IntersectionObserver =
   MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
 // Mock scrollTo
-window.scrollTo = jest.fn();
+window.scrollTo = vi.fn();
 
 // Mock Service Worker with complete API
 const mockServiceWorkerRegistration = {
@@ -60,10 +89,10 @@ const mockServiceWorkerRegistration = {
   waiting: null,
   active: null,
   onupdatefound: null,
-  unregister: jest.fn().mockResolvedValue(true),
+  unregister: vi.fn().mockResolvedValue(true),
   pushManager: {
-    getSubscription: jest.fn().mockResolvedValue(null),
-    subscribe: jest.fn().mockResolvedValue({}),
+    getSubscription: vi.fn().mockResolvedValue(null),
+    subscribe: vi.fn().mockResolvedValue({}),
   },
 };
 
@@ -72,15 +101,15 @@ const mockReady = Promise.resolve(mockServiceWorkerRegistration);
 Object.defineProperty(navigator, 'serviceWorker', {
   writable: true,
   value: {
-    register: jest.fn(() => Promise.resolve(mockServiceWorkerRegistration)),
+    register: vi.fn(() => Promise.resolve(mockServiceWorkerRegistration)),
     ready: mockReady,
     controller: null,
-    getRegistration: jest.fn(() =>
+    getRegistration: vi.fn(() =>
       Promise.resolve(mockServiceWorkerRegistration)
     ),
-    getRegistrations: jest.fn(() => Promise.resolve([])),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
+    getRegistrations: vi.fn(() => Promise.resolve([])),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
   },
 });
 
@@ -96,13 +125,13 @@ if (!navigator.serviceWorker.ready || !navigator.serviceWorker.ready.then) {
 // Ensure document elements have classList
 if (!document.documentElement.classList) {
   const mockClassList = {
-    add: jest.fn(),
-    remove: jest.fn(),
-    contains: jest.fn(() => false),
-    toggle: jest.fn(),
-    replace: jest.fn(),
-    item: jest.fn(),
-    toString: jest.fn(() => ''),
+    add: vi.fn(),
+    remove: vi.fn(),
+    contains: vi.fn(() => false),
+    toggle: vi.fn(),
+    replace: vi.fn(),
+    item: vi.fn(),
+    toString: vi.fn(() => ''),
     length: 0,
     value: '',
   };
@@ -116,13 +145,13 @@ if (!document.documentElement.classList) {
 
 if (!document.body.classList) {
   const mockClassList = {
-    add: jest.fn(),
-    remove: jest.fn(),
-    contains: jest.fn(() => false),
-    toggle: jest.fn(),
-    replace: jest.fn(),
-    item: jest.fn(),
-    toString: jest.fn(() => ''),
+    add: vi.fn(),
+    remove: vi.fn(),
+    contains: vi.fn(() => false),
+    toggle: vi.fn(),
+    replace: vi.fn(),
+    item: vi.fn(),
+    toString: vi.fn(() => ''),
     length: 0,
     value: '',
   };
@@ -134,6 +163,41 @@ if (!document.body.classList) {
   });
 }
 
+// Mock localStorage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value.toString();
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key];
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
+    get length() {
+      return Object.keys(store).length;
+    },
+    key: vi.fn((index: number) => {
+      const keys = Object.keys(store);
+      return keys[index] || null;
+    }),
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+  writable: true,
+});
+
+// Mock sessionStorage
+Object.defineProperty(window, 'sessionStorage', {
+  value: localStorageMock,
+  writable: true,
+});
+
 // Mock window.location for tests
 Object.defineProperty(window, 'location', {
   writable: true,
@@ -143,7 +207,7 @@ Object.defineProperty(window, 'location', {
     pathname: '/',
     search: '',
     hash: '',
-    reload: jest.fn(),
+    reload: vi.fn(),
   },
 });
 
@@ -152,7 +216,7 @@ const originalError = console.error;
 const originalWarn = console.warn;
 
 beforeAll(() => {
-  console.error = jest.fn((...args) => {
+  console.error = vi.fn((...args) => {
     // Only suppress known React warnings
     const message = args[0]?.toString() || '';
     if (
@@ -166,7 +230,7 @@ beforeAll(() => {
     originalError.apply(console, args);
   });
 
-  console.warn = jest.fn((...args) => {
+  console.warn = vi.fn((...args) => {
     const message = args[0]?.toString() || '';
     if (
       message.includes('componentWillReceiveProps') ||
@@ -183,39 +247,25 @@ afterAll(() => {
   console.warn = originalWarn;
 });
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn((_key: string): string | null => null),
-  setItem: jest.fn((_key: string, _value: string): void => undefined),
-  removeItem: jest.fn((_key: string): void => undefined),
-  clear: jest.fn((): void => undefined),
-  key: jest.fn((_index: number): string | null => null),
-  length: 0,
-};
-global.localStorage = localStorageMock as Storage;
-
-// Mock sessionStorage
-global.sessionStorage = localStorageMock as Storage;
-
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
-  observe = jest.fn();
-  unobserve = jest.fn();
-  disconnect = jest.fn();
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
 };
 
 // Mock requestAnimationFrame
-global.requestAnimationFrame = jest.fn((cb: FrameRequestCallback) =>
+global.requestAnimationFrame = vi.fn((cb: FrameRequestCallback) =>
   setTimeout(cb, 0)
 ) as unknown as typeof requestAnimationFrame;
-global.cancelAnimationFrame = jest.fn((id: number) =>
+global.cancelAnimationFrame = vi.fn((id: number) =>
   clearTimeout(id)
 ) as unknown as typeof cancelAnimationFrame;
 
 // Mock Notification API
 global.Notification = {
   permission: 'default' as NotificationPermission,
-  requestPermission: jest
+  requestPermission: vi
     .fn()
     .mockResolvedValue('granted' as NotificationPermission),
 } as unknown as typeof Notification;
@@ -238,14 +288,15 @@ declare global {
   }
 }
 
-(global as typeof globalThis & { gtag?: jest.Mock }).gtag = jest.fn();
+(global as typeof globalThis & { gtag?: ReturnType<typeof vi.fn> }).gtag =
+  vi.fn();
 
 // Mock fetch if not available
 if (!global.fetch) {
-  global.fetch = jest.fn().mockResolvedValue({
+  global.fetch = vi.fn().mockResolvedValue({
     ok: true,
-    json: jest.fn().mockResolvedValue({}),
-    text: jest.fn().mockResolvedValue(''),
+    json: vi.fn().mockResolvedValue({}),
+    text: vi.fn().mockResolvedValue(''),
     headers: new Headers(),
     status: 200,
     statusText: 'OK',
@@ -255,11 +306,11 @@ if (!global.fetch) {
 // Mock performance API
 if (!global.performance) {
   const mockPerformance: Partial<Performance> = {
-    now: jest.fn(() => Date.now()),
-    mark: jest.fn(),
-    measure: jest.fn(),
-    getEntriesByType: jest.fn(() => []),
-    getEntriesByName: jest.fn(() => []),
+    now: vi.fn(() => Date.now()),
+    mark: vi.fn(),
+    measure: vi.fn(),
+    getEntriesByType: vi.fn(() => []),
+    getEntriesByName: vi.fn(() => []),
   };
   global.performance = mockPerformance as Performance;
 }

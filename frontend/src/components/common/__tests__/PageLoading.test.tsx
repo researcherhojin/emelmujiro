@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import PageLoading from '../PageLoading';
 import React from 'react';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,

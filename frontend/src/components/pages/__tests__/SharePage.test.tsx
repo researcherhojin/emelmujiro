@@ -1,10 +1,10 @@
-import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import SharePage from '../SharePage';
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   Share2: ({ className }: { className?: string }) => (
     <div data-testid="share-icon" className={className}>
       Share
@@ -27,28 +27,31 @@ jest.mock('lucide-react', () => ({
   ),
 }));
 
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-  useLocation: () => ({
-    search: mockSearchParams,
-  }),
-}));
-
+const mockNavigate = vi.fn();
 let mockSearchParams = '';
+
+vi.mock('react-router-dom', async () => {
+  const actual = await import('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    useLocation: () => ({
+      search: mockSearchParams,
+    }),
+  };
+});
 
 describe('SharePage', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockSearchParams = '';
     localStorage.clear();
-    jest.spyOn(window, 'alert').mockImplementation(() => {});
-    jest.spyOn(window, 'open').mockImplementation(() => null);
+    vi.spyOn(window, 'alert').mockImplementation(() => {});
+    vi.spyOn(window, 'open').mockImplementation(() => null);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   const renderSharePage = (searchParams = '') => {

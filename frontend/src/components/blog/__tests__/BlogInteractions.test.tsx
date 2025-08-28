@@ -1,26 +1,27 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import BlogInteractions from '../BlogInteractions';
 import { BlogPost } from '../../../types';
 
 // Mock logger
-jest.mock('../../../utils/logger', () => {
+vi.mock('../../../utils/logger', () => {
   return {
     __esModule: true,
     default: {
-      error: jest.fn(),
-      info: jest.fn(),
-      debug: jest.fn(),
-      warn: jest.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
     },
   };
 });
 
 // Mock window.open
-const mockOpen = jest.fn();
+const mockOpen = vi.fn();
 window.open = mockOpen;
 
 // Mock navigator.share
-const mockShare = jest.fn();
+const mockShare = vi.fn();
 Object.defineProperty(navigator, 'share', {
   value: mockShare,
   writable: true,
@@ -28,7 +29,7 @@ Object.defineProperty(navigator, 'share', {
 });
 
 // Mock navigator.clipboard
-const mockWriteText = jest.fn();
+const mockWriteText = vi.fn();
 Object.defineProperty(navigator, 'clipboard', {
   value: {
     writeText: mockWriteText,
@@ -60,7 +61,7 @@ describe('BlogInteractions Component', () => {
     mockOpen.mockClear();
     mockShare.mockClear();
     mockWriteText.mockClear();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Mock window.location.href to include blog path
     Object.defineProperty(window, 'location', {
@@ -449,7 +450,7 @@ describe('BlogInteractions Component', () => {
     it('handles localStorage errors gracefully', () => {
       const mockError = new Error('Storage error');
       const originalGetItem = Storage.prototype.getItem;
-      Storage.prototype.getItem = jest.fn(() => {
+      Storage.prototype.getItem = vi.fn(() => {
         throw mockError;
       });
 
@@ -485,7 +486,7 @@ describe('BlogInteractions Component', () => {
 
       // Mock clipboard failure and provide fallback
       mockWriteText.mockRejectedValue(new Error('Clipboard error'));
-      const mockExecCommand = jest.fn(() => true);
+      const mockExecCommand = vi.fn(() => true);
       document.execCommand = mockExecCommand;
 
       render(<BlogInteractions post={mockPost} />);

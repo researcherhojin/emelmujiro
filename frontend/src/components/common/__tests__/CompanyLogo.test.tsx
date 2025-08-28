@@ -2,8 +2,6 @@
  * Comprehensive tests for CompanyLogo component
  * Testing logo rendering, styling, and company-specific configurations
  */
-
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import CompanyLogo from '../CompanyLogo';
 
@@ -260,22 +258,46 @@ describe('CompanyLogo', () => {
         expectedText: 'SK',
         expectedFont: ['font-black', 'italic'],
       },
-      { name: 'LG', expectedText: 'LG', expectedFont: ['font-bold'] },
+      {
+        name: 'LG',
+        expectedText: 'LG',
+        expectedFont: ['font-bold'],
+      },
       {
         name: '한국전력공사',
         expectedText: 'KEPCO',
         expectedFont: ['font-semibold'],
       },
-      { name: '국민은행', expectedText: 'KB', expectedFont: ['font-bold'] },
-      { name: 'CJ', expectedText: 'CJ', expectedFont: ['font-black'] },
+      {
+        name: '국민은행',
+        expectedText: 'KB',
+        expectedFont: ['font-bold'],
+      },
+      {
+        name: 'CJ',
+        expectedText: 'CJ',
+        expectedFont: ['font-black'],
+      },
       {
         name: '현대자동차',
         expectedText: 'HYUNDAI',
         expectedFont: ['font-bold', 'italic'],
       },
-      { name: '포스코', expectedText: 'POSCO', expectedFont: ['font-bold'] },
-      { name: 'KT', expectedText: 'KT', expectedFont: ['font-black'] },
-      { name: '네이버', expectedText: 'NAVER', expectedFont: ['font-bold'] },
+      {
+        name: '포스코',
+        expectedText: 'POSCO',
+        expectedFont: ['font-bold'],
+      },
+      {
+        name: 'KT',
+        expectedText: 'KT',
+        expectedFont: ['font-black'],
+      },
+      {
+        name: '네이버',
+        expectedText: 'NAVER',
+        expectedFont: ['font-bold'],
+      },
     ];
 
     companies.forEach(({ name, expectedText, expectedFont }) => {

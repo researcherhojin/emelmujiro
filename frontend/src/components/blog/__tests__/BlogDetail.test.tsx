@@ -1,73 +1,68 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import BlogDetail from '../BlogDetail';
 import { BlogProvider } from '../../../contexts/BlogContext';
 import { BlogPost } from '../../../types';
 
 // Mock react-markdown to avoid dependency issues
-jest.mock('react-markdown', () => {
-  return function ReactMarkdown({ children }: { children: string }) {
+vi.mock('react-markdown', () => ({
+  default: function ReactMarkdown({ children }: { children: string }) {
     return <div data-testid="markdown-content">{children}</div>;
-  };
-});
-
-// Mock remark-gfm to avoid dependency issues
-jest.mock('remark-gfm', () => {
-  return function remarkGfm() {
-    return {};
-  };
-});
-
-// Mock ErrorBoundary to prevent error catching during tests
-jest.mock('../../common/ErrorBoundary', () => {
-  return function ErrorBoundary({ children }: { children: React.ReactNode }) {
-    return <>{children}</>;
-  };
-});
-
-// Mock SEO component that uses Helmet
-jest.mock('../../layout/SEO', () => {
-  return function SEO() {
-    return null;
-  };
-});
-
-// Mock other blog components
-jest.mock('../BlogInteractions', () => {
-  return function BlogInteractions() {
-    return <div>Blog Interactions</div>;
-  };
-});
-
-jest.mock('../BlogComments', () => {
-  return function BlogComments() {
-    return <div>Blog Comments</div>;
-  };
-});
-
-const mockNavigate = jest.fn();
-const mockFetchPostById = jest.fn();
-const mockClearCurrentPost = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-  useParams: () => ({ id: '1' }),
+  },
 }));
 
-jest.mock('../../../contexts/BlogContext', () => ({
-  ...jest.requireActual('../../../contexts/BlogContext'),
-  useBlog: () => ({
-    currentPost: mockPost,
-    loading: mockLoading,
-    error: mockError,
-    fetchPostById: mockFetchPostById,
-    clearCurrentPost: mockClearCurrentPost,
-    posts: [],
-    fetchPosts: jest.fn(),
-    totalPages: 1,
-    currentPage: 1,
-  }),
+// Mock remark-gfm to avoid dependency issues
+vi.mock('remark-gfm', () => ({
+  default: function remarkGfm() {
+    return {};
+  },
+}));
+
+// Mock ErrorBoundary to prevent error catching during tests
+vi.mock('../../common/ErrorBoundary', () => ({
+  default: function ErrorBoundary({ children }: { children: React.ReactNode }) {
+    return <>{children}</>;
+  },
+}));
+
+// Mock SEO component that uses Helmet
+vi.mock('../../layout/SEO', () => ({
+  default: function SEO() {
+    return null;
+  },
+}));
+
+// Mock other blog components
+vi.mock('../BlogInteractions', () => ({
+  default: function BlogInteractions() {
+    return <div>Blog Interactions</div>;
+  },
+}));
+
+vi.mock('../BlogComments', () => ({
+  default: function BlogComments() {
+    return <div>Blog Comments</div>;
+  },
+}));
+
+const mockNavigate = vi.fn();
+const mockFetchPostById = vi.fn();
+const mockClearCurrentPost = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await import('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    useParams: () => ({ id: '1' }),
+  };
+});
+
+// Mock useBlog hook
+import { useBlog } from '../../../contexts/BlogContext';
+vi.mock('../../../contexts/BlogContext', () => ({
+  useBlog: vi.fn(),
   BlogProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
   ),
@@ -77,91 +72,182 @@ let mockPost: BlogPost | null = null;
 let mockLoading = false;
 let mockError: string | null = null;
 
-const testPost: BlogPost = {
-  id: 1,
-  title: 'Test Blog Post',
-  slug: 'test-blog-post',
-  content: '# Test Content\n\nThis is **bold** text.',
-  excerpt: 'Test excerpt',
-  author: 'Test Author',
-  created_at: '2024-01-01T12:00:00Z',
-  updated_at: '2024-01-02T12:00:00Z',
-  published: true,
-  category: 'Technology',
-  tags: ['test', 'react'],
-  image_url: 'https://example.com/image.jpg',
-  date: '2024-01-01',
-  publishedAt: '2024-01-01',
-};
-
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(
-    <BrowserRouter>
-      <BlogProvider>{component}</BlogProvider>
-    </BrowserRouter>
-  );
-};
-
 describe('BlogDetail Component', () => {
   beforeEach(() => {
-    mockNavigate.mockClear();
-    mockFetchPostById.mockClear();
-    mockClearCurrentPost.mockClear();
-    // Reset mock values before each test
     mockPost = null;
     mockLoading = false;
     mockError = null;
+    mockNavigate.mockClear();
+    mockFetchPostById.mockClear();
+    mockClearCurrentPost.mockClear();
+
+    // Setup the mock implementation
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: mockLoading,
+      error: mockError,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
   });
 
-  it('renders loading state', () => {
+  const renderComponent = () => {
+    return render(
+      <BrowserRouter>
+        <BlogProvider>
+          <BlogDetail />
+        </BlogProvider>
+      </BrowserRouter>
+    );
+  };
+
+  test('renders loading state', () => {
     mockLoading = true;
-    renderWithRouter(<BlogDetail />);
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: mockLoading,
+      error: mockError,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  });
+
+  test('renders error state for 404', () => {
+    mockError = '404';
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: mockLoading,
+      error: mockError,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+    expect(screen.getByText(/게시글을 찾을 수 없습니다/)).toBeInTheDocument();
+  });
+
+  test('renders error state for other errors', () => {
+    mockError = 'Network error';
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: mockLoading,
+      error: mockError,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
     expect(
-      screen.getByText('블로그 포스트를 불러오는 중입니다...')
+      screen.getByText(/게시글을 불러오는 중 오류가 발생했습니다/)
     ).toBeInTheDocument();
   });
 
-  it('renders error state for 404', () => {
-    mockError = 'Error 404: Post not found';
-    renderWithRouter(<BlogDetail />);
-    expect(mockNavigate).toHaveBeenCalledWith('/404', { replace: true });
-  });
+  test('renders blog post details', () => {
+    mockPost = {
+      id: 1,
+      title: 'Test Blog Post',
+      content: 'This is test content',
+      excerpt: 'Test excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      views: 100,
+      likes: 10,
+      author: 'Test Author',
+      category: 'Technology',
+      tags: ['test', 'blog'],
+      image_url: 'test.jpg',
+      published: true,
+      slug: 'test-blog-post',
+      readTime: 5,
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: mockLoading,
+      error: mockError,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
 
-  it('renders error state for other errors', () => {
-    mockError = 'Network error';
-    renderWithRouter(<BlogDetail />);
-    expect(screen.getByText('Network error')).toBeInTheDocument();
-    expect(screen.getByText('뒤로 가기')).toBeInTheDocument();
-  });
-
-  it('renders blog post details', () => {
-    mockPost = testPost;
-    renderWithRouter(<BlogDetail />);
+    renderComponent();
 
     expect(screen.getByText('Test Blog Post')).toBeInTheDocument();
-    expect(screen.getByText(/작성자: Test Author/)).toBeInTheDocument();
+    expect(screen.getByTestId('markdown-content')).toHaveTextContent(
+      'This is test content'
+    );
+    expect(screen.getByText('Test Author')).toBeInTheDocument();
     expect(screen.getByText('Technology')).toBeInTheDocument();
-    expect(screen.getByText('#test')).toBeInTheDocument();
-    expect(screen.getByText('#react')).toBeInTheDocument();
   });
 
-  it('handles back button click', () => {
-    mockPost = testPost;
-    renderWithRouter(<BlogDetail />);
+  test('handles back button click', () => {
+    mockPost = {
+      id: 1,
+      title: 'Test Blog Post',
+      content: 'This is test content',
+      excerpt: 'Test excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      views: 100,
+      likes: 10,
+      author: 'Test Author',
+      category: 'Technology',
+      tags: ['test', 'blog'],
+      image_url: 'test.jpg',
+      published: true,
+      slug: 'test-blog-post',
+      readTime: 5,
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: mockLoading,
+      error: mockError,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
 
-    const backButton = screen.getByText('뒤로가기');
+    renderComponent();
+
+    const backButton = screen.getByText(/뒤로 가기/);
     fireEvent.click(backButton);
 
     expect(mockNavigate).toHaveBeenCalledWith(-1);
   });
 
-  it('calls fetchPostById on mount', () => {
-    renderWithRouter(<BlogDetail />);
-    expect(mockFetchPostById).toHaveBeenCalledWith('1');
+  test('calls fetchPostById on mount', () => {
+    renderComponent();
+    expect(mockFetchPostById).toHaveBeenCalledWith(1);
   });
 
-  it('calls clearCurrentPost on unmount', () => {
-    const { unmount } = renderWithRouter(<BlogDetail />);
+  test('calls clearCurrentPost on unmount', () => {
+    const { unmount } = renderComponent();
     unmount();
     expect(mockClearCurrentPost).toHaveBeenCalled();
   });

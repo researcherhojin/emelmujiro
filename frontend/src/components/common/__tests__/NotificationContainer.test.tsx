@@ -5,11 +5,12 @@
 
 import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { renderWithSelectiveProviders } from '../../../test-utils/test-utils';
 import NotificationContainer from '../NotificationContainer';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -29,7 +30,7 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   X: () => <div data-testid="x-icon">X</div>,
   CheckCircle: ({ className }: { className?: string }) => (
     <div data-testid="check-circle-icon" className={className}>
@@ -60,26 +61,26 @@ interface Notification {
   message: string;
 }
 
-const mockRemoveNotification = jest.fn();
+const mockRemoveNotification = vi.fn();
 const mockUIContext = {
   notifications: [] as Notification[],
   removeNotification: mockRemoveNotification,
-  addNotification: jest.fn(),
+  addNotification: vi.fn(),
   darkMode: false,
-  toggleDarkMode: jest.fn(),
+  toggleDarkMode: vi.fn(),
   sidebarOpen: false,
-  setSidebarOpen: jest.fn(),
+  setSidebarOpen: vi.fn(),
   loading: false,
-  setLoading: jest.fn(),
+  setLoading: vi.fn(),
 };
 
-jest.mock('../../../contexts/UIContext', () => ({
+vi.mock('../../../contexts/UIContext', () => ({
   useUI: () => mockUIContext,
 }));
 
 describe('NotificationContainer', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders without notifications', () => {
