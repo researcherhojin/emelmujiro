@@ -74,6 +74,7 @@ const translations: Record<string, string> = {
   'chat.admin.title': '채팅 관리자 패널',
   'chat.admin.settings': '설정',
   'chat.admin.cannedResponses': '자동 응답',
+  'chat.admin.cannedResponsesTitle': '자동 응답 관리',
   'chat.admin.statistics': '통계',
   'chat.admin.users': '사용자',
   'chat.admin.connected': '연결됨',
@@ -86,6 +87,7 @@ const translations: Record<string, string> = {
   'chat.admin.saveSettings': '설정 저장',
   'chat.admin.add': '추가',
   'chat.admin.addCannedResponse': '새 자동 응답 추가',
+  'chat.admin.addCannedResponsePlaceholder': '새 자동 응답 추가...',
   'chat.admin.totalMessages': '총 메시지',
   'chat.admin.userMessages': '사용자 메시지',
   'chat.admin.avgResponseTime': '평균 응답시간',
@@ -105,6 +107,8 @@ const translations: Record<string, string> = {
   'common.delete': '삭제',
   'common.cancel': '취소',
   'common.save': '저장',
+  '설정 저장': '설정 저장',
+  추가: '추가',
 };
 
 vi.mock('react-i18next', () => ({

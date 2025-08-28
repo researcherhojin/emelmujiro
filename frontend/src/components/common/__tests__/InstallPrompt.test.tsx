@@ -261,10 +261,14 @@ describe('InstallPrompt', () => {
       const mockPrompt = vi
         .fn()
         .mockRejectedValue(new Error('Installation failed'));
+      const rejectedPromise = Promise.reject(new Error('User choice failed'));
+      // Catch the rejection to prevent unhandled promise rejection
+      rejectedPromise.catch(() => {});
+
       Object.assign(mockEvent, {
         preventDefault: vi.fn(),
         prompt: mockPrompt,
-        userChoice: Promise.reject(new Error('User choice failed')),
+        userChoice: rejectedPromise,
       });
 
       // Mock console.error
