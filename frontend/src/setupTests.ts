@@ -32,7 +32,7 @@ window.prompt = vi.fn(() => null);
 
 // Mock CSS.supports for CSS parsing errors
 if (!window.CSS) {
-  window.CSS = {} as any;
+  window.CSS = {} as typeof window.CSS;
 }
 if (!window.CSS.supports) {
   window.CSS.supports = vi.fn(() => false);
