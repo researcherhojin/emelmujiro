@@ -12,11 +12,8 @@ const mockConsoleError = vi
   .mockImplementation(() => {});
 
 // Mock environment variable at module level
-const originalEnv = process.env.PUBLIC_URL;
-const originalNodeEnv = process.env.NODE_ENV;
-
-// Set default PUBLIC_URL
-process.env.PUBLIC_URL = '';
+vi.stubEnv('PUBLIC_URL', '');
+vi.stubEnv('NODE_ENV', 'production');
 
 describe('serviceWorkerRegistration', () => {
   let originalServiceWorker: typeof navigator.serviceWorker | undefined;
@@ -34,8 +31,8 @@ describe('serviceWorkerRegistration', () => {
     vi.resetModules();
 
     // Set process.env defaults
-    process.env.PUBLIC_URL = '';
-    process.env.NODE_ENV = 'production';
+    vi.stubEnv('PUBLIC_URL', '');
+    vi.stubEnv('NODE_ENV', 'production');
 
     // Mock fetch globally
     global.fetch = vi.fn(() =>
@@ -130,8 +127,8 @@ describe('serviceWorkerRegistration', () => {
       writable: true,
       value: originalLocation,
     });
-    process.env.PUBLIC_URL = originalEnv;
-    process.env.NODE_ENV = originalNodeEnv;
+    vi.stubEnv('PUBLIC_URL', '');
+    vi.stubEnv('NODE_ENV', 'test');
 
     // Restore console methods
     mockConsoleLog.mockRestore();
@@ -158,7 +155,7 @@ describe('serviceWorkerRegistration', () => {
     });
 
     it('should not register if PUBLIC_URL origin is different from window origin', async () => {
-      process.env.PUBLIC_URL = 'https://cdn.example.com';
+      vi.stubEnv('PUBLIC_URL', 'https://cdn.example.com');
 
       Object.defineProperty(window, 'location', {
         writable: true,

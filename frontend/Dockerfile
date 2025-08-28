@@ -8,11 +8,11 @@ RUN apk update && apk upgrade && \
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json* ./
+COPY package.json yarn.lock* ./
 
-# Install dependencies using npm
+# Install dependencies using yarn
 # Install all dependencies including optional ones for build stage
-RUN npm ci || npm install
+RUN yarn install --frozen-lockfile || yarn install
 
 # Copy source code
 COPY . .
@@ -21,7 +21,7 @@ COPY . .
 ENV DISABLE_ESLINT_PLUGIN=true
 ENV ESLINT_NO_DEV_ERRORS=true
 ENV CI=false
-RUN npm run build
+RUN yarn build
 
 # Production stage
 FROM nginx:alpine
