@@ -86,8 +86,7 @@ const translations: Record<string, string> = {
   'chat.admin.soundEnabled': '알림음 활성화',
   'chat.admin.saveSettings': '설정 저장',
   'chat.admin.add': '추가',
-  'chat.admin.addCannedResponse': '새 자동 응답 추가',
-  'chat.admin.addCannedResponsePlaceholder': '새 자동 응답 추가...',
+  'chat.admin.addCannedResponse': '새 자동 응답 추가...',
   'chat.admin.totalMessages': '총 메시지',
   'chat.admin.userMessages': '사용자 메시지',
   'chat.admin.avgResponseTime': '평균 응답시간',
@@ -401,7 +400,11 @@ describe('AdminPanel', () => {
       // Check that the canned responses section is shown
       await waitFor(
         () => {
-          expect(screen.getByText('자동 응답 관리')).toBeInTheDocument();
+          // The component is already on the Canned Responses tab
+          // Check that the tab content is visible by checking for input placeholder
+          expect(
+            screen.getByPlaceholderText('새 자동 응답 추가...')
+          ).toBeInTheDocument();
         },
         { timeout: 2000 }
       );

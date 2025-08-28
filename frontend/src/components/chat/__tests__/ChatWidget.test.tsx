@@ -88,11 +88,15 @@ describe('ChatWidget', () => {
     localStorage.clear();
     // Reset mocks
     vi.clearAllMocks();
+    // Use fake timers for all tests
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('renders chat button initially', async () => {
-    // Mock the component to avoid the 2-second delay
-    vi.useFakeTimers();
     render(<ChatWidget />);
 
     // Fast-forward time to skip the delay
@@ -106,8 +110,6 @@ describe('ChatWidget', () => {
       },
       { timeout: 1000 }
     );
-
-    vi.useRealTimers();
   });
 
   it('opens chat window when button is clicked', async () => {
@@ -128,8 +130,11 @@ describe('ChatWidget', () => {
 
     render(<ChatWidget />);
 
+    // Fast-forward time to skip the delay
+    vi.advanceTimersByTime(2000);
+
     // Wait for widget to appear
-    const chatButton = await screen.findByRole('button', {}, { timeout: 3000 });
+    const chatButton = await screen.findByRole('button', {}, { timeout: 1000 });
     fireEvent.click(chatButton);
 
     expect(mockOpenChat).toHaveBeenCalled();

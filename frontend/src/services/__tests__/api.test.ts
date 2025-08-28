@@ -35,6 +35,7 @@ vi.mock('axios', () => ({
 describe('API Service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
     localStorage.clear();
   });
 
