@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 # Update packages for security and install minimal build tools
 RUN apk update && apk upgrade && \
