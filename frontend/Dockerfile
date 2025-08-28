@@ -7,18 +7,12 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /app
 
-# Copy package files (including yarn.lock if exists)
-COPY package.json yarn.lock* package-lock.json* ./
+# Copy package files
+COPY package.json package-lock.json* ./
 
-# Install dependencies - use yarn if yarn.lock exists, otherwise npm
-# Skip optional dependencies in Docker build
-RUN if [ -f yarn.lock ]; then \
-      yarn install --ignore-optional; \
-    elif [ -f package-lock.json ]; then \
-      npm ci --omit=optional; \
-    else \
-      npm install --omit=optional; \
-    fi
+# Install dependencies using npm
+# Install all dependencies including optional ones for build stage
+RUN npm ci || npm install
 
 # Copy source code
 COPY . .
@@ -26,11 +20,8 @@ COPY . .
 # Build the application (disable ESLint during build)
 ENV DISABLE_ESLINT_PLUGIN=true
 ENV ESLINT_NO_DEV_ERRORS=true
-RUN if [ -f yarn.lock ]; then \
-      yarn build; \
-    else \
-      npm run build; \
-    fi
+ENV CI=false
+RUN npm run build
 
 # Production stage
 FROM nginx:alpine
