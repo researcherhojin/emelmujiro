@@ -2,7 +2,19 @@
  * @jest-environment jsdom
  */
 
+import { vi } from 'vitest';
 import { measureWebVitals, logPerformanceMetrics } from '../webVitals';
+
+// Define ReportHandler type locally since it's not exported from web-vitals
+type ReportHandler = (metric: {
+  name: string;
+  value: number;
+  rating: 'good' | 'needs-improvement' | 'poor';
+  id: string;
+  delta: number;
+  entries: any[];
+  navigationType: string;
+}) => void;
 
 // Create a proper mock for web-vitals
 const createMockMetric = (name: string, value: number) => ({
@@ -17,42 +29,42 @@ const createMockMetric = (name: string, value: number) => ({
 
 // Mock functions to track calls
 const mockCallbacks = {
-  onCLS: jest.fn(),
-  onFCP: jest.fn(),
-  onLCP: jest.fn(),
-  onTTFB: jest.fn(),
-  onINP: jest.fn(),
+  onCLS: vi.fn(),
+  onFCP: vi.fn(),
+  onLCP: vi.fn(),
+  onTTFB: vi.fn(),
+  onINP: vi.fn(),
 };
 
 // Mock the web-vitals module
-jest.mock('web-vitals', () => {
+vi.mock('web-vitals', () => {
   return {
-    onCLS: jest.fn((callback) => {
+    onCLS: vi.fn((callback) => {
       mockCallbacks.onCLS(callback);
       // Simulate async metric reporting
       setTimeout(() => {
         callback(createMockMetric('CLS', 0.1));
       }, 0);
     }),
-    onFCP: jest.fn((callback) => {
+    onFCP: vi.fn((callback) => {
       mockCallbacks.onFCP(callback);
       setTimeout(() => {
         callback(createMockMetric('FCP', 1000));
       }, 0);
     }),
-    onLCP: jest.fn((callback) => {
+    onLCP: vi.fn((callback) => {
       mockCallbacks.onLCP(callback);
       setTimeout(() => {
         callback(createMockMetric('LCP', 2500));
       }, 0);
     }),
-    onTTFB: jest.fn((callback) => {
+    onTTFB: vi.fn((callback) => {
       mockCallbacks.onTTFB(callback);
       setTimeout(() => {
         callback(createMockMetric('TTFB', 800));
       }, 0);
     }),
-    onINP: jest.fn((callback) => {
+    onINP: vi.fn((callback) => {
       mockCallbacks.onINP(callback);
       setTimeout(() => {
         callback(createMockMetric('INP', 200));
@@ -73,7 +85,7 @@ describe(
     }
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
 
       // Clear localStorage
       window.localStorage.clear();
@@ -82,18 +94,18 @@ describe(
       Object.defineProperty(window, 'performance', {
         writable: true,
         value: {
-          getEntriesByType: jest.fn(),
+          getEntriesByType: vi.fn(),
         },
       });
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     describe('measureWebVitals', () => {
       it('should call all web vitals functions when callback provided', async () => {
-        const mockCallback = jest.fn();
+        const mockCallback = vi.fn();
 
         measureWebVitals(mockCallback);
 
@@ -117,8 +129,7 @@ describe(
       });
 
       it('should not call web vitals functions when callback is null', async () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        measureWebVitals(null as any);
+        measureWebVitals(null as unknown as ReportHandler);
 
         await new Promise((resolve) => setTimeout(resolve, 10));
 
@@ -127,8 +138,7 @@ describe(
       });
 
       it('should not call web vitals functions when callback is not a function', async () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        measureWebVitals('not a function' as any);
+        measureWebVitals('not a function' as unknown as ReportHandler);
 
         await new Promise((resolve) => setTimeout(resolve, 10));
 
@@ -136,8 +146,8 @@ describe(
       });
 
       it('should handle sample rate configuration', async () => {
-        const mockCallback = jest.fn();
-        Math.random = jest.fn().mockReturnValue(0.8);
+        const mockCallback = vi.fn();
+        Math.random = vi.fn().mockReturnValue(0.8);
 
         measureWebVitals(mockCallback, { sampleRate: 0.5 });
 
@@ -147,8 +157,8 @@ describe(
       });
 
       it('should include sample rate when below threshold', async () => {
-        const mockCallback = jest.fn();
-        Math.random = jest.fn().mockReturnValue(0.3);
+        const mockCallback = vi.fn();
+        Math.random = vi.fn().mockReturnValue(0.3);
 
         measureWebVitals(mockCallback, { sampleRate: 0.5 });
 
@@ -159,8 +169,10 @@ describe(
       });
 
       it('should enable logging when configured', async () => {
-        const mockCallback = jest.fn();
-        const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+        const mockCallback = vi.fn();
+        const consoleWarnSpy = vi
+          .spyOn(console, 'warn')
+          .mockImplementation(() => {});
 
         measureWebVitals(mockCallback, { enableLogging: true });
 
@@ -178,7 +190,7 @@ describe(
         }) {
           console.log(metric);
         };
-        const spy = jest.spyOn(console, 'log').mockImplementation();
+        const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
         measureWebVitals(mockCallback);
 
@@ -200,15 +212,14 @@ describe(
           domContentLoadedEventEnd: 1000,
           navigationStart: 0,
           loadEventEnd: 2000,
-        };
-
+        } as any;
         const mockPaintTiming = [
           { name: 'first-contentful-paint', startTime: 500 },
           { name: 'largest-contentful-paint', startTime: 1500 },
         ];
 
         const performanceMock = {
-          getEntriesByType: jest.fn((type: string) => {
+          getEntriesByType: vi.fn((type: string) => {
             if (type === 'navigation') return [mockNavigationTiming];
             if (type === 'paint') return mockPaintTiming;
             return [];
@@ -230,7 +241,7 @@ describe(
 
       it('should not log when disabled', () => {
         const performanceMock = {
-          getEntriesByType: jest.fn(),
+          getEntriesByType: vi.fn(),
         };
 
         Object.defineProperty(window, 'performance', {
@@ -256,7 +267,7 @@ describe(
 
       it('should handle missing performance entries', () => {
         const performanceMock = {
-          getEntriesByType: jest.fn().mockReturnValue([]),
+          getEntriesByType: vi.fn().mockReturnValue([]),
         };
 
         Object.defineProperty(window, 'performance', {
@@ -279,9 +290,8 @@ describe(
           navigationStart: 0,
           loadEventEnd: 2000,
         };
-
         const performanceMock = {
-          getEntriesByType: jest.fn(() => [mockNavigationTiming]),
+          getEntriesByType: vi.fn(() => [mockNavigationTiming]),
         };
 
         Object.defineProperty(window, 'performance', {
@@ -289,7 +299,7 @@ describe(
           value: performanceMock,
         });
 
-        const setItemSpy = jest.spyOn(Storage.prototype, 'setItem');
+        const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
 
         logPerformanceMetrics({ enableLogging: true, enableReporting: true });
 
@@ -311,9 +321,8 @@ describe(
           navigationStart: 0,
           loadEventEnd: 2000,
         };
-
         const performanceMock = {
-          getEntriesByType: jest.fn(() => [mockNavigationTiming]),
+          getEntriesByType: vi.fn(() => [mockNavigationTiming]),
         };
 
         Object.defineProperty(window, 'performance', {
@@ -321,7 +330,9 @@ describe(
           value: performanceMock,
         });
 
-        const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+        const consoleLogSpy = vi
+          .spyOn(console, 'log')
+          .mockImplementation(() => {});
 
         logPerformanceMetrics({ enableLogging: true });
 
@@ -343,9 +354,8 @@ describe(
           navigationStart: 0,
           loadEventEnd: 3000,
         };
-
         const performanceMock = {
-          getEntriesByType: jest.fn(() => [mockNavigationTiming]),
+          getEntriesByType: vi.fn(() => [mockNavigationTiming]),
         };
 
         Object.defineProperty(window, 'performance', {
@@ -353,7 +363,9 @@ describe(
           value: performanceMock,
         });
 
-        const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+        const consoleLogSpy = vi
+          .spyOn(console, 'log')
+          .mockImplementation(() => {});
 
         logPerformanceMetrics({ enableLogging: true });
 
@@ -376,13 +388,12 @@ describe(
           navigationStart: 0,
           loadEventEnd: 2000,
         };
-
         const mockPaintTiming = [
           { name: 'first-contentful-paint', startTime: 800 },
         ];
 
         const performanceMock = {
-          getEntriesByType: jest.fn((type: string) => {
+          getEntriesByType: vi.fn((type: string) => {
             if (type === 'navigation') return [mockNavigationTiming];
             if (type === 'paint') return mockPaintTiming;
             return [];
@@ -394,7 +405,9 @@ describe(
           value: performanceMock,
         });
 
-        const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+        const consoleLogSpy = vi
+          .spyOn(console, 'log')
+          .mockImplementation(() => {});
 
         logPerformanceMetrics({ enableLogging: true });
 
@@ -407,7 +420,7 @@ describe(
 
     describe('integration scenarios', () => {
       it('should work with both functions called together', async () => {
-        const mockCallback = jest.fn();
+        const mockCallback = vi.fn();
 
         measureWebVitals(mockCallback);
         logPerformanceMetrics({ enableLogging: false }); // disabled so it doesn't interfere
@@ -419,8 +432,8 @@ describe(
       });
 
       it('should handle multiple callback registrations', async () => {
-        const mockCallback1 = jest.fn();
-        const mockCallback2 = jest.fn();
+        const mockCallback1 = vi.fn();
+        const mockCallback2 = vi.fn();
 
         measureWebVitals(mockCallback1);
         measureWebVitals(mockCallback2);
@@ -433,7 +446,7 @@ describe(
       });
 
       it('should handle errors in callback gracefully', async () => {
-        const errorCallback = jest.fn(() => {
+        const errorCallback = vi.fn(() => {
           throw new Error('Callback error');
         });
 

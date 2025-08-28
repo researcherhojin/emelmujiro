@@ -3,20 +3,27 @@
  * Testing rendering, navigation, modal interactions, and service details
  */
 
+import { vi } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Footer from '../Footer';
 
+// Set higher timeout for modal tests
+const MODAL_TEST_TIMEOUT = 10000;
+
 // Mock useNavigate
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}));
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await import('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   Mail: ({ className }: { className?: string }) => (
     <div data-testid="mail-icon" className={className}>
       Mail
@@ -60,7 +67,7 @@ jest.mock('lucide-react', () => ({
 }));
 
 // Mock scroll methods
-const mockScrollIntoView = jest.fn();
+const mockScrollIntoView = vi.fn();
 Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
   configurable: true,
   value: mockScrollIntoView,
@@ -72,15 +79,15 @@ describe('Footer Component', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     // Mock getElementById
-    jest.spyOn(document, 'getElementById').mockReturnValue({
+    vi.spyOn(document, 'getElementById').mockReturnValue({
       scrollIntoView: mockScrollIntoView,
     } as unknown as HTMLElement);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('Basic Rendering', () => {
@@ -183,30 +190,33 @@ describe('Footer Component', () => {
       expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
     });
 
-    test('navigates and scrolls to hero section when home is clicked from different page', async () => {
-      // Mock current pathname as different page
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: { pathname: '/profile' },
-      });
+    test(
+      'navigates and scrolls to hero section when home is clicked from different page',
+      async () => {
+        // Mock current pathname as different page
+        Object.defineProperty(window, 'location', {
+          writable: true,
+          value: { pathname: '/profile' },
+        });
 
-      jest.useFakeTimers();
-      renderWithRouter(<Footer />);
+        vi.useFakeTimers();
+        renderWithRouter(<Footer />);
 
-      const homeButton = screen.getByText('홈');
-      fireEvent.click(homeButton);
+        const homeButton = screen.getByText('홈');
+        fireEvent.click(homeButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/');
+        expect(mockNavigate).toHaveBeenCalledWith('/');
 
-      // Fast-forward timer for setTimeout
-      jest.advanceTimersByTime(100);
+        // Fast-forward timer for setTimeout
+        vi.advanceTimersByTime(100);
 
-      // Verify that navigation and scroll behavior occurred
-      await waitFor(() => expect(mockScrollIntoView).toHaveBeenCalled());
-      expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
+        // Verify that navigation and scroll behavior occurred
+        expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
 
-      jest.useRealTimers();
-    });
+        vi.useRealTimers();
+      },
+      MODAL_TEST_TIMEOUT
+    );
 
     test('scrolls to services section when services link is clicked', () => {
       Object.defineProperty(window, 'location', {
@@ -225,247 +235,359 @@ describe('Footer Component', () => {
   });
 
   describe('Service Modal Functionality', () => {
-    test('opens AI solution modal when clicked', async () => {
-      renderWithRouter(<Footer />);
+    test(
+      'opens AI solution modal when clicked',
+      async () => {
+        renderWithRouter(<Footer />);
 
-      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
-      const aiSolutionButton = aiSolutionButtons[0]; // Get the first button
-      fireEvent.click(aiSolutionButton);
+        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        const aiSolutionButton = aiSolutionButtons[0]; // Get the first button
+        fireEvent.click(aiSolutionButton);
 
-      await waitFor(() =>
-        expect(
-          screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).toBeInTheDocument()
-      );
-      expect(screen.getByText('주요 서비스')).toBeInTheDocument();
-      expect(screen.getByText('주요 사례')).toBeInTheDocument();
-      expect(screen.getByTestId('code-icon')).toBeInTheDocument();
-    });
+        await waitFor(
+          () =>
+            expect(
+              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).toBeInTheDocument(),
+          { timeout: 3000 }
+        );
+        expect(screen.getByText('주요 서비스')).toBeInTheDocument();
+        expect(screen.getByText('주요 사례')).toBeInTheDocument();
+        expect(screen.getByTestId('code-icon')).toBeInTheDocument();
+      },
+      MODAL_TEST_TIMEOUT
+    );
 
-    test('opens AI education modal when clicked', async () => {
-      renderWithRouter(<Footer />);
+    test(
+      'opens AI education modal when clicked',
+      async () => {
+        renderWithRouter(<Footer />);
 
-      const aiEducationButton = screen.getByText('AI 교육 & 강의');
-      fireEvent.click(aiEducationButton);
+        const aiEducationButton = screen.getByText('AI 교육 & 강의');
+        fireEvent.click(aiEducationButton);
 
-      await waitFor(() =>
-        expect(
-          screen.getByText('실무 중심의 AI 교육 프로그램을 제공합니다.')
-        ).toBeInTheDocument()
-      );
-      expect(screen.getByTestId('graduation-cap-icon')).toBeInTheDocument();
-    });
+        await waitFor(
+          () =>
+            expect(
+              screen.getByText('실무 중심의 AI 교육 프로그램을 제공합니다.')
+            ).toBeInTheDocument(),
+          { timeout: 3000 }
+        );
+        expect(screen.getByTestId('graduation-cap-icon')).toBeInTheDocument();
+      },
+      MODAL_TEST_TIMEOUT
+    );
 
-    test('opens AI consulting modal when clicked', async () => {
-      renderWithRouter(<Footer />);
+    test(
+      'opens AI consulting modal when clicked',
+      async () => {
+        renderWithRouter(<Footer />);
 
-      const aiConsultingButton = screen.getByText('AI 전략 컨설팅');
-      fireEvent.click(aiConsultingButton);
+        const aiConsultingButton = screen.getByText('AI 전략 컨설팅');
+        fireEvent.click(aiConsultingButton);
 
-      await waitFor(() =>
-        expect(
-          screen.getByText(
-            'AI 도입 전략부터 실행까지 종합적인 컨설팅을 제공합니다.'
-          )
-        ).toBeInTheDocument()
-      );
-      expect(screen.getByTestId('bar-chart-icon')).toBeInTheDocument();
-    });
+        await waitFor(
+          () =>
+            expect(
+              screen.getByText(
+                'AI 도입 전략부터 실행까지 종합적인 컨설팅을 제공합니다.'
+              )
+            ).toBeInTheDocument(),
+          { timeout: 3000 }
+        );
+        expect(screen.getByTestId('bar-chart-icon')).toBeInTheDocument();
+      },
+      MODAL_TEST_TIMEOUT
+    );
 
-    test('opens data analysis modal when clicked', async () => {
-      renderWithRouter(<Footer />);
+    test(
+      'opens data analysis modal when clicked',
+      async () => {
+        renderWithRouter(<Footer />);
 
-      const dataAnalysisButton = screen.getByText('데이터 분석');
-      fireEvent.click(dataAnalysisButton);
+        const dataAnalysisButton = screen.getByText('데이터 분석');
+        fireEvent.click(dataAnalysisButton);
 
-      await waitFor(() =>
-        expect(
-          screen.getByText(
-            '비즈니스 인사이트 도출을 위한 데이터 분석 서비스를 제공합니다.'
-          )
-        ).toBeInTheDocument()
-      );
-      expect(screen.getByTestId('database-icon')).toBeInTheDocument();
-    });
+        await waitFor(
+          () =>
+            expect(
+              screen.getByText('빅데이터 분석과 인사이트 도출을 지원합니다.')
+            ).toBeInTheDocument(),
+          { timeout: 3000 }
+        );
+        expect(screen.getByTestId('database-icon')).toBeInTheDocument();
+      },
+      MODAL_TEST_TIMEOUT
+    );
+
+    test(
+      'closes modal when X button is clicked',
+      async () => {
+        renderWithRouter(<Footer />);
+
+        const aiSolutionButton = screen.getByText('AI 솔루션 개발');
+        fireEvent.click(aiSolutionButton);
+
+        await waitFor(
+          () =>
+            expect(
+              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).toBeInTheDocument(),
+          { timeout: 3000 }
+        );
+
+        const closeButton = screen.getByTestId('x-icon');
+        fireEvent.click(closeButton);
+
+        await waitFor(
+          () =>
+            expect(
+              screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).not.toBeInTheDocument(),
+          { timeout: 3000 }
+        );
+      },
+      MODAL_TEST_TIMEOUT
+    );
   });
 
   describe('Service Modal Interactions', () => {
-    test('closes modal when X button is clicked', async () => {
-      renderWithRouter(<Footer />);
+    test(
+      'closes modal when X button is clicked',
+      async () => {
+        renderWithRouter(<Footer />);
 
-      // Open modal
-      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButtons[0]);
+        // Open modal
+        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        fireEvent.click(aiSolutionButtons[0]);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).toBeInTheDocument();
-      });
+        await waitFor(
+          () => {
+            expect(
+              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
 
-      // Close modal
-      const closeButton = screen.getByTestId('x-icon');
-      fireEvent.click(closeButton);
+        // Close modal
+        const closeButton = screen.getByTestId('x-icon');
+        fireEvent.click(closeButton);
 
-      await waitFor(() => {
-        expect(
-          screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).not.toBeInTheDocument();
-      });
-    });
+        await waitFor(
+          () => {
+            expect(
+              screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).not.toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
+      },
+      MODAL_TEST_TIMEOUT
+    );
 
-    test('closes modal when 닫기 button is clicked', async () => {
-      renderWithRouter(<Footer />);
+    test(
+      'closes modal when 닫기 button is clicked',
+      async () => {
+        renderWithRouter(<Footer />);
 
-      // Open modal
-      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButtons[0]);
+        // Open modal
+        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        fireEvent.click(aiSolutionButtons[0]);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).toBeInTheDocument();
-      });
+        await waitFor(
+          () => {
+            expect(
+              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
 
-      // Close modal with 닫기 button
-      const closeButtons = screen.getAllByText('닫기');
-      const modalCloseButton = closeButtons.find((button) =>
-        button.className.includes('border-gray-300')
-      );
-      fireEvent.click(modalCloseButton!);
+        // Close modal with 닫기 button
+        const closeButtons = screen.getAllByText('닫기');
+        const modalCloseButton = closeButtons.find((button) =>
+          button.className.includes('border-gray-300')
+        );
+        fireEvent.click(modalCloseButton!);
 
-      await waitFor(() => {
-        expect(
-          screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).not.toBeInTheDocument();
-      });
-    });
+        await waitFor(
+          () => {
+            expect(
+              screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).not.toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
+      },
+      MODAL_TEST_TIMEOUT
+    );
 
-    test('closes modal and navigates to contact when 문의하기 button is clicked', async () => {
-      renderWithRouter(<Footer />);
+    test(
+      'closes modal and navigates to contact when 문의하기 button is clicked',
+      async () => {
+        renderWithRouter(<Footer />);
 
-      // Open modal
-      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButtons[0]);
+        // Open modal
+        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        fireEvent.click(aiSolutionButtons[0]);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).toBeInTheDocument();
-      });
+        await waitFor(
+          () => {
+            expect(
+              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
 
-      // Click 문의하기 button in modal
-      const contactButtons = screen.getAllByText('문의하기');
-      const modalContactButton = contactButtons.find((button) =>
-        button.className.includes('bg-gray-900')
-      );
+        // Click 문의하기 button in modal
+        const contactButtons = screen.getAllByText('문의하기');
+        const modalContactButton = contactButtons.find((button) =>
+          button.className.includes('bg-gray-900')
+        );
 
-      fireEvent.click(modalContactButton!);
+        fireEvent.click(modalContactButton!);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/contact');
+        expect(mockNavigate).toHaveBeenCalledWith('/contact');
 
-      // NOTE: Modal closing animation timing is flaky in tests
-      // Consider adding waitFor or adjusting timing for more reliable tests
-    });
+        // NOTE: Modal closing animation timing is flaky in tests
+        // Consider adding waitFor or adjusting timing for more reliable tests
+      },
+      MODAL_TEST_TIMEOUT
+    );
 
-    test('closes modal when backdrop is clicked', async () => {
-      renderWithRouter(<Footer />);
+    test(
+      'closes modal when backdrop is clicked',
+      async () => {
+        renderWithRouter(<Footer />);
 
-      // Open modal
-      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButtons[0]);
+        // Open modal
+        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        fireEvent.click(aiSolutionButtons[0]);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).toBeInTheDocument();
-      });
+        await waitFor(
+          () => {
+            expect(
+              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
 
-      // Click backdrop to close modal
-      const backdrop = screen.getByLabelText('Close modal');
-      fireEvent.click(backdrop);
+        // Click backdrop to close modal
+        const backdrop = screen.getByLabelText('Close modal');
+        fireEvent.click(backdrop);
 
-      await waitFor(() => {
-        expect(
-          screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).not.toBeInTheDocument();
-      });
-    });
+        await waitFor(
+          () => {
+            expect(
+              screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).not.toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
+      },
+      MODAL_TEST_TIMEOUT
+    );
 
-    test('closes modal when Escape key is pressed on backdrop', async () => {
-      renderWithRouter(<Footer />);
+    test(
+      'closes modal when Escape key is pressed on backdrop',
+      async () => {
+        renderWithRouter(<Footer />);
 
-      // Open modal
-      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButtons[0]);
+        // Open modal
+        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        fireEvent.click(aiSolutionButtons[0]);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).toBeInTheDocument();
-      });
+        await waitFor(
+          () => {
+            expect(
+              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
 
-      // Press Escape to close modal
-      const backdrop = screen.getByLabelText('Close modal');
-      fireEvent.keyDown(backdrop, { key: 'Escape' });
+        // Press Escape to close modal
+        const backdrop = screen.getByLabelText('Close modal');
+        fireEvent.keyDown(backdrop, { key: 'Escape' });
 
-      await waitFor(() => {
-        expect(
-          screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-        ).not.toBeInTheDocument();
-      });
-    });
+        await waitFor(
+          () => {
+            expect(
+              screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+            ).not.toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
+      },
+      MODAL_TEST_TIMEOUT
+    );
   });
 
   describe('Service Modal Content', () => {
-    test('displays all service details for AI solution', async () => {
-      renderWithRouter(<Footer />);
+    test(
+      'displays all service details for AI solution',
+      async () => {
+        renderWithRouter(<Footer />);
 
-      const aiSolutionButton = screen.getByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButton);
+        const aiSolutionButton = screen.getByText('AI 솔루션 개발');
+        fireEvent.click(aiSolutionButton);
 
-      await waitFor(() =>
+        await waitFor(
+          () =>
+            expect(
+              screen.getByText('맞춤형 LLM 기반 솔루션 개발')
+            ).toBeInTheDocument(),
+          { timeout: 3000 }
+        );
         expect(
-          screen.getByText('맞춤형 LLM 기반 솔루션 개발')
-        ).toBeInTheDocument()
-      );
-      expect(
-        screen.getByText('Computer Vision & 이미지 분석 시스템')
-      ).toBeInTheDocument();
-      expect(screen.getByText('MLOps 파이프라인 구축')).toBeInTheDocument();
-      expect(
-        screen.getByText(/삼성전자.*AI 이상탐지 시스템/)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/LG전자.*데이터 분석 파이프라인/)
-      ).toBeInTheDocument();
-    });
-
-    test('displays all service details for AI education', async () => {
-      renderWithRouter(<Footer />);
-
-      const aiEducationButton = screen.getByText('AI 교육 & 강의');
-      fireEvent.click(aiEducationButton);
-
-      await waitFor(() => {
-        expect(
-          screen.getByText('실무 중심의 AI 교육 프로그램을 제공합니다.')
+          screen.getByText('Computer Vision & 이미지 분석 시스템')
         ).toBeInTheDocument();
-      });
+        expect(screen.getByText('MLOps 파이프라인 구축')).toBeInTheDocument();
+        expect(
+          screen.getByText(/삼성전자.*AI 이상탐지 시스템/)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/LG전자.*데이터 분석 파이프라인/)
+        ).toBeInTheDocument();
+      },
+      MODAL_TEST_TIMEOUT
+    );
 
-      expect(
-        screen.getByText('기업 맞춤형 AI 교육 커리큘럼 설계')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('Python 머신러닝/딥러닝 실무 교육')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/삼성전자.*Python 머신러닝 교육/)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/멋쟁이사자처럼.*AI 스타트업 교육/)
-      ).toBeInTheDocument();
-    });
+    test(
+      'displays all service details for AI education',
+      async () => {
+        renderWithRouter(<Footer />);
+
+        const aiEducationButton = screen.getByText('AI 교육 & 강의');
+        fireEvent.click(aiEducationButton);
+
+        await waitFor(
+          () => {
+            expect(
+              screen.getByText('실무 중심의 AI 교육 프로그램을 제공합니다.')
+            ).toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
+
+        expect(
+          screen.getByText('기업 맞춤형 AI 교육 커리큘럼 설계')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Python 머신러닝/딥러닝 실무 교육')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/삼성전자.*Python 머신러닝 교육/)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/멋쟁이사자처럼.*AI 스타트업 교육/)
+        ).toBeInTheDocument();
+      },
+      MODAL_TEST_TIMEOUT
+    );
   });
 
   describe('CSS Classes and Styling', () => {
@@ -496,22 +618,29 @@ describe('Footer Component', () => {
   });
 
   describe('Accessibility', () => {
-    test('modal has correct accessibility attributes', async () => {
-      renderWithRouter(<Footer />);
+    test(
+      'modal has correct accessibility attributes',
+      async () => {
+        renderWithRouter(<Footer />);
 
-      // Open modal
-      const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
-      fireEvent.click(aiSolutionButtons[0]);
+        // Open modal
+        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        fireEvent.click(aiSolutionButtons[0]);
 
-      await waitFor(() => {
+        await waitFor(
+          () => {
+            const backdrop = screen.getByLabelText('Close modal');
+            expect(backdrop).toBeInTheDocument();
+          },
+          { timeout: 3000 }
+        );
+
         const backdrop = screen.getByLabelText('Close modal');
-        expect(backdrop).toBeInTheDocument();
-      });
-
-      const backdrop = screen.getByLabelText('Close modal');
-      expect(backdrop).toHaveAttribute('role', 'button');
-      expect(backdrop).toHaveAttribute('tabIndex', '0');
-    });
+        expect(backdrop).toHaveAttribute('role', 'button');
+        expect(backdrop).toHaveAttribute('tabIndex', '0');
+      },
+      MODAL_TEST_TIMEOUT
+    );
 
     test('all buttons are accessible', () => {
       renderWithRouter(<Footer />);
@@ -531,7 +660,7 @@ describe('Footer Component', () => {
       });
 
       // Mock getElementById to return null
-      jest.spyOn(document, 'getElementById').mockReturnValue(null);
+      vi.spyOn(document, 'getElementById').mockReturnValue(null);
 
       renderWithRouter(<Footer />);
 

@@ -3,18 +3,19 @@
  * Testing notification permission requests, banner display logic, and user interactions
  */
 
+import { vi } from 'vitest';
 import { screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { renderWithSelectiveProviders } from '../../../test-utils/test-utils';
 import NotificationPermission from '../NotificationPermission';
 import * as logger from '../../../utils/logger';
 
 // Mock push notification utilities
-const mockIsPushNotificationSupported = jest.fn();
-const mockIsPushNotificationEnabled = jest.fn();
-const mockRequestNotificationPermission = jest.fn();
-const mockSubscribeToPushNotifications = jest.fn();
+const mockIsPushNotificationSupported = vi.fn();
+const mockIsPushNotificationEnabled = vi.fn();
+const mockRequestNotificationPermission = vi.fn();
+const mockSubscribeToPushNotifications = vi.fn();
 
-jest.mock('../../../utils/pushNotifications', () => ({
+vi.mock('../../../utils/pushNotifications', () => ({
   isPushNotificationSupported: () => mockIsPushNotificationSupported(),
   isPushNotificationEnabled: () => mockIsPushNotificationEnabled(),
   requestNotificationPermission: () => mockRequestNotificationPermission(),
@@ -22,14 +23,14 @@ jest.mock('../../../utils/pushNotifications', () => ({
 }));
 
 // Mock logger
-jest.mock('../../../utils/logger', () => ({
-  error: jest.fn(),
+vi.mock('../../../utils/logger', () => ({
+  error: vi.fn(),
 }));
 
-const mockLoggerError = logger.error as jest.Mock;
+const mockLoggerError = logger.error as any;
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   Bell: ({ className }: { className?: string }) => (
     <div data-testid="bell-icon" className={className}>
       Bell
@@ -43,7 +44,7 @@ jest.mock('lucide-react', () => ({
 }));
 
 // Mock Notification constructor
-const mockNotification = jest.fn();
+const mockNotification = vi.fn();
 Object.defineProperty(window, 'Notification', {
   writable: true,
   value: mockNotification,
@@ -51,10 +52,10 @@ Object.defineProperty(window, 'Notification', {
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
 };
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
@@ -62,8 +63,8 @@ Object.defineProperty(window, 'localStorage', {
 
 describe('NotificationPermission', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.useFakeTimers();
+    vi.clearAllMocks();
+    vi.useFakeTimers();
 
     // Reset default mocks
     mockIsPushNotificationSupported.mockReturnValue(true);
@@ -75,8 +76,8 @@ describe('NotificationPermission', () => {
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
   });
 
   it('does not render banner when push notifications are not supported', () => {
@@ -86,7 +87,7 @@ describe('NotificationPermission', () => {
 
     // Fast forward past the delay
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     expect(
@@ -102,7 +103,7 @@ describe('NotificationPermission', () => {
 
     // Fast forward past the delay
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     expect(
@@ -123,7 +124,7 @@ describe('NotificationPermission', () => {
 
     // Fast forward past the delay
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
@@ -136,7 +137,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
@@ -160,7 +161,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     const enableButton = screen.getByText('알림 받기');
@@ -197,7 +198,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     const enableButton = screen.getByText('알림 받기');
@@ -228,7 +229,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     const enableButton = screen.getByText('알림 받기');
@@ -257,7 +258,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     const enableButton = screen.getByText('알림 받기');
@@ -283,7 +284,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
@@ -307,7 +308,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
@@ -337,7 +338,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     const enableButton = screen.getByText('알림 받기');
@@ -364,7 +365,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     // Check that banner is displayed through its actual content
@@ -378,7 +379,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     const enableButton = screen.getByText('알림 받기');
@@ -415,7 +416,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     const closeButton = screen.getByRole('button', { name: '닫기' });
@@ -435,7 +436,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     const titleElement = screen.getByText('알림을 받아보시겠습니까?');
@@ -459,7 +460,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     const closeButton = screen.getByRole('button', { name: '닫기' });
@@ -482,7 +483,7 @@ describe('NotificationPermission', () => {
     );
 
     // Spy on clearTimeout
-    const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
+    const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
 
     unmount();
 
@@ -499,7 +500,7 @@ describe('NotificationPermission', () => {
     );
 
     // Spy on setTimeout
-    const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+    const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
     setTimeoutSpy.mockClear();
 
     rerender(<NotificationPermission />);
@@ -516,7 +517,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     expect(
@@ -531,7 +532,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     const bellIcon = screen.getByTestId('bell-icon');
@@ -545,7 +546,7 @@ describe('NotificationPermission', () => {
     renderWithSelectiveProviders(<NotificationPermission />);
 
     act(() => {
-      jest.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10000);
     });
 
     const xIcon = screen.getByTestId('x-icon');
@@ -564,7 +565,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const laterButton = screen.getByText('나중에');
@@ -584,7 +585,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const closeButton = screen.getByRole('button', { name: '닫기' });
@@ -603,7 +604,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const laterButton = screen.getByText('나중에');
@@ -626,7 +627,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const enableButton = screen.getByText('알림 받기');
@@ -651,7 +652,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const enableButton = screen.getByText('알림 받기');
@@ -675,7 +676,7 @@ describe('NotificationPermission', () => {
       );
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const banner = container.querySelector('.animate-fade-in');
@@ -691,7 +692,7 @@ describe('NotificationPermission', () => {
       );
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const banner = container.querySelector(
@@ -709,7 +710,7 @@ describe('NotificationPermission', () => {
       );
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const banner = container.querySelector('.left-4.right-4');
@@ -725,7 +726,7 @@ describe('NotificationPermission', () => {
       );
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const banner = container.querySelector('.z-40');
@@ -734,10 +735,10 @@ describe('NotificationPermission', () => {
   });
 
   describe('Timer management', () => {
-    it('does not create timer when notifications are supported', () => {
+    it('does not create timer when notifications are not supported', () => {
       mockIsPushNotificationSupported.mockReturnValue(false);
 
-      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+      const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
       setTimeoutSpy.mockClear();
 
       renderWithSelectiveProviders(<NotificationPermission />);
@@ -750,7 +751,7 @@ describe('NotificationPermission', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
-      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+      const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
       setTimeoutSpy.mockClear();
 
       renderWithSelectiveProviders(<NotificationPermission />);
@@ -763,7 +764,7 @@ describe('NotificationPermission', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
-      const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
 
       const { unmount } = renderWithSelectiveProviders(
         <NotificationPermission />
@@ -792,7 +793,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const enableButton = screen.getByText('알림 받기');
@@ -817,7 +818,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const enableButton = screen.getByText('알림 받기');
@@ -854,7 +855,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const enableButton = screen.getByText('알림 받기');
@@ -883,7 +884,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const laterButton = screen.getByText('나중에');
@@ -917,7 +918,7 @@ describe('NotificationPermission', () => {
       rerender(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       // Should still show banner only once
@@ -937,7 +938,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       // Should work correctly after remounting
@@ -954,7 +955,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const enableButton = screen.getByText('알림 받기');
@@ -977,7 +978,7 @@ describe('NotificationPermission', () => {
       renderWithSelectiveProviders(<NotificationPermission />);
 
       act(() => {
-        jest.advanceTimersByTime(10000);
+        vi.advanceTimersByTime(10000);
       });
 
       const enableButton = screen.getByText('알림 받기');

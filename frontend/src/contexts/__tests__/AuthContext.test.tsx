@@ -1,21 +1,22 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import { AuthProvider, useAuth } from '../AuthContext';
 import axiosInstance from '../../services/api';
 
 // Mock axios
-jest.mock('../../services/api', () => ({
+vi.mock('../../services/api', () => ({
   __esModule: true,
   default: {
-    post: jest.fn(),
-    get: jest.fn(),
+    post: vi.fn(),
+    get: vi.fn(),
     interceptors: {
-      request: { use: jest.fn() },
-      response: { use: jest.fn() },
+      request: { use: vi.fn() },
+      response: { use: vi.fn() },
     },
   },
 }));
 
-const mockedAxios = axiosInstance as jest.Mocked<typeof axiosInstance>;
+const mockedAxios = axiosInstance as any;
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
@@ -42,19 +43,18 @@ const TestComponent: React.FC = () => {
 
 // Mock localStorage
 const mockLocalStorage = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
 };
-
 Object.defineProperty(window, 'localStorage', {
   value: mockLocalStorage,
 });
 
 describe('AuthContext', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockLocalStorage.getItem.mockReturnValue(null);
   });
 
@@ -214,7 +214,7 @@ describe('AuthContext', () => {
   });
 
   test('throws error when used outside provider', () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => {
       render(<TestComponent />);

@@ -1,15 +1,19 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import NotFound from '../NotFound';
 
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}));
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await import('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 // Mock window.history.back
-const mockBack = jest.fn();
+const mockBack = vi.fn();
 Object.defineProperty(window, 'history', {
   writable: true,
   value: {
@@ -20,7 +24,7 @@ Object.defineProperty(window, 'history', {
 
 describe('NotFound', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockBack.mockClear();
   });
 
@@ -42,7 +46,9 @@ describe('NotFound', () => {
       </MemoryRouter>
     );
 
-    const homeButton = screen.getByRole('button', { name: /홈페이지로 이동/i });
+    const homeButton = screen.getByRole('button', {
+      name: /홈페이지로 이동/i,
+    });
     expect(homeButton).toBeInTheDocument();
 
     // Click the button and check navigation

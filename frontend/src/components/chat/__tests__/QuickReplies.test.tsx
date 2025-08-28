@@ -1,9 +1,10 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import QuickReplies from '../QuickReplies';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     button: ({
       children,
@@ -24,7 +25,7 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   MessageSquare: ({ className }: { className?: string }) => (
     <div data-testid="message-icon" className={className}>
       Message
@@ -48,19 +49,21 @@ jest.mock('lucide-react', () => ({
 }));
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, defaultValue: string) => defaultValue,
   }),
 }));
 
-// Mock ChatContext
-jest.mock('../../../contexts/ChatContext', () => ({
-  useChatContext: () => ({
-    settings: {
-      quickReplies: [],
-    },
-  }),
+// Mock ChatContext with default implementation
+const mockUseChatContext = vi.fn(() => ({
+  settings: {
+    quickReplies: [] as string[],
+  },
+}));
+
+vi.mock('../../../contexts/ChatContext', () => ({
+  useChatContext: mockUseChatContext,
   ChatProvider: ({ children }: { children?: React.ReactNode }) => children,
 }));
 
@@ -74,10 +77,16 @@ describe(
       return;
     }
 
-    const mockOnSelect = jest.fn();
+    const mockOnSelect = vi.fn();
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
+      // Reset to default mock implementation
+      mockUseChatContext.mockReturnValue({
+        settings: {
+          quickReplies: [] as string[],
+        },
+      });
     });
 
     const renderQuickReplies = () => {
@@ -185,8 +194,6 @@ describe(
 
     it('renders custom quick replies when available', () => {
       // Mock ChatContext with custom quick replies
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      const mockUseChatContext = jest.spyOn(ChatContext, 'useChatContext');
       mockUseChatContext.mockReturnValue({
         settings: {
           quickReplies: [
@@ -196,7 +203,7 @@ describe(
             '연락처 문의',
             'Custom Reply 1',
             'Custom Reply 2',
-          ],
+          ] as string[],
         },
       });
 
@@ -207,8 +214,6 @@ describe(
     });
 
     it('handles custom reply selection', () => {
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      const mockUseChatContext = jest.spyOn(ChatContext, 'useChatContext');
       mockUseChatContext.mockReturnValue({
         settings: {
           quickReplies: [
@@ -217,7 +222,7 @@ describe(
             '요금 문의',
             '연락처 문의',
             'Custom Reply',
-          ],
+          ] as string[],
         },
       });
 
@@ -230,8 +235,6 @@ describe(
     });
 
     it('does not render custom section when only 4 or fewer replies', () => {
-      const ChatContext = jest.requireMock('../../../contexts/ChatContext');
-      const mockUseChatContext = jest.spyOn(ChatContext, 'useChatContext');
       mockUseChatContext.mockReturnValue({
         settings: {
           quickReplies: [
@@ -239,7 +242,7 @@ describe(
             '기술 지원',
             '요금 문의',
             '연락처 문의',
-          ],
+          ] as string[],
         },
       });
 

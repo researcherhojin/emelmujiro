@@ -1,23 +1,29 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import BlogEditor from '../BlogEditor';
 
 // Mock useNavigate
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}));
-
-// Mock ReactMarkdown to avoid issues with markdown rendering
-jest.mock('react-markdown', () => {
-  return function ReactMarkdown({ children }: { children: string }) {
-    return <div data-testid="markdown-preview">{children}</div>;
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await import('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
   };
 });
 
+// Mock ReactMarkdown to avoid issues with markdown rendering
+vi.mock('react-markdown', () => ({
+  default: function ReactMarkdown({ children }: { children: string }) {
+    return <div data-testid="markdown-preview">{children}</div>;
+  },
+}));
+
 // Mock remarkGfm
-jest.mock('remark-gfm', () => () => {});
+vi.mock('remark-gfm', () => ({
+  default: () => {},
+}));
 
 // Define types for blog posts
 interface BlogPost {
@@ -31,13 +37,13 @@ interface BlogPost {
 }
 
 // Mock logger
-jest.mock('../../../utils/logger', () => ({
+vi.mock('../../../utils/logger', () => ({
   __esModule: true,
   default: {
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn(),
+    info: vi.fn(),
+    error: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn(),
   },
 }));
 
@@ -49,7 +55,7 @@ describe('BlogEditor Component', () => {
   beforeEach(() => {
     localStorage.clear();
     mockNavigate.mockClear();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Admin Mode', () => {
@@ -173,7 +179,7 @@ describe('BlogEditor Component', () => {
       const saveButton = screen.getByRole('button', { name: /저장/ });
 
       // Mock alert
-      const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
       fireEvent.click(saveButton);
 
@@ -205,7 +211,7 @@ describe('BlogEditor Component', () => {
       const saveButton = screen.getByRole('button', { name: /저장/ });
 
       // Mock alert
-      const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
       fireEvent.click(saveButton);
 
@@ -245,7 +251,7 @@ describe('BlogEditor Component', () => {
 
       const saveButton = screen.getByRole('button', { name: /저장/ });
 
-      jest.spyOn(window, 'alert').mockImplementation();
+      vi.spyOn(window, 'alert').mockImplementation(() => {});
 
       fireEvent.click(saveButton);
 
@@ -277,10 +283,12 @@ describe('BlogEditor Component', () => {
 
       // Mock createElement and click
       const linkElement = document.createElement('a');
-      const createElementSpy = jest
+      const createElementSpy = vi
         .spyOn(document, 'createElement')
         .mockReturnValue(linkElement);
-      const clickSpy = jest.spyOn(linkElement, 'click').mockImplementation();
+      const clickSpy = vi
+        .spyOn(linkElement, 'click')
+        .mockImplementation(() => {});
 
       const exportButton = screen.getByRole('button', { name: /내보내기/ });
       fireEvent.click(exportButton);
@@ -313,7 +321,7 @@ describe('BlogEditor Component', () => {
         'input[type="file"]'
       ) as HTMLInputElement;
 
-      const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
       fireEvent.change(fileInput, { target: { files: [file] } });
 
@@ -355,7 +363,7 @@ describe('BlogEditor Component', () => {
         'input[type="file"]'
       ) as HTMLInputElement;
 
-      const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
       fireEvent.change(fileInput, { target: { files: [invalidFile] } });
 

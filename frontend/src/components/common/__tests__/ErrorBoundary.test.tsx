@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import ErrorBoundary from '../ErrorBoundary';
 
 // Component that throws an error
@@ -10,11 +11,13 @@ const ProblemChild = ({ shouldThrow }: { shouldThrow: boolean }) => {
 };
 
 // Mock the logger module to avoid console output
-jest.mock('../../../utils/logger', () => ({
-  error: jest.fn(),
-  debug: jest.fn(),
-  warn: jest.fn(),
-  info: jest.fn(),
+vi.mock('../../../utils/logger', () => ({
+  default: {
+    error: vi.fn(),
+    debug: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+  },
 }));
 
 // Mock console.error to avoid cluttering test output
@@ -23,13 +26,13 @@ const originalConsoleError = console.error;
 describe('ErrorBoundary Component', () => {
   beforeEach(() => {
     // Mock console.error
-    console.error = jest.fn();
+    console.error = vi.fn();
   });
 
   afterEach(() => {
     // Restore console.error
     console.error = originalConsoleError;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders children when there is no error', () => {
@@ -58,8 +61,8 @@ describe('ErrorBoundary Component', () => {
     ).toBeInTheDocument();
   });
 
-  it('logs error to console', () => {
-    const logger = jest.requireMock('../../../utils/logger');
+  it('logs error to console', async () => {
+    const { default: logger } = await import('../../../utils/logger');
 
     render(
       <ErrorBoundary>
@@ -81,7 +84,7 @@ describe('ErrorBoundary Component', () => {
     const originalReload = window.location.reload;
     Object.defineProperty(window, 'location', {
       configurable: true,
-      value: { ...window.location, reload: jest.fn() },
+      value: { ...window.location, reload: vi.fn() },
     });
 
     render(
@@ -154,7 +157,7 @@ describe('ErrorBoundary Component', () => {
     );
 
     // Error boundary should still show error state
-    // (React error boundaries don't automatically reset)
+    // (React error boundaries don't automatically reset),
     expect(screen.getByText('문제가 발생했습니다')).toBeInTheDocument();
   });
 

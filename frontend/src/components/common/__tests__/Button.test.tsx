@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import Button from '../Button';
 
@@ -87,7 +88,7 @@ describe('Button Component', () => {
 
   describe('Click Events', () => {
     it('calls onClick handler when clicked', () => {
-      const handleClick = jest.fn();
+      const handleClick = vi.fn();
       render(<Button onClick={handleClick}>Click me</Button>);
 
       fireEvent.click(screen.getByRole('button'));
@@ -95,7 +96,7 @@ describe('Button Component', () => {
     });
 
     it('does not call onClick when disabled', () => {
-      const handleClick = jest.fn();
+      const handleClick = vi.fn();
       render(
         <Button onClick={handleClick} disabled>
           Disabled

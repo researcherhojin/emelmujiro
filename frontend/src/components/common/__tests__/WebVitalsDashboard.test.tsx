@@ -3,17 +3,18 @@
  * Testing metric collection, rating calculations, dashboard interactions, and analytics integration
  */
 
+import { vi } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import WebVitalsDashboard from '../WebVitalsDashboard';
 
 // Mock web-vitals library
-const mockOnCLS = jest.fn();
-const mockOnFCP = jest.fn();
-const mockOnLCP = jest.fn();
-const mockOnTTFB = jest.fn();
-const mockOnINP = jest.fn();
+const mockOnCLS = vi.fn();
+const mockOnFCP = vi.fn();
+const mockOnLCP = vi.fn();
+const mockOnTTFB = vi.fn();
+const mockOnINP = vi.fn();
 
-jest.mock('web-vitals', () => ({
+vi.mock('web-vitals', () => ({
   onCLS: (callback: Function) => mockOnCLS(callback),
   onFCP: (callback: Function) => mockOnFCP(callback),
   onLCP: (callback: Function) => mockOnLCP(callback),
@@ -22,12 +23,12 @@ jest.mock('web-vitals', () => ({
 }));
 
 // Mock console.log
-const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
+const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 
 describe('WebVitalsDashboard', () => {
   let originalEnv: string | undefined;
   let originalGtag: typeof window.gtag;
-  let mockGtag: jest.Mock;
+  let mockGtag: any;
 
   beforeEach(() => {
     // Store original environment
@@ -35,20 +36,20 @@ describe('WebVitalsDashboard', () => {
     originalGtag = window.gtag;
 
     // Mock gtag
-    mockGtag = jest.fn();
+    mockGtag = vi.fn();
     Object.defineProperty(window, 'gtag', {
       writable: true,
       value: mockGtag,
     });
 
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockConsoleLog.mockClear();
 
     // Mock Date.now for consistent timestamps
-    jest.spyOn(Date, 'now').mockReturnValue(1640995200000); // Fixed timestamp
-    jest
-      .spyOn(Date.prototype, 'toLocaleTimeString')
-      .mockReturnValue('12:00:00 AM');
+    vi.spyOn(Date, 'now').mockReturnValue(1640995200000); // Fixed timestamp
+    vi.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue(
+      '12:00:00 AM'
+    );
   });
 
   afterEach(() => {
@@ -67,7 +68,7 @@ describe('WebVitalsDashboard', () => {
       value: originalGtag,
     });
 
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('Development Mode Behavior', () => {
@@ -648,7 +649,7 @@ describe('WebVitalsDashboard', () => {
     test('removes event listener on unmount in development', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
 
-      const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
       const { unmount } = render(<WebVitalsDashboard />);
       unmount();

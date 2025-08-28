@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import AboutPage from '../AboutPage';
@@ -12,7 +13,7 @@ interface MotionComponentProps {
 }
 
 // Mock framer-motion to avoid animation issues in tests
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: MotionComponentProps) => (
       <div {...props}>{children}</div>
@@ -38,8 +39,8 @@ jest.mock('framer-motion', () => ({
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
   useAnimation: () => ({
-    start: jest.fn(),
-    set: jest.fn(),
+    start: vi.fn(),
+    set: vi.fn(),
   }),
   useInView: () => true,
 }));

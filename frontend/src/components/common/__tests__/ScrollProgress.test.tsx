@@ -3,6 +3,7 @@
  * Testing scroll progress calculation, event handling, and accessibility
  */
 
+import { vi } from "vitest";
 import { render, screen, fireEvent } from '@testing-library/react';
 import ScrollProgress from '../ScrollProgress';
 
@@ -38,8 +39,8 @@ describe('ScrollProgress', () => {
     });
 
     // Mock addEventListener and removeEventListener
-    jest.spyOn(window, 'addEventListener');
-    jest.spyOn(window, 'removeEventListener');
+    vi.spyOn(window, 'addEventListener');
+    vi.spyOn(window, 'removeEventListener');
   });
 
   afterEach(() => {
@@ -54,7 +55,7 @@ describe('ScrollProgress', () => {
       value: originalDocumentElement,
     });
 
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('Basic Rendering', () => {
@@ -158,7 +159,7 @@ describe('ScrollProgress', () => {
     test('calculates 0% progress when at top of page', () => {
       render(<ScrollProgress />);
 
-      // Already at top (scrollY = 0)
+      // Already at top (scrollY = 0),
       fireEvent.scroll(window);
 
       const progressBar = screen.getByRole('progressbar');
@@ -242,7 +243,7 @@ describe('ScrollProgress', () => {
     });
 
     test('handles edge case where document height equals window height', () => {
-      // Make document height equal to window height (no scrolling needed)
+      // Make document height equal to window height (no scrolling needed),
       Object.defineProperty(document.documentElement, 'scrollHeight', {
         writable: true,
         value: 800, // Same as window.innerHeight
@@ -366,7 +367,7 @@ describe('ScrollProgress', () => {
     test('handles negative scroll values', () => {
       render(<ScrollProgress />);
 
-      // Simulate negative scroll (shouldn't happen in practice)
+      // Simulate negative scroll (shouldn't happen in practice),
       Object.defineProperty(window, 'scrollY', {
         writable: true,
         value: -100,

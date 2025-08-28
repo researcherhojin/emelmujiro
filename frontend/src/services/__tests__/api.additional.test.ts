@@ -1,4 +1,5 @@
 // Test for additional API functionality
+import { vi } from 'vitest';
 // Since we're using GitHub Pages without a backend, all tests use mock data
 
 import { api } from '../api';
@@ -7,9 +8,9 @@ import { BlogPost } from '../../types';
 // Mock console methods
 const originalConsole = { ...console };
 beforeAll(() => {
-  console.error = jest.fn();
-  console.log = jest.fn();
-  console.warn = jest.fn();
+  console.error = vi.fn();
+  console.log = vi.fn();
+  console.warn = vi.fn();
 });
 
 afterAll(() => {
@@ -20,7 +21,7 @@ afterAll(() => {
 
 describe('API Service - Mock Mode for GitHub Pages', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     localStorage.clear();
   });
 
@@ -174,7 +175,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
 
       expect(result).toBeDefined();
       expect(result.data).toBeDefined();
-      // Should still work even with token (mock mode)
+      // Should still work even with token (mock mode),
     });
 
     it('should work without auth token', async () => {
@@ -184,7 +185,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
 
       expect(result).toBeDefined();
       expect(result.data).toBeDefined();
-      // Should work without token (mock mode)
+      // Should work without token (mock mode),
     });
   });
 
@@ -268,7 +269,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       await api.getBlogPosts(1);
       const endTime = Date.now();
 
-      // Mock data should return almost instantly (< 100ms)
+      // Mock data should return almost instantly (< 100ms),
       expect(endTime - startTime).toBeLessThan(100);
     });
 

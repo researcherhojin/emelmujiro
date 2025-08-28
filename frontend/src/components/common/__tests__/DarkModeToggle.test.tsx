@@ -1,30 +1,29 @@
-import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import DarkModeToggle from '../DarkModeToggle';
 // Removed unused import
 
 // Mock UI Context
-const mockToggleTheme = jest.fn();
+const mockToggleTheme = vi.fn();
 const mockUIContextValue = {
   theme: 'light' as 'light' | 'dark',
   toggleTheme: mockToggleTheme,
-  setTheme: jest.fn(),
+  setTheme: vi.fn(),
   isGlobalLoading: false,
-  setGlobalLoading: jest.fn(),
+  setGlobalLoading: vi.fn(),
   notifications: [],
-  showNotification: jest.fn(),
-  removeNotification: jest.fn(),
+  showNotification: vi.fn(),
+  removeNotification: vi.fn(),
   modals: [],
-  openModal: jest.fn(),
-  closeModal: jest.fn(),
-  closeAllModals: jest.fn(),
+  openModal: vi.fn(),
+  closeModal: vi.fn(),
+  closeAllModals: vi.fn(),
   isSidebarOpen: false,
-  toggleSidebar: jest.fn(),
-  setSidebarOpen: jest.fn(),
+  toggleSidebar: vi.fn(),
+  setSidebarOpen: vi.fn(),
 };
-
-jest.mock('../../../contexts/UIContext', () => ({
+vi.mock('../../../contexts/UIContext', () => ({
   useUI: () => mockUIContextValue,
 }));
 

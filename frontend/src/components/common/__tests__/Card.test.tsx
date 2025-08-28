@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import Card from '../Card';
 
 describe('Card Component', () => {
@@ -101,7 +102,7 @@ describe('Card Component', () => {
 
   describe('Additional Props', () => {
     it('passes through additional props', () => {
-      const handleClick = jest.fn();
+      const handleClick = vi.fn();
       render(
         <Card data-testid="custom-card" onClick={handleClick} role="article">
           Content

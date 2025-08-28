@@ -43,7 +43,7 @@ jobs:
       - name: Run frontend tests
         working-directory: ./frontend
         run: |
-          CI=true npm test -- --coverage --watchAll=false --passWithNoTests --maxWorkers=2
+          CI=true npm test -- --run --passWithNoTests --maxWorkers=2
         continue-on-error: true
 
       - name: Upload test coverage
@@ -53,6 +53,7 @@ jobs:
           name: frontend-coverage
           path: frontend/coverage/
           retention-days: 7
+          if-no-files-found: ignore
 
   # ========================================
   # Backend Tests

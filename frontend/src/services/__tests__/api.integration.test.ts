@@ -1,41 +1,40 @@
 // Mock the api module directly
+import { vi } from 'vitest';
 import { blogService, api } from '../api';
 
-jest.mock('../api', () => {
+vi.mock('../api', () => {
   const mockBlogService = {
-    getPosts: jest.fn(),
-    getPost: jest.fn(),
-    searchPosts: jest.fn(),
-    getCategories: jest.fn(),
-    createPost: jest.fn(),
-    updatePost: jest.fn(),
-    deletePost: jest.fn(),
+    getPosts: vi.fn(),
+    getPost: vi.fn(),
+    searchPosts: vi.fn(),
+    getCategories: vi.fn(),
+    createPost: vi.fn(),
+    updatePost: vi.fn(),
+    deletePost: vi.fn(),
   };
-
   const mockApi = {
-    getProjects: jest.fn(),
-    createProject: jest.fn(),
-    getBlogPosts: jest.fn(),
-    getBlogPost: jest.fn(),
-    searchBlogPosts: jest.fn(),
-    getBlogCategories: jest.fn(),
-    createContact: jest.fn(),
-    subscribeNewsletter: jest.fn(),
-    checkHealth: jest.fn(),
+    getProjects: vi.fn(),
+    createProject: vi.fn(),
+    getBlogPosts: vi.fn(),
+    getBlogPost: vi.fn(),
+    searchBlogPosts: vi.fn(),
+    getBlogCategories: vi.fn(),
+    createContact: vi.fn(),
+    subscribeNewsletter: vi.fn(),
+    checkHealth: vi.fn(),
   };
-
   return {
     api: mockApi,
     blogService: mockBlogService,
     default: {
-      create: jest.fn(() => ({
-        get: jest.fn(),
-        post: jest.fn(),
-        put: jest.fn(),
-        delete: jest.fn(),
+      create: vi.fn(() => ({
+        get: vi.fn(),
+        post: vi.fn(),
+        put: vi.fn(),
+        delete: vi.fn(),
         interceptors: {
-          request: { use: jest.fn() },
-          response: { use: jest.fn() },
+          request: { use: vi.fn() },
+          response: { use: vi.fn() },
         },
       })),
     },
@@ -55,7 +54,7 @@ describe(
     }
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     describe('blogService.getPosts', () => {
@@ -77,17 +76,16 @@ describe(
           status: 200,
         };
 
-        (blogService.getPosts as jest.Mock).mockResolvedValue(mockResponse);
+        (blogService.getPosts as any).mockResolvedValue(mockResponse);
 
         const result = await blogService.getPosts(1, 10);
 
         expect(blogService.getPosts).toHaveBeenCalledWith(1, 10);
-
         expect(result.data).toEqual(mockResponse.data);
       });
 
       test('handles pagination correctly', async () => {
-        const mockResponse = {
+        const mockPaginationResponse = {
           data: {
             count: 50,
             next: 'http://localhost:8000/api/blog-posts/?page=4',
@@ -97,12 +95,11 @@ describe(
           status: 200,
         };
 
-        (blogService.getPosts as jest.Mock).mockResolvedValue(mockResponse);
+        (blogService.getPosts as any).mockResolvedValue(mockPaginationResponse);
 
         const result = await blogService.getPosts(3, 10);
 
         expect(blogService.getPosts).toHaveBeenCalledWith(3, 10);
-
         expect(result.data.count).toBe(50);
         expect(result.data.next).toContain('page=4');
         expect(result.data.previous).toContain('page=2');
@@ -110,7 +107,7 @@ describe(
 
       test('handles API errors correctly', async () => {
         const errorMessage = 'Network Error';
-        (blogService.getPosts as jest.Mock).mockRejectedValue(
+        (blogService.getPosts as any).mockRejectedValue(
           new Error(errorMessage)
         );
 
@@ -125,7 +122,7 @@ describe(
           },
         };
 
-        (blogService.getPosts as jest.Mock).mockRejectedValue(errorResponse);
+        (blogService.getPosts as any).mockRejectedValue(errorResponse);
 
         await expect(blogService.getPosts(1)).rejects.toEqual(errorResponse);
       });
@@ -139,11 +136,12 @@ describe(
           content: 'Test Content',
           author: 'Test Author',
         };
-
-        (blogService.getPost as jest.Mock).mockResolvedValue({
+        const mockPostResponse = {
           data: mockPost,
           status: 200,
-        });
+        };
+
+        (blogService.getPost as any).mockResolvedValue(mockPostResponse);
 
         const result = await blogService.getPost('1');
 
@@ -159,7 +157,7 @@ describe(
           },
         };
 
-        (blogService.getPost as jest.Mock).mockRejectedValue(errorResponse);
+        (blogService.getPost as any).mockRejectedValue(errorResponse);
 
         await expect(blogService.getPost('999')).rejects.toEqual(errorResponse);
       });
@@ -176,23 +174,26 @@ describe(
           },
         ];
 
-        (blogService.searchPosts as jest.Mock).mockResolvedValue({
+        const mockSearchResponse = {
           data: { count: 1, next: null, previous: null, results: mockResults },
           status: 200,
-        });
+        };
+
+        (blogService.searchPosts as any).mockResolvedValue(mockSearchResponse);
 
         const result = await blogService.searchPosts('search term');
 
         expect(blogService.searchPosts).toHaveBeenCalledWith('search term');
-
         expect(result.data.results).toEqual(mockResults);
       });
 
       test('handles empty search results', async () => {
-        (blogService.searchPosts as jest.Mock).mockResolvedValue({
+        const mockEmptyResponse = {
           data: { count: 0, next: null, previous: null, results: [] },
           status: 200,
-        });
+        };
+
+        (blogService.searchPosts as any).mockResolvedValue(mockEmptyResponse);
 
         const result = await blogService.searchPosts('nonexistent');
 
@@ -200,7 +201,7 @@ describe(
       });
 
       test('handles search errors', async () => {
-        (blogService.searchPosts as jest.Mock).mockRejectedValue(
+        (blogService.searchPosts as any).mockRejectedValue(
           new Error('Search failed')
         );
 
@@ -239,7 +240,7 @@ describe(
           },
         };
 
-        (blogService.getPosts as jest.Mock).mockRejectedValue(rateLimitError);
+        (blogService.getPosts as any).mockRejectedValue(rateLimitError);
 
         await expect(blogService.getPosts(1)).rejects.toEqual(rateLimitError);
       });
@@ -252,7 +253,7 @@ describe(
           message: 'Network Error',
         };
 
-        (blogService.getPosts as jest.Mock).mockRejectedValue(networkError);
+        (blogService.getPosts as any).mockRejectedValue(networkError);
 
         await expect(blogService.getPosts(1)).rejects.toEqual(networkError);
       });

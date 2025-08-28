@@ -1,3 +1,5 @@
+import { vi } from 'vitest';
+import type { MockedFunction, Mocked } from 'vitest';
 import {
   render,
   screen,
@@ -17,22 +19,23 @@ import { InternalAxiosRequestConfig } from 'axios';
 import React from 'react';
 
 // Mock dependencies
-jest.mock('../../../services/api');
-jest.mock('../../../utils/backgroundSync');
+vi.mock('../../../services/api');
+vi.mock('../../../utils/backgroundSync');
 
-const mockedApi = api as jest.Mocked<typeof api>;
-const mockedRegisterBackgroundSync =
-  registerBackgroundSync as jest.MockedFunction<typeof registerBackgroundSync>;
+const mockedApi = api as Mocked<typeof api>;
+const mockedRegisterBackgroundSync = registerBackgroundSync as MockedFunction<
+  typeof registerBackgroundSync
+>;
 
-jest.mock('../../../utils/logger', () => ({
-  debug: jest.fn(),
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
+vi.mock('../../../utils/logger', () => ({
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
 }));
 
 // Mock UnifiedLoading components
-jest.mock('../../common/UnifiedLoading', () => ({
+vi.mock('../../common/UnifiedLoading', () => ({
   PageLoading: () => <div data-testid="page-loading">Loading...</div>,
   InlineLoading: () => <div data-testid="inline-loading">Loading...</div>,
   ButtonLoading: () => <div data-testid="button-loading">Loading...</div>,
@@ -40,11 +43,11 @@ jest.mock('../../common/UnifiedLoading', () => ({
 }));
 
 // Mock SEOHelmet to prevent react-helmet-async errors
-jest.mock('../../common/SEOHelmet', () => {
-  return function MockSEOHelmet() {
+vi.mock('../../common/SEOHelmet', () => ({
+  default: function MockSEOHelmet() {
     return null;
-  };
-});
+  },
+}));
 
 // Define type for motion component props
 type MotionComponentProps = {
@@ -58,7 +61,7 @@ type MotionComponentProps = {
 };
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: MotionComponentProps) => (
       <div {...props}>{children}</div>
@@ -75,11 +78,14 @@ jest.mock('framer-motion', () => ({
   ),
 }));
 
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}));
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 describe('ContactPage Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
@@ -87,28 +93,28 @@ describe('ContactPage Component', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.useFakeTimers();
+    vi.clearAllMocks();
+    vi.useFakeTimers();
     // Reset navigator.onLine
     Object.defineProperty(navigator, 'onLine', {
       writable: true,
       value: true,
     });
     // Mock window.scrollTo
-    window.scrollTo = jest.fn();
+    window.scrollTo = vi.fn();
     // Mock window.alert
-    window.alert = jest.fn();
+    window.alert = vi.fn();
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
   });
 
   const waitForFormToLoad = async () => {
     // Advance timers to skip loading state
     act(() => {
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
     });
 
     // Wait for form to be visible
@@ -179,7 +185,7 @@ describe('ContactPage Component', () => {
       });
 
       // Test with valid email
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       fireEvent.change(emailInput, { target: { value: 'valid@email.com' } });
 
       // Mock successful submission
@@ -257,7 +263,7 @@ describe('ContactPage Component', () => {
       });
 
       // Test with valid message
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       mockedApi.createContact.mockResolvedValue({
         data: { id: 1 },
         status: 200,
@@ -337,7 +343,7 @@ describe('ContactPage Component', () => {
 
       // Advance timers to trigger navigation (which happens after 2 seconds)
       act(() => {
-        jest.advanceTimersByTime(2000);
+        vi.advanceTimersByTime(2000);
       });
 
       // Verify navigation
@@ -401,15 +407,15 @@ describe('ContactPage Component', () => {
 
       // Mock window.location.href setter
       const originalLocation = window.location;
-      const hrefSetter = jest.fn();
+      const hrefSetter = vi.fn();
       Object.defineProperty(window, 'location', {
         writable: true,
         value: {
           ...originalLocation,
           href: '',
-          assign: jest.fn(),
-          reload: jest.fn(),
-          replace: jest.fn(),
+          assign: vi.fn(),
+          reload: vi.fn(),
+          replace: vi.fn(),
         },
       });
       Object.defineProperty(window.location, 'href', {
@@ -536,7 +542,7 @@ describe('ContactPage Component', () => {
     });
 
     it('cleans up event listeners on unmount', () => {
-      const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
       const { unmount } = renderWithRouter(<ContactPage />);
 

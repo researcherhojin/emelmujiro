@@ -1,11 +1,12 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import MessageList from '../MessageList';
 import { ChatProvider } from '../../../contexts/ChatContext';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -26,7 +27,7 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock lucide-react icons
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   Bot: () => <span>Bot</span>,
   User: () => <span>User</span>,
   Clock: () => <span>Clock</span>,
@@ -50,7 +51,7 @@ jest.mock('lucide-react', () => ({
 }));
 
 // Mock LazyImage component
-jest.mock('../../common/LazyImage', () => ({
+vi.mock('../../common/LazyImage', () => ({
   LazyImage: ({
     src,
     alt,
@@ -63,19 +64,19 @@ jest.mock('../../common/LazyImage', () => ({
 }));
 
 // Mock date-fns
-jest.mock('date-fns', () => ({
-  format: jest.fn((date: Date | string) => {
+vi.mock('date-fns', () => ({
+  format: vi.fn((date: Date | string) => {
     const d = new Date(date);
     return `${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
   }),
 }));
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: {
-      changeLanguage: jest.fn(),
+      changeLanguage: vi.fn(),
       language: 'ko',
     },
   }),
@@ -120,22 +121,21 @@ const mockChatContext = {
   agentAvailable: true,
   businessHours: { isOpen: true, openTime: '09:00', closeTime: '18:00' },
   unreadCount: 0,
-  sendMessage: jest.fn(),
-  sendFile: jest.fn(),
-  markAsRead: jest.fn(),
-  clearMessages: jest.fn(),
-  exportChat: jest.fn(),
-  startTyping: jest.fn(),
-  stopTyping: jest.fn(),
-  openChat: jest.fn(),
-  closeChat: jest.fn(),
-  toggleMinimize: jest.fn(),
-  markAllAsRead: jest.fn(),
+  sendMessage: vi.fn(),
+  sendFile: vi.fn(),
+  markAsRead: vi.fn(),
+  clearMessages: vi.fn(),
+  exportChat: vi.fn(),
+  startTyping: vi.fn(),
+  stopTyping: vi.fn(),
+  openChat: vi.fn(),
+  closeChat: vi.fn(),
+  toggleMinimize: vi.fn(),
+  markAllAsRead: vi.fn(),
   isOpen: true,
   isMinimized: false,
 };
-
-jest.mock('../../../contexts/ChatContext', () => ({
+vi.mock('../../../contexts/ChatContext', () => ({
   useChatContext: () => mockChatContext,
   ChatProvider: ({ children }: { children: React.ReactNode }) => (
     <>{children}</>
@@ -153,11 +153,11 @@ describe(
     }
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       // Reset mock messages
       mockChatContext.messages = [] as ChatMessage[];
       // Mock scrollIntoView
-      Element.prototype.scrollIntoView = jest.fn();
+      Element.prototype.scrollIntoView = vi.fn();
     });
 
     it('should render empty message list', () => {
@@ -246,7 +246,7 @@ describe(
     });
 
     it('should handle retry action for failed messages', () => {
-      const mockRetry = jest.fn();
+      const mockRetry = vi.fn();
       mockChatContext.sendMessage = mockRetry;
       mockChatContext.messages = [
         {
@@ -265,7 +265,7 @@ describe(
         </ChatProvider>
       );
 
-      // Find the retry button (failed messages show RefreshCw icon)
+      // Find the retry button (failed messages show RefreshCw icon),
       const retryButtons = screen.getAllByText('RefreshCw');
       expect(retryButtons).toHaveLength(1);
 
@@ -402,7 +402,7 @@ describe(
 
     // NOTE: Quick reply click handling pending implementation in MessageList component
     it('should handle quick reply click', () => {
-      const mockSend = jest.fn();
+      const mockSend = vi.fn();
       mockChatContext.sendMessage = mockSend;
       mockChatContext.messages = [
         {
@@ -476,7 +476,7 @@ describe(
     });
 
     it('should scroll to bottom on new messages', async () => {
-      const scrollIntoViewMock = jest.fn();
+      const scrollIntoViewMock = vi.fn();
       Element.prototype.scrollIntoView = scrollIntoViewMock;
 
       const { rerender } = render(

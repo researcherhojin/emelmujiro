@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import LazyImage from '../LazyImage';
 
 describe('LazyImage Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders placeholder initially without img element', () => {
@@ -16,20 +17,20 @@ describe('LazyImage Component', () => {
       />
     );
 
-    // Image should not be rendered yet (lazy loading)
+    // Image should not be rendered yet (lazy loading),
     const img = screen.queryByAltText('Test image');
     expect(img).not.toBeInTheDocument();
   });
 
   it('creates IntersectionObserver on mount', () => {
     // Mock to capture the IntersectionObserver instance
-    const mockObserve = jest.fn();
-    global.IntersectionObserver = jest
+    const mockObserve = vi.fn();
+    global.IntersectionObserver = vi
       .fn()
       .mockImplementation((_callback, _options) => ({
         observe: mockObserve,
-        unobserve: jest.fn(),
-        disconnect: jest.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
       }));
 
     render(<LazyImage src="test.jpg" alt="Test image" />);

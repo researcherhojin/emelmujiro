@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import BlogSection from '../BlogSection';
 import React from 'react';
@@ -15,7 +16,7 @@ type MotionComponentProps = {
 };
 
 // Mock dependencies
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -36,14 +37,14 @@ jest.mock('framer-motion', () => ({
   },
 }));
 
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   ArrowRight: () => <div data-testid="arrow-right">ArrowRight</div>,
   Loader2: () => <div data-testid="loader">Loader</div>,
   BookOpen: () => <div data-testid="book-open">BookOpen</div>,
 }));
 
-jest.mock('../../blog/BlogCard', () => {
-  return function BlogCard({
+vi.mock('../../blog/BlogCard', () => ({
+  default: function BlogCard({
     post,
   }: {
     post: { title: string; excerpt: string };
@@ -54,14 +55,17 @@ jest.mock('../../blog/BlogCard', () => {
         <p>{post.excerpt}</p>
       </div>
     );
+  },
+}));
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await import('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
   };
 });
-
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}));
 
 describe('BlogSection Component', () => {
   const mockPosts: BlogPost[] = [
@@ -116,7 +120,7 @@ describe('BlogSection Component', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Normal State', () => {
@@ -136,7 +140,7 @@ describe('BlogSection Component', () => {
 
       expect(screen.getByText('AI 트렌드')).toBeInTheDocument();
       expect(
-        screen.getByText('최신 AI 기술 동향과 실제 도입 사례를 공유합니다')
+        screen.getByText('최신 AI 기술 동향과 실제 도입 사례를 공유핉니다')
       ).toBeInTheDocument();
     });
 

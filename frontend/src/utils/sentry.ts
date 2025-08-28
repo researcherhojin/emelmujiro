@@ -1,43 +1,41 @@
-// Sentry 초기화 및 에러 트래킹 유틸리티
-// 프로덕션 환경에서만 실제 Sentry를 로드하고 사용
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
+// @ts-ignore - Replay is available but not in types
+const Replay = (Sentry as any).Replay;
+import env from '../config/env';
 
-/**
- * Sentry 초기화 및 설정
- * 프로덕션 환경에서만 동적으로 Sentry를 로드
- */
-export const initSentry = async () => {
-  // 프로덕션 환경에서만 Sentry 활성화
-  if (
-    process.env.NODE_ENV === 'production' &&
-    process.env.REACT_APP_SENTRY_DSN &&
-    process.env.REACT_APP_ENABLE_ERROR_REPORTING === 'true'
-  ) {
+// Type definitions for better type safety
+interface WindowWithDevTools extends Window {
+  __REACT_DEVTOOLS_GLOBAL_HOOK__?: unknown;
+}
+
+interface ErrorInfo {
+  componentStack?: string;
+  digest?: string;
+}
+
+// Sentry 초기화
+export function initSentry(): void {
+  if (env.ENABLE_SENTRY && env.SENTRY_DSN) {
     try {
-      // Dynamic import of Sentry modules
-      const Sentry = await import('@sentry/react');
-
       Sentry.init({
-        dsn: process.env.REACT_APP_SENTRY_DSN,
-        environment: process.env.REACT_APP_SENTRY_ENVIRONMENT || 'production',
-        release:
-          process.env.REACT_APP_SENTRY_RELEASE ||
-          process.env.REACT_APP_APP_VERSION,
-
+        dsn: env.SENTRY_DSN,
+        environment: env.NODE_ENV,
         integrations: [
-          // Default integrations will be automatically included
+          new BrowserTracing(),
+          new Replay({
+            maskAllText: false,
+            blockAllMedia: false,
+          }),
         ],
-
-        // 성능 모니터링
-        tracesSampleRate: 0.1,
-
-        // 세션 리플레이
+        tracesSampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
         replaysSessionSampleRate: 0.1,
         replaysOnErrorSampleRate: 1.0,
 
         // 에러 필터링
         beforeSend(event, _hint) {
           // 개발자 도구가 열려있을 때 에러 무시
-          if ((window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+          if ((window as WindowWithDevTools).__REACT_DEVTOOLS_GLOBAL_HOOK__) {
             return null;
           }
 
@@ -46,194 +44,227 @@ export const initSentry = async () => {
             return null;
           }
 
-          // 취소된 요청 무시
-          if (event.message?.includes('AbortError')) {
-            return null;
-          }
-
-          // 브라우저 확장 프로그램 에러 무시
+          // 사용자 취소 에러 필터링
           if (
-            event.exception?.values?.[0]?.stacktrace?.frames?.some(
-              (frame) =>
-                frame.filename?.includes('chrome-extension://') ||
-                frame.filename?.includes('moz-extension://')
-            )
+            event.exception?.values?.[0]?.value?.includes('cancelled') ||
+            event.exception?.values?.[0]?.value?.includes('aborted')
           ) {
             return null;
           }
 
-          // 민감한 정보 제거
-          if (event.request?.cookies) {
-            delete event.request.cookies;
-          }
-          if (event.user?.email) {
-            event.user.email = '***';
+          // 확장 프로그램으로 인한 에러 필터링
+          if (
+            event.exception?.values?.[0]?.value?.includes('extension://') ||
+            event.exception?.values?.[0]?.value?.includes('chrome-extension://')
+          ) {
+            return null;
           }
 
           return event;
         },
 
-        // 브레드크럼 필터링
-        beforeBreadcrumb(breadcrumb, _hint) {
-          // 민감한 정보가 포함된 브레드크럼 제거
-          if (
-            breadcrumb.category === 'console' &&
-            breadcrumb.level === 'debug'
-          ) {
-            return null;
-          }
-
-          // XHR 요청에서 민감한 헤더 제거
-          if (breadcrumb.category === 'xhr' && breadcrumb.data?.headers) {
-            delete breadcrumb.data.headers.Authorization;
-            delete breadcrumb.data.headers.Cookie;
-          }
-
-          return breadcrumb;
-        },
-
-        // 에러 무시 목록
+        // 무시할 에러들
         ignoreErrors: [
-          'ResizeObserver loop limit exceeded',
-          'ResizeObserver loop completed with undelivered notifications',
-          'Non-Error promise rejection captured',
+          // 네트워크 관련
           'Network request failed',
           'NetworkError',
           'Failed to fetch',
-          'User cancelled',
-          'User denied',
-          'Extension context invalidated',
-          'chrome-extension',
-          'moz-extension',
+          'Load failed',
+          'The request timed out',
+
+          // 사용자 액션
+          'ResizeObserver loop limit exceeded',
+          'ResizeObserver loop completed with undelivered notifications',
+          'Non-Error promise rejection captured',
+
+          // 브라우저 확장 프로그램
+          'extension://',
+          'chrome-extension://',
+          'moz-extension://',
+
+          // 알려진 서드파티 에러
+          'top.GLOBALS',
+          'grecaptcha',
+          'fb_xd_fragment',
+          '__tcfapi',
+
+          // Service Worker
+          'Failed to register a ServiceWorker',
+          'No matching service worker detected',
         ],
 
-        // 초기 스코프 설정
-        initialScope: {
-          tags: {
-            component: 'frontend',
-            version: process.env.REACT_APP_APP_VERSION,
-          },
-          user: {
-            id: localStorage.getItem('userId') || 'anonymous',
-          },
-        },
-      });
+        // 블랙리스트 URL
+        denyUrls: [
+          // 브라우저 확장 프로그램
+          /extensions\//i,
+          /^chrome:\/\//i,
+          /^chrome-extension:\/\//i,
+          /^moz-extension:\/\//i,
 
-      // 추가 컨텍스트 설정
-      Sentry.setContext('app', {
-        name: process.env.REACT_APP_APP_NAME,
-        version: process.env.REACT_APP_APP_VERSION,
-        environment: process.env.REACT_APP_ENV,
+          // 서드파티 스크립트
+          /graph\.facebook\.com/i,
+          /connect\.facebook\.net/i,
+          /google-analytics\.com/i,
+          /googletagmanager\.com/i,
+          /doubleclick\.net/i,
+        ],
       });
-
-      // 전역 Sentry 객체 설정
-      (window as any).Sentry = Sentry;
 
       // Sentry initialized successfully
     } catch (error) {
       console.error('Failed to initialize Sentry:', error);
     }
   }
-};
+}
 
-/**
- * 사용자 정보 설정
- */
-export const setSentryUser = (user: {
-  id: string;
-  email?: string;
-  username?: string;
-}) => {
-  if ((window as any).Sentry) {
-    (window as any).Sentry.setUser({
-      id: user.id,
-      email: user.email,
-      username: user.username,
-    });
+// 사용자 컨텍스트 설정
+export function setSentryUser(
+  user: {
+    id?: string;
+    email?: string;
+    username?: string;
+  } | null
+): void {
+  if (env.ENABLE_SENTRY) {
+    Sentry.setUser(user);
   }
-};
+}
 
-/**
- * 사용자 정보 초기화
- */
-export const clearSentryUser = () => {
-  if ((window as any).Sentry) {
-    (window as any).Sentry.setUser(null);
+// 추가 컨텍스트 설정
+export function setSentryContext(
+  key: string,
+  context: Record<string, unknown>
+): void {
+  if (env.ENABLE_SENTRY) {
+    Sentry.setContext(key, context);
   }
-};
+}
 
-/**
- * 커스텀 에러 리포팅
- */
-export const reportError = (error: Error, context?: Record<string, any>) => {
-  console.error('Error reported:', error, context);
-
-  if ((window as any).Sentry) {
-    (window as any).Sentry.captureException(error, {
-      contexts: {
-        custom: context,
-      },
-    });
+// 에러 캡처
+export function captureException(
+  error: Error | unknown,
+  context?: Record<string, unknown>
+): void {
+  if (env.ENABLE_SENTRY) {
+    if (context) {
+      Sentry.withScope((scope) => {
+        Object.keys(context).forEach((key) => {
+          scope.setExtra(key, context[key]);
+        });
+        Sentry.captureException(error);
+      });
+    } else {
+      Sentry.captureException(error);
+    }
+  } else {
+    // 개발 환경에서는 콘솔에 출력
+    console.error('Error captured:', error, context);
   }
-};
+}
 
-/**
- * 커스텀 메시지 리포팅
- */
-export const reportMessage = (
+// 메시지 캡처
+export function captureMessage(
   message: string,
-  level: string = 'info',
-  context?: Record<string, any>
-) => {
-  if ((window as any).Sentry) {
-    (window as any).Sentry.captureMessage(message, {
-      level,
-      contexts: {
-        custom: context,
-      },
-    });
+  level: Sentry.SeverityLevel = 'info',
+  context?: Record<string, unknown>
+): void {
+  if (env.ENABLE_SENTRY) {
+    if (context) {
+      Sentry.withScope((scope) => {
+        Object.keys(context).forEach((key) => {
+          scope.setExtra(key, context[key]);
+        });
+        Sentry.captureMessage(message, level);
+      });
+    } else {
+      Sentry.captureMessage(message, level);
+    }
+  } else {
+    // 개발 환경에서는 콘솔에 출력
+    // eslint-disable-next-line no-console
+    console.log(`[${level.toUpperCase()}] ${message}`, context);
   }
-};
+}
 
-/**
- * 성능 트랜잭션 시작
- */
-export const startTransaction = (name: string, op: string = 'navigation') => {
-  if ((window as any).Sentry) {
-    return (window as any).Sentry.startTransaction({
+// 브레드크럼 추가
+export function addBreadcrumb(breadcrumb: {
+  message?: string;
+  category?: string;
+  level?: Sentry.SeverityLevel;
+  data?: Record<string, unknown>;
+  timestamp?: number;
+}): void {
+  if (env.ENABLE_SENTRY) {
+    Sentry.addBreadcrumb(breadcrumb);
+  }
+}
+
+// 트랜잭션 시작
+export function startTransaction(name: string, op: string): any {
+  if (env.ENABLE_SENTRY) {
+    // @ts-ignore - startTransaction exists but not in types
+    return (Sentry as any).startTransaction({
       name,
       op,
     });
   }
   return null;
-};
+}
 
-/**
- * 브레드크럼 추가
- */
-export const addBreadcrumb = (breadcrumb: {
-  message: string;
-  category?: string;
-  level?: string;
-  data?: Record<string, any>;
-}) => {
-  if ((window as any).Sentry) {
-    (window as any).Sentry.addBreadcrumb({
-      message: breadcrumb.message,
-      category: breadcrumb.category || 'custom',
-      level: breadcrumb.level || 'info',
-      data: breadcrumb.data,
-      timestamp: Date.now() / 1000,
+// React Error Boundary와 함께 사용할 에러 리포터
+export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
+  if (env.ENABLE_SENTRY) {
+    Sentry.withScope((scope) => {
+      scope.setContext('errorBoundary', {
+        componentStack: errorInfo.componentStack,
+        digest: errorInfo.digest,
+      });
+      Sentry.captureException(error);
     });
+  } else {
+    console.error('Error Boundary:', error, errorInfo);
   }
-};
+}
+
+// 성능 모니터링
+export function measurePerformance(
+  name: string,
+  callback: () => void | Promise<void>
+): void {
+  const transaction = startTransaction(name, 'custom');
+
+  const execute = async (): Promise<void> => {
+    try {
+      await callback();
+    } catch (error) {
+      captureException(error, { operation: name });
+      throw error;
+    } finally {
+      transaction?.finish();
+    }
+  };
+
+  execute().catch((error) => {
+    console.error(`Performance measurement failed for ${name}:`, error);
+  });
+}
+
+// Sentry 플러시 (앱 종료 시 사용)
+export async function flushSentry(): Promise<void> {
+  if (env.ENABLE_SENTRY) {
+    await Sentry.flush(2000);
+  }
+}
 
 export default {
   initSentry,
   setSentryUser,
-  clearSentryUser,
-  reportError,
-  reportMessage,
-  startTransaction,
+  setSentryContext,
+  captureException,
+  captureMessage,
   addBreadcrumb,
+  startTransaction,
+  reportErrorBoundary,
+  measurePerformance,
+  flushSentry,
 };

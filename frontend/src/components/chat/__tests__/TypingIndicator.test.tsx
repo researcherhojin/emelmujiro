@@ -1,9 +1,10 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import TypingIndicator from '../TypingIndicator';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -16,7 +17,7 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock lucide-react
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   Bot: ({ className }: { className?: string }) => (
     <div data-testid="bot-icon" className={className}>
       Bot
@@ -25,7 +26,7 @@ jest.mock('lucide-react', () => ({
 }));
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, defaultValue: string) => defaultValue,
   }),

@@ -125,7 +125,7 @@ jobs:
           else
             npm ci --prefer-offline --no-audit
           fi
-          CI=true npm test -- --watchAll=false --passWithNoTests --changedSince=${{ github.event.pull_request.base.sha }}
+          CI=true npm test -- --run --passWithNoTests
 
       - name: Setup Python
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')

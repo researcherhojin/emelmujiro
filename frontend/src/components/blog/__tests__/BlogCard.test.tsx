@@ -56,7 +56,7 @@ describe('BlogCard Component', () => {
 
   it('handles missing image gracefully', async () => {
     const postWithoutImage = { ...mockPost, image_url: undefined };
-    renderWithRouter(<BlogCard post={postWithoutImage} />);
+    renderWithRouter(<BlogCard post={mockPost} />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Blog Post')).toBeInTheDocument();

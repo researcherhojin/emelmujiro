@@ -1,16 +1,20 @@
 import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import HeroSection from '../HeroSection';
 
 // Mock useNavigate
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}));
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await import('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 // Mock react-i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -37,7 +41,7 @@ describe('HeroSection Component', () => {
   test('renders main heading', () => {
     renderWithRouter(<HeroSection />);
 
-    // Check that the heading is rendered (h1 element specifically)
+    // Check that the heading is rendered (h1 element specifically),
     const heading = screen.getByRole('heading', { level: 1 });
     expect(heading).toBeInTheDocument();
     expect(heading.textContent).toContain('실무에 강한');

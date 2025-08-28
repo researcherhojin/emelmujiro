@@ -1,6 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
+import { vi } from 'vitest';
 import api, { blogService } from '../api';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosRequestConfig } from 'axios';
 
 describe(
   process.env.CI === 'true'
@@ -23,7 +24,7 @@ describe(
 
     afterEach(() => {
       mock.restore();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     describe('Base Configuration', () => {
@@ -67,6 +68,7 @@ describe(
             { id: 2, title: 'Post 2' },
           ],
         };
+
         mock
           .onGet('/blog-posts/?page=1&page_size=6')
           .reply(200, paginatedResponse);
@@ -156,10 +158,12 @@ describe(
         const token = 'test-token';
         localStorage.setItem('authToken', token);
 
-        mock.onGet('/blog-posts/?page=1&page_size=6').reply((config) => {
-          expect(config.headers?.Authorization).toBe(`Bearer ${token}`);
-          return [200, { count: 0, next: null, previous: null, results: [] }];
-        });
+        mock
+          .onGet('/blog-posts/?page=1&page_size=6')
+          .reply((config: AxiosRequestConfig) => {
+            expect(config.headers?.Authorization).toBe(`Bearer ${token}`);
+            return [200, { count: 0, next: null, previous: null, results: [] }];
+          });
 
         await blogService.getPosts();
       });

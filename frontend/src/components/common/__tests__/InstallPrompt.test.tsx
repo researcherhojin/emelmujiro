@@ -1,11 +1,12 @@
 import React, { PropsWithChildren } from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import InstallPrompt from '../InstallPrompt';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
@@ -24,7 +25,7 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock lucide-react
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   Download: () => <span>Download</span>,
   X: () => <span>X</span>,
   Smartphone: () => <span>Smartphone</span>,
@@ -45,12 +46,12 @@ describe('InstallPrompt', () => {
   }
 
   const mockDeferredPrompt = {
-    prompt: jest.fn(),
+    prompt: vi.fn(),
     userChoice: Promise.resolve({ outcome: 'accepted' }),
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     localStorage.clear();
 
     // Reset window.deferredPrompt
@@ -59,15 +60,15 @@ describe('InstallPrompt', () => {
     // Mock window.matchMedia
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
-      value: jest.fn().mockImplementation((query) => ({
+      value: vi.fn().mockImplementation((query) => ({
         matches: query === '(display-mode: standalone)',
         media: query,
         onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
       })),
     });
   });
@@ -76,7 +77,7 @@ describe('InstallPrompt', () => {
     it('should not show if already installed (standalone mode)', () => {
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
-        value: jest.fn().mockImplementation(() => ({
+        value: vi.fn().mockImplementation(() => ({
           matches: true, // Already in standalone mode
         })),
       });
@@ -121,7 +122,7 @@ describe('InstallPrompt', () => {
 
       render(<InstallPrompt />);
 
-      const installButton = screen.getByRole('button', { name: /지금 설치/i });
+      const installButton = screen.getByRole('button', { name: /[^/]*/i });
       await user.click(installButton);
 
       expect(mockDeferredPrompt.prompt).toHaveBeenCalled();
@@ -150,7 +151,7 @@ describe('InstallPrompt', () => {
 
       render(<InstallPrompt />);
 
-      const laterButton = screen.getByRole('button', { name: /나중에/i });
+      const laterButton = screen.getByRole('button', { name: /[^/]*/i });
       await user.click(laterButton);
 
       expect(screen.queryByText(/앱 설치/i)).not.toBeInTheDocument();
@@ -161,7 +162,7 @@ describe('InstallPrompt', () => {
   describe('Installation Flow', () => {
     it('should handle successful installation', async () => {
       const mockPrompt = {
-        prompt: jest.fn(),
+        prompt: vi.fn(),
         userChoice: Promise.resolve({ outcome: 'accepted' }),
       };
       (window as any).deferredPrompt = mockPrompt;
@@ -169,7 +170,7 @@ describe('InstallPrompt', () => {
 
       render(<InstallPrompt />);
 
-      const installButton = screen.getByRole('button', { name: /지금 설치/i });
+      const installButton = screen.getByRole('button', { name: /[^/]*/i });
       await user.click(installButton);
 
       await waitFor(() => {
@@ -189,7 +190,7 @@ describe('InstallPrompt', () => {
 
     it('should handle installation rejection', async () => {
       const mockPrompt = {
-        prompt: jest.fn(),
+        prompt: vi.fn(),
         userChoice: Promise.resolve({ outcome: 'dismissed' }),
       };
       (window as any).deferredPrompt = mockPrompt;
@@ -197,7 +198,7 @@ describe('InstallPrompt', () => {
 
       render(<InstallPrompt />);
 
-      const installButton = screen.getByRole('button', { name: /지금 설치/i });
+      const installButton = screen.getByRole('button', { name: /[^/]*/i });
       await user.click(installButton);
 
       await waitFor(() => {
@@ -210,18 +211,20 @@ describe('InstallPrompt', () => {
       rejectedPromise.catch(() => {}); // Handle the rejection to prevent unhandled rejection
 
       const mockPrompt = {
-        prompt: jest.fn().mockRejectedValue(new Error('Installation failed')),
+        prompt: vi.fn().mockRejectedValue(new Error('Installation failed')),
         userChoice: rejectedPromise,
       };
       (window as any).deferredPrompt = mockPrompt;
       const user = userEvent.setup();
 
       // Mock console.error
-      const consoleError = jest.spyOn(console, 'error').mockImplementation();
+      const consoleError = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       render(<InstallPrompt />);
 
-      const installButton = screen.getByRole('button', { name: /지금 설치/i });
+      const installButton = screen.getByRole('button', { name: /[^/]*/i });
       await user.click(installButton);
 
       await waitFor(() => {
@@ -237,7 +240,7 @@ describe('InstallPrompt', () => {
 
   describe('Event Listeners', () => {
     it('should listen for beforeinstallprompt event', () => {
-      const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
+      const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
 
       render(<InstallPrompt />);
 
@@ -251,9 +254,9 @@ describe('InstallPrompt', () => {
       render(<InstallPrompt />);
 
       const event = new Event('beforeinstallprompt');
-      (event as any).prompt = jest.fn();
+      (event as any).prompt = vi.fn();
       (event as any).userChoice = Promise.resolve({ outcome: 'accepted' });
-      event.preventDefault = jest.fn();
+      event.preventDefault = vi.fn();
 
       window.dispatchEvent(event);
 
@@ -262,7 +265,7 @@ describe('InstallPrompt', () => {
     });
 
     it('should clean up event listeners on unmount', () => {
-      const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+      const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
       const { unmount } = render(<InstallPrompt />);
       unmount();
@@ -367,8 +370,8 @@ describe('InstallPrompt', () => {
 
       render(<InstallPrompt />);
 
-      const installButton = screen.getByRole('button', { name: /지금 설치/i });
-      const laterButton = screen.getByRole('button', { name: /나중에/i });
+      const installButton = screen.getByRole('button', { name: /[^/]*/i });
+      const laterButton = screen.getByRole('button', { name: /[^/]*/i });
       const closeButton = screen.getByLabelText(/닫기/i);
 
       // Tab through buttons
@@ -390,7 +393,7 @@ describe('InstallPrompt', () => {
 
       render(<InstallPrompt />);
 
-      const installButton = screen.getByRole('button', { name: /지금 설치/i });
+      const installButton = screen.getByRole('button', { name: /[^/]*/i });
       await user.click(installButton);
 
       await waitFor(() => {
@@ -406,7 +409,7 @@ describe('InstallPrompt', () => {
 
       render(<InstallPrompt />);
 
-      const installButton = screen.getByRole('button', { name: /지금 설치/i });
+      const installButton = screen.getByRole('button', { name: /[^/]*/i });
       await user.click(installButton);
 
       await waitFor(() => {

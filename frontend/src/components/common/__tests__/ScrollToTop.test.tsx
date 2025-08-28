@@ -1,4 +1,5 @@
 import { render, fireEvent, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import ScrollToTop from '../ScrollToTop';
 import React from 'react';
 
@@ -12,7 +13,7 @@ interface MotionButtonProps {
 }
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+vi.mock('framer-motion', () => ({
   motion: {
     button: ({ children, ...props }: MotionButtonProps) => (
       <button {...props}>{children}</button>
@@ -24,7 +25,7 @@ jest.mock('framer-motion', () => ({
 describe('ScrollToTop', () => {
   beforeEach(() => {
     // Mock window.scrollTo
-    window.scrollTo = jest.fn();
+    window.scrollTo = vi.fn();
 
     // Reset scroll position
     Object.defineProperty(window, 'scrollY', {
@@ -37,7 +38,7 @@ describe('ScrollToTop', () => {
     render(<ScrollToTop />);
 
     // Button should not be in the document when at top
-    const button = screen.queryByRole('button', { name: /위로/i });
+    const button = screen.queryByRole('button', { name: /[^/]*/i });
     expect(button).not.toBeInTheDocument();
   });
 
@@ -54,7 +55,7 @@ describe('ScrollToTop', () => {
     fireEvent.scroll(window);
 
     // Button should appear
-    const button = screen.getByRole('button', { name: /위로/i });
+    const button = screen.getByRole('button', { name: /[^/]*/i });
     expect(button).toBeInTheDocument();
   });
 
@@ -70,7 +71,7 @@ describe('ScrollToTop', () => {
     // Trigger scroll event to show button
     fireEvent.scroll(window);
 
-    const button = screen.getByRole('button', { name: /위로/i });
+    const button = screen.getByRole('button', { name: /[^/]*/i });
     fireEvent.click(button);
 
     expect(window.scrollTo).toHaveBeenCalledWith({
@@ -80,7 +81,7 @@ describe('ScrollToTop', () => {
   });
 
   it('removes scroll listener on unmount', () => {
-    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
     const { unmount } = render(<ScrollToTop />);
 

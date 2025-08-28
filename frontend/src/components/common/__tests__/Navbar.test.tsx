@@ -1,18 +1,21 @@
 import { screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import Navbar from '../Navbar';
 
 // Mock useNavigate
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-  useLocation: () => ({ pathname: '/' }),
-}));
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await import('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    useLocation: () => ({ pathname: '/' }),
+  };
+});
 
 // Mock i18n translations
-jest.mock('react-i18next', () => ({
-  ...jest.requireActual('react-i18next'),
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
@@ -26,7 +29,7 @@ jest.mock('react-i18next', () => ({
       return translations[key] || key;
     },
     i18n: {
-      changeLanguage: jest.fn(),
+      changeLanguage: vi.fn(),
       language: 'ko',
     },
   }),

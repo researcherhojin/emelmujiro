@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import BlogComments from '../BlogComments';
 
 // Mock localStorage comments
@@ -31,7 +32,7 @@ describe('BlogComments', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     // Clear localStorage
     localStorage.clear();
   });
@@ -114,7 +115,7 @@ describe('BlogComments', () => {
     // Submit
     fireEvent.click(submitButton);
 
-    // Check if form is cleared (comment field is cleared, name might be retained)
+    // Check if form is cleared (comment field is cleared, name might be retained),
     expect(contentInput.value).toBe('');
   });
 
@@ -146,7 +147,7 @@ describe('BlogComments', () => {
     expect(firstLikeButton).toBeDefined();
     fireEvent.click(firstLikeButton!);
 
-    // Likes count should change (increase or decrease based on user's previous action)
+    // Likes count should change (increase or decrease based on user's previous action),
     // Since it's a new user, it should increase to 3
     expect(screen.getByText('3')).toBeInTheDocument();
   });

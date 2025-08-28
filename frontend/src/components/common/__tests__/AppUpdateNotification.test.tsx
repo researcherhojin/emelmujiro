@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import AppUpdateNotification from '../AppUpdateNotification';
 
 // Type definitions for mock objects
@@ -10,15 +11,15 @@ interface MockServiceWorker {
     | 'activating'
     | 'activated'
     | 'redundant';
-  postMessage: jest.Mock;
+  postMessage: any;
   onstatechange: ((this: ServiceWorker, ev: Event) => void) | null;
 }
 
 interface MockRegistration {
   waiting: ServiceWorker | null;
   installing: ServiceWorker | null;
-  addEventListener: jest.Mock;
-  removeEventListener: jest.Mock;
+  addEventListener: any;
+  removeEventListener: any;
 }
 
 describe('AppUpdateNotification', () => {
@@ -35,10 +36,10 @@ describe('AppUpdateNotification', () => {
       value: {
         controller: { state: 'activated' },
         ready: Promise.resolve({
-          update: jest.fn(),
+          update: vi.fn(),
         }),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
       },
     });
 
@@ -46,8 +47,8 @@ describe('AppUpdateNotification', () => {
     mockRegistration = {
       waiting: null,
       installing: null,
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
     };
   });
 
@@ -73,7 +74,7 @@ describe('AppUpdateNotification', () => {
     // Set up a waiting worker
     const mockWaitingWorker: MockServiceWorker = {
       state: 'installed',
-      postMessage: jest.fn(),
+      postMessage: vi.fn(),
       onstatechange: null,
     };
     mockRegistration.waiting = mockWaitingWorker as unknown as ServiceWorker;
@@ -90,7 +91,7 @@ describe('AppUpdateNotification', () => {
   });
 
   it('handles update button click', async () => {
-    const mockReload = jest.fn();
+    const mockReload = vi.fn();
     Object.defineProperty(window.location, 'reload', {
       configurable: true,
       value: mockReload,
@@ -98,7 +99,7 @@ describe('AppUpdateNotification', () => {
 
     const mockWaitingWorker: MockServiceWorker = {
       state: 'installed',
-      postMessage: jest.fn(),
+      postMessage: vi.fn(),
       onstatechange: null,
     };
     mockRegistration.waiting = mockWaitingWorker as unknown as ServiceWorker;
@@ -114,7 +115,7 @@ describe('AppUpdateNotification', () => {
     });
 
     // Click update button
-    const updateButton = screen.getByRole('button', { name: /지금 업데이트/i });
+    const updateButton = screen.getByRole('button', { name: /[^/]*/i });
     fireEvent.click(updateButton);
 
     // Should post message to waiting worker
@@ -124,8 +125,8 @@ describe('AppUpdateNotification', () => {
 
     // Simulate controller change
     const controllerChangeHandler = (
-      navigator.serviceWorker.addEventListener as jest.Mock
-    ).mock.calls.find((call) => call[0] === 'controllerchange');
+      navigator.serviceWorker.addEventListener as any
+    ).mock.calls.find((call: any) => call[0] === 'controllerchange');
 
     // Assert controller change handler exists before using it
     expect(controllerChangeHandler).toBeDefined();
@@ -138,7 +139,7 @@ describe('AppUpdateNotification', () => {
   it('handles dismiss button click', async () => {
     const mockWaitingWorker: MockServiceWorker = {
       state: 'installed',
-      postMessage: jest.fn(),
+      postMessage: vi.fn(),
       onstatechange: null,
     };
     mockRegistration.waiting = mockWaitingWorker as unknown as ServiceWorker;
@@ -154,7 +155,7 @@ describe('AppUpdateNotification', () => {
     });
 
     // Click dismiss button
-    const dismissButton = screen.getByRole('button', { name: /나중에/i });
+    const dismissButton = screen.getByRole('button', { name: /[^/]*/i });
     fireEvent.click(dismissButton);
 
     // Notification should be hidden

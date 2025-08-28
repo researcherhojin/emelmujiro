@@ -51,7 +51,6 @@ describe('seoConfig', () => {
       });
     });
   });
-
   describe('generateMetaTags', () => {
     it('should generate meta tags for home page', () => {
       const metaTags = generateMetaTags('home');
@@ -134,7 +133,6 @@ describe('seoConfig', () => {
       });
     });
   });
-
   describe('generateStructuredData', () => {
     it('should generate organization structured data', () => {
       const structuredData = generateStructuredData('organization');
@@ -335,7 +333,6 @@ describe('seoConfig', () => {
       });
     });
   });
-
   describe('generateCanonicalUrl', () => {
     it('should generate canonical URL for root path', () => {
       const canonicalUrl = generateCanonicalUrl('');
@@ -363,7 +360,6 @@ describe('seoConfig', () => {
       );
     });
   });
-
   describe('generateAlternateLinks', () => {
     it('should generate alternate language links', () => {
       const alternateLinks = generateAlternateLinks();
@@ -382,7 +378,6 @@ describe('seoConfig', () => {
       ]);
     });
   });
-
   describe('integration scenarios', () => {
     it('should work with all page types', () => {
       const pageTypes: Array<keyof typeof SEO_CONFIG.pages> = [

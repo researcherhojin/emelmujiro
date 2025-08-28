@@ -1,57 +1,60 @@
 import { screen, waitFor, render } from '@testing-library/react';
+import { vi } from 'vitest';
 import { InternalAxiosRequestConfig } from 'axios';
 import App from '../../App';
 import { blogService } from '../../services/api';
 
 // Mock react-helmet-async
-jest.mock('react-helmet-async', () => ({
+vi.mock('react-helmet-async', () => ({
   HelmetProvider: ({ children }: { children: React.ReactNode }) => children,
   Helmet: () => null,
 }));
 
 // Mock SEOHelmet to prevent issues
-jest.mock('../../components/common/SEOHelmet', () => {
-  return function MockSEOHelmet() {
+vi.mock('../../components/common/SEOHelmet', () => ({
+  default: function MockSEOHelmet() {
     return null;
-  };
-});
+  },
+}));
 
 // Mock logger to prevent console output
-jest.mock('../../utils/logger', () => ({
-  error: jest.fn(),
-  debug: jest.fn(),
-  warn: jest.fn(),
-  info: jest.fn(),
+vi.mock('../../utils/logger', () => ({
+  default: {
+    error: vi.fn(),
+    debug: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+  },
 }));
 
 // Mock the blogService
-jest.mock('../../services/api', () => ({
+vi.mock('../../services/api', () => ({
   blogService: {
-    getPosts: jest.fn(),
-    getPost: jest.fn(),
-    createPost: jest.fn(),
-    updatePost: jest.fn(),
-    deletePost: jest.fn(),
-    searchPosts: jest.fn(),
+    getPosts: vi.fn(),
+    getPost: vi.fn(),
+    createPost: vi.fn(),
+    updatePost: vi.fn(),
+    deletePost: vi.fn(),
+    searchPosts: vi.fn(),
   },
   api: {
-    getBlogPosts: jest.fn(),
-    getBlogPost: jest.fn(),
-    searchBlogPosts: jest.fn(),
-    createContact: jest.fn(),
+    getBlogPosts: vi.fn(),
+    getBlogPost: vi.fn(),
+    searchBlogPosts: vi.fn(),
+    createContact: vi.fn(),
   },
 }));
 
-const mockedBlogService = blogService as jest.Mocked<typeof blogService>;
+const mockedBlogService = blogService as any;
 
 // framer-motion is already mocked in src/__mocks__/framer-motion.js
 
 // Mock Navbar and other complex components to simplify tests
-jest.mock('../../components/common/Navbar', () => {
-  return function MockNavbar() {
+vi.mock('../../components/common/Navbar', () => ({
+  default: function MockNavbar() {
     return <nav>Mock Navbar</nav>;
-  };
-});
+  },
+}));
 
 const mockPosts = [
   {
@@ -93,7 +96,7 @@ describe(
     }
 
     beforeEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       // Mock successful blog posts fetch
       mockedBlogService.getPosts.mockResolvedValue({
         data: {
