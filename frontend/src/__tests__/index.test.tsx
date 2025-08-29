@@ -109,9 +109,9 @@ describe('Index', () => {
   it('registers service worker', async () => {
     // Dynamically import to test service worker registration
     try {
-      await import('../index');
+      await import('../main');
     } catch (error) {
-      // Index might fail to load in test environment, that's okay
+      // Main might fail to load in test environment, that's okay
     }
 
     const { register } = await import('../serviceWorkerRegistration');

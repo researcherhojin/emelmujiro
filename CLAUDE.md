@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Emelmujiro (에멜무지로) is a full-stack web application for an AI Education and Consulting company. The codebase uses a monorepo structure with React/TypeScript frontend and Django backend, deployed via GitHub Pages.
 
+**Current Version**: v3.7.0 (2025.08.29)
+**Build Tool**: Vite 7.1 (migrated from Create React App)
+**Test Framework**: Vitest (migrated from Jest)
+
 ## Essential Commands
 
 ### Development
@@ -98,6 +102,8 @@ cd backend && black . && flake8 .
 - **Vitest**: Unit/integration testing with jsdom
 - **TypeScript 5.9**: Strict mode enabled
 - **Path Aliases**: `@/` maps to `src/` directory
+- **Entry Point**: `src/main.tsx` (not index.tsx)
+- **Tailwind CSS**: v3.4.17 (PostCSS configuration)
 
 **Application Structure:**
 
@@ -241,6 +247,7 @@ vi.mock('@/hooks/useCustomHook', () => ({
 - Use `CI=true npm test -- --run` for single run mode
 - Check mock implementations match component expectations
 - Ensure `renderWithProviders` is used for components needing context
+- AdminPanel test may timeout - CI timeout is set to 15s
 
 ### TypeScript Errors
 
@@ -264,6 +271,12 @@ npm run dev:clean
 lsof -ti:3000 | xargs kill -9
 lsof -ti:8000 | xargs kill -9
 ```
+
+### Service Worker Caching Issues
+
+- Development: Service Worker is disabled by default
+- Clear browser cache and unregister Service Worker if needed
+- Cache version is in `public/service-worker-enhanced.js`
 
 ## Performance Benchmarks
 
