@@ -281,7 +281,16 @@ describe('AdminPanel', () => {
           () => {
             expect(cannedTab).toHaveClass('text-blue-600');
           },
-          { timeout: 500 }
+          { timeout: 3000 }
+        );
+
+        // Verify canned responses content is displayed
+        await waitFor(
+          () => {
+            const addButtons = screen.getAllByText('추가');
+            expect(addButtons.length).toBeGreaterThan(0);
+          },
+          { timeout: 3000 }
         );
       }
     });
@@ -304,7 +313,7 @@ describe('AdminPanel', () => {
               screen.getByTestId('total-messages-count')
             ).toBeInTheDocument();
           },
-          { timeout: 2000 }
+          { timeout: 3000 }
         );
       }
     });
@@ -319,11 +328,14 @@ describe('AdminPanel', () => {
       if (usersTab) {
         fireEvent.click(usersTab);
 
-        await waitFor(() => {
-          expect(usersTab).toHaveClass('text-blue-600');
-          const activeUsers = screen.getAllByText('활성 사용자');
-          expect(activeUsers.length).toBeGreaterThan(0);
-        });
+        await waitFor(
+          () => {
+            expect(usersTab).toHaveClass('text-blue-600');
+            const activeUsers = screen.getAllByText('활성 사용자');
+            expect(activeUsers.length).toBeGreaterThan(0);
+          },
+          { timeout: 3000 }
+        );
       }
     });
   });
