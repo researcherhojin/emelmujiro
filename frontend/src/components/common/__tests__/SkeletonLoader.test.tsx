@@ -131,7 +131,8 @@ describe('Skeleton Component', () => {
     it('renders card skeleton structure', () => {
       render(<SkeletonCard />);
 
-      const card = screen.getByTestId('skeleton-card');
+      const cards = screen.getAllByTestId('skeleton-card');
+      const card = cards[0];
       expect(card).toBeInTheDocument();
       expect(card).toHaveClass(
         'space-y-4',
@@ -145,7 +146,8 @@ describe('Skeleton Component', () => {
     it('renders image placeholder', () => {
       render(<SkeletonCard />);
 
-      const card = screen.getByTestId('skeleton-card');
+      const cards = screen.getAllByTestId('skeleton-card');
+      const card = cards[0];
       const skeletons = within(card).getAllByRole('generic');
       const imagePlaceholder = skeletons.find(
         (el) => el.style.height === '200px'
@@ -156,7 +158,8 @@ describe('Skeleton Component', () => {
     it('renders title and subtitle placeholders', () => {
       render(<SkeletonCard />);
 
-      const card = screen.getByTestId('skeleton-card');
+      const cards = screen.getAllByTestId('skeleton-card');
+      const card = cards[0];
       const skeletons = within(card).getAllByRole('generic');
 
       const titlePlaceholder = skeletons.find(
@@ -173,7 +176,8 @@ describe('Skeleton Component', () => {
     it('renders content text placeholders', () => {
       render(<SkeletonCard />);
 
-      const card = screen.getByTestId('skeleton-card');
+      const cards = screen.getAllByTestId('skeleton-card');
+      const card = cards[0];
       const skeletons = within(card).getAllByRole('generic');
       const textPlaceholders = skeletons.filter(
         (el) => el.style.height === '14px'
@@ -184,7 +188,8 @@ describe('Skeleton Component', () => {
     it('renders footer elements', () => {
       render(<SkeletonCard />);
 
-      const card = screen.getByTestId('skeleton-card');
+      const cards = screen.getAllByTestId('skeleton-card');
+      const card = cards[0];
       const skeletons = within(card).getAllByRole('generic');
 
       // Footer should have two elements with specific dimensions
@@ -199,7 +204,8 @@ describe('Skeleton Component', () => {
     it('applies custom className to card', () => {
       render(<SkeletonCard className="custom-card" />);
 
-      const card = screen.getByTestId('skeleton-card');
+      const cards = screen.getAllByTestId('skeleton-card');
+      const card = cards[0];
       expect(card).toBeInTheDocument();
       expect(card).toHaveClass(
         'custom-card',
@@ -714,7 +720,8 @@ describe('Skeleton Component', () => {
       render(<SkeletonCard />);
 
       // Card should maintain expected structure and spacing
-      const card = screen.getByTestId('skeleton-card');
+      const cards = screen.getAllByTestId('skeleton-card');
+      const card = cards[0];
       expect(card).toBeInTheDocument();
       expect(card).toHaveClass('space-y-4', 'p-6');
     });
@@ -737,7 +744,8 @@ describe('Skeleton Component', () => {
       expect(circleSkeletons[0]).toHaveClass('rounded-full');
 
       // Test card has border class
-      const card = screen.getByTestId('skeleton-card');
+      const cards = screen.getAllByTestId('skeleton-card');
+      const card = cards[0];
       expect(card).toHaveClass('border');
     });
   });
