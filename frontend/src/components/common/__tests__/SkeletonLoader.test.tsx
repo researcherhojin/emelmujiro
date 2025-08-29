@@ -374,7 +374,6 @@ describe('Skeleton Component', () => {
 
       const hero = container.querySelector('[data-testid="skeleton-hero"]');
       expect(hero).toBeInTheDocument();
-      expect(hero).toBeInTheDocument();
       expect(hero).toHaveClass('py-20', 'px-4');
     });
 
@@ -425,7 +424,6 @@ describe('Skeleton Component', () => {
 
       const hero = container.querySelector('[data-testid="skeleton-hero"]');
       expect(hero).toBeInTheDocument();
-      expect(hero).toBeInTheDocument();
       expect(hero).toHaveClass('custom-hero');
     });
   });
@@ -437,7 +435,6 @@ describe('Skeleton Component', () => {
       const services = container.querySelector(
         '[data-testid="skeleton-services"]'
       );
-      expect(services).toBeInTheDocument();
       expect(services).toBeInTheDocument();
       expect(services).toHaveClass('py-16');
     });
@@ -510,7 +507,6 @@ describe('Skeleton Component', () => {
         '[data-testid="skeleton-services"]'
       );
       expect(services).toBeInTheDocument();
-      expect(services).toBeInTheDocument();
       expect(services).toHaveClass('custom-services');
     });
   });
@@ -522,7 +518,6 @@ describe('Skeleton Component', () => {
       const blogList = container.querySelector(
         '[data-testid="skeleton-blog-list"]'
       );
-      expect(blogList).toBeInTheDocument();
       expect(blogList).toBeInTheDocument();
 
       // Each blog card has data-testid="skeleton-card"
@@ -580,7 +575,6 @@ describe('Skeleton Component', () => {
         '[data-testid="skeleton-blog-list"]'
       );
       expect(blogList).toBeInTheDocument();
-      expect(blogList).toBeInTheDocument();
       expect(blogList).toHaveClass(
         'custom-blog-list',
         'grid',
@@ -596,7 +590,6 @@ describe('Skeleton Component', () => {
       const { container } = render(<SkeletonNav />);
 
       const nav = container.querySelector('[data-testid="skeleton-nav"]');
-      expect(nav).toBeInTheDocument();
       expect(nav).toBeInTheDocument();
       expect(nav).toHaveClass('flex', 'items-center', 'justify-between', 'p-4');
     });
@@ -642,7 +635,6 @@ describe('Skeleton Component', () => {
 
       const nav = container.querySelector('[data-testid="skeleton-nav"]');
       expect(nav).toBeInTheDocument();
-      expect(nav).toBeInTheDocument();
       expect(nav).toHaveClass(
         'custom-nav',
         'flex',
@@ -658,7 +650,6 @@ describe('Skeleton Component', () => {
       const { container } = render(<SkeletonForm />);
 
       const form = container.querySelector('[data-testid="skeleton-form"]');
-      expect(form).toBeInTheDocument();
       expect(form).toBeInTheDocument();
       expect(form).toHaveClass('space-y-6');
     });
@@ -707,7 +698,6 @@ describe('Skeleton Component', () => {
 
       const form = container.querySelector('[data-testid="skeleton-form"]');
       expect(form).toBeInTheDocument();
-      expect(form).toBeInTheDocument();
       expect(form).toHaveClass('custom-form', 'space-y-6');
     });
   });
@@ -747,8 +737,7 @@ describe('Skeleton Component', () => {
 
       const nav = container.querySelector('[data-testid="skeleton-nav"]');
       expect(nav).toBeInTheDocument();
-      expect(nav).toBeInTheDocument();
-      expect(nav.tagName).toBe('NAV');
+      expect(nav?.tagName).toBe('NAV');
     });
   });
 

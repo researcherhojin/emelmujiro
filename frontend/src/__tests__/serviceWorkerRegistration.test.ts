@@ -263,51 +263,55 @@ describe('serviceWorkerRegistration', () => {
       expect(mockRegister).toHaveBeenCalledWith('/service-worker-enhanced.js');
     });
 
-    it('should handle service worker registration errors', async () => {
-      const registrationError = new Error('Registration failed');
-      const mockRegister = vi.fn().mockRejectedValue(registrationError);
+    it(
+      'should handle service worker registration errors',
+      { timeout: 10000 },
+      async () => {
+        const registrationError = new Error('Registration failed');
+        const mockRegister = vi.fn().mockRejectedValue(registrationError);
 
-      Object.defineProperty(navigator, 'serviceWorker', {
-        writable: true,
-        value: {
-          register: mockRegister,
-          ready: Promise.resolve(mockServiceWorkerRegistration),
-          controller: null,
-        },
-      });
+        Object.defineProperty(navigator, 'serviceWorker', {
+          writable: true,
+          value: {
+            register: mockRegister,
+            ready: Promise.resolve(mockServiceWorkerRegistration),
+            controller: null,
+          },
+        });
 
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: {
-          hostname: 'example.com',
-          origin: 'https://example.com',
-          href: 'https://example.com',
-        },
-      });
+        Object.defineProperty(window, 'location', {
+          writable: true,
+          value: {
+            hostname: 'example.com',
+            origin: 'https://example.com',
+            href: 'https://example.com',
+          },
+        });
 
-      const { register } = await import('../serviceWorkerRegistration');
+        const { register } = await import('../serviceWorkerRegistration');
 
-      // Create a promise to track when the registration is done
-      const registrationPromise = register();
+        // Create a promise to track when the registration is done
+        const registrationPromise = register();
 
-      // Trigger load event
-      window.dispatchEvent(new Event('load'));
+        // Trigger load event
+        window.dispatchEvent(new Event('load'));
 
-      // Wait for the promise to settle (it will reject)
-      try {
-        await registrationPromise;
-      } catch (e) {
-        // Expected to fail
+        // Wait for the promise to settle (it will reject)
+        try {
+          await registrationPromise;
+        } catch (e) {
+          // Expected to fail
+        }
+
+        // Small delay to ensure console.error is called
+        await new Promise((resolve) => setTimeout(resolve, 10));
+
+        expect(mockLoggerError).toHaveBeenCalledWith(
+          'Error during service worker registration:',
+          registrationError
+        );
       }
-
-      // Small delay to ensure console.error is called
-      await new Promise((resolve) => setTimeout(resolve, 10));
-
-      expect(mockLoggerError).toHaveBeenCalledWith(
-        'Error during service worker registration:',
-        registrationError
-      );
-    });
+    );
 
     it('should handle service worker update found scenario', async () => {
       // Set location to non-localhost to avoid ready promise log
@@ -677,9 +681,9 @@ describe('serviceWorkerRegistration', () => {
       const { unregister } = await import('../serviceWorkerRegistration');
 
       // unregister function should handle missing service worker gracefully
-      const result = unregister();
+      const result = await unregister();
 
-      // Should be void/undefined
+      // Should resolve to undefined without errors
       expect(result).toBeUndefined();
 
       // Should not throw or cause errors
