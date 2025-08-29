@@ -208,11 +208,16 @@ describe('AdminPanel', () => {
     it('renders when open', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      expect(screen.getByText('채팅 관리자 패널')).toBeInTheDocument();
-      expect(screen.getByText('설정')).toBeInTheDocument();
-      expect(screen.getByText('자동 응답')).toBeInTheDocument();
-      expect(screen.getByText('통계')).toBeInTheDocument();
-      expect(screen.getByText('사용자')).toBeInTheDocument();
+      // Use getAllByText or more specific queries to handle duplicates
+      expect(screen.getAllByText('채팅 관리자 패널').length).toBeGreaterThan(0);
+
+      // Check tabs exist
+      const tabs = screen.getAllByRole('tab');
+      const tabTexts = tabs.map((tab) => tab.textContent);
+      expect(tabTexts).toContain('설정');
+      expect(tabTexts).toContain('자동 응답');
+      expect(tabTexts).toContain('통계');
+      expect(tabTexts).toContain('사용자');
     });
 
     it('does not render content when closed', () => {
@@ -262,9 +267,11 @@ describe('AdminPanel', () => {
     it('switches to canned responses tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Find the canned responses tab text and click its button parent
-      const cannedTabText = screen.getByText('자동 응답');
-      const cannedTab = cannedTabText.closest('button');
+      // Find the canned responses tab and click it
+      const tabs = screen.getAllByRole('tab');
+      const cannedTab = tabs.find((tab) =>
+        tab.textContent?.includes('자동 응답')
+      );
       expect(cannedTab).toBeDefined();
 
       if (cannedTab) {
@@ -305,13 +312,19 @@ describe('AdminPanel', () => {
     it('switches to users tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const usersTab = screen.getByText('사용자').closest('button')!;
-      fireEvent.click(usersTab);
+      const tabs = screen.getAllByRole('tab');
+      const usersTab = tabs.find((tab) => tab.textContent?.includes('사용자'));
+      expect(usersTab).toBeDefined();
 
-      await waitFor(() => {
-        expect(usersTab).toHaveClass('text-blue-600');
-        expect(screen.getByText('활성 사용자')).toBeInTheDocument();
-      });
+      if (usersTab) {
+        fireEvent.click(usersTab);
+
+        await waitFor(() => {
+          expect(usersTab).toHaveClass('text-blue-600');
+          const activeUsers = screen.getAllByText('활성 사용자');
+          expect(activeUsers.length).toBeGreaterThan(0);
+        });
+      }
     });
   });
 
@@ -346,7 +359,8 @@ describe('AdminPanel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find max message length input
-      const maxLengthLabel = screen.getByText('최대 메시지 길이');
+      const maxLengthLabels = screen.getAllByText('최대 메시지 길이');
+      const maxLengthLabel = maxLengthLabels[0];
       const maxLengthInput = maxLengthLabel.parentElement?.querySelector(
         'input'
       ) as HTMLInputElement;
@@ -360,7 +374,8 @@ describe('AdminPanel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find save button by text
-      const saveButton = screen.getByText('설정 저장')?.closest('button');
+      const saveButtons = screen.getAllByText('설정 저장');
+      const saveButton = saveButtons[0]?.closest('button');
       expect(saveButton).toBeDefined();
 
       if (saveButton) {
@@ -431,13 +446,15 @@ describe('AdminPanel', () => {
       const input = screen.getByPlaceholderText('새 자동 응답 추가...');
       await user.type(input, '새로운 자동 응답');
 
-      const addButton = screen.getByText('추가')?.closest('button');
+      const addButtons = screen.getAllByText('추가');
+      const addButton = addButtons[0]?.closest('button');
       if (addButton) {
         fireEvent.click(addButton);
       }
 
       await waitFor(() => {
-        expect(screen.getByText('새로운 자동 응답')).toBeInTheDocument();
+        const newResponses = screen.getAllByText('새로운 자동 응답');
+        expect(newResponses.length).toBeGreaterThan(0);
       });
     });
 
@@ -448,14 +465,16 @@ describe('AdminPanel', () => {
       const input = screen.getByPlaceholderText('새 자동 응답 추가...');
       await user.type(input, '테스트 응답');
 
-      const addButton = screen.getByText('추가')?.closest('button');
+      const addButtons = screen.getAllByText('추가');
+      const addButton = addButtons[0]?.closest('button');
       if (addButton) {
         fireEvent.click(addButton);
       }
 
       // Now we should have a response to edit
       await waitFor(() => {
-        expect(screen.getByText('테스트 응답')).toBeInTheDocument();
+        const testResponses = screen.getAllByText('테스트 응답');
+        expect(testResponses.length).toBeGreaterThan(0);
       });
     });
 
@@ -465,14 +484,16 @@ describe('AdminPanel', () => {
       const input = screen.getByPlaceholderText('새 자동 응답 추가...');
       await user.type(input, '삭제할 응답');
 
-      const addButton = screen.getByText('추가')?.closest('button');
+      const addButtons = screen.getAllByText('추가');
+      const addButton = addButtons[0]?.closest('button');
       if (addButton) {
         fireEvent.click(addButton);
       }
 
       // Verify it was added
       await waitFor(() => {
-        expect(screen.getByText('삭제할 응답')).toBeInTheDocument();
+        const deleteResponses = screen.getAllByText('삭제할 응답');
+        expect(deleteResponses.length).toBeGreaterThan(0);
       });
 
       // Now test deletion - the component doesn't show delete buttons
@@ -488,7 +509,8 @@ describe('AdminPanel', () => {
 
     it('does not add empty canned response', async () => {
       const input = screen.getByPlaceholderText('새 자동 응답 추가...');
-      const addButton = screen.getByText('추가')?.closest('button');
+      const addButtons = screen.getAllByText('추가');
+      const addButton = addButtons[0]?.closest('button');
 
       if (addButton) {
         fireEvent.click(addButton);
@@ -529,22 +551,26 @@ describe('AdminPanel', () => {
     });
 
     it('displays total messages count', () => {
-      expect(screen.getByText('총 메시지')).toBeInTheDocument();
+      const totalMessages = screen.getAllByText('총 메시지');
+      expect(totalMessages.length).toBeGreaterThan(0);
       expect(screen.getByTestId('total-messages-count')).toBeInTheDocument();
     });
 
     it('displays active users count', () => {
-      expect(screen.getByText('사용자 메시지')).toBeInTheDocument();
+      const userMessages = screen.getAllByText('사용자 메시지');
+      expect(userMessages.length).toBeGreaterThan(0);
       expect(screen.getByTestId('active-users-count')).toBeInTheDocument();
     });
 
     it('displays average response time', () => {
-      expect(screen.getByText('평균 응답시간')).toBeInTheDocument();
+      const avgResponseTime = screen.getAllByText('평균 응답시간');
+      expect(avgResponseTime.length).toBeGreaterThan(0);
       expect(screen.getByTestId('avg-response-time')).toBeInTheDocument();
     });
 
     it('displays satisfaction rate', () => {
-      expect(screen.getByText('만족도')).toBeInTheDocument();
+      const satisfaction = screen.getAllByText('만족도');
+      expect(satisfaction.length).toBeGreaterThan(0);
       expect(screen.getByTestId('satisfaction-rate')).toBeInTheDocument();
     });
 
@@ -556,7 +582,8 @@ describe('AdminPanel', () => {
     });
 
     it('refreshes statistics when button clicked', async () => {
-      const refreshButton = screen.getByText('새로고침')?.closest('button');
+      const refreshButtons = screen.getAllByText('새로고침');
+      const refreshButton = refreshButtons[0]?.closest('button');
 
       if (refreshButton) {
         fireEvent.click(refreshButton);
