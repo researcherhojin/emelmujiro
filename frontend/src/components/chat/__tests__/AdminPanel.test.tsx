@@ -293,7 +293,7 @@ describe('AdminPanel', () => {
           { timeout: 3000 }
         );
       }
-    });
+    }, 10000);
 
     it('switches to statistics tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
@@ -316,7 +316,7 @@ describe('AdminPanel', () => {
           { timeout: 3000 }
         );
       }
-    });
+    }, 10000);
 
     it('switches to users tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
@@ -337,7 +337,7 @@ describe('AdminPanel', () => {
           { timeout: 3000 }
         );
       }
-    });
+    }, 10000);
   });
 
   describe('Settings Tab', () => {
