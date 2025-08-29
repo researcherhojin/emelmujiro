@@ -426,7 +426,7 @@ describe('AdminPanel', () => {
     beforeEach(() => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
       // Switch to Canned Responses tab
-      const cannedTab = screen.getByText('자동 응답');
+      const cannedTab = screen.getByRole('tab', { name: /자동 응답/ });
       fireEvent.click(cannedTab);
     });
 
@@ -530,7 +530,8 @@ describe('AdminPanel', () => {
     beforeEach(() => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
       // Switch to Statistics tab since Settings is default
-      const statsTab = screen.getByText('통계');
+      // Use role selector to get the tab button specifically
+      const statsTab = screen.getByRole('tab', { name: /통계/ });
       fireEvent.click(statsTab);
     });
 
@@ -607,7 +608,7 @@ describe('AdminPanel', () => {
     beforeEach(() => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
       // Switch to Users tab
-      const usersTab = screen.getByText('사용자');
+      const usersTab = screen.getByRole('tab', { name: /사용자/ });
       fireEvent.click(usersTab);
     });
 
