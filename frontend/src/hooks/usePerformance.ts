@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useRef, useState } from 'react';
+import logger from '../utils/logger';
 
 // Performance monitoring hook
 export function usePerformanceMonitor() {
@@ -60,7 +61,7 @@ export function usePerformanceMonitor() {
       fidObserver.observe({ entryTypes: ['first-input'] });
       clsObserver.observe({ entryTypes: ['layout-shift'] });
     } catch (error) {
-      console.warn('Performance monitoring not supported:', error);
+      logger.warn('Performance monitoring not supported:', error);
     }
 
     return () => {

@@ -5,6 +5,7 @@ import {
   requestNotificationPermission,
   subscribeToPushNotifications,
 } from '../../utils/pushNotifications';
+import logger from '../../utils/logger';
 
 // Type for notification permission (removed - unused)
 
@@ -57,7 +58,7 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
       try {
         setSettings(JSON.parse(savedSettings));
       } catch (error) {
-        console.error('Failed to load notification settings:', error);
+        logger.error('Failed to load notification settings:', error);
       }
     }
   }, []);
@@ -81,7 +82,7 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
         if (onClose) onClose();
       }
     } catch (error) {
-      console.error('Failed to enable notifications:', error);
+      logger.error('Failed to enable notifications:', error);
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +122,7 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
         throw new Error('Failed to save notification settings');
       }
     } catch (error) {
-      console.error('Failed to save notification settings:', error);
+      logger.error('Failed to save notification settings:', error);
       // Still allow local storage to work even if server fails
     }
   };

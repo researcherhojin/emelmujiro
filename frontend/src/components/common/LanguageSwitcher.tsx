@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
 import { Globe, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import logger from '../../utils/logger';
 
 interface Language {
   code: string;
@@ -56,7 +57,7 @@ const LanguageSwitcher: React.FC = memo(() => {
           })
         );
       } catch (error) {
-        console.error('Failed to change language:', error);
+        logger.error('Failed to change language:', error);
       }
     },
     [i18n]

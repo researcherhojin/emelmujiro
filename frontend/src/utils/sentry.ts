@@ -1,6 +1,7 @@
 // Sentry configuration - Enhanced Error Tracking for 2025
 import * as Sentry from '@sentry/react';
 import env from '../config/env';
+import logger from './logger';
 
 // Type definitions for better type safety
 interface WindowWithDevTools extends Window {
@@ -101,7 +102,7 @@ export function initSentry(): void {
 
       // Sentry initialized successfully
     } catch (error) {
-      console.error('Failed to initialize Sentry:', error);
+      logger.error('Failed to initialize Sentry:', error);
     }
   }
 }
@@ -147,7 +148,7 @@ export function captureException(
     }
   } else {
     // 개발 환경에서는 콘솔에 출력
-    console.error('Error captured:', error, context);
+    logger.error('Error captured:', { error, context });
   }
 }
 
@@ -170,8 +171,8 @@ export function captureMessage(
     }
   } else {
     // 개발 환경에서는 콘솔에 출력
-    // eslint-disable-next-line no-console
-    console.log(`[${level.toUpperCase()}] ${message}`, context);
+
+    logger.info(`[${level.toUpperCase()}] ${message}`, context);
   }
 }
 
@@ -205,7 +206,7 @@ export function startTransaction(name: string, op: string): string | null {
 
       return name;
     } catch (error) {
-      console.warn('Failed to start transaction:', error);
+      logger.warn('Failed to start transaction:', error);
       return null;
     }
   }
@@ -223,7 +224,7 @@ export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
       Sentry.captureException(error);
     });
   } else {
-    console.error('Error Boundary:', error, errorInfo);
+    logger.error('Error Boundary:', { error, errorInfo });
   }
 }
 
@@ -244,7 +245,7 @@ export function measurePerformance(
   } else {
     // Sentry가 비활성화된 경우에도 콜백 실행
     Promise.resolve(callback()).catch((error) => {
-      console.error(`Performance measurement failed for ${name}:`, error);
+      logger.error(`Performance measurement failed for ${name}:`, error);
     });
   }
 }

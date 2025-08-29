@@ -1,4 +1,5 @@
 import { onCLS, onFCP, onLCP, onTTFB, onINP, Metric } from 'web-vitals';
+import logger from './logger';
 
 export interface WebVitalsData {
   name: string;
@@ -43,7 +44,7 @@ const sendToAnalytics = async (metric: WebVitalsData) => {
       //   body: JSON.stringify(metric),
       // });
     } catch (error) {
-      console.error('Failed to send metrics:', error);
+      logger.error('Failed to send metrics:', error);
     }
   }
   // Development logging is handled by the caller if needed
@@ -143,7 +144,7 @@ export const PerformanceMonitor = () => {
         for (const entry of list.getEntries()) {
           // Long task detected
           if (entry.duration > 50) {
-            console.warn('Long task detected:', {
+            logger.warn('Long task detected:', {
               duration: entry.duration,
               startTime: entry.startTime,
               name: entry.name,
@@ -166,7 +167,7 @@ export const PerformanceMonitor = () => {
     const slowResources = resources.filter((r) => r.duration > 1000);
 
     if (slowResources.length > 0) {
-      console.warn('Slow resources detected:', slowResources);
+      logger.warn('Slow resources detected:', slowResources);
     }
   }
 };

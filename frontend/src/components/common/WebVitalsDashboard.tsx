@@ -1,5 +1,17 @@
 import React, { useEffect, useState, memo, useRef } from 'react';
 import { onCLS, onFCP, onLCP, onTTFB, onINP, Metric } from 'web-vitals';
+import logger from '../../utils/logger';
+
+// Extend Window interface to include gtag
+declare global {
+  interface Window {
+    gtag?: (
+      command: string,
+      targetId: string,
+      config?: Record<string, unknown>
+    ) => void;
+  }
+}
 
 interface VitalMetric {
   name: string;
@@ -121,10 +133,8 @@ const WebVitalsDashboard: React.FC = memo(() => {
 
       // Log to console for debugging (development only)
       // Use debug level logging to reduce console noise
-      // eslint-disable-next-line no-console
-      if (process.env.NODE_ENV === 'development' && console.debug) {
-        // eslint-disable-next-line no-console
-        console.debug(`Web Vital [${metric.name}]:`, {
+      if (process.env.NODE_ENV === 'development') {
+        logger.debug(`Web Vital [${metric.name}]:`, {
           value: formatMetricValue(metric.name, metric.value),
           rating: vitalMetric.rating,
           raw: metric,

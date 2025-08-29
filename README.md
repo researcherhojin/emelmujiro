@@ -207,7 +207,7 @@ emelmujiro/
   - manifest.json의 모든 아이콘 경로에 /emelmujiro/ prefix 추가
   - HTML preload 및 apple-touch-icon 경로 수정
 - **미사용 의존성 제거**:
-  - @sentry/integrations, @babel/*, webpack 관련 패키지 10개 제거
+  - @sentry/integrations, @babel/\*, webpack 관련 패키지 10개 제거
   - 번들 크기 최적화
 
 ### 2025.08.28 (저녁) - ESLint 경고 완전 제거
@@ -339,12 +339,6 @@ logger.error('Failed to load chat history:', error);
 - ESLint 규칙 최적화 (테스트 파일 규칙 완화)
 - imagemin 패키지 제거로 보안 취약점 대폭 감소
 - React.memo 테스트 로직 개선
-
-### 이전 업데이트
-
-- **v2.3.0** (2024.12.24): AdminPanel 테스트 개선, 의존성 업데이트
-- **v2.2.0** (2024.12.23): ContactPage 리팩토링, 테스트 안정화
-- **v2.1.0** (2024.12.14): 중복 코드 제거, 번들 크기 10% 감소
 
 ## 🚧 향후 개선 로드맵
 

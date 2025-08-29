@@ -1,4 +1,6 @@
 // Cache optimization utilities for better performance
+import logger from './logger';
+
 interface CacheConfig {
   maxAge: number;
   maxEntries: number;
@@ -155,7 +157,7 @@ export class StorageCache {
       storage.setItem(key, JSON.stringify(item));
       return true;
     } catch (error) {
-      console.warn('Storage cache set failed:', error);
+      logger.warn('Storage cache set failed:', error);
       return false;
     }
   }
@@ -179,7 +181,7 @@ export class StorageCache {
 
       return parsed.data;
     } catch (error) {
-      console.warn('Storage cache get failed:', error);
+      logger.warn('Storage cache get failed:', error);
       return null;
     }
   }
@@ -190,7 +192,7 @@ export class StorageCache {
       storage.removeItem(key);
       return true;
     } catch (error) {
-      console.warn('Storage cache remove failed:', error);
+      logger.warn('Storage cache remove failed:', error);
       return false;
     }
   }
@@ -201,7 +203,7 @@ export class StorageCache {
       storage.clear();
       return true;
     } catch (error) {
-      console.warn('Storage cache clear failed:', error);
+      logger.warn('Storage cache clear failed:', error);
       return false;
     }
   }
