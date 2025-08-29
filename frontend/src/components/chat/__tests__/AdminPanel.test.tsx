@@ -227,13 +227,16 @@ describe('AdminPanel', () => {
     it('renders all navigation tabs', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Tabs are rendered as buttons with text - use role-based queries for specificity
-      expect(screen.getByRole('tab', { name: /설정/i })).toBeInTheDocument();
-      expect(
-        screen.getByRole('tab', { name: /자동 응답/i })
-      ).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /통계/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /사용자/i })).toBeInTheDocument();
+      // Get all tabs and verify we have the correct number
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs).toHaveLength(4);
+
+      // Verify each tab exists by checking text content
+      const tabTexts = tabs.map((tab) => tab.textContent);
+      expect(tabTexts).toContain('설정');
+      expect(tabTexts).toContain('자동 응답');
+      expect(tabTexts).toContain('통계');
+      expect(tabTexts).toContain('사용자');
     });
   });
 
@@ -242,7 +245,11 @@ describe('AdminPanel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Check if settings tab is selected (has blue-600 class)
-      const settingsButton = screen.getByRole('tab', { name: /설정/i });
+      const tabs = screen.getAllByRole('tab');
+      const settingsButton = tabs.find((tab) =>
+        tab.textContent?.includes('설정')
+      );
+      expect(settingsButton).toBeDefined();
       expect(settingsButton).toHaveClass('text-blue-600');
       expect(screen.getByText('환영 메시지')).toBeInTheDocument();
     });
@@ -271,19 +278,23 @@ describe('AdminPanel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find and click the statistics tab
-      const statsTab = screen.getByRole('tab', { name: /통계/i });
-      fireEvent.click(statsTab);
+      const tabs = screen.getAllByRole('tab');
+      const statsTab = tabs.find((tab) => tab.textContent?.includes('통계'));
+      expect(statsTab).toBeDefined();
+      if (statsTab) {
+        fireEvent.click(statsTab);
 
-      // Wait for the statistics content to appear - check for any statistics-related content
-      await waitFor(
-        () => {
-          // Check for statistics metrics instead of the header
-          expect(
-            screen.getByTestId('total-messages-count')
-          ).toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+        // Wait for the statistics content to appear - check for any statistics-related content
+        await waitFor(
+          () => {
+            // Check for statistics metrics instead of the header
+            expect(
+              screen.getByTestId('total-messages-count')
+            ).toBeInTheDocument();
+          },
+          { timeout: 2000 }
+        );
+      }
     });
 
     it('switches to users tab', async () => {
