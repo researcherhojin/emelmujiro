@@ -19,8 +19,8 @@ describe('Skeleton Component', () => {
     it('renders with default props', () => {
       render(<Skeleton data-testid="skeleton" />);
 
-      const skeleton = screen.getByTestId('skeleton');
-      expect(skeleton).toHaveClass(
+      const skeletons = screen.getAllByTestId('skeleton');
+      expect(skeletons[0]).toHaveClass(
         'animate-pulse',
         'bg-gray-200',
         'dark:bg-gray-700',
@@ -48,46 +48,46 @@ describe('Skeleton Component', () => {
     it('applies custom width and height', () => {
       render(<Skeleton width="100px" height="50px" data-testid="skeleton" />);
 
-      const skeleton = screen.getByTestId('skeleton');
-      expect(skeleton).toHaveStyle({ width: '100px', height: '50px' });
+      const skeletons = screen.getAllByTestId('skeleton');
+      expect(skeletons[0]).toHaveStyle({ width: '100px', height: '50px' });
     });
 
     it('applies numeric width and height', () => {
       render(<Skeleton width={200} height={100} data-testid="skeleton" />);
 
-      const skeleton = screen.getByTestId('skeleton');
-      expect(skeleton).toHaveStyle({ width: '200px', height: '100px' });
+      const skeletons = screen.getAllByTestId('skeleton');
+      expect(skeletons[0]).toHaveStyle({ width: '200px', height: '100px' });
     });
 
     it('renders as circle when circle prop is true', () => {
       render(<Skeleton circle data-testid="skeleton" />);
 
-      const skeleton = screen.getByTestId('skeleton');
-      expect(skeleton).toHaveClass('rounded-full');
-      expect(skeleton).not.toHaveClass('rounded');
+      const skeletons = screen.getAllByTestId('skeleton');
+      expect(skeletons[0]).toHaveClass('rounded-full');
+      expect(skeletons[0]).not.toHaveClass('rounded');
     });
 
     it('renders without rounded corners when rounded is false', () => {
       render(<Skeleton rounded={false} data-testid="skeleton" />);
 
-      const skeleton = screen.getByTestId('skeleton');
-      expect(skeleton).not.toHaveClass('rounded');
-      expect(skeleton).not.toHaveClass('rounded-full');
+      const skeletons = screen.getAllByTestId('skeleton');
+      expect(skeletons[0]).not.toHaveClass('rounded');
+      expect(skeletons[0]).not.toHaveClass('rounded-full');
     });
 
     it('circle prop overrides rounded prop', () => {
       render(<Skeleton circle rounded={false} data-testid="skeleton" />);
 
-      const skeleton = screen.getByTestId('skeleton');
-      expect(skeleton).toHaveClass('rounded-full');
-      expect(skeleton).not.toHaveClass('rounded');
+      const skeletons = screen.getAllByTestId('skeleton');
+      expect(skeletons[0]).toHaveClass('rounded-full');
+      expect(skeletons[0]).not.toHaveClass('rounded');
     });
 
     it('renders as div element', () => {
       render(<Skeleton data-testid="skeleton" />);
 
-      const skeleton = screen.getByTestId('skeleton');
-      expect(skeleton.nodeName).toBe('DIV');
+      const skeletons = screen.getAllByTestId('skeleton');
+      expect(skeletons[0].nodeName).toBe('DIV');
     });
   });
 
@@ -693,12 +693,12 @@ describe('Skeleton Component', () => {
       );
 
       // Test normal skeleton has rounded class
-      const normalSkeleton = screen.getByTestId('normal-skeleton');
-      expect(normalSkeleton).toHaveClass('rounded');
+      const normalSkeletons = screen.getAllByTestId('normal-skeleton');
+      expect(normalSkeletons[0]).toHaveClass('rounded');
 
       // Test circle skeleton has rounded-full class
-      const circleSkeleton = screen.getByTestId('circle-skeleton');
-      expect(circleSkeleton).toHaveClass('rounded-full');
+      const circleSkeletons = screen.getAllByTestId('circle-skeleton');
+      expect(circleSkeletons[0]).toHaveClass('rounded-full');
 
       // Test card has border class
       const card = screen.getByTestId('skeleton-card');
