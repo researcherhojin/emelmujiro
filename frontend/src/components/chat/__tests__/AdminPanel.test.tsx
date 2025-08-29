@@ -710,7 +710,9 @@ describe('AdminPanel', () => {
 
       const dialogs = screen.getAllByRole('dialog');
       expect(dialogs[0]).toHaveAttribute('aria-label', '관리자 패널');
-      expect(screen.getByRole('tablist')).toBeInTheDocument();
+
+      const tablists = screen.getAllByRole('tablist');
+      expect(tablists[0]).toBeInTheDocument();
 
       // Get unique tabs to handle potential duplicate renders in StrictMode
       const tabs = screen.getAllByRole('tab');
