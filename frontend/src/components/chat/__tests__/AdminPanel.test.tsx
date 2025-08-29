@@ -406,9 +406,9 @@ describe('AdminPanel', () => {
     it('shows success notification on save', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Find and click save button
-      const saveButton = screen.getByRole('button', { name: /설정 저장/i });
-      fireEvent.click(saveButton);
+      // Find and click save button - use getAllByRole since there might be multiple
+      const saveButtons = screen.getAllByRole('button', { name: /설정 저장/i });
+      fireEvent.click(saveButtons[0]);
 
       // Check if notification was triggered
       await waitFor(
