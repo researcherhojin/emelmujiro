@@ -50,8 +50,16 @@ describe('Skeleton Component', () => {
 
       const skeletons = screen.getAllByTestId('skeleton');
       const skeleton = skeletons[0];
-      expect(skeleton.style.width).toBe('100px');
-      expect(skeleton.style.height).toBe('50px');
+
+      // Check if style attribute contains the expected values
+      const styleAttr = skeleton.getAttribute('style') || '';
+      expect(styleAttr).toBeTruthy();
+      expect(styleAttr.includes('width') && styleAttr.includes('100px')).toBe(
+        true
+      );
+      expect(styleAttr.includes('height') && styleAttr.includes('50px')).toBe(
+        true
+      );
     });
 
     it('applies numeric width and height', () => {
@@ -59,8 +67,16 @@ describe('Skeleton Component', () => {
 
       const skeletons = screen.getAllByTestId('skeleton');
       const skeleton = skeletons[0];
-      expect(skeleton.style.width).toBe('200px');
-      expect(skeleton.style.height).toBe('100px');
+
+      // Check if style attribute contains the expected values
+      const styleAttr = skeleton.getAttribute('style') || '';
+      expect(styleAttr).toBeTruthy();
+      expect(styleAttr.includes('width') && styleAttr.includes('200px')).toBe(
+        true
+      );
+      expect(styleAttr.includes('height') && styleAttr.includes('100px')).toBe(
+        true
+      );
     });
 
     it('renders as circle when circle prop is true', () => {

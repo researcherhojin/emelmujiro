@@ -6,13 +6,20 @@
 echo "🔍 CI 환경 시뮬레이션 테스트 시작..."
 echo "================================"
 
-# CI 환경 변수 설정
+# CI 환경 변수 설정 (GitHub Actions와 동일)
 export CI=true
 export NODE_ENV=test
 export REACT_APP_ENV=test
 
 # React StrictMode 활성화 확인
 export REACT_STRICT_MODE=true
+
+# GitHub Actions 환경 변수 시뮬레이션
+export GITHUB_ACTIONS=true
+export RUNNER_OS=Linux
+
+# jsdom 환경 설정
+export NODE_OPTIONS="--max-old-space-size=4096"
 
 # 테스트 실행 전 캐시 정리
 echo "📦 캐시 정리 중..."
