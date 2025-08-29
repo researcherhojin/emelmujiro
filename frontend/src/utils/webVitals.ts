@@ -1,5 +1,6 @@
 // Enhanced Web Vitals measurement utility
 import { Metric } from 'web-vitals';
+import logger from './logger';
 
 interface PerformanceMetrics {
   dnsLookup: number;
@@ -50,7 +51,7 @@ export const measureWebVitals = (
             };
 
             if (config.enableLogging) {
-              console.warn('Web Vital:', enhancedMetric);
+              logger.warn('Web Vital:', enhancedMetric);
             }
 
             onPerfEntry(enhancedMetric);
@@ -67,11 +68,11 @@ export const measureWebVitals = (
           onTTFB(wrappedCallback);
           onINP(wrappedCallback);
         } catch (error) {
-          console.warn('Web Vitals measurement failed:', error);
+          logger.warn('Web Vitals measurement failed:', error);
         }
       })
       .catch((error) => {
-        console.warn('Failed to load web-vitals library:', error);
+        logger.warn('Failed to load web-vitals library:', error);
       });
   }
 };
@@ -90,7 +91,7 @@ const sendToAnalytics = async (
       body: JSON.stringify(metric),
     });
   } catch (error) {
-    console.warn('Failed to send metric to analytics:', error);
+    logger.warn('Failed to send metric to analytics:', error);
   }
 };
 
@@ -125,7 +126,7 @@ export const logPerformanceMetrics = (config: WebVitalsConfig = {}): void => {
               }
             });
 
-            console.warn('Performance Metrics:', metrics);
+            logger.warn('Performance Metrics:', metrics);
 
             // Store metrics with timestamp
             const metricsWithTimestamp = {
@@ -145,7 +146,7 @@ export const logPerformanceMetrics = (config: WebVitalsConfig = {}): void => {
             }
           }
         } catch (error) {
-          console.warn('Performance metrics logging failed:', error);
+          logger.warn('Performance metrics logging failed:', error);
         }
       }, 0);
     });
@@ -169,7 +170,7 @@ export const initPerformanceMonitoring = (
         list.getEntries().forEach((entry) => {
           // Only log really long tasks (> 100ms) to reduce noise
           if (entry.duration > 100) {
-            console.warn('Long task detected:', {
+            logger.warn('Long task detected:', {
               duration: entry.duration,
               startTime: entry.startTime,
             });
@@ -184,7 +185,7 @@ export const initPerformanceMonitoring = (
         longTaskObserver.disconnect();
       }, 30000);
     } catch (error) {
-      console.warn('Long task monitoring failed:', error);
+      logger.warn('Long task monitoring failed:', error);
     }
   }
 };
@@ -206,11 +207,11 @@ export const checkPerformanceBudget = (): void => {
     if (budget && metric.value > budget) {
       // Only log as warning in development, error in production
       if (isDevelopment) {
-        console.warn(
+        logger.warn(
           `Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`
         );
       } else {
-        console.error(
+        logger.error(
           `Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`
         );
       }

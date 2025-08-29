@@ -1,5 +1,5 @@
 # Build stage
-FROM node:22-alpine AS builder
+FROM node:24-alpine AS builder
 
 # Update packages for security and install minimal build tools
 RUN apk update && apk upgrade && \
@@ -7,18 +7,12 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /app
 
-# Copy package files (including yarn.lock if exists)
-COPY package.json yarn.lock* package-lock.json* ./
+# Copy package files
+COPY package.json yarn.lock* ./
 
-# Install dependencies - use yarn if yarn.lock exists, otherwise npm
-# Skip optional dependencies in Docker build
-RUN if [ -f yarn.lock ]; then \
-      yarn install --ignore-optional; \
-    elif [ -f package-lock.json ]; then \
-      npm ci --omit=optional; \
-    else \
-      npm install --omit=optional; \
-    fi
+# Install dependencies using yarn
+# Install all dependencies including optional ones for build stage
+RUN yarn install --frozen-lockfile || yarn install
 
 # Copy source code
 COPY . .
@@ -26,11 +20,8 @@ COPY . .
 # Build the application (disable ESLint during build)
 ENV DISABLE_ESLINT_PLUGIN=true
 ENV ESLINT_NO_DEV_ERRORS=true
-RUN if [ -f yarn.lock ]; then \
-      yarn build; \
-    else \
-      npm run build; \
-    fi
+ENV CI=false
+RUN yarn build
 
 # Production stage
 FROM nginx:alpine

@@ -4,10 +4,14 @@
  */
 
 import { vi } from 'vitest';
-import { screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  screen,
+  fireEvent,
+  waitFor as originalWaitFor,
+  act,
+} from '@testing-library/react';
 import { renderWithSelectiveProviders } from '../../../test-utils/test-utils';
 import NotificationPermission from '../NotificationPermission';
-import * as logger from '../../../utils/logger';
 
 // Mock push notification utilities
 const mockIsPushNotificationSupported = vi.fn();
@@ -24,10 +28,17 @@ vi.mock('../../../utils/pushNotifications', () => ({
 
 // Mock logger
 vi.mock('../../../utils/logger', () => ({
-  error: vi.fn(),
+  default: {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+  },
 }));
 
-const mockLoggerError = logger.error as any;
+// Import logger after mocking to get mocked version
+import logger from '../../../utils/logger';
+const mockLoggerError = vi.mocked(logger.error);
 
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
@@ -62,6 +73,25 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 describe('NotificationPermission', () => {
+  // Custom waitFor that works with fake timers
+  const waitFor = async (
+    callback: () => void | Promise<void>,
+    options = {}
+  ) => {
+    // For async tests, use real timers temporarily
+    vi.useRealTimers();
+
+    const result = await originalWaitFor(callback, {
+      timeout: 1000,
+      ...options,
+    });
+
+    // Restore fake timers after wait
+    vi.useFakeTimers();
+
+    return result;
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
@@ -76,7 +106,12 @@ describe('NotificationPermission', () => {
   });
 
   afterEach(() => {
-    vi.runOnlyPendingTimers();
+    // Check if timers are mocked before trying to run them
+    try {
+      vi.runOnlyPendingTimers();
+    } catch {
+      // Timers might already be real, that's ok
+    }
     vi.useRealTimers();
   });
 
@@ -633,15 +668,18 @@ describe('NotificationPermission', () => {
       const enableButton = screen.getByText('알림 받기');
       fireEvent.click(enableButton);
 
-      await waitFor(() => {
-        expect(mockNotification).toHaveBeenCalledWith(
-          '알림 활성화 완료!',
-          expect.objectContaining({
-            body: '이제 에멜무지로의 중요한 소식을 받아보실 수 있습니다.',
-            icon: '/logo192.png',
-          })
-        );
-      });
+      await waitFor(
+        () => {
+          expect(mockNotification).toHaveBeenCalledWith(
+            '알림 활성화 완료!',
+            expect.objectContaining({
+              body: '이제 에멜무지로의 중요한 소식을 받아보실 수 있습니다.',
+              icon: '/logo192.png',
+            })
+          );
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('does not create notification when permission denied', async () => {

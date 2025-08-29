@@ -142,482 +142,472 @@ vi.mock('../../../contexts/ChatContext', () => ({
   ),
 }));
 
-describe(
-  process.env.CI === 'true' ? 'MessageList (skipped in CI)' : 'MessageList',
-  () => {
-    if (process.env.CI === 'true') {
-      it('skipped in CI', () => {
-        expect(true).toBe(true);
-      });
-      return;
+describe('MessageList', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Reset mock messages
+    mockChatContext.messages = [] as ChatMessage[];
+    // Mock scrollIntoView
+    Element.prototype.scrollIntoView = vi.fn();
+  });
+
+  it('should render empty message list', () => {
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    // Should render empty state
+    expect(screen.getByText('chat.emptyState.title')).toBeInTheDocument();
+    expect(screen.getByText('chat.emptyState.subtitle')).toBeInTheDocument();
+  });
+
+  it('should render messages', () => {
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'agent' as MessageSender,
+        content: 'Hello! How can I help you?',
+        timestamp: new Date().toISOString(),
+        status: 'sent' as MessageStatus,
+      },
+      {
+        id: '2',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'I need help with my order',
+        timestamp: new Date().toISOString(),
+        status: 'delivered' as MessageStatus,
+      },
+    ] as ChatMessage[];
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    expect(screen.getByText('Hello! How can I help you?')).toBeInTheDocument();
+    expect(screen.getByText('I need help with my order')).toBeInTheDocument();
+  });
+
+  it('should display bot and user icons', () => {
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'agent' as MessageSender,
+        content: 'Bot message',
+        timestamp: new Date().toISOString(),
+      },
+      {
+        id: '2',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'User message',
+        timestamp: new Date().toISOString(),
+      },
+    ] as ChatMessage[];
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    expect(screen.getAllByText('Bot')).toHaveLength(1);
+    // Note: User messages don't show Bot icon
+  });
+
+  it('should show typing indicator when agent is typing', () => {
+    mockChatContext.isTyping = true;
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    // Typing indicator should be shown
+    expect(screen.getAllByText('Bot')).toHaveLength(1);
+  });
+
+  it('should handle retry action for failed messages', () => {
+    const mockRetry = vi.fn();
+    mockChatContext.sendMessage = mockRetry;
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'Failed message',
+        timestamp: new Date().toISOString(),
+        status: 'failed' as MessageStatus,
+      },
+    ] as ChatMessage[];
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    // Find the retry button (failed messages show RefreshCw icon),
+    const retryButtons = screen.getAllByText('RefreshCw');
+    expect(retryButtons).toHaveLength(1);
+
+    // Find the actual button element that contains the RefreshCw icon
+    // In the component, RefreshCw is likely rendered inside a button
+    const allButtons = screen.getAllByRole('button');
+    const retryButton = allButtons.find((button) =>
+      button.textContent?.includes('RefreshCw')
+    );
+
+    expect(retryButton).toBeDefined();
+    if (retryButton) {
+      fireEvent.click(retryButton);
     }
 
-    beforeEach(() => {
-      vi.clearAllMocks();
-      // Reset mock messages
-      mockChatContext.messages = [] as ChatMessage[];
-      // Mock scrollIntoView
-      Element.prototype.scrollIntoView = vi.fn();
-    });
+    // Should call retry/sendMessage function with the message object
+    expect(mockRetry).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'text',
+        content: 'Failed message',
+        sender: 'user',
+      })
+    );
+  });
 
-    it('should render empty message list', () => {
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
+  it('should display timestamps', () => {
+    const timestamp = new Date('2024-01-15T10:30:00').toISOString();
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'Test message',
+        timestamp,
+      },
+    ] as ChatMessage[];
 
-      // Should render empty state
-      expect(screen.getByText('chat.emptyState.title')).toBeInTheDocument();
-      expect(screen.getByText('chat.emptyState.subtitle')).toBeInTheDocument();
-    });
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
 
-    it('should render messages', () => {
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'agent' as MessageSender,
-          content: 'Hello! How can I help you?',
-          timestamp: new Date().toISOString(),
-          status: 'sent' as MessageStatus,
-        },
-        {
-          id: '2',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'I need help with my order',
-          timestamp: new Date().toISOString(),
-          status: 'delivered' as MessageStatus,
-        },
-      ] as ChatMessage[];
+    // Timestamp should be formatted and displayed
+    expect(screen.getByText('Test message')).toBeInTheDocument();
+    // The actual timestamp display depends on the implementation
+  });
 
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      expect(
-        screen.getByText('Hello! How can I help you?')
-      ).toBeInTheDocument();
-      expect(screen.getByText('I need help with my order')).toBeInTheDocument();
-    });
-
-    it('should display bot and user icons', () => {
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'agent' as MessageSender,
-          content: 'Bot message',
-          timestamp: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'User message',
-          timestamp: new Date().toISOString(),
-        },
-      ] as ChatMessage[];
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      expect(screen.getAllByText('Bot')).toHaveLength(1);
-      // Note: User messages don't show Bot icon
-    });
-
-    it('should show typing indicator when agent is typing', () => {
-      mockChatContext.isTyping = true;
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      // Typing indicator should be shown
-      expect(screen.getAllByText('Bot')).toHaveLength(1);
-    });
-
-    it('should handle retry action for failed messages', () => {
-      const mockRetry = vi.fn();
-      mockChatContext.sendMessage = mockRetry;
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'Failed message',
-          timestamp: new Date().toISOString(),
-          status: 'failed' as MessageStatus,
-        },
-      ] as ChatMessage[];
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      // Find the retry button (failed messages show RefreshCw icon),
-      const retryButtons = screen.getAllByText('RefreshCw');
-      expect(retryButtons).toHaveLength(1);
-
-      // Find the actual button element that contains the RefreshCw icon
-      // In the component, RefreshCw is likely rendered inside a button
-      const allButtons = screen.getAllByRole('button');
-      const retryButton = allButtons.find((button) =>
-        button.textContent?.includes('RefreshCw')
-      );
-
-      expect(retryButton).toBeDefined();
-      if (retryButton) {
-        fireEvent.click(retryButton);
-      }
-
-      // Should call retry/sendMessage function with the message object
-      expect(mockRetry).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'text',
-          content: 'Failed message',
-          sender: 'user',
-        })
-      );
-    });
-
-    it('should display timestamps', () => {
-      const timestamp = new Date('2024-01-15T10:30:00').toISOString();
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'Test message',
-          timestamp,
-        },
-      ] as ChatMessage[];
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      // Timestamp should be formatted and displayed
-      expect(screen.getByText('Test message')).toBeInTheDocument();
-      // The actual timestamp display depends on the implementation
-    });
-
-    // Image attachments test - activating to verify current behavior
-    it('should handle image attachments', () => {
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'Check this image',
-          timestamp: new Date().toISOString(),
-          attachments: [
-            {
-              type: 'image',
-              url: 'https://example.com/image.jpg',
-              name: 'image.jpg',
-            },
-          ],
-        },
-      ] as ChatMessage[];
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      // Images are only rendered for 'image' type messages, not 'text' type with attachments
-      // This test needs different message structure
-      const textContent = screen.getByText('Check this image');
-      expect(textContent).toBeInTheDocument();
-      // Image might not be visible in text type messages
-    });
-
-    // NOTE: File attachments feature pending implementation in MessageList component
-    it('should handle file attachments', () => {
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'Here is a document',
-          timestamp: new Date().toISOString(),
-          attachments: [
-            {
-              type: 'file',
-              url: 'https://example.com/doc.pdf',
-              name: 'document.pdf',
-              size: 1024000,
-            },
-          ],
-        },
-      ] as ChatMessage[];
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      // Files are only shown for 'file' type messages
-      expect(screen.getByText('Here is a document')).toBeInTheDocument();
-    });
-
-    // NOTE: Quick replies feature pending implementation in MessageList component
-    it('should display quick replies', () => {
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'agent' as MessageSender,
-          content: 'How can I help?',
-          timestamp: new Date().toISOString(),
-          quickReplies: ['Track Order', 'Cancel Order', 'Contact Support'],
-        },
-      ] as ChatMessage[];
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      expect(screen.getByText('Track Order')).toBeInTheDocument();
-      expect(screen.getByText('Cancel Order')).toBeInTheDocument();
-      expect(screen.getByText('Contact Support')).toBeInTheDocument();
-    });
-
-    // NOTE: Quick reply click handling pending implementation in MessageList component
-    it('should handle quick reply click', () => {
-      const mockSend = vi.fn();
-      mockChatContext.sendMessage = mockSend;
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'agent' as MessageSender,
-          content: 'Choose an option',
-          timestamp: new Date().toISOString(),
-          quickReplies: ['Yes', 'No'],
-        },
-      ] as ChatMessage[];
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      const yesButton = screen.getByText('Yes');
-      fireEvent.click(yesButton);
-
-      expect(mockSend).toHaveBeenCalledWith('Yes');
-    });
-
-    it('should show message status icons', () => {
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'Sending',
-          timestamp: new Date().toISOString(),
-          status: 'sending' as MessageStatus,
-        },
-        {
-          id: '2',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'Sent',
-          timestamp: new Date().toISOString(),
-          status: 'sent',
-        },
-        {
-          id: '3',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'Delivered',
-          timestamp: new Date().toISOString(),
-          status: 'delivered',
-        },
-        {
-          id: '4',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'Read',
-          timestamp: new Date().toISOString(),
-          status: 'read' as MessageStatus,
-        },
-      ] as ChatMessage[];
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      // Check for status icons - these are shown for user messages
-      expect(screen.getByText('Clock')).toBeInTheDocument(); // Sending
-      expect(screen.getByText('Check')).toBeInTheDocument(); // Sent
-      expect(screen.getAllByText('CheckCheck')).toHaveLength(2); // Delivered and Read
-    });
-
-    it('should scroll to bottom on new messages', async () => {
-      const scrollIntoViewMock = vi.fn();
-      Element.prototype.scrollIntoView = scrollIntoViewMock;
-
-      const { rerender } = render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      // Add a new message
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'New message',
-          timestamp: new Date().toISOString(),
-        },
-      ];
-
-      rerender(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      await waitFor(() => {
-        expect(scrollIntoViewMock).toHaveBeenCalled();
-      });
-    });
-
-    it('should handle system messages', () => {
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'system' as MessageType,
-          sender: 'system' as MessageSender,
-          content: 'Agent joined the chat',
-          timestamp: new Date().toISOString(),
-        },
-      ] as ChatMessage[];
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      expect(screen.getByText('Agent joined the chat')).toBeInTheDocument();
-    });
-
-    // NOTE: Mark as read functionality pending implementation
-    it('should mark messages as read', () => {
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'agent' as MessageSender,
-          content: 'New message',
-          timestamp: new Date().toISOString(),
-          status: 'delivered',
-        },
-      ] as ChatMessage[];
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      // markAsRead should be called for agent messages
-      // Note: This might not be called immediately in tests
-      // expect(mockChatContext.markAsRead).toHaveBeenCalled();
-    });
-
-    it('should handle empty attachment list', () => {
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'user' as MessageSender,
-          content: 'Message without attachments',
-          timestamp: new Date().toISOString(),
-          attachments: [],
-        },
-      ] as ChatMessage[];
-
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
-
-      expect(
-        screen.getByText('Message without attachments')
-      ).toBeInTheDocument();
-    });
-
-    it('should handle message with reactions', () => {
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'agent' as MessageSender,
-          content: 'Helpful message',
-          timestamp: new Date().toISOString(),
-          reactions: {
-            thumbsUp: 5,
-            thumbsDown: 1,
+  // Image attachments test - activating to verify current behavior
+  it('should handle image attachments', () => {
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'Check this image',
+        timestamp: new Date().toISOString(),
+        attachments: [
+          {
+            type: 'image',
+            url: 'https://example.com/image.jpg',
+            name: 'image.jpg',
           },
-        },
-      ] as ChatMessage[];
+        ],
+      },
+    ] as ChatMessage[];
 
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
 
-      expect(screen.getByText('Helpful message')).toBeInTheDocument();
-      // Reactions might be displayed depending on implementation
+    // Images are only rendered for 'image' type messages, not 'text' type with attachments
+    // This test needs different message structure
+    const textContent = screen.getByText('Check this image');
+    expect(textContent).toBeInTheDocument();
+    // Image might not be visible in text type messages
+  });
+
+  // NOTE: File attachments feature pending implementation in MessageList component
+  it('should handle file attachments', () => {
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'Here is a document',
+        timestamp: new Date().toISOString(),
+        attachments: [
+          {
+            type: 'file',
+            url: 'https://example.com/doc.pdf',
+            name: 'document.pdf',
+            size: 1024000,
+          },
+        ],
+      },
+    ] as ChatMessage[];
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    // Files are only shown for 'file' type messages
+    expect(screen.getByText('Here is a document')).toBeInTheDocument();
+  });
+
+  // NOTE: Quick replies feature pending implementation in MessageList component
+  it('should display quick replies', () => {
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'agent' as MessageSender,
+        content: 'How can I help?',
+        timestamp: new Date().toISOString(),
+        quickReplies: ['Track Order', 'Cancel Order', 'Contact Support'],
+      },
+    ] as ChatMessage[];
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    expect(screen.getByText('Track Order')).toBeInTheDocument();
+    expect(screen.getByText('Cancel Order')).toBeInTheDocument();
+    expect(screen.getByText('Contact Support')).toBeInTheDocument();
+  });
+
+  // NOTE: Quick reply click handling pending implementation in MessageList component
+  it('should handle quick reply click', () => {
+    const mockSend = vi.fn();
+    mockChatContext.sendMessage = mockSend;
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'agent' as MessageSender,
+        content: 'Choose an option',
+        timestamp: new Date().toISOString(),
+        quickReplies: ['Yes', 'No'],
+      },
+    ] as ChatMessage[];
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    const yesButton = screen.getByText('Yes');
+    fireEvent.click(yesButton);
+
+    expect(mockSend).toHaveBeenCalledWith({
+      type: 'text',
+      content: 'Yes',
+      sender: 'user',
     });
+  });
 
-    it('should be accessible with ARIA attributes', () => {
-      mockChatContext.messages = [
-        {
-          id: '1',
-          type: 'text' as MessageType,
-          sender: 'agent' as MessageSender,
-          content: 'Test message',
-          timestamp: new Date().toISOString(),
-        },
-      ] as ChatMessage[];
+  it('should show message status icons', () => {
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'Sending',
+        timestamp: new Date().toISOString(),
+        status: 'sending' as MessageStatus,
+      },
+      {
+        id: '2',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'Sent',
+        timestamp: new Date().toISOString(),
+        status: 'sent',
+      },
+      {
+        id: '3',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'Delivered',
+        timestamp: new Date().toISOString(),
+        status: 'delivered',
+      },
+      {
+        id: '4',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'Read',
+        timestamp: new Date().toISOString(),
+        status: 'read' as MessageStatus,
+      },
+    ] as ChatMessage[];
 
-      render(
-        <ChatProvider>
-          <MessageList />
-        </ChatProvider>
-      );
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
 
-      // Verify messages are rendered
-      expect(screen.getByText('Test message')).toBeInTheDocument();
+    // Check for status icons - these are shown for user messages
+    expect(screen.getByText('Clock')).toBeInTheDocument(); // Sending
+    expect(screen.getByText('Check')).toBeInTheDocument(); // Sent
+    expect(screen.getAllByText('CheckCheck')).toHaveLength(2); // Delivered and Read
+  });
+
+  it('should scroll to bottom on new messages', async () => {
+    const scrollIntoViewMock = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoViewMock;
+
+    const { rerender } = render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    // Add a new message
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'New message',
+        timestamp: new Date().toISOString(),
+      },
+    ];
+
+    rerender(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    await waitFor(() => {
+      expect(scrollIntoViewMock).toHaveBeenCalled();
     });
-  }
-);
+  });
+
+  it('should handle system messages', () => {
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'system' as MessageType,
+        sender: 'system' as MessageSender,
+        content: 'Agent joined the chat',
+        timestamp: new Date().toISOString(),
+      },
+    ] as ChatMessage[];
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    expect(screen.getByText('Agent joined the chat')).toBeInTheDocument();
+  });
+
+  // NOTE: Mark as read functionality pending implementation
+  it('should mark messages as read', () => {
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'agent' as MessageSender,
+        content: 'New message',
+        timestamp: new Date().toISOString(),
+        status: 'delivered',
+      },
+    ] as ChatMessage[];
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    // markAsRead should be called for agent messages
+    // Note: This might not be called immediately in tests
+    // expect(mockChatContext.markAsRead).toHaveBeenCalled();
+  });
+
+  it('should handle empty attachment list', () => {
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'user' as MessageSender,
+        content: 'Message without attachments',
+        timestamp: new Date().toISOString(),
+        attachments: [],
+      },
+    ] as ChatMessage[];
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    expect(screen.getByText('Message without attachments')).toBeInTheDocument();
+  });
+
+  it('should handle message with reactions', () => {
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'agent' as MessageSender,
+        content: 'Helpful message',
+        timestamp: new Date().toISOString(),
+        reactions: {
+          thumbsUp: 5,
+          thumbsDown: 1,
+        },
+      },
+    ] as ChatMessage[];
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    expect(screen.getByText('Helpful message')).toBeInTheDocument();
+    // Reactions might be displayed depending on implementation
+  });
+
+  it('should be accessible with ARIA attributes', () => {
+    mockChatContext.messages = [
+      {
+        id: '1',
+        type: 'text' as MessageType,
+        sender: 'agent' as MessageSender,
+        content: 'Test message',
+        timestamp: new Date().toISOString(),
+      },
+    ] as ChatMessage[];
+
+    render(
+      <ChatProvider>
+        <MessageList />
+      </ChatProvider>
+    );
+
+    // Verify messages are rendered
+    expect(screen.getByText('Test message')).toBeInTheDocument();
+  });
+});

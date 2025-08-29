@@ -575,16 +575,23 @@ describe('OptimizedImage', () => {
   });
 
   it('handles canvas creation failure gracefully', async () => {
-    // Avoid infinite recursion
+    // Avoid infinite recursion by using the real DOM method
     let canvasCreationAttempted = false;
-    const originalCreateElement = document.createElement.bind(document);
+
+    // Use Object.getOwnPropertyDescriptor to get the actual native method
+    const descriptor = Object.getOwnPropertyDescriptor(
+      Document.prototype,
+      'createElement'
+    );
+    const originalCreateElement = descriptor?.value;
 
     mockCreateElement.mockImplementation((tagName: string) => {
       if (tagName === 'canvas' && !canvasCreationAttempted) {
         canvasCreationAttempted = true;
         throw new Error('Canvas creation failed');
       }
-      return originalCreateElement(tagName);
+      // Call the real DOM method, not the mock
+      return originalCreateElement?.call(document, tagName);
     });
 
     render(<OptimizedImage src="/test-image.jpg" alt="Test image" />);

@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import BlogDetail from '../BlogDetail';
@@ -23,6 +24,13 @@ vi.mock('remark-gfm', () => ({
 vi.mock('../../common/ErrorBoundary', () => ({
   default: function ErrorBoundary({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
+  },
+}));
+
+// Mock PageLoading component
+vi.mock('../../common/PageLoading', () => ({
+  default: function PageLoading({ message }: { message?: string }) {
+    return <div>{message || 'Loading...'}</div>;
   },
 }));
 
@@ -120,7 +128,9 @@ describe('BlogDetail Component', () => {
     });
 
     renderComponent();
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    expect(
+      screen.getByText('블로그 포스트를 불러오는 중입니다...')
+    ).toBeInTheDocument();
   });
 
   test('renders error state for 404', () => {
@@ -138,7 +148,8 @@ describe('BlogDetail Component', () => {
     });
 
     renderComponent();
-    expect(screen.getByText(/게시글을 찾을 수 없습니다/)).toBeInTheDocument();
+    // 404 errors navigate to /404 page, so component returns null
+    expect(mockNavigate).toHaveBeenCalledWith('/404', { replace: true });
   });
 
   test('renders error state for other errors', () => {
@@ -156,9 +167,9 @@ describe('BlogDetail Component', () => {
     });
 
     renderComponent();
-    expect(
-      screen.getByText(/게시글을 불러오는 중 오류가 발생했습니다/)
-    ).toBeInTheDocument();
+    // Check for error message (the actual error message is shown)
+    expect(screen.getByText('Network error')).toBeInTheDocument();
+    expect(screen.getByText('뒤로 가기')).toBeInTheDocument();
   });
 
   test('renders blog post details', () => {
@@ -198,7 +209,8 @@ describe('BlogDetail Component', () => {
     expect(screen.getByTestId('markdown-content')).toHaveTextContent(
       'This is test content'
     );
-    expect(screen.getByText('Test Author')).toBeInTheDocument();
+    // Author is shown with "작성자: " prefix
+    expect(screen.getByText(/작성자: Test Author/)).toBeInTheDocument();
     expect(screen.getByText('Technology')).toBeInTheDocument();
   });
 
@@ -235,7 +247,7 @@ describe('BlogDetail Component', () => {
 
     renderComponent();
 
-    const backButton = screen.getByText(/뒤로 가기/);
+    const backButton = screen.getByText('뒤로가기');
     fireEvent.click(backButton);
 
     expect(mockNavigate).toHaveBeenCalledWith(-1);
@@ -243,7 +255,7 @@ describe('BlogDetail Component', () => {
 
   test('calls fetchPostById on mount', () => {
     renderComponent();
-    expect(mockFetchPostById).toHaveBeenCalledWith(1);
+    expect(mockFetchPostById).toHaveBeenCalledWith('1');
   });
 
   test('calls clearCurrentPost on unmount', () => {

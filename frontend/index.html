@@ -51,7 +51,7 @@
       name="twitter:description"
       content="최신 기술로 비즈니스의 미래를 설계합니다"
     />
-    <meta name="twitter:image" content="%PUBLIC_URL%/og-image.png" />
+    <meta name="twitter:image" content="/og-image.png" />
 
     <!-- PWA 지원 -->
     <meta name="mobile-web-app-capable" content="yes" />
@@ -61,7 +61,7 @@
       content="black-translucent"
     />
     <meta name="apple-mobile-web-app-title" content="에멜무지로" />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-icon" href="/logo192.png" />
 
     <!-- 보안 헤더 -->
     <!-- CSP는 개발 환경에서 문제를 일으킬 수 있으므로 주석 처리 -->
@@ -81,22 +81,12 @@
     <link rel="dns-prefetch" href="https://api.github.com" />
 
     <!-- Prefetch critical resources -->
-    <link rel="prefetch" href="%PUBLIC_URL%/offline.html" />
-    <link rel="prefetch" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="prefetch" href="/offline.html" />
+    <link rel="prefetch" href="/manifest.json" />
 
     <!-- Preload critical images -->
-    <link
-      rel="preload"
-      href="%PUBLIC_URL%/logo192.png"
-      as="image"
-      type="image/png"
-    />
-    <link
-      rel="preload"
-      href="%PUBLIC_URL%/logo512.png"
-      as="image"
-      type="image/png"
-    />
+    <link rel="preload" href="/logo192.png" as="image" type="image/png" />
+    <link rel="preload" href="/logo512.png" as="image" type="image/png" />
 
     <!-- Fonts with optimized loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -128,7 +118,7 @@
       rel="canonical"
       href="https://researcherhojin.github.io/emelmujiro/"
     />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
 
     <!-- Critical CSS inline for above-the-fold content -->
     <style>
@@ -190,7 +180,7 @@
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker
-            .register('%PUBLIC_URL%/service-worker-enhanced.js')
+            .register('/service-worker-enhanced.js')
             .then((registration) => {
               // Service Worker registered successfully
             })

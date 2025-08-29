@@ -28,6 +28,12 @@ const mockedRegisterBackgroundSync = registerBackgroundSync as MockedFunction<
 >;
 
 vi.mock('../../../utils/logger', () => ({
+  default: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  },
   debug: vi.fn(),
   info: vi.fn(),
   warn: vi.fn(),
@@ -94,7 +100,8 @@ describe('ContactPage Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
+    // Don't use fake timers with waitFor - causes timeout issues
+    // vi.useFakeTimers();
     // Reset navigator.onLine
     Object.defineProperty(navigator, 'onLine', {
       writable: true,
@@ -107,21 +114,19 @@ describe('ContactPage Component', () => {
   });
 
   afterEach(() => {
-    vi.runOnlyPendingTimers();
-    vi.useRealTimers();
+    // vi.runOnlyPendingTimers();
+    // vi.useRealTimers();
   });
 
   const waitForFormToLoad = async () => {
-    // Advance timers to skip loading state
-    act(() => {
-      vi.advanceTimersByTime(1000);
-    });
-
-    // Wait for form to be visible
-    await waitFor(() => {
-      const nameInput = screen.queryByPlaceholderText('홍길동');
-      expect(nameInput).toBeInTheDocument();
-    });
+    // Wait for form to be visible (no need for timer manipulation)
+    await waitFor(
+      () => {
+        const nameInput = screen.queryByPlaceholderText('홍길동');
+        expect(nameInput).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   };
 
   it('renders contact form with all fields', async () => {
@@ -342,14 +347,18 @@ describe('ContactPage Component', () => {
       });
 
       // Advance timers to trigger navigation (which happens after 2 seconds)
-      act(() => {
-        vi.advanceTimersByTime(2000);
-      });
+      // Don't need timer manipulation without fake timers
+      // act(() => {
+      //   vi.advanceTimersByTime(2000);
+      // });
 
-      // Verify navigation
-      await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/');
-      });
+      // Verify navigation (happens after 2 seconds)
+      await waitFor(
+        () => {
+          expect(mockNavigate).toHaveBeenCalledWith('/');
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('handles offline submission with background sync', async () => {
