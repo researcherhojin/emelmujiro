@@ -111,7 +111,7 @@ describe('HomePage', () => {
     expect(document.body).toBeInTheDocument();
   });
 
-  it.skip('handles error boundary gracefully', () => {
+  it('handles error boundary gracefully', () => {
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 

@@ -27,6 +27,37 @@ vi.mock('../../common/StructuredData', () => ({
   },
 }));
 
+// Mock lucide-react icons used in ProfilePage
+vi.mock('lucide-react', () => {
+  const React = require('react');
+  return {
+    MapPin: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'MapPin'),
+    Mail: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'Mail'),
+    Briefcase: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'Briefcase'),
+    GraduationCap: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'GraduationCap'),
+    Code: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'Code'),
+    Star: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'Star'),
+    Award: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'Award'),
+    ChevronLeft: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'ChevronLeft'),
+    Calendar: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'Calendar'),
+    Building: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'Building'),
+    User: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'User'),
+    Clock: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'Clock'),
+  };
+});
+
 describe('ProfilePage Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
@@ -95,17 +126,28 @@ describe('ProfilePage Component', () => {
     it('maintains active tab styling', () => {
       renderWithRouter(<ProfilePage />);
 
-      const careerTab = screen.getByRole('button', { name: '경력' });
-      const educationTab = screen.getByRole('button', { name: '학력' });
+      // Look for tab buttons by text content - be more specific to avoid duplicates
+      const buttons = screen.getAllByRole('button');
+      const careerTab = buttons.find((btn) =>
+        btn.textContent?.includes('Briefcase경력')
+      );
+      const educationTab = buttons.find((btn) =>
+        btn.textContent?.includes('GraduationCap학력')
+      );
+
+      // Check that buttons exist
+      expect(careerTab).toBeInTheDocument();
+      expect(educationTab).toBeInTheDocument();
 
       // Career tab should be active initially
       expect(careerTab).toHaveClass('text-gray-900');
 
       // Switch to education tab
-      fireEvent.click(educationTab);
-
-      expect(educationTab).toHaveClass('text-gray-900');
-      expect(careerTab).not.toHaveClass('text-gray-900');
+      if (educationTab) {
+        fireEvent.click(educationTab);
+        expect(educationTab).toHaveClass('text-gray-900');
+        expect(careerTab).not.toHaveClass('text-gray-900');
+      }
     });
   });
 
@@ -113,8 +155,11 @@ describe('ProfilePage Component', () => {
     it('displays all career items', () => {
       renderWithRouter(<ProfilePage />);
 
-      // Check for career section existence
-      const careerTab = screen.getByRole('button', { name: '경력' });
+      // Check for career section existence using more specific query
+      const buttons = screen.getAllByRole('button');
+      const careerTab = buttons.find((btn) =>
+        btn.textContent?.includes('Briefcase경력')
+      );
       expect(careerTab).toBeInTheDocument();
       expect(careerTab).toHaveClass('text-gray-900');
     });

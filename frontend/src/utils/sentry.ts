@@ -1,7 +1,4 @@
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/tracing';
-// @ts-ignore - Replay is available but not in types
-const Replay = (Sentry as any).Replay;
 import env from '../config/env';
 
 // Type definitions for better type safety
@@ -21,16 +18,7 @@ export function initSentry(): void {
       Sentry.init({
         dsn: env.SENTRY_DSN,
         environment: env.NODE_ENV,
-        integrations: [
-          new BrowserTracing(),
-          new Replay({
-            maskAllText: false,
-            blockAllMedia: false,
-          }),
-        ],
         tracesSampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
-        replaysSessionSampleRate: 0.1,
-        replaysOnErrorSampleRate: 1.0,
 
         // 에러 필터링
         beforeSend(event, _hint) {
@@ -200,13 +188,25 @@ export function addBreadcrumb(breadcrumb: {
 }
 
 // 트랜잭션 시작
-export function startTransaction(name: string, op: string): any {
+export function startTransaction(name: string, op: string): string | null {
   if (env.ENABLE_SENTRY) {
-    // @ts-ignore - startTransaction exists but not in types
-    return (Sentry as any).startTransaction({
-      name,
-      op,
-    });
+    try {
+      // Sentry v7+ 방식으로 트랜잭션 시작
+      Sentry.startSpan(
+        {
+          name,
+          op,
+        },
+        () => {
+          // 스팬 내부에서 실행할 작업이 있다면 여기에 추가
+        }
+      );
+
+      return name;
+    } catch (error) {
+      console.warn('Failed to start transaction:', error);
+      return null;
+    }
   }
   return null;
 }
@@ -231,22 +231,21 @@ export function measurePerformance(
   name: string,
   callback: () => void | Promise<void>
 ): void {
-  const transaction = startTransaction(name, 'custom');
-
-  const execute = async (): Promise<void> => {
-    try {
-      await callback();
-    } catch (error) {
-      captureException(error, { operation: name });
-      throw error;
-    } finally {
-      transaction?.finish();
-    }
-  };
-
-  execute().catch((error) => {
-    console.error(`Performance measurement failed for ${name}:`, error);
-  });
+  if (env.ENABLE_SENTRY) {
+    Sentry.startSpan({ name, op: 'custom' }, async () => {
+      try {
+        await callback();
+      } catch (error) {
+        captureException(error, { operation: name });
+        throw error;
+      }
+    });
+  } else {
+    // Sentry가 비활성화된 경우에도 콜백 실행
+    Promise.resolve(callback()).catch((error) => {
+      console.error(`Performance measurement failed for ${name}:`, error);
+    });
+  }
 }
 
 // Sentry 플러시 (앱 종료 시 사용)
@@ -256,7 +255,8 @@ export async function flushSentry(): Promise<void> {
   }
 }
 
-export default {
+// 기본 내보내기
+const sentryUtils = {
   initSentry,
   setSentryUser,
   setSentryContext,
@@ -268,3 +268,5 @@ export default {
   measurePerformance,
   flushSentry,
 };
+
+export default sentryUtils;

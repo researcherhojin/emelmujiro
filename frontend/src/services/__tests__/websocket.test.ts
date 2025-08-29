@@ -356,20 +356,25 @@ if (process.env.CI === 'true') {
           const onError = vi.fn();
           wsService.on('error', onError);
 
-          // Force connection to fail
-          (global as any).WebSocket = class {
-            constructor() {
-              throw new Error('Connection failed');
-            }
-          };
+          // Save original MockWebSocket
+          const originalWebSocket = (global as any).WebSocket;
 
-          wsService.connect('ws://localhost:8000/ws/chat/');
-          await new Promise((resolve) => setTimeout(resolve, 10));
+          try {
+            // Force connection to fail
+            (global as any).WebSocket = class {
+              constructor() {
+                throw new Error('Connection failed');
+              }
+            };
 
-          expect(onError).toHaveBeenCalled();
+            wsService.connect('ws://localhost:8000/ws/chat/');
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
-          // Restore MockWebSocket
-          (global as any).WebSocket = MockWebSocket;
+            expect(onError).toHaveBeenCalled();
+          } finally {
+            // Always restore MockWebSocket
+            (global as any).WebSocket = originalWebSocket;
+          }
         });
       });
 

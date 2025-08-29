@@ -13,6 +13,7 @@ import {
   Trash2,
   Eye,
 } from 'lucide-react';
+import logger from '../../utils/logger';
 // import { api } from '../../services/api'; // Currently using mock data
 
 interface DashboardStats {
@@ -80,7 +81,7 @@ const AdminDashboard: React.FC = () => {
         },
       ]);
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
+      logger.error('Failed to fetch dashboard data:', error);
     } finally {
       setLoading(false);
     }

@@ -18,6 +18,7 @@ jobs:
   frontend-test:
     name: Frontend Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15 # Add timeout to prevent 6-hour hangs
 
     steps:
       - name: Checkout code
@@ -43,8 +44,9 @@ jobs:
       - name: Run frontend tests
         working-directory: ./frontend
         run: |
-          CI=true npm test -- --coverage --watchAll=false --passWithNoTests --maxWorkers=2
+          CI=true npm run test:ci
         continue-on-error: true
+        timeout-minutes: 10 # Individual test step timeout
 
       - name: Upload test coverage
         if: always()
@@ -53,6 +55,7 @@ jobs:
           name: frontend-coverage
           path: frontend/coverage/
           retention-days: 7
+          if-no-files-found: ignore
 
   # ========================================
   # Backend Tests
@@ -178,7 +181,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Upload to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: frontend/build
 

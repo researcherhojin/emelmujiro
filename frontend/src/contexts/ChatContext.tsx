@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { useUI } from './UIContext';
 import { ChatWebSocketService } from '../services/websocket';
+import logger from '../utils/logger';
 
 export type MessageType = 'text' | 'image' | 'file' | 'system';
 export type MessageSender = 'user' | 'agent' | 'system';
@@ -233,7 +234,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
         setUnreadCount(data.unreadCount || 0);
       }
     } catch (error) {
-      console.error('Failed to load chat history:', error);
+      logger.error('Failed to load chat history:', error);
     }
   };
 
@@ -246,7 +247,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       };
       localStorage.setItem('chat-history', JSON.stringify(data));
     } catch (error) {
-      console.error('Failed to persist chat data:', error);
+      logger.error('Failed to persist chat data:', error);
     }
   }, [messages, unreadCount]);
 
@@ -298,7 +299,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     } catch (error) {
       // Silently fail for autoplay restrictions
       if (error instanceof Error && !error.message.includes('user gesture')) {
-        console.warn('Could not play notification sound:', error);
+        logger.warn('Could not play notification sound:', error);
       }
     }
   };
@@ -506,7 +507,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
           },
 
           onError: (error: Event) => {
-            console.error('WebSocket error:', error);
+            logger.error('WebSocket error:', error);
             setIsConnected(false);
             showNotification('error', '채팅 서비스 연결에 실패했습니다.');
           },
@@ -568,11 +569,11 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       );
 
       wsRef.current!.connect().catch((error: unknown) => {
-        console.error('Connection failed:', error);
+        logger.error('Connection failed:', error);
         setIsConnected(false);
       });
     } catch (error) {
-      console.error('WebSocket initialization failed:', error);
+      logger.error('WebSocket initialization failed:', error);
       setIsConnected(false);
       showNotification('error', '채팅 서비스 초기화에 실패했습니다.');
     }

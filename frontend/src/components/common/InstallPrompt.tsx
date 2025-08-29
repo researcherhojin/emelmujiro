@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Download, X, Smartphone, Monitor } from 'lucide-react';
+import logger from '../../utils/logger';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -88,6 +89,7 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({
 
       if (outcome === 'accepted') {
         // User accepted the A2HS prompt
+        localStorage.setItem('pwa-install-accepted', 'true');
         setIsVisible(false);
         if (onInstall) {
           onInstall();
@@ -99,7 +101,7 @@ const InstallPrompt: React.FC<InstallPromptProps> = ({
 
       setDeferredPrompt(null);
     } catch (error) {
-      console.error('Error during installation:', error);
+      logger.error('Error during installation:', error);
     } finally {
       setIsInstalling(false);
     }

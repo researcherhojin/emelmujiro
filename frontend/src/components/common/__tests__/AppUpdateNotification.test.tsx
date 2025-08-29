@@ -114,8 +114,8 @@ describe('AppUpdateNotification', () => {
       expect(screen.getByText(/새로운 버전이 있습니다/i)).toBeInTheDocument();
     });
 
-    // Click update button
-    const updateButton = screen.getByRole('button', { name: /[^/]*/i });
+    // Click update button - be more specific
+    const updateButton = screen.getByText('지금 업데이트');
     fireEvent.click(updateButton);
 
     // Should post message to waiting worker
@@ -154,8 +154,8 @@ describe('AppUpdateNotification', () => {
       expect(screen.getByText(/새로운 버전이 있습니다/i)).toBeInTheDocument();
     });
 
-    // Click dismiss button
-    const dismissButton = screen.getByRole('button', { name: /[^/]*/i });
+    // Click dismiss button - use specific text
+    const dismissButton = screen.getByText('나중에');
     fireEvent.click(dismissButton);
 
     // Notification should be hidden
