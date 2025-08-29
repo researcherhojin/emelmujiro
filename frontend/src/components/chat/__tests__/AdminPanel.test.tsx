@@ -643,8 +643,9 @@ describe('AdminPanel', () => {
     it('calls onClose when close button is clicked', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Find the X close button by its test ID
-      const closeButton = screen.getByTestId('icon-x').closest('button');
+      // Find the X close button by its test ID - handle multiple elements
+      const closeButtons = screen.getAllByTestId('icon-x');
+      const closeButton = closeButtons[0]?.closest('button');
       expect(closeButton).toBeDefined();
 
       if (closeButton) {
