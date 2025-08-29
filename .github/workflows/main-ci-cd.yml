@@ -33,12 +33,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('frontend/package-lock.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      - name: Install frontend dependencies
-        working-directory: ./frontend
+      - name: Install dependencies
         run: npm ci
 
       - name: Run frontend tests
@@ -129,15 +128,16 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('frontend/package-lock.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      - name: Install and build frontend
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
         working-directory: ./frontend
-        run: |
-          npm ci
-          CI=false npm run build
+        run: CI=false npm run build
         env:
           REACT_APP_API_URL: https://api.emelmujiro.com
           PUBLIC_URL: https://researcherhojin.github.io/emelmujiro
