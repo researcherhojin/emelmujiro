@@ -71,6 +71,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ci": "vitest run --bail=1 --no-coverage",
+    "test:ci:local": "./scripts/test-ci-local.sh",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",

@@ -49,14 +49,18 @@ describe('Skeleton Component', () => {
       render(<Skeleton width="100px" height="50px" data-testid="skeleton" />);
 
       const skeletons = screen.getAllByTestId('skeleton');
-      expect(skeletons[0]).toHaveStyle({ width: '100px', height: '50px' });
+      const skeleton = skeletons[0];
+      expect(skeleton.style.width).toBe('100px');
+      expect(skeleton.style.height).toBe('50px');
     });
 
     it('applies numeric width and height', () => {
       render(<Skeleton width={200} height={100} data-testid="skeleton" />);
 
       const skeletons = screen.getAllByTestId('skeleton');
-      expect(skeletons[0]).toHaveStyle({ width: '200px', height: '100px' });
+      const skeleton = skeletons[0];
+      expect(skeleton.style.width).toBe('200px');
+      expect(skeleton.style.height).toBe('100px');
     });
 
     it('renders as circle when circle prop is true', () => {
