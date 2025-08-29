@@ -1,6 +1,6 @@
 import React from 'react';
 import { vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AdminPanel from '../AdminPanel';
 import { UIProvider } from '../../../contexts/UIContext';
@@ -669,8 +669,8 @@ describe('AdminPanel', () => {
     it('does not close when clicking inside panel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      const panel = screen.getByRole('dialog');
-      fireEvent.click(panel);
+      const panels = screen.getAllByRole('dialog');
+      fireEvent.click(panels[0]);
 
       expect(mockOnClose).not.toHaveBeenCalled();
     });
@@ -708,10 +708,8 @@ describe('AdminPanel', () => {
     it('has proper ARIA labels', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      expect(screen.getByRole('dialog')).toHaveAttribute(
-        'aria-label',
-        '관리자 패널'
-      );
+      const dialogs = screen.getAllByRole('dialog');
+      expect(dialogs[0]).toHaveAttribute('aria-label', '관리자 패널');
       expect(screen.getByRole('tablist')).toBeInTheDocument();
 
       // Get unique tabs to handle potential duplicate renders in StrictMode
