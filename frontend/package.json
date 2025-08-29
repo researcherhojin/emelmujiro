@@ -79,6 +79,7 @@
     "build": "npm run generate:sitemap && tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
+    "test:ci": "vitest run --bail=1 --no-coverage",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",

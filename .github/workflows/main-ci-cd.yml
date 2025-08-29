@@ -18,7 +18,7 @@ jobs:
   frontend-test:
     name: Frontend Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15  # Add timeout to prevent 6-hour hangs
+    timeout-minutes: 15 # Add timeout to prevent 6-hour hangs
 
     steps:
       - name: Checkout code
@@ -44,9 +44,9 @@ jobs:
       - name: Run frontend tests
         working-directory: ./frontend
         run: |
-          CI=true npm test -- --run --passWithNoTests --maxWorkers=2 --reporter=verbose
+          CI=true npm run test:ci
         continue-on-error: true
-        timeout-minutes: 10  # Individual test step timeout
+        timeout-minutes: 10 # Individual test step timeout
 
       - name: Upload test coverage
         if: always()
