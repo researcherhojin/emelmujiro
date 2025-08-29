@@ -32,13 +32,17 @@ describe('Skeleton Component', () => {
       render(<Skeleton className="custom-class" data-testid="skeleton" />);
 
       const skeletons = screen.getAllByTestId('skeleton');
-      expect(skeletons[0]).toHaveClass(
-        'custom-class',
-        'animate-pulse',
-        'bg-gray-200',
-        'dark:bg-gray-700',
-        'rounded'
+      // Find the skeleton with custom-class (might be first or second due to StrictMode)
+      const customSkeleton = skeletons.find((el) =>
+        el.classList.contains('custom-class')
       );
+
+      expect(customSkeleton).toBeDefined();
+      expect(customSkeleton).toHaveClass('custom-class');
+      expect(customSkeleton).toHaveClass('animate-pulse');
+      expect(customSkeleton).toHaveClass('bg-gray-200');
+      expect(customSkeleton).toHaveClass('dark:bg-gray-700');
+      expect(customSkeleton).toHaveClass('rounded');
     });
 
     it('applies custom width and height', () => {
