@@ -220,40 +220,52 @@ describe('Skeleton Component', () => {
 
   describe('SkeletonText Component', () => {
     it('renders default number of lines', () => {
-      render(<SkeletonText />);
+      const { container } = render(<SkeletonText />);
 
-      const textContainer = screen.getByTestId('skeleton-text');
-      const textLines = within(textContainer)
+      const textContainer = container.querySelector(
+        '[data-testid="skeleton-text"]'
+      );
+      expect(textContainer).toBeInTheDocument();
+      const textLines = within(textContainer as HTMLElement)
         .getAllByRole('generic')
         .filter((el) => el.style.height === '16px');
       expect(textLines.length).toBe(3);
     });
 
     it('renders custom number of lines', () => {
-      render(<SkeletonText lines={5} />);
+      const { container } = render(<SkeletonText lines={5} />);
 
-      const textContainer = screen.getByTestId('skeleton-text');
-      const textLines = within(textContainer)
+      const textContainer = container.querySelector(
+        '[data-testid="skeleton-text"]'
+      );
+      expect(textContainer).toBeInTheDocument();
+      const textLines = within(textContainer as HTMLElement)
         .getAllByRole('generic')
         .filter((el) => el.style.height === '16px');
       expect(textLines.length).toBe(5);
     });
 
     it('renders single line correctly', () => {
-      render(<SkeletonText lines={1} />);
+      const { container } = render(<SkeletonText lines={1} />);
 
-      const textContainer = screen.getByTestId('skeleton-text');
-      const textLines = within(textContainer)
+      const textContainer = container.querySelector(
+        '[data-testid="skeleton-text"]'
+      );
+      expect(textContainer).toBeInTheDocument();
+      const textLines = within(textContainer as HTMLElement)
         .getAllByRole('generic')
         .filter((el) => el.style.height === '16px');
       expect(textLines.length).toBe(1);
     });
 
     it('makes last line shorter', () => {
-      render(<SkeletonText lines={3} />);
+      const { container } = render(<SkeletonText lines={3} />);
 
-      const textContainer = screen.getByTestId('skeleton-text');
-      const textLines = within(textContainer)
+      const textContainer = container.querySelector(
+        '[data-testid="skeleton-text"]'
+      );
+      expect(textContainer).toBeInTheDocument();
+      const textLines = within(textContainer as HTMLElement)
         .getAllByRole('generic')
         .filter((el) => el.style.height === '16px');
       const lastLine = textLines[textLines.length - 1];
@@ -262,18 +274,23 @@ describe('Skeleton Component', () => {
     });
 
     it('applies custom className', () => {
-      render(<SkeletonText className="custom-text" />);
+      const { container } = render(<SkeletonText className="custom-text" />);
 
-      const textContainer = screen.getByTestId('skeleton-text');
+      const textContainer = container.querySelector(
+        '[data-testid="skeleton-text"]'
+      );
       expect(textContainer).toBeInTheDocument();
       expect(textContainer).toHaveClass('custom-text', 'space-y-2');
     });
 
     it('handles zero lines gracefully', () => {
-      render(<SkeletonText lines={0} />);
+      const { container } = render(<SkeletonText lines={0} />);
 
-      const textContainer = screen.getByTestId('skeleton-text');
-      const textLines = within(textContainer)
+      const textContainer = container.querySelector(
+        '[data-testid="skeleton-text"]'
+      );
+      expect(textContainer).toBeInTheDocument();
+      const textLines = within(textContainer as HTMLElement)
         .queryAllByRole('generic')
         .filter((el) => el.style.height === '16px');
       expect(textLines.length).toBe(0);
@@ -689,8 +706,9 @@ describe('Skeleton Component', () => {
         rerender(<SkeletonText lines={i} />);
       }
 
-      // Verify the last render (lines=10),
-      const textContainer = screen.getByTestId('skeleton-text');
+      // Verify the last render (lines=10)
+      const textContainers = screen.getAllByTestId('skeleton-text');
+      const textContainer = textContainers[textContainers.length - 1];
       const textLines = within(textContainer)
         .getAllByRole('generic')
         .filter((el) => el.style.height === '16px');
