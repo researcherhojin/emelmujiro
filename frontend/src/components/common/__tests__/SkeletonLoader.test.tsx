@@ -20,7 +20,12 @@ describe('Skeleton Component', () => {
       render(<Skeleton data-testid="skeleton" />);
 
       const skeleton = screen.getByTestId('skeleton');
-      expect(skeleton).toHaveClass('animate-pulse', 'bg-gray-200', 'rounded');
+      expect(skeleton).toHaveClass(
+        'animate-pulse',
+        'bg-gray-200',
+        'dark:bg-gray-700',
+        'rounded'
+      );
     });
 
     it('applies custom className', () => {
@@ -31,6 +36,7 @@ describe('Skeleton Component', () => {
         'custom-class',
         'animate-pulse',
         'bg-gray-200',
+        'dark:bg-gray-700',
         'rounded'
       );
     });
