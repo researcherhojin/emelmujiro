@@ -290,21 +290,22 @@ describe('serviceWorkerRegistration', () => {
 
         const { register } = await import('../serviceWorkerRegistration');
 
-        // Create a promise to track when the registration is done
-        const registrationPromise = register();
+        // Register doesn't return a promise, it's void
+        register();
 
         // Trigger load event
         window.dispatchEvent(new Event('load'));
 
-        // Wait for the promise to settle (it will reject)
-        try {
-          await registrationPromise;
-        } catch (e) {
-          // Expected to fail
-        }
+        // Wait for the registration to be attempted
+        await vi.waitFor(
+          () => {
+            expect(mockRegister).toHaveBeenCalled();
+          },
+          { timeout: 5000 }
+        );
 
-        // Small delay to ensure console.error is called
-        await new Promise((resolve) => setTimeout(resolve, 10));
+        // Wait a bit for error handling
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
         expect(mockLoggerError).toHaveBeenCalledWith(
           'Error during service worker registration:',
