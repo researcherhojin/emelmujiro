@@ -736,10 +736,9 @@ describe('AdminPanel', () => {
 
       // Check that tab is selected
       expect(cannedTabs[0]).toHaveAttribute('aria-selected', 'true');
-      expect(screen.getByRole('tabpanel')).toHaveAttribute(
-        'aria-labelledby',
-        cannedTabs[0].id
-      );
+
+      const tabpanels = screen.getAllByRole('tabpanel');
+      expect(tabpanels[0]).toHaveAttribute('aria-labelledby', cannedTabs[0].id);
     });
   });
 });
