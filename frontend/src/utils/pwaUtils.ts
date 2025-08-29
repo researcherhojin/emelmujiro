@@ -1,4 +1,5 @@
-// PWA utilities for enhanced features
+// PWA utilities for enhanced features - 2025 Edition
+// Includes support for latest PWA APIs
 import logger from './logger';
 
 // App Badge API

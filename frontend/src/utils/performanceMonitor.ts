@@ -4,6 +4,17 @@
 
 import logger from './logger';
 
+// Extend Window interface to include gtag
+declare global {
+  interface Window {
+    gtag?: (
+      command: string,
+      targetId: string,
+      config?: Record<string, unknown>
+    ) => void;
+  }
+}
+
 interface PerformanceMetrics {
   FCP?: number; // First Contentful Paint
   LCP?: number; // Largest Contentful Paint
@@ -12,6 +23,7 @@ interface PerformanceMetrics {
   TTFB?: number; // Time to First Byte
   TTI?: number; // Time to Interactive
   TBT?: number; // Total Blocking Time
+  INP?: number; // Interaction to Next Paint (Core Web Vital 2024+)
 }
 
 class PerformanceMonitor {
@@ -40,6 +52,9 @@ class PerformanceMonitor {
 
     // Observe cumulative layout shift
     this.observeCLS();
+
+    // Observe Interaction to Next Paint
+    this.observeINP();
 
     // Log metrics on page unload
     if (typeof window !== 'undefined') {
@@ -144,6 +159,30 @@ class PerformanceMonitor {
       this.observers.set('cls', observer);
     } catch (error) {
       logger.error('Failed to observe CLS:', error);
+    }
+  }
+
+  /**
+   * Observe Interaction to Next Paint (INP)
+   */
+  private observeINP(): void {
+    try {
+      let maxINP = 0;
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          const eventEntry = entry as PerformanceEventTiming;
+          if (eventEntry.duration > maxINP) {
+            maxINP = eventEntry.duration;
+            this.metrics.INP = Math.round(maxINP);
+            logger.info('INP:', this.metrics.INP);
+          }
+        }
+      });
+
+      observer.observe({ entryTypes: ['event'] });
+      this.observers.set('inp', observer);
+    } catch (error) {
+      logger.error('Failed to observe INP:', error);
     }
   }
 
@@ -266,6 +305,7 @@ class PerformanceMonitor {
       CLS: 0.1, // 0.1
       TTFB: 800, // 800ms
       TTI: 3800, // 3.8s
+      INP: 200, // 200ms (Good INP threshold)
     };
 
     const violations: string[] = [];
