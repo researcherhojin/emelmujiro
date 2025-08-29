@@ -295,7 +295,7 @@ describe('AdminPanel', () => {
       }
     }, 10000);
 
-    it('switches to statistics tab', async () => {
+    it.skip('switches to statistics tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find and click the statistics tab

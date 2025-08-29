@@ -2,16 +2,7 @@ import React, { useEffect, useState, memo, useRef } from 'react';
 import { onCLS, onFCP, onLCP, onTTFB, onINP, Metric } from 'web-vitals';
 import logger from '../../utils/logger';
 
-// Extend Window interface to include gtag
-declare global {
-  interface Window {
-    gtag?: (
-      command: string,
-      targetId: string,
-      config?: Record<string, unknown>
-    ) => void;
-  }
-}
+// gtag is already defined in @types/global.d.ts
 
 interface VitalMetric {
   name: string;

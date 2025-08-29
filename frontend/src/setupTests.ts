@@ -621,11 +621,7 @@ Object.defineProperty(navigator, 'language', {
 });
 
 // Mock window.gtag for Google Analytics
-declare global {
-  interface Window {
-    gtag?: (...args: unknown[]) => void;
-  }
-}
+// gtag is already defined in @types/global.d.ts
 
 (global as typeof globalThis & { gtag?: ReturnType<typeof vi.fn> }).gtag =
   vi.fn();
