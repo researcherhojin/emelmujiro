@@ -61,7 +61,7 @@
       content="black-translucent"
     />
     <meta name="apple-mobile-web-app-title" content="에멜무지로" />
-    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="apple-touch-icon" href="/emelmujiro/logo192.png" />
 
     <!-- 보안 헤더 -->
     <!-- CSP는 개발 환경에서 문제를 일으킬 수 있으므로 주석 처리 -->
@@ -85,8 +85,18 @@
     <link rel="prefetch" href="/manifest.json" />
 
     <!-- Preload critical images -->
-    <link rel="preload" href="/logo192.png" as="image" type="image/png" />
-    <link rel="preload" href="/logo512.png" as="image" type="image/png" />
+    <link
+      rel="preload"
+      href="/emelmujiro/logo192.png"
+      as="image"
+      type="image/png"
+    />
+    <link
+      rel="preload"
+      href="/emelmujiro/logo512.png"
+      as="image"
+      type="image/png"
+    />
 
     <!-- Fonts with optimized loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -196,7 +206,10 @@
       // Critical image preloading
       if (window.requestIdleCallback) {
         requestIdleCallback(() => {
-          const criticalImages = ['/logo192.png', '/logo512.png'];
+          const criticalImages = [
+            '/emelmujiro/logo192.png',
+            '/emelmujiro/logo512.png',
+          ];
 
           criticalImages.forEach((src) => {
             const img = new Image();
@@ -264,6 +277,6 @@
         themeColorMeta.content = theme === 'dark' ? '#1F2937' : '#111827';
       }
     </script>
-    <script type="module" src="/src/index.tsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
