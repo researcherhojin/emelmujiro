@@ -227,11 +227,13 @@ describe('AdminPanel', () => {
     it('renders all navigation tabs', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Tabs are rendered as buttons with text
-      expect(screen.getByText('설정')).toBeInTheDocument();
-      expect(screen.getByText('자동 응답')).toBeInTheDocument();
-      expect(screen.getByText('통계')).toBeInTheDocument();
-      expect(screen.getByText('사용자')).toBeInTheDocument();
+      // Tabs are rendered as buttons with text - use role-based queries for specificity
+      expect(screen.getByRole('tab', { name: /설정/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('tab', { name: /자동 응답/i })
+      ).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /통계/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /사용자/i })).toBeInTheDocument();
     });
   });
 
@@ -240,7 +242,7 @@ describe('AdminPanel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Check if settings tab is selected (has blue-600 class)
-      const settingsButton = screen.getByText('설정').closest('button');
+      const settingsButton = screen.getByRole('tab', { name: /설정/i });
       expect(settingsButton).toHaveClass('text-blue-600');
       expect(screen.getByText('환영 메시지')).toBeInTheDocument();
     });
