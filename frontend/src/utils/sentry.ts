@@ -1,3 +1,4 @@
+// Sentry configuration - Enhanced Error Tracking for 2025
 import * as Sentry from '@sentry/react';
 import env from '../config/env';
 
