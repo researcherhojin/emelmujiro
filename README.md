@@ -85,9 +85,9 @@ npm run dev
 - **State**: Context API (4개 Context)
 - **Routing**: React Router 7 (HashRouter)
 - **Testing**: Vitest 3.2 + React Testing Library
-- **i18n**: react-i18next (한국어/영어)
 - **PWA**: Service Worker + Offline Support
 - **Icons**: Lucide React
+- **i18n**: react-i18next (준비됨, UI 미구현)
 
 ### Backend (API)
 
@@ -147,7 +147,6 @@ emelmujiro/
 - ✅ **실시간 채팅** - WebSocket 기반 상담 시스템
 - ✅ **블로그 시스템** - 마크다운 지원, 검색, 댓글
 - ✅ **다크 모드** - 시스템 설정 연동
-- ✅ **다국어 지원** - 한국어/영어 실시간 전환
 - ✅ **접근성** - WCAG 2.1 AA 준수
 
 ### 성능 최적화
@@ -214,7 +213,6 @@ emelmujiro/
 
 - [CLAUDE.md](CLAUDE.md) - Claude Code 가이드
 - [CI-CD-README.md](CI-CD-README.md) - CI/CD 파이프라인 문서
-- [VITE_MIGRATION.md](VITE_MIGRATION.md) - Vite 마이그레이션 가이드
 
 ## 📞 문의
 
