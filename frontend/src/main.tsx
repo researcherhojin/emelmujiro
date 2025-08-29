@@ -46,16 +46,23 @@ if (process.env.NODE_ENV === 'production') {
   });
 } else {
   // 개발 환경에서는 기존 Service Worker 완전 제거
-  serviceWorkerRegistration.unregister().then(() => {
-    // 캐시도 모두 삭제
-    if ('caches' in window) {
-      caches.keys().then((names) => {
-        names.forEach((name) => {
-          caches.delete(name);
-        });
+  const unregisterPromise = serviceWorkerRegistration.unregister();
+  if (unregisterPromise && typeof unregisterPromise.then === 'function') {
+    unregisterPromise
+      .then(() => {
+        // 캐시도 모두 삭제
+        if ('caches' in window) {
+          caches.keys().then((names) => {
+            names.forEach((name) => {
+              caches.delete(name);
+            });
+          });
+        }
+      })
+      .catch((error) => {
+        logger.warn('Failed to unregister service worker:', error);
       });
-    }
-  });
+  }
 }
 
 // Initialize cache optimization

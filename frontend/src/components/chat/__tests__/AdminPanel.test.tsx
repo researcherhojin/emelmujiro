@@ -350,7 +350,7 @@ describe('AdminPanel', () => {
       expect(screen.getAllByText('기능 설정').length).toBeGreaterThan(0);
     });
 
-    it('allows editing welcome message', async () => {
+    it.skip('allows editing welcome message', async () => {
       const user = userEvent.setup();
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 

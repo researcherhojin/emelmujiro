@@ -139,14 +139,16 @@ function checkValidServiceWorker(swUrl: string, config?: Config): void {
     });
 }
 
-export function unregister(): void {
+export function unregister(): Promise<void> {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready
+    return navigator.serviceWorker.ready
       .then((registration) => {
-        registration.unregister();
+        return registration.unregister().then(() => void 0);
       })
       .catch((error) => {
         logger.error(error.message);
+        throw error;
       });
   }
+  return Promise.resolve();
 }
