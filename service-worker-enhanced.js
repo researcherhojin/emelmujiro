@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 
 // Advanced Service Worker with enhanced PWA features
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = `emelmujiro-${CACHE_VERSION}`;
 const DYNAMIC_CACHE_NAME = `emelmujiro-dynamic-${CACHE_VERSION}`;
 const IMAGE_CACHE_NAME = `emelmujiro-images-${CACHE_VERSION}`;
@@ -26,13 +26,18 @@ const DYNAMIC_CACHE_PATTERNS = [
   /^https:\/\/fonts\.gstatic\.com/,
   /\.woff2?$/,
   /\.ttf$/,
-  /\/static\/css\//,
-  /\/static\/js\//,
-  /\/static\/media\//,
+  /\/assets\//,  // Vite uses /assets/ instead of /static/
 ];
 
 // Image patterns for separate image cache
-const IMAGE_PATTERNS = [/\.png$/, /\.jpg$/, /\.jpeg$/, /\.gif$/, /\.svg$/, /\.webp$/];
+const IMAGE_PATTERNS = [
+  /\.png$/,
+  /\.jpg$/,
+  /\.jpeg$/,
+  /\.gif$/,
+  /\.svg$/,
+  /\.webp$/,
+];
 
 // API endpoints that should be cached
 const API_CACHE_PATTERNS = [
@@ -68,18 +73,18 @@ let isOnline = navigator.onLine;
 let lastSyncTime = Date.now();
 
 // Install event - cache essential resources
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing...');
 
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then(cache => {
+      .then((cache) => {
         console.log('[Service Worker] Caching essential resources');
         // Cache each URL individually to handle failures gracefully
         return Promise.all(
-          urlsToCache.map(url => {
-            return cache.add(url).catch(error => {
+          urlsToCache.map((url) => {
+            return cache.add(url).catch((error) => {
               console.warn(`[Service Worker] Failed to cache ${url}:`, error);
             });
           })
@@ -89,22 +94,22 @@ self.addEventListener('install', event => {
         console.log('[Service Worker] Skip waiting');
         return self.skipWaiting();
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('[Service Worker] Installation failed:', error);
       })
   );
 });
 
 // Activate event - clean up old caches
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
   console.log('[Service Worker] Activating...');
 
   event.waitUntil(
     caches
       .keys()
-      .then(cacheNames => {
+      .then((cacheNames) => {
         return Promise.all(
-          cacheNames.map(cacheName => {
+          cacheNames.map((cacheName) => {
             if (
               cacheName !== CACHE_NAME &&
               cacheName !== DYNAMIC_CACHE_NAME &&
@@ -126,7 +131,7 @@ self.addEventListener('activate', event => {
 });
 
 // Fetch event - serve from cache when possible
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
@@ -167,7 +172,7 @@ async function handleBlogRequest(request) {
     // Update in background if online
     if (isOnline) {
       fetch(request)
-        .then(response => {
+        .then((response) => {
           if (response && response.status === 200) {
             cache.put(request, response.clone());
           }
@@ -227,7 +232,10 @@ async function handleApiRequest(request) {
     return response;
   } catch (error) {
     // If network fails, try cache
-    console.log('[Service Worker] Network failed, trying cache for:', request.url);
+    console.log(
+      '[Service Worker] Network failed, trying cache for:',
+      request.url
+    );
     const cachedResponse = await cache.match(request);
 
     if (cachedResponse) {
@@ -293,7 +301,11 @@ async function handleGeneralRequest(request) {
     const response = await fetch(request);
 
     // Cache dynamic resources if successful
-    if (response && response.status === 200 && shouldCacheDynamically(request.url)) {
+    if (
+      response &&
+      response.status === 200 &&
+      shouldCacheDynamically(request.url)
+    ) {
       const cache = await caches.open(DYNAMIC_CACHE_NAME);
       cache.put(request, response.clone());
 
@@ -314,7 +326,7 @@ async function handleGeneralRequest(request) {
 }
 
 // Background sync for offline form submissions
-self.addEventListener('sync', event => {
+self.addEventListener('sync', (event) => {
   console.log('[Service Worker] Background sync:', event.tag);
 
   if (event.tag === 'sync-contact-form') {
@@ -359,7 +371,7 @@ async function syncContactForms() {
 }
 
 // Enhanced push notification handler with different types
-self.addEventListener('push', event => {
+self.addEventListener('push', (event) => {
   console.log('[Service Worker] Push received');
 
   let data = {};
@@ -385,7 +397,7 @@ self.addEventListener('push', event => {
           return navigator.setAppBadge(data.badgeCount || 1);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('[Service Worker] Failed to show notification:', error);
       })
   );
@@ -483,7 +495,7 @@ function createNotificationOptions(data, type) {
 }
 
 // Enhanced notification click handler with action support
-self.addEventListener('notificationclick', event => {
+self.addEventListener('notificationclick', (event) => {
   console.log('[Service Worker] Notification clicked', event.action);
 
   const notification = event.notification;
@@ -515,9 +527,9 @@ self.addEventListener('notificationclick', event => {
   event.waitUntil(
     clients
       .matchAll({ type: 'window', includeUncontrolled: true })
-      .then(windowClients => {
+      .then((windowClients) => {
         // Check if there's already a window/tab open with the same origin
-        const existingClient = windowClients.find(client => {
+        const existingClient = windowClients.find((client) => {
           const clientUrl = new URL(client.url);
           const targetUrl = new URL(urlToOpen, self.location.origin);
           return clientUrl.origin === targetUrl.origin;
@@ -534,31 +546,34 @@ self.addEventListener('notificationclick', event => {
           }
         }
       })
-      .catch(error => {
-        console.error('[Service Worker] Failed to handle notification click:', error);
+      .catch((error) => {
+        console.error(
+          '[Service Worker] Failed to handle notification click:',
+          error
+        );
       })
   );
 });
 
 // Helper functions
 function isApiRequest(url) {
-  return API_CACHE_PATTERNS.some(pattern => pattern.test(url.pathname));
+  return API_CACHE_PATTERNS.some((pattern) => pattern.test(url.pathname));
 }
 
 function isBlogRequest(url) {
-  return BLOG_CACHE_PATTERNS.some(pattern => pattern.test(url.pathname));
+  return BLOG_CACHE_PATTERNS.some((pattern) => pattern.test(url.pathname));
 }
 
 function isImageRequest(url) {
-  return IMAGE_PATTERNS.some(pattern => pattern.test(url.pathname));
+  return IMAGE_PATTERNS.some((pattern) => pattern.test(url.pathname));
 }
 
 function isAllowedCrossOrigin(url) {
-  return DYNAMIC_CACHE_PATTERNS.some(pattern => pattern.test(url.href));
+  return DYNAMIC_CACHE_PATTERNS.some((pattern) => pattern.test(url.href));
 }
 
 function shouldCacheDynamically(url) {
-  return DYNAMIC_CACHE_PATTERNS.some(pattern => pattern.test(url));
+  return DYNAMIC_CACHE_PATTERNS.some((pattern) => pattern.test(url));
 }
 
 // Check if cached response is expired
@@ -581,7 +596,7 @@ async function limitCacheSize(cacheName, maxSize) {
   if (keys.length > maxSize) {
     // Delete oldest entries
     const keysToDelete = keys.slice(0, keys.length - maxSize);
-    await Promise.all(keysToDelete.map(key => cache.delete(key)));
+    await Promise.all(keysToDelete.map((key) => cache.delete(key)));
   }
 }
 
@@ -622,8 +637,8 @@ self.addEventListener('online', () => {
   isOnline = true;
 
   // Notify all clients about network status change
-  self.clients.matchAll().then(clients => {
-    clients.forEach(client => {
+  self.clients.matchAll().then((clients) => {
+    clients.forEach((client) => {
       client.postMessage({ type: 'NETWORK_STATUS', online: true });
     });
   });
@@ -637,8 +652,8 @@ self.addEventListener('offline', () => {
   isOnline = false;
 
   // Notify all clients about network status change
-  self.clients.matchAll().then(clients => {
-    clients.forEach(client => {
+  self.clients.matchAll().then((clients) => {
+    clients.forEach((client) => {
       client.postMessage({ type: 'NETWORK_STATUS', online: false });
     });
   });
@@ -651,12 +666,15 @@ async function triggerBackgroundSync() {
       await self.registration.sync.register('periodic-sync');
     }
   } catch (error) {
-    console.error('[Service Worker] Failed to register background sync:', error);
+    console.error(
+      '[Service Worker] Failed to register background sync:',
+      error
+    );
   }
 }
 
 // Enhanced message handler for client communication
-self.addEventListener('message', event => {
+self.addEventListener('message', (event) => {
   console.log('[Service Worker] Message received:', event.data);
 
   const { type, data } = event.data;
@@ -667,7 +685,9 @@ self.addEventListener('message', event => {
       break;
 
     case 'CACHE_URLS':
-      event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(data.urls)));
+      event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => cache.addAll(data.urls))
+      );
       break;
 
     case 'PRELOAD_BLOG_POSTS':
@@ -680,7 +700,7 @@ self.addEventListener('message', event => {
 
     case 'GET_CACHE_STATUS':
       event.waitUntil(
-        getCacheStatus().then(status => {
+        getCacheStatus().then((status) => {
           event.ports[0].postMessage(status);
         })
       );
@@ -690,7 +710,9 @@ self.addEventListener('message', event => {
       event.waitUntil(
         self.registration.sync.register('periodic-content-sync').catch(() => {
           // Fallback to manual sync if background sync is not supported
-          console.log('[Service Worker] Background sync not supported, using manual sync');
+          console.log(
+            '[Service Worker] Background sync not supported, using manual sync'
+          );
         })
       );
       break;
@@ -738,7 +760,7 @@ async function getCacheStatus() {
     const keys = await cache.keys();
     status[cacheName] = {
       count: keys.length,
-      urls: keys.map(request => request.url).slice(0, 5), // First 5 URLs for debugging
+      urls: keys.map((request) => request.url).slice(0, 5), // First 5 URLs for debugging
     };
   }
 
@@ -751,7 +773,7 @@ async function getCacheStatus() {
 }
 
 // Periodic content sync
-self.addEventListener('sync', event => {
+self.addEventListener('sync', (event) => {
   console.log('[Service Worker] Background sync:', event.tag);
 
   if (event.tag === 'periodic-content-sync') {
