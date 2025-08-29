@@ -4,17 +4,6 @@
 
 import logger from './logger';
 
-// Extend Window interface to include gtag
-declare global {
-  interface Window {
-    gtag?: (
-      command: string,
-      targetId: string,
-      config?: Record<string, unknown>
-    ) => void;
-  }
-}
-
 interface PerformanceMetrics {
   FCP?: number; // First Contentful Paint
   LCP?: number; // Largest Contentful Paint
