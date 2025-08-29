@@ -264,7 +264,7 @@ describe('AdminPanel', () => {
       expect(welcomeMessages.length).toBeGreaterThan(0);
     });
 
-    it.skip('switches to canned responses tab', async () => {
+    it('switches to canned responses tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find the canned responses tab and click it
@@ -295,7 +295,7 @@ describe('AdminPanel', () => {
       }
     }, 10000);
 
-    it.skip('switches to statistics tab', async () => {
+    it('switches to statistics tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find and click the statistics tab
@@ -318,7 +318,7 @@ describe('AdminPanel', () => {
       }
     }, 10000);
 
-    it.skip('switches to users tab', async () => {
+    it('switches to users tab', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       const tabs = screen.getAllByRole('tab');
@@ -350,7 +350,7 @@ describe('AdminPanel', () => {
       expect(screen.getAllByText('기능 설정').length).toBeGreaterThan(0);
     });
 
-    it.skip('allows editing welcome message', async () => {
+    it('allows editing welcome message', async () => {
       const user = userEvent.setup();
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
@@ -366,7 +366,7 @@ describe('AdminPanel', () => {
       expect(welcomeInput.value).toBe('새로운 환영 메시지입니다');
     });
 
-    it.skip('allows editing max message length', async () => {
+    it('allows editing max message length', async () => {
       const user = userEvent.setup();
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
@@ -382,7 +382,7 @@ describe('AdminPanel', () => {
       expect(maxLengthInput.value).toBe('1000');
     });
 
-    it.skip('saves settings to localStorage', async () => {
+    it('saves settings to localStorage', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find save button by text
@@ -403,7 +403,7 @@ describe('AdminPanel', () => {
       }
     });
 
-    it.skip('shows success notification on save', async () => {
+    it('shows success notification on save', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find and click save button - use getAllByRole since there might be multiple
@@ -426,11 +426,12 @@ describe('AdminPanel', () => {
     beforeEach(() => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
       // Switch to Canned Responses tab
-      const cannedTab = screen.getByRole('tab', { name: /자동 응답/ });
-      fireEvent.click(cannedTab);
+      // Handle multiple elements in StrictMode by using getAllByRole
+      const cannedTabs = screen.getAllByRole('tab', { name: /자동 응답/ });
+      fireEvent.click(cannedTabs[0]);
     });
 
-    it.skip('displays existing canned responses', async () => {
+    it('displays existing canned responses', async () => {
       // The Canned Responses tab has been clicked in beforeEach
       // Wait for the content to be rendered
       await waitFor(() => {
@@ -439,7 +440,7 @@ describe('AdminPanel', () => {
       });
     });
 
-    it.skip('allows adding new canned response', async () => {
+    it('allows adding new canned response', async () => {
       const user = userEvent.setup();
 
       const input = screen.getByPlaceholderText('새 자동 응답 추가...');
@@ -457,7 +458,7 @@ describe('AdminPanel', () => {
       });
     });
 
-    it.skip('allows editing canned response', async () => {
+    it('allows editing canned response', async () => {
       const user = userEvent.setup();
 
       // Since no canned responses exist by default, add one first
@@ -477,7 +478,7 @@ describe('AdminPanel', () => {
       });
     });
 
-    it.skip('allows deleting canned response', async () => {
+    it('allows deleting canned response', async () => {
       // First add a response
       const user = userEvent.setup();
       const input = screen.getByPlaceholderText('새 자동 응답 추가...');
@@ -499,14 +500,14 @@ describe('AdminPanel', () => {
       // It would need to be implemented in the component
     });
 
-    it.skip('cancels editing when cancel button is clicked', async () => {
+    it('cancels editing when cancel button is clicked', async () => {
       // This functionality requires edit buttons to be present
       // Since the component doesn't have predefined canned responses,
       // this test needs to be updated when editing functionality is added
       expect(true).toBe(true);
     });
 
-    it.skip('does not add empty canned response', async () => {
+    it('does not add empty canned response', async () => {
       const input = screen.getByPlaceholderText('새 자동 응답 추가...');
       const addButtons = screen.getAllByText('추가');
       const addButton = addButtons[0]?.closest('button');
@@ -530,9 +531,9 @@ describe('AdminPanel', () => {
     beforeEach(() => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
       // Switch to Statistics tab since Settings is default
-      // Use role selector to get the tab button specifically
-      const statsTab = screen.getByRole('tab', { name: /통계/ });
-      fireEvent.click(statsTab);
+      // Handle multiple elements in StrictMode by using getAllByRole
+      const statsTabs = screen.getAllByRole('tab', { name: /통계/ });
+      fireEvent.click(statsTabs[0]);
     });
 
     it('displays total messages count', () => {
@@ -584,7 +585,7 @@ describe('AdminPanel', () => {
       expect(refreshButtons.length).toBeGreaterThan(0);
     });
 
-    it.skip('refreshes statistics when button clicked', async () => {
+    it('refreshes statistics when button clicked', async () => {
       const refreshButtons = screen.getAllByText('새로고침');
       const refreshButton = refreshButtons[0]?.closest('button');
 
@@ -608,11 +609,12 @@ describe('AdminPanel', () => {
     beforeEach(() => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
       // Switch to Users tab
-      const usersTab = screen.getByRole('tab', { name: /사용자/ });
-      fireEvent.click(usersTab);
+      // Handle multiple elements in StrictMode by using getAllByRole
+      const usersTabs = screen.getAllByRole('tab', { name: /사용자/ });
+      fireEvent.click(usersTabs[0]);
     });
 
-    it.skip('displays active users list', async () => {
+    it('displays active users list', async () => {
       // Check for either active users or no users message
       const activeUsersText = screen.queryByText('활성 사용자');
       const noUsersText = screen.queryByText('현재 활성 사용자가 없습니다.');
@@ -626,7 +628,7 @@ describe('AdminPanel', () => {
       }
     });
 
-    it.skip('shows user status indicators', async () => {
+    it('shows user status indicators', async () => {
       // Check if there are any users online
       const onlineIndicators = screen.queryAllByTestId('user-status-online');
       const noUsersMessage = screen.queryByText('현재 활성 사용자가 없습니다.');
@@ -667,7 +669,7 @@ describe('AdminPanel', () => {
       expect(hasUsersTabContent).toBeTruthy();
     });
 
-    it.skip('allows blocking a user', async () => {
+    it('allows blocking a user', async () => {
       const blockButtons = screen.queryAllByRole('button', { name: /차단/i });
       const noUsersMessage = screen.queryByText('현재 활성 사용자가 없습니다.');
 
@@ -698,7 +700,7 @@ describe('AdminPanel', () => {
       // Business hours info is in the statistics tab, not settings
     });
 
-    it.skip('allows toggling business hours', async () => {
+    it('allows toggling business hours', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Business hours toggle is not implemented in the current AdminPanel
@@ -762,7 +764,7 @@ describe('AdminPanel', () => {
   });
 
   describe('Error Handling', () => {
-    it.skip('shows error notification when save fails', async () => {
+    it('shows error notification when save fails', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Error handling for save failure is not properly testable with current implementation
@@ -795,7 +797,7 @@ describe('AdminPanel', () => {
       expect(true).toBe(true);
     });
 
-    it.skip('announces tab changes to screen readers', async () => {
+    it('announces tab changes to screen readers', async () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       const cannedTab = screen.getByText('자동 응답').closest('button')!;
