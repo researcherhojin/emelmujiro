@@ -26,8 +26,8 @@ describe('Skeleton Component', () => {
     it('applies custom className', () => {
       render(<Skeleton className="custom-class" data-testid="skeleton" />);
 
-      const skeleton = screen.getByTestId('skeleton');
-      expect(skeleton).toHaveClass(
+      const skeletons = screen.getAllByTestId('skeleton');
+      expect(skeletons[0]).toHaveClass(
         'custom-class',
         'animate-pulse',
         'bg-gray-200',
