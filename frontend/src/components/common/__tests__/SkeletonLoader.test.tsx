@@ -299,18 +299,23 @@ describe('Skeleton Component', () => {
 
   describe('SkeletonListItem Component', () => {
     it('renders list item structure', () => {
-      render(<SkeletonListItem />);
+      const { container } = render(<SkeletonListItem />);
 
-      const listItem = screen.getByTestId('skeleton-list-item');
+      const listItem = container.querySelector(
+        '[data-testid="skeleton-list-item"]'
+      );
       expect(listItem).toBeInTheDocument();
       expect(listItem).toHaveClass('flex', 'items-center', 'space-x-4', 'p-4');
     });
 
     it('renders circular avatar placeholder', () => {
-      render(<SkeletonListItem />);
+      const { container } = render(<SkeletonListItem />);
 
-      const listItem = screen.getByTestId('skeleton-list-item');
-      const skeletons = within(listItem).getAllByRole('generic');
+      const listItem = container.querySelector(
+        '[data-testid="skeleton-list-item"]'
+      );
+      expect(listItem).toBeInTheDocument();
+      const skeletons = within(listItem as HTMLElement).getAllByRole('generic');
       const avatar = skeletons.find(
         (el) =>
           el.style.width === '48px' &&
@@ -321,10 +326,13 @@ describe('Skeleton Component', () => {
     });
 
     it('renders content area with text placeholders', () => {
-      render(<SkeletonListItem />);
+      const { container } = render(<SkeletonListItem />);
 
-      const listItem = screen.getByTestId('skeleton-list-item');
-      const skeletons = within(listItem).getAllByRole('generic');
+      const listItem = container.querySelector(
+        '[data-testid="skeleton-list-item"]'
+      );
+      expect(listItem).toBeInTheDocument();
+      const skeletons = within(listItem as HTMLElement).getAllByRole('generic');
       const textPlaceholders = skeletons.filter(
         (el) =>
           el.classList.contains('animate-pulse') &&
@@ -334,10 +342,13 @@ describe('Skeleton Component', () => {
     });
 
     it('renders action button placeholder', () => {
-      render(<SkeletonListItem />);
+      const { container } = render(<SkeletonListItem />);
 
-      const listItem = screen.getByTestId('skeleton-list-item');
-      const skeletons = within(listItem).getAllByRole('generic');
+      const listItem = container.querySelector(
+        '[data-testid="skeleton-list-item"]'
+      );
+      expect(listItem).toBeInTheDocument();
+      const skeletons = within(listItem as HTMLElement).getAllByRole('generic');
       const actionButton = skeletons.find(
         (el) => el.style.height === '32px' && el.style.width === '80px'
       );
@@ -345,9 +356,13 @@ describe('Skeleton Component', () => {
     });
 
     it('applies custom className', () => {
-      render(<SkeletonListItem className="custom-item" />);
+      const { container } = render(
+        <SkeletonListItem className="custom-item" />
+      );
 
-      const listItem = screen.getByTestId('skeleton-list-item');
+      const listItem = container.querySelector(
+        '[data-testid="skeleton-list-item"]'
+      );
       expect(listItem).toBeInTheDocument();
       expect(listItem).toHaveClass('custom-item');
     });
@@ -355,18 +370,20 @@ describe('Skeleton Component', () => {
 
   describe('SkeletonHero Component', () => {
     it('renders hero section structure', () => {
-      render(<SkeletonHero />);
+      const { container } = render(<SkeletonHero />);
 
-      const hero = screen.getByTestId('skeleton-hero');
+      const hero = container.querySelector('[data-testid="skeleton-hero"]');
+      expect(hero).toBeInTheDocument();
       expect(hero).toBeInTheDocument();
       expect(hero).toHaveClass('py-20', 'px-4');
     });
 
     it('renders title placeholders', () => {
-      render(<SkeletonHero />);
+      const { container } = render(<SkeletonHero />);
 
-      const hero = screen.getByTestId('skeleton-hero');
-      const skeletons = within(hero).getAllByRole('generic');
+      const hero = container.querySelector('[data-testid="skeleton-hero"]');
+      expect(hero).toBeInTheDocument();
+      const skeletons = within(hero as HTMLElement).getAllByRole('generic');
       // Title lines have 48px height and are wider (w-3/4 or w-2/3),
       // Filter out CTA buttons which also have 48px height but specific widths (120px, 140px),
       const titleLines = skeletons.filter(
@@ -376,10 +393,11 @@ describe('Skeleton Component', () => {
     });
 
     it('renders description placeholders', () => {
-      render(<SkeletonHero />);
+      const { container } = render(<SkeletonHero />);
 
-      const hero = screen.getByTestId('skeleton-hero');
-      const skeletons = within(hero).getAllByRole('generic');
+      const hero = container.querySelector('[data-testid="skeleton-hero"]');
+      expect(hero).toBeInTheDocument();
+      const skeletons = within(hero as HTMLElement).getAllByRole('generic');
       const descriptionLines = skeletons.filter(
         (el) => el.style.height === '20px'
       );
@@ -387,10 +405,11 @@ describe('Skeleton Component', () => {
     });
 
     it('renders CTA button placeholders', () => {
-      render(<SkeletonHero />);
+      const { container } = render(<SkeletonHero />);
 
-      const hero = screen.getByTestId('skeleton-hero');
-      const skeletons = within(hero).getAllByRole('generic');
+      const hero = container.querySelector('[data-testid="skeleton-hero"]');
+      expect(hero).toBeInTheDocument();
+      const skeletons = within(hero as HTMLElement).getAllByRole('generic');
       // There are title placeholders (48px) and CTA buttons (48px),
       // CTA buttons also have width specified
       const ctaButtons = skeletons.filter(
@@ -402,9 +421,10 @@ describe('Skeleton Component', () => {
     });
 
     it('applies custom className', () => {
-      render(<SkeletonHero className="custom-hero" />);
+      const { container } = render(<SkeletonHero className="custom-hero" />);
 
-      const hero = screen.getByTestId('skeleton-hero');
+      const hero = container.querySelector('[data-testid="skeleton-hero"]');
+      expect(hero).toBeInTheDocument();
       expect(hero).toBeInTheDocument();
       expect(hero).toHaveClass('custom-hero');
     });
@@ -412,18 +432,24 @@ describe('Skeleton Component', () => {
 
   describe('SkeletonServices Component', () => {
     it('renders services section structure', () => {
-      render(<SkeletonServices />);
+      const { container } = render(<SkeletonServices />);
 
-      const services = screen.getByTestId('skeleton-services');
+      const services = container.querySelector(
+        '[data-testid="skeleton-services"]'
+      );
+      expect(services).toBeInTheDocument();
       expect(services).toBeInTheDocument();
       expect(services).toHaveClass('py-16');
     });
 
     it('renders section title placeholders', () => {
-      render(<SkeletonServices />);
+      const { container } = render(<SkeletonServices />);
 
-      const services = screen.getByTestId('skeleton-services');
-      const skeletons = within(services).getAllByRole('generic');
+      const services = container.querySelector(
+        '[data-testid="skeleton-services"]'
+      );
+      expect(services).toBeInTheDocument();
+      const skeletons = within(services as HTMLElement).getAllByRole('generic');
 
       const titlePlaceholder = skeletons.find(
         (el) => el.style.height === '40px'
@@ -437,11 +463,14 @@ describe('Skeleton Component', () => {
     });
 
     it('renders service cards grid', () => {
-      render(<SkeletonServices />);
+      const { container } = render(<SkeletonServices />);
 
-      const services = screen.getByTestId('skeleton-services');
+      const services = container.querySelector(
+        '[data-testid="skeleton-services"]'
+      );
+      expect(services).toBeInTheDocument();
       // Service cards have icons (48x48), titles (28px height), and other elements
-      const skeletons = within(services).getAllByRole('generic');
+      const skeletons = within(services as HTMLElement).getAllByRole('generic');
       const icons = skeletons.filter(
         (el) => el.style.width === '48px' && el.style.height === '48px'
       );
@@ -450,10 +479,13 @@ describe('Skeleton Component', () => {
     });
 
     it('renders service card content', () => {
-      render(<SkeletonServices />);
+      const { container } = render(<SkeletonServices />);
 
-      const services = screen.getByTestId('skeleton-services');
-      const skeletons = within(services).getAllByRole('generic');
+      const services = container.querySelector(
+        '[data-testid="skeleton-services"]'
+      );
+      expect(services).toBeInTheDocument();
+      const skeletons = within(services as HTMLElement).getAllByRole('generic');
 
       // Each card should have: 1 icon (48x48), 1 title (28px height), 1 divider (4px height),
       const icons = skeletons.filter(
@@ -470,9 +502,14 @@ describe('Skeleton Component', () => {
     });
 
     it('applies custom className', () => {
-      render(<SkeletonServices className="custom-services" />);
+      const { container } = render(
+        <SkeletonServices className="custom-services" />
+      );
 
-      const services = screen.getByTestId('skeleton-services');
+      const services = container.querySelector(
+        '[data-testid="skeleton-services"]'
+      );
+      expect(services).toBeInTheDocument();
       expect(services).toBeInTheDocument();
       expect(services).toHaveClass('custom-services');
     });
@@ -480,44 +517,69 @@ describe('Skeleton Component', () => {
 
   describe('SkeletonBlogList Component', () => {
     it('renders default number of blog cards', () => {
-      render(<SkeletonBlogList />);
+      const { container } = render(<SkeletonBlogList />);
 
-      const blogList = screen.getByTestId('skeleton-blog-list');
+      const blogList = container.querySelector(
+        '[data-testid="skeleton-blog-list"]'
+      );
+      expect(blogList).toBeInTheDocument();
       expect(blogList).toBeInTheDocument();
 
       // Each blog card has data-testid="skeleton-card"
-      const blogCards = within(blogList).getAllByTestId('skeleton-card');
+      const blogCards = within(blogList as HTMLElement).getAllByTestId(
+        'skeleton-card'
+      );
       expect(blogCards.length).toBe(6);
     });
 
     it('renders custom number of blog cards', () => {
-      render(<SkeletonBlogList count={3} />);
+      const { container } = render(<SkeletonBlogList count={3} />);
 
-      const blogList = screen.getByTestId('skeleton-blog-list');
-      const blogCards = within(blogList).getAllByTestId('skeleton-card');
+      const blogList = container.querySelector(
+        '[data-testid="skeleton-blog-list"]'
+      );
+      expect(blogList).toBeInTheDocument();
+      const blogCards = within(blogList as HTMLElement).getAllByTestId(
+        'skeleton-card'
+      );
       expect(blogCards.length).toBe(3);
     });
 
     it('renders single blog card', () => {
-      render(<SkeletonBlogList count={1} />);
+      const { container } = render(<SkeletonBlogList count={1} />);
 
-      const blogList = screen.getByTestId('skeleton-blog-list');
-      const blogCards = within(blogList).getAllByTestId('skeleton-card');
+      const blogList = container.querySelector(
+        '[data-testid="skeleton-blog-list"]'
+      );
+      expect(blogList).toBeInTheDocument();
+      const blogCards = within(blogList as HTMLElement).getAllByTestId(
+        'skeleton-card'
+      );
       expect(blogCards.length).toBe(1);
     });
 
     it('handles zero count gracefully', () => {
-      render(<SkeletonBlogList count={0} />);
+      const { container } = render(<SkeletonBlogList count={0} />);
 
-      const blogList = screen.getByTestId('skeleton-blog-list');
-      const blogCards = within(blogList).queryAllByTestId('skeleton-card');
+      const blogList = container.querySelector(
+        '[data-testid="skeleton-blog-list"]'
+      );
+      expect(blogList).toBeInTheDocument();
+      const blogCards = within(blogList as HTMLElement).queryAllByTestId(
+        'skeleton-card'
+      );
       expect(blogCards.length).toBe(0);
     });
 
     it('applies custom className', () => {
-      render(<SkeletonBlogList className="custom-blog-list" />);
+      const { container } = render(
+        <SkeletonBlogList className="custom-blog-list" />
+      );
 
-      const blogList = screen.getByTestId('skeleton-blog-list');
+      const blogList = container.querySelector(
+        '[data-testid="skeleton-blog-list"]'
+      );
+      expect(blogList).toBeInTheDocument();
       expect(blogList).toBeInTheDocument();
       expect(blogList).toHaveClass(
         'custom-blog-list',
@@ -531,18 +593,20 @@ describe('Skeleton Component', () => {
 
   describe('SkeletonNav Component', () => {
     it('renders navigation structure', () => {
-      render(<SkeletonNav />);
+      const { container } = render(<SkeletonNav />);
 
-      const nav = screen.getByTestId('skeleton-nav');
+      const nav = container.querySelector('[data-testid="skeleton-nav"]');
+      expect(nav).toBeInTheDocument();
       expect(nav).toBeInTheDocument();
       expect(nav).toHaveClass('flex', 'items-center', 'justify-between', 'p-4');
     });
 
     it('renders logo placeholder', () => {
-      render(<SkeletonNav />);
+      const { container } = render(<SkeletonNav />);
 
-      const nav = screen.getByTestId('skeleton-nav');
-      const skeletons = within(nav).getAllByRole('generic');
+      const nav = container.querySelector('[data-testid="skeleton-nav"]');
+      expect(nav).toBeInTheDocument();
+      const skeletons = within(nav as HTMLElement).getAllByRole('generic');
       const logo = skeletons.find(
         (el) => el.style.width === '120px' && el.style.height === '32px'
       );
@@ -550,10 +614,11 @@ describe('Skeleton Component', () => {
     });
 
     it('renders navigation menu items', () => {
-      render(<SkeletonNav />);
+      const { container } = render(<SkeletonNav />);
 
-      const nav = screen.getByTestId('skeleton-nav');
-      const skeletons = within(nav).getAllByRole('generic');
+      const nav = container.querySelector('[data-testid="skeleton-nav"]');
+      expect(nav).toBeInTheDocument();
+      const skeletons = within(nav as HTMLElement).getAllByRole('generic');
       const menuItems = skeletons.filter(
         (el) => el.style.width === '80px' && el.style.height === '20px'
       );
@@ -561,10 +626,11 @@ describe('Skeleton Component', () => {
     });
 
     it('renders action button placeholder', () => {
-      render(<SkeletonNav />);
+      const { container } = render(<SkeletonNav />);
 
-      const nav = screen.getByTestId('skeleton-nav');
-      const skeletons = within(nav).getAllByRole('generic');
+      const nav = container.querySelector('[data-testid="skeleton-nav"]');
+      expect(nav).toBeInTheDocument();
+      const skeletons = within(nav as HTMLElement).getAllByRole('generic');
       const actionButton = skeletons.find(
         (el) => el.style.width === '100px' && el.style.height === '36px'
       );
@@ -572,9 +638,10 @@ describe('Skeleton Component', () => {
     });
 
     it('applies custom className', () => {
-      render(<SkeletonNav className="custom-nav" />);
+      const { container } = render(<SkeletonNav className="custom-nav" />);
 
-      const nav = screen.getByTestId('skeleton-nav');
+      const nav = container.querySelector('[data-testid="skeleton-nav"]');
+      expect(nav).toBeInTheDocument();
       expect(nav).toBeInTheDocument();
       expect(nav).toHaveClass(
         'custom-nav',
@@ -588,18 +655,20 @@ describe('Skeleton Component', () => {
 
   describe('SkeletonForm Component', () => {
     it('renders form structure', () => {
-      render(<SkeletonForm />);
+      const { container } = render(<SkeletonForm />);
 
-      const form = screen.getByTestId('skeleton-form');
+      const form = container.querySelector('[data-testid="skeleton-form"]');
+      expect(form).toBeInTheDocument();
       expect(form).toBeInTheDocument();
       expect(form).toHaveClass('space-y-6');
     });
 
     it('renders form fields with labels and inputs', () => {
-      render(<SkeletonForm />);
+      const { container } = render(<SkeletonForm />);
 
-      const form = screen.getByTestId('skeleton-form');
-      const skeletons = within(form).getAllByRole('generic');
+      const form = container.querySelector('[data-testid="skeleton-form"]');
+      expect(form).toBeInTheDocument();
+      const skeletons = within(form as HTMLElement).getAllByRole('generic');
 
       // Should have 3 labels (20px height) and 3 inputs (2x44px, 1x120px),
       const labels = skeletons.filter((el) => el.style.height === '20px');
@@ -612,19 +681,21 @@ describe('Skeleton Component', () => {
     });
 
     it('renders textarea field with different height', () => {
-      render(<SkeletonForm />);
+      const { container } = render(<SkeletonForm />);
 
-      const form = screen.getByTestId('skeleton-form');
-      const skeletons = within(form).getAllByRole('generic');
+      const form = container.querySelector('[data-testid="skeleton-form"]');
+      expect(form).toBeInTheDocument();
+      const skeletons = within(form as HTMLElement).getAllByRole('generic');
       const textarea = skeletons.find((el) => el.style.height === '120px');
       expect(textarea).toBeInTheDocument();
     });
 
     it('renders submit button placeholder', () => {
-      render(<SkeletonForm />);
+      const { container } = render(<SkeletonForm />);
 
-      const form = screen.getByTestId('skeleton-form');
-      const skeletons = within(form).getAllByRole('generic');
+      const form = container.querySelector('[data-testid="skeleton-form"]');
+      expect(form).toBeInTheDocument();
+      const skeletons = within(form as HTMLElement).getAllByRole('generic');
       const submitButton = skeletons.find(
         (el) => el.style.height === '48px' && el.style.width === '120px'
       );
@@ -632,9 +703,10 @@ describe('Skeleton Component', () => {
     });
 
     it('applies custom className', () => {
-      render(<SkeletonForm className="custom-form" />);
+      const { container } = render(<SkeletonForm className="custom-form" />);
 
-      const form = screen.getByTestId('skeleton-form');
+      const form = container.querySelector('[data-testid="skeleton-form"]');
+      expect(form).toBeInTheDocument();
       expect(form).toBeInTheDocument();
       expect(form).toHaveClass('custom-form', 'space-y-6');
     });
@@ -651,8 +723,8 @@ describe('Skeleton Component', () => {
         </div>
       );
 
-      const container = screen.getByTestId('skeleton-container');
-      const skeletons = within(container).getAllByRole('generic');
+      const skeletonContainer = screen.getByTestId('skeleton-container');
+      const skeletons = within(skeletonContainer).getAllByRole('generic');
       const animatedElements = skeletons.filter((el) =>
         el.classList.contains('animate-pulse')
       );
@@ -671,9 +743,10 @@ describe('Skeleton Component', () => {
     });
 
     it('skeleton components use semantic HTML', () => {
-      render(<SkeletonNav />);
+      const { container } = render(<SkeletonNav />);
 
-      const nav = screen.getByTestId('skeleton-nav');
+      const nav = container.querySelector('[data-testid="skeleton-nav"]');
+      expect(nav).toBeInTheDocument();
       expect(nav).toBeInTheDocument();
       expect(nav.tagName).toBe('NAV');
     });
