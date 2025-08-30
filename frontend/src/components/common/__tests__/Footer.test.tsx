@@ -686,7 +686,8 @@ describe('Footer Component', () => {
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const aiSolutionButton = screen.getByText('AI 솔루션 개발');
+        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        const aiSolutionButton = aiSolutionButtons[0];
         fireEvent.click(aiSolutionButton);
 
         await waitFor(
@@ -715,7 +716,8 @@ describe('Footer Component', () => {
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const aiEducationButton = screen.getByText('AI 교육 & 강의');
+        const aiEducationButtons = screen.getAllByText('AI 교육 & 강의');
+        const aiEducationButton = aiEducationButtons[0];
         fireEvent.click(aiEducationButton);
 
         await waitFor(
@@ -757,9 +759,9 @@ describe('Footer Component', () => {
     test('applies correct CSS classes to service buttons', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      const serviceButton = screen.getByText('AI 솔루션 개발');
-      expect(serviceButton).toHaveClass('text-gray-600');
-      expect(serviceButton).toHaveClass('text-sm');
+      const serviceButtons = screen.getAllByText('AI 솔루션 개발');
+      expect(serviceButtons[0]).toHaveClass('text-gray-600');
+      expect(serviceButtons[0]).toHaveClass('text-sm');
     });
 
     test('applies correct CSS classes to contact CTA button', () => {
@@ -820,7 +822,8 @@ describe('Footer Component', () => {
 
       const { container } = renderWithRouter(<Footer />);
 
-      const homeButton = screen.getByText('홈');
+      const homeButtons = screen.getAllByText('홈');
+      const homeButton = homeButtons[0];
 
       // Should not throw error when element is not found
       expect(() => {
