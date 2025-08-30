@@ -107,7 +107,7 @@ npm run dev
 
 ```
 emelmujiro/
-├── frontend/                # React 애플리케이션
+├── frontend/               # React 애플리케이션
 │   ├── public/             # 정적 파일
 │   ├── src/
 │   │   ├── @types/         # TypeScript 타입 정의
