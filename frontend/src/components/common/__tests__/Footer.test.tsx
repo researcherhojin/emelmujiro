@@ -93,9 +93,13 @@ describe('Footer Component', () => {
   describe('Basic Rendering', () => {
     test('renders company name', () => {
       const { container } = renderWithRouter(<Footer />);
-      const companyName = container.querySelector('h2');
+      // 회사명은 h3 태그에 있고, 여러 h3 중에서 '에멜무지로'를 포함하는 것을 찾음
+      const headings = container.querySelectorAll('h3');
+      const companyName = Array.from(headings).find(
+        (h) => h.textContent === '에멜무지로'
+      );
       expect(companyName).toBeInTheDocument();
-      expect(companyName?.textContent).toContain('에멜무지로');
+      expect(companyName?.textContent).toBe('에멜무지로');
     });
 
     test('renders all service sections', () => {
@@ -144,16 +148,21 @@ describe('Footer Component', () => {
     test('renders contact information with icons', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      const email = container.querySelector(
-        'a[href="mailto:researcherhojin@gmail.com"]'
+      // 이메일 정보 확인 (span 태그에 있음)
+      const emailSpans = container.querySelectorAll('span');
+      const email = Array.from(emailSpans).find(
+        (span) => span.textContent === 'researcherhojin@gmail.com'
       );
       expect(email).toBeInTheDocument();
-      expect(email?.textContent).toBe('researcherhojin@gmail.com');
 
-      const phone = container.querySelector('a[href="tel:010-7279-0380"]');
+      // 전화번호 정보 확인
+      const phoneSpans = container.querySelectorAll('span');
+      const phone = Array.from(phoneSpans).find(
+        (span) => span.textContent === '010-7279-0380'
+      );
       expect(phone).toBeInTheDocument();
-      expect(phone?.textContent).toBe('010-7279-0380');
 
+      // Mail과 Phone 아이콘 확인 (lucide-react icons are mocked as div with data-testid)
       expect(
         container.querySelector('[data-testid="mail-icon"]')
       ).toBeInTheDocument();
@@ -165,9 +174,15 @@ describe('Footer Component', () => {
     test('renders contact CTA section', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      const ctaText = container.querySelector('p.text-lg');
+      // CTA 텍스트는 p.text-base 클래스를 가지고 있음
+      const paragraphs = container.querySelectorAll('p');
+      const ctaText = Array.from(paragraphs).find(
+        (p) => p.textContent === 'AI 프로젝트 도입을 계획 중이시나요?'
+      );
       expect(ctaText).toBeInTheDocument();
       expect(ctaText?.textContent).toBe('AI 프로젝트 도입을 계획 중이시나요?');
+
+      // ExternalLink 아이콘 확인
       expect(
         container.querySelector('[data-testid="external-link-icon"]')
       ).toBeInTheDocument();
@@ -177,7 +192,9 @@ describe('Footer Component', () => {
       const { container } = renderWithRouter(<Footer />);
       const currentYear = new Date().getFullYear();
 
-      const copyright = container.querySelector('.text-center.text-gray-500');
+      // copyright는 text-center 안의 p 태그에 있음
+      const centerDiv = container.querySelector('.text-center');
+      const copyright = centerDiv?.querySelector('p');
       expect(copyright).toBeInTheDocument();
       expect(copyright?.textContent).toBe(
         `© ${currentYear} 에멜무지로. All rights reserved.`
