@@ -748,8 +748,10 @@ describe('Footer Component', () => {
     test('applies correct CSS classes to footer container', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      // Footer should be rendered with proper structure
-      expect(screen.getByText('에멜무지로')).toBeInTheDocument();
+      // Footer should be rendered with proper structure - multiple instances are expected
+      const companyNames = screen.getAllByText('에멜무지로');
+      expect(companyNames.length).toBeGreaterThan(0);
+      expect(companyNames[0]).toBeInTheDocument();
     });
 
     test('applies correct CSS classes to service buttons', () => {
