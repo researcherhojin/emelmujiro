@@ -190,7 +190,7 @@ describe('UnifiedLoading Component', () => {
         '[data-testid="loading-inline"]'
       );
       expect(inlineContainer).toBeInTheDocument();
-      expect(inlineContainer.tagName).toBe('SPAN');
+      expect(inlineContainer?.tagName).toBe('SPAN');
     });
 
     it('renders inline loading with smaller spinner', () => {
@@ -626,7 +626,7 @@ describe('UnifiedLoading Component', () => {
 
       const messages = screen.queryAllByText(/./); // Query for any text
       // Filter to only p elements
-      const paragraphs = messages.filter((el) => el.tagName === 'P');
+      const paragraphs = messages.filter((el) => el?.tagName === 'P');
       expect(paragraphs.length).toBe(0);
     });
 
