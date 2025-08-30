@@ -324,20 +324,38 @@ describe('Footer Component', () => {
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
-        const aiSolutionButton = aiSolutionButtons[0]; // Get the first button
-        fireEvent.click(aiSolutionButton);
+        const buttons = container.querySelectorAll('button');
+        const aiSolutionButton = Array.from(buttons).find(
+          (btn) => btn.textContent === 'AI 솔루션 개발'
+        );
+        expect(aiSolutionButton).toBeTruthy();
+        fireEvent.click(aiSolutionButton!);
 
         await waitFor(
-          () =>
-            expect(
-              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-            ).toBeInTheDocument(),
+          () => {
+            const modalText = Array.from(container.querySelectorAll('p')).find(
+              (p) =>
+                p.textContent?.includes(
+                  '기업 맞춤형 AI 솔루션을 설계하고 구현합니다.'
+                )
+            );
+            expect(modalText).toBeInTheDocument();
+          },
           { timeout: 3000 }
         );
-        expect(screen.getByText('주요 서비스')).toBeInTheDocument();
-        expect(screen.getByText('주요 사례')).toBeInTheDocument();
-        expect(screen.getByTestId('code-icon')).toBeInTheDocument();
+
+        const headings = container.querySelectorAll('h4');
+        const hasMainService = Array.from(headings).some(
+          (h) => h.textContent === '주요 서비스'
+        );
+        const hasMainCase = Array.from(headings).some(
+          (h) => h.textContent === '주요 사례'
+        );
+        expect(hasMainService).toBe(true);
+        expect(hasMainCase).toBe(true);
+
+        const codeIcon = container.querySelector('[data-testid="code-icon"]');
+        expect(codeIcon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
     );
@@ -347,17 +365,30 @@ describe('Footer Component', () => {
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const aiEducationButton = screen.getByText('AI 교육 & 강의');
-        fireEvent.click(aiEducationButton);
+        const buttons = container.querySelectorAll('button');
+        const aiEducationButton = Array.from(buttons).find(
+          (btn) => btn.textContent === 'AI 교육 & 강의'
+        );
+        expect(aiEducationButton).toBeTruthy();
+        fireEvent.click(aiEducationButton!);
 
         await waitFor(
-          () =>
-            expect(
-              screen.getByText('실무 중심의 AI 교육 프로그램을 제공합니다.')
-            ).toBeInTheDocument(),
+          () => {
+            const modalText = Array.from(container.querySelectorAll('p')).find(
+              (p) =>
+                p.textContent?.includes(
+                  '실무 중심의 AI 교육 프로그램을 제공합니다.'
+                )
+            );
+            expect(modalText).toBeInTheDocument();
+          },
           { timeout: 3000 }
         );
-        expect(screen.getByTestId('graduation-cap-icon')).toBeInTheDocument();
+
+        const graduationIcon = container.querySelector(
+          '[data-testid="graduation-cap-icon"]'
+        );
+        expect(graduationIcon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
     );
@@ -367,19 +398,30 @@ describe('Footer Component', () => {
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const aiConsultingButton = screen.getByText('AI 전략 컨설팅');
-        fireEvent.click(aiConsultingButton);
+        const buttons = container.querySelectorAll('button');
+        const aiConsultingButton = Array.from(buttons).find(
+          (btn) => btn.textContent === 'AI 전략 컨설팅'
+        );
+        expect(aiConsultingButton).toBeTruthy();
+        fireEvent.click(aiConsultingButton!);
 
         await waitFor(
-          () =>
-            expect(
-              screen.getByText(
-                'AI 도입 전략부터 실행까지 종합적인 컨설팅을 제공합니다.'
-              )
-            ).toBeInTheDocument(),
+          () => {
+            const modalText = Array.from(container.querySelectorAll('p')).find(
+              (p) =>
+                p.textContent?.includes(
+                  'AI 도입 전략부터 실행까지 종합적인 컨설팅을 제공합니다.'
+                )
+            );
+            expect(modalText).toBeInTheDocument();
+          },
           { timeout: 3000 }
         );
-        expect(screen.getByTestId('bar-chart-icon')).toBeInTheDocument();
+
+        const barChartIcon = container.querySelector(
+          '[data-testid="bar-chart-icon"]'
+        );
+        expect(barChartIcon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
     );
@@ -389,19 +431,30 @@ describe('Footer Component', () => {
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const dataAnalysisButton = screen.getByText('데이터 분석');
-        fireEvent.click(dataAnalysisButton);
+        const buttons = container.querySelectorAll('button');
+        const dataAnalysisButton = Array.from(buttons).find(
+          (btn) => btn.textContent === '데이터 분석'
+        );
+        expect(dataAnalysisButton).toBeTruthy();
+        fireEvent.click(dataAnalysisButton!);
 
         await waitFor(
-          () =>
-            expect(
-              screen.getByText(
-                '비즈니스 인사이트 도출을 위한 데이터 분석 서비스를 제공합니다.'
-              )
-            ).toBeInTheDocument(),
+          () => {
+            const modalText = Array.from(container.querySelectorAll('p')).find(
+              (p) =>
+                p.textContent?.includes(
+                  '비즈니스 인사이트 도출을 위한 데이터 분석 서비스를 제공합니다.'
+                )
+            );
+            expect(modalText).toBeInTheDocument();
+          },
           { timeout: 3000 }
         );
-        expect(screen.getByTestId('database-icon')).toBeInTheDocument();
+
+        const databaseIcon = container.querySelector(
+          '[data-testid="database-icon"]'
+        );
+        expect(databaseIcon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
     );
@@ -411,25 +464,40 @@ describe('Footer Component', () => {
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const aiSolutionButton = screen.getByText('AI 솔루션 개발');
-        fireEvent.click(aiSolutionButton);
+        const buttons = container.querySelectorAll('button');
+        const aiSolutionButton = Array.from(buttons).find(
+          (btn) => btn.textContent === 'AI 솔루션 개발'
+        );
+        expect(aiSolutionButton).toBeTruthy();
+        fireEvent.click(aiSolutionButton!);
 
         await waitFor(
-          () =>
-            expect(
-              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-            ).toBeInTheDocument(),
+          () => {
+            const modalText = Array.from(container.querySelectorAll('p')).find(
+              (p) =>
+                p.textContent?.includes(
+                  '기업 맞춤형 AI 솔루션을 설계하고 구현합니다.'
+                )
+            );
+            expect(modalText).toBeInTheDocument();
+          },
           { timeout: 3000 }
         );
 
-        const closeButton = screen.getByTestId('x-icon');
-        fireEvent.click(closeButton);
+        const closeButton = container.querySelector('[data-testid="x-icon"]');
+        expect(closeButton).toBeTruthy();
+        fireEvent.click(closeButton!);
 
         await waitFor(
-          () =>
-            expect(
-              screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
-            ).not.toBeInTheDocument(),
+          () => {
+            const modalText = Array.from(container.querySelectorAll('p')).find(
+              (p) =>
+                p.textContent?.includes(
+                  '기업 맞춤형 AI 솔루션을 설계하고 구현합니다.'
+                )
+            );
+            expect(modalText).toBeFalsy();
+          },
           { timeout: 3000 }
         );
       },
