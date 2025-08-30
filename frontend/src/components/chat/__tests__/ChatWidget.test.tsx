@@ -99,12 +99,16 @@ describe('ChatWidget', () => {
   it('renders chat button initially', async () => {
     render(<ChatWidget />);
 
-    // Fast-forward time to skip the delay and run all timers
-    await vi.runOnlyPendingTimersAsync();
+    // Fast-forward time to skip the delay
+    await act(async () => {
+      vi.advanceTimersByTime(2000);
+    });
 
     // Check button exists
-    const chatButton = screen.getByRole('button');
-    expect(chatButton).toBeInTheDocument();
+    await waitFor(() => {
+      const chatButton = screen.getByRole('button');
+      expect(chatButton).toBeInTheDocument();
+    });
   });
 
   it('opens chat window when button is clicked', async () => {
@@ -126,13 +130,16 @@ describe('ChatWidget', () => {
     render(<ChatWidget />);
 
     // Fast-forward time to skip the delay
-    await vi.runOnlyPendingTimersAsync();
+    await act(async () => {
+      vi.advanceTimersByTime(2000);
+    });
 
     // Wait for widget to appear
-    const chatButton = screen.getByRole('button');
-    fireEvent.click(chatButton);
-
-    expect(mockOpenChat).toHaveBeenCalled();
+    await waitFor(() => {
+      const chatButton = screen.getByRole('button');
+      fireEvent.click(chatButton);
+      expect(mockOpenChat).toHaveBeenCalled();
+    });
     expect(mockMarkAllAsRead).toHaveBeenCalled();
   });
 
@@ -168,11 +175,15 @@ describe('ChatWidget', () => {
     render(<ChatWidget />);
 
     // Fast-forward time to skip the delay
-    await vi.runOnlyPendingTimersAsync();
+    await act(async () => {
+      vi.advanceTimersByTime(2000);
+    });
 
-    const chatButton = screen.getByRole('button');
-    // Connection indicator should be visible
-    expect(chatButton).toBeInTheDocument();
+    await waitFor(() => {
+      const chatButton = screen.getByRole('button');
+      // Connection indicator should be visible
+      expect(chatButton).toBeInTheDocument();
+    });
   });
 
   it('shows unread count badge when there are unread messages', async () => {
@@ -192,10 +203,14 @@ describe('ChatWidget', () => {
     render(<ChatWidget />);
 
     // Fast-forward time to skip the delay
-    await vi.runOnlyPendingTimersAsync();
+    await act(async () => {
+      vi.advanceTimersByTime(2000);
+    });
 
     // Should show unread count
-    expect(screen.getByText('5')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('5')).toBeInTheDocument();
+    });
   });
 
   it('displays business hours when closed', async () => {
@@ -215,10 +230,14 @@ describe('ChatWidget', () => {
     render(<ChatWidget />);
 
     // Fast-forward time to skip the delay
-    await vi.runOnlyPendingTimersAsync();
+    await act(async () => {
+      vi.advanceTimersByTime(2000);
+    });
 
-    const widget = screen.getByRole('button');
-    expect(widget).toBeInTheDocument();
+    await waitFor(() => {
+      const widget = screen.getByRole('button');
+      expect(widget).toBeInTheDocument();
+    });
   });
 
   it('shows hover tooltip', async () => {

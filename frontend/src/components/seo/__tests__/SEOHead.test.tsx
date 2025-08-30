@@ -14,23 +14,25 @@ vi.mock('react-helmet-async', () => ({
     // Recursive function to process nested children
     const processChild = (child: any) => {
       if (React.isValidElement(child)) {
+        const props = child.props as any;
         if (child.type === 'title') {
-          mockHelmetData.title = child.props.children;
+          mockHelmetData.title = props.children;
         } else if (child.type === 'meta') {
-          const name = child.props.name || child.props.property;
+          const name = props.name || props.property;
           if (name) {
-            mockHelmetData[name] = child.props.content;
+            mockHelmetData[name] = props.content;
           }
-        } else if (child.type === 'link' && child.props.rel === 'canonical') {
-          mockHelmetData.canonical = child.props.href;
+        } else if (child.type === 'link' && props.rel === 'canonical') {
+          mockHelmetData.canonical = props.href;
         } else if (child.type === 'script') {
-          mockHelmetData.script = child.props.children;
+          mockHelmetData.script = props.children;
         } else if (
           child.type === React.Fragment ||
-          child.type === Symbol.for('react.fragment')
+          (typeof child.type === 'symbol' &&
+            child.type === Symbol.for('react.fragment'))
         ) {
           // Process children of fragments
-          React.Children.forEach(child.props.children, processChild);
+          React.Children.forEach(props.children, processChild);
         }
       }
     };

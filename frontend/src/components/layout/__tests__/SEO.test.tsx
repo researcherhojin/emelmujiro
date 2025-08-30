@@ -71,10 +71,10 @@ describe('SEO Component', () => {
       const children = React.Children.toArray(callArgs.children);
       const titleElement = children.find(
         (child: any) => React.isValidElement(child) && child.type === 'title'
-      ) as React.ReactElement;
+      ) as React.ReactElement<any>;
 
       expect(titleElement).toBeDefined();
-      expect(titleElement.props.children).toContain('에멜무지로');
+      expect(titleElement?.props?.children).toContain('에멜무지로');
     });
 
     it('should use default description when no description provided', () => {
@@ -104,10 +104,10 @@ describe('SEO Component', () => {
       const children = React.Children.toArray(callArgs.children);
       const titleElement = children.find(
         (child: any) => React.isValidElement(child) && child.type === 'title'
-      ) as React.ReactElement;
+      ) as React.ReactElement<any>;
 
       expect(titleElement).toBeDefined();
-      expect(titleElement.props.children).toContain(customTitle);
+      expect(titleElement?.props?.children).toContain(customTitle);
     });
 
     it('should use custom description when provided', () => {
