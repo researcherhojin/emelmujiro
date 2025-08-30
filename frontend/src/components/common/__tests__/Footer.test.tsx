@@ -204,30 +204,43 @@ describe('Footer Component', () => {
 
   describe('Navigation Functionality', () => {
     test('navigates to profile page when profile link is clicked', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
-      const profileButton = screen.getAllByText('대표 프로필')[0];
-      fireEvent.click(profileButton);
+      const profileButtons = container.querySelectorAll('button');
+      const profileButton = Array.from(profileButtons).find(
+        (btn) => btn.textContent === '대표 프로필'
+      );
+      expect(profileButton).toBeTruthy();
+      fireEvent.click(profileButton!);
 
       expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
     test('navigates to contact page when contact link is clicked', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
-      const contactButtons = screen.getAllByText('문의하기');
-      fireEvent.click(contactButtons[0]); // First contact button in navigation
+      const contactButtons = container.querySelectorAll('button');
+      const contactButton = Array.from(contactButtons).find(
+        (btn) => btn.textContent === '문의하기'
+      );
+      expect(contactButton).toBeTruthy();
+      fireEvent.click(contactButton!);
 
       expect(mockNavigate).toHaveBeenCalledWith('/contact');
     });
 
     test('navigates to contact page when CTA button is clicked', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
-      const ctaButton = screen.getByRole('button', {
-        name: /문의하기.*ExternalLink/,
+      // CTA 버튼은 ExternalLink 아이콘을 포함한 버튼
+      const buttons = container.querySelectorAll('button');
+      const ctaButton = Array.from(buttons).find((btn) => {
+        const hasText = btn.textContent?.includes('문의하기');
+        const hasIcon = btn.querySelector('[data-testid="external-link-icon"]');
+        return hasText && hasIcon;
       });
-      fireEvent.click(ctaButton);
+      expect(ctaButton).toBeTruthy();
+      fireEvent.click(ctaButton!);
 
       expect(mockNavigate).toHaveBeenCalledWith('/contact');
     });
@@ -239,10 +252,14 @@ describe('Footer Component', () => {
         value: { pathname: '/' },
       });
 
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
-      const homeButton = screen.getByText('홈');
-      fireEvent.click(homeButton);
+      const buttons = container.querySelectorAll('button');
+      const homeButton = Array.from(buttons).find(
+        (btn) => btn.textContent === '홈'
+      );
+      expect(homeButton).toBeTruthy();
+      fireEvent.click(homeButton!);
 
       // Verify that navigation behavior occurred
       expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
@@ -258,10 +275,14 @@ describe('Footer Component', () => {
         });
 
         vi.useFakeTimers();
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
-        const homeButton = screen.getByText('홈');
-        fireEvent.click(homeButton);
+        const buttons = container.querySelectorAll('button');
+        const homeButton = Array.from(buttons).find(
+          (btn) => btn.textContent === '홈'
+        );
+        expect(homeButton).toBeTruthy();
+        fireEvent.click(homeButton!);
 
         expect(mockNavigate).toHaveBeenCalledWith('/');
 
@@ -282,9 +303,14 @@ describe('Footer Component', () => {
         value: { pathname: '/' },
       });
 
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
-      const servicesButton = screen.getAllByText('서비스')[1]; // Navigation 서비스
+      const buttons = container.querySelectorAll('button');
+      const servicesButtons = Array.from(buttons).filter(
+        (btn) => btn.textContent === '서비스'
+      );
+      const servicesButton = servicesButtons[0]; // Navigation 서비스
+      expect(servicesButton).toBeTruthy();
       fireEvent.click(servicesButton);
 
       // Verify scroll behavior occurred
@@ -296,7 +322,7 @@ describe('Footer Component', () => {
     test(
       'opens AI solution modal when clicked',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
         const aiSolutionButton = aiSolutionButtons[0]; // Get the first button
@@ -319,7 +345,7 @@ describe('Footer Component', () => {
     test(
       'opens AI education modal when clicked',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         const aiEducationButton = screen.getByText('AI 교육 & 강의');
         fireEvent.click(aiEducationButton);
@@ -339,7 +365,7 @@ describe('Footer Component', () => {
     test(
       'opens AI consulting modal when clicked',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         const aiConsultingButton = screen.getByText('AI 전략 컨설팅');
         fireEvent.click(aiConsultingButton);
@@ -361,7 +387,7 @@ describe('Footer Component', () => {
     test(
       'opens data analysis modal when clicked',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         const dataAnalysisButton = screen.getByText('데이터 분석');
         fireEvent.click(dataAnalysisButton);
@@ -383,7 +409,7 @@ describe('Footer Component', () => {
     test(
       'closes modal when X button is clicked',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         const aiSolutionButton = screen.getByText('AI 솔루션 개발');
         fireEvent.click(aiSolutionButton);
@@ -415,7 +441,7 @@ describe('Footer Component', () => {
     test(
       'closes modal when X button is clicked',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         // Open modal
         const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
@@ -449,7 +475,7 @@ describe('Footer Component', () => {
     test(
       'closes modal when 닫기 button is clicked',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         // Open modal
         const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
@@ -486,7 +512,7 @@ describe('Footer Component', () => {
     test(
       'closes modal and navigates to contact when 문의하기 button is clicked',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         // Open modal
         const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
@@ -520,7 +546,7 @@ describe('Footer Component', () => {
     test(
       'closes modal when backdrop is clicked',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         // Open modal
         const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
@@ -554,7 +580,7 @@ describe('Footer Component', () => {
     test(
       'closes modal when Escape key is pressed on backdrop',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         // Open modal
         const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
@@ -590,7 +616,7 @@ describe('Footer Component', () => {
     test(
       'displays all service details for AI solution',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         const aiSolutionButton = screen.getByText('AI 솔루션 개발');
         fireEvent.click(aiSolutionButton);
@@ -619,7 +645,7 @@ describe('Footer Component', () => {
     test(
       'displays all service details for AI education',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         const aiEducationButton = screen.getByText('AI 교육 & 강의');
         fireEvent.click(aiEducationButton);
@@ -652,14 +678,14 @@ describe('Footer Component', () => {
 
   describe('CSS Classes and Styling', () => {
     test('applies correct CSS classes to footer container', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
       // Footer should be rendered with proper structure
       expect(screen.getByText('에멜무지로')).toBeInTheDocument();
     });
 
     test('applies correct CSS classes to service buttons', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
       const serviceButton = screen.getByText('AI 솔루션 개발');
       expect(serviceButton).toHaveClass('text-gray-600');
@@ -667,7 +693,7 @@ describe('Footer Component', () => {
     });
 
     test('applies correct CSS classes to contact CTA button', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
       const ctaButton = screen.getByRole('button', {
         name: /문의하기.*ExternalLink/,
@@ -681,7 +707,7 @@ describe('Footer Component', () => {
     test(
       'modal has correct accessibility attributes',
       async () => {
-        renderWithRouter(<Footer />);
+        const { container } = renderWithRouter(<Footer />);
 
         // Open modal
         const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
@@ -703,7 +729,7 @@ describe('Footer Component', () => {
     );
 
     test('all buttons are accessible', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
       const buttons = screen.getAllByRole('button');
       buttons.forEach((button) => {
@@ -722,7 +748,7 @@ describe('Footer Component', () => {
       // Mock getElementById to return null
       vi.spyOn(document, 'getElementById').mockReturnValue(null);
 
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
       const homeButton = screen.getByText('홈');
 
@@ -733,7 +759,7 @@ describe('Footer Component', () => {
     });
 
     test('modal does not render when service is null', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
       // Modal should not be visible initially
       expect(screen.queryByText('주요 서비스')).not.toBeInTheDocument();
