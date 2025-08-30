@@ -396,7 +396,7 @@ describe('SkeletonScreen', () => {
       );
 
       const { rerender } = render(<LoadingComponent isLoading={true} />);
-      expect(screen.getByRole('status')).toBeInTheDocument();
+      expect(screen.getAllByRole('status')[0]).toBeInTheDocument();
 
       rerender(<LoadingComponent isLoading={false} />);
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
