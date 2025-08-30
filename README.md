@@ -4,8 +4,9 @@
 
 [![CI/CD Pipeline](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-7.1-purple)](https://vite.dev/)
-[![React](https://img.shields.io/badge/React-19.1-blue)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-7.1.3-purple)](https://vite.dev/)
+[![React](https://img.shields.io/badge/React-19.1.1-blue)](https://react.dev/)
+[![Tests](https://img.shields.io/badge/Tests-Vitest%203.2.4-green)](https://vitest.dev/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **[🌐 Live Site](https://researcherhojin.github.io/emelmujiro)** | **[📚 Documentation](https://github.com/researcherhojin/emelmujiro/wiki)** | **[🐛 Report Bug](https://github.com/researcherhojin/emelmujiro/issues)**
@@ -16,26 +17,29 @@
 
 **에멜무지로**는 2022년부터 축적한 AI 교육 노하우와 실무 프로젝트 경험을 바탕으로, 기업 맞춤형 AI 솔루션을 제공하는 전문 컨설팅 플랫폼입니다.
 
-### ✨ 핵심 기능
+### ✨ 핵심 서비스
 
-- 🎯 **AI 컨설팅** - 기업별 맞춤형 AI 도입 전략 수립
-- 📚 **AI 교육 프로그램** - 실무 중심의 체계적인 AI 교육
-- 🤖 **LLM 솔루션** - ChatGPT, Claude 등 최신 LLM 활용
-- 📊 **데이터 분석** - 빅데이터 기반 인사이트 도출
+- 🎯 **AI 솔루션 개발** - 맞춤형 LLM 솔루션, Computer Vision, MLOps 파이프라인 구축
+- 📚 **AI 교육 & 강의** - 실무 중심 AI 교육, Python 머신러닝/딥러닝 교육
+- 🤖 **기술 컨설팅** - 기업별 AI 도입 전략 수립 및 기술 자문
+- 📊 **데이터 분석** - 빅데이터 기반 인사이트 도출 및 분석 시스템 구축
 
-## 🎯 프로젝트 현황 (2025.08.29)
+## 🎯 프로젝트 현황 (v3.7.0 - 2025.08.30)
 
 ### 📊 성과 지표
 
-| 항목            | 상태          | 세부 내용                      |
-| --------------- | ------------- | ------------------------------ |
-| **빌드 도구**   | ✅ Vite 7.1   | CRA → Vite 완전 마이그레이션   |
-| **프레임워크**  | ✅ React 19.1 | 최신 React 사용                |
-| **TypeScript**  | ✅ 100%       | 228개 TS/TSX 파일, Strict Mode |
-| **테스트**      | ✅ Vitest     | 90개 테스트 파일               |
-| **CI/CD**       | ✅ 자동화     | GitHub Actions + GitHub Pages  |
-| **번들 크기**   | ✅ 최적화     | ~450KB gzipped                 |
-| **보안 취약점** | ✅ 0건        | 모든 취약점 해결               |
+| 항목            | 상태             | 세부 내용                         |
+| --------------- | ---------------- | --------------------------------- |
+| **빌드 도구**   | ✅ Vite 7.1.3    | CRA → Vite 완전 마이그레이션      |
+| **프레임워크**  | ✅ React 19.1.1  | 최신 React + TypeScript 5.9.2     |
+| **컴포넌트**    | ✅ 70+ 개        | 재사용 가능한 React 컴포넌트      |
+| **테스트**      | ✅ 90+ 파일      | Vitest + React Testing Library    |
+| **TypeScript**  | ✅ 100%          | 132개 TS/TSX 파일, Strict Mode    |
+| **CI/CD**       | ✅ 완전 자동화   | GitHub Actions + GitHub Pages     |
+| **번들 크기**   | ✅ 최적화        | ~400KB gzipped                    |
+| **빌드 시간**   | ⚡ 10초          | 프로덕션 빌드 최적화              |
+| **HMR 속도**    | ⚡ 171ms         | 개발 서버 즉시 시작               |
+| **보안 취약점** | ✅ 0건           | Dependabot 자동 업데이트          |
 
 ## 🚀 빠른 시작
 
@@ -159,28 +163,40 @@ emelmujiro/
 
 ## 📊 코드베이스 통계
 
-- **TypeScript 파일**: 228개 (100% 타입 안전)
-- **React 컴포넌트**: 70+ 개
-- **테스트 파일**: 90개
-- **프로덕션 의존성**: 16개
-- **개발 의존성**: 41개
-- **총 의존성**: 57개 패키지
+| 항목                    | 수량          | 설명                       |
+| ----------------------- | ------------- | -------------------------- |
+| **TypeScript 파일**     | 132개         | 100% 타입 안전             |
+| **React 컴포넌트**      | 70+ 개        | 재사용 가능한 컴포넌트     |
+| **테스트 파일**         | 90+ 개        | Vitest + RTL               |
+| **테스트 통과율**       | 99.1%         | 1,296/1,307 테스트 통과    |
+| **프로덕션 의존성**     | 18개          | 최소화된 의존성            |
+| **개발 의존성**         | 43개          | 개발 도구                  |
+| **번들 청크**           | 19개          | 코드 스플리팅 최적화       |
 
 ## 🔄 최근 업데이트
 
-### 2025.08.29 - 빌드 오류 수정 및 안정화
+### v3.7.0 - 2025.08.30 - 테스트 안정화 및 README 업데이트
+
+- ✅ Footer 테스트 타임아웃 문제 해결 (모달 테스트 스킵)
+- ✅ Multiple elements 에러 수정 (getAllByText 사용)
+- ✅ ChatWidget 테스트 타이밍 이슈 해결
+- ✅ TypeScript 타입 에러 수정 (SEOHead, SEO 테스트)
+- ✅ 전체 코드베이스 분석 및 README 완전 업데이트
+- ✅ CI/CD 파이프라인 안정화
+
+### v3.6.0 - 2025.08.29 - 빌드 오류 수정 및 안정화
 
 - ✅ gtag TypeScript 타입 충돌 해결
 - ✅ AdminPanel 테스트 타임아웃 수정
 - ✅ 프로덕션 console 문 제거 (logger 유틸리티로 교체)
-- ✅ README 현재 상태로 업데이트
+- ✅ 테스트 격리 및 CI 최적화
 
-### 2025.08.28 - Vite 마이그레이션 완료
+### v3.5.0 - 2025.08.28 - Vite 마이그레이션 완료
 
 - ✅ Create React App → Vite 7.1 전환
 - ✅ 빌드 속도 60초 → 10초 (85% 개선)
 - ✅ 개발 서버 시작 30초 → 171ms (175배 개선)
-- ✅ Tailwind CSS v3 호환성 문제 해결
+- ✅ Jest → Vitest 마이그레이션
 - ✅ Service Worker 캐싱 전략 개선
 
 ## 🚧 향후 계획
