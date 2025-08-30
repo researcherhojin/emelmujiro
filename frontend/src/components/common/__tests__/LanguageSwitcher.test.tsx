@@ -21,6 +21,16 @@ vi.mock('react-i18next', () => ({
   useTranslation: vi.fn(),
 }));
 
+// Mock logger
+vi.mock('../../../utils/logger', () => ({
+  default: {
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn(),
+  },
+}));
+
 const mockUseTranslation = useTranslation as MockedFunction<
   typeof useTranslation
 >;
@@ -239,7 +249,8 @@ describe('LanguageSwitcher', () => {
 
   it('handles language change errors gracefully', async () => {
     const user = userEvent.setup();
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const logger = await import('../../../utils/logger');
+    const loggerErrorSpy = vi.spyOn(logger.default, 'error');
     mockChangeLanguage.mockRejectedValue(new Error('Language change failed'));
 
     render(<LanguageSwitcher />);
@@ -251,13 +262,13 @@ describe('LanguageSwitcher', () => {
     await user.click(englishOption);
 
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
         'Failed to change language:',
         expect.any(Error)
       );
     });
 
-    consoleSpy.mockRestore();
+    loggerErrorSpy.mockRestore();
   });
 
   it('dispatches custom language change event', async () => {

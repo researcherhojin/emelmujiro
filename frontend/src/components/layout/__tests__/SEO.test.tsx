@@ -64,18 +64,17 @@ describe('SEO Component', () => {
     it('should use default title when no title provided', () => {
       renderWithProviders(<SEO />);
 
-      expect(mockHelmetComponent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          children: expect.arrayContaining([
-            expect.objectContaining({
-              props: expect.objectContaining({
-                children: expect.stringContaining(''),
-              }),
-            }),
-          ]),
-        }),
-        expect.anything()
-      );
+      expect(mockHelmetComponent).toHaveBeenCalled();
+      const callArgs = mockHelmetComponent.mock.calls[0][0];
+
+      // Find the title element in children
+      const children = React.Children.toArray(callArgs.children);
+      const titleElement = children.find(
+        (child: any) => React.isValidElement(child) && child.type === 'title'
+      ) as React.ReactElement;
+
+      expect(titleElement).toBeDefined();
+      expect(titleElement.props.children).toContain('에멜무지로');
     });
 
     it('should use default description when no description provided', () => {
@@ -98,18 +97,17 @@ describe('SEO Component', () => {
 
       renderWithProviders(<SEO title={customTitle} />);
 
-      expect(mockHelmetComponent).toHaveBeenCalledWith(
-        expect.objectContaining({
-          children: expect.arrayContaining([
-            expect.objectContaining({
-              props: expect.objectContaining({
-                children: expect.stringContaining(customTitle),
-              }),
-            }),
-          ]),
-        }),
-        expect.anything()
-      );
+      expect(mockHelmetComponent).toHaveBeenCalled();
+      const callArgs = mockHelmetComponent.mock.calls[0][0];
+
+      // Find the title element in children
+      const children = React.Children.toArray(callArgs.children);
+      const titleElement = children.find(
+        (child: any) => React.isValidElement(child) && child.type === 'title'
+      ) as React.ReactElement;
+
+      expect(titleElement).toBeDefined();
+      expect(titleElement.props.children).toContain(customTitle);
     });
 
     it('should use custom description when provided', () => {
