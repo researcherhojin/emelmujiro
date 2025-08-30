@@ -11,7 +11,8 @@ describe('SkeletonScreen', () => {
       const skeletonElement = container.querySelector('[role="status"]');
       expect(skeletonElement).toBeInTheDocument();
 
-      const srOnlyText = screen.getByText('콘텐츠를 불러오는 중입니다...');
+      const srOnlyText =
+        screen.getAllByText('콘텐츠를 불러오는 중입니다...')[0];
       expect(srOnlyText).toBeInTheDocument();
       expect(srOnlyText).toHaveClass('sr-only');
     });
@@ -328,7 +329,7 @@ describe('SkeletonScreen', () => {
     it('includes screen reader only text', () => {
       render(<SkeletonScreen />);
 
-      const srText = screen.getByText('콘텐츠를 불러오는 중입니다...');
+      const srText = screen.getAllByText('콘텐츠를 불러오는 중입니다...')[0];
       expect(srText).toHaveClass('sr-only');
     });
 
