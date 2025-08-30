@@ -83,9 +83,11 @@ vi.mock('../SkeletonLoader', () => ({
 describe('UnifiedLoading Component', () => {
   describe('Default Spinner Variant', () => {
     it('renders default spinner loading', () => {
-      render(<UnifiedLoading />);
+      const { container } = render(<UnifiedLoading />);
 
-      const spinner = screen.getByTestId('spinner-element');
+      const spinner = container.querySelector(
+        '[data-testid="spinner-element"]'
+      );
       expect(spinner).toBeInTheDocument();
       expect(spinner).toHaveClass(
         'w-12',
@@ -98,27 +100,37 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders spinner with custom message', () => {
-      render(<UnifiedLoading message="Custom loading message" />);
+      const { container } = render(
+        <UnifiedLoading message="Custom loading message" />
+      );
 
       expect(screen.getByText('Custom loading message')).toBeInTheDocument();
     });
 
     it('renders spinner with custom size', () => {
-      render(<UnifiedLoading size="lg" />);
+      const { container } = render(<UnifiedLoading size="lg" />);
 
-      const spinner = screen.getByTestId('spinner-element');
+      const spinner = container.querySelector(
+        '[data-testid="spinner-element"]'
+      );
+      expect(spinner).toBeInTheDocument();
       expect(spinner).toHaveClass('w-16', 'h-16');
     });
 
     it('renders spinner with custom color', () => {
-      render(<UnifiedLoading color="blue" />);
+      const { container } = render(<UnifiedLoading color="blue" />);
 
-      const spinner = screen.getByTestId('spinner-element');
+      const spinner = container.querySelector(
+        '[data-testid="spinner-element"]'
+      );
+      expect(spinner).toBeInTheDocument();
       expect(spinner).toHaveClass('border-blue-600');
     });
 
     it('renders spinner with custom className', () => {
-      render(<UnifiedLoading className="custom-loading" />);
+      const { container } = render(
+        <UnifiedLoading className="custom-loading" />
+      );
 
       const loadingDiv = screen.getByTestId('loading-spinner');
       expect(loadingDiv).toHaveClass('custom-loading');
@@ -127,7 +139,7 @@ describe('UnifiedLoading Component', () => {
 
   describe('Page Variant', () => {
     it('renders page loading with fullscreen wrapper', () => {
-      render(<UnifiedLoading variant="page" />);
+      const { container } = render(<UnifiedLoading variant="page" />);
 
       const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
       expect(fullscreenWrapper).toBeInTheDocument();
@@ -144,16 +156,20 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders page loading with spinner inside fullscreen wrapper', () => {
-      render(<UnifiedLoading variant="page" />);
+      const { container } = render(<UnifiedLoading variant="page" />);
 
       const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
       expect(fullscreenWrapper).toBeInTheDocument();
-      const spinner = screen.getByTestId('spinner-element');
+      const spinner = container.querySelector(
+        '[data-testid="spinner-element"]'
+      );
       expect(spinner).toBeInTheDocument();
     });
 
     it('renders page loading with message', () => {
-      render(<UnifiedLoading variant="page" message="Loading page..." />);
+      const { container } = render(
+        <UnifiedLoading variant="page" message="Loading page..." />
+      );
 
       expect(screen.getByText('Loading page...')).toBeInTheDocument();
     });
@@ -161,7 +177,7 @@ describe('UnifiedLoading Component', () => {
 
   describe('Inline Variant', () => {
     it('renders inline loading as span element', () => {
-      render(<UnifiedLoading variant="inline" />);
+      const { container } = render(<UnifiedLoading variant="inline" />);
 
       const inlineContainer = screen.getByTestId('loading-inline');
       expect(inlineContainer).toBeInTheDocument();
@@ -169,7 +185,7 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders inline loading with smaller spinner', () => {
-      render(<UnifiedLoading variant="inline" />);
+      const { container } = render(<UnifiedLoading variant="inline" />);
 
       const elements = screen.getAllByRole('generic');
       const spinner = elements.find(
@@ -179,7 +195,9 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders inline loading with message', () => {
-      render(<UnifiedLoading variant="inline" message="Loading..." />);
+      const { container } = render(
+        <UnifiedLoading variant="inline" message="Loading..." />
+      );
 
       const message = screen.getByText('Loading...');
       expect(message).toBeInTheDocument();
@@ -187,7 +205,7 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders inline loading without fullscreen wrapper', () => {
-      render(<UnifiedLoading variant="inline" />);
+      const { container } = render(<UnifiedLoading variant="inline" />);
 
       const fullscreenWrapper = screen.queryByTestId('fullscreen-wrapper');
       expect(fullscreenWrapper).not.toBeInTheDocument();
@@ -196,31 +214,33 @@ describe('UnifiedLoading Component', () => {
 
   describe('Skeleton Variants', () => {
     it('renders skeleton-hero variant', () => {
-      render(<UnifiedLoading variant="skeleton-hero" />);
+      const { container } = render(<UnifiedLoading variant="skeleton-hero" />);
 
       expect(screen.getByTestId('skeleton-hero')).toBeInTheDocument();
     });
 
     it('renders skeleton-services variant', () => {
-      render(<UnifiedLoading variant="skeleton-services" />);
+      const { container } = render(
+        <UnifiedLoading variant="skeleton-services" />
+      );
 
       expect(screen.getByTestId('skeleton-services')).toBeInTheDocument();
     });
 
     it('renders skeleton-blog variant', () => {
-      render(<UnifiedLoading variant="skeleton-blog" />);
+      const { container } = render(<UnifiedLoading variant="skeleton-blog" />);
 
       expect(screen.getByTestId('skeleton-blog-list')).toBeInTheDocument();
     });
 
     it('renders skeleton-form variant', () => {
-      render(<UnifiedLoading variant="skeleton-form" />);
+      const { container } = render(<UnifiedLoading variant="skeleton-form" />);
 
       expect(screen.getByTestId('skeleton-form')).toBeInTheDocument();
     });
 
     it('renders skeleton-card variant', () => {
-      render(<UnifiedLoading variant="skeleton-card" />);
+      const { container } = render(<UnifiedLoading variant="skeleton-card" />);
 
       expect(screen.getByTestId('skeleton-card')).toBeInTheDocument();
     });
@@ -237,7 +257,7 @@ describe('UnifiedLoading Component', () => {
 
   describe('Dots Variant', () => {
     it('renders dots animation', () => {
-      render(<UnifiedLoading variant="dots" />);
+      const { container } = render(<UnifiedLoading variant="dots" />);
 
       const dotsContainer = screen.getByTestId('loading-dots');
       expect(dotsContainer).toBeInTheDocument();
@@ -254,7 +274,7 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders dots with default color', () => {
-      render(<UnifiedLoading variant="dots" />);
+      const { container } = render(<UnifiedLoading variant="dots" />);
 
       const dotsContainer = screen.getByTestId('loading-dots');
       expect(dotsContainer).toBeInTheDocument();
@@ -263,7 +283,9 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders dots with custom color', () => {
-      render(<UnifiedLoading variant="dots" color="blue" />);
+      const { container } = render(
+        <UnifiedLoading variant="dots" color="blue" />
+      );
 
       const dotsContainer = screen.getByTestId('loading-dots');
       expect(dotsContainer).toBeInTheDocument();
@@ -272,7 +294,9 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders dots with message', () => {
-      render(<UnifiedLoading variant="dots" message="Processing..." />);
+      const { container } = render(
+        <UnifiedLoading variant="dots" message="Processing..." />
+      );
 
       const message = screen.getByText('Processing...');
       expect(message).toBeInTheDocument();
@@ -280,7 +304,9 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders dots with fullscreen wrapper when fullScreen is true', () => {
-      render(<UnifiedLoading variant="dots" fullScreen />);
+      const { container } = render(
+        <UnifiedLoading variant="dots" fullScreen />
+      );
 
       const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
       expect(fullscreenWrapper).toBeInTheDocument();
@@ -289,7 +315,7 @@ describe('UnifiedLoading Component', () => {
 
   describe('Pulse Variant', () => {
     it('renders pulse animation', () => {
-      render(<UnifiedLoading variant="pulse" />);
+      const { container } = render(<UnifiedLoading variant="pulse" />);
 
       const pulseContainer = screen.getByTestId('loading-pulse');
       expect(pulseContainer).toBeInTheDocument();
@@ -306,21 +332,27 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders pulse with correct size', () => {
-      render(<UnifiedLoading variant="pulse" size="lg" />);
+      const { container } = render(
+        <UnifiedLoading variant="pulse" size="lg" />
+      );
 
       const pulseElement = screen.getByTestId('pulse-element');
       expect(pulseElement).toHaveClass('w-16', 'h-16');
     });
 
     it('renders pulse with custom color', () => {
-      render(<UnifiedLoading variant="pulse" color="green" />);
+      const { container } = render(
+        <UnifiedLoading variant="pulse" color="green" />
+      );
 
       const pulseElement = screen.getByTestId('pulse-element');
       expect(pulseElement).toHaveClass('bg-green-600');
     });
 
     it('renders pulse with message', () => {
-      render(<UnifiedLoading variant="pulse" message="Loading data..." />);
+      const { container } = render(
+        <UnifiedLoading variant="pulse" message="Loading data..." />
+      );
 
       const message = screen.getByText('Loading data...');
       expect(message).toBeInTheDocument();
@@ -328,7 +360,9 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders pulse with fullscreen wrapper when fullScreen is true', () => {
-      render(<UnifiedLoading variant="pulse" fullScreen />);
+      const { container } = render(
+        <UnifiedLoading variant="pulse" fullScreen />
+      );
 
       const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
       expect(fullscreenWrapper).toBeInTheDocument();
@@ -341,9 +375,12 @@ describe('UnifiedLoading Component', () => {
 
     sizes.forEach((size, index) => {
       it(`renders ${size} size correctly`, () => {
-        render(<UnifiedLoading size={size} />);
+        const { container } = render(<UnifiedLoading size={size} />);
 
-        const spinner = screen.getByTestId('spinner-element');
+        const spinner = container.querySelector(
+          '[data-testid="spinner-element"]'
+        );
+        expect(spinner).toBeInTheDocument();
         expectedClasses[index].split(' ').forEach((className) => {
           expect(spinner).toHaveClass(className);
         });
@@ -356,24 +393,32 @@ describe('UnifiedLoading Component', () => {
 
     colors.forEach((color) => {
       it(`renders ${color} color correctly`, () => {
-        render(<UnifiedLoading color={color} />);
+        const { container } = render(<UnifiedLoading color={color} />);
 
-        const spinner = screen.getByTestId('spinner-element');
+        const spinner = container.querySelector(
+          '[data-testid="spinner-element"]'
+        );
+        expect(spinner).toBeInTheDocument();
         expect(spinner).toHaveClass(`border-${color}-600`);
       });
     });
 
     it('defaults to indigo color when invalid color is provided', () => {
-      render(<UnifiedLoading color={'invalid-color' as unknown as string} />);
+      const { container } = render(
+        <UnifiedLoading color={'invalid-color' as unknown as string} />
+      );
 
-      const spinner = screen.getByTestId('spinner-element');
+      const spinner = container.querySelector(
+        '[data-testid="spinner-element"]'
+      );
+      expect(spinner).toBeInTheDocument();
       expect(spinner).toHaveClass('border-indigo-600');
     });
   });
 
   describe('FullScreen Behavior', () => {
     it('renders fullscreen wrapper when fullScreen is true', () => {
-      render(<UnifiedLoading fullScreen />);
+      const { container } = render(<UnifiedLoading fullScreen />);
 
       const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
       expect(fullscreenWrapper).toBeInTheDocument();
@@ -390,21 +435,25 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('does not render fullscreen wrapper when fullScreen is false', () => {
-      render(<UnifiedLoading fullScreen={false} />);
+      const { container } = render(<UnifiedLoading fullScreen={false} />);
 
       const fullscreenWrapper = screen.queryByTestId('fullscreen-wrapper');
       expect(fullscreenWrapper).not.toBeInTheDocument();
     });
 
     it('page variant automatically uses fullscreen wrapper', () => {
-      render(<UnifiedLoading variant="page" fullScreen={false} />);
+      const { container } = render(
+        <UnifiedLoading variant="page" fullScreen={false} />
+      );
 
       const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
       expect(fullscreenWrapper).toBeInTheDocument();
     });
 
     it('inline variant never uses fullscreen wrapper', () => {
-      render(<UnifiedLoading variant="inline" fullScreen />);
+      const { container } = render(
+        <UnifiedLoading variant="inline" fullScreen />
+      );
 
       const fullscreenWrapper = screen.queryByTestId('fullscreen-wrapper');
       expect(fullscreenWrapper).not.toBeInTheDocument();
@@ -488,7 +537,9 @@ describe('UnifiedLoading Component', () => {
 
   describe('Message Rendering', () => {
     it('renders message with spinner variant', () => {
-      render(<UnifiedLoading message="Loading data..." />);
+      const { container } = render(
+        <UnifiedLoading message="Loading data..." />
+      );
 
       const message = screen.getByText('Loading data...');
       expect(message).toBeInTheDocument();
@@ -496,7 +547,7 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('does not render message element when message is not provided', () => {
-      render(<UnifiedLoading />);
+      const { container } = render(<UnifiedLoading />);
 
       const messages = screen.queryAllByText(/./); // Query for any text
       // Filter to only p elements
@@ -505,7 +556,7 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('renders empty message gracefully', () => {
-      render(<UnifiedLoading message="" />);
+      const { container } = render(<UnifiedLoading message="" />);
 
       // Empty string is falsy, so no message element should be rendered
       const messages = screen.queryAllByRole('paragraph');
@@ -516,7 +567,7 @@ describe('UnifiedLoading Component', () => {
       const longMessage =
         'This is a very long loading message that should still be displayed correctly without breaking the layout or causing any visual issues.';
 
-      render(<UnifiedLoading message={longMessage} />);
+      const { container } = render(<UnifiedLoading message={longMessage} />);
 
       expect(screen.getByText(longMessage)).toBeInTheDocument();
     });
@@ -524,7 +575,7 @@ describe('UnifiedLoading Component', () => {
 
   describe('Accessibility', () => {
     it('does not contain interactive elements', () => {
-      render(<UnifiedLoading message="Loading..." />);
+      const { container } = render(<UnifiedLoading message="Loading..." />);
 
       const buttons = screen.queryAllByRole('button');
       expect(buttons.length).toBe(0);
@@ -534,14 +585,16 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('provides meaningful content for screen readers', () => {
-      render(<UnifiedLoading message="Loading user data" />);
+      const { container } = render(
+        <UnifiedLoading message="Loading user data" />
+      );
 
       const message = screen.getByText('Loading user data');
       expect(message).toBeInTheDocument();
     });
 
     it('skeleton variants provide non-interactive placeholders', () => {
-      render(<UnifiedLoading variant="skeleton-hero" />);
+      const { container } = render(<UnifiedLoading variant="skeleton-hero" />);
 
       const skeletonHero = screen.getByTestId('skeleton-hero');
       expect(skeletonHero).toBeInTheDocument();
@@ -600,51 +653,62 @@ describe('UnifiedLoading Component', () => {
 
   describe('Edge Cases', () => {
     it('handles undefined variant gracefully', () => {
-      render(
+      const { container } = render(
         <UnifiedLoading variant={undefined as unknown as LoadingVariant} />
       );
 
       // Should default to spinner
-      const spinner = screen.getByTestId('spinner-element');
+      const spinner = container.querySelector(
+        '[data-testid="spinner-element"]'
+      );
       expect(spinner).toBeInTheDocument();
     });
 
     it('handles invalid variant gracefully', () => {
-      render(
+      const { container } = render(
         <UnifiedLoading
           variant={'invalid-variant' as unknown as LoadingVariant}
         />
       );
 
       // Should default to spinner
-      const spinner = screen.getByTestId('spinner-element');
+      const spinner = container.querySelector(
+        '[data-testid="spinner-element"]'
+      );
       expect(spinner).toBeInTheDocument();
     });
 
     it('handles null message gracefully', () => {
       expect(() => {
-        render(<UnifiedLoading message={null as unknown as string} />);
+        const { container } = render(
+          <UnifiedLoading message={null as unknown as string} />
+        );
       }).not.toThrow();
     });
 
     it('handles undefined size gracefully', () => {
-      render(
+      const { container } = render(
         <UnifiedLoading
           size={undefined as unknown as 'sm' | 'md' | 'lg' | 'xl'}
         />
       );
 
       // Should default to md size
-      const spinner = screen.getByTestId('spinner-element');
+      const spinner = container.querySelector(
+        '[data-testid="spinner-element"]'
+      );
+      expect(spinner).toBeInTheDocument();
       expect(spinner).toHaveClass('w-12', 'h-12');
     });
   });
 
   describe('CSS Classes', () => {
     it('applies correct animation classes to spinner', () => {
-      render(<UnifiedLoading />);
+      const { container } = render(<UnifiedLoading />);
 
-      const animatedElement = screen.getByTestId('spinner-element');
+      const animatedElement = container.querySelector(
+        '[data-testid="spinner-element"]'
+      );
       expect(animatedElement).toBeInTheDocument();
       expect(animatedElement).toHaveClass(
         'border-4',
@@ -654,7 +718,7 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('applies correct layout classes to fullscreen wrapper', () => {
-      render(<UnifiedLoading variant="page" />);
+      const { container } = render(<UnifiedLoading variant="page" />);
 
       const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
       expect(fullscreenWrapper).toBeInTheDocument();
@@ -671,7 +735,9 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('applies correct spacing classes to inline variant', () => {
-      render(<UnifiedLoading variant="inline" message="Test" />);
+      const { container } = render(
+        <UnifiedLoading variant="inline" message="Test" />
+      );
 
       const inlineContainer = screen.getByTestId('loading-inline');
       expect(inlineContainer).toBeInTheDocument();
