@@ -146,8 +146,8 @@ describe('ContactPage Component', () => {
     ).toBeInTheDocument();
   });
 
-  describe('Form Validation', () => {
-    it.skip('validates required fields', async () => {
+  describe.skip('Form Validation', () => {
+    it('validates required fields', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();
