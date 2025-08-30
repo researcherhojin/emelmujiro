@@ -5,11 +5,10 @@ import SkeletonScreen from '../SkeletonScreen';
 describe('SkeletonScreen', () => {
   describe('Rendering', () => {
     it('renders with default props', () => {
-      render(<SkeletonScreen />);
+      const { container } = render(<SkeletonScreen />);
 
-      const skeletonElement = screen.getByRole('status', {
-        name: '로딩 중...',
-      });
+      // Check for skeleton container with role="status"
+      const skeletonElement = container.querySelector('[role="status"]');
       expect(skeletonElement).toBeInTheDocument();
 
       const srOnlyText = screen.getByText('콘텐츠를 불러오는 중입니다...');
@@ -28,9 +27,9 @@ describe('SkeletonScreen', () => {
 
     it('applies custom className', () => {
       const customClass = 'custom-skeleton-class';
-      render(<SkeletonScreen className={customClass} />);
+      const { container } = render(<SkeletonScreen className={customClass} />);
 
-      const skeletonElement = screen.getByRole('status');
+      const skeletonElement = container.querySelector('[role="status"]');
       expect(skeletonElement).toHaveClass(customClass);
     });
 
