@@ -92,55 +92,96 @@ describe('Footer Component', () => {
 
   describe('Basic Rendering', () => {
     test('renders company name', () => {
-      renderWithRouter(<Footer />);
-      expect(screen.getByText('에멜무지로')).toBeInTheDocument();
+      const { container } = renderWithRouter(<Footer />);
+      const companyName = container.querySelector('h2');
+      expect(companyName).toBeInTheDocument();
+      expect(companyName?.textContent).toContain('에멜무지로');
     });
 
     test('renders all service sections', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
-      expect(screen.getAllByText('서비스')[0]).toBeInTheDocument();
-      expect(screen.getByText('AI 솔루션 개발')).toBeInTheDocument();
-      expect(screen.getByText('AI 교육 & 강의')).toBeInTheDocument();
-      expect(screen.getByText('AI 전략 컨설팅')).toBeInTheDocument();
-      expect(screen.getByText('데이터 분석')).toBeInTheDocument();
+      const serviceHeaders = container.querySelectorAll('h3');
+      const hasServiceHeader = Array.from(serviceHeaders).some(
+        (h) => h.textContent === '서비스'
+      );
+      expect(hasServiceHeader).toBe(true);
+
+      const buttons = container.querySelectorAll('button');
+      const serviceNames = [
+        'AI 솔루션 개발',
+        'AI 교육 & 강의',
+        'AI 전략 컨설팅',
+        '데이터 분석',
+      ];
+      serviceNames.forEach((name) => {
+        const hasService = Array.from(buttons).some(
+          (btn) => btn.textContent === name
+        );
+        expect(hasService).toBe(true);
+      });
     });
 
     test('renders navigation menu', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
-      expect(screen.getByText('메뉴')).toBeInTheDocument();
-      expect(screen.getByText('홈')).toBeInTheDocument();
-      expect(screen.getAllByText('서비스')[1]).toBeInTheDocument(); // Navigation서비스
-      expect(screen.getAllByText('대표 프로필')[0]).toBeInTheDocument();
-      expect(screen.getAllByText('문의하기')[0]).toBeInTheDocument();
+      const menuHeaders = container.querySelectorAll('h3');
+      const hasMenuHeader = Array.from(menuHeaders).some(
+        (h) => h.textContent === '메뉴'
+      );
+      expect(hasMenuHeader).toBe(true);
+
+      const buttons = container.querySelectorAll('button');
+      const menuItems = ['홈', '서비스', '대표 프로필', '문의하기'];
+      menuItems.forEach((item) => {
+        const hasItem = Array.from(buttons).some((btn) =>
+          btn.textContent?.includes(item)
+        );
+        expect(hasItem).toBe(true);
+      });
     });
 
     test('renders contact information with icons', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
-      expect(screen.getByText('researcherhojin@gmail.com')).toBeInTheDocument();
-      expect(screen.getByText('010-7279-0380')).toBeInTheDocument();
-      expect(screen.getByTestId('mail-icon')).toBeInTheDocument();
-      expect(screen.getByTestId('phone-icon')).toBeInTheDocument();
+      const email = container.querySelector(
+        'a[href="mailto:researcherhojin@gmail.com"]'
+      );
+      expect(email).toBeInTheDocument();
+      expect(email?.textContent).toBe('researcherhojin@gmail.com');
+
+      const phone = container.querySelector('a[href="tel:010-7279-0380"]');
+      expect(phone).toBeInTheDocument();
+      expect(phone?.textContent).toBe('010-7279-0380');
+
+      expect(
+        container.querySelector('[data-testid="mail-icon"]')
+      ).toBeInTheDocument();
+      expect(
+        container.querySelector('[data-testid="phone-icon"]')
+      ).toBeInTheDocument();
     });
 
     test('renders contact CTA section', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
 
+      const ctaText = container.querySelector('p.text-lg');
+      expect(ctaText).toBeInTheDocument();
+      expect(ctaText?.textContent).toBe('AI 프로젝트 도입을 계획 중이시나요?');
       expect(
-        screen.getByText('AI 프로젝트 도입을 계획 중이시나요?')
+        container.querySelector('[data-testid="external-link-icon"]')
       ).toBeInTheDocument();
-      expect(screen.getByTestId('external-link-icon')).toBeInTheDocument();
     });
 
     test('renders copyright with current year', () => {
-      renderWithRouter(<Footer />);
+      const { container } = renderWithRouter(<Footer />);
       const currentYear = new Date().getFullYear();
 
-      expect(
-        screen.getByText(`© ${currentYear} 에멜무지로. All rights reserved.`)
-      ).toBeInTheDocument();
+      const copyright = container.querySelector('.text-center.text-gray-500');
+      expect(copyright).toBeInTheDocument();
+      expect(copyright?.textContent).toBe(
+        `© ${currentYear} 에멜무지로. All rights reserved.`
+      );
     });
   });
 
