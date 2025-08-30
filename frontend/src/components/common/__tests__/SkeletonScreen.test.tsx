@@ -321,7 +321,7 @@ describe('SkeletonScreen', () => {
     it('has proper ARIA attributes', () => {
       render(<SkeletonScreen />);
 
-      const skeleton = screen.getByRole('status');
+      const skeleton = screen.getAllByRole('status')[0];
       expect(skeleton).toHaveAttribute('aria-label', '로딩 중...');
     });
 
