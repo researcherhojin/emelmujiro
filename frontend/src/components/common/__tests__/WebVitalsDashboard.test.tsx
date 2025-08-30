@@ -4,7 +4,13 @@
  */
 
 import { vi } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  act,
+  waitFor,
+} from '@testing-library/react';
 import WebVitalsDashboard from '../WebVitalsDashboard';
 
 // Mock web-vitals library
@@ -98,7 +104,7 @@ describe('WebVitalsDashboard', () => {
       expect(screen.getByText('Collecting metrics...')).toBeInTheDocument();
     });
 
-    test('hides dashboard when close button is clicked', () => {
+    test('hides dashboard when close button is clicked', async () => {
       render(<WebVitalsDashboard />);
 
       // Open dashboard
@@ -107,7 +113,9 @@ describe('WebVitalsDashboard', () => {
       })[0];
       fireEvent.click(toggleButton);
 
-      expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+      });
 
       // Close dashboard
       const closeButton = screen.getAllByRole('button', {
