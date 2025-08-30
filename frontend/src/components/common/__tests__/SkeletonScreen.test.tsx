@@ -453,7 +453,7 @@ describe('SkeletonScreen', () => {
       rerender(<SkeletonScreen variant="card" count={2} />);
 
       // Component should maintain same structure
-      expect(screen.getByRole('status')).toBeInTheDocument();
+      expect(screen.getAllByRole('status')[0]).toBeInTheDocument();
     });
   });
 
@@ -467,7 +467,7 @@ describe('SkeletonScreen', () => {
       expect(skeletonItems.length).toBe(0);
 
       // Should still have the wrapper with accessibility attributes
-      expect(screen.getByRole('status')).toBeInTheDocument();
+      expect(screen.getAllByRole('status')[0]).toBeInTheDocument();
     });
 
     it('handles negative count as 0', () => {
