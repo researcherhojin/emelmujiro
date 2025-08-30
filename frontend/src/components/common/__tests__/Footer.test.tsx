@@ -767,11 +767,11 @@ describe('Footer Component', () => {
     test('applies correct CSS classes to contact CTA button', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      const ctaButton = screen.getByRole('button', {
+      const ctaButtons = screen.getAllByRole('button', {
         name: /문의하기.*ExternalLink/,
       });
-      expect(ctaButton).toHaveClass('inline-flex');
-      expect(ctaButton).toHaveClass('items-center');
+      expect(ctaButtons[0]).toHaveClass('inline-flex');
+      expect(ctaButtons[0]).toHaveClass('items-center');
     });
   });
 
