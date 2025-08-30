@@ -132,7 +132,10 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading className="custom-loading" />
       );
 
-      const loadingDiv = screen.getByTestId('loading-spinner');
+      const loadingDiv = container.querySelector(
+        '[data-testid="loading-spinner"]'
+      );
+      expect(loadingDiv).toBeInTheDocument();
       expect(loadingDiv).toHaveClass('custom-loading');
     });
   });
