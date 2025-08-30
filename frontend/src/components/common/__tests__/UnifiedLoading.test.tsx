@@ -144,7 +144,9 @@ describe('UnifiedLoading Component', () => {
     it('renders page loading with fullscreen wrapper', () => {
       const { container } = render(<UnifiedLoading variant="page" />);
 
-      const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
+      const fullscreenWrapper = container.querySelector(
+        '[data-testid="fullscreen-wrapper"]'
+      );
       expect(fullscreenWrapper).toBeInTheDocument();
       expect(fullscreenWrapper).toHaveClass(
         'fixed',
@@ -161,7 +163,9 @@ describe('UnifiedLoading Component', () => {
     it('renders page loading with spinner inside fullscreen wrapper', () => {
       const { container } = render(<UnifiedLoading variant="page" />);
 
-      const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
+      const fullscreenWrapper = container.querySelector(
+        '[data-testid="fullscreen-wrapper"]'
+      );
       expect(fullscreenWrapper).toBeInTheDocument();
       const spinner = container.querySelector(
         '[data-testid="spinner-element"]'
@@ -182,7 +186,9 @@ describe('UnifiedLoading Component', () => {
     it('renders inline loading as span element', () => {
       const { container } = render(<UnifiedLoading variant="inline" />);
 
-      const inlineContainer = screen.getByTestId('loading-inline');
+      const inlineContainer = container.querySelector(
+        '[data-testid="loading-inline"]'
+      );
       expect(inlineContainer).toBeInTheDocument();
       expect(inlineContainer.tagName).toBe('SPAN');
     });
@@ -210,7 +216,9 @@ describe('UnifiedLoading Component', () => {
     it('renders inline loading without fullscreen wrapper', () => {
       const { container } = render(<UnifiedLoading variant="inline" />);
 
-      const fullscreenWrapper = screen.queryByTestId('fullscreen-wrapper');
+      const fullscreenWrapper = container.querySelector(
+        '[data-testid="fullscreen-wrapper"]'
+      );
       expect(fullscreenWrapper).not.toBeInTheDocument();
     });
   });
@@ -219,7 +227,10 @@ describe('UnifiedLoading Component', () => {
     it('renders skeleton-hero variant', () => {
       const { container } = render(<UnifiedLoading variant="skeleton-hero" />);
 
-      expect(screen.getByTestId('skeleton-hero')).toBeInTheDocument();
+      const skeletonHero = container.querySelector(
+        '[data-testid="skeleton-hero"]'
+      );
+      expect(skeletonHero).toBeInTheDocument();
     });
 
     it('renders skeleton-services variant', () => {
@@ -227,33 +238,48 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="skeleton-services" />
       );
 
-      expect(screen.getByTestId('skeleton-services')).toBeInTheDocument();
+      const skeletonServices = container.querySelector(
+        '[data-testid="skeleton-services"]'
+      );
+      expect(skeletonServices).toBeInTheDocument();
     });
 
     it('renders skeleton-blog variant', () => {
       const { container } = render(<UnifiedLoading variant="skeleton-blog" />);
 
-      expect(screen.getByTestId('skeleton-blog-list')).toBeInTheDocument();
+      const skeletonBlog = container.querySelector(
+        '[data-testid="skeleton-blog-list"]'
+      );
+      expect(skeletonBlog).toBeInTheDocument();
     });
 
     it('renders skeleton-form variant', () => {
       const { container } = render(<UnifiedLoading variant="skeleton-form" />);
 
-      expect(screen.getByTestId('skeleton-form')).toBeInTheDocument();
+      const skeletonForm = container.querySelector(
+        '[data-testid="skeleton-form"]'
+      );
+      expect(skeletonForm).toBeInTheDocument();
     });
 
     it('renders skeleton-card variant', () => {
       const { container } = render(<UnifiedLoading variant="skeleton-card" />);
 
-      expect(screen.getByTestId('skeleton-card')).toBeInTheDocument();
+      const skeletonCard = container.querySelector(
+        '[data-testid="skeleton-card"]'
+      );
+      expect(skeletonCard).toBeInTheDocument();
     });
 
     it('passes className to skeleton components', () => {
-      render(
+      const { container } = render(
         <UnifiedLoading variant="skeleton-hero" className="custom-skeleton" />
       );
 
-      const skeletonHero = screen.getByTestId('skeleton-hero');
+      const skeletonHero = container.querySelector(
+        '[data-testid="skeleton-hero"]'
+      );
+      expect(skeletonHero).toBeInTheDocument();
       expect(skeletonHero).toHaveClass('custom-skeleton');
     });
   });
@@ -262,7 +288,9 @@ describe('UnifiedLoading Component', () => {
     it('renders dots animation', () => {
       const { container } = render(<UnifiedLoading variant="dots" />);
 
-      const dotsContainer = screen.getByTestId('loading-dots');
+      const dotsContainer = container.querySelector(
+        '[data-testid="loading-dots"]'
+      );
       expect(dotsContainer).toBeInTheDocument();
       expect(dotsContainer).toHaveClass(
         'flex',
@@ -279,7 +307,9 @@ describe('UnifiedLoading Component', () => {
     it('renders dots with default color', () => {
       const { container } = render(<UnifiedLoading variant="dots" />);
 
-      const dotsContainer = screen.getByTestId('loading-dots');
+      const dotsContainer = container.querySelector(
+        '[data-testid="loading-dots"]'
+      );
       expect(dotsContainer).toBeInTheDocument();
       // Verify container exists - dots are mocked motion.div elements
       // The actual color classes would be applied in real implementation
@@ -290,7 +320,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="dots" color="blue" />
       );
 
-      const dotsContainer = screen.getByTestId('loading-dots');
+      const dotsContainer = container.querySelector(
+        '[data-testid="loading-dots"]'
+      );
       expect(dotsContainer).toBeInTheDocument();
       // Verify container exists - dots are mocked motion.div elements
       // The actual color classes would be applied in real implementation
@@ -311,7 +343,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="dots" fullScreen />
       );
 
-      const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
+      const fullscreenWrapper = container.querySelector(
+        '[data-testid="fullscreen-wrapper"]'
+      );
       expect(fullscreenWrapper).toBeInTheDocument();
     });
   });
@@ -320,7 +354,9 @@ describe('UnifiedLoading Component', () => {
     it('renders pulse animation', () => {
       const { container } = render(<UnifiedLoading variant="pulse" />);
 
-      const pulseContainer = screen.getByTestId('loading-pulse');
+      const pulseContainer = container.querySelector(
+        '[data-testid="loading-pulse"]'
+      );
       expect(pulseContainer).toBeInTheDocument();
       expect(pulseContainer).toHaveClass(
         'flex',
@@ -329,7 +365,9 @@ describe('UnifiedLoading Component', () => {
         'justify-center'
       );
 
-      const pulseElement = screen.getByTestId('pulse-element');
+      const pulseElement = container.querySelector(
+        '[data-testid="pulse-element"]'
+      );
       expect(pulseElement).toBeInTheDocument();
       expect(pulseElement).toHaveClass('rounded-full');
     });
@@ -339,7 +377,10 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="pulse" size="lg" />
       );
 
-      const pulseElement = screen.getByTestId('pulse-element');
+      const pulseElement = container.querySelector(
+        '[data-testid="pulse-element"]'
+      );
+      expect(pulseElement).toBeInTheDocument();
       expect(pulseElement).toHaveClass('w-16', 'h-16');
     });
 
@@ -348,7 +389,10 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="pulse" color="green" />
       );
 
-      const pulseElement = screen.getByTestId('pulse-element');
+      const pulseElement = container.querySelector(
+        '[data-testid="pulse-element"]'
+      );
+      expect(pulseElement).toBeInTheDocument();
       expect(pulseElement).toHaveClass('bg-green-600');
     });
 
@@ -367,7 +411,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="pulse" fullScreen />
       );
 
-      const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
+      const fullscreenWrapper = container.querySelector(
+        '[data-testid="fullscreen-wrapper"]'
+      );
       expect(fullscreenWrapper).toBeInTheDocument();
     });
   });
@@ -423,7 +469,9 @@ describe('UnifiedLoading Component', () => {
     it('renders fullscreen wrapper when fullScreen is true', () => {
       const { container } = render(<UnifiedLoading fullScreen />);
 
-      const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
+      const fullscreenWrapper = container.querySelector(
+        '[data-testid="fullscreen-wrapper"]'
+      );
       expect(fullscreenWrapper).toBeInTheDocument();
       expect(fullscreenWrapper).toHaveClass(
         'fixed',
@@ -440,7 +488,9 @@ describe('UnifiedLoading Component', () => {
     it('does not render fullscreen wrapper when fullScreen is false', () => {
       const { container } = render(<UnifiedLoading fullScreen={false} />);
 
-      const fullscreenWrapper = screen.queryByTestId('fullscreen-wrapper');
+      const fullscreenWrapper = container.querySelector(
+        '[data-testid="fullscreen-wrapper"]'
+      );
       expect(fullscreenWrapper).not.toBeInTheDocument();
     });
 
@@ -449,7 +499,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="page" fullScreen={false} />
       );
 
-      const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
+      const fullscreenWrapper = container.querySelector(
+        '[data-testid="fullscreen-wrapper"]'
+      );
       expect(fullscreenWrapper).toBeInTheDocument();
     });
 
@@ -458,7 +510,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="inline" fullScreen />
       );
 
-      const fullscreenWrapper = screen.queryByTestId('fullscreen-wrapper');
+      const fullscreenWrapper = container.querySelector(
+        '[data-testid="fullscreen-wrapper"]'
+      );
       expect(fullscreenWrapper).not.toBeInTheDocument();
     });
   });
@@ -478,18 +532,22 @@ describe('UnifiedLoading Component', () => {
       });
 
       it('uses page variant', () => {
-        render(<PageLoading />);
+        const { container } = render(<PageLoading />);
 
-        const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
+        const fullscreenWrapper = container.querySelector(
+          '[data-testid="fullscreen-wrapper"]'
+        );
         expect(fullscreenWrapper).toBeInTheDocument();
       });
     });
 
     describe('InlineLoading', () => {
       it('renders inline loading without message', () => {
-        render(<InlineLoading />);
+        const { container } = render(<InlineLoading />);
 
-        const inlineContainer = screen.getByTestId('loading-inline');
+        const inlineContainer = container.querySelector(
+          '[data-testid="loading-inline"]'
+        );
         expect(inlineContainer).toBeInTheDocument();
         expect(inlineContainer).toHaveClass('inline-flex', 'items-center');
 
@@ -504,33 +562,43 @@ describe('UnifiedLoading Component', () => {
       });
 
       it('uses small size', () => {
-        render(<InlineLoading />);
+        const { container } = render(<InlineLoading />);
 
-        const spinner = screen.getByTestId('inline-spinner');
+        const spinner = container.querySelector(
+          '[data-testid="inline-spinner"]'
+        );
+        expect(spinner).toBeInTheDocument();
         expect(spinner).toHaveClass('w-4', 'h-4');
       });
     });
 
     describe('ButtonLoading', () => {
       it('renders button loading for use inside buttons', () => {
-        render(<ButtonLoading />);
+        const { container } = render(<ButtonLoading />);
 
-        const inlineContainer = screen.getByTestId('loading-inline');
+        const inlineContainer = container.querySelector(
+          '[data-testid="loading-inline"]'
+        );
         expect(inlineContainer).toBeInTheDocument();
         expect(inlineContainer).toHaveClass('inline-flex', 'items-center');
       });
 
       it('uses small size', () => {
-        render(<ButtonLoading />);
+        const { container } = render(<ButtonLoading />);
 
-        const spinner = screen.getByTestId('inline-spinner');
+        const spinner = container.querySelector(
+          '[data-testid="inline-spinner"]'
+        );
+        expect(spinner).toBeInTheDocument();
         expect(spinner).toHaveClass('w-4', 'h-4');
       });
 
       it('uses white color for buttons', () => {
-        render(<ButtonLoading />);
+        const { container } = render(<ButtonLoading />);
 
-        const spinner = screen.getByTestId('inline-spinner');
+        const spinner = container.querySelector(
+          '[data-testid="inline-spinner"]'
+        );
         // Note: The actual component may need to be checked for the correct class
         // Since white is not in the colorClasses map, it would default to indigo
         expect(spinner).toBeInTheDocument();
@@ -599,7 +667,9 @@ describe('UnifiedLoading Component', () => {
     it('skeleton variants provide non-interactive placeholders', () => {
       const { container } = render(<UnifiedLoading variant="skeleton-hero" />);
 
-      const skeletonHero = screen.getByTestId('skeleton-hero');
+      const skeletonHero = container.querySelector(
+        '[data-testid="skeleton-hero"]'
+      );
       expect(skeletonHero).toBeInTheDocument();
 
       const interactiveElements = screen.queryAllByRole('button');
@@ -628,14 +698,19 @@ describe('UnifiedLoading Component', () => {
 
     it('handles rapid re-renders efficiently', () => {
       const variants = ['spinner', 'dots', 'pulse', 'skeleton-hero'] as const;
-      const { rerender } = render(<UnifiedLoading variant="spinner" />);
+      const { rerender, container } = render(
+        <UnifiedLoading variant="spinner" />
+      );
 
       variants.forEach((variant) => {
         rerender(<UnifiedLoading variant={variant} />);
       });
 
       // Should render final state correctly
-      expect(screen.getByTestId('skeleton-hero')).toBeInTheDocument();
+      const skeletonHero = container.querySelector(
+        '[data-testid="skeleton-hero"]'
+      );
+      expect(skeletonHero).toBeInTheDocument();
     });
   });
 
@@ -723,7 +798,9 @@ describe('UnifiedLoading Component', () => {
     it('applies correct layout classes to fullscreen wrapper', () => {
       const { container } = render(<UnifiedLoading variant="page" />);
 
-      const fullscreenWrapper = screen.getByTestId('fullscreen-wrapper');
+      const fullscreenWrapper = container.querySelector(
+        '[data-testid="fullscreen-wrapper"]'
+      );
       expect(fullscreenWrapper).toBeInTheDocument();
       expect(fullscreenWrapper).toHaveClass(
         'fixed',
@@ -742,7 +819,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="inline" message="Test" />
       );
 
-      const inlineContainer = screen.getByTestId('loading-inline');
+      const inlineContainer = container.querySelector(
+        '[data-testid="loading-inline"]'
+      );
       expect(inlineContainer).toBeInTheDocument();
       expect(inlineContainer).toHaveClass('inline-flex', 'items-center');
 
