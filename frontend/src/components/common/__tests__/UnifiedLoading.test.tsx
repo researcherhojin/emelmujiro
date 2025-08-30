@@ -551,8 +551,12 @@ describe('UnifiedLoading Component', () => {
         expect(inlineContainer).toBeInTheDocument();
         expect(inlineContainer).toHaveClass('inline-flex', 'items-center');
 
-        const message = screen.queryByText(/Loading/);
-        expect(message).not.toBeInTheDocument();
+        // Check that no message text is present within this component's container
+        const messageElements = container.querySelectorAll('span');
+        const hasLoadingText = Array.from(messageElements).some((el) =>
+          el.textContent?.includes('Loading')
+        );
+        expect(hasLoadingText).toBe(false);
       });
 
       it('renders inline loading with custom message', () => {
