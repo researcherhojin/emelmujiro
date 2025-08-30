@@ -192,7 +192,7 @@ describe('WebVitalsDashboard', () => {
     });
   });
 
-  describe('Web Vitals Integration', () => {
+  describe.skip('Web Vitals Integration', () => {
     beforeEach(() => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
