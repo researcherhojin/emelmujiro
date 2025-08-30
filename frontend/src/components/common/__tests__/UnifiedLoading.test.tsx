@@ -104,7 +104,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading message="Custom loading message" />
       );
 
-      expect(screen.getByText('Custom loading message')).toBeInTheDocument();
+      const message = container.querySelector('p');
+      expect(message).toBeInTheDocument();
+      expect(message?.textContent).toBe('Custom loading message');
     });
 
     it('renders spinner with custom size', () => {
@@ -178,7 +180,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="page" message="Loading page..." />
       );
 
-      expect(screen.getByText('Loading page...')).toBeInTheDocument();
+      const message = container.querySelector('p');
+      expect(message).toBeInTheDocument();
+      expect(message?.textContent).toBe('Loading page...');
     });
   });
 
@@ -196,11 +200,9 @@ describe('UnifiedLoading Component', () => {
     it('renders inline loading with smaller spinner', () => {
       const { container } = render(<UnifiedLoading variant="inline" />);
 
-      const elements = screen.getAllByRole('generic');
-      const spinner = elements.find(
-        (el) => el.classList.contains('w-4') && el.classList.contains('h-4')
-      );
+      const spinner = container.querySelector('[data-testid="inline-spinner"]');
       expect(spinner).toBeInTheDocument();
+      expect(spinner).toHaveClass('w-4', 'h-4');
     });
 
     it('renders inline loading with message', () => {
@@ -208,8 +210,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="inline" message="Loading..." />
       );
 
-      const message = screen.getByText('Loading...');
+      const message = container.querySelector('.ml-2.text-sm.text-gray-600');
       expect(message).toBeInTheDocument();
+      expect(message?.textContent).toBe('Loading...');
       expect(message).toHaveClass('ml-2', 'text-sm', 'text-gray-600');
     });
 
@@ -333,8 +336,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="dots" message="Processing..." />
       );
 
-      const message = screen.getByText('Processing...');
+      const message = container.querySelector('.ml-4.text-gray-600');
       expect(message).toBeInTheDocument();
+      expect(message?.textContent).toBe('Processing...');
       expect(message).toHaveClass('ml-4', 'text-gray-600');
     });
 
@@ -401,8 +405,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading variant="pulse" message="Loading data..." />
       );
 
-      const message = screen.getByText('Loading data...');
+      const message = container.querySelector('.mt-4.text-gray-600');
       expect(message).toBeInTheDocument();
+      expect(message?.textContent).toBe('Loading data...');
       expect(message).toHaveClass('mt-4', 'text-gray-600');
     });
 
@@ -520,15 +525,21 @@ describe('UnifiedLoading Component', () => {
   describe('Preset Components', () => {
     describe('PageLoading', () => {
       it('renders page loading with default message', () => {
-        render(<PageLoading />);
+        const { container } = render(<PageLoading />);
 
-        expect(screen.getByText('페이지를 불러오는 중...')).toBeInTheDocument();
+        const message = container.querySelector('p');
+        expect(message).toBeInTheDocument();
+        expect(message?.textContent).toBe('페이지를 불러오는 중...');
       });
 
       it('renders page loading with custom message', () => {
-        render(<PageLoading message="커스텀 로딩 메시지" />);
+        const { container } = render(
+          <PageLoading message="커스텀 로딩 메시지" />
+        );
 
-        expect(screen.getByText('커스텀 로딩 메시지')).toBeInTheDocument();
+        const message = container.querySelector('p');
+        expect(message).toBeInTheDocument();
+        expect(message?.textContent).toBe('커스텀 로딩 메시지');
       });
 
       it('uses page variant', () => {
@@ -560,9 +571,11 @@ describe('UnifiedLoading Component', () => {
       });
 
       it('renders inline loading with custom message', () => {
-        render(<InlineLoading message="처리 중..." />);
+        const { container } = render(<InlineLoading message="처리 중..." />);
 
-        expect(screen.getByText('처리 중...')).toBeInTheDocument();
+        const message = container.querySelector('.ml-2');
+        expect(message).toBeInTheDocument();
+        expect(message?.textContent).toBe('처리 중...');
       });
 
       it('uses small size', () => {
@@ -616,17 +629,16 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading message="Loading data..." />
       );
 
-      const message = screen.getByText('Loading data...');
+      const message = container.querySelector('p.mt-4.text-gray-600');
       expect(message).toBeInTheDocument();
+      expect(message?.textContent).toBe('Loading data...');
       expect(message).toHaveClass('mt-4', 'text-gray-600');
     });
 
     it('does not render message element when message is not provided', () => {
       const { container } = render(<UnifiedLoading />);
 
-      const messages = screen.queryAllByText(/./); // Query for any text
-      // Filter to only p elements
-      const paragraphs = messages.filter((el) => el?.tagName === 'P');
+      const paragraphs = container.querySelectorAll('p');
       expect(paragraphs.length).toBe(0);
     });
 
@@ -634,8 +646,8 @@ describe('UnifiedLoading Component', () => {
       const { container } = render(<UnifiedLoading message="" />);
 
       // Empty string is falsy, so no message element should be rendered
-      const messages = screen.queryAllByRole('paragraph');
-      expect(messages.length).toBe(0);
+      const paragraphs = container.querySelectorAll('p');
+      expect(paragraphs.length).toBe(0);
     });
 
     it('renders long messages correctly', () => {
@@ -644,7 +656,9 @@ describe('UnifiedLoading Component', () => {
 
       const { container } = render(<UnifiedLoading message={longMessage} />);
 
-      expect(screen.getByText(longMessage)).toBeInTheDocument();
+      const message = container.querySelector('p');
+      expect(message).toBeInTheDocument();
+      expect(message?.textContent).toBe(longMessage);
     });
   });
 
@@ -652,10 +666,10 @@ describe('UnifiedLoading Component', () => {
     it('does not contain interactive elements', () => {
       const { container } = render(<UnifiedLoading message="Loading..." />);
 
-      const buttons = screen.queryAllByRole('button');
+      const buttons = container.querySelectorAll('button');
       expect(buttons.length).toBe(0);
 
-      const links = screen.queryAllByRole('link');
+      const links = container.querySelectorAll('a');
       expect(links.length).toBe(0);
     });
 
@@ -664,8 +678,9 @@ describe('UnifiedLoading Component', () => {
         <UnifiedLoading message="Loading user data" />
       );
 
-      const message = screen.getByText('Loading user data');
+      const message = container.querySelector('p');
       expect(message).toBeInTheDocument();
+      expect(message?.textContent).toBe('Loading user data');
     });
 
     it('skeleton variants provide non-interactive placeholders', () => {
@@ -676,8 +691,8 @@ describe('UnifiedLoading Component', () => {
       );
       expect(skeletonHero).toBeInTheDocument();
 
-      const interactiveElements = screen.queryAllByRole('button');
-      expect(interactiveElements.length).toBe(0);
+      const buttons = container.querySelectorAll('button');
+      expect(buttons.length).toBe(0);
     });
   });
 
@@ -724,12 +739,14 @@ describe('UnifiedLoading Component', () => {
     });
 
     it('uses memo for optimization', () => {
-      const { rerender } = render(<UnifiedLoading message="Test" />);
+      const { rerender, container } = render(<UnifiedLoading message="Test" />);
 
       // Rerender with same props should use memoized version
       rerender(<UnifiedLoading message="Test" />);
 
-      expect(screen.getByText('Test')).toBeInTheDocument();
+      const message = container.querySelector('p');
+      expect(message).toBeInTheDocument();
+      expect(message?.textContent).toBe('Test');
     });
   });
 
@@ -829,7 +846,9 @@ describe('UnifiedLoading Component', () => {
       expect(inlineContainer).toBeInTheDocument();
       expect(inlineContainer).toHaveClass('inline-flex', 'items-center');
 
-      const message = screen.getByText('Test');
+      const message = container.querySelector('.ml-2');
+      expect(message).toBeInTheDocument();
+      expect(message?.textContent).toBe('Test');
       expect(message).toHaveClass('ml-2');
     });
   });
