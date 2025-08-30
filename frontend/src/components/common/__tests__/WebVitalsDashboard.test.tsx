@@ -79,9 +79,9 @@ describe('WebVitalsDashboard', () => {
     test('renders toggle button in development mode', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       expect(toggleButton).toBeInTheDocument();
       expect(toggleButton).toHaveTextContent('📊');
     });
@@ -89,10 +89,10 @@ describe('WebVitalsDashboard', () => {
     test('shows dashboard when toggle button is clicked', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButtons = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
       });
-      fireEvent.click(toggleButton);
+      fireEvent.click(toggleButtons[0]);
 
       expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
       expect(screen.getByText('Collecting metrics...')).toBeInTheDocument();
@@ -102,17 +102,17 @@ describe('WebVitalsDashboard', () => {
       render(<WebVitalsDashboard />);
 
       // Open dashboard
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
 
       // Close dashboard
-      const closeButton = screen.getByRole('button', {
+      const closeButton = screen.getAllByRole('button', {
         name: /close dashboard/i,
-      });
+      })[0];
       fireEvent.click(closeButton);
 
       expect(
@@ -203,9 +203,9 @@ describe('WebVitalsDashboard', () => {
       render(<WebVitalsDashboard />);
 
       // Open dashboard
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       // Simulate CLS metric
@@ -222,9 +222,9 @@ describe('WebVitalsDashboard', () => {
     test('handles FCP metric correctly', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       // Simulate FCP metric
@@ -241,9 +241,9 @@ describe('WebVitalsDashboard', () => {
     test('handles LCP metric with needs-improvement rating', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       // Simulate LCP metric with medium value
@@ -260,9 +260,9 @@ describe('WebVitalsDashboard', () => {
     test('handles TTFB metric with poor rating', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       // Simulate TTFB metric with poor value
@@ -279,9 +279,9 @@ describe('WebVitalsDashboard', () => {
     test('handles INP metric correctly', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       // Simulate INP metric
@@ -303,9 +303,9 @@ describe('WebVitalsDashboard', () => {
 
     test('correctly rates CLS metrics', () => {
       render(<WebVitalsDashboard />);
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       const clsHandler = mockOnCLS.mock.calls[0][0];
@@ -331,9 +331,9 @@ describe('WebVitalsDashboard', () => {
 
     test('correctly rates FCP metrics', () => {
       render(<WebVitalsDashboard />);
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       const fcpHandler = mockOnFCP.mock.calls[0][0];
@@ -366,9 +366,9 @@ describe('WebVitalsDashboard', () => {
     test('shows collecting message when no metrics are available', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       expect(screen.getByText('Collecting metrics...')).toBeInTheDocument();
@@ -383,9 +383,9 @@ describe('WebVitalsDashboard', () => {
     test('displays metric descriptions correctly', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       // Add some metrics
@@ -408,9 +408,9 @@ describe('WebVitalsDashboard', () => {
     test('displays metric timestamps', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       const clsHandler = mockOnCLS.mock.calls[0][0];
@@ -424,9 +424,9 @@ describe('WebVitalsDashboard', () => {
     test('shows performance summary when metrics are available', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       // Add metrics with different ratings
@@ -451,9 +451,9 @@ describe('WebVitalsDashboard', () => {
     test('displays tips and instructions', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       expect(
@@ -545,9 +545,9 @@ describe('WebVitalsDashboard', () => {
     test('applies correct CSS classes to dashboard container', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       const dashboard = screen.getByTestId('web-vitals-dashboard');
@@ -570,9 +570,9 @@ describe('WebVitalsDashboard', () => {
     test('applies correct CSS classes to toggle button', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       expect(toggleButton).toHaveClass(
         'fixed',
         'bottom-4',
@@ -591,9 +591,9 @@ describe('WebVitalsDashboard', () => {
     test('applies rating-specific colors to metric cards', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
       // Good metric
@@ -677,9 +677,9 @@ describe('WebVitalsDashboard', () => {
     test('toggle button has correct accessibility attributes', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       expect(toggleButton).toHaveAttribute(
         'aria-label',
         'Toggle Web Vitals Dashboard'
@@ -689,14 +689,14 @@ describe('WebVitalsDashboard', () => {
     test('close button has correct accessibility attributes', () => {
       render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getByRole('button', {
+      const toggleButton = screen.getAllByRole('button', {
         name: /toggle web vitals dashboard/i,
-      });
+      })[0];
       fireEvent.click(toggleButton);
 
-      const closeButton = screen.getByRole('button', {
+      const closeButton = screen.getAllByRole('button', {
         name: /close dashboard/i,
-      });
+      })[0];
       expect(closeButton).toHaveAttribute('aria-label', 'Close dashboard');
     });
   });
