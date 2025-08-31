@@ -482,10 +482,10 @@ describe('SkeletonScreen', () => {
     it('handles very long className', () => {
       const longClass =
         'very-long-class-name-that-might-break-something-if-not-handled-properly';
-      render(<SkeletonScreen className={longClass} />);
+      const { container } = render(<SkeletonScreen className={longClass} />);
 
-      const skeletons = screen.getAllByRole('status');
-      expect(skeletons[0]).toHaveClass(longClass);
+      const skeleton = container.querySelector(`[role="status"]`);
+      expect(skeleton).toHaveClass(longClass);
     });
 
     it('maintains structure with empty className', () => {
