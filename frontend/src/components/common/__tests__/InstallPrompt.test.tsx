@@ -107,11 +107,16 @@ describe('InstallPrompt', () => {
       });
 
       render(<InstallPrompt />);
-      window.dispatchEvent(mockEvent);
-
-      waitFor(() => {
-        expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
+      await act(async () => {
+        window.dispatchEvent(mockEvent);
       });
+
+      await waitFor(
+        () => {
+          expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
     it('should show when beforeinstallprompt event is available', async () => {
@@ -123,11 +128,17 @@ describe('InstallPrompt', () => {
       });
 
       render(<InstallPrompt />);
-      window.dispatchEvent(mockEvent);
-
-      await waitFor(() => {
-        expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
+      
+      await act(async () => {
+        window.dispatchEvent(mockEvent);
       });
+
+      await waitFor(
+        () => {
+          expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
   });
 
