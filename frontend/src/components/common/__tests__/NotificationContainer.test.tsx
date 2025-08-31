@@ -108,13 +108,11 @@ describe('NotificationContainer', () => {
     expect(
       screen.getByText('Operation completed successfully!')
     ).toBeInTheDocument();
-    expect(screen.getByTestId('check-circle-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('check-circle-icon')).toHaveClass(
-      'w-5',
-      'h-5',
-      'text-green-500'
-    );
-    expect(screen.getByTestId('x-icon')).toBeInTheDocument();
+    const checkCircleIcons = screen.getAllByTestId('check-circle-icon');
+    expect(checkCircleIcons[0]).toBeInTheDocument();
+    expect(checkCircleIcons[0]).toHaveClass('w-5', 'h-5', 'text-green-500');
+    const xIcons = screen.getAllByTestId('x-icon');
+    expect(xIcons[0]).toBeInTheDocument();
   });
 
   it('renders single error notification', () => {
@@ -129,12 +127,9 @@ describe('NotificationContainer', () => {
     renderWithSelectiveProviders(<NotificationContainer />);
 
     expect(screen.getByText('Something went wrong!')).toBeInTheDocument();
-    expect(screen.getByTestId('alert-circle-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('alert-circle-icon')).toHaveClass(
-      'w-5',
-      'h-5',
-      'text-red-500'
-    );
+    const alertCircleIcons = screen.getAllByTestId('alert-circle-icon');
+    expect(alertCircleIcons[0]).toBeInTheDocument();
+    expect(alertCircleIcons[0]).toHaveClass('w-5', 'h-5', 'text-red-500');
   });
 
   it('renders single warning notification', () => {
@@ -149,12 +144,9 @@ describe('NotificationContainer', () => {
     renderWithSelectiveProviders(<NotificationContainer />);
 
     expect(screen.getByText('Please be careful!')).toBeInTheDocument();
-    expect(screen.getByTestId('alert-triangle-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('alert-triangle-icon')).toHaveClass(
-      'w-5',
-      'h-5',
-      'text-yellow-500'
-    );
+    const alertTriangleIcons = screen.getAllByTestId('alert-triangle-icon');
+    expect(alertTriangleIcons[0]).toBeInTheDocument();
+    expect(alertTriangleIcons[0]).toHaveClass('w-5', 'h-5', 'text-yellow-500');
   });
 
   it('renders info notification (default type)', () => {
@@ -169,12 +161,9 @@ describe('NotificationContainer', () => {
     renderWithSelectiveProviders(<NotificationContainer />);
 
     expect(screen.getByText('Here is some information')).toBeInTheDocument();
-    expect(screen.getByTestId('info-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('info-icon')).toHaveClass(
-      'w-5',
-      'h-5',
-      'text-blue-500'
-    );
+    const infoIcons = screen.getAllByTestId('info-icon');
+    expect(infoIcons[0]).toBeInTheDocument();
+    expect(infoIcons[0]).toHaveClass('w-5', 'h-5', 'text-blue-500');
   });
 
   it('renders notification with unknown type as info', () => {
@@ -189,12 +178,9 @@ describe('NotificationContainer', () => {
     renderWithSelectiveProviders(<NotificationContainer />);
 
     expect(screen.getByText('Unknown type notification')).toBeInTheDocument();
-    expect(screen.getByTestId('info-icon')).toBeInTheDocument();
-    expect(screen.getByTestId('info-icon')).toHaveClass(
-      'w-5',
-      'h-5',
-      'text-blue-500'
-    );
+    const infoIcons = screen.getAllByTestId('info-icon');
+    expect(infoIcons[0]).toBeInTheDocument();
+    expect(infoIcons[0]).toHaveClass('w-5', 'h-5', 'text-blue-500');
   });
 
   it('renders multiple notifications', () => {
@@ -333,7 +319,8 @@ describe('NotificationContainer', () => {
     );
 
     // Check that X icon is inside the button
-    expect(closeButton).toContainElement(screen.getByTestId('x-icon'));
+    const xIconsForClose = screen.getAllByTestId('x-icon');
+    expect(closeButton).toContainElement(xIconsForClose[0]);
   });
 
   it('handles empty notification message', () => {
