@@ -80,7 +80,8 @@ describe('ScrollProgress', () => {
       expect(progressBar).toBeInTheDocument();
 
       // Check that the container has the correct classes
-      const container = screen.getByTestId('scroll-progress-container');
+      const containers = screen.getAllByTestId('scroll-progress-container');
+      const container = containers[containers.length - 1];
       expect(container).toHaveClass(
         'fixed',
         'top-0',
@@ -104,7 +105,8 @@ describe('ScrollProgress', () => {
       render(<ScrollProgress />);
 
       // Verify the container has the correct classes
-      const container = screen.getByTestId('scroll-progress-container');
+      const containers = screen.getAllByTestId('scroll-progress-container');
+      const container = containers[containers.length - 1];
       expect(container).toHaveClass(
         'fixed',
         'top-0',
