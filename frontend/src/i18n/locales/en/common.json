@@ -1,4 +1,8 @@
 {
+  "about": "About",
+  "blog": "Blog",
+  "profile": "Profile",
+  "contact": "Contact",
   "buttons": {
     "submit": "Submit",
     "cancel": "Cancel",
