@@ -85,7 +85,7 @@ describe('BlogInteractions Component', () => {
 
     it('displays initial like count as 0', () => {
       render(<BlogInteractions post={mockPost} />);
-      const zeroElements = screen.getAllByText('0');
+      const zeroElements = screen.queryAllByText('0');
       expect(zeroElements.length).toBeGreaterThanOrEqual(1);
     });
   });
@@ -99,7 +99,7 @@ describe('BlogInteractions Component', () => {
       const likeButton = buttons[0]; // First button is the like button
       fireEvent.click(likeButton);
 
-      const oneElements = screen.getAllByText('1');
+      const oneElements = screen.queryAllByText('1');
       expect(oneElements.length).toBeGreaterThanOrEqual(1);
     });
 
@@ -111,12 +111,12 @@ describe('BlogInteractions Component', () => {
 
       // Like
       fireEvent.click(likeButton);
-      const oneElements = screen.getAllByText('1');
+      const oneElements = screen.queryAllByText('1');
       expect(oneElements.length).toBeGreaterThanOrEqual(1);
 
       // Unlike
       fireEvent.click(likeButton);
-      const zeroElements2 = screen.getAllByText('0');
+      const zeroElements2 = screen.queryAllByText('0');
       expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
     });
 
@@ -152,7 +152,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const fiveElements = screen.getAllByText('5');
+      const fiveElements = screen.queryAllByText('5');
       expect(fiveElements.length).toBeGreaterThanOrEqual(1);
     });
 
@@ -171,12 +171,12 @@ describe('BlogInteractions Component', () => {
       const likeButton = buttons[0];
 
       // Should be already liked
-      const oneElements = screen.getAllByText('1');
+      const oneElements = screen.queryAllByText('1');
       expect(oneElements.length).toBeGreaterThanOrEqual(1);
 
       // Click to unlike
       fireEvent.click(likeButton);
-      const zeroElements2 = screen.getAllByText('0');
+      const zeroElements2 = screen.queryAllByText('0');
       expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
     });
   });
@@ -464,7 +464,7 @@ describe('BlogInteractions Component', () => {
       render(<BlogInteractions post={mockPost} />);
 
       // Should render with default values
-      const zeroElements2 = screen.getAllByText('0');
+      const zeroElements2 = screen.queryAllByText('0');
       expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
       // Check for first button (like button)
       const buttons = screen.getAllByRole('button');
@@ -480,7 +480,7 @@ describe('BlogInteractions Component', () => {
       render(<BlogInteractions post={mockPost} />);
 
       // Should render with default values
-      const zeroElements2 = screen.getAllByText('0');
+      const zeroElements2 = screen.queryAllByText('0');
       expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
     });
 
