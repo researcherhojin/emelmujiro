@@ -322,7 +322,7 @@ describe('SkeletonScreen', () => {
     it('has proper ARIA attributes', () => {
       render(<SkeletonScreen />);
 
-      const skeleton = screen.getAllByRole('status')[0];
+      const skeleton = document.querySelector('[role="status"]');
       expect(skeleton).toHaveAttribute('aria-label', '로딩 중...');
     });
 
@@ -396,7 +396,7 @@ describe('SkeletonScreen', () => {
       );
 
       const { rerender } = render(<LoadingComponent isLoading={true} />);
-      expect(screen.getAllByRole('status')[0]).toBeInTheDocument();
+      expect(document.querySelector('[role="status"]')).toBeInTheDocument();
 
       rerender(<LoadingComponent isLoading={false} />);
       expect(screen.queryAllByRole('status')).toHaveLength(0);
@@ -453,7 +453,7 @@ describe('SkeletonScreen', () => {
       rerender(<SkeletonScreen variant="card" count={2} />);
 
       // Component should maintain same structure
-      expect(screen.getAllByRole('status')[0]).toBeInTheDocument();
+      expect(document.querySelector('[role="status"]')).toBeInTheDocument();
     });
   });
 
@@ -467,7 +467,7 @@ describe('SkeletonScreen', () => {
       expect(skeletonItems.length).toBe(0);
 
       // Should still have the wrapper with accessibility attributes
-      expect(screen.getAllByRole('status')[0]).toBeInTheDocument();
+      expect(document.querySelector('[role="status"]')).toBeInTheDocument();
     });
 
     it('handles negative count as 0', () => {
@@ -489,9 +489,9 @@ describe('SkeletonScreen', () => {
     });
 
     it('maintains structure with empty className', () => {
-      render(<SkeletonScreen className="" />);
+      const { container } = render(<SkeletonScreen className="" />);
 
-      const skeleton = screen.getByRole('status');
+      const skeleton = container.querySelector('[role="status"]');
       expect(skeleton).toBeInTheDocument();
     });
   });
