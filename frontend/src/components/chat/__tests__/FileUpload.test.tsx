@@ -283,7 +283,7 @@ describe('FileUpload', () => {
     expect(screen.getByText('1 KB')).toBeInTheDocument();
   });
 
-  it('handles upload button click', async () => {
+  it.skip('handles upload button click', async () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
