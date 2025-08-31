@@ -593,6 +593,15 @@ Object.defineProperty(window, 'location', {
   },
 });
 
+// Mock globalHistory for react-router
+(global as any).globalHistory = {
+  replaceState: vi.fn(),
+  pushState: vi.fn(),
+  back: vi.fn(),
+  forward: vi.fn(),
+  go: vi.fn(),
+};
+
 // Suppress console errors and warnings in tests
 const originalError = console.error;
 const originalWarn = console.warn;
