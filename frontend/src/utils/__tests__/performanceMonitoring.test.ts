@@ -3,6 +3,7 @@
  */
 
 import { vi } from 'vitest';
+import logger from '../logger';
 import {
   initWebVitals,
   getMetrics,
@@ -275,6 +276,9 @@ describe('performanceMonitoring', () => {
         throw new Error('Analytics error');
       });
 
+      // Mock logger to enable error logging in production for this test
+      const mockLoggerError = vi.spyOn(logger, 'error');
+
       initWebVitals();
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       const mockMetric = {
@@ -288,10 +292,12 @@ describe('performanceMonitoring', () => {
       };
       await lcpCallback(mockMetric);
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
+      expect(mockLoggerError).toHaveBeenCalledWith(
         'Failed to send metrics:',
         expect.any(Error)
       );
+      
+      mockLoggerError.mockRestore();
     });
 
     it('should not send analytics in development', async () => {

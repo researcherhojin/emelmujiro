@@ -94,7 +94,7 @@ describe('InstallPrompt', () => {
       expect(screen.queryByText(/앱 설치/i)).not.toBeInTheDocument();
     });
 
-    it('should show if dismissed more than 7 days ago', () => {
+    it('should show if dismissed more than 7 days ago', async () => {
       const oldTime = new Date().getTime() - 8 * 24 * 60 * 60 * 1000; // 8 days ago
       localStorage.setItem('install-prompt-dismissed', oldTime.toString());
 
