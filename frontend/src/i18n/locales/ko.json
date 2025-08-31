@@ -1,0 +1,166 @@
+{
+  "common": {
+    "home": "홈",
+    "about": "소개",
+    "services": "서비스",
+    "contact": "문의",
+    "blog": "블로그",
+    "profile": "프로필",
+    "login": "로그인",
+    "logout": "로그아웃",
+    "register": "회원가입",
+    "search": "검색",
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다",
+    "success": "성공",
+    "cancel": "취소",
+    "confirm": "확인",
+    "save": "저장",
+    "delete": "삭제",
+    "edit": "수정",
+    "close": "닫기",
+    "back": "뒤로",
+    "next": "다음",
+    "previous": "이전",
+    "submit": "제출",
+    "language": "언어"
+  },
+  "hero": {
+    "title": "AI 혁신을 선도하는",
+    "subtitle": "에멜무지로",
+    "description": "2022년부터 축적한 AI 교육 노하우와 실무 프로젝트 경험을 바탕으로 기업 맞춤형 AI 솔루션을 제공합니다",
+    "cta": {
+      "primary": "무료 상담 신청",
+      "secondary": "서비스 알아보기"
+    }
+  },
+  "services": {
+    "title": "핵심 서비스",
+    "subtitle": "AI 기술로 비즈니스 혁신을 이끕니다",
+    "aiSolution": {
+      "title": "AI 솔루션 개발",
+      "description": "맞춤형 LLM 솔루션, Computer Vision, MLOps 파이프라인 구축"
+    },
+    "education": {
+      "title": "AI 교육 & 강의",
+      "description": "실무 중심 AI 교육, Python 머신러닝/딥러닝 교육"
+    },
+    "consulting": {
+      "title": "기술 컨설팅",
+      "description": "기업별 AI 도입 전략 수립 및 기술 자문"
+    },
+    "dataAnalysis": {
+      "title": "데이터 분석",
+      "description": "빅데이터 기반 인사이트 도출 및 분석 시스템 구축"
+    }
+  },
+  "about": {
+    "title": "에멜무지로 소개",
+    "mission": {
+      "title": "우리의 미션",
+      "description": "AI 기술의 대중화를 통해 모든 기업이 AI의 혜택을 누릴 수 있도록 지원합니다"
+    },
+    "vision": {
+      "title": "우리의 비전",
+      "description": "AI 교육과 컨설팅 분야의 선도 기업으로 성장하여 디지털 혁신을 이끕니다"
+    },
+    "values": {
+      "title": "핵심 가치",
+      "innovation": "혁신",
+      "trust": "신뢰",
+      "excellence": "전문성",
+      "collaboration": "협업"
+    }
+  },
+  "contact": {
+    "title": "문의하기",
+    "subtitle": "프로젝트에 대해 상담을 원하시나요?",
+    "form": {
+      "name": "이름",
+      "email": "이메일",
+      "phone": "전화번호",
+      "company": "회사명",
+      "message": "문의 내용",
+      "service": "서비스 선택",
+      "budget": "예산",
+      "timeline": "프로젝트 일정",
+      "submit": "문의 전송",
+      "sending": "전송 중...",
+      "success": "문의가 성공적으로 전송되었습니다",
+      "error": "전송 중 오류가 발생했습니다"
+    },
+    "info": {
+      "email": "researcherhojin@gmail.com",
+      "phone": "+82-10-1234-5678",
+      "address": "서울특별시 강남구",
+      "hours": "평일 09:00 - 18:00"
+    }
+  },
+  "blog": {
+    "title": "블로그",
+    "subtitle": "AI 트렌드와 인사이트를 공유합니다",
+    "readMore": "더 읽기",
+    "author": "작성자",
+    "date": "작성일",
+    "tags": "태그",
+    "relatedPosts": "관련 글",
+    "comments": "댓글",
+    "writeComment": "댓글 작성",
+    "noComments": "댓글이 없습니다",
+    "search": "블로그 검색",
+    "categories": {
+      "all": "전체",
+      "ai": "AI/ML",
+      "tutorial": "튜토리얼",
+      "casestudy": "사례 연구",
+      "news": "뉴스"
+    }
+  },
+  "footer": {
+    "company": "회사 정보",
+    "services": "서비스",
+    "resources": "리소스",
+    "legal": "법적 고지",
+    "privacy": "개인정보처리방침",
+    "terms": "이용약관",
+    "copyright": "© 2025 에멜무지로. All rights reserved.",
+    "socialMedia": "소셜 미디어"
+  },
+  "chat": {
+    "title": "실시간 상담",
+    "online": "온라인",
+    "offline": "오프라인",
+    "typing": "입력 중...",
+    "sendMessage": "메시지 전송",
+    "placeholder": "메시지를 입력하세요",
+    "welcome": "안녕하세요! 무엇을 도와드릴까요?",
+    "connectionLost": "연결이 끊어졌습니다",
+    "reconnecting": "재연결 중..."
+  },
+  "errors": {
+    "404": "페이지를 찾을 수 없습니다",
+    "500": "서버 오류가 발생했습니다",
+    "network": "네트워크 연결을 확인해주세요",
+    "validation": {
+      "required": "필수 입력 항목입니다",
+      "email": "올바른 이메일 형식이 아닙니다",
+      "minLength": "최소 {{min}}자 이상 입력해주세요",
+      "maxLength": "최대 {{max}}자까지 입력 가능합니다",
+      "pattern": "올바른 형식이 아닙니다"
+    }
+  },
+  "pwa": {
+    "install": "앱 설치",
+    "update": "업데이트 사용 가능",
+    "offline": "오프라인 모드",
+    "online": "온라인 연결됨"
+  },
+  "accessibility": {
+    "skipToContent": "본문으로 건너뛰기",
+    "menu": "메뉴",
+    "navigation": "네비게이션",
+    "search": "검색",
+    "darkMode": "다크 모드",
+    "lightMode": "라이트 모드"
+  }
+}

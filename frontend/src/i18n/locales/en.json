@@ -1,0 +1,166 @@
+{
+  "common": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "contact": "Contact",
+    "blog": "Blog",
+    "profile": "Profile",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "language": "Language"
+  },
+  "hero": {
+    "title": "Leading AI Innovation",
+    "subtitle": "Emelmujiro",
+    "description": "Providing customized AI solutions based on AI education expertise and practical project experience accumulated since 2022",
+    "cta": {
+      "primary": "Request Free Consultation",
+      "secondary": "Explore Services"
+    }
+  },
+  "services": {
+    "title": "Core Services",
+    "subtitle": "Driving business innovation with AI technology",
+    "aiSolution": {
+      "title": "AI Solution Development",
+      "description": "Custom LLM solutions, Computer Vision, MLOps pipeline construction"
+    },
+    "education": {
+      "title": "AI Education & Training",
+      "description": "Practice-oriented AI education, Python machine learning/deep learning training"
+    },
+    "consulting": {
+      "title": "Technical Consulting",
+      "description": "AI adoption strategy development and technical advisory for enterprises"
+    },
+    "dataAnalysis": {
+      "title": "Data Analysis",
+      "description": "Big data-based insight extraction and analysis system construction"
+    }
+  },
+  "about": {
+    "title": "About Emelmujiro",
+    "mission": {
+      "title": "Our Mission",
+      "description": "Supporting all companies to enjoy the benefits of AI through the democratization of AI technology"
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "Growing as a leading company in AI education and consulting to drive digital transformation"
+    },
+    "values": {
+      "title": "Core Values",
+      "innovation": "Innovation",
+      "trust": "Trust",
+      "excellence": "Excellence",
+      "collaboration": "Collaboration"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Want to discuss your project?",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "company": "Company",
+      "message": "Message",
+      "service": "Select Service",
+      "budget": "Budget",
+      "timeline": "Project Timeline",
+      "submit": "Send Inquiry",
+      "sending": "Sending...",
+      "success": "Your inquiry has been sent successfully",
+      "error": "An error occurred while sending"
+    },
+    "info": {
+      "email": "researcherhojin@gmail.com",
+      "phone": "+82-10-1234-5678",
+      "address": "Gangnam-gu, Seoul",
+      "hours": "Weekdays 09:00 - 18:00"
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Sharing AI trends and insights",
+    "readMore": "Read More",
+    "author": "Author",
+    "date": "Date",
+    "tags": "Tags",
+    "relatedPosts": "Related Posts",
+    "comments": "Comments",
+    "writeComment": "Write Comment",
+    "noComments": "No comments",
+    "search": "Search Blog",
+    "categories": {
+      "all": "All",
+      "ai": "AI/ML",
+      "tutorial": "Tutorial",
+      "casestudy": "Case Study",
+      "news": "News"
+    }
+  },
+  "footer": {
+    "company": "Company",
+    "services": "Services",
+    "resources": "Resources",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© 2025 Emelmujiro. All rights reserved.",
+    "socialMedia": "Social Media"
+  },
+  "chat": {
+    "title": "Live Chat",
+    "online": "Online",
+    "offline": "Offline",
+    "typing": "Typing...",
+    "sendMessage": "Send Message",
+    "placeholder": "Type your message",
+    "welcome": "Hello! How can I help you?",
+    "connectionLost": "Connection lost",
+    "reconnecting": "Reconnecting..."
+  },
+  "errors": {
+    "404": "Page not found",
+    "500": "Server error occurred",
+    "network": "Please check your network connection",
+    "validation": {
+      "required": "This field is required",
+      "email": "Invalid email format",
+      "minLength": "Minimum {{min}} characters required",
+      "maxLength": "Maximum {{max}} characters allowed",
+      "pattern": "Invalid format"
+    }
+  },
+  "pwa": {
+    "install": "Install App",
+    "update": "Update Available",
+    "offline": "Offline Mode",
+    "online": "Online Connected"
+  },
+  "accessibility": {
+    "skipToContent": "Skip to Content",
+    "menu": "Menu",
+    "navigation": "Navigation",
+    "search": "Search",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
+  }
+}

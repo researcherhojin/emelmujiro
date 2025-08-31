@@ -5,6 +5,7 @@
   "homepage": "https://researcherhojin.github.io/emelmujiro",
   "dependencies": {
     "@sentry/react": "^10.7.0",
+    "@tanstack/react-virtual": "^3.13.12",
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^11.15.0",
@@ -19,7 +20,8 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.8.2",
     "remark-gfm": "^4.0.1",
-    "web-vitals": "^5.1.0"
+    "web-vitals": "^5.1.0",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",

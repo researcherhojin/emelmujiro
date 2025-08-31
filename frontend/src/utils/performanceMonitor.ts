@@ -1,8 +1,5 @@
-/**
- * Performance monitoring utility for tracking app metrics
- */
-
 import logger from './logger';
+// import { onCLS, onFCP, onINP, onLCP, onTTFB, Metric } from 'web-vitals';
 
 interface PerformanceMetrics {
   FCP?: number; // First Contentful Paint
@@ -15,9 +12,21 @@ interface PerformanceMetrics {
   INP?: number; // Interaction to Next Paint (Core Web Vital 2024+)
 }
 
+interface PerformanceReport {
+  metrics: PerformanceMetrics;
+  resourceTimings: PerformanceResourceTiming[];
+  navigationTiming: PerformanceNavigationTiming | null;
+  marks: Map<string, number>;
+  measures: Map<string, number>;
+  timestamp: number;
+}
+
 class PerformanceMonitor {
   private metrics: PerformanceMetrics = {};
   private observers: Map<string, PerformanceObserver> = new Map();
+  private marks: Map<string, number> = new Map();
+  private measures: Map<string, number> = new Map();
+  private subscribers: Set<(report: PerformanceReport) => void> = new Set();
 
   constructor() {
     if (typeof window !== 'undefined' && 'performance' in window) {
@@ -36,7 +45,7 @@ class PerformanceMonitor {
     // Observe largest contentful paint
     this.observeLCP();
 
-    // Observe first input delay
+    // Observe first input delay (legacy metric)
     this.observeFID();
 
     // Observe cumulative layout shift
@@ -96,7 +105,8 @@ class PerformanceMonitor {
   }
 
   /**
-   * Observe First Input Delay
+   * Observe First Input Delay (deprecated - using INP instead)
+   * FID is now calculated from first-input performance entries
    */
   private observeFID(): void {
     try {

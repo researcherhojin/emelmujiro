@@ -10,115 +10,129 @@ Emelmujiro (에멜무지로) is a full-stack web application for an AI Education
 **Build Tool**: Vite 7.1.3 (migrated from Create React App)
 **Test Framework**: Vitest 3.2.4 (migrated from Jest)
 **Live Site**: https://researcherhojin.github.io/emelmujiro
+**Port Configuration**: Frontend dev (5173), Frontend preview (4173), Backend (8000)
 
 ## Essential Commands
 
 ### Development
 
 ```bash
-# Start full application (frontend + backend)
-npm run dev
+# Start full application (frontend + backend) from root
+npm run dev                # Runs both frontend and backend concurrently
+npm run dev:clean          # Kills existing processes first (./scripts/kill-ports.sh)
+npm run dev:safe           # Kills all on any failure
 
-# Start with clean ports (kills existing processes)
-npm run dev:clean
-
-# Frontend only (Vite dev server on port 5173)
-cd frontend && npm run dev
-
-# Backend only (Django on port 8000)
-cd backend && python manage.py runserver
+# Individual services
+cd frontend && npm run dev  # Frontend only (Vite dev server on port 5173)
+cd backend && python manage.py runserver  # Backend only (Django on port 8000)
 
 # Docker development
-docker compose up -d
+npm run dev:docker          # Uses ./scripts/start-dev.sh
+docker compose up -d        # Direct docker compose
 
-# Development with specific environments
-npm run dev:docker        # Docker compose development
-npm run dev:db           # With PostgreSQL
+# Port management
+lsof -ti:5173 | xargs kill -9  # Kill Vite dev server
+lsof -ti:4173 | xargs kill -9  # Kill Vite preview
+lsof -ti:8000 | xargs kill -9  # Kill Django server
 ```
 
 ### Testing
 
 ```bash
-# Run all frontend tests (Vitest)
-cd frontend && npm test
+# Run all tests from root
+npm test                    # Runs both frontend and backend tests
+
+# Frontend tests (Vitest) - from frontend directory
+cd frontend && npm test     # Watch mode
+cd frontend && npm run test:run  # Single run
+cd frontend && CI=true npm test -- --run  # CI mode with single run
+cd frontend && npm run test:ci  # Optimized CI run (bail on first failure)
+cd frontend && npm run test:coverage  # With coverage report
+cd frontend && npm run test:ui  # Interactive UI
 
 # Run specific test file
-cd frontend && npm test -- --run src/components/common/__tests__/Button.test.tsx
+cd frontend && CI=true npm test -- --run src/components/common/__tests__/Button.test.tsx
 
-# Run tests in watch mode
-cd frontend && npm test
-
-# Run tests once (CI mode)
-cd frontend && CI=true npm test -- --run
-
-# Run tests with verbose output (for debugging)
+# Run with verbose output (for debugging)
 cd frontend && CI=true npm test -- --run --reporter=verbose
 
-# Test with coverage
-cd frontend && npm run test:coverage
+# Run tests for a directory
+cd frontend && CI=true npm test -- --run src/components/common/__tests__/
 
-# Run tests with specific reporter
-cd frontend && npm test -- --run --reporter=basic
-
-# Test UI (interactive)
-cd frontend && npm run test:ui
-
-# Run E2E tests (Playwright)
+# E2E tests (Playwright)
 cd frontend && npm run test:e2e
+cd frontend && npm run test:e2e:ui  # Interactive mode
+cd frontend && npm run test:e2e:debug  # Debug mode
 
 # Backend tests
 cd backend && python manage.py test
+npm run test:backend  # From root
 
-# Test a specific component directory
-cd frontend && npm test -- --run src/components/common/__tests__/
+# Local CI simulation
+cd frontend && npm run test:ci:local  # Uses ./scripts/test-ci-local.sh
 ```
 
 ### Building & Deployment
 
 ```bash
-# Build frontend for production (Vite)
-npm run build:frontend
-# Or from frontend directory
-cd frontend && npm run build
+# Build frontend for production
+npm run build               # From root (builds frontend)
+npm run build:frontend      # Explicit frontend build from root
+cd frontend && npm run build  # From frontend directory
+# Build process: generate:sitemap -> tsc -> vite build
 
 # Preview production build locally (port 4173)
 cd frontend && npm run preview
 
-# Deploy to GitHub Pages (automatic on main branch push)
-# Manual deploy:
-cd frontend && npm run deploy
+# Deploy to GitHub Pages
+cd frontend && npm run deploy  # Runs predeploy (build) then gh-pages -d build
+# Note: Automatic deployment happens on push to main branch via GitHub Actions
 
-# Build Docker images
-./scripts/docker-build.sh
+# Docker operations
+./scripts/docker-build.sh   # Build Docker images
+./scripts/docker-build.sh --push --tag v1.0.0  # Build and push
+./scripts/docker-build.sh --no-cache  # Build without cache
 
-# Full production build with optimization
-npm run build:prod
+# Bundle analysis
+cd frontend && npm run analyze:bundle  # Analyze bundle size with source-map-explorer
+cd frontend && npm run analyze:build   # Build then analyze
 ```
 
 ### Code Quality
 
 ```bash
-# Lint frontend
-cd frontend && npm run lint
-cd frontend && npm run lint:fix
+# Linting
+npm run lint                # From root (lints frontend)
+cd frontend && npm run lint  # ESLint check
+cd frontend && npm run lint:fix  # Auto-fix ESLint issues
 
-# TypeScript type checking
-cd frontend && npm run type-check
+# TypeScript
+cd frontend && npm run type-check  # Single type check
+cd frontend && npm run type-check:watch  # Watch mode
 
-# Format with Prettier
-cd frontend && npm run format
+# Formatting
+cd frontend && npm run format  # Format all files with Prettier
+cd frontend && npm run format:check  # Check formatting without changes
 
-# Analyze bundle size
-cd frontend && npm run analyze:bundle
+# Bundle analysis
+cd frontend && npm run analyze:bundle  # Analyze existing build
+cd frontend && npm run analyze:build   # Build then analyze
 
-# Security audit
-cd frontend && npm audit
+# Security
+cd frontend && npm audit    # Check for vulnerabilities
+cd frontend && npm audit fix  # Auto-fix vulnerabilities
 
-# Backend formatting
-cd backend && black . && flake8 .
+# Backend code quality
+cd backend && black .       # Format Python code
+cd backend && flake8 .      # Lint Python code
 
-# Clean install (remove lock files and reinstall)
-npm run clean:install
+# Clean operations
+npm run clean               # Clean all (frontend + backend)
+cd frontend && npm run clean  # Remove build and cache
+cd frontend && npm run clean:all  # Remove everything including node_modules
+
+# Validation (comprehensive check)
+cd frontend && npm run validate  # Runs lint, type-check, and test:coverage
 ```
 
 ## Architecture Overview
@@ -132,6 +146,7 @@ npm run clean:install
 - **TypeScript 5.9**: Strict mode enabled with all strict checks
 - **Path Aliases**: `@/` maps to `src/` directory
 - **Entry Point**: `src/main.tsx` (not index.tsx)
+  **Server Port**: Development server runs on port 3000 (configured in vite.config.ts)
 - **Tailwind CSS**: v3.4.17 with PostCSS configuration
 - **PWA**: Full Progressive Web App support with Service Worker
 
@@ -177,12 +192,13 @@ npm run clean:install
 - **Test Files**: 90 test files across all components
 - **Patterns**: Use `renderWithProviders` for context wrapping
 - **Mocking**: Use `vi.mock()` for module mocking
-- **CI Optimization**: 
+- **CI Optimization**:
   - Tests run with `pool: 'forks'` for better isolation
   - Single fork in CI mode to prevent memory issues
   - 15s timeout in CI, 10s locally
 - **Setup File**: `frontend/src/setupTests.ts` with comprehensive mocks
-- **Known Issues**: 
+- **Test Utils**: `frontend/src/test-utils/test-utils.tsx` provides `renderWithProviders`
+- **Known Issues**:
   - Several test suites are currently skipped due to timing/isolation issues
   - DOM cleanup issues between tests may cause failures
 
@@ -193,10 +209,14 @@ npm run clean:install
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { renderWithProviders } from '@/test-utils/test-utils';
 
 describe('Component', () => {
   it('should render correctly', () => {
-    // test implementation
+    // For components needing context
+    renderWithProviders(<Component />);
+    // For simple components
+    render(<Component />);
   });
 });
 ```
@@ -278,7 +298,7 @@ const fetchData = async () => {
 ### Testing Pattern with Providers
 
 ```typescript
-import { renderWithProviders } from '@/test-utils';
+import { renderWithProviders } from '@/test-utils/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 
 describe('Component', () => {
@@ -286,7 +306,10 @@ describe('Component', () => {
     const { getByText } = renderWithProviders(
       <Component title="Test" />,
       {
-        initialState: { /* custom initial state */ }
+        routerProps: {
+          initialEntries: ['/'],
+          initialIndex: 0,
+        }
       }
     );
     expect(getByText('Test')).toBeInTheDocument();
@@ -319,8 +342,16 @@ vi.mock('@/services/api', () => ({
 
 ## Important Configuration Files
 
+- **Monorepo**: `package.json` - Root package with workspaces configuration
 - **Vite Config**: `frontend/vite.config.ts` - Build configuration with chunking strategy
-- **Vitest Config**: `frontend/vitest.config.ts` - Test configuration with coverage settings
+  - Base path: `/emelmujiro/`
+  - Server port: 3000
+  - API proxy: `/api` → `http://127.0.0.1:8000`
+  - Manual chunks for optimization
+- **Vitest Config**: `frontend/vitest.config.ts` - Test configuration
+  - Pool: `forks` for better isolation
+  - Timeouts: 15s (CI) / 10s (local)
+  - Single fork in CI to prevent memory issues
 - **TypeScript**: `frontend/tsconfig.json` - Strict mode with path aliases
 - **ESLint**: `frontend/eslint.config.mjs` - Flat config with React/TypeScript rules
 - **Tailwind**: `frontend/tailwind.config.js` - Custom theme and utilities
@@ -328,6 +359,7 @@ vi.mock('@/services/api', () => ({
 - **CI/CD**: `.github/workflows/main-ci-cd.yml` - Automated pipeline
 - **PWA Manifest**: `frontend/public/manifest.json` - PWA configuration
 - **Test Setup**: `frontend/src/setupTests.ts` - Global test configuration
+- **Test Utils**: `frontend/src/test-utils/test-utils.tsx` - Testing helpers
 
 ## Common Issues & Solutions
 
@@ -399,6 +431,13 @@ Before deploying to production:
 5. **Bundle Analysis**: `cd frontend && npm run analyze:bundle`
 6. **Security Audit**: `cd frontend && npm audit`
 7. **Preview Build**: `cd frontend && npm run preview`
+8. **Validate All**: `cd frontend && npm run validate` (comprehensive check)
+
+### Pre-commit Hooks
+
+- Configured via Husky and lint-staged
+- Automatically runs ESLint and Prettier on staged files
+- Backend: Runs Black and Flake8 on Python files
 
 ## Current Test Status
 
@@ -408,7 +447,7 @@ These test suites are currently skipped due to CI/CD stability issues:
 
 1. **WebVitalsDashboard** (`src/components/common/__tests__/WebVitalsDashboard.test.tsx`)
    - Production Mode Behavior
-   - Web Vitals Integration  
+   - Web Vitals Integration
    - Metric Rating System
    - Dashboard Content and Layout
    - CSS Classes and Styling
@@ -440,6 +479,9 @@ These test suites are currently skipped due to CI/CD stability issues:
 - **Component Count**: 70+ React components
 - **Test Files**: 90 test files
 - **Dependencies**: 61 packages (18 production, 43 development)
-- **Bundle Chunks**: 19 (with code splitting)
+- **Bundle Chunks**: Optimized with manual chunking:
+  - `react-vendor`: React core libraries
+  - `ui-vendor`: UI libraries (framer-motion, lucide-react)
+  - `i18n`: Internationalization libraries
 - **React Version**: 19.1.1
 - **TypeScript Version**: 5.9.2
