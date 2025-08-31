@@ -1,9 +1,34 @@
 /* eslint-disable no-undef */
 // Vitest setup file
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { vi, afterEach, beforeEach } from 'vitest';
 import { beforeAll, afterAll } from 'vitest';
+import { cleanup } from '@testing-library/react';
 import React from 'react';
+
+// Enhanced cleanup after each test
+afterEach(() => {
+  // Clean up React Testing Library first
+  cleanup();
+
+  // Clear all mocks
+  vi.clearAllMocks();
+  vi.restoreAllMocks();
+
+  // Clear localStorage and sessionStorage
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Clear all timers
+  vi.clearAllTimers();
+});
+
+// Setup before each test
+beforeEach(() => {
+  // Ensure clean slate
+  localStorage.clear();
+  sessionStorage.clear();
+});
 
 // Mock lucide-react icons - comprehensive mock for all icons
 vi.mock('lucide-react', () => {
@@ -436,6 +461,24 @@ Object.defineProperty(document.body, 'classList', {
   },
   configurable: true,
 });
+
+// Global mock for getPropertyValue to prevent errors in CI
+const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
+CSSStyleDeclaration.prototype.getPropertyValue = function (prop: string) {
+  if (this === undefined || this === null) {
+    return '';
+  }
+  try {
+    return originalGetPropertyValue.call(this, prop);
+  } catch {
+    return '';
+  }
+};
+
+// Global mock for scrollIntoView
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = vi.fn();
+}
 
 // Ensure style property exists
 if (!document.documentElement.style) {

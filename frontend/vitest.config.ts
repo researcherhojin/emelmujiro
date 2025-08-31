@@ -18,9 +18,15 @@ export default defineConfig({
       forks: {
         maxForks: process.env.CI ? 1 : undefined, // Single process in CI to avoid memory issues
         singleFork: process.env.CI ? true : false, // Run tests sequentially in CI
+        isolate: true, // Enable isolation for each test file
       },
     },
-    isolate: process.env.CI ? false : true, // Disable isolation in CI for better performance
+    isolate: true, // Enable isolation for better test stability
+    clearMocks: true, // Clear all mocks between tests
+    restoreMocks: true, // Restore all mocks between tests
+    mockReset: true, // Reset mock state between tests
+    unstubEnvs: true, // Restore environment variables after each test
+    unstubGlobals: true, // Restore global stubs after each test
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
