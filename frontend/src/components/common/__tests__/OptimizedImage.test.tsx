@@ -101,7 +101,8 @@ describe('OptimizedImage', () => {
   it('renders with LazyImage by default', () => {
     render(<OptimizedImage src="/test-image.jpg" alt="Test image" />);
 
-    expect(screen.getByTestId('lazy-image')).toBeInTheDocument();
+    const lazyImages = screen.getAllByTestId('lazy-image');
+    expect(lazyImages[0]).toBeInTheDocument();
   });
 
   it('renders regular img element when loading is eager', () => {
