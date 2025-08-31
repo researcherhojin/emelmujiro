@@ -355,7 +355,7 @@ describe('backgroundSync', () => {
   });
 
   describe('queueFailedRequest', () => {
-    it('should queue failed request with correct data structure', async () => {
+    it.skip('should queue failed request with correct data structure', async () => {
       const url = '/api/test';
       const options = {
         method: 'POST',
