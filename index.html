@@ -85,8 +85,18 @@
     <link rel="prefetch" href="/emelmujiro/manifest.json" />
 
     <!-- Preload critical images -->
-    <link rel="preload" href="/emelmujiro/logo192.png" as="image" type="image/png" />
-    <link rel="preload" href="/emelmujiro/logo512.png" as="image" type="image/png" />
+    <link
+      rel="preload"
+      href="/emelmujiro/logo192.png"
+      as="image"
+      type="image/png"
+    />
+    <link
+      rel="preload"
+      href="/emelmujiro/logo512.png"
+      as="image"
+      type="image/png"
+    />
 
     <!-- Fonts with optimized loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -158,11 +168,11 @@
     </style>
 
     <title>에멜무지로 | AI 기반 소프트웨어 개발 및 IT 교육 전문가</title>
-    <script type="module" crossorigin src="/emelmujiro/assets/index-D7wojeWw.js"></script>
-    <link rel="modulepreload" crossorigin href="/emelmujiro/assets/react-vendor-BPZHHc88.js">
-    <link rel="modulepreload" crossorigin href="/emelmujiro/assets/ui-vendor-B8I1SmuU.js">
-    <link rel="modulepreload" crossorigin href="/emelmujiro/assets/i18n-C_xjgTvF.js">
-    <link rel="stylesheet" crossorigin href="/emelmujiro/assets/index-CLu0enoU.css">
+    <script type="module" crossorigin src="/emelmujiro/assets/index-DWd285fD.js"></script>
+    <link rel="modulepreload" crossorigin href="/emelmujiro/assets/react-vendor-BOp29kWJ.js">
+    <link rel="modulepreload" crossorigin href="/emelmujiro/assets/ui-vendor-i7F9FKVx.js">
+    <link rel="modulepreload" crossorigin href="/emelmujiro/assets/i18n-C26XKfAY.js">
+    <link rel="stylesheet" crossorigin href="/emelmujiro/assets/index-C2hOvZ2m.css">
   <link rel="manifest" href="/emelmujiro/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/emelmujiro/registerSW.js"></script></head>
   <body>
     <noscript>자바스크립트를 활성화해주세요.</noscript>
@@ -201,7 +211,10 @@
       // Critical image preloading
       if (window.requestIdleCallback) {
         requestIdleCallback(() => {
-          const criticalImages = ['/logo192.png', '/logo512.png'];
+          const criticalImages = [
+            '/emelmujiro/logo192.png',
+            '/emelmujiro/logo512.png',
+          ];
 
           criticalImages.forEach((src) => {
             const img = new Image();

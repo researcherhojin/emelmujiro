@@ -1,4 +1,8 @@
 {
+  "about": "소개",
+  "blog": "블로그",
+  "profile": "프로필",
+  "contact": "문의하기",
   "buttons": {
     "submit": "제출",
     "cancel": "취소",

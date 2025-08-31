@@ -4,18 +4,18 @@
   "description": "AI 기반 소프트웨어 개발 및 IT 교육 전문 기업",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "/emelmujiro/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "/emelmujiro/logo192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "logo512.png",
+      "src": "/emelmujiro/logo512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
@@ -37,28 +37,28 @@
       "short_name": "문의",
       "description": "프로젝트 문의 및 상담",
       "url": "/emelmujiro/#/contact",
-      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/emelmujiro/logo192.png", "sizes": "192x192" }]
     },
     {
       "name": "블로그",
       "short_name": "블로그",
       "description": "최신 기술 블로그 글 보기",
       "url": "/emelmujiro/#/blog",
-      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/emelmujiro/logo192.png", "sizes": "192x192" }]
     },
     {
       "name": "회사소개",
       "short_name": "소개",
       "description": "에멜무지로 회사 소개",
       "url": "/emelmujiro/#/about",
-      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/emelmujiro/logo192.png", "sizes": "192x192" }]
     },
     {
       "name": "대표 프로필",
       "short_name": "프로필",
       "description": "대표 이력 및 전문 분야",
       "url": "/emelmujiro/#/profile",
-      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/emelmujiro/logo192.png", "sizes": "192x192" }]
     }
   ],
   "share_target": {
@@ -73,13 +73,13 @@
   },
   "screenshots": [
     {
-      "src": "logo512.png",
+      "src": "/emelmujiro/logo512.png",
       "type": "image/png",
       "sizes": "512x512",
       "form_factor": "wide"
     },
     {
-      "src": "logo192.png",
+      "src": "/emelmujiro/logo192.png",
       "type": "image/png",
       "sizes": "192x192",
       "form_factor": "narrow"

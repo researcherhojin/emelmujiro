@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 
 // Advanced Service Worker with enhanced PWA features
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = `emelmujiro-${CACHE_VERSION}`;
 const DYNAMIC_CACHE_NAME = `emelmujiro-dynamic-${CACHE_VERSION}`;
 const IMAGE_CACHE_NAME = `emelmujiro-images-${CACHE_VERSION}`;
@@ -26,7 +26,7 @@ const DYNAMIC_CACHE_PATTERNS = [
   /^https:\/\/fonts\.gstatic\.com/,
   /\.woff2?$/,
   /\.ttf$/,
-  /\/assets\//,  // Vite uses /assets/ instead of /static/
+  /\/assets\//, // Vite uses /assets/ instead of /static/
 ];
 
 // Image patterns for separate image cache
