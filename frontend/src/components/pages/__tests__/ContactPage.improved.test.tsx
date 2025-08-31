@@ -30,13 +30,18 @@ vi.mock('../../../services/api', () => ({
 
 // Mock navigator.onLine
 let onlineStatus = true;
-if (typeof window !== 'undefined') {
-  Object.defineProperty(window.navigator, 'onLine', {
-    configurable: true,
-    get() {
-      return onlineStatus;
-    },
-  });
+if (typeof window !== 'undefined' && window.navigator) {
+  try {
+    Object.defineProperty(window.navigator, 'onLine', {
+      configurable: true,
+      get() {
+        return onlineStatus;
+      },
+    });
+  } catch (error) {
+    // Property may already be defined, skip mocking
+    console.warn('Could not mock navigator.onLine:', error);
+  }
 }
 
 describe('ContactPage - Improved', () => {

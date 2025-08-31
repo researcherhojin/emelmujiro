@@ -484,8 +484,8 @@ describe('SkeletonScreen', () => {
         'very-long-class-name-that-might-break-something-if-not-handled-properly';
       render(<SkeletonScreen className={longClass} />);
 
-      const skeleton = screen.getByRole('status');
-      expect(skeleton).toHaveClass(longClass);
+      const skeletons = screen.getAllByRole('status');
+      expect(skeletons[0]).toHaveClass(longClass);
     });
 
     it('maintains structure with empty className', () => {
