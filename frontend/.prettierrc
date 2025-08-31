@@ -11,5 +11,13 @@
   "bracketSameLine": false,
   "arrowParens": "always",
   "endOfLine": "lf",
-  "singleAttributePerLine": false
+  "singleAttributePerLine": false,
+  "overrides": [
+    {
+      "files": "*.xml",
+      "options": {
+        "parser": "xml"
+      }
+    }
+  ]
 }
