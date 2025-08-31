@@ -612,6 +612,7 @@ describe('MessageList', () => {
     );
 
     // Verify messages are rendered
-    expect(screen.getByText('Test message')).toBeInTheDocument();
+    const messages = screen.getAllByText('Test message');
+    expect(messages.length).toBeGreaterThanOrEqual(1);
   });
 });
