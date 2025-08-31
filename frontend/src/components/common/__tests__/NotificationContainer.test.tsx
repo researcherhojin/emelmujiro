@@ -273,8 +273,8 @@ describe('NotificationContainer', () => {
 
     renderWithSelectiveProviders(<NotificationContainer />);
 
-    const motionDiv = screen.getByTestId('motion-div');
-    expect(motionDiv).toHaveClass(
+    const motionDivs = screen.getAllByTestId('motion-div');
+    expect(motionDivs[motionDivs.length - 1]).toHaveClass(
       'p-4',
       'rounded-lg',
       'shadow-lg',
