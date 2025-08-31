@@ -14,7 +14,7 @@ const Navbar: React.FC = memo(() => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation('navigation');
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,9 +26,9 @@ const Navbar: React.FC = memo(() => {
   }, []);
 
   const navItems: NavItem[] = [
-    { label: t('links.about'), path: '/about' },
-    { label: t('links.blog'), path: '/blog' },
-    { label: t('links.profile'), path: '/profile' },
+    { label: t('common.about'), path: '/about' },
+    { label: t('common.blog'), path: '/blog' },
+    { label: t('common.profile'), path: '/profile' },
   ];
 
   const handleNavigation = useCallback(
@@ -97,7 +97,7 @@ const Navbar: React.FC = memo(() => {
             className="text-2xl font-black text-gray-900 dark:text-white hover:text-gray-800 dark:hover:text-gray-100 transition-colors tracking-tight select-none focus:outline-none border-none bg-transparent"
             style={{ outline: 'none', boxShadow: 'none' }}
           >
-            {t('company.name')}
+            에멜무지로
           </Link>
 
           {/* Desktop Navigation */}
@@ -134,7 +134,7 @@ const Navbar: React.FC = memo(() => {
               className="px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-base font-bold
                                 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-100 transition-all"
             >
-              {t('links.contact')}
+              {t('common.contact')}
             </button>
           </div>
 
@@ -145,7 +145,7 @@ const Navbar: React.FC = memo(() => {
               onClick={toggleMenu}
               className="inline-flex items-center justify-center p-2 text-gray-700 dark:text-gray-300
                               hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
-              aria-label={t('accessibility.menu', { ns: 'common' })}
+              aria-label="메뉴"
             >
               {isOpen ? (
                 <X className="w-6 h-6" />
@@ -182,7 +182,7 @@ const Navbar: React.FC = memo(() => {
                 className="w-full px-4 py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-base
                                     font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all shadow-md active:scale-95"
               >
-                {t('links.contact')}
+                {t('common.contact')}
               </button>
             </div>
           </div>
