@@ -93,7 +93,8 @@ describe('OptimizedImage', () => {
   it('renders basic image with required props', () => {
     render(<OptimizedImage src="/test-image.jpg" alt="Test image" />);
 
-    const image = screen.getByAltText('Test image');
+    const images = screen.getAllByAltText('Test image');
+    const image = images[images.length - 1];
     expect(image).toBeInTheDocument();
     expect(image).toHaveAttribute('alt', 'Test image');
   });
@@ -110,7 +111,9 @@ describe('OptimizedImage', () => {
       <OptimizedImage src="/test-image.jpg" alt="Test image" loading="eager" />
     );
 
-    const image = screen.getByAltText('Test image');
+    const images = screen.getAllByAltText('Test image');
+    // Get the last image which should be the one from this test
+    const image = images[images.length - 1];
     expect(image).toBeInTheDocument();
     expect(image).not.toHaveAttribute('data-testid', 'lazy-image');
     expect(image.tagName).toBe('IMG');
@@ -125,7 +128,8 @@ describe('OptimizedImage', () => {
       />
     );
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     expect(image).toHaveClass('custom-class');
   });
 
@@ -139,7 +143,8 @@ describe('OptimizedImage', () => {
       />
     );
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     expect(image).toHaveAttribute('width', '800');
     expect(image).toHaveAttribute('height', '600');
   });
@@ -172,7 +177,8 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toHaveAttribute('src', expect.stringContaining('fm=auto'));
     });
   });
@@ -196,11 +202,13 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     const src = image.getAttribute('src')!;
     expect(src).toContain('q=85'); // Quality for high DPI
     expect(src).toContain('fm=webp'); // WebP format
@@ -225,11 +233,13 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     const src = image.getAttribute('src')!;
     expect(src).toContain('q=90'); // Higher quality for standard DPI
     expect(src).toContain('fm=auto'); // Auto format
@@ -250,7 +260,8 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       const src = image.getAttribute('src');
       expect(src).toBe('https://images.pexels.com/photos/123456789/test.jpeg');
     });
@@ -262,7 +273,8 @@ describe('OptimizedImage', () => {
     render(<OptimizedImage src={originalSrc} alt="Test image" />);
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toHaveAttribute('src', originalSrc);
     });
   });
@@ -278,11 +290,13 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     const srcSet = image.getAttribute('srcset')!;
     expect(srcSet).toContain('320w');
     expect(srcSet).toContain('640w');
@@ -301,11 +315,13 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     const srcSet = image.getAttribute('srcset') ?? '';
     expect(srcSet).not.toContain('1024w'); // > 2x400
     expect(srcSet).not.toContain('1280w'); // > 2x400
@@ -322,14 +338,16 @@ describe('OptimizedImage', () => {
       />
     );
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     expect(image).toHaveAttribute('srcset', customSrcSet);
   });
 
   it('generates default sizes attribute', () => {
     render(<OptimizedImage src="/test-image.jpg" alt="Test image" />);
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     expect(image).toHaveAttribute(
       'sizes',
       '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
@@ -347,7 +365,8 @@ describe('OptimizedImage', () => {
       />
     );
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     expect(image).toHaveAttribute('sizes', customSizes);
   });
 
@@ -362,7 +381,8 @@ describe('OptimizedImage', () => {
       />
     );
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     fireEvent.load(image);
 
     expect(onLoadMock).toHaveBeenCalledTimes(1);
@@ -379,7 +399,8 @@ describe('OptimizedImage', () => {
       />
     );
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     fireEvent.error(image);
 
     expect(onErrorMock).toHaveBeenCalledTimes(1);
@@ -401,11 +422,13 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     const src = image.getAttribute('src')!;
     expect(src).toContain('w=1200'); // 400 * 3
     expect(src).toContain('h=900'); // 300 * 3
@@ -428,11 +451,13 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     const src = image.getAttribute('src')!;
     expect(src).toContain('w=400'); // Default to 1x
     expect(src).toContain('h=300'); // Default to 1x
@@ -448,7 +473,8 @@ describe('OptimizedImage', () => {
       />
     );
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     expect(image).not.toHaveAttribute('srcset');
   });
 
@@ -461,7 +487,8 @@ describe('OptimizedImage', () => {
       />
     );
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     expect(image).not.toHaveAttribute('srcset');
   });
 
@@ -482,11 +509,13 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByAltText('Test image');
+      const images = screen.getAllByAltText('Test image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
 
-    const image = screen.getByAltText('Test image');
+    const images = screen.getAllByAltText('Test image');
+    const image = images[images.length - 1];
     expect(image.tagName).toBe('IMG');
     expect(image).toHaveClass('eager-image');
     expect(image).toHaveAttribute('loading', 'eager');
@@ -503,7 +532,8 @@ describe('OptimizedImage', () => {
   it('handles empty alt text', () => {
     render(<OptimizedImage src="/test-image.jpg" alt="" />);
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     expect(image).toHaveAttribute('alt', '');
   });
 
@@ -523,11 +553,13 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
 
-    const image = screen.getByTestId('lazy-image');
+    const images = screen.getAllByTestId('lazy-image');
+    const image = images[images.length - 1];
     const src = image.getAttribute('src')!;
     expect(src).toContain('w=800'); // 200 * 4
     expect(src).toContain('h=600'); // 150 * 4
@@ -545,11 +577,13 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
 
-    const image1 = screen.getByTestId('lazy-image');
+    const images1 = screen.getAllByTestId('lazy-image');
+    const image1 = images1[images1.length - 1];
     const src1 = image1.getAttribute('src')!;
     expect(src1).toContain('fm=webp');
 
@@ -566,11 +600,13 @@ describe('OptimizedImage', () => {
     );
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
 
-    const image2 = screen.getByTestId('lazy-image');
+    const images2 = screen.getAllByTestId('lazy-image');
+    const image2 = images2[images2.length - 1];
     const src2 = image2.getAttribute('src')!;
     expect(src2).toMatch(/fm=(webp|auto)/);
   });
@@ -598,7 +634,8 @@ describe('OptimizedImage', () => {
     render(<OptimizedImage src="/test-image.jpg" alt="Test image" />);
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
   });
@@ -611,7 +648,8 @@ describe('OptimizedImage', () => {
     render(<OptimizedImage src="/test-image.jpg" alt="Test image" />);
 
     await waitFor(() => {
-      const image = screen.getByTestId('lazy-image');
+      const images = screen.getAllByTestId('lazy-image');
+      const image = images[images.length - 1];
       expect(image).toBeInTheDocument();
     });
   });
