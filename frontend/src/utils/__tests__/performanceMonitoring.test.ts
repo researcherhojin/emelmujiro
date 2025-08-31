@@ -582,6 +582,9 @@ describe('performanceMonitoring', () => {
     });
 
     it('should monitor slow resources', () => {
+      // Mock logger.warn
+      const mockLoggerWarn = vi.spyOn(logger, 'warn');
+      
       const slowResource = {
         name: 'slow-image.png',
         duration: 1500,
@@ -603,9 +606,11 @@ describe('performanceMonitoring', () => {
 
       PerformanceMonitor();
 
-      expect(mockConsoleWarn).toHaveBeenCalledWith('Slow resources detected:', [
+      expect(mockLoggerWarn).toHaveBeenCalledWith('Slow resources detected:', [
         slowResource,
       ]);
+      
+      mockLoggerWarn.mockRestore();
     });
 
     it('should handle PerformanceObserver errors gracefully', () => {
