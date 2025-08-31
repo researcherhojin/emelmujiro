@@ -216,7 +216,9 @@ describe('NotificationContainer', () => {
 
     renderWithSelectiveProviders(<NotificationContainer />);
 
-    const closeButton = screen.getByRole('button');
+    const closeButtons = screen.getAllByRole('button');
+    // The close button should be the last button
+    const closeButton = closeButtons[closeButtons.length - 1];
     fireEvent.click(closeButton);
 
     expect(mockRemoveNotification).toHaveBeenCalledWith('test-notification-id');
@@ -311,7 +313,8 @@ describe('NotificationContainer', () => {
 
     renderWithSelectiveProviders(<NotificationContainer />);
 
-    const closeButton = screen.getByRole('button');
+    const closeButtons = screen.getAllByRole('button');
+    const closeButton = closeButtons[closeButtons.length - 1];
     expect(closeButton).toHaveClass(
       'text-gray-400',
       'hover:text-gray-600',
@@ -320,7 +323,9 @@ describe('NotificationContainer', () => {
 
     // Check that X icon is inside the button
     const xIconsForClose = screen.getAllByTestId('x-icon');
-    expect(closeButton).toContainElement(xIconsForClose[0]);
+    expect(closeButton).toContainElement(
+      xIconsForClose[xIconsForClose.length - 1]
+    );
   });
 
   it('handles empty notification message', () => {
@@ -335,7 +340,8 @@ describe('NotificationContainer', () => {
     renderWithSelectiveProviders(<NotificationContainer />);
 
     // Empty notification should still render with close button
-    const closeButton = screen.getByRole('button');
+    const closeButtons = screen.getAllByRole('button');
+    const closeButton = closeButtons[closeButtons.length - 1];
     expect(closeButton).toBeInTheDocument();
   });
 
@@ -384,7 +390,8 @@ describe('NotificationContainer', () => {
     renderWithSelectiveProviders(<NotificationContainer />);
 
     // Check that the close button is accessible
-    const closeButton = screen.getByRole('button');
+    const closeButtons = screen.getAllByRole('button');
+    const closeButton = closeButtons[closeButtons.length - 1];
     expect(closeButton).toBeInTheDocument();
 
     // Message should be accessible to screen readers
@@ -465,7 +472,8 @@ describe('NotificationContainer', () => {
 
     renderWithSelectiveProviders(<NotificationContainer />);
 
-    const closeButton = screen.getByRole('button');
+    const closeButtons = screen.getAllByRole('button');
+    const closeButton = closeButtons[closeButtons.length - 1];
     fireEvent.click(closeButton);
 
     // Should still call removeNotification with the correct ID
