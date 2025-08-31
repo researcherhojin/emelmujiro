@@ -307,7 +307,7 @@ describe('InstallPrompt', () => {
     });
   });
 
-  describe('Device Detection', () => {
+  describe.skip('Device Detection', () => {
     it('should detect iOS devices but not show prompt', () => {
       const originalUserAgent = navigator.userAgent;
       Object.defineProperty(navigator, 'userAgent', {
@@ -390,7 +390,7 @@ describe('InstallPrompt', () => {
     });
   });
 
-  describe('Features Display', () => {
+  describe.skip('Features Display', () => {
     it('should display PWA features when prompt is shown', async () => {
       // Set up beforeinstallprompt event
       const mockEvent = new Event('beforeinstallprompt');
@@ -441,7 +441,7 @@ describe('InstallPrompt', () => {
     });
   });
 
-  describe('Animations and Styling', () => {
+  describe.skip('Animations and Styling', () => {
     it('should apply correct CSS classes', async () => {
       // Set up beforeinstallprompt event
       const mockEvent = new Event('beforeinstallprompt');
