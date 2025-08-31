@@ -11,6 +11,19 @@ if (!Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = vi.fn();
 }
 
+// Mock getPropertyValue for all CSSStyleDeclaration instances
+const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
+CSSStyleDeclaration.prototype.getPropertyValue = function (prop: string) {
+  if (this === undefined || this === null) {
+    return '';
+  }
+  try {
+    return originalGetPropertyValue.call(this, prop);
+  } catch {
+    return '';
+  }
+};
+
 describe('SkipLink Component', () => {
   let mockScrollIntoView: any;
   let mockMainContent: HTMLElement;
@@ -32,16 +45,6 @@ describe('SkipLink Component', () => {
 
     // Mock focus method for main content
     mockMainContent.focus = vi.fn();
-
-    // Add style with getPropertyValue method for accessibility API
-    mockMainContent.style.cssText = '';
-    if (!mockMainContent.style.getPropertyValue) {
-      Object.defineProperty(mockMainContent.style, 'getPropertyValue', {
-        value: vi.fn().mockReturnValue(''),
-        writable: true,
-        configurable: true,
-      });
-    }
 
     // Add to document
     document.body.appendChild(mockMainContent);
