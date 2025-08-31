@@ -38,6 +38,19 @@ Object.defineProperty(navigator, 'clipboard', {
   configurable: true,
 });
 
+// Mock getPropertyValue for all CSSStyleDeclaration instances
+const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
+CSSStyleDeclaration.prototype.getPropertyValue = function (prop: string) {
+  if (this === undefined || this === null) {
+    return '';
+  }
+  try {
+    return originalGetPropertyValue.call(this, prop);
+  } catch {
+    return '';
+  }
+};
+
 const mockPost: BlogPost = {
   id: 1,
   title: 'Test Blog Post',
