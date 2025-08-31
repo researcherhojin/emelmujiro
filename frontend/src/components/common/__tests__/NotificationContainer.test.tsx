@@ -452,7 +452,8 @@ describe('NotificationContainer', () => {
 
     renderWithSelectiveProviders(<NotificationContainer />);
 
-    const motionDiv = screen.getByTestId('motion-div');
+    const motionDivs = screen.getAllByTestId('motion-div');
+    const motionDiv = motionDivs[motionDivs.length - 1];
 
     // Check that framer-motion props are passed correctly
     expect(motionDiv).toHaveAttribute('initial');
