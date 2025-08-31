@@ -33,6 +33,16 @@ describe('SkipLink Component', () => {
     // Mock focus method for main content
     mockMainContent.focus = vi.fn();
 
+    // Add style with getPropertyValue method for accessibility API
+    mockMainContent.style.cssText = '';
+    if (!mockMainContent.style.getPropertyValue) {
+      Object.defineProperty(mockMainContent.style, 'getPropertyValue', {
+        value: vi.fn().mockReturnValue(''),
+        writable: true,
+        configurable: true,
+      });
+    }
+
     // Add to document
     document.body.appendChild(mockMainContent);
 
