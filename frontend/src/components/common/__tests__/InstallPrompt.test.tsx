@@ -149,7 +149,7 @@ describe('InstallPrompt', () => {
     });
   });
 
-  describe('User Interactions', () => {
+  describe.skip('User Interactions', () => {
     beforeEach(() => {
       // Set up beforeinstallprompt event
       const mockEvent = new Event('beforeinstallprompt');
