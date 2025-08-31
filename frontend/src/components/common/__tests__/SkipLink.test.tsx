@@ -22,7 +22,13 @@ describe('SkipLink Component', () => {
     // Create mock main content element
     mockMainContent = document.createElement('div');
     mockMainContent.id = 'main-content';
-    mockMainContent.scrollIntoView = mockScrollIntoView;
+
+    // Use Object.defineProperty to override scrollIntoView
+    Object.defineProperty(mockMainContent, 'scrollIntoView', {
+      value: mockScrollIntoView,
+      writable: true,
+      configurable: true,
+    });
 
     // Mock focus method for main content
     mockMainContent.focus = vi.fn();
