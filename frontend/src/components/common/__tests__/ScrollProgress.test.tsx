@@ -7,6 +7,19 @@ import { vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ScrollProgress from '../ScrollProgress';
 
+// Mock getPropertyValue for all CSSStyleDeclaration instances
+const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
+CSSStyleDeclaration.prototype.getPropertyValue = function (prop: string) {
+  if (this === undefined || this === null) {
+    return '';
+  }
+  try {
+    return originalGetPropertyValue.call(this, prop);
+  } catch {
+    return '';
+  }
+};
+
 describe('ScrollProgress', () => {
   let originalScrollY: number;
   let originalInnerHeight: number;
