@@ -3,6 +3,19 @@ import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import BlogEditor from '../BlogEditor';
 
+// Mock getPropertyValue for all CSSStyleDeclaration instances
+const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
+CSSStyleDeclaration.prototype.getPropertyValue = function (prop: string) {
+  if (this === undefined || this === null) {
+    return '';
+  }
+  try {
+    return originalGetPropertyValue.call(this, prop);
+  } catch {
+    return '';
+  }
+};
+
 // Mock useNavigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
