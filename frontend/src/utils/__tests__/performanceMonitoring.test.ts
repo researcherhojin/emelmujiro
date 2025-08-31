@@ -533,6 +533,9 @@ describe('performanceMonitoring', () => {
     });
 
     it('should warn about long tasks', () => {
+      // Mock logger.warn
+      const mockLoggerWarn = vi.spyOn(logger, 'warn');
+      
       PerformanceMonitor();
 
       const mockEntry: MockPerformanceEntry = {
@@ -548,11 +551,13 @@ describe('performanceMonitoring', () => {
         getEntries: () => [mockEntry],
       });
 
-      expect(mockConsoleWarn).toHaveBeenCalledWith('Long task detected:', {
+      expect(mockLoggerWarn).toHaveBeenCalledWith('Long task detected:', {
         duration: 100,
         startTime: 1000,
         name: 'long-task',
       });
+      
+      mockLoggerWarn.mockRestore();
     });
 
     it('should not warn about short tasks', () => {
