@@ -97,7 +97,7 @@ describe('ScrollProgress', () => {
       const progressBars = screen.getAllByRole('progressbar');
       const progressBar = progressBars[progressBars.length - 1];
       expect(progressBar).toBeInTheDocument();
-      expect(progressBar).toHaveStyle('width: 0%');
+      expect(progressBar.getAttribute('style')).toContain('width: 0%');
     });
 
     test('applies correct CSS classes to container', () => {
@@ -183,7 +183,7 @@ describe('ScrollProgress', () => {
 
       const progressBars = screen.getAllByRole('progressbar');
       const progressBar = progressBars[progressBars.length - 1];
-      expect(progressBar).toHaveStyle('width: 0%');
+      expect(progressBar.getAttribute('style')).toContain('width: 0%');
     });
 
     test('calculates 50% progress when at middle of page', () => {
@@ -201,7 +201,7 @@ describe('ScrollProgress', () => {
 
       const progressBars = screen.getAllByRole('progressbar');
       const progressBar = progressBars[progressBars.length - 1];
-      expect(progressBar).toHaveStyle('width: 50%');
+      expect(progressBar.getAttribute('style')).toContain('width: 50%');
     });
 
     test('calculates 100% progress when at bottom of page', () => {
@@ -218,7 +218,7 @@ describe('ScrollProgress', () => {
 
       const progressBars = screen.getAllByRole('progressbar');
       const progressBar = progressBars[progressBars.length - 1];
-      expect(progressBar).toHaveStyle('width: 100%');
+      expect(progressBar.getAttribute('style')).toContain('width: 100%');
     });
 
     test('handles over-scroll gracefully', () => {
@@ -235,7 +235,7 @@ describe('ScrollProgress', () => {
       const progressBars = screen.getAllByRole('progressbar');
       const progressBar = progressBars[progressBars.length - 1];
       // Should cap at 100%
-      expect(progressBar).toHaveStyle('width: 125%'); // Mathematical result, but still works
+      expect(progressBar.getAttribute('style')).toContain('width: 125%'); // Mathematical result, but still works
     });
 
     test('calculates progress with different window and document heights', () => {
@@ -263,7 +263,7 @@ describe('ScrollProgress', () => {
 
       const progressBars = screen.getAllByRole('progressbar');
       const progressBar = progressBars[progressBars.length - 1];
-      expect(progressBar).toHaveStyle('width: 25%');
+      expect(progressBar.getAttribute('style')).toContain('width: 25%');
     });
 
     test('handles edge case where document height equals window height', () => {
@@ -313,7 +313,7 @@ describe('ScrollProgress', () => {
       // Initial state should be 0%
       let progressBars = screen.getAllByRole('progressbar');
       let progressBar = progressBars[progressBars.length - 1];
-      expect(progressBar).toHaveStyle('width: 0%');
+      expect(progressBar.getAttribute('style')).toContain('width: 0%');
 
       // Simulate scroll to 75%
       Object.defineProperty(window, 'scrollY', {
@@ -325,7 +325,7 @@ describe('ScrollProgress', () => {
 
       progressBars = screen.getAllByRole('progressbar');
       progressBar = progressBars[progressBars.length - 1];
-      expect(progressBar).toHaveStyle('width: 75%');
+      expect(progressBar.getAttribute('style')).toContain('width: 75%');
     });
 
     test('handles multiple scroll events correctly', () => {
@@ -337,17 +337,17 @@ describe('ScrollProgress', () => {
       // First scroll event
       Object.defineProperty(window, 'scrollY', { value: 240 });
       fireEvent.scroll(window);
-      expect(progressBar).toHaveStyle('width: 20%');
+      expect(progressBar.getAttribute('style')).toContain('width: 20%');
 
       // Second scroll event
       Object.defineProperty(window, 'scrollY', { value: 480 });
       fireEvent.scroll(window);
-      expect(progressBar).toHaveStyle('width: 40%');
+      expect(progressBar.getAttribute('style')).toContain('width: 40%');
 
       // Third scroll event
       Object.defineProperty(window, 'scrollY', { value: 720 });
       fireEvent.scroll(window);
-      expect(progressBar).toHaveStyle('width: 60%');
+      expect(progressBar.getAttribute('style')).toContain('width: 60%');
     });
   });
 
@@ -357,7 +357,7 @@ describe('ScrollProgress', () => {
 
       const progressBars = screen.getAllByRole('progressbar');
       const progressBar = progressBars[progressBars.length - 1];
-      expect(progressBar).toHaveStyle('width: 0%');
+      expect(progressBar.getAttribute('style')).toContain('width: 0%');
       expect(progressBar).toHaveAttribute('aria-valuenow', '0');
     });
 
@@ -471,7 +471,9 @@ describe('ScrollProgress', () => {
         fireEvent.scroll(window);
 
         expect(progressBar).toHaveClass('h-full', 'bg-indigo-600');
-        expect(progressBar).toHaveStyle(`width: ${percentage}%`);
+        expect(progressBar.getAttribute('style')).toContain(
+          `width: ${percentage}%`
+        );
       });
     });
   });
@@ -494,7 +496,7 @@ describe('ScrollProgress', () => {
       fireEvent.scroll(window);
 
       // Final state should reflect the last scroll event
-      expect(progressBar).toHaveStyle('width: 25%');
+      expect(progressBar.getAttribute('style')).toContain('width: 25%');
     });
 
     test('cleanup prevents memory leaks', () => {
