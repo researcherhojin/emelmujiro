@@ -37,7 +37,6 @@
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "@types/react-helmet-async": "^1.0.1",
-    "@tailwindcss/postcss": "^4.1.12",
     "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^8.42.0",
     "@typescript-eslint/parser": "^8.42.0",
