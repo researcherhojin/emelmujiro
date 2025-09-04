@@ -107,12 +107,12 @@ describe.skip('InstallPrompt', () => {
       });
 
       render(<InstallPrompt />);
-      
+
       // Dispatch event and wait for component to update
       await act(async () => {
         window.dispatchEvent(mockEvent);
         // Give component time to process the event
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       });
 
       // Check if the install prompt is shown
@@ -135,7 +135,7 @@ describe.skip('InstallPrompt', () => {
       });
 
       render(<InstallPrompt />);
-      
+
       await act(async () => {
         window.dispatchEvent(mockEvent);
       });

@@ -237,7 +237,7 @@ export class StorageCache {
         }
       }
     } catch (error) {
-      console.warn('Storage cache cleanup failed:', error);
+      logger.warn('Storage cache cleanup failed:', error);
     }
 
     return cleanedCount;
