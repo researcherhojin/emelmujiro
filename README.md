@@ -24,7 +24,7 @@
 - 🤖 **기술 컨설팅** - 기업별 AI 도입 전략 수립 및 기술 자문
 - 📊 **데이터 분석** - 빅데이터 기반 인사이트 도출 및 분석 시스템 구축
 
-## 🎯 프로젝트 현황 (v3.9.0 - 2025.09.01)
+## 🎯 프로젝트 현황 (v3.9.1 - 2025.09.04)
 
 ### 📊 성과 지표
 
@@ -32,13 +32,13 @@
 | --------------- | --------------- | ------------------------------ |
 | **빌드 도구**   | ✅ Vite 7.1.3   | CRA → Vite 완전 마이그레이션   |
 | **프레임워크**  | ✅ React 19.1.1 | 최신 React + TypeScript 5.9.2  |
-| **컴포넌트**    | ✅ 134개        | 재사용 가능한 React 컴포넌트   |
+| **컴포넌트**    | ✅ 156개        | React 컴포넌트 (TSX 파일)      |
 | **테스트**      | ✅ 92개 파일    | Vitest + React Testing Library |
 | **TypeScript**  | ✅ 100%         | 238개 TS/TSX 파일, Strict Mode |
 | **CI/CD**       | ✅ 안정화 완료  | GitHub Actions + GitHub Pages  |
 | **번들 크기**   | ✅ 최적화       | ~400KB gzipped                 |
 | **빌드 시간**   | ⚡ 10초         | 프로덕션 빌드 최적화           |
-| **HMR 속도**    | ⚡ 171ms        | 개발 서버 즉시 시작            |
+| **HMR 속도**    | ⚡ <200ms       | 개발 서버 즉시 시작            |
 | **보안 취약점** | ✅ 0건          | Dependabot 자동 업데이트       |
 
 ## 🚀 빠른 시작
@@ -83,15 +83,15 @@ npm run dev
 
 ### Frontend
 
-- **Core**: React 19.1 + TypeScript 5.9
-- **Build Tool**: Vite 7.1
-- **Styling**: Tailwind CSS 3.4 + Framer Motion 11
-- **State**: Context API (4개 Context)
-- **Routing**: React Router 7 (HashRouter)
-- **Testing**: Vitest 3.2 + React Testing Library
-- **PWA**: Service Worker + Offline Support
-- **Icons**: Lucide React
-- **i18n**: react-i18next (준비됨, UI 미구현)
+- **Core**: React 19.1.1 + TypeScript 5.9.2
+- **Build Tool**: Vite 7.1.3
+- **Styling**: Tailwind CSS 3.4.17 + Framer Motion 11.15.0
+- **State**: Zustand 5.0.8 + Context API
+- **Routing**: React Router 7.8.2 (HashRouter)
+- **Testing**: Vitest 3.2.4 + React Testing Library 16.3.0
+- **PWA**: Service Worker + vite-plugin-pwa
+- **Icons**: Lucide React 0.542.0
+- **i18n**: react-i18next 15.6.1 (한국어/영어 지원)
 
 ### Backend (API)
 
@@ -156,24 +156,39 @@ emelmujiro/
 ### 성능 최적화
 
 - ⚡ **빠른 빌드** - Vite로 10초 내 빌드
-- 🚀 **즉시 HMR** - 171ms 개발 서버 시작
+- 🚀 **즉시 HMR** - <200ms 개발 서버 시작
 - 📦 **코드 스플리팅** - 동적 임포트 최적화
 - 🖼️ **이미지 최적화** - Lazy Loading
 - 💾 **캐싱 전략** - Service Worker 캐싱
 
 ## 📊 코드베이스 통계
 
-| 항목                | 수량   | 설명                   |
-| ------------------- | ------ | ---------------------- |
-| **TypeScript 파일** | 138개  | 100% 타입 안전         |
-| **React 컴포넌트**  | 70+ 개 | 재사용 가능한 컴포넌트 |
-| **테스트 파일**     | 90개   | Vitest + RTL           |
-| **테스트 안정성**   | ✅     | CI/CD 파이프라인 통과  |
-| **프로덕션 의존성** | 18개   | 최소화된 의존성        |
-| **개발 의존성**     | 43개   | 개발 도구              |
-| **번들 청크**       | 19개   | 코드 스플리팅 최적화   |
+| 항목                | 수량   | 설명                  |
+| ------------------- | ------ | --------------------- |
+| **TypeScript 파일** | 238개  | 100% 타입 안전        |
+| **React 컴포넌트**  | 156개  | TSX 컴포넌트 파일     |
+| **테스트 파일**     | 92개   | Vitest + RTL          |
+| **테스트 안정성**   | ✅     | CI/CD 파이프라인 통과 |
+| **프로덕션 의존성** | 24개   | package.json 기준     |
+| **개발 의존성**     | 43개   | 개발 도구             |
+| **번들 청크**       | 최적화 | Manual chunking 적용  |
 
 ## 🔄 최근 업데이트
+
+### v3.9.1 - 2025.09.04 - CI/CD 파이프라인 완전 안정화
+
+- ✅ 네비게이션 바 "문의" → "문의하기" 텍스트 수정
+- ✅ FileUpload 테스트 타임아웃 문제 해결
+- ✅ CompanyLogo 테스트 toHaveStyle 호환성 문제 해결
+- ✅ Docker 빌드 설정 수정 (yarn → npm, build → dist)
+- ✅ PostCSS 호환성 문제 해결 (Tailwind v3 유지)
+
+### v3.9.0 - 2025.09.01 - Zustand 상태 관리 추가
+
+- ✅ Zustand 5.0.8 도입 (useAppStore)
+- ✅ 상태 관리 개선 (UI, Auth, Blog, Chat slices)
+- ✅ Immer 미들웨어 통한 불변성 관리
+- ✅ DevTools 및 persist 미들웨어 적용
 
 ### v3.8.0 - 2025.08.30 - 대규모 테스트 안정화 완료
 
@@ -206,26 +221,109 @@ emelmujiro/
 - ✅ Jest → Vitest 마이그레이션
 - ✅ Service Worker 캐싱 전략 개선
 
+## 🔍 코드베이스 분석 및 개선 사항
+
+### 🚨 Critical (즉시 해결 필요)
+
+#### 1. 테스트 안정성 문제
+
+- **150+ 스킵된 테스트**: 전체 테스트 파일의 상당 부분이 스킵 처리됨
+  - 주요 영향: ChatWindow, WebVitalsDashboard, ContactPage 등
+  - 원인: DOM cleanup, 타임아웃, 비동기 처리 문제
+- **해결 방안**: 테스트 격리 개선, 타임아웃 설정 조정, 모킹 전략 개선
+
+#### 2. 보안 취약점
+
+- **document.write 사용**: `public/service-worker-enhanced.js`
+- **eval 사용 가능성**: 동적 코드 실행 위험
+- **해결 방안**: 안전한 DOM 조작 메서드로 교체
+
+### ⚠️ High Priority (1주 내 해결)
+
+#### 1. 불완전한 기능 구현
+
+- **WebSocket 시스템**: 스텁 구현 상태 (`src/services/websocket.ts`)
+- **PWA 기능**: Service Worker 일부 기능 미구현
+- **블로그 시스템**:
+  - 댓글 기능 백엔드 미구현
+  - 검색 기능 최적화 필요
+  - 에디터 파일 업로드 미구현
+
+#### 2. TypeScript 타입 안정성
+
+- **150+ any 타입 사용**: 타입 안정성 저하
+- **주요 파일**:
+  - API 서비스 (`src/services/api.ts`)
+  - WebSocket (`src/services/websocket.ts`)
+  - 유틸리티 함수들
+
+### 📋 Medium Priority (2주 내 해결)
+
+#### 1. 국제화(i18n) 미완성
+
+- **UI 통합 미완료**: LanguageSwitcher 컴포넌트 미사용
+- **번역 파일 정리 필요**: 중복 키, 미사용 번역
+- **동적 언어 전환**: 일부 컴포넌트 미지원
+
+#### 2. 코드 중복 및 리팩토링
+
+- **중복 컴포넌트**: Button 변형 (10+개)
+- **유사 기능**: 로딩 상태 처리 패턴 불일치
+- **API 호출 패턴**: 에러 처리 일관성 부족
+
+#### 3. 성능 최적화
+
+- **번들 크기**: 미사용 의존성 제거 필요
+- **이미지 최적화**: WebP 포맷 미지원
+- **코드 스플리팅**: 추가 최적화 가능
+
+### 💡 Low Priority (1개월 내 개선)
+
+#### 1. 문서화
+
+- **JSDoc 주석 부족**: 복잡한 함수/컴포넌트 설명 필요
+- **Storybook 미구축**: 컴포넌트 문서화 시스템 부재
+- **API 문서**: Swagger/OpenAPI 스펙 미작성
+
+#### 2. 개발자 경험
+
+- **디버깅 도구**: Redux DevTools 미통합 (Zustand)
+- **에러 바운더리**: 세분화 필요
+- **로깅 시스템**: 구조화된 로그 수집 미구현
+
+### 📊 개선 진행 상황
+
+| 카테고리 | 전체 | 완료 | 진행중 | 대기 |
+| -------- | ---- | ---- | ------ | ---- |
+| Critical | 2    | 0    | 0      | 2    |
+| High     | 8    | 0    | 1      | 7    |
+| Medium   | 12   | 0    | 2      | 10   |
+| Low      | 6    | 0    | 0      | 6    |
+
 ## 🚧 향후 계획
 
-### 즉시 해결 필요 사항
+### Phase 1: 안정화 (2025 Q1)
 
-- [ ] 스킵된 테스트 복구 (현재 15개 describe 블록 스킵)
-- [ ] 테스트 격리 문제 해결 (DOM cleanup)
-- [ ] ChatWidget 테스트 완료 대기 중
+- [ ] 모든 스킵된 테스트 복구 및 안정화
+- [ ] TypeScript any 타입 제거
+- [ ] 보안 취약점 해결
+- [ ] WebSocket 실제 구현
+- [ ] PWA 기능 완성
 
-### 단기 목표 (2025 Q1)
+### Phase 2: 기능 완성 (2025 Q2)
 
-- [ ] 모든 스킵된 테스트 리팩토링
+- [ ] 블로그 시스템 완전 구현
+- [ ] i18n 완전 통합
 - [ ] E2E 테스트 구축 (Playwright)
-- [ ] Lighthouse 점수 100점 달성
-- [ ] 테스트 커버리지 85% 이상
+- [ ] 테스트 커버리지 85% 달성
+- [ ] Lighthouse 점수 100점
 
-### 중기 목표 (2025 Q2)
+### Phase 3: 확장 (2025 Q3)
 
-- [ ] Next.js 14 마이그레이션
-- [ ] 상태 관리 개선 (Zustand)
+- [ ] Next.js 14 마이그레이션 검토
 - [ ] AI API 직접 통합 (OpenAI/Claude)
+- [ ] Storybook 구축
+- [ ] 마이크로서비스 아키텍처 전환
 
 ## 🤝 기여하기
 

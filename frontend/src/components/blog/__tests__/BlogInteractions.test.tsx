@@ -103,8 +103,8 @@ describe('BlogInteractions Component', () => {
     });
   });
 
-  describe('Like Functionality', () => {
-    it.skip('increments likes when like button is clicked', () => {
+  describe.skip('Like Functionality', () => {
+    it('increments likes when like button is clicked', () => {
       // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
@@ -117,7 +117,7 @@ describe('BlogInteractions Component', () => {
       expect(oneElements.length).toBeGreaterThanOrEqual(1);
     });
 
-    it.skip('toggles like state', () => {
+    it('toggles like state', () => {
       // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
@@ -135,7 +135,7 @@ describe('BlogInteractions Component', () => {
       expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
     });
 
-    it.skip('persists likes in localStorage', () => {
+    it('persists likes in localStorage', () => {
       // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
@@ -148,7 +148,7 @@ describe('BlogInteractions Component', () => {
       expect(likesData[mockPost.id].users).toHaveLength(1);
     });
 
-    it.skip('generates and stores unique user ID', () => {
+    it('generates and stores unique user ID', () => {
       // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
@@ -173,7 +173,7 @@ describe('BlogInteractions Component', () => {
       expect(fiveElements.length).toBeGreaterThanOrEqual(1);
     });
 
-    it.skip('prevents duplicate likes from same user', () => {
+    it('prevents duplicate likes from same user', () => {
       // Skipped: State updates not working in test environment
       const userId = 'user_123';
       localStorage.setItem('userId', userId);
@@ -199,8 +199,8 @@ describe('BlogInteractions Component', () => {
     });
   });
 
-  describe('Bookmark Functionality', () => {
-    it.skip('toggles bookmark state', () => {
+  describe.skip('Bookmark Functionality', () => {
+    it('toggles bookmark state', () => {
       // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
@@ -221,7 +221,7 @@ describe('BlogInteractions Component', () => {
       expect(bookmarks).toHaveLength(0);
     });
 
-    it.skip('loads existing bookmarks on mount', () => {
+    it('loads existing bookmarks on mount', () => {
       // Skipped: State updates not working in test environment
       const existingBookmarks = [{ id: mockPost.id, title: mockPost.title }];
       localStorage.setItem('bookmarks', JSON.stringify(existingBookmarks));
@@ -237,7 +237,7 @@ describe('BlogInteractions Component', () => {
       expect(bookmarks).toHaveLength(0); // Should remove existing bookmark
     });
 
-    it.skip('stores bookmark with post metadata', () => {
+    it('stores bookmark with post metadata', () => {
       // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
@@ -257,7 +257,7 @@ describe('BlogInteractions Component', () => {
   });
 
   describe('Share Functionality', () => {
-    it.skip('shows share menu when share button is clicked', () => {
+    it('shows share menu when share button is clicked', () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available to trigger share menu
       const originalShare = navigator.share;
@@ -281,7 +281,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('shows and hides share menu', () => {
+    it('shows and hides share menu', () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
@@ -311,7 +311,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('shares to Facebook', () => {
+    it('shares to Facebook', () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
@@ -343,7 +343,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('shares to Twitter', () => {
+    it('shares to Twitter', () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
@@ -375,7 +375,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('shares to LinkedIn', () => {
+    it('shares to LinkedIn', () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
@@ -407,7 +407,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('copies link to clipboard', async () => {
+    it('copies link to clipboard', async () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
@@ -448,7 +448,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('uses native share API on mobile when available', async () => {
+    it('uses native share API on mobile when available', async () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock as mobile device
       const originalCanShare = navigator.canShare;
@@ -512,7 +512,7 @@ describe('BlogInteractions Component', () => {
       expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
     });
 
-    it.skip('handles clipboard API failure', async () => {
+    it('handles clipboard API failure', async () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;

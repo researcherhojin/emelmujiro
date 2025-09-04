@@ -471,7 +471,7 @@ describe('MessageList', () => {
     expect(checkCheckElements.length).toBeGreaterThanOrEqual(2); // Delivered and Read
   });
 
-  it.skip('should scroll to bottom on new messages', async () => {
+  it('should scroll to bottom on new messages', async () => {
     // Skipped: async waitFor causes timeout in CI environment
     const scrollIntoViewMock = vi.fn();
     Element.prototype.scrollIntoView = scrollIntoViewMock;

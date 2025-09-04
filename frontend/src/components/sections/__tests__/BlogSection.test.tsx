@@ -169,9 +169,7 @@ describe('BlogSection Component', () => {
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
 
-      const viewAllButton = screen.getByRole('button', {
-        name: '블로그 전체 글 보기',
-      });
+      const viewAllButton = screen.getByText('전체 트렌드 보기');
       expect(viewAllButton).toBeInTheDocument();
     });
 
@@ -180,9 +178,7 @@ describe('BlogSection Component', () => {
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
 
-      const viewAllButton = screen.getByRole('button', {
-        name: '블로그 전체 글 보기',
-      });
+      const viewAllButton = screen.getByText('전체 트렌드 보기');
       fireEvent.click(viewAllButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('/blog');

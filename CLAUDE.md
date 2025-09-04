@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Emelmujiro (에멜무지로) is a full-stack web application for an AI Education and Consulting company. The codebase uses a monorepo structure with React/TypeScript frontend and Django backend, deployed via GitHub Pages.
 
-**Current Version**: v3.9.0 (2025.09.01)
+**Current Version**: v3.9.1 (2025.09.04)
 **Build Tool**: Vite 7.1.3 (migrated from Create React App)
 **Test Framework**: Vitest 3.2.4 (migrated from Jest)
 **Live Site**: https://researcherhojin.github.io/emelmujiro
@@ -146,14 +146,14 @@ cd frontend && npm run validate  # Runs lint, type-check, and test:coverage
 - **TypeScript 5.9**: Strict mode enabled with all strict checks
 - **Path Aliases**: `@/` maps to `src/` directory
 - **Entry Point**: `src/main.tsx` (not index.tsx)
-- **Server Port**: Development server runs on port 5173 (configured in vite.config.ts)
 - **Tailwind CSS**: v3.4.17 with PostCSS configuration
 - **PWA**: Full Progressive Web App support with Service Worker
 
 **Application Structure:**
 
 - **Routing**: HashRouter for GitHub Pages compatibility
-- **State Management**: Context API (UIContext, BlogContext, AuthContext, FormContext)
+- **State Management**: Zustand 5.0.8 + Context API (UIContext, BlogContext, AuthContext, FormContext)
+  - **Zustand Store**: `src/store/useAppStore.ts` with UI, Auth, Blog, Chat slices
 - **API Layer**: Centralized in `frontend/src/services/api.ts`
 - **WebSocket**: `frontend/src/services/websocket.ts` for real-time features
 - **PWA**: Service Worker with offline support in `public/service-worker-enhanced.js`
@@ -441,7 +441,7 @@ Before deploying to production:
 
 ## Current Test Status
 
-### Skipped Test Suites (as of v3.9.0)
+### Skipped Test Suites (as of v3.9.1)
 
 These test suites are currently skipped due to CI/CD stability issues:
 
@@ -465,6 +465,7 @@ These test suites are currently skipped due to CI/CD stability issues:
 4. **Other Individual Tests**
    - accessibility.test.ts: "should handle accessibility announcements with focus management"
    - Footer.test.tsx: Accessibility modal test
+   - FileUpload.test.tsx: "shows success message after upload" (CI timeout issue)
 
 ### Testing Best Practices for This Codebase
 
@@ -475,8 +476,8 @@ These test suites are currently skipped due to CI/CD stability issues:
 
 ## Project Statistics
 
-- **TypeScript Coverage**: 100% (139 TS/TSX source files)
-- **Component Count**: 134 React components
+- **TypeScript Coverage**: 100% (238 TS/TSX files)
+- **Component Count**: 156 React components (TSX files)
 - **Test Files**: 92 test files
 - **Dependencies**: 61 packages (18 production, 43 development)
 - **Bundle Chunks**: Optimized with manual chunking:

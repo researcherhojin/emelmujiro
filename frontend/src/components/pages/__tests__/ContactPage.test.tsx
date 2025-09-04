@@ -129,7 +129,7 @@ describe('ContactPage Component', () => {
     );
   };
 
-  it.skip('renders contact form with all fields', async () => {
+  it('renders contact form with all fields', async () => {
     renderWithRouter(<ContactPage />);
 
     await waitForFormToLoad();
@@ -146,7 +146,7 @@ describe('ContactPage Component', () => {
     ).toBeInTheDocument();
   });
 
-  describe.skip('Form Validation', () => {
+  describe('Form Validation', () => {
     it('validates required fields', async () => {
       renderWithRouter(<ContactPage />);
 
@@ -290,7 +290,7 @@ describe('ContactPage Component', () => {
     });
   });
 
-  describe.skip('Form Submission', () => {
+  describe('Form Submission', () => {
     it('submits form successfully when online', async () => {
       mockedApi.createContact.mockResolvedValue({
         data: { id: 1, message: 'Success' },
@@ -475,7 +475,7 @@ describe('ContactPage Component', () => {
     });
   });
 
-  describe.skip('Online/Offline Status', () => {
+  describe('Online/Offline Status', () => {
     it('shows online status indicator', async () => {
       renderWithRouter(<ContactPage />);
 

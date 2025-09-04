@@ -775,8 +775,8 @@ describe('Footer Component', () => {
     });
   });
 
-  describe('Accessibility', () => {
-    test.skip(
+  describe.skip('Accessibility', () => {
+    test(
       'modal has correct accessibility attributes',
       async () => {
         const { container } = renderWithRouter(<Footer />);
