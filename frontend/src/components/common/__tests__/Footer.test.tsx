@@ -318,7 +318,7 @@ describe('Footer Component', () => {
     });
   });
 
-  describe.skip('Service Modal Functionality', () => {
+  describe('Service Modal Functionality', () => {
     test(
       'opens AI solution modal when clicked',
       async () => {
@@ -505,7 +505,7 @@ describe('Footer Component', () => {
     );
   });
 
-  describe.skip('Service Modal Interactions', () => {
+  describe('Service Modal Interactions', () => {
     test(
       'closes modal when X button is clicked',
       async () => {
@@ -680,7 +680,7 @@ describe('Footer Component', () => {
     );
   });
 
-  describe.skip('Service Modal Content', () => {
+  describe('Service Modal Content', () => {
     test(
       'displays all service details for AI solution',
       async () => {
@@ -776,7 +776,7 @@ describe('Footer Component', () => {
   });
 
   describe('Accessibility', () => {
-    test.skip(
+    test(
       'modal has correct accessibility attributes',
       async () => {
         const { container } = renderWithRouter(<Footer />);

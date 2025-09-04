@@ -384,7 +384,7 @@ describe('SkeletonScreen', () => {
   });
 
   describe('Component Integration', () => {
-    it.skip('can be used as a loading state placeholder', () => {
+    it('can be used as a loading state placeholder', () => {
       const LoadingComponent = ({ isLoading }: { isLoading: boolean }) => (
         <>
           {isLoading ? (

@@ -149,7 +149,7 @@ describe('OptimizedImage', () => {
     expect(image).toHaveAttribute('height', '600');
   });
 
-  it.skip('detects WebP support correctly', async () => {
+  it('detects WebP support correctly', async () => {
     // Skipped: WebP detection happens asynchronously and causes timeout in CI
     (mockCanvas.toDataURL as any).mockReturnValue(
       'data:image/webp;base64,test'
@@ -167,7 +167,7 @@ describe('OptimizedImage', () => {
     });
   });
 
-  it.skip('handles no WebP support', async () => {
+  it('handles no WebP support', async () => {
     // Skipped: WebP detection happens asynchronously and causes timeout in CI
     (mockCanvas.toDataURL as any).mockReturnValue('data:image/png;base64,test');
 
@@ -185,7 +185,7 @@ describe('OptimizedImage', () => {
     });
   });
 
-  it.skip('optimizes Unsplash images with WebP support', async () => {
+  it('optimizes Unsplash images with WebP support', async () => {
     (mockCanvas.toDataURL as any).mockReturnValue(
       'data:image/webp;base64,test'
     );
@@ -218,7 +218,7 @@ describe('OptimizedImage', () => {
     expect(src).toContain('h=1200'); // Height * devicePixelRatio
   });
 
-  it.skip('optimizes Unsplash images without WebP support', async () => {
+  it('optimizes Unsplash images without WebP support', async () => {
     (mockCanvas.toDataURL as any).mockReturnValue('data:image/png;base64,test');
     Object.defineProperty(window, 'devicePixelRatio', {
       writable: true,
@@ -247,7 +247,7 @@ describe('OptimizedImage', () => {
     expect(src).toContain('fm=auto'); // Auto format
   });
 
-  it.skip('optimizes Pexels images', async () => {
+  it('optimizes Pexels images', async () => {
     (mockCanvas.toDataURL as any).mockReturnValue(
       'data:image/webp;base64,test'
     );
@@ -269,7 +269,7 @@ describe('OptimizedImage', () => {
     });
   });
 
-  it.skip('does not optimize non-CDN images', async () => {
+  it('does not optimize non-CDN images', async () => {
     const originalSrc = '/local-image.jpg';
 
     render(<OptimizedImage src={originalSrc} alt="Test image" />);
@@ -281,7 +281,7 @@ describe('OptimizedImage', () => {
     });
   });
 
-  it.skip('generates srcSet for Unsplash images with width', async () => {
+  it('generates srcSet for Unsplash images with width', async () => {
     render(
       <OptimizedImage
         src="https://images.unsplash.com/photo-123456789"
@@ -306,7 +306,7 @@ describe('OptimizedImage', () => {
     expect(srcSet).toContain('1024w');
   });
 
-  it.skip('limits srcSet widths to 2x original width', async () => {
+  it('limits srcSet widths to 2x original width', async () => {
     render(
       <OptimizedImage
         src="https://images.unsplash.com/photo-123456789"
@@ -408,7 +408,7 @@ describe('OptimizedImage', () => {
     expect(onErrorMock).toHaveBeenCalledTimes(1);
   });
 
-  it.skip('handles different device pixel ratios', async () => {
+  it('handles different device pixel ratios', async () => {
     Object.defineProperty(window, 'devicePixelRatio', {
       writable: true,
       value: 3,
@@ -437,7 +437,7 @@ describe('OptimizedImage', () => {
     expect(src).toContain('q=85'); // High DPI quality
   });
 
-  it.skip('handles missing devicePixelRatio', async () => {
+  it('handles missing devicePixelRatio', async () => {
     Object.defineProperty(window, 'devicePixelRatio', {
       writable: true,
       value: undefined,
@@ -494,7 +494,7 @@ describe('OptimizedImage', () => {
     expect(image).not.toHaveAttribute('srcset');
   });
 
-  it.skip('renders eager loading image with all optimizations', async () => {
+  it('renders eager loading image with all optimizations', async () => {
     (mockCanvas.toDataURL as any).mockReturnValue(
       'data:image/webp;base64,test'
     );
@@ -539,7 +539,7 @@ describe('OptimizedImage', () => {
     expect(image).toHaveAttribute('alt', '');
   });
 
-  it.skip('handles very large device pixel ratio', async () => {
+  it('handles very large device pixel ratio', async () => {
     Object.defineProperty(window, 'devicePixelRatio', {
       writable: true,
       value: 4,
@@ -568,7 +568,7 @@ describe('OptimizedImage', () => {
     expect(src).toContain('q=85'); // High DPI quality
   });
 
-  it.skip('updates image source when WebP support changes', async () => {
+  it('updates image source when WebP support changes', async () => {
     const { rerender } = render(
       <OptimizedImage
         src="https://images.unsplash.com/photo-123456789"
@@ -613,7 +613,7 @@ describe('OptimizedImage', () => {
     expect(src2).toMatch(/fm=(webp|auto)/);
   });
 
-  it.skip('handles canvas creation failure gracefully', async () => {
+  it('handles canvas creation failure gracefully', async () => {
     // Avoid infinite recursion by using the real DOM method
     let canvasCreationAttempted = false;
 
@@ -642,7 +642,7 @@ describe('OptimizedImage', () => {
     });
   });
 
-  it.skip('handles toDataURL failure gracefully', async () => {
+  it('handles toDataURL failure gracefully', async () => {
     (mockCanvas.toDataURL as any).mockImplementation(() => {
       throw new Error('toDataURL failed');
     });

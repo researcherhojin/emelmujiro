@@ -188,7 +188,7 @@ describe('ChatWindowAdvanced', () => {
     });
   });
 
-  describe.skip('Message Sending', () => {
+  describe('Message Sending', () => {
     it('should send message on form submit', async () => {
       const sendMessage = vi.fn();
       mockUseChatContext.mockReturnValue({
@@ -338,7 +338,7 @@ describe('ChatWindowAdvanced', () => {
     });
   });
 
-  describe.skip('Typing Indicator', () => {
+  describe('Typing Indicator', () => {
     it('should show typing indicator when someone is typing', () => {
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,

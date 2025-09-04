@@ -196,7 +196,7 @@ describe('serviceWorkerRegistration', () => {
       expect(mockRegister).not.toHaveBeenCalled();
     });
 
-    it.skipIf(process.env.CI)(
+    it.skipIf(!process.env.CI)(
       'should register service worker on localhost with valid config',
       async () => {
         const mockRegister = vi
@@ -231,7 +231,7 @@ describe('serviceWorkerRegistration', () => {
       }
     );
 
-    it.skipIf(process.env.CI)(
+    it.skipIf(!process.env.CI)(
       'should register service worker on non-localhost',
       async () => {
         Object.defineProperty(window, 'location', {
@@ -273,7 +273,7 @@ describe('serviceWorkerRegistration', () => {
       }
     );
 
-    it.skipIf(process.env.CI)(
+    it.skipIf(!process.env.CI)(
       'should handle service worker registration errors',
       { timeout: 10000 },
       async () => {
@@ -324,7 +324,7 @@ describe('serviceWorkerRegistration', () => {
       }
     );
 
-    it.skipIf(process.env.CI)(
+    it.skipIf(!process.env.CI)(
       'should handle service worker update found scenario',
       async () => {
         // Set location to non-localhost to avoid ready promise log
@@ -397,7 +397,7 @@ describe('serviceWorkerRegistration', () => {
       }
     );
 
-    it.skipIf(process.env.CI)(
+    it.skipIf(!process.env.CI)(
       'should handle service worker success scenario (no existing controller)',
       async () => {
         const onSuccess = vi.fn();
@@ -617,7 +617,7 @@ describe('serviceWorkerRegistration', () => {
       });
     });
 
-    it.skipIf(process.env.CI)(
+    it.skipIf(!process.env.CI)(
       'should handle offline scenario during validation',
       async () => {
         global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));

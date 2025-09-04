@@ -182,7 +182,7 @@ describe('backgroundSync', () => {
       );
     });
 
-    it.skip('should register sync successfully with data', async () => {
+    it('should register sync successfully with data', async () => {
       const testData = { message: 'test data' };
 
       // Mock successful IndexedDB operations
@@ -227,7 +227,7 @@ describe('backgroundSync', () => {
       );
     });
 
-    it.skip('should handle IndexedDB storage errors', async () => {
+    it('should handle IndexedDB storage errors', async () => {
       const testData = { message: 'test data' };
 
       // Mock IndexedDB error
@@ -242,7 +242,7 @@ describe('backgroundSync', () => {
   });
 
   describe('getSyncData', () => {
-    it.skip('should retrieve sync data successfully', async () => {
+    it('should retrieve sync data successfully', async () => {
       const testData = {
         tag: 'test-sync',
         data: { message: 'test data' },
@@ -266,7 +266,7 @@ describe('backgroundSync', () => {
       expect(result).toEqual(testData);
     });
 
-    it.skip('should handle database open errors', async () => {
+    it('should handle database open errors', async () => {
       // Mock IndexedDB error
       setTimeout(() => {
         mockRequest.error = new Error('Database error');
@@ -276,7 +276,7 @@ describe('backgroundSync', () => {
       await expect(getSyncData('test-sync')).rejects.toThrow('Database error');
     });
 
-    it.skip('should handle get operation errors', async () => {
+    it('should handle get operation errors', async () => {
       // Mock successful database open but failed get
       setTimeout(() => {
         mockRequest.onsuccess?.();
@@ -292,7 +292,7 @@ describe('backgroundSync', () => {
       );
     });
 
-    it.skip('should return undefined when data not found', async () => {
+    it('should return undefined when data not found', async () => {
       // Mock successful operations but no data
       setTimeout(() => {
         mockRequest.onsuccess?.();
@@ -309,7 +309,7 @@ describe('backgroundSync', () => {
   });
 
   describe('clearSyncData', () => {
-    it.skip('should clear sync data successfully', async () => {
+    it('should clear sync data successfully', async () => {
       // Mock successful IndexedDB operations
       setTimeout(() => {
         mockRequest.onsuccess?.();
@@ -325,7 +325,7 @@ describe('backgroundSync', () => {
       expect(mockObjectStore.delete).toHaveBeenCalledWith('test-sync');
     });
 
-    it.skip('should handle database open errors', async () => {
+    it('should handle database open errors', async () => {
       // Mock IndexedDB error
       setTimeout(() => {
         mockRequest.error = new Error('Database error');
@@ -337,7 +337,7 @@ describe('backgroundSync', () => {
       );
     });
 
-    it.skip('should handle delete operation errors', async () => {
+    it('should handle delete operation errors', async () => {
       // Mock successful database open but failed delete
       setTimeout(() => {
         mockRequest.onsuccess?.();
@@ -355,7 +355,7 @@ describe('backgroundSync', () => {
   });
 
   describe('queueFailedRequest', () => {
-    it.skip('should queue failed request with correct data structure', async () => {
+    it('should queue failed request with correct data structure', async () => {
       const url = '/api/test';
       const options = {
         method: 'POST',
@@ -396,7 +396,7 @@ describe('backgroundSync', () => {
   });
 
   describe('IndexedDB database upgrade', () => {
-    it.skip('should create object store on database upgrade', async () => {
+    it('should create object store on database upgrade', async () => {
       mockDatabase.objectStoreNames.contains.mockReturnValue(false);
 
       // Mock database upgrade needed
@@ -417,7 +417,7 @@ describe('backgroundSync', () => {
       });
     });
 
-    it.skip('should not create object store if it already exists', async () => {
+    it('should not create object store if it already exists', async () => {
       mockDatabase.objectStoreNames.contains.mockReturnValue(true);
 
       // Mock database upgrade needed
@@ -452,7 +452,7 @@ describe('backgroundSync', () => {
       expect(mockRegistration.sync.register).toHaveBeenCalledWith('sync-3');
     });
 
-    it.skip('should handle sync with complex data objects', async () => {
+    it('should handle sync with complex data objects', async () => {
       const complexData = {
         user: { id: 1, name: 'Test User' },
         form: {

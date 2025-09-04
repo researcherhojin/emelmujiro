@@ -82,7 +82,7 @@ vi.mock('../AdminPanel', () => ({
     isOpen ? <div data-testid="admin-panel">Admin Panel</div> : null,
 }));
 
-describe.skip('ChatWidget', () => {
+describe('ChatWidget', () => {
   beforeEach(() => {
     // Clear localStorage before each test
     localStorage.clear();

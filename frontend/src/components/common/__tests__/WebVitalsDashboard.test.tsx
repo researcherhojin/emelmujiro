@@ -104,7 +104,7 @@ describe('WebVitalsDashboard', () => {
       expect(screen.getByText('Collecting metrics...')).toBeInTheDocument();
     });
 
-    test.skip('hides dashboard when close button is clicked', async () => {
+    test('hides dashboard when close button is clicked', async () => {
       render(<WebVitalsDashboard />);
 
       // Open dashboard
@@ -128,7 +128,7 @@ describe('WebVitalsDashboard', () => {
       ).not.toBeInTheDocument();
     });
 
-    test.skip('toggles dashboard visibility with keyboard shortcut', () => {
+    test('toggles dashboard visibility with keyboard shortcut', () => {
       render(<WebVitalsDashboard />);
 
       // Initially dashboard should not be visible
@@ -149,7 +149,7 @@ describe('WebVitalsDashboard', () => {
       ).not.toBeInTheDocument();
     });
 
-    test.skip('ignores other keyboard combinations', () => {
+    test('ignores other keyboard combinations', () => {
       render(<WebVitalsDashboard />);
 
       // Try different key combinations
@@ -170,7 +170,7 @@ describe('WebVitalsDashboard', () => {
     });
   });
 
-  describe.skip('Production Mode Behavior', () => {
+  describe('Production Mode Behavior', () => {
     beforeEach(() => {
       process.env = { ...process.env, NODE_ENV: 'production' };
     });
@@ -192,7 +192,7 @@ describe('WebVitalsDashboard', () => {
     });
   });
 
-  describe.skip('Web Vitals Integration', () => {
+  describe('Web Vitals Integration', () => {
     beforeEach(() => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
@@ -304,7 +304,7 @@ describe('WebVitalsDashboard', () => {
     });
   });
 
-  describe.skip('Metric Rating System', () => {
+  describe('Metric Rating System', () => {
     beforeEach(() => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
@@ -366,7 +366,7 @@ describe('WebVitalsDashboard', () => {
     });
   });
 
-  describe.skip('Dashboard Content and Layout', () => {
+  describe('Dashboard Content and Layout', () => {
     beforeEach(() => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
@@ -545,7 +545,7 @@ describe('WebVitalsDashboard', () => {
     });
   });
 
-  describe.skip('CSS Classes and Styling', () => {
+  describe('CSS Classes and Styling', () => {
     beforeEach(() => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
@@ -677,7 +677,7 @@ describe('WebVitalsDashboard', () => {
     });
   });
 
-  describe.skip('Accessibility', () => {
+  describe('Accessibility', () => {
     beforeEach(() => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
