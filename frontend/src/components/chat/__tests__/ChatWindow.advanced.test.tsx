@@ -188,8 +188,8 @@ describe('ChatWindowAdvanced', () => {
     });
   });
 
-  describe('Message Sending', () => {
-    it.skip('should send message on form submit', async () => {
+  describe.skip('Message Sending', () => {
+    it('should send message on form submit', async () => {
       const sendMessage = vi.fn();
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
