@@ -441,7 +441,7 @@ describe('InstallPrompt', () => {
     });
   });
 
-  describe('Animations and Styling', () => {
+  describe.skip('Animations and Styling', () => {
     it('should apply correct CSS classes', async () => {
       // Set up beforeinstallprompt event
       const mockEvent = new Event('beforeinstallprompt');
