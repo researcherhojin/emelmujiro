@@ -67,7 +67,11 @@ export const enhancedCleanup = () => {
 
 // Wrap timer functions to track them
 export const setupTimerTracking = () => {
-  global.setTimeout = ((callback: Function, delay?: number, ...args: unknown[]) => {
+  global.setTimeout = ((
+    callback: Function,
+    delay?: number,
+    ...args: unknown[]
+  ) => {
     const timerId = originalSetTimeout(callback, delay, ...args);
     activeTimers.add(timerId as unknown as number);
     return timerId;
@@ -84,7 +88,7 @@ export const setupTimerTracking = () => {
   }) as typeof setInterval;
 
   if (global.requestAnimationFrame) {
-    global.requestAnimationFrame = ((callback: (time: DOMHighResTimeStamp) => void) => {
+    global.requestAnimationFrame = ((callback: (time: number) => void) => {
       const frameId = originalRequestAnimationFrame(callback);
       activeAnimationFrames.add(frameId);
       return frameId;

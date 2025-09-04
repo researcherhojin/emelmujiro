@@ -289,31 +289,43 @@ vi.mock('framer-motion', () => {
 
   // Create motion components that just render the element with props
   const createMotionComponent = (element: string) => {
-    return React.forwardRef((props: any, ref: any) => {
-      const { children, ...rest } = props;
-      // Remove motion-specific props
-      const filteredProps = Object.keys(rest).reduce((acc: any, key) => {
-        if (
-          !key.startsWith('animate') &&
-          !key.startsWith('initial') &&
-          !key.startsWith('exit') &&
-          !key.startsWith('transition') &&
-          !key.startsWith('whileHover') &&
-          !key.startsWith('whileTap') &&
-          !key.startsWith('whileDrag') &&
-          !key.startsWith('whileFocus') &&
-          !key.startsWith('whileInView') &&
-          !key.startsWith('variants') &&
-          !key.startsWith('layout') &&
-          !key.startsWith('drag')
-        ) {
-          acc[key] = rest[key];
-        }
-        return acc;
-      }, {});
+    return React.forwardRef(
+      (
+        props: React.PropsWithChildren<Record<string, unknown>>,
+        ref: React.Ref<HTMLElement>
+      ) => {
+        const { children, ...rest } = props;
+        // Remove motion-specific props
+        const filteredProps = Object.keys(rest).reduce(
+          (acc: Record<string, unknown>, key) => {
+            if (
+              !key.startsWith('animate') &&
+              !key.startsWith('initial') &&
+              !key.startsWith('exit') &&
+              !key.startsWith('transition') &&
+              !key.startsWith('whileHover') &&
+              !key.startsWith('whileTap') &&
+              !key.startsWith('whileDrag') &&
+              !key.startsWith('whileFocus') &&
+              !key.startsWith('whileInView') &&
+              !key.startsWith('variants') &&
+              !key.startsWith('layout') &&
+              !key.startsWith('drag')
+            ) {
+              acc[key] = rest[key];
+            }
+            return acc;
+          },
+          {}
+        );
 
-      return React.createElement(element, { ...filteredProps, ref }, children);
-    });
+        return React.createElement(
+          element,
+          { ...filteredProps, ref },
+          children
+        );
+      }
+    );
   };
 
   return {
@@ -323,7 +335,7 @@ vi.mock('framer-motion', () => {
         get: (_target, prop: string) => createMotionComponent(prop),
       }
     ),
-    AnimatePresence: ({ children }: any) =>
+    AnimatePresence: ({ children }: React.PropsWithChildren) =>
       React.createElement(React.Fragment, null, children),
     useAnimation: () => ({
       start: vi.fn(),
@@ -331,15 +343,19 @@ vi.mock('framer-motion', () => {
       stop: vi.fn(),
       mount: vi.fn(),
     }),
-    useMotionValue: (initial: any) => ({
+    useMotionValue: (initial: unknown) => ({
       get: () => initial,
       set: vi.fn(),
       onChange: vi.fn(),
       destroy: vi.fn(),
       isAnimating: () => false,
     }),
-    useTransform: (value: any, _inputRange: any, _outputRange: any) => value,
-    useSpring: (value: any) => value,
+    useTransform: (
+      value: unknown,
+      _inputRange: unknown[],
+      _outputRange: unknown[]
+    ) => value,
+    useSpring: (value: unknown) => value,
     useScroll: () => ({
       scrollX: { get: () => 0 },
       scrollY: { get: () => 0 },
@@ -364,7 +380,7 @@ vi.mock('framer-motion', () => {
     }),
     useInView: () => true,
     domAnimation: {},
-    LazyMotion: ({ children }: any) => children,
+    LazyMotion: ({ children }: React.PropsWithChildren) => children,
   };
 });
 
@@ -694,7 +710,8 @@ Object.defineProperty(window, 'history', {
 });
 
 // Also set globalHistory for compatibility
-(global as any).globalHistory = window.history;
+(global as unknown as { globalHistory: History }).globalHistory =
+  window.history;
 
 // Suppress console errors and warnings in tests
 const originalError = console.error;
