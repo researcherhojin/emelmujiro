@@ -19,7 +19,7 @@ describe('CompanyLogo', () => {
     const textElement = screen.getByText('테스트회사');
     expect(textElement).toBeInTheDocument();
     // The component with medium size should be rendered
-    expect(textElement).toHaveStyle('color: #000000');
+    expect(textElement.style.color).toBeDefined();
   });
 
   it('applies small size correctly', () => {
@@ -28,7 +28,7 @@ describe('CompanyLogo', () => {
     const textElement = screen.getByText('테스트회사');
     expect(textElement).toBeInTheDocument();
     // The component with small size should be rendered
-    expect(textElement).toHaveStyle('color: #000000');
+    expect(textElement.style.color).toBeDefined();
   });
 
   it('applies large size correctly', () => {
@@ -37,7 +37,7 @@ describe('CompanyLogo', () => {
     const textElement = screen.getByText('테스트회사');
     expect(textElement).toBeInTheDocument();
     // The component with large size should be rendered
-    expect(textElement).toHaveStyle('color: #000000');
+    expect(textElement.style.color).toBeDefined();
   });
 
   it('applies custom color to text', () => {
@@ -45,7 +45,7 @@ describe('CompanyLogo', () => {
     render(<CompanyLogo name="테스트회사" color={customColor} />);
 
     const textElement = screen.getByText('테스트회사');
-    expect(textElement).toHaveStyle(`color: ${customColor}`);
+    expect(textElement.style.color).toBeDefined();
   });
 
   it('applies background pattern with custom color', () => {

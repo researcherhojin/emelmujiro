@@ -8,20 +8,18 @@ RUN apk update && apk upgrade && \
 WORKDIR /app
 
 # Copy package files
-COPY package.json yarn.lock* ./
+COPY package.json package-lock.json* ./
 
-# Install dependencies using yarn
+# Install dependencies using npm
 # Install all dependencies including optional ones for build stage
-RUN yarn install --frozen-lockfile || yarn install
+RUN npm ci --include=optional || npm install
 
 # Copy source code
 COPY . .
 
-# Build the application (disable ESLint during build)
-ENV DISABLE_ESLINT_PLUGIN=true
-ENV ESLINT_NO_DEV_ERRORS=true
+# Build the application
 ENV CI=false
-RUN yarn build
+RUN npm run build
 
 # Production stage
 FROM nginx:alpine
@@ -32,8 +30,8 @@ RUN apk update && apk upgrade
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Copy built files from builder stage
-COPY --from=builder /app/build /usr/share/nginx/html
+# Copy built files from builder stage (Vite outputs to dist/)
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Set proper permissions (nginx user already exists in nginx:alpine image)
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
