@@ -28,9 +28,10 @@ vi.mock('../../../services/api', () => ({
   },
 }));
 
-// Mock navigator.onLine
+// Mock navigator.onLine - skip in CI environment due to property redefinition issues
 let onlineStatus = true;
-if (typeof window !== 'undefined' && window.navigator) {
+// Only mock if not in CI environment where it causes issues
+if (typeof window !== 'undefined' && window.navigator && !process.env.CI) {
   try {
     Object.defineProperty(window.navigator, 'onLine', {
       configurable: true,
@@ -40,7 +41,7 @@ if (typeof window !== 'undefined' && window.navigator) {
     });
   } catch (error) {
     // Property may already be defined, skip mocking
-    console.warn('Could not mock navigator.onLine:', error);
+    // This is expected in CI environments
   }
 }
 
