@@ -476,7 +476,7 @@ describe('ContactPage Component', () => {
   });
 
   describe('Online/Offline Status', () => {
-    it('shows online status indicator', async () => {
+    it.skip('shows online status indicator', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();

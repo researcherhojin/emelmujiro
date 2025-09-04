@@ -1,5 +1,6 @@
 // MessageSender type for WebSocket message sending functionality
 import logger from '../utils/logger';
+import { getWebSocketUrl, WS_CONFIG, WS_ENDPOINTS } from '../config/websocket';
 
 export type MessageSenderFunction = (
   message: string,
