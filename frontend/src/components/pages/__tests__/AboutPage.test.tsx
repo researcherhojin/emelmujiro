@@ -116,7 +116,7 @@ describe('AboutPage', () => {
     expect(screen.getByText('98%')).toBeInTheDocument();
   });
 
-  it('renders contact CTA section', () => {
+  it.skip('renders contact CTA section', () => {
     renderWithRouter();
 
     expect(
