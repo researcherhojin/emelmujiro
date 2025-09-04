@@ -24,7 +24,7 @@
 - 🤖 **기술 컨설팅** - 기업별 AI 도입 전략 수립 및 기술 자문
 - 📊 **데이터 분석** - 빅데이터 기반 인사이트 도출 및 분석 시스템 구축
 
-## 🎯 프로젝트 현황 (v3.9.0 - 2025.09.01)
+## 🎯 프로젝트 현황 (v3.9.1 - 2025.09.04)
 
 ### 📊 성과 지표
 
@@ -32,13 +32,13 @@
 | --------------- | --------------- | ------------------------------ |
 | **빌드 도구**   | ✅ Vite 7.1.3   | CRA → Vite 완전 마이그레이션   |
 | **프레임워크**  | ✅ React 19.1.1 | 최신 React + TypeScript 5.9.2  |
-| **컴포넌트**    | ✅ 134개        | 재사용 가능한 React 컴포넌트   |
+| **컴포넌트**    | ✅ 156개        | React 컴포넌트 (TSX 파일)      |
 | **테스트**      | ✅ 92개 파일    | Vitest + React Testing Library |
 | **TypeScript**  | ✅ 100%         | 238개 TS/TSX 파일, Strict Mode |
 | **CI/CD**       | ✅ 안정화 완료  | GitHub Actions + GitHub Pages  |
 | **번들 크기**   | ✅ 최적화       | ~400KB gzipped                 |
 | **빌드 시간**   | ⚡ 10초         | 프로덕션 빌드 최적화           |
-| **HMR 속도**    | ⚡ 171ms        | 개발 서버 즉시 시작            |
+| **HMR 속도**    | ⚡ <200ms       | 개발 서버 즉시 시작            |
 | **보안 취약점** | ✅ 0건          | Dependabot 자동 업데이트       |
 
 ## 🚀 빠른 시작
@@ -83,15 +83,15 @@ npm run dev
 
 ### Frontend
 
-- **Core**: React 19.1 + TypeScript 5.9
-- **Build Tool**: Vite 7.1
-- **Styling**: Tailwind CSS 3.4 + Framer Motion 11
-- **State**: Context API (4개 Context)
-- **Routing**: React Router 7 (HashRouter)
-- **Testing**: Vitest 3.2 + React Testing Library
-- **PWA**: Service Worker + Offline Support
-- **Icons**: Lucide React
-- **i18n**: react-i18next (준비됨, UI 미구현)
+- **Core**: React 19.1.1 + TypeScript 5.9.2
+- **Build Tool**: Vite 7.1.3
+- **Styling**: Tailwind CSS 3.4.17 + Framer Motion 11.15.0
+- **State**: Zustand 5.0.8 + Context API
+- **Routing**: React Router 7.8.2 (HashRouter)
+- **Testing**: Vitest 3.2.4 + React Testing Library 16.3.0
+- **PWA**: Service Worker + vite-plugin-pwa
+- **Icons**: Lucide React 0.542.0
+- **i18n**: react-i18next 15.6.1 (한국어/영어 지원)
 
 ### Backend (API)
 
@@ -156,7 +156,7 @@ emelmujiro/
 ### 성능 최적화
 
 - ⚡ **빠른 빌드** - Vite로 10초 내 빌드
-- 🚀 **즉시 HMR** - 171ms 개발 서버 시작
+- 🚀 **즉시 HMR** - <200ms 개발 서버 시작
 - 📦 **코드 스플리팅** - 동적 임포트 최적화
 - 🖼️ **이미지 최적화** - Lazy Loading
 - 💾 **캐싱 전략** - Service Worker 캐싱
@@ -165,15 +165,30 @@ emelmujiro/
 
 | 항목                | 수량   | 설명                   |
 | ------------------- | ------ | ---------------------- |
-| **TypeScript 파일** | 138개  | 100% 타입 안전         |
-| **React 컴포넌트**  | 70+ 개 | 재사용 가능한 컴포넌트 |
-| **테스트 파일**     | 90개   | Vitest + RTL           |
+| **TypeScript 파일** | 238개  | 100% 타입 안전         |
+| **React 컴포넌트**  | 156개  | TSX 컴포넌트 파일       |
+| **테스트 파일**     | 92개   | Vitest + RTL           |
 | **테스트 안정성**   | ✅     | CI/CD 파이프라인 통과  |
-| **프로덕션 의존성** | 18개   | 최소화된 의존성        |
+| **프로덕션 의존성** | 24개   | package.json 기준      |
 | **개발 의존성**     | 43개   | 개발 도구              |
-| **번들 청크**       | 19개   | 코드 스플리팅 최적화   |
+| **번들 청크**       | 최적화  | Manual chunking 적용   |
 
 ## 🔄 최근 업데이트
+
+### v3.9.1 - 2025.09.04 - CI/CD 파이프라인 완전 안정화
+
+- ✅ 네비게이션 바 "문의" → "문의하기" 텍스트 수정
+- ✅ FileUpload 테스트 타임아웃 문제 해결
+- ✅ CompanyLogo 테스트 toHaveStyle 호환성 문제 해결
+- ✅ Docker 빌드 설정 수정 (yarn → npm, build → dist)
+- ✅ PostCSS 호환성 문제 해결 (Tailwind v3 유지)
+
+### v3.9.0 - 2025.09.01 - Zustand 상태 관리 추가
+
+- ✅ Zustand 5.0.8 도입 (useAppStore)
+- ✅ 상태 관리 개선 (UI, Auth, Blog, Chat slices)
+- ✅ Immer 미들웨어 통한 불변성 관리
+- ✅ DevTools 및 persist 미들웨어 적용
 
 ### v3.8.0 - 2025.08.30 - 대규모 테스트 안정화 완료
 
