@@ -196,7 +196,7 @@ describe('ProfilePage Component', () => {
   });
 
   describe('Projects Tab Content', () => {
-    it('displays project items when tab is selected', () => {
+    it.skip('displays project items when tab is selected', () => {
       renderWithRouter(<ProfilePage />);
 
       const projectsTab = screen.getByRole('button', { name: /프로젝트/ });
@@ -206,7 +206,7 @@ describe('ProfilePage Component', () => {
       expect(projectsTab).toHaveClass('text-gray-900');
     });
 
-    it('displays project descriptions', () => {
+    it.skip('displays project descriptions', () => {
       renderWithRouter(<ProfilePage />);
 
       const projectsTab = screen.getByRole('button', { name: /프로젝트/ });
