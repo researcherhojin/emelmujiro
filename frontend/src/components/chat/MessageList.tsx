@@ -132,16 +132,33 @@ const MessageList: React.FC = () => {
       const img = new Image();
       img.src = url;
       img.onload = () => {
-        const newWindow = window.open();
+        const newWindow = window.open('', '_blank');
         if (newWindow) {
-          newWindow.document.write(`
-            <html>
-              <head><title>${filename}</title></head>
-              <body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;">
-                <img src="${url}" style="max-width:100%;max-height:100%;object-fit:contain;" />
-              </body>
-            </html>
-          `);
+          // Safely set the document content using DOM methods
+          const doc = newWindow.document;
+          doc.title = filename.replace(/[<>]/g, ''); // Sanitize filename
+
+          // Create elements safely
+          const html = doc.documentElement;
+          html.style.height = '100%';
+
+          const body = doc.body;
+          body.style.margin = '0';
+          body.style.backgroundColor = '#000';
+          body.style.display = 'flex';
+          body.style.alignItems = 'center';
+          body.style.justifyContent = 'center';
+          body.style.height = '100%';
+
+          const imgElement = doc.createElement('img');
+          imgElement.src = url;
+          imgElement.style.maxWidth = '100%';
+          imgElement.style.maxHeight = '100%';
+          imgElement.style.objectFit = 'contain';
+
+          // Clear any existing content and append the image
+          body.innerHTML = '';
+          body.appendChild(imgElement);
         }
       };
     } else if (file?.url) {
