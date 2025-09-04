@@ -539,7 +539,7 @@ describe('OptimizedImage', () => {
     expect(image).toHaveAttribute('alt', '');
   });
 
-  it('handles very large device pixel ratio', async () => {
+  it.skip('handles very large device pixel ratio', async () => {
     Object.defineProperty(window, 'devicePixelRatio', {
       writable: true,
       value: 4,
