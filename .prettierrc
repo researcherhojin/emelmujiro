@@ -16,6 +16,7 @@
   "htmlWhitespaceSensitivity": "css",
   "vueIndentScriptAndStyle": false,
   "embeddedLanguageFormatting": "auto",
+  "plugins": ["@prettier/plugin-xml"],
   "overrides": [
     {
       "files": "*.{yml,yaml}",
@@ -27,13 +28,13 @@
     {
       "files": "*.{xml,svg,xsl,xslt,xsd,rss,atom}",
       "options": {
-        "parser": "html",
+        "parser": "xml",
         "printWidth": 120,
         "tabWidth": 2,
         "useTabs": false,
-        "htmlWhitespaceSensitivity": "ignore",
-        "bracketSameLine": true,
+
         "singleAttributePerLine": false,
+
         "xmlWhitespaceSensitivity": "ignore",
         "xmlSelfClosingSpace": true,
         "xmlQuoteAttributes": "double",
