@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package.json ./
 
 # Install dependencies using npm
-# Since we're in a monorepo without a lock file in this directory, 
+# Since we're in a monorepo without a lock file in this directory,
 # use npm install with force to handle any conflicts
 RUN npm install --force --include=optional
 
