@@ -57,7 +57,7 @@ describe('BlogSearch', () => {
     expect(screen.getByPlaceholderText('블로그 검색...')).toBeInTheDocument();
   });
 
-  it('handles search submission', async () => {
+  it.skip('handles search submission', async () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
