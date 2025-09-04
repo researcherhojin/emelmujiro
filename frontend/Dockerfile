@@ -8,11 +8,12 @@ RUN apk update && apk upgrade && \
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json* ./
+COPY package.json ./
 
 # Install dependencies using npm
-# Install all dependencies including optional ones for build stage
-RUN npm ci --include=optional || npm install
+# Since we're in a monorepo without a lock file in this directory, 
+# use npm install with force to handle any conflicts
+RUN npm install --force --include=optional
 
 # Copy source code
 COPY . .
