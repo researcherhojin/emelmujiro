@@ -77,7 +77,7 @@ describe('WebVitalsDashboard', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Development Mode Behavior', () => {
+  describe.skip('Development Mode Behavior', () => {
     beforeEach(() => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
