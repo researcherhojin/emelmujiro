@@ -33,7 +33,7 @@ jobs:
               continue
             fi
             # Skip dependabot commits (they follow their own format)
-            if [[ "$msg" =~ ^Bump\ |^build\(deps|^chore\(deps|^ci\(deps ]]; then
+            if [[ "$msg" =~ ^Bump\ |^build\(deps|^chore\(deps|^ci\(deps|^deps-dev\(deps|^deps\(deps ]]; then
               continue
             fi
             if [[ ! "$msg" =~ ^(feat|fix|docs|style|refactor|test|chore|deps|ci)(\(.+\))?: ]]; then
