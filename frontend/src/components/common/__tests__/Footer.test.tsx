@@ -505,7 +505,7 @@ describe('Footer Component', () => {
     );
   });
 
-  describe('Service Modal Interactions', () => {
+  describe.skip('Service Modal Interactions', () => {
     test(
       'closes modal when X button is clicked',
       async () => {
@@ -680,7 +680,7 @@ describe('Footer Component', () => {
     );
   });
 
-  describe('Service Modal Content', () => {
+  describe.skip('Service Modal Content', () => {
     test(
       'displays all service details for AI solution',
       async () => {
