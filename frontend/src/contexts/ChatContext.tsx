@@ -10,6 +10,7 @@ import React, {
 import { useUI } from './UIContext';
 import { ChatWebSocketService } from '../services/websocket';
 import logger from '../utils/logger';
+import env from '../config/env';
 
 export type MessageType = 'text' | 'image' | 'file' | 'system';
 export type MessageSender = 'user' | 'agent' | 'system';
@@ -476,7 +477,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     try {
       wsRef.current = new ChatWebSocketService(
         {
-          url: process.env.REACT_APP_WS_URL || 'ws://localhost:8000/ws/chat/',
+          url: `${env.WS_URL}/chat/`,
           reconnectInterval: 3000,
           maxReconnectAttempts: 5,
           heartbeatInterval: 30000,
