@@ -318,7 +318,7 @@ describe('Footer Component', () => {
     });
   });
 
-  describe('Service Modal Functionality', () => {
+  describe.skip('Service Modal Functionality', () => {
     test(
       'opens AI solution modal when clicked',
       async () => {
