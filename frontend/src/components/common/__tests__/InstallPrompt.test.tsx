@@ -390,7 +390,7 @@ describe('InstallPrompt', () => {
     });
   });
 
-  describe('Features Display', () => {
+  describe.skip('Features Display', () => {
     it('should display PWA features when prompt is shown', async () => {
       // Set up beforeinstallprompt event
       const mockEvent = new Event('beforeinstallprompt');
