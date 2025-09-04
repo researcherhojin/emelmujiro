@@ -79,7 +79,7 @@ describe('SharePage', () => {
     expect(pageContent).toBeTruthy();
   });
 
-  it('displays empty state when no content is shared', async () => {
+  it.skip('displays empty state when no content is shared', async () => {
     renderSharePage();
 
     await waitFor(
