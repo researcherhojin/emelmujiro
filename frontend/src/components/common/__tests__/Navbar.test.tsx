@@ -19,12 +19,10 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
-        'company.name': '에멜무지로',
-        'links.about': '회사소개',
-        'links.services': '서비스',
-        'links.blog': '블로그',
-        'links.profile': '대표 프로필',
-        'actions.contact': '문의하기',
+        'common.about': '회사소개',
+        'common.blog': '블로그',
+        'common.profile': '대표 프로필',
+        'common.contact': '문의하기',
       };
       return translations[key] || key;
     },

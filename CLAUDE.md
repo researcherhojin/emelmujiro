@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Emelmujiro (에멜무지로) is a full-stack web application for an AI Education and Consulting company. The codebase uses a monorepo structure with React/TypeScript frontend and Django backend, deployed via GitHub Pages.
 
-**Current Version**: v3.8.0 (2025.08.31)
+**Current Version**: v3.9.0 (2025.09.01)
 **Build Tool**: Vite 7.1.3 (migrated from Create React App)
 **Test Framework**: Vitest 3.2.4 (migrated from Jest)
 **Live Site**: https://researcherhojin.github.io/emelmujiro
@@ -146,7 +146,7 @@ cd frontend && npm run validate  # Runs lint, type-check, and test:coverage
 - **TypeScript 5.9**: Strict mode enabled with all strict checks
 - **Path Aliases**: `@/` maps to `src/` directory
 - **Entry Point**: `src/main.tsx` (not index.tsx)
-  **Server Port**: Development server runs on port 3000 (configured in vite.config.ts)
+- **Server Port**: Development server runs on port 5173 (configured in vite.config.ts)
 - **Tailwind CSS**: v3.4.17 with PostCSS configuration
 - **PWA**: Full Progressive Web App support with Service Worker
 
@@ -189,7 +189,7 @@ cd frontend && npm run validate  # Runs lint, type-check, and test:coverage
 **Frontend Testing:**
 
 - **Framework**: Vitest 3.2.4 with React Testing Library
-- **Test Files**: 90 test files across all components
+- **Test Files**: 92 test files across all components
 - **Patterns**: Use `renderWithProviders` for context wrapping
 - **Mocking**: Use `vi.mock()` for module mocking
 - **CI Optimization**:
@@ -345,7 +345,7 @@ vi.mock('@/services/api', () => ({
 - **Monorepo**: `package.json` - Root package with workspaces configuration
 - **Vite Config**: `frontend/vite.config.ts` - Build configuration with chunking strategy
   - Base path: `/emelmujiro/`
-  - Server port: 3000
+  - Server port: 5173
   - API proxy: `/api` → `http://127.0.0.1:8000`
   - Manual chunks for optimization
 - **Vitest Config**: `frontend/vitest.config.ts` - Test configuration
@@ -415,8 +415,8 @@ lsof -ti:8000 | xargs kill -9  # Django server
 
 - **Dev Server Start**: ~171ms (Vite)
 - **Production Build**: ~10 seconds
-- **Bundle Size**: ~450KB gzipped
-- **Test Suite**: ~30 seconds for full run
+- **Bundle Size**: ~400KB gzipped
+- **Test Suite**: ~30 seconds for full run (92 test files)
 - **HMR Update**: <100ms
 - **Lighthouse Score**: 95+ across all metrics
 
@@ -441,7 +441,7 @@ Before deploying to production:
 
 ## Current Test Status
 
-### Skipped Test Suites (as of v3.8.0)
+### Skipped Test Suites (as of v3.9.0)
 
 These test suites are currently skipped due to CI/CD stability issues:
 
@@ -475,9 +475,9 @@ These test suites are currently skipped due to CI/CD stability issues:
 
 ## Project Statistics
 
-- **TypeScript Coverage**: 100% (138 TS/TSX source files)
-- **Component Count**: 70+ React components
-- **Test Files**: 90 test files
+- **TypeScript Coverage**: 100% (139 TS/TSX source files)
+- **Component Count**: 134 React components
+- **Test Files**: 92 test files
 - **Dependencies**: 61 packages (18 production, 43 development)
 - **Bundle Chunks**: Optimized with manual chunking:
   - `react-vendor`: React core libraries

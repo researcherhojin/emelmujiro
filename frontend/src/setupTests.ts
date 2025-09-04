@@ -283,6 +283,91 @@ vi.mock('lucide-react', () => {
 // Note: Dynamic imports are not supported in test setup files
 // CI-specific setup should be handled differently in Vite
 
+// Mock framer-motion
+vi.mock('framer-motion', () => {
+  const React = require('react');
+
+  // Create motion components that just render the element with props
+  const createMotionComponent = (element: string) => {
+    return React.forwardRef((props: any, ref: any) => {
+      const { children, ...rest } = props;
+      // Remove motion-specific props
+      const filteredProps = Object.keys(rest).reduce((acc: any, key) => {
+        if (
+          !key.startsWith('animate') &&
+          !key.startsWith('initial') &&
+          !key.startsWith('exit') &&
+          !key.startsWith('transition') &&
+          !key.startsWith('whileHover') &&
+          !key.startsWith('whileTap') &&
+          !key.startsWith('whileDrag') &&
+          !key.startsWith('whileFocus') &&
+          !key.startsWith('whileInView') &&
+          !key.startsWith('variants') &&
+          !key.startsWith('layout') &&
+          !key.startsWith('drag')
+        ) {
+          acc[key] = rest[key];
+        }
+        return acc;
+      }, {});
+
+      return React.createElement(element, { ...filteredProps, ref }, children);
+    });
+  };
+
+  return {
+    motion: new Proxy(
+      {},
+      {
+        get: (_target, prop: string) => createMotionComponent(prop),
+      }
+    ),
+    AnimatePresence: ({ children }: any) =>
+      React.createElement(React.Fragment, null, children),
+    useAnimation: () => ({
+      start: vi.fn(),
+      set: vi.fn(),
+      stop: vi.fn(),
+      mount: vi.fn(),
+    }),
+    useMotionValue: (initial: any) => ({
+      get: () => initial,
+      set: vi.fn(),
+      onChange: vi.fn(),
+      destroy: vi.fn(),
+      isAnimating: () => false,
+    }),
+    useTransform: (value: any, _inputRange: any, _outputRange: any) => value,
+    useSpring: (value: any) => value,
+    useScroll: () => ({
+      scrollX: { get: () => 0 },
+      scrollY: { get: () => 0 },
+      scrollXProgress: { get: () => 0 },
+      scrollYProgress: { get: () => 0 },
+    }),
+    useViewportScroll: () => ({
+      scrollX: { get: () => 0 },
+      scrollY: { get: () => 0 },
+      scrollXProgress: { get: () => 0 },
+      scrollYProgress: { get: () => 0 },
+    }),
+    useReducedMotion: () => false,
+    usePresence: () => [true, vi.fn()],
+    useIsPresent: () => true,
+    useAnimate: () => [null, vi.fn()],
+    useAnimationControls: () => ({
+      start: vi.fn(),
+      set: vi.fn(),
+      stop: vi.fn(),
+      mount: vi.fn(),
+    }),
+    useInView: () => true,
+    domAnimation: {},
+    LazyMotion: ({ children }: any) => children,
+  };
+});
+
 // Mock react-helmet-async to prevent classList errors
 vi.mock('react-helmet-async', () => {
   const React = require('react');
