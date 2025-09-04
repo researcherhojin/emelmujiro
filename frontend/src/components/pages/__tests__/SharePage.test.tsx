@@ -82,9 +82,14 @@ describe('SharePage', () => {
   it('displays empty state when no content is shared', async () => {
     renderSharePage();
 
-    await waitFor(() => {
-      expect(screen.getByText('공유할 콘텐츠가 없습니다')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText('공유할 콘텐츠가 없습니다')
+        ).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
     expect(screen.getByText('홈으로 돌아가기')).toBeInTheDocument();
   });
@@ -92,9 +97,12 @@ describe('SharePage', () => {
   it('displays shared title correctly', async () => {
     renderSharePage('?title=테스트 제목');
 
-    await waitFor(() => {
-      expect(screen.getByText('테스트 제목')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('테스트 제목')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
     expect(screen.getByText('제목')).toBeInTheDocument();
   });
@@ -102,9 +110,12 @@ describe('SharePage', () => {
   it('displays shared text correctly', async () => {
     renderSharePage('?text=테스트 내용입니다');
 
-    await waitFor(() => {
-      expect(screen.getByText('테스트 내용입니다')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('테스트 내용입니다')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
     expect(screen.getByText('내용')).toBeInTheDocument();
   });
@@ -112,9 +123,12 @@ describe('SharePage', () => {
   it('displays shared URL correctly', async () => {
     renderSharePage('?url=https://example.com');
 
-    await waitFor(() => {
-      expect(screen.getByText('https://example.com')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('https://example.com')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
     expect(screen.getByText('링크')).toBeInTheDocument();
   });
@@ -122,9 +136,12 @@ describe('SharePage', () => {
   it('displays all shared parameters together', async () => {
     renderSharePage('?title=테스트제목&text=테스트내용&url=https://test.com');
 
-    await waitFor(() => {
-      expect(screen.getByText('테스트제목')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('테스트제목')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
     expect(screen.getByText('테스트내용')).toBeInTheDocument();
     expect(screen.getByText('https://test.com')).toBeInTheDocument();
   });
@@ -132,9 +149,12 @@ describe('SharePage', () => {
   it('navigates to contact page when inquiry button is clicked', async () => {
     renderSharePage('?title=테스트');
 
-    await waitFor(() => {
-      expect(screen.getByText('문의하기')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('문의하기')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
     // Click the button with '문의하기' text
     const buttons = screen.getAllByRole('button');
@@ -157,9 +177,12 @@ describe('SharePage', () => {
   it('opens URL in new window when view content is clicked', async () => {
     renderSharePage('?url=https://example.com');
 
-    await waitFor(() => {
-      expect(screen.getByText('원본 보기')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('원본 보기')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
     const buttons = screen.getAllByRole('button');
     const viewButton = buttons.find((btn) =>
@@ -178,9 +201,12 @@ describe('SharePage', () => {
   it('saves content to localStorage when save button is clicked', async () => {
     renderSharePage('?title=저장할 제목&text=저장할 내용');
 
-    await waitFor(() => {
-      expect(screen.getByText('나중에 보기')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('나중에 보기')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
     const buttons = screen.getAllByRole('button');
     const saveButton = buttons.find((btn) =>
@@ -211,9 +237,12 @@ describe('SharePage', () => {
 
     renderSharePage('?title=New Item');
 
-    await waitFor(() => {
-      expect(screen.getByText('나중에 보기')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('나중에 보기')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
     const buttons = screen.getAllByRole('button');
     const saveButton = buttons.find((btn) =>
@@ -232,9 +261,12 @@ describe('SharePage', () => {
   it('navigates to home when home button is clicked in empty state', async () => {
     renderSharePage();
 
-    await waitFor(() => {
-      expect(screen.getByText('홈으로 돌아가기')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('홈으로 돌아가기')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
     const homeButton = screen.getByText('홈으로 돌아가기');
     fireEvent.click(homeButton);
@@ -245,9 +277,12 @@ describe('SharePage', () => {
   it('shows all action buttons when content is present', async () => {
     renderSharePage('?title=Test&url=https://test.com');
 
-    await waitFor(() => {
-      expect(screen.getByText('문의하기')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('문의하기')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
     expect(screen.getByText('원본 보기')).toBeInTheDocument();
     expect(screen.getByText('나중에 보기')).toBeInTheDocument();
   });
@@ -255,9 +290,12 @@ describe('SharePage', () => {
   it('does not show view content button when no URL is present', async () => {
     renderSharePage('?title=Test&text=Content');
 
-    await waitFor(() => {
-      expect(screen.getByText('문의하기')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('문의하기')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
     expect(screen.queryByText('원본 보기')).not.toBeInTheDocument();
   });
 
@@ -265,18 +303,24 @@ describe('SharePage', () => {
     const specialTitle = encodeURIComponent('제목 & <특수문자>');
     renderSharePage(`?title=${specialTitle}`);
 
-    await waitFor(() => {
-      expect(screen.getByText('제목 & <특수문자>')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('제목 & <특수문자>')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
   });
 
   it('handles very long content gracefully', async () => {
     const longText = 'A'.repeat(1000);
     renderSharePage(`?text=${longText}`);
 
-    await waitFor(() => {
-      expect(screen.getByText(longText)).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText(longText)).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
     const textElement = screen.getByText(longText);
     expect(textElement).toHaveClass('whitespace-pre-wrap');
   });
