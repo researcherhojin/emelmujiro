@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Emelmujiro (에멜무지로) is a full-stack web application for an AI Education and Consulting company. The codebase uses a monorepo structure with React/TypeScript frontend and Django backend, deployed via GitHub Pages.
 
-**Current Version**: v4.0.0 (2025.09.05)
+**Current Version**: v4.0.1 (2025.09.05)
 **Build Tool**: Vite 7.1.3 (migrated from Create React App)
 **Test Framework**: Vitest 3.2.4 (migrated from Jest)
 **Live Site**: https://researcherhojin.github.io/emelmujiro
@@ -140,33 +140,42 @@ cd frontend && npm run validate  # Runs lint, type-check, and test:coverage
 ### Frontend (Vite + React + TypeScript)
 
 **Build Configuration:**
-
-- **Vite 7.1**: Lightning-fast HMR, optimized builds
+- **Vite 7.1**: Lightning-fast HMR, optimized builds, configured in `frontend/vite.config.ts`
+  - Base path: `/emelmujiro/`
+  - Server port: 5173 (configured as 3000 in vite.config but overridden)
+  - API proxy: `/api` → `http://127.0.0.1:8000`
+  - Manual chunks for optimization (react-vendor, ui-vendor, i18n)
 - **Vitest**: Unit/integration testing with jsdom environment
+  - Configuration: `frontend/vitest.config.ts`
+  - Pool: `forks` for better isolation
+  - Timeouts: 15s (CI) / 10s (local)
+  - Single fork in CI to prevent memory issues
 - **TypeScript 5.9**: Strict mode enabled with all strict checks
-- **Path Aliases**: `@/` maps to `src/` directory
+  - Configuration: `frontend/tsconfig.json`
+  - Path alias: `@/` maps to `src/` directory
+  - Target: ES2020, Module: ESNext
 - **Entry Point**: `src/main.tsx` (not index.tsx)
 - **Tailwind CSS**: v4.1.12 with PostCSS configuration
 - **PWA**: Full Progressive Web App support with Service Worker
 
 **Application Structure:**
-
 - **Routing**: HashRouter for GitHub Pages compatibility
-- **State Management**: Zustand 5.0.8 + Context API (UIContext, BlogContext, AuthContext, FormContext)
-  - **Zustand Store**: `src/store/useAppStore.ts` with UI, Auth, Blog, Chat slices
-- **API Layer**: Centralized in `frontend/src/services/api.ts`
+- **State Management**: 
+  - **Zustand 5.0.8**: `src/store/useAppStore.ts` with UI, Auth, Blog, Chat slices
+  - **Context API**: UIContext, BlogContext, AuthContext, FormContext
+- **API Layer**: 
+  - Centralized in `frontend/src/services/api.ts`
+  - Mock API support with `VITE_USE_MOCK_API` env variable
 - **WebSocket**: `frontend/src/services/websocket.ts` for real-time features
-- **PWA**: Complete Progressive Web App implementation
-  - Service Worker with offline support in `public/service-worker-enhanced.js`
-  - Web App Manifest with shortcuts and share targets
-  - Install prompts and background sync
-  - Push notifications support
-  - App badges and Edge side panel
+- **PWA Features**:
+  - Service Worker: `public/service-worker-enhanced.js`
+  - Web App Manifest: `public/manifest.json`
+  - Install prompts, background sync, push notifications
+  - App badges and Edge side panel support
 - **i18n**: Korean/English support via react-i18next (fully configured)
 - **Analytics**: Google Analytics integration
 
 **Component Patterns:**
-
 - All components are TypeScript functional components
 - Props defined with interfaces (not type aliases)
 - Lazy loading for route-level code splitting
@@ -176,26 +185,31 @@ cd frontend && npm run validate  # Runs lint, type-check, and test:coverage
 ### Backend (Django REST Framework)
 
 **API Structure:**
-
 - Single `api` app handling all endpoints
 - JWT authentication via djangorestframework-simplejwt
-- WebSocket support via Django Channels
+- WebSocket support via Django Channels (4.3.1)
 - CORS configured for frontend integration
 - PostgreSQL support with DATABASE_URL
+- Rate limiting with django-ratelimit
 
 **Database:**
-
-- SQLite for development
+- SQLite for development (`db.sqlite3`)
 - PostgreSQL for production (via DATABASE_URL)
-- Redis for caching and WebSocket
+- Redis for caching and WebSocket (channels-redis)
+
+**Dependencies (requirements.txt):**
+- Django 5.2.5, DRF 3.16.1
+- Channels 4.3.1 for WebSocket
+- psycopg2-binary for PostgreSQL
+- gunicorn for production server
 
 ### Testing Strategy
 
 **Frontend Testing:**
-
-- **Framework**: Vitest 3.2.4 with React Testing Library
+- **Framework**: Vitest 3.2.4 with React Testing Library 16.3.0
 - **Test Files**: 92 test files across all components
-- **Patterns**: Use `renderWithProviders` for context wrapping
+- **Test Statistics**: 716 active tests, 773 skipped (52% skip rate)
+- **Patterns**: Use `renderWithProviders` from `src/test-utils/test-utils.tsx`
 - **Mocking**: Use `vi.mock()` for module mocking
 - **CI Optimization**:
   - Tests run with `pool: 'forks'` for better isolation
@@ -203,12 +217,8 @@ cd frontend && npm run validate  # Runs lint, type-check, and test:coverage
   - 15s timeout in CI, 10s locally
 - **Setup File**: `frontend/src/setupTests.ts` with comprehensive mocks
 - **Test Utils**: `frontend/src/test-utils/test-utils.tsx` provides `renderWithProviders`
-- **Known Issues**:
-  - Several test suites are currently skipped due to timing/isolation issues
-  - DOM cleanup issues between tests may cause failures
 
 **Test File Conventions:**
-
 ```typescript
 // Standard test structure
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -227,7 +237,6 @@ describe('Component', () => {
 ```
 
 **Common Mock Patterns:**
-
 ```typescript
 // Mock lucide-react icons (extensively used)
 vi.mock('lucide-react', () => ({
@@ -243,20 +252,26 @@ vi.mock('framer-motion', () => ({
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
+
+// Mock API calls
+vi.mock('@/services/api', () => ({
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+  }
+}));
 ```
 
 ### CI/CD Pipeline
 
 **GitHub Actions Workflows:**
-
-- `main-ci-cd.yml`: Full pipeline with testing, security scanning, and deployment
-- `pr-checks.yml`: Lightweight checks for pull requests
+- `.github/workflows/main-ci-cd.yml`: Full pipeline with testing, security scanning, and deployment
+- `.github/workflows/pr-checks.yml`: Lightweight checks for pull requests
 - Automatic deployment to GitHub Pages on main branch push
 - Docker image builds to GitHub Container Registry
 - Memory optimization with NODE_OPTIONS='--max-old-space-size=4096'
 
 **Additional CI Tools:**
-
 - Dependabot for dependency updates
 - CodeQL for security analysis
 - GitLab CI support (`.gitlab-ci.yml`)
@@ -265,7 +280,6 @@ vi.mock('framer-motion', () => ({
 ## Key Development Patterns
 
 ### Component Pattern
-
 ```typescript
 interface ComponentProps {
   title: string;
@@ -285,7 +299,6 @@ export default Component;
 ```
 
 ### API Integration Pattern
-
 ```typescript
 import api from '@/services/api';
 
@@ -301,7 +314,6 @@ const fetchData = async () => {
 ```
 
 ### Testing Pattern with Providers
-
 ```typescript
 import { renderWithProviders } from '@/test-utils/test-utils';
 import { describe, it, expect, vi } from 'vitest';
@@ -323,7 +335,6 @@ describe('Component', () => {
 ```
 
 ### Mock Pattern for Vitest
-
 ```typescript
 // Mock external modules
 vi.mock('lucide-react', () => ({
@@ -347,55 +358,111 @@ vi.mock('@/services/api', () => ({
 
 ## Important Configuration Files
 
-- **Monorepo**: `package.json` - Root package with workspaces configuration
-- **Vite Config**: `frontend/vite.config.ts` - Build configuration with chunking strategy
+### Monorepo Structure
+- **Root**: `package.json` - Workspaces configuration with frontend workspace
+- **Scripts**: `scripts/` directory with helper scripts:
+  - `kill-ports.sh`: Clean up running processes
+  - `docker-build.sh`: Build Docker images
+  - `pre-deploy-check.sh`: Pre-deployment validation
+  - `start-dev.sh`: Start development environment
+
+### Frontend Configuration
+- **Vite Config**: `frontend/vite.config.ts` - Build configuration
   - Base path: `/emelmujiro/`
-  - Server port: 5173
+  - Server port: 5173 (configured as 3000 but overridden)
   - API proxy: `/api` → `http://127.0.0.1:8000`
-  - Manual chunks for optimization
+  - Manual chunks: react-vendor, ui-vendor, i18n
+  - PWA plugin configuration
 - **Vitest Config**: `frontend/vitest.config.ts` - Test configuration
   - Pool: `forks` for better isolation
   - Timeouts: 15s (CI) / 10s (local)
   - Single fork in CI to prevent memory issues
 - **TypeScript**: `frontend/tsconfig.json` - Strict mode with path aliases
+  - Target: ES2020, Module: ESNext
+  - Path alias: `@/` → `./src`
+  - Strict mode enabled
 - **ESLint**: `frontend/eslint.config.mjs` - Flat config with React/TypeScript rules
 - **Tailwind**: `frontend/tailwind.config.js` - Custom theme and utilities
-- **Docker**: `docker-compose.yml` - Multi-service orchestration
-- **CI/CD**: `.github/workflows/main-ci-cd.yml` - Automated pipeline
-- **PWA Manifest**: `frontend/public/manifest.json` - PWA configuration
 - **Test Setup**: `frontend/src/setupTests.ts` - Global test configuration
 - **Test Utils**: `frontend/src/test-utils/test-utils.tsx` - Testing helpers
+
+### Backend Configuration
+- **Django Settings**: `backend/config/settings.py`
+- **Requirements**: `backend/requirements.txt` - 20 Python packages
+- **Environment**: `.env.example` for configuration template
+
+### CI/CD Configuration
+- **GitHub Actions**: `.github/workflows/main-ci-cd.yml` - Automated pipeline
+- **PR Checks**: `.github/workflows/pr-checks.yml` - Pull request validation
+- **Docker**: `docker-compose.yml` - Multi-service orchestration
+- **PWA Manifest**: `frontend/public/manifest.json` - PWA configuration
 
 ## Common Issues & Solutions
 
 ### Vitest Test Failures
 
-- Use `CI=true npm test -- --run` for single run mode
-- Check mock implementations match component expectations
-- Ensure `renderWithProviders` is used for components needing context
-- Common issues:
-  - Multiple elements found: Use `getAllBy*()[0]` instead of `getBy*`
-  - Timeout errors: Consider skipping with `test.skip` or `describe.skip`
-  - DOM not cleaned up: Previous tests' elements may interfere
-  - Style property errors: Use `querySelector` instead of `getByRole` when needed
-- Currently skipped test suites:
-  - WebVitalsDashboard: Multiple sections due to rendering issues
-  - ContactPage: Form validation and submission timeouts
-  - SkeletonScreen: One integration test with cleanup issues
+**Multiple elements found error:**
+```typescript
+// Problem: Multiple elements with same test ID
+// Solution: Use getAllBy* and select first
+const buttons = getAllByRole('button');
+fireEvent.click(buttons[0]);
+```
+
+**Style property errors:**
+```typescript
+// Problem: style.getPropertyValue errors with getByRole
+// Solution: Skip test in CI or use alternative queries
+const itSkipInCI = process.env.CI === 'true' ? it.skip : it;
+itSkipInCI('test using getByRole', () => {
+  // test code
+});
+```
+
+**Timeout errors:**
+```typescript
+// Problem: Async operations timing out
+// Solution: Increase timeout or use waitFor with longer timeout
+it('async test', async () => {
+  // test code
+}, 30000); // 30s timeout
+
+// Or use waitFor with options
+await waitFor(() => {
+  expect(element).toBeInTheDocument();
+}, { timeout: 5000 });
+```
+
+**DOM cleanup issues:**
+- Previous tests' elements may interfere
+- Ensure proper cleanup in afterEach
+- Consider using `test.skip` for problematic tests
 
 ### TypeScript Errors
 
-- Run `npm run type-check` to identify issues
-- Check for missing type definitions in `@types/` packages
-- Verify path aliases resolve correctly
-- Common issue: JSX element type errors - ensure React imports are correct
+```bash
+# Check for TypeScript errors
+cd frontend && npm run type-check
+
+# Common fixes:
+# - Check for missing type definitions in @types/ packages
+# - Verify path aliases resolve correctly
+# - Ensure React imports are correct for JSX elements
+```
 
 ### Build Issues
 
-- Clear cache: `rm -rf frontend/node_modules frontend/dist`
-- Reinstall: `cd frontend && npm ci`
-- Check for conflicting dependencies with `npm ls`
-- Vite cache issues: `rm -rf frontend/node_modules/.vite`
+```bash
+# Clear cache and reinstall
+rm -rf frontend/node_modules frontend/dist frontend/node_modules/.vite
+cd frontend && npm ci
+
+# Check for conflicting dependencies
+npm ls
+
+# Verify build locally before pushing
+cd frontend && npm run build && npm run preview
+```
 
 ### Port Conflicts
 
@@ -446,54 +513,37 @@ Before deploying to production:
 
 ## Current Test Status
 
-### v4.0.0 CI/CD Achievements
+### v4.0.1 CI/CD Achievements
 
 **Major Improvements:**
-
 - **Test Recovery**: 173 tests recovered from 223 skipped (77.6% recovery rate)
 - **TypeScript Errors**: Reduced from 27 to 0 (100% resolution)
 - **CI/CD Pipeline**: All stages now passing (Backend, Frontend, Build, Docker, Deploy)
 - **Test Statistics**: 716 active tests, 773 skipped (from 1,489 total)
 - **Docker Build**: Fixed build path issue (dist → build)
 
-### Skipped Test Suites (as of v4.0.0)
+### Skipped Test Suites (as of v4.0.1)
 
 Currently 50 test suites remain skipped for CI stability (down from 223):
 
-1. **WebVitalsDashboard** (`src/components/common/__tests__/WebVitalsDashboard.test.tsx`)
-   - Production Mode Behavior
-   - Web Vitals Integration
-   - Metric Rating System
-   - Dashboard Content and Layout
-   - CSS Classes and Styling
-   - Accessibility
-
-2. **ContactPage** (`src/components/pages/__tests__/ContactPage.test.tsx`)
-   - Form Validation (entire describe block)
-   - Form Submission (entire describe block)
-   - Online/Offline Status
-   - Individual test: "renders contact form with all fields"
-
-3. **SkeletonScreen** (`src/components/common/__tests__/SkeletonScreen.test.tsx`)
-   - Component Integration: "can be used as a loading state placeholder"
-
-4. **Other Individual Tests**
-   - accessibility.test.ts: "should handle accessibility announcements with focus management"
-   - Footer.test.tsx: Accessibility modal test
-   - FileUpload.test.tsx: "shows success message after upload" (CI timeout issue)
-   - ProfilePage.test.tsx: "renders profile description", "switches to projects tab"
-   - AboutPage.test.tsx: "renders contact CTA section", "has contact button that can be clicked"
-   - AboutSection.test.tsx: "uses proper semantic HTML"
-   - Button.test.tsx: "applies primary variant by default"
-   - QuickReplies.test.tsx: "applies correct color classes to buttons", "renders in a 2-column grid layout"
+**Major Skip Categories:**
+1. **WebVitalsDashboard**: Multiple rendering and style issues
+2. **ContactPage**: Form validation and submission timeouts
+3. **SkeletonScreen**: Component integration cleanup issues
+4. **File Upload Tests**: Upload simulation timeouts
+5. **getByRole Query Tests**: style.getPropertyValue errors
 
 ### Common Test Issues
 
 **style.getPropertyValue Errors:**
-
 - Caused by dom-accessibility-api when using `getByRole` queries
 - Affected queries: `getByRole('button')`, `getByRole('heading')`, `getByRole('tab')`
 - Solution: Tests using these queries have been skipped for CI stability
+
+**Timeout Issues:**
+- IndexedDB operations in backgroundSync tests
+- Component lifecycle timeouts in SharePage tests
+- Form submission timeouts in ContactPage tests
 
 ### Testing Best Practices for This Codebase
 
@@ -501,6 +551,7 @@ Currently 50 test suites remain skipped for CI stability (down from 223):
 2. **Timeout Issues**: Set appropriate timeouts or skip problematic tests in CI
 3. **DOM Cleanup**: Be aware that previous tests may leave DOM elements that interfere with subsequent tests
 4. **Mock Consistency**: Ensure all lucide-react icons and framer-motion components are properly mocked
+5. **Use renderWithProviders**: For components needing context, always use the helper from `@/test-utils/test-utils`
 
 ## Project Statistics
 
@@ -509,14 +560,11 @@ Currently 50 test suites remain skipped for CI stability (down from 223):
 - **Test Files**: 92 test files (716 active, 773 skipped from 1,489 total)
 - **Dependencies**: 61 packages (18 production, 43 development)
 - **Bundle Size**: ~400KB gzipped
-- **Bundle Chunks**: Optimized with manual chunking:
-  - `react-vendor`: React core libraries
-  - `ui-vendor`: UI libraries (framer-motion, lucide-react)
-  - `i18n`: Internationalization libraries
+- **Bundle Chunks**: Optimized with manual chunking
 - **React Version**: 19.1.1
 - **TypeScript Version**: 5.9.2
 - **Python Files**: 23 files (Django backend)
-- **CI/CD Status**: ✅ Fully stable (v4.0.0)
+- **CI/CD Status**: ✅ Fully stable (v4.0.1)
 - **Lighthouse Score**: 95+ across all metrics
 
 ## Current Development Priorities
@@ -529,7 +577,7 @@ Currently 50 test suites remain skipped for CI stability (down from 223):
    - Configure Redis for caching/WebSocket
    - Update `VITE_API_URL` and `VITE_USE_MOCK_API=false`
 
-2. **Remaining Test Recovery**: 50 test suites still skipped
+2. **Remaining Test Recovery**: 50 test suites still skipped (773 tests)
    - Focus on waitFor timeout issues
    - Resolve getByRole query problems
    - Fix form validation timeouts
@@ -568,7 +616,6 @@ Currently 50 test suites remain skipped for CI stability (down from 223):
 If tests fail in CI but pass locally:
 
 1. **Check for style.getPropertyValue errors**:
-
    ```typescript
    // Skip problematic test in CI
    const itSkipInCI = process.env.CI === 'true' ? it.skip : it;
@@ -578,7 +625,6 @@ If tests fail in CI but pass locally:
    ```
 
 2. **For timeout issues with IndexedDB**:
-
    ```typescript
    // Increase timeout or skip
    it('test with IndexedDB', async () => {
@@ -588,10 +634,54 @@ If tests fail in CI but pass locally:
 
 3. **Emergency fix to unblock CI**:
    ```bash
-   # Skip all failing test files temporarily
+   # Skip specific test files temporarily
    cd frontend
-   for file in backgroundSync SharePage FileUpload BlogEditor ProfilePage EmojiPicker; do
-     sed -i "1s/^/if (process.env.CI === 'true') { describe.skip('$file', () => {}); } else {\n/" src/**/__tests__/$file.test.tsx
-     echo "}" >> src/**/__tests__/$file.test.tsx
-   done
+   ./scripts/skip-problematic-tests.sh
    ```
+
+## Environment Variables
+
+### Frontend (.env files)
+```bash
+# Required for production
+VITE_API_URL=https://api.emelmujiro.com  # Backend API URL
+VITE_WS_URL=wss://api.emelmujiro.com/ws  # WebSocket URL
+VITE_USE_MOCK_API=false                  # Use real API in production
+VITE_GA_TRACKING_ID=G-XXXXXXXXXX         # Google Analytics
+
+# Optional
+VITE_SENTRY_DSN=https://...              # Sentry error tracking
+VITE_PUBLIC_URL=/emelmujiro              # Base URL for routing
+```
+
+### Backend (.env files)
+```bash
+# Django settings
+SECRET_KEY=your-secret-key
+DEBUG=False
+ALLOWED_HOSTS=api.emelmujiro.com
+
+# Database
+DATABASE_URL=postgresql://user:pass@host:port/dbname
+
+# Redis (for caching and WebSocket)
+REDIS_URL=redis://localhost:6379
+
+# CORS
+CORS_ALLOWED_ORIGINS=https://researcherhojin.github.io
+```
+
+## Useful Scripts
+
+### Frontend Scripts (`frontend/scripts/`)
+- `generate-sitemap.js`: Generate sitemap for SEO
+- `optimize-images.js`: Optimize images for production
+- `skip-problematic-tests.sh`: Skip failing tests in CI
+- `skip-all-async-tests.sh`: Emergency CI fix
+
+### Root Scripts (`scripts/`)
+- `kill-ports.sh`: Kill all development server processes
+- `docker-build.sh`: Build and optionally push Docker images
+- `pre-deploy-check.sh`: Comprehensive pre-deployment validation
+- `start-dev.sh`: Start development environment with Docker
+- `check-ports.sh`: Check if default ports are in use
