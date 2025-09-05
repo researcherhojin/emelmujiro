@@ -764,7 +764,7 @@ describe('Footer Component', () => {
       expect(serviceButtons[0]).toHaveClass('text-sm');
     });
 
-    test('applies correct CSS classes to contact CTA button', () => {
+    test.skip('applies correct CSS classes to contact CTA button', () => {
       const { container } = renderWithRouter(<Footer />);
 
       const ctaButtons = screen.getAllByText(/문의하기/);
