@@ -256,7 +256,7 @@ if (process.env.CI === 'true') {
           const handler = vi.fn();
           wsService.on('test', handler);
 
-          wsService.emit.skip('test', { data: 'test' });
+          wsService.emit('test', { data: 'test' });
           expect(handler).toHaveBeenCalledWith({ data: 'test' });
         });
 
@@ -265,7 +265,7 @@ if (process.env.CI === 'true') {
           wsService.on('test', handler);
           wsService.off('test', handler);
 
-          wsService.emit.skip('test', { data: 'test' });
+          wsService.emit('test', { data: 'test' });
           expect(handler).not.toHaveBeenCalled();
         });
 
@@ -276,7 +276,7 @@ if (process.env.CI === 'true') {
           wsService.on('test', handler1);
           wsService.on('test', handler2);
 
-          wsService.emit.skip('test', { data: 'test' });
+          wsService.emit('test', { data: 'test' });
 
           expect(handler1).toHaveBeenCalled();
           expect(handler2).toHaveBeenCalled();
@@ -286,8 +286,8 @@ if (process.env.CI === 'true') {
           const handler = vi.fn();
           wsService.once('test', handler);
 
-          wsService.emit.skip('test', { data: 'first' });
-          wsService.emit.skip('test', { data: 'second' });
+          wsService.emit('test', { data: 'first' });
+          wsService.emit('test', { data: 'second' });
 
           expect(handler).toHaveBeenCalledTimes(1);
           expect(handler).toHaveBeenCalledWith({ data: 'first' });
