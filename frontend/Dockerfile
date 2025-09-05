@@ -31,8 +31,8 @@ RUN apk update && apk upgrade
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Copy built files from builder stage (Vite outputs to dist/)
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy built files from builder stage (Vite outputs to build/)
+COPY --from=builder /app/build /usr/share/nginx/html
 
 # Set proper permissions (nginx user already exists in nginx:alpine image)
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
