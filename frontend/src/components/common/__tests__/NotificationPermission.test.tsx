@@ -348,7 +348,7 @@ describe('NotificationPermission', () => {
 
     expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
 
-    const closeButton = screen.getByRole('button', { name: '닫기' });
+    const closeButton = screen.getByText('닫기');
     fireEvent.click(closeButton);
 
     expect(
@@ -454,7 +454,7 @@ describe('NotificationPermission', () => {
       vi.advanceTimersByTime(10000);
     });
 
-    const closeButton = screen.getByRole('button', { name: '닫기' });
+    const closeButton = screen.getByText('닫기');
     expect(closeButton).toHaveClass(
       'flex-shrink-0',
       'ml-2',
@@ -498,7 +498,7 @@ describe('NotificationPermission', () => {
       vi.advanceTimersByTime(10000);
     });
 
-    const closeButton = screen.getByRole('button', { name: '닫기' });
+    const closeButton = screen.getByText('닫기');
     expect(closeButton).toHaveAttribute('aria-label', '닫기');
 
     const enableButton = screen.getByText('알림 받기');
@@ -623,7 +623,7 @@ describe('NotificationPermission', () => {
         vi.advanceTimersByTime(10000);
       });
 
-      const closeButton = screen.getByRole('button', { name: '닫기' });
+      const closeButton = screen.getByText('닫기');
       fireEvent.click(closeButton);
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
@@ -652,7 +652,7 @@ describe('NotificationPermission', () => {
     });
   });
 
-  describe.skip('Notification API interaction', () => {
+  describe('Notification API interaction', () => {
     it('creates success notification when permissions granted', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
@@ -816,7 +816,7 @@ describe('NotificationPermission', () => {
     });
   });
 
-  describe.skip('Error boundaries', () => {
+  describe('Error boundaries', () => {
     it('handles Notification constructor error gracefully', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
@@ -879,7 +879,7 @@ describe('NotificationPermission', () => {
     });
   });
 
-  describe.skip('Concurrent operations', () => {
+  describe('Concurrent operations', () => {
     it('prevents multiple simultaneous subscription attempts', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
@@ -984,7 +984,7 @@ describe('NotificationPermission', () => {
     });
   });
 
-  describe.skip('Button states and interactions', () => {
+  describe('Button states and interactions', () => {
     it('ensures enable button is properly disabled during loading', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);

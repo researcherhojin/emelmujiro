@@ -182,7 +182,7 @@ describe('backgroundSync', () => {
       );
     });
 
-    it.skip('should register sync successfully with data', async () => {
+    it('should register sync successfully with data', async () => {
       const testData = { message: 'test data' };
 
       // Mock successful IndexedDB operations
@@ -227,7 +227,7 @@ describe('backgroundSync', () => {
       );
     });
 
-    it.skip('should handle IndexedDB storage errors', async () => {
+    it('should handle IndexedDB storage errors', async () => {
       const testData = { message: 'test data' };
 
       // Mock IndexedDB error
@@ -241,7 +241,7 @@ describe('backgroundSync', () => {
     });
   });
 
-  describe.skip('getSyncData', () => {
+  describe('getSyncData', () => {
     it('should retrieve sync data successfully', async () => {
       const testData = {
         tag: 'test-sync',
@@ -308,7 +308,7 @@ describe('backgroundSync', () => {
     });
   });
 
-  describe.skip('clearSyncData', () => {
+  describe('clearSyncData', () => {
     it('should clear sync data successfully', async () => {
       // Mock successful IndexedDB operations
       setTimeout(() => {
@@ -354,7 +354,7 @@ describe('backgroundSync', () => {
     });
   });
 
-  describe.skip('queueFailedRequest', () => {
+  describe('queueFailedRequest', () => {
     it('should queue failed request with correct data structure', async () => {
       const url = '/api/test';
       const options = {
@@ -395,7 +395,7 @@ describe('backgroundSync', () => {
     });
   });
 
-  describe.skip('IndexedDB database upgrade', () => {
+  describe('IndexedDB database upgrade', () => {
     it('should create object store on database upgrade', async () => {
       mockDatabase.objectStoreNames.contains.mockReturnValue(false);
 
@@ -452,7 +452,7 @@ describe('backgroundSync', () => {
       expect(mockRegistration.sync.register).toHaveBeenCalledWith('sync-3');
     });
 
-    it.skip('should handle sync with complex data objects', async () => {
+    it('should handle sync with complex data objects', async () => {
       const complexData = {
         user: { id: 1, name: 'Test User' },
         form: {

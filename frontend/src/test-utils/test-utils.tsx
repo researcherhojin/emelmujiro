@@ -164,6 +164,17 @@ export * from '@testing-library/react';
 // Export user event
 export { default as userEvent } from '@testing-library/user-event';
 
+// Export test helpers (excluding waitFor to avoid conflict)
+export {
+  safeGetByRole,
+  findButton,
+  findHeading,
+  waitForElement,
+  mockIntersectionObserver,
+  mockResizeObserver,
+  setupCommonMocks,
+} from './test-helpers';
+
 // Test data factories
 export const createMockBlogPost = (overrides = {}) => ({
   id: '1',

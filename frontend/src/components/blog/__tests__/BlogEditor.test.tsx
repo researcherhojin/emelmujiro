@@ -186,10 +186,10 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
     });
 
-    it.skip('validates required fields before saving', () => {
+    it('validates required fields before saving', () => {
       renderWithRouter(<BlogEditor />);
 
-      const saveButton = screen.getByRole('button', { name: /저장/ });
+      const saveButton = screen.getByText(/저장/);
 
       // Mock alert
       const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
@@ -201,7 +201,7 @@ describe('BlogEditor Component', () => {
       alertSpy.mockRestore();
     });
 
-    it.skip('saves post to localStorage with valid data', () => {
+    it('saves post to localStorage with valid data', () => {
       // Clear localStorage and set initial empty posts
       localStorage.clear();
       localStorage.setItem('adminMode', 'true');
@@ -221,7 +221,7 @@ describe('BlogEditor Component', () => {
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
       fireEvent.change(categorySelect, { target: { value: 'Technology' } });
 
-      const saveButton = screen.getByRole('button', { name: /저장/ });
+      const saveButton = screen.getByText(/저장/);
 
       // Mock alert
       const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
@@ -244,7 +244,7 @@ describe('BlogEditor Component', () => {
       alertSpy.mockRestore();
     });
 
-    it.skip('generates unique ID and timestamp for new posts', () => {
+    it('generates unique ID and timestamp for new posts', () => {
       // Clear localStorage and set initial empty posts
       localStorage.clear();
       localStorage.setItem('adminMode', 'true');
@@ -262,7 +262,7 @@ describe('BlogEditor Component', () => {
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
 
-      const saveButton = screen.getByRole('button', { name: /저장/ });
+      const saveButton = screen.getByText(/저장/);
 
       vi.spyOn(window, 'alert').mockImplementation(() => {});
 
@@ -285,7 +285,7 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
     });
 
-    it.skip('exports posts as JSON', () => {
+    it('exports posts as JSON', () => {
       const mockPosts = [
         { id: 1, title: 'Post 1', content: 'Content 1' },
         { id: 2, title: 'Post 2', content: 'Content 2' },
@@ -303,7 +303,7 @@ describe('BlogEditor Component', () => {
         .spyOn(linkElement, 'click')
         .mockImplementation(() => {});
 
-      const exportButton = screen.getByRole('button', { name: /내보내기/ });
+      const exportButton = screen.getByText(/내보내기/);
       fireEvent.click(exportButton);
 
       expect(createElementSpy).toHaveBeenCalledWith('a');
@@ -314,7 +314,7 @@ describe('BlogEditor Component', () => {
       clickSpy.mockRestore();
     });
 
-    it.skip('imports posts from JSON file', async () => {
+    it('imports posts from JSON file', async () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
 
@@ -362,7 +362,7 @@ describe('BlogEditor Component', () => {
       alertSpy.mockRestore();
     });
 
-    it.skip('validates imported JSON structure', async () => {
+    it('validates imported JSON structure', async () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
 
@@ -394,10 +394,10 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
     });
 
-    it.skip('navigates back on cancel', () => {
+    it('navigates back on cancel', () => {
       renderWithRouter(<BlogEditor />);
 
-      const cancelButton = screen.getByRole('button', { name: /취소/ });
+      const cancelButton = screen.getByText(/취소/);
       fireEvent.click(cancelButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('/blog');

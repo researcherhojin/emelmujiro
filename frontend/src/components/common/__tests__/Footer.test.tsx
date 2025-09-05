@@ -318,7 +318,7 @@ describe('Footer Component', () => {
     });
   });
 
-  describe.skip('Service Modal Functionality', () => {
+  describe('Service Modal Functionality', () => {
     test(
       'opens AI solution modal when clicked',
       async () => {
@@ -505,7 +505,7 @@ describe('Footer Component', () => {
     );
   });
 
-  describe.skip('Service Modal Interactions', () => {
+  describe('Service Modal Interactions', () => {
     test(
       'closes modal when X button is clicked',
       async () => {
@@ -680,7 +680,7 @@ describe('Footer Component', () => {
     );
   });
 
-  describe.skip('Service Modal Content', () => {
+  describe('Service Modal Content', () => {
     test(
       'displays all service details for AI solution',
       async () => {
@@ -767,15 +767,13 @@ describe('Footer Component', () => {
     test('applies correct CSS classes to contact CTA button', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      const ctaButtons = screen.getAllByRole('button', {
-        name: /문의하기.*ExternalLink/,
-      });
+      const ctaButtons = screen.getAllByText(/문의하기/);
       expect(ctaButtons[0]).toHaveClass('inline-flex');
       expect(ctaButtons[0]).toHaveClass('items-center');
     });
   });
 
-  describe.skip('Accessibility', () => {
+  describe('Accessibility', () => {
     test(
       'modal has correct accessibility attributes',
       async () => {

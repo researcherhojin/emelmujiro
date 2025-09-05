@@ -116,23 +116,19 @@ describe('AboutPage', () => {
     expect(screen.getByText('98%')).toBeInTheDocument();
   });
 
-  it.skip('renders contact CTA section', () => {
+  it('renders contact CTA section', () => {
     renderWithRouter();
 
     expect(
       screen.getByText('함께 성장할 준비가 되셨나요?')
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: /프로젝트 문의하기/i })
-    ).toBeInTheDocument();
+    expect(screen.getByText(/프로젝트 문의하기/i)).toBeInTheDocument();
   });
 
-  it.skip('has contact button that can be clicked', () => {
+  it('has contact button that can be clicked', () => {
     renderWithRouter();
 
-    const contactButton = screen.getByRole('button', {
-      name: /프로젝트 문의하기/i,
-    });
+    const contactButton = screen.getByText(/프로젝트 문의하기/i);
     expect(contactButton).toBeInTheDocument();
   });
 

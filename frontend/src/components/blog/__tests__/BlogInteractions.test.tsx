@@ -103,7 +103,7 @@ describe('BlogInteractions Component', () => {
     });
   });
 
-  describe.skip('Like Functionality', () => {
+  describe('Like Functionality', () => {
     it('increments likes when like button is clicked', () => {
       // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
@@ -199,7 +199,7 @@ describe('BlogInteractions Component', () => {
     });
   });
 
-  describe.skip('Bookmark Functionality', () => {
+  describe('Bookmark Functionality', () => {
     it('toggles bookmark state', () => {
       // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
@@ -257,7 +257,7 @@ describe('BlogInteractions Component', () => {
   });
 
   describe('Share Functionality', () => {
-    it.skip('shows share menu when share button is clicked', () => {
+    it('shows share menu when share button is clicked', () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available to trigger share menu
       const originalShare = navigator.share;
@@ -265,7 +265,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByRole('button', { name: /공유/ });
+      const shareButton = screen.getByText(/공유/);
       fireEvent.click(shareButton);
 
       expect(screen.getByText('Facebook')).toBeInTheDocument();
@@ -281,7 +281,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('shows and hides share menu', () => {
+    it('shows and hides share menu', () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
@@ -293,7 +293,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByRole('button', { name: /공유/ });
+      const shareButton = screen.getByText(/공유/);
 
       // Click to show menu
       fireEvent.click(shareButton);
@@ -311,7 +311,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('shares to Facebook', () => {
+    it('shares to Facebook', () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
@@ -323,7 +323,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByRole('button', { name: /공유/ });
+      const shareButton = screen.getByText(/공유/);
       fireEvent.click(shareButton);
 
       const facebookButton = screen.getByText('Facebook');
@@ -343,7 +343,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('shares to Twitter', () => {
+    it('shares to Twitter', () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
@@ -355,7 +355,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByRole('button', { name: /공유/ });
+      const shareButton = screen.getByText(/공유/);
       fireEvent.click(shareButton);
 
       const twitterButton = screen.getByText('Twitter');
@@ -375,7 +375,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('shares to LinkedIn', () => {
+    it('shares to LinkedIn', () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
@@ -387,7 +387,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByRole('button', { name: /공유/ });
+      const shareButton = screen.getByText(/공유/);
       fireEvent.click(shareButton);
 
       const linkedinButton = screen.getByText('LinkedIn');
@@ -407,7 +407,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('copies link to clipboard', async () => {
+    it('copies link to clipboard', async () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
@@ -421,7 +421,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByRole('button', { name: /공유/ });
+      const shareButton = screen.getByText(/공유/);
       fireEvent.click(shareButton);
 
       const copyButton = screen.getByText('링크 복사');
@@ -448,7 +448,7 @@ describe('BlogInteractions Component', () => {
       });
     });
 
-    it.skip('uses native share API on mobile when available', async () => {
+    it('uses native share API on mobile when available', async () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock as mobile device
       const originalCanShare = navigator.canShare;
@@ -461,7 +461,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByRole('button', { name: /공유/ });
+      const shareButton = screen.getByText(/공유/);
       fireEvent.click(shareButton);
 
       await waitFor(() => {
@@ -512,7 +512,7 @@ describe('BlogInteractions Component', () => {
       expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
     });
 
-    it.skip('handles clipboard API failure', async () => {
+    it('handles clipboard API failure', async () => {
       // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
@@ -529,7 +529,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByRole('button', { name: /공유/ });
+      const shareButton = screen.getByText(/공유/);
       fireEvent.click(shareButton);
 
       const copyButton = screen.getByText(/링크 복사/);

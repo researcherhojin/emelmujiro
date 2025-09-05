@@ -66,7 +66,7 @@ describe('WebVitalsDashboard - Improved', () => {
     delete window.gtag;
   });
 
-  describe.skip('Basic Rendering', () => {
+  describe('Basic Rendering', () => {
     it('renders toggle button in development mode', () => {
       render(<WebVitalsDashboard />);
 
@@ -101,7 +101,7 @@ describe('WebVitalsDashboard - Improved', () => {
     });
   });
 
-  describe.skip('Metrics Collection', () => {
+  describe('Metrics Collection', () => {
     it('collects and displays CLS metric', async () => {
       render(<WebVitalsDashboard />);
 
@@ -199,7 +199,7 @@ describe('WebVitalsDashboard - Improved', () => {
     });
   });
 
-  describe.skip('Analytics Integration', () => {
+  describe('Analytics Integration', () => {
     it('sends metrics to Google Analytics when available', async () => {
       render(<WebVitalsDashboard />);
 
@@ -233,7 +233,7 @@ describe('WebVitalsDashboard - Improved', () => {
     });
   });
 
-  describe.skip('Keyboard Shortcuts', () => {
+  describe('Keyboard Shortcuts', () => {
     it('toggles dashboard with Ctrl+Shift+V', async () => {
       render(<WebVitalsDashboard />);
 

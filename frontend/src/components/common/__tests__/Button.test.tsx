@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import Button from '../Button';
@@ -15,7 +15,7 @@ describe('Button Component', () => {
   });
 
   describe('Variants', () => {
-    it.skip('applies primary variant by default', () => {
+    it('applies primary variant by default', () => {
       render(<Button>Primary</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveClass('bg-gray-900');

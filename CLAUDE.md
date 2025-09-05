@@ -146,7 +146,7 @@ cd frontend && npm run validate  # Runs lint, type-check, and test:coverage
 - **TypeScript 5.9**: Strict mode enabled with all strict checks
 - **Path Aliases**: `@/` maps to `src/` directory
 - **Entry Point**: `src/main.tsx` (not index.tsx)
-- **Tailwind CSS**: v3.4.17 with PostCSS configuration
+- **Tailwind CSS**: v4.1.12 with PostCSS configuration
 - **PWA**: Full Progressive Web App support with Service Worker
 
 **Application Structure:**
@@ -497,7 +497,7 @@ These test suites are currently skipped due to CI/CD stability issues (212 tests
 - **TypeScript Coverage**: 100% (238 TS/TSX files)
 - **Component Count**: 156 React components (TSX files)
 - **Test Files**: 92 test files (851 passing, 212 skipped)
-- **Dependencies**: 61 packages (18 production, 43 development)
+- **Dependencies**: 61 packages (24 production, 43 development)
 - **Bundle Size**: ~400KB gzipped
 - **Bundle Chunks**: Optimized with manual chunking:
   - `react-vendor`: React core libraries

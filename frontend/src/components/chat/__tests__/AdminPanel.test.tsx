@@ -1,6 +1,6 @@
 import React from 'react';
 import { vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import AdminPanel from '../AdminPanel';
 import { UIProvider } from '../../../contexts/UIContext';
@@ -227,7 +227,7 @@ describe('AdminPanel', () => {
       expect(panel).toBeNull();
     });
 
-    it.skip('renders all navigation tabs', () => {
+    it('renders all navigation tabs', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Get all tabs - in StrictMode or CI, components might render twice
@@ -262,7 +262,7 @@ describe('AdminPanel', () => {
       expect(welcomeMessages.length).toBeGreaterThan(0);
     });
 
-    it.skip('switches to canned responses tab', () => {
+    it('switches to canned responses tab', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find the canned responses tab and click it
@@ -278,7 +278,7 @@ describe('AdminPanel', () => {
       ).toBeInTheDocument();
     });
 
-    it.skip('switches to statistics tab', () => {
+    it('switches to statistics tab', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find and click the statistics tab
@@ -292,7 +292,7 @@ describe('AdminPanel', () => {
       expect(screen.getByTestId('total-messages-count')).toBeInTheDocument();
     });
 
-    it.skip('switches to users tab', () => {
+    it('switches to users tab', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find and click the users tab
@@ -375,7 +375,7 @@ describe('AdminPanel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       // Find and click save button - use getAllByRole since there might be multiple
-      const saveButtons = screen.getAllByRole('button', { name: /설정 저장/i });
+      const saveButtons = screen.getAllByText(/설정 저장/i);
       fireEvent.click(saveButtons[0]);
 
       // Check if notification was triggered
@@ -728,7 +728,7 @@ describe('AdminPanel', () => {
       expect(true).toBe(true);
     });
 
-    it.skip('announces tab changes to screen readers', () => {
+    it('announces tab changes to screen readers', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       const cannedTabs = screen.getAllByRole('tab', { name: /자동 응답/ });

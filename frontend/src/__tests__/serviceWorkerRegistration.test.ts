@@ -196,7 +196,7 @@ describe('serviceWorkerRegistration', () => {
       expect(mockRegister).not.toHaveBeenCalled();
     });
 
-    it.skip('should register service worker on localhost with valid config', async () => {
+    it('should register service worker on localhost with valid config', async () => {
       const mockRegister = vi
         .fn()
         .mockResolvedValue(mockServiceWorkerRegistration);
@@ -226,7 +226,7 @@ describe('serviceWorkerRegistration', () => {
       expect(mockRegister).toHaveBeenCalledWith('/service-worker-enhanced.js');
     });
 
-    it.skip('should register service worker on non-localhost', async () => {
+    it('should register service worker on non-localhost', async () => {
       Object.defineProperty(window, 'location', {
         writable: true,
         value: {
@@ -263,7 +263,7 @@ describe('serviceWorkerRegistration', () => {
       expect(mockRegister).toHaveBeenCalledWith('/service-worker-enhanced.js');
     });
 
-    it.skip(
+    it(
       'should handle service worker registration errors',
       { timeout: 10000 },
       async () => {
@@ -314,7 +314,7 @@ describe('serviceWorkerRegistration', () => {
       }
     );
 
-    it.skip('should handle service worker update found scenario', async () => {
+    it('should handle service worker update found scenario', async () => {
       // Set location to non-localhost to avoid ready promise log
       Object.defineProperty(window, 'location', {
         writable: true,
@@ -384,7 +384,7 @@ describe('serviceWorkerRegistration', () => {
       expect(onUpdate).toHaveBeenCalledWith(mockRegistration);
     });
 
-    it.skip('should handle service worker success scenario (no existing controller)', async () => {
+    it('should handle service worker success scenario (no existing controller)', async () => {
       const onSuccess = vi.fn();
 
       // Create a registration with active worker
@@ -601,7 +601,7 @@ describe('serviceWorkerRegistration', () => {
       });
     });
 
-    it.skip('should handle offline scenario during validation', async () => {
+    it('should handle offline scenario during validation', async () => {
       global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
       const mockRegister = vi

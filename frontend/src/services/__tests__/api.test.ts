@@ -40,7 +40,7 @@ describe('API Service', () => {
   });
 
   describe('Blog API', () => {
-    it.skip('should fetch blog posts', async () => {
+    it('should fetch blog posts', async () => {
       const mockResponse = {
         data: {
           count: 1,
@@ -71,7 +71,7 @@ describe('API Service', () => {
       expect(result.data.results).toHaveLength(1);
     });
 
-    it.skip('should fetch single blog post', async () => {
+    it('should fetch single blog post', async () => {
       const mockPostResponse = {
         data: {
           id: 1,
@@ -97,7 +97,7 @@ describe('API Service', () => {
   });
 
   describe('Contact API', () => {
-    it.skip('should submit contact form', async () => {
+    it('should submit contact form', async () => {
       const formData = {
         name: 'Test User',
         email: 'test@example.com',
@@ -116,17 +116,17 @@ describe('API Service', () => {
   });
 
   describe('Interceptors', () => {
-    it.skip('should setup request interceptor', async () => {
+    it('should setup request interceptor', async () => {
       await import('../api');
       expect(mockRequestUse).toHaveBeenCalled();
     });
 
-    it.skip('should setup response interceptor', async () => {
+    it('should setup response interceptor', async () => {
       await import('../api');
       expect(mockResponseUse).toHaveBeenCalled();
     });
 
-    it.skip('should add auth token to requests', async () => {
+    it('should add auth token to requests', async () => {
       const token = 'test-token';
       localStorage.setItem('authToken', token);
 
@@ -144,7 +144,7 @@ describe('API Service', () => {
       }
     });
 
-    it.skip('should handle response errors', async () => {
+    it('should handle response errors', async () => {
       await import('../api');
 
       // Get the error interceptor function

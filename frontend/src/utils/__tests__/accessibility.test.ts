@@ -520,7 +520,7 @@ describe('accessibility', () => {
       expect(isVisibleToScreenReader(legend)).toBe(true);
     });
 
-    it.skip('should handle accessibility announcements with focus management', async () => {
+    it('should handle accessibility announcements with focus management', async () => {
       const button = document.createElement('button');
       button.textContent = 'Test';
       document.body.appendChild(button);

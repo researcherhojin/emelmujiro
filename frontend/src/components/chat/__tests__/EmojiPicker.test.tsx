@@ -1,6 +1,6 @@
 import React from 'react';
 import { vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import EmojiPicker from '../EmojiPicker';
 
 // Mock framer-motion
@@ -156,11 +156,11 @@ describe('EmojiPicker', () => {
     expect(searchInput.value).toBe('');
   });
 
-  it.skip('highlights active category', () => {
+  it('highlights active category', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
     // First category button should be active by default
-    const smileyButton = screen.getByRole('button', { name: '표정' });
+    const smileyButton = screen.getByText('표정');
 
     expect(smileyButton.className).toContain('bg-blue-50');
   });

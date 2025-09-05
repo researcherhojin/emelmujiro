@@ -1,6 +1,6 @@
 import React from 'react';
 import { vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom'; // Add this import to fix TypeScript errors
 import QuickReplies from '../QuickReplies';
 import { useChatContext } from '../../../contexts/ChatContext';
@@ -136,7 +136,7 @@ describe('QuickReplies', () => {
     expect(mockOnSelect).toHaveBeenNthCalledWith(4, '연락처 문의');
   });
 
-  it.skip('applies correct color classes to buttons', () => {
+  it('applies correct color classes to buttons', () => {
     renderQuickReplies();
 
     const buttons = screen.getAllByRole('button');
@@ -148,7 +148,7 @@ describe('QuickReplies', () => {
     expect(buttons[3].className).toContain('bg-purple-50');
   });
 
-  it.skip('renders in a 2-column grid layout', () => {
+  it('renders in a 2-column grid layout', () => {
     renderQuickReplies();
 
     // Verify all 4 quick reply buttons are present

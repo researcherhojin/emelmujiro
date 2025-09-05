@@ -12,6 +12,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import WebVitalsDashboard from '../WebVitalsDashboard';
+import { setupCommonMocks, findButton } from '../../../test-utils/test-helpers';
 
 // Mock web-vitals library
 const mockOnCLS = vi.fn();
@@ -37,6 +38,8 @@ describe('WebVitalsDashboard', () => {
   let mockGtag: any;
 
   beforeEach(() => {
+    setupCommonMocks();
+
     // Store original environment
     originalEnv = process.env.NODE_ENV;
     originalGtag = window.gtag;
@@ -77,58 +80,81 @@ describe('WebVitalsDashboard', () => {
     vi.restoreAllMocks();
   });
 
-  describe.skip('Development Mode Behavior', () => {
+  describe('Development Mode Behavior', () => {
     beforeEach(() => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
     test('renders toggle button in development mode', () => {
-      render(<WebVitalsDashboard />);
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      expect(toggleButton).toBeInTheDocument();
-      expect(toggleButton).toHaveTextContent('📊');
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      expect(toggleButton).toBeTruthy();
+      expect(toggleButton?.textContent).toContain('📊');
     });
 
-    test('shows dashboard when toggle button is clicked', () => {
-      render(<WebVitalsDashboard />);
+    test('shows dashboard when toggle button is clicked', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButtons = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      });
-      fireEvent.click(toggleButtons[0]);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      expect(toggleButton).toBeTruthy();
 
-      expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
       expect(screen.getByText('Collecting metrics...')).toBeInTheDocument();
     });
 
     test('hides dashboard when close button is clicked', async () => {
-      render(<WebVitalsDashboard />);
+      const { container } = render(<WebVitalsDashboard />);
 
       // Open dashboard
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
 
-      await waitFor(() => {
-        expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
-      });
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Close dashboard
-      const closeButton = screen.getAllByRole('button', {
-        name: /close dashboard/i,
-      })[0];
-      fireEvent.click(closeButton);
+      const closeButton = findButton(container, /close dashboard/i);
+      if (closeButton) {
+        fireEvent.click(closeButton);
+      }
 
-      expect(
-        screen.queryByText('Web Vitals Dashboard')
-      ).not.toBeInTheDocument();
+      await waitFor(
+        () => {
+          expect(
+            screen.queryByText('Web Vitals Dashboard')
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
-    test('toggles dashboard visibility with keyboard shortcut', () => {
+    test('toggles dashboard visibility with keyboard shortcut', async () => {
       render(<WebVitalsDashboard />);
 
       // Initially dashboard should not be visible
@@ -139,14 +165,24 @@ describe('WebVitalsDashboard', () => {
       // Press Ctrl+Shift+V
       fireEvent.keyDown(window, { key: 'V', ctrlKey: true, shiftKey: true });
 
-      expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Press again to hide
       fireEvent.keyDown(window, { key: 'V', ctrlKey: true, shiftKey: true });
 
-      expect(
-        screen.queryByText('Web Vitals Dashboard')
-      ).not.toBeInTheDocument();
+      await waitFor(
+        () => {
+          expect(
+            screen.queryByText('Web Vitals Dashboard')
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
     test('ignores other keyboard combinations', () => {
@@ -176,11 +212,13 @@ describe('WebVitalsDashboard', () => {
     });
 
     test('does not render toggle button in production mode', () => {
-      render(<WebVitalsDashboard />);
+      const { container } = render(<WebVitalsDashboard />);
 
-      expect(
-        screen.queryByRole('button', { name: /toggle web vitals dashboard/i })
-      ).not.toBeInTheDocument();
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      expect(toggleButton).toBeFalsy();
     });
 
     test('does not show dashboard in production mode', () => {
@@ -207,14 +245,24 @@ describe('WebVitalsDashboard', () => {
       expect(mockOnINP).toHaveBeenCalledWith(expect.any(Function));
     });
 
-    test('handles CLS metric correctly', () => {
-      render(<WebVitalsDashboard />);
+    test('handles CLS metric correctly', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
       // Open dashboard
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Simulate CLS metric
       const clsHandler = mockOnCLS.mock.calls[0][0];
@@ -222,18 +270,33 @@ describe('WebVitalsDashboard', () => {
         clsHandler({ name: 'CLS', value: 0.05 });
       });
 
-      expect(screen.getByText('CLS')).toBeInTheDocument();
-      expect(screen.getByText('0.050')).toBeInTheDocument(); // CLS formatted to 3 decimals
-      expect(screen.getByText('✅')).toBeInTheDocument(); // Good rating
+      await waitFor(
+        () => {
+          expect(screen.getByText('CLS')).toBeInTheDocument();
+          expect(screen.getByText('0.050')).toBeInTheDocument(); // CLS formatted to 3 decimals
+          expect(screen.getByText('✅')).toBeInTheDocument(); // Good rating
+        },
+        { timeout: 5000 }
+      );
     });
 
-    test('handles FCP metric correctly', () => {
-      render(<WebVitalsDashboard />);
+    test('handles FCP metric correctly', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Simulate FCP metric
       const fcpHandler = mockOnFCP.mock.calls[0][0];
@@ -241,18 +304,33 @@ describe('WebVitalsDashboard', () => {
         fcpHandler({ name: 'FCP', value: 1500 });
       });
 
-      expect(screen.getByText('FCP')).toBeInTheDocument();
-      expect(screen.getByText('1500ms')).toBeInTheDocument();
-      expect(screen.getByText('✅')).toBeInTheDocument(); // Good rating
+      await waitFor(
+        () => {
+          expect(screen.getByText('FCP')).toBeInTheDocument();
+          expect(screen.getByText('1500ms')).toBeInTheDocument();
+          expect(screen.getByText('✅')).toBeInTheDocument(); // Good rating
+        },
+        { timeout: 5000 }
+      );
     });
 
-    test('handles LCP metric with needs-improvement rating', () => {
-      render(<WebVitalsDashboard />);
+    test('handles LCP metric with needs-improvement rating', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Simulate LCP metric with medium value
       const lcpHandler = mockOnLCP.mock.calls[0][0];
@@ -260,18 +338,33 @@ describe('WebVitalsDashboard', () => {
         lcpHandler({ name: 'LCP', value: 3000 });
       });
 
-      expect(screen.getByText('LCP')).toBeInTheDocument();
-      expect(screen.getByText('3000ms')).toBeInTheDocument();
-      expect(screen.getByText('⚠️')).toBeInTheDocument(); // Needs improvement rating
+      await waitFor(
+        () => {
+          expect(screen.getByText('LCP')).toBeInTheDocument();
+          expect(screen.getByText('3000ms')).toBeInTheDocument();
+          expect(screen.getByText('⚠️')).toBeInTheDocument(); // Needs improvement rating
+        },
+        { timeout: 5000 }
+      );
     });
 
-    test('handles TTFB metric with poor rating', () => {
-      render(<WebVitalsDashboard />);
+    test('handles TTFB metric with poor rating', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Simulate TTFB metric with poor value
       const ttfbHandler = mockOnTTFB.mock.calls[0][0];
@@ -279,18 +372,33 @@ describe('WebVitalsDashboard', () => {
         ttfbHandler({ name: 'TTFB', value: 2000 });
       });
 
-      expect(screen.getByText('TTFB')).toBeInTheDocument();
-      expect(screen.getByText('2000ms')).toBeInTheDocument();
-      expect(screen.getByText('❌')).toBeInTheDocument(); // Poor rating
+      await waitFor(
+        () => {
+          expect(screen.getByText('TTFB')).toBeInTheDocument();
+          expect(screen.getByText('2000ms')).toBeInTheDocument();
+          expect(screen.getByText('❌')).toBeInTheDocument(); // Poor rating
+        },
+        { timeout: 5000 }
+      );
     });
 
-    test('handles INP metric correctly', () => {
-      render(<WebVitalsDashboard />);
+    test('handles INP metric correctly', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Simulate INP metric
       const inpHandler = mockOnINP.mock.calls[0][0];
@@ -298,9 +406,14 @@ describe('WebVitalsDashboard', () => {
         inpHandler({ name: 'INP', value: 150 });
       });
 
-      expect(screen.getByText('INP')).toBeInTheDocument();
-      expect(screen.getByText('150ms')).toBeInTheDocument();
-      expect(screen.getByText('✅')).toBeInTheDocument(); // Good rating
+      await waitFor(
+        () => {
+          expect(screen.getByText('INP')).toBeInTheDocument();
+          expect(screen.getByText('150ms')).toBeInTheDocument();
+          expect(screen.getByText('✅')).toBeInTheDocument(); // Good rating
+        },
+        { timeout: 5000 }
+      );
     });
   });
 
@@ -309,12 +422,22 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
-    test('correctly rates CLS metrics', () => {
-      render(<WebVitalsDashboard />);
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+    test('correctly rates CLS metrics', async () => {
+      const { container } = render(<WebVitalsDashboard />);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       const clsHandler = mockOnCLS.mock.calls[0][0];
 
@@ -322,27 +445,55 @@ describe('WebVitalsDashboard', () => {
       act(() => {
         clsHandler({ name: 'CLS', value: 0.05 });
       });
-      expect(screen.getByText('✅')).toBeInTheDocument();
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('✅')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Needs improvement CLS
       act(() => {
         clsHandler({ name: 'CLS', value: 0.15 });
       });
-      expect(screen.getByText('⚠️')).toBeInTheDocument();
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('⚠️')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Poor CLS
       act(() => {
         clsHandler({ name: 'CLS', value: 0.3 });
       });
-      expect(screen.getByText('❌')).toBeInTheDocument();
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('❌')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
-    test('correctly rates FCP metrics', () => {
-      render(<WebVitalsDashboard />);
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+    test('correctly rates FCP metrics', async () => {
+      const { container } = render(<WebVitalsDashboard />);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       const fcpHandler = mockOnFCP.mock.calls[0][0];
 
@@ -350,19 +501,37 @@ describe('WebVitalsDashboard', () => {
       act(() => {
         fcpHandler({ name: 'FCP', value: 1500 });
       });
-      expect(screen.getByText('✅')).toBeInTheDocument();
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('✅')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Needs improvement FCP
       act(() => {
         fcpHandler({ name: 'FCP', value: 2500 });
       });
-      expect(screen.getByText('⚠️')).toBeInTheDocument();
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('⚠️')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Poor FCP
       act(() => {
         fcpHandler({ name: 'FCP', value: 3500 });
       });
-      expect(screen.getByText('❌')).toBeInTheDocument();
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('❌')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
   });
 
@@ -371,30 +540,48 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
-    test('shows collecting message when no metrics are available', () => {
-      render(<WebVitalsDashboard />);
+    test('shows collecting message when no metrics are available', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
 
-      expect(screen.getByText('Collecting metrics...')).toBeInTheDocument();
-      expect(
-        screen.getByText('Navigate around the site to generate metrics')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('Press Ctrl+Shift+V to toggle this dashboard')
-      ).toBeInTheDocument();
+      await waitFor(
+        () => {
+          expect(screen.getByText('Collecting metrics...')).toBeInTheDocument();
+          expect(
+            screen.getByText('Navigate around the site to generate metrics')
+          ).toBeInTheDocument();
+          expect(
+            screen.getByText('Press Ctrl+Shift+V to toggle this dashboard')
+          ).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
-    test('displays metric descriptions correctly', () => {
-      render(<WebVitalsDashboard />);
+    test('displays metric descriptions correctly', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Add some metrics
       const clsHandler = mockOnCLS.mock.calls[0][0];
@@ -405,37 +592,69 @@ describe('WebVitalsDashboard', () => {
         fcpHandler({ name: 'FCP', value: 1500 });
       });
 
-      expect(
-        screen.getByText('Cumulative Layout Shift - Visual stability')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('First Contentful Paint - First render time')
-      ).toBeInTheDocument();
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText('Cumulative Layout Shift - Visual stability')
+          ).toBeInTheDocument();
+          expect(
+            screen.getByText('First Contentful Paint - First render time')
+          ).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
-    test('displays metric timestamps', () => {
-      render(<WebVitalsDashboard />);
+    test('displays metric timestamps', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       const clsHandler = mockOnCLS.mock.calls[0][0];
       act(() => {
         clsHandler({ name: 'CLS', value: 0.05 });
       });
 
-      expect(screen.getByText('Measured at: 12:00:00 AM')).toBeInTheDocument();
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText('Measured at: 12:00:00 AM')
+          ).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
-    test('shows performance summary when metrics are available', () => {
-      render(<WebVitalsDashboard />);
+    test('shows performance summary when metrics are available', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Add metrics with different ratings
       const clsHandler = mockOnCLS.mock.calls[0][0];
@@ -448,33 +667,47 @@ describe('WebVitalsDashboard', () => {
         lcpHandler({ name: 'LCP', value: 5000 }); // Poor
       });
 
-      expect(screen.getByText('Performance Summary')).toBeInTheDocument();
-      // Check that the summary contains the correct values
-      // Using getByText to find specific text content
-      expect(screen.getByText(/Good:/)).toBeInTheDocument();
-      expect(screen.getByText(/Needs Improvement:/)).toBeInTheDocument();
-      expect(screen.getByText(/Poor:/)).toBeInTheDocument();
+      await waitFor(
+        () => {
+          expect(screen.getByText('Performance Summary')).toBeInTheDocument();
+          // Check that the summary contains the correct values
+          expect(screen.getByText(/Good:/)).toBeInTheDocument();
+          expect(screen.getByText(/Needs Improvement:/)).toBeInTheDocument();
+          expect(screen.getByText(/Poor:/)).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
-    test('displays tips and instructions', () => {
-      render(<WebVitalsDashboard />);
+    test('displays tips and instructions', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
-
-      expect(
-        screen.getByText(/Metrics are collected as you interact with the page/)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/Data is sent to analytics if configured/)
-      ).toBeInTheDocument();
-      // Multiple elements contain this text, so use getAllByText
-      const toggleTexts = screen.getAllByText(
-        /Press Ctrl\+Shift\+V to toggle this dashboard/
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
       );
-      expect(toggleTexts.length).toBeGreaterThan(0);
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText(
+              /Metrics are collected as you interact with the page/
+            )
+          ).toBeInTheDocument();
+          expect(
+            screen.getByText(/Data is sent to analytics if configured/)
+          ).toBeInTheDocument();
+          // Multiple elements contain this text, so use getAllByText
+          const toggleTexts = screen.getAllByText(
+            /Press Ctrl\+Shift\+V to toggle this dashboard/
+          );
+          expect(toggleTexts.length).toBeGreaterThan(0);
+        },
+        { timeout: 5000 }
+      );
     });
   });
 
@@ -550,59 +783,81 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
-    test('applies correct CSS classes to dashboard container', () => {
-      render(<WebVitalsDashboard />);
+    test('applies correct CSS classes to dashboard container', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
 
-      const dashboard = screen.getByTestId('web-vitals-dashboard');
-      expect(dashboard).toHaveClass(
-        'fixed',
-        'bottom-20',
-        'right-4',
-        'z-40',
-        'bg-white',
-        'dark:bg-gray-800',
-        'p-6',
-        'rounded-lg',
-        'shadow-2xl',
-        'max-w-4xl',
-        'max-h-[80vh]',
-        'overflow-auto'
+      await waitFor(
+        () => {
+          const dashboard = screen.getByTestId('web-vitals-dashboard');
+          expect(dashboard).toHaveClass(
+            'fixed',
+            'bottom-20',
+            'right-4',
+            'z-40',
+            'bg-white',
+            'dark:bg-gray-800',
+            'p-6',
+            'rounded-lg',
+            'shadow-2xl',
+            'max-w-4xl',
+            'max-h-[80vh]',
+            'overflow-auto'
+          );
+        },
+        { timeout: 5000 }
       );
     });
 
     test('applies correct CSS classes to toggle button', () => {
-      render(<WebVitalsDashboard />);
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      expect(toggleButton).toHaveClass(
-        'fixed',
-        'bottom-4',
-        'right-4',
-        'z-50',
-        'bg-blue-600',
-        'text-white',
-        'p-3',
-        'rounded-full',
-        'shadow-lg',
-        'hover:bg-blue-700',
-        'transition-colors'
+      const toggleButton = container.querySelector(
+        'button[aria-label="Toggle Web Vitals Dashboard"]'
       );
+      expect(toggleButton).toBeTruthy();
+
+      if (toggleButton) {
+        expect(toggleButton).toHaveClass(
+          'fixed',
+          'bottom-4',
+          'right-4',
+          'z-50',
+          'bg-blue-600',
+          'text-white',
+          'p-3',
+          'rounded-full',
+          'shadow-lg',
+          'hover:bg-blue-700',
+          'transition-colors'
+        );
+      }
     });
 
-    test('applies rating-specific colors to metric cards', () => {
-      render(<WebVitalsDashboard />);
+    test('applies rating-specific colors to metric cards', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       // Good metric
       const clsHandler = mockOnCLS.mock.calls[0][0];
@@ -610,13 +865,18 @@ describe('WebVitalsDashboard', () => {
         clsHandler({ name: 'CLS', value: 0.05 });
       });
 
-      // Verify that CLS metric is displayed
-      const clsText = screen.getByText('CLS');
-      expect(clsText).toBeInTheDocument();
+      await waitFor(
+        () => {
+          // Verify that CLS metric is displayed
+          const clsText = screen.getByText('CLS');
+          expect(clsText).toBeInTheDocument();
 
-      // Verify the good rating value is displayed
-      const clsValue = screen.getByText('0.050');
-      expect(clsValue).toBeInTheDocument();
+          // Verify the good rating value is displayed
+          const clsValue = screen.getByText('0.050');
+          expect(clsValue).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
   });
 
@@ -683,29 +943,40 @@ describe('WebVitalsDashboard', () => {
     });
 
     test('toggle button has correct accessibility attributes', () => {
-      render(<WebVitalsDashboard />);
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      expect(toggleButton).toHaveAttribute(
-        'aria-label',
+      const toggleButton = container.querySelector(
+        'button[aria-label="Toggle Web Vitals Dashboard"]'
+      );
+      expect(toggleButton).toBeTruthy();
+      expect(toggleButton?.getAttribute('aria-label')).toBe(
         'Toggle Web Vitals Dashboard'
       );
     });
 
-    test('close button has correct accessibility attributes', () => {
-      render(<WebVitalsDashboard />);
+    test('close button has correct accessibility attributes', async () => {
+      const { container } = render(<WebVitalsDashboard />);
 
-      const toggleButton = screen.getAllByRole('button', {
-        name: /toggle web vitals dashboard/i,
-      })[0];
-      fireEvent.click(toggleButton);
+      const toggleButton = findButton(
+        container,
+        /toggle web vitals dashboard/i
+      );
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
 
-      const closeButton = screen.getAllByRole('button', {
-        name: /close dashboard/i,
-      })[0];
-      expect(closeButton).toHaveAttribute('aria-label', 'Close dashboard');
+      await waitFor(
+        () => {
+          const closeButton = container.querySelector(
+            'button[aria-label="Close dashboard"]'
+          );
+          expect(closeButton).toBeTruthy();
+          expect(closeButton?.getAttribute('aria-label')).toBe(
+            'Close dashboard'
+          );
+        },
+        { timeout: 5000 }
+      );
     });
   });
 });

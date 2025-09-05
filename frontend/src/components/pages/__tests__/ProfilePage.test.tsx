@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import ProfilePage from '../ProfilePage';
@@ -75,7 +75,7 @@ describe('ProfilePage Component', () => {
       expect(screen.getByText('AI Researcher & Educator')).toBeInTheDocument();
     });
 
-    it.skip('renders profile description', () => {
+    it('renders profile description', () => {
       renderWithRouter(<ProfilePage />);
 
       // Check for the presence of key sections instead
@@ -113,10 +113,10 @@ describe('ProfilePage Component', () => {
       expect(screen.getByText('경북대학교')).toBeInTheDocument();
     });
 
-    it.skip('switches to projects tab', () => {
+    it('switches to projects tab', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByRole('button', { name: /프로젝트/ });
+      const projectsTab = screen.getByText(/프로젝트/);
       fireEvent.click(projectsTab);
 
       // Check for project section is rendered
@@ -196,20 +196,20 @@ describe('ProfilePage Component', () => {
   });
 
   describe('Projects Tab Content', () => {
-    it.skip('displays project items when tab is selected', () => {
+    it('displays project items when tab is selected', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByRole('button', { name: /프로젝트/ });
+      const projectsTab = screen.getByText(/프로젝트/);
       fireEvent.click(projectsTab);
 
       // Check that projects tab is active
       expect(projectsTab).toHaveClass('text-gray-900');
     });
 
-    it.skip('displays project descriptions', () => {
+    it('displays project descriptions', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByRole('button', { name: /프로젝트/ });
+      const projectsTab = screen.getByText(/프로젝트/);
       fireEvent.click(projectsTab);
 
       // Projects content should be visible

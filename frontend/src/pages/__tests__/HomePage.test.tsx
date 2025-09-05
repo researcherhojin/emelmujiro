@@ -40,7 +40,7 @@ describe('HomePage', () => {
     expect(document.body).toBeInTheDocument();
   });
 
-  it.skip('renders all sections after loading', async () => {
+  it('renders all sections after loading', async () => {
     renderWithProviders(<HomePage />);
 
     await waitFor(() => {
@@ -61,7 +61,7 @@ describe('HomePage', () => {
     }
   });
 
-  it.skip('renders sections in correct order', async () => {
+  it('renders sections in correct order', async () => {
     const { container } = renderWithProviders(<HomePage />);
 
     await waitFor(() => {
@@ -73,7 +73,7 @@ describe('HomePage', () => {
     });
   });
 
-  it.skip('handles suspense fallback correctly', async () => {
+  it('handles suspense fallback correctly', async () => {
     renderWithProviders(<HomePage />);
 
     // Wait for all sections to load
@@ -93,7 +93,7 @@ describe('HomePage', () => {
     expect(document.body).toBeInTheDocument();
   });
 
-  it.skip('renders with React.Suspense wrapper', async () => {
+  it('renders with React.Suspense wrapper', async () => {
     renderWithProviders(<HomePage />);
 
     // All lazy loaded components should eventually render

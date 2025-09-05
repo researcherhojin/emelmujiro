@@ -189,7 +189,7 @@ describe('ChatWindowAdvanced', () => {
   });
 
   describe('Message Sending', () => {
-    it.skip('should send message on form submit', async () => {
+    it('should send message on form submit', async () => {
       const sendMessage = vi.fn();
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
@@ -214,7 +214,7 @@ describe('ChatWindowAdvanced', () => {
       });
     }, 20000);
 
-    it.skip('should send message on Enter key', async () => {
+    it('should send message on Enter key', async () => {
       const sendMessage = vi.fn();
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
@@ -350,7 +350,7 @@ describe('ChatWindowAdvanced', () => {
       expect(screen.getByTestId('typing-indicator')).toBeInTheDocument();
     });
 
-    it.skip('should trigger typing events on input', async () => {
+    it('should trigger typing events on input', async () => {
       const startTyping = vi.fn();
       const stopTyping = vi.fn();
 

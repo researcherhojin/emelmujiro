@@ -129,7 +129,7 @@ describe('ContactPage Component', () => {
     );
   };
 
-  it.skip('renders contact form with all fields', async () => {
+  it('renders contact form with all fields', async () => {
     renderWithRouter(<ContactPage />);
 
     await waitForFormToLoad();
@@ -146,8 +146,8 @@ describe('ContactPage Component', () => {
     ).toBeInTheDocument();
   });
 
-  describe.skip('Form Validation', () => {
-    it.skip('validates required fields', async () => {
+  describe('Form Validation', () => {
+    it('validates required fields', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();
@@ -290,7 +290,7 @@ describe('ContactPage Component', () => {
     });
   });
 
-  describe.skip('Form Submission', () => {
+  describe('Form Submission', () => {
     it('submits form successfully when online', async () => {
       mockedApi.createContact.mockResolvedValue({
         data: { id: 1, message: 'Success' },
@@ -476,7 +476,7 @@ describe('ContactPage Component', () => {
   });
 
   describe('Online/Offline Status', () => {
-    it.skip('shows online status indicator', async () => {
+    it('shows online status indicator', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();
@@ -486,7 +486,7 @@ describe('ContactPage Component', () => {
       expect(onlineText).toBeInTheDocument();
     });
 
-    it.skip('shows offline status indicator', async () => {
+    it('shows offline status indicator', async () => {
       Object.defineProperty(navigator, 'onLine', {
         writable: true,
         value: false,
@@ -501,7 +501,7 @@ describe('ContactPage Component', () => {
       expect(offlineText).toBeInTheDocument();
     });
 
-    it.skip('updates status when connection changes', async () => {
+    it('updates status when connection changes', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();

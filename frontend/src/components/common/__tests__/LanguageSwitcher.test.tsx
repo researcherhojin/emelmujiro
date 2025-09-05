@@ -263,7 +263,7 @@ describe('LanguageSwitcher', () => {
     expect(screen.getByText('English')).toBeInTheDocument();
   });
 
-  it.skip('handles language change errors gracefully', async () => {
+  it('handles language change errors gracefully', async () => {
     // Skip this test as it requires async error handling
     const logger = await import('../../../utils/logger');
     const loggerErrorSpy = vi.spyOn(logger.default, 'error');
@@ -290,7 +290,7 @@ describe('LanguageSwitcher', () => {
     loggerErrorSpy.mockRestore();
   });
 
-  it.skip('dispatches custom language change event', async () => {
+  it('dispatches custom language change event', async () => {
     // Skip this test as it requires async event handling
     mockChangeLanguage.mockResolvedValue(undefined);
 

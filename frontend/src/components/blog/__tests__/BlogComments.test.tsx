@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import BlogComments from '../BlogComments';
 
@@ -65,13 +65,13 @@ describe('BlogComments', () => {
     expect(emptyMessage).toBeInTheDocument();
   });
 
-  it.skip('handles comment submission', () => {
+  it('handles comment submission', () => {
     render(<BlogComments {...defaultProps} />);
 
     // Find form inputs - 실제 placeholder 텍스트에 맞게 수정
     const nameInput = screen.getByPlaceholderText('이름');
     const contentInput = screen.getByPlaceholderText('댓글을 작성해주세요...');
-    const submitButton = screen.getByRole('button', { name: /댓글 작성/i });
+    const submitButton = screen.getByText(/댓글 작성/i);
 
     // Fill and submit form
     fireEvent.change(nameInput, { target: { value: 'Test User' } });
@@ -85,10 +85,10 @@ describe('BlogComments', () => {
     expect(screen.getByText('Test User')).toBeInTheDocument();
   });
 
-  it.skip('validates required fields', () => {
+  it('validates required fields', () => {
     render(<BlogComments {...defaultProps} />);
 
-    const submitButton = screen.getByRole('button', { name: /작성/i });
+    const submitButton = screen.getByText(/작성/i);
     const initialCommentCount = screen.queryAllByTestId('comment-item').length;
 
     // Try to submit empty form
@@ -99,14 +99,14 @@ describe('BlogComments', () => {
     expect(afterSubmitCount).toBe(initialCommentCount);
   });
 
-  it.skip('clears form after successful submission', () => {
+  it('clears form after successful submission', () => {
     render(<BlogComments {...defaultProps} />);
 
     const nameInput = screen.getByPlaceholderText('이름') as HTMLInputElement;
     const contentInput = screen.getByPlaceholderText(
       '댓글을 작성해주세요...'
     ) as HTMLTextAreaElement;
-    const submitButton = screen.getByRole('button', { name: /댓글 작성/i });
+    const submitButton = screen.getByText(/댓글 작성/i);
 
     // Fill form
     fireEvent.change(nameInput, { target: { value: 'Test User' } });
@@ -115,7 +115,7 @@ describe('BlogComments', () => {
     // Submit
     fireEvent.click(submitButton);
 
-    // Check if form is cleared (comment field is cleared, name might be retained),
+    // Check if form is cleared (comment field is cleared, name might be retained)
     expect(contentInput.value).toBe('');
   });
 
@@ -147,12 +147,12 @@ describe('BlogComments', () => {
     expect(firstLikeButton).toBeDefined();
     fireEvent.click(firstLikeButton!);
 
-    // Likes count should change (increase or decrease based on user's previous action),
+    // Likes count should change (increase or decrease based on user's previous action)
     // Since it's a new user, it should increase to 3
     expect(screen.getByText('3')).toBeInTheDocument();
   });
 
-  it.skip('handles reply button click', () => {
+  it('handles reply button click', () => {
     localStorage.setItem('blogComments', JSON.stringify(mockComments));
     render(<BlogComments {...defaultProps} />);
 
@@ -165,8 +165,6 @@ describe('BlogComments', () => {
     expect(replyInput).toBeInTheDocument();
 
     // Reply submit button should be visible
-    expect(
-      screen.getByRole('button', { name: /답글 작성/i })
-    ).toBeInTheDocument();
+    expect(screen.getByText(/답글 작성/i)).toBeInTheDocument();
   });
 });

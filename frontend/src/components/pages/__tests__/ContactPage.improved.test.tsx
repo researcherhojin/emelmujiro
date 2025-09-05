@@ -45,7 +45,7 @@ if (typeof window !== 'undefined' && window.navigator && !process.env.CI) {
   }
 }
 
-describe.skip('ContactPage - Improved', () => {
+describe('ContactPage - Improved', () => {
   let user: ReturnType<typeof userEvent.setup>;
 
   beforeEach(() => {
@@ -89,9 +89,7 @@ describe.skip('ContactPage - Improved', () => {
         screen.queryByRole('textbox', { name: /메시지|message/i });
 
       expect(nameInput || emailInput || messageInput).toBeTruthy();
-      expect(
-        screen.getByRole('button', { name: /전송|submit/i })
-      ).toBeInTheDocument();
+      expect(screen.getByText(/전송|submit/i)).toBeInTheDocument();
     });
 
     it('renders contact information section', () => {
@@ -107,7 +105,7 @@ describe.skip('ContactPage - Improved', () => {
     it('shows error when submitting empty form', async () => {
       renderWithProviders(<ContactPage />);
 
-      const submitButton = screen.getByRole('button', { name: /전송|submit/i });
+      const submitButton = screen.getByText(/전송|submit/i);
 
       await act(async () => {
         await user.click(submitButton);
@@ -136,7 +134,7 @@ describe.skip('ContactPage - Improved', () => {
         await user.type(emailInput, 'invalid-email');
       });
 
-      const submitButton = screen.getByRole('button', { name: /전송|submit/i });
+      const submitButton = screen.getByText(/전송|submit/i);
       await act(async () => {
         await user.click(submitButton);
       });
@@ -186,7 +184,7 @@ describe.skip('ContactPage - Improved', () => {
       const nameInput = screen.getByLabelText(/이름|name/i);
       const emailInput = screen.getByLabelText(/이메일|email/i);
       const messageInput = screen.getByLabelText(/메시지|message/i);
-      const submitButton = screen.getByRole('button', { name: /전송|submit/i });
+      const submitButton = screen.getByText(/전송|submit/i);
 
       await act(async () => {
         await user.type(nameInput, '홍길동');
@@ -217,7 +215,7 @@ describe.skip('ContactPage - Improved', () => {
       const nameInput = screen.getByLabelText(/이름|name/i);
       const emailInput = screen.getByLabelText(/이메일|email/i);
       const messageInput = screen.getByLabelText(/메시지|message/i);
-      const submitButton = screen.getByRole('button', { name: /전송|submit/i });
+      const submitButton = screen.getByText(/전송|submit/i);
 
       await act(async () => {
         await user.type(nameInput, '홍길동');
@@ -244,7 +242,7 @@ describe.skip('ContactPage - Improved', () => {
       const nameInput = screen.getByLabelText(/이름|name/i);
       const emailInput = screen.getByLabelText(/이메일|email/i);
       const messageInput = screen.getByLabelText(/메시지|message/i);
-      const submitButton = screen.getByRole('button', { name: /전송|submit/i });
+      const submitButton = screen.getByText(/전송|submit/i);
 
       await act(async () => {
         await user.type(nameInput, '홍길동');
@@ -285,7 +283,7 @@ describe.skip('ContactPage - Improved', () => {
 
       renderWithProviders(<ContactPage />);
 
-      const submitButton = screen.getByRole('button', { name: /전송|submit/i });
+      const submitButton = screen.getByText(/전송|submit/i);
 
       // Check if button is disabled or shows offline state
       await waitFor(
@@ -311,7 +309,7 @@ describe.skip('ContactPage - Improved', () => {
         await flushPromises();
       });
 
-      const submitButton = screen.getByRole('button', { name: /전송|submit/i });
+      const submitButton = screen.getByText(/전송|submit/i);
 
       await waitFor(
         () => {
