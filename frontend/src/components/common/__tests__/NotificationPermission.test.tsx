@@ -454,7 +454,7 @@ describe('NotificationPermission', () => {
       vi.advanceTimersByTime(10000);
     });
 
-    const closeButton = screen.getByText('닫기');
+    const closeButton = screen.getByLabelText('닫기');
     expect(closeButton).toHaveClass(
       'flex-shrink-0',
       'ml-2',
@@ -498,7 +498,7 @@ describe('NotificationPermission', () => {
       vi.advanceTimersByTime(10000);
     });
 
-    const closeButton = screen.getByText('닫기');
+    const closeButton = screen.getByLabelText('닫기');
     expect(closeButton).toHaveAttribute('aria-label', '닫기');
 
     const enableButton = screen.getByText('알림 받기');
@@ -623,7 +623,7 @@ describe('NotificationPermission', () => {
         vi.advanceTimersByTime(10000);
       });
 
-      const closeButton = screen.getByText('닫기');
+      const closeButton = screen.getByLabelText('닫기');
       fireEvent.click(closeButton);
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
