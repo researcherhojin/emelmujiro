@@ -11,6 +11,8 @@
 
 **[🌐 Live Site](https://researcherhojin.github.io/emelmujiro)** | **[📚 Documentation](https://github.com/researcherhojin/emelmujiro/wiki)** | **[🐛 Report Bug](https://github.com/researcherhojin/emelmujiro/issues)**
 
+⚠️ **주의**: 현재 프로덕션 사이트는 Mock API를 사용 중입니다. 실제 백엔드 배포 진행 중입니다.
+
 </div>
 
 ## 📌 프로젝트 개요
@@ -24,7 +26,7 @@
 - 🤖 **기술 컨설팅** - 기업별 AI 도입 전략 수립 및 기술 자문
 - 📊 **데이터 분석** - 빅데이터 기반 인사이트 도출 및 분석 시스템 구축
 
-## 🎯 프로젝트 현황 (v4.0.0 - 2025.09.05)
+## 🎯 프로젝트 현황 (v4.0.2 - 2025.09.05)
 
 ### 📊 성과 지표
 
@@ -33,7 +35,7 @@
 | **빌드 도구**   | ✅ Vite 7.1.3   | CRA → Vite 완전 마이그레이션   |
 | **프레임워크**  | ✅ React 19.1.1 | 최신 React + TypeScript 5.9.2  |
 | **컴포넌트**    | ✅ 156개        | React 컴포넌트 (TSX 파일)      |
-| **테스트**      | ✅ 92개 파일    | 716 active, 773 skipped        |
+| **테스트**      | ⚠️ 92개 파일    | 716 active, 773 skipped (52%)  |
 | **TypeScript**  | ✅ 100%         | 239개 TS/TSX 파일, Strict Mode |
 | **CI/CD**       | ✅ 완전 안정화  | 모든 파이프라인 성공           |
 | **번들 크기**   | ✅ 최적화       | ~400KB gzipped                 |
@@ -41,8 +43,30 @@
 | **HMR 속도**    | ⚡ <100ms       | 개발 서버 즉시 시작 (171ms)    |
 | **보안 취약점** | ✅ 0건          | Dependabot 자동 업데이트       |
 | **Docker**      | ✅ 최적화       | Multi-stage build 구성         |
+| **백엔드 상태** | ⚠️ Mock API     | 프로덕션 백엔드 미배포 상태    |
 
-### 🎉 v4.0.0 주요 성과 - CI/CD 완전 안정화
+### 🎉 v4.0.2 최신 업데이트 - 프로젝트 문서 강화
+
+#### 📚 문서 개선
+
+- **CLAUDE.md 대폭 개선**:
+  - 상세한 설정 파일 경로 및 설명 추가
+  - 환경 변수 문서화 완성
+  - 유용한 스크립트 섹션 추가
+  - 테스트 패턴 및 디버깅 가이드 강화
+  - 의존성 버전 정보 명확화
+- **Git 브랜치 정리**: 불필요한 브랜치 삭제 및 구조 단순화
+- **README.md 버전 업데이트**: v4.0.2로 갱신
+
+### 🏆 v4.0.1 주요 성과 - 문서화 및 디버깅 가이드
+
+#### 📚 문서 개선
+
+- **CLAUDE.md 업데이트**: v4.0.0 성과 반영 및 CI/CD 디버깅 가이드 추가
+- **테스트 가이드**: style.getPropertyValue 에러 해결 방법 문서화
+- **긴급 수정 스크립트**: CI 테스트 실패 시 빠른 복구 방법 제공
+
+### 🏆 v4.0.0 주요 성과 - CI/CD 완전 안정화
 
 #### 📈 개선 내역
 
@@ -73,6 +97,12 @@
 git clone https://github.com/researcherhojin/emelmujiro.git
 cd emelmujiro
 
+# 의존성 설치
+npm install
+cd frontend && npm install
+cd ../backend && pip install -r requirements.txt
+cd ..
+
 # 전체 애플리케이션 시작 (프론트엔드 + 백엔드)
 npm run dev
 
@@ -90,17 +120,17 @@ cd backend && python manage.py runserver
 
 ### 🛠 주요 명령어
 
-| 명령어               | 설명                          |
-| -------------------- | ----------------------------- |
-| `npm run dev`        | 프론트엔드 + 백엔드 동시 시작 |
-| `npm run dev:clean`  | 기존 프로세스 정리 후 시작    |
-| `npm run build`      | 프론트엔드 프로덕션 빌드      |
-| `npm run preview`    | 빌드 미리보기 (port 4173)     |
-| `npm test`           | 모든 테스트 실행              |
-| `npm run test:ci`    | CI 환경 테스트 (최적화)       |
-| `npm run lint`       | ESLint 실행                   |
-| `npm run type-check` | TypeScript 타입 체크          |
-| `npm run deploy`     | GitHub Pages 배포             |
+| 명령어                              | 설명                          |
+| ----------------------------------- | ----------------------------- |
+| `npm run dev`                       | 프론트엔드 + 백엔드 동시 시작 |
+| `npm run dev:clean`                 | 기존 프로세스 정리 후 시작    |
+| `npm run build`                     | 프론트엔드 프로덕션 빌드      |
+| `cd frontend && npm run preview`    | 빌드 미리보기 (port 4173)     |
+| `npm test`                          | 모든 테스트 실행              |
+| `cd frontend && npm run test:ci`    | CI 환경 테스트 (최적화)       |
+| `cd frontend && npm run lint`       | ESLint 실행                   |
+| `cd frontend && npm run type-check` | TypeScript 타입 체크          |
+| `cd frontend && npm run deploy`     | GitHub Pages 배포             |
 
 ## 🔧 기술 스택
 
@@ -121,15 +151,18 @@ cd backend && python manage.py runserver
 - **Framework**: Django 5.2.5 + Django REST Framework 3.16.1
 - **Auth**: JWT (djangorestframework-simplejwt 5.5.1)
 - **WebSocket**: Django Channels 4.3.1
-- **Database**: SQLite (개발) / PostgreSQL (프로덕션)
-- **Security**: django-ratelimit, CORS headers
+- **Database**: SQLite (개발) / PostgreSQL (프로덕션 준비)
+- **Caching**: Redis (channels-redis 4.3.0)
+- **Security**: django-ratelimit 4.1.0, CORS headers
+- **Production Server**: Gunicorn 23.0.0
 
 ### DevOps
 
 - **CI/CD**: GitHub Actions (main-ci-cd.yml, pr-checks.yml)
-- **Hosting**: GitHub Pages
+- **Hosting**: GitHub Pages (Frontend)
 - **Monitoring**: Sentry 10.7.0 + Web Vitals Dashboard
 - **Container**: Docker + Docker Compose
+- **Code Quality**: ESLint, Prettier, Black, Flake8
 - **Dependencies**: 18 production, 43 development (총 61개)
 
 ## 📁 프로젝트 구조
@@ -169,8 +202,12 @@ emelmujiro/
 ├── backend/                # Django API (23개 Python 파일)
 │   ├── api/                # API 앱
 │   ├── config/             # Django 설정
-│   └── requirements.txt    # 20개 Python 패키지
-└── .github/workflows/      # CI/CD 파이프라인 (3개 워크플로우)
+│   └── requirements.txt    # 35개 Python 패키지
+├── scripts/                # 루트 레벨 스크립트
+│   ├── kill-ports.sh       # 포트 정리
+│   ├── docker-build.sh     # Docker 빌드
+│   └── pre-deploy-check.sh # 배포 전 검증
+└── .github/workflows/      # CI/CD 파이프라인 (2개 워크플로우)
 ```
 
 ## 🌟 주요 기능
@@ -220,6 +257,21 @@ emelmujiro/
 
 ## 🔄 최근 업데이트
 
+### v4.0.2 - 2025.09.05 - 프로젝트 문서 강화
+
+- ✅ CLAUDE.md 대폭 개선 (설정 파일 경로, 환경 변수, 스크립트 문서화)
+- ✅ Git 브랜치 구조 정리 (불필요한 브랜치 삭제)
+- ✅ README.md 버전 및 통계 업데이트
+- ✅ 의존성 버전 정보 명확화
+
+### v4.0.1 - 2025.09.05 - 문서화 및 디버깅 가이드 개선
+
+- ✅ CLAUDE.md에 CI/CD 디버깅 가이드 추가
+- ✅ style.getPropertyValue 에러 해결 방법 문서화
+- ✅ IndexedDB 타임아웃 이슈 대응 방안 제공
+- ✅ CI 환경별 테스트 스킵 패턴 정립
+- ✅ 긴급 수정 스크립트 제공
+
 ### v4.0.0 - 2025.09.05 - CI/CD 완벽 안정화 달성
 
 - ✅ 223개 스킵된 테스트 중 173개 활성화 (77.6% 복구율)
@@ -246,33 +298,12 @@ emelmujiro/
 - ✅ 미사용 WebSocket imports 정리
 - ✅ package.json 중복 키 제거
 
-### v3.9.0 - 2025.09.01 - Zustand 상태 관리 도입
-
-- ✅ Zustand 5.0.8 도입 (useAppStore)
-- ✅ 상태 관리 개선 (UI, Auth, Blog, Chat slices)
-- ✅ Immer 미들웨어 통한 불변성 관리
-- ✅ DevTools 및 persist 미들웨어 적용
-- ✅ TypeScript 타입 안전성 강화
-
-### v3.8.0 - 2025.08.30 - 대규모 테스트 안정화
-
-- ✅ 90+ 테스트 파일 전면 검토 및 안정화
-- ✅ CI/CD 파이프라인 메모리 최적화 (NODE_OPTIONS)
-- ✅ Vitest pool: forks 설정으로 테스트 격리 개선
-- ✅ 테스트 타임아웃 15s (CI) / 10s (local) 설정
-
-### v3.5.0 - 2025.08.28 - Vite 마이그레이션 완료
-
-- ✅ Create React App → Vite 7.1 전환
-- ✅ 빌드 속도 60초 → 10초 (85% 개선)
-- ✅ 개발 서버 시작 30초 → 171ms (175배 개선)
-- ✅ Jest → Vitest 마이그레이션
-- ✅ HMR <100ms 달성
-
 ## 🚧 개발 로드맵 & TODO
 
-### ✅ 완료된 작업 (v4.0.0)
+### ✅ 완료된 작업 (v4.0.2)
 
+- [x] CLAUDE.md 문서 개선
+- [x] Git 브랜치 정리
 - [x] CI/CD 파이프라인 완전 안정화
 - [x] TypeScript 컴파일 에러 제거
 - [x] 테스트 타임아웃 문제 해결
@@ -286,6 +317,7 @@ emelmujiro/
 VITE_API_URL=https://api.emelmujiro.com
 VITE_WS_URL=wss://api.emelmujiro.com/ws
 VITE_USE_MOCK_API=false
+VITE_GA_TRACKING_ID=G-XXXXXXXXXX
 
 # 2. 테스트 타임아웃 증가 (vitest.config.ts)
 export default {
@@ -311,22 +343,29 @@ server: {
 
 ### 🔴 긴급 (Critical) - 즉시 해결 필요
 
-#### 테스트 안정화
-
-- [ ] **223개 스킵된 테스트 복구**
-  - [ ] BlogSearch 테스트 (9개) - waitFor 타임아웃 문제
-  - [ ] ProfilePage 테스트 (4개) - getByRole 에러
-  - [ ] ContactPage 테스트 (11개) - 폼 검증 타임아웃
-  - [ ] SharePage 테스트 (14개) - 비동기 처리 문제
-  - [ ] WebVitalsDashboard 테스트 (5개) - 렌더링 이슈
-
-#### 프로덕션 준비
+#### 백엔드 배포 (최우선)
 
 - [ ] **실제 백엔드 서버 배포** (현재 Mock API 사용 중)
-  - [ ] AWS/Heroku/Railway 중 선택하여 Django 백엔드 배포
+  - [ ] Railway/Render/Heroku 중 선택하여 Django 백엔드 배포
   - [ ] PostgreSQL 데이터베이스 설정
   - [ ] Redis 캐시 서버 구성
   - [ ] 환경변수 설정 (`VITE_API_URL`, `VITE_USE_MOCK_API=false`)
+
+#### 테스트 안정화
+
+- [ ] **773개 스킵된 테스트 복구** (전체의 52%)
+  - [ ] backgroundSync 테스트 (11개) - IndexedDB 타임아웃
+  - [ ] SharePage 테스트 (14개) - 컴포넌트 라이프사이클 타임아웃
+  - [ ] BlogEditor 테스트 (7개) - style.getPropertyValue 에러
+  - [ ] ProfilePage 테스트 (4개) - style.getPropertyValue 에러
+  - [ ] FileUpload 테스트 (3개) - 업로드 시뮬레이션 타임아웃
+
+#### CI/CD 개선
+
+- [ ] **테스트 타임아웃 증가** (15s → 30s)
+- [ ] **CI 메모리 할당 증가** (4GB → 8GB)
+- [ ] **병렬 테스트 실행 최적화**
+- [ ] **테스트 격리 개선** (pool: forks 설정 조정)
 
 ### 🟡 중요 (High Priority) - 1-2주 내
 
@@ -413,7 +452,7 @@ server: {
 
 | 영역                | 현재 상태       | 목표 상태 | 우선순위    |
 | ------------------- | --------------- | --------- | ----------- |
-| **스킵된 테스트**   | 223개           | 0개       | 🔴 Critical |
+| **스킵된 테스트**   | 773개 (52%)     | 0개       | 🔴 Critical |
 | **Mock API 의존**   | 100% (프로덕션) | 0%        | 🔴 Critical |
 | **TypeScript any**  | 약 15개         | 0개       | 🟡 High     |
 | **번들 크기**       | 400KB           | 300KB     | 🟢 Medium   |
@@ -425,7 +464,7 @@ server: {
 
 **2025년 1분기 (Q1)**
 
-- 주 1-2: 테스트 안정화, 백엔드 서버 배포
+- 주 1-2: 백엔드 서버 긴급 배포, 테스트 안정화
 - 주 3-4: 보안 강화, i18n 완성
 - 주 5-8: WebSocket 프로덕션, PWA 검증
 - 주 9-12: 성능 최적화, 테스트 커버리지
@@ -461,7 +500,7 @@ server: {
 
 ## 📚 추가 문서
 
-- [CLAUDE.md](CLAUDE.md) - Claude Code 가이드 (프로젝트 컨벤션)
+- [CLAUDE.md](CLAUDE.md) - Claude Code 가이드 (프로젝트 컨벤션 및 명령어)
 - [CI-CD-README.md](CI-CD-README.md) - CI/CD 파이프라인 문서
 - [Wiki](https://github.com/researcherhojin/emelmujiro/wiki) - 프로젝트 위키
 
