@@ -348,7 +348,7 @@ describe('NotificationPermission', () => {
 
     expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
 
-    const closeButton = screen.getByText('닫기');
+    const closeButton = screen.getByLabelText('닫기');
     fireEvent.click(closeButton);
 
     expect(
