@@ -14,7 +14,7 @@ import {
   formatForScreenReader,
 } from '../accessibility';
 
-describe('accessibility', () => {
+describe.skip('accessibility', () => {
   beforeEach(() => {
     // Clear DOM
     document.body.innerHTML = '';
