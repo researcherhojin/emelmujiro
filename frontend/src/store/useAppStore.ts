@@ -112,7 +112,7 @@ const useAppStore = create<AppStore>()(
         removeNotification: (id) =>
           set((state) => {
             state.notifications = state.notifications.filter(
-              (n) => n.id !== id
+              (n: { id: string }) => n.id !== id
             );
           }),
         clearNotifications: () =>
@@ -153,14 +153,18 @@ const useAppStore = create<AppStore>()(
           }),
         updatePost: (id, updates) =>
           set((state) => {
-            const index = state.posts.findIndex((p) => p.id === id);
+            const index = state.posts.findIndex(
+              (p: { id: string }) => p.id === id
+            );
             if (index !== -1) {
               state.posts[index] = { ...state.posts[index], ...updates };
             }
           }),
         deletePost: (id) =>
           set((state) => {
-            state.posts = state.posts.filter((p) => p.id !== id);
+            state.posts = state.posts.filter(
+              (p: { id: string }) => p.id !== id
+            );
           }),
         selectPost: (id) =>
           set((state) => {
