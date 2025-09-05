@@ -45,12 +45,14 @@
 ### 🎉 v4.0.0 주요 성과 - CI/CD 완전 안정화
 
 #### 📈 개선 내역
+
 - **테스트 복구**: 223개 스킵된 테스트 중 173개 활성화 (77.6% 복구율)
 - **TypeScript 에러**: 27개 → 0개 (100% 해결)
 - **CI/CD 파이프라인**: 모든 단계 성공 (Backend, Frontend, Build, Docker, Deploy)
 - **테스트 안정성**: 716개 활성 테스트 안정적 실행
 
 #### 🔧 기술적 개선
+
 - `test-helpers.tsx` 유틸리티 추가로 getByRole 문제 근본 해결
 - waitFor 타임아웃 5000ms 표준화
 - Docker 빌드 경로 수정 (dist → build)
@@ -310,6 +312,7 @@ server: {
 ### 🔴 긴급 (Critical) - 즉시 해결 필요
 
 #### 테스트 안정화
+
 - [ ] **223개 스킵된 테스트 복구**
   - [ ] BlogSearch 테스트 (9개) - waitFor 타임아웃 문제
   - [ ] ProfilePage 테스트 (4개) - getByRole 에러
@@ -318,6 +321,7 @@ server: {
   - [ ] WebVitalsDashboard 테스트 (5개) - 렌더링 이슈
 
 #### 프로덕션 준비
+
 - [ ] **실제 백엔드 서버 배포** (현재 Mock API 사용 중)
   - [ ] AWS/Heroku/Railway 중 선택하여 Django 백엔드 배포
   - [ ] PostgreSQL 데이터베이스 설정
@@ -327,6 +331,7 @@ server: {
 ### 🟡 중요 (High Priority) - 1-2주 내
 
 #### 보안 강화
+
 - [ ] **인증 토큰 저장 방식 개선**
   ```typescript
   // 현재: localStorage (XSS 취약)
@@ -337,17 +342,20 @@ server: {
 - [ ] 입력값 검증 및 살균 강화
 
 #### i18n 완성
+
 - [ ] **LanguageSwitcher UI 컴포넌트 헤더에 추가**
 - [ ] 하드코딩된 한국어 텍스트 번역 키로 교체 (약 200개 문자열)
 - [ ] 영어 번역 파일 완성 (`en/translation.json`)
 - [ ] 언어 선택 localStorage 저장
 
 #### WebSocket 프로덕션 설정
+
 - [ ] **WebSocket 서버 URL 환경변수화**
   ```typescript
-  const WS_URL = process.env.NODE_ENV === 'production' 
-    ? 'wss://api.emelmujiro.com/ws'
-    : 'ws://localhost:8000/ws';
+  const WS_URL =
+    process.env.NODE_ENV === 'production'
+      ? 'wss://api.emelmujiro.com/ws'
+      : 'ws://localhost:8000/ws';
   ```
 - [ ] 재연결 로직 구현
 - [ ] 연결 상태 모니터링
@@ -355,6 +363,7 @@ server: {
 ### 🟢 일반 (Medium Priority) - 3-4주 내
 
 #### 성능 최적화
+
 - [ ] **번들 크기 최적화** (현재 400KB → 목표 300KB)
   - [ ] 사용하지 않는 의존성 제거
   - [ ] Dynamic imports 확대 적용
@@ -364,12 +373,14 @@ server: {
   - [ ] 테스트 병렬 실행 최적화
 
 #### PWA 기능 검증
+
 - [ ] Service Worker 오프라인 모드 테스트
 - [ ] 푸시 알림 구현 및 테스트
 - [ ] 백그라운드 동기화 실제 구현
 - [ ] 앱 설치 프롬프트 UX 개선
 
 #### 테스트 커버리지
+
 - [ ] 현재 추정 70% → 목표 85%
 - [ ] E2E 테스트 추가 (Playwright)
 - [ ] 통합 테스트 작성
@@ -378,18 +389,21 @@ server: {
 ### 🔵 개선 (Low Priority) - 5-8주 내
 
 #### 관리자 기능
+
 - [ ] 블로그 댓글 관리 시스템
 - [ ] 사용자 분석 대시보드
 - [ ] 실시간 채팅 관리 패널
 - [ ] 컨텐츠 관리 시스템 (CMS)
 
 #### SEO & 접근성
+
 - [ ] 동적 메타태그 생성
 - [ ] 구조화된 데이터 확장
 - [ ] 사이트맵 자동 생성
 - [ ] 접근성 WCAG 2.1 AAA 수준 달성
 
 #### 개발자 경험
+
 - [ ] Storybook 컴포넌트 문서화
 - [ ] API 문서화 (Swagger/OpenAPI)
 - [ ] 개발 가이드 작성
@@ -397,25 +411,27 @@ server: {
 
 ### 📊 기술 부채 해결
 
-| 영역 | 현재 상태 | 목표 상태 | 우선순위 |
-|------|----------|----------|---------|
-| **스킵된 테스트** | 223개 | 0개 | 🔴 Critical |
-| **Mock API 의존** | 100% (프로덕션) | 0% | 🔴 Critical |
-| **TypeScript any** | 약 15개 | 0개 | 🟡 High |
-| **번들 크기** | 400KB | 300KB | 🟢 Medium |
-| **테스트 커버리지** | ~70% | 85%+ | 🟢 Medium |
-| **i18n 적용률** | 30% | 100% | 🟡 High |
-| **보안 취약점** | 3개 | 0개 | 🔴 Critical |
+| 영역                | 현재 상태       | 목표 상태 | 우선순위    |
+| ------------------- | --------------- | --------- | ----------- |
+| **스킵된 테스트**   | 223개           | 0개       | 🔴 Critical |
+| **Mock API 의존**   | 100% (프로덕션) | 0%        | 🔴 Critical |
+| **TypeScript any**  | 약 15개         | 0개       | 🟡 High     |
+| **번들 크기**       | 400KB           | 300KB     | 🟢 Medium   |
+| **테스트 커버리지** | ~70%            | 85%+      | 🟢 Medium   |
+| **i18n 적용률**     | 30%             | 100%      | 🟡 High     |
+| **보안 취약점**     | 3개             | 0개       | 🔴 Critical |
 
 ### 🚀 구현 타임라인
 
 **2025년 1분기 (Q1)**
+
 - 주 1-2: 테스트 안정화, 백엔드 서버 배포
 - 주 3-4: 보안 강화, i18n 완성
 - 주 5-8: WebSocket 프로덕션, PWA 검증
 - 주 9-12: 성능 최적화, 테스트 커버리지
 
 **2025년 2분기 (Q2)**
+
 - 관리자 기능 구현
 - SEO 최적화
 - 문서화 완성
