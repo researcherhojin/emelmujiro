@@ -67,7 +67,7 @@ jobs:
           cache-dependency-path: frontend/yarn.lock
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
@@ -131,7 +131,7 @@ jobs:
 
       - name: Setup Python
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
