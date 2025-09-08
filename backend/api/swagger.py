@@ -5,7 +5,7 @@ from rest_framework import permissions
 schema_view = get_schema_view(
     openapi.Info(
         title="Emelmujiro API",
-        default_version='v1',
+        default_version="v1",
         description="""
         # Emelmujiro API Documentation
 
@@ -45,9 +45,7 @@ schema_view = get_schema_view(
         """,
         terms_of_service="https://emelmujiro.com/terms/",
         contact=openapi.Contact(
-            name="Emelmujiro Support",
-            email="researcherhojin@gmail.com",
-            url="https://emelmujiro.com"
+            name="Emelmujiro Support", email="researcherhojin@gmail.com", url="https://emelmujiro.com"
         ),
         license=openapi.License(name="MIT License"),
     ),
@@ -58,39 +56,23 @@ schema_view = get_schema_view(
 
 # Custom parameters for common use
 auth_header = openapi.Parameter(
-    'Authorization',
+    "Authorization",
     openapi.IN_HEADER,
     description="JWT Token (Bearer <token>)",
     type=openapi.TYPE_STRING,
-    required=True
+    required=True,
 )
 
 page_param = openapi.Parameter(
-    'page',
-    openapi.IN_QUERY,
-    description="Page number",
-    type=openapi.TYPE_INTEGER,
-    default=1
+    "page", openapi.IN_QUERY, description="Page number", type=openapi.TYPE_INTEGER, default=1
 )
 
 page_size_param = openapi.Parameter(
-    'page_size',
-    openapi.IN_QUERY,
-    description="Number of items per page",
-    type=openapi.TYPE_INTEGER,
-    default=10
+    "page_size", openapi.IN_QUERY, description="Number of items per page", type=openapi.TYPE_INTEGER, default=10
 )
 
-search_param = openapi.Parameter(
-    'search',
-    openapi.IN_QUERY,
-    description="Search query",
-    type=openapi.TYPE_STRING
-)
+search_param = openapi.Parameter("search", openapi.IN_QUERY, description="Search query", type=openapi.TYPE_STRING)
 
 category_param = openapi.Parameter(
-    'category',
-    openapi.IN_QUERY,
-    description="Category filter",
-    type=openapi.TYPE_STRING
+    "category", openapi.IN_QUERY, description="Category filter", type=openapi.TYPE_STRING
 )

@@ -49,10 +49,7 @@ class Command(BaseCommand):
         if not settings.ALLOWED_HOSTS or "localhost" in str(settings.ALLOWED_HOSTS):
             issues.append("⚠️  ALLOWED_HOSTS가 프로덕션용으로 설정되지 않았습니다.")
 
-        if (
-            hasattr(settings, "CORS_ALLOW_ALL_ORIGINS")
-            and settings.CORS_ALLOW_ALL_ORIGINS
-        ):
+        if hasattr(settings, "CORS_ALLOW_ALL_ORIGINS") and settings.CORS_ALLOW_ALL_ORIGINS:
             issues.append("⚠️  CORS_ALLOW_ALL_ORIGINS이 True로 설정되어 있습니다.")
 
         # 2. 보안 헤더 확인
@@ -78,9 +75,7 @@ class Command(BaseCommand):
             for issue in issues:
                 self.stdout.write(f"  {issue}")
         else:
-            self.stdout.write(
-                self.style.SUCCESS("✅ 주요 보안 설정이 올바르게 구성되었습니다.")
-            )
+            self.stdout.write(self.style.SUCCESS("✅ 주요 보안 설정이 올바르게 구성되었습니다."))
 
     def clean_old_logs(self):
         """오래된 로그 정리"""
@@ -97,18 +92,12 @@ class Command(BaseCommand):
                 cache.delete(key)
                 cleaned_count += 1
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"✅ {cleaned_count}개의 오래된 캐시 항목이 정리되었습니다."
-            )
-        )
+        self.stdout.write(self.style.SUCCESS(f"✅ {cleaned_count}개의 오래된 캐시 항목이 정리되었습니다."))
 
     def unblock_ip(self, ip_address):
         """IP 차단 해제"""
         if not ip_address:
-            self.stdout.write(
-                self.style.ERROR("IP 주소를 제공해주세요. --ip 옵션을 사용하세요.")
-            )
+            self.stdout.write(self.style.ERROR("IP 주소를 제공해주세요. --ip 옵션을 사용하세요."))
             return
 
         self.stdout.write(self.style.SUCCESS(f"=== IP 차단 해제: {ip_address} ==="))
@@ -142,17 +131,13 @@ class Command(BaseCommand):
         try:
             # 오늘의 통계
             today = timezone.now().date()
-            today_contacts = ContactAttempt.objects.filter(
-                attempted_at__date=today
-            ).count()
+            today_contacts = ContactAttempt.objects.filter(attempted_at__date=today).count()
 
             today_visits = SiteVisit.objects.filter(visited_at__date=today).count()
 
             # 주간 통계
             week_ago = timezone.now() - timedelta(days=7)
-            week_contacts = ContactAttempt.objects.filter(
-                attempted_at__gte=week_ago
-            ).count()
+            week_contacts = ContactAttempt.objects.filter(attempted_at__gte=week_ago).count()
 
             # 차단된 IP 통계 (캐시에서 확인)
             blocked_ips_count = 0

@@ -165,9 +165,7 @@ class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(category=category)
         if search:
             queryset = queryset.filter(
-                Q(title__icontains=search)
-                | Q(description__icontains=search)
-                | Q(content__icontains=search)
+                Q(title__icontains=search) | Q(description__icontains=search) | Q(content__icontains=search)
             )
         if featured and featured.lower() == "true":
             queryset = queryset.filter(is_featured=True)
@@ -183,14 +181,10 @@ class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
         # 조회수 증가 (하루에 한 번만)
         instance = self.get_object()
         ip_address = get_client_ip(request)
-        cache_key = (
-            f"blog_view_{instance.id}_{hashlib.md5(ip_address.encode()).hexdigest()}"
-        )
+        cache_key = f"blog_view_{instance.id}_{hashlib.md5(ip_address.encode()).hexdigest()}"
 
         if not cache.get(cache_key):
-            BlogPost.objects.filter(id=instance.id).update(
-                view_count=F("view_count") + 1
-            )
+            BlogPost.objects.filter(id=instance.id).update(view_count=F("view_count") + 1)
             cache.set(cache_key, True, timeout=86400)  # 24시간
 
         return response
@@ -216,9 +210,7 @@ class CategoryListView(APIView):
 
         category_data = []
         for cat in categories:
-            category_choice = dict(BlogPost.CATEGORY_CHOICES).get(
-                cat["category"], cat["category"]
-            )
+            category_choice = dict(BlogPost.CATEGORY_CHOICES).get(cat["category"], cat["category"])
             category_data.append(
                 {
                     "value": cat["category"],
@@ -287,9 +279,7 @@ class ContactView(APIView):
             self._log_contact_attempt(ip_address, email, True)
 
             return Response(
-                {
-                    "message": "문의가 성공적으로 접수되었습니다. 빠른 시일 내에 답변드리겠습니다."
-                },
+                {"message": "문의가 성공적으로 접수되었습니다. 빠른 시일 내에 답변드리겠습니다."},
                 status=status.HTTP_201_CREATED,
             )
 
@@ -303,9 +293,7 @@ class ContactView(APIView):
             self._log_contact_attempt(ip_address, email, False)
             logger.error(f"Contact form error: {str(e)}")
             return Response(
-                {
-                    "error": "문의 접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
-                },
+                {"error": "문의 접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
@@ -449,9 +437,7 @@ class NewsletterView(APIView):
                     )
 
             # 새 구독 생성
-            NewsletterSubscription.objects.create(
-                email=email, name=name, ip_address=ip_address
-            )
+            NewsletterSubscription.objects.create(email=email, name=name, ip_address=ip_address)
 
             return Response(
                 {"message": "뉴스레터 구독이 완료되었습니다."},
@@ -477,9 +463,7 @@ def health_check(request):
 def send_test_email(request):
     """개발용 테스트 이메일 (DEBUG 모드에서만)"""
     if not settings.DEBUG:
-        return Response(
-            {"error": "이 기능은 개발 모드에서만 사용할 수 있습니다."}, status=403
-        )
+        return Response({"error": "이 기능은 개발 모드에서만 사용할 수 있습니다."}, status=403)
 
     try:
         send_mail(
@@ -489,9 +473,7 @@ def send_test_email(request):
             recipient_list=[settings.ADMIN_EMAIL],
             fail_silently=False,
         )
-        return Response(
-            {"message": "테스트 이메일이 성공적으로 전송되었습니다."}, status=200
-        )
+        return Response({"message": "테스트 이메일이 성공적으로 전송되었습니다."}, status=200)
     except BadHeaderError:
         return Response({"error": "잘못된 이메일 헤더입니다."}, status=400)
     except Exception as e:
