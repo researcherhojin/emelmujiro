@@ -272,6 +272,25 @@
       // Performance timing
       window.performanceStart = Date.now();
 
+      // Clean up old service workers and caches
+      if (
+        'serviceWorker' in navigator &&
+        window.location.hostname !== 'localhost'
+      ) {
+        navigator.serviceWorker
+          .getRegistrations()
+          .then(function (registrations) {
+            registrations.forEach(function (registration) {
+              if (
+                registration.scope.includes('/emelmujiro/') &&
+                !registration.active?.scriptURL?.includes('/sw.js')
+              ) {
+                registration.unregister();
+              }
+            });
+          });
+      }
+
       // Service Worker registration is handled by Vite PWA plugin
       // The Vite PWA plugin will automatically register the service worker
       // and manage caching strategies
