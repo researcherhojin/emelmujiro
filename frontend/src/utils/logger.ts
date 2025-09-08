@@ -155,7 +155,7 @@ class Logger {
 // 싱글톤 인스턴스
 const logger = new Logger({
   enableInProduction: process.env.REACT_APP_ENABLE_LOGGING === 'true',
-  logLevel: (process.env.REACT_APP_LOG_LEVEL as LogLevel) || 'info',
+  logLevel: (process.env.REACT_APP_LOG_LEVEL as LogLevel) || 'error', // Only show errors by default
 });
 
 export default logger;

@@ -20,7 +20,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'ko',
-    debug: process.env.NODE_ENV === 'development',
+    debug: false, // Disable debug logs
 
     interpolation: {
       escapeValue: false,
