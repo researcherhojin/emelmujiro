@@ -14,10 +14,7 @@ node_modules/
 package-lock.json
 yarn.lock
 
-# XML and Sitemap files (Prettier XML plugin issues)
-*.xml
-sitemap.xml
-sitemap-index.xml
+# Robot files
 robots.txt
 
 # Python files
