@@ -97,9 +97,7 @@ class ContactSerializer(serializers.ModelSerializer):
 
         # 특수문자 제한
         if not re.match(r"^[a-zA-Z가-힣\s]+$", value.strip()):
-            raise serializers.ValidationError(
-                "이름에는 한글, 영문, 공백만 사용할 수 있습니다."
-            )
+            raise serializers.ValidationError("이름에는 한글, 영문, 공백만 사용할 수 있습니다.")
 
         return value.strip()
 
@@ -127,13 +125,9 @@ class ContactSerializer(serializers.ModelSerializer):
         clean_phone = re.sub(r"\s+", "", value)
 
         # 한국 전화번호 패턴 검증
-        korean_phone_pattern = (
-            r"^(01[016789]|02|0[3-9][0-9]?)[-]?[0-9]{3,4}[-]?[0-9]{4}$"
-        )
+        korean_phone_pattern = r"^(01[016789]|02|0[3-9][0-9]?)[-]?[0-9]{3,4}[-]?[0-9]{4}$"
         if not re.match(korean_phone_pattern, clean_phone):
-            raise serializers.ValidationError(
-                "올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)"
-            )
+            raise serializers.ValidationError("올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)")
 
         return clean_phone
 
@@ -150,14 +144,10 @@ class ContactSerializer(serializers.ModelSerializer):
     def validate_message(self, value):
         """메시지 검증"""
         if len(value.strip()) < 10:
-            raise serializers.ValidationError(
-                "문의 내용은 최소 10자 이상이어야 합니다."
-            )
+            raise serializers.ValidationError("문의 내용은 최소 10자 이상이어야 합니다.")
 
         if len(value) > 2000:
-            raise serializers.ValidationError(
-                "문의 내용은 2000자를 초과할 수 없습니다."
-            )
+            raise serializers.ValidationError("문의 내용은 2000자를 초과할 수 없습니다.")
 
         # 스팸 키워드 체크
         spam_keywords = ["대출", "투자", "수익", "홍보", "광고", "마케팅"]
@@ -165,9 +155,7 @@ class ContactSerializer(serializers.ModelSerializer):
 
         spam_count = sum(1 for keyword in spam_keywords if keyword in message_lower)
         if spam_count >= 2:
-            raise serializers.ValidationError(
-                "스팸으로 의심되는 내용이 포함되어 있습니다."
-            )
+            raise serializers.ValidationError("스팸으로 의심되는 내용이 포함되어 있습니다.")
 
         return value.strip()
 
@@ -206,9 +194,7 @@ class NewsletterSubscriptionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("이름은 최소 2자 이상이어야 합니다.")
 
         if value and not re.match(r"^[a-zA-Z가-힣\s]+$", value.strip()):
-            raise serializers.ValidationError(
-                "이름에는 한글, 영문, 공백만 사용할 수 있습니다."
-            )
+            raise serializers.ValidationError("이름에는 한글, 영문, 공백만 사용할 수 있습니다.")
 
         return value.strip() if value else value
 

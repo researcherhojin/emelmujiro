@@ -123,9 +123,7 @@ class NewsletterAPITestCase(APITestCase):
 
     def test_duplicate_newsletter_subscription(self):
         """Test duplicate newsletter subscription"""
-        NewsletterSubscription.objects.create(
-            email="subscriber@example.com", name="First Subscriber"
-        )
+        NewsletterSubscription.objects.create(email="subscriber@example.com", name="First Subscriber")
         url = reverse("newsletter-subscribe")
         data = {"email": "subscriber@example.com", "name": "Second Subscriber"}
         response: Response = self.client.post(url, data, format="json")  # type: ignore
@@ -136,9 +134,7 @@ class AuthenticationAPITestCase(APITestCase):
     """Tests for Authentication API endpoints"""
 
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
 
     def test_user_registration(self):
         """Test user registration"""

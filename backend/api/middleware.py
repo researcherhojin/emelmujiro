@@ -31,9 +31,7 @@ class SecurityMiddleware(MiddlewareMixin):
         ]
 
         # 컴파일된 패턴
-        self.compiled_patterns = [
-            re.compile(pattern, re.IGNORECASE) for pattern in self.malicious_patterns
-        ]
+        self.compiled_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.malicious_patterns]
 
     def process_request(self, request):
         """요청 전처리"""
@@ -47,15 +45,11 @@ class SecurityMiddleware(MiddlewareMixin):
         # Rate limiting 체크
         if self.is_rate_limited(ip_address):
             logger.warning(f"Rate limited IP: {ip_address}")
-            return JsonResponse(
-                {"error": "Too many requests. Please try again later."}, status=429
-            )
+            return JsonResponse({"error": "Too many requests. Please try again later."}, status=429)
 
         # 악성 요청 패턴 체크
         if self.contains_malicious_content(request):
-            logger.error(
-                f"Malicious request detected from {ip_address}: {request.path}"
-            )
+            logger.error(f"Malicious request detected from {ip_address}: {request.path}")
             self.block_ip_temporarily(ip_address)
             return HttpResponseForbidden("Malicious request detected")
 
@@ -132,9 +126,7 @@ class SecurityMiddleware(MiddlewareMixin):
 
         # 3회 이상 차단 시 영구 차단 검토
         if block_count >= 3:
-            logger.critical(
-                f"IP {ip_address} blocked {block_count} times. Consider permanent block."
-            )
+            logger.critical(f"IP {ip_address} blocked {block_count} times. Consider permanent block.")
 
     def log_request(self, request, ip_address):
         """요청 로깅"""
@@ -142,9 +134,7 @@ class SecurityMiddleware(MiddlewareMixin):
         sensitive_paths = ["/api/contact/", "/admin/"]
 
         if request.path in sensitive_paths:
-            logger.info(
-                f"Sensitive endpoint accessed: {request.path} from {ip_address}"
-            )
+            logger.info(f"Sensitive endpoint accessed: {request.path} from {ip_address}")
 
 
 class ContentSecurityMiddleware(MiddlewareMixin):

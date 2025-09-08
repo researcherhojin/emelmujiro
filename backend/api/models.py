@@ -22,16 +22,10 @@ class BlogPost(models.Model):
     title = models.CharField(max_length=200, verbose_name="제목")
     description = models.TextField(verbose_name="설명")
     content = models.TextField(verbose_name="내용")
-    category = models.CharField(
-        max_length=50, choices=CATEGORY_CHOICES, verbose_name="카테고리"
-    )
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, verbose_name="카테고리")
     date = models.DateTimeField(default=timezone.now, verbose_name="작성일")
-    image_url = models.URLField(
-        blank=True, null=True, validators=[URLValidator()], verbose_name="이미지 URL"
-    )
-    link = models.URLField(
-        blank=True, null=True, validators=[URLValidator()], verbose_name="관련 링크"
-    )
+    image_url = models.URLField(blank=True, null=True, validators=[URLValidator()], verbose_name="이미지 URL")
+    link = models.URLField(blank=True, null=True, validators=[URLValidator()], verbose_name="관련 링크")
     is_published = models.BooleanField(default=True, verbose_name="공개 여부")
     is_featured = models.BooleanField(default=False, verbose_name="추천 글")
     view_count = models.PositiveIntegerField(default=0, verbose_name="조회수")
@@ -70,16 +64,12 @@ class Contact(models.Model):
     )
     subject = models.CharField(max_length=200, verbose_name="제목")
     message = models.TextField(verbose_name="내용")
-    ip_address = models.GenericIPAddressField(
-        null=True, blank=True, verbose_name="IP 주소"
-    )
+    ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name="IP 주소")
     user_agent = models.TextField(blank=True, verbose_name="사용자 에이전트")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="문의일")
     is_processed = models.BooleanField(default=False, verbose_name="처리 여부")
     processed_at = models.DateTimeField(null=True, blank=True, verbose_name="처리일")
-    processed_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="처리자"
-    )
+    processed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="처리자")
     notes = models.TextField(blank=True, verbose_name="관리자 메모")
 
     class Meta:
@@ -99,9 +89,7 @@ class ContactAttempt(models.Model):
     attempt_count = models.PositiveIntegerField(default=1, verbose_name="시도 횟수")
     last_attempt = models.DateTimeField(auto_now=True, verbose_name="마지막 시도")
     is_blocked = models.BooleanField(default=False, verbose_name="차단 여부")
-    block_reason = models.CharField(
-        max_length=200, blank=True, verbose_name="차단 사유"
-    )
+    block_reason = models.CharField(max_length=200, blank=True, verbose_name="차단 사유")
 
     class Meta:
         unique_together = ["ip_address", "email"]
@@ -141,15 +129,9 @@ class NewsletterSubscription(models.Model):
     name = models.CharField(max_length=100, blank=True, verbose_name="이름")
     is_active = models.BooleanField(default=True, verbose_name="구독 활성화")
     subscribed_at = models.DateTimeField(auto_now_add=True, verbose_name="구독일")
-    unsubscribed_at = models.DateTimeField(
-        null=True, blank=True, verbose_name="구독 해지일"
-    )
-    unsubscribe_token = models.UUIDField(
-        default=uuid.uuid4, verbose_name="구독 해지 토큰"
-    )
-    ip_address = models.GenericIPAddressField(
-        null=True, blank=True, verbose_name="IP 주소"
-    )
+    unsubscribed_at = models.DateTimeField(null=True, blank=True, verbose_name="구독 해지일")
+    unsubscribe_token = models.UUIDField(default=uuid.uuid4, verbose_name="구독 해지 토큰")
+    ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name="IP 주소")
 
     class Meta:
         verbose_name = "뉴스레터 구독"

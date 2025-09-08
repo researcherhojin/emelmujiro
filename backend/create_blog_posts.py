@@ -8,7 +8,7 @@ import django
 from datetime import datetime, timedelta
 
 # Django 설정
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 django.setup()
 
@@ -20,10 +20,10 @@ User = get_user_model()
 
 # 관리자 사용자 가져오기
 try:
-    author = User.objects.get(username='admin')
+    author = User.objects.get(username="admin")
 except User.DoesNotExist:
     print("Admin user not found. Creating one...")
-    author = User.objects.create_superuser('admin', 'admin@emelmujiro.com', 'admin123')
+    author = User.objects.create_superuser("admin", "admin@emelmujiro.com", "admin123")
 
 # BlogPost 모델의 CATEGORY_CHOICES 활용
 # ai, ml, ds, nlp, cv, rl, education, career, project, other
@@ -31,10 +31,10 @@ except User.DoesNotExist:
 # AI 관련 블로그 포스트 데이터
 blog_posts_data = [
     {
-        'title': '2025년 AI 트렌드: ChatGPT를 넘어서',
-        'description': 'ChatGPT의 등장 이후 AI 산업은 급격히 변화하고 있습니다. 2025년 주목해야 할 AI 트렌드를 살펴봅니다.',
-        'category': 'ai',
-        'content': '''
+        "title": "2025년 AI 트렌드: ChatGPT를 넘어서",
+        "description": "ChatGPT의 등장 이후 AI 산업은 급격히 변화하고 있습니다. 2025년 주목해야 할 AI 트렌드를 살펴봅니다.",
+        "category": "ai",
+        "content": """
 # 2025년 AI 트렌드: ChatGPT를 넘어서
 
 2024년이 ChatGPT와 생성형 AI의 해였다면, 2025년은 AI가 더욱 깊이 우리 일상에 스며드는 해가 될 것입니다.
@@ -92,16 +92,16 @@ EU의 AI Act를 시작으로 전 세계적으로 AI 규제가 본격화됩니다
 2025년은 AI가 '신기한 기술'에서 '필수 도구'로 전환되는 중요한 시기가 될 것입니다. 기업과 개인 모두 이러한 변화에 적응하고 AI를 효과적으로 활용하는 방법을 배워야 합니다.
 
 에멜무지로는 이러한 AI 혁신의 최전선에서 여러분의 비즈니스가 AI를 효과적으로 활용할 수 있도록 돕겠습니다.
-        ''',
-        'is_published': True,
-        'is_featured': True,
-        'view_count': 342,
+        """,
+        "is_published": True,
+        "is_featured": True,
+        "view_count": 342,
     },
     {
-        'title': 'ChatGPT API 활용 가이드: 실전 예제와 함께',
-        'description': 'ChatGPT API를 실제 프로젝트에 적용하는 방법을 코드 예제와 함께 상세히 설명합니다.',
-        'category': 'nlp',
-        'content': '''
+        "title": "ChatGPT API 활용 가이드: 실전 예제와 함께",
+        "description": "ChatGPT API를 실제 프로젝트에 적용하는 방법을 코드 예제와 함께 상세히 설명합니다.",
+        "category": "nlp",
+        "content": '''
 # ChatGPT API 활용 가이드: 실전 예제와 함께
 
 OpenAI의 ChatGPT API는 개발자들에게 강력한 AI 기능을 제공합니다. 이 가이드에서는 실제 프로젝트에 ChatGPT API를 통합하는 방법을 알아봅니다.
@@ -337,15 +337,15 @@ ChatGPT API는 강력한 도구이지만, 효과적으로 사용하려면 적절
 
 에멜무지로는 ChatGPT API를 활용한 맞춤형 솔루션 개발을 지원합니다. 문의사항이 있으시면 언제든 연락주세요.
         ''',
-        'is_published': True,
-        'is_featured': True,
-        'view_count': 523,
+        "is_published": True,
+        "is_featured": True,
+        "view_count": 523,
     },
     {
-        'title': 'AI가 바꾸는 교육의 미래: 개인 맞춤형 학습의 시대',
-        'description': 'AI 기술이 교육 분야에 가져온 혁신과 개인 맞춤형 학습의 가능성을 탐구합니다.',
-        'category': 'education',
-        'content': '''
+        "title": "AI가 바꾸는 교육의 미래: 개인 맞춤형 학습의 시대",
+        "description": "AI 기술이 교육 분야에 가져온 혁신과 개인 맞춤형 학습의 가능성을 탐구합니다.",
+        "category": "education",
+        "content": '''
 # AI가 바꾸는 교육의 미래: 개인 맞춤형 학습의 시대
 
 교육은 인류 역사상 가장 중요한 활동 중 하나입니다. 이제 AI가 이 교육의 패러다임을 근본적으로 바꾸고 있습니다.
@@ -573,14 +573,14 @@ AI는 교육을 민주화하고 개인화하는 강력한 도구입니다. 모�
 
 에멜무지로는 AI 교육 혁신의 선두에서 교육 기관과 기업의 디지털 전환을 지원합니다. 함께 교육의 미래를 만들어가겠습니다.
         ''',
-        'is_published': True,
-        'view_count': 267,
+        "is_published": True,
+        "view_count": 267,
     },
     {
-        'title': 'LangChain으로 구축하는 지능형 챗봇: 단계별 가이드',
-        'description': 'LangChain 프레임워크를 사용하여 문서 기반 지능형 챗봇을 구축하는 방법을 상세히 알아봅니다.',
-        'category': 'nlp',
-        'content': '''
+        "title": "LangChain으로 구축하는 지능형 챗봇: 단계별 가이드",
+        "description": "LangChain 프레임워크를 사용하여 문서 기반 지능형 챗봇을 구축하는 방법을 상세히 알아봅니다.",
+        "category": "nlp",
+        "content": '''
 # LangChain으로 구축하는 지능형 챗봇: 단계별 가이드
 
 LangChain은 대규모 언어 모델(LLM)을 활용한 애플리케이션 개발을 위한 강력한 프레임워크입니다. 이 가이드에서는 LangChain을 사용하여 실제 문서를 기반으로 답변하는 지능형 챗봇을 구축합니다.
@@ -1010,15 +1010,15 @@ LangChain을 사용하면 강력한 문서 기반 챗봇을 쉽게 구축할 수
 
 에멜무지로는 LangChain을 활용한 기업용 AI 솔루션 개발을 전문으로 합니다. 맞춤형 챗봇 구축이 필요하시면 언제든 문의해주세요.
         ''',
-        'is_published': True,
-        'is_featured': True,
-        'view_count': 412,
+        "is_published": True,
+        "is_featured": True,
+        "view_count": 412,
     },
     {
-        'title': 'AI 윤리: 우리가 반드시 고민해야 할 문제들',
-        'description': 'AI 기술이 발전하면서 우리가 직면한 윤리적 딜레마와 해결 방안을 탐구합니다.',
-        'category': 'other',
-        'content': '''
+        "title": "AI 윤리: 우리가 반드시 고민해야 할 문제들",
+        "description": "AI 기술이 발전하면서 우리가 직면한 윤리적 딜레마와 해결 방안을 탐구합니다.",
+        "category": "other",
+        "content": '''
 # AI 윤리: 우리가 반드시 고민해야 할 문제들
 
 AI 기술이 급속도로 발전하면서 우리 사회는 전례 없는 윤리적 도전에 직면하고 있습니다. 이제는 "AI로 무엇을 할 수 있는가?"보다 "AI로 무엇을 해야 하는가?"를 묻는 시대입니다.
@@ -1417,19 +1417,17 @@ AI 윤리는 선택이 아닌 필수입니다. 기술의 발전 속도만큼 윤
 
 **"The question is not whether we can build AI, but whether we should, and if so, how we can do it responsibly."**
         ''',
-        'is_published': True,
-        'view_count': 189,
+        "is_published": True,
+        "view_count": 189,
     },
 ]
 
 # 블로그 포스트 생성
 for i, post_data in enumerate(blog_posts_data):
     # 제목으로 중복 체크
-    if not BlogPost.objects.filter(title=post_data['title']).exists():
+    if not BlogPost.objects.filter(title=post_data["title"]).exists():
         # 포스트 생성
-        post = BlogPost.objects.create(
-            **post_data
-        )
+        post = BlogPost.objects.create(**post_data)
 
         # 생성 시간을 과거로 조정 (더 자연스럽게)
         days_ago = (len(blog_posts_data) - i) * 3

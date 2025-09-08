@@ -68,26 +68,18 @@ class ContactAdmin(admin.ModelAdmin):
 
     def ip_address_short(self, obj):
         if obj.ip_address:
-            return (
-                obj.ip_address[:15] + "..."
-                if len(obj.ip_address) > 15
-                else obj.ip_address
-            )
+            return obj.ip_address[:15] + "..." if len(obj.ip_address) > 15 else obj.ip_address
         return "-"
 
     ip_address_short.short_description = "IP 주소"
 
     def mark_as_processed(self, request, queryset):
-        queryset.update(
-            is_processed=True, processed_at=timezone.now(), processed_by=request.user
-        )
+        queryset.update(is_processed=True, processed_at=timezone.now(), processed_by=request.user)
         self.message_user(request, f"{queryset.count()}개의 문의가 처리되었습니다.")
 
     def mark_as_unprocessed(self, request, queryset):
         queryset.update(is_processed=False, processed_at=None, processed_by=None)
-        self.message_user(
-            request, f"{queryset.count()}개의 문의가 미처리 상태로 변경되었습니다."
-        )
+        self.message_user(request, f"{queryset.count()}개의 문의가 미처리 상태로 변경되었습니다.")
 
     mark_as_processed.short_description = "선택된 문의를 처리 완료 상태로 변경"
     mark_as_unprocessed.short_description = "선택된 문의를 미처리 상태로 변경"
@@ -109,15 +101,11 @@ class ContactAttemptAdmin(admin.ModelAdmin):
 
     def block_attempts(self, request, queryset):
         queryset.update(is_blocked=True, block_reason="관리자에 의한 차단")
-        self.message_user(
-            request, f"{queryset.count()}개의 IP/이메일이 차단되었습니다."
-        )
+        self.message_user(request, f"{queryset.count()}개의 IP/이메일이 차단되었습니다.")
 
     def unblock_attempts(self, request, queryset):
         queryset.update(is_blocked=False, block_reason="")
-        self.message_user(
-            request, f"{queryset.count()}개의 IP/이메일 차단이 해제되었습니다."
-        )
+        self.message_user(request, f"{queryset.count()}개의 IP/이메일 차단이 해제되었습니다.")
 
     block_attempts.short_description = "선택된 항목 차단"
     unblock_attempts.short_description = "선택된 항목 차단 해제"
@@ -171,11 +159,7 @@ class NewsletterSubscriptionAdmin(admin.ModelAdmin):
 
     def ip_address_short(self, obj):
         if obj.ip_address:
-            return (
-                obj.ip_address[:15] + "..."
-                if len(obj.ip_address) > 15
-                else obj.ip_address
-            )
+            return obj.ip_address[:15] + "..." if len(obj.ip_address) > 15 else obj.ip_address
         return "-"
 
     ip_address_short.short_description = "IP 주소"
