@@ -272,6 +272,22 @@
       // Performance timing
       window.performanceStart = Date.now();
 
+      // Suppress React DevTools errors in production
+      if (window.location.hostname !== 'localhost') {
+        const originalError = console.error;
+        console.error = function(...args) {
+          // Filter out React DevTools errors
+          const errorString = args.join(' ');
+          if (errorString.includes('react-devtools') || 
+              errorString.includes('react-dom.js') ||
+              errorString.includes('static/js/main') ||
+              errorString.includes('static/css/main')) {
+            return; // Suppress these errors
+          }
+          originalError.apply(console, args);
+        };
+      }
+
       // Clean up old service workers and caches
       if (
         'serviceWorker' in navigator &&
