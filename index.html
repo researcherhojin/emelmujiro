@@ -85,18 +85,8 @@
     <link rel="prefetch" href="/emelmujiro/manifest.json" />
 
     <!-- Preload critical images -->
-    <link
-      rel="preload"
-      href="/emelmujiro/logo192.png"
-      as="image"
-      type="image/png"
-    />
-    <link
-      rel="preload"
-      href="/emelmujiro/logo512.png"
-      as="image"
-      type="image/png"
-    />
+    <link rel="preload" href="/emelmujiro/logo192.png" as="image" type="image/png" />
+    <link rel="preload" href="/emelmujiro/logo512.png" as="image" type="image/png" />
 
     <!-- Fonts with optimized loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -259,7 +249,7 @@
         }
       }
     </script>
-    <script type="module" crossorigin src="/emelmujiro/assets/index-BP7P1ltd.js"></script>
+    <script type="module" crossorigin src="/emelmujiro/assets/index-BM4l87xM.js"></script>
     <link rel="modulepreload" crossorigin href="/emelmujiro/assets/react-vendor-CcblIELh.js">
     <link rel="modulepreload" crossorigin href="/emelmujiro/assets/ui-vendor-dPCV3Ya0.js">
     <link rel="modulepreload" crossorigin href="/emelmujiro/assets/i18n-BLYQbxJl.js">
@@ -282,19 +272,9 @@
       // Performance timing
       window.performanceStart = Date.now();
 
-      // Service Worker registration
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker
-            .register('/service-worker-enhanced.js')
-            .then((registration) => {
-              // Service Worker registered successfully
-            })
-            .catch((error) => {
-              // SW registration failed
-            });
-        });
-      }
+      // Service Worker registration is handled by Vite PWA plugin
+      // The Vite PWA plugin will automatically register the service worker
+      // and manage caching strategies
 
       // Font loading is handled by CSS link tag above
       // The @font-face rules in the CSS file will handle the font loading
