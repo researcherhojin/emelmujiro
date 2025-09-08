@@ -1,0 +1,36 @@
+# Build output
+build/
+dist/
+coverage/
+node_modules/
+
+# Test files
+*.test.js
+*.spec.js
+*.test.ts
+*.spec.ts
+
+# Package files
+package-lock.json
+yarn.lock
+
+# XML and Sitemap files (Prettier XML plugin issues)
+*.xml
+sitemap.xml
+sitemap-index.xml
+robots.txt
+
+# Python files
+*.py
+*.pyc
+__pycache__/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+
+# Other
+*.log
+*.svg
+.DS_Store
+.env*

@@ -17,6 +17,7 @@ Emelmujiro (에멜무지로) is a full-stack web application for an AI Education
 ## Essential Commands
 
 ### Quick Start
+
 ```bash
 # Install all dependencies
 npm install
@@ -38,7 +39,8 @@ npm run dev:safe           # Kills all on any failure
 
 # Individual services
 cd frontend && npm run dev  # Frontend only (Vite dev server on port 5173)
-cd backend && python manage.py runserver  # Backend only (Django on port 8000)
+cd frontend && npm start    # Alias for npm run dev
+cd backend && python3 manage.py runserver  # Backend only (Django on port 8000)
 
 # Docker development
 npm run dev:docker          # Uses ./scripts/start-dev.sh
@@ -48,7 +50,7 @@ docker compose up -d        # Direct docker compose
 lsof -ti:5173 | xargs kill -9  # Kill Vite dev server
 lsof -ti:4173 | xargs kill -9  # Kill Vite preview
 lsof -ti:8000 | xargs kill -9  # Kill Django server
-./scripts/kill-ports.sh         # Kill all at once
+./scripts/kill-ports.sh         # Kill all at once (if exists)
 ```
 
 ### Testing
@@ -75,7 +77,7 @@ cd frontend && CI=true npm test -- --run --reporter=verbose
 cd frontend && CI=true npm test -- --run src/components/common/__tests__/
 
 # Backend tests
-cd backend && python manage.py test
+cd backend && python3 manage.py test
 npm run test:backend  # From root
 ```
 
@@ -127,6 +129,7 @@ cd frontend && npm run validate  # Runs lint, type-check, and test:coverage
 ### Frontend (React + TypeScript + Vite)
 
 **Core Technologies:**
+
 - React 19.1.1 with TypeScript 5.9.2 (strict mode)
 - Vite 7.1.3 for build tooling (HMR in ~171ms)
 - Vitest 3.2.4 for testing with React Testing Library
@@ -134,6 +137,7 @@ cd frontend && npm run validate  # Runs lint, type-check, and test:coverage
 - Zustand 5.0.8 for state management
 
 **Key Directories:**
+
 ```
 frontend/src/
 ├── components/     # React components organized by feature
@@ -148,12 +152,14 @@ frontend/src/
 ```
 
 **Important Files:**
+
 - `vite.config.ts`: Base path `/emelmujiro/`, port 5173, API proxy to :8000
 - `vitest.config.ts`: Test config with forks pool, 15s timeout in CI
 - `tsconfig.json`: Path alias `@/` → `src/`, ES2020 target
 - Entry point: `src/main.tsx` (not index.tsx)
 
 **State Management:**
+
 - Zustand store at `src/store/useAppStore.ts` with slices:
   - UI slice: Theme, loading, modals
   - Auth slice: User, tokens, permissions
@@ -162,11 +168,13 @@ frontend/src/
 - Context API for component-level state (UIContext, AuthContext, BlogContext, FormContext)
 
 **Routing:**
+
 - HashRouter for GitHub Pages compatibility
 - Lazy loading for code splitting
 - Protected routes with auth guard
 
 **API Integration:**
+
 - Centralized in `src/services/api.ts`
 - Mock API support via `VITE_USE_MOCK_API` env variable
 - WebSocket in `src/services/websocket.ts`
@@ -175,6 +183,7 @@ frontend/src/
 ### Backend (Django + DRF)
 
 **Core Technologies:**
+
 - Django 5.2.5 with Django REST Framework 3.16.1
 - Django Channels 4.3.1 for WebSocket support
 - JWT authentication (djangorestframework-simplejwt)
@@ -182,6 +191,7 @@ frontend/src/
 - Redis for caching and WebSocket
 
 **Structure:**
+
 ```
 backend/
 ├── api/            # Main API app
@@ -193,6 +203,7 @@ backend/
 ### Testing Strategy
 
 **Frontend Testing:**
+
 - 92 test files, 716 active tests, 773 skipped (52% skip rate)
 - Use `renderWithProviders` from `src/test-utils/test-utils.tsx`
 - Mock patterns in `src/setupTests.ts`
@@ -202,6 +213,7 @@ backend/
   - Use `test.skip` or `describe.skip` for problematic tests
 
 **Test Patterns:**
+
 ```typescript
 // Always use renderWithProviders for components with context
 import { renderWithProviders } from '@/test-utils/test-utils';
@@ -232,6 +244,7 @@ vi.mock('framer-motion', () => ({
 ### Test Failures in CI
 
 **Problem**: `style.getPropertyValue` errors
+
 ```typescript
 // Solution: Skip in CI
 const itSkipInCI = process.env.CI === 'true' ? it.skip : it;
@@ -241,6 +254,7 @@ itSkipInCI('test using getByRole', () => {
 ```
 
 **Problem**: Timeout errors
+
 ```typescript
 // Solution: Increase timeout
 it('async test', async () => {
@@ -249,6 +263,7 @@ it('async test', async () => {
 ```
 
 **Problem**: Multiple elements found
+
 ```typescript
 // Solution: Use getAllBy* and select first
 const buttons = getAllByRole('button');
@@ -286,11 +301,13 @@ cd frontend && npm run type-check
 ## Deployment
 
 **GitHub Pages (Frontend):**
+
 - Automatic deployment on push to main branch
 - Manual: `cd frontend && npm run deploy`
 - URL: https://researcherhojin.github.io/emelmujiro
 
 **Backend Deployment (Pending):**
+
 - Target: Railway/Render/Heroku
 - Needs: PostgreSQL, Redis, environment variables
 - Update: `VITE_API_URL`, `VITE_USE_MOCK_API=false`
@@ -298,6 +315,7 @@ cd frontend && npm run type-check
 ## Environment Variables
 
 ### Frontend (.env files)
+
 ```bash
 VITE_API_URL=https://api.emelmujiro.com  # Backend API URL
 VITE_WS_URL=wss://api.emelmujiro.com/ws  # WebSocket URL
@@ -307,6 +325,7 @@ VITE_SENTRY_DSN=https://...              # Sentry error tracking
 ```
 
 ### Backend (.env files)
+
 ```bash
 SECRET_KEY=your-secret-key
 DEBUG=False
@@ -319,12 +338,14 @@ CORS_ALLOWED_ORIGINS=https://researcherhojin.github.io
 ## CI/CD Pipeline
 
 **GitHub Actions:**
+
 - `.github/workflows/main-ci-cd.yml`: Full pipeline (test, build, deploy)
 - `.github/workflows/pr-checks.yml`: PR validation
 - Memory optimization: `NODE_OPTIONS='--max-old-space-size=4096'`
 - All stages currently passing ✅
 
 **Docker:**
+
 - Multi-stage build configuration
 - Build: `./scripts/docker-build.sh`
 - Push: `./scripts/docker-build.sh --push --tag v1.0.0`
@@ -354,7 +375,7 @@ CORS_ALLOWED_ORIGINS=https://researcherhojin.github.io
 
 ### 🟡 High Priority (1-2 weeks)
 
-1. **Security**: 
+1. **Security**:
    - Move from localStorage to httpOnly cookies
    - Implement CSRF protection
    - Add Content Security Policy
@@ -389,20 +410,16 @@ CORS_ALLOWED_ORIGINS=https://researcherhojin.github.io
 ## Useful Scripts
 
 ### Root Level (`scripts/`)
-- `kill-ports.sh`: Kill all development server processes
-- `docker-build.sh`: Build and push Docker images
-- `pre-deploy-check.sh`: Pre-deployment validation
-- `start-dev.sh`: Start development with Docker
 
-### Frontend (`frontend/scripts/`)
-- `generate-sitemap.js`: Generate sitemap for SEO
+- `generate-sitemap.js`: Generate sitemap for SEO (run during build)
 - `optimize-images.js`: Optimize images for production
-- `skip-problematic-tests.sh`: Skip failing tests in CI
-- `test-ci-local.sh`: Simulate CI environment locally
+- `skip-problematic-tests.sh`: Skip failing tests in CI (773 tests)
+- `skip-all-async-tests.sh`: Skip all async tests that timeout in CI
 
 ## Key Patterns to Follow
 
 ### Component Structure
+
 ```typescript
 interface ComponentProps {
   title: string;
@@ -410,7 +427,11 @@ interface ComponentProps {
   className?: string;
 }
 
-const Component: React.FC<ComponentProps> = ({ title, onAction, className }) => {
+const Component: React.FC<ComponentProps> = ({
+  title,
+  onAction,
+  className,
+}) => {
   // Implementation
 };
 
@@ -418,6 +439,7 @@ export default Component;
 ```
 
 ### API Calls
+
 ```typescript
 import api from '@/services/api';
 
@@ -433,6 +455,7 @@ const fetchData = async () => {
 ```
 
 ### Testing with Context
+
 ```typescript
 import { renderWithProviders } from '@/test-utils/test-utils';
 
@@ -443,3 +466,17 @@ describe('Component', () => {
   });
 });
 ```
+
+## Command Aliases & Shortcuts
+
+### From Root Directory
+
+- `npm run dev` = Start both frontend and backend
+- `npm run build` = Build frontend for production
+- `npm test` = Run all tests (frontend + backend)
+
+### From Frontend Directory
+
+- `npm start` = Alias for `npm run dev` (Vite dev server)
+- `npm run test:run` = Run tests once (no watch)
+- `npm run test:ci` = Optimized CI test run with bail on first failure
