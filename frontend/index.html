@@ -267,19 +267,9 @@
       // Performance timing
       window.performanceStart = Date.now();
 
-      // Service Worker registration
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker
-            .register('/service-worker-enhanced.js')
-            .then((registration) => {
-              // Service Worker registered successfully
-            })
-            .catch((error) => {
-              // SW registration failed
-            });
-        });
-      }
+      // Service Worker registration is handled by Vite PWA plugin
+      // The Vite PWA plugin will automatically register the service worker
+      // and manage caching strategies
 
       // Font loading is handled by CSS link tag above
       // The @font-face rules in the CSS file will handle the font loading

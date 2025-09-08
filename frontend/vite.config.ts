@@ -11,7 +11,12 @@ export default defineConfig({
     tsconfigPaths(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'logo192.png', 'logo512.png'],
+      includeAssets: [
+        'favicon.ico',
+        'logo192.png',
+        'logo512.png',
+        'offline.html',
+      ],
       manifest: {
         name: '에멜무지로',
         short_name: 'Emelmujiro',
@@ -35,6 +40,12 @@ export default defineConfig({
         ],
       },
       workbox: {
+        globPatterns: [
+          '**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff,woff2}',
+        ],
+        navigateFallback: '/emelmujiro/index.html',
+        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -58,6 +69,21 @@ export default defineConfig({
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern:
+              /^https:\/\/researcherhojin\.github\.io\/emelmujiro\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'app-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
               },
               cacheableResponse: {
                 statuses: [0, 200],
