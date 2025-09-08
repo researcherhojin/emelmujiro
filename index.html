@@ -254,7 +254,7 @@
     <link rel="modulepreload" crossorigin href="/emelmujiro/assets/ui-vendor-dPCV3Ya0.js">
     <link rel="modulepreload" crossorigin href="/emelmujiro/assets/i18n-BLYQbxJl.js">
     <link rel="stylesheet" crossorigin href="/emelmujiro/assets/index-C0lGNxR0.css">
-  <link rel="manifest" href="/emelmujiro/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/emelmujiro/registerSW.js"></script></head>
+  <link rel="manifest" href="/emelmujiro/manifest.webmanifest"><script id="vite-plugin-pwa:inline-sw">if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/emelmujiro/sw.js', { scope: '/emelmujiro/' })})}</script></head>
   <body>
     <noscript>자바스크립트를 활성화해주세요.</noscript>
     <div id="root">
@@ -275,37 +275,60 @@
       // Suppress React DevTools errors in production
       if (window.location.hostname !== 'localhost') {
         const originalError = console.error;
-        console.error = function(...args) {
+        console.error = function (...args) {
           // Filter out React DevTools errors
           const errorString = args.join(' ');
-          if (errorString.includes('react-devtools') || 
-              errorString.includes('react-dom.js') ||
-              errorString.includes('static/js/main') ||
-              errorString.includes('static/css/main')) {
+          if (
+            errorString.includes('react-devtools') ||
+            errorString.includes('react-dom.js') ||
+            errorString.includes('static/js/main') ||
+            errorString.includes('static/css/main')
+          ) {
             return; // Suppress these errors
           }
           originalError.apply(console, args);
         };
       }
 
-      // Clean up old service workers and caches
-      if (
-        'serviceWorker' in navigator &&
-        window.location.hostname !== 'localhost'
-      ) {
-        navigator.serviceWorker
-          .getRegistrations()
-          .then(function (registrations) {
-            registrations.forEach(function (registration) {
-              if (
-                registration.scope.includes('/emelmujiro/') &&
-                !registration.active?.scriptURL?.includes('/sw.js')
-              ) {
+      // Aggressive cleanup of ALL old service workers and caches
+      if ('serviceWorker' in navigator) {
+        // Unregister ALL service workers on production
+        if (window.location.hostname !== 'localhost') {
+          navigator.serviceWorker
+            .getRegistrations()
+            .then(function (registrations) {
+              registrations.forEach(function (registration) {
                 registration.unregister();
-              }
+              });
             });
-          });
+
+          // Clear ALL caches
+          if ('caches' in window) {
+            caches.keys().then(function (names) {
+              names.forEach(function (name) {
+                caches.delete(name);
+              });
+            });
+          }
+        }
       }
+
+      // Prevent 404 errors from being logged
+      window.addEventListener(
+        'error',
+        function (e) {
+          if (
+            e.target &&
+            e.target.tagName === 'LINK' &&
+            (e.target.href.includes('/static/css/main') ||
+              e.target.href.includes('service-worker-enhanced'))
+          ) {
+            e.preventDefault();
+            return true;
+          }
+        },
+        true
+      );
 
       // Service Worker registration is handled by Vite PWA plugin
       // The Vite PWA plugin will automatically register the service worker
