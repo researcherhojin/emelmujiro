@@ -24,8 +24,18 @@ const getEnvVar = (key: string, defaultValue: string = ''): string => {
 
 export const env = {
   // API Configuration
-  API_URL: getEnvVar('REACT_APP_API_URL', 'http://localhost:8000/api'),
-  WS_URL: getEnvVar('REACT_APP_WS_URL', 'ws://localhost:8000/ws'),
+  API_URL: getEnvVar(
+    'REACT_APP_API_URL',
+    process.env.NODE_ENV === 'production'
+      ? 'https://api.emelmujiro.com/api'
+      : 'http://localhost:8000/api'
+  ),
+  WS_URL: getEnvVar(
+    'REACT_APP_WS_URL',
+    process.env.NODE_ENV === 'production'
+      ? 'wss://api.emelmujiro.com/ws'
+      : 'ws://localhost:8000/ws'
+  ),
 
   // Feature Flags
   ENABLE_ANALYTICS: getEnvVar('REACT_APP_ENABLE_ANALYTICS', 'false') === 'true',

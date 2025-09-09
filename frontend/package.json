@@ -26,13 +26,10 @@
   "devDependencies": {
     "@eslint/js": "^9.34.0",
     "@playwright/test": "^1.55.0",
-    "@prettier/plugin-xml": "^3.4.2",
-    "@tailwindcss/postcss": "^4.1.12",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/jest": "^30.0.0",
     "@types/node": "^24.3.0",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
@@ -41,13 +38,10 @@
     "@typescript-eslint/eslint-plugin": "^8.42.0",
     "@typescript-eslint/parser": "^8.42.0",
     "@vitejs/plugin-react": "^5.0.1",
-    "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.21",
-    "axe-playwright": "^2.1.0",
     "axios-mock-adapter": "^2.1.0",
     "eslint": "^9.34.0",
-    "eslint-plugin-jest": "^29.0.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -62,7 +56,7 @@
     "prettier": "^3.6.2",
     "sitemap": "^8.0.0",
     "source-map-explorer": "^2.5.3",
-    "tailwindcss": "^4.1.12",
+    "tailwindcss": "^3.4.17",
     "terser": "^5.44.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.3",
@@ -86,16 +80,10 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
-    "lighthouse": "lhci autorun",
-    "lighthouse:view": "lhci open",
-    "eject": "react-scripts eject",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx,css,md}",
     "format:check": "prettier --check src/**/*.{js,jsx,ts,tsx,css,md}",
-    "analyze": "npm run build && source-map-explorer 'build/static/js/*.js'",
-    "analyze:build": "npm run build && npm run analyze",
-    "build:profile": "react-scripts build --profile",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "build:sitemap": "node sitemap-generator.js",
@@ -118,16 +106,6 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
-    ]
-  },
-  "jest": {
-    "moduleNameMapper": {
-      "^framer-motion$": "<rootDir>/src/__mocks__/framer-motion.tsx",
-      "^axios$": "axios/dist/node/axios.cjs",
-      "^react-helmet-async$": "<rootDir>/src/__mocks__/react-helmet-async.tsx"
-    },
-    "transformIgnorePatterns": [
-      "node_modules/(?!(react-markdown|remark-gfm|unified|bail|is-plain-obj|trough|vfile|vfile-message|unist-util-stringify-position|mdast-util-from-markdown|mdast-util-to-string|micromark|decode-named-character-reference|character-entities|mdast-util-to-markdown|zwitch|longest-streak|mdast-util-phrasing|unist-util-visit-parents|unist-util-is|mdast-util-definitions|mdast-util-to-hast|unist-util-visit|unist-util-generated|unist-util-position|unist-builder|mdast-util-gfm|mdast-util-gfm-autolink-literal|mdast-util-find-and-replace|escape-string-regexp|mdast-util-gfm-footnote|mdast-util-gfm-strikethrough|mdast-util-gfm-table|mdast-util-gfm-task-list-item|micromark-extension-gfm|micromark-extension-gfm-autolink-literal|micromark-extension-gfm-footnote|micromark-extension-gfm-strikethrough|micromark-extension-gfm-table|micromark-extension-gfm-tagfilter|micromark-extension-gfm-task-list-item|micromark-util-combine-extensions|micromark-util-chunked|micromark-util-classify-character|micromark-util-resolve-all|micromark-core-commonmark|micromark-factory-destination|micromark-factory-label|micromark-factory-space|micromark-factory-title|micromark-factory-whitespace|micromark-util-character|micromark-util-decode-numeric-character-reference|micromark-util-encode|micromark-util-normalize-identifier|micromark-util-symbol|micromark-util-decode-string|micromark-util-subtokenize|micromark-util-html-tag-name|micromark-util-sanitize-uri|trim-lines|property-information|hast-util-whitespace|space-separated-tokens|comma-separated-tokens|vfile-location|web-namespaces|micromark-util-types|hast-util-to-jsx-runtime|hast-util-from-parse5|hastscript|parse5|vfile-message|unist-util-visit|unist-util-is|zwitch|unist-util-position-from-estree|estree-util-is-identifier-name|hast-util-to-estree|estree-util-attach-comments|estree-walker|estree-util-build-jsx|estree-util-to-js|astring|source-map|periscopic|is-reference|hast-util-raw|parse5|html-void-elements|devlop|ccount|character-entities-html4|character-reference-invalid|stringify-entities|rehype-raw|hast-util-parse|inline-style-parser|style-to-object|remark-rehype|micromark-util-combine-extensions|micromark-util-html-tag-name|hast-util-from-html|remark-parse|mdast-util-to-string|remark-stringify|html-url-attributes|unist-util-visit-parents|@bundled-es-modules)/)"
     ]
   },
   "lint-staged": {

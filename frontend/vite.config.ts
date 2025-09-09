@@ -11,6 +11,8 @@ export default defineConfig({
     tsconfigPaths(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'inline',
+      strategies: 'generateSW',
       includeAssets: [
         'favicon.ico',
         'logo192.png',
@@ -96,7 +98,8 @@ export default defineConfig({
   ],
   base: '/emelmujiro/',
   server: {
-    port: 3000,
+    port: 5173,
+    strictPort: false,
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8000',
