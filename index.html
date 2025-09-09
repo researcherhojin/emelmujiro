@@ -290,26 +290,36 @@
         };
       }
 
-      // Aggressive cleanup of ALL old service workers and caches
-      if ('serviceWorker' in navigator) {
-        // Unregister ALL service workers on production
-        if (window.location.hostname !== 'localhost') {
-          navigator.serviceWorker
-            .getRegistrations()
-            .then(function (registrations) {
-              registrations.forEach(function (registration) {
+      // Clean up only old/invalid service workers
+      if (
+        'serviceWorker' in navigator &&
+        window.location.hostname !== 'localhost'
+      ) {
+        navigator.serviceWorker
+          .getRegistrations()
+          .then(function (registrations) {
+            registrations.forEach(function (registration) {
+              // Only unregister service workers that are NOT the current PWA service worker
+              if (
+                registration.active &&
+                !registration.active.scriptURL.includes('/sw.js') &&
+                !registration.active.scriptURL.includes('/workbox')
+              ) {
                 registration.unregister();
-              });
+              }
             });
+          });
 
-          // Clear ALL caches
-          if ('caches' in window) {
-            caches.keys().then(function (names) {
-              names.forEach(function (name) {
+        // Clean up only old caches, not current PWA caches
+        if ('caches' in window) {
+          caches.keys().then(function (names) {
+            names.forEach(function (name) {
+              // Only delete caches that are not from the current PWA
+              if (!name.includes('workbox') && !name.includes('precache')) {
                 caches.delete(name);
-              });
+              }
             });
-          }
+          });
         }
       }
 
