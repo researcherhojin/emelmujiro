@@ -272,22 +272,24 @@
       // Performance timing
       window.performanceStart = Date.now();
 
-      // Suppress React DevTools errors in production
+      // Suppress only specific React DevTools errors in production
       if (window.location.hostname !== 'localhost') {
         const originalError = console.error;
+        const originalWarn = console.warn;
+        
         console.error = function (...args) {
-          // Filter out React DevTools errors
-          const errorString = args.join(' ');
-          if (
-            errorString.includes('react-devtools') ||
-            errorString.includes('react-dom.js') ||
-            errorString.includes('static/js/main') ||
-            errorString.includes('static/css/main')
-          ) {
-            return; // Suppress these errors
+          if (args.length > 0 && typeof args[0] === 'string') {
+            const errorString = args[0];
+            // Only suppress very specific DevTools errors
+            if (errorString.includes('Download the React DevTools')) {
+              return;
+            }
           }
           originalError.apply(console, args);
         };
+        
+        // Don't suppress warnings - they might be important
+        console.warn = originalWarn;
       }
 
       // Clean up only old/invalid service workers
@@ -323,22 +325,19 @@
         }
       }
 
-      // Prevent 404 errors from being logged
-      window.addEventListener(
-        'error',
-        function (e) {
-          if (
-            e.target &&
-            e.target.tagName === 'LINK' &&
-            (e.target.href.includes('/static/css/main') ||
-              e.target.href.includes('service-worker-enhanced'))
-          ) {
+      // Handle resource loading errors gracefully
+      window.addEventListener('error', function (e) {
+        // Only prevent errors for truly missing resources that we know about
+        if (e.target && e.target.tagName) {
+          const src = e.target.src || e.target.href || '';
+          if (src.includes('/static/css/main') || 
+              src.includes('/static/js/main') ||
+              src.includes('service-worker-enhanced')) {
             e.preventDefault();
             return true;
           }
-        },
-        true
-      );
+        }
+      }, true);
 
       // Service Worker registration is handled by Vite PWA plugin
       // The Vite PWA plugin will automatically register the service worker
