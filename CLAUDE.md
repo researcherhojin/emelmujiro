@@ -4,301 +4,255 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Emelmujiro (에멜무지로) is a full-stack web application for an AI Education and Consulting company using a monorepo structure with React/TypeScript frontend and Django backend, deployed via GitHub Pages.
+Emelmujiro (에멜무지로) is a full-stack monorepo application for AI Education and Consulting, deployed via GitHub Pages with Mock API in production.
 
 **Live Site**: https://researcherhojin.github.io/emelmujiro
-**Frontend Dev Server**: Port 5173 (Vite)
-**Backend Dev Server**: Port 8000 (Django)
-**Preview Server**: Port 4173 (Vite preview)
+**Frontend Dev**: Port 5173 (Vite) - NOT 3000
+**Backend Dev**: Port 8000 (Django)
+**Preview**: Port 4173 (Vite preview)
 
-⚠️ **Important**: Production currently uses Mock API. Real backend deployment is pending.
+⚠️ **Critical**: Production ALWAYS uses Mock API due to GitHub Pages deployment. Real backend deployment pending.
 
 ## Essential Commands
 
-### Quick Start
-
+### Monorepo Commands (from root)
 ```bash
-# Install all dependencies
-npm install
-cd frontend && npm install
-cd ../backend && pip install -r requirements.txt
+# Install everything
+npm install && cd frontend && npm install && cd ../backend && pip install -r requirements.txt
 
-# Start full application (from root)
+# Development
 npm run dev                # Frontend + Backend concurrently
-npm run dev:clean          # Kill ports first then start
+npm run dev:clean          # Kill ports first, then start
+npm run dev:safe           # Kill others on fail (--kill-others-on-fail)
+
+# Build & Test
+npm run build:frontend     # Workspace-aware frontend build
+npm test                   # Both frontend and backend tests
+npm run install:all        # Install all dependencies
 ```
 
-### Development
-
+### Frontend Commands (from frontend/)
 ```bash
-# Frontend (from frontend/)
-npm run dev                # Start Vite dev server (port 5173)
-npm start                  # Alias for npm run dev
-npm run preview            # Preview production build (port 4173)
+# Development
+npm run dev                # Vite dev server (port 5173)
+npm run preview            # Preview build (port 4173)
 
-# Backend (from backend/)
-python3 manage.py runserver    # Start Django (port 8000)
-
-# Port management (when ports are stuck)
-lsof -ti:5173 | xargs kill -9  # Kill Vite dev
-lsof -ti:8000 | xargs kill -9  # Kill Django
-./scripts/kill-ports.sh         # Kill all ports
-```
-
-### Testing
-
-```bash
-# Run tests (from frontend/)
-npm test                   # Watch mode
+# Testing
+npm test                   # Vitest watch mode
 npm run test:run           # Single run
-npm run test:ci            # CI optimized (bail on failure)
-npm run test:coverage      # With coverage report
+npm run test:ci            # CI optimized (--bail=1, no coverage)
+npm run test:coverage      # With coverage
 CI=true npm test -- --run  # CI mode single run
 
-# Run specific test
+# Specific test
 CI=true npm test -- --run src/components/common/__tests__/Button.test.tsx
+CI=true npm test -- --run --reporter=verbose  # Verbose output
 
-# Run with verbose output
-CI=true npm test -- --run --reporter=verbose
-
-# Backend tests (from backend/)
-python3 manage.py test
-```
-
-### Building & Deployment
-
-```bash
-# Build frontend (from root or frontend/)
+# Build & Deploy
 npm run build              # Production build to 'build' directory
+npm run deploy             # Build + deploy to GitHub Pages
+npm run generate:sitemap   # Generate SEO sitemaps
 
-# Deploy to GitHub Pages (from frontend/)
-npm run deploy             # Build then deploy with gh-pages
-
-# Bundle analysis (from frontend/)
-npm run analyze:bundle     # Analyze bundle size
-```
-
-### Code Quality
-
-```bash
-# Frontend (from frontend/)
+# Code Quality
 npm run lint               # ESLint check
-npm run lint:fix           # Auto-fix ESLint issues
+npm run lint:fix           # Auto-fix
 npm run type-check         # TypeScript check
-npm run format             # Prettier format all files
-
-# Backend (from backend/)
-black .                    # Format Python code
-flake8 .                   # Lint Python code
+npm run type-check:watch   # Watch mode
+npm run format             # Prettier format
+npm run validate           # lint + type-check + test:coverage
 ```
 
-## Architecture
-
-### Frontend Stack
-
-- **React** 19.1.1 with **TypeScript** 5.9.2 (strict mode)
-- **Vite** 7.1.3 build tool
-- **Vitest** 3.2.4 testing (migrated from Jest)
-- **Tailwind CSS** 3.4.17 styling (downgraded from 4.x for PostCSS compatibility)
-- **Zustand** 5.0.8 + React Context for state
-
-### Directory Structure
-
-```
-frontend/src/
-├── components/     # React components by feature
-│   ├── admin/      # Admin dashboard components
-│   ├── blog/       # Blog-related components
-│   ├── chat/       # Chat/messaging components
-│   ├── common/     # Shared components
-│   └── sections/   # Page sections
-├── contexts/       # React Context providers
-├── store/          # Zustand store with slices
-├── services/       # API (api.ts) and WebSocket
-├── pages/          # Route-level components
-├── hooks/          # Custom React hooks
-├── utils/          # Utility functions
-├── test-utils/     # Testing utilities
-└── i18n/          # Internationalization (ko/en)
+### Backend Commands (from backend/)
+```bash
+python3 manage.py runserver     # Django dev server
+python3 manage.py test          # Django tests
+python3 manage.py makemigrations
+python3 manage.py migrate
+black .                         # Format Python code
+flake8 .                        # Lint Python code
 ```
 
-### Key Configuration Files
+### Port Management
+```bash
+# Kill stuck ports (CRITICAL - use 5173, not 3000!)
+lsof -ti:5173 | xargs kill -9  # Kill Vite
+lsof -ti:8000 | xargs kill -9  # Kill Django
+./scripts/kill-ports.sh         # Kill all (3000, 8000)
 
-- **vite.config.ts**: Base path `/emelmujiro/`, API proxy to :8000
-- **vitest.config.ts**: Forks pool, 15s timeout in CI
-- **tsconfig.json**: Path alias `@/` → `src/`, ES2020 target
+# Check port availability
+lsof -i:5173
+netstat -an | grep 5173
+```
 
-### State Management
+## Architecture & Patterns
 
+### Mock API vs Real API
+```typescript
+// src/services/api.ts - ALWAYS mock in production!
+const USE_MOCK_API =
+  process.env.REACT_APP_USE_MOCK_API === 'true' ||
+  process.env.NODE_ENV === 'test' ||
+  isProduction; // GitHub Pages can't reach backend
+```
+
+### Environment Variables Migration
+```typescript
+// src/config/env.ts - Supports both REACT_APP_ and VITE_
+const getEnvVar = (key: string, defaultValue: string = ''): string => {
+  const viteKey = key.replace('REACT_APP_', 'VITE_');
+  // Checks Vite env first, fallbacks to process.env
+};
+```
+
+### State Management Architecture
 - **Zustand Store** (`src/store/useAppStore.ts`):
-  - UI slice: Theme, loading, modals
+  - UI slice: Theme, loading, modals, notifications
   - Auth slice: User, tokens, permissions
   - Blog slice: Posts, categories, comments
-  - Chat slice: Messages, typing, online users
-- **Context API**: UIContext, AuthContext, BlogContext, FormContext
+  - Chat slice: Messages, typing indicators, online users
+- **React Context**: UIContext, AuthContext, BlogContext, FormContext
+- **Pattern**: Zustand for global state, Context for component-level state
 
-### Backend (Django)
-
-- **Django** 5.2.6 with **DRF** 3.16.1
-- **Django Channels** 4.3.1 for WebSocket
-- **JWT Authentication** via djangorestframework-simplejwt
-- **Database**: SQLite3 (dev), PostgreSQL ready
-
-## Testing Guidelines
-
-### Current Status
-
-- **Test Files**: 92 files (40 passing, 52 skipped)
-- **Tests**: 1599 total (716 passing, 883 skipped - 55% skip rate)
-- **Execution Time**: ~6.35s
-
-### Common Test Patterns
-
+### API Service Structure
 ```typescript
-// Use renderWithProviders for components with context
-import { renderWithProviders } from '@/test-utils/test-utils';
-
-// Mock lucide-react icons
-vi.mock('lucide-react', () => ({
-  IconName: () => <div data-testid="icon-IconName">Icon</div>
-}));
-
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>
-}));
-```
-
-### Handling Test Issues
-
-```typescript
-// Skip tests in CI that use getByRole (causes style.getPropertyValue errors)
-const itSkipInCI = process.env.CI === 'true' ? it.skip : it;
-itSkipInCI('test using getByRole', () => {
-  // test code
+// src/services/api.ts
+const api = axios.create({
+  baseURL: API_URL,
+  timeout: 30000,
 });
 
-// Increase timeout for async tests
-it('async test', async () => {
-  // test code
-}, 30000); // 30s timeout
+// Services: blog, contact, projects, newsletter, health
+// All have mock implementations in src/services/mockData.ts
 ```
 
-## Environment Variables
+## Testing Issues & Workarounds
 
-### Frontend (.env)
+### 55% Test Skip Rate - Root Causes
+1. **getByRole failures**: `style.getPropertyValue` errors in CI
+2. **classList errors**: DOM manipulation issues
+3. **framer-motion warnings**: `whileHover`, `whileTap` props
+4. **IndexedDB unavailable**: Test environment limitation
+5. **react-helmet-async**: DOM conflicts
 
-```bash
-VITE_API_URL=https://api.emelmujiro.com  # Backend API URL
-VITE_WS_URL=wss://api.emelmujiro.com/ws  # WebSocket URL
-VITE_USE_MOCK_API=false                  # Use real API in production
+### CI-Specific Test Pattern
+```typescript
+// Common workaround pattern (121 occurrences)
+const itSkipInCI = process.env.CI === 'true' ? it.skip : it;
+itSkipInCI('test using getByRole', () => {
+  // Test that fails in CI
+});
 ```
 
-### Backend (.env)
+### Test Configuration
+- **Vitest**: Forks pool, single fork in CI, 15s timeout
+- **Memory**: `NODE_OPTIONS='--max-old-space-size=4096'` in CI
+- **Custom Utilities**: `renderWithProviders` in test-utils/
 
-```bash
-SECRET_KEY=your-secret-key
-DEBUG=False
-ALLOWED_HOSTS=api.emelmujiro.com
-DATABASE_URL=postgresql://...
-REDIS_URL=redis://localhost:6379
-CORS_ALLOWED_ORIGINS=https://researcherhojin.github.io
+## Critical Configuration
+
+### Vite Configuration
+```typescript
+// vite.config.ts
+base: '/emelmujiro/',  // REQUIRED for GitHub Pages
+server: {
+  port: 5173,          // NOT 3000!
+  proxy: {
+    '/api': 'http://127.0.0.1:8000'
+  }
+}
 ```
 
-## PWA Features
+### Build Configuration
+- **Output**: `build/` directory (not `dist/`)
+- **Chunks**: react-vendor, ui-vendor, i18n
+- **Terser**: Drops console/debugger in production
 
-- **Service Worker**: `public/service-worker-enhanced.js`
-- **Manifest**: `public/manifest.json`
-- **Features**: Offline support, install prompt, background sync, push notifications
-- **Cache Strategy**: Network first with fallback
+### TypeScript Configuration
+- **Target**: ES2020
+- **Path Alias**: `@/` → `src/`
+- **Types**: vite/client, node, vitest/globals, @testing-library/jest-dom
 
-## CI/CD Pipeline
+## Docker Setup
 
-- **GitHub Actions**: `.github/workflows/main-ci-cd.yml`
-- **Node Version**: 20
-- **Python Version**: 3.11
-- **Memory Optimization**: `NODE_OPTIONS='--max-old-space-size=4096'`
-- **Automatic Deployment**: On push to main branch
-
-## Performance Metrics
-
-- **Bundle Size**: 190KB (52% reduction from v4.0.2)
-- **Build Time**: 2.8s (72% reduction from v4.0.2)
-- **Package Count**: 56 dependencies (reduced from 61)
-- **First Contentful Paint**: < 1.2s
-- **Time to Interactive**: < 2.5s
-
-## Known Issues & Solutions
-
-### Tailwind CSS 4.x Incompatibility
-
-If you encounter CSS not loading or PostCSS errors:
+### Development
 ```bash
-# Downgrade to Tailwind CSS 3.x
-cd frontend
-npm install tailwindcss@3.4.17
+docker-compose -f docker-compose.dev.yml up
+```
 
-# Ensure postcss.config.js uses 'tailwindcss' not '@tailwindcss/postcss'
+### Production Stack
+```yaml
+# docker-compose.yml services:
+- frontend (nginx:alpine)
+- backend (Django + Gunicorn)
+- postgres (PostgreSQL 15)
+- redis (Redis 7)
+- nginx (proxy, production profile)
+- certbot (SSL, production profile)
+```
+
+## Git Hooks & Pre-commit
+
+### Husky + lint-staged
+```json
+// Runs on pre-commit
+"src/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"]
+"src/**/*.{json,css,md}": ["prettier --write"]
+```
+
+### Pre-deployment Check
+```bash
+./scripts/pre-deploy-check.sh  # 326-line comprehensive validation
+```
+
+## Current Issues & Solutions
+
+### React 19 Compatibility
+- Using React 19.1.1 but many libraries incompatible
+- Dependabot ignores React 19.x updates
+- Solution: Mock problematic components in tests
+
+### Memory Issues in CI
+```bash
+# Optimizations applied:
+NODE_OPTIONS='--max-old-space-size=4096'
+vitest --pool=forks --poolOptions.forks.singleFork  # In CI
+```
+
+### Tailwind CSS 3.x (Downgraded from 4.x)
+```javascript
+// postcss.config.js - MUST use 'tailwindcss', not '@tailwindcss/postcss'
 module.exports = {
   plugins: {
-    tailwindcss: {},  // Correct for v3.x
+    tailwindcss: {},  // v3.x syntax
     autoprefixer: {},
   },
 };
-
-# Clear Vite cache and restart
-rm -rf node_modules/.vite
-npm run dev
 ```
 
-### Port Conflicts
+## Deployment
 
+### GitHub Pages (Current)
 ```bash
-npm run dev:clean          # Kill all ports and restart
-# Or manually:
-lsof -ti:5173 | xargs kill -9
-lsof -ti:8000 | xargs kill -9
+cd frontend && npm run deploy  # Builds and deploys via gh-pages
 ```
 
-### Test Failures in CI
+### Full Production (Future)
+1. Deploy backend to cloud provider
+2. Set VITE_USE_MOCK_API=false
+3. Configure PostgreSQL and Redis
+4. Update CORS settings
 
-- Many tests skipped due to `getByRole` and IndexedDB issues
-- Use `test.skip` or conditional skipping for problematic tests
-- Increase timeouts for async operations
+## Performance Metrics
 
-### Build Issues
+- **Bundle Size**: 190KB gzipped (52% reduction from v4.0.2)
+- **Build Time**: 2.8s (72% reduction)
+- **Dev Server Start**: ~144ms
+- **Test Execution**: ~6.35s for 716 active tests
 
-```bash
-# Clear cache and rebuild
-rm -rf frontend/node_modules frontend/build frontend/node_modules/.vite
-cd frontend && npm ci && npm run build
-```
+## Common Pitfalls
 
-## Recent Changes (v4.1.0)
-
-### Package Optimization
-- Removed 5 unused packages (Jest-related, unused Prettier plugin, unused Playwright tools)
-- Migrated fully to Vitest, removed all Jest configuration
-- Optimized bundle size by 52% through better code splitting
-- Improved build performance by 72%
-
-### Tailwind CSS Migration
-- Downgraded from Tailwind CSS 4.x to 3.4.17 for PostCSS compatibility
-- Fixed CSS build issues in development and production
-- Updated PostCSS configuration for v3.x compatibility
-
-### Environment Configuration
-- Improved environment variable handling in `src/config/env.ts`
-- Better separation between production and development API URLs
-- Support for both Vite and legacy process.env variables
-
-## Current Priorities
-
-1. **Backend Deployment**: Production uses Mock API - needs real backend deployment
-2. **Test Recovery**: Fix 883 skipped tests (55% skip rate)
-3. **TypeScript Strict Mode**: Enable stricter type checking
-4. **React Warnings**: Fix framer-motion prop warnings in tests
-5. **PWA Enhancements**: Improve offline functionality and caching strategies
+1. **Wrong Port**: Frontend is 5173, not 3000
+2. **Mock API**: Production always uses mock, not configurable
+3. **Test Skips**: 55% tests skipped is expected, not a bug
+4. **Build Output**: Goes to `build/`, not `dist/`
+5. **Environment Variables**: Use VITE_ prefix for new vars
