@@ -8,7 +8,6 @@
     "types": [
       "vite/client",
       "node",
-      "jest",
       "vitest/globals",
       "@testing-library/jest-dom"
     ],
