@@ -5,7 +5,6 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import typescriptPlugin from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import testingLibraryPlugin from 'eslint-plugin-testing-library';
-import jestPlugin from 'eslint-plugin-jest';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 
 export default [
@@ -105,12 +104,10 @@ export default [
     ],
     plugins: {
       'testing-library': testingLibraryPlugin,
-      jest: jestPlugin,
     },
     languageOptions: {
       globals: {
-        ...globals.jest,
-        jest: 'readonly',
+        vi: 'readonly',
         describe: 'readonly',
         it: 'readonly',
         test: 'readonly',
@@ -127,7 +124,6 @@ export default [
       'testing-library/no-container': 'off',
       'testing-library/no-wait-for-multiple-assertions': 'off',
       'testing-library/no-unnecessary-act': 'off',
-      'jest/no-conditional-expect': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       'jsx-a11y/alt-text': 'off',
