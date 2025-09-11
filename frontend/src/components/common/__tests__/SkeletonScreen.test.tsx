@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import SkeletonScreen from '../SkeletonScreen';
 
-describe.skip('SkeletonScreen', () => {
+describe('SkeletonScreen', () => {
   describe('Rendering', () => {
     it('renders with default props', () => {
       const { container } = render(<SkeletonScreen />);
