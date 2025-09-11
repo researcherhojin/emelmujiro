@@ -26,7 +26,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   onLoad,
   onError,
 }) => {
-  const [imageSrc, setImageSrc] = useState<string>('');
+  const [imageSrc, setImageSrc] = useState<string>(src);
   const [isWebPSupported, setIsWebPSupported] = useState<boolean>(false);
 
   useEffect(() => {
@@ -88,6 +88,11 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
     return '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw';
   };
+
+  // Don't render if src is empty
+  if (!imageSrc) {
+    return null;
+  }
 
   if (loading === 'lazy') {
     return (
