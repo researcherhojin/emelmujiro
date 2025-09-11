@@ -43,7 +43,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       expect(firstPost).toHaveProperty('content');
     });
 
-    it.skip('should fetch single blog post with mock data', async () => {
+    it('should fetch single blog post with mock data', async () => {
       const result = await api.getBlogPost(1);
 
       expect(result).toBeDefined();
@@ -53,7 +53,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       expect(result.data.content).toBeDefined();
     });
 
-    it.skip('should fetch blog categories with mock data', async () => {
+    it('should fetch blog categories with mock data', async () => {
       const result = await api.getBlogCategories();
 
       expect(result).toBeDefined();
@@ -68,7 +68,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       expect(firstCategory).toHaveProperty('slug');
     });
 
-    it.skip('should search blog posts with mock data', async () => {
+    it('should search blog posts with mock data', async () => {
       const result = await api.searchBlogPosts('tech');
 
       expect(result).toBeDefined();
@@ -77,7 +77,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       expect(Array.isArray(result.data.results)).toBe(true);
     });
 
-    it.skip('should handle pagination in mock data', async () => {
+    it('should handle pagination in mock data', async () => {
       const page1 = await api.getBlogPosts(1);
       const page2 = await api.getBlogPosts(2);
 
@@ -92,7 +92,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
   });
 
   describe('Contact Form Operations', () => {
-    it.skip('should submit contact form with mock response', async () => {
+    it('should submit contact form with mock response', async () => {
       const formData = {
         name: 'John Doe',
         email: 'john@example.com',
@@ -109,7 +109,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       expect(result.data.email).toBe(formData.email);
     });
 
-    it.skip('should handle contact form with minimal data', async () => {
+    it('should handle contact form with minimal data', async () => {
       const formData = {
         name: 'Jane',
         email: 'jane@test.com',
@@ -123,7 +123,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       expect(result.data.success).toBe(true);
     });
 
-    it.skip('should handle contact form with all optional fields', async () => {
+    it('should handle contact form with all optional fields', async () => {
       const formData = {
         name: 'Test User',
         email: 'test@test.com',
@@ -142,7 +142,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
   });
 
   describe('Newsletter Operations', () => {
-    it.skip('should subscribe to newsletter with mock response', async () => {
+    it('should subscribe to newsletter with mock response', async () => {
       const email = 'subscriber@example.com';
 
       const result = await api.subscribeNewsletter(email);
@@ -153,7 +153,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       expect(result.data.message).toContain('성공');
     });
 
-    it.skip('should handle various email formats', async () => {
+    it('should handle various email formats', async () => {
       const emails = [
         'test@example.com',
         'user.name@company.co.kr',
@@ -168,7 +168,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
   });
 
   describe('Authentication Simulation', () => {
-    it.skip('should work with auth token in localStorage', async () => {
+    it('should work with auth token in localStorage', async () => {
       localStorage.setItem('authToken', 'test-token-123');
 
       const result = await api.getBlogPosts(1);
@@ -178,7 +178,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       // Should still work even with token (mock mode),
     });
 
-    it.skip('should work without auth token', async () => {
+    it('should work without auth token', async () => {
       localStorage.removeItem('authToken');
 
       const result = await api.getBlogPosts(1);
@@ -190,7 +190,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
   });
 
   describe('Error Handling in Mock Mode', () => {
-    it.skip('should handle non-existent blog post gracefully', async () => {
+    it('should handle non-existent blog post gracefully', async () => {
       const result = await api.getBlogPost(99999);
 
       // In mock mode, should still return a post
@@ -199,7 +199,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       expect(result.data.id).toBeDefined();
     });
 
-    it.skip('should handle empty search query', async () => {
+    it('should handle empty search query', async () => {
       const result = await api.searchBlogPosts('');
 
       expect(result).toBeDefined();
@@ -207,7 +207,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       expect(result.data.results).toBeDefined();
     });
 
-    it.skip('should handle special characters in search', async () => {
+    it('should handle special characters in search', async () => {
       const result = await api.searchBlogPosts('!@#$%^&*()');
 
       expect(result).toBeDefined();
@@ -217,7 +217,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
   });
 
   describe('Data Consistency', () => {
-    it.skip('should return consistent mock data structure', async () => {
+    it('should return consistent mock data structure', async () => {
       const result1 = await api.getBlogPosts(1);
       const result2 = await api.getBlogPosts(1);
 
@@ -226,7 +226,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       expect(result1.data.results.length).toBe(result2.data.results.length);
     });
 
-    it.skip('should return valid dates in blog posts', async () => {
+    it('should return valid dates in blog posts', async () => {
       const result = await api.getBlogPosts(1);
 
       result.data.results.forEach((post: BlogPost) => {
@@ -238,7 +238,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       });
     });
 
-    it.skip('should return valid categories', async () => {
+    it('should return valid categories', async () => {
       const categories = await api.getBlogCategories();
 
       if (Array.isArray(categories.data)) {
@@ -264,7 +264,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
   });
 
   describe('Performance', () => {
-    it.skip('should return mock data quickly', async () => {
+    it('should return mock data quickly', async () => {
       const startTime = Date.now();
       await api.getBlogPosts(1);
       const endTime = Date.now();
@@ -273,7 +273,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       expect(endTime - startTime).toBeLessThan(100);
     });
 
-    it.skip('should handle multiple concurrent requests', async () => {
+    it('should handle multiple concurrent requests', async () => {
       const promises = [
         api.getBlogPosts(1),
         api.getBlogPost(1),
