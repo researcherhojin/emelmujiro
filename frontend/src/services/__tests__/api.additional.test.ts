@@ -26,7 +26,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
   });
 
   describe('Blog Operations', () => {
-    it.skip('should fetch blog posts with mock data', async () => {
+    it('should fetch blog posts with mock data', async () => {
       const result = await api.getBlogPosts(1);
 
       // Result should be a mock response

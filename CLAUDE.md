@@ -16,6 +16,7 @@ Emelmujiro (에멜무지로) is a full-stack monorepo application for AI Educati
 ## Essential Commands
 
 ### Monorepo Commands (from root)
+
 ```bash
 # Install everything
 npm install && cd frontend && npm install && cd ../backend && pip install -r requirements.txt
@@ -32,6 +33,7 @@ npm run install:all        # Install all dependencies
 ```
 
 ### Frontend Commands (from frontend/)
+
 ```bash
 # Development
 npm run dev                # Vite dev server (port 5173)
@@ -63,6 +65,7 @@ npm run validate           # lint + type-check + test:coverage
 ```
 
 ### Backend Commands (from backend/)
+
 ```bash
 python3 manage.py runserver     # Django dev server
 python3 manage.py test          # Django tests
@@ -73,6 +76,7 @@ flake8 .                        # Lint Python code
 ```
 
 ### Port Management
+
 ```bash
 # Kill stuck ports (CRITICAL - use 5173, not 3000!)
 lsof -ti:5173 | xargs kill -9  # Kill Vite
@@ -87,6 +91,7 @@ netstat -an | grep 5173
 ## Architecture & Patterns
 
 ### Mock API vs Real API
+
 ```typescript
 // src/services/api.ts - ALWAYS mock in production!
 const USE_MOCK_API =
@@ -96,6 +101,7 @@ const USE_MOCK_API =
 ```
 
 ### Environment Variables Migration
+
 ```typescript
 // src/config/env.ts - Supports both REACT_APP_ and VITE_
 const getEnvVar = (key: string, defaultValue: string = ''): string => {
@@ -105,6 +111,7 @@ const getEnvVar = (key: string, defaultValue: string = ''): string => {
 ```
 
 ### State Management Architecture
+
 - **Zustand Store** (`src/store/useAppStore.ts`):
   - UI slice: Theme, loading, modals, notifications
   - Auth slice: User, tokens, permissions
@@ -114,6 +121,7 @@ const getEnvVar = (key: string, defaultValue: string = ''): string => {
 - **Pattern**: Zustand for global state, Context for component-level state
 
 ### API Service Structure
+
 ```typescript
 // src/services/api.ts
 const api = axios.create({
@@ -125,9 +133,32 @@ const api = axios.create({
 // All have mock implementations in src/services/mockData.ts
 ```
 
+### Component Testing Pattern
+
+```typescript
+// src/test-utils/test-utils.tsx - renderWithProviders pattern
+const renderWithProviders = (ui: ReactElement, options?: RenderOptions) => {
+  return render(ui, {
+    wrapper: ({ children }) => (
+      <MemoryRouter>
+        <UIProvider>
+          <AuthProvider>
+            <BlogProvider>
+              {children}
+            </BlogProvider>
+          </AuthProvider>
+        </UIProvider>
+      </MemoryRouter>
+    ),
+    ...options,
+  });
+};
+```
+
 ## Testing Issues & Workarounds
 
 ### 55% Test Skip Rate - Root Causes
+
 1. **getByRole failures**: `style.getPropertyValue` errors in CI
 2. **classList errors**: DOM manipulation issues
 3. **framer-motion warnings**: `whileHover`, `whileTap` props
@@ -135,6 +166,7 @@ const api = axios.create({
 5. **react-helmet-async**: DOM conflicts
 
 ### CI-Specific Test Pattern
+
 ```typescript
 // Common workaround pattern (121 occurrences)
 const itSkipInCI = process.env.CI === 'true' ? it.skip : it;
@@ -144,13 +176,16 @@ itSkipInCI('test using getByRole', () => {
 ```
 
 ### Test Configuration
+
 - **Vitest**: Forks pool, single fork in CI, 15s timeout
 - **Memory**: `NODE_OPTIONS='--max-old-space-size=4096'` in CI
 - **Custom Utilities**: `renderWithProviders` in test-utils/
+- **Setup File**: 832-line setupTests.ts with comprehensive mocking
 
 ## Critical Configuration
 
 ### Vite Configuration
+
 ```typescript
 // vite.config.ts
 base: '/emelmujiro/',  // REQUIRED for GitHub Pages
@@ -163,23 +198,29 @@ server: {
 ```
 
 ### Build Configuration
+
 - **Output**: `build/` directory (not `dist/`)
 - **Chunks**: react-vendor, ui-vendor, i18n
 - **Terser**: Drops console/debugger in production
+- **Source Maps**: Hidden in production
 
 ### TypeScript Configuration
+
 - **Target**: ES2020
 - **Path Alias**: `@/` → `src/`
 - **Types**: vite/client, node, vitest/globals, @testing-library/jest-dom
+- **Strict Mode**: Enabled with all checks
 
 ## Docker Setup
 
 ### Development
+
 ```bash
 docker-compose -f docker-compose.dev.yml up
 ```
 
 ### Production Stack
+
 ```yaml
 # docker-compose.yml services:
 - frontend (nginx:alpine)
@@ -193,6 +234,7 @@ docker-compose -f docker-compose.dev.yml up
 ## Git Hooks & Pre-commit
 
 ### Husky + lint-staged
+
 ```json
 // Runs on pre-commit
 "src/**/*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"]
@@ -200,6 +242,7 @@ docker-compose -f docker-compose.dev.yml up
 ```
 
 ### Pre-deployment Check
+
 ```bash
 ./scripts/pre-deploy-check.sh  # 326-line comprehensive validation
 ```
@@ -207,11 +250,13 @@ docker-compose -f docker-compose.dev.yml up
 ## Current Issues & Solutions
 
 ### React 19 Compatibility
+
 - Using React 19.1.1 but many libraries incompatible
 - Dependabot ignores React 19.x updates
-- Solution: Mock problematic components in tests
+- Solution: Mock problematic components in tests (setupTests.ts)
 
 ### Memory Issues in CI
+
 ```bash
 # Optimizations applied:
 NODE_OPTIONS='--max-old-space-size=4096'
@@ -219,11 +264,12 @@ vitest --pool=forks --poolOptions.forks.singleFork  # In CI
 ```
 
 ### Tailwind CSS 3.x (Downgraded from 4.x)
+
 ```javascript
 // postcss.config.js - MUST use 'tailwindcss', not '@tailwindcss/postcss'
 module.exports = {
   plugins: {
-    tailwindcss: {},  // v3.x syntax
+    tailwindcss: {}, // v3.x syntax
     autoprefixer: {},
   },
 };
@@ -232,11 +278,13 @@ module.exports = {
 ## Deployment
 
 ### GitHub Pages (Current)
+
 ```bash
 cd frontend && npm run deploy  # Builds and deploys via gh-pages
 ```
 
 ### Full Production (Future)
+
 1. Deploy backend to cloud provider
 2. Set VITE_USE_MOCK_API=false
 3. Configure PostgreSQL and Redis
@@ -255,4 +303,5 @@ cd frontend && npm run deploy  # Builds and deploys via gh-pages
 2. **Mock API**: Production always uses mock, not configurable
 3. **Test Skips**: 55% tests skipped is expected, not a bug
 4. **Build Output**: Goes to `build/`, not `dist/`
-5. **Environment Variables**: Use VITE_ prefix for new vars
+5. **Environment Variables**: Use VITE\_ prefix for new vars
+6. **Kill Ports Script**: Targets wrong port (3000 instead of 5173) in line 80

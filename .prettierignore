@@ -4,23 +4,9 @@ dist/
 coverage/
 node_modules/
 
-# Test files
-*.test.js
-*.spec.js
-*.test.ts
-*.spec.ts
-
-# Robot files
-robots.txt
-
 # Python files
-*.py
 *.pyc
 __pycache__/
-
-# Docker
-Dockerfile*
-docker-compose*.yml
 
 # Other
 *.log
