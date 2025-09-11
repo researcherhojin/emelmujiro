@@ -72,14 +72,14 @@ describe('BlogEditor Component', () => {
   });
 
   describe('Admin Mode', () => {
-    it.skip('shows admin required message when not in admin mode', () => {
+    it('shows admin required message when not in admin mode', () => {
       localStorage.removeItem('adminMode');
       renderWithRouter(<BlogEditor />);
       expect(screen.getByText('관리자 모드가 필요합니다')).toBeInTheDocument();
       expect(screen.queryByText('블로그 글쓰기')).not.toBeInTheDocument();
     });
 
-    it.skip('renders editor when in admin mode', () => {
+    it('renders editor when in admin mode', () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
       expect(screen.getByText('블로그 글쓰기')).toBeInTheDocument();
@@ -88,7 +88,7 @@ describe('BlogEditor Component', () => {
       ).not.toBeInTheDocument();
     });
 
-    it.skip('activates admin mode via URL parameter', () => {
+    it('activates admin mode via URL parameter', () => {
       const originalLocation = window.location;
       Object.defineProperty(window, 'location', {
         writable: true,
@@ -110,7 +110,7 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
     });
 
-    it.skip('renders all form fields', () => {
+    it('renders all form fields', () => {
       renderWithRouter(<BlogEditor />);
 
       expect(screen.getByText('제목 *')).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe('BlogEditor Component', () => {
       expect(screen.getByText('내용 * (Markdown 지원)')).toBeInTheDocument();
     });
 
-    it.skip('updates form data on input change', () => {
+    it('updates form data on input change', () => {
       renderWithRouter(<BlogEditor />);
 
       // Find title input by placeholder
@@ -140,7 +140,7 @@ describe('BlogEditor Component', () => {
       expect(contentTextarea.value).toBe('Test Content');
     });
 
-    it.skip('has default author value', () => {
+    it('has default author value', () => {
       renderWithRouter(<BlogEditor />);
 
       // Find author input by its label
@@ -154,7 +154,7 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
     });
 
-    it.skip('toggles preview mode', () => {
+    it('toggles preview mode', () => {
       renderWithRouter(<BlogEditor />);
 
       // Initially preview is shown
@@ -164,7 +164,7 @@ describe('BlogEditor Component', () => {
       );
     });
 
-    it.skip('displays content in preview mode', () => {
+    it('displays content in preview mode', () => {
       renderWithRouter(<BlogEditor />);
 
       const contentTextarea = screen.getByPlaceholderText(
@@ -186,10 +186,10 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
     });
 
-    it.skip('validates required fields before saving', () => {
+    it('validates required fields before saving', () => {
       renderWithRouter(<BlogEditor />);
 
-      const saveButton = screen.getByText(/저장/);
+      const saveButton = screen.getByRole('button', { name: /저장/ });
 
       // Mock alert
       const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
@@ -201,7 +201,7 @@ describe('BlogEditor Component', () => {
       alertSpy.mockRestore();
     });
 
-    it.skip('saves post to localStorage with valid data', () => {
+    it('saves post to localStorage with valid data', () => {
       // Clear localStorage and set initial empty posts
       localStorage.clear();
       localStorage.setItem('adminMode', 'true');
@@ -221,7 +221,7 @@ describe('BlogEditor Component', () => {
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
       fireEvent.change(categorySelect, { target: { value: 'Technology' } });
 
-      const saveButton = screen.getByText(/저장/);
+      const saveButton = screen.getByRole('button', { name: /저장/ });
 
       // Mock alert
       const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
@@ -244,7 +244,7 @@ describe('BlogEditor Component', () => {
       alertSpy.mockRestore();
     });
 
-    it.skip('generates unique ID and timestamp for new posts', () => {
+    it('generates unique ID and timestamp for new posts', () => {
       // Clear localStorage and set initial empty posts
       localStorage.clear();
       localStorage.setItem('adminMode', 'true');
@@ -262,7 +262,7 @@ describe('BlogEditor Component', () => {
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
 
-      const saveButton = screen.getByText(/저장/);
+      const saveButton = screen.getByRole('button', { name: /저장/ });
 
       vi.spyOn(window, 'alert').mockImplementation(() => {});
 
@@ -285,7 +285,7 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
     });
 
-    it.skip('exports posts as JSON', () => {
+    it('exports posts as JSON', () => {
       const mockPosts = [
         { id: 1, title: 'Post 1', content: 'Content 1' },
         { id: 2, title: 'Post 2', content: 'Content 2' },
@@ -303,7 +303,9 @@ describe('BlogEditor Component', () => {
         .spyOn(linkElement, 'click')
         .mockImplementation(() => {});
 
-      const exportButton = screen.getByText(/내보내기/);
+      const exportButton = screen.getByRole('button', {
+        name: /JSON 내보내기/,
+      });
       fireEvent.click(exportButton);
 
       expect(createElementSpy).toHaveBeenCalledWith('a');
@@ -314,7 +316,7 @@ describe('BlogEditor Component', () => {
       clickSpy.mockRestore();
     });
 
-    it.skip('imports posts from JSON file', async () => {
+    it('imports posts from JSON file', async () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
 
@@ -362,7 +364,7 @@ describe('BlogEditor Component', () => {
       alertSpy.mockRestore();
     });
 
-    it.skip('validates imported JSON structure', async () => {
+    it('validates imported JSON structure', async () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
 
@@ -394,7 +396,7 @@ describe('BlogEditor Component', () => {
       localStorage.setItem('adminMode', 'true');
     });
 
-    it.skip('navigates back on cancel', () => {
+    it('navigates back on cancel', () => {
       renderWithRouter(<BlogEditor />);
 
       const cancelButton = screen.getByText(/취소/);
