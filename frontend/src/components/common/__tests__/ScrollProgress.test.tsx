@@ -410,9 +410,9 @@ describe('ScrollProgress', () => {
 
       const progressBars = screen.getAllByRole('progressbar');
       const progressBar = progressBars[progressBars.length - 1];
-      // Should handle negative values without crashing
+      // Should clamp negative values to 0%
       const widthValue = progressBar.style.width;
-      expect(widthValue).toContain('-8.333333333333'); // Accept floating point precision variations
+      expect(widthValue).toBe('0%');
       // Component should handle this without crashing
     });
 
