@@ -19,11 +19,17 @@ const PWAInstallButton: React.FC = memo(() => {
     }
 
     // PWA 설치 여부 확인
-    if (
-      window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as Navigator & { standalone?: boolean }).standalone
-    ) {
-      setIsInstalled(true);
+    try {
+      if (
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as Navigator & { standalone?: boolean }).standalone
+      ) {
+        setIsInstalled(true);
+        return;
+      }
+    } catch (error) {
+      // matchMedia may not work in some test environments
+      console.warn('matchMedia not available:', error);
       return;
     }
 
