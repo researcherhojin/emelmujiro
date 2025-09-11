@@ -125,7 +125,7 @@ describe('BlogSection Component', () => {
   });
 
   describe('Normal State', () => {
-    it.skip('renders section with correct ID', () => {
+    it('renders section with correct ID', () => {
       renderWithRouter(
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
@@ -134,7 +134,7 @@ describe('BlogSection Component', () => {
       expect(screen.getByText('AI 트렌드')).toBeInTheDocument();
     });
 
-    it.skip('displays section header', () => {
+    it('displays section header', () => {
       renderWithRouter(
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
@@ -150,7 +150,7 @@ describe('BlogSection Component', () => {
       expect(descriptionText).toBeInTheDocument();
     });
 
-    it.skip('displays only first 3 posts', () => {
+    it('displays only first 3 posts', () => {
       renderWithRouter(
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
@@ -164,7 +164,7 @@ describe('BlogSection Component', () => {
       expect(screen.queryByText('AI Trend 4')).not.toBeInTheDocument();
     });
 
-    it.skip('shows "view all" button when more than 3 posts', () => {
+    it('shows "view all" button when more than 3 posts', () => {
       renderWithRouter(
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
@@ -173,7 +173,7 @@ describe('BlogSection Component', () => {
       expect(viewAllButton).toBeInTheDocument();
     });
 
-    it.skip('navigates to blog page when "view all" button is clicked', () => {
+    it('navigates to blog page when "view all" button is clicked', () => {
       renderWithRouter(
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
@@ -184,7 +184,7 @@ describe('BlogSection Component', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/blog');
     });
 
-    it.skip('does not show "view all" button when 3 or fewer posts', () => {
+    it('does not show "view all" button when 3 or fewer posts', () => {
       const threePosts = mockPosts.slice(0, 3);
       renderWithRouter(
         <BlogSection posts={threePosts} isLoading={false} error={null} />
@@ -195,7 +195,7 @@ describe('BlogSection Component', () => {
   });
 
   describe('Loading State', () => {
-    it.skip('displays loading spinner and message', () => {
+    it('displays loading spinner and message', () => {
       renderWithRouter(
         <BlogSection posts={[]} isLoading={true} error={null} />
       );
@@ -206,7 +206,7 @@ describe('BlogSection Component', () => {
       ).toBeInTheDocument();
     });
 
-    it.skip('does not display posts when loading', () => {
+    it('does not display posts when loading', () => {
       renderWithRouter(
         <BlogSection posts={mockPosts} isLoading={true} error={null} />
       );
@@ -216,7 +216,7 @@ describe('BlogSection Component', () => {
   });
 
   describe('Error State', () => {
-    it.skip('displays error message', () => {
+    it('displays error message', () => {
       const errorMessage = '네트워크 오류가 발생했습니다';
       renderWithRouter(
         <BlogSection posts={[]} isLoading={false} error={errorMessage} />
@@ -226,7 +226,7 @@ describe('BlogSection Component', () => {
       expect(screen.getByText('⚠️')).toBeInTheDocument();
     });
 
-    it.skip('does not display posts when error occurs', () => {
+    it('does not display posts when error occurs', () => {
       renderWithRouter(
         <BlogSection
           posts={mockPosts}
@@ -240,7 +240,7 @@ describe('BlogSection Component', () => {
   });
 
   describe('Empty State', () => {
-    it.skip('displays empty state message when no posts', () => {
+    it('displays empty state message when no posts', () => {
       renderWithRouter(
         <BlogSection posts={[]} isLoading={false} error={null} />
       );
@@ -253,7 +253,7 @@ describe('BlogSection Component', () => {
       ).toBeInTheDocument();
     });
 
-    it.skip('displays empty state icon', () => {
+    it('displays empty state icon', () => {
       renderWithRouter(
         <BlogSection posts={[]} isLoading={false} error={null} />
       );
@@ -264,7 +264,7 @@ describe('BlogSection Component', () => {
   });
 
   describe('Edge Cases', () => {
-    it.skip('handles empty posts array', () => {
+    it('handles empty posts array', () => {
       renderWithRouter(
         <BlogSection posts={[]} isLoading={false} error={null} />
       );
@@ -274,7 +274,7 @@ describe('BlogSection Component', () => {
       ).toBeInTheDocument();
     });
 
-    it.skip('handles empty posts with loading state', () => {
+    it('handles empty posts with loading state', () => {
       renderWithRouter(
         <BlogSection posts={[]} isLoading={true} error={null} />
       );
@@ -282,7 +282,7 @@ describe('BlogSection Component', () => {
       expect(screen.getByTestId('loader')).toBeInTheDocument();
     });
 
-    it.skip('handles posts with missing properties', () => {
+    it('handles posts with missing properties', () => {
       const incompletePosts: Partial<BlogPost>[] = [
         {
           id: 1,
@@ -319,7 +319,7 @@ describe('BlogSection Component', () => {
   });
 
   describe('Styling and Layout', () => {
-    it.skip('applies correct section styling', () => {
+    it('applies correct section styling', () => {
       renderWithRouter(
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
@@ -336,7 +336,7 @@ describe('BlogSection Component', () => {
       expect(descriptionText).toBeInTheDocument();
     });
 
-    it.skip('applies grid layout for posts', () => {
+    it('applies grid layout for posts', () => {
       renderWithRouter(
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
@@ -346,7 +346,7 @@ describe('BlogSection Component', () => {
       expect(blogCards).toHaveLength(3); // Only first 3 posts are displayed
     });
 
-    it.skip('shows loading state', () => {
+    it('shows loading state', () => {
       renderWithRouter(
         <BlogSection posts={[]} isLoading={true} error={null} />
       );
@@ -355,7 +355,7 @@ describe('BlogSection Component', () => {
       expect(screen.getByTestId('loader')).toBeInTheDocument();
     });
 
-    it.skip('displays error message', () => {
+    it('displays error message', () => {
       renderWithRouter(
         <BlogSection posts={[]} isLoading={false} error="Test error" />
       );
@@ -366,7 +366,7 @@ describe('BlogSection Component', () => {
   });
 
   describe('Accessibility', () => {
-    it.skip('has proper heading hierarchy', () => {
+    it('has proper heading hierarchy', () => {
       renderWithRouter(
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
@@ -375,7 +375,7 @@ describe('BlogSection Component', () => {
       expect(heading).toHaveTextContent('AI 트렌드');
     });
 
-    it.skip('has proper aria-label for navigation button', () => {
+    it('has proper aria-label for navigation button', () => {
       renderWithRouter(
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
