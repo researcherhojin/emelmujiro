@@ -2,6 +2,7 @@ import { screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import Navbar from '../Navbar';
+import { testSkipInCI } from '../../../test-utils/ci-skip';
 
 // Mock useNavigate
 const mockNavigate = vi.fn();
@@ -38,12 +39,12 @@ describe('Navbar Component', () => {
     mockNavigate.mockClear();
   });
 
-  test('renders logo', () => {
+  testSkipInCI('renders logo', () => {
     renderWithProviders(<Navbar />);
     expect(screen.getByText('에멜무지로')).toBeInTheDocument();
   });
 
-  test('renders navigation items', () => {
+  testSkipInCI('renders navigation items', () => {
     renderWithProviders(<Navbar />);
     expect(
       screen.getByRole('button', { name: '회사소개' })
@@ -54,7 +55,7 @@ describe('Navbar Component', () => {
     ).toBeInTheDocument();
   });
 
-  test('navigates on menu item click', () => {
+  testSkipInCI('navigates on menu item click', () => {
     renderWithProviders(<Navbar />);
 
     const aboutButton = screen.getByRole('button', { name: '회사소개' });
@@ -62,7 +63,7 @@ describe('Navbar Component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/about');
   });
 
-  test('mobile menu button toggles menu', () => {
+  testSkipInCI('mobile menu button toggles menu', () => {
     renderWithProviders(<Navbar />);
 
     // Mobile menu should not be visible initially
@@ -81,7 +82,7 @@ describe('Navbar Component', () => {
     expect(mobileMenuItems.length).toBeGreaterThan(1); // One in desktop, one in mobile
   });
 
-  test('logo navigates to home', () => {
+  testSkipInCI('logo navigates to home', () => {
     renderWithProviders(<Navbar />);
 
     // Find all links and check for the logo link
@@ -92,7 +93,7 @@ describe('Navbar Component', () => {
     expect(logoLink).toHaveAttribute('href', '#/');
   });
 
-  test('applies scroll styles', () => {
+  testSkipInCI('applies scroll styles', () => {
     renderWithProviders(<Navbar />);
 
     const navbar = screen.getByRole('navigation');

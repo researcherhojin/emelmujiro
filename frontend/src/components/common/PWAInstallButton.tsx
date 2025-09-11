@@ -13,6 +13,11 @@ const PWAInstallButton: React.FC = memo(() => {
   const [isInstalled, setIsInstalled] = useState<boolean>(false);
 
   useEffect(() => {
+    // Check if window and matchMedia are available (for test environment)
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return;
+    }
+
     // PWA 설치 여부 확인
     if (
       window.matchMedia('(display-mode: standalone)').matches ||
