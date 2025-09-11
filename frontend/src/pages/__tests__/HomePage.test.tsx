@@ -35,12 +35,12 @@ vi.mock('../../components/seo/SEOHead', () => ({
 }));
 
 describe('HomePage', () => {
-  it.skip('renders without crashing', () => {
+  it('renders without crashing', () => {
     renderWithProviders(<HomePage />);
     expect(document.body).toBeInTheDocument();
   });
 
-  it.skip('renders all sections after loading', async () => {
+  it('renders all sections after loading', async () => {
     renderWithProviders(<HomePage />);
 
     await waitFor(() => {
@@ -51,7 +51,7 @@ describe('HomePage', () => {
     });
   });
 
-  it.skip('shows loading state initially', () => {
+  it('shows loading state initially', () => {
     renderWithProviders(<HomePage />);
 
     // Should show loading component initially
@@ -61,7 +61,7 @@ describe('HomePage', () => {
     }
   });
 
-  it.skip('renders sections in correct order', async () => {
+  it('renders sections in correct order', async () => {
     const { container } = renderWithProviders(<HomePage />);
 
     await waitFor(() => {
@@ -73,7 +73,7 @@ describe('HomePage', () => {
     });
   });
 
-  it.skip('handles suspense fallback correctly', async () => {
+  it('handles suspense fallback correctly', async () => {
     renderWithProviders(<HomePage />);
 
     // Wait for all sections to load
@@ -85,7 +85,7 @@ describe('HomePage', () => {
     );
   });
 
-  it.skip('passes correct props to SEOHead', () => {
+  it('passes correct props to SEOHead', () => {
     renderWithProviders(<HomePage />);
 
     // SEOHead should be called with correct props
@@ -93,7 +93,7 @@ describe('HomePage', () => {
     expect(document.body).toBeInTheDocument();
   });
 
-  it.skip('renders with React.Suspense wrapper', async () => {
+  it('renders with React.Suspense wrapper', async () => {
     renderWithProviders(<HomePage />);
 
     // All lazy loaded components should eventually render
@@ -103,7 +103,7 @@ describe('HomePage', () => {
     });
   });
 
-  it.skip('includes structured data for SEO', () => {
+  it('includes structured data for SEO', () => {
     renderWithProviders(<HomePage />);
 
     // HomePage should include structured data
@@ -111,7 +111,7 @@ describe('HomePage', () => {
     expect(document.body).toBeInTheDocument();
   });
 
-  it.skip('handles error boundary gracefully', () => {
+  it('handles error boundary gracefully', () => {
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -126,7 +126,7 @@ describe('HomePage', () => {
     consoleSpy.mockRestore();
   });
 
-  it.skip('applies correct page layout', () => {
+  it('applies correct page layout', () => {
     const { container } = renderWithProviders(<HomePage />);
 
     // Check if the page has proper structure

@@ -116,17 +116,17 @@ describe('API Service', () => {
   });
 
   describe('Interceptors', () => {
-    it.skip('should setup request interceptor', async () => {
+    it('should setup request interceptor', async () => {
       await import('../api');
       expect(mockRequestUse).toHaveBeenCalled();
     });
 
-    it.skip('should setup response interceptor', async () => {
+    it('should setup response interceptor', async () => {
       await import('../api');
       expect(mockResponseUse).toHaveBeenCalled();
     });
 
-    it.skip('should add auth token to requests', async () => {
+    it('should add auth token to requests', async () => {
       const token = 'test-token';
       localStorage.setItem('authToken', token);
 
@@ -144,7 +144,7 @@ describe('API Service', () => {
       }
     });
 
-    it.skip('should handle response errors', async () => {
+    it('should handle response errors', async () => {
       await import('../api');
 
       // Get the error interceptor function
