@@ -29,7 +29,10 @@ const PWAInstallButton: React.FC = memo(() => {
       }
     } catch (error) {
       // matchMedia may not work in some test environments
-      console.warn('matchMedia not available:', error);
+      // Silently fail in test environments
+      if (process.env.NODE_ENV !== 'test') {
+        console.warn('matchMedia not available:', error);
+      }
       return;
     }
 

@@ -8,6 +8,12 @@ vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
+      initial,
+      animate,
+      exit,
+      whileHover,
+      whileTap,
+      transition,
       ...props
     }: {
       children?: React.ReactNode;
@@ -16,6 +22,12 @@ vi.mock('framer-motion', () => ({
     button: ({
       children,
       onClick,
+      initial,
+      animate,
+      exit,
+      whileHover,
+      whileTap,
+      transition,
       ...props
     }: {
       children?: React.ReactNode;
