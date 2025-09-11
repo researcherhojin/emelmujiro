@@ -38,7 +38,7 @@ describe('HeroSection Component', () => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 
-  test.skip('renders main heading', () => {
+  test('renders main heading', () => {
     renderWithRouter(<HeroSection />);
 
     // Check that the heading is rendered (h1 element specifically),
@@ -48,7 +48,7 @@ describe('HeroSection Component', () => {
     expect(heading.textContent).toContain('AI 전문가 그룹');
   });
 
-  test.skip('renders subheading', () => {
+  test('renders subheading', () => {
     renderWithRouter(<HeroSection />);
 
     expect(
@@ -56,7 +56,7 @@ describe('HeroSection Component', () => {
     ).toBeInTheDocument();
   });
 
-  test.skip('renders call to action button', () => {
+  test('renders call to action button', () => {
     renderWithRouter(<HeroSection />);
 
     // HeroSection now only has one CTA button with an arrow
