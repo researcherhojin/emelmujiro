@@ -1,5 +1,5 @@
 const { SitemapStream, streamToPromise } = require('sitemap');
-const { createWriteStream } = require('fs');
+const { writeFileSync } = require('fs');
 const path = require('path');
 
 // 사이트 URL 설정
@@ -47,11 +47,7 @@ const pages = [
 
 async function generateSitemap() {
   const sitemap = new SitemapStream({ hostname });
-  const writeStream = createWriteStream(
-    path.join(__dirname, 'public', 'sitemap.xml')
-  );
-
-  sitemap.pipe(writeStream);
+  const sitemapPath = path.join(__dirname, 'public', 'sitemap.xml');
 
   // 페이지 추가
   pages.forEach((page) => {
@@ -65,8 +61,54 @@ async function generateSitemap() {
 
   sitemap.end();
 
-  await streamToPromise(sitemap);
+  // XML 스트림을 문자열로 변환
+  const sitemapBuffer = await streamToPromise(sitemap);
+  const sitemapXML = sitemapBuffer.toString();
+
+  // 수동으로 XML 포맷팅
+  const formattedXML = formatXML(sitemapXML);
+  writeFileSync(sitemapPath, formattedXML);
+
   console.log('Sitemap generated successfully!');
+}
+
+// XML 포맷팅 함수
+function formatXML(xml) {
+  const PADDING = '  '; // 2 spaces
+  let formatted = '';
+  let indent = '';
+  
+  // XML 선언을 분리
+  const xmlDeclaration = xml.match(/^<\?xml[^?]*\?>/)?.[0] || '';
+  let xmlContent = xml.replace(/^<\?xml[^?]*\?>/, '');
+  
+  // 태그 분리 및 포맷팅
+  xmlContent = xmlContent
+    .replace(/></g, '>\n<')
+    .replace(/(<urlset[^>]*>)/g, '\n$1\n')
+    .replace(/<\/urlset>/g, '\n</urlset>');
+  
+  const lines = xmlContent.split('\n').filter(line => line.trim());
+  
+  formatted = xmlDeclaration + '\n';
+  
+  lines.forEach(line => {
+    const trimmedLine = line.trim();
+    
+    if (trimmedLine.startsWith('</')) {
+      indent = indent.substring(PADDING.length);
+      formatted += indent + trimmedLine + '\n';
+    } else if (trimmedLine.startsWith('<') && !trimmedLine.includes('</')) {
+      formatted += indent + trimmedLine + '\n';
+      if (!trimmedLine.includes('/>') && !trimmedLine.includes('</')) {
+        indent += PADDING;
+      }
+    } else {
+      formatted += indent + trimmedLine + '\n';
+    }
+  });
+  
+  return formatted;
 }
 
 generateSitemap().catch(console.error);
