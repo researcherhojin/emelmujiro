@@ -8,7 +8,7 @@ describe('StorageCache', () => {
   });
 
   describe('localStorage cache', () => {
-    it.skip('should set and get values from localStorage', () => {
+    it('should set and get values from localStorage', () => {
       const cache = new StorageCache('localStorage');
       const testData = { name: 'test', value: 123 };
 
@@ -18,7 +18,7 @@ describe('StorageCache', () => {
       expect(result).toEqual(testData);
     });
 
-    it.skip('should return null for expired items', async () => {
+    it('should return null for expired items', async () => {
       const cache = new StorageCache('localStorage');
       const testData = { name: 'test' };
 
@@ -32,7 +32,7 @@ describe('StorageCache', () => {
       expect(result).toBeNull();
     });
 
-    it.skip('should remove items', () => {
+    it('should remove items', () => {
       const cache = new StorageCache('localStorage');
       cache.set('test-key', 'test-value', 1000);
 
@@ -42,7 +42,7 @@ describe('StorageCache', () => {
       expect(result).toBeNull();
     });
 
-    it.skip('should clear all items with prefix', () => {
+    it('should clear all items with prefix', () => {
       const cache = new StorageCache('localStorage');
       cache.set('key1', 'value1', 1000);
       cache.set('key2', 'value2', 1000);
@@ -53,7 +53,7 @@ describe('StorageCache', () => {
       expect(cache.get('key2')).toBeNull();
     });
 
-    it.skip('should handle storage quota exceeded', () => {
+    it('should handle storage quota exceeded', () => {
       const cache = new StorageCache('localStorage');
       const largeData = new Array(10000000).join('x'); // Very large string
 
@@ -65,7 +65,7 @@ describe('StorageCache', () => {
   });
 
   describe('sessionStorage cache', () => {
-    it.skip('should set and get values from sessionStorage', () => {
+    it('should set and get values from sessionStorage', () => {
       const cache = new StorageCache('sessionStorage');
       const testData = { name: 'test', value: 456 };
 
@@ -75,7 +75,7 @@ describe('StorageCache', () => {
       expect(result).toEqual(testData);
     });
 
-    it.skip('should handle invalid JSON gracefully', () => {
+    it('should handle invalid JSON gracefully', () => {
       const cache = new StorageCache('sessionStorage');
 
       // Manually set invalid JSON
@@ -107,14 +107,14 @@ describe('preloadCriticalResources', () => {
     vi.restoreAllMocks();
   });
 
-  it.skip('should skip preloading in development mode', () => {
+  it('should skip preloading in development mode', () => {
     (process.env as any).NODE_ENV = 'development';
     preloadCriticalResources();
 
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
-  it.skip('should attempt to preload resources in production', async () => {
+  it('should attempt to preload resources in production', async () => {
     (process.env as any).NODE_ENV = 'production';
     (process.env as any).PUBLIC_URL = '/emelmujiro';
 
@@ -135,7 +135,7 @@ describe('preloadCriticalResources', () => {
     );
   });
 
-  it.skip('should handle fetch errors gracefully', async () => {
+  it('should handle fetch errors gracefully', async () => {
     (process.env as any).NODE_ENV = 'production';
 
     (global.fetch as any).mockRejectedValue(new Error('Network error'));
