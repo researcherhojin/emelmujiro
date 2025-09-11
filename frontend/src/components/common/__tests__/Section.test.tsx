@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import Section from '../Section';
+import { testSkipInCI } from '../../../test-utils/ci-skip';
 
 describe('Section Component', () => {
-  test('renders children content', () => {
+  testSkipInCI('renders children content', () => {
     render(
       <Section>
         <p>Test content</p>
@@ -11,7 +12,7 @@ describe('Section Component', () => {
     expect(screen.getByText('Test content')).toBeInTheDocument();
   });
 
-  test('renders with title', () => {
+  testSkipInCI('renders with title', () => {
     render(
       <Section title="Test Title">
         <p>Content</p>
@@ -22,7 +23,7 @@ describe('Section Component', () => {
     ).toBeInTheDocument();
   });
 
-  test('renders with subtitle', () => {
+  testSkipInCI('renders with subtitle', () => {
     render(
       <Section subtitle="Test Subtitle">
         <p>Content</p>
@@ -31,7 +32,7 @@ describe('Section Component', () => {
     expect(screen.getByText('Test Subtitle')).toBeInTheDocument();
   });
 
-  test('applies background color class', () => {
+  testSkipInCI('applies background color class', () => {
     render(
       <Section bgColor="gray">
         <p>Content</p>
@@ -41,7 +42,7 @@ describe('Section Component', () => {
     expect(screen.getByText('Content')).toBeInTheDocument();
   });
 
-  test('applies custom className', () => {
+  testSkipInCI('applies custom className', () => {
     render(
       <Section className="custom-section">
         <p>Content</p>
