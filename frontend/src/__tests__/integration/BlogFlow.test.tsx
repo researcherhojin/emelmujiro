@@ -83,7 +83,7 @@ const mockPosts = [
   },
 ];
 
-describe.skip('Blog Flow Integration Tests', () => {
+describe('Blog Flow Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Mock successful blog posts fetch
@@ -101,7 +101,7 @@ describe.skip('Blog Flow Integration Tests', () => {
     });
   });
 
-  test.skip('app renders without crashing', async () => {
+  test('app renders without crashing', async () => {
     render(<App />);
 
     // Wait for the app to render
@@ -113,7 +113,7 @@ describe.skip('Blog Flow Integration Tests', () => {
     );
   });
 
-  test.skip('handles navigation when available', async () => {
+  test('handles navigation when available', async () => {
     render(<App />);
 
     // Wait for initial render
@@ -124,7 +124,7 @@ describe.skip('Blog Flow Integration Tests', () => {
     });
   });
 
-  test.skip('displays content based on route', async () => {
+  test('displays content based on route', async () => {
     render(<App />);
 
     // Wait for content to load
@@ -133,7 +133,7 @@ describe.skip('Blog Flow Integration Tests', () => {
     });
   });
 
-  test.skip('handles errors gracefully', async () => {
+  test('handles errors gracefully', async () => {
     // Mock an error response
     mockedBlogService.getPosts.mockRejectedValue(new Error('Network error'));
 
@@ -145,7 +145,7 @@ describe.skip('Blog Flow Integration Tests', () => {
     });
   });
 
-  test.skip('renders with mobile viewport', async () => {
+  test('renders with mobile viewport', async () => {
     // Mock mobile viewport
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
@@ -161,7 +161,7 @@ describe.skip('Blog Flow Integration Tests', () => {
     });
   });
 
-  test.skip('mocked blog service is configured correctly', () => {
+  test('mocked blog service is configured correctly', () => {
     // Verify mocks are set up
     expect(mockedBlogService.getPosts).toBeDefined();
     expect(mockedBlogService.getPost).toBeDefined();
