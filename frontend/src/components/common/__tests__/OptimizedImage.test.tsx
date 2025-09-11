@@ -24,10 +24,12 @@ vi.mock('../LazyImage', () => {
     default: function MockLazyImage(
       props: React.ImgHTMLAttributes<HTMLImageElement> & { loading?: string }
     ) {
+      // Avoid empty src warnings in tests
+      const src = props.src || undefined;
       return (
         <img
           data-testid="lazy-image"
-          src={props.src}
+          src={src}
           alt={props.alt}
           className={props.className}
           width={props.width}

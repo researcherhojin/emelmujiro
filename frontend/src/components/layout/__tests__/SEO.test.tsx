@@ -31,9 +31,19 @@ type MockedHelmet = MockInstance & {
 
 // Mock react-helmet-async
 vi.mock('react-helmet-async', () => {
-  const mockHelmet = vi.fn(({ children }: { children: React.ReactNode }) => (
-    <div data-testid="helmet-mock">{children}</div>
-  ));
+  const mockHelmet = vi.fn(({ children }: { children: React.ReactNode }) => {
+    // Filter out html elements to avoid hydration warnings
+    const filteredChildren = React.Children.toArray(children).filter(
+      (child) => {
+        if (React.isValidElement(child)) {
+          return child.type !== 'html';
+        }
+        return true;
+      }
+    );
+
+    return <div data-testid="helmet-mock">{filteredChildren}</div>;
+  });
 
   return {
     Helmet: mockHelmet,

@@ -92,7 +92,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   if (loading === 'lazy') {
     return (
       <LazyImage
-        src={imageSrc}
+        src={imageSrc || undefined}
         alt={alt}
         className={className}
         width={width}
@@ -107,7 +107,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   return (
     <img
-      src={imageSrc}
+      src={imageSrc || undefined}
       alt={alt}
       className={className}
       width={width}
