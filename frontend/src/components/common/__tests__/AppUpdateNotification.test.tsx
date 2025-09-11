@@ -60,7 +60,7 @@ describe('AppUpdateNotification', () => {
     });
   });
 
-  it.skip('renders without crashing', () => {
+  it('renders without crashing', () => {
     render(
       <AppUpdateNotification
         registration={mockRegistration as unknown as ServiceWorkerRegistration}
@@ -70,7 +70,7 @@ describe('AppUpdateNotification', () => {
     expect(screen.queryByText(/새로운 버전/i)).not.toBeInTheDocument();
   });
 
-  it.skip('shows notification when update is available', async () => {
+  it('shows notification when update is available', async () => {
     // Set up a waiting worker
     const mockWaitingWorker: MockServiceWorker = {
       state: 'installed',
@@ -90,7 +90,7 @@ describe('AppUpdateNotification', () => {
     });
   });
 
-  it.skip('handles update button click', async () => {
+  it('handles update button click', async () => {
     const mockReload = vi.fn();
     Object.defineProperty(window.location, 'reload', {
       configurable: true,
@@ -136,7 +136,7 @@ describe('AppUpdateNotification', () => {
     expect(mockReload).toHaveBeenCalled();
   });
 
-  it.skip('handles dismiss button click', async () => {
+  it('handles dismiss button click', async () => {
     const mockWaitingWorker: MockServiceWorker = {
       state: 'installed',
       postMessage: vi.fn(),
@@ -164,7 +164,7 @@ describe('AppUpdateNotification', () => {
     ).not.toBeInTheDocument();
   });
 
-  it.skip('cleans up event listener on unmount', () => {
+  it('cleans up event listener on unmount', () => {
     const { unmount } = render(
       <AppUpdateNotification
         registration={mockRegistration as unknown as ServiceWorkerRegistration}
@@ -179,7 +179,7 @@ describe('AppUpdateNotification', () => {
     );
   });
 
-  it.skip('handles missing registration gracefully', () => {
+  it('handles missing registration gracefully', () => {
     // Should not throw error
     expect(() => render(<AppUpdateNotification />)).not.toThrow();
   });

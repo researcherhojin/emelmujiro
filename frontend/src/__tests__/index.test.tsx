@@ -80,7 +80,7 @@ describe('Index', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it.skip('renders without crashing', () => {
+  it('renders without crashing', () => {
     // Test the core behavior without importing the actual index file
     // since it has complex dependencies that are hard to mock
 
@@ -106,7 +106,7 @@ describe('Index', () => {
     expect(mockRender).toHaveBeenCalled();
   });
 
-  it.skip('registers service worker', async () => {
+  it('registers service worker', async () => {
     // Get the mocked register function
     const { register } = await import('../serviceWorkerRegistration');
 
@@ -129,7 +129,7 @@ describe('Index', () => {
     expect(register).toHaveBeenCalledWith(mockConfig);
   });
 
-  it.skip('initializes performance monitoring', async () => {
+  it('initializes performance monitoring', async () => {
     // Test that the mocked functions are available
     const { initPerformanceMonitoring } = await import('../utils/webVitals');
     const { initializeCacheOptimization } = await import(
@@ -143,7 +143,7 @@ describe('Index', () => {
     expect(typeof initializeCacheOptimization).toBe('function');
   });
 
-  it.skip('renders App component in StrictMode with HelmetProvider', () => {
+  it('renders App component in StrictMode with HelmetProvider', () => {
     // Test the core rendering structure without importing the actual index file
 
     const MockApp = () =>
@@ -174,7 +174,7 @@ describe('Index', () => {
     expect(helmetProvider).toBeTruthy();
   });
 
-  it.skip('throws error when root element is missing', () => {
+  it('throws error when root element is missing', () => {
     // Remove the root element
     if (document.body.contains(rootElement)) {
       document.body.removeChild(rootElement);
@@ -185,7 +185,7 @@ describe('Index', () => {
     expect(root).toBeNull();
   });
 
-  it.skip('handles service worker update callback', () => {
+  it('handles service worker update callback', () => {
     const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
     const mockReload = vi.fn();
 
@@ -205,7 +205,7 @@ describe('Index', () => {
     mockConfirm.mockRestore();
   });
 
-  it.skip('handles service worker update cancellation', () => {
+  it('handles service worker update cancellation', () => {
     const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
     const mockReload = vi.fn();
 

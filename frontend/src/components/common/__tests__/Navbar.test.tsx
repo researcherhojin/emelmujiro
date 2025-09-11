@@ -38,12 +38,12 @@ describe('Navbar Component', () => {
     mockNavigate.mockClear();
   });
 
-  test.skip('renders logo', () => {
+  test('renders logo', () => {
     renderWithProviders(<Navbar />);
     expect(screen.getByText('에멜무지로')).toBeInTheDocument();
   });
 
-  test.skip('renders navigation items', () => {
+  test('renders navigation items', () => {
     renderWithProviders(<Navbar />);
     expect(
       screen.getByRole('button', { name: '회사소개' })
@@ -54,7 +54,7 @@ describe('Navbar Component', () => {
     ).toBeInTheDocument();
   });
 
-  test.skip('navigates on menu item click', () => {
+  test('navigates on menu item click', () => {
     renderWithProviders(<Navbar />);
 
     const aboutButton = screen.getByRole('button', { name: '회사소개' });
@@ -62,7 +62,7 @@ describe('Navbar Component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/about');
   });
 
-  test.skip('mobile menu button toggles menu', () => {
+  test('mobile menu button toggles menu', () => {
     renderWithProviders(<Navbar />);
 
     // Mobile menu should not be visible initially
@@ -72,7 +72,7 @@ describe('Navbar Component', () => {
 
     // Click mobile menu button - find by aria-label
     const menuButton = screen.getByRole('button', {
-      name: /accessibility.menu/i,
+      name: '메뉴',
     });
     fireEvent.click(menuButton);
 
@@ -81,7 +81,7 @@ describe('Navbar Component', () => {
     expect(mobileMenuItems.length).toBeGreaterThan(1); // One in desktop, one in mobile
   });
 
-  test.skip('logo navigates to home', () => {
+  test('logo navigates to home', () => {
     renderWithProviders(<Navbar />);
 
     // Find all links and check for the logo link
@@ -92,7 +92,7 @@ describe('Navbar Component', () => {
     expect(logoLink).toHaveAttribute('href', '#/');
   });
 
-  test.skip('applies scroll styles', () => {
+  test('applies scroll styles', () => {
     renderWithProviders(<Navbar />);
 
     const navbar = screen.getByRole('navigation');
