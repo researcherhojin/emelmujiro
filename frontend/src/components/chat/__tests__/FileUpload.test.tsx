@@ -93,7 +93,7 @@ describe('FileUpload', () => {
     vi.clearAllMocks();
   });
 
-  it.skip('renders file upload component', () => {
+  it('renders file upload component', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     expect(screen.getByText('파일 업로드')).toBeInTheDocument();
@@ -101,7 +101,7 @@ describe('FileUpload', () => {
     expect(screen.getByText('파일 선택')).toBeInTheDocument();
   });
 
-  it.skip('shows file types and size info', () => {
+  it('shows file types and size info', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     expect(screen.getByText('지원 파일 형식:')).toBeInTheDocument();
@@ -110,7 +110,7 @@ describe('FileUpload', () => {
     ).toBeInTheDocument();
   });
 
-  it.skip('handles file selection via click', () => {
+  it('handles file selection via click', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -129,7 +129,7 @@ describe('FileUpload', () => {
     expect(screen.getByText('test.pdf')).toBeInTheDocument();
   });
 
-  it.skip('handles drag and drop', () => {
+  it('handles drag and drop', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const dropZone = screen.getByTestId('drop-zone');
@@ -149,7 +149,7 @@ describe('FileUpload', () => {
     expect(screen.getByText('test.jpg')).toBeInTheDocument();
   });
 
-  it.skip('validates file type', () => {
+  it('validates file type', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -170,7 +170,7 @@ describe('FileUpload', () => {
     );
   });
 
-  it.skip('validates file size', () => {
+  it('validates file size', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -196,7 +196,7 @@ describe('FileUpload', () => {
     );
   });
 
-  it.skip('displays correct icon for image files', () => {
+  it('displays correct icon for image files', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -212,7 +212,7 @@ describe('FileUpload', () => {
     expect(screen.getByTestId('fileimage-icon')).toBeInTheDocument();
   });
 
-  it.skip('displays correct icon for video files', () => {
+  it('displays correct icon for video files', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -228,7 +228,7 @@ describe('FileUpload', () => {
     expect(screen.getByTestId('filevideo-icon')).toBeInTheDocument();
   });
 
-  it.skip('displays correct icon for audio files', () => {
+  it('displays correct icon for audio files', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -244,7 +244,7 @@ describe('FileUpload', () => {
     expect(screen.getByTestId('fileaudio-icon')).toBeInTheDocument();
   });
 
-  it.skip('displays correct icon for PDF files', () => {
+  it('displays correct icon for PDF files', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -260,7 +260,7 @@ describe('FileUpload', () => {
     expect(screen.getByTestId('filetext-icon')).toBeInTheDocument();
   });
 
-  it.skip('formats file size correctly', () => {
+  it('formats file size correctly', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -283,7 +283,7 @@ describe('FileUpload', () => {
     expect(screen.getByText('1 KB')).toBeInTheDocument();
   });
 
-  it.skip('handles upload button click', async () => {
+  it('handles upload button click', async () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -308,7 +308,7 @@ describe('FileUpload', () => {
     );
   });
 
-  it.skip('handles cancel button click', () => {
+  it('handles cancel button click', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -328,7 +328,7 @@ describe('FileUpload', () => {
     expect(screen.queryByText('test.pdf')).not.toBeInTheDocument();
   });
 
-  it.skip('calls onClose when close button is clicked', () => {
+  it('calls onClose when close button is clicked', () => {
     render(<FileUpload onUpload={mockOnUpload} onClose={mockOnClose} />);
 
     const closeButton = screen.getByLabelText(/닫기|close/i);
@@ -337,7 +337,7 @@ describe('FileUpload', () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  it.skip('shows upload progress', async () => {
+  it('shows upload progress', async () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -359,7 +359,7 @@ describe('FileUpload', () => {
     });
   });
 
-  it.skip('handles drag leave event', () => {
+  it('handles drag leave event', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
     const dropZone = screen.getByTestId('drop-zone');
 
@@ -370,7 +370,7 @@ describe('FileUpload', () => {
     expect(dropZone).not.toHaveClass('border-blue-500');
   });
 
-  it.skip('handles drag over event', () => {
+  it('handles drag over event', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
     const dropZone = screen.getByTestId('drop-zone');
 
@@ -381,7 +381,7 @@ describe('FileUpload', () => {
     expect(event.preventDefault).toHaveBeenCalled();
   });
 
-  it.skip('removes file when remove button is clicked', () => {
+  it('removes file when remove button is clicked', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
@@ -404,7 +404,7 @@ describe('FileUpload', () => {
     expect(screen.queryByText('test.pdf')).not.toBeInTheDocument();
   });
 
-  it.skip('shows success message after upload', async () => {
+  it('shows success message after upload', async () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
     const fileInput = screen.getByTestId('file-input') as HTMLInputElement;
