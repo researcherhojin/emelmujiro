@@ -133,28 +133,6 @@ const api = axios.create({
 // All have mock implementations in src/services/mockData.ts
 ```
 
-### Component Testing Pattern
-
-```typescript
-// src/test-utils/test-utils.tsx - renderWithProviders pattern
-const renderWithProviders = (ui: ReactElement, options?: RenderOptions) => {
-  return render(ui, {
-    wrapper: ({ children }) => (
-      <MemoryRouter>
-        <UIProvider>
-          <AuthProvider>
-            <BlogProvider>
-              {children}
-            </BlogProvider>
-          </AuthProvider>
-        </UIProvider>
-      </MemoryRouter>
-    ),
-    ...options,
-  });
-};
-```
-
 ## Testing Issues & Workarounds
 
 ### 55% Test Skip Rate - Root Causes
@@ -180,7 +158,6 @@ itSkipInCI('test using getByRole', () => {
 - **Vitest**: Forks pool, single fork in CI, 15s timeout
 - **Memory**: `NODE_OPTIONS='--max-old-space-size=4096'` in CI
 - **Custom Utilities**: `renderWithProviders` in test-utils/
-- **Setup File**: 832-line setupTests.ts with comprehensive mocking
 
 ## Critical Configuration
 
@@ -202,7 +179,6 @@ server: {
 - **Output**: `build/` directory (not `dist/`)
 - **Chunks**: react-vendor, ui-vendor, i18n
 - **Terser**: Drops console/debugger in production
-- **Source Maps**: Hidden in production
 
 ### TypeScript Configuration
 
@@ -253,7 +229,7 @@ docker-compose -f docker-compose.dev.yml up
 
 - Using React 19.1.1 but many libraries incompatible
 - Dependabot ignores React 19.x updates
-- Solution: Mock problematic components in tests (setupTests.ts)
+- Solution: Mock problematic components in tests
 
 ### Memory Issues in CI
 
@@ -304,4 +280,3 @@ cd frontend && npm run deploy  # Builds and deploys via gh-pages
 3. **Test Skips**: 55% tests skipped is expected, not a bug
 4. **Build Output**: Goes to `build/`, not `dist/`
 5. **Environment Variables**: Use VITE\_ prefix for new vars
-6. **Kill Ports Script**: Targets wrong port (3000 instead of 5173) in line 80
