@@ -60,7 +60,7 @@ describe('UIContext', () => {
     mockLocalStorage.getItem.mockReturnValue(null);
   });
 
-  test.skip('provides initial state', () => {
+  test('provides initial state', () => {
     render(
       <UIProvider>
         <TestComponent />
@@ -72,7 +72,7 @@ describe('UIContext', () => {
     expect(screen.getByTestId('loading')).toHaveTextContent('false');
   });
 
-  test.skip('toggles theme', async () => {
+  test('toggles theme', async () => {
     render(
       <UIProvider>
         <TestComponent />
@@ -93,7 +93,7 @@ describe('UIContext', () => {
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith('theme', 'light');
   });
 
-  test.skip('toggles sidebar state', async () => {
+  test('toggles sidebar state', async () => {
     render(
       <UIProvider>
         <TestComponent />
@@ -111,7 +111,7 @@ describe('UIContext', () => {
     expect(screen.getByTestId('sidebar-open')).toHaveTextContent('false');
   });
 
-  test.skip('sets loading state', async () => {
+  test('sets loading state', async () => {
     render(
       <UIProvider>
         <TestComponent />
@@ -130,7 +130,7 @@ describe('UIContext', () => {
     expect(screen.getByTestId('loading')).toHaveTextContent('false');
   });
 
-  test.skip('loads saved theme from localStorage', () => {
+  test('loads saved theme from localStorage', () => {
     mockLocalStorage.getItem.mockReturnValue('dark');
 
     render(
@@ -143,7 +143,7 @@ describe('UIContext', () => {
     expect(mockLocalStorage.getItem).toHaveBeenCalledWith('theme');
   });
 
-  test.skip('handles invalid theme in localStorage', () => {
+  test('handles invalid theme in localStorage', () => {
     mockLocalStorage.getItem.mockReturnValue('invalid-theme');
 
     render(
@@ -156,7 +156,7 @@ describe('UIContext', () => {
     expect(screen.getByTestId('theme')).toHaveTextContent('light');
   });
 
-  test.skip('throws error when used outside provider', () => {
+  test('throws error when used outside provider', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => {
