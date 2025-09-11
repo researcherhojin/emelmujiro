@@ -114,7 +114,7 @@ describe('preloadCriticalResources', () => {
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
-  it('should attempt to preload resources in production', async () => {
+  it('should not attempt to preload resources in production (Vite handles this)', async () => {
     (process.env as any).NODE_ENV = 'production';
     (process.env as any).PUBLIC_URL = '/emelmujiro';
 
@@ -127,15 +127,12 @@ describe('preloadCriticalResources', () => {
     // Wait for async operations
     await new Promise((resolve) => setTimeout(resolve, 10));
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/static/css/main.css'),
-      {
-        method: 'HEAD',
-      }
-    );
+    // In Vite setup, preloadCriticalResources does nothing
+    // Asset loading is handled by Vite's build system
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
-  it('should handle fetch errors gracefully', async () => {
+  it('should not throw errors even in production', async () => {
     (process.env as any).NODE_ENV = 'production';
 
     (global.fetch as any).mockRejectedValue(new Error('Network error'));
@@ -145,5 +142,8 @@ describe('preloadCriticalResources', () => {
 
     // Wait for async operations
     await new Promise((resolve) => setTimeout(resolve, 10));
+
+    // Fetch should not have been called since Vite handles asset loading
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });

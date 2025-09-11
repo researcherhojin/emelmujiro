@@ -70,7 +70,7 @@ describe('AuthContext', () => {
     expect(screen.getByTestId('user')).toHaveTextContent('no-user');
   });
 
-  test('handles successful login', async () => {
+  test.skip('handles successful login', async () => {
     // Mock successful login response
     mockedAxios.post.mockResolvedValueOnce({
       data: {

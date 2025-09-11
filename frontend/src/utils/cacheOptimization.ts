@@ -250,35 +250,15 @@ export const sessionCache = new StorageCache('sessionStorage');
 
 // Preload critical resources
 export const preloadCriticalResources = () => {
-  // Skip preloading in development mode as webpack handles this
+  // Skip preloading in development mode
   if (process.env.NODE_ENV === 'development') {
     return;
   }
 
-  // For GitHub Pages deployment, use the correct path
-  const basePath = process.env.PUBLIC_URL || '';
-  const criticalResources = [
-    `${basePath}/static/css/main.css`,
-    `${basePath}/static/js/main.js`,
-  ];
-
-  criticalResources.forEach((resource) => {
-    // Check if resource exists before trying to preload
-    fetch(resource, { method: 'HEAD' })
-      .then((response) => {
-        if (response.ok) {
-          const link = document.createElement('link');
-          link.rel = 'preload';
-          link.as = resource.endsWith('.css') ? 'style' : 'script';
-          link.href = resource;
-          document.head.appendChild(link);
-        }
-      })
-      .catch(() => {
-        // Resource not found, skip preloading
-        // Silently skip - resource not found
-      });
-  });
+  // Vite handles asset loading differently than Create React App
+  // The main JS and CSS are already loaded via script/link tags in index.html
+  // So we don't need to manually preload them
+  // This function is kept for backward compatibility but does nothing in Vite setup
 };
 
 // Performance observer for monitoring cache efficiency
