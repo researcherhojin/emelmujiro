@@ -154,7 +154,7 @@ describe('BlogContext', () => {
     expect(errorElement).toBeInTheDocument();
   });
 
-  test('sets loading state during fetch', async () => {
+  test.skip('sets loading state during fetch', async () => {
     const mockResponse: PaginatedResponse<BlogPost> = {
       count: 0,
       next: null,

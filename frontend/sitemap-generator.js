@@ -77,24 +77,24 @@ function formatXML(xml) {
   const PADDING = '  '; // 2 spaces
   let formatted = '';
   let indent = '';
-  
+
   // XML 선언을 분리
   const xmlDeclaration = xml.match(/^<\?xml[^?]*\?>/)?.[0] || '';
   let xmlContent = xml.replace(/^<\?xml[^?]*\?>/, '');
-  
+
   // 태그 분리 및 포맷팅
   xmlContent = xmlContent
     .replace(/></g, '>\n<')
     .replace(/(<urlset[^>]*>)/g, '\n$1\n')
     .replace(/<\/urlset>/g, '\n</urlset>');
-  
-  const lines = xmlContent.split('\n').filter(line => line.trim());
-  
+
+  const lines = xmlContent.split('\n').filter((line) => line.trim());
+
   formatted = xmlDeclaration + '\n';
-  
-  lines.forEach(line => {
+
+  lines.forEach((line) => {
     const trimmedLine = line.trim();
-    
+
     if (trimmedLine.startsWith('</')) {
       indent = indent.substring(PADDING.length);
       formatted += indent + trimmedLine + '\n';
@@ -107,7 +107,7 @@ function formatXML(xml) {
       formatted += indent + trimmedLine + '\n';
     }
   });
-  
+
   return formatted;
 }
 
