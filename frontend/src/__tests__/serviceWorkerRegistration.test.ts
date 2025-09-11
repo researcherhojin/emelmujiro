@@ -150,7 +150,7 @@ describe('serviceWorkerRegistration', () => {
   });
 
   describe('register function', () => {
-    it.skip('should not register if service worker is not supported', async () => {
+    it('should not register if service worker is not supported', async () => {
       // Remove service worker support
       Object.defineProperty(navigator, 'serviceWorker', {
         writable: true,
@@ -165,7 +165,7 @@ describe('serviceWorkerRegistration', () => {
       expect(navigator.serviceWorker).toBeUndefined();
     });
 
-    it.skip('should not register if PUBLIC_URL origin is different from window origin', async () => {
+    it('should not register if PUBLIC_URL origin is different from window origin', async () => {
       vi.stubEnv('PUBLIC_URL', 'https://cdn.example.com');
 
       Object.defineProperty(window, 'location', {
@@ -196,7 +196,7 @@ describe('serviceWorkerRegistration', () => {
       expect(mockRegister).not.toHaveBeenCalled();
     });
 
-    it.skip('should register service worker on localhost with valid config', async () => {
+    it('should register service worker on localhost with valid config', async () => {
       const mockRegister = vi
         .fn()
         .mockResolvedValue(mockServiceWorkerRegistration);
@@ -226,7 +226,7 @@ describe('serviceWorkerRegistration', () => {
       expect(mockRegister).toHaveBeenCalledWith('/service-worker-enhanced.js');
     });
 
-    it.skip('should register service worker on non-localhost', async () => {
+    it('should register service worker on non-localhost', async () => {
       Object.defineProperty(window, 'location', {
         writable: true,
         value: {
@@ -263,7 +263,7 @@ describe('serviceWorkerRegistration', () => {
       expect(mockRegister).toHaveBeenCalledWith('/service-worker-enhanced.js');
     });
 
-    it.skip(
+    it(
       'should handle service worker registration errors',
       { timeout: 10000 },
       async () => {
@@ -314,7 +314,7 @@ describe('serviceWorkerRegistration', () => {
       }
     );
 
-    it.skip('should handle service worker update found scenario', async () => {
+    it('should handle service worker update found scenario', async () => {
       // Set location to non-localhost to avoid ready promise log
       Object.defineProperty(window, 'location', {
         writable: true,
@@ -384,7 +384,7 @@ describe('serviceWorkerRegistration', () => {
       expect(onUpdate).toHaveBeenCalledWith(mockRegistration);
     });
 
-    it.skip('should handle service worker success scenario (no existing controller)', async () => {
+    it('should handle service worker success scenario (no existing controller)', async () => {
       const onSuccess = vi.fn();
 
       // Create a registration with active worker
@@ -454,12 +454,12 @@ describe('serviceWorkerRegistration', () => {
   });
 
   describe('localhost detection and validation', () => {
-    it.skip('should detect localhost correctly', async () => {
+    it('should detect localhost correctly', async () => {
       const { isLocalhost } = await import('../serviceWorkerRegistration');
       expect(isLocalhost).toBe(true);
     });
 
-    it.skip('should detect non-localhost correctly', async () => {
+    it('should detect non-localhost correctly', async () => {
       Object.defineProperty(window, 'location', {
         writable: true,
         value: {
@@ -473,7 +473,7 @@ describe('serviceWorkerRegistration', () => {
       expect(isLocalhost).toBe(false);
     });
 
-    it.skip('should validate service worker on localhost', async () => {
+    it('should validate service worker on localhost', async () => {
       global.fetch = vi.fn(() =>
         Promise.resolve({
           ok: true,
@@ -514,7 +514,7 @@ describe('serviceWorkerRegistration', () => {
       });
     });
 
-    it.skip('should handle invalid service worker content type', async () => {
+    it('should handle invalid service worker content type', async () => {
       global.fetch = vi.fn(() =>
         Promise.resolve({
           ok: true,
@@ -558,7 +558,7 @@ describe('serviceWorkerRegistration', () => {
       });
     });
 
-    it.skip('should handle 404 error for service worker file', async () => {
+    it('should handle 404 error for service worker file', async () => {
       global.fetch = vi.fn(() =>
         Promise.resolve({
           ok: false,
@@ -601,7 +601,7 @@ describe('serviceWorkerRegistration', () => {
       });
     });
 
-    it.skip('should handle offline scenario during validation', async () => {
+    it('should handle offline scenario during validation', async () => {
       global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
       const mockRegister = vi
@@ -646,7 +646,7 @@ describe('serviceWorkerRegistration', () => {
   });
 
   describe('unregister function', () => {
-    it.skip('should unregister service worker', async () => {
+    it('should unregister service worker', async () => {
       const mockUnregister = vi.fn().mockResolvedValue(true);
       mockServiceWorkerRegistration.unregister = mockUnregister;
 
@@ -666,7 +666,7 @@ describe('serviceWorkerRegistration', () => {
       expect(mockUnregister).toHaveBeenCalled();
     });
 
-    it.skip('should handle unregistration when service worker is not supported', async () => {
+    it('should handle unregistration when service worker is not supported', async () => {
       // Mock navigator without serviceWorker
       const originalNavigator = global.navigator;
       const mockNavigator = { ...originalNavigator };
@@ -698,7 +698,7 @@ describe('serviceWorkerRegistration', () => {
       });
     });
 
-    it.skip('should handle unregistration errors', async () => {
+    it('should handle unregistration errors', async () => {
       // Skip this test as it has module mocking issues
       // The unregister function works correctly in practice
       expect(true).toBe(true);
@@ -706,7 +706,7 @@ describe('serviceWorkerRegistration', () => {
   });
 
   describe('worker state changes', () => {
-    it.skip('should handle worker state change when in installed state with waiting worker', async () => {
+    it('should handle worker state change when in installed state with waiting worker', async () => {
       const onUpdate = vi.fn();
       const mockWaitingWorker = {
         state: 'waiting',
@@ -741,7 +741,7 @@ describe('serviceWorkerRegistration', () => {
       });
     });
 
-    it.skip('should handle worker state change when not in installed state', async () => {
+    it('should handle worker state change when not in installed state', async () => {
       const onUpdate = vi.fn();
       const mockInstallingWorker = {
         state: 'installing',

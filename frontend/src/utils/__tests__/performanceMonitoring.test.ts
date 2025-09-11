@@ -74,7 +74,7 @@ describe('performanceMonitoring', () => {
   });
 
   describe('initWebVitals', () => {
-    it.skip('should initialize all web vitals metrics', () => {
+    it('should initialize all web vitals metrics', () => {
       initWebVitals();
 
       expect(mockOnCLS).toHaveBeenCalledWith(expect.any(Function));
@@ -90,7 +90,7 @@ describe('performanceMonitoring', () => {
       initWebVitals();
     });
 
-    it.skip('should handle LCP metric with good rating', async () => {
+    it('should handle LCP metric with good rating', async () => {
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       const mockMetric = {
         name: 'LCP' as const,
@@ -114,7 +114,7 @@ describe('performanceMonitoring', () => {
       });
     });
 
-    it.skip('should handle CLS metric with needs-improvement rating', async () => {
+    it('should handle CLS metric with needs-improvement rating', async () => {
       const clsCallback = mockOnCLS.mock.calls[0][0];
       const mockMetric = {
         name: 'CLS' as const,
@@ -135,7 +135,7 @@ describe('performanceMonitoring', () => {
       });
     });
 
-    it.skip('should handle INP metric with poor rating', async () => {
+    it('should handle INP metric with poor rating', async () => {
       const inpCallback = mockOnINP.mock.calls[0][0];
       const mockMetric = {
         name: 'INP' as const,
@@ -156,7 +156,7 @@ describe('performanceMonitoring', () => {
       });
     });
 
-    it.skip('should handle FCP metric', async () => {
+    it('should handle FCP metric', async () => {
       const fcpCallback = mockOnFCP.mock.calls[0][0];
       const mockMetric = {
         name: 'FCP' as const,
@@ -177,7 +177,7 @@ describe('performanceMonitoring', () => {
       });
     });
 
-    it.skip('should handle TTFB metric', async () => {
+    it('should handle TTFB metric', async () => {
       const ttfbCallback = mockOnTTFB.mock.calls[0][0];
       const mockMetric = {
         name: 'TTFB' as const,
@@ -198,7 +198,7 @@ describe('performanceMonitoring', () => {
       });
     });
 
-    it.skip('should handle unknown metric name with good rating as fallback', async () => {
+    it('should handle unknown metric name with good rating as fallback', async () => {
       const clsCallback = mockOnCLS.mock.calls[0][0];
       const mockMetric = {
         name: 'UNKNOWN_METRIC' as string,
@@ -227,7 +227,7 @@ describe('performanceMonitoring', () => {
       (process.env as any).NODE_ENV = originalNodeEnv;
     });
 
-    it.skip('should send metrics to Google Analytics in production', async () => {
+    it('should send metrics to Google Analytics in production', async () => {
       (process.env as any).NODE_ENV = 'production';
       (window as WindowWithGtag).gtag = mockGtag;
 
@@ -251,7 +251,7 @@ describe('performanceMonitoring', () => {
       });
     });
 
-    it.skip('should not send to Google Analytics if gtag not available', async () => {
+    it('should not send to Google Analytics if gtag not available', async () => {
       (process.env as any).NODE_ENV = 'production';
 
       initWebVitals();
@@ -270,7 +270,7 @@ describe('performanceMonitoring', () => {
       expect(mockGtag).not.toHaveBeenCalled();
     });
 
-    it.skip('should handle analytics errors gracefully', async () => {
+    it('should handle analytics errors gracefully', async () => {
       (process.env as any).NODE_ENV = 'production';
       (window as WindowWithGtag).gtag = vi.fn(() => {
         throw new Error('Analytics error');
@@ -300,7 +300,7 @@ describe('performanceMonitoring', () => {
       mockLoggerError.mockRestore();
     });
 
-    it.skip('should not send analytics in development', async () => {
+    it('should not send analytics in development', async () => {
       (process.env as any).NODE_ENV = 'development';
       (window as WindowWithGtag).gtag = mockGtag;
 
@@ -326,7 +326,7 @@ describe('performanceMonitoring', () => {
       initWebVitals();
     });
 
-    it.skip('should clear metrics', async () => {
+    it('should clear metrics', async () => {
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       await lcpCallback({
         name: 'LCP' as const,
@@ -343,7 +343,7 @@ describe('performanceMonitoring', () => {
       expect(getMetrics()).toHaveLength(0);
     });
 
-    it.skip('should return copy of metrics array', async () => {
+    it('should return copy of metrics array', async () => {
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       await lcpCallback({
         name: 'LCP' as const,
@@ -368,7 +368,7 @@ describe('performanceMonitoring', () => {
       initWebVitals();
     });
 
-    it.skip('should generate summary for single metric type', async () => {
+    it('should generate summary for single metric type', async () => {
       const lcpCallback = mockOnLCP.mock.calls[0][0];
 
       // Add multiple LCP metrics
@@ -416,7 +416,7 @@ describe('performanceMonitoring', () => {
       });
     });
 
-    it.skip('should generate summary for multiple metric types', async () => {
+    it('should generate summary for multiple metric types', async () => {
       const lcpCallback = mockOnLCP.mock.calls[0][0];
       const clsCallback = mockOnCLS.mock.calls[0][0];
 
@@ -457,7 +457,7 @@ describe('performanceMonitoring', () => {
       expect(summary.CLS.ratings['needs-improvement']).toBe(1);
     });
 
-    it.skip('should handle empty metrics', () => {
+    it('should handle empty metrics', () => {
       const summary = getMetricsSummary();
       expect(summary).toEqual({});
     });
@@ -521,7 +521,7 @@ describe('performanceMonitoring', () => {
       delete g.performance;
     });
 
-    it.skip('should set up long task observer', () => {
+    it('should set up long task observer', () => {
       PerformanceMonitor();
 
       expect(global.PerformanceObserver).toHaveBeenCalledWith(
@@ -532,7 +532,7 @@ describe('performanceMonitoring', () => {
       });
     });
 
-    it.skip('should warn about long tasks', () => {
+    it('should warn about long tasks', () => {
       // Mock logger.warn
       const mockLoggerWarn = vi.spyOn(logger, 'warn');
 
@@ -560,7 +560,7 @@ describe('performanceMonitoring', () => {
       mockLoggerWarn.mockRestore();
     });
 
-    it.skip('should not warn about short tasks', () => {
+    it('should not warn about short tasks', () => {
       PerformanceMonitor();
 
       const mockEntry: MockPerformanceEntry = {
@@ -581,7 +581,7 @@ describe('performanceMonitoring', () => {
       );
     });
 
-    it.skip('should monitor slow resources', () => {
+    it('should monitor slow resources', () => {
       // Mock logger.warn
       const mockLoggerWarn = vi.spyOn(logger, 'warn');
 
@@ -613,7 +613,7 @@ describe('performanceMonitoring', () => {
       mockLoggerWarn.mockRestore();
     });
 
-    it.skip('should handle PerformanceObserver errors gracefully', () => {
+    it('should handle PerformanceObserver errors gracefully', () => {
       global.PerformanceObserver = vi.fn().mockImplementation(() => {
         throw new Error('PerformanceObserver error');
       }) as unknown as typeof PerformanceObserver;
@@ -626,21 +626,21 @@ describe('performanceMonitoring', () => {
       expect(() => PerformanceMonitor()).not.toThrow();
     });
 
-    it.skip('should handle missing PerformanceObserver', () => {
+    it('should handle missing PerformanceObserver', () => {
       const g = global as any;
       delete g.PerformanceObserver;
 
       expect(() => PerformanceMonitor()).not.toThrow();
     });
 
-    it.skip('should handle missing performance API', () => {
+    it('should handle missing performance API', () => {
       const g = global as any;
       delete g.performance;
 
       expect(() => PerformanceMonitor()).not.toThrow();
     });
 
-    it.skip('should handle performance API without getEntriesByType', () => {
+    it('should handle performance API without getEntriesByType', () => {
       (global as any).performance = {};
 
       expect(() => PerformanceMonitor()).not.toThrow();
