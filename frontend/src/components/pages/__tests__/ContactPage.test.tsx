@@ -129,7 +129,7 @@ describe('ContactPage Component', () => {
     );
   };
 
-  it.skip('renders contact form with all fields', async () => {
+  it('renders contact form with all fields', async () => {
     renderWithRouter(<ContactPage />);
 
     await waitForFormToLoad();
@@ -146,8 +146,8 @@ describe('ContactPage Component', () => {
     ).toBeInTheDocument();
   });
 
-  describe.skip('Form Validation', () => {
-    it.skip('validates required fields', async () => {
+  describe('Form Validation', () => {
+    it('validates required fields', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();
@@ -163,7 +163,7 @@ describe('ContactPage Component', () => {
       });
     });
 
-    it.skip('validates email format', async () => {
+    it('validates email format', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();
@@ -212,7 +212,7 @@ describe('ContactPage Component', () => {
       });
     });
 
-    it.skip('validates phone number format', async () => {
+    it('validates phone number format', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();
@@ -241,7 +241,7 @@ describe('ContactPage Component', () => {
       });
     });
 
-    it.skip('validates message is not empty', async () => {
+    it('validates message is not empty', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();
@@ -290,8 +290,8 @@ describe('ContactPage Component', () => {
     });
   });
 
-  describe.skip('Form Submission', () => {
-    it.skip('submits form successfully when online', async () => {
+  describe('Form Submission', () => {
+    it('submits form successfully when online', async () => {
       mockedApi.createContact.mockResolvedValue({
         data: { id: 1, message: 'Success' },
         status: 200,
@@ -361,7 +361,7 @@ describe('ContactPage Component', () => {
       );
     });
 
-    it.skip('handles offline submission with background sync', async () => {
+    it('handles offline submission with background sync', async () => {
       Object.defineProperty(navigator, 'onLine', {
         writable: true,
         value: false,
@@ -411,7 +411,7 @@ describe('ContactPage Component', () => {
       });
     });
 
-    it.skip('handles API error', async () => {
+    it('handles API error', async () => {
       mockedApi.createContact.mockRejectedValue(new Error('Network error'));
 
       // Mock window.location.href setter
@@ -476,7 +476,7 @@ describe('ContactPage Component', () => {
   });
 
   describe('Online/Offline Status', () => {
-    it.skip('shows online status indicator', async () => {
+    it('shows online status indicator', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();
@@ -486,7 +486,7 @@ describe('ContactPage Component', () => {
       expect(onlineText).toBeInTheDocument();
     });
 
-    it.skip('shows offline status indicator', async () => {
+    it('shows offline status indicator', async () => {
       Object.defineProperty(navigator, 'onLine', {
         writable: true,
         value: false,
@@ -501,7 +501,7 @@ describe('ContactPage Component', () => {
       expect(offlineText).toBeInTheDocument();
     });
 
-    it.skip('updates status when connection changes', async () => {
+    it('updates status when connection changes', async () => {
       renderWithRouter(<ContactPage />);
 
       await waitForFormToLoad();
@@ -544,13 +544,13 @@ describe('ContactPage Component', () => {
   // Character Counter tests removed - feature no longer exists in ContactPage
 
   describe('Page Behavior', () => {
-    it.skip('scrolls to top on mount', () => {
+    it('scrolls to top on mount', () => {
       renderWithRouter(<ContactPage />);
 
       expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
     });
 
-    it.skip('cleans up event listeners on unmount', () => {
+    it('cleans up event listeners on unmount', () => {
       const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
       const { unmount } = renderWithRouter(<ContactPage />);
