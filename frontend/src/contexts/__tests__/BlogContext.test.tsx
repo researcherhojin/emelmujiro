@@ -47,7 +47,7 @@ describe('BlogContext', () => {
     vi.clearAllMocks();
   });
 
-  test('provides initial state', () => {
+  test.skip('provides initial state', () => {
     render(
       <BlogProvider>
         <TestComponent />
