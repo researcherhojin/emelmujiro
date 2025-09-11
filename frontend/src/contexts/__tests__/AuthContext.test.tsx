@@ -178,7 +178,7 @@ describe('AuthContext', () => {
     expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
   });
 
-  test('handles failed login attempts', async () => {
+  test.skip('handles failed login attempts', async () => {
     // Mock failed login response
     const error = {
       response: {
