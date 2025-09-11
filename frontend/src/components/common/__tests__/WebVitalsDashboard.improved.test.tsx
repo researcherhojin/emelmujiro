@@ -184,7 +184,7 @@ describe('WebVitalsDashboard - Improved', () => {
   });
 
   describe('Production Mode', () => {
-    it.skip('does not render in production mode', () => {
+    it('does not render in production mode', () => {
       // @ts-ignore - Need to override for testing
       process.env.NODE_ENV = 'production';
 

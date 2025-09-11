@@ -66,7 +66,7 @@ describe('LanguageSwitcher', () => {
     vi.clearAllMocks();
   });
 
-  it.skip('renders language switcher button', () => {
+  it('renders language switcher button', () => {
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
@@ -75,7 +75,7 @@ describe('LanguageSwitcher', () => {
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it.skip('displays current language flag and name', () => {
+  it('displays current language flag and name', () => {
     render(<LanguageSwitcher />);
 
     // Korean flag should be visible
@@ -84,7 +84,7 @@ describe('LanguageSwitcher', () => {
     expect(screen.getByText('한국어')).toBeInTheDocument();
   });
 
-  it.skip('opens dropdown when button is clicked', () => {
+  it('opens dropdown when button is clicked', () => {
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
@@ -104,7 +104,7 @@ describe('LanguageSwitcher', () => {
     expect(screen.getAllByText('English').length).toBeGreaterThan(0);
   });
 
-  it.skip('closes dropdown when clicking outside', () => {
+  it('closes dropdown when clicking outside', () => {
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
@@ -120,7 +120,7 @@ describe('LanguageSwitcher', () => {
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it.skip('changes language when option is selected', () => {
+  it('changes language when option is selected', () => {
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
@@ -138,7 +138,7 @@ describe('LanguageSwitcher', () => {
     expect(mockChangeLanguage).toHaveBeenCalledWith('en');
   });
 
-  it.skip('stores language preference in localStorage', () => {
+  it('stores language preference in localStorage', () => {
     // The component should call i18n.changeLanguage when selecting a language
     // The actual localStorage setting happens inside the component's handleLanguageChange
     // Since we're mocking i18n.changeLanguage, we're actually testing that the language change
@@ -167,7 +167,7 @@ describe('LanguageSwitcher', () => {
     // The important thing is that changeLanguage is called correctly.
   });
 
-  it.skip('updates document language attribute', () => {
+  it('updates document language attribute', () => {
     // Mock successful language change
     mockChangeLanguage.mockResolvedValue(undefined);
 
@@ -187,7 +187,7 @@ describe('LanguageSwitcher', () => {
     expect(mockChangeLanguage).toHaveBeenCalledWith('en');
   });
 
-  it.skip('handles keyboard navigation', () => {
+  it('handles keyboard navigation', () => {
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
@@ -204,7 +204,7 @@ describe('LanguageSwitcher', () => {
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it.skip('shows current language as selected', () => {
+  it('shows current language as selected', () => {
     render(<LanguageSwitcher />);
 
     const button = screen.getByLabelText('Language selector');
@@ -230,7 +230,7 @@ describe('LanguageSwitcher', () => {
     );
   });
 
-  it.skip('calls changeLanguage when option is selected', () => {
+  it('calls changeLanguage when option is selected', () => {
     mockChangeLanguage.mockResolvedValue(undefined);
 
     render(<LanguageSwitcher />);
@@ -248,7 +248,7 @@ describe('LanguageSwitcher', () => {
     expect(mockChangeLanguage).toHaveBeenCalledWith('en');
   });
 
-  it.skip('displays English language when i18n language is en', () => {
+  it('displays English language when i18n language is en', () => {
     mockUseTranslation.mockReturnValue({
       t: mockT,
       i18n: { ...mockI18n, language: 'en' },
@@ -263,7 +263,7 @@ describe('LanguageSwitcher', () => {
     expect(screen.getByText('English')).toBeInTheDocument();
   });
 
-  it.skip('handles language change errors gracefully', async () => {
+  it('handles language change errors gracefully', async () => {
     // Skip this test as it requires async error handling
     const logger = await import('../../../utils/logger');
     const loggerErrorSpy = vi.spyOn(logger.default, 'error');
@@ -290,7 +290,7 @@ describe('LanguageSwitcher', () => {
     loggerErrorSpy.mockRestore();
   });
 
-  it.skip('dispatches custom language change event', async () => {
+  it('dispatches custom language change event', async () => {
     // Skip this test as it requires async event handling
     mockChangeLanguage.mockResolvedValue(undefined);
 
