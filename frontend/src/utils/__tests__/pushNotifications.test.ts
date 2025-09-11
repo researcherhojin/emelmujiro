@@ -141,11 +141,11 @@ describe('pushNotifications', () => {
   });
 
   describe('isPushNotificationSupported', () => {
-    it.skip('should return true when both serviceWorker and PushManager are supported', () => {
+    it('should return true when both serviceWorker and PushManager are supported', () => {
       expect(isPushNotificationSupported()).toBe(true);
     });
 
-    it.skip('should return false when serviceWorker is not supported', () => {
+    it('should return false when serviceWorker is not supported', () => {
       Object.defineProperty(global, 'navigator', {
         value: {},
         writable: true,
@@ -154,7 +154,7 @@ describe('pushNotifications', () => {
       expect(isPushNotificationSupported()).toBe(false);
     });
 
-    it.skip('should return false when PushManager is not supported', () => {
+    it('should return false when PushManager is not supported', () => {
       Object.defineProperty(global, 'window', {
         value: {},
         writable: true,
@@ -165,7 +165,7 @@ describe('pushNotifications', () => {
   });
 
   describe('isPushNotificationEnabled', () => {
-    it.skip('should return true when push notifications are supported and permission granted', () => {
+    it('should return true when push notifications are supported and permission granted', () => {
       Object.defineProperty(global.Notification, 'permission', {
         value: 'granted',
         writable: true,
@@ -174,7 +174,7 @@ describe('pushNotifications', () => {
       expect(isPushNotificationEnabled()).toBe(true);
     });
 
-    it.skip('should return false when push notifications are not supported', () => {
+    it('should return false when push notifications are not supported', () => {
       Object.defineProperty(global, 'navigator', {
         value: {},
         writable: true,
@@ -183,7 +183,7 @@ describe('pushNotifications', () => {
       expect(isPushNotificationEnabled()).toBe(false);
     });
 
-    it.skip('should return false when permission is denied', () => {
+    it('should return false when permission is denied', () => {
       Object.defineProperty(global.Notification, 'permission', {
         value: 'denied',
         writable: true,
@@ -192,7 +192,7 @@ describe('pushNotifications', () => {
       expect(isPushNotificationEnabled()).toBe(false);
     });
 
-    it.skip('should return false when permission is default', () => {
+    it('should return false when permission is default', () => {
       Object.defineProperty(global.Notification, 'permission', {
         value: 'default',
         writable: true,
@@ -203,7 +203,7 @@ describe('pushNotifications', () => {
   });
 
   describe('requestNotificationPermission', () => {
-    it.skip('should request permission and return true when granted', async () => {
+    it('should request permission and return true when granted', async () => {
       (
         global.Notification.requestPermission as ReturnType<typeof vi.fn>
       ).mockResolvedValue('granted');
@@ -214,7 +214,7 @@ describe('pushNotifications', () => {
       expect(result).toBe(true);
     });
 
-    it.skip('should return false when permission is denied', async () => {
+    it('should return false when permission is denied', async () => {
       (
         global.Notification.requestPermission as ReturnType<typeof vi.fn>
       ).mockResolvedValue('denied');
@@ -224,7 +224,7 @@ describe('pushNotifications', () => {
       expect(result).toBe(false);
     });
 
-    it.skip('should return false when push notifications are not supported', async () => {
+    it('should return false when push notifications are not supported', async () => {
       Object.defineProperty(global, 'navigator', {
         value: {},
         writable: true,
@@ -248,7 +248,7 @@ describe('pushNotifications', () => {
       });
     });
 
-    it.skip('should subscribe successfully when no existing subscription', async () => {
+    it('should subscribe successfully when no existing subscription', async () => {
       const result = await subscribeToPushNotifications();
 
       expect(mockRegistration.pushManager.getSubscription).toHaveBeenCalled();
@@ -259,7 +259,7 @@ describe('pushNotifications', () => {
       expect(result).toBe(mockSubscription);
     });
 
-    it.skip('should return existing subscription when already subscribed', async () => {
+    it('should return existing subscription when already subscribed', async () => {
       mockRegistration.pushManager.getSubscription.mockResolvedValue(
         mockSubscription
       );
@@ -270,7 +270,7 @@ describe('pushNotifications', () => {
       expect(result).toBe(mockSubscription);
     });
 
-    it.skip('should throw error when push notifications not supported', async () => {
+    it('should throw error when push notifications not supported', async () => {
       Object.defineProperty(global, 'navigator', {
         value: {},
         writable: true,
@@ -281,7 +281,7 @@ describe('pushNotifications', () => {
       );
     });
 
-    it.skip('should throw error when permission not granted', async () => {
+    it('should throw error when permission not granted', async () => {
       Object.defineProperty(global.Notification, 'permission', {
         value: 'denied',
         writable: true,
@@ -293,7 +293,7 @@ describe('pushNotifications', () => {
       );
     });
 
-    it.skip('should handle subscription errors', async () => {
+    it('should handle subscription errors', async () => {
       const error = new Error('Subscription failed');
       mockRegistration.pushManager.subscribe.mockRejectedValue(error);
 
@@ -308,7 +308,7 @@ describe('pushNotifications', () => {
   });
 
   describe('unsubscribeFromPushNotifications', () => {
-    it.skip('should unsubscribe successfully when subscription exists', async () => {
+    it('should unsubscribe successfully when subscription exists', async () => {
       mockRegistration.pushManager.getSubscription.mockResolvedValue(
         mockSubscription
       );
@@ -319,7 +319,7 @@ describe('pushNotifications', () => {
       expect(result).toBe(true);
     });
 
-    it.skip('should return false when no subscription exists', async () => {
+    it('should return false when no subscription exists', async () => {
       mockRegistration.pushManager.getSubscription.mockResolvedValue(null);
 
       const result = await unsubscribeFromPushNotifications();
@@ -328,7 +328,7 @@ describe('pushNotifications', () => {
       expect(result).toBe(false);
     });
 
-    it.skip('should handle unsubscribe errors', async () => {
+    it('should handle unsubscribe errors', async () => {
       const error = new Error('Unsubscribe failed');
       const mockSubscriptionWithError = {
         ...mockSubscription,
@@ -349,7 +349,7 @@ describe('pushNotifications', () => {
   });
 
   describe('sendSubscriptionToServer', () => {
-    it.skip('should send subscription to server successfully', async () => {
+    it('should send subscription to server successfully', async () => {
       const result = await sendSubscriptionToServer(mockSubscription);
 
       expect(mockFetch).toHaveBeenCalledWith('/api/notifications/subscribe', {
@@ -362,7 +362,7 @@ describe('pushNotifications', () => {
       expect(result).toEqual({ success: true });
     });
 
-    it.skip('should throw error when server response is not ok', async () => {
+    it('should throw error when server response is not ok', async () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 500,
@@ -374,7 +374,7 @@ describe('pushNotifications', () => {
       );
     });
 
-    it.skip('should handle fetch errors', async () => {
+    it('should handle fetch errors', async () => {
       const error = new Error('Network error');
       mockFetch.mockRejectedValue(error);
 
@@ -397,7 +397,7 @@ describe('pushNotifications', () => {
       });
     });
 
-    it.skip('should show notification with default options', async () => {
+    it('should show notification with default options', async () => {
       await showNotification('Test notification');
 
       expect(mockRegistration.showNotification).toHaveBeenCalledWith(
@@ -413,7 +413,7 @@ describe('pushNotifications', () => {
       );
     });
 
-    it.skip('should show notification with custom options', async () => {
+    it('should show notification with custom options', async () => {
       const customOptions = {
         icon: '/custom-icon.png',
         body: 'Custom notification body',
@@ -436,7 +436,7 @@ describe('pushNotifications', () => {
       );
     });
 
-    it.skip('should not show notification when push notifications are not enabled', async () => {
+    it('should not show notification when push notifications are not enabled', async () => {
       Object.defineProperty(global.Notification, 'permission', {
         value: 'denied',
         writable: true,
@@ -451,7 +451,7 @@ describe('pushNotifications', () => {
       );
     });
 
-    it.skip('should handle notification errors', async () => {
+    it('should handle notification errors', async () => {
       const error = new Error('Notification failed');
       mockRegistration.showNotification.mockRejectedValue(error);
 
@@ -467,7 +467,7 @@ describe('pushNotifications', () => {
 
   describe('urlBase64ToUint8Array', () => {
     // Test the internal urlBase64ToUint8Array function through public API
-    it.skip('should correctly decode VAPID key during subscription', async () => {
+    it('should correctly decode VAPID key during subscription', async () => {
       Object.defineProperty(global.Notification, 'permission', {
         value: 'granted',
         writable: true,
@@ -495,7 +495,7 @@ describe('pushNotifications', () => {
       }
     });
 
-    it.skip('should use environment VAPID key when available', async () => {
+    it('should use environment VAPID key when available', async () => {
       process.env.REACT_APP_VAPID_PUBLIC_KEY = 'test-vapid-key';
       Object.defineProperty(global.Notification, 'permission', {
         value: 'granted',
@@ -508,7 +508,7 @@ describe('pushNotifications', () => {
       expect(mockRegistration.pushManager.subscribe).toHaveBeenCalled();
     });
 
-    it.skip('should use default VAPID key when environment variable not set', async () => {
+    it('should use default VAPID key when environment variable not set', async () => {
       delete process.env.REACT_APP_VAPID_PUBLIC_KEY;
       Object.defineProperty(global.Notification, 'permission', {
         value: 'granted',
