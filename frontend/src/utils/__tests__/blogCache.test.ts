@@ -55,19 +55,19 @@ describe('blogCache', () => {
   });
 
   describe('isBlogCacheAvailable', () => {
-    it.skip('should return true when localStorage and serviceWorker are available', () => {
+    it('should return true when localStorage and serviceWorker are available', () => {
       expect(isBlogCacheAvailable()).toBe(true);
     });
   });
 
   describe('getCachedPosts', () => {
-    it.skip('should return empty array when no cached posts exist', () => {
+    it('should return empty array when no cached posts exist', () => {
       localStorageMock.getItem.mockReturnValue(null);
       const result = getCachedPosts();
       expect(result).toEqual([]);
     });
 
-    it.skip('should return cached posts when they exist', () => {
+    it('should return cached posts when they exist', () => {
       const mockPosts = [
         {
           id: '1',
@@ -91,7 +91,7 @@ describe('blogCache', () => {
       expect(result).toEqual(mockPosts);
     });
 
-    it.skip('should handle invalid JSON in cache', () => {
+    it('should handle invalid JSON in cache', () => {
       localStorageMock.getItem.mockReturnValue('invalid json');
 
       const result = getCachedPosts();
@@ -100,7 +100,7 @@ describe('blogCache', () => {
   });
 
   describe('cacheBlogPost', () => {
-    it.skip('should cache a blog post', async () => {
+    it('should cache a blog post', async () => {
       const mockPost = {
         id: '1',
         title: 'Test Post',
@@ -115,7 +115,7 @@ describe('blogCache', () => {
       expect(localStorageMock.setItem).toHaveBeenCalled();
     });
 
-    it.skip('should update existing cached post', async () => {
+    it('should update existing cached post', async () => {
       const existingPost = {
         id: '1',
         title: 'Old Title',
@@ -140,14 +140,14 @@ describe('blogCache', () => {
   });
 
   describe('getCachedPost', () => {
-    it.skip('should return null when post is not cached', () => {
+    it('should return null when post is not cached', () => {
       localStorageMock.getItem.mockReturnValue('[]');
 
       const result = getCachedPost('1');
       expect(result).toBeNull();
     });
 
-    it.skip('should return cached post when it exists', () => {
+    it('should return cached post when it exists', () => {
       const mockPost = {
         id: '1',
         title: 'Test Post',
@@ -163,7 +163,7 @@ describe('blogCache', () => {
   });
 
   describe('updateLastAccessedTime', () => {
-    it.skip('should update the last accessed time of a cached post', () => {
+    it('should update the last accessed time of a cached post', () => {
       const mockPost = {
         id: '1',
         title: 'Test Post',
@@ -180,7 +180,7 @@ describe('blogCache', () => {
   });
 
   describe('removeCachedPost', () => {
-    it.skip('should remove a cached post', () => {
+    it('should remove a cached post', () => {
       const mockPosts = [
         {
           id: '1',
@@ -206,7 +206,7 @@ describe('blogCache', () => {
       expect(localStorageMock.setItem).toHaveBeenCalled();
     });
 
-    it.skip('should return false when post does not exist', () => {
+    it('should return false when post does not exist', () => {
       localStorageMock.getItem.mockReturnValue('[]');
 
       const result = removeCachedPost('999');
@@ -216,7 +216,7 @@ describe('blogCache', () => {
   });
 
   describe('clearBlogCache', () => {
-    it.skip('should clear all cached posts', () => {
+    it('should clear all cached posts', () => {
       const mockPosts = [
         {
           id: '1',
@@ -246,7 +246,7 @@ describe('blogCache', () => {
   });
 
   describe('getBlogCacheStats', () => {
-    it.skip('should return cache statistics', () => {
+    it('should return cache statistics', () => {
       const mockPosts = [
         {
           id: '1',
@@ -276,7 +276,7 @@ describe('blogCache', () => {
   });
 
   describe('isBlogPostCached', () => {
-    it.skip('should return true when post is cached', () => {
+    it('should return true when post is cached', () => {
       const mockPost = {
         id: '1',
         title: 'Test Post',
@@ -289,7 +289,7 @@ describe('blogCache', () => {
       expect(isBlogPostCached('1')).toBe(true);
     });
 
-    it.skip('should return false when post is not cached', () => {
+    it('should return false when post is not cached', () => {
       localStorageMock.getItem.mockReturnValue('[]');
 
       expect(isBlogPostCached('999')).toBe(false);
@@ -297,7 +297,7 @@ describe('blogCache', () => {
   });
 
   describe('getRecentlyAccessedPosts', () => {
-    it.skip('should return recently accessed posts in order', () => {
+    it('should return recently accessed posts in order', () => {
       const mockPosts = [
         {
           id: '1',
@@ -333,7 +333,7 @@ describe('blogCache', () => {
   });
 
   describe('cleanupBlogCache', () => {
-    it.skip('should remove old posts from cache', () => {
+    it('should remove old posts from cache', () => {
       const oldDate = Date.now() - 25 * 60 * 60 * 1000; // 25 hours ago
       const recentDate = Date.now() - 1 * 60 * 60 * 1000; // 1 hour ago
 
@@ -368,7 +368,7 @@ describe('blogCache', () => {
   });
 
   describe('initBlogCache', () => {
-    it.skip('should initialize the blog cache', () => {
+    it('should initialize the blog cache', () => {
       initBlogCache();
 
       // Should check if cache exists
@@ -377,7 +377,7 @@ describe('blogCache', () => {
       );
     });
 
-    it.skip('should create empty cache if none exists', () => {
+    it('should create empty cache if none exists', () => {
       localStorageMock.getItem.mockReturnValue(null);
 
       initBlogCache();
