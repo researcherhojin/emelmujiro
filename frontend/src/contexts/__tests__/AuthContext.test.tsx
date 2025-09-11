@@ -58,7 +58,7 @@ describe('AuthContext', () => {
     mockLocalStorage.getItem.mockReturnValue(null);
   });
 
-  test.skip('provides initial state', () => {
+  test('provides initial state', () => {
     render(
       <AuthProvider>
         <TestComponent />
@@ -70,7 +70,7 @@ describe('AuthContext', () => {
     expect(screen.getByTestId('user')).toHaveTextContent('no-user');
   });
 
-  test.skip('handles successful login', async () => {
+  test('handles successful login', async () => {
     // Mock successful login response
     mockedAxios.post.mockResolvedValueOnce({
       data: {
@@ -105,7 +105,7 @@ describe('AuthContext', () => {
     );
   });
 
-  test.skip('handles logout', async () => {
+  test('handles logout', async () => {
     // Start with authenticated user
     mockLocalStorage.getItem.mockReturnValue('fake-token');
 
@@ -124,7 +124,7 @@ describe('AuthContext', () => {
     expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('authToken');
   });
 
-  test.skip('checks auth status on mount', async () => {
+  test('checks auth status on mount', async () => {
     mockLocalStorage.getItem.mockReturnValue('existing-token');
 
     // Mock the checkAuth API call - returns user data directly
@@ -150,7 +150,7 @@ describe('AuthContext', () => {
     expect(mockedAxios.get).toHaveBeenCalledWith('/auth/me/');
   });
 
-  test.skip('sets loading state during auth operations', async () => {
+  test('sets loading state during auth operations', async () => {
     // Mock successful login response
     mockedAxios.post.mockResolvedValueOnce({
       data: {
@@ -178,7 +178,7 @@ describe('AuthContext', () => {
     expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
   });
 
-  test.skip('handles failed login attempts', async () => {
+  test('handles failed login attempts', async () => {
     // Mock failed login response
     const error = {
       response: {
@@ -213,7 +213,7 @@ describe('AuthContext', () => {
     );
   });
 
-  test.skip('throws error when used outside provider', () => {
+  test('throws error when used outside provider', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => {
