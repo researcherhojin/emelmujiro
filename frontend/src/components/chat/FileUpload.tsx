@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Upload,
@@ -26,6 +26,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const maxFileSize = 10 * 1024 * 1024; // 10MB
   const allowedTypes = [
@@ -123,18 +124,36 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
     setSelectedFile(file);
   };
 
+  // Cleanup intervals on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, []);
+
   const handleUpload = async () => {
     if (!selectedFile) return;
 
     try {
       setUploadProgress(0);
 
+      // Clear any existing interval
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
       // Simulate upload progress
-      const interval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setUploadProgress((prev) => {
           if (prev === null) return 0;
           if (prev >= 100) {
-            clearInterval(interval);
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+              intervalRef.current = null;
+            }
             return 100;
           }
           return prev + 10;
@@ -143,6 +162,12 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
 
       // Wait for "upload" to complete
       await new Promise((resolve) => setTimeout(resolve, 1200));
+
+      // Clear interval after upload completes
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
 
       onUpload(selectedFile);
       setSelectedFile(null);
@@ -158,6 +183,13 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
       }
     } catch (error) {
       logger.error('Upload error:', error);
+
+      // Clear interval on error
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+
       setUploadProgress(null);
       showNotification(
         'error',
@@ -167,6 +199,12 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
   };
 
   const handleCancel = () => {
+    // Clear any running interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     setSelectedFile(null);
     setUploadProgress(null);
     if (onClose) {
