@@ -85,10 +85,10 @@ describe('BlogComments', () => {
     expect(screen.getByText('Test User')).toBeInTheDocument();
   });
 
-  it.skip('validates required fields', () => {
+  it('validates required fields', () => {
     render(<BlogComments {...defaultProps} />);
 
-    const submitButton = screen.getByText(/작성/i);
+    const submitButton = screen.getByRole('button', { name: /댓글 작성/i });
     const initialCommentCount = screen.queryAllByTestId('comment-item').length;
 
     // Try to submit empty form

@@ -52,12 +52,12 @@ describe('BlogSearch', () => {
     });
   });
 
-  it.skip('renders search input', () => {
+  it('renders search input', () => {
     renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
     expect(screen.getByPlaceholderText('블로그 검색...')).toBeInTheDocument();
   });
 
-  it.skip('handles search submission', async () => {
+  it('handles search submission', async () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
@@ -77,7 +77,7 @@ describe('BlogSearch', () => {
     }
   });
 
-  it.skip('trims whitespace from search query', async () => {
+  it('trims whitespace from search query', async () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
@@ -93,7 +93,7 @@ describe('BlogSearch', () => {
     });
   });
 
-  it.skip('does not submit empty search', async () => {
+  it('does not submit empty search', async () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
@@ -112,7 +112,7 @@ describe('BlogSearch', () => {
     // or called with empty array
   });
 
-  it.skip('handles search with special characters', async () => {
+  it('handles search with special characters', async () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
@@ -128,7 +128,7 @@ describe('BlogSearch', () => {
     });
   });
 
-  it.skip('clears search on clear button click', async () => {
+  it('clears search on clear button click', async () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
@@ -148,7 +148,7 @@ describe('BlogSearch', () => {
     }
   });
 
-  it.skip('filters posts based on search term', async () => {
+  it('filters posts based on search term', async () => {
     const onSearch = vi.fn();
     const mockResults = [
       {
@@ -193,7 +193,7 @@ describe('BlogSearch', () => {
     });
   });
 
-  it.skip('shows recent searches when focused', () => {
+  it('shows recent searches when focused', () => {
     // Set some recent searches in localStorage
     localStorage.setItem(
       'recentSearches',
@@ -213,7 +213,7 @@ describe('BlogSearch', () => {
     // This would depend on the actual implementation
   });
 
-  it.skip('shows search results count', async () => {
+  it('shows search results count', async () => {
     const onSearch = vi.fn();
     const mockResults = [
       {
@@ -258,7 +258,7 @@ describe('BlogSearch', () => {
     });
   });
 
-  it.skip('updates search term', () => {
+  it('updates search term', () => {
     renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
 
     const input = screen.getByPlaceholderText(
@@ -269,7 +269,7 @@ describe('BlogSearch', () => {
     expect(input.value).toBe('TypeScript');
   });
 
-  it.skip('handles empty search', async () => {
+  it('handles empty search', async () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
@@ -287,7 +287,7 @@ describe('BlogSearch', () => {
     expect(input.value).toBe('');
   });
 
-  it.skip('shows search icon', () => {
+  it('shows search icon', () => {
     renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
 
     // Check for search icon (mocked as a div with data-testid)
