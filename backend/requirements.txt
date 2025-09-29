@@ -11,7 +11,7 @@ python-dotenv==1.1.1
 whitenoise==6.9.0
 
 # API Documentation
-drf-yasg==1.21.10
+drf-yasg==1.21.11
 
 # Authentication & Security
 djangorestframework-simplejwt==5.5.1
