@@ -6,7 +6,7 @@
   "dependencies": {
     "@sentry/react": "^10.11.0",
     "@tanstack/react-virtual": "^3.13.12",
-    "axios": "^1.11.0",
+    "axios": "^1.13.2",
     "date-fns": "^4.1.0",
     "framer-motion": "^11.18.2",
     "i18next": "^25.5.2",
