@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Code2, GraduationCap, MessageSquare, Database } from 'lucide-react';
+import { GraduationCap, Code2, MessageSquare, Eye } from 'lucide-react';
 
 interface Service {
   number: string;
@@ -53,43 +53,47 @@ const ServicesSection: React.FC = memo(() => {
   const services: Service[] = [
     {
       number: '01',
-      title: 'AI 컨설팅',
-      description: '비즈니스 문제를 위한 AI 솔루션 개발',
-      details: [
-        'MLOps 구축 및 최적화',
-        '모델 개발 및 성능 향상',
-        'AI 도입 전략 수립',
-      ],
-      icon: Code2,
-    },
-    {
-      number: '02',
-      title: '기업 AI 교육',
-      description: '실무자를 위한 체계적인 AI 역량 강화',
+      title: 'AI 교육 & 강의',
+      description: '대기업·공공기관 맞춤형 AI 역량 강화',
       details: [
         '맞춤형 커리큘럼 설계',
-        '실습 중심 교육 진행',
-        '1:1 멘토링 지원',
+        '프로젝트 기반 실습 교육',
+        '1:1 기술 멘토링',
       ],
       icon: GraduationCap,
     },
     {
+      number: '02',
+      title: 'AI 컨설팅',
+      description: 'AI 도입을 위한 전략 수립 및 기술 자문',
+      details: [
+        'AI 도입 전략 및 기술 검토',
+        '모델 선정 및 PoC 개발',
+        '서비스 프로토타입 설계',
+      ],
+      icon: Code2,
+    },
+    {
       number: '03',
-      title: 'LLM 솔루션',
-      description: '최신 언어 모델 기반 비즈니스 혁신',
-      details: ['RAG 시스템 구축', '맞춤형 챗봇 개발', '문서 자동화 솔루션'],
+      title: 'LLM/생성형 AI',
+      description: '대규모 언어 모델 기반 서비스 개발',
+      details: [
+        'RAG 시스템 설계 및 구축',
+        'LLM 기반 서비스 프로토타입',
+        '생성형 AI 활용 교육',
+      ],
       icon: MessageSquare,
     },
     {
       number: '04',
-      title: '데이터 분석',
-      description: '데이터 기반 의사결정 지원 시스템',
+      title: 'Computer Vision',
+      description: '영상 처리 및 비전 AI 솔루션',
       details: [
-        '비즈니스 인텔리전스 도구 구축',
-        '예측 모델 개발',
-        '데이터 파이프라인 최적화',
+        '객체 탐지 / 세그멘테이션',
+        '최신 모델 적용 (YOLO, SAM 등)',
+        'CV 프로젝트 설계 및 멘토링',
       ],
-      icon: Database,
+      icon: Eye,
     },
   ];
 

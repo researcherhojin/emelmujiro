@@ -9,7 +9,7 @@ const CTASection: React.FC = memo(() => {
             GET STARTED
           </h2>
           <h3 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-8">
-            프로젝트를 시작할 준비가 되셨나요?
+            AI 교육 · 컨설팅이 필요하신가요?
           </h3>
 
           <p className="text-xl font-medium text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
@@ -17,22 +17,16 @@ const CTASection: React.FC = memo(() => {
           </p>
 
           <a
-            href="#/contact"
+            href="mailto:researcherhojin@gmail.com"
             className="inline-flex items-center justify-center px-12 py-6 text-lg font-bold text-white bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all rounded-2xl"
-            aria-label="프로젝트 문의하기"
+            aria-label="이메일로 문의하기"
           >
-            프로젝트 문의하기 →
+            이메일로 문의하기 →
           </a>
 
           <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              이메일로 직접 문의하실 수 있습니다:
-              <a
-                href="mailto:researcherhojin@gmail.com"
-                className="font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white ml-1 underline"
-              >
-                researcherhojin@gmail.com
-              </a>
+              researcherhojin@gmail.com
             </p>
           </div>
         </div>

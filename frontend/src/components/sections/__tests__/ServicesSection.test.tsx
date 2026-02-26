@@ -23,47 +23,43 @@ describe('ServicesSection Component', () => {
   test('renders all service cards', () => {
     renderWithRouter(<ServicesSection />);
 
-    // Check for service titles
+    expect(screen.getByText('AI 교육 & 강의')).toBeInTheDocument();
     expect(screen.getByText('AI 컨설팅')).toBeInTheDocument();
-    expect(screen.getByText('기업 AI 교육')).toBeInTheDocument();
-    expect(screen.getByText('LLM 솔루션')).toBeInTheDocument();
+    expect(screen.getByText('LLM/생성형 AI')).toBeInTheDocument();
+    expect(screen.getByText('Computer Vision')).toBeInTheDocument();
   });
 
   test('renders service descriptions', () => {
     renderWithRouter(<ServicesSection />);
 
     expect(
-      screen.getByText(/비즈니스 문제를 위한 AI 솔루션 개발/)
+      screen.getByText(/대기업·공공기관 맞춤형 AI 역량 강화/)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/실무자를 위한 체계적인 AI 역량 강화/)
+      screen.getByText(/AI 도입을 위한 전략 수립 및 기술 자문/)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/최신 언어 모델 기반 비즈니스 혁신/)
+      screen.getByText(/대규모 언어 모델 기반 서비스 개발/)
     ).toBeInTheDocument();
   });
 
   test('renders service details', () => {
     renderWithRouter(<ServicesSection />);
 
-    // Check for some detail items
-    expect(screen.getByText(/MLOps 구축 및 최적화/)).toBeInTheDocument();
     expect(screen.getByText(/맞춤형 커리큘럼 설계/)).toBeInTheDocument();
-    expect(screen.getByText(/RAG 시스템 구축/)).toBeInTheDocument();
+    expect(screen.getByText(/RAG 시스템 설계 및 구축/)).toBeInTheDocument();
+    expect(screen.getByText(/객체 탐지 \/ 세그멘테이션/)).toBeInTheDocument();
   });
 
   test('service cards have proper content', () => {
     renderWithRouter(<ServicesSection />);
 
-    // Check that service descriptions are present
     expect(
-      screen.getByText(/비즈니스 문제를 위한 AI 솔루션 개발/)
+      screen.getByText(/대기업·공공기관 맞춤형 AI 역량 강화/)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/실무자를 위한 체계적인 AI 역량 강화/)
+      screen.getByText(/AI 도입을 위한 전략 수립 및 기술 자문/)
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/최신 언어 모델 기반 비즈니스 혁신/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/영상 처리 및 비전 AI 솔루션/)).toBeInTheDocument();
   });
 });
