@@ -22,6 +22,10 @@ dependencies = [
     "gunicorn==23.0.0",
     "psycopg2-binary==2.9.10",
     "whitenoise==6.9.0",
+    "channels==4.3.1",
+    "channels-redis==4.3.0",
+    "daphne==4.2.1",
+    "redis==6.4.0",
 ]
 
 [project.optional-dependencies]
@@ -34,6 +38,7 @@ dev = [
     "ruff>=0.1.0",
     "mypy>=1.8.0",
     "pre-commit>=3.6.0",
+    "watchdog[watchmedo]>=4.0.0",
 ]
 
 [tool.black]
@@ -104,11 +109,7 @@ exclude = [
     ".venv/",
 ]
 
-[tool.setuptools]
-packages = ["api", "config"]
-py-modules = []
-
-[tool.setuptools.package-find]
+[tool.setuptools.packages.find]
 where = ["."]
 include = ["api*", "config*"]
 exclude = ["tests*"]

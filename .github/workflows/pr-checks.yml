@@ -66,11 +66,8 @@ jobs:
           cache: "yarn"
           cache-dependency-path: frontend/yarn.lock
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
 
       - name: Frontend lint
         run: |
@@ -86,9 +83,9 @@ jobs:
       - name: Backend lint
         run: |
           cd backend
-          pip install black flake8
-          black --check . || true
-          flake8 . --max-line-length=120 --exclude=migrations,venv,.venv || true
+          uv sync --frozen
+          uv run black --check . || true
+          uv run flake8 . --max-line-length=120 --exclude=migrations,venv,.venv || true
 
   # Run only affected tests based on changed files
   affected-tests:
@@ -129,19 +126,16 @@ jobs:
           CI=true npm test -- --run --passWithNoTests --maxWorkers=2
         timeout-minutes: 10 # Individual test step timeout
 
-      - name: Setup Python
+      - name: Install uv
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
+        uses: astral-sh/setup-uv@v5
 
       - name: Test backend changes
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
         run: |
           cd backend
-          pip install -r requirements.txt
-          python manage.py test
+          uv sync --frozen
+          uv run python manage.py test
 
   # Security scan for dependencies
   security-scan:

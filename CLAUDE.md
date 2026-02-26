@@ -34,11 +34,13 @@ npm run test:ci            # CI-optimized (--bail=1, no coverage)
 # Run a specific test file:
 CI=true npm test -- --run src/components/common/__tests__/Button.test.tsx
 
-# Backend (from backend/)
-python3 manage.py runserver
-python3 manage.py test
-black .                    # Format
-flake8 .                   # Lint
+# Backend (from backend/ — uses uv)
+uv sync                    # Install dependencies
+uv sync --dev              # Install with dev dependencies
+uv run python manage.py runserver
+uv run python manage.py test
+uv run black .             # Format
+uv run flake8 .            # Lint
 
 # Deploy (from frontend/)
 npm run deploy             # Build + deploy to GitHub Pages via gh-pages
@@ -53,7 +55,7 @@ lsof -ti:8000 | xargs kill -9
 ### Monorepo Structure
 
 - `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x
-- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels)
+- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels). Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`)
 - Root `package.json` uses npm workspaces pointing to `frontend/`
 
 ### Routing
@@ -77,6 +79,10 @@ Uses `createHashRouter` (HashRouter) in `frontend/src/App.tsx`. All pages are la
 ### Provider Hierarchy
 
 `App.tsx` wraps the app in: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > BlogProvider > FormProvider > ChatProvider > RouterProvider`.
+
+### i18n
+
+Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false`.
 
 ### Path Alias
 
@@ -109,6 +115,21 @@ itSkipInCI('test that fails in CI', () => { /* ... */ });
 - `NODE_OPTIONS='--max-old-space-size=4096'` for CI memory
 - 15s timeout in CI, 10s locally
 
+### E2E Testing (Playwright)
+
+Config in `frontend/playwright.config.ts`. Tests in `frontend/e2e/`. **Known bug**: `baseURL` and `webServer.url` are set to port 3000 but should be 5173.
+
+## CI/CD
+
+### Commit Messages
+
+PR checks enforce **conventional commits**: `type(scope): description`. Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`.
+
+### Pipelines
+
+- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages + Docker build. Backend tests run against PostgreSQL 15. Node 20, Python 3.11. Frontend test step uses `continue-on-error: true`.
+- **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy) + bundle size check (<10MB). Posts summary comment on PR.
+
 ## Critical Configuration
 
 ### Vite (`frontend/vite.config.ts`)
@@ -123,9 +144,13 @@ itSkipInCI('test that fails in CI', () => { /* ... */ });
 
 Downgraded from 4.x. PostCSS config (`frontend/postcss.config.js`) must use `tailwindcss: {}`, NOT `@tailwindcss/postcss`.
 
+### ESLint
+
+ESLint 9 **flat config** format in `frontend/eslint.config.mjs` (not `.eslintrc`). Plugins: `@typescript-eslint`, `react`, `react-hooks`, `jsx-a11y`, `testing-library`. Test files have relaxed rules (no-unused-vars off, no-explicit-any off, no-console off). Unused vars prefixed with `_` are allowed.
+
 ### Pre-commit Hooks
 
-Husky + lint-staged: ESLint --fix + Prettier on `src/**/*.{js,jsx,ts,tsx}`, Prettier on `src/**/*.{json,css,md}`. Backend: black --check + flake8 on `backend/**/*.py`.
+Husky + lint-staged: ESLint --fix + Prettier on `src/**/*.{js,jsx,ts,tsx}`, Prettier on `src/**/*.{json,css,md}`. Backend: `uv run black --check` + `uv run flake8` on `backend/**/*.py`.
 
 ## Common Pitfalls
 
@@ -137,3 +162,5 @@ Husky + lint-staged: ESLint --fix + Prettier on `src/**/*.{js,jsx,ts,tsx}`, Pret
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
 8. **minimatch override**: Root and frontend `package.json` both have `overrides` to force `minimatch>=10.2.1` for security. Don't remove these
+9. **Playwright port mismatch**: `playwright.config.ts` references port 3000 — needs to be 5173 if running E2E tests
+10. **Conventional commits required**: PR checks validate commit message format (`type(scope): description`)

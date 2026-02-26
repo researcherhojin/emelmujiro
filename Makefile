@@ -16,7 +16,7 @@ help:
 
 install:
 	npm install
-	cd backend && pip install -r requirements.txt
+	cd backend && uv sync
 	npx husky install
 
 dev:
@@ -43,19 +43,19 @@ build:
 
 test:
 	npm test
-	cd backend && python manage.py test
+	cd backend && uv run python manage.py test
 
 test-ci:
 	npm test -- --watchAll=false --passWithNoTests
-	cd backend && coverage run --source='.' manage.py test && coverage report
+	cd backend && uv run coverage run --source='.' manage.py test && uv run coverage report
 
 lint:
 	npm run lint:frontend
-	cd backend && black --check . && flake8
+	cd backend && uv run black --check . && uv run flake8
 
 lint-fix:
 	cd frontend && eslint src --fix
-	cd backend && black .
+	cd backend && uv run black .
 
 clean:
 	npm run clean

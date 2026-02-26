@@ -11,19 +11,19 @@
     "dev:clean": "./scripts/kill-ports.sh && npm run dev",
     "dev:docker": "./scripts/start-dev.sh",
     "dev:frontend": "npm run start --workspace=frontend",
-    "dev:backend": "cd backend && python3 manage.py runserver",
+    "dev:backend": "cd backend && uv run python manage.py runserver",
     "dev:safe": "concurrently --kill-others-on-fail \"npm run dev:backend\" \"npm run dev:frontend\"",
     "build": "npm run build:frontend",
     "build:frontend": "npm run build --workspace=frontend",
     "test": "npm run test:frontend && npm run test:backend",
     "test:frontend": "npm run test --workspace=frontend",
-    "test:backend": "cd backend && python3 manage.py test",
+    "test:backend": "cd backend && uv run python manage.py test",
     "lint": "npm run lint:frontend",
     "lint:frontend": "cd frontend && eslint src --ext .js,.jsx,.ts,.tsx",
     "clean": "npm run clean:frontend && npm run clean:backend",
     "clean:frontend": "rm -rf frontend/build frontend/node_modules",
     "clean:backend": "find backend -type d -name '__pycache__' -exec rm -rf {} + && rm -rf backend/staticfiles",
-    "install:all": "npm install && cd backend && pip install -r requirements.txt",
+    "install:all": "npm install && cd backend && uv sync",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -41,8 +41,8 @@
       "eslint --fix"
     ],
     "backend/**/*.py": [
-      "black --check",
-      "flake8"
+      "uv run --directory backend black --check",
+      "uv run --directory backend flake8"
     ]
   },
   "overrides": {
