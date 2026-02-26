@@ -31,8 +31,6 @@ const ContactPage: React.FC = memo(() => {
           </p>
 
           <p className="text-base text-gray-500 dark:text-gray-500 mb-8">
-            현재 백엔드 시스템을 구축 중입니다.
-            <br />
             아래 이메일로 직접 문의해주시면 빠르게 답변드리겠습니다.
           </p>
 

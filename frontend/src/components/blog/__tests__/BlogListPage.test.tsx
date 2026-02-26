@@ -36,11 +36,11 @@ describe('BlogListPage', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows information about backend system construction', () => {
+  it('shows wait message', () => {
     renderWithProviders(<BlogListPage />);
 
     expect(
-      screen.getByText(/현재 백엔드 시스템을 구축 중입니다/)
+      screen.getByText(/양질의 AI 인사이트와 기술 트렌드를 준비하고 있으니/)
     ).toBeInTheDocument();
   });
 

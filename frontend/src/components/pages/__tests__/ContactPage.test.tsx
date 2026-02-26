@@ -49,12 +49,9 @@ describe('ContactPage Component', () => {
     );
   });
 
-  it('displays backend construction notice', () => {
+  it('displays contact guidance message', () => {
     renderWithRouter(<ContactPage />);
 
-    expect(
-      screen.getByText(/현재 백엔드 시스템을 구축 중입니다/)
-    ).toBeInTheDocument();
     expect(
       screen.getByText(/이메일로 직접 문의해주시면 빠르게 답변드리겠습니다/)
     ).toBeInTheDocument();

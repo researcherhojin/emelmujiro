@@ -29,8 +29,6 @@ const BlogListPage: React.FC = memo(() => {
           </p>
 
           <p className="text-base text-gray-500 dark:text-gray-500 mb-12">
-            현재 백엔드 시스템을 구축 중입니다.
-            <br />
             양질의 AI 인사이트와 기술 트렌드를 준비하고 있으니 조금만
             기다려주세요.
           </p>
