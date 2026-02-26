@@ -41,7 +41,7 @@ SYSTEMS_APPS = [
     "django.contrib.staticfiles",
 ]
 
-INSTALLED_APPS = CUSTOM_APPS + SYSTEMS_APPS
+INSTALLED_APPS = SYSTEMS_APPS + CUSTOM_APPS
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
