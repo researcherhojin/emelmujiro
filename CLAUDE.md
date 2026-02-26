@@ -127,7 +127,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Pipelines
 
-- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages + Docker build. Backend tests run against PostgreSQL 15. Node 20, Python 3.11. Frontend test step uses `continue-on-error: true`.
+- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages + Docker build. Backend tests run against PostgreSQL 15. Node 22, Python 3.12. Frontend test step uses `continue-on-error: true`.
 - **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy) + bundle size check (<10MB). Posts summary comment on PR.
 
 ## Critical Configuration

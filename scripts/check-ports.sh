@@ -5,16 +5,16 @@
 echo "🔍 포트 상태 확인 중..."
 
 # Frontend 포트 확인
-if lsof -Pi :3000 -sTCP:LISTEN -t >/dev/null ; then
-    echo "❌ Port 3000 (Frontend) is already in use"
+if lsof -Pi :5173 -sTCP:LISTEN -t >/dev/null ; then
+    echo "❌ Port 5173 (Frontend) is already in use"
     echo "Kill process? (y/n)"
     read -r response
     if [[ "$response" == "y" ]]; then
-        lsof -ti:3000 | xargs kill -9
-        echo "✅ Port 3000 cleared"
+        lsof -ti:5173 | xargs kill -9
+        echo "✅ Port 5173 cleared"
     fi
 else
-    echo "✅ Port 3000 (Frontend) is available"
+    echo "✅ Port 5173 (Frontend) is available"
 fi
 
 # Backend 포트 확인

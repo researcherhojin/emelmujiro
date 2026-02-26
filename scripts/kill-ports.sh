@@ -5,9 +5,9 @@
 echo "🧹 개발 환경 포트 정리 중..."
 
 # Frontend 포트 정리
-if lsof -Pi :3000 -sTCP:LISTEN -t >/dev/null ; then
-    lsof -ti:3000 | xargs kill -9 2>/dev/null
-    echo "✅ Port 3000 (Frontend) cleared"
+if lsof -Pi :5173 -sTCP:LISTEN -t >/dev/null ; then
+    lsof -ti:5173 | xargs kill -9 2>/dev/null
+    echo "✅ Port 5173 (Frontend) cleared"
 fi
 
 # Backend 포트 정리
