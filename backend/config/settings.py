@@ -46,16 +46,13 @@ INSTALLED_APPS = CUSTOM_APPS + SYSTEMS_APPS
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # 정적 파일 보안
-    # "api.middleware.SecurityMiddleware",  # 커스텀 보안 미들웨어 (임시 비활성화)
-    # "api.middleware.APIResponseTimeMiddleware",  # 응답 시간 모니터링 (임시 비활성화)
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "api.middleware.ContentSecurityMiddleware",  # CSP 헤더 (임시 비활성화)
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -80,21 +77,50 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 # Channels configuration
+REDIS_HOST = os.environ.get("REDIS_HOST", "127.0.0.1")
+REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
         },
     },
 }
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+# Database configuration
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    # Production: Parse DATABASE_URL (e.g. postgresql://user:pass@host:port/dbname)
+    import re
+
+    db_match = re.match(r"postgresql://([^:]+):([^@]+)@([^:]+):(\d+)/(.+)", DATABASE_URL)
+    if db_match:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "USER": db_match.group(1),
+                "PASSWORD": db_match.group(2),
+                "HOST": db_match.group(3),
+                "PORT": db_match.group(4),
+                "NAME": db_match.group(5),
+            }
+        }
+    else:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": BASE_DIR / "db.sqlite3",
+            }
+        }
+else:
+    # Development: SQLite
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -137,7 +163,7 @@ APPEND_SLASH = True  # URL 끝에 슬래시 자동 추가
 # CORS 설정
 CORS_ALLOWED_ORIGINS = os.environ.get(
     "CORS_ALLOWED_ORIGINS",
-    "http://localhost:5173,http://127.0.0.1:5173,http://192.168.0.80:5173,https://researcherhojin.github.io",
+    "http://localhost:5173,http://127.0.0.1:5173,https://researcherhojin.github.io",
 ).split(",")
 
 CORS_ALLOW_CREDENTIALS = True
@@ -227,7 +253,12 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES": {"anon": "100/hour", "user": "1000/hour"},
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "100/hour",
+        "user": "1000/hour",
+        "contact": "5/hour",
+        "newsletter": "3/hour",
+    },
 }
 
 # Swagger 설정
@@ -278,7 +309,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 # 이메일 발송 설정
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-ADMIN_EMAIL = "researcherhojin@gmail.com"
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@emelmujiro.com")
 EMAIL_TIMEOUT = 5
 EMAIL_MAX_RETRIES = 3
 
@@ -286,44 +317,27 @@ EMAIL_MAX_RETRIES = 3
 RECAPTCHA_PUBLIC_KEY = os.environ.get("RECAPTCHA_PUBLIC_KEY")
 RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY")
 
-# 캐시 설정 (Redis 사용 권장, 개발 시에는 로컬 메모리)
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
-        "TIMEOUT": 300,
-        "OPTIONS": {
-            "MAX_ENTRIES": 1000,
-        },
+# 캐시 설정
+REDIS_URL = os.environ.get("REDIS_URL")
+if REDIS_URL and not DEBUG:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_URL,
+            "TIMEOUT": 300,
+        }
     }
-}
-
-# REST Framework 설정
-REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.AllowAny",
-    ],
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,
-    "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.AnonRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
-    ],
-    "DEFAULT_THROTTLE_RATES": {
-        "anon": "100/hour",
-        "user": "1000/hour",
-        "contact": "5/hour",
-        "newsletter": "3/hour",
-    },
-    "DEFAULT_RENDERER_CLASSES": [
-        "rest_framework.renderers.JSONRenderer",
-    ],
-    "DEFAULT_PARSER_CLASSES": [
-        "rest_framework.parsers.JSONParser",
-        "rest_framework.parsers.FormParser",
-        "rest_framework.parsers.MultiPartParser",
-    ],
-}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "unique-snowflake",
+            "TIMEOUT": 300,
+            "OPTIONS": {
+                "MAX_ENTRIES": 1000,
+            },
+        }
+    }
 
 # 로깅 설정
 LOGGING = {

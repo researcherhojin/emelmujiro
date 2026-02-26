@@ -23,7 +23,9 @@ try:
     author = User.objects.get(username="admin")
 except User.DoesNotExist:
     print("Admin user not found. Creating one...")
-    author = User.objects.create_superuser("admin", "admin@emelmujiro.com", "admin123")
+    import secrets
+
+    author = User.objects.create_superuser("admin", "admin@emelmujiro.com", secrets.token_urlsafe(16))
 
 # BlogPost 모델의 CATEGORY_CHOICES 활용
 # ai, ml, ds, nlp, cv, rl, education, career, project, other

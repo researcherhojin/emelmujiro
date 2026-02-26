@@ -86,8 +86,6 @@
     "format:check": "prettier --check src/**/*.{js,jsx,ts,tsx,css,md}",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "build:sitemap": "node sitemap-generator.js",
-    "postbuild": "npm run build:sitemap",
     "prepare": "husky",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",

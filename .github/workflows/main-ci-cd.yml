@@ -44,8 +44,7 @@ jobs:
         working-directory: ./frontend
         run: |
           CI=true npm run test:ci
-        continue-on-error: true
-        timeout-minutes: 10 # Individual test step timeout
+        timeout-minutes: 10
 
       - name: Upload test coverage
         if: always()
@@ -88,10 +87,10 @@ jobs:
       - name: Install backend dependencies
         working-directory: ./backend
         run: uv sync --frozen
-        continue-on-error: true
 
       - name: Run backend tests
         working-directory: ./backend
+        timeout-minutes: 10
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
           SECRET_KEY: test-secret-key
@@ -99,7 +98,6 @@ jobs:
         run: |
           uv run python manage.py migrate --noinput
           uv run python manage.py test
-        continue-on-error: true
 
   # ========================================
   # Build Frontend

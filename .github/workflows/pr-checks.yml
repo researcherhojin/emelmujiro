@@ -72,15 +72,15 @@ jobs:
         run: |
           cd frontend
           npm ci --prefer-offline --no-audit
-          npm run lint || true
-          npx prettier --check "src/**/*.{js,jsx,ts,tsx,css}" || true
+          npm run lint
+          npx prettier --check "src/**/*.{js,jsx,ts,tsx,css}"
 
       - name: Backend lint
         run: |
           cd backend
           uv sync --frozen
-          uv run black --check . || true
-          uv run flake8 . --max-line-length=120 --exclude=migrations,venv,.venv || true
+          uv run black --check .
+          uv run flake8 . --max-line-length=120 --exclude=migrations,venv,.venv
 
   # Run only affected tests based on changed files
   affected-tests:
@@ -143,7 +143,7 @@ jobs:
           scan-type: "fs"
           scan-ref: "."
           format: "table"
-          exit-code: "0"
+          exit-code: "1"
           severity: "CRITICAL,HIGH"
 
   # Size and performance budget checks
