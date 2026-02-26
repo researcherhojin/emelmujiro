@@ -24,11 +24,9 @@ const CTASection: React.FC = memo(() => {
             이메일로 문의하기 →
           </a>
 
-          <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              researcherhojin@gmail.com
-            </p>
-          </div>
+          <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
+            researcherhojin@gmail.com
+          </p>
         </div>
       </div>
     </section>

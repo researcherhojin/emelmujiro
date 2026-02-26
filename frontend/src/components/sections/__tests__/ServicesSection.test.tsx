@@ -32,15 +32,9 @@ describe('ServicesSection Component', () => {
   test('renders service descriptions', () => {
     renderWithRouter(<ServicesSection />);
 
-    expect(
-      screen.getByText(/대기업·공공기관 맞춤형 AI 역량 강화/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/AI 도입을 위한 전략 수립 및 기술 자문/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/대규모 언어 모델 기반 서비스 개발/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/기업 맞춤 AI 교육 프로그램/)).toBeInTheDocument();
+    expect(screen.getByText(/AI 도입 전략 및 기술 자문/)).toBeInTheDocument();
+    expect(screen.getByText(/LLM 기반 서비스 개발/)).toBeInTheDocument();
   });
 
   test('renders service details', () => {
@@ -54,12 +48,8 @@ describe('ServicesSection Component', () => {
   test('service cards have proper content', () => {
     renderWithRouter(<ServicesSection />);
 
-    expect(
-      screen.getByText(/대기업·공공기관 맞춤형 AI 역량 강화/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/AI 도입을 위한 전략 수립 및 기술 자문/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/기업 맞춤 AI 교육 프로그램/)).toBeInTheDocument();
+    expect(screen.getByText(/AI 도입 전략 및 기술 자문/)).toBeInTheDocument();
     expect(screen.getByText(/영상 처리 및 비전 AI 솔루션/)).toBeInTheDocument();
   });
 });

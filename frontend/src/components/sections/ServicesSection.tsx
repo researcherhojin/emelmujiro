@@ -54,7 +54,7 @@ const ServicesSection: React.FC = memo(() => {
     {
       number: '01',
       title: 'AI 교육 & 강의',
-      description: '대기업·공공기관 맞춤형 AI 역량 강화',
+      description: '기업 맞춤 AI 교육 프로그램',
       details: [
         '맞춤형 커리큘럼 설계',
         '프로젝트 기반 실습 교육',
@@ -65,7 +65,7 @@ const ServicesSection: React.FC = memo(() => {
     {
       number: '02',
       title: 'AI 컨설팅',
-      description: 'AI 도입을 위한 전략 수립 및 기술 자문',
+      description: 'AI 도입 전략 및 기술 자문',
       details: [
         'AI 도입 전략 및 기술 검토',
         '모델 선정 및 PoC 개발',
@@ -76,7 +76,7 @@ const ServicesSection: React.FC = memo(() => {
     {
       number: '03',
       title: 'LLM/생성형 AI',
-      description: '대규모 언어 모델 기반 서비스 개발',
+      description: 'LLM 기반 서비스 개발',
       details: [
         'RAG 시스템 설계 및 구축',
         'LLM 기반 서비스 프로토타입',
