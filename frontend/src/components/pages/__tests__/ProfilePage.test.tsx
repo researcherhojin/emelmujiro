@@ -98,7 +98,7 @@ describe('ProfilePage Component', () => {
       expect(screen.getByText('50+')).toBeInTheDocument(); // Total projects
       expect(screen.getByText('1,000+')).toBeInTheDocument(); // Total students
       expect(screen.getByText('30+')).toBeInTheDocument(); // Partner companies
-      expect(screen.getByText('4+')).toBeInTheDocument(); // Years of experience
+      expect(screen.getByText('5+')).toBeInTheDocument(); // Years of experience
     });
   });
 
@@ -225,7 +225,9 @@ describe('ProfilePage Component', () => {
       fireEvent.click(projectsTab!);
 
       // Projects content should be visible
-      expect(screen.getByText('AI 엔지니어 심화 부트캠프')).toBeInTheDocument();
+      expect(
+        screen.getByText('AI 컴퓨터비전(CV) 심화 과정')
+      ).toBeInTheDocument();
     });
   });
 

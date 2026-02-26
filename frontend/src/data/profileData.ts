@@ -44,7 +44,7 @@ export const careerData: CareerItem[] = [
     company: '멋쟁이사자처럼',
     position: 'AI 전문 강사',
     description:
-      '스타트업 스테이션 과정 · AI 엔지니어 심화 부트캠프 이미지처리 · 창업 특강 및 멘토링',
+      'AI 엔지니어 심화 부트캠프 · 테킷 스타트업 스테이션 · 한국과학창의재단 AI 교육 · 산업전문인력 AI역량강화 교육',
     current: true,
   },
   {
@@ -52,7 +52,7 @@ export const careerData: CareerItem[] = [
     company: '엘리스',
     position: 'AI/데이터분석 전문 강사',
     description:
-      '삼성전자 Spotfire 데이터 분석 · Python/ML 기초 교육 · 현대건설 ML/DL 과정',
+      '삼성전자 Spotfire 데이터 분석 · LG전자 Data Science 프로젝트 · Python/ML 기초 교육 · 현대건설 ML/DL 과정',
   },
   {
     period: '2022.10 ~ 2024.09',
@@ -98,14 +98,15 @@ export const educationData: EducationItem[] = [
 
 export const projects: Project[] = [
   {
-    id: 'ai-bootcamp',
-    title: 'AI 엔지니어 심화 부트캠프',
-    period: '2024 ~ 2025',
+    id: 'ai-cv-bootcamp',
+    title: 'AI 컴퓨터비전(CV) 심화 과정',
+    period: '2024 ~ 2026',
     description:
-      '멋쟁이사자처럼 AI 엔지니어 심화 부트캠프 이미지처리 과정 · 객체 탐지, 세그멘테이션, 멀티태스킹 실전 프로젝트',
+      '멋쟁이사자처럼 AI 엔지니어 심화 부트캠프 1~3기 운영 · YOLO, RT-DETR, SAM 기반 실전 프로젝트 리딩 · AI 챔피언상 수상팀 및 데이콘 우승팀 배출',
     category: 'bootcamp',
     tags: [
       'Computer Vision',
+      'Image Generation',
       'Object Detection',
       'PyTorch',
       'Segmentation',
@@ -113,21 +114,29 @@ export const projects: Project[] = [
     highlight: true,
   },
   {
-    id: 'nano-ai',
-    title: '산업전문인력 AI역량강화 교육',
-    period: '2025.06 ~ 2025.08',
+    id: 'ict-piuda',
+    title: 'ICT콤플렉스 피우다 프로젝트',
+    period: '2025',
     description:
-      '나노융합산업연구조합 협력 · 나노소재 빅데이터 활용 AI융합전문가 교육 · 제조라인 고장예측 및 신소재 구조분석',
+      '경계선지능 청소년 AI 학습 지원 서비스 "이음(E-eum)" 기획 및 개발 · LLM 기반 쉬운 말 변환 시스템 · 270팀 중 최종 15팀, 분야 3위 수상',
+    category: 'research',
+    tags: ['FastAPI', 'LLM', 'React', '사회적 가치'].sort(),
+  },
+  {
+    id: 'nano-ai',
+    title: '산업전문인력 AI 역량강화 교육',
+    period: '2022 ~ 2025',
+    description:
+      '나노융합산업연구조합 협력 · 나노소재 빅데이터 AI 융합 교육 · SECOM 반도체 공정 고장예측 · CNT/수지 복합소재 구조분석 시뮬레이션',
     category: 'enterprise',
     tags: ['빅데이터', '산업 AI', '시뮬레이션', '제조 AI'].sort(),
-    highlight: false,
   },
   {
     id: 'teacher-training',
     title: '생성형 AI 교육자 연수',
     period: '2024 ~ 2025',
     description:
-      '한국과학창의재단 찾아가는 학교 컨설팅 · 초중고 교사 및 학부모 대상 ChatGPT 활용 교육',
+      '한국과학창의재단 찾아가는 학교 컨설팅 · 초중고 6개교 교사 및 학부모 대상 ChatGPT 활용 교육',
     category: 'education',
     tags: ['AI 리터러시', 'ChatGPT', '교육 혁신', '생성형 AI'].sort(),
   },
@@ -136,54 +145,18 @@ export const projects: Project[] = [
     title: '테킷 스타트업 스테이션',
     period: '2023 ~ 2025',
     description:
-      '멋쟁이사자처럼 테킷 스타트업 스테이션 7~10기 운영 · 예비 IT창업자 대상 개발 역량 강화',
+      '멋쟁이사자처럼 테킷 스타트업 스테이션 7~10기 운영 · 예비 IT창업자 대상 AI 서비스 설계 및 개발 멘토링 · 정부 창업 지원사업 선정팀 다수 배출',
     category: 'startup',
-    tags: ['MVP 개발', '멘토링', '창업 교육', '풀스택'].sort(),
+    tags: ['AI 서비스', 'MVP 개발', '멘토링', '창업 교육'].sort(),
   },
   {
-    id: 'samsung-spotfire',
-    title: '삼성전자 Spotfire 데이터 분석',
-    period: '2023 ~ 2024',
+    id: 'enterprise-ai-education',
+    title: '대기업·공공기관 AI 교육',
+    period: '2022 ~ 2026',
     description:
-      '삼성전자 임직원 대상 Spotfire 데이터 분석 및 시각화 교육 · 실무 데이터 활용 대시보드 구축',
+      '삼성전자, LG전자, 현대건설, SKT, 서울대, 서울시 교육청 등 · CV, ML/DL, 데이터 분석, 생성형 AI 프로젝트 기반 교육 설계 및 운영',
     category: 'enterprise',
-    tags: ['BI', 'Spotfire', '데이터 분석', '시각화'].sort(),
-  },
-  {
-    id: 'lg-data-science',
-    title: 'LG전자 Data Science 프로젝트',
-    period: '2023',
-    description:
-      'Data Science 프로젝트 기획부터 개발까지 메인 강사 · 머신러닝 모델 개발 및 배포',
-    category: 'enterprise',
-    tags: ['Data Science', 'ML', '실무 교육', '프로젝트'].sort(),
-  },
-  {
-    id: 'hyundai-ml',
-    title: '현대건설 ML/DL 과정',
-    period: '2023',
-    description:
-      '현대건설 시니어 대상 머신러닝/딥러닝 교육 · YOLO 기반 건설 현장 안전 관리 시스템',
-    category: 'enterprise',
-    tags: ['Computer Vision', 'Deep Learning', 'YOLO', '안전 관리'].sort(),
-  },
-  {
-    id: 'keti-nano',
-    title: 'KETI 나노소재 AI 전문가 과정',
-    period: '2022',
-    description:
-      '한국전자기술연구원 나노소재 빅데이터 활용 AI융합 전문가 과정 · 도메인 지식 기반 AI 도입',
-    category: 'research',
-    tags: ['AI 융합', '나노소재', '빅데이터', '연구'].sort(),
-  },
-  {
-    id: 'seoul-ai',
-    title: '서울시립대 AI 취업사관학교',
-    period: '2022',
-    description:
-      '서울시립대 캠퍼스타운형 취업사관학교 AI 과정 · 대학생 대상 실무 중심 AI 교육',
-    category: 'education',
-    tags: ['AI 교육', '실무 프로젝트', '취업 연계'].sort(),
+    tags: ['Computer Vision', 'Data Science', 'ML/DL', '생성형 AI'].sort(),
   },
   {
     id: 'open-source',
@@ -200,7 +173,7 @@ export const projectStats: ProjectStats = {
   totalProjects: '50+',
   totalStudents: '1,000+',
   partnerCompanies: '30+',
-  yearsOfExperience: '4+',
+  yearsOfExperience: '5+',
 };
 
 export const projectCategories = [
