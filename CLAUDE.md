@@ -94,16 +94,6 @@ Uses `i18next` + `react-i18next` with browser language detection. Fallback langu
 
 Vitest with jsdom environment. Config in `frontend/vitest.config.ts`. Setup file: `frontend/src/setupTests.ts`.
 
-### CI Skip Pattern
-
-A small number of tests (~1%) use `itSkipInCI` for genuine jsdom limitations (classList errors, IndexedDB unavailability). Most tests run in both local and CI environments.
-
-```typescript
-// Use helpers from src/test-utils/ci-skip.ts
-import { itSkipInCI } from '@/test-utils/ci-skip';
-itSkipInCI('test that fails in CI', () => { /* ... */ });
-```
-
 ### Test Utilities
 
 - `renderWithProviders` in `src/test-utils/renderWithProviders.tsx` — Wraps component in all providers (HelmetProvider, UIProvider, AuthProvider, BlogProvider, FormProvider, Router). ChatProvider is excluded due to WebSocket complexity.
@@ -111,9 +101,9 @@ itSkipInCI('test that fails in CI', () => { /* ... */ });
 
 ### CI Test Config
 
-- Uses forks pool with single fork (`singleFork: true`) in CI to avoid memory issues
-- `NODE_OPTIONS='--max-old-space-size=4096'` for CI memory
+- Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
+- All 1577 tests pass in both local and CI environments with 0 skips
 
 ### E2E Testing (Playwright)
 
@@ -157,7 +147,7 @@ Husky + lint-staged: ESLint --fix + Prettier on `src/**/*.{js,jsx,ts,tsx}`, Pret
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API in production**: Always on, not configurable — GitHub Pages has no backend
 3. **Build output**: `build/`, not `dist/`
-4. **Test skips in CI**: Some tests use `itSkipInCI` for jsdom limitations; most tests run in both local and CI
+4. **All tests run in CI**: 1577 tests pass with 0 skips in both local and CI environments
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
