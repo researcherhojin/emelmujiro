@@ -125,6 +125,8 @@ jobs:
         run: |
           cd backend
           uv sync --frozen
+          uv run python manage.py makemigrations --noinput
+          uv run python manage.py migrate --noinput
           uv run python manage.py test
 
   # Security scan for dependencies
