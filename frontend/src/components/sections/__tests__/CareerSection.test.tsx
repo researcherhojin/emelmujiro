@@ -108,7 +108,7 @@ describe('CareerSection', () => {
     expect(buttons.length).toBeGreaterThan(0);
 
     // Check if there are any collapsible descriptions or content
-    const descriptions = screen.queryAllByText(/4년간의 경험/);
+    const descriptions = screen.queryAllByText(/5년간의 경험/);
     expect(descriptions.length).toBeGreaterThanOrEqual(1);
   });
 

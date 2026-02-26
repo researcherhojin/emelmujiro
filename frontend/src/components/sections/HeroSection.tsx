@@ -73,10 +73,10 @@ const HeroSection: React.FC = memo(() => {
               </div>
               <div className="text-center">
                 <div className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-gray-900 dark:text-white mb-2 sm:mb-3">
-                  98%
+                  4.8+
                 </div>
                 <div className="text-sm sm:text-base font-semibold text-gray-600 dark:text-gray-400">
-                  고객 만족도
+                  강의 만족도
                 </div>
               </div>
             </div>
@@ -94,7 +94,7 @@ const HeroSection: React.FC = memo(() => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="hidden sm:inline">Since 2022 • </span>4년의
+                <span className="hidden sm:inline">Since 2022 • </span>5년의
                 검증된 전문성
               </span>
             </div>

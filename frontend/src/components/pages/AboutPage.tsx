@@ -236,9 +236,9 @@ const AboutPage: React.FC = memo(() => {
               </div>
               <div>
                 <div className="text-5xl font-black text-gray-900 dark:text-white mb-2">
-                  98%
+                  4.8+
                 </div>
-                <p className="text-gray-600 dark:text-gray-400">고객 만족도</p>
+                <p className="text-gray-600 dark:text-gray-400">강의 만족도</p>
               </div>
             </div>
           </div>

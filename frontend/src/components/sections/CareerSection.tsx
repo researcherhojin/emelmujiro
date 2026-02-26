@@ -469,7 +469,7 @@ const CareerSection: React.FC = memo(() => {
   const stats: StatItem[] = [
     { label: '강의 경험', value: '50+', icon: BookOpen },
     { label: '파트너사', value: '15+', icon: Building },
-    { label: '교육 기간', value: '4년', icon: Award },
+    { label: '교육 기간', value: '5년', icon: Award },
   ];
 
   const toggleYear = useCallback((year: string) => {
@@ -512,7 +512,7 @@ const CareerSection: React.FC = memo(() => {
           </h2>
           <p className="text-xl text-gray-600 leading-relaxed">
             AI 교육과 비즈니스 개발 분야에서 쌓아온{' '}
-            <strong className="text-gray-900">4년간의 경험</strong>을 연도별로
+            <strong className="text-gray-900">5년간의 경험</strong>을 연도별로
             소개합니다.
           </p>
         </div>

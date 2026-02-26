@@ -15,9 +15,9 @@ describe('CareerSummarySection', () => {
   it('displays years of experience', () => {
     renderWithProviders(<CareerSummarySection />);
 
-    // Check for experience years - the component has "4년" in multiple places
+    // Check for experience years - the component has "5년" in multiple places
     // Including in the stats and description
-    const yearElements = screen.getAllByText(/4년/);
+    const yearElements = screen.getAllByText(/5년/);
     expect(yearElements.length).toBeGreaterThan(0);
     expect(yearElements[0]).toBeInTheDocument();
   });
@@ -29,7 +29,7 @@ describe('CareerSummarySection', () => {
     expect(screen.getByText('50+')).toBeInTheDocument();
     expect(screen.getByText('15+')).toBeInTheDocument();
     // Multiple "4년" texts exist, use getAllByText
-    const yearElements = screen.getAllByText('4년');
+    const yearElements = screen.getAllByText('5년');
     expect(yearElements.length).toBeGreaterThan(0);
   });
 

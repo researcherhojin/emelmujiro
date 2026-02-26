@@ -113,7 +113,7 @@ describe('AboutPage', () => {
     expect(screen.getByText('1,000+')).toBeInTheDocument();
     expect(screen.getByText('50+')).toBeInTheDocument();
     expect(screen.getByText('30+')).toBeInTheDocument();
-    expect(screen.getByText('98%')).toBeInTheDocument();
+    expect(screen.getByText('4.8+')).toBeInTheDocument();
   });
 
   it('renders contact CTA section', () => {
