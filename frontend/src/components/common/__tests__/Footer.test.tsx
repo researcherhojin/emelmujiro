@@ -113,10 +113,10 @@ describe('Footer Component', () => {
 
       const buttons = container.querySelectorAll('button');
       const serviceNames = [
-        'AI 솔루션 개발',
         'AI 교육 & 강의',
-        'AI 전략 컨설팅',
-        '데이터 분석',
+        'AI 컨설팅',
+        'LLM/생성형 AI',
+        'Computer Vision',
       ];
       serviceNames.forEach((name) => {
         const hasService = Array.from(buttons).some(
@@ -326,7 +326,7 @@ describe('Footer Component', () => {
 
         const buttons = container.querySelectorAll('button');
         const aiSolutionButton = Array.from(buttons).find(
-          (btn) => btn.textContent === 'AI 솔루션 개발'
+          (btn) => btn.textContent === 'LLM/생성형 AI'
         );
         expect(aiSolutionButton).toBeTruthy();
         fireEvent.click(aiSolutionButton!);
@@ -400,7 +400,7 @@ describe('Footer Component', () => {
 
         const buttons = container.querySelectorAll('button');
         const aiConsultingButton = Array.from(buttons).find(
-          (btn) => btn.textContent === 'AI 전략 컨설팅'
+          (btn) => btn.textContent === 'AI 컨설팅'
         );
         expect(aiConsultingButton).toBeTruthy();
         fireEvent.click(aiConsultingButton!);
@@ -433,7 +433,7 @@ describe('Footer Component', () => {
 
         const buttons = container.querySelectorAll('button');
         const dataAnalysisButton = Array.from(buttons).find(
-          (btn) => btn.textContent === '데이터 분석'
+          (btn) => btn.textContent === 'Computer Vision'
         );
         expect(dataAnalysisButton).toBeTruthy();
         fireEvent.click(dataAnalysisButton!);
@@ -466,7 +466,7 @@ describe('Footer Component', () => {
 
         const buttons = container.querySelectorAll('button');
         const aiSolutionButton = Array.from(buttons).find(
-          (btn) => btn.textContent === 'AI 솔루션 개발'
+          (btn) => btn.textContent === 'LLM/생성형 AI'
         );
         expect(aiSolutionButton).toBeTruthy();
         fireEvent.click(aiSolutionButton!);
@@ -512,7 +512,7 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
         fireEvent.click(aiSolutionButtons[0]);
 
         await waitFor(
@@ -546,7 +546,7 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
         fireEvent.click(aiSolutionButtons[0]);
 
         await waitFor(
@@ -583,7 +583,7 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
         fireEvent.click(aiSolutionButtons[0]);
 
         await waitFor(
@@ -617,7 +617,7 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
         fireEvent.click(aiSolutionButtons[0]);
 
         await waitFor(
@@ -651,7 +651,7 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
         fireEvent.click(aiSolutionButtons[0]);
 
         await waitFor(
@@ -686,7 +686,7 @@ describe('Footer Component', () => {
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
         const aiSolutionButton = aiSolutionButtons[0];
         fireEvent.click(aiSolutionButton);
 
@@ -759,7 +759,7 @@ describe('Footer Component', () => {
     test('applies correct CSS classes to service buttons', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      const serviceButtons = screen.getAllByText('AI 솔루션 개발');
+      const serviceButtons = screen.getAllByText('LLM/생성형 AI');
       expect(serviceButtons[0]).toHaveClass('text-gray-600');
       expect(serviceButtons[0]).toHaveClass('text-sm');
     });
@@ -785,7 +785,7 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('AI 솔루션 개발');
+        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
         fireEvent.click(aiSolutionButtons[0]);
 
         await waitFor(

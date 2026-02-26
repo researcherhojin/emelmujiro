@@ -23,10 +23,6 @@ const CTASection: React.FC = memo(() => {
           >
             이메일로 문의하기 →
           </a>
-
-          <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
-            researcherhojin@gmail.com
-          </p>
         </div>
       </div>
     </section>

@@ -177,15 +177,6 @@ const Footer: React.FC = memo(() => {
               <ul className="space-y-3">
                 <li>
                   <button
-                    onClick={() => handleServiceClick('ai-solution')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
-                    style={{ outline: 'none', boxShadow: 'none' }}
-                  >
-                    AI 솔루션 개발
-                  </button>
-                </li>
-                <li>
-                  <button
                     onClick={() => handleServiceClick('ai-education')}
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
@@ -199,7 +190,16 @@ const Footer: React.FC = memo(() => {
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
-                    AI 전략 컨설팅
+                    AI 컨설팅
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleServiceClick('ai-solution')}
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
+                    style={{ outline: 'none', boxShadow: 'none' }}
+                  >
+                    LLM/생성형 AI
                   </button>
                 </li>
                 <li>
@@ -208,7 +208,7 @@ const Footer: React.FC = memo(() => {
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
-                    데이터 분석
+                    Computer Vision
                   </button>
                 </li>
               </ul>
