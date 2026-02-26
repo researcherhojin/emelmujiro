@@ -25,7 +25,8 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
-migrations/
+# Ignore migration merge artifacts but keep migration files
+migrations/*.pyc
 
 # Virtual Environment
 .venv/
