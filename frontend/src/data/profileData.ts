@@ -35,8 +35,7 @@ export const careerData: CareerItem[] = [
     period: '2024.12 ~ 현재',
     company: '에멜무지로',
     position: '대표',
-    description:
-      'AI 교육 및 컨설팅 전문 기업 창업 · 기업 맞춤형 AI 솔루션 개발',
+    description: 'AI 교육·컨설팅 전문 기업 창업 · LLM/RAG 기반 솔루션 개발',
     current: true,
   },
   {
@@ -58,14 +57,15 @@ export const careerData: CareerItem[] = [
     period: '2022.10 ~ 2024.09',
     company: 'Cobslab',
     position: '책임 연구원 / 전문 강사',
-    description: '대기업/정부기관 Python, 데이터 분석, ML/DL 강의 개발 및 연구',
+    description:
+      '삼성전자, LG전자 등 대기업·정부기관 AI 교육 콘텐츠 개발 및 강의',
   },
   {
     period: '2022.04 ~ 2023.02',
     company: '모두의연구소 / 한글과컴퓨터',
     position: 'AI 교육 강사',
     description:
-      '서울대, 서울시립대 AI 교육 · SKT Computer Vision · KETI 나노소재 AI융합 전문가 과정',
+      '서울대·서울시립대 AI 교육 · SKT Computer Vision · KETI 나노소재 AI 과정 · 서울시 교육청 교원 AI 직무연수',
   },
   {
     period: '2022.06',
@@ -114,6 +114,15 @@ export const projects: Project[] = [
     highlight: true,
   },
   {
+    id: 'enterprise-ai-education',
+    title: '대기업·공공기관 AI 교육',
+    period: '2022 ~ 2026',
+    description:
+      '삼성전자, LG전자, 현대건설, SKT, 서울대, 서울시 교육청 등 · CV, ML/DL, 데이터 분석, 생성형 AI 프로젝트 기반 교육 설계 및 운영',
+    category: 'enterprise',
+    tags: ['Computer Vision', 'Data Science', 'ML/DL', '생성형 AI'].sort(),
+  },
+  {
     id: 'ict-piuda',
     title: 'ICT콤플렉스 피우다 프로젝트',
     period: '2025',
@@ -121,15 +130,6 @@ export const projects: Project[] = [
       '경계선지능 청소년 AI 학습 지원 서비스 "이음(E-eum)" 기획 및 개발 · LLM 기반 쉬운 말 변환 시스템 · 270팀 중 최종 15팀, 분야 3위 수상',
     category: 'research',
     tags: ['FastAPI', 'LLM', 'React', '사회적 가치'].sort(),
-  },
-  {
-    id: 'nano-ai',
-    title: '산업전문인력 AI 역량강화 교육',
-    period: '2022 ~ 2025',
-    description:
-      '나노융합산업연구조합 협력 · 나노소재 빅데이터 AI 융합 교육 · SECOM 반도체 공정 고장예측 · CNT/수지 복합소재 구조분석 시뮬레이션',
-    category: 'enterprise',
-    tags: ['빅데이터', '산업 AI', '시뮬레이션', '제조 AI'].sort(),
   },
   {
     id: 'teacher-training',
@@ -150,13 +150,13 @@ export const projects: Project[] = [
     tags: ['AI 서비스', 'MVP 개발', '멘토링', '창업 교육'].sort(),
   },
   {
-    id: 'enterprise-ai-education',
-    title: '대기업·공공기관 AI 교육',
-    period: '2022 ~ 2026',
+    id: 'nano-ai',
+    title: '산업전문인력 AI 역량강화 교육',
+    period: '2022 ~ 2025',
     description:
-      '삼성전자, LG전자, 현대건설, SKT, 서울대, 서울시 교육청 등 · CV, ML/DL, 데이터 분석, 생성형 AI 프로젝트 기반 교육 설계 및 운영',
+      '나노융합산업연구조합 협력 · 나노소재 빅데이터 AI 융합 교육 · SECOM 반도체 공정 고장예측 · CNT/수지 복합소재 구조분석 시뮬레이션',
     category: 'enterprise',
-    tags: ['Computer Vision', 'Data Science', 'ML/DL', '생성형 AI'].sort(),
+    tags: ['빅데이터', '산업 AI', '시뮬레이션', '제조 AI'].sort(),
   },
   {
     id: 'open-source',
