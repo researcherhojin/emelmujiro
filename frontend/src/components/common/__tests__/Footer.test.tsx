@@ -91,7 +91,7 @@ describe('Footer Component', () => {
   });
 
   describe('Basic Rendering', () => {
-    test.skip('renders company name', () => {
+    test('renders company name', () => {
       const { container } = renderWithRouter(<Footer />);
       // 회사명은 h3 태그에 있고, 여러 h3 중에서 '에멜무지로'를 포함하는 것을 찾음
       const headings = container.querySelectorAll('h3');
@@ -102,7 +102,7 @@ describe('Footer Component', () => {
       expect(companyName?.textContent).toBe('에멜무지로');
     });
 
-    test.skip('renders all service sections', () => {
+    test('renders all service sections', () => {
       const { container } = renderWithRouter(<Footer />);
 
       const serviceHeaders = container.querySelectorAll('h3');
@@ -126,7 +126,7 @@ describe('Footer Component', () => {
       });
     });
 
-    test.skip('renders navigation menu', () => {
+    test('renders navigation menu', () => {
       const { container } = renderWithRouter(<Footer />);
 
       const menuHeaders = container.querySelectorAll('h3');
@@ -145,7 +145,7 @@ describe('Footer Component', () => {
       });
     });
 
-    test.skip('renders contact information with icons', () => {
+    test('renders contact information with icons', () => {
       const { container } = renderWithRouter(<Footer />);
 
       // 이메일 정보 확인 (span 태그에 있음)
@@ -171,7 +171,7 @@ describe('Footer Component', () => {
       ).toBeInTheDocument();
     });
 
-    test.skip('renders contact CTA section', () => {
+    test('renders contact CTA section', () => {
       const { container } = renderWithRouter(<Footer />);
 
       // CTA 텍스트는 p.text-base 클래스를 가지고 있음
@@ -188,7 +188,7 @@ describe('Footer Component', () => {
       ).toBeInTheDocument();
     });
 
-    test.skip('renders copyright with current year', () => {
+    test('renders copyright with current year', () => {
       const { container } = renderWithRouter(<Footer />);
       const currentYear = new Date().getFullYear();
 
@@ -203,7 +203,7 @@ describe('Footer Component', () => {
   });
 
   describe('Navigation Functionality', () => {
-    test.skip('navigates to profile page when profile link is clicked', () => {
+    test('navigates to profile page when profile link is clicked', () => {
       const { container } = renderWithRouter(<Footer />);
 
       const profileButtons = container.querySelectorAll('button');
@@ -216,7 +216,7 @@ describe('Footer Component', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
-    test.skip('navigates to contact page when contact link is clicked', () => {
+    test('navigates to contact page when contact link is clicked', () => {
       const { container } = renderWithRouter(<Footer />);
 
       const contactButtons = container.querySelectorAll('button');
@@ -229,7 +229,7 @@ describe('Footer Component', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/contact');
     });
 
-    test.skip('navigates to contact page when CTA button is clicked', () => {
+    test('navigates to contact page when CTA button is clicked', () => {
       const { container } = renderWithRouter(<Footer />);
 
       // CTA 버튼은 ExternalLink 아이콘을 포함한 버튼
@@ -245,7 +245,7 @@ describe('Footer Component', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/contact');
     });
 
-    test.skip('scrolls to hero section when home is clicked on same page', () => {
+    test('scrolls to hero section when home is clicked on same page', () => {
       // Mock current pathname as '/'
       Object.defineProperty(window, 'location', {
         writable: true,
@@ -265,7 +265,7 @@ describe('Footer Component', () => {
       expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
     });
 
-    test.skip(
+    test(
       'navigates and scrolls to hero section when home is clicked from different page',
       async () => {
         // Mock current pathname as different page
@@ -297,7 +297,7 @@ describe('Footer Component', () => {
       MODAL_TEST_TIMEOUT
     );
 
-    test.skip('scrolls to services section when services link is clicked', () => {
+    test('scrolls to services section when services link is clicked', () => {
       Object.defineProperty(window, 'location', {
         writable: true,
         value: { pathname: '/' },
@@ -319,7 +319,7 @@ describe('Footer Component', () => {
   });
 
   describe('Service Modal Functionality', () => {
-    test.skip(
+    test(
       'opens AI solution modal when clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -360,7 +360,7 @@ describe('Footer Component', () => {
       MODAL_TEST_TIMEOUT
     );
 
-    test.skip(
+    test(
       'opens AI education modal when clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -393,7 +393,7 @@ describe('Footer Component', () => {
       MODAL_TEST_TIMEOUT
     );
 
-    test.skip(
+    test(
       'opens AI consulting modal when clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -426,7 +426,7 @@ describe('Footer Component', () => {
       MODAL_TEST_TIMEOUT
     );
 
-    test.skip(
+    test(
       'opens data analysis modal when clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -459,7 +459,7 @@ describe('Footer Component', () => {
       MODAL_TEST_TIMEOUT
     );
 
-    test.skip(
+    test(
       'closes modal when X button is clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -506,7 +506,7 @@ describe('Footer Component', () => {
   });
 
   describe('Service Modal Interactions', () => {
-    test.skip(
+    test(
       'closes modal when X button is clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -540,7 +540,7 @@ describe('Footer Component', () => {
       MODAL_TEST_TIMEOUT
     );
 
-    test.skip(
+    test(
       'closes modal when 닫기 button is clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -577,7 +577,7 @@ describe('Footer Component', () => {
       MODAL_TEST_TIMEOUT
     );
 
-    test.skip(
+    test(
       'closes modal and navigates to contact when 문의하기 button is clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -611,7 +611,7 @@ describe('Footer Component', () => {
       MODAL_TEST_TIMEOUT
     );
 
-    test.skip(
+    test(
       'closes modal when backdrop is clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -645,7 +645,7 @@ describe('Footer Component', () => {
       MODAL_TEST_TIMEOUT
     );
 
-    test.skip(
+    test(
       'closes modal when Escape key is pressed on backdrop',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -681,7 +681,7 @@ describe('Footer Component', () => {
   });
 
   describe('Service Modal Content', () => {
-    test.skip(
+    test(
       'displays all service details for AI solution',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -711,7 +711,7 @@ describe('Footer Component', () => {
       MODAL_TEST_TIMEOUT
     );
 
-    test.skip(
+    test(
       'displays all service details for AI education',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -747,7 +747,7 @@ describe('Footer Component', () => {
   });
 
   describe('CSS Classes and Styling', () => {
-    test.skip('applies correct CSS classes to footer container', () => {
+    test('applies correct CSS classes to footer container', () => {
       const { container } = renderWithRouter(<Footer />);
 
       // Footer should be rendered with proper structure - multiple instances are expected
@@ -756,7 +756,7 @@ describe('Footer Component', () => {
       expect(companyNames[0]).toBeInTheDocument();
     });
 
-    test.skip('applies correct CSS classes to service buttons', () => {
+    test('applies correct CSS classes to service buttons', () => {
       const { container } = renderWithRouter(<Footer />);
 
       const serviceButtons = screen.getAllByText('AI 솔루션 개발');
@@ -764,17 +764,22 @@ describe('Footer Component', () => {
       expect(serviceButtons[0]).toHaveClass('text-sm');
     });
 
-    test.skip('applies correct CSS classes to contact CTA button', () => {
+    test('applies correct CSS classes to contact CTA button', () => {
       const { container } = renderWithRouter(<Footer />);
 
       const ctaButtons = screen.getAllByText(/문의하기/);
-      expect(ctaButtons[0]).toHaveClass('inline-flex');
-      expect(ctaButtons[0]).toHaveClass('items-center');
+      // Find the CTA button that has inline-flex class (not the nav button)
+      const ctaButton = ctaButtons.find((btn) =>
+        btn.className.includes('inline-flex')
+      );
+      expect(ctaButton).toBeTruthy();
+      expect(ctaButton).toHaveClass('inline-flex');
+      expect(ctaButton).toHaveClass('items-center');
     });
   });
 
   describe('Accessibility', () => {
-    test.skip(
+    test(
       'modal has correct accessibility attributes',
       async () => {
         const { container } = renderWithRouter(<Footer />);
@@ -798,7 +803,7 @@ describe('Footer Component', () => {
       MODAL_TEST_TIMEOUT
     );
 
-    test.skip('all buttons are accessible', () => {
+    test('all buttons are accessible', () => {
       const { container } = renderWithRouter(<Footer />);
 
       const buttons = screen.getAllByRole('button');
@@ -809,7 +814,7 @@ describe('Footer Component', () => {
   });
 
   describe('Error Handling', () => {
-    test.skip('handles missing DOM element gracefully in scroll function', () => {
+    test('handles missing DOM element gracefully in scroll function', () => {
       Object.defineProperty(window, 'location', {
         writable: true,
         value: { pathname: '/' },
@@ -829,7 +834,7 @@ describe('Footer Component', () => {
       }).not.toThrow();
     });
 
-    test.skip('modal does not render when service is null', () => {
+    test('modal does not render when service is null', () => {
       const { container } = renderWithRouter(<Footer />);
 
       // Modal should not be visible initially
@@ -839,7 +844,7 @@ describe('Footer Component', () => {
   });
 
   describe('Component Display Names', () => {
-    test.skip('Footer has correct display name', () => {
+    test('Footer has correct display name', () => {
       expect(Footer.displayName).toBe('Footer');
     });
   });

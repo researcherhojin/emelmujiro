@@ -1,6 +1,5 @@
 import { render, screen, act } from '@testing-library/react';
 import OfflineIndicator from '../OfflineIndicator';
-import { itSkipInCI } from '../../../test-utils/ci-skip';
 
 describe('OfflineIndicator', () => {
   beforeEach(() => {
@@ -11,7 +10,7 @@ describe('OfflineIndicator', () => {
     });
   });
 
-  itSkipInCI('does not show indicator when online', () => {
+  it('does not show indicator when online', () => {
     Object.defineProperty(navigator, 'onLine', {
       writable: true,
       value: true,
@@ -24,7 +23,7 @@ describe('OfflineIndicator', () => {
     expect(offlineMessage).not.toBeInTheDocument();
   });
 
-  itSkipInCI('shows indicator when offline', () => {
+  it('shows indicator when offline', () => {
     Object.defineProperty(navigator, 'onLine', {
       writable: true,
       value: false,
@@ -35,7 +34,7 @@ describe('OfflineIndicator', () => {
     expect(screen.getByText(/오프라인 상태/i)).toBeInTheDocument();
   });
 
-  itSkipInCI('responds to online event', () => {
+  it('responds to online event', () => {
     Object.defineProperty(navigator, 'onLine', {
       writable: true,
       value: false,
@@ -62,7 +61,7 @@ describe('OfflineIndicator', () => {
     expect(offlineMessage).not.toBeInTheDocument();
   });
 
-  itSkipInCI('responds to offline event', () => {
+  it('responds to offline event', () => {
     Object.defineProperty(navigator, 'onLine', {
       writable: true,
       value: true,

@@ -18,7 +18,7 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
-      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://frontend}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://frontend}
     env_file:
       - ./backend/.env
     depends_on:

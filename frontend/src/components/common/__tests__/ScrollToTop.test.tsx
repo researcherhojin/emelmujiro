@@ -2,7 +2,6 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import ScrollToTop from '../ScrollToTop';
 import React from 'react';
-import { itSkipInCI } from '../../../test-utils/ci-skip';
 
 // Type definition for motion component props
 interface MotionButtonProps {
@@ -35,7 +34,7 @@ describe('ScrollToTop', () => {
     });
   });
 
-  itSkipInCI('does not show button when at top of page', () => {
+  it('does not show button when at top of page', () => {
     render(<ScrollToTop />);
 
     // Button should not be in the document when at top
@@ -43,7 +42,7 @@ describe('ScrollToTop', () => {
     expect(button).not.toBeInTheDocument();
   });
 
-  itSkipInCI('shows button when scrolled down', () => {
+  it('shows button when scrolled down', () => {
     render(<ScrollToTop />);
 
     // Simulate scroll down
@@ -60,7 +59,7 @@ describe('ScrollToTop', () => {
     expect(button).toBeInTheDocument();
   });
 
-  itSkipInCI('scrolls to top when button is clicked', () => {
+  it('scrolls to top when button is clicked', () => {
     render(<ScrollToTop />);
 
     // Simulate scroll down
@@ -81,7 +80,7 @@ describe('ScrollToTop', () => {
     });
   });
 
-  itSkipInCI('removes scroll listener on unmount', () => {
+  it('removes scroll listener on unmount', () => {
     const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
     const { unmount } = render(<ScrollToTop />);
@@ -96,7 +95,7 @@ describe('ScrollToTop', () => {
     removeEventListenerSpy.mockRestore();
   });
 
-  itSkipInCI('hides button when scrolled back to top', () => {
+  it('hides button when scrolled back to top', () => {
     render(<ScrollToTop />);
 
     // First scroll down

@@ -16,8 +16,7 @@ export default defineConfig({
     pool: 'forks', // Use forks pool for better isolation
     poolOptions: {
       forks: {
-        maxForks: process.env.CI ? 1 : undefined, // Single process in CI to avoid memory issues
-        singleFork: process.env.CI ? true : false, // Run tests sequentially in CI
+        maxForks: process.env.CI ? 2 : undefined, // Limit forks in CI to manage memory
         isolate: true, // Enable isolation for each test file
       },
     },

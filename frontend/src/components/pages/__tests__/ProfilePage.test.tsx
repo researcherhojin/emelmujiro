@@ -68,14 +68,14 @@ describe('ProfilePage Component', () => {
   });
 
   describe('Rendering', () => {
-    it.skip('renders profile page with title', () => {
+    it('renders profile page with title', () => {
       renderWithRouter(<ProfilePage />);
 
       expect(screen.getByText('이호진')).toBeInTheDocument();
       expect(screen.getByText('AI Researcher & Educator')).toBeInTheDocument();
     });
 
-    it.skip('renders profile description', () => {
+    it('renders profile description', () => {
       renderWithRouter(<ProfilePage />);
 
       // Check for the presence of key sections instead
@@ -84,7 +84,7 @@ describe('ProfilePage Component', () => {
       ).toBeInTheDocument();
     });
 
-    it.skip('renders all navigation tabs', () => {
+    it('renders all navigation tabs', () => {
       renderWithRouter(<ProfilePage />);
 
       expect(screen.getByText('경력')).toBeInTheDocument();
@@ -92,7 +92,7 @@ describe('ProfilePage Component', () => {
       expect(screen.getByText('프로젝트')).toBeInTheDocument();
     });
 
-    it.skip('renders statistics section', () => {
+    it('renders statistics section', () => {
       renderWithRouter(<ProfilePage />);
 
       expect(screen.getByText('50+')).toBeInTheDocument(); // Total projects
@@ -103,7 +103,7 @@ describe('ProfilePage Component', () => {
   });
 
   describe('Tab Navigation', () => {
-    it.skip('switches to education tab', () => {
+    it('switches to education tab', () => {
       renderWithRouter(<ProfilePage />);
 
       const educationTab = screen.getByText('학력');
@@ -113,17 +113,21 @@ describe('ProfilePage Component', () => {
       expect(screen.getByText('경북대학교')).toBeInTheDocument();
     });
 
-    it.skip('switches to projects tab', () => {
+    it('switches to projects tab', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByText(/프로젝트/);
-      fireEvent.click(projectsTab);
+      const buttons = screen.getAllByRole('button');
+      const projectsTab = buttons.find((btn) =>
+        btn.textContent?.includes('Code프로젝트')
+      );
+      expect(projectsTab).toBeDefined();
+      fireEvent.click(projectsTab!);
 
       // Check for project section is rendered
       expect(projectsTab).toHaveClass('text-gray-900');
     });
 
-    it.skip('maintains active tab styling', () => {
+    it('maintains active tab styling', () => {
       renderWithRouter(<ProfilePage />);
 
       // Look for tab buttons by text content - be more specific to avoid duplicates
@@ -152,7 +156,7 @@ describe('ProfilePage Component', () => {
   });
 
   describe('Career Tab Content', () => {
-    it.skip('displays all career items', () => {
+    it('displays all career items', () => {
       renderWithRouter(<ProfilePage />);
 
       // Check for career section existence using more specific query
@@ -164,7 +168,7 @@ describe('ProfilePage Component', () => {
       expect(careerTab).toHaveClass('text-gray-900');
     });
 
-    it.skip('shows current position badge', () => {
+    it('shows current position badge', () => {
       renderWithRouter(<ProfilePage />);
 
       // Check for career items structure
@@ -174,7 +178,7 @@ describe('ProfilePage Component', () => {
   });
 
   describe('Education Tab Content', () => {
-    it.skip('displays education items when tab is selected', () => {
+    it('displays education items when tab is selected', () => {
       renderWithRouter(<ProfilePage />);
 
       const educationTab = screen.getByText('학력');
@@ -184,7 +188,7 @@ describe('ProfilePage Component', () => {
       expect(screen.getByText('경북대학교')).toBeInTheDocument();
     });
 
-    it.skip('displays education descriptions', () => {
+    it('displays education descriptions', () => {
       renderWithRouter(<ProfilePage />);
 
       const educationTab = screen.getByText('학력');
@@ -196,29 +200,37 @@ describe('ProfilePage Component', () => {
   });
 
   describe('Projects Tab Content', () => {
-    it.skip('displays project items when tab is selected', () => {
+    it('displays project items when tab is selected', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByText(/프로젝트/);
-      fireEvent.click(projectsTab);
+      const buttons = screen.getAllByRole('button');
+      const projectsTab = buttons.find((btn) =>
+        btn.textContent?.includes('Code프로젝트')
+      );
+      expect(projectsTab).toBeDefined();
+      fireEvent.click(projectsTab!);
 
       // Check that projects tab is active
       expect(projectsTab).toHaveClass('text-gray-900');
     });
 
-    it.skip('displays project descriptions', () => {
+    it('displays project descriptions', () => {
       renderWithRouter(<ProfilePage />);
 
-      const projectsTab = screen.getByText(/프로젝트/);
-      fireEvent.click(projectsTab);
+      const buttons = screen.getAllByRole('button');
+      const projectsTab = buttons.find((btn) =>
+        btn.textContent?.includes('Code프로젝트')
+      );
+      expect(projectsTab).toBeDefined();
+      fireEvent.click(projectsTab!);
 
       // Projects content should be visible
-      expect(projectsTab).toBeInTheDocument();
+      expect(screen.getByText('AI 엔지니어 심화 부트캠프')).toBeInTheDocument();
     });
   });
 
   describe('Responsive Design', () => {
-    it.skip('applies responsive grid for statistics', () => {
+    it('applies responsive grid for statistics', () => {
       renderWithRouter(<ProfilePage />);
 
       // Check that statistics are displayed
@@ -229,7 +241,7 @@ describe('ProfilePage Component', () => {
   });
 
   describe('Accessibility', () => {
-    it.skip('uses semantic HTML elements', () => {
+    it('uses semantic HTML elements', () => {
       renderWithRouter(<ProfilePage />);
 
       expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
@@ -238,7 +250,7 @@ describe('ProfilePage Component', () => {
   });
 
   describe('Icons', () => {
-    it.skip('displays appropriate icons for each section', () => {
+    it('displays appropriate icons for each section', () => {
       renderWithRouter(<ProfilePage />);
 
       // Check that the component renders without errors

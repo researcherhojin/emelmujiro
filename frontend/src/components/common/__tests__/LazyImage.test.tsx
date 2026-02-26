@@ -1,14 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import LazyImage from '../LazyImage';
-import { itSkipInCI } from '../../../test-utils/ci-skip';
 
 describe('LazyImage Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  itSkipInCI('renders placeholder initially without img element', () => {
+  it('renders placeholder initially without img element', () => {
     render(
       <LazyImage
         src="test.jpg"
@@ -23,7 +22,7 @@ describe('LazyImage Component', () => {
     expect(img).not.toBeInTheDocument();
   });
 
-  itSkipInCI('creates IntersectionObserver on mount', () => {
+  it('creates IntersectionObserver on mount', () => {
     // Mock to capture the IntersectionObserver instance
     const mockObserve = vi.fn();
     global.IntersectionObserver = vi
@@ -46,7 +45,7 @@ describe('LazyImage Component', () => {
     expect(mockObserve).toHaveBeenCalled();
   });
 
-  itSkipInCI('renders with priority prop immediately', () => {
+  it('renders with priority prop immediately', () => {
     render(<LazyImage src="test.jpg" alt="Priority image" priority={true} />);
 
     const img = screen.getByAltText('Priority image');
@@ -55,7 +54,7 @@ describe('LazyImage Component', () => {
     expect(img).toHaveAttribute('src', 'test.jpg');
   });
 
-  itSkipInCI('renders with custom className', () => {
+  it('renders with custom className', () => {
     render(
       <LazyImage
         src="test.jpg"
@@ -69,7 +68,7 @@ describe('LazyImage Component', () => {
     expect(img).toHaveClass('custom-class');
   });
 
-  itSkipInCI('passes through additional img props when rendered', () => {
+  it('passes through additional img props when rendered', () => {
     render(
       <LazyImage
         src="test.jpg"

@@ -2,10 +2,9 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils';
 import CareerSummarySection from '../CareerSummarySection';
-import { itSkipInCI } from '../../../test-utils/ci-skip';
 
 describe('CareerSummarySection', () => {
-  itSkipInCI('renders career summary section', () => {
+  it('renders career summary section', () => {
     renderWithProviders(<CareerSummarySection />);
 
     // Check if section renders by finding specific stats
@@ -13,7 +12,7 @@ describe('CareerSummarySection', () => {
     expect(stat).toBeInTheDocument();
   });
 
-  itSkipInCI('displays years of experience', () => {
+  it('displays years of experience', () => {
     renderWithProviders(<CareerSummarySection />);
 
     // Check for experience years - the component has "4년" in multiple places
@@ -23,7 +22,7 @@ describe('CareerSummarySection', () => {
     expect(yearElements[0]).toBeInTheDocument();
   });
 
-  itSkipInCI('shows key achievements', () => {
+  it('shows key achievements', () => {
     renderWithProviders(<CareerSummarySection />);
 
     // Check for achievement numbers in the rendered content
@@ -34,20 +33,20 @@ describe('CareerSummarySection', () => {
     expect(yearElements.length).toBeGreaterThan(0);
   });
 
-  itSkipInCI('displays company count', () => {
+  it('displays company count', () => {
     renderWithProviders(<CareerSummarySection />);
 
     expect(screen.getByText('파트너사')).toBeInTheDocument();
   });
 
-  itSkipInCI('shows student count', () => {
+  it('shows student count', () => {
     renderWithProviders(<CareerSummarySection />);
 
     // Changed to match actual content - looks for training experience instead
     expect(screen.getByText('강의 경험')).toBeInTheDocument();
   });
 
-  itSkipInCI('renders statistics cards', () => {
+  it('renders statistics cards', () => {
     renderWithProviders(<CareerSummarySection />);
 
     // Look for the statistics grid elements
@@ -64,7 +63,7 @@ describe('CareerSummarySection', () => {
     expect(screen.getByText('50+')).toBeInTheDocument();
   });
 
-  itSkipInCI('displays icons for each stat', () => {
+  it('displays icons for each stat', () => {
     renderWithProviders(<CareerSummarySection />);
 
     // CareerSummarySection might not have visible icons, just check it renders with stats
@@ -72,7 +71,7 @@ describe('CareerSummarySection', () => {
     expect(screen.getByText('15+')).toBeInTheDocument();
   });
 
-  itSkipInCI('shows project count if available', () => {
+  it('shows project count if available', () => {
     renderWithProviders(<CareerSummarySection />);
 
     const projectCount = screen.queryByText(/프로젝트|Projects/);
@@ -81,7 +80,7 @@ describe('CareerSummarySection', () => {
     }
   });
 
-  itSkipInCI('renders with proper grid layout', () => {
+  it('renders with proper grid layout', () => {
     renderWithProviders(<CareerSummarySection />);
 
     // Check if stats are rendered in a layout
@@ -89,7 +88,7 @@ describe('CareerSummarySection', () => {
     expect(stats.length).toBeGreaterThan(0);
   });
 
-  itSkipInCI('applies animation classes', () => {
+  it('applies animation classes', () => {
     renderWithProviders(<CareerSummarySection />);
 
     // Check if component renders - animation is visual styling
@@ -97,7 +96,7 @@ describe('CareerSummarySection', () => {
     expect(content.length).toBeGreaterThanOrEqual(0);
   });
 
-  itSkipInCI('displays satisfaction rate if available', () => {
+  it('displays satisfaction rate if available', () => {
     renderWithProviders(<CareerSummarySection />);
 
     const satisfactionRate = screen.queryByText(/만족도|Satisfaction|%/);
@@ -106,7 +105,7 @@ describe('CareerSummarySection', () => {
     }
   });
 
-  itSkipInCI('shows technology stack count', () => {
+  it('shows technology stack count', () => {
     renderWithProviders(<CareerSummarySection />);
 
     const techStack = screen.queryByText(/기술|Technologies/);
@@ -115,7 +114,7 @@ describe('CareerSummarySection', () => {
     }
   });
 
-  itSkipInCI('renders with responsive design', () => {
+  it('renders with responsive design', () => {
     renderWithProviders(<CareerSummarySection />);
 
     // Check if component renders with content
@@ -123,7 +122,7 @@ describe('CareerSummarySection', () => {
     expect(content.length).toBeGreaterThan(0);
   });
 
-  itSkipInCI('displays certification count if any', () => {
+  it('displays certification count if any', () => {
     renderWithProviders(<CareerSummarySection />);
 
     const certifications = screen.queryByText(/자격증|Certifications/);
@@ -132,7 +131,7 @@ describe('CareerSummarySection', () => {
     }
   });
 
-  itSkipInCI('shows training hours delivered', () => {
+  it('shows training hours delivered', () => {
     renderWithProviders(<CareerSummarySection />);
 
     const trainingHours = screen.queryByText(/시간|Hours/);

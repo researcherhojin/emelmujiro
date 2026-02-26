@@ -2,9 +2,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import BlogComments from '../BlogComments';
 
-// Skip all tests in CI environment due to rendering issues
-const itSkipInCI = process.env.CI === 'true' ? it.skip : it;
-
 // Mock localStorage comments
 const mockComments = {
   '1': [
@@ -40,7 +37,7 @@ describe('BlogComments', () => {
     localStorage.clear();
   });
 
-  it.skip('renders comments section', () => {
+  it('renders comments section', () => {
     render(<BlogComments {...defaultProps} />);
 
     // BlogComments가 h3로 렌더링하는지 확인
@@ -48,7 +45,7 @@ describe('BlogComments', () => {
     expect(heading).toHaveTextContent('댓글');
   });
 
-  it.skip('displays comments from localStorage', () => {
+  it('displays comments from localStorage', () => {
     // Set up localStorage with mock comments
     localStorage.setItem('blogComments', JSON.stringify(mockComments));
 
@@ -61,14 +58,14 @@ describe('BlogComments', () => {
     expect(screen.getByText('Jane Smith')).toBeInTheDocument();
   });
 
-  itSkipInCI('shows empty state when no comments', () => {
+  it('shows empty state when no comments', () => {
     render(<BlogComments {...defaultProps} />);
 
     const emptyMessage = screen.getByText(/첫 번째 댓글을 작성해보세요/i);
     expect(emptyMessage).toBeInTheDocument();
   });
 
-  itSkipInCI('handles comment submission', () => {
+  it('handles comment submission', () => {
     render(<BlogComments {...defaultProps} />);
 
     // Find form inputs - 실제 placeholder 텍스트에 맞게 수정
@@ -88,7 +85,7 @@ describe('BlogComments', () => {
     expect(screen.getByText('Test User')).toBeInTheDocument();
   });
 
-  itSkipInCI('validates required fields', () => {
+  it('validates required fields', () => {
     render(<BlogComments {...defaultProps} />);
 
     const submitButton = screen.getByRole('button', { name: /댓글 작성/i });
@@ -102,7 +99,7 @@ describe('BlogComments', () => {
     expect(afterSubmitCount).toBe(initialCommentCount);
   });
 
-  itSkipInCI('clears form after successful submission', () => {
+  it('clears form after successful submission', () => {
     render(<BlogComments {...defaultProps} />);
 
     const nameInput = screen.getByPlaceholderText('이름') as HTMLInputElement;
@@ -122,7 +119,7 @@ describe('BlogComments', () => {
     expect(contentInput.value).toBe('');
   });
 
-  itSkipInCI('handles localStorage parsing error gracefully', () => {
+  it('handles localStorage parsing error gracefully', () => {
     // Set invalid JSON in localStorage
     localStorage.setItem('blogComments', 'invalid json');
 
@@ -134,7 +131,7 @@ describe('BlogComments', () => {
     expect(emptyMessage).toBeInTheDocument();
   });
 
-  itSkipInCI('handles like button click', () => {
+  it('handles like button click', () => {
     localStorage.setItem('blogComments', JSON.stringify(mockComments));
     render(<BlogComments {...defaultProps} />);
 
@@ -155,7 +152,7 @@ describe('BlogComments', () => {
     expect(screen.getByText('3')).toBeInTheDocument();
   });
 
-  itSkipInCI('handles reply button click', () => {
+  it('handles reply button click', () => {
     localStorage.setItem('blogComments', JSON.stringify(mockComments));
     render(<BlogComments {...defaultProps} />);
 

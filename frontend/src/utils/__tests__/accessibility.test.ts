@@ -14,7 +14,7 @@ import {
   formatForScreenReader,
 } from '../accessibility';
 
-describe.skip('accessibility', () => {
+describe('accessibility', () => {
   beforeEach(() => {
     // Clear DOM
     document.body.innerHTML = '';
@@ -29,7 +29,7 @@ describe.skip('accessibility', () => {
   });
 
   describe('announceToScreenReader', () => {
-    it.skip('should create announcement element with polite priority', () => {
+    it('should create announcement element with polite priority', () => {
       announceToScreenReader('Test message');
 
       const announcement = document.querySelector('[role="status"]');
@@ -40,7 +40,7 @@ describe.skip('accessibility', () => {
       expect(announcement?.className).toBe('sr-only');
     });
 
-    it.skip('should create announcement element with assertive priority', () => {
+    it('should create announcement element with assertive priority', () => {
       announceToScreenReader('Urgent message', 'assertive');
 
       const announcement = document.querySelector('[aria-live="assertive"]');
@@ -49,7 +49,7 @@ describe.skip('accessibility', () => {
       expect(announcement?.textContent).toBe('Urgent message');
     });
 
-    it.skip('should remove announcement after timeout', () => {
+    it('should remove announcement after timeout', () => {
       vi.useFakeTimers();
 
       announceToScreenReader('Temporary message');
@@ -66,7 +66,7 @@ describe.skip('accessibility', () => {
       vi.useRealTimers();
     });
 
-    it.skip('should handle multiple announcements', () => {
+    it('should handle multiple announcements', () => {
       announceToScreenReader('Message 1');
       announceToScreenReader('Message 2');
 
@@ -78,7 +78,7 @@ describe.skip('accessibility', () => {
   });
 
   describe('prefersReducedMotion', () => {
-    it.skip('should return true when user prefers reduced motion', () => {
+    it('should return true when user prefers reduced motion', () => {
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
         value: vi.fn().mockImplementation((query) => ({
@@ -96,7 +96,7 @@ describe.skip('accessibility', () => {
       expect(prefersReducedMotion()).toBe(true);
     });
 
-    it.skip('should return false when user does not prefer reduced motion', () => {
+    it('should return false when user does not prefer reduced motion', () => {
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
         value: vi.fn().mockImplementation((query) => ({
@@ -116,13 +116,13 @@ describe.skip('accessibility', () => {
   });
 
   describe('getContrastRatio', () => {
-    it.skip('should calculate contrast ratio for valid RGB colors', () => {
+    it('should calculate contrast ratio for valid RGB colors', () => {
       // Black vs White should have high contrast (21:1),
       const ratio = getContrastRatio('rgb(0, 0, 0)', 'rgb(255, 255, 255)');
       expect(ratio).toBeCloseTo(21, 0);
     });
 
-    it.skip('should calculate contrast ratio for same colors', () => {
+    it('should calculate contrast ratio for same colors', () => {
       const ratio = getContrastRatio(
         'rgb(128, 128, 128)',
         'rgb(128, 128, 128)'
@@ -130,7 +130,7 @@ describe.skip('accessibility', () => {
       expect(ratio).toBe(1);
     });
 
-    it.skip('should handle colors with low contrast', () => {
+    it('should handle colors with low contrast', () => {
       const ratio = getContrastRatio(
         'rgb(200, 200, 200)',
         'rgb(220, 220, 220)'
@@ -139,18 +139,18 @@ describe.skip('accessibility', () => {
       expect(ratio).toBeLessThan(2);
     });
 
-    it.skip('should return 1 for invalid color formats', () => {
+    it('should return 1 for invalid color formats', () => {
       const ratio = getContrastRatio('invalid-color', 'another-invalid');
       expect(ratio).toBe(1); // (0 + 0.05) / (0 + 0.05) = 1
     });
 
-    it.skip('should handle hex colors converted to rgb', () => {
+    it('should handle hex colors converted to rgb', () => {
       // This test assumes the colors are already in rgb format
       const ratio = getContrastRatio('rgb(0, 0, 0)', 'rgb(255, 255, 255)');
       expect(ratio).toBeGreaterThan(15);
     });
 
-    it.skip('should calculate correct luminance values', () => {
+    it('should calculate correct luminance values', () => {
       // Test with known color values
       const ratio1 = getContrastRatio('rgb(255, 0, 0)', 'rgb(255, 255, 255)');
       const ratio2 = getContrastRatio('rgb(0, 255, 0)', 'rgb(255, 255, 255)');
@@ -163,17 +163,17 @@ describe.skip('accessibility', () => {
   });
 
   describe('generateAriaId', () => {
-    it.skip('should generate ID with default prefix', () => {
+    it('should generate ID with default prefix', () => {
       const id = generateAriaId();
       expect(id).toMatch(/^aria-\d+-[a-z0-9]+$/);
     });
 
-    it.skip('should generate ID with custom prefix', () => {
+    it('should generate ID with custom prefix', () => {
       const id = generateAriaId('custom');
       expect(id).toMatch(/^custom-\d+-[a-z0-9]+$/);
     });
 
-    it.skip('should generate unique IDs', () => {
+    it('should generate unique IDs', () => {
       // Mock different values for each call
       let callCount = 0;
       vi.spyOn(Date, 'now').mockImplementation(() => 1234567890 + callCount++);
@@ -183,7 +183,7 @@ describe.skip('accessibility', () => {
       expect(id1).not.toBe(id2);
     });
 
-    it.skip('should include timestamp and random component', () => {
+    it('should include timestamp and random component', () => {
       const id = generateAriaId('test');
       expect(id).toContain('test'); // Should contain prefix
       expect(id).toContain('1234567890'); // Mocked timestamp
@@ -213,7 +213,7 @@ describe.skip('accessibility', () => {
     });
 
     describe('save and restore', () => {
-      it.skip('should save and restore focus', () => {
+      it('should save and restore focus', () => {
         testButton.focus();
         expect(document.activeElement).toBe(testButton);
 
@@ -225,30 +225,30 @@ describe.skip('accessibility', () => {
         expect(document.activeElement).toBe(testButton);
       });
 
-      it.skip('should handle null element gracefully', () => {
+      it('should handle null element gracefully', () => {
         expect(() => manageFocus.restore(null)).not.toThrow();
       });
 
-      it.skip('should handle element without focus method', () => {
+      it('should handle element without focus method', () => {
         const mockElement = {} as HTMLElement;
         expect(() => manageFocus.restore(mockElement)).not.toThrow();
       });
     });
 
     describe('focusFirst', () => {
-      it.skip('should focus first focusable element', () => {
+      it('should focus first focusable element', () => {
         manageFocus.focusFirst(testContainer);
         expect(document.activeElement).toBe(testButton);
       });
 
-      it.skip('should handle container with no focusable elements', () => {
+      it('should handle container with no focusable elements', () => {
         const emptyDiv = document.createElement('div');
         document.body.appendChild(emptyDiv);
 
         expect(() => manageFocus.focusFirst(emptyDiv)).not.toThrow();
       });
 
-      it.skip('should skip elements with tabindex -1', () => {
+      it('should skip elements with tabindex -1', () => {
         testButton.tabIndex = -1;
         manageFocus.focusFirst(testContainer);
         expect(document.activeElement).toBe(testInput);
@@ -256,7 +256,7 @@ describe.skip('accessibility', () => {
     });
 
     describe('trap', () => {
-      it.skip('should return focusable elements info', () => {
+      it('should return focusable elements info', () => {
         const trapInfo = manageFocus.trap(testContainer);
 
         expect(trapInfo.firstElement).toBe(testButton);
@@ -264,7 +264,7 @@ describe.skip('accessibility', () => {
         expect(trapInfo.elements).toEqual([testButton, testInput]);
       });
 
-      it.skip('should handle container with single focusable element', () => {
+      it('should handle container with single focusable element', () => {
         const singleContainer = document.createElement('div');
         singleContainer.appendChild(testButton.cloneNode(true));
         document.body.appendChild(singleContainer);
@@ -273,7 +273,7 @@ describe.skip('accessibility', () => {
         expect(trapInfo.firstElement).toBe(trapInfo.lastElement);
       });
 
-      it.skip('should handle container with no focusable elements', () => {
+      it('should handle container with no focusable elements', () => {
         const emptyDiv = document.createElement('div');
         const trapInfo = manageFocus.trap(emptyDiv);
 
@@ -282,7 +282,7 @@ describe.skip('accessibility', () => {
         expect(trapInfo.elements).toEqual([]);
       });
 
-      it.skip('should include various focusable elements', () => {
+      it('should include various focusable elements', () => {
         const link = document.createElement('a');
         link.href = '#';
         const select = document.createElement('select');
@@ -311,7 +311,7 @@ describe.skip('accessibility', () => {
       vi.useRealTimers();
     });
 
-    it.skip('should debounce function calls', () => {
+    it('should debounce function calls', () => {
       const mockFn = vi.fn();
       const debouncedFn = debounceForA11y(mockFn, 100);
 
@@ -327,7 +327,7 @@ describe.skip('accessibility', () => {
       expect(mockFn).toHaveBeenCalledWith('arg5', 'arg6');
     });
 
-    it.skip('should reset timer on subsequent calls', () => {
+    it('should reset timer on subsequent calls', () => {
       const mockFn = vi.fn();
       const debouncedFn = debounceForA11y(mockFn, 100);
 
@@ -343,7 +343,7 @@ describe.skip('accessibility', () => {
       expect(mockFn).toHaveBeenCalledWith('second');
     });
 
-    it.skip('should handle functions with no arguments', () => {
+    it('should handle functions with no arguments', () => {
       const mockFn = vi.fn();
       const debouncedFn = debounceForA11y(mockFn, 50);
 
@@ -354,7 +354,7 @@ describe.skip('accessibility', () => {
       expect(mockFn).toHaveBeenCalledWith();
     });
 
-    it.skip('should preserve function return type', () => {
+    it('should preserve function return type', () => {
       const mockFn = vi.fn().mockReturnValue('test');
       const debouncedFn = debounceForA11y(mockFn, 50);
 
@@ -374,16 +374,16 @@ describe.skip('accessibility', () => {
       document.body.appendChild(testElement);
     });
 
-    it.skip('should return true for visible element', () => {
+    it('should return true for visible element', () => {
       expect(isVisibleToScreenReader(testElement)).toBe(true);
     });
 
-    it.skip('should return false for element with aria-hidden', () => {
+    it('should return false for element with aria-hidden', () => {
       testElement.setAttribute('aria-hidden', 'true');
       expect(isVisibleToScreenReader(testElement)).toBe(false);
     });
 
-    it.skip('should return false for element with hidden parent', () => {
+    it('should return false for element with hidden parent', () => {
       const parent = document.createElement('div');
       parent.setAttribute('aria-hidden', 'true');
       parent.appendChild(testElement);
@@ -392,12 +392,12 @@ describe.skip('accessibility', () => {
       expect(isVisibleToScreenReader(testElement)).toBe(false);
     });
 
-    it.skip('should return true for element with aria-hidden false', () => {
+    it('should return true for element with aria-hidden false', () => {
       testElement.setAttribute('aria-hidden', 'false');
       expect(isVisibleToScreenReader(testElement)).toBe(true);
     });
 
-    it.skip('should return false for element with display none', () => {
+    it('should return false for element with display none', () => {
       // Mock getComputedStyle
       Object.defineProperty(window, 'getComputedStyle', {
         value: () => ({
@@ -409,7 +409,7 @@ describe.skip('accessibility', () => {
       expect(isVisibleToScreenReader(testElement)).toBe(false);
     });
 
-    it.skip('should return false for element with visibility hidden', () => {
+    it('should return false for element with visibility hidden', () => {
       Object.defineProperty(window, 'getComputedStyle', {
         value: () => ({
           display: 'block',
@@ -420,7 +420,7 @@ describe.skip('accessibility', () => {
       expect(isVisibleToScreenReader(testElement)).toBe(false);
     });
 
-    it.skip('should return true for visible styled element', () => {
+    it('should return true for visible styled element', () => {
       Object.defineProperty(window, 'getComputedStyle', {
         value: () => ({
           display: 'block',
@@ -433,14 +433,14 @@ describe.skip('accessibility', () => {
   });
 
   describe('formatForScreenReader', () => {
-    it.skip('should format date strings', () => {
+    it('should format date strings', () => {
       const formatted = formatForScreenReader('2024-03-15', 'date');
       expect(formatted).toContain('2024');
       expect(formatted).toContain('3월');
       expect(formatted).toContain('15일');
     });
 
-    it.skip('should format time strings', () => {
+    it('should format time strings', () => {
       const timeString = '2024-03-15T14:30:00';
       const formatted = formatForScreenReader(timeString, 'time');
       // Korean locale formats time as '오후 2:30'
@@ -448,38 +448,38 @@ describe.skip('accessibility', () => {
       expect(formatted).toContain('30');
     });
 
-    it.skip('should format numbers with commas', () => {
+    it('should format numbers with commas', () => {
       const formatted = formatForScreenReader('1234567', 'number');
       expect(formatted).toBe('1,234,567');
     });
 
-    it.skip('should format currency with commas and won symbol', () => {
+    it('should format currency with commas and won symbol', () => {
       const formatted = formatForScreenReader('1000000', 'currency');
       expect(formatted).toBe('1,000,000원');
     });
 
-    it.skip('should handle small numbers', () => {
+    it('should handle small numbers', () => {
       const formatted = formatForScreenReader('100', 'number');
       expect(formatted).toBe('100');
     });
 
-    it.skip('should handle empty strings', () => {
+    it('should handle empty strings', () => {
       const formatted = formatForScreenReader('', 'number');
       expect(formatted).toBe('');
     });
 
-    it.skip('should return original text for default case', () => {
+    it('should return original text for default case', () => {
       const formatted = formatForScreenReader('test text');
       expect(formatted).toBe('test text');
     });
 
-    it.skip('should handle invalid date strings gracefully', () => {
+    it('should handle invalid date strings gracefully', () => {
       const formatted = formatForScreenReader('invalid-date', 'date');
       // Should still attempt to create a date, resulting in "Invalid Date" formatting
       expect(typeof formatted).toBe('string');
     });
 
-    it.skip('should handle zero values', () => {
+    it('should handle zero values', () => {
       const numberFormatted = formatForScreenReader('0', 'number');
       expect(numberFormatted).toBe('0');
 
@@ -487,14 +487,14 @@ describe.skip('accessibility', () => {
       expect(currencyFormatted).toBe('0원');
     });
 
-    it.skip('should handle negative numbers', () => {
+    it('should handle negative numbers', () => {
       const formatted = formatForScreenReader('-1234', 'number');
       expect(formatted).toBe('-1,234');
     });
   });
 
   describe('integration scenarios', () => {
-    it.skip('should work with complex DOM structures', () => {
+    it('should work with complex DOM structures', () => {
       const form = document.createElement('form');
       const fieldset = document.createElement('fieldset');
       const legend = document.createElement('legend');
@@ -520,7 +520,7 @@ describe.skip('accessibility', () => {
       expect(isVisibleToScreenReader(legend)).toBe(true);
     });
 
-    it.skip('should handle accessibility announcements with focus management', async () => {
+    it('should handle accessibility announcements with focus management', async () => {
       const button = document.createElement('button');
       button.textContent = 'Test';
       document.body.appendChild(button);

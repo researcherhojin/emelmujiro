@@ -1,10 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import Card from '../Card';
-import { itSkipInCI } from '../../../test-utils/ci-skip';
 
 describe('Card Component', () => {
-  itSkipInCI('renders children correctly', () => {
+  it('renders children correctly', () => {
     render(
       <Card>
         <h2>Card Title</h2>
@@ -17,7 +16,7 @@ describe('Card Component', () => {
   });
 
   describe('Base Styles', () => {
-    itSkipInCI('applies base classes', () => {
+    it('applies base classes', () => {
       render(<Card data-testid="test-card">Content</Card>);
       const card = screen.getByTestId('test-card');
 
@@ -29,14 +28,14 @@ describe('Card Component', () => {
       expect(card).toHaveClass('duration-300');
     });
 
-    itSkipInCI('applies default padding', () => {
+    it('applies default padding', () => {
       render(<Card data-testid="test-card">Content</Card>);
       const card = screen.getByTestId('test-card');
 
       expect(card).toHaveClass('p-8');
     });
 
-    itSkipInCI('applies custom padding', () => {
+    it('applies custom padding', () => {
       render(
         <Card data-testid="test-card" padding="p-4">
           Content
@@ -50,7 +49,7 @@ describe('Card Component', () => {
   });
 
   describe('Hover Effects', () => {
-    itSkipInCI('applies hover classes by default', () => {
+    it('applies hover classes by default', () => {
       render(<Card data-testid="test-card">Content</Card>);
       const card = screen.getByTestId('test-card');
 
@@ -60,7 +59,7 @@ describe('Card Component', () => {
       expect(card).toHaveClass('cursor-pointer');
     });
 
-    itSkipInCI('does not apply hover classes when hover is false', () => {
+    it('does not apply hover classes when hover is false', () => {
       render(
         <Card data-testid="test-card" hover={false}>
           Content
@@ -76,7 +75,7 @@ describe('Card Component', () => {
   });
 
   describe('Custom ClassName', () => {
-    itSkipInCI('applies custom className', () => {
+    it('applies custom className', () => {
       render(
         <Card data-testid="test-card" className="custom-class">
           Content
@@ -87,7 +86,7 @@ describe('Card Component', () => {
       expect(card).toHaveClass('custom-class');
     });
 
-    itSkipInCI('combines custom className with base classes', () => {
+    it('combines custom className with base classes', () => {
       render(
         <Card data-testid="test-card" className="custom-class">
           Content
@@ -102,7 +101,7 @@ describe('Card Component', () => {
   });
 
   describe('Additional Props', () => {
-    itSkipInCI('passes through additional props', () => {
+    it('passes through additional props', () => {
       const handleClick = vi.fn();
       render(
         <Card data-testid="custom-card" onClick={handleClick} role="article">
@@ -120,7 +119,7 @@ describe('Card Component', () => {
   });
 
   describe('Complex Content', () => {
-    itSkipInCI('renders complex nested content', () => {
+    it('renders complex nested content', () => {
       render(
         <Card>
           <header>

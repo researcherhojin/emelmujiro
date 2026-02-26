@@ -1,7 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { UIProvider, useUI } from '../UIContext';
-import { testSkipInCI } from '../../test-utils/ci-skip';
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
@@ -61,7 +60,7 @@ describe('UIContext', () => {
     mockLocalStorage.getItem.mockReturnValue(null);
   });
 
-  testSkipInCI('provides initial state', () => {
+  test('provides initial state', () => {
     render(
       <UIProvider>
         <TestComponent />
@@ -73,7 +72,7 @@ describe('UIContext', () => {
     expect(screen.getByTestId('loading')).toHaveTextContent('false');
   });
 
-  testSkipInCI('toggles theme', async () => {
+  test('toggles theme', async () => {
     render(
       <UIProvider>
         <TestComponent />
@@ -94,7 +93,7 @@ describe('UIContext', () => {
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith('theme', 'light');
   });
 
-  testSkipInCI('toggles sidebar state', async () => {
+  test('toggles sidebar state', async () => {
     render(
       <UIProvider>
         <TestComponent />
@@ -112,7 +111,7 @@ describe('UIContext', () => {
     expect(screen.getByTestId('sidebar-open')).toHaveTextContent('false');
   });
 
-  testSkipInCI('sets loading state', async () => {
+  test('sets loading state', async () => {
     render(
       <UIProvider>
         <TestComponent />
@@ -131,7 +130,7 @@ describe('UIContext', () => {
     expect(screen.getByTestId('loading')).toHaveTextContent('false');
   });
 
-  testSkipInCI('loads saved theme from localStorage', () => {
+  test('loads saved theme from localStorage', () => {
     mockLocalStorage.getItem.mockReturnValue('dark');
 
     render(
@@ -144,7 +143,7 @@ describe('UIContext', () => {
     expect(mockLocalStorage.getItem).toHaveBeenCalledWith('theme');
   });
 
-  testSkipInCI('handles invalid theme in localStorage', () => {
+  test('handles invalid theme in localStorage', () => {
     mockLocalStorage.getItem.mockReturnValue('invalid-theme');
 
     render(
@@ -157,7 +156,7 @@ describe('UIContext', () => {
     expect(screen.getByTestId('theme')).toHaveTextContent('light');
   });
 
-  testSkipInCI('throws error when used outside provider', () => {
+  test('throws error when used outside provider', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => {

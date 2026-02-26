@@ -85,7 +85,7 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
-    test.skip('renders toggle button in development mode', () => {
+    test('renders toggle button in development mode', () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -96,7 +96,7 @@ describe('WebVitalsDashboard', () => {
       expect(toggleButton?.textContent).toContain('📊');
     });
 
-    test.skip('shows dashboard when toggle button is clicked', async () => {
+    test('shows dashboard when toggle button is clicked', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -119,7 +119,7 @@ describe('WebVitalsDashboard', () => {
       expect(screen.getByText('Collecting metrics...')).toBeInTheDocument();
     });
 
-    test.skip('hides dashboard when close button is clicked', async () => {
+    test('hides dashboard when close button is clicked', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       // Open dashboard
@@ -154,7 +154,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('toggles dashboard visibility with keyboard shortcut', async () => {
+    test('toggles dashboard visibility with keyboard shortcut', async () => {
       render(<WebVitalsDashboard />);
 
       // Initially dashboard should not be visible
@@ -185,7 +185,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('ignores other keyboard combinations', () => {
+    test('ignores other keyboard combinations', () => {
       render(<WebVitalsDashboard />);
 
       // Try different key combinations
@@ -211,7 +211,7 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'production' };
     });
 
-    test.skip('does not render toggle button in production mode', () => {
+    test('does not render toggle button in production mode', () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -221,7 +221,7 @@ describe('WebVitalsDashboard', () => {
       expect(toggleButton).toBeFalsy();
     });
 
-    test.skip('does not show dashboard in production mode', () => {
+    test('does not show dashboard in production mode', () => {
       render(<WebVitalsDashboard />);
 
       expect(
@@ -235,7 +235,7 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
-    test.skip('registers all web vitals observers', () => {
+    test('registers all web vitals observers', () => {
       render(<WebVitalsDashboard />);
 
       expect(mockOnCLS).toHaveBeenCalledWith(expect.any(Function));
@@ -245,7 +245,7 @@ describe('WebVitalsDashboard', () => {
       expect(mockOnINP).toHaveBeenCalledWith(expect.any(Function));
     });
 
-    test.skip('handles CLS metric correctly', async () => {
+    test('handles CLS metric correctly', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       // Open dashboard
@@ -280,7 +280,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('handles FCP metric correctly', async () => {
+    test('handles FCP metric correctly', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -314,7 +314,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('handles LCP metric with needs-improvement rating', async () => {
+    test('handles LCP metric with needs-improvement rating', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -348,7 +348,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('handles TTFB metric with poor rating', async () => {
+    test('handles TTFB metric with poor rating', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -382,7 +382,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('handles INP metric correctly', async () => {
+    test('handles INP metric correctly', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -422,7 +422,7 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
-    test.skip('correctly rates CLS metrics', async () => {
+    test('correctly rates CLS metrics', async () => {
       const { container } = render(<WebVitalsDashboard />);
       const toggleButton = findButton(
         container,
@@ -478,7 +478,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('correctly rates FCP metrics', async () => {
+    test('correctly rates FCP metrics', async () => {
       const { container } = render(<WebVitalsDashboard />);
       const toggleButton = findButton(
         container,
@@ -540,7 +540,7 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
-    test.skip('shows collecting message when no metrics are available', async () => {
+    test('shows collecting message when no metrics are available', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -565,7 +565,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('displays metric descriptions correctly', async () => {
+    test('displays metric descriptions correctly', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -605,7 +605,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('displays metric timestamps', async () => {
+    test('displays metric timestamps', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -638,7 +638,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('shows performance summary when metrics are available', async () => {
+    test('shows performance summary when metrics are available', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -679,7 +679,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('displays tips and instructions', async () => {
+    test('displays tips and instructions', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -716,7 +716,7 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
-    test.skip('sends metrics to gtag when available', () => {
+    test('sends metrics to gtag when available', () => {
       render(<WebVitalsDashboard />);
 
       const clsHandler = mockOnCLS.mock.calls[0][0];
@@ -731,7 +731,7 @@ describe('WebVitalsDashboard', () => {
       });
     });
 
-    test.skip('handles missing gtag gracefully', () => {
+    test('handles missing gtag gracefully', () => {
       // Remove gtag
       Object.defineProperty(window, 'gtag', {
         writable: true,
@@ -751,7 +751,7 @@ describe('WebVitalsDashboard', () => {
   });
 
   describe('Development Logging', () => {
-    test.skip('logs metrics in development mode', () => {
+    test('logs metrics in development mode', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
       render(<WebVitalsDashboard />);
 
@@ -765,7 +765,7 @@ describe('WebVitalsDashboard', () => {
       expect(mockOnCLS).toHaveBeenCalled();
     });
 
-    test.skip('does not log metrics in production mode', () => {
+    test('does not log metrics in production mode', () => {
       process.env = { ...process.env, NODE_ENV: 'production' };
       render(<WebVitalsDashboard />);
 
@@ -783,7 +783,7 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
-    test.skip('applies correct CSS classes to dashboard container', async () => {
+    test('applies correct CSS classes to dashboard container', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -816,7 +816,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('applies correct CSS classes to toggle button', () => {
+    test('applies correct CSS classes to toggle button', () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = container.querySelector(
@@ -841,7 +841,7 @@ describe('WebVitalsDashboard', () => {
       }
     });
 
-    test.skip('applies rating-specific colors to metric cards', async () => {
+    test('applies rating-specific colors to metric cards', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(
@@ -881,7 +881,7 @@ describe('WebVitalsDashboard', () => {
   });
 
   describe('Edge Cases and Error Handling', () => {
-    test.skip('handles unknown metric names gracefully', () => {
+    test('handles unknown metric names gracefully', () => {
       render(<WebVitalsDashboard />);
 
       const clsHandler = mockOnCLS.mock.calls[0][0];
@@ -893,7 +893,7 @@ describe('WebVitalsDashboard', () => {
       }).not.toThrow();
     });
 
-    test.skip('handles missing console.log gracefully', () => {
+    test('handles missing console.log gracefully', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
 
       // Mock console to not have log method
@@ -914,7 +914,7 @@ describe('WebVitalsDashboard', () => {
       global.console = originalConsole;
     });
 
-    test.skip('removes event listener on unmount in development', () => {
+    test('removes event listener on unmount in development', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
 
       const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
@@ -932,7 +932,7 @@ describe('WebVitalsDashboard', () => {
   });
 
   describe('Component Display Names', () => {
-    test.skip('WebVitalsDashboard has correct display name', () => {
+    test('WebVitalsDashboard has correct display name', () => {
       expect(WebVitalsDashboard.displayName).toBe('WebVitalsDashboard');
     });
   });
@@ -942,7 +942,7 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
-    test.skip('toggle button has correct accessibility attributes', () => {
+    test('toggle button has correct accessibility attributes', () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = container.querySelector(
@@ -954,7 +954,7 @@ describe('WebVitalsDashboard', () => {
       );
     });
 
-    test.skip('close button has correct accessibility attributes', async () => {
+    test('close button has correct accessibility attributes', async () => {
       const { container } = render(<WebVitalsDashboard />);
 
       const toggleButton = findButton(

@@ -185,9 +185,9 @@ pipeline {
                 dir('frontend') {
                     sh '''
                         npm run build
-                        npx http-server build -p 3000 &
+                        npx http-server build -p 5173 &
                         sleep 5
-                        lhci autorun --collect.url=http://localhost:3000
+                        lhci autorun --collect.url=http://localhost:5173
                     '''
                 }
             }

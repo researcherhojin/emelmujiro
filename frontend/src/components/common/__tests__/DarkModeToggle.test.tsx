@@ -2,8 +2,6 @@ import { vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import DarkModeToggle from '../DarkModeToggle';
-import { itSkipInCI } from '../../../test-utils/ci-skip';
-// Removed unused import
 
 // Mock UI Context
 const mockToggleTheme = vi.fn();
@@ -33,7 +31,7 @@ describe('DarkModeToggle', () => {
     mockToggleTheme.mockClear();
   });
 
-  itSkipInCI('renders correctly in light mode', () => {
+  it('renders correctly in light mode', () => {
     render(<DarkModeToggle />);
 
     const button = screen.getByRole('button');
@@ -42,7 +40,7 @@ describe('DarkModeToggle', () => {
     expect(button).toHaveAttribute('title', '다크 모드로 전환');
   });
 
-  itSkipInCI('renders correctly in dark mode', () => {
+  it('renders correctly in dark mode', () => {
     mockUIContextValue.theme = 'dark';
     render(<DarkModeToggle />);
 
@@ -51,7 +49,7 @@ describe('DarkModeToggle', () => {
     expect(button).toHaveAttribute('title', '라이트 모드로 전환');
   });
 
-  itSkipInCI('calls toggleTheme when clicked', () => {
+  it('calls toggleTheme when clicked', () => {
     render(<DarkModeToggle />);
 
     const button = screen.getByRole('button');
@@ -60,7 +58,7 @@ describe('DarkModeToggle', () => {
     expect(mockToggleTheme).toHaveBeenCalledTimes(1);
   });
 
-  itSkipInCI('has proper accessibility attributes', () => {
+  it('has proper accessibility attributes', () => {
     render(<DarkModeToggle />);
 
     const button = screen.getByRole('button');
@@ -68,7 +66,7 @@ describe('DarkModeToggle', () => {
     expect(button).toHaveAttribute('title');
   });
 
-  itSkipInCI('shows correct icons for light mode', () => {
+  it('shows correct icons for light mode', () => {
     mockUIContextValue.theme = 'light';
     render(<DarkModeToggle />);
 
@@ -79,7 +77,7 @@ describe('DarkModeToggle', () => {
     expect(toggleButton).toHaveAttribute('aria-label', 'Switch to dark mode');
   });
 
-  itSkipInCI('shows correct icons for dark mode', () => {
+  it('shows correct icons for dark mode', () => {
     mockUIContextValue.theme = 'dark';
     render(<DarkModeToggle />);
 

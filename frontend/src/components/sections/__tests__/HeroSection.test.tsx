@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import HeroSection from '../HeroSection';
-import { testSkipInCI } from '../../../test-utils/ci-skip';
 
 // Mock useNavigate
 const mockNavigate = vi.fn();
@@ -39,7 +38,7 @@ describe('HeroSection Component', () => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 
-  testSkipInCI('renders main heading', () => {
+  test('renders main heading', () => {
     renderWithRouter(<HeroSection />);
 
     // Check that the heading is rendered (h1 element specifically),
@@ -49,7 +48,7 @@ describe('HeroSection Component', () => {
     expect(heading.textContent).toContain('AI 전문가 그룹');
   });
 
-  testSkipInCI('renders subheading', () => {
+  test('renders subheading', () => {
     renderWithRouter(<HeroSection />);
 
     expect(
@@ -57,7 +56,7 @@ describe('HeroSection Component', () => {
     ).toBeInTheDocument();
   });
 
-  testSkipInCI('renders call to action button', () => {
+  test('renders call to action button', () => {
     renderWithRouter(<HeroSection />);
 
     // HeroSection now only has one CTA button with an arrow

@@ -3,7 +3,6 @@ import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import BlogListPage from '../BlogListPage';
-import { itSkipInCI } from '../../../test-utils/ci-skip';
 
 // Mock useNavigate
 const mockNavigate = vi.fn();
@@ -28,7 +27,7 @@ describe('BlogListPage', () => {
     vi.clearAllMocks();
   });
 
-  itSkipInCI('renders the under construction message', () => {
+  it('renders the under construction message', () => {
     renderWithProviders(<BlogListPage />);
 
     expect(screen.getByText('블로그 준비 중')).toBeInTheDocument();
@@ -37,7 +36,7 @@ describe('BlogListPage', () => {
     ).toBeInTheDocument();
   });
 
-  itSkipInCI('shows information about backend system construction', () => {
+  it('shows information about backend system construction', () => {
     renderWithProviders(<BlogListPage />);
 
     expect(
@@ -45,14 +44,14 @@ describe('BlogListPage', () => {
     ).toBeInTheDocument();
   });
 
-  itSkipInCI('renders the back to main button', () => {
+  it('renders the back to main button', () => {
     renderWithProviders(<BlogListPage />);
 
     const backButton = screen.getByText('메인으로 돌아가기');
     expect(backButton).toBeInTheDocument();
   });
 
-  itSkipInCI('navigates to home when back button is clicked', () => {
+  it('navigates to home when back button is clicked', () => {
     renderWithProviders(<BlogListPage />);
 
     const backButton = screen.getByText('메인으로 돌아가기');

@@ -3,10 +3,10 @@ module.exports = {
     collect: {
       staticDistDir: './build',
       url: [
-        'http://localhost:3000/',
-        'http://localhost:3000/#/about',
-        'http://localhost:3000/#/contact',
-        'http://localhost:3000/#/profile',
+        'http://localhost:5173/',
+        'http://localhost:5173/#/about',
+        'http://localhost:5173/#/contact',
+        'http://localhost:5173/#/profile',
       ],
       numberOfRuns: 3,
       settings: {

@@ -45,29 +45,6 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-// Mock framer-motion to avoid animation issues in tests
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({
-      children,
-      ...props
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <div {...props}>{children}</div>,
-    button: ({
-      children,
-      ...props
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <button {...props}>{children}</button>,
-  },
-  AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
-    <>{children}</>
-  ),
-}));
-
 // Import mocked functions
 import { useChatContext } from '../../../contexts/ChatContext';
 const mockUseChatContext = useChatContext as ReturnType<typeof vi.fn>;
@@ -82,13 +59,22 @@ vi.mock('../AdminPanel', () => ({
     isOpen ? <div data-testid="admin-panel">Admin Panel</div> : null,
 }));
 
+/**
+ * Helper: renders ChatWidget and advances fake timers past the 2s visibility delay.
+ */
+async function renderAndWaitForVisible() {
+  const result = render(<ChatWidget />);
+  // Advance past the 2-second visibility delay
+  await act(async () => {
+    vi.advanceTimersByTime(2100);
+  });
+  return result;
+}
+
 describe('ChatWidget', () => {
   beforeEach(() => {
-    // Clear localStorage before each test
     localStorage.clear();
-    // Reset mocks
     vi.clearAllMocks();
-    // Use fake timers for all tests
     vi.useFakeTimers();
   });
 
@@ -96,25 +82,14 @@ describe('ChatWidget', () => {
     vi.useRealTimers();
   });
 
-  it.skip('renders chat button initially', async () => {
-    render(<ChatWidget />);
+  it('renders chat button initially', async () => {
+    await renderAndWaitForVisible();
 
-    // Fast-forward time to skip the delay
-    await act(async () => {
-      vi.advanceTimersByTime(2000);
-    });
+    const chatButton = screen.getByRole('button');
+    expect(chatButton).toBeInTheDocument();
+  });
 
-    // Check button exists
-    await waitFor(
-      () => {
-        const chatButton = screen.getByRole('button');
-        expect(chatButton).toBeInTheDocument();
-      },
-      { timeout: 5000 }
-    );
-  }, 20000);
-
-  it.skip('opens chat window when button is clicked', async () => {
+  it('opens chat window when button is clicked', async () => {
     const mockOpenChat = vi.fn();
     const mockMarkAllAsRead = vi.fn();
     mockUseChatContext.mockReturnValue({
@@ -130,38 +105,88 @@ describe('ChatWidget', () => {
       markAllAsRead: mockMarkAllAsRead,
     });
 
-    render(<ChatWidget />);
+    await renderAndWaitForVisible();
 
-    // Fast-forward time to skip the delay
-    await act(async () => {
-      vi.advanceTimersByTime(2000);
-    });
+    const chatButton = screen.getByRole('button');
+    fireEvent.click(chatButton);
 
-    // Wait for widget to appear
-    await waitFor(() => {
-      const chatButton = screen.getByRole('button');
-      fireEvent.click(chatButton);
-      expect(mockOpenChat).toHaveBeenCalled();
-    });
+    expect(mockOpenChat).toHaveBeenCalled();
     expect(mockMarkAllAsRead).toHaveBeenCalled();
   });
 
-  it.skip('shows chat window when isOpen is true', async () => {
-    // Test passes if it doesn't throw
-    expect(true).toBe(true);
+  it('shows chat window when isOpen is true', async () => {
+    mockUseChatContext.mockReturnValue({
+      isOpen: true,
+      isMinimized: false,
+      unreadCount: 0,
+      isConnected: true,
+      agentAvailable: true,
+      businessHours: { isOpen: true, hours: '09:00 - 18:00' },
+      openChat: vi.fn(),
+      closeChat: vi.fn(),
+      toggleMinimize: vi.fn(),
+      markAllAsRead: vi.fn(),
+    });
+
+    await renderAndWaitForVisible();
+
+    expect(screen.getByTestId('chat-window')).toBeInTheDocument();
   });
 
-  it.skip('shows minimized state when isMinimized is true', async () => {
-    // Test passes if it doesn't throw
-    expect(true).toBe(true);
+  it('shows minimized state when isMinimized is true', async () => {
+    mockUseChatContext.mockReturnValue({
+      isOpen: true,
+      isMinimized: true,
+      unreadCount: 0,
+      isConnected: true,
+      agentAvailable: true,
+      businessHours: { isOpen: true, hours: '09:00 - 18:00' },
+      openChat: vi.fn(),
+      closeChat: vi.fn(),
+      toggleMinimize: vi.fn(),
+      markAllAsRead: vi.fn(),
+    });
+
+    await renderAndWaitForVisible();
+
+    // When minimized, ChatWindow should not be rendered
+    expect(screen.queryByTestId('chat-window')).not.toBeInTheDocument();
   });
 
-  it.skip('closes chat window when close button is clicked', async () => {
-    // Test passes if it doesn't throw
-    expect(true).toBe(true);
+  it('closes chat window when close button is clicked', async () => {
+    const mockCloseChat = vi.fn();
+    mockUseChatContext.mockReturnValue({
+      isOpen: true,
+      isMinimized: false,
+      unreadCount: 0,
+      isConnected: true,
+      agentAvailable: true,
+      businessHours: { isOpen: true, hours: '09:00 - 18:00' },
+      openChat: vi.fn(),
+      closeChat: mockCloseChat,
+      toggleMinimize: vi.fn(),
+      markAllAsRead: vi.fn(),
+    });
+
+    await renderAndWaitForVisible();
+
+    // There are multiple buttons: minimize, close (in header), and the floating button.
+    // The close button in the header has aria-label="chat.close"
+    // The floating button also has aria-label="chat.close" when isOpen is true.
+    // Get all buttons with chat.close label and pick the one in the header (not role="button")
+    const allCloseButtons = screen.getAllByLabelText('chat.close');
+    // The header close button should be the one that's NOT the floating button
+    // The floating button has role="button" explicitly set
+    const headerCloseButton = allCloseButtons.find(
+      (btn) => btn.getAttribute('role') !== 'button'
+    );
+    expect(headerCloseButton).toBeTruthy();
+    fireEvent.click(headerCloseButton!);
+
+    expect(mockCloseChat).toHaveBeenCalled();
   });
 
-  it.skip('shows connection status indicator', async () => {
+  it('shows connection status indicator', async () => {
     mockUseChatContext.mockReturnValue({
       isOpen: false,
       isMinimized: false,
@@ -175,21 +200,13 @@ describe('ChatWidget', () => {
       markAllAsRead: vi.fn(),
     });
 
-    render(<ChatWidget />);
+    await renderAndWaitForVisible();
 
-    // Fast-forward time to skip the delay
-    await act(async () => {
-      vi.advanceTimersByTime(2000);
-    });
-
-    await waitFor(() => {
-      const chatButton = screen.getByRole('button');
-      // Connection indicator should be visible
-      expect(chatButton).toBeInTheDocument();
-    });
+    const chatButton = screen.getByRole('button');
+    expect(chatButton).toBeInTheDocument();
   });
 
-  it.skip('shows unread count badge when there are unread messages', async () => {
+  it('shows unread count badge when there are unread messages', async () => {
     mockUseChatContext.mockReturnValue({
       isOpen: false,
       isMinimized: false,
@@ -203,20 +220,12 @@ describe('ChatWidget', () => {
       markAllAsRead: vi.fn(),
     });
 
-    render(<ChatWidget />);
+    await renderAndWaitForVisible();
 
-    // Fast-forward time to skip the delay
-    await act(async () => {
-      vi.advanceTimersByTime(2000);
-    });
-
-    // Should show unread count
-    await waitFor(() => {
-      expect(screen.getByText('5')).toBeInTheDocument();
-    });
+    expect(screen.getByText('5')).toBeInTheDocument();
   });
 
-  it.skip('displays business hours when closed', async () => {
+  it('displays business hours when closed', async () => {
     mockUseChatContext.mockReturnValue({
       isOpen: false,
       isMinimized: false,
@@ -230,21 +239,31 @@ describe('ChatWidget', () => {
       markAllAsRead: vi.fn(),
     });
 
-    render(<ChatWidget />);
+    await renderAndWaitForVisible();
 
-    // Fast-forward time to skip the delay
-    await act(async () => {
-      vi.advanceTimersByTime(2000);
-    });
-
-    await waitFor(() => {
-      const widget = screen.getByRole('button');
-      expect(widget).toBeInTheDocument();
-    });
+    const widget = screen.getByRole('button');
+    expect(widget).toBeInTheDocument();
   });
 
-  it.skip('shows hover tooltip', async () => {
-    // Test passes if it doesn't throw
-    expect(true).toBe(true);
+  it('shows hover tooltip', async () => {
+    mockUseChatContext.mockReturnValue({
+      isOpen: false,
+      isMinimized: false,
+      unreadCount: 0,
+      isConnected: true,
+      agentAvailable: true,
+      businessHours: { isOpen: true, hours: '09:00 - 18:00' },
+      openChat: vi.fn(),
+      closeChat: vi.fn(),
+      toggleMinimize: vi.fn(),
+      markAllAsRead: vi.fn(),
+    });
+
+    await renderAndWaitForVisible();
+
+    const chatButton = screen.getByRole('button');
+    fireEvent.mouseEnter(chatButton);
+
+    expect(screen.getByText('chat.quickInfo.available')).toBeInTheDocument();
   });
 });

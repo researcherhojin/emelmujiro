@@ -158,7 +158,7 @@ describe('ChatWindowAdvanced', () => {
   });
 
   describe('Rendering and Basic Interactions', () => {
-    it.skip('should render chat window', () => {
+    it('should render chat window', () => {
       render(<ChatWindow />);
 
       expect(screen.getByTestId('message-list')).toBeInTheDocument();
@@ -167,14 +167,14 @@ describe('ChatWindowAdvanced', () => {
       ).toBeInTheDocument();
     });
 
-    it.skip('should render with connected state', () => {
+    it('should render with connected state', () => {
       render(<ChatWindow />);
 
       // ChatWindow always renders its content
       expect(screen.getByTestId('message-list')).toBeInTheDocument();
     });
 
-    it.skip('should show disconnected state', () => {
+    it('should show disconnected state', () => {
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
         isConnected: false,
@@ -189,7 +189,7 @@ describe('ChatWindowAdvanced', () => {
   });
 
   describe('Message Sending', () => {
-    it.skip('should send message on form submit', async () => {
+    it('should send message on form submit', async () => {
       const sendMessage = vi.fn();
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
@@ -214,7 +214,7 @@ describe('ChatWindowAdvanced', () => {
       });
     }, 20000);
 
-    it.skip('should send message on Enter key', async () => {
+    it('should send message on Enter key', async () => {
       const sendMessage = vi.fn();
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
@@ -234,7 +234,7 @@ describe('ChatWindowAdvanced', () => {
       });
     }, 20000);
 
-    it.skip('should allow multi-line messages with Shift+Enter', async () => {
+    it('should allow multi-line messages with Shift+Enter', async () => {
       const sendMessage = vi.fn();
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
@@ -256,7 +256,7 @@ describe('ChatWindowAdvanced', () => {
   });
 
   describe('Window Controls', () => {
-    it.skip('should have file upload button', () => {
+    it('should have file upload button', () => {
       render(<ChatWindow />);
 
       const fileButton = screen.getByTitle(/파일 첨부/i);
@@ -265,7 +265,7 @@ describe('ChatWindowAdvanced', () => {
   });
 
   describe('Quick Replies', () => {
-    it.skip('should show and use quick replies', async () => {
+    it('should show and use quick replies', async () => {
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
         messages: [],
@@ -280,7 +280,7 @@ describe('ChatWindowAdvanced', () => {
   });
 
   describe('Emoji Picker', () => {
-    it.skip('should toggle emoji picker', async () => {
+    it('should toggle emoji picker', async () => {
       render(<ChatWindow />);
 
       const emojiButton = screen.queryByTitle(/이모지/i);
@@ -294,7 +294,7 @@ describe('ChatWindowAdvanced', () => {
   });
 
   describe('File Upload', () => {
-    it.skip('should handle file selection', async () => {
+    it('should handle file selection', async () => {
       const sendFile = vi.fn();
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
@@ -315,31 +315,31 @@ describe('ChatWindowAdvanced', () => {
   });
 
   describe('Voice Recording', () => {
-    it.skip('should toggle voice recording', async () => {
+    it('should toggle voice recording', async () => {
       // Voice recording feature might not be implemented
       expect(true).toBe(true);
     });
   });
 
   describe('Settings and Options', () => {
-    it.skip('should export chat history', async () => {
+    it('should export chat history', async () => {
       // Export is handled internally in the component
       expect(true).toBe(true);
     });
 
-    it.skip('should clear chat history', async () => {
+    it('should clear chat history', async () => {
       // Clear might be in a menu or settings
       expect(true).toBe(true);
     });
 
-    it.skip('should toggle sound notifications', () => {
+    it('should toggle sound notifications', () => {
       // Sound settings might be in preferences
       expect(true).toBe(true);
     });
   });
 
   describe('Typing Indicator', () => {
-    it.skip('should show typing indicator when someone is typing', () => {
+    it('should show typing indicator when someone is typing', () => {
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
         isTyping: true,
@@ -350,7 +350,7 @@ describe('ChatWindowAdvanced', () => {
       expect(screen.getByTestId('typing-indicator')).toBeInTheDocument();
     });
 
-    it.skip('should trigger typing events on input', async () => {
+    it('should trigger typing events on input', async () => {
       const startTyping = vi.fn();
       const stopTyping = vi.fn();
 
@@ -377,7 +377,7 @@ describe('ChatWindowAdvanced', () => {
   });
 
   describe('Connection Status', () => {
-    it.skip('should show reconnecting banner when disconnected', () => {
+    it('should show reconnecting banner when disconnected', () => {
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
         isConnected: false,
@@ -390,7 +390,7 @@ describe('ChatWindowAdvanced', () => {
       expect(elements.length).toBeGreaterThan(0);
     });
 
-    it.skip('should show business hours notice when closed', () => {
+    it('should show business hours notice when closed', () => {
       mockUseChatContext.mockReturnValue({
         ...mockChatContextValue,
         businessHours: { isOpen: false, hours: '09:00 - 18:00' },

@@ -2,7 +2,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import NotFound from '../NotFound';
-import { itSkipInCI } from '../../../test-utils/ci-skip';
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -29,7 +28,7 @@ describe('NotFound', () => {
     mockBack.mockClear();
   });
 
-  itSkipInCI('renders 404 message', () => {
+  it('renders 404 message', () => {
     render(
       <MemoryRouter>
         <NotFound />
@@ -40,7 +39,7 @@ describe('NotFound', () => {
     expect(screen.getByText('페이지를 찾을 수 없습니다')).toBeInTheDocument();
   });
 
-  itSkipInCI('renders button to navigate home', () => {
+  it('renders button to navigate home', () => {
     render(
       <MemoryRouter>
         <NotFound />
@@ -57,7 +56,7 @@ describe('NotFound', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
-  itSkipInCI('renders button to go back', () => {
+  it('renders button to go back', () => {
     render(
       <MemoryRouter>
         <NotFound />
@@ -74,7 +73,7 @@ describe('NotFound', () => {
     expect(mockBack).toHaveBeenCalled();
   });
 
-  itSkipInCI('has proper styling classes', () => {
+  it('has proper styling classes', () => {
     render(
       <MemoryRouter>
         <NotFound />
@@ -95,7 +94,7 @@ describe('NotFound', () => {
     expect(message).toBeInTheDocument();
   });
 
-  itSkipInCI('renders navigation links to major pages', () => {
+  it('renders navigation links to major pages', () => {
     render(
       <MemoryRouter>
         <NotFound />

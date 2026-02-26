@@ -7,7 +7,7 @@ ALLOWED_HOSTS=localhost,127.0.0.1,yourdomain.com
 DATABASE_URL=sqlite:///db.sqlite3
 
 # CORS 설정
-CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,https://yourdomain.com
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,https://yourdomain.com
 
 # 이메일 설정
 EMAIL_HOST_USER=your-email@gmail.com

@@ -94,9 +94,9 @@ Uses `i18next` + `react-i18next` with browser language detection. Fallback langu
 
 Vitest with jsdom environment. Config in `frontend/vitest.config.ts`. Setup file: `frontend/src/setupTests.ts`.
 
-### CI Skip Pattern (Expected Behavior)
+### CI Skip Pattern
 
-~55% of tests are skipped in CI due to jsdom limitations (getByRole failures, classList errors, framer-motion prop warnings, no IndexedDB). This is intentional, not a bug.
+A small number of tests (~1%) use `itSkipInCI` for genuine jsdom limitations (classList errors, IndexedDB unavailability). Most tests run in both local and CI environments.
 
 ```typescript
 // Use helpers from src/test-utils/ci-skip.ts
@@ -117,7 +117,7 @@ itSkipInCI('test that fails in CI', () => { /* ... */ });
 
 ### E2E Testing (Playwright)
 
-Config in `frontend/playwright.config.ts`. Tests in `frontend/e2e/`. **Known bug**: `baseURL` and `webServer.url` are set to port 3000 but should be 5173.
+Config in `frontend/playwright.config.ts`. Tests in `frontend/e2e/`.
 
 ## CI/CD
 
@@ -157,10 +157,9 @@ Husky + lint-staged: ESLint --fix + Prettier on `src/**/*.{js,jsx,ts,tsx}`, Pret
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API in production**: Always on, not configurable — GitHub Pages has no backend
 3. **Build output**: `build/`, not `dist/`
-4. **Test skips in CI**: ~55% skipped is expected behavior
+4. **Test skips in CI**: Some tests use `itSkipInCI` for jsdom limitations; most tests run in both local and CI
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
 8. **minimatch override**: Root and frontend `package.json` both have `overrides` to force `minimatch>=10.2.1` for security. Don't remove these
-9. **Playwright port mismatch**: `playwright.config.ts` references port 3000 — needs to be 5173 if running E2E tests
-10. **Conventional commits required**: PR checks validate commit message format (`type(scope): description`)
+9. **Conventional commits required**: PR checks validate commit message format (`type(scope): description`)

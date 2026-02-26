@@ -2,7 +2,6 @@ import { vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../test-utils';
 import HomePage from '../HomePage';
-import { itSkipInCI } from '../../test-utils/ci-skip';
 
 // Mock lazy loaded components
 vi.mock('../../components/sections/HeroSection', () => ({
@@ -36,12 +35,12 @@ vi.mock('../../components/seo/SEOHead', () => ({
 }));
 
 describe('HomePage', () => {
-  itSkipInCI('renders without crashing', () => {
+  it('renders without crashing', () => {
     renderWithProviders(<HomePage />);
     expect(document.body).toBeInTheDocument();
   });
 
-  itSkipInCI('renders all sections after loading', async () => {
+  it('renders all sections after loading', async () => {
     renderWithProviders(<HomePage />);
 
     await waitFor(() => {
@@ -52,7 +51,7 @@ describe('HomePage', () => {
     });
   });
 
-  itSkipInCI('shows loading state initially', () => {
+  it('shows loading state initially', () => {
     renderWithProviders(<HomePage />);
 
     // Should show loading component initially
@@ -62,7 +61,7 @@ describe('HomePage', () => {
     }
   });
 
-  itSkipInCI('renders sections in correct order', async () => {
+  it('renders sections in correct order', async () => {
     const { container } = renderWithProviders(<HomePage />);
 
     await waitFor(() => {
@@ -74,7 +73,7 @@ describe('HomePage', () => {
     });
   });
 
-  itSkipInCI('handles suspense fallback correctly', async () => {
+  it('handles suspense fallback correctly', async () => {
     renderWithProviders(<HomePage />);
 
     // Wait for all sections to load
@@ -86,7 +85,7 @@ describe('HomePage', () => {
     );
   });
 
-  itSkipInCI('passes correct props to SEOHead', () => {
+  it('passes correct props to SEOHead', () => {
     renderWithProviders(<HomePage />);
 
     // SEOHead should be called with correct props
@@ -94,7 +93,7 @@ describe('HomePage', () => {
     expect(document.body).toBeInTheDocument();
   });
 
-  itSkipInCI('renders with React.Suspense wrapper', async () => {
+  it('renders with React.Suspense wrapper', async () => {
     renderWithProviders(<HomePage />);
 
     // All lazy loaded components should eventually render
@@ -104,7 +103,7 @@ describe('HomePage', () => {
     });
   });
 
-  itSkipInCI('includes structured data for SEO', () => {
+  it('includes structured data for SEO', () => {
     renderWithProviders(<HomePage />);
 
     // HomePage should include structured data
@@ -112,7 +111,7 @@ describe('HomePage', () => {
     expect(document.body).toBeInTheDocument();
   });
 
-  itSkipInCI('handles error boundary gracefully', () => {
+  it('handles error boundary gracefully', () => {
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -127,7 +126,7 @@ describe('HomePage', () => {
     consoleSpy.mockRestore();
   });
 
-  itSkipInCI('applies correct page layout', () => {
+  it('applies correct page layout', () => {
     const { container } = renderWithProviders(<HomePage />);
 
     // Check if the page has proper structure

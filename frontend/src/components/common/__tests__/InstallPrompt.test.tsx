@@ -72,7 +72,7 @@ describe('InstallPrompt', () => {
   });
 
   describe('Visibility Conditions', () => {
-    it.skip('should not show if already installed (standalone mode)', () => {
+    it('should not show if already installed (standalone mode)', () => {
       Object.defineProperty(window, 'matchMedia', {
         writable: true,
         value: vi.fn().mockImplementation(() => ({
@@ -85,7 +85,7 @@ describe('InstallPrompt', () => {
       expect(screen.queryByText(/앱 설치/i)).not.toBeInTheDocument();
     });
 
-    it.skip('should not show if dismissed recently', () => {
+    it('should not show if dismissed recently', () => {
       const recentTime = new Date().getTime() - 1000; // 1 second ago
       localStorage.setItem('pwa-install-dismissed', recentTime.toString());
 
@@ -94,7 +94,7 @@ describe('InstallPrompt', () => {
       expect(screen.queryByText(/앱 설치/i)).not.toBeInTheDocument();
     });
 
-    it.skip('should show if dismissed more than 7 days ago', async () => {
+    it('should show if dismissed more than 7 days ago', async () => {
       const oldTime = new Date().getTime() - 8 * 24 * 60 * 60 * 1000; // 8 days ago
       localStorage.setItem('install-prompt-dismissed', oldTime.toString());
 
@@ -126,7 +126,7 @@ describe('InstallPrompt', () => {
       }
     });
 
-    it.skip('should show when beforeinstallprompt event is available', async () => {
+    it('should show when beforeinstallprompt event is available', async () => {
       const mockEvent = new Event('beforeinstallprompt');
       Object.assign(mockEvent, {
         preventDefault: vi.fn(),
@@ -163,7 +163,7 @@ describe('InstallPrompt', () => {
       setTimeout(() => window.dispatchEvent(mockEvent), 0);
     });
 
-    it.skip('should handle install button click', async () => {
+    it('should handle install button click', async () => {
       const user = userEvent.setup();
 
       render(<InstallPrompt />);
@@ -173,7 +173,7 @@ describe('InstallPrompt', () => {
         expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
       });
 
-      const installButton = screen.getByText(/설치/i);
+      const installButton = screen.getByRole('button', { name: /설치/ });
       await user.click(installButton);
 
       await waitFor(() => {
@@ -181,7 +181,7 @@ describe('InstallPrompt', () => {
       });
     });
 
-    it.skip('should handle dismiss button click', async () => {
+    it('should handle dismiss button click', async () => {
       const user = userEvent.setup();
 
       render(<InstallPrompt />);
@@ -198,7 +198,7 @@ describe('InstallPrompt', () => {
       expect(localStorage.getItem('install-prompt-dismissed')).toBeTruthy();
     });
 
-    it.skip('should handle "나중에" button click', async () => {
+    it('should handle "나중에" button click', async () => {
       const user = userEvent.setup();
 
       render(<InstallPrompt />);
@@ -230,7 +230,7 @@ describe('InstallPrompt', () => {
       setTimeout(() => window.dispatchEvent(mockEvent), 0);
     });
 
-    it.skip('should handle successful installation', async () => {
+    it('should handle successful installation', async () => {
       const user = userEvent.setup();
 
       render(<InstallPrompt />);
@@ -240,7 +240,7 @@ describe('InstallPrompt', () => {
         expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
       });
 
-      const installButton = screen.getByText(/설치/i);
+      const installButton = screen.getByRole('button', { name: /설치/ });
       await user.click(installButton);
 
       // Check that installation was successful
@@ -249,14 +249,14 @@ describe('InstallPrompt', () => {
       });
     });
 
-    it.skip('should handle installation rejection', async () => {
+    it('should handle installation rejection', async () => {
       // This test verifies that rejection (dismissal) is handled properly
       // The component calls handleDismiss() when outcome is not 'accepted'
       // This sets localStorage 'install-prompt-dismissed' with a timestamp
       expect(true).toBe(true);
     });
 
-    it.skip('should handle installation error', async () => {
+    it('should handle installation error', async () => {
       // This test verifies that errors during installation are properly handled
       // The component has a try-catch that logs errors to console
       // Testing async error handling with promises is complex in the test environment
@@ -265,7 +265,7 @@ describe('InstallPrompt', () => {
   });
 
   describe('Event Listeners', () => {
-    it.skip('should listen for beforeinstallprompt event', () => {
+    it('should listen for beforeinstallprompt event', () => {
       const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
 
       render(<InstallPrompt />);
@@ -276,7 +276,7 @@ describe('InstallPrompt', () => {
       );
     });
 
-    it.skip('should handle beforeinstallprompt event', async () => {
+    it('should handle beforeinstallprompt event', async () => {
       render(<InstallPrompt />);
 
       const event = new Event('beforeinstallprompt');
@@ -294,7 +294,7 @@ describe('InstallPrompt', () => {
       });
     });
 
-    it.skip('should clean up event listeners on unmount', () => {
+    it('should clean up event listeners on unmount', () => {
       const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
       const { unmount } = render(<InstallPrompt />);
@@ -308,7 +308,7 @@ describe('InstallPrompt', () => {
   });
 
   describe('Device Detection', () => {
-    it.skip('should detect iOS devices but not show prompt', () => {
+    it('should detect iOS devices but not show prompt', () => {
       const originalUserAgent = navigator.userAgent;
       Object.defineProperty(navigator, 'userAgent', {
         value: 'iPhone',
@@ -326,7 +326,7 @@ describe('InstallPrompt', () => {
       });
     });
 
-    it.skip('should detect Android device', async () => {
+    it('should detect Android device', async () => {
       const originalUserAgent = navigator.userAgent;
       Object.defineProperty(navigator, 'userAgent', {
         value: 'Android',
@@ -358,7 +358,7 @@ describe('InstallPrompt', () => {
       });
     });
 
-    it.skip('should show desktop instructions', async () => {
+    it('should show desktop instructions', async () => {
       const originalUserAgent = navigator.userAgent;
       Object.defineProperty(navigator, 'userAgent', {
         value: 'Chrome Desktop',
@@ -391,7 +391,7 @@ describe('InstallPrompt', () => {
   });
 
   describe('Features Display', () => {
-    it.skip('should display PWA features when prompt is shown', async () => {
+    it('should display PWA features when prompt is shown', async () => {
       // Set up beforeinstallprompt event
       const mockEvent = new Event('beforeinstallprompt');
       Object.assign(mockEvent, {
@@ -414,7 +414,7 @@ describe('InstallPrompt', () => {
       expect(screen.getByText(/빠른 실행/i)).toBeInTheDocument();
     });
 
-    it.skip('should show app benefits when prompt is shown', async () => {
+    it('should show app benefits when prompt is shown', async () => {
       // Set up beforeinstallprompt event
       const mockEvent = new Event('beforeinstallprompt');
       Object.assign(mockEvent, {
@@ -442,7 +442,7 @@ describe('InstallPrompt', () => {
   });
 
   describe('Animations and Styling', () => {
-    it.skip('should apply correct CSS classes', async () => {
+    it('should apply correct CSS classes', async () => {
       // Set up beforeinstallprompt event
       const mockEvent = new Event('beforeinstallprompt');
       Object.assign(mockEvent, {
@@ -464,7 +464,7 @@ describe('InstallPrompt', () => {
       expect(promptElement).toBeInTheDocument();
     });
 
-    it.skip('should have accessible focus management', async () => {
+    it('should have accessible focus management', async () => {
       const user = userEvent.setup();
 
       // Set up beforeinstallprompt event
@@ -483,7 +483,7 @@ describe('InstallPrompt', () => {
         expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
       });
 
-      const installButton = screen.getByText(/설치/i);
+      const installButton = screen.getByRole('button', { name: /설치/ });
       const laterButton = screen.getByText(/나중에/i);
       const closeButton = screen.getByLabelText(/닫기/i);
 
@@ -495,7 +495,7 @@ describe('InstallPrompt', () => {
   });
 
   describe('Local Storage Management', () => {
-    it.skip('should store installation state', async () => {
+    it('should store installation state', async () => {
       const user = userEvent.setup();
 
       // Set up beforeinstallprompt event
@@ -514,7 +514,7 @@ describe('InstallPrompt', () => {
         expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
       });
 
-      const installButton = screen.getByText(/설치/i);
+      const installButton = screen.getByRole('button', { name: /설치/ });
       await user.click(installButton);
 
       // Component should hide after successful install
@@ -523,7 +523,7 @@ describe('InstallPrompt', () => {
       });
     });
 
-    it.skip('should clear old dismissal after successful install', async () => {
+    it('should clear old dismissal after successful install', async () => {
       localStorage.setItem('install-prompt-dismissed', '12345');
       const user = userEvent.setup();
 
@@ -543,7 +543,7 @@ describe('InstallPrompt', () => {
         expect(screen.getByText(/앱 설치/i)).toBeInTheDocument();
       });
 
-      const installButton = screen.getByText(/설치/i);
+      const installButton = screen.getByRole('button', { name: /설치/ });
       await user.click(installButton);
 
       // Component should hide after successful install

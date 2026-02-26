@@ -2,9 +2,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import ErrorBoundary from '../ErrorBoundary';
 
-// Skip tests in CI environment due to rendering issues
-const itSkipInCI = process.env.CI === 'true' ? it.skip : it;
-
 // Component that throws an error
 const ProblemChild = ({ shouldThrow }: { shouldThrow: boolean }) => {
   if (shouldThrow) {
@@ -38,7 +35,7 @@ describe('ErrorBoundary Component', () => {
     vi.clearAllMocks();
   });
 
-  itSkipInCI('renders children when there is no error', () => {
+  it('renders children when there is no error', () => {
     render(
       <ErrorBoundary>
         <div>Test content</div>
@@ -48,7 +45,7 @@ describe('ErrorBoundary Component', () => {
     expect(screen.getByText('Test content')).toBeInTheDocument();
   });
 
-  itSkipInCI('renders error UI when child component throws', () => {
+  it('renders error UI when child component throws', () => {
     render(
       <ErrorBoundary>
         <ProblemChild shouldThrow={true} />
@@ -64,7 +61,7 @@ describe('ErrorBoundary Component', () => {
     ).toBeInTheDocument();
   });
 
-  itSkipInCI('logs error to console', async () => {
+  it('logs error to console', async () => {
     const { default: logger } = await import('../../../utils/logger');
 
     render(
@@ -82,7 +79,7 @@ describe('ErrorBoundary Component', () => {
     expect(logger.debug).toHaveBeenCalled();
   });
 
-  itSkipInCI('handles reload button click', () => {
+  it('handles reload button click', () => {
     // Mock window.location.reload
     const originalReload = window.location.reload;
     Object.defineProperty(window, 'location', {
@@ -108,7 +105,7 @@ describe('ErrorBoundary Component', () => {
     });
   });
 
-  itSkipInCI('applies correct styling to error UI', () => {
+  it('applies correct styling to error UI', () => {
     render(
       <ErrorBoundary>
         <ProblemChild shouldThrow={true} />
@@ -127,7 +124,7 @@ describe('ErrorBoundary Component', () => {
     expect(reloadButton).toHaveClass('bg-indigo-600', 'text-white');
   });
 
-  itSkipInCI('catches errors from nested components', () => {
+  it('catches errors from nested components', () => {
     const DeepChild = () => {
       throw new Error('Deep error');
     };
@@ -143,7 +140,7 @@ describe('ErrorBoundary Component', () => {
     expect(screen.getByText('문제가 발생했습니다')).toBeInTheDocument();
   });
 
-  itSkipInCI('recovers when error is resolved', () => {
+  it('recovers when error is resolved', () => {
     const { rerender } = render(
       <ErrorBoundary>
         <ProblemChild shouldThrow={true} />
@@ -164,7 +161,7 @@ describe('ErrorBoundary Component', () => {
     expect(screen.getByText('문제가 발생했습니다')).toBeInTheDocument();
   });
 
-  itSkipInCI('handles multiple children with one failing', () => {
+  it('handles multiple children with one failing', () => {
     render(
       <ErrorBoundary>
         <div>First child</div>
@@ -178,7 +175,7 @@ describe('ErrorBoundary Component', () => {
     expect(screen.queryByText('Third child')).not.toBeInTheDocument();
   });
 
-  itSkipInCI('centers error content on screen', () => {
+  it('centers error content on screen', () => {
     render(
       <ErrorBoundary>
         <ProblemChild shouldThrow={true} />
@@ -190,7 +187,7 @@ describe('ErrorBoundary Component', () => {
   });
 
   describe('getDerivedStateFromError', () => {
-    itSkipInCI('updates state when error occurs', () => {
+    it('updates state when error occurs', () => {
       const error = new Error('Test error');
       const newState = ErrorBoundary.getDerivedStateFromError(error);
 

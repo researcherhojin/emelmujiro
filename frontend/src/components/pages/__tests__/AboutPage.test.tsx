@@ -5,9 +5,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import AboutPage from '../AboutPage';
 import React from 'react';
 
-// Skip tests in CI environment due to rendering issues
-const itSkipInCI = process.env.CI === 'true' ? it.skip : it;
-
 // Type definitions for motion component props
 interface MotionComponentProps {
   children?: React.ReactNode;
@@ -59,13 +56,13 @@ describe('AboutPage', () => {
     );
   };
 
-  itSkipInCI('renders about page with main heading', () => {
+  it('renders about page with main heading', () => {
     renderWithRouter();
 
     expect(screen.getByText('에멜무지로')).toBeInTheDocument();
   });
 
-  itSkipInCI('renders company introduction section', () => {
+  it('renders company introduction section', () => {
     renderWithRouter();
 
     expect(
@@ -76,7 +73,7 @@ describe('AboutPage', () => {
     ).toBeInTheDocument();
   });
 
-  itSkipInCI('renders mission section', () => {
+  it('renders mission section', () => {
     renderWithRouter();
 
     expect(screen.getByText('우리의 미션')).toBeInTheDocument();
@@ -85,7 +82,7 @@ describe('AboutPage', () => {
     ).toBeInTheDocument();
   });
 
-  itSkipInCI('renders timeline section', () => {
+  it('renders timeline section', () => {
     renderWithRouter();
 
     expect(screen.getByText('우리의 여정')).toBeInTheDocument();
@@ -93,7 +90,7 @@ describe('AboutPage', () => {
     expect(screen.getByText('2025')).toBeInTheDocument();
   });
 
-  itSkipInCI('renders core values section', () => {
+  it('renders core values section', () => {
     renderWithRouter();
 
     expect(screen.getByText('핵심 가치')).toBeInTheDocument();
@@ -104,13 +101,13 @@ describe('AboutPage', () => {
     expect(screen.getByText('최신 기술 활용')).toBeInTheDocument();
   });
 
-  itSkipInCI('renders services section', () => {
+  it('renders services section', () => {
     renderWithRouter();
 
     expect(screen.getByText('핵심 가치')).toBeInTheDocument();
   });
 
-  itSkipInCI('renders company stats section', () => {
+  it('renders company stats section', () => {
     renderWithRouter();
 
     expect(screen.getByText('1,000+')).toBeInTheDocument();
@@ -119,7 +116,7 @@ describe('AboutPage', () => {
     expect(screen.getByText('98%')).toBeInTheDocument();
   });
 
-  itSkipInCI('renders contact CTA section', () => {
+  it('renders contact CTA section', () => {
     renderWithRouter();
 
     expect(
@@ -128,14 +125,14 @@ describe('AboutPage', () => {
     expect(screen.getByText(/프로젝트 문의하기/i)).toBeInTheDocument();
   });
 
-  itSkipInCI('has contact button that can be clicked', () => {
+  it('has contact button that can be clicked', () => {
     renderWithRouter();
 
     const contactButton = screen.getByText(/프로젝트 문의하기/i);
     expect(contactButton).toBeInTheDocument();
   });
 
-  itSkipInCI('renders with proper semantic structure', () => {
+  it('renders with proper semantic structure', () => {
     renderWithRouter();
 
     // Check that sections exist by looking for section headings
@@ -144,7 +141,7 @@ describe('AboutPage', () => {
     expect(screen.getByText('주요 성과')).toBeInTheDocument();
   });
 
-  itSkipInCI('renders values and services with their content', () => {
+  it('renders values and services with their content', () => {
     renderWithRouter();
 
     // Check that value items are rendered
@@ -158,7 +155,7 @@ describe('AboutPage', () => {
     expect(techValue).toBeInTheDocument();
   });
 
-  itSkipInCI('displays timeline section', () => {
+  it('displays timeline section', () => {
     renderWithRouter();
 
     expect(screen.getByText('우리의 여정')).toBeInTheDocument();
@@ -167,7 +164,7 @@ describe('AboutPage', () => {
     expect(screen.getByText('2025')).toBeInTheDocument();
   });
 
-  itSkipInCI('displays all value descriptions', () => {
+  it('displays all value descriptions', () => {
     renderWithRouter();
 
     expect(

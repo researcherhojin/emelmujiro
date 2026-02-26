@@ -113,7 +113,7 @@ describe('BlogDetail Component', () => {
     );
   };
 
-  test.skip('renders loading state', () => {
+  test('renders loading state', () => {
     mockLoading = true;
     (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
       currentPost: mockPost,
@@ -152,7 +152,7 @@ describe('BlogDetail Component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/404', { replace: true });
   });
 
-  test.skip('renders error state for other errors', () => {
+  test('renders error state for other errors', () => {
     mockError = 'Network error';
     (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
       currentPost: mockPost,
@@ -172,7 +172,7 @@ describe('BlogDetail Component', () => {
     expect(screen.getByText('뒤로 가기')).toBeInTheDocument();
   });
 
-  test.skip('renders blog post details', () => {
+  test('renders blog post details', () => {
     mockPost = {
       id: 1,
       title: 'Test Blog Post',

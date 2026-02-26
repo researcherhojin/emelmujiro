@@ -115,7 +115,7 @@ describe('NotificationPermission', () => {
     vi.useRealTimers();
   });
 
-  it.skip('does not render banner when push notifications are not supported', () => {
+  it('does not render banner when push notifications are not supported', () => {
     mockIsPushNotificationSupported.mockReturnValue(false);
 
     renderWithSelectiveProviders(<NotificationPermission />);
@@ -130,7 +130,7 @@ describe('NotificationPermission', () => {
     ).not.toBeInTheDocument();
   });
 
-  it.skip('does not render banner when push notifications are already enabled', () => {
+  it('does not render banner when push notifications are already enabled', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(true);
 
@@ -146,7 +146,7 @@ describe('NotificationPermission', () => {
     ).not.toBeInTheDocument();
   });
 
-  it.skip('renders banner after delay when conditions are met', () => {
+  it('renders banner after delay when conditions are met', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -165,7 +165,7 @@ describe('NotificationPermission', () => {
     expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
   });
 
-  it.skip('renders complete banner content', () => {
+  it('renders complete banner content', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -187,7 +187,7 @@ describe('NotificationPermission', () => {
     expect(screen.getByTestId('x-icon')).toBeInTheDocument();
   });
 
-  it.skip('handles successful notification permission request', async () => {
+  it('handles successful notification permission request', async () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
     mockRequestNotificationPermission.mockResolvedValue(true);
@@ -225,7 +225,7 @@ describe('NotificationPermission', () => {
     });
   });
 
-  it.skip('handles permission denied scenario', async () => {
+  it('handles permission denied scenario', async () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
     mockRequestNotificationPermission.mockResolvedValue(false);
@@ -253,7 +253,7 @@ describe('NotificationPermission', () => {
     });
   });
 
-  it.skip('handles notification subscription error', async () => {
+  it('handles notification subscription error', async () => {
     const subscriptionError = new Error('Subscription failed');
 
     mockIsPushNotificationSupported.mockReturnValue(true);
@@ -283,7 +283,7 @@ describe('NotificationPermission', () => {
     });
   });
 
-  it.skip('handles permission request error', async () => {
+  it('handles permission request error', async () => {
     const permissionError = new Error('Permission request failed');
 
     mockIsPushNotificationSupported.mockReturnValue(true);
@@ -312,7 +312,7 @@ describe('NotificationPermission', () => {
     });
   });
 
-  it.skip('dismisses banner when "나중에" button is clicked', () => {
+  it('dismisses banner when "나중에" button is clicked', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -336,7 +336,7 @@ describe('NotificationPermission', () => {
     );
   });
 
-  it.skip('dismisses banner when X button is clicked', () => {
+  it('dismisses banner when X button is clicked', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -360,7 +360,7 @@ describe('NotificationPermission', () => {
     );
   });
 
-  it.skip('disables enable button during subscription process', async () => {
+  it('disables enable button during subscription process', async () => {
     let resolvePermission: (value: boolean) => void;
     const permissionPromise = new Promise<boolean>((resolve) => {
       resolvePermission = resolve;
@@ -393,7 +393,7 @@ describe('NotificationPermission', () => {
     });
   });
 
-  it.skip('applies correct CSS classes to banner container', () => {
+  it('applies correct CSS classes to banner container', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -407,7 +407,7 @@ describe('NotificationPermission', () => {
     expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
   });
 
-  it.skip('applies correct CSS classes to buttons', () => {
+  it('applies correct CSS classes to buttons', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -444,7 +444,7 @@ describe('NotificationPermission', () => {
     );
   });
 
-  it.skip('applies correct CSS classes to close button', () => {
+  it('applies correct CSS classes to close button', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -464,7 +464,7 @@ describe('NotificationPermission', () => {
     );
   });
 
-  it.skip('applies correct CSS classes to text elements', () => {
+  it('applies correct CSS classes to text elements', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -488,7 +488,7 @@ describe('NotificationPermission', () => {
     expect(descriptionElement).toHaveClass('text-sm', 'text-gray-600', 'mb-3');
   });
 
-  it.skip('has correct accessibility attributes', () => {
+  it('has correct accessibility attributes', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -509,7 +509,7 @@ describe('NotificationPermission', () => {
     expect(laterButton).toBeInTheDocument();
   });
 
-  it.skip('clears timeout when component unmounts', () => {
+  it('clears timeout when component unmounts', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -526,7 +526,7 @@ describe('NotificationPermission', () => {
     clearTimeoutSpy.mockRestore();
   });
 
-  it.skip('handles component re-render without duplicating timer', () => {
+  it('handles component re-render without duplicating timer', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -545,7 +545,7 @@ describe('NotificationPermission', () => {
     setTimeoutSpy.mockRestore();
   });
 
-  it.skip('does not show banner if notifications already supported but effect returns undefined', () => {
+  it('does not show banner if notifications already supported but effect returns undefined', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(true); // Already enabled
 
@@ -560,7 +560,7 @@ describe('NotificationPermission', () => {
     ).not.toBeInTheDocument();
   });
 
-  it.skip('handles Bell icon rendering correctly', () => {
+  it('handles Bell icon rendering correctly', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -574,7 +574,7 @@ describe('NotificationPermission', () => {
     expect(bellIcon).toHaveClass('w-6', 'h-6', 'text-gray-900');
   });
 
-  it.skip('handles X icon rendering correctly', () => {
+  it('handles X icon rendering correctly', () => {
     mockIsPushNotificationSupported.mockReturnValue(true);
     mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -588,12 +588,12 @@ describe('NotificationPermission', () => {
     expect(xIcon).toHaveClass('w-5', 'h-5');
   });
 
-  it.skip('maintains component display name', () => {
+  it('maintains component display name', () => {
     expect(NotificationPermission.displayName).toBe('NotificationPermission');
   });
 
   describe('localStorage interaction', () => {
-    it.skip('stores dismissal in localStorage when dismissed', () => {
+    it('stores dismissal in localStorage when dismissed', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -613,7 +613,7 @@ describe('NotificationPermission', () => {
       );
     });
 
-    it.skip('stores dismissal timestamp when dismissed via X button', () => {
+    it('stores dismissal timestamp when dismissed via X button', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -632,7 +632,7 @@ describe('NotificationPermission', () => {
       );
     });
 
-    it.skip('stores dismissal timestamp when dismissed via "나중에" button', () => {
+    it('stores dismissal timestamp when dismissed via "나중에" button', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -653,7 +653,7 @@ describe('NotificationPermission', () => {
   });
 
   describe('Notification API interaction', () => {
-    it.skip('creates success notification when permissions granted', async () => {
+    it('creates success notification when permissions granted', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
       mockRequestNotificationPermission.mockResolvedValue(true);
@@ -666,23 +666,22 @@ describe('NotificationPermission', () => {
       });
 
       const enableButton = screen.getByText('알림 받기');
-      fireEvent.click(enableButton);
 
-      await waitFor(
-        () => {
-          expect(mockNotification).toHaveBeenCalledWith(
-            '알림 활성화 완료!',
-            expect.objectContaining({
-              body: '이제 에멜무지로의 중요한 소식을 받아보실 수 있습니다.',
-              icon: '/logo192.png',
-            })
-          );
-        },
-        { timeout: 3000 }
+      // Use act to properly flush async operations from the click handler
+      await act(async () => {
+        fireEvent.click(enableButton);
+      });
+
+      expect(mockNotification).toHaveBeenCalledWith(
+        '알림 활성화 완료!',
+        expect.objectContaining({
+          body: '이제 에멜무지로의 중요한 소식을 받아보실 수 있습니다.',
+          icon: '/logo192.png',
+        })
       );
     });
 
-    it.skip('does not create notification when permission denied', async () => {
+    it('does not create notification when permission denied', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
       mockRequestNotificationPermission.mockResolvedValue(false);
@@ -694,18 +693,19 @@ describe('NotificationPermission', () => {
       });
 
       const enableButton = screen.getByText('알림 받기');
-      fireEvent.click(enableButton);
 
-      await waitFor(() => {
-        expect(mockRequestNotificationPermission).toHaveBeenCalled();
+      // Use act to properly flush async operations from the click handler
+      await act(async () => {
+        fireEvent.click(enableButton);
       });
 
+      expect(mockRequestNotificationPermission).toHaveBeenCalled();
       expect(mockNotification).not.toHaveBeenCalled();
     });
   });
 
   describe('Animation and styling', () => {
-    it.skip('applies fade-in animation class to banner', () => {
+    it('applies fade-in animation class to banner', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -721,7 +721,7 @@ describe('NotificationPermission', () => {
       expect(banner).toBeInTheDocument();
     });
 
-    it.skip('applies correct positioning classes for desktop', () => {
+    it('applies correct positioning classes for desktop', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -739,7 +739,7 @@ describe('NotificationPermission', () => {
       expect(banner).toBeInTheDocument();
     });
 
-    it.skip('applies correct positioning classes for mobile', () => {
+    it('applies correct positioning classes for mobile', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -755,7 +755,7 @@ describe('NotificationPermission', () => {
       expect(banner).toBeInTheDocument();
     });
 
-    it.skip('applies correct z-index for overlay', () => {
+    it('applies correct z-index for overlay', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -773,7 +773,7 @@ describe('NotificationPermission', () => {
   });
 
   describe('Timer management', () => {
-    it.skip('does not create timer when notifications are not supported', () => {
+    it('does not create timer when notifications are not supported', () => {
       mockIsPushNotificationSupported.mockReturnValue(false);
 
       const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
@@ -785,7 +785,7 @@ describe('NotificationPermission', () => {
       setTimeoutSpy.mockRestore();
     });
 
-    it.skip('creates timer with correct delay when conditions met', () => {
+    it('creates timer with correct delay when conditions met', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -798,7 +798,7 @@ describe('NotificationPermission', () => {
       setTimeoutSpy.mockRestore();
     });
 
-    it.skip('cleans up timer on unmount before it fires', () => {
+    it('cleans up timer on unmount before it fires', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -817,7 +817,7 @@ describe('NotificationPermission', () => {
   });
 
   describe('Error boundaries', () => {
-    it.skip('handles Notification constructor error gracefully', async () => {
+    it('handles Notification constructor error gracefully', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
       mockRequestNotificationPermission.mockResolvedValue(true);
@@ -835,17 +835,19 @@ describe('NotificationPermission', () => {
       });
 
       const enableButton = screen.getByText('알림 받기');
-      fireEvent.click(enableButton);
+
+      // Use act to properly flush async operations from the click handler
+      await act(async () => {
+        fireEvent.click(enableButton);
+      });
 
       // Should handle error gracefully and still hide banner
-      await waitFor(() => {
-        expect(
-          screen.queryByText('알림을 받아보시겠습니까?')
-        ).not.toBeInTheDocument();
-      });
+      expect(
+        screen.queryByText('알림을 받아보시겠습니까?')
+      ).not.toBeInTheDocument();
     });
 
-    it.skip('handles subscription error and stays functional', async () => {
+    it('handles subscription error and stays functional', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
       mockRequestNotificationPermission.mockResolvedValue(true);
@@ -860,11 +862,13 @@ describe('NotificationPermission', () => {
       });
 
       const enableButton = screen.getByText('알림 받기');
-      fireEvent.click(enableButton);
 
-      await waitFor(() => {
-        expect(mockLoggerError).toHaveBeenCalled();
+      // Use act to properly flush async operations from the click handler
+      await act(async () => {
+        fireEvent.click(enableButton);
       });
+
+      expect(mockLoggerError).toHaveBeenCalled();
 
       // Banner should still be visible after error
       expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
@@ -880,7 +884,7 @@ describe('NotificationPermission', () => {
   });
 
   describe('Concurrent operations', () => {
-    it.skip('prevents multiple simultaneous subscription attempts', async () => {
+    it('prevents multiple simultaneous subscription attempts', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -889,6 +893,7 @@ describe('NotificationPermission', () => {
         resolvePermission = resolve;
       });
       mockRequestNotificationPermission.mockReturnValue(permissionPromise);
+      mockSubscribeToPushNotifications.mockResolvedValue({});
 
       renderWithSelectiveProviders(<NotificationPermission />);
 
@@ -903,19 +908,18 @@ describe('NotificationPermission', () => {
       fireEvent.click(enableButton);
       fireEvent.click(enableButton);
 
-      // Should only call once
+      // Should only call once (button is disabled after first click)
       expect(mockRequestNotificationPermission).toHaveBeenCalledTimes(1);
 
-      act(() => {
+      // Resolve the permission and flush async operations
+      await act(async () => {
         resolvePermission!(true);
       });
 
-      await waitFor(() => {
-        expect(screen.queryByText('설정 중...')).not.toBeInTheDocument();
-      });
+      expect(screen.queryByText('설정 중...')).not.toBeInTheDocument();
     });
 
-    it.skip('handles rapid dismiss clicks correctly', () => {
+    it('handles rapid dismiss clicks correctly', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -943,7 +947,7 @@ describe('NotificationPermission', () => {
   });
 
   describe('Component lifecycle', () => {
-    it.skip('handles props changes correctly with memo', () => {
+    it('handles props changes correctly with memo', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -963,7 +967,7 @@ describe('NotificationPermission', () => {
       expect(screen.getByText('알림을 받아보시겠습니까?')).toBeInTheDocument();
     });
 
-    it.skip('handles multiple mount/unmount cycles', () => {
+    it('handles multiple mount/unmount cycles', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -985,7 +989,7 @@ describe('NotificationPermission', () => {
   });
 
   describe('Button states and interactions', () => {
-    it.skip('ensures enable button is properly disabled during loading', () => {
+    it('ensures enable button is properly disabled during loading', () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
       mockRequestNotificationPermission.mockReturnValue(new Promise(() => {})); // Never resolves
@@ -1004,7 +1008,7 @@ describe('NotificationPermission', () => {
       expect(loadingButton.closest('button')).toHaveAttribute('disabled');
     });
 
-    it.skip('maintains button functionality after error', async () => {
+    it('maintains button functionality after error', async () => {
       mockIsPushNotificationSupported.mockReturnValue(true);
       mockIsPushNotificationEnabled.mockReturnValue(false);
 
@@ -1020,22 +1024,26 @@ describe('NotificationPermission', () => {
       });
 
       const enableButton = screen.getByText('알림 받기');
-      fireEvent.click(enableButton);
 
-      await waitFor(() => {
-        expect(mockLoggerError).toHaveBeenCalled();
+      // Use act to properly flush async operations from the click handler
+      await act(async () => {
+        fireEvent.click(enableButton);
       });
+
+      expect(mockLoggerError).toHaveBeenCalled();
 
       // Button should be enabled again
       expect(screen.getByText('알림 받기')).not.toBeDisabled();
 
       // Second attempt succeeds
       mockRequestNotificationPermission.mockResolvedValueOnce(true);
-      fireEvent.click(screen.getByText('알림 받기'));
+      mockSubscribeToPushNotifications.mockResolvedValue({});
 
-      await waitFor(() => {
-        expect(mockRequestNotificationPermission).toHaveBeenCalledTimes(2);
+      await act(async () => {
+        fireEvent.click(screen.getByText('알림 받기'));
       });
+
+      expect(mockRequestNotificationPermission).toHaveBeenCalledTimes(2);
     });
   });
 });

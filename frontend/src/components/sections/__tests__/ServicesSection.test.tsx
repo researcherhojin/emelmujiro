@@ -2,26 +2,25 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import ServicesSection from '../ServicesSection';
 import React from 'react';
-import { testSkipInCI } from '../../../test-utils/ci-skip';
 
 describe('ServicesSection Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
   };
 
-  testSkipInCI('renders section title', () => {
+  test('renders section title', () => {
     renderWithRouter(<ServicesSection />);
     expect(screen.getByText('주요 서비스')).toBeInTheDocument();
   });
 
-  testSkipInCI('renders section subtitle', () => {
+  test('renders section subtitle', () => {
     renderWithRouter(<ServicesSection />);
     expect(
       screen.getByText(/기업의 AI 도입을 위한 단계별 솔루션/)
     ).toBeInTheDocument();
   });
 
-  testSkipInCI('renders all service cards', () => {
+  test('renders all service cards', () => {
     renderWithRouter(<ServicesSection />);
 
     // Check for service titles
@@ -30,7 +29,7 @@ describe('ServicesSection Component', () => {
     expect(screen.getByText('LLM 솔루션')).toBeInTheDocument();
   });
 
-  testSkipInCI('renders service descriptions', () => {
+  test('renders service descriptions', () => {
     renderWithRouter(<ServicesSection />);
 
     expect(
@@ -44,7 +43,7 @@ describe('ServicesSection Component', () => {
     ).toBeInTheDocument();
   });
 
-  testSkipInCI('renders service details', () => {
+  test('renders service details', () => {
     renderWithRouter(<ServicesSection />);
 
     // Check for some detail items
@@ -53,15 +52,7 @@ describe('ServicesSection Component', () => {
     expect(screen.getByText(/RAG 시스템 구축/)).toBeInTheDocument();
   });
 
-  testSkipInCI('renders all service cards', () => {
-    renderWithRouter(<ServicesSection />);
-    // Check that all service titles are rendered
-    expect(screen.getByText('AI 컨설팅')).toBeInTheDocument();
-    expect(screen.getByText('기업 AI 교육')).toBeInTheDocument();
-    expect(screen.getByText('LLM 솔루션')).toBeInTheDocument();
-  });
-
-  testSkipInCI('service cards have proper content', () => {
+  test('service cards have proper content', () => {
     renderWithRouter(<ServicesSection />);
 
     // Check that service descriptions are present

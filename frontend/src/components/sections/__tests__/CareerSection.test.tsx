@@ -222,23 +222,6 @@ describe('CareerSection', () => {
     }
   });
 
-  it.skip('handles click events on career items', () => {
-    renderWithProviders(<CareerSection />);
-
-    // Look for any clickable career item
-    const clickableItems = screen.queryAllByRole('button');
-
-    if (clickableItems.length > 0) {
-      fireEvent.click(clickableItems[0]);
-      // Item should remain visible
-      expect(clickableItems[0]).toBeInTheDocument();
-    } else {
-      // If no clickable items, just ensure component renders
-      const content = screen.getByText('경력 상세');
-      expect(content).toBeInTheDocument();
-    }
-  });
-
   it('renders achievements with proper formatting', () => {
     renderWithProviders(<CareerSection />);
 
