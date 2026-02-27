@@ -103,7 +103,7 @@ Vitest with jsdom environment. Config in `frontend/vitest.config.ts`. Setup file
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- All 1553 tests pass in both local and CI environments with 0 skips
+- All tests pass in both local and CI environments with 0 skips (89 test files, ~1544 test cases)
 
 ### E2E Testing (Playwright)
 
@@ -147,7 +147,7 @@ Husky + lint-staged: ESLint --fix + Prettier on `src/**/*.{js,jsx,ts,tsx}`, Pret
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API in production**: Always on, not configurable — GitHub Pages has no backend
 3. **Build output**: `build/`, not `dist/`
-4. **All tests run in CI**: 1553 tests pass with 0 skips in both local and CI environments
+4. **All tests run in CI**: ~1544 tests pass with 0 skips (count changes as tests are added/removed)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility

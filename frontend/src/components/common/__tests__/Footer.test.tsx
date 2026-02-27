@@ -44,9 +44,9 @@ vi.mock('lucide-react', () => ({
       X
     </div>
   ),
-  Code: ({ className }: { className?: string }) => (
-    <div data-testid="code-icon" className={className}>
-      Code
+  Code2: ({ className }: { className?: string }) => (
+    <div data-testid="code2-icon" className={className}>
+      Code2
     </div>
   ),
   GraduationCap: ({ className }: { className?: string }) => (
@@ -54,14 +54,14 @@ vi.mock('lucide-react', () => ({
       GraduationCap
     </div>
   ),
-  BarChart3: ({ className }: { className?: string }) => (
-    <div data-testid="bar-chart-icon" className={className}>
-      BarChart3
+  MessageSquare: ({ className }: { className?: string }) => (
+    <div data-testid="message-square-icon" className={className}>
+      MessageSquare
     </div>
   ),
-  Database: ({ className }: { className?: string }) => (
-    <div data-testid="database-icon" className={className}>
-      Database
+  Eye: ({ className }: { className?: string }) => (
+    <div data-testid="eye-icon" className={className}>
+      Eye
     </div>
   ),
 }));
@@ -320,23 +320,23 @@ describe('Footer Component', () => {
 
   describe('Service Modal Functionality', () => {
     test(
-      'opens AI solution modal when clicked',
+      'opens LLM/생성형 AI modal when clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
         const buttons = container.querySelectorAll('button');
-        const aiSolutionButton = Array.from(buttons).find(
+        const llmButton = Array.from(buttons).find(
           (btn) => btn.textContent === 'LLM/생성형 AI'
         );
-        expect(aiSolutionButton).toBeTruthy();
-        fireEvent.click(aiSolutionButton!);
+        expect(llmButton).toBeTruthy();
+        fireEvent.click(llmButton!);
 
         await waitFor(
           () => {
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
                 p.textContent?.includes(
-                  '기업 맞춤형 AI 솔루션을 설계하고 구현합니다.'
+                  'LLM 기반 서비스를 설계하고 개발합니다.'
                 )
             );
             expect(modalText).toBeInTheDocument();
@@ -348,14 +348,12 @@ describe('Footer Component', () => {
         const hasMainService = Array.from(headings).some(
           (h) => h.textContent === '주요 서비스'
         );
-        const hasMainCase = Array.from(headings).some(
-          (h) => h.textContent === '주요 사례'
-        );
         expect(hasMainService).toBe(true);
-        expect(hasMainCase).toBe(true);
 
-        const codeIcon = container.querySelector('[data-testid="code-icon"]');
-        expect(codeIcon).toBeInTheDocument();
+        const messageSquareIcon = container.querySelector(
+          '[data-testid="message-square-icon"]'
+        );
+        expect(messageSquareIcon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
     );
@@ -377,7 +375,7 @@ describe('Footer Component', () => {
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
                 p.textContent?.includes(
-                  '실무 중심의 AI 교육 프로그램을 제공합니다.'
+                  '기업 맞춤 AI 교육 프로그램을 설계하고 운영합니다.'
                 )
             );
             expect(modalText).toBeInTheDocument();
@@ -410,7 +408,7 @@ describe('Footer Component', () => {
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
                 p.textContent?.includes(
-                  'AI 도입 전략부터 실행까지 종합적인 컨설팅을 제공합니다.'
+                  'AI 도입 전략 수립부터 기술 자문까지 제공합니다.'
                 )
             );
             expect(modalText).toBeInTheDocument();
@@ -418,32 +416,30 @@ describe('Footer Component', () => {
           { timeout: 3000 }
         );
 
-        const barChartIcon = container.querySelector(
-          '[data-testid="bar-chart-icon"]'
-        );
-        expect(barChartIcon).toBeInTheDocument();
+        const code2Icon = container.querySelector('[data-testid="code2-icon"]');
+        expect(code2Icon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
     );
 
     test(
-      'opens data analysis modal when clicked',
+      'opens Computer Vision modal when clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
         const buttons = container.querySelectorAll('button');
-        const dataAnalysisButton = Array.from(buttons).find(
+        const cvButton = Array.from(buttons).find(
           (btn) => btn.textContent === 'Computer Vision'
         );
-        expect(dataAnalysisButton).toBeTruthy();
-        fireEvent.click(dataAnalysisButton!);
+        expect(cvButton).toBeTruthy();
+        fireEvent.click(cvButton!);
 
         await waitFor(
           () => {
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
                 p.textContent?.includes(
-                  '비즈니스 인사이트 도출을 위한 데이터 분석 서비스를 제공합니다.'
+                  '영상 처리 및 비전 AI 솔루션을 제공합니다.'
                 )
             );
             expect(modalText).toBeInTheDocument();
@@ -451,10 +447,8 @@ describe('Footer Component', () => {
           { timeout: 3000 }
         );
 
-        const databaseIcon = container.querySelector(
-          '[data-testid="database-icon"]'
-        );
-        expect(databaseIcon).toBeInTheDocument();
+        const eyeIcon = container.querySelector('[data-testid="eye-icon"]');
+        expect(eyeIcon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
     );
@@ -465,18 +459,18 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         const buttons = container.querySelectorAll('button');
-        const aiSolutionButton = Array.from(buttons).find(
+        const llmButton = Array.from(buttons).find(
           (btn) => btn.textContent === 'LLM/생성형 AI'
         );
-        expect(aiSolutionButton).toBeTruthy();
-        fireEvent.click(aiSolutionButton!);
+        expect(llmButton).toBeTruthy();
+        fireEvent.click(llmButton!);
 
         await waitFor(
           () => {
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
                 p.textContent?.includes(
-                  '기업 맞춤형 AI 솔루션을 설계하고 구현합니다.'
+                  'LLM 기반 서비스를 설계하고 개발합니다.'
                 )
             );
             expect(modalText).toBeInTheDocument();
@@ -493,7 +487,7 @@ describe('Footer Component', () => {
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
                 p.textContent?.includes(
-                  '기업 맞춤형 AI 솔루션을 설계하고 구현합니다.'
+                  'LLM 기반 서비스를 설계하고 개발합니다.'
                 )
             );
             expect(modalText).toBeFalsy();
@@ -512,13 +506,13 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
-        fireEvent.click(aiSolutionButtons[0]);
+        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        fireEvent.click(llmButtons[0]);
 
         await waitFor(
           () => {
             expect(
-              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+              screen.getByText('LLM 기반 서비스를 설계하고 개발합니다.')
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -531,7 +525,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+              screen.queryByText('LLM 기반 서비스를 설계하고 개발합니다.')
             ).not.toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -546,13 +540,13 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
-        fireEvent.click(aiSolutionButtons[0]);
+        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        fireEvent.click(llmButtons[0]);
 
         await waitFor(
           () => {
             expect(
-              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+              screen.getByText('LLM 기반 서비스를 설계하고 개발합니다.')
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -568,7 +562,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+              screen.queryByText('LLM 기반 서비스를 설계하고 개발합니다.')
             ).not.toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -583,13 +577,13 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
-        fireEvent.click(aiSolutionButtons[0]);
+        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        fireEvent.click(llmButtons[0]);
 
         await waitFor(
           () => {
             expect(
-              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+              screen.getByText('LLM 기반 서비스를 설계하고 개발합니다.')
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -617,13 +611,13 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
-        fireEvent.click(aiSolutionButtons[0]);
+        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        fireEvent.click(llmButtons[0]);
 
         await waitFor(
           () => {
             expect(
-              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+              screen.getByText('LLM 기반 서비스를 설계하고 개발합니다.')
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -636,7 +630,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+              screen.queryByText('LLM 기반 서비스를 설계하고 개발합니다.')
             ).not.toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -651,13 +645,13 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
-        fireEvent.click(aiSolutionButtons[0]);
+        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        fireEvent.click(llmButtons[0]);
 
         await waitFor(
           () => {
             expect(
-              screen.getByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+              screen.getByText('LLM 기반 서비스를 설계하고 개발합니다.')
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -670,7 +664,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.queryByText('기업 맞춤형 AI 솔루션을 설계하고 구현합니다.')
+              screen.queryByText('LLM 기반 서비스를 설계하고 개발합니다.')
             ).not.toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -682,30 +676,25 @@ describe('Footer Component', () => {
 
   describe('Service Modal Content', () => {
     test(
-      'displays all service details for AI solution',
+      'displays all service details for LLM/생성형 AI',
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
-        const aiSolutionButton = aiSolutionButtons[0];
-        fireEvent.click(aiSolutionButton);
+        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        fireEvent.click(llmButtons[0]);
 
         await waitFor(
           () =>
             expect(
-              screen.getByText('맞춤형 LLM 기반 솔루션 개발')
+              screen.getByText('RAG 시스템 설계 및 구축')
             ).toBeInTheDocument(),
           { timeout: 3000 }
         );
         expect(
-          screen.getByText('Computer Vision & 이미지 분석 시스템')
-        ).toBeInTheDocument();
-        expect(screen.getByText('MLOps 파이프라인 구축')).toBeInTheDocument();
-        expect(
-          screen.getByText(/삼성전자.*AI 이상탐지 시스템/)
+          screen.getByText('LLM 기반 서비스 프로토타입')
         ).toBeInTheDocument();
         expect(
-          screen.getByText(/LG전자.*데이터 분석 파이프라인/)
+          screen.getByText('AI 에이전트 설계 및 개발')
         ).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
@@ -723,23 +712,17 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.getByText('실무 중심의 AI 교육 프로그램을 제공합니다.')
+              screen.getByText(
+                '기업 맞춤 AI 교육 프로그램을 설계하고 운영합니다.'
+              )
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
         );
 
-        expect(
-          screen.getByText('기업 맞춤형 AI 교육 커리큘럼 설계')
-        ).toBeInTheDocument();
+        expect(screen.getByText('맞춤형 커리큘럼 설계')).toBeInTheDocument();
         expect(
           screen.getByText('Python 머신러닝/딥러닝 실무 교육')
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText(/삼성전자.*Python 머신러닝 교육/)
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText(/멋쟁이사자처럼.*AI 스타트업 교육/)
         ).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
@@ -785,8 +768,8 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const aiSolutionButtons = screen.getAllByText('LLM/생성형 AI');
-        fireEvent.click(aiSolutionButtons[0]);
+        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        fireEvent.click(llmButtons[0]);
 
         await waitFor(
           () => {
@@ -839,7 +822,6 @@ describe('Footer Component', () => {
 
       // Modal should not be visible initially
       expect(screen.queryByText('주요 서비스')).not.toBeInTheDocument();
-      expect(screen.queryByText('주요 사례')).not.toBeInTheDocument();
     });
   });
 

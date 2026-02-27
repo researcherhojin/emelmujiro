@@ -70,22 +70,6 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
                     ))}
                   </ul>
                 </div>
-
-                <div className="mb-6">
-                  <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                    주요 사례
-                  </h4>
-                  <ul className="space-y-1">
-                    {service.cases.map((caseItem, index) => (
-                      <li
-                        key={index}
-                        className="text-sm text-gray-600 dark:text-gray-400"
-                      >
-                        • {caseItem}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
               </div>
             </div>
 
@@ -195,7 +179,7 @@ const Footer: React.FC = memo(() => {
                 </li>
                 <li>
                   <button
-                    onClick={() => handleServiceClick('ai-solution')}
+                    onClick={() => handleServiceClick('llm-genai')}
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
@@ -204,7 +188,7 @@ const Footer: React.FC = memo(() => {
                 </li>
                 <li>
                   <button
-                    onClick={() => handleServiceClick('data-analysis')}
+                    onClick={() => handleServiceClick('computer-vision')}
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
