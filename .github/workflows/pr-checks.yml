@@ -63,15 +63,25 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: node-cache
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.node-cache.outputs.cache-hit != 'true'
+        working-directory: ./frontend
+        run: npm ci --prefer-offline --no-audit
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
 
       - name: Frontend lint
+        working-directory: ./frontend
         run: |
-          cd frontend
-          npm ci --prefer-offline --no-audit
           npm run lint
           npx prettier --check "src/**/*.{js,jsx,ts,tsx,css}"
 
@@ -106,15 +116,25 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+
+      - name: Cache node_modules
+        if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/')
+        uses: actions/cache@v4
+        id: node-cache
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install dependencies
+        if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/') && steps.node-cache.outputs.cache-hit != 'true'
+        working-directory: ./frontend
+        run: npm ci --prefer-offline --no-audit
 
       - name: Test frontend changes
         if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/')
-        run: |
-          cd frontend
-          npm ci --prefer-offline --no-audit
-          CI=true npm test -- --run --passWithNoTests --maxWorkers=2
-        timeout-minutes: 10 # Individual test step timeout
+        working-directory: ./frontend
+        run: CI=true npm test -- --run --passWithNoTests --maxWorkers=2
+        timeout-minutes: 10
 
       - name: Install uv
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
@@ -164,12 +184,22 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: node-cache
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.node-cache.outputs.cache-hit != 'true'
+        working-directory: ./frontend
+        run: npm ci --prefer-offline --no-audit
 
       - name: Build and analyze
+        working-directory: ./frontend
         run: |
-          cd frontend
-          npm ci --prefer-offline --no-audit
           npm run build
 
           # Check build size
