@@ -48,7 +48,7 @@ export const env = {
   VAPID_PUBLIC_KEY: getEnvVar('REACT_APP_VAPID_PUBLIC_KEY', ''),
 
   // App Configuration
-  APP_NAME: getEnvVar('REACT_APP_APP_NAME', '에멜무지로'),
+  APP_NAME: getEnvVar('REACT_APP_APP_NAME', 'Emelmujiro'),
   APP_VERSION: getEnvVar('REACT_APP_VERSION', '1.0.0'),
   PUBLIC_URL: getEnvVar('REACT_APP_PUBLIC_URL', '/emelmujiro'),
 

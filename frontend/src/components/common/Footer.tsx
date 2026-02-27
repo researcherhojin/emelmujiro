@@ -2,7 +2,7 @@ import React, { useState, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail, Phone, ExternalLink, X } from 'lucide-react';
-import { services, type ServiceDetail } from '../../data/footerData';
+import { getServices, type ServiceDetail } from '../../data/footerData';
 
 interface ServiceModalProps {
   isOpen: boolean;
@@ -118,7 +118,8 @@ const Footer: React.FC = memo(() => {
   const currentYear = new Date().getFullYear();
 
   const handleServiceClick = useCallback((serviceKey: string) => {
-    setSelectedService(services[serviceKey]);
+    const currentServices = getServices();
+    setSelectedService(currentServices[serviceKey]);
     setIsServiceModalOpen(true);
   }, []);
 

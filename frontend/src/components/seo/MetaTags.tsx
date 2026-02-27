@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 
 interface MetaTagsProps {
   title?: string;
@@ -21,26 +22,29 @@ interface MetaTagsProps {
   jsonLd?: Record<string, unknown>;
 }
 
-const MetaTags: React.FC<MetaTagsProps> = ({
-  title = '에멜무지로 - AI 교육 & 컨설팅',
-  description = '에멜무지로는 최첨단 AI 기술을 활용한 맞춤형 교육과 전문 컨설팅 서비스를 제공합니다. 디지털 혁신을 위한 최고의 파트너가 되어드립니다.',
-  keywords = 'AI교육, AI컨설팅, 인공지능, 머신러닝, 딥러닝, 디지털전환, DX, 기업교육, IT컨설팅',
-  image = `${process.env.REACT_APP_SITE_URL}/og-image.png`,
-  url = process.env.REACT_APP_SITE_URL ||
-    'https://researcherhojin.github.io/emelmujiro',
-  type = 'website',
-  author = '에멜무지로',
-  publishedTime,
-  modifiedTime,
-  section,
-  tags = [],
-  noindex = false,
-  nofollow = false,
-  canonical,
-  locale = 'ko_KR',
-  alternateLocales = [],
-  jsonLd,
-}) => {
+const MetaTags: React.FC<MetaTagsProps> = (props) => {
+  const { t, i18n: i18nInstance } = useTranslation();
+
+  const {
+    title = t('seo.metaTags.defaultTitle'),
+    description = t('seo.metaTags.defaultDescription'),
+    keywords = t('seo.metaTags.defaultKeywords'),
+    image = `${process.env.REACT_APP_SITE_URL}/og-image.png`,
+    url = process.env.REACT_APP_SITE_URL ||
+      'https://researcherhojin.github.io/emelmujiro',
+    type = 'website',
+    author = t('common.companyName'),
+    publishedTime,
+    modifiedTime,
+    section,
+    tags = [],
+    noindex = false,
+    nofollow = false,
+    canonical,
+    locale = i18nInstance.language === 'en' ? 'en_US' : 'ko_KR',
+    alternateLocales = [],
+    jsonLd,
+  } = props;
   const siteName = process.env.REACT_APP_APP_NAME || 'Emelmujiro';
   const twitterHandle = process.env.REACT_APP_TWITTER_HANDLE || '@emelmujiro';
 
@@ -187,13 +191,13 @@ const MetaTags: React.FC<MetaTagsProps> = ({
               {
                 '@type': 'ListItem',
                 position: 1,
-                name: '홈',
+                name: t('common.home'),
                 item: url,
               },
               {
                 '@type': 'ListItem',
                 position: 2,
-                name: section || '콘텐츠',
+                name: section || t('seo.metaTags.content'),
                 item: `${url}/${section?.toLowerCase()}`,
               },
               {
@@ -216,18 +220,18 @@ const MetaTags: React.FC<MetaTagsProps> = ({
             mainEntity: [
               {
                 '@type': 'Question',
-                name: 'AI 교육 프로그램은 어떻게 진행되나요?',
+                name: t('seo.metaTags.faq.educationQuestion'),
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: '맞춤형 커리큘럼을 통해 이론과 실습을 병행하며, 전문 강사진이 직접 교육을 진행합니다.',
+                  text: t('seo.metaTags.faq.educationAnswer'),
                 },
               },
               {
                 '@type': 'Question',
-                name: '컨설팅 서비스 비용은 어떻게 되나요?',
+                name: t('seo.metaTags.faq.consultingQuestion'),
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: '프로젝트 규모와 기간에 따라 상이하며, 무료 상담을 통해 견적을 제공해드립니다.',
+                  text: t('seo.metaTags.faq.consultingAnswer'),
                 },
               },
             ],

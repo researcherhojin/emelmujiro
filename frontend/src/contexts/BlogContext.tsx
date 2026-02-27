@@ -6,6 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import { api } from '../services/api';
+import i18n from '../i18n';
 import {
   getBlogPosts as getLocalBlogPosts,
   getBlogPost as getLocalBlogPost,
@@ -70,7 +71,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
         setTotalPages(1);
         setCurrentPage(1);
       } catch {
-        setError('블로그 포스트를 불러오는데 실패했습니다.');
+        setError(i18n.t('blogErrors.fetchPostsFailed'));
         setPosts([]);
       }
     } finally {
@@ -101,7 +102,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
         const localPost = await getLocalBlogPost(id);
         setCurrentPost(localPost as BlogPost);
       } catch {
-        setError('포스트를 불러오는데 실패했습니다.');
+        setError(i18n.t('blogErrors.fetchPostFailed'));
         setCurrentPost(null);
       }
     } finally {

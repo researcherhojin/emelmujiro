@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 
 interface SEOHeadProps {
   title?: string;
@@ -16,20 +17,23 @@ interface SEOHeadProps {
   structuredData?: object;
 }
 
-const SEOHead: React.FC<SEOHeadProps> = ({
-  title = 'Emelmujiro - AI 교육 & 컨설팅',
-  description = 'AI 기술 교육과 컨설팅을 제공하는 전문 기업입니다. 머신러닝, 딥러닝, 데이터 분석 교육 및 기업 AI 전환 컨설팅 서비스를 제공합니다.',
-  keywords = 'AI교육, 머신러닝, 딥러닝, 데이터분석, AI컨설팅, 기업교육, Python, TensorFlow, PyTorch, 인공지능',
-  image = 'https://researcherhojin.github.io/emelmujiro/og-image.png',
-  url = 'https://researcherhojin.github.io/emelmujiro',
-  type = 'website',
-  author = '이호진',
-  publishedTime,
-  modifiedTime,
-  section,
-  tags = [],
-  structuredData,
-}) => {
+const SEOHead: React.FC<SEOHeadProps> = (props) => {
+  const { t } = useTranslation();
+
+  const {
+    title = t('seo.seoHead.defaultTitle'),
+    description = t('seo.seoHead.defaultDescription'),
+    keywords = t('seo.seoHead.defaultKeywords'),
+    image = 'https://researcherhojin.github.io/emelmujiro/og-image.png',
+    url = 'https://researcherhojin.github.io/emelmujiro',
+    type = 'website',
+    author = t('seo.personName'),
+    publishedTime,
+    modifiedTime,
+    section,
+    tags = [],
+    structuredData,
+  } = props;
   const siteTitle = 'Emelmujiro';
   const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
 
@@ -38,13 +42,13 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Emelmujiro',
-    alternateName: '에멜무지로',
-    description: 'AI 교육 & 컨설팅 전문 기업',
+    alternateName: t('common.companyName'),
+    description: t('seo.seoHead.orgDescription'),
     url: 'https://researcherhojin.github.io/emelmujiro',
     logo: 'https://researcherhojin.github.io/emelmujiro/logo.png',
     founder: {
       '@type': 'Person',
-      name: '이호진',
+      name: t('seo.personName'),
       jobTitle: 'CEO & AI Consultant',
     },
     foundingDate: '2024',
@@ -87,16 +91,16 @@ const SEOHead: React.FC<SEOHeadProps> = ({
         '@type': 'Offer',
         itemOffered: {
           '@type': 'Service',
-          name: 'AI 교육 프로그램',
-          description: '기업 맞춤형 AI 교육 프로그램',
+          name: t('seo.seoHead.offerEducationName'),
+          description: t('seo.seoHead.offerEducationDescription'),
         },
       },
       {
         '@type': 'Offer',
         itemOffered: {
           '@type': 'Service',
-          name: 'AI 컨설팅',
-          description: '기업 AI 전환 컨설팅 서비스',
+          name: t('seo.seoHead.offerConsultingName'),
+          description: t('seo.seoHead.offerConsultingDescription'),
         },
       },
     ],

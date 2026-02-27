@@ -11,6 +11,7 @@ import { useUI } from './UIContext';
 import { ChatWebSocketService } from '../services/websocket';
 import logger from '../utils/logger';
 import env from '../config/env';
+import i18n from '../i18n';
 
 export type MessageType = 'text' | 'image' | 'file' | 'system';
 export type MessageSender = 'user' | 'agent' | 'system';
@@ -107,26 +108,32 @@ const getDefaultBusinessHours = (): BusinessHours => {
 
   return {
     isOpen: isBusinessDay && isBusinessHour,
-    hours: '월-금 09:00-18:00 (KST)',
+    hours: i18n.t('chatContext.businessHours'),
     timezone: 'Asia/Seoul',
   };
 };
 
-const defaultSettings: ChatSettings = {
-  welcomeMessage: '안녕하세요! 에멜무지로 고객지원입니다. 무엇을 도와드릴까요?',
-  quickReplies: ['서비스 문의', '기술 지원', '요금 문의', '예약 문의', '기타'],
+const getDefaultSettings = (): ChatSettings => ({
+  welcomeMessage: i18n.t('chatContext.welcomeMessage'),
+  quickReplies: [
+    i18n.t('chatContext.quickReplies.service'),
+    i18n.t('chatContext.quickReplies.techSupport'),
+    i18n.t('chatContext.quickReplies.pricing'),
+    i18n.t('chatContext.quickReplies.reservation'),
+    i18n.t('chatContext.quickReplies.other'),
+  ],
   cannedResponses: [
-    '문의해주셔서 감사합니다.',
-    '곧 담당자가 연결될 예정입니다.',
-    '추가 정보가 필요합니다.',
-    '문제가 해결되었는지 확인해주세요.',
-    '다른 도움이 필요하시면 언제든 문의해주세요.',
+    i18n.t('chatContext.cannedResponses.thanks'),
+    i18n.t('chatContext.cannedResponses.agentConnecting'),
+    i18n.t('chatContext.cannedResponses.needMoreInfo'),
+    i18n.t('chatContext.cannedResponses.checkResolved'),
+    i18n.t('chatContext.cannedResponses.anytimeHelp'),
   ],
   allowFileUpload: true,
   allowEmoji: true,
   soundEnabled: true,
   maxMessageLength: 1000,
-};
+});
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const { showNotification } = useUI();
@@ -147,14 +154,14 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   // Agent Info
   const [agentAvailable] = useState(true);
-  const [agentName] = useState('고객지원팀');
+  const [agentName] = useState(i18n.t('chatContext.agentName'));
   const [agentAvatar] = useState<string>();
   const [businessHours, setBusinessHours] = useState<BusinessHours>(
     getDefaultBusinessHours
   );
 
   // Settings
-  const [settings] = useState<ChatSettings>(defaultSettings);
+  const [settings] = useState<ChatSettings>(getDefaultSettings);
 
   // WebSocket connection
   const wsRef = useRef<ChatWebSocketService | null>(null);
@@ -272,8 +279,9 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       interface WindowWithWebkit extends Window {
         webkitAudioContext?: typeof AudioContext;
       }
-      const audioContext = new (window.AudioContext ||
-        (window as WindowWithWebkit).webkitAudioContext)();
+      const audioContext = new (
+        window.AudioContext || (window as WindowWithWebkit).webkitAudioContext
+      )();
 
       // Resume context if suspended (for autoplay policy)
       if (audioContext.state === 'suspended') {
@@ -378,7 +386,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
           const autoReply: ChatMessage = {
             id: generateMessageId(),
             type: 'system',
-            content: '현재 오프라인 상태입니다. 연결되면 메시지가 전송됩니다.',
+            content: i18n.t('chatContext.offlineMessage'),
             sender: 'system',
             timestamp: new Date(),
             status: 'read',
@@ -499,7 +507,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
               messageQueueRef.current = [];
             }
 
-            showNotification('success', '채팅 서비스에 연결되었습니다.');
+            showNotification(
+              'success',
+              i18n.t('chatContext.notifications.connected')
+            );
           },
 
           onClose: () => {
@@ -510,7 +521,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
           onError: (error: Event) => {
             logger.error('WebSocket error:', error);
             setIsConnected(false);
-            showNotification('error', '채팅 서비스 연결에 실패했습니다.');
+            showNotification(
+              'error',
+              i18n.t('chatContext.notifications.connectionFailed')
+            );
           },
 
           onMessage: (data: {
@@ -560,11 +574,17 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
           },
 
           onReconnect: () => {
-            showNotification('info', '채팅 서비스에 재연결 중입니다...');
+            showNotification(
+              'info',
+              i18n.t('chatContext.notifications.reconnecting')
+            );
           },
 
           onReconnectFailed: () => {
-            showNotification('error', '채팅 서비스 재연결에 실패했습니다.');
+            showNotification(
+              'error',
+              i18n.t('chatContext.notifications.reconnectFailed')
+            );
           },
         }
       );
@@ -576,7 +596,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     } catch (error) {
       logger.error('WebSocket initialization failed:', error);
       setIsConnected(false);
-      showNotification('error', '채팅 서비스 초기화에 실패했습니다.');
+      showNotification('error', i18n.t('chatContext.notifications.initFailed'));
     }
   };
 

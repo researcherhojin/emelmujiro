@@ -6,6 +6,7 @@ import React, {
   ReactNode,
 } from 'react';
 import axiosInstance from '../services/api';
+import i18n from '../i18n';
 
 interface User {
   id: number;
@@ -69,7 +70,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(user);
     } catch (err) {
       const error = err as Error & { userMessage?: string };
-      setError(error.userMessage || error.message || '로그인에 실패했습니다.');
+      setError(
+        error.userMessage || error.message || i18n.t('auth.loginFailed')
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -97,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (err) {
       const error = err as Error & { userMessage?: string };
       setError(
-        error.userMessage || error.message || '회원가입에 실패했습니다.'
+        error.userMessage || error.message || i18n.t('auth.registerFailed')
       );
       throw err;
     } finally {

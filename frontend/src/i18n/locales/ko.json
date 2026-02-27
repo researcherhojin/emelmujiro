@@ -624,5 +624,159 @@
     "careerSection": "경력 상세",
     "careerTimeline": "연도별 경력",
     "careerStats": "경력 통계"
+  },
+  "footerServices": {
+    "education": {
+      "title": "AI 교육 & 강의",
+      "description": "기업 맞춤 AI 교육 프로그램을 설계하고 운영합니다.",
+      "details": [
+        "맞춤형 커리큘럼 설계",
+        "프로젝트 기반 실습 교육",
+        "1:1 기술 멘토링",
+        "Python 머신러닝/딥러닝 실무 교육",
+        "LLM & 생성형 AI 활용 워크샵",
+        "비전공자 대상 AI 기초 교육"
+      ]
+    },
+    "consulting": {
+      "title": "AI 컨설팅",
+      "description": "AI 도입 전략 수립부터 기술 자문까지 제공합니다.",
+      "details": [
+        "AI 도입 전략 및 기술 검토",
+        "모델 선정 및 PoC 개발",
+        "서비스 프로토타입 설계",
+        "AI 비즈니스 모델 개발",
+        "AI 프로젝트 관리 및 기술 자문",
+        "AI 성과 측정 및 ROI 분석"
+      ]
+    },
+    "llmGenai": {
+      "title": "LLM/생성형 AI",
+      "description": "LLM 기반 서비스를 설계하고 개발합니다.",
+      "details": [
+        "RAG 시스템 설계 및 구축",
+        "LLM 기반 서비스 프로토타입",
+        "생성형 AI 활용 교육",
+        "프롬프트 엔지니어링 최적화",
+        "LLM 파인튜닝 및 성능 최적화",
+        "AI 에이전트 설계 및 개발"
+      ]
+    },
+    "computerVision": {
+      "title": "Computer Vision",
+      "description": "영상 처리 및 비전 AI 솔루션을 제공합니다.",
+      "details": [
+        "객체 탐지 / 세그멘테이션",
+        "최신 모델 적용 (YOLO, SAM 등)",
+        "CV 프로젝트 설계 및 멘토링",
+        "이미지 분류 및 검색 시스템",
+        "영상 분석 파이프라인 구축",
+        "산업용 비전 AI 솔루션 설계"
+      ]
+    }
+  },
+  "formValidation": {
+    "nameRequired": "이름을 입력해주세요.",
+    "nameMinLength": "이름은 2자 이상이어야 합니다.",
+    "emailRequired": "이메일을 입력해주세요.",
+    "emailInvalid": "올바른 이메일 형식이 아닙니다.",
+    "phoneInvalid": "올바른 전화번호 형식이 아닙니다.",
+    "messageRequired": "문의 내용을 입력해주세요.",
+    "messageMinLength": "문의 내용은 10자 이상이어야 합니다.",
+    "messageMaxLength": "문의 내용은 1000자를 초과할 수 없습니다.",
+    "submitFailed": "문의 전송에 실패했습니다.",
+    "offlineMessage": "오프라인 상태입니다. 연결이 복구되면 자동으로 전송됩니다."
+  },
+  "auth": {
+    "loginFailed": "로그인에 실패했습니다.",
+    "registerFailed": "회원가입에 실패했습니다."
+  },
+  "blogErrors": {
+    "fetchPostsFailed": "블로그 포스트를 불러오는데 실패했습니다.",
+    "fetchPostFailed": "포스트를 불러오는데 실패했습니다."
+  },
+  "chatContext": {
+    "businessHours": "월-금 09:00-18:00 (KST)",
+    "welcomeMessage": "안녕하세요! 에멜무지로 고객지원입니다. 무엇을 도와드릴까요?",
+    "agentName": "고객지원팀",
+    "offlineMessage": "현재 오프라인 상태입니다. 연결되면 메시지가 전송됩니다.",
+    "quickReplies": {
+      "service": "서비스 문의",
+      "techSupport": "기술 지원",
+      "pricing": "요금 문의",
+      "reservation": "예약 문의",
+      "other": "기타"
+    },
+    "cannedResponses": {
+      "thanks": "문의해주셔서 감사합니다.",
+      "agentConnecting": "곧 담당자가 연결될 예정입니다.",
+      "needMoreInfo": "추가 정보가 필요합니다.",
+      "checkResolved": "문제가 해결되었는지 확인해주세요.",
+      "anytimeHelp": "다른 도움이 필요하시면 언제든 문의해주세요."
+    },
+    "notifications": {
+      "connected": "채팅 서비스에 연결되었습니다.",
+      "connectionFailed": "채팅 서비스 연결에 실패했습니다.",
+      "reconnecting": "채팅 서비스에 재연결 중입니다...",
+      "reconnectFailed": "채팅 서비스 재연결에 실패했습니다.",
+      "initFailed": "채팅 서비스 초기화에 실패했습니다."
+    }
+  },
+  "seo": {
+    "personName": "이호진",
+    "site": {
+      "name": "에멜무지로",
+      "title": "에멜무지로 | AI 혁신 파트너",
+      "description": "기업의 AI 전환을 위한 솔루션 개발, 실전 교육, 전략 컨설팅을 제공합니다. 검증된 방법론과 실전 경험을 바탕으로 귀사의 디지털 혁신을 함께 만들어갑니다."
+    },
+    "pages": {
+      "home": {
+        "title": "홈",
+        "description": "AI 교육과 컨설팅 전문 기업 에멜무지로입니다. 맞춤형 AI 솔루션으로 귀사의 디지털 혁신을 돕습니다.",
+        "keywords": "AI 도입, AI 컨설팅, AI 교육, 기업 AI, 디지털 전환, AI 솔루션, 머신러닝, 딥러닝, 생성형 AI"
+      },
+      "about": {
+        "title": "회사소개",
+        "description": "에멜무지로는 2022년부터 축적한 AI 교육 노하우와 실무 프로젝트 경험을 바탕으로 맞춤형 AI 솔루션을 제공합니다.",
+        "keywords": "AI 회사, AI 전문기업, AI 교육기관, AI 컨설팅 회사, 에멜무지로 소개"
+      },
+      "profile": {
+        "title": "대표 프로필",
+        "description": "이호진 대표 - AI 연구자 및 교육자. 한양대학교 인공지능융합대학원 석사, 다년간의 AI 프로젝트 경험 보유",
+        "keywords": "이호진, AI 전문가, AI 교육자, AI 연구자, 한양대학교, 인공지능 전문가"
+      },
+      "contact": {
+        "title": "문의하기",
+        "description": "AI 도입 컨설팅, 맞춤형 교육, 솔루션 개발 문의는 에멜무지로에게 연락주세요.",
+        "keywords": "AI 상담, AI 문의, 컨설팅 문의, 교육 문의, 연락처"
+      },
+      "blog": {
+        "title": "블로그",
+        "description": "AI 기술 동향, 실무 사례, 교육 콘텐츠를 공유하는 에멜무지로 블로그",
+        "keywords": "AI 블로그, AI 기술, AI 트렌드, AI 사례, AI 교육 자료"
+      }
+    },
+    "seoHead": {
+      "defaultTitle": "Emelmujiro - AI 교육 & 컨설팅",
+      "defaultDescription": "AI 기술 교육과 컨설팅을 제공하는 전문 기업입니다. 머신러닝, 딥러닝, 데이터 분석 교육 및 기업 AI 전환 컨설팅 서비스를 제공합니다.",
+      "defaultKeywords": "AI교육, 머신러닝, 딥러닝, 데이터분석, AI컨설팅, 기업교육, Python, TensorFlow, PyTorch, 인공지능",
+      "orgDescription": "AI 교육 & 컨설팅 전문 기업",
+      "offerEducationName": "AI 교육 프로그램",
+      "offerEducationDescription": "기업 맞춤형 AI 교육 프로그램",
+      "offerConsultingName": "AI 컨설팅",
+      "offerConsultingDescription": "기업 AI 전환 컨설팅 서비스"
+    },
+    "metaTags": {
+      "defaultTitle": "에멜무지로 - AI 교육 & 컨설팅",
+      "defaultDescription": "에멜무지로는 최첨단 AI 기술을 활용한 맞춤형 교육과 전문 컨설팅 서비스를 제공합니다. 디지털 혁신을 위한 최고의 파트너가 되어드립니다.",
+      "defaultKeywords": "AI교육, AI컨설팅, 인공지능, 머신러닝, 딥러닝, 디지털전환, DX, 기업교육, IT컨설팅",
+      "content": "콘텐츠",
+      "faq": {
+        "educationQuestion": "AI 교육 프로그램은 어떻게 진행되나요?",
+        "educationAnswer": "맞춤형 커리큘럼을 통해 이론과 실습을 병행하며, 전문 강사진이 직접 교육을 진행합니다.",
+        "consultingQuestion": "컨설팅 서비스 비용은 어떻게 되나요?",
+        "consultingAnswer": "프로젝트 규모와 기간에 따라 상이하며, 무료 상담을 통해 견적을 제공해드립니다."
+      }
+    }
   }
 }

@@ -624,5 +624,159 @@
     "careerSection": "Career details",
     "careerTimeline": "Career timeline by year",
     "careerStats": "Career statistics"
+  },
+  "footerServices": {
+    "education": {
+      "title": "AI Education & Training",
+      "description": "We design and operate custom corporate AI education programs.",
+      "details": [
+        "Custom curriculum design",
+        "Project-based hands-on training",
+        "1:1 technical mentoring",
+        "Python ML/DL practical training",
+        "LLM & Generative AI workshop",
+        "AI fundamentals for non-technical backgrounds"
+      ]
+    },
+    "consulting": {
+      "title": "AI Consulting",
+      "description": "From AI adoption strategy to technical advisory services.",
+      "details": [
+        "AI adoption strategy & technical review",
+        "Model selection & PoC development",
+        "Service prototype design",
+        "AI business model development",
+        "AI project management & technical advisory",
+        "AI performance measurement & ROI analysis"
+      ]
+    },
+    "llmGenai": {
+      "title": "LLM/Generative AI",
+      "description": "We design and develop LLM-based services.",
+      "details": [
+        "RAG system design & implementation",
+        "LLM-based service prototyping",
+        "Generative AI training",
+        "Prompt engineering optimization",
+        "LLM fine-tuning & performance optimization",
+        "AI agent design & development"
+      ]
+    },
+    "computerVision": {
+      "title": "Computer Vision",
+      "description": "Video processing and vision AI solutions.",
+      "details": [
+        "Object detection / segmentation",
+        "Latest models (YOLO, SAM, etc.)",
+        "CV project design & mentoring",
+        "Image classification & search systems",
+        "Video analysis pipeline development",
+        "Industrial vision AI solution design"
+      ]
+    }
+  },
+  "formValidation": {
+    "nameRequired": "Please enter your name.",
+    "nameMinLength": "Name must be at least 2 characters.",
+    "emailRequired": "Please enter your email.",
+    "emailInvalid": "Invalid email format.",
+    "phoneInvalid": "Invalid phone number format.",
+    "messageRequired": "Please enter your message.",
+    "messageMinLength": "Message must be at least 10 characters.",
+    "messageMaxLength": "Message cannot exceed 1000 characters.",
+    "submitFailed": "Failed to send inquiry.",
+    "offlineMessage": "You are offline. Your message will be sent automatically when connected."
+  },
+  "auth": {
+    "loginFailed": "Login failed.",
+    "registerFailed": "Registration failed."
+  },
+  "blogErrors": {
+    "fetchPostsFailed": "Failed to load blog posts.",
+    "fetchPostFailed": "Failed to load post."
+  },
+  "chatContext": {
+    "businessHours": "Mon-Fri 09:00-18:00 (KST)",
+    "welcomeMessage": "Hello! This is Emelmujiro customer support. How can we help you?",
+    "agentName": "Support Team",
+    "offlineMessage": "You are currently offline. Your message will be sent when connected.",
+    "quickReplies": {
+      "service": "Service inquiry",
+      "techSupport": "Technical support",
+      "pricing": "Pricing inquiry",
+      "reservation": "Reservation inquiry",
+      "other": "Other"
+    },
+    "cannedResponses": {
+      "thanks": "Thank you for your inquiry.",
+      "agentConnecting": "An agent will be with you shortly.",
+      "needMoreInfo": "We need additional information.",
+      "checkResolved": "Please confirm if the issue has been resolved.",
+      "anytimeHelp": "Feel free to contact us anytime if you need further assistance."
+    },
+    "notifications": {
+      "connected": "Connected to chat service.",
+      "connectionFailed": "Failed to connect to chat service.",
+      "reconnecting": "Reconnecting to chat service...",
+      "reconnectFailed": "Failed to reconnect to chat service.",
+      "initFailed": "Failed to initialize chat service."
+    }
+  },
+  "seo": {
+    "personName": "Hojin Lee",
+    "site": {
+      "name": "Emelmujiro",
+      "title": "Emelmujiro | AI Innovation Partner",
+      "description": "We provide solution development, hands-on training, and strategic consulting for corporate AI transformation. We build your digital innovation together with proven methodologies and practical experience."
+    },
+    "pages": {
+      "home": {
+        "title": "Home",
+        "description": "Emelmujiro is an AI education and consulting company. We help your digital innovation with customized AI solutions.",
+        "keywords": "AI adoption, AI consulting, AI education, corporate AI, digital transformation, AI solutions, machine learning, deep learning, generative AI"
+      },
+      "about": {
+        "title": "About Us",
+        "description": "Emelmujiro provides customized AI solutions based on AI education know-how and practical project experience accumulated since 2022.",
+        "keywords": "AI company, AI specialist, AI education institute, AI consulting company, about Emelmujiro"
+      },
+      "profile": {
+        "title": "CEO Profile",
+        "description": "Hojin Lee, CEO - AI Researcher and Educator. MS in AI Convergence at Hanyang University, with years of AI project experience.",
+        "keywords": "Hojin Lee, AI expert, AI educator, AI researcher, Hanyang University, AI specialist"
+      },
+      "contact": {
+        "title": "Contact Us",
+        "description": "Contact Emelmujiro for AI adoption consulting, customized training, and solution development inquiries.",
+        "keywords": "AI consultation, AI inquiry, consulting inquiry, education inquiry, contact"
+      },
+      "blog": {
+        "title": "Blog",
+        "description": "Emelmujiro blog sharing AI technology trends, practical cases, and educational content.",
+        "keywords": "AI blog, AI technology, AI trends, AI cases, AI education resources"
+      }
+    },
+    "seoHead": {
+      "defaultTitle": "Emelmujiro - AI Education & Consulting",
+      "defaultDescription": "A specialized company providing AI technology education and consulting. We offer machine learning, deep learning, data analysis training and corporate AI transformation consulting services.",
+      "defaultKeywords": "AI education, machine learning, deep learning, data analysis, AI consulting, corporate training, Python, TensorFlow, PyTorch, artificial intelligence",
+      "orgDescription": "AI Education & Consulting Company",
+      "offerEducationName": "AI Education Program",
+      "offerEducationDescription": "Custom corporate AI education program",
+      "offerConsultingName": "AI Consulting",
+      "offerConsultingDescription": "Corporate AI transformation consulting service"
+    },
+    "metaTags": {
+      "defaultTitle": "Emelmujiro - AI Education & Consulting",
+      "defaultDescription": "Emelmujiro provides customized education and professional consulting services using cutting-edge AI technology. We are your best partner for digital innovation.",
+      "defaultKeywords": "AI education, AI consulting, artificial intelligence, machine learning, deep learning, digital transformation, DX, corporate training, IT consulting",
+      "content": "Content",
+      "faq": {
+        "educationQuestion": "How are AI education programs conducted?",
+        "educationAnswer": "We combine theory and practice through customized curricula, with expert instructors directly conducting the training.",
+        "consultingQuestion": "How much do consulting services cost?",
+        "consultingAnswer": "Costs vary depending on project scope and duration. We provide estimates through free consultations."
+      }
+    }
   }
 }

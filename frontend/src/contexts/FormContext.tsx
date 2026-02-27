@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { api } from '../services/api';
+import i18n from '../i18n';
 
 interface ContactFormState {
   name: string;
@@ -75,34 +76,34 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
 
     // Name validation
     if (!contactForm.name.trim()) {
-      errors.name = '이름을 입력해주세요.';
+      errors.name = i18n.t('formValidation.nameRequired');
     } else if (contactForm.name.trim().length < 2) {
-      errors.name = '이름은 2자 이상이어야 합니다.';
+      errors.name = i18n.t('formValidation.nameMinLength');
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!contactForm.email.trim()) {
-      errors.email = '이메일을 입력해주세요.';
+      errors.email = i18n.t('formValidation.emailRequired');
     } else if (!emailRegex.test(contactForm.email)) {
-      errors.email = '올바른 이메일 형식이 아닙니다.';
+      errors.email = i18n.t('formValidation.emailInvalid');
     }
 
     // Phone validation (optional but if provided, must be valid)
     if (contactForm.phone) {
       const phoneRegex = /^[0-9-+() ]+$/;
       if (!phoneRegex.test(contactForm.phone)) {
-        errors.phone = '올바른 전화번호 형식이 아닙니다.';
+        errors.phone = i18n.t('formValidation.phoneInvalid');
       }
     }
 
     // Message validation
     if (!contactForm.message.trim()) {
-      errors.message = '문의 내용을 입력해주세요.';
+      errors.message = i18n.t('formValidation.messageRequired');
     } else if (contactForm.message.trim().length < 10) {
-      errors.message = '문의 내용은 10자 이상이어야 합니다.';
+      errors.message = i18n.t('formValidation.messageMinLength');
     } else if (contactForm.message.length > 1000) {
-      errors.message = '문의 내용은 1000자를 초과할 수 없습니다.';
+      errors.message = i18n.t('formValidation.messageMaxLength');
     }
 
     setFormErrors(errors);
@@ -146,7 +147,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
     } catch (error) {
       const err = error as Error & { userMessage?: string };
       setSubmitError(
-        err.userMessage || err.message || '문의 전송에 실패했습니다.'
+        err.userMessage || err.message || i18n.t('formValidation.submitFailed')
       );
 
       // Save to localStorage for later sync if offline
@@ -163,9 +164,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
           'pendingContacts',
           JSON.stringify(pendingContacts)
         );
-        setSubmitError(
-          '오프라인 상태입니다. 연결이 복구되면 자동으로 전송됩니다.'
-        );
+        setSubmitError(i18n.t('formValidation.offlineMessage'));
       }
     } finally {
       setIsSubmitting(false);

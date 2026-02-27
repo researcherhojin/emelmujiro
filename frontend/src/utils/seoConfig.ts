@@ -1,13 +1,14 @@
+import i18n from '../i18n';
+
 // SEO Configuration and utilities
-export const SEO_CONFIG = {
+export const getSeoConfig = () => ({
   site: {
-    name: '에멜무지로',
-    title: '에멜무지로 | AI 혁신 파트너',
-    description:
-      '기업의 AI 전환을 위한 솔루션 개발, 실전 교육, 전략 컨설팅을 제공합니다. 검증된 방법론과 실전 경험을 바탕으로 귀사의 디지털 혁신을 함께 만들어갑니다.',
+    name: i18n.t('seo.site.name'),
+    title: i18n.t('seo.site.title'),
+    description: i18n.t('seo.site.description'),
     url: 'https://researcherhojin.github.io/emelmujiro',
     image: '/og-image.png',
-    locale: 'ko_KR',
+    locale: i18n.language === 'en' ? 'en_US' : 'ko_KR',
     type: 'website' as const,
   },
   social: {
@@ -19,45 +20,43 @@ export const SEO_CONFIG = {
   },
   pages: {
     home: {
-      title: '홈',
-      description:
-        'AI 교육과 컨설팅 전문 기업 에멜무지로입니다. 맞춤형 AI 솔루션으로 귀사의 디지털 혁신을 돕습니다.',
-      keywords:
-        'AI 도입, AI 컨설팅, AI 교육, 기업 AI, 디지털 전환, AI 솔루션, 머신러닝, 딥러닝, 생성형 AI',
+      title: i18n.t('seo.pages.home.title'),
+      description: i18n.t('seo.pages.home.description'),
+      keywords: i18n.t('seo.pages.home.keywords'),
     },
     about: {
-      title: '회사소개',
-      description:
-        '에멜무지로는 2022년부터 축적한 AI 교육 노하우와 실무 프로젝트 경험을 바탕으로 맞춤형 AI 솔루션을 제공합니다.',
-      keywords:
-        'AI 회사, AI 전문기업, AI 교육기관, AI 컨설팅 회사, 에멜무지로 소개',
+      title: i18n.t('seo.pages.about.title'),
+      description: i18n.t('seo.pages.about.description'),
+      keywords: i18n.t('seo.pages.about.keywords'),
     },
     profile: {
-      title: '대표 프로필',
-      description:
-        '이호진 대표 - AI 연구자 및 교육자. 한양대학교 인공지능융합대학원 석사, 다년간의 AI 프로젝트 경험 보유',
-      keywords:
-        '이호진, AI 전문가, AI 교육자, AI 연구자, 한양대학교, 인공지능 전문가',
+      title: i18n.t('seo.pages.profile.title'),
+      description: i18n.t('seo.pages.profile.description'),
+      keywords: i18n.t('seo.pages.profile.keywords'),
     },
     contact: {
-      title: '문의하기',
-      description:
-        'AI 도입 컨설팅, 맞춤형 교육, 솔루션 개발 문의는 에멜무지로에게 연락주세요.',
-      keywords: 'AI 상담, AI 문의, 컨설팅 문의, 교육 문의, 연락처',
+      title: i18n.t('seo.pages.contact.title'),
+      description: i18n.t('seo.pages.contact.description'),
+      keywords: i18n.t('seo.pages.contact.keywords'),
     },
     blog: {
-      title: '블로그',
-      description:
-        'AI 기술 동향, 실무 사례, 교육 콘텐츠를 공유하는 에멜무지로 블로그',
-      keywords: 'AI 블로그, AI 기술, AI 트렌드, AI 사례, AI 교육 자료',
+      title: i18n.t('seo.pages.blog.title'),
+      description: i18n.t('seo.pages.blog.description'),
+      keywords: i18n.t('seo.pages.blog.keywords'),
     },
   },
-};
+});
+
+// Static reference for backward compatibility
+export const SEO_CONFIG = getSeoConfig();
 
 // Generate meta tags for a specific page
-export function generateMetaTags(page: keyof typeof SEO_CONFIG.pages) {
-  const pageConfig = SEO_CONFIG.pages[page];
-  const siteConfig = SEO_CONFIG.site;
+export function generateMetaTags(
+  page: 'home' | 'about' | 'profile' | 'contact' | 'blog'
+) {
+  const config = getSeoConfig();
+  const pageConfig = config.pages[page];
+  const siteConfig = config.site;
 
   return {
     title: `${pageConfig.title} | ${siteConfig.name}`,
@@ -84,7 +83,7 @@ export function generateMetaTags(page: keyof typeof SEO_CONFIG.pages) {
       title: `${pageConfig.title} | ${siteConfig.name}`,
       description: pageConfig.description,
       images: [siteConfig.image],
-      creator: SEO_CONFIG.social.twitter,
+      creator: config.social.twitter,
     },
   };
 }
@@ -105,22 +104,23 @@ export function generateStructuredData(
   type: 'organization' | 'website' | 'breadcrumb' | 'person' | 'article',
   data?: StructuredDataInput
 ) {
-  const baseUrl = SEO_CONFIG.site.url;
+  const config = getSeoConfig();
+  const baseUrl = config.site.url;
 
   const schemas = {
     organization: {
       '@context': 'https://schema.org',
       '@type': 'Organization',
-      name: SEO_CONFIG.site.name,
+      name: config.site.name,
       url: baseUrl,
       logo: `${baseUrl}/logo192.png`,
-      description: SEO_CONFIG.site.description,
+      description: config.site.description,
       sameAs: [
-        `https://github.com/${SEO_CONFIG.social.github}`,
-        SEO_CONFIG.social.linkedin &&
-          `https://linkedin.com/company/${SEO_CONFIG.social.linkedin}`,
-        SEO_CONFIG.social.facebook &&
-          `https://facebook.com/${SEO_CONFIG.social.facebook}`,
+        `https://github.com/${config.social.github}`,
+        config.social.linkedin &&
+          `https://linkedin.com/company/${config.social.linkedin}`,
+        config.social.facebook &&
+          `https://facebook.com/${config.social.facebook}`,
       ].filter(Boolean),
       contactPoint: {
         '@type': 'ContactPoint',
@@ -134,11 +134,11 @@ export function generateStructuredData(
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       url: baseUrl,
-      name: SEO_CONFIG.site.name,
-      description: SEO_CONFIG.site.description,
+      name: config.site.name,
+      description: config.site.description,
       publisher: {
         '@type': 'Organization',
-        name: SEO_CONFIG.site.name,
+        name: config.site.name,
       },
       potentialAction: {
         '@type': 'SearchAction',
@@ -153,7 +153,7 @@ export function generateStructuredData(
         {
           '@type': 'ListItem',
           position: 1,
-          name: '홈',
+          name: i18n.t('common.home'),
           item: baseUrl,
         },
         ...(data?.items || []),
@@ -162,12 +162,12 @@ export function generateStructuredData(
     person: {
       '@context': 'https://schema.org',
       '@type': 'Person',
-      name: '이호진',
+      name: i18n.t('seo.personName'),
       jobTitle: 'AI Researcher & Educator',
       url: `${baseUrl}/#/profile`,
       worksFor: {
         '@type': 'Organization',
-        name: SEO_CONFIG.site.name,
+        name: config.site.name,
       },
       ...data,
     },
@@ -176,12 +176,12 @@ export function generateStructuredData(
       '@type': 'Article',
       headline: data?.title,
       description: data?.description,
-      author: data?.author || '이호진',
+      author: data?.author || i18n.t('seo.personName'),
       datePublished: data?.publishedDate,
       dateModified: data?.modifiedDate || data?.publishedDate,
       publisher: {
         '@type': 'Organization',
-        name: SEO_CONFIG.site.name,
+        name: config.site.name,
         logo: {
           '@type': 'ImageObject',
           url: `${baseUrl}/logo192.png`,
@@ -200,15 +200,18 @@ export function generateStructuredData(
 
 // Generate canonical URL
 export function generateCanonicalUrl(path: string): string {
-  const baseUrl = SEO_CONFIG.site.url;
+  const config = getSeoConfig();
+  const baseUrl = config.site.url;
   const cleanPath = path?.startsWith('/') ? path : `/${path || ''}`;
   return path ? `${baseUrl}${cleanPath}` : baseUrl;
 }
 
 // Generate alternate language links
 export function generateAlternateLinks() {
+  const config = getSeoConfig();
   return [
-    { rel: 'alternate', hreflang: 'ko', href: SEO_CONFIG.site.url },
-    { rel: 'alternate', hreflang: 'x-default', href: SEO_CONFIG.site.url },
+    { rel: 'alternate', hreflang: 'ko', href: config.site.url },
+    { rel: 'alternate', hreflang: 'en', href: config.site.url },
+    { rel: 'alternate', hreflang: 'x-default', href: config.site.url },
   ];
 }
