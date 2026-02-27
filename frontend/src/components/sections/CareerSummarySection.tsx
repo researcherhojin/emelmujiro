@@ -1,6 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   BookOpen,
   Building,
@@ -17,8 +18,8 @@ interface StatItem {
 
 interface Highlight {
   year: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
 }
 
 interface StatCardProps {
@@ -49,60 +50,68 @@ interface HighlightCardProps {
   index: number;
 }
 
-const HighlightCard: React.FC<HighlightCardProps> = memo(({ item, index }) => (
-  <motion.div
-    initial={{ opacity: 0, x: -20 }}
-    whileInView={{ opacity: 1, x: 0 }}
-    transition={{ delay: index * 0.1 }}
-    className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
-  >
-    <div className="flex items-start space-x-4">
-      <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-        <span className="text-lg font-bold text-gray-900">
-          {item.year.slice(-2)}
-        </span>
+const HighlightCard: React.FC<HighlightCardProps> = memo(({ item, index }) => {
+  const { t } = useTranslation();
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.1 }}
+      className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+    >
+      <div className="flex items-start space-x-4">
+        <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+          <span className="text-lg font-bold text-gray-900">
+            {item.year.slice(-2)}
+          </span>
+        </div>
+        <div className="flex-1">
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
+            {t(item.titleKey)}
+          </h3>
+          <p className="text-gray-600">{t(item.descriptionKey)}</p>
+        </div>
       </div>
-      <div className="flex-1">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">
-          {item.year}년 - {item.title}
-        </h3>
-        <p className="text-gray-600">{item.description}</p>
-      </div>
-    </div>
-  </motion.div>
-));
+    </motion.div>
+  );
+});
 
 HighlightCard.displayName = 'HighlightCard';
 
 const CareerSummarySection: React.FC = memo(() => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const stats: StatItem[] = [
-    { label: '강의 경험', value: '50+', icon: BookOpen },
-    { label: '파트너사', value: '15+', icon: Building },
-    { label: '교육 기간', value: '5년', icon: Award },
+    { label: t('career.stats.lectures'), value: '50+', icon: BookOpen },
+    { label: t('career.stats.partners'), value: '15+', icon: Building },
+    {
+      label: t('career.stats.educationPeriod'),
+      value: t('career.stats.educationYears'),
+      icon: Award,
+    },
   ];
 
   const highlights: Highlight[] = [
     {
       year: '2025',
-      title: '사업 확장 및 대학원 진학',
-      description: 'AI 기술 전문성 강화와 비즈니스 성장',
+      titleKey: 'careerSummary.highlights.2025.title',
+      descriptionKey: 'careerSummary.highlights.2025.description',
     },
     {
       year: '2024',
-      title: '대학원 진학 및 사업 성장',
-      description: '한양대 AI융합대학원 진학, 기업 교육 확대',
+      titleKey: 'careerSummary.highlights.2024.title',
+      descriptionKey: 'careerSummary.highlights.2024.description',
     },
     {
       year: '2023',
-      title: '교육 활동 전성기',
-      description: '삼성전자, LG전자, 현대건설 등 대기업 AI 교육',
+      titleKey: 'careerSummary.highlights.2023.title',
+      descriptionKey: 'careerSummary.highlights.2023.description',
     },
     {
       year: '2022',
-      title: 'AI 교육 전문가로 성장',
-      description: '교육 콘텐츠 개발 및 기업 교육 전문가 활동',
+      titleKey: 'careerSummary.highlights.2022.title',
+      descriptionKey: 'careerSummary.highlights.2022.description',
     },
   ];
 
@@ -115,13 +124,12 @@ const CareerSummarySection: React.FC = memo(() => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-6">
-            실무 이력
+            {t('careerSummary.title')}
           </h2>
-          <p className="text-xl text-gray-600 leading-relaxed">
-            AI 교육과 비즈니스 개발 분야에서 쌓아온{' '}
-            <strong className="text-gray-900">5년간의 경험</strong>을
-            소개합니다.
-          </p>
+          <p
+            className="text-xl text-gray-600 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: t('careerSummary.subtitle') }}
+          />
         </div>
 
         {/* Stats */}
@@ -144,7 +152,7 @@ const CareerSummarySection: React.FC = memo(() => {
             onClick={handleViewDetail}
             className="inline-flex items-center px-8 py-4 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
-            상세 이력 보기
+            {t('careerSummary.viewDetail')}
             <ArrowRight className="ml-2 w-4 h-4" />
           </button>
         </div>

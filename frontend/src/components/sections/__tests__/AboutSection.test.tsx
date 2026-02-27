@@ -4,6 +4,18 @@ import AboutSection from '../AboutSection';
 import { STATISTICS } from '../../../constants';
 import React from 'react';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, options?: { defaultValue?: string }) => {
+      if (options?.defaultValue) return options.defaultValue;
+      return key;
+    },
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 // Define type for motion component props
 type MotionComponentProps = {
   children?: React.ReactNode;
@@ -83,35 +95,40 @@ vi.mock('lucide-react', () => ({
 describe('AboutSection Component', () => {
   it('renders section with correct content', () => {
     render(<AboutSection />);
-    // Check for the main heading
-    expect(screen.getByText('About Me')).toBeInTheDocument();
+    // t('profile.aboutMe') returns 'profile.aboutMe', but with defaultValue it returns 'About Me'
+    // The component uses t('profile.aboutMe') without defaultValue
+    expect(screen.getByText('profile.aboutMe')).toBeInTheDocument();
   });
 
   it('displays the main title', () => {
     render(<AboutSection />);
-    expect(screen.getByText('About Me')).toBeInTheDocument();
+    expect(screen.getByText('profile.aboutMe')).toBeInTheDocument();
   });
 
   it('displays all profile statistics', () => {
     render(<AboutSection />);
 
-    // Check statistics display - using Korean text from component
-    expect(screen.getByText('교육 경력')).toBeInTheDocument();
+    // Check statistics display - now uses i18n keys
+    expect(
+      screen.getByText('profile.stats.educationCareer')
+    ).toBeInTheDocument();
     expect(
       screen.getByText(`${STATISTICS.experience.yearsInEducation}년+`)
     ).toBeInTheDocument();
 
-    expect(screen.getByText('교육 수료생')).toBeInTheDocument();
+    expect(screen.getByText('profile.stats.students')).toBeInTheDocument();
     expect(
       screen.getByText(`${STATISTICS.education.totalStudentsText}`)
     ).toBeInTheDocument();
 
-    expect(screen.getByText('협력 기업')).toBeInTheDocument();
+    expect(screen.getByText('profile.stats.partners')).toBeInTheDocument();
     expect(
       screen.getByText(`${STATISTICS.experience.totalCompaniesWorkedWith}곳+`)
     ).toBeInTheDocument();
 
-    expect(screen.getByText('강의 프로젝트')).toBeInTheDocument();
+    expect(
+      screen.getByText('profile.stats.lectureProjects')
+    ).toBeInTheDocument();
     expect(
       screen.getByText(`${STATISTICS.projects.totalProjectsText}`)
     ).toBeInTheDocument();
@@ -130,13 +147,14 @@ describe('AboutSection Component', () => {
   it('displays profile introduction', () => {
     render(<AboutSection />);
 
-    // Check for the Korean introduction text
-    expect(screen.getByText(/에멜무지로 대표 이호진/)).toBeInTheDocument();
+    // Check for the i18n key for CEO name
+    expect(screen.getByText('profile.ceoName')).toBeInTheDocument();
   });
 
   it('displays goals section', () => {
     render(<AboutSection />);
 
+    // Uses defaultValue: 'Goals & Values'
     expect(screen.getByText('Goals & Values')).toBeInTheDocument();
     expect(screen.getByTestId('target-icon')).toBeInTheDocument();
   });
@@ -144,6 +162,7 @@ describe('AboutSection Component', () => {
   it('displays work style section', () => {
     render(<AboutSection />);
 
+    // Uses defaultValue: 'Work Style'
     expect(screen.getByText('Work Style')).toBeInTheDocument();
     expect(screen.getByTestId('brain-icon')).toBeInTheDocument();
   });
@@ -151,6 +170,7 @@ describe('AboutSection Component', () => {
   it('displays skills section', () => {
     render(<AboutSection />);
 
+    // Uses defaultValue: 'Technical Skills'
     expect(screen.getByText('Technical Skills')).toBeInTheDocument();
     expect(screen.getByTestId('code-icon')).toBeInTheDocument();
   });
@@ -158,7 +178,7 @@ describe('AboutSection Component', () => {
   it('displays skill categories', () => {
     render(<AboutSection />);
 
-    // Check for skill categories
+    // Check for skill categories (these are hardcoded strings, not i18n)
     expect(screen.getByText('Web Programming')).toBeInTheDocument();
     expect(screen.getByText('ML / DL / Data Engineering')).toBeInTheDocument();
     expect(screen.getByText('Collaboration & Tools')).toBeInTheDocument();
@@ -167,6 +187,7 @@ describe('AboutSection Component', () => {
   it('displays certifications section', () => {
     render(<AboutSection />);
 
+    // Uses defaultValue: 'Certifications & Achievements'
     expect(
       screen.getByText('Certifications & Achievements')
     ).toBeInTheDocument();
@@ -175,7 +196,7 @@ describe('AboutSection Component', () => {
 
   it('renders all main content sections', () => {
     render(<AboutSection />);
-    // Verify main sections are present through their content
+    // Verify main sections are present through their content (using defaultValues)
     expect(screen.getByText('Goals & Values')).toBeInTheDocument();
     expect(screen.getByText('Work Style')).toBeInTheDocument();
     expect(screen.getByText('Technical Skills')).toBeInTheDocument();
@@ -183,8 +204,7 @@ describe('AboutSection Component', () => {
 
   it('renders stats with correct content', () => {
     render(<AboutSection />);
-    // Check for specific stat values instead of iterating
-    // Since STATISTICS is a complex nested object, check for specific content
+    // Check for specific stat values
     expect(screen.getByText('1,000+')).toBeInTheDocument(); // totalStudentsText
     expect(screen.getByText('50+')).toBeInTheDocument(); // totalProjectsText
   });
@@ -194,10 +214,10 @@ describe('AboutSection Component', () => {
 
     // Check for main heading
     expect(
-      screen.getByRole('heading', { name: 'About Me' })
+      screen.getByRole('heading', { name: 'profile.aboutMe' })
     ).toBeInTheDocument();
 
-    // Check for section headings
+    // Check for section headings (using defaultValues)
     expect(
       screen.getByRole('heading', { name: /Goals & Values/ })
     ).toBeInTheDocument();
@@ -212,10 +232,8 @@ describe('AboutSection Component', () => {
   it('displays motivational quote', () => {
     render(<AboutSection />);
 
-    // Check for the quote at the bottom of the section
-    expect(
-      screen.getByText(/비전공자도 쉽게 입문할 수 있는/)
-    ).toBeInTheDocument();
+    // Check for the quote key
+    expect(screen.getByText('profile.quote')).toBeInTheDocument();
   });
 
   it('displays Star and Zap icons in section headers', () => {
@@ -230,17 +248,17 @@ describe('AboutSection Component', () => {
     const headings = screen.getAllByRole('heading');
     const headingTexts = headings.map((h) => h.textContent);
 
-    // Find main section headings (h2 and h3 with icons),
+    // Find main section headings
     const mainHeadings = headingTexts.filter(
       (text) =>
-        text?.includes('About Me') ||
+        text?.includes('profile.aboutMe') ||
         text?.includes('Goals & Values') ||
         text?.includes('Work Style') ||
         text?.includes('Technical Skills') ||
         text?.includes('Certifications & Achievements')
     );
 
-    expect(mainHeadings[0]).toContain('About Me');
+    expect(mainHeadings[0]).toContain('profile.aboutMe');
     expect(mainHeadings[1]).toContain('Goals & Values');
     expect(mainHeadings[2]).toContain('Work Style');
     expect(mainHeadings[3]).toContain('Technical Skills');

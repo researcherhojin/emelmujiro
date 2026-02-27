@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Code, GraduationCap, MessageSquare, Database } from 'lucide-react';
 
 interface ServiceCardProps {
@@ -36,30 +37,48 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(
 ServiceCard.displayName = 'ServiceCard';
 
 const ServiceCards: React.FC = memo(() => {
+  const { t } = useTranslation();
+
   const services = [
     {
       icon: <Code className="w-6 h-6" />,
-      title: 'AI 컨설팅',
-      description: '비즈니스 맞춤형 AI 솔루션 제공',
-      features: ['AI 도입 전략 수립', '기술 검토 및 평가', 'ROI 분석'],
+      title: t('contact.services.consulting.title'),
+      description: t('contact.services.consulting.description'),
+      features: [
+        t('contact.services.consulting.feature1'),
+        t('contact.services.consulting.feature2'),
+        t('contact.services.consulting.feature3'),
+      ],
     },
     {
       icon: <GraduationCap className="w-6 h-6" />,
-      title: '기업 AI 교육',
-      description: '실무 중심의 AI 교육 프로그램',
-      features: ['맞춤형 커리큘럼', '실습 위주 교육', '사후 멘토링'],
+      title: t('contact.services.education.title'),
+      description: t('contact.services.education.description'),
+      features: [
+        t('contact.services.education.feature1'),
+        t('contact.services.education.feature2'),
+        t('contact.services.education.feature3'),
+      ],
     },
     {
       icon: <MessageSquare className="w-6 h-6" />,
-      title: 'LLM 솔루션',
-      description: '대규모 언어 모델 구축 및 최적화',
-      features: ['커스텀 LLM 개발', 'Fine-tuning', 'API 통합'],
+      title: t('contact.services.llm.title'),
+      description: t('contact.services.llm.description'),
+      features: [
+        t('contact.services.llm.feature1'),
+        t('contact.services.llm.feature2'),
+        t('contact.services.llm.feature3'),
+      ],
     },
     {
       icon: <Database className="w-6 h-6" />,
-      title: '데이터 분석',
-      description: '데이터 기반 인사이트 도출',
-      features: ['데이터 파이프라인', '예측 모델링', '시각화 대시보드'],
+      title: t('contact.services.data.title'),
+      description: t('contact.services.data.description'),
+      features: [
+        t('contact.services.data.feature1'),
+        t('contact.services.data.feature2'),
+        t('contact.services.data.feature3'),
+      ],
     },
   ];
 

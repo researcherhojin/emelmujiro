@@ -266,6 +266,49 @@
       "activity": "활동"
     }
   },
+  "careerSummary": {
+    "title": "실무 이력",
+    "subtitle": "AI 교육과 비즈니스 개발 분야에서 쌓아온 <strong>5년간의 경험</strong>을 소개합니다.",
+    "viewDetail": "상세 이력 보기",
+    "highlights": {
+      "2025": {
+        "title": "사업 확장 및 대학원 진학",
+        "description": "AI 기술 전문성 강화와 비즈니스 성장"
+      },
+      "2024": {
+        "title": "대학원 진학 및 사업 성장",
+        "description": "한양대 AI융합대학원 진학, 기업 교육 확대"
+      },
+      "2023": {
+        "title": "교육 활동 전성기",
+        "description": "삼성전자, LG전자, 현대건설 등 대기업 AI 교육"
+      },
+      "2022": {
+        "title": "AI 교육 전문가로 성장",
+        "description": "교육 콘텐츠 개발 및 기업 교육 전문가 활동"
+      }
+    }
+  },
+  "quickIntro": {
+    "items": {
+      "consulting": {
+        "title": "AI 컨설팅",
+        "description": "비즈니스 문제에 대한 실용적 AI 솔루션"
+      },
+      "education": {
+        "title": "기업 AI 교육",
+        "description": "실무자를 위한 체계적인 AI 역량 강화"
+      },
+      "llm": {
+        "title": "LLM 솔루션",
+        "description": "최신 언어 모델 기반 비즈니스 혁신"
+      },
+      "data": {
+        "title": "데이터 분석",
+        "description": "비즈니스 인사이트 도출을 위한 분석"
+      }
+    }
+  },
   "contact": {
     "title": "문의하기",
     "subtitle": "프로젝트에 대해 상담을 원하시나요?",
@@ -281,18 +324,81 @@
       "submit": "문의 전송",
       "sending": "전송 중...",
       "success": "문의가 성공적으로 전송되었습니다",
-      "error": "전송 중 오류가 발생했습니다"
+      "error": "전송 중 오류가 발생했습니다",
+      "ariaLabel": "문의 양식",
+      "nameAriaLabel": "이름 입력",
+      "emailAriaLabel": "이메일 입력",
+      "phoneAriaLabel": "전화번호 입력",
+      "companyAriaLabel": "회사/기관명 입력",
+      "inquiryType": "문의 유형",
+      "inquiryTypeAriaLabel": "문의 유형 선택",
+      "consulting": "AI 컨설팅",
+      "education": "기업 AI 교육",
+      "llm": "LLM 솔루션",
+      "data": "데이터 분석",
+      "messageAriaLabel": "문의 내용 입력",
+      "offlineMode": "오프라인 모드",
+      "offlineMessage": "현재 오프라인 상태입니다. 문의는 저장되어 인터넷 연결 시 자동으로 전송됩니다.",
+      "submitAriaLabel": "문의 전송",
+      "submitting": "전송 중..."
     },
     "info": {
       "email": "researcherhojin@gmail.com",
       "phone": "+82-10-1234-5678",
       "address": "서울특별시 강남구",
-      "hours": "평일 09:00 - 18:00"
+      "hours": "평일 09:00 - 18:00",
+      "emailLabel": "이메일",
+      "phoneLabel": "전화번호",
+      "phoneValue": "직접 문의 부탁드립니다",
+      "businessHours": "업무 시간",
+      "weekdays": "월요일 - 금요일: 09:00 - 18:00",
+      "weekends": "토요일 - 일요일: 휴무",
+      "quickResponse": "빠른 응답 시간",
+      "responseMessage": "보통 24시간 이내에 답변드립니다."
+    },
+    "services": {
+      "consulting": {
+        "title": "AI 컨설팅",
+        "description": "비즈니스 맞춤형 AI 솔루션 제공",
+        "feature1": "AI 도입 전략 수립",
+        "feature2": "기술 검토 및 평가",
+        "feature3": "ROI 분석"
+      },
+      "education": {
+        "title": "기업 AI 교육",
+        "description": "실무 중심의 AI 교육 프로그램",
+        "feature1": "맞춤형 커리큘럼",
+        "feature2": "실습 위주 교육",
+        "feature3": "사후 멘토링"
+      },
+      "llm": {
+        "title": "LLM 솔루션",
+        "description": "대규모 언어 모델 구축 및 최적화",
+        "feature1": "커스텀 LLM 개발",
+        "feature2": "Fine-tuning",
+        "feature3": "API 통합"
+      },
+      "data": {
+        "title": "데이터 분석",
+        "description": "데이터 기반 인사이트 도출",
+        "feature1": "데이터 파이프라인",
+        "feature2": "예측 모델링",
+        "feature3": "시각화 대시보드"
+      }
+    }
+  },
+  "contactPage": {
+    "successMessage": "문의가 정상적으로 접수되었습니다.",
+    "successDetail": "빠른 시일 내에 답변드리겠습니다.",
+    "placeholder": {
+      "name": "홍길동",
+      "company": "회사명을 입력해주세요",
+      "message": "문의하실 내용을 자세히 적어주세요"
     }
   },
   "blog": {
     "title": "블로그",
-    "subtitle": "AI 트렌드와 인사이트를 공유합니다",
+    "subtitle": "최신 AI 기술 동향과 실제 도입 사례를 공유합니다",
     "readMore": "더 읽기",
     "author": "작성자",
     "date": "작성일",
@@ -302,6 +408,20 @@
     "writeComment": "댓글 작성",
     "noComments": "댓글이 없습니다",
     "search": "블로그 검색",
+    "loading": "최신 AI 트렌드를 불러오는 중...",
+    "trends": "AI 트렌드",
+    "emptyTitle": "곧 새로운 AI 트렌드로 찾아뵙겠습니다",
+    "emptyDescription": "생성형 AI와 최신 기술 동향을 준비 중입니다",
+    "viewAll": "블로그 전체 글 보기",
+    "viewAllTrends": "전체 트렌드 보기",
+    "preparing": "블로그 준비 중",
+    "preparingSubtitle": "더 나은 콘텐츠로 곧 찾아뵙겠습니다",
+    "preparingDescription": "양질의 AI 인사이트와 기술 트렌드를 준비하고 있으니 조금만 기다려주세요.",
+    "backToMain": "메인으로 돌아가기",
+    "seo": {
+      "title": "블로그 | 에멜무지로",
+      "description": "AI와 IT 관련 최신 소식과 인사이트를 공유합니다"
+    },
     "categories": {
       "all": "전체",
       "ai": "AI/ML",
@@ -309,6 +429,142 @@
       "casestudy": "사례 연구",
       "news": "뉴스"
     }
+  },
+  "logos": {
+    "sectionLabel": "TRUSTED BY",
+    "title": "함께한 기업 및 기관",
+    "logoAlt": "{{name}} 로고"
+  },
+  "profile": {
+    "aboutMe": "About Me",
+    "intro": "삼성전자, SK, LG 등 다수의 대기업 및 공공기관에서 Deep Learning과 LLM 교육과 연구를 수행하는",
+    "ceoName": "에멜무지로 대표 이호진",
+    "introSuffix": "입니다.",
+    "goalsTitle": "Goals & Values",
+    "workStyleTitle": "Work Style",
+    "skillsTitle": "Technical Skills",
+    "certificationsTitle": "Certifications & Achievements",
+    "stats": {
+      "educationCareer": "교육 경력",
+      "students": "교육 수료생",
+      "partners": "협력 기업",
+      "lectureProjects": "강의 프로젝트"
+    },
+    "goals": {
+      "competitive": {
+        "title": "대체 불가능한 경쟁력 구축",
+        "description": "AI Researcher로써 지속적인 연구와 혁신을 통해 독보적인 전문성을 쌓고 있습니다."
+      },
+      "sharing": {
+        "title": "지식 공유를 통한 가치 창출",
+        "description": "교육과 멘토링을 통해 더 많은 사람들이 AI 기술을 활용할 수 있도록 돕고 있습니다."
+      }
+    },
+    "workStyle": {
+      "communication": {
+        "title": "소통과 협업",
+        "description": "다양한 사람들과의 원활한 소통을 통해 시너지를 만들어내는 것을 즐깁니다."
+      },
+      "creative": {
+        "title": "창의적 문제 해결",
+        "description": "창의적인 아이디어로 문제를 해결하며 성장하는 과정에서 보람을 느낍니다."
+      },
+      "trending": {
+        "title": "트렌드 선도",
+        "description": "인공지능 트렌드를 빠르게 캐치하고 새로운 지식을 적극적으로 공유합니다."
+      }
+    },
+    "certifications": {
+      "adsp": {
+        "name": "ADsP (데이터분석 준전문가)",
+        "issuer": "한국데이터산업진흥원"
+      },
+      "ncsStrategy": {
+        "name": "NCS 정보기술전략&계획",
+        "score": "57점"
+      },
+      "ncsDev": {
+        "name": "NCS 정보기술개발",
+        "score": "57점"
+      },
+      "ncsAI": {
+        "name": "NCS 인공지능",
+        "score": "57점"
+      }
+    },
+    "quote": "\"비전공자도 쉽게 입문할 수 있는 실무 중심의 AI 교육을 추구합니다\"",
+    "quoteDescription": "복잡한 AI 기술을 누구나 이해할 수 있도록 쉽게 풀어내고, 실제 업무에 바로 적용할 수 있는 실용적인 교육을 제공하는 것이 저의 목표입니다. 함께 AI의 무한한 가능성을 탐험해보세요."
+  },
+  "home": {
+    "seo": {
+      "title": "Emelmujiro - AI 교육 & 컨설팅",
+      "description": "AI 기술 교육과 컨설팅을 제공하는 전문 기업입니다. 머신러닝, 딥러닝, 데이터 분석 교육 및 기업 AI 전환 컨설팅 서비스를 제공합니다.",
+      "structuredDescription": "AI 교육과 컨설팅을 제공하는 전문 기업",
+      "orgDescription": "AI 교육 & 컨설팅 전문 기업"
+    }
+  },
+  "notFound": {
+    "title": "페이지를 찾을 수 없습니다",
+    "description": "요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.\nURL을 다시 확인하시거나 아래 옵션을 이용해 주세요.",
+    "goBack": "이전 페이지로",
+    "goHome": "홈으로 가기",
+    "help": "도움말",
+    "popularPages": "인기 페이지"
+  },
+  "serverError": {
+    "status": {
+      "500": "서버 내부 오류가 발생했습니다",
+      "502": "게이트웨이 오류가 발생했습니다",
+      "503": "서비스를 일시적으로 사용할 수 없습니다",
+      "504": "게이트웨이 시간 초과"
+    },
+    "offlineMessage": "인터넷 연결이 끊어진 것 같습니다. 네트워크를 확인해 주세요.",
+    "retrying": "서버에 다시 연결 중... ({{count}}/3)",
+    "temporaryIssue": "일시적인 문제로 서비스에 접속할 수 없습니다.",
+    "retryFailed": "재시도 {{count}}회 실패. 잠시 후 다시 시도해 주세요.",
+    "retryingButton": "재시도 중...",
+    "retry": "다시 시도",
+    "contactSupport": "지원팀 문의",
+    "statusCode": "상태 코드:",
+    "time": "시간:",
+    "network": "네트워크:",
+    "connected": "연결됨",
+    "disconnected": "끊김",
+    "retryLabel": "재시도:",
+    "helpText": "이 문제가 계속되면 다음을 시도해 보세요:",
+    "helpTip1": "브라우저 캐시 삭제",
+    "helpTip2": "다른 브라우저로 접속",
+    "helpTip3": "잠시 후 다시 시도"
+  },
+  "errorBoundary": {
+    "title": "앗! 문제가 발생했습니다",
+    "description": "예상치 못한 오류가 발생했습니다. 불편을 드려 죄송합니다.",
+    "repeatedError": "오류가 반복적으로 발생하고 있습니다. 지원팀에 문의해 주세요.",
+    "errorDetail": "에러 상세:",
+    "retry": "다시 시도",
+    "contactSupport": "지원팀 문의",
+    "errorId": "오류 ID:",
+    "time": "시간:"
+  },
+  "notification": {
+    "settings": "알림 설정",
+    "closeSettings": "설정 닫기",
+    "blogUpdates": "블로그 업데이트",
+    "blogUpdatesDesc": "새 글이 게시될 때 알림",
+    "contactResponse": "문의 응답",
+    "contactResponseDesc": "문의에 대한 응답 알림",
+    "systemAlerts": "시스템 알림",
+    "systemAlertsDesc": "중요한 시스템 업데이트",
+    "marketing": "마케팅 정보",
+    "marketingDesc": "프로모션 및 이벤트 정보",
+    "save": "저장",
+    "cancel": "취소",
+    "enableTitle": "알림 허용하기",
+    "enableDescription": "새 블로그 글과 중요한 업데이트를 놓치지 마세요. 언제든지 설정에서 변경할 수 있습니다.",
+    "enabling": "설정 중...",
+    "allow": "허용",
+    "later": "나중에",
+    "settingsAriaLabel": "알림 설정"
   },
   "chat": {
     "title": "실시간 상담",

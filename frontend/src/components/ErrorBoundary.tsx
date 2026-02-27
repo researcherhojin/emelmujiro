@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home, Mail } from 'lucide-react';
+import i18n from '../i18n';
 import logger from '../utils/logger';
 
 interface Props {
@@ -137,14 +138,14 @@ class ErrorBoundary extends Component<Props, State> {
 
             {/* 에러 메시지 */}
             <h1 className="text-3xl font-bold text-gray-900 text-center mb-4">
-              앗! 문제가 발생했습니다
+              {i18n.t('errorBoundary.title')}
             </h1>
 
             <p className="text-gray-600 text-center mb-8">
-              예상치 못한 오류가 발생했습니다. 불편을 드려 죄송합니다.
+              {i18n.t('errorBoundary.description')}
               {this.state.errorCount > 2 && (
                 <span className="block mt-2 text-sm text-orange-600">
-                  오류가 반복적으로 발생하고 있습니다. 지원팀에 문의해 주세요.
+                  {i18n.t('errorBoundary.repeatedError')}
                 </span>
               )}
             </p>
@@ -152,7 +153,9 @@ class ErrorBoundary extends Component<Props, State> {
             {/* 개발 환경에서만 에러 상세 표시 */}
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <div className="mb-8 p-4 bg-gray-100 rounded-lg">
-                <h2 className="font-semibold text-gray-700 mb-2">에러 상세:</h2>
+                <h2 className="font-semibold text-gray-700 mb-2">
+                  {i18n.t('errorBoundary.errorDetail')}
+                </h2>
                 <pre className="text-xs text-red-600 overflow-auto">
                   {this.state.error.toString()}
                 </pre>
@@ -176,7 +179,7 @@ class ErrorBoundary extends Component<Props, State> {
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
               >
                 <RefreshCw className="w-5 h-5" />
-                다시 시도
+                {i18n.t('errorBoundary.retry')}
               </button>
 
               <button
@@ -184,7 +187,7 @@ class ErrorBoundary extends Component<Props, State> {
                 className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
               >
                 <Home className="w-5 h-5" />
-                홈으로
+                {i18n.t('common.home')}
               </button>
 
               <a
@@ -192,16 +195,20 @@ class ErrorBoundary extends Component<Props, State> {
                 className="flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <Mail className="w-5 h-5" />
-                지원팀 문의
+                {i18n.t('errorBoundary.contactSupport')}
               </a>
             </div>
 
             {/* 추가 정보 */}
             <div className="mt-8 pt-8 border-t border-gray-200">
               <p className="text-sm text-gray-500 text-center">
-                오류 ID: {Date.now().toString(36).toUpperCase()}
+                {i18n.t('errorBoundary.errorId')}{' '}
+                {Date.now().toString(36).toUpperCase()}
                 <br />
-                시간: {new Date().toLocaleString('ko-KR')}
+                {i18n.t('errorBoundary.time')}{' '}
+                {new Date().toLocaleString(
+                  i18n.language === 'ko' ? 'ko-KR' : 'en-US'
+                )}
               </p>
             </div>
           </div>

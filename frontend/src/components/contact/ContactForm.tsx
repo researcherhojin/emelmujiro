@@ -1,4 +1,5 @@
 import React, { memo, ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Send, WifiOff } from 'lucide-react';
 
 interface FormData {
@@ -22,12 +23,14 @@ interface ContactFormProps {
 
 const ContactForm: React.FC<ContactFormProps> = memo(
   ({ formData, isSubmitting, isOnline, onInputChange, onSubmit }) => {
+    const { t } = useTranslation();
+
     return (
       <form
         onSubmit={onSubmit}
         className="space-y-6"
         noValidate
-        aria-label="문의 양식"
+        aria-label={t('contact.form.ariaLabel')}
       >
         <div className="grid md:grid-cols-2 gap-6">
           <div>
@@ -35,7 +38,7 @@ const ContactForm: React.FC<ContactFormProps> = memo(
               htmlFor="name"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
-              이름 <span className="text-red-500">*</span>
+              {t('contact.form.name')} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -45,9 +48,9 @@ const ContactForm: React.FC<ContactFormProps> = memo(
               onChange={onInputChange}
               required
               className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-gray-400 dark:focus:border-gray-500 transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              placeholder="홍길동"
+              placeholder={t('contactPage.placeholder.name')}
               aria-required="true"
-              aria-label="이름 입력"
+              aria-label={t('contact.form.nameAriaLabel')}
             />
           </div>
 
@@ -56,7 +59,7 @@ const ContactForm: React.FC<ContactFormProps> = memo(
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
-              이메일 <span className="text-red-500">*</span>
+              {t('contact.form.email')} <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
@@ -68,7 +71,7 @@ const ContactForm: React.FC<ContactFormProps> = memo(
               className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-gray-400 dark:focus:border-gray-500 transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               placeholder="example@company.com"
               aria-required="true"
-              aria-label="이메일 입력"
+              aria-label={t('contact.form.emailAriaLabel')}
             />
           </div>
 
@@ -77,7 +80,7 @@ const ContactForm: React.FC<ContactFormProps> = memo(
               htmlFor="phone"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
-              전화번호
+              {t('contact.form.phone')}
             </label>
             <input
               type="tel"
@@ -87,7 +90,7 @@ const ContactForm: React.FC<ContactFormProps> = memo(
               onChange={onInputChange}
               className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-gray-400 dark:focus:border-gray-500 transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               placeholder="010-1234-5678"
-              aria-label="전화번호 입력"
+              aria-label={t('contact.form.phoneAriaLabel')}
             />
           </div>
 
@@ -96,7 +99,7 @@ const ContactForm: React.FC<ContactFormProps> = memo(
               htmlFor="company"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
-              회사/기관명
+              {t('contact.form.company')}
             </label>
             <input
               type="text"
@@ -105,8 +108,8 @@ const ContactForm: React.FC<ContactFormProps> = memo(
               value={formData.company}
               onChange={onInputChange}
               className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-gray-400 dark:focus:border-gray-500 transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              placeholder="에멜무지로"
-              aria-label="회사/기관명 입력"
+              placeholder={t('contactPage.placeholder.company')}
+              aria-label={t('contact.form.companyAriaLabel')}
             />
           </div>
         </div>
@@ -116,7 +119,8 @@ const ContactForm: React.FC<ContactFormProps> = memo(
             htmlFor="inquiryType"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
-            문의 유형 <span className="text-red-500">*</span>
+            {t('contact.form.inquiryType')}{' '}
+            <span className="text-red-500">*</span>
           </label>
           <select
             id="inquiryType"
@@ -126,12 +130,12 @@ const ContactForm: React.FC<ContactFormProps> = memo(
             required
             className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-gray-400 dark:focus:border-gray-500 transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             aria-required="true"
-            aria-label="문의 유형 선택"
+            aria-label={t('contact.form.inquiryTypeAriaLabel')}
           >
-            <option value="consulting">AI 컨설팅</option>
-            <option value="education">기업 AI 교육</option>
-            <option value="llm">LLM 솔루션</option>
-            <option value="data">데이터 분석</option>
+            <option value="consulting">{t('contact.form.consulting')}</option>
+            <option value="education">{t('contact.form.education')}</option>
+            <option value="llm">{t('contact.form.llm')}</option>
+            <option value="data">{t('contact.form.data')}</option>
           </select>
         </div>
 
@@ -140,7 +144,7 @@ const ContactForm: React.FC<ContactFormProps> = memo(
             htmlFor="message"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
-            문의 내용 <span className="text-red-500">*</span>
+            {t('contact.form.message')} <span className="text-red-500">*</span>
           </label>
           <textarea
             id="message"
@@ -150,9 +154,9 @@ const ContactForm: React.FC<ContactFormProps> = memo(
             required
             rows={6}
             className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-gray-400 dark:focus:border-gray-500 transition-colors resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-            placeholder="문의하실 내용을 자유롭게 작성해주세요."
+            placeholder={t('contactPage.placeholder.message')}
             aria-required="true"
-            aria-label="문의 내용 입력"
+            aria-label={t('contact.form.messageAriaLabel')}
           />
         </div>
 
@@ -160,11 +164,12 @@ const ContactForm: React.FC<ContactFormProps> = memo(
           <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
             <div className="flex items-center space-x-2 text-yellow-800 dark:text-yellow-200">
               <WifiOff className="w-5 h-5" />
-              <span className="font-medium">오프라인 모드</span>
+              <span className="font-medium">
+                {t('contact.form.offlineMode')}
+              </span>
             </div>
             <p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
-              현재 오프라인 상태입니다. 문의는 저장되어 인터넷 연결 시 자동으로
-              전송됩니다.
+              {t('contact.form.offlineMessage')}
             </p>
           </div>
         )}
@@ -173,17 +178,17 @@ const ContactForm: React.FC<ContactFormProps> = memo(
           type="submit"
           disabled={isSubmitting}
           className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-4 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
-          aria-label="문의 전송"
+          aria-label={t('contact.form.submitAriaLabel')}
         >
           {isSubmitting ? (
             <>
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white dark:border-gray-900" />
-              <span>전송 중...</span>
+              <span>{t('contact.form.submitting')}</span>
             </>
           ) : (
             <>
               <Send className="w-5 h-5" />
-              <span>문의 전송</span>
+              <span>{t('contact.form.submit')}</span>
             </>
           )}
         </button>

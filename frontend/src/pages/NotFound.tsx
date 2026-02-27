@@ -2,20 +2,22 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Home, Search, ArrowLeft, HelpCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 const NotFound: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleGoBack = () => {
     navigate(-1);
   };
 
   const popularPages = [
-    { name: '홈', path: '/' },
-    { name: '소개', path: '/about' },
-    { name: '서비스', path: '/services' },
-    { name: '블로그', path: '/blog' },
-    { name: '문의하기', path: '/contact' },
+    { name: t('common.home'), path: '/' },
+    { name: t('common.about'), path: '/about' },
+    { name: t('common.services'), path: '/services' },
+    { name: t('common.blog'), path: '/blog' },
+    { name: t('common.contact'), path: '/contact' },
   ];
 
   return (
@@ -47,12 +49,10 @@ const NotFound: React.FC = () => {
             className="mb-8"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              페이지를 찾을 수 없습니다
+              {t('notFound.title')}
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.
-              <br />
-              URL을 다시 확인하시거나 아래 옵션을 이용해 주세요.
+              {t('notFound.description')}
             </p>
           </motion.div>
 
@@ -68,7 +68,7 @@ const NotFound: React.FC = () => {
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all hover:shadow-lg"
             >
               <ArrowLeft className="w-5 h-5" />
-              이전 페이지로
+              {t('notFound.goBack')}
             </button>
 
             <Link
@@ -76,7 +76,7 @@ const NotFound: React.FC = () => {
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-blue-500 text-white rounded-xl hover:shadow-xl transition-all transform hover:scale-105"
             >
               <Home className="w-5 h-5" />
-              홈으로 가기
+              {t('notFound.goHome')}
             </Link>
 
             <Link
@@ -84,7 +84,7 @@ const NotFound: React.FC = () => {
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all hover:shadow-lg"
             >
               <HelpCircle className="w-5 h-5" />
-              도움말
+              {t('notFound.help')}
             </Link>
           </motion.div>
 
@@ -97,7 +97,7 @@ const NotFound: React.FC = () => {
           >
             <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center justify-center gap-2">
               <Search className="w-5 h-5" />
-              인기 페이지
+              {t('notFound.popularPages')}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {popularPages.map((page, index) => (

@@ -266,6 +266,49 @@
       "activity": "Activity"
     }
   },
+  "careerSummary": {
+    "title": "Career Summary",
+    "subtitle": "Introducing <strong>5 years of experience</strong> in AI education and business development.",
+    "viewDetail": "View Career Details",
+    "highlights": {
+      "2025": {
+        "title": "Business Expansion & Graduate School",
+        "description": "Strengthening AI technology expertise and business growth"
+      },
+      "2024": {
+        "title": "Graduate School & Business Growth",
+        "description": "Enrolled in Hanyang University AI Convergence Graduate School, expanding corporate education"
+      },
+      "2023": {
+        "title": "Peak Education Activity",
+        "description": "AI education for major enterprises including Samsung, LG Electronics, Hyundai E&C"
+      },
+      "2022": {
+        "title": "Growth as AI Education Expert",
+        "description": "Education content development and corporate education specialist activities"
+      }
+    }
+  },
+  "quickIntro": {
+    "items": {
+      "consulting": {
+        "title": "AI Consulting",
+        "description": "Practical AI solutions for business challenges"
+      },
+      "education": {
+        "title": "Corporate AI Education",
+        "description": "Systematic AI capability building for practitioners"
+      },
+      "llm": {
+        "title": "LLM Solutions",
+        "description": "Business innovation with latest language models"
+      },
+      "data": {
+        "title": "Data Analysis",
+        "description": "Analysis for business insight extraction"
+      }
+    }
+  },
   "contact": {
     "title": "Contact Us",
     "subtitle": "Want to discuss your project?",
@@ -281,18 +324,81 @@
       "submit": "Send Inquiry",
       "sending": "Sending...",
       "success": "Your inquiry has been sent successfully",
-      "error": "An error occurred while sending"
+      "error": "An error occurred while sending",
+      "ariaLabel": "Contact form",
+      "nameAriaLabel": "Enter name",
+      "emailAriaLabel": "Enter email",
+      "phoneAriaLabel": "Enter phone number",
+      "companyAriaLabel": "Enter company name",
+      "inquiryType": "Inquiry Type",
+      "inquiryTypeAriaLabel": "Select inquiry type",
+      "consulting": "AI Consulting",
+      "education": "Corporate AI Education",
+      "llm": "LLM Solutions",
+      "data": "Data Analysis",
+      "messageAriaLabel": "Enter message",
+      "offlineMode": "Offline Mode",
+      "offlineMessage": "You are currently offline. Your inquiry will be saved and sent automatically when connected.",
+      "submitAriaLabel": "Send inquiry",
+      "submitting": "Sending..."
     },
     "info": {
       "email": "researcherhojin@gmail.com",
       "phone": "+82-10-1234-5678",
       "address": "Gangnam-gu, Seoul",
-      "hours": "Weekdays 09:00 - 18:00"
+      "hours": "Weekdays 09:00 - 18:00",
+      "emailLabel": "Email",
+      "phoneLabel": "Phone",
+      "phoneValue": "Please contact us directly",
+      "businessHours": "Business Hours",
+      "weekdays": "Monday - Friday: 09:00 - 18:00",
+      "weekends": "Saturday - Sunday: Closed",
+      "quickResponse": "Quick Response Time",
+      "responseMessage": "We typically respond within 24 hours."
+    },
+    "services": {
+      "consulting": {
+        "title": "AI Consulting",
+        "description": "Custom AI solutions for your business",
+        "feature1": "AI adoption strategy",
+        "feature2": "Technical review & evaluation",
+        "feature3": "ROI analysis"
+      },
+      "education": {
+        "title": "Corporate AI Education",
+        "description": "Practice-focused AI training programs",
+        "feature1": "Custom curriculum",
+        "feature2": "Hands-on training",
+        "feature3": "Post-training mentoring"
+      },
+      "llm": {
+        "title": "LLM Solutions",
+        "description": "Large language model building & optimization",
+        "feature1": "Custom LLM development",
+        "feature2": "Fine-tuning",
+        "feature3": "API integration"
+      },
+      "data": {
+        "title": "Data Analysis",
+        "description": "Data-driven insight extraction",
+        "feature1": "Data pipeline",
+        "feature2": "Predictive modeling",
+        "feature3": "Visualization dashboard"
+      }
+    }
+  },
+  "contactPage": {
+    "successMessage": "Your inquiry has been submitted successfully.",
+    "successDetail": "We will respond as soon as possible.",
+    "placeholder": {
+      "name": "John Doe",
+      "company": "Enter your company name",
+      "message": "Please describe your inquiry in detail"
     }
   },
   "blog": {
     "title": "Blog",
-    "subtitle": "Sharing AI trends and insights",
+    "subtitle": "Sharing latest AI technology trends and real adoption cases",
     "readMore": "Read More",
     "author": "Author",
     "date": "Date",
@@ -302,6 +408,20 @@
     "writeComment": "Write Comment",
     "noComments": "No comments",
     "search": "Search Blog",
+    "loading": "Loading latest AI trends...",
+    "trends": "AI Trends",
+    "emptyTitle": "New AI trends coming soon",
+    "emptyDescription": "We're preparing generative AI and latest technology trends",
+    "viewAll": "View all blog posts",
+    "viewAllTrends": "View All Trends",
+    "preparing": "Blog Coming Soon",
+    "preparingSubtitle": "We'll be back with better content soon",
+    "preparingDescription": "We're preparing quality AI insights and technology trends. Please stay tuned.",
+    "backToMain": "Back to Home",
+    "seo": {
+      "title": "Blog | Emelmujiro",
+      "description": "Sharing latest AI and IT news and insights"
+    },
     "categories": {
       "all": "All",
       "ai": "AI/ML",
@@ -309,6 +429,142 @@
       "casestudy": "Case Study",
       "news": "News"
     }
+  },
+  "logos": {
+    "sectionLabel": "TRUSTED BY",
+    "title": "Companies We've Worked With",
+    "logoAlt": "{{name}} logo"
+  },
+  "profile": {
+    "aboutMe": "About Me",
+    "intro": "Conducting Deep Learning and LLM education and research at major enterprises and public institutions including Samsung, SK, LG",
+    "ceoName": "Hojin Lee, CEO of Emelmujiro",
+    "introSuffix": ".",
+    "goalsTitle": "Goals & Values",
+    "workStyleTitle": "Work Style",
+    "skillsTitle": "Technical Skills",
+    "certificationsTitle": "Certifications & Achievements",
+    "stats": {
+      "educationCareer": "Education Career",
+      "students": "Total Students",
+      "partners": "Partner Companies",
+      "lectureProjects": "Lecture Projects"
+    },
+    "goals": {
+      "competitive": {
+        "title": "Building Irreplaceable Competitiveness",
+        "description": "As an AI Researcher, building unique expertise through continuous research and innovation."
+      },
+      "sharing": {
+        "title": "Creating Value Through Knowledge Sharing",
+        "description": "Helping more people leverage AI technology through education and mentoring."
+      }
+    },
+    "workStyle": {
+      "communication": {
+        "title": "Communication & Collaboration",
+        "description": "Enjoys creating synergy through smooth communication with diverse people."
+      },
+      "creative": {
+        "title": "Creative Problem Solving",
+        "description": "Finds fulfillment in growing through creative problem solving."
+      },
+      "trending": {
+        "title": "Trend Leadership",
+        "description": "Quickly catches AI trends and actively shares new knowledge."
+      }
+    },
+    "certifications": {
+      "adsp": {
+        "name": "ADsP (Associate Data Scientist Professional)",
+        "issuer": "Korea Data Agency"
+      },
+      "ncsStrategy": {
+        "name": "NCS IT Strategy & Planning",
+        "score": "57 pts"
+      },
+      "ncsDev": {
+        "name": "NCS IT Development",
+        "score": "57 pts"
+      },
+      "ncsAI": {
+        "name": "NCS Artificial Intelligence",
+        "score": "57 pts"
+      }
+    },
+    "quote": "\"Pursuing practice-focused AI education accessible even to non-technical backgrounds\"",
+    "quoteDescription": "My goal is to break down complex AI technology so anyone can understand it, and provide practical education that can be immediately applied to real work. Let's explore the infinite possibilities of AI together."
+  },
+  "home": {
+    "seo": {
+      "title": "Emelmujiro - AI Education & Consulting",
+      "description": "A specialized company providing AI technology education and consulting. We offer machine learning, deep learning, data analysis training and corporate AI transformation consulting services.",
+      "structuredDescription": "A company providing professional AI education and consulting services",
+      "orgDescription": "AI Education & Consulting Company"
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you requested may not exist or may have been moved.\nPlease check the URL or use the options below.",
+    "goBack": "Go Back",
+    "goHome": "Go Home",
+    "help": "Help",
+    "popularPages": "Popular Pages"
+  },
+  "serverError": {
+    "status": {
+      "500": "Internal server error occurred",
+      "502": "Gateway error occurred",
+      "503": "Service temporarily unavailable",
+      "504": "Gateway timeout"
+    },
+    "offlineMessage": "It seems your internet connection is lost. Please check your network.",
+    "retrying": "Reconnecting to server... ({{count}}/3)",
+    "temporaryIssue": "Service is temporarily unavailable due to a temporary issue.",
+    "retryFailed": "Retry {{count}} failed. Please try again later.",
+    "retryingButton": "Retrying...",
+    "retry": "Try Again",
+    "contactSupport": "Contact Support",
+    "statusCode": "Status Code:",
+    "time": "Time:",
+    "network": "Network:",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "retryLabel": "Retries:",
+    "helpText": "If this problem persists, try the following:",
+    "helpTip1": "Clear browser cache",
+    "helpTip2": "Try a different browser",
+    "helpTip3": "Try again later"
+  },
+  "errorBoundary": {
+    "title": "Oops! Something went wrong",
+    "description": "An unexpected error occurred. We apologize for the inconvenience.",
+    "repeatedError": "Errors are occurring repeatedly. Please contact our support team.",
+    "errorDetail": "Error details:",
+    "retry": "Try Again",
+    "contactSupport": "Contact Support",
+    "errorId": "Error ID:",
+    "time": "Time:"
+  },
+  "notification": {
+    "settings": "Notification Settings",
+    "closeSettings": "Close settings",
+    "blogUpdates": "Blog Updates",
+    "blogUpdatesDesc": "Notify when new posts are published",
+    "contactResponse": "Contact Response",
+    "contactResponseDesc": "Notify when inquiry responses arrive",
+    "systemAlerts": "System Alerts",
+    "systemAlertsDesc": "Important system updates",
+    "marketing": "Marketing",
+    "marketingDesc": "Promotions and event information",
+    "save": "Save",
+    "cancel": "Cancel",
+    "enableTitle": "Enable Notifications",
+    "enableDescription": "Don't miss new blog posts and important updates. You can change this anytime in settings.",
+    "enabling": "Setting up...",
+    "allow": "Allow",
+    "later": "Later",
+    "settingsAriaLabel": "Notification settings"
   },
   "chat": {
     "title": "Live Chat",

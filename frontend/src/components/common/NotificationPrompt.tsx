@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bell, X, Settings } from 'lucide-react';
 import {
   isPushNotificationSupported,
@@ -25,6 +26,7 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
   onClose,
   className = '',
 }) => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -140,12 +142,12 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                알림 설정
+                {t('notification.settings')}
               </h3>
               <button
                 onClick={() => setShowSettings(false)}
                 className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                aria-label="설정 닫기"
+                aria-label={t('notification.closeSettings')}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -155,10 +157,10 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <label className="text-sm font-medium text-gray-900 dark:text-white">
-                    블로그 업데이트
+                    {t('notification.blogUpdates')}
                   </label>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    새 글이 게시될 때 알림
+                    {t('notification.blogUpdatesDesc')}
                   </p>
                 </div>
                 <input
@@ -174,10 +176,10 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <label className="text-sm font-medium text-gray-900 dark:text-white">
-                    문의 응답
+                    {t('notification.contactResponse')}
                   </label>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    문의에 대한 응답 알림
+                    {t('notification.contactResponseDesc')}
                   </p>
                 </div>
                 <input
@@ -193,10 +195,10 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <label className="text-sm font-medium text-gray-900 dark:text-white">
-                    시스템 알림
+                    {t('notification.systemAlerts')}
                   </label>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    중요한 시스템 업데이트
+                    {t('notification.systemAlertsDesc')}
                   </p>
                 </div>
                 <input
@@ -212,10 +214,10 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <label className="text-sm font-medium text-gray-900 dark:text-white">
-                    마케팅 정보
+                    {t('notification.marketing')}
                   </label>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    프로모션 및 이벤트 정보
+                    {t('notification.marketingDesc')}
                   </p>
                 </div>
                 <input
@@ -238,7 +240,7 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg
                            font-medium transition-colors duration-200"
               >
-                저장
+                {t('notification.save')}
               </button>
               <button
                 onClick={() => setShowSettings(false)}
@@ -246,7 +248,7 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
                            dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200
                            py-2 px-4 rounded-lg font-medium transition-colors duration-200"
               >
-                취소
+                {t('notification.cancel')}
               </button>
             </div>
           </div>
@@ -269,11 +271,10 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
 
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-            알림 허용하기
+            {t('notification.enableTitle')}
           </h3>
           <p className="text-xs text-gray-600 dark:text-gray-300 mb-4">
-            새 블로그 글과 중요한 업데이트를 놓치지 마세요. 언제든지 설정에서
-            변경할 수 있습니다.
+            {t('notification.enableDescription')}
           </p>
 
           <div className="flex space-x-2">
@@ -284,14 +285,14 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
                          text-white py-2 px-3 rounded text-xs font-medium
                          transition-colors duration-200 disabled:cursor-not-allowed"
             >
-              {isLoading ? '설정 중...' : '허용'}
+              {isLoading ? t('notification.enabling') : t('notification.allow')}
             </button>
 
             <button
               onClick={() => setShowSettings(true)}
               className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400
                          dark:hover:text-gray-200 transition-colors duration-200"
-              aria-label="알림 설정"
+              aria-label={t('notification.settings')}
             >
               <Settings className="w-4 h-4" />
             </button>
@@ -300,7 +301,7 @@ const NotificationPrompt: React.FC<NotificationPromptProps> = ({
               onClick={handleDismiss}
               className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400
                          dark:hover:text-gray-200 transition-colors duration-200"
-              aria-label="나중에"
+              aria-label={t('notification.later')}
             >
               <X className="w-4 h-4" />
             </button>

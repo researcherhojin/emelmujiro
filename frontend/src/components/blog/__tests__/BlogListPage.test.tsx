@@ -4,6 +4,15 @@ import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import BlogListPage from '../BlogListPage';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 // Mock useNavigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -30,31 +39,27 @@ describe('BlogListPage', () => {
   it('renders the under construction message', () => {
     renderWithProviders(<BlogListPage />);
 
-    expect(screen.getByText('블로그 준비 중')).toBeInTheDocument();
-    expect(
-      screen.getByText('더 나은 콘텐츠로 곧 찾아뵙겠습니다')
-    ).toBeInTheDocument();
+    expect(screen.getByText('blog.preparing')).toBeInTheDocument();
+    expect(screen.getByText('blog.preparingSubtitle')).toBeInTheDocument();
   });
 
   it('shows wait message', () => {
     renderWithProviders(<BlogListPage />);
 
-    expect(
-      screen.getByText(/양질의 AI 인사이트와 기술 트렌드를 준비하고 있으니/)
-    ).toBeInTheDocument();
+    expect(screen.getByText('blog.preparingDescription')).toBeInTheDocument();
   });
 
   it('renders the back to main button', () => {
     renderWithProviders(<BlogListPage />);
 
-    const backButton = screen.getByText('메인으로 돌아가기');
+    const backButton = screen.getByText('blog.backToMain');
     expect(backButton).toBeInTheDocument();
   });
 
   it('navigates to home when back button is clicked', () => {
     renderWithProviders(<BlogListPage />);
 
-    const backButton = screen.getByText('메인으로 돌아가기');
+    const backButton = screen.getByText('blog.backToMain');
     backButton.click();
 
     expect(mockNavigate).toHaveBeenCalledWith('/');

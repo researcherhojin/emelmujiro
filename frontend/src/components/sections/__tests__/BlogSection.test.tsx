@@ -8,6 +8,15 @@ import React from 'react';
 // Import BlogPost type from types
 import { BlogPost } from '../../../types';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 // Define type for motion component props
 type MotionComponentProps = {
   children?: React.ReactNode;
@@ -130,8 +139,7 @@ describe('BlogSection Component', () => {
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
 
-      // Check for blog section content instead of ID
-      expect(screen.getByText('AI 트렌드')).toBeInTheDocument();
+      expect(screen.getByText('blog.trends')).toBeInTheDocument();
     });
 
     it('displays section header', () => {
@@ -139,15 +147,8 @@ describe('BlogSection Component', () => {
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
 
-      expect(screen.getByText('AI 트렌드')).toBeInTheDocument();
-      // Use a more flexible matcher
-      const descriptionText = screen.getByText((content, element) => {
-        return (
-          element?.tagName.toLowerCase() === 'p' &&
-          content.includes('최신 AI 기술 동향')
-        );
-      });
-      expect(descriptionText).toBeInTheDocument();
+      expect(screen.getByText('blog.trends')).toBeInTheDocument();
+      expect(screen.getByText('blog.subtitle')).toBeInTheDocument();
     });
 
     it('displays only first 3 posts', () => {
@@ -169,7 +170,7 @@ describe('BlogSection Component', () => {
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
 
-      const viewAllButton = screen.getByText('전체 트렌드 보기');
+      const viewAllButton = screen.getByText('blog.viewAllTrends');
       expect(viewAllButton).toBeInTheDocument();
     });
 
@@ -178,7 +179,7 @@ describe('BlogSection Component', () => {
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
 
-      const viewAllButton = screen.getByText('전체 트렌드 보기');
+      const viewAllButton = screen.getByText('blog.viewAllTrends');
       fireEvent.click(viewAllButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('/blog');
@@ -190,7 +191,7 @@ describe('BlogSection Component', () => {
         <BlogSection posts={threePosts} isLoading={false} error={null} />
       );
 
-      expect(screen.queryByText('전체 트렌드 보기')).not.toBeInTheDocument();
+      expect(screen.queryByText('blog.viewAllTrends')).not.toBeInTheDocument();
     });
   });
 
@@ -201,9 +202,7 @@ describe('BlogSection Component', () => {
       );
 
       expect(screen.getByTestId('loader')).toBeInTheDocument();
-      expect(
-        screen.getByText('최신 AI 트렌드를 불러오는 중...')
-      ).toBeInTheDocument();
+      expect(screen.getByText('blog.loading')).toBeInTheDocument();
     });
 
     it('does not display posts when loading', () => {
@@ -245,12 +244,8 @@ describe('BlogSection Component', () => {
         <BlogSection posts={[]} isLoading={false} error={null} />
       );
 
-      expect(
-        screen.getByText('곧 새로운 AI 트렌드로 찾아뵙겠습니다')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('생성형 AI와 최신 기술 동향을 준비 중입니다')
-      ).toBeInTheDocument();
+      expect(screen.getByText('blog.emptyTitle')).toBeInTheDocument();
+      expect(screen.getByText('blog.emptyDescription')).toBeInTheDocument();
     });
 
     it('displays empty state icon', () => {
@@ -269,9 +264,7 @@ describe('BlogSection Component', () => {
         <BlogSection posts={[]} isLoading={false} error={null} />
       );
 
-      expect(
-        screen.getByText('곧 새로운 AI 트렌드로 찾아뵙겠습니다')
-      ).toBeInTheDocument();
+      expect(screen.getByText('blog.emptyTitle')).toBeInTheDocument();
     });
 
     it('handles empty posts with loading state', () => {
@@ -324,16 +317,8 @@ describe('BlogSection Component', () => {
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
 
-      // Check for content presence instead of CSS classes
-      expect(screen.getByText('AI 트렌드')).toBeInTheDocument();
-      // Use a partial text matcher in case of any rendering differences
-      const descriptionText = screen.getByText((content, element) => {
-        return (
-          element?.tagName.toLowerCase() === 'p' &&
-          content.includes('최신 AI 기술 동향과 실제 도입 사례를 공유합니다')
-        );
-      });
-      expect(descriptionText).toBeInTheDocument();
+      expect(screen.getByText('blog.trends')).toBeInTheDocument();
+      expect(screen.getByText('blog.subtitle')).toBeInTheDocument();
     });
 
     it('applies grid layout for posts', () => {
@@ -372,7 +357,7 @@ describe('BlogSection Component', () => {
       );
 
       const heading = screen.getByRole('heading', { level: 2 });
-      expect(heading).toHaveTextContent('AI 트렌드');
+      expect(heading).toHaveTextContent('blog.trends');
     });
 
     it('has proper aria-label for navigation button', () => {
@@ -380,7 +365,7 @@ describe('BlogSection Component', () => {
         <BlogSection posts={mockPosts} isLoading={false} error={null} />
       );
 
-      const button = screen.getByLabelText('블로그 전체 글 보기');
+      const button = screen.getByLabelText('blog.viewAll');
       expect(button).toBeInTheDocument();
     });
   });

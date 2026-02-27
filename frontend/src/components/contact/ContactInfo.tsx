@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Mail, Phone } from 'lucide-react';
 
 interface ContactIconProps {
@@ -35,37 +36,39 @@ const ContactIcon: React.FC<ContactIconProps> = memo(
 ContactIcon.displayName = 'ContactIcon';
 
 const ContactInfo: React.FC = memo(() => {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       <ContactIcon
         icon={<Mail className="w-6 h-6" />}
-        title="이메일"
+        title={t('contact.info.email')}
         value="researcherhojin@gmail.com"
         link="mailto:researcherhojin@gmail.com"
       />
 
       <ContactIcon
         icon={<Phone className="w-6 h-6" />}
-        title="전화번호"
-        value="직접 문의 부탁드립니다"
+        title={t('contact.info.phone')}
+        value={t('contact.info.phoneValue')}
       />
 
       <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-xl">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          업무 시간
+          {t('contact.info.businessHours')}
         </h3>
         <div className="space-y-1 text-gray-600 dark:text-gray-400">
-          <p>월요일 - 금요일: 09:00 - 18:00</p>
-          <p>토요일 - 일요일: 휴무</p>
+          <p>{t('contact.info.weekdays')}</p>
+          <p>{t('contact.info.weekends')}</p>
         </div>
       </div>
 
       <div className="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          빠른 응답 시간
+          {t('contact.info.quickResponse')}
         </h3>
         <p className="text-gray-600 dark:text-gray-400">
-          보통 24시간 이내에 답변드립니다.
+          {t('contact.info.responseMessage')}
         </p>
       </div>
     </div>

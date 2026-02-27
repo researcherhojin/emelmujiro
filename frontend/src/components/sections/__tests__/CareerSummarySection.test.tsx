@@ -1,7 +1,17 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import { renderWithProviders } from '../../../test-utils';
 import CareerSummarySection from '../CareerSummarySection';
+
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+}));
 
 describe('CareerSummarySection', () => {
   it('renders career summary section', () => {
@@ -15,9 +25,8 @@ describe('CareerSummarySection', () => {
   it('displays years of experience', () => {
     renderWithProviders(<CareerSummarySection />);
 
-    // Check for experience years - the component has "5년" in multiple places
-    // Including in the stats and description
-    const yearElements = screen.getAllByText(/5년/);
+    // Check for experience years - now uses i18n key
+    const yearElements = screen.getAllByText('career.stats.educationYears');
     expect(yearElements.length).toBeGreaterThan(0);
     expect(yearElements[0]).toBeInTheDocument();
   });
@@ -28,22 +37,23 @@ describe('CareerSummarySection', () => {
     // Check for achievement numbers in the rendered content
     expect(screen.getByText('50+')).toBeInTheDocument();
     expect(screen.getByText('15+')).toBeInTheDocument();
-    // Multiple "4년" texts exist, use getAllByText
-    const yearElements = screen.getAllByText('5년');
+    // educationYears is now an i18n key
+    const yearElements = screen.getAllByText('career.stats.educationYears');
     expect(yearElements.length).toBeGreaterThan(0);
   });
 
   it('displays company count', () => {
     renderWithProviders(<CareerSummarySection />);
 
-    expect(screen.getByText('파트너사')).toBeInTheDocument();
+    // Now uses i18n key
+    expect(screen.getByText('career.stats.partners')).toBeInTheDocument();
   });
 
   it('shows student count', () => {
     renderWithProviders(<CareerSummarySection />);
 
-    // Changed to match actual content - looks for training experience instead
-    expect(screen.getByText('강의 경험')).toBeInTheDocument();
+    // Now uses i18n key
+    expect(screen.getByText('career.stats.lectures')).toBeInTheDocument();
   });
 
   it('renders statistics cards', () => {
@@ -55,7 +65,7 @@ describe('CareerSummarySection', () => {
       expect(statsGrid).toBeInTheDocument();
     } else {
       // Check for stats by looking for specific numbers
-      const stats = screen.queryAllByText(/50\+|15\+|4년/);
+      const stats = screen.queryAllByText(/50\+|15\+/);
       expect(stats.length).toBeGreaterThan(0);
     }
 
@@ -66,7 +76,7 @@ describe('CareerSummarySection', () => {
   it('displays icons for each stat', () => {
     renderWithProviders(<CareerSummarySection />);
 
-    // CareerSummarySection might not have visible icons, just check it renders with stats
+    // CareerSummarySection renders with stats
     expect(screen.getByText('50+')).toBeInTheDocument();
     expect(screen.getByText('15+')).toBeInTheDocument();
   });
@@ -84,7 +94,7 @@ describe('CareerSummarySection', () => {
     renderWithProviders(<CareerSummarySection />);
 
     // Check if stats are rendered in a layout
-    const stats = screen.queryAllByText(/50\+|15\+|4년/);
+    const stats = screen.queryAllByText(/50\+|15\+/);
     expect(stats.length).toBeGreaterThan(0);
   });
 

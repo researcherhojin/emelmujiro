@@ -1,4 +1,5 @@
 import React, { useState, useCallback, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface FormData {
   name: string;
@@ -8,6 +9,7 @@ interface FormData {
 }
 
 const ContactPage: React.FC = memo(() => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -39,9 +41,9 @@ const ContactPage: React.FC = memo(() => {
         {submitted ? (
           <div className="text-center py-12">
             <p className="text-lg font-semibold text-white mb-4">
-              문의가 정상적으로 접수되었습니다.
+              {t('contactPage.successMessage')}
             </p>
-            <p className="text-gray-400">빠른 시일 내에 답변드리겠습니다.</p>
+            <p className="text-gray-400">{t('contactPage.successDetail')}</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -50,7 +52,7 @@ const ContactPage: React.FC = memo(() => {
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-300 mb-1"
               >
-                이름
+                {t('contact.form.name')}
               </label>
               <input
                 type="text"
@@ -60,7 +62,7 @@ const ContactPage: React.FC = memo(() => {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 rounded-lg border border-white/20 bg-black text-white focus:ring-2 focus:ring-white focus:border-white transition-colors"
-                placeholder="홍길동"
+                placeholder={t('contactPage.placeholder.name')}
               />
             </div>
             <div>
@@ -68,7 +70,7 @@ const ContactPage: React.FC = memo(() => {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-300 mb-1"
               >
-                이메일
+                {t('contact.form.email')}
               </label>
               <input
                 type="email"
@@ -86,7 +88,7 @@ const ContactPage: React.FC = memo(() => {
                 htmlFor="company"
                 className="block text-sm font-medium text-gray-300 mb-1"
               >
-                회사명
+                {t('contact.form.company')}
               </label>
               <input
                 type="text"
@@ -95,7 +97,7 @@ const ContactPage: React.FC = memo(() => {
                 value={formData.company}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded-lg border border-white/20 bg-black text-white focus:ring-2 focus:ring-white focus:border-white transition-colors"
-                placeholder="회사명을 입력해주세요"
+                placeholder={t('contactPage.placeholder.company')}
               />
             </div>
             <div>
@@ -103,7 +105,7 @@ const ContactPage: React.FC = memo(() => {
                 htmlFor="message"
                 className="block text-sm font-medium text-gray-300 mb-1"
               >
-                문의 내용
+                {t('contact.form.message')}
               </label>
               <textarea
                 id="message"
@@ -113,14 +115,14 @@ const ContactPage: React.FC = memo(() => {
                 required
                 rows={4}
                 className="w-full px-4 py-2 rounded-lg border border-white/20 bg-black text-white focus:ring-2 focus:ring-white focus:border-white transition-colors"
-                placeholder="문의하실 내용을 자세히 적어주세요"
+                placeholder={t('contactPage.placeholder.message')}
               />
             </div>
             <button
               type="submit"
               className="w-full px-6 py-3 bg-white text-black rounded-lg font-medium hover:bg-gray-200 transition-colors"
             >
-              문의하기
+              {t('common.contact')}
             </button>
           </form>
         )}

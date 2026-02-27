@@ -8,8 +8,10 @@ import {
   WifiOff,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 const ServerError: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
@@ -45,10 +47,10 @@ const ServerError: React.FC = () => {
   };
 
   const statusMessages = [
-    { code: 500, message: '서버 내부 오류가 발생했습니다' },
-    { code: 502, message: '게이트웨이 오류가 발생했습니다' },
-    { code: 503, message: '서비스를 일시적으로 사용할 수 없습니다' },
-    { code: 504, message: '게이트웨이 시간 초과' },
+    { code: 500, message: t('serverError.status.500') },
+    { code: 502, message: t('serverError.status.502') },
+    { code: 503, message: t('serverError.status.503') },
+    { code: 504, message: t('serverError.status.504') },
   ];
 
   const currentStatus =
@@ -111,7 +113,7 @@ const ServerError: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <WifiOff className="w-5 h-5 text-orange-400" />
                   <p className="text-orange-200">
-                    인터넷 연결이 끊어진 것 같습니다. 네트워크를 확인해 주세요.
+                    {t('serverError.offlineMessage')}
                   </p>
                 </div>
               </motion.div>
@@ -121,16 +123,16 @@ const ServerError: React.FC = () => {
               {isRetrying ? (
                 <span className="flex items-center justify-center gap-2">
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  서버에 다시 연결 중... ({retryCount}/3)
+                  {t('serverError.retrying', { count: retryCount })}
                 </span>
               ) : (
-                '일시적인 문제로 서비스에 접속할 수 없습니다.'
+                t('serverError.temporaryIssue')
               )}
             </p>
 
             {retryCount > 0 && !isRetrying && (
               <p className="text-red-400 text-sm text-center mt-2">
-                재시도 {retryCount}회 실패. 잠시 후 다시 시도해 주세요.
+                {t('serverError.retryFailed', { count: retryCount })}
               </p>
             )}
           </div>
@@ -152,7 +154,9 @@ const ServerError: React.FC = () => {
               <RefreshCw
                 className={`w-5 h-5 ${isRetrying ? 'animate-spin' : ''}`}
               />
-              {isRetrying ? '재시도 중...' : '다시 시도'}
+              {isRetrying
+                ? t('serverError.retryingButton')
+                : t('serverError.retry')}
             </button>
 
             <button
@@ -160,7 +164,7 @@ const ServerError: React.FC = () => {
               className="flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white hover:bg-white/20 rounded-xl transition-all border border-white/20"
             >
               <Home className="w-5 h-5" />
-              홈으로
+              {t('common.home')}
             </button>
 
             <a
@@ -168,7 +172,7 @@ const ServerError: React.FC = () => {
               className="flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white hover:bg-white/20 rounded-xl transition-all border border-white/20"
             >
               <Mail className="w-5 h-5" />
-              지원팀 문의
+              {t('serverError.contactSupport')}
             </a>
           </div>
 
@@ -176,25 +180,38 @@ const ServerError: React.FC = () => {
           <div className="border-t border-white/10 pt-6">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="text-white/40">
-                <p>상태 코드: {currentStatus.code}</p>
-                <p>시간: {new Date().toLocaleTimeString('ko-KR')}</p>
+                <p>
+                  {t('serverError.statusCode')} {currentStatus.code}
+                </p>
+                <p>
+                  {t('serverError.time')}{' '}
+                  {new Date().toLocaleTimeString(
+                    i18n.language === 'ko' ? 'ko-KR' : 'en-US'
+                  )}
+                </p>
               </div>
               <div className="text-white/40 text-right">
                 <p className="flex items-center justify-end gap-2">
-                  네트워크:{' '}
+                  {t('serverError.network')}{' '}
                   {isOnline ? (
                     <>
                       <Wifi className="w-4 h-4 text-green-400" />
-                      <span className="text-green-400">연결됨</span>
+                      <span className="text-green-400">
+                        {t('serverError.connected')}
+                      </span>
                     </>
                   ) : (
                     <>
                       <WifiOff className="w-4 h-4 text-red-400" />
-                      <span className="text-red-400">끊김</span>
+                      <span className="text-red-400">
+                        {t('serverError.disconnected')}
+                      </span>
                     </>
                   )}
                 </p>
-                <p>재시도: {retryCount}/3</p>
+                <p>
+                  {t('serverError.retryLabel')} {retryCount}/3
+                </p>
               </div>
             </div>
 
@@ -219,11 +236,11 @@ const ServerError: React.FC = () => {
           transition={{ delay: 0.5 }}
           className="text-center mt-8 text-white/40 text-sm"
         >
-          <p>이 문제가 계속되면 다음을 시도해 보세요:</p>
+          <p>{t('serverError.helpText')}</p>
           <ul className="mt-2 space-y-1">
-            <li>• 브라우저 캐시 삭제</li>
-            <li>• 다른 브라우저로 접속</li>
-            <li>• 잠시 후 다시 시도</li>
+            <li>• {t('serverError.helpTip1')}</li>
+            <li>• {t('serverError.helpTip2')}</li>
+            <li>• {t('serverError.helpTip3')}</li>
           </ul>
         </motion.div>
       </div>

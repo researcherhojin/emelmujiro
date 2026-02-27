@@ -1,37 +1,47 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import { renderWithProviders } from '../../../test-utils';
 import QuickIntroSection from '../QuickIntroSection';
+
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+}));
 
 describe('QuickIntroSection', () => {
   it('renders quick intro section', () => {
     renderWithProviders(<QuickIntroSection />);
 
-    // Check for main heading
-    expect(screen.getByText('주요 서비스')).toBeInTheDocument();
-    expect(screen.getByText('WHAT WE DO')).toBeInTheDocument();
+    // Check for main heading (now i18n keys)
+    expect(screen.getByText('services.title')).toBeInTheDocument();
+    expect(screen.getByText('services.sectionLabel')).toBeInTheDocument();
   });
 
   it('displays introduction text', () => {
     renderWithProviders(<QuickIntroSection />);
 
-    // Check for intro content - use queryAllByText for multiple matches
-    const introTexts = screen.queryAllByText(/AI|인공지능|전문가/);
+    // Check for i18n keys for differentiator items
+    const introTexts = screen.queryAllByText(/quickIntro\.items/);
     expect(introTexts.length).toBeGreaterThan(0);
   });
 
   it('shows key highlights', () => {
     renderWithProviders(<QuickIntroSection />);
 
-    // Check for highlight items
-    const highlights = screen.queryAllByText(/경력|교육|프로젝트|연구/);
+    // Check for differentiator title keys
+    const highlights = screen.queryAllByText(/quickIntro\.items\.\w+\.title/);
     expect(highlights.length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders with proper styling', () => {
     renderWithProviders(<QuickIntroSection />);
 
-    const heading = screen.getByText('주요 서비스');
+    const heading = screen.getByText('services.title');
     expect(heading).toBeInTheDocument();
     // Check if it has proper heading styling
     expect(heading).toHaveClass('text-3xl');

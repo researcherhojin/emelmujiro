@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 import SEOHead from '../components/seo/SEOHead';
 import { PageLoading } from '../components/common/UnifiedLoading';
 
@@ -11,13 +12,15 @@ const LogosSection = lazy(() => import('../components/sections/LogosSection'));
 const CTASection = lazy(() => import('../components/sections/CTASection'));
 
 const HomePage: React.FC = () => {
+  const { t } = useTranslation();
+
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Emelmujiro',
     alternateName: '에멜무지로',
     url: 'https://researcherhojin.github.io/emelmujiro',
-    description: 'AI 교육과 컨설팅을 제공하는 전문 기업',
+    description: t('home.seo.structuredDescription'),
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -30,7 +33,7 @@ const HomePage: React.FC = () => {
     mainEntity: {
       '@type': 'Organization',
       name: 'Emelmujiro',
-      description: 'AI 교육 & 컨설팅 전문 기업',
+      description: t('home.seo.orgDescription'),
       founder: {
         '@type': 'Person',
         name: '이호진',
@@ -41,8 +44,8 @@ const HomePage: React.FC = () => {
   return (
     <>
       <SEOHead
-        title="Emelmujiro - AI 교육 & 컨설팅"
-        description="AI 기술 교육과 컨설팅을 제공하는 전문 기업입니다. 머신러닝, 딥러닝, 데이터 분석 교육 및 기업 AI 전환 컨설팅 서비스를 제공합니다."
+        title={t('home.seo.title')}
+        description={t('home.seo.description')}
         url="https://researcherhojin.github.io/emelmujiro"
         structuredData={structuredData}
       />
