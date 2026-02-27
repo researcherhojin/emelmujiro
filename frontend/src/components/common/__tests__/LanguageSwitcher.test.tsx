@@ -19,6 +19,7 @@ import LanguageSwitcher from '../LanguageSwitcher';
 // Mock i18next
 vi.mock('react-i18next', () => ({
   useTranslation: vi.fn(),
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
 // Mock logger

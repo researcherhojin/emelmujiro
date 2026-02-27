@@ -2,6 +2,25 @@
  * @jest-environment jsdom
  */
 
+import { vi } from 'vitest';
+
+// Mock i18n module - seoConfig.ts uses i18n.t() directly
+vi.mock('../../i18n', () => ({
+  default: {
+    t: (key: string) => key,
+    language: 'ko',
+  },
+}));
+
+// Must also mock react-i18next since i18n.ts imports initReactI18next from it
+vi.mock('react-i18next', () => ({
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+}));
+
 import {
   SEO_CONFIG,
   generateMetaTags,
@@ -14,10 +33,9 @@ describe('seoConfig', () => {
   describe('SEO_CONFIG', () => {
     it('should have correct site configuration', () => {
       expect(SEO_CONFIG.site).toEqual({
-        name: '에멜무지로',
-        title: '에멜무지로 | AI 혁신 파트너',
-        description:
-          '기업의 AI 전환을 위한 솔루션 개발, 실전 교육, 전략 컨설팅을 제공합니다. 검증된 방법론과 실전 경험을 바탕으로 귀사의 디지털 혁신을 함께 만들어갑니다.',
+        name: 'seo.site.name',
+        title: 'seo.site.title',
+        description: 'seo.site.description',
         url: 'https://researcherhojin.github.io/emelmujiro',
         image: '/og-image.png',
         locale: 'ko_KR',
@@ -55,7 +73,7 @@ describe('seoConfig', () => {
     it('should generate meta tags for home page', () => {
       const metaTags = generateMetaTags('home');
 
-      expect(metaTags.title).toBe('홈 | 에멜무지로');
+      expect(metaTags.title).toBe('seo.pages.home.title | seo.site.name');
       expect(metaTags.description).toBe(SEO_CONFIG.pages.home.description);
       expect(metaTags.keywords).toBe(SEO_CONFIG.pages.home.keywords);
     });
@@ -63,7 +81,7 @@ describe('seoConfig', () => {
     it('should generate meta tags for about page', () => {
       const metaTags = generateMetaTags('about');
 
-      expect(metaTags.title).toBe('회사소개 | 에멜무지로');
+      expect(metaTags.title).toBe('seo.pages.about.title | seo.site.name');
       expect(metaTags.description).toBe(SEO_CONFIG.pages.about.description);
       expect(metaTags.keywords).toBe(SEO_CONFIG.pages.about.keywords);
     });
@@ -71,7 +89,7 @@ describe('seoConfig', () => {
     it('should generate meta tags for profile page', () => {
       const metaTags = generateMetaTags('profile');
 
-      expect(metaTags.title).toBe('대표 프로필 | 에멜무지로');
+      expect(metaTags.title).toBe('seo.pages.profile.title | seo.site.name');
       expect(metaTags.description).toBe(SEO_CONFIG.pages.profile.description);
       expect(metaTags.keywords).toBe(SEO_CONFIG.pages.profile.keywords);
     });
@@ -79,7 +97,7 @@ describe('seoConfig', () => {
     it('should generate meta tags for contact page', () => {
       const metaTags = generateMetaTags('contact');
 
-      expect(metaTags.title).toBe('문의하기 | 에멜무지로');
+      expect(metaTags.title).toBe('seo.pages.contact.title | seo.site.name');
       expect(metaTags.description).toBe(SEO_CONFIG.pages.contact.description);
       expect(metaTags.keywords).toBe(SEO_CONFIG.pages.contact.keywords);
     });
@@ -87,7 +105,7 @@ describe('seoConfig', () => {
     it('should generate meta tags for blog page', () => {
       const metaTags = generateMetaTags('blog');
 
-      expect(metaTags.title).toBe('블로그 | 에멜무지로');
+      expect(metaTags.title).toBe('seo.pages.blog.title | seo.site.name');
       expect(metaTags.description).toBe(SEO_CONFIG.pages.blog.description);
       expect(metaTags.keywords).toBe(SEO_CONFIG.pages.blog.keywords);
     });
@@ -96,16 +114,16 @@ describe('seoConfig', () => {
       const metaTags = generateMetaTags('home');
 
       expect(metaTags.openGraph).toEqual({
-        title: '홈 | 에멜무지로',
+        title: 'seo.pages.home.title | seo.site.name',
         description: SEO_CONFIG.pages.home.description,
         url: 'https://researcherhojin.github.io/emelmujiro',
-        siteName: '에멜무지로',
+        siteName: 'seo.site.name',
         images: [
           {
             url: '/og-image.png',
             width: 1200,
             height: 630,
-            alt: '에멜무지로',
+            alt: 'seo.site.name',
           },
         ],
         locale: 'ko_KR',
@@ -126,7 +144,7 @@ describe('seoConfig', () => {
 
       expect(metaTags.twitter).toEqual({
         card: 'summary_large_image',
-        title: '대표 프로필 | 에멜무지로',
+        title: 'seo.pages.profile.title | seo.site.name',
         description: SEO_CONFIG.pages.profile.description,
         images: ['/og-image.png'],
         creator: '@emelmujiro',
@@ -140,7 +158,7 @@ describe('seoConfig', () => {
       expect(structuredData).toEqual({
         '@context': 'https://schema.org',
         '@type': 'Organization',
-        name: '에멜무지로',
+        name: 'seo.site.name',
         url: 'https://researcherhojin.github.io/emelmujiro',
         logo: 'https://researcherhojin.github.io/emelmujiro/logo192.png',
         description: SEO_CONFIG.site.description,
@@ -166,11 +184,11 @@ describe('seoConfig', () => {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         url: 'https://researcherhojin.github.io/emelmujiro',
-        name: '에멜무지로',
+        name: 'seo.site.name',
         description: SEO_CONFIG.site.description,
         publisher: {
           '@type': 'Organization',
-          name: '에멜무지로',
+          name: 'seo.site.name',
         },
         potentialAction: {
           '@type': 'SearchAction',
@@ -191,7 +209,7 @@ describe('seoConfig', () => {
           {
             '@type': 'ListItem',
             position: 1,
-            name: '홈',
+            name: 'common.home',
             item: 'https://researcherhojin.github.io/emelmujiro',
           },
         ],
@@ -229,12 +247,12 @@ describe('seoConfig', () => {
       expect(structuredData).toEqual({
         '@context': 'https://schema.org',
         '@type': 'Person',
-        name: '이호진',
+        name: 'seo.personName',
         jobTitle: 'AI Researcher & Educator',
         url: 'https://researcherhojin.github.io/emelmujiro/#/profile',
         worksFor: {
           '@type': 'Organization',
-          name: '에멜무지로',
+          name: 'seo.site.name',
         },
       });
     });
@@ -275,7 +293,7 @@ describe('seoConfig', () => {
         dateModified: '2024-01-02',
         publisher: {
           '@type': 'Organization',
-          name: '에멜무지로',
+          name: 'seo.site.name',
           logo: {
             '@type': 'ImageObject',
             url: 'https://researcherhojin.github.io/emelmujiro/logo192.png',
@@ -302,7 +320,7 @@ describe('seoConfig', () => {
 
       // Type narrowing for article
       expect(structuredData['@type']).toBe('Article');
-      expect((structuredData as any).author).toEqual('이호진');
+      expect((structuredData as any).author).toEqual('seo.personName');
     });
 
     it('should use publishedDate for modifiedDate if not provided', () => {
@@ -372,6 +390,11 @@ describe('seoConfig', () => {
         },
         {
           rel: 'alternate',
+          hreflang: 'en',
+          href: 'https://researcherhojin.github.io/emelmujiro',
+        },
+        {
+          rel: 'alternate',
           hreflang: 'x-default',
           href: 'https://researcherhojin.github.io/emelmujiro',
         },
@@ -391,7 +414,7 @@ describe('seoConfig', () => {
       pageTypes.forEach((pageType) => {
         const metaTags = generateMetaTags(pageType);
 
-        expect(metaTags.title).toContain('에멜무지로');
+        expect(metaTags.title).toContain('seo.site.name');
         expect(metaTags.description).toBeTruthy();
         expect(metaTags.keywords).toBeTruthy();
         expect(metaTags.openGraph.title).toBeTruthy();

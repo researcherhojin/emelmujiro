@@ -22,6 +22,14 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Mock i18n module used by footerData.ts
+vi.mock('../../../i18n', () => ({
+  default: {
+    t: (key: string) => key,
+    language: 'ko',
+  },
+}));
+
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -32,6 +40,7 @@ vi.mock('react-i18next', () => ({
     i18n: { language: 'ko', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: any) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
 // Mock lucide-react icons
@@ -351,12 +360,10 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            // Modal description comes from footerData.ts (hardcoded Korean)
+            // Modal description comes from footerData.ts (now uses i18n.t() keys)
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
-                p.textContent?.includes(
-                  'LLM 기반 서비스를 설계하고 개발합니다.'
-                )
+                p.textContent?.includes('footerServices.llmGenai.description')
             );
             expect(modalText).toBeInTheDocument();
           },
@@ -391,12 +398,10 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            // Modal description comes from footerData.ts (hardcoded Korean)
+            // Modal description comes from footerData.ts (now uses i18n.t() keys)
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
-                p.textContent?.includes(
-                  '기업 맞춤 AI 교육 프로그램을 설계하고 운영합니다.'
-                )
+                p.textContent?.includes('footerServices.education.description')
             );
             expect(modalText).toBeInTheDocument();
           },
@@ -425,12 +430,10 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            // Modal description comes from footerData.ts (hardcoded Korean)
+            // Modal description comes from footerData.ts (now uses i18n.t() keys)
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
-                p.textContent?.includes(
-                  'AI 도입 전략 수립부터 기술 자문까지 제공합니다.'
-                )
+                p.textContent?.includes('footerServices.consulting.description')
             );
             expect(modalText).toBeInTheDocument();
           },
@@ -457,11 +460,11 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            // Modal description comes from footerData.ts (hardcoded Korean)
+            // Modal description comes from footerData.ts (now uses i18n.t() keys)
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
                 p.textContent?.includes(
-                  '영상 처리 및 비전 AI 솔루션을 제공합니다.'
+                  'footerServices.computerVision.description'
                 )
             );
             expect(modalText).toBeInTheDocument();
@@ -491,9 +494,7 @@ describe('Footer Component', () => {
           () => {
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
-                p.textContent?.includes(
-                  'LLM 기반 서비스를 설계하고 개발합니다.'
-                )
+                p.textContent?.includes('footerServices.llmGenai.description')
             );
             expect(modalText).toBeInTheDocument();
           },
@@ -508,9 +509,7 @@ describe('Footer Component', () => {
           () => {
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
-                p.textContent?.includes(
-                  'LLM 기반 서비스를 설계하고 개발합니다.'
-                )
+                p.textContent?.includes('footerServices.llmGenai.description')
             );
             expect(modalText).toBeFalsy();
           },
@@ -534,7 +533,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.getByText('LLM 기반 서비스를 설계하고 개발합니다.')
+              screen.getByText('footerServices.llmGenai.description')
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -547,7 +546,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.queryByText('LLM 기반 서비스를 설계하고 개발합니다.')
+              screen.queryByText('footerServices.llmGenai.description')
             ).not.toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -568,7 +567,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.getByText('LLM 기반 서비스를 설계하고 개발합니다.')
+              screen.getByText('footerServices.llmGenai.description')
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -584,7 +583,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.queryByText('LLM 기반 서비스를 설계하고 개발합니다.')
+              screen.queryByText('footerServices.llmGenai.description')
             ).not.toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -605,7 +604,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.getByText('LLM 기반 서비스를 설계하고 개발합니다.')
+              screen.getByText('footerServices.llmGenai.description')
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -639,7 +638,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.getByText('LLM 기반 서비스를 설계하고 개발합니다.')
+              screen.getByText('footerServices.llmGenai.description')
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -652,7 +651,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.queryByText('LLM 기반 서비스를 설계하고 개발합니다.')
+              screen.queryByText('footerServices.llmGenai.description')
             ).not.toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -673,7 +672,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.getByText('LLM 기반 서비스를 설계하고 개발합니다.')
+              screen.getByText('footerServices.llmGenai.description')
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -686,7 +685,7 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             expect(
-              screen.queryByText('LLM 기반 서비스를 설계하고 개발합니다.')
+              screen.queryByText('footerServices.llmGenai.description')
             ).not.toBeInTheDocument();
           },
           { timeout: 3000 }
@@ -709,15 +708,15 @@ describe('Footer Component', () => {
         await waitFor(
           () =>
             expect(
-              screen.getByText('RAG 시스템 설계 및 구축')
+              screen.getByText('footerServices.llmGenai.details.0')
             ).toBeInTheDocument(),
           { timeout: 3000 }
         );
         expect(
-          screen.getByText('LLM 기반 서비스 프로토타입')
+          screen.getByText('footerServices.llmGenai.details.1')
         ).toBeInTheDocument();
         expect(
-          screen.getByText('AI 에이전트 설계 및 개발')
+          screen.getByText('footerServices.llmGenai.details.5')
         ).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
@@ -738,17 +737,17 @@ describe('Footer Component', () => {
           () => {
             // Modal description from footerData.ts (hardcoded Korean)
             expect(
-              screen.getByText(
-                '기업 맞춤 AI 교육 프로그램을 설계하고 운영합니다.'
-              )
+              screen.getByText('footerServices.education.description')
             ).toBeInTheDocument();
           },
           { timeout: 3000 }
         );
 
-        expect(screen.getByText('맞춤형 커리큘럼 설계')).toBeInTheDocument();
         expect(
-          screen.getByText('Python 머신러닝/딥러닝 실무 교육')
+          screen.getByText('footerServices.education.details.0')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('footerServices.education.details.3')
         ).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT

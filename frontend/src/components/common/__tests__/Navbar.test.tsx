@@ -31,6 +31,7 @@ vi.mock('react-i18next', () => ({
       language: 'ko',
     },
   }),
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
 describe('Navbar Component', () => {

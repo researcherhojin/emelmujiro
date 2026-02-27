@@ -1,6 +1,17 @@
 import React from 'react';
 import { vi } from 'vitest';
 import { renderWithProviders } from '../../../test-utils';
+
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 import SEOHead from '../SEOHead';
 
 // Mock react-helmet-async
@@ -60,12 +71,10 @@ describe('SEOHead', () => {
     const helmet = getByTestId('helmet');
     expect(helmet).toBeInTheDocument();
 
-    // Check if title is rendered
+    // Check if title is rendered - mock t() returns key as-is
     const helmetData = JSON.parse(helmet.getAttribute('data-helmet') || '{}');
-    expect(helmetData.title).toBe('Emelmujiro - AI 교육 & 컨설팅 | Emelmujiro');
-    expect(helmetData.description).toBe(
-      'AI 기술 교육과 컨설팅을 제공하는 전문 기업입니다. 머신러닝, 딥러닝, 데이터 분석 교육 및 기업 AI 전환 컨설팅 서비스를 제공합니다.'
-    );
+    expect(helmetData.title).toBe('seo.seoHead.defaultTitle | Emelmujiro');
+    expect(helmetData.description).toBe('seo.seoHead.defaultDescription');
   });
 
   it('renders with custom title', () => {

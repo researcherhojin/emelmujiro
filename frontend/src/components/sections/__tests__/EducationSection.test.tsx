@@ -14,6 +14,7 @@ vi.mock('react-i18next', () => ({
     i18n: { language: 'ko', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: any) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
 describe('EducationSection', () => {
