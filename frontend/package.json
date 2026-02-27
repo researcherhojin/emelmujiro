@@ -67,7 +67,7 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "npm run generate:sitemap && tsc && vite build",
+    "build": "npm run generate:sitemap && tsc -p tsconfig.build.json && vite build",
     "preview": "vite preview",
     "test": "vitest",
     "test:ci": "vitest run --bail=1 --no-coverage",
