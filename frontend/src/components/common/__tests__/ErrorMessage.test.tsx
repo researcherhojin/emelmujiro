@@ -2,6 +2,18 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import ErrorMessage from '../ErrorMessage';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, options?: any) => {
+      if (options?.returnObjects) return key;
+      return key;
+    },
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: any) => children,
+}));
+
 describe('ErrorMessage Component', () => {
   test('renders error message', () => {
     render(<ErrorMessage message="Something went wrong" />);
@@ -18,7 +30,7 @@ describe('ErrorMessage Component', () => {
     const handleClose = vi.fn();
     render(<ErrorMessage message="Error" onClose={handleClose} />);
 
-    const closeButton = screen.getByRole('button', { name: '닫기' });
+    const closeButton = screen.getByRole('button', { name: 'common.close' });
     expect(closeButton).toBeInTheDocument();
   });
 
@@ -26,7 +38,7 @@ describe('ErrorMessage Component', () => {
     const handleClose = vi.fn();
     render(<ErrorMessage message="Error" onClose={handleClose} />);
 
-    const closeButton = screen.getByRole('button', { name: '닫기' });
+    const closeButton = screen.getByRole('button', { name: 'common.close' });
     fireEvent.click(closeButton);
 
     expect(handleClose).toHaveBeenCalledTimes(1);
@@ -35,7 +47,7 @@ describe('ErrorMessage Component', () => {
   test('does not render close button when onClose not provided', () => {
     render(<ErrorMessage message="Error" />);
     expect(
-      screen.queryByRole('button', { name: '닫기' })
+      screen.queryByRole('button', { name: 'common.close' })
     ).not.toBeInTheDocument();
   });
 

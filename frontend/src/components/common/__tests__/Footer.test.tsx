@@ -22,6 +22,18 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, options?: any) => {
+      if (options?.returnObjects) return key;
+      return key;
+    },
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: any) => children,
+}));
+
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   Mail: ({ className }: { className?: string }) => (
@@ -93,13 +105,13 @@ describe('Footer Component', () => {
   describe('Basic Rendering', () => {
     test('renders company name', () => {
       const { container } = renderWithRouter(<Footer />);
-      // 회사명은 h3 태그에 있고, 여러 h3 중에서 '에멜무지로'를 포함하는 것을 찾음
+      // 회사명은 h3 태그에 있고, 'common.companyName' i18n key를 포함하는 것을 찾음
       const headings = container.querySelectorAll('h3');
       const companyName = Array.from(headings).find(
-        (h) => h.textContent === '에멜무지로'
+        (h) => h.textContent === 'common.companyName'
       );
       expect(companyName).toBeInTheDocument();
-      expect(companyName?.textContent).toBe('에멜무지로');
+      expect(companyName?.textContent).toBe('common.companyName');
     });
 
     test('renders all service sections', () => {
@@ -107,16 +119,16 @@ describe('Footer Component', () => {
 
       const serviceHeaders = container.querySelectorAll('h3');
       const hasServiceHeader = Array.from(serviceHeaders).some(
-        (h) => h.textContent === '서비스'
+        (h) => h.textContent === 'footer.services'
       );
       expect(hasServiceHeader).toBe(true);
 
       const buttons = container.querySelectorAll('button');
       const serviceNames = [
-        'AI 교육 & 강의',
-        'AI 컨설팅',
-        'LLM/생성형 AI',
-        'Computer Vision',
+        'services.education.title',
+        'services.consulting.title',
+        'services.llmGenai.title',
+        'services.computerVision.title',
       ];
       serviceNames.forEach((name) => {
         const hasService = Array.from(buttons).some(
@@ -131,12 +143,17 @@ describe('Footer Component', () => {
 
       const menuHeaders = container.querySelectorAll('h3');
       const hasMenuHeader = Array.from(menuHeaders).some(
-        (h) => h.textContent === '메뉴'
+        (h) => h.textContent === 'common.menu'
       );
       expect(hasMenuHeader).toBe(true);
 
       const buttons = container.querySelectorAll('button');
-      const menuItems = ['홈', '서비스', '대표 프로필', '문의하기'];
+      const menuItems = [
+        'common.home',
+        'common.services',
+        'common.representativeProfile',
+        'common.contact',
+      ];
       menuItems.forEach((item) => {
         const hasItem = Array.from(buttons).some((btn) =>
           btn.textContent?.includes(item)
@@ -174,13 +191,13 @@ describe('Footer Component', () => {
     test('renders contact CTA section', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      // CTA 텍스트는 p.text-base 클래스를 가지고 있음
+      // CTA 텍스트 (i18n key)
       const paragraphs = container.querySelectorAll('p');
       const ctaText = Array.from(paragraphs).find(
-        (p) => p.textContent === 'AI 프로젝트 도입을 계획 중이시나요?'
+        (p) => p.textContent === 'footer.ctaQuestion'
       );
       expect(ctaText).toBeInTheDocument();
-      expect(ctaText?.textContent).toBe('AI 프로젝트 도입을 계획 중이시나요?');
+      expect(ctaText?.textContent).toBe('footer.ctaQuestion');
 
       // ExternalLink 아이콘 확인
       expect(
@@ -190,15 +207,13 @@ describe('Footer Component', () => {
 
     test('renders copyright with current year', () => {
       const { container } = renderWithRouter(<Footer />);
-      const currentYear = new Date().getFullYear();
 
       // copyright는 text-center 안의 p 태그에 있음
+      // With the mock, t('footer.copyright', { year: currentYear }) returns 'footer.copyright'
       const centerDiv = container.querySelector('.text-center');
       const copyright = centerDiv?.querySelector('p');
       expect(copyright).toBeInTheDocument();
-      expect(copyright?.textContent).toBe(
-        `© ${currentYear} 에멜무지로. All rights reserved.`
-      );
+      expect(copyright?.textContent).toBe('footer.copyright');
     });
   });
 
@@ -208,7 +223,7 @@ describe('Footer Component', () => {
 
       const profileButtons = container.querySelectorAll('button');
       const profileButton = Array.from(profileButtons).find(
-        (btn) => btn.textContent === '대표 프로필'
+        (btn) => btn.textContent === 'common.representativeProfile'
       );
       expect(profileButton).toBeTruthy();
       fireEvent.click(profileButton!);
@@ -220,8 +235,11 @@ describe('Footer Component', () => {
       const { container } = renderWithRouter(<Footer />);
 
       const contactButtons = container.querySelectorAll('button');
+      // There are multiple 'common.contact' buttons; find the one in the nav section
       const contactButton = Array.from(contactButtons).find(
-        (btn) => btn.textContent === '문의하기'
+        (btn) =>
+          btn.textContent === 'common.contact' &&
+          btn.className.includes('text-sm')
       );
       expect(contactButton).toBeTruthy();
       fireEvent.click(contactButton!);
@@ -235,7 +253,7 @@ describe('Footer Component', () => {
       // CTA 버튼은 ExternalLink 아이콘을 포함한 버튼
       const buttons = container.querySelectorAll('button');
       const ctaButton = Array.from(buttons).find((btn) => {
-        const hasText = btn.textContent?.includes('문의하기');
+        const hasText = btn.textContent?.includes('common.contact');
         const hasIcon = btn.querySelector('[data-testid="external-link-icon"]');
         return hasText && hasIcon;
       });
@@ -256,7 +274,7 @@ describe('Footer Component', () => {
 
       const buttons = container.querySelectorAll('button');
       const homeButton = Array.from(buttons).find(
-        (btn) => btn.textContent === '홈'
+        (btn) => btn.textContent === 'common.home'
       );
       expect(homeButton).toBeTruthy();
       fireEvent.click(homeButton!);
@@ -279,7 +297,7 @@ describe('Footer Component', () => {
 
         const buttons = container.querySelectorAll('button');
         const homeButton = Array.from(buttons).find(
-          (btn) => btn.textContent === '홈'
+          (btn) => btn.textContent === 'common.home'
         );
         expect(homeButton).toBeTruthy();
         fireEvent.click(homeButton!);
@@ -307,7 +325,7 @@ describe('Footer Component', () => {
 
       const buttons = container.querySelectorAll('button');
       const servicesButtons = Array.from(buttons).filter(
-        (btn) => btn.textContent === '서비스'
+        (btn) => btn.textContent === 'common.services'
       );
       const servicesButton = servicesButtons[0]; // Navigation 서비스
       expect(servicesButton).toBeTruthy();
@@ -326,13 +344,14 @@ describe('Footer Component', () => {
 
         const buttons = container.querySelectorAll('button');
         const llmButton = Array.from(buttons).find(
-          (btn) => btn.textContent === 'LLM/생성형 AI'
+          (btn) => btn.textContent === 'services.llmGenai.title'
         );
         expect(llmButton).toBeTruthy();
         fireEvent.click(llmButton!);
 
         await waitFor(
           () => {
+            // Modal description comes from footerData.ts (hardcoded Korean)
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
                 p.textContent?.includes(
@@ -346,7 +365,7 @@ describe('Footer Component', () => {
 
         const headings = container.querySelectorAll('h4');
         const hasMainService = Array.from(headings).some(
-          (h) => h.textContent === '주요 서비스'
+          (h) => h.textContent === 'footer.mainServices'
         );
         expect(hasMainService).toBe(true);
 
@@ -365,13 +384,14 @@ describe('Footer Component', () => {
 
         const buttons = container.querySelectorAll('button');
         const aiEducationButton = Array.from(buttons).find(
-          (btn) => btn.textContent === 'AI 교육 & 강의'
+          (btn) => btn.textContent === 'services.education.title'
         );
         expect(aiEducationButton).toBeTruthy();
         fireEvent.click(aiEducationButton!);
 
         await waitFor(
           () => {
+            // Modal description comes from footerData.ts (hardcoded Korean)
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
                 p.textContent?.includes(
@@ -398,13 +418,14 @@ describe('Footer Component', () => {
 
         const buttons = container.querySelectorAll('button');
         const aiConsultingButton = Array.from(buttons).find(
-          (btn) => btn.textContent === 'AI 컨설팅'
+          (btn) => btn.textContent === 'services.consulting.title'
         );
         expect(aiConsultingButton).toBeTruthy();
         fireEvent.click(aiConsultingButton!);
 
         await waitFor(
           () => {
+            // Modal description comes from footerData.ts (hardcoded Korean)
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
                 p.textContent?.includes(
@@ -429,13 +450,14 @@ describe('Footer Component', () => {
 
         const buttons = container.querySelectorAll('button');
         const cvButton = Array.from(buttons).find(
-          (btn) => btn.textContent === 'Computer Vision'
+          (btn) => btn.textContent === 'services.computerVision.title'
         );
         expect(cvButton).toBeTruthy();
         fireEvent.click(cvButton!);
 
         await waitFor(
           () => {
+            // Modal description comes from footerData.ts (hardcoded Korean)
             const modalText = Array.from(container.querySelectorAll('p')).find(
               (p) =>
                 p.textContent?.includes(
@@ -460,7 +482,7 @@ describe('Footer Component', () => {
 
         const buttons = container.querySelectorAll('button');
         const llmButton = Array.from(buttons).find(
-          (btn) => btn.textContent === 'LLM/생성형 AI'
+          (btn) => btn.textContent === 'services.llmGenai.title'
         );
         expect(llmButton).toBeTruthy();
         fireEvent.click(llmButton!);
@@ -506,7 +528,7 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        const llmButtons = screen.getAllByText('services.llmGenai.title');
         fireEvent.click(llmButtons[0]);
 
         await waitFor(
@@ -535,12 +557,12 @@ describe('Footer Component', () => {
     );
 
     test(
-      'closes modal when 닫기 button is clicked',
+      'closes modal when close button is clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        const llmButtons = screen.getAllByText('services.llmGenai.title');
         fireEvent.click(llmButtons[0]);
 
         await waitFor(
@@ -552,8 +574,8 @@ describe('Footer Component', () => {
           { timeout: 3000 }
         );
 
-        // Close modal with 닫기 button
-        const closeButtons = screen.getAllByText('닫기');
+        // Close modal with common.close button
+        const closeButtons = screen.getAllByText('common.close');
         const modalCloseButton = closeButtons.find((button) =>
           button.className.includes('border-gray-300')
         );
@@ -572,12 +594,12 @@ describe('Footer Component', () => {
     );
 
     test(
-      'closes modal and navigates to contact when 문의하기 button is clicked',
+      'closes modal and navigates to contact when contact button is clicked',
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        const llmButtons = screen.getAllByText('services.llmGenai.title');
         fireEvent.click(llmButtons[0]);
 
         await waitFor(
@@ -589,8 +611,8 @@ describe('Footer Component', () => {
           { timeout: 3000 }
         );
 
-        // Click 문의하기 button in modal
-        const contactButtons = screen.getAllByText('문의하기');
+        // Click common.contact button in modal
+        const contactButtons = screen.getAllByText('common.contact');
         const modalContactButton = contactButtons.find((button) =>
           button.className.includes('bg-gray-900')
         );
@@ -611,7 +633,7 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        const llmButtons = screen.getAllByText('services.llmGenai.title');
         fireEvent.click(llmButtons[0]);
 
         await waitFor(
@@ -645,7 +667,7 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        const llmButtons = screen.getAllByText('services.llmGenai.title');
         fireEvent.click(llmButtons[0]);
 
         await waitFor(
@@ -680,9 +702,10 @@ describe('Footer Component', () => {
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        const llmButtons = screen.getAllByText('services.llmGenai.title');
         fireEvent.click(llmButtons[0]);
 
+        // Service details come from footerData.ts (hardcoded Korean)
         await waitFor(
           () =>
             expect(
@@ -705,12 +728,15 @@ describe('Footer Component', () => {
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const aiEducationButtons = screen.getAllByText('AI 교육 & 강의');
+        const aiEducationButtons = screen.getAllByText(
+          'services.education.title'
+        );
         const aiEducationButton = aiEducationButtons[0];
         fireEvent.click(aiEducationButton);
 
         await waitFor(
           () => {
+            // Modal description from footerData.ts (hardcoded Korean)
             expect(
               screen.getByText(
                 '기업 맞춤 AI 교육 프로그램을 설계하고 운영합니다.'
@@ -734,7 +760,7 @@ describe('Footer Component', () => {
       const { container } = renderWithRouter(<Footer />);
 
       // Footer should be rendered with proper structure - multiple instances are expected
-      const companyNames = screen.getAllByText('에멜무지로');
+      const companyNames = screen.getAllByText('common.companyName');
       expect(companyNames.length).toBeGreaterThan(0);
       expect(companyNames[0]).toBeInTheDocument();
     });
@@ -742,7 +768,7 @@ describe('Footer Component', () => {
     test('applies correct CSS classes to service buttons', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      const serviceButtons = screen.getAllByText('LLM/생성형 AI');
+      const serviceButtons = screen.getAllByText('services.llmGenai.title');
       expect(serviceButtons[0]).toHaveClass('text-gray-600');
       expect(serviceButtons[0]).toHaveClass('text-sm');
     });
@@ -750,7 +776,7 @@ describe('Footer Component', () => {
     test('applies correct CSS classes to contact CTA button', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      const ctaButtons = screen.getAllByText(/문의하기/);
+      const ctaButtons = screen.getAllByText(/common.contact/);
       // Find the CTA button that has inline-flex class (not the nav button)
       const ctaButton = ctaButtons.find((btn) =>
         btn.className.includes('inline-flex')
@@ -768,7 +794,7 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         // Open modal
-        const llmButtons = screen.getAllByText('LLM/생성형 AI');
+        const llmButtons = screen.getAllByText('services.llmGenai.title');
         fireEvent.click(llmButtons[0]);
 
         await waitFor(
@@ -808,7 +834,7 @@ describe('Footer Component', () => {
 
       const { container } = renderWithRouter(<Footer />);
 
-      const homeButtons = screen.getAllByText('홈');
+      const homeButtons = screen.getAllByText('common.home');
       const homeButton = homeButtons[0];
 
       // Should not throw error when element is not found
@@ -820,8 +846,8 @@ describe('Footer Component', () => {
     test('modal does not render when service is null', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      // Modal should not be visible initially
-      expect(screen.queryByText('주요 서비스')).not.toBeInTheDocument();
+      // Modal should not be visible initially (i18n key for main services header)
+      expect(screen.queryByText('footer.mainServices')).not.toBeInTheDocument();
     });
   });
 

@@ -1,20 +1,23 @@
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { GraduationCap, Code2, MessageSquare, Eye } from 'lucide-react';
 
 interface Service {
   number: string;
-  title: string;
-  description: string;
-  details: string[];
+  titleKey: string;
+  descriptionKey: string;
+  detailsKey: string;
   icon: React.ElementType;
 }
 
 interface ServiceCardProps {
   service: Service;
+  t: (key: string, options?: object) => string;
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = memo(({ service }) => {
+const ServiceCard: React.FC<ServiceCardProps> = memo(({ service, t }) => {
   const Icon = service.icon;
+  const details = t(service.detailsKey, { returnObjects: true }) as string[];
 
   return (
     <div className="group relative bg-white dark:bg-gray-800 p-8 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all duration-300">
@@ -27,21 +30,22 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(({ service }) => {
       </div>
 
       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-        {service.title}
+        {t(service.titleKey)}
       </h3>
       <p className="text-base leading-relaxed text-gray-600 dark:text-gray-400 mb-6">
-        {service.description}
+        {t(service.descriptionKey)}
       </p>
       <ul className="space-y-3">
-        {service.details.map((detail, idx) => (
-          <li
-            key={idx}
-            className="text-sm text-gray-500 dark:text-gray-400 flex items-start"
-          >
-            <span className="mr-2 text-gray-400 mt-1">•</span>
-            <span>{detail}</span>
-          </li>
-        ))}
+        {Array.isArray(details) &&
+          details.map((detail, idx) => (
+            <li
+              key={idx}
+              className="text-sm text-gray-500 dark:text-gray-400 flex items-start"
+            >
+              <span className="mr-2 text-gray-400 mt-1">•</span>
+              <span>{detail}</span>
+            </li>
+          ))}
       </ul>
     </div>
   );
@@ -50,49 +54,35 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(({ service }) => {
 ServiceCard.displayName = 'ServiceCard';
 
 const ServicesSection: React.FC = memo(() => {
+  const { t } = useTranslation();
+
   const services: Service[] = [
     {
       number: '01',
-      title: 'AI 교육 & 강의',
-      description: '기업 맞춤 AI 교육 프로그램',
-      details: [
-        '맞춤형 커리큘럼 설계',
-        '프로젝트 기반 실습 교육',
-        '1:1 기술 멘토링',
-      ],
+      titleKey: 'services.education.title',
+      descriptionKey: 'services.education.description',
+      detailsKey: 'services.education.details',
       icon: GraduationCap,
     },
     {
       number: '02',
-      title: 'AI 컨설팅',
-      description: 'AI 도입 전략 및 기술 자문',
-      details: [
-        'AI 도입 전략 및 기술 검토',
-        '모델 선정 및 PoC 개발',
-        '서비스 프로토타입 설계',
-      ],
+      titleKey: 'services.consulting.title',
+      descriptionKey: 'services.consulting.description',
+      detailsKey: 'services.consulting.details',
       icon: Code2,
     },
     {
       number: '03',
-      title: 'LLM/생성형 AI',
-      description: 'LLM 기반 서비스 개발',
-      details: [
-        'RAG 시스템 설계 및 구축',
-        'LLM 기반 서비스 프로토타입',
-        '생성형 AI 활용 교육',
-      ],
+      titleKey: 'services.llmGenai.title',
+      descriptionKey: 'services.llmGenai.description',
+      detailsKey: 'services.llmGenai.details',
       icon: MessageSquare,
     },
     {
       number: '04',
-      title: 'Computer Vision',
-      description: '영상 처리 및 비전 AI 솔루션',
-      details: [
-        '객체 탐지 / 세그멘테이션',
-        '최신 모델 적용 (YOLO, SAM 등)',
-        'CV 프로젝트 설계 및 멘토링',
-      ],
+      titleKey: 'services.computerVision.title',
+      descriptionKey: 'services.computerVision.description',
+      detailsKey: 'services.computerVision.details',
       icon: Eye,
     },
   ];
@@ -102,19 +92,19 @@ const ServicesSection: React.FC = memo(() => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-20 text-center">
           <h2 className="text-sm font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase mb-4">
-            WHAT WE DO
+            {t('services.sectionLabel')}
           </h2>
           <h3 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-6">
-            주요 서비스
+            {t('services.title')}
           </h3>
           <p className="text-xl font-medium text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            기업의 AI 도입을 위한 단계별 솔루션을 제공합니다
+            {t('services.subtitle')}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service) => (
-            <ServiceCard key={service.number} service={service} />
+            <ServiceCard key={service.number} service={service} t={t} />
           ))}
         </div>
       </div>

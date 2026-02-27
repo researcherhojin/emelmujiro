@@ -16,12 +16,24 @@ vi.mock('framer-motion', () => ({
   },
 }));
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, options?: any) => {
+      if (options?.returnObjects) return key;
+      return key;
+    },
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: any) => children,
+}));
+
 describe('PageLoading', () => {
   it('renders loading message', () => {
     render(<PageLoading />);
 
     // Check if loading message is present
-    const loadingMessage = screen.getByText('페이지를 불러오는 중...');
+    const loadingMessage = screen.getByText('common.pageLoading');
     expect(loadingMessage).toBeInTheDocument();
   });
 
@@ -29,14 +41,14 @@ describe('PageLoading', () => {
     render(<PageLoading />);
 
     // Verify the exact loading message text
-    expect(screen.getByText('페이지를 불러오는 중...')).toBeInTheDocument();
+    expect(screen.getByText('common.pageLoading')).toBeInTheDocument();
   });
 
   it('renders loading component structure', () => {
     render(<PageLoading />);
 
     // Check for loading message which confirms the component rendered correctly
-    const loadingMessage = screen.getByText('페이지를 불러오는 중...');
+    const loadingMessage = screen.getByText('common.pageLoading');
     expect(loadingMessage).toBeInTheDocument();
 
     // Verify it's rendered as a paragraph element
@@ -47,7 +59,7 @@ describe('PageLoading', () => {
     render(<PageLoading />);
 
     // Check that loading text is accessible
-    const loadingText = screen.getByText('페이지를 불러오는 중...');
+    const loadingText = screen.getByText('common.pageLoading');
     expect(loadingText).toBeInTheDocument();
     expect(loadingText.tagName).toBe('P');
   });

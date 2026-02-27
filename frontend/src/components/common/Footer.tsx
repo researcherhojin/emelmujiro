@@ -1,5 +1,6 @@
 import React, { useState, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Mail, Phone, ExternalLink, X } from 'lucide-react';
 import { services, type ServiceDetail } from '../../data/footerData';
 
@@ -12,6 +13,8 @@ interface ServiceModalProps {
 
 const ServiceModal: React.FC<ServiceModalProps> = memo(
   ({ isOpen, service, onClose, onContactClick }) => {
+    const { t } = useTranslation();
+
     if (!isOpen || !service) return null;
 
     const IconComponent = service.icon;
@@ -57,7 +60,7 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
 
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                    주요 서비스
+                    {t('footer.mainServices')}
                   </h4>
                   <ul className="space-y-2">
                     {service.details.map((detail, index) => (
@@ -79,14 +82,14 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
                 className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-900 dark:bg-gray-100 text-base font-medium text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
                 onClick={onContactClick}
               >
-                문의하기
+                {t('common.contact')}
               </button>
               <button
                 type="button"
                 className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-dark-600 shadow-sm px-4 py-2 bg-white dark:bg-dark-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
                 onClick={onClose}
               >
-                닫기
+                {t('common.close')}
               </button>
             </div>
           </div>
@@ -99,6 +102,7 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
 ServiceModal.displayName = 'ServiceModal';
 
 const Footer: React.FC = memo(() => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isServiceModalOpen, setIsServiceModalOpen] = useState<boolean>(false);
   const [selectedService, setSelectedService] = useState<ServiceDetail | null>(
@@ -156,7 +160,7 @@ const Footer: React.FC = memo(() => {
             {/* Services */}
             <div className="col-span-1">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                서비스
+                {t('footer.services')}
               </h3>
               <ul className="space-y-3">
                 <li>
@@ -165,7 +169,7 @@ const Footer: React.FC = memo(() => {
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
-                    AI 교육 & 강의
+                    {t('services.education.title')}
                   </button>
                 </li>
                 <li>
@@ -174,7 +178,7 @@ const Footer: React.FC = memo(() => {
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
-                    AI 컨설팅
+                    {t('services.consulting.title')}
                   </button>
                 </li>
                 <li>
@@ -183,7 +187,7 @@ const Footer: React.FC = memo(() => {
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
-                    LLM/생성형 AI
+                    {t('services.llmGenai.title')}
                   </button>
                 </li>
                 <li>
@@ -192,7 +196,7 @@ const Footer: React.FC = memo(() => {
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
-                    Computer Vision
+                    {t('services.computerVision.title')}
                   </button>
                 </li>
               </ul>
@@ -201,7 +205,7 @@ const Footer: React.FC = memo(() => {
             {/* Navigation */}
             <div className="col-span-1">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                메뉴
+                {t('common.menu')}
               </h3>
               <ul className="space-y-3">
                 <li>
@@ -210,7 +214,7 @@ const Footer: React.FC = memo(() => {
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
-                    홈
+                    {t('common.home')}
                   </button>
                 </li>
                 <li>
@@ -219,7 +223,7 @@ const Footer: React.FC = memo(() => {
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
-                    서비스
+                    {t('common.services')}
                   </button>
                 </li>
                 <li>
@@ -228,7 +232,7 @@ const Footer: React.FC = memo(() => {
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
-                    대표 프로필
+                    {t('common.representativeProfile')}
                   </button>
                 </li>
                 <li>
@@ -237,7 +241,7 @@ const Footer: React.FC = memo(() => {
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
                     style={{ outline: 'none', boxShadow: 'none' }}
                   >
-                    문의하기
+                    {t('common.contact')}
                   </button>
                 </li>
               </ul>
@@ -246,7 +250,7 @@ const Footer: React.FC = memo(() => {
             {/* Company Info */}
             <div className="col-span-1">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                에멜무지로
+                {t('common.companyName')}
               </h3>
               <div className="space-y-3">
                 <div className="flex items-start text-base text-gray-700 dark:text-gray-300">
@@ -263,16 +267,16 @@ const Footer: React.FC = memo(() => {
             {/* Contact CTA */}
             <div className="col-span-1">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                문의하기
+                {t('common.contact')}
               </h3>
               <p className="text-gray-700 dark:text-gray-300 text-base mb-6 leading-relaxed">
-                AI 프로젝트 도입을 계획 중이시나요?
+                {t('footer.ctaQuestion')}
               </p>
               <button
                 onClick={() => handleNavigate('/contact')}
                 className="inline-flex items-center px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-base font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
-                문의하기
+                {t('common.contact')}
                 <ExternalLink className="ml-2 w-3 h-3 flex-shrink-0" />
               </button>
             </div>
@@ -282,7 +286,7 @@ const Footer: React.FC = memo(() => {
           <div className="mt-8 lg:mt-12 pt-6 lg:pt-8 border-t border-gray-200 dark:border-dark-700">
             <div className="text-center">
               <p className="text-gray-600 dark:text-gray-400 text-base">
-                © {currentYear} 에멜무지로. All rights reserved.
+                {t('footer.copyright', { year: currentYear })}
               </p>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import React, { memo, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AlertTriangle,
   XCircle,
@@ -28,6 +29,7 @@ interface TypeConfig {
 
 const ErrorMessage: React.FC<ErrorMessageProps> = memo(
   ({ type = 'error', title, message, onClose, action, className = '' }) => {
+    const { t } = useTranslation();
     const types: Record<MessageType, TypeConfig> = {
       error: {
         bgColor: 'bg-red-50',
@@ -89,7 +91,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = memo(
                 onClick={onClose}
                 className={`inline-flex rounded-md ${config.bgColor} p-1.5 ${config.textColor} hover:${config.bgColor} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-${type === 'error' ? 'red' : type === 'warning' ? 'yellow' : type === 'info' ? 'blue' : 'green'}-50 focus:ring-${type === 'error' ? 'red' : type === 'warning' ? 'yellow' : type === 'info' ? 'blue' : 'green'}-600`}
               >
-                <span className="sr-only">닫기</span>
+                <span className="sr-only">{t('common.close')}</span>
                 <svg
                   className="h-5 w-5"
                   viewBox="0 0 20 20"

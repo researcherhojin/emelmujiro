@@ -23,53 +23,247 @@
     "next": "다음",
     "previous": "이전",
     "submit": "제출",
-    "language": "언어"
+    "language": "언어",
+    "pageLoading": "페이지를 불러오는 중...",
+    "companyName": "에멜무지로",
+    "inquireProject": "프로젝트 문의하기 →",
+    "inquireByEmail": "이메일로 문의하기 →",
+    "inquireEducation": "교육 문의하기",
+    "menu": "메뉴",
+    "representativeProfile": "대표 프로필"
   },
   "hero": {
-    "title": "AI 혁신을 선도하는",
-    "subtitle": "에멜무지로",
-    "description": "2022년부터 축적한 AI 교육 노하우와 실무 프로젝트 경험을 바탕으로 기업 맞춤형 AI 솔루션을 제공합니다",
+    "badge": "AI EDUCATION & CONSULTING",
+    "titleLine1": "실무에 강한",
+    "titleLine2": "AI 전문가 그룹",
+    "descriptionLine1": "대기업 AI 교육부터 스타트업 기술 컨설팅까지,",
+    "descriptionLine2": "맞춤형 솔루션으로 비즈니스 성장을 가속화합니다.",
     "cta": {
       "primary": "무료 상담 신청",
       "secondary": "서비스 알아보기"
-    }
+    },
+    "stats": {
+      "students": "누적 수강생",
+      "projects": "완료 프로젝트",
+      "partners": "협력사 기업",
+      "satisfaction": "강의 만족도"
+    },
+    "expertise": "5년의 검증된 전문성"
   },
   "services": {
-    "title": "핵심 서비스",
-    "subtitle": "AI 기술로 비즈니스 혁신을 이끕니다",
-    "aiSolution": {
-      "title": "AI 솔루션 개발",
-      "description": "맞춤형 LLM 솔루션, Computer Vision, MLOps 파이프라인 구축"
-    },
+    "sectionLabel": "WHAT WE DO",
+    "title": "주요 서비스",
+    "subtitle": "기업의 AI 도입을 위한 단계별 솔루션을 제공합니다",
     "education": {
       "title": "AI 교육 & 강의",
-      "description": "실무 중심 AI 교육, Python 머신러닝/딥러닝 교육"
+      "description": "기업 맞춤 AI 교육 프로그램",
+      "details": [
+        "맞춤형 커리큘럼 설계",
+        "프로젝트 기반 실습 교육",
+        "1:1 기술 멘토링"
+      ]
     },
     "consulting": {
-      "title": "기술 컨설팅",
-      "description": "기업별 AI 도입 전략 수립 및 기술 자문"
+      "title": "AI 컨설팅",
+      "description": "AI 도입 전략 및 기술 자문",
+      "details": [
+        "AI 도입 전략 및 기술 검토",
+        "모델 선정 및 PoC 개발",
+        "서비스 프로토타입 설계"
+      ]
     },
-    "dataAnalysis": {
-      "title": "데이터 분석",
-      "description": "빅데이터 기반 인사이트 도출 및 분석 시스템 구축"
+    "llmGenai": {
+      "title": "LLM/생성형 AI",
+      "description": "LLM 기반 서비스 개발",
+      "details": [
+        "RAG 시스템 설계 및 구축",
+        "LLM 기반 서비스 프로토타입",
+        "생성형 AI 활용 교육"
+      ]
+    },
+    "computerVision": {
+      "title": "Computer Vision",
+      "description": "영상 처리 및 비전 AI 솔루션",
+      "details": [
+        "객체 탐지 / 세그멘테이션",
+        "최신 모델 적용 (YOLO, SAM 등)",
+        "CV 프로젝트 설계 및 멘토링"
+      ]
+    }
+  },
+  "cta": {
+    "sectionLabel": "GET STARTED",
+    "title": "AI 교육 · 컨설팅이 필요하신가요?",
+    "subtitle": "AI 전문가와 함께 귀사의 비즈니스 문제를 해결하세요",
+    "emailAriaLabel": "이메일로 문의하기"
+  },
+  "education": {
+    "title": "실전 AI 교육",
+    "subtitle": "현장에서 바로 활용할 수 있는 실무 중심 교육을 제공합니다",
+    "tracks": {
+      "corporate": {
+        "title": "기업 실무자 과정",
+        "description": "실제 기업 환경에서 활용 가능한 AI/ML 실무 교육",
+        "highlights": [
+          "Spotfire 데이터 분석 및 시각화",
+          "Python 기반 머신러닝 기초",
+          "실무 데이터 활용 프로젝트"
+        ]
+      },
+      "advanced": {
+        "title": "AI 기술 심화 과정",
+        "description": "Computer Vision과 딥러닝 중심의 전문가 양성 과정",
+        "highlights": [
+          "YOLO 기반 객체 인식 실습",
+          "Vision AI 알고리즘 구현",
+          "AI 프로젝트 실전 구축"
+        ]
+      },
+      "genai": {
+        "title": "생성형 AI 활용 과정",
+        "description": "최신 생성형 AI 기술의 비즈니스 적용 교육",
+        "highlights": [
+          "LLM 기반 서비스 설계",
+          "업무 자동화 프로세스",
+          "AI 도입 전략 수립"
+        ]
+      }
+    },
+    "recentCourses": "최근 진행 과정",
+    "courses": {
+      "samsung": {
+        "company": "삼성전자",
+        "course": "Spotfire 데이터 분석",
+        "period": "2023.05 ~ 현재",
+        "type": "임직원 대상 실습 중심 교육"
+      },
+      "hyundai": {
+        "company": "현대건설",
+        "course": "ML/DL 교육",
+        "period": "2023.05 ~ 2023.09",
+        "type": "12차수 진행 완료"
+      },
+      "likelion": {
+        "company": "멋쟁이사자처럼",
+        "course": "테킷 스타트업 스테이션",
+        "period": "2023.11 ~ 2024.02",
+        "type": "실전 프로젝트 중심 교육"
+      }
     }
   },
   "about": {
-    "title": "에멜무지로 소개",
+    "sectionLabel": "ABOUT US",
+    "title": "에멜무지로",
+    "subtitle": "AI 교육과 솔루션 개발 전문 스타트업",
     "mission": {
       "title": "우리의 미션",
-      "description": "AI 기술의 대중화를 통해 모든 기업이 AI의 혜택을 누릴 수 있도록 지원합니다"
+      "description": "에멜무지로는 2024년 12월에 설립된 AI 교육 및 컨설팅 전문 기업입니다.\n실무 중심의 AI 교육과 맞춤형 솔루션 개발을 통해\n고객사의 디지털 혁신을 지원하고 함께 성장하는 파트너가 되겠습니다."
     },
     "vision": {
       "title": "우리의 비전",
       "description": "AI 교육과 컨설팅 분야의 선도 기업으로 성장하여 디지털 혁신을 이끕니다"
     },
+    "journey": {
+      "sectionLabel": "OUR JOURNEY",
+      "title": "우리의 여정",
+      "subtitle": "AI 교육 전문가로 성장해온 발자취"
+    },
+    "timeline": {
+      "2022": {
+        "title": "AI 교육 시작",
+        "description": "모두의연구소, 한글과컴퓨터에서 서울대, 서울시립대, LG전자 등 대학/기업 AI 교육 시작"
+      },
+      "2023": {
+        "title": "교육 확대",
+        "description": "삼성전자, 현대건설, LG전자, 카카오 등 대기업 AI/ML 교육 프로젝트 수행"
+      },
+      "2024": {
+        "title": "전문화 및 창업",
+        "description": "멋쟁이사자처럼 AI 과정 전문 강사 활동, 12월 에멜무지로 설립"
+      },
+      "2025": {
+        "title": "지속적 성장",
+        "description": "산업전문인력 AI역량강화 교육 및 기업 맞춤형 교육 확대"
+      }
+    },
     "values": {
+      "sectionLabel": "CORE VALUES",
       "title": "핵심 가치",
-      "innovation": "혁신",
-      "trust": "신뢰",
-      "excellence": "전문성",
-      "collaboration": "협업"
+      "subtitle": "에멜무지로가 추구하는 4가지 핵심 가치입니다",
+      "practical": {
+        "title": "실무 중심 교육",
+        "description": "이론과 실습을 균형있게 구성하여 현업에서 바로 활용 가능한 실무 적용 교육"
+      },
+      "custom": {
+        "title": "맞춤형 커리큘럼",
+        "description": "고객사의 수준과 목표에 맞춰 설계된 단계별 맞춤 교육 프로그램"
+      },
+      "latest": {
+        "title": "최신 기술 활용",
+        "description": "ChatGPT, Claude 등 최신 AI 도구 활용법 실습 교육"
+      },
+      "growth": {
+        "title": "지속적인 성장",
+        "description": "교육 후에도 지속적인 학습과 피드백 제공"
+      }
+    },
+    "achievements": {
+      "title": "주요 성과"
+    },
+    "ctaTitle": "함께 성장할 준비가 되셨나요?",
+    "ctaSubtitle": "AI 혁신의 파트너, 에멜무지로와 함께하세요",
+    "seo": {
+      "title": "회사 소개 | 에멜무지로",
+      "description": "AI 교육과 컨설팅 전문 기업 에멜무지로를 소개합니다. 실무 중심의 AI 솔루션을 제공합니다."
+    }
+  },
+  "footer": {
+    "company": "에멜무지로",
+    "services": "서비스",
+    "resources": "리소스",
+    "legal": "법적 고지",
+    "privacy": "개인정보처리방침",
+    "terms": "이용약관",
+    "copyright": "© {{year}} 에멜무지로. All rights reserved.",
+    "socialMedia": "소셜 미디어",
+    "mainServices": "주요 서비스",
+    "ctaQuestion": "AI 프로젝트 도입을 계획 중이시나요?"
+  },
+  "career": {
+    "title": "경력 상세",
+    "subtitle": "AI 교육과 비즈니스 개발 분야에서 쌓아온 <strong>5년간의 경험</strong>을 연도별로 소개합니다.",
+    "monthlyActivities": "월별 활동 내역",
+    "activities": "개 활동",
+    "projects": "개 프로젝트",
+    "yearLabel": "{{year}}년",
+    "monthLabel": "개월 활동",
+    "expandLabel": "펼치기",
+    "collapseLabel": "접기",
+    "stats": {
+      "lectures": "강의 경험",
+      "partners": "파트너사",
+      "educationPeriod": "교육 기간",
+      "educationYears": "5년"
+    },
+    "status": {
+      "completed": "완료",
+      "inProgress": "진행중"
+    },
+    "types": {
+      "lecture": "강의",
+      "consulting": "컨설팅",
+      "business": "사업",
+      "study": "학업",
+      "mentoring": "멘토링",
+      "competition": "공모전",
+      "research": "연구",
+      "development": "개발",
+      "planning": "기획",
+      "education": "교육",
+      "preparation": "준비",
+      "review": "정리",
+      "employment": "취업",
+      "activity": "활동"
     }
   },
   "contact": {
@@ -115,16 +309,6 @@
       "casestudy": "사례 연구",
       "news": "뉴스"
     }
-  },
-  "footer": {
-    "company": "회사 정보",
-    "services": "서비스",
-    "resources": "리소스",
-    "legal": "법적 고지",
-    "privacy": "개인정보처리방침",
-    "terms": "이용약관",
-    "copyright": "© 2025 에멜무지로. All rights reserved.",
-    "socialMedia": "소셜 미디어"
   },
   "chat": {
     "title": "실시간 상담",

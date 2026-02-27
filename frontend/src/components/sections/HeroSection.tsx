@@ -1,6 +1,9 @@
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const HeroSection: React.FC = memo(() => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative min-h-screen flex items-center bg-white dark:bg-gray-900">
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-8 py-20 sm:py-24 lg:py-0">
@@ -10,26 +13,26 @@ const HeroSection: React.FC = memo(() => {
             {/* Simple badge */}
             <div className="mb-10">
               <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
-                AI EDUCATION & CONSULTING
+                {t('hero.badge')}
               </span>
             </div>
 
             {/* Main Headline - Typography focused */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-8 sm:mb-10 leading-[1.1] sm:leading-[1.05] tracking-tight">
               <span className="block text-gray-900 dark:text-white">
-                실무에 강한
+                {t('hero.titleLine1')}
               </span>
               <span className="block text-gray-900 dark:text-white mt-2 sm:mt-3">
-                AI 전문가 그룹
+                {t('hero.titleLine2')}
               </span>
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 leading-relaxed max-w-xl font-medium">
-              대기업 AI 교육부터 스타트업 기술 컨설팅까지,
+              {t('hero.descriptionLine1')}
               <br className="hidden sm:block" />
               <span className="block sm:inline">
-                맞춤형 솔루션으로 비즈니스 성장을 가속화합니다.
+                {t('hero.descriptionLine2')}
               </span>
             </p>
 
@@ -39,7 +42,7 @@ const HeroSection: React.FC = memo(() => {
                 href="#/contact"
                 className="inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg font-bold text-white bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all rounded-xl sm:rounded-2xl"
               >
-                프로젝트 문의하기 →
+                {t('common.inquireProject')}
               </a>
             </div>
           </div>
@@ -52,7 +55,7 @@ const HeroSection: React.FC = memo(() => {
                   1,000+
                 </div>
                 <div className="text-sm sm:text-base font-semibold text-gray-600 dark:text-gray-400">
-                  누적 수강생
+                  {t('hero.stats.students')}
                 </div>
               </div>
               <div className="text-center">
@@ -60,7 +63,7 @@ const HeroSection: React.FC = memo(() => {
                   50+
                 </div>
                 <div className="text-sm sm:text-base font-semibold text-gray-600 dark:text-gray-400">
-                  완료 프로젝트
+                  {t('hero.stats.projects')}
                 </div>
               </div>
               <div className="text-center">
@@ -68,7 +71,7 @@ const HeroSection: React.FC = memo(() => {
                   30+
                 </div>
                 <div className="text-sm sm:text-base font-semibold text-gray-600 dark:text-gray-400">
-                  협력사 기업
+                  {t('hero.stats.partners')}
                 </div>
               </div>
               <div className="text-center">
@@ -76,7 +79,7 @@ const HeroSection: React.FC = memo(() => {
                   4.8+
                 </div>
                 <div className="text-sm sm:text-base font-semibold text-gray-600 dark:text-gray-400">
-                  강의 만족도
+                  {t('hero.stats.satisfaction')}
                 </div>
               </div>
             </div>
@@ -94,8 +97,8 @@ const HeroSection: React.FC = memo(() => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="hidden sm:inline">Since 2022 • </span>5년의
-                검증된 전문성
+                <span className="hidden sm:inline">Since 2022 • </span>
+                {t('hero.expertise')}
               </span>
             </div>
           </div>

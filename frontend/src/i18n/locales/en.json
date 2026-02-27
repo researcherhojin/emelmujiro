@@ -23,53 +23,247 @@
     "next": "Next",
     "previous": "Previous",
     "submit": "Submit",
-    "language": "Language"
+    "language": "Language",
+    "pageLoading": "Loading page...",
+    "companyName": "Emelmujiro",
+    "inquireProject": "Inquire About Project →",
+    "inquireByEmail": "Contact via Email →",
+    "inquireEducation": "Inquire About Training",
+    "menu": "Menu",
+    "representativeProfile": "CEO Profile"
   },
   "hero": {
-    "title": "Leading AI Innovation",
-    "subtitle": "Emelmujiro",
-    "description": "Providing customized AI solutions based on AI education expertise and practical project experience accumulated since 2022",
+    "badge": "AI EDUCATION & CONSULTING",
+    "titleLine1": "Practice-Driven",
+    "titleLine2": "AI Expert Group",
+    "descriptionLine1": "From corporate AI education to startup tech consulting,",
+    "descriptionLine2": "we accelerate your business growth with tailored solutions.",
     "cta": {
       "primary": "Request Free Consultation",
       "secondary": "Explore Services"
-    }
+    },
+    "stats": {
+      "students": "Total Students",
+      "projects": "Completed Projects",
+      "partners": "Partner Companies",
+      "satisfaction": "Course Satisfaction"
+    },
+    "expertise": "5 Years of Proven Expertise"
   },
   "services": {
+    "sectionLabel": "WHAT WE DO",
     "title": "Core Services",
-    "subtitle": "Driving business innovation with AI technology",
-    "aiSolution": {
-      "title": "AI Solution Development",
-      "description": "Custom LLM solutions, Computer Vision, MLOps pipeline construction"
-    },
+    "subtitle": "We provide step-by-step solutions for corporate AI adoption",
     "education": {
       "title": "AI Education & Training",
-      "description": "Practice-oriented AI education, Python machine learning/deep learning training"
+      "description": "Custom corporate AI education programs",
+      "details": [
+        "Custom curriculum design",
+        "Project-based hands-on training",
+        "1:1 technical mentoring"
+      ]
     },
     "consulting": {
-      "title": "Technical Consulting",
-      "description": "AI adoption strategy development and technical advisory for enterprises"
+      "title": "AI Consulting",
+      "description": "AI adoption strategy & technical advisory",
+      "details": [
+        "AI adoption strategy & technical review",
+        "Model selection & PoC development",
+        "Service prototype design"
+      ]
     },
-    "dataAnalysis": {
-      "title": "Data Analysis",
-      "description": "Big data-based insight extraction and analysis system construction"
+    "llmGenai": {
+      "title": "LLM/Generative AI",
+      "description": "LLM-based service development",
+      "details": [
+        "RAG system design & implementation",
+        "LLM-based service prototyping",
+        "Generative AI training"
+      ]
+    },
+    "computerVision": {
+      "title": "Computer Vision",
+      "description": "Video processing & vision AI solutions",
+      "details": [
+        "Object detection / segmentation",
+        "Latest models (YOLO, SAM, etc.)",
+        "CV project design & mentoring"
+      ]
+    }
+  },
+  "cta": {
+    "sectionLabel": "GET STARTED",
+    "title": "Need AI Education & Consulting?",
+    "subtitle": "Solve your business challenges with our AI experts",
+    "emailAriaLabel": "Contact via email"
+  },
+  "education": {
+    "title": "Hands-On AI Training",
+    "subtitle": "We provide practice-focused training you can apply immediately",
+    "tracks": {
+      "corporate": {
+        "title": "Corporate Practitioner Course",
+        "description": "AI/ML hands-on training for real corporate environments",
+        "highlights": [
+          "Spotfire data analysis & visualization",
+          "Python-based machine learning fundamentals",
+          "Real-world data project practice"
+        ]
+      },
+      "advanced": {
+        "title": "Advanced AI Technology Course",
+        "description": "Expert training focused on Computer Vision and deep learning",
+        "highlights": [
+          "YOLO-based object detection practice",
+          "Vision AI algorithm implementation",
+          "Practical AI project building"
+        ]
+      },
+      "genai": {
+        "title": "Generative AI Course",
+        "description": "Business application training for latest generative AI",
+        "highlights": [
+          "LLM-based service design",
+          "Business automation processes",
+          "AI adoption strategy planning"
+        ]
+      }
+    },
+    "recentCourses": "Recent Courses",
+    "courses": {
+      "samsung": {
+        "company": "Samsung Electronics",
+        "course": "Spotfire Data Analysis",
+        "period": "2023.05 ~ Present",
+        "type": "Hands-on training for employees"
+      },
+      "hyundai": {
+        "company": "Hyundai E&C",
+        "course": "ML/DL Training",
+        "period": "2023.05 ~ 2023.09",
+        "type": "12 sessions completed"
+      },
+      "likelion": {
+        "company": "Likelion",
+        "course": "Tekit Startup Station",
+        "period": "2023.11 ~ 2024.02",
+        "type": "Project-based hands-on training"
+      }
     }
   },
   "about": {
-    "title": "About Emelmujiro",
+    "sectionLabel": "ABOUT US",
+    "title": "Emelmujiro",
+    "subtitle": "AI Education & Solution Development Startup",
     "mission": {
       "title": "Our Mission",
-      "description": "Supporting all companies to enjoy the benefits of AI through the democratization of AI technology"
+      "description": "Emelmujiro was founded in December 2024 as an AI education and consulting company.\nThrough practice-focused AI education and custom solution development,\nwe aim to be a partner that supports and grows with our clients' digital innovation."
     },
     "vision": {
       "title": "Our Vision",
       "description": "Growing as a leading company in AI education and consulting to drive digital transformation"
     },
+    "journey": {
+      "sectionLabel": "OUR JOURNEY",
+      "title": "Our Journey",
+      "subtitle": "Footsteps of growth as AI education experts"
+    },
+    "timeline": {
+      "2022": {
+        "title": "AI Education Begins",
+        "description": "Started AI education at universities and corporations including Seoul National University, UOS, and LG Electronics through MoResearch Lab and Hancom"
+      },
+      "2023": {
+        "title": "Education Expansion",
+        "description": "Conducted AI/ML education projects for major enterprises including Samsung, Hyundai E&C, LG Electronics, and Kakao"
+      },
+      "2024": {
+        "title": "Specialization & Founding",
+        "description": "Specialized AI course instructor at Likelion, founded Emelmujiro in December"
+      },
+      "2025": {
+        "title": "Continued Growth",
+        "description": "Industrial AI workforce capacity building education and expansion of custom corporate training"
+      }
+    },
     "values": {
+      "sectionLabel": "CORE VALUES",
       "title": "Core Values",
-      "innovation": "Innovation",
-      "trust": "Trust",
-      "excellence": "Excellence",
-      "collaboration": "Collaboration"
+      "subtitle": "Four core values that Emelmujiro pursues",
+      "practical": {
+        "title": "Practice-Focused Education",
+        "description": "Balanced theory and practice for immediately applicable real-world training"
+      },
+      "custom": {
+        "title": "Custom Curriculum",
+        "description": "Step-by-step education programs designed to match client level and goals"
+      },
+      "latest": {
+        "title": "Latest Technology",
+        "description": "Hands-on training with latest AI tools including ChatGPT and Claude"
+      },
+      "growth": {
+        "title": "Continuous Growth",
+        "description": "Ongoing learning and feedback support after training"
+      }
+    },
+    "achievements": {
+      "title": "Key Achievements"
+    },
+    "ctaTitle": "Ready to Grow Together?",
+    "ctaSubtitle": "Partner with Emelmujiro for AI innovation",
+    "seo": {
+      "title": "About Us | Emelmujiro",
+      "description": "Learn about Emelmujiro, an AI education and consulting company. We provide practice-focused AI solutions."
+    }
+  },
+  "footer": {
+    "company": "Emelmujiro",
+    "services": "Services",
+    "resources": "Resources",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© {{year}} Emelmujiro. All rights reserved.",
+    "socialMedia": "Social Media",
+    "mainServices": "Main Services",
+    "ctaQuestion": "Planning an AI project?"
+  },
+  "career": {
+    "title": "Career Details",
+    "subtitle": "Introducing <strong>5 years of experience</strong> in AI education and business development by year.",
+    "monthlyActivities": "Monthly Activities",
+    "activities": " activities",
+    "projects": " projects",
+    "yearLabel": "{{year}}",
+    "monthLabel": " months active",
+    "expandLabel": "Expand",
+    "collapseLabel": "Collapse",
+    "stats": {
+      "lectures": "Lecture Experience",
+      "partners": "Partners",
+      "educationPeriod": "Training Period",
+      "educationYears": "5 Years"
+    },
+    "status": {
+      "completed": "Completed",
+      "inProgress": "In Progress"
+    },
+    "types": {
+      "lecture": "Lecture",
+      "consulting": "Consulting",
+      "business": "Business",
+      "study": "Study",
+      "mentoring": "Mentoring",
+      "competition": "Competition",
+      "research": "Research",
+      "development": "Development",
+      "planning": "Planning",
+      "education": "Education",
+      "preparation": "Preparation",
+      "review": "Review",
+      "employment": "Employment",
+      "activity": "Activity"
     }
   },
   "contact": {
@@ -115,16 +309,6 @@
       "casestudy": "Case Study",
       "news": "News"
     }
-  },
-  "footer": {
-    "company": "Company",
-    "services": "Services",
-    "resources": "Resources",
-    "legal": "Legal",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "copyright": "© 2025 Emelmujiro. All rights reserved.",
-    "socialMedia": "Social Media"
   },
   "chat": {
     "title": "Live Chat",
