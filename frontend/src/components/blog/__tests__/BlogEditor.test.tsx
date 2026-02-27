@@ -1,7 +1,20 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import BlogEditor from '../BlogEditor';
+
+// Mock react-i18next BEFORE component imports
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, params?: Record<string, unknown>) => {
+      if (params && 'count' in params) return `${params.count}${key}`;
+      return key;
+    },
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
 
 // Mock getPropertyValue for all CSSStyleDeclaration instances
 const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
@@ -60,6 +73,8 @@ vi.mock('../../../utils/logger', () => ({
   },
 }));
 
+import BlogEditor from '../BlogEditor';
+
 describe('BlogEditor Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
     return render(<BrowserRouter>{component}</BrowserRouter>);
@@ -75,16 +90,18 @@ describe('BlogEditor Component', () => {
     it('shows admin required message when not in admin mode', () => {
       localStorage.removeItem('adminMode');
       renderWithRouter(<BlogEditor />);
-      expect(screen.getByText('관리자 모드가 필요합니다')).toBeInTheDocument();
-      expect(screen.queryByText('블로그 글쓰기')).not.toBeInTheDocument();
+      expect(screen.getByText('blogEditor.adminRequired')).toBeInTheDocument();
+      expect(
+        screen.queryByText('blogEditor.writePost')
+      ).not.toBeInTheDocument();
     });
 
     it('renders editor when in admin mode', () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
-      expect(screen.getByText('블로그 글쓰기')).toBeInTheDocument();
+      expect(screen.getByText('blogEditor.writePost')).toBeInTheDocument();
       expect(
-        screen.queryByText('관리자 모드가 필요합니다')
+        screen.queryByText('blogEditor.adminRequired')
       ).not.toBeInTheDocument();
     });
 
@@ -113,26 +130,26 @@ describe('BlogEditor Component', () => {
     it('renders all form fields', () => {
       renderWithRouter(<BlogEditor />);
 
-      expect(screen.getByText('제목 *')).toBeInTheDocument();
-      expect(screen.getByText('요약')).toBeInTheDocument();
-      expect(screen.getByText('카테고리')).toBeInTheDocument();
-      expect(screen.getByText('태그 (쉼표로 구분)')).toBeInTheDocument();
-      expect(screen.getByText('작성자')).toBeInTheDocument();
-      expect(screen.getByText('이미지 URL')).toBeInTheDocument();
-      expect(screen.getByText('내용 * (Markdown 지원)')).toBeInTheDocument();
+      expect(screen.getByText('blogEditor.titleLabel')).toBeInTheDocument();
+      expect(screen.getByText('blogEditor.excerptLabel')).toBeInTheDocument();
+      expect(screen.getByText('blogEditor.categoryLabel')).toBeInTheDocument();
+      expect(screen.getByText('blogEditor.tagsLabel')).toBeInTheDocument();
+      expect(screen.getByText('blogEditor.authorLabel')).toBeInTheDocument();
+      expect(screen.getByText('blogEditor.imageUrlLabel')).toBeInTheDocument();
+      expect(screen.getByText('blogEditor.contentLabel')).toBeInTheDocument();
     });
 
     it('updates form data on input change', () => {
       renderWithRouter(<BlogEditor />);
 
-      // Find title input by placeholder
+      // Find title input by placeholder (i18n key returned by mock t())
       const titleInput = screen.getByPlaceholderText(
-        '포스트 제목을 입력하세요'
+        'blogEditor.enterTitle'
       ) as HTMLInputElement;
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       expect(titleInput.value).toBe('Test Title');
 
-      // Find content textarea by placeholder text
+      // Find content textarea by placeholder text (hardcoded in component)
       const contentTextarea = screen.getByPlaceholderText(
         /## 제목/
       ) as HTMLTextAreaElement;
@@ -189,14 +206,14 @@ describe('BlogEditor Component', () => {
     it('validates required fields before saving', () => {
       renderWithRouter(<BlogEditor />);
 
-      const saveButton = screen.getByRole('button', { name: /저장/ });
+      const saveButton = screen.getByRole('button', { name: /common\.save/ });
 
       // Mock alert
       const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
       fireEvent.click(saveButton);
 
-      expect(alertSpy).toHaveBeenCalledWith('제목과 내용은 필수입니다.');
+      expect(alertSpy).toHaveBeenCalledWith('blogEditor.titleContentRequired');
 
       alertSpy.mockRestore();
     });
@@ -210,7 +227,7 @@ describe('BlogEditor Component', () => {
       renderWithRouter(<BlogEditor />);
 
       const titleInput = screen.getByPlaceholderText(
-        '포스트 제목을 입력하세요'
+        'blogEditor.enterTitle'
       ) as HTMLInputElement;
       const contentTextarea = screen.getByPlaceholderText(
         /## 제목/
@@ -221,7 +238,7 @@ describe('BlogEditor Component', () => {
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
       fireEvent.change(categorySelect, { target: { value: 'Technology' } });
 
-      const saveButton = screen.getByRole('button', { name: /저장/ });
+      const saveButton = screen.getByRole('button', { name: /common\.save/ });
 
       // Mock alert
       const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
@@ -238,7 +255,7 @@ describe('BlogEditor Component', () => {
       expect(lastPost?.content).toBe('Test Content');
       expect(lastPost?.category).toBe('일반');
 
-      expect(alertSpy).toHaveBeenCalledWith('포스트가 저장되었습니다!');
+      expect(alertSpy).toHaveBeenCalledWith('blogEditor.postSaved');
       expect(mockNavigate).toHaveBeenCalledWith('/blog');
 
       alertSpy.mockRestore();
@@ -253,7 +270,7 @@ describe('BlogEditor Component', () => {
       renderWithRouter(<BlogEditor />);
 
       const titleInput = screen.getByPlaceholderText(
-        '포스트 제목을 입력하세요'
+        'blogEditor.enterTitle'
       ) as HTMLInputElement;
       const contentTextarea = screen.getByPlaceholderText(
         /## 제목/
@@ -262,7 +279,7 @@ describe('BlogEditor Component', () => {
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
 
-      const saveButton = screen.getByRole('button', { name: /저장/ });
+      const saveButton = screen.getByRole('button', { name: /common\.save/ });
 
       vi.spyOn(window, 'alert').mockImplementation(() => {});
 
@@ -304,7 +321,7 @@ describe('BlogEditor Component', () => {
         .mockImplementation(() => {});
 
       const exportButton = screen.getByRole('button', {
-        name: /JSON 내보내기/,
+        name: /blogEditor\.exportJSON/,
       });
       fireEvent.click(exportButton);
 
@@ -359,7 +376,8 @@ describe('BlogEditor Component', () => {
       );
       expect(importedPost?.content).toBe('Imported Content');
 
-      expect(alertSpy).toHaveBeenCalledWith('1개의 포스트를 가져왔습니다!');
+      // The mock t() with params returns `${params.count}${key}`
+      expect(alertSpy).toHaveBeenCalledWith('1blogEditor.importSuccess');
 
       alertSpy.mockRestore();
     });
@@ -399,7 +417,7 @@ describe('BlogEditor Component', () => {
     it('navigates back on cancel', () => {
       renderWithRouter(<BlogEditor />);
 
-      const cancelButton = screen.getByText(/취소/);
+      const cancelButton = screen.getByText(/common\.cancel/);
       fireEvent.click(cancelButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('/blog');

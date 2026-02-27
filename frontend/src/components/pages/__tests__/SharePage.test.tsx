@@ -1,7 +1,17 @@
+import React from 'react';
 import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import SharePage from '../SharePage';
+
+// Mock react-i18next BEFORE component imports
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
 
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
@@ -40,6 +50,8 @@ vi.mock('react-router-dom', async () => {
     }),
   };
 });
+
+import SharePage from '../SharePage';
 
 describe('SharePage', () => {
   beforeEach(() => {
@@ -84,14 +96,12 @@ describe('SharePage', () => {
 
     await waitFor(
       () => {
-        expect(
-          screen.getByText('공유할 콘텐츠가 없습니다')
-        ).toBeInTheDocument();
+        expect(screen.getByText('share.noContent')).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
 
-    expect(screen.getByText('홈으로 돌아가기')).toBeInTheDocument();
+    expect(screen.getByText('share.goHome')).toBeInTheDocument();
   });
 
   it('displays shared title correctly', async () => {
@@ -104,7 +114,7 @@ describe('SharePage', () => {
       { timeout: 5000 }
     );
 
-    expect(screen.getByText('제목')).toBeInTheDocument();
+    expect(screen.getByText('share.fieldTitle')).toBeInTheDocument();
   });
 
   it('displays shared text correctly', async () => {
@@ -117,7 +127,7 @@ describe('SharePage', () => {
       { timeout: 5000 }
     );
 
-    expect(screen.getByText('내용')).toBeInTheDocument();
+    expect(screen.getByText('share.fieldContent')).toBeInTheDocument();
   });
 
   it('displays shared URL correctly', async () => {
@@ -130,7 +140,7 @@ describe('SharePage', () => {
       { timeout: 5000 }
     );
 
-    expect(screen.getByText('링크')).toBeInTheDocument();
+    expect(screen.getByText('share.fieldLink')).toBeInTheDocument();
   });
 
   it('displays all shared parameters together', async () => {
@@ -151,15 +161,15 @@ describe('SharePage', () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText('문의하기')).toBeInTheDocument();
+        expect(screen.getByText('share.sendInquiry')).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
 
-    // Click the button with '문의하기' text
+    // Click the button with 'share.sendInquiry' text
     const buttons = screen.getAllByRole('button');
     const inquiryButton = buttons.find((btn) =>
-      btn.textContent?.includes('문의하기')
+      btn.textContent?.includes('share.sendInquiry')
     );
     expect(inquiryButton).toBeDefined();
     if (inquiryButton) fireEvent.click(inquiryButton);
@@ -179,14 +189,14 @@ describe('SharePage', () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText('원본 보기')).toBeInTheDocument();
+        expect(screen.getByText('share.viewOriginal')).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
 
     const buttons = screen.getAllByRole('button');
     const viewButton = buttons.find((btn) =>
-      btn.textContent?.includes('원본 보기')
+      btn.textContent?.includes('share.viewOriginal')
     );
     expect(viewButton).toBeDefined();
     if (viewButton) fireEvent.click(viewButton);
@@ -203,14 +213,14 @@ describe('SharePage', () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText('나중에 보기')).toBeInTheDocument();
+        expect(screen.getByText('share.saveLater')).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
 
     const buttons = screen.getAllByRole('button');
     const saveButton = buttons.find((btn) =>
-      btn.textContent?.includes('나중에 보기')
+      btn.textContent?.includes('share.saveLater')
     );
     expect(saveButton).toBeDefined();
     if (saveButton) fireEvent.click(saveButton);
@@ -222,7 +232,7 @@ describe('SharePage', () => {
     expect(savedContent[0].title).toBe('저장할 제목');
     expect(savedContent[0].text).toBe('저장할 내용');
 
-    expect(window.alert).toHaveBeenCalledWith('콘텐츠가 저장되었습니다!');
+    expect(window.alert).toHaveBeenCalledWith('share.saved');
     expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
@@ -239,14 +249,14 @@ describe('SharePage', () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText('나중에 보기')).toBeInTheDocument();
+        expect(screen.getByText('share.saveLater')).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
 
     const buttons = screen.getAllByRole('button');
     const saveButton = buttons.find((btn) =>
-      btn.textContent?.includes('나중에 보기')
+      btn.textContent?.includes('share.saveLater')
     );
     expect(saveButton).toBeDefined();
     if (saveButton) fireEvent.click(saveButton);
@@ -263,12 +273,12 @@ describe('SharePage', () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText('홈으로 돌아가기')).toBeInTheDocument();
+        expect(screen.getByText('share.goHome')).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
 
-    const homeButton = screen.getByText('홈으로 돌아가기');
+    const homeButton = screen.getByText('share.goHome');
     fireEvent.click(homeButton);
 
     expect(mockNavigate).toHaveBeenCalledWith('/');
@@ -279,12 +289,12 @@ describe('SharePage', () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText('문의하기')).toBeInTheDocument();
+        expect(screen.getByText('share.sendInquiry')).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
-    expect(screen.getByText('원본 보기')).toBeInTheDocument();
-    expect(screen.getByText('나중에 보기')).toBeInTheDocument();
+    expect(screen.getByText('share.viewOriginal')).toBeInTheDocument();
+    expect(screen.getByText('share.saveLater')).toBeInTheDocument();
   });
 
   it('does not show view content button when no URL is present', async () => {
@@ -292,11 +302,11 @@ describe('SharePage', () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText('문의하기')).toBeInTheDocument();
+        expect(screen.getByText('share.sendInquiry')).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
-    expect(screen.queryByText('원본 보기')).not.toBeInTheDocument();
+    expect(screen.queryByText('share.viewOriginal')).not.toBeInTheDocument();
   });
 
   it('handles special characters in shared content', async () => {

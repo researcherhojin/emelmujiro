@@ -1,5 +1,22 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
+
+// Mock i18n (class component uses i18n.t() directly)
+vi.mock('../../../i18n', () => ({
+  default: { t: (key: string) => key, language: 'ko' },
+}));
+
+// Mock react-i18next in case any child uses it
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 import ErrorBoundary from '../ErrorBoundary';
 
 // Component that throws an error
@@ -52,12 +69,10 @@ describe('ErrorBoundary Component', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('문제가 발생했습니다')).toBeInTheDocument();
+    expect(screen.getByText('errorBoundary.title')).toBeInTheDocument();
+    expect(screen.getByText('errorBoundary.message')).toBeInTheDocument();
     expect(
-      screen.getByText(/페이지를 불러오는 도중 오류가 발생했습니다/)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: '다시 시도' })
+      screen.getByRole('button', { name: 'errorBoundary.retry' })
     ).toBeInTheDocument();
   });
 
@@ -93,7 +108,9 @@ describe('ErrorBoundary Component', () => {
       </ErrorBoundary>
     );
 
-    const reloadButton = screen.getByRole('button', { name: '다시 시도' });
+    const reloadButton = screen.getByRole('button', {
+      name: 'errorBoundary.retry',
+    });
     fireEvent.click(reloadButton);
 
     expect(window.location.reload).toHaveBeenCalled();
@@ -112,15 +129,15 @@ describe('ErrorBoundary Component', () => {
       </ErrorBoundary>
     );
 
-    const errorTitle = screen.getByText('문제가 발생했습니다');
+    const errorTitle = screen.getByText('errorBoundary.title');
     expect(errorTitle).toHaveClass('text-2xl', 'font-bold', 'text-red-600');
 
-    const errorMessage = screen.getByText(
-      /페이지를 불러오는 도중 오류가 발생했습니다/
-    );
+    const errorMessage = screen.getByText('errorBoundary.message');
     expect(errorMessage).toHaveClass('text-gray-500');
 
-    const reloadButton = screen.getByRole('button', { name: '다시 시도' });
+    const reloadButton = screen.getByRole('button', {
+      name: 'errorBoundary.retry',
+    });
     expect(reloadButton).toHaveClass('bg-indigo-600', 'text-white');
   });
 
@@ -137,7 +154,7 @@ describe('ErrorBoundary Component', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('문제가 발생했습니다')).toBeInTheDocument();
+    expect(screen.getByText('errorBoundary.title')).toBeInTheDocument();
   });
 
   it('recovers when error is resolved', () => {
@@ -147,7 +164,7 @@ describe('ErrorBoundary Component', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('문제가 발생했습니다')).toBeInTheDocument();
+    expect(screen.getByText('errorBoundary.title')).toBeInTheDocument();
 
     // Re-render without error
     rerender(
@@ -158,7 +175,7 @@ describe('ErrorBoundary Component', () => {
 
     // Error boundary should still show error state
     // (React error boundaries don't automatically reset),
-    expect(screen.getByText('문제가 발생했습니다')).toBeInTheDocument();
+    expect(screen.getByText('errorBoundary.title')).toBeInTheDocument();
   });
 
   it('handles multiple children with one failing', () => {
@@ -170,7 +187,7 @@ describe('ErrorBoundary Component', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('문제가 발생했습니다')).toBeInTheDocument();
+    expect(screen.getByText('errorBoundary.title')).toBeInTheDocument();
     expect(screen.queryByText('First child')).not.toBeInTheDocument();
     expect(screen.queryByText('Third child')).not.toBeInTheDocument();
   });
@@ -183,7 +200,7 @@ describe('ErrorBoundary Component', () => {
     );
 
     // Just verify the error message is displayed
-    expect(screen.getByText(/문제가 발생했습니다/)).toBeInTheDocument();
+    expect(screen.getByText('errorBoundary.title')).toBeInTheDocument();
   });
 
   describe('getDerivedStateFromError', () => {

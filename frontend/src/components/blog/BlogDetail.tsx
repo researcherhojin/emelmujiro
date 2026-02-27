@@ -1,4 +1,5 @@
 import React, { useEffect, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -12,6 +13,7 @@ import { useBlog } from '../../contexts/BlogContext';
 import { formatDate } from '../../utils/dateFormat';
 
 const BlogDetailPage: React.FC = memo(() => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const {
@@ -31,7 +33,7 @@ const BlogDetailPage: React.FC = memo(() => {
   }, [id]);
 
   if (loading) {
-    return <PageLoading message="블로그 포스트를 불러오는 중입니다..." />;
+    return <PageLoading message={t('blogDetail.loading')} />;
   }
 
   if (error && error.includes('404')) {
@@ -48,7 +50,7 @@ const BlogDetailPage: React.FC = memo(() => {
             onClick={() => navigate(-1)}
             className="mt-4 text-indigo-600 hover:text-indigo-700"
           >
-            뒤로 가기
+            {t('common.goBack')}
           </button>
         </div>
       </div>
@@ -60,9 +62,9 @@ const BlogDetailPage: React.FC = memo(() => {
       <div className="min-h-screen bg-gray-50 pt-20">
         {post && (
           <SEO
-            title={`${post.title} | 에멜무지로 블로그`}
+            title={`${post.title} | ${t('blogDetail.blogTitle')}`}
             description={post.excerpt || post.title}
-            keywords={`${post.category}, 에멜무지로, 블로그`}
+            keywords={`${post.category}, ${t('blogDetail.blogKeywords')}`}
             ogImage={post.image_url}
           />
         )}
@@ -72,13 +74,13 @@ const BlogDetailPage: React.FC = memo(() => {
             className="mb-8 text-indigo-600 hover:text-indigo-700 flex items-center group"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            뒤로가기
+            {t('common.goBack')}
           </button>
           <article className="bg-white rounded-lg shadow-md overflow-hidden">
             {post?.image_url && (
               <img
                 src={post.image_url}
-                alt={`${post.title} 관련 이미지`}
+                alt={`${post.title} ${t('blogDetail.relatedImage')}`}
                 className="w-full h-64 object-cover"
               />
             )}
@@ -104,7 +106,9 @@ const BlogDetailPage: React.FC = memo(() => {
 
               {/* Author and tags */}
               <div className="flex items-center mb-6 text-gray-600">
-                <span>작성자: {post?.author}</span>
+                <span>
+                  {t('blogDetail.author')} {post?.author}
+                </span>
                 {post?.tags && post.tags.length > 0 && (
                   <>
                     <span className="mx-2">•</span>

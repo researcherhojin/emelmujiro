@@ -2,6 +2,17 @@ import React from 'react';
 import { vi } from 'vitest';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils';
+
+// Mock react-i18next BEFORE component imports
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 import AdminDashboard from '../AdminDashboard';
 
 describe('AdminDashboard', () => {
@@ -12,25 +23,25 @@ describe('AdminDashboard', () => {
   it('renders admin dashboard with sidebar', () => {
     renderWithProviders(<AdminDashboard />);
 
-    expect(screen.getByText('관리자 대시보드')).toBeInTheDocument();
-    expect(screen.getByText('개요')).toBeInTheDocument();
-    expect(screen.getByText('콘텐츠 관리')).toBeInTheDocument();
-    expect(screen.getByText('사용자 관리')).toBeInTheDocument();
-    expect(screen.getByText('메시지')).toBeInTheDocument();
-    expect(screen.getByText('분석')).toBeInTheDocument();
-    expect(screen.getByText('설정')).toBeInTheDocument();
+    expect(screen.getByText('admin.dashboard')).toBeInTheDocument();
+    expect(screen.getByText('admin.overview')).toBeInTheDocument();
+    expect(screen.getByText('admin.contentManagement')).toBeInTheDocument();
+    expect(screen.getByText('admin.userManagement')).toBeInTheDocument();
+    expect(screen.getByText('admin.messages')).toBeInTheDocument();
+    expect(screen.getByText('admin.analytics')).toBeInTheDocument();
+    expect(screen.getByText('admin.settings')).toBeInTheDocument();
   });
 
   it('displays overview section by default', async () => {
     renderWithProviders(<AdminDashboard />);
 
     await waitFor(() => {
-      expect(screen.getByText('대시보드 개요')).toBeInTheDocument();
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
     });
-    expect(screen.getByText('총 사용자')).toBeInTheDocument();
-    expect(screen.getByText('총 게시물')).toBeInTheDocument();
-    expect(screen.getByText('총 메시지')).toBeInTheDocument();
-    expect(screen.getByText('총 조회수')).toBeInTheDocument();
+    expect(screen.getByText('admin.totalUsers')).toBeInTheDocument();
+    expect(screen.getByText('admin.totalPosts')).toBeInTheDocument();
+    expect(screen.getByText('admin.totalMessages')).toBeInTheDocument();
+    expect(screen.getByText('admin.totalViews')).toBeInTheDocument();
   });
 
   it('displays stats after loading', async () => {
@@ -48,58 +59,64 @@ describe('AdminDashboard', () => {
     renderWithProviders(<AdminDashboard />);
 
     await waitFor(() => {
-      expect(screen.getByText('최근 활동')).toBeInTheDocument();
+      expect(screen.getByText('admin.recentActivity')).toBeInTheDocument();
     });
-    expect(screen.getByText('새 사용자 가입')).toBeInTheDocument();
-    expect(screen.getByText('블로그 포스트 작성')).toBeInTheDocument();
-    expect(screen.getByText('문의 메시지 접수')).toBeInTheDocument();
+    expect(screen.getByText('admin.newUserSignup')).toBeInTheDocument();
+    expect(screen.getByText('admin.blogPostCreated')).toBeInTheDocument();
+    expect(screen.getByText('admin.inquiryReceived')).toBeInTheDocument();
   });
 
   it('switches to content management tab', async () => {
     renderWithProviders(<AdminDashboard />);
 
-    const contentTab = screen.getByRole('button', { name: /콘텐츠 관리/i });
+    const contentTab = screen.getByRole('button', {
+      name: /admin\.contentManagement/i,
+    });
     fireEvent.click(contentTab);
 
     await waitFor(() => {
       expect(
-        screen.getByRole('heading', { name: '콘텐츠 관리' })
+        screen.getByRole('heading', { name: 'admin.contentManagement' })
       ).toBeInTheDocument();
     });
-    expect(screen.getByText('새 콘텐츠')).toBeInTheDocument();
+    expect(screen.getByText('admin.newContent')).toBeInTheDocument();
     expect(screen.getByText('AI 교육의 미래')).toBeInTheDocument();
   });
 
   it('displays content table with correct columns', async () => {
     renderWithProviders(<AdminDashboard />);
 
-    const contentTab = screen.getByRole('button', { name: /콘텐츠 관리/i });
+    const contentTab = screen.getByRole('button', {
+      name: /admin\.contentManagement/i,
+    });
     fireEvent.click(contentTab);
 
     await waitFor(() => {
-      expect(screen.getByText('제목')).toBeInTheDocument();
+      expect(screen.getByText('admin.tableTitle')).toBeInTheDocument();
     });
-    expect(screen.getByText('유형')).toBeInTheDocument();
-    expect(screen.getByText('상태')).toBeInTheDocument();
-    expect(screen.getByText('작성자')).toBeInTheDocument();
-    expect(screen.getByText('조회수')).toBeInTheDocument();
-    expect(screen.getByText('작성일')).toBeInTheDocument();
+    expect(screen.getByText('admin.tableType')).toBeInTheDocument();
+    expect(screen.getByText('admin.tableStatus')).toBeInTheDocument();
+    expect(screen.getByText('admin.tableAuthor')).toBeInTheDocument();
+    expect(screen.getByText('admin.tableViews')).toBeInTheDocument();
+    expect(screen.getByText('admin.tableDate')).toBeInTheDocument();
   });
 
   it('handles delete content with confirmation', async () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
     renderWithProviders(<AdminDashboard />);
 
-    const contentTab = screen.getByRole('button', { name: /콘텐츠 관리/i });
+    const contentTab = screen.getByRole('button', {
+      name: /admin\.contentManagement/i,
+    });
     fireEvent.click(contentTab);
 
     await waitFor(() => {
-      expect(screen.getAllByTitle('삭제')[0]).toBeInTheDocument();
+      expect(screen.getAllByTitle('admin.delete')[0]).toBeInTheDocument();
     });
-    const deleteButtons = screen.getAllByTitle('삭제');
+    const deleteButtons = screen.getAllByTitle('admin.delete');
     fireEvent.click(deleteButtons[0]);
 
-    expect(confirmSpy).toHaveBeenCalledWith('정말 삭제하시겠습니까?');
+    expect(confirmSpy).toHaveBeenCalledWith('admin.confirmDelete');
 
     // Content should be removed after deletion
     await waitFor(() => {
@@ -113,13 +130,15 @@ describe('AdminDashboard', () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
     renderWithProviders(<AdminDashboard />);
 
-    const contentTab = screen.getByRole('button', { name: /콘텐츠 관리/i });
+    const contentTab = screen.getByRole('button', {
+      name: /admin\.contentManagement/i,
+    });
     fireEvent.click(contentTab);
 
     await waitFor(() => {
-      expect(screen.getAllByTitle('삭제')[0]).toBeInTheDocument();
+      expect(screen.getAllByTitle('admin.delete')[0]).toBeInTheDocument();
     });
-    const deleteButtons = screen.getAllByTitle('삭제');
+    const deleteButtons = screen.getAllByTitle('admin.delete');
     fireEvent.click(deleteButtons[0]);
 
     // Content should still be present
@@ -131,52 +150,64 @@ describe('AdminDashboard', () => {
   it('switches to users tab', () => {
     renderWithProviders(<AdminDashboard />);
 
-    const usersTab = screen.getByRole('button', { name: /사용자 관리/i });
+    const usersTab = screen.getByRole('button', {
+      name: /admin\.userManagement/i,
+    });
     fireEvent.click(usersTab);
 
-    expect(screen.getByText('사용자 관리 페이지')).toBeInTheDocument();
+    expect(screen.getByText('admin.userManagementPage')).toBeInTheDocument();
   });
 
   it('switches to messages tab', () => {
     renderWithProviders(<AdminDashboard />);
 
-    const messagesTab = screen.getByRole('button', { name: /메시지/i });
+    const messagesTab = screen.getByRole('button', {
+      name: /admin\.messages/i,
+    });
     fireEvent.click(messagesTab);
 
-    expect(screen.getByText('메시지 페이지')).toBeInTheDocument();
+    expect(screen.getByText('admin.messagesPage')).toBeInTheDocument();
   });
 
   it('switches to analytics tab', () => {
     renderWithProviders(<AdminDashboard />);
 
-    const analyticsTab = screen.getByRole('button', { name: /분석/i });
+    const analyticsTab = screen.getByRole('button', {
+      name: /admin\.analytics/i,
+    });
     fireEvent.click(analyticsTab);
 
-    expect(screen.getByText('분석 페이지')).toBeInTheDocument();
+    expect(screen.getByText('admin.analyticsPage')).toBeInTheDocument();
   });
 
   it('switches to settings tab', () => {
     renderWithProviders(<AdminDashboard />);
 
-    const settingsTab = screen.getByRole('button', { name: /설정/i });
+    const settingsTab = screen.getByRole('button', {
+      name: /admin\.settings/i,
+    });
     fireEvent.click(settingsTab);
 
-    expect(screen.getByText('설정 페이지')).toBeInTheDocument();
+    expect(screen.getByText('admin.settingsPage')).toBeInTheDocument();
   });
 
   it('displays logout button', () => {
     renderWithProviders(<AdminDashboard />);
 
-    expect(screen.getByText('로그아웃')).toBeInTheDocument();
+    expect(screen.getByText('admin.logout')).toBeInTheDocument();
   });
 
   it('highlights active tab', () => {
     renderWithProviders(<AdminDashboard />);
 
-    const overviewTab = screen.getByRole('button', { name: /개요/i });
+    const overviewTab = screen.getByRole('button', {
+      name: /admin\.overview/i,
+    });
     expect(overviewTab).toHaveClass('bg-gray-800');
 
-    const contentTab = screen.getByRole('button', { name: /콘텐츠 관리/i });
+    const contentTab = screen.getByRole('button', {
+      name: /admin\.contentManagement/i,
+    });
     fireEvent.click(contentTab);
 
     expect(contentTab).toHaveClass('bg-gray-800');
@@ -186,13 +217,15 @@ describe('AdminDashboard', () => {
     renderWithProviders(<AdminDashboard />);
 
     // Since the component might not have loading state, just check if the component renders
-    expect(screen.getByText('관리자 대시보드')).toBeInTheDocument();
+    expect(screen.getByText('admin.dashboard')).toBeInTheDocument();
   });
 
   it('displays content status badges correctly', async () => {
     renderWithProviders(<AdminDashboard />);
 
-    const contentTab = screen.getByRole('button', { name: /콘텐츠 관리/i });
+    const contentTab = screen.getByRole('button', {
+      name: /admin\.contentManagement/i,
+    });
     fireEvent.click(contentTab);
 
     await waitFor(() => {
@@ -204,7 +237,9 @@ describe('AdminDashboard', () => {
   it('displays content type badges', async () => {
     renderWithProviders(<AdminDashboard />);
 
-    const contentTab = screen.getByRole('button', { name: /콘텐츠 관리/i });
+    const contentTab = screen.getByRole('button', {
+      name: /admin\.contentManagement/i,
+    });
     fireEvent.click(contentTab);
 
     await waitFor(() => {

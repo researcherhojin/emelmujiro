@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Save, X, Eye, Download, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -7,6 +8,7 @@ import { BlogPost } from '../../types';
 import logger from '../../utils/logger';
 
 const BlogEditor: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -49,7 +51,7 @@ const BlogEditor: React.FC = () => {
   // Save post to localStorage
   const handleSave = () => {
     if (!formData.title || !formData.content) {
-      alert('제목과 내용은 필수입니다.');
+      alert(t('blogEditor.titleContentRequired'));
       return;
     }
 
@@ -86,7 +88,7 @@ const BlogEditor: React.FC = () => {
       // Save to localStorage
       localStorage.setItem('customBlogPosts', JSON.stringify(updatedPosts));
 
-      alert('포스트가 저장되었습니다!');
+      alert(t('blogEditor.postSaved'));
 
       // Reset form
       setFormData({
@@ -103,7 +105,7 @@ const BlogEditor: React.FC = () => {
       navigate('/blog');
     } catch (error) {
       logger.error('Failed to save post:', error);
-      alert('포스트 저장 중 오류가 발생했습니다.');
+      alert(t('blogEditor.saveError'));
     }
   };
 
@@ -124,7 +126,7 @@ const BlogEditor: React.FC = () => {
       linkElement.click();
     } catch (error) {
       logger.error('Failed to export posts:', error);
-      alert('포스트 내보내기 중 오류가 발생했습니다.');
+      alert(t('blogEditor.exportError'));
     }
   };
 
@@ -157,9 +159,9 @@ const BlogEditor: React.FC = () => {
         );
 
         localStorage.setItem('customBlogPosts', JSON.stringify(uniquePosts));
-        alert(`${posts.length}개의 포스트를 가져왔습니다!`);
+        alert(t('blogEditor.importSuccess', { count: posts.length }));
       } catch {
-        alert('파일을 읽는 중 오류가 발생했습니다.');
+        alert(t('blogEditor.importError'));
       }
     };
     reader.readAsText(file);
@@ -180,9 +182,11 @@ const BlogEditor: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 pt-20">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-          <h2 className="text-2xl font-bold mb-4">관리자 모드가 필요합니다</h2>
+          <h2 className="text-2xl font-bold mb-4">
+            {t('blogEditor.adminRequired')}
+          </h2>
           <p className="text-gray-600 mb-8">
-            블로그 글을 작성하려면 관리자 권한이 필요합니다.
+            {t('blogEditor.adminDescription')}
           </p>
           <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
             <p className="text-sm text-gray-500 mb-4">
@@ -196,7 +200,7 @@ const BlogEditor: React.FC = () => {
               }}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              관리자 모드 활성화
+              {t('blogEditor.activateAdmin')}
             </button>
           </div>
         </div>
@@ -208,11 +212,11 @@ const BlogEditor: React.FC = () => {
     <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">블로그 글쓰기</h1>
+          <h1 className="text-3xl font-bold">{t('blogEditor.writePost')}</h1>
           <div className="flex gap-2">
             <label className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer flex items-center">
               <Upload className="w-4 h-4 mr-2" />
-              JSON 가져오기
+              {t('blogEditor.importJSON')}
               <input
                 type="file"
                 accept=".json"
@@ -225,14 +229,14 @@ const BlogEditor: React.FC = () => {
               className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center"
             >
               <Download className="w-4 h-4 mr-2" />
-              JSON 내보내기
+              {t('blogEditor.exportJSON')}
             </button>
             <button
               onClick={() => navigate('/blog')}
               className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center"
             >
               <X className="w-4 h-4 mr-2" />
-              취소
+              {t('common.cancel')}
             </button>
           </div>
         </div>
@@ -240,37 +244,41 @@ const BlogEditor: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Editor */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4">편집기</h2>
+            <h2 className="text-xl font-bold mb-4">{t('blogEditor.editor')}</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">제목 *</label>
+                <label className="block text-sm font-medium mb-1">
+                  {t('blogEditor.titleLabel')}
+                </label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="포스트 제목을 입력하세요"
+                  placeholder={t('blogEditor.enterTitle')}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">요약</label>
+                <label className="block text-sm font-medium mb-1">
+                  {t('blogEditor.excerptLabel')}
+                </label>
                 <input
                   type="text"
                   name="excerpt"
                   value={formData.excerpt}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="간단한 요약 (비워두면 자동 생성)"
+                  placeholder={t('blogEditor.excerptPlaceholder')}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    카테고리
+                    {t('blogEditor.categoryLabel')}
                   </label>
                   <select
                     name="category"
@@ -278,7 +286,7 @@ const BlogEditor: React.FC = () => {
                     onChange={handleChange}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">선택하세요</option>
+                    <option value="">{t('blogEditor.selectCategory')}</option>
                     {categories.map((cat) => (
                       <option key={cat} value={cat}>
                         {cat}
@@ -289,7 +297,7 @@ const BlogEditor: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    작성자
+                    {t('blogEditor.authorLabel')}
                   </label>
                   <input
                     type="text"
@@ -303,7 +311,7 @@ const BlogEditor: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  태그 (쉼표로 구분)
+                  {t('blogEditor.tagsLabel')}
                 </label>
                 <input
                   type="text"
@@ -317,7 +325,7 @@ const BlogEditor: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  이미지 URL
+                  {t('blogEditor.imageUrlLabel')}
                 </label>
                 <input
                   type="text"
@@ -325,13 +333,13 @@ const BlogEditor: React.FC = () => {
                   value={formData.image_url}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/image.jpg (비워두면 자동 생성)"
+                  placeholder={t('blogEditor.imageUrlPlaceholder')}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  내용 * (Markdown 지원)
+                  {t('blogEditor.contentLabel')}
                 </label>
                 <textarea
                   name="content"
@@ -349,14 +357,16 @@ const BlogEditor: React.FC = () => {
                   className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center justify-center"
                 >
                   <Save className="w-4 h-4 mr-2" />
-                  저장
+                  {t('common.save')}
                 </button>
                 <button
                   onClick={() => setShowPreview(!showPreview)}
                   className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center justify-center"
                 >
                   <Eye className="w-4 h-4 mr-2" />
-                  {showPreview ? '편집기' : '미리보기'}
+                  {showPreview
+                    ? t('blogEditor.editor')
+                    : t('blogEditor.preview')}
                 </button>
               </div>
             </div>
@@ -364,7 +374,9 @@ const BlogEditor: React.FC = () => {
 
           {/* Preview */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4">미리보기</h2>
+            <h2 className="text-xl font-bold mb-4">
+              {t('blogEditor.preview')}
+            </h2>
 
             <article className="prose prose-indigo max-w-none">
               {formData.image_url && (
@@ -381,7 +393,7 @@ const BlogEditor: React.FC = () => {
                 </span>
               )}
 
-              <h1>{formData.title || '제목을 입력하세요'}</h1>
+              <h1>{formData.title || t('blogEditor.enterTitle')}</h1>
 
               {formData.tags && (
                 <div className="flex gap-2 mb-4">
@@ -409,19 +421,18 @@ const BlogEditor: React.FC = () => {
 
         {/* Instructions */}
         <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h3 className="font-bold text-yellow-800 mb-2">📝 사용 방법</h3>
+          <h3 className="font-bold text-yellow-800 mb-2">
+            {t('blogEditor.howToUse')}
+          </h3>
           <ul className="text-sm text-yellow-700 space-y-1">
-            <li>• 작성한 글은 브라우저의 localStorage에 저장됩니다</li>
-            <li>• JSON 내보내기로 포스트를 백업할 수 있습니다</li>
-            <li>• JSON 파일을 수정하여 대량의 포스트를 추가할 수 있습니다</li>
+            <li>• {t('blogEditor.instruction1')}</li>
+            <li>• {t('blogEditor.instruction2')}</li>
+            <li>• {t('blogEditor.instruction3')}</li>
             <li>
-              • 실제 배포 시에는{' '}
-              <code className="bg-yellow-100 px-1">blogPosts.js</code> 파일에
-              직접 추가하는 것을 추천합니다
+              • {t('blogEditor.instruction4')}{' '}
+              <code className="bg-yellow-100 px-1">blogPosts.js</code>
             </li>
-            <li>
-              • Markdown 문법을 사용하여 풍부한 콘텐츠를 작성할 수 있습니다
-            </li>
+            <li>• {t('blogEditor.instruction5')}</li>
           </ul>
         </div>
       </div>

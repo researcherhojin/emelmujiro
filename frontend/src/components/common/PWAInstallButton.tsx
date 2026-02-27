@@ -1,5 +1,7 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Download } from 'lucide-react';
+import logger from '../../utils/logger';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -7,6 +9,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const PWAInstallButton: React.FC = memo(() => {
+  const { t } = useTranslation();
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallButton, setShowInstallButton] = useState<boolean>(false);
@@ -31,7 +34,7 @@ const PWAInstallButton: React.FC = memo(() => {
       // matchMedia may not work in some test environments
       // Silently fail in test environments
       if (process.env.NODE_ENV !== 'test') {
-        console.warn('matchMedia not available:', error);
+        logger.warn('matchMedia not available:', error);
       }
       return;
     }
@@ -97,10 +100,10 @@ const PWAInstallButton: React.FC = memo(() => {
         className="bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg
                     hover:bg-gray-800 transition-all duration-200 flex items-center gap-2
                     hover:scale-105 active:scale-95"
-        aria-label="앱 설치하기"
+        aria-label={t('pwa.installApp')}
       >
         <Download className="w-5 h-5" />
-        <span className="font-medium">앱 설치하기</span>
+        <span className="font-medium">{t('pwa.installApp')}</span>
       </button>
     </div>
   );

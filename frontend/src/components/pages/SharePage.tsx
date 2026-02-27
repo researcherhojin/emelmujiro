@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Share2, MessageCircle, Mail, ExternalLink } from 'lucide-react';
 
@@ -9,6 +10,7 @@ interface SharedContent {
 }
 
 const SharePage: React.FC = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [sharedContent, setSharedContent] = useState<SharedContent>({});
@@ -31,19 +33,19 @@ const SharePage: React.FC = () => {
   const handleSendInquiry = () => {
     // Navigate to contact page with pre-filled content
     const message = `
-안녕하세요, 다음 내용에 대해 문의드립니다:
+${t('share.inquiryTemplate')}
 
-제목: ${sharedContent.title || ''}
-내용: ${sharedContent.text || ''}
-링크: ${sharedContent.url || ''}
+${t('share.fieldTitle')}: ${sharedContent.title || ''}
+${t('share.fieldContent')}: ${sharedContent.text || ''}
+${t('share.fieldLink')}: ${sharedContent.url || ''}
 
-관련하여 상담을 받고 싶습니다.
+${t('share.inquiryFooter')}
     `.trim();
 
     navigate('/contact', {
       state: {
         prefilledMessage: message,
-        subject: sharedContent.title || '공유된 콘텐츠 문의',
+        subject: sharedContent.title || t('share.defaultSubject'),
       },
     });
   };
@@ -72,7 +74,7 @@ const SharePage: React.FC = () => {
     ); // Keep only 50 items
 
     // Show success message and redirect
-    alert('콘텐츠가 저장되었습니다!');
+    alert(t('share.saved'));
     navigate('/');
   };
 
@@ -82,7 +84,7 @@ const SharePage: React.FC = () => {
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">
-            공유된 콘텐츠를 처리하는 중...
+            {t('share.processing')}
           </p>
         </div>
       </div>
@@ -98,16 +100,16 @@ const SharePage: React.FC = () => {
         <div className="max-w-md mx-auto text-center p-8">
           <Share2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            공유할 콘텐츠가 없습니다
+            {t('share.noContent')}
           </h1>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            다른 앱에서 콘텐츠를 공유하여 이 페이지를 사용할 수 있습니다.
+            {t('share.noContentDescription')}
           </p>
           <button
             onClick={() => navigate('/')}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
           >
-            홈으로 돌아가기
+            {t('share.goHome')}
           </button>
         </div>
       </div>
@@ -123,23 +125,23 @@ const SharePage: React.FC = () => {
             <Share2 className="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            콘텐츠 공유
+            {t('share.title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-300">
-            공유된 콘텐츠를 어떻게 활용하시겠습니까?
+            {t('share.howToUse')}
           </p>
         </div>
 
         {/* Shared Content Display */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            공유된 콘텐츠
+            {t('share.sharedContent')}
           </h2>
 
           {sharedContent.title && (
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                제목
+                {t('share.fieldTitle')}
               </label>
               <p className="text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 p-3 rounded">
                 {sharedContent.title}
@@ -150,7 +152,7 @@ const SharePage: React.FC = () => {
           {sharedContent.text && (
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                내용
+                {t('share.fieldContent')}
               </label>
               <p className="text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 p-3 rounded whitespace-pre-wrap">
                 {sharedContent.text}
@@ -161,7 +163,7 @@ const SharePage: React.FC = () => {
           {sharedContent.url && (
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                링크
+                {t('share.fieldLink')}
               </label>
               <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
                 <a
@@ -185,7 +187,7 @@ const SharePage: React.FC = () => {
                        transition-colors flex items-center justify-center space-x-2"
           >
             <MessageCircle className="w-5 h-5" />
-            <span>문의하기</span>
+            <span>{t('share.sendInquiry')}</span>
           </button>
 
           {sharedContent.url && (
@@ -195,7 +197,7 @@ const SharePage: React.FC = () => {
                          transition-colors flex items-center justify-center space-x-2"
             >
               <ExternalLink className="w-5 h-5" />
-              <span>원본 보기</span>
+              <span>{t('share.viewOriginal')}</span>
             </button>
           )}
 
@@ -205,7 +207,7 @@ const SharePage: React.FC = () => {
                        transition-colors flex items-center justify-center space-x-2"
           >
             <Mail className="w-5 h-5" />
-            <span>나중에 보기</span>
+            <span>{t('share.saveLater')}</span>
           </button>
 
           <button
@@ -213,33 +215,33 @@ const SharePage: React.FC = () => {
             className="bg-gray-600 hover:bg-gray-700 text-white p-4 rounded-lg font-medium
                        transition-colors flex items-center justify-center space-x-2"
           >
-            <span>홈으로 이동</span>
+            <span>{t('share.goToHome')}</span>
           </button>
         </div>
 
         {/* Additional Options */}
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            다른 옵션이 필요하시나요?
+            {t('share.otherOptions')}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <button
               onClick={() => navigate('/blog')}
               className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
             >
-              블로그 둘러보기
+              {t('share.browseBlog')}
             </button>
             <button
               onClick={() => navigate('/about')}
               className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
             >
-              회사 소개
+              {t('share.aboutCompany')}
             </button>
             <button
               onClick={() => navigate('/contact')}
               className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
             >
-              직접 문의하기
+              {t('share.directInquiry')}
             </button>
           </div>
         </div>

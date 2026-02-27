@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   Users,
@@ -34,6 +35,7 @@ interface ContentItem {
 }
 
 const AdminDashboard: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
@@ -98,7 +100,7 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleDeleteContent = (id: string | number) => {
-    if (window.confirm('정말 삭제하시겠습니까?')) {
+    if (window.confirm(t('admin.confirmDelete'))) {
       // Delete content
       setContentItems(contentItems.filter((item) => item.id !== id));
     }
@@ -112,16 +114,20 @@ const AdminDashboard: React.FC = () => {
   const renderSidebar = () => (
     <div className="w-64 bg-gray-900 text-white h-screen fixed left-0 top-0">
       <div className="p-6">
-        <h2 className="text-2xl font-bold">관리자 대시보드</h2>
+        <h2 className="text-2xl font-bold">{t('admin.dashboard')}</h2>
       </div>
       <nav className="mt-6">
         {[
-          { id: 'overview', label: '개요', icon: LayoutDashboard },
-          { id: 'content', label: '콘텐츠 관리', icon: FileText },
-          { id: 'users', label: '사용자 관리', icon: Users },
-          { id: 'messages', label: '메시지', icon: MessageSquare },
-          { id: 'analytics', label: '분석', icon: BarChart3 },
-          { id: 'settings', label: '설정', icon: Settings },
+          { id: 'overview', label: t('admin.overview'), icon: LayoutDashboard },
+          {
+            id: 'content',
+            label: t('admin.contentManagement'),
+            icon: FileText,
+          },
+          { id: 'users', label: t('admin.userManagement'), icon: Users },
+          { id: 'messages', label: t('admin.messages'), icon: MessageSquare },
+          { id: 'analytics', label: t('admin.analytics'), icon: BarChart3 },
+          { id: 'settings', label: t('admin.settings'), icon: Settings },
         ].map((item) => {
           const Icon = item.icon;
           return (
@@ -143,7 +149,7 @@ const AdminDashboard: React.FC = () => {
       <div className="absolute bottom-0 w-full p-6">
         <button className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg flex items-center justify-center space-x-2 transition-colors">
           <LogOut className="w-5 h-5" />
-          <span>로그아웃</span>
+          <span>{t('admin.logout')}</span>
         </button>
       </div>
     </div>
@@ -151,29 +157,31 @@ const AdminDashboard: React.FC = () => {
 
   const renderOverview = () => (
     <div>
-      <h1 className="text-3xl font-bold mb-8">대시보드 개요</h1>
+      <h1 className="text-3xl font-bold mb-8">
+        {t('admin.dashboardOverview')}
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
           {
-            label: '총 사용자',
+            label: t('admin.totalUsers'),
             value: stats.totalUsers,
             icon: Users,
             color: 'blue',
           },
           {
-            label: '총 게시물',
+            label: t('admin.totalPosts'),
             value: stats.totalPosts,
             icon: FileText,
             color: 'green',
           },
           {
-            label: '총 메시지',
+            label: t('admin.totalMessages'),
             value: stats.totalMessages,
             icon: MessageSquare,
             color: 'purple',
           },
           {
-            label: '총 조회수',
+            label: t('admin.totalViews'),
             value: stats.totalViews,
             icon: Eye,
             color: 'orange',
@@ -198,12 +206,26 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4">최근 활동</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {t('admin.recentActivity')}
+        </h2>
         <div className="space-y-4">
           {[
-            { time: '10분 전', action: '새 사용자 가입', user: 'user123' },
-            { time: '30분 전', action: '블로그 포스트 작성', user: '관리자' },
-            { time: '1시간 전', action: '문의 메시지 접수', user: 'guest456' },
+            {
+              time: t('admin.tenMinAgo'),
+              action: t('admin.newUserSignup'),
+              user: 'user123',
+            },
+            {
+              time: t('admin.thirtyMinAgo'),
+              action: t('admin.blogPostCreated'),
+              user: t('admin.administrator'),
+            },
+            {
+              time: t('admin.oneHourAgo'),
+              action: t('admin.inquiryReceived'),
+              user: 'guest456',
+            },
           ].map((activity, index) => (
             <div
               key={index}
@@ -224,13 +246,13 @@ const AdminDashboard: React.FC = () => {
   const renderContentManagement = () => (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">콘텐츠 관리</h1>
+        <h1 className="text-3xl font-bold">{t('admin.contentManagement')}</h1>
         <button
           onClick={handleCreateContent}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2 transition-colors"
         >
           <Plus className="w-5 h-5" />
-          <span>새 콘텐츠</span>
+          <span>{t('admin.newContent')}</span>
         </button>
       </div>
 
@@ -240,25 +262,25 @@ const AdminDashboard: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  제목
+                  {t('admin.tableTitle')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  유형
+                  {t('admin.tableType')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  상태
+                  {t('admin.tableStatus')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  작성자
+                  {t('admin.tableAuthor')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  조회수
+                  {t('admin.tableViews')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  작성일
+                  {t('admin.tableDate')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  작업
+                  {t('admin.tableActions')}
                 </th>
               </tr>
             </thead>
@@ -302,21 +324,21 @@ const AdminDashboard: React.FC = () => {
                       <button
                         onClick={() => handleViewContent(item.id)}
                         className="text-blue-600 hover:text-blue-900"
-                        title="보기"
+                        title={t('admin.view')}
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleEditContent(item.id)}
                         className="text-green-600 hover:text-green-900"
-                        title="수정"
+                        title={t('admin.edit')}
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteContent(item.id)}
                         className="text-red-600 hover:text-red-900"
-                        title="삭제"
+                        title={t('admin.delete')}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -346,13 +368,13 @@ const AdminDashboard: React.FC = () => {
       case 'content':
         return renderContentManagement();
       case 'users':
-        return <div>사용자 관리 페이지</div>;
+        return <div>{t('admin.userManagementPage')}</div>;
       case 'messages':
-        return <div>메시지 페이지</div>;
+        return <div>{t('admin.messagesPage')}</div>;
       case 'analytics':
-        return <div>분석 페이지</div>;
+        return <div>{t('admin.analyticsPage')}</div>;
       case 'settings':
-        return <div>설정 페이지</div>;
+        return <div>{t('admin.settingsPage')}</div>;
       default:
         return renderOverview();
     }

@@ -1,10 +1,19 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import BlogDetail from '../BlogDetail';
-import { BlogProvider } from '../../../contexts/BlogContext';
 import { BlogPost } from '../../../types';
+
+// Mock react-i18next BEFORE component imports
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
 
 // Mock react-markdown to avoid dependency issues
 vi.mock('react-markdown', () => ({
@@ -76,6 +85,9 @@ vi.mock('../../../contexts/BlogContext', () => ({
   ),
 }));
 
+import BlogDetail from '../BlogDetail';
+import { BlogProvider } from '../../../contexts/BlogContext';
+
 let mockPost: BlogPost | null = null;
 let mockLoading = false;
 let mockError: string | null = null;
@@ -128,9 +140,7 @@ describe('BlogDetail Component', () => {
     });
 
     renderComponent();
-    expect(
-      screen.getByText('블로그 포스트를 불러오는 중입니다...')
-    ).toBeInTheDocument();
+    expect(screen.getByText('blogDetail.loading')).toBeInTheDocument();
   });
 
   test('renders error state for 404', () => {
@@ -169,7 +179,7 @@ describe('BlogDetail Component', () => {
     renderComponent();
     // Check for error message (the actual error message is shown)
     expect(screen.getByText('Network error')).toBeInTheDocument();
-    expect(screen.getByText('뒤로 가기')).toBeInTheDocument();
+    expect(screen.getByText('common.goBack')).toBeInTheDocument();
   });
 
   test('renders blog post details', () => {
@@ -209,8 +219,8 @@ describe('BlogDetail Component', () => {
     expect(screen.getByTestId('markdown-content')).toHaveTextContent(
       'This is test content'
     );
-    // Author is shown with "작성자: " prefix
-    expect(screen.getByText(/작성자: Test Author/)).toBeInTheDocument();
+    // Author is shown with t('blogDetail.author') prefix (which returns key)
+    expect(screen.getByText(/blogDetail\.author/)).toBeInTheDocument();
     expect(screen.getByText('Technology')).toBeInTheDocument();
   });
 
@@ -247,7 +257,8 @@ describe('BlogDetail Component', () => {
 
     renderComponent();
 
-    const backButton = screen.getByText('뒤로가기');
+    // The back button text is t('common.goBack') which returns the key
+    const backButton = screen.getAllByText('common.goBack')[0];
     fireEvent.click(backButton);
 
     expect(mockNavigate).toHaveBeenCalledWith(-1);
