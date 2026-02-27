@@ -15,12 +15,12 @@ const staticRoutes = [
 
 // Mock blog posts data (hardcoded for sitemap generation)
 const mockBlogPosts = [
-  { slug: 'ai-future-preparation', publishedAt: '2024-03-15' },
-  { slug: 'ml-optimization-guide', publishedAt: '2024-03-10' },
-  { slug: 'digital-transformation-start', publishedAt: '2024-03-05' },
-  { slug: 'chatgpt-automation', publishedAt: '2024-02-28' },
-  { slug: 'data-driven-decision', publishedAt: '2024-02-20' },
-  { slug: 'ai-education-design', publishedAt: '2024-02-15' },
+  { slug: 'ai-future-preparation', publishedAt: '2026-02-15' },
+  { slug: 'ml-optimization-guide', publishedAt: '2026-02-10' },
+  { slug: 'digital-transformation-start', publishedAt: '2026-02-05' },
+  { slug: 'chatgpt-automation', publishedAt: '2026-01-28' },
+  { slug: 'data-driven-decision', publishedAt: '2026-01-20' },
+  { slug: 'ai-education-design', publishedAt: '2026-01-15' },
 ];
 
 // Generate dynamic routes for blog posts

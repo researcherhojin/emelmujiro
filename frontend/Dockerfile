@@ -10,10 +10,9 @@ WORKDIR /app
 # Copy package files
 COPY package.json ./
 
-# Install dependencies using npm
-# Since we're in a monorepo without a lock file in this directory,
-# use npm install with force to handle any conflicts
-RUN npm install --force --include=optional
+# Install dependencies
+COPY package-lock.json ./
+RUN npm ci
 
 # Copy source code
 COPY . .

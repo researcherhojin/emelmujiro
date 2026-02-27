@@ -137,15 +137,15 @@ jobs:
         working-directory: ./frontend
         run: CI=false npm run build
         env:
-          REACT_APP_API_URL: https://api.emelmujiro.com
-          PUBLIC_URL: https://researcherhojin.github.io/emelmujiro
+          VITE_API_URL: https://api.emelmujiro.com
+          VITE_USE_MOCK_API: "true"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build
           path: frontend/build/
-          retention-days: 1
+          retention-days: 7
 
   # ========================================
   # Deploy to GitHub Pages
@@ -170,7 +170,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v4
         with:
           name: frontend-build
           path: frontend/build
