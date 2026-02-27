@@ -12,18 +12,26 @@ interface Service {
 
 interface ServiceCardProps {
   service: Service;
-  t: (key: string, options?: object) => string;
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = memo(({ service, t }) => {
+const ServiceCard: React.FC<ServiceCardProps> = memo(({ service }) => {
+  const { t } = useTranslation();
   const Icon = service.icon;
-  const details = t(service.detailsKey, { returnObjects: true }) as string[];
+  const details = t(service.detailsKey, {
+    returnObjects: true,
+  }) as unknown as string[];
 
   return (
-    <div className="group relative bg-white dark:bg-gray-800 p-8 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all duration-300">
+    <article
+      className="group relative bg-white dark:bg-gray-800 p-8 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all duration-300"
+      aria-label={t(service.titleKey)}
+    >
       {/* Icon and Number */}
       <div className="flex items-center justify-between mb-6">
-        <Icon className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />
+        <Icon
+          className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors"
+          aria-hidden="true"
+        />
         <span className="text-4xl font-black text-gray-200 dark:text-gray-700 group-hover:text-gray-300 dark:group-hover:text-gray-600 transition-colors">
           {service.number}
         </span>
@@ -47,7 +55,7 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(({ service, t }) => {
             </li>
           ))}
       </ul>
-    </div>
+    </article>
   );
 });
 
@@ -88,7 +96,11 @@ const ServicesSection: React.FC = memo(() => {
   ];
 
   return (
-    <section id="services" className="py-32 bg-gray-50 dark:bg-gray-950">
+    <section
+      id="services"
+      aria-label={t('accessibility.servicesSection')}
+      className="py-32 bg-gray-50 dark:bg-gray-950"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-20 text-center">
           <h2 className="text-sm font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase mb-4">
@@ -104,7 +116,7 @@ const ServicesSection: React.FC = memo(() => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service) => (
-            <ServiceCard key={service.number} service={service} t={t} />
+            <ServiceCard key={service.number} service={service} />
           ))}
         </div>
       </div>

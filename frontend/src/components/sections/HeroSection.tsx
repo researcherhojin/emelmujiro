@@ -5,7 +5,10 @@ const HeroSection: React.FC = memo(() => {
   const { t } = useTranslation();
 
   return (
-    <section className="relative min-h-screen flex items-center bg-white dark:bg-gray-900">
+    <section
+      aria-label={t('accessibility.heroSection')}
+      className="relative min-h-screen flex items-center bg-white dark:bg-gray-900"
+    >
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-8 py-20 sm:py-24 lg:py-0">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left content */}
@@ -48,7 +51,11 @@ const HeroSection: React.FC = memo(() => {
           </div>
 
           {/* Right content - Simple Stats */}
-          <div className="relative mt-12 lg:mt-0">
+          <div
+            className="relative mt-12 lg:mt-0"
+            role="region"
+            aria-label={t('accessibility.statsSection')}
+          >
             <div className="grid grid-cols-2 gap-6 sm:gap-8">
               <div className="text-center">
                 <div className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-gray-900 dark:text-white mb-2 sm:mb-3">
@@ -90,6 +97,7 @@ const HeroSection: React.FC = memo(() => {
                   className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2"
                   fill="currentColor"
                   viewBox="0 0 20 20"
+                  aria-hidden="true"
                 >
                   <path
                     fillRule="evenodd"

@@ -20,7 +20,12 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
     const IconComponent = service.icon;
 
     return (
-      <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div
+        className="fixed inset-0 z-50 overflow-y-auto"
+        role="dialog"
+        aria-modal="true"
+        aria-label={service?.title}
+      >
         <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div
             className="fixed inset-0 bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-80 transition-opacity"
@@ -41,8 +46,9 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
                 type="button"
                 className="bg-white dark:bg-dark-900 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none"
                 onClick={onClose}
+                aria-label={t('accessibility.closeModal')}
               >
-                <X className="h-6 w-6" />
+                <X className="h-6 w-6" aria-hidden="true" />
               </button>
             </div>
 
@@ -158,7 +164,10 @@ const Footer: React.FC = memo(() => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {/* Services */}
-            <div className="col-span-1">
+            <nav
+              className="col-span-1"
+              aria-label={t('accessibility.footerNavServices')}
+            >
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                 {t('footer.services')}
               </h3>
@@ -200,10 +209,13 @@ const Footer: React.FC = memo(() => {
                   </button>
                 </li>
               </ul>
-            </div>
+            </nav>
 
             {/* Navigation */}
-            <div className="col-span-1">
+            <nav
+              className="col-span-1"
+              aria-label={t('accessibility.footerNavMenu')}
+            >
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                 {t('common.menu')}
               </h3>
@@ -245,7 +257,7 @@ const Footer: React.FC = memo(() => {
                   </button>
                 </li>
               </ul>
-            </div>
+            </nav>
 
             {/* Company Info */}
             <div className="col-span-1">
@@ -254,11 +266,17 @@ const Footer: React.FC = memo(() => {
               </h3>
               <div className="space-y-3">
                 <div className="flex items-start text-base text-gray-700 dark:text-gray-300">
-                  <Mail className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+                  <Mail
+                    className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0"
+                    aria-hidden="true"
+                  />
                   <span className="break-all">researcherhojin@gmail.com</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                  <Phone className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <Phone
+                    className="w-4 h-4 mr-2 flex-shrink-0"
+                    aria-hidden="true"
+                  />
                   <span>010-7279-0380</span>
                 </div>
               </div>
@@ -277,7 +295,10 @@ const Footer: React.FC = memo(() => {
                 className="inline-flex items-center px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-base font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {t('common.contact')}
-                <ExternalLink className="ml-2 w-3 h-3 flex-shrink-0" />
+                <ExternalLink
+                  className="ml-2 w-3 h-3 flex-shrink-0"
+                  aria-hidden="true"
+                />
               </button>
             </div>
           </div>

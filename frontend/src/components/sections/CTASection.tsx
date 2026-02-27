@@ -5,7 +5,10 @@ const CTASection: React.FC = memo(() => {
   const { t } = useTranslation();
 
   return (
-    <section className="py-32 bg-gray-50 dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
+    <section
+      aria-label={t('accessibility.ctaSection')}
+      className="py-32 bg-gray-50 dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800"
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-16 md:p-20 text-center shadow-sm border border-gray-200 dark:border-gray-800">
           <h2 className="text-sm font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase mb-6">

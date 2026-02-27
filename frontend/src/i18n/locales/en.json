@@ -347,6 +347,26 @@
     "navigation": "Navigation",
     "search": "Search",
     "darkMode": "Dark Mode",
-    "lightMode": "Light Mode"
+    "lightMode": "Light Mode",
+    "heroSection": "Hero introduction",
+    "statsSection": "Key statistics",
+    "servicesSection": "Services overview",
+    "ctaSection": "Call to action",
+    "educationSection": "Education programs",
+    "educationTracks": "Education tracks",
+    "recentCoursesSection": "Recent courses",
+    "aboutHeroSection": "About us",
+    "timelineSection": "Company timeline",
+    "coreValuesSection": "Core values",
+    "achievementsSection": "Key achievements",
+    "aboutCtaSection": "Contact us",
+    "footerNavServices": "Services list",
+    "footerNavMenu": "Menu list",
+    "footerCompanyInfo": "Company information",
+    "footerContactCta": "Contact us",
+    "closeModal": "Close modal",
+    "careerSection": "Career details",
+    "careerTimeline": "Career timeline by year",
+    "careerStats": "Career statistics"
   }
 }

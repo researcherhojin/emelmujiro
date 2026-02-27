@@ -76,7 +76,10 @@ const AboutPage: React.FC = memo(() => {
 
       <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* Hero Section */}
-        <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+        <section
+          aria-label={t('accessibility.aboutHeroSection')}
+          className="pt-32 pb-20 px-4 sm:px-6 lg:px-8"
+        >
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
@@ -103,7 +106,10 @@ const AboutPage: React.FC = memo(() => {
         </section>
 
         {/* Timeline Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950">
+        <section
+          aria-label={t('accessibility.timelineSection')}
+          className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950"
+        >
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-20">
               <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
@@ -154,7 +160,10 @@ const AboutPage: React.FC = memo(() => {
         </section>
 
         {/* Core Values Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <section
+          aria-label={t('accessibility.coreValuesSection')}
+          className="py-20 px-4 sm:px-6 lg:px-8"
+        >
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
@@ -178,7 +187,10 @@ const AboutPage: React.FC = memo(() => {
                     className="group relative bg-white dark:bg-gray-800 p-8 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all duration-300"
                   >
                     <div className="flex items-center justify-between mb-6">
-                      <Icon className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />
+                      <Icon
+                        className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors"
+                        aria-hidden="true"
+                      />
                       <span className="text-4xl font-black text-gray-200 dark:text-gray-700 group-hover:text-gray-300 dark:group-hover:text-gray-600 transition-colors">
                         {displayNumber}
                       </span>
@@ -199,7 +211,10 @@ const AboutPage: React.FC = memo(() => {
         </section>
 
         {/* Achievement Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950">
+        <section
+          aria-label={t('accessibility.achievementsSection')}
+          className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950"
+        >
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-12 text-center">
               {t('about.achievements.title')}
@@ -242,7 +257,10 @@ const AboutPage: React.FC = memo(() => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <section
+          aria-label={t('accessibility.aboutCtaSection')}
+          className="py-20 px-4 sm:px-6 lg:px-8"
+        >
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-6">
               {t('about.ctaTitle')}

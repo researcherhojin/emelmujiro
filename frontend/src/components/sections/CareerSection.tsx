@@ -92,6 +92,7 @@ const MonthButton: React.FC<MonthButtonProps> = memo(
     <div className="relative">
       <button
         onClick={onToggle}
+        aria-expanded={isActive}
         className={`w-full p-4 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border ${
           isActive ? 'border-gray-300 bg-gray-50' : 'border-gray-200'
         }`}
@@ -188,6 +189,7 @@ const YearCard: React.FC<YearCardProps> = memo(
               className={`w-6 h-6 text-gray-400 transition-transform ${
                 isExpanded ? 'rotate-180' : ''
               }`}
+              aria-hidden="true"
             />
           </div>
         </div>
@@ -220,7 +222,7 @@ const YearCard: React.FC<YearCardProps> = memo(
             {yearData.months && (
               <div className="space-y-3">
                 <h4 className="text-lg font-semibold text-gray-900 flex items-center">
-                  <Calendar className="w-5 h-5 mr-2" />
+                  <Calendar className="w-5 h-5 mr-2" aria-hidden="true" />
                   월별 활동 내역
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -262,7 +264,10 @@ const StatCard: React.FC<StatCardProps> = memo(({ stat, index }) => {
       transition={{ delay: index * 0.1 }}
       className="text-center p-6 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
     >
-      <IconComponent className="w-8 h-8 text-gray-700 mx-auto mb-3" />
+      <IconComponent
+        className="w-8 h-8 text-gray-700 mx-auto mb-3"
+        aria-hidden="true"
+      />
       <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
       <div className="text-gray-600">{stat.label}</div>
     </motion.div>
@@ -504,7 +509,7 @@ const CareerSection: React.FC = memo(() => {
   }, []);
 
   return (
-    <section id="career" className="py-24 bg-white">
+    <section id="career" aria-label="경력 상세" className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-6">
@@ -518,7 +523,7 @@ const CareerSection: React.FC = memo(() => {
         </div>
 
         {/* Timeline */}
-        <div className="space-y-8">
+        <div className="space-y-8" role="region" aria-label="연도별 경력">
           {Object.entries(careerData)
             .sort(([a], [b]) => parseInt(b) - parseInt(a))
             .map(([year, yearData]) => (
@@ -536,7 +541,11 @@ const CareerSection: React.FC = memo(() => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+        <div
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16"
+          role="region"
+          aria-label="경력 통계"
+        >
           {stats.map((stat, index) => (
             <StatCard key={index} stat={stat} index={index} />
           ))}

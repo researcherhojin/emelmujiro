@@ -22,24 +22,27 @@ interface Course {
 interface TrackCardProps {
   track: Track;
   index: number;
-  t: (key: string, options?: object) => string;
 }
 
-const TrackCard: React.FC<TrackCardProps> = memo(({ track, index, t }) => {
+const TrackCard: React.FC<TrackCardProps> = memo(({ track, index }) => {
+  const { t } = useTranslation();
   const highlights = t(track.highlightsKey, {
     returnObjects: true,
-  }) as string[];
+  }) as unknown as string[];
 
   return (
-    <motion.div
+    <motion.article
       key={track.id}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true }}
       className="bg-white rounded-xl shadow-sm hover:shadow-md p-8 flex flex-col"
+      aria-label={t(track.titleKey)}
     >
-      <div className="text-center">{track.icon}</div>
+      <div className="text-center" aria-hidden="true">
+        {track.icon}
+      </div>
       <h3 className="text-2xl font-semibold mb-4 text-gray-900">
         {t(track.titleKey)}
       </h3>
@@ -56,7 +59,7 @@ const TrackCard: React.FC<TrackCardProps> = memo(({ track, index, t }) => {
             </li>
           ))}
       </ul>
-    </motion.div>
+    </motion.article>
   );
 });
 
@@ -65,24 +68,27 @@ TrackCard.displayName = 'TrackCard';
 interface CourseCardProps {
   course: Course;
   index: number;
-  t: (key: string) => string;
 }
 
-const CourseCard: React.FC<CourseCardProps> = memo(({ course, index, t }) => (
-  <div
-    key={index}
-    className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors"
-  >
-    <h4 className="font-semibold text-lg text-gray-900 mb-2">
-      {t(course.companyKey)}
-    </h4>
-    <div className="space-y-2 text-sm text-gray-600">
-      <p>{t(course.courseKey)}</p>
-      <p>{t(course.periodKey)}</p>
-      <p className="text-gray-700">{t(course.typeKey)}</p>
-    </div>
-  </div>
-));
+const CourseCard: React.FC<CourseCardProps> = memo(({ course, index }) => {
+  const { t } = useTranslation();
+  return (
+    <article
+      key={index}
+      className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors"
+      aria-label={t(course.companyKey)}
+    >
+      <h4 className="font-semibold text-lg text-gray-900 mb-2">
+        {t(course.companyKey)}
+      </h4>
+      <div className="space-y-2 text-sm text-gray-600">
+        <p>{t(course.courseKey)}</p>
+        <p>{t(course.periodKey)}</p>
+        <p className="text-gray-700">{t(course.typeKey)}</p>
+      </div>
+    </article>
+  );
+});
 
 CourseCard.displayName = 'CourseCard';
 
@@ -140,7 +146,11 @@ const EducationSection: React.FC = memo(() => {
   }, [navigate]);
 
   return (
-    <section id="education" className="py-24 bg-white">
+    <section
+      id="education"
+      aria-label={t('accessibility.educationSection')}
+      className="py-24 bg-white"
+    >
       <div className="max-w-6xl mx-auto px-4">
         {/* Value Proposition */}
         <motion.div
@@ -159,7 +169,7 @@ const EducationSection: React.FC = memo(() => {
         {/* Education Tracks */}
         <div className="grid md:grid-cols-3 gap-8 mb-20">
           {tracks.map((track, index) => (
-            <TrackCard key={track.id} track={track} index={index} t={t} />
+            <TrackCard key={track.id} track={track} index={index} />
           ))}
         </div>
 
@@ -176,7 +186,7 @@ const EducationSection: React.FC = memo(() => {
           </h3>
           <div className="grid md:grid-cols-3 gap-6">
             {recentCourses.map((course, index) => (
-              <CourseCard key={index} course={course} index={index} t={t} />
+              <CourseCard key={index} course={course} index={index} />
             ))}
           </div>
         </motion.div>
@@ -195,7 +205,7 @@ const EducationSection: React.FC = memo(() => {
               className="bg-gray-900 text-white px-8 py-4 rounded-lg flex items-center
                                      hover:bg-gray-800 transition-colors shadow-md hover:shadow-lg"
             >
-              <CalendarCheck className="w-5 h-5 mr-2" />
+              <CalendarCheck className="w-5 h-5 mr-2" aria-hidden="true" />
               {t('common.inquireEducation')}
             </button>
           </motion.div>

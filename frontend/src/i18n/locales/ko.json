@@ -347,6 +347,26 @@
     "navigation": "네비게이션",
     "search": "검색",
     "darkMode": "다크 모드",
-    "lightMode": "라이트 모드"
+    "lightMode": "라이트 모드",
+    "heroSection": "메인 소개",
+    "statsSection": "주요 실적",
+    "servicesSection": "서비스 소개",
+    "ctaSection": "문의하기",
+    "educationSection": "교육 프로그램",
+    "educationTracks": "교육 트랙",
+    "recentCoursesSection": "최근 진행 과정",
+    "aboutHeroSection": "회사 소개",
+    "timelineSection": "연혁",
+    "coreValuesSection": "핵심 가치",
+    "achievementsSection": "주요 성과",
+    "aboutCtaSection": "문의하기",
+    "footerNavServices": "서비스 목록",
+    "footerNavMenu": "메뉴 목록",
+    "footerCompanyInfo": "회사 정보",
+    "footerContactCta": "문의하기",
+    "closeModal": "모달 닫기",
+    "careerSection": "경력 상세",
+    "careerTimeline": "연도별 경력",
+    "careerStats": "경력 통계"
   }
 }
