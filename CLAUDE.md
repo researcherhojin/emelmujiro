@@ -82,7 +82,25 @@ Uses `createHashRouter` (HashRouter) in `frontend/src/App.tsx`. All pages are la
 
 ### i18n
 
-Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false`.
+Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false`. All UI strings, data files, contexts, and SEO modules use i18n — no hardcoded Korean in components.
+
+**Test mocking pattern** — Every test for a component using `useTranslation()` must mock `react-i18next`. The standard mock:
+```typescript
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+```
+The `initReactI18next` export is required because `src/i18n.ts` imports it. For non-React files that call `i18n.t()` directly (e.g., `seoConfig.ts`, `footerData.ts`), mock the i18n module itself:
+```typescript
+vi.mock('../../i18n', () => ({
+  default: { t: (key: string) => key, language: 'ko' },
+}));
+```
 
 ### Path Alias
 
@@ -103,7 +121,7 @@ Vitest with jsdom environment. Config in `frontend/vitest.config.ts`. Setup file
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- All tests pass in both local and CI environments with 0 skips (89 test files, ~1544 test cases)
+- 106 test files, 1718 tests, 0 failures, 0 skips
 
 ### E2E Testing (Playwright)
 
@@ -147,9 +165,11 @@ Husky + lint-staged: ESLint --fix + Prettier on `src/**/*.{js,jsx,ts,tsx}`, Pret
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API in production**: Always on, not configurable — GitHub Pages has no backend
 3. **Build output**: `build/`, not `dist/`
-4. **All tests run in CI**: ~1544 tests pass with 0 skips (count changes as tests are added/removed)
+4. **Test count**: 106 files, 1718 tests, 0 failures, 0 skips (as of 2026-02-27)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
 8. **minimatch override**: Root and frontend `package.json` both have `overrides` to force `minimatch>=10.2.1` for security. Don't remove these
 9. **Conventional commits required**: PR checks validate commit message format (`type(scope): description`)
+10. **Build uses separate tsconfig**: `tsconfig.build.json` excludes test types and files; the build script runs `tsc -p tsconfig.build.json`. Don't add test-only types (like `@testing-library/jest-dom`) to `tsconfig.build.json`
+11. **CI cache**: Both `node_modules/` and `frontend/node_modules/` are cached using `hashFiles('package-lock.json')` (root lock file, not `frontend/package-lock.json` which doesn't exist in npm workspaces)
