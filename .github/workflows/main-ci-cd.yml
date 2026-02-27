@@ -33,8 +33,10 @@ jobs:
         uses: actions/cache@v4
         id: node-cache
         with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('frontend/package-lock.json') }}
+          path: |
+            node_modules
+            frontend/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         if: steps.node-cache.outputs.cache-hit != 'true'
@@ -122,8 +124,10 @@ jobs:
         uses: actions/cache@v4
         id: node-cache
         with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('frontend/package-lock.json') }}
+          path: |
+            node_modules
+            frontend/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         if: steps.node-cache.outputs.cache-hit != 'true'
