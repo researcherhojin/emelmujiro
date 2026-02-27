@@ -153,12 +153,13 @@ emelmujiro/
 
 ### v4.6.0 (2026.02.27)
 
-- **i18n 완전 이관**: 전체 컴포넌트, 데이터 파일, Context, SEO 모듈의 하드코딩 한국어 → i18n 키로 전환
+- **i18n 완전 이관**: 전체 컴포넌트, 데이터 파일, Context, SEO 모듈, Admin, Blog, Share 등 하드코딩 한국어 → i18n 키로 전환 완료
 - **영어 번역 완료**: `ko.json`, `en.json` 전체 번역 키 추가
 - **테스트 대폭 확대**: 1544개 → 1718개 (106 파일), 18개 미테스트 컴포넌트 테스트 추가
 - **Footer 서비스 모달 리팩토링**: 홈페이지 서비스 섹션과 모달 내용 일치화
 - **접근성 개선**: 섹션 컴포넌트 a11y 속성 추가
-- **CI 안정화**: tsconfig.build.json 분리, npm workspaces 캐시 수정
+- **CI/CD 안정화**: tsconfig.build.json 분리, npm workspaces 캐시 수정, artifact 버전 통일, 환경변수 VITE_ prefix 전환
+- **보안 강화**: CSP에서 unsafe-eval 제거, Trivy 버전 고정, Docker npm ci 전환
 
 ### v4.5.0 (2026.02.26)
 

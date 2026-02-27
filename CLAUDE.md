@@ -70,7 +70,7 @@ Uses `createHashRouter` (HashRouter) in `frontend/src/App.tsx`. All pages are la
 
 ### Mock API System
 
-`frontend/src/services/api.ts` contains both real axios calls and mock implementations. `USE_MOCK_API` is true when: `REACT_APP_USE_MOCK_API=true`, `NODE_ENV=test`, or in production. Mock data lives in `src/services/mockData.ts`. Every API method (blog, contact, newsletter, health) has a mock path.
+`frontend/src/services/api.ts` contains both real axios calls and mock implementations. `USE_MOCK_API` is true when: `VITE_USE_MOCK_API=true`, `NODE_ENV=test`, or in production. Mock data lives in `src/services/mockData.ts`. Every API method (blog, contact, newsletter, health) has a mock path.
 
 ### Environment Variables
 
@@ -135,8 +135,8 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Pipelines
 
-- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages + Docker build. Backend tests run against PostgreSQL 15. Node 22, Python 3.12. Frontend test step uses `continue-on-error: true`.
-- **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy) + bundle size check (<10MB). Posts summary comment on PR.
+- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages. Backend tests run against PostgreSQL 15. Node 22, Python 3.12. Uses `actions/upload-artifact@v4` and `actions/download-artifact@v4` (must match versions).
+- **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy v0.28.0) + bundle size check (<10MB). Posts summary comment on PR.
 
 ## Critical Configuration
 
