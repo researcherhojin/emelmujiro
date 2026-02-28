@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform (v0.9.0). Frontend is React/TypeScript deployed to GitHub Pages; backend is Django (not yet deployed to production).
+Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform (v0.9.1). Frontend is React/TypeScript deployed to GitHub Pages; backend is Django (not yet deployed to production). Licensed under Apache 2.0.
 
 - **Live Site**: https://researcherhojin.github.io/emelmujiro
 - **Frontend Dev**: http://localhost:5173 (Vite) — **NOT port 3000**
@@ -152,7 +152,7 @@ These are mocked globally — do NOT re-mock in individual tests:
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 106 test files, 1718 tests, 0 failures, 0 skips
+- 106 test files, 1724 tests, 0 failures, 0 skips
 
 ### E2E Testing (Playwright)
 
@@ -166,7 +166,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Pipelines
 
-- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages. Backend tests run against PostgreSQL 15. Node 22, Python 3.12. Uses `actions/upload-artifact@v4` and `actions/download-artifact@v4` (must match versions).
+- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages. Backend tests run against PostgreSQL 15 (timeout: 10min). Node 22, Python 3.12. Uses `actions/upload-artifact@v4` and `actions/download-artifact@v4` (must match versions).
 - **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy v0.28.0) + bundle size check (<10MB). Posts summary comment on PR.
 
 ## Critical Configuration
@@ -176,7 +176,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 - `base: '/emelmujiro/'` — Required for GitHub Pages subpath
 - Build output: `build/` (not `dist/`)
 - Build pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` (sitemap must succeed)
-- Terser drops console/debugger in production
+- esbuild minifier (switched from Terser for ~10x faster builds). `esbuild.drop: ['console', 'debugger']` in production
 - Manual chunks: react-vendor, ui-vendor, i18n
 - PWA via `vite-plugin-pwa`: service worker with Workbox, runtime caching for fonts
 - Dev server proxies `/api` to `http://127.0.0.1:8000` (`strictPort: false` — tries next port if busy)
@@ -191,7 +191,7 @@ ESLint 9 **flat config** format in `frontend/eslint.config.mjs` (not `.eslintrc`
 
 ### Pre-commit Hooks
 
-Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root** directory. Root `package.json` lint-staged config covers both frontend (`eslint --fix --config frontend/eslint.config.mjs`) and backend (`uv run --directory backend black --check`, `uv run --directory backend flake8`). Frontend `package.json` also has its own lint-staged config (eslint + prettier).
+Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root** directory. `.lintstagedrc.js` at repo root handles path translation for both frontend and backend: converts absolute paths to directory-relative paths using `path.relative()`, then runs `cd frontend && eslint --fix` / `cd backend && uv run black --check` / `cd backend && uv run flake8`. Note: `.lintstagedrc.js` takes precedence over any `lint-staged` config in `package.json`.
 
 ### Backend Django Config
 
@@ -199,14 +199,14 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - JWT: access 30min, refresh 7 days, rotation + blacklist
 - DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr
 - API docs: Swagger at `/api/docs/`, ReDoc at `/api/redoc/` (drf-yasg)
-- Backend endpoints: `/api/blog/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/auth/{register,login,logout,user,token/refresh,token/verify}/`
+- Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/auth/{register,login,logout,user,token/refresh,token/verify}/`
 
 ## Common Pitfalls
 
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API in production**: Always on, not configurable — GitHub Pages has no backend
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: 106 files, 1718 tests, 0 failures, 0 skips (as of 2026-02-28)
+4. **Test count**: 106 files, 1724 tests, 0 failures, 0 skips (as of 2026-02-28)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
@@ -215,4 +215,5 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 10. **Build uses separate tsconfig**: `tsconfig.build.json` excludes test types and files; the build script runs `tsc -p tsconfig.build.json`. Don't add test-only types (like `@testing-library/jest-dom`) to `tsconfig.build.json`
 11. **CI cache**: Both `node_modules/` and `frontend/node_modules/` are cached using `hashFiles('package-lock.json')` (root lock file, not `frontend/package-lock.json` which doesn't exist in npm workspaces)
 12. **Sitemap generation in build**: `npm run build` first runs `scripts/generate-sitemap.js`. If this script fails, the entire build fails
-13. **ChatWidget disabled**: `ChatWidget` is commented out in `App.tsx` but `ChatProvider` remains in the provider tree
+13. **Mock WebSocket in production**: `ChatWebSocketService` uses `USE_MOCK_WS` flag (same pattern as `USE_MOCK_API`). In dev/test/production, WebSocket is simulated — no real backend connection. Agent responses are triggered on user message send
+14. **Backend blog router**: `backend/api/urls.py` registers BlogPostViewSet with `basename="blog"` (NOT `"blog-posts"`). DRF generates URL names as `blog-list` and `blog-detail`

@@ -22,17 +22,17 @@
 - **LLM/생성형 AI** - LLM 기반 서비스 설계 및 개발
 - **Computer Vision** - 영상 처리 및 비전 AI 솔루션
 
-## 현재 상태 (v0.9.0)
+## 현재 상태 (v0.9.1)
 
-| 항목       | 상태    | 세부사항                              |
-| ---------- | ------- | ------------------------------------- |
-| **빌드**   | ✅ 정상 | Vite 빌드                             |
-| **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) |
-| **테스트** | ✅ 통과 | 1718 통과, 0 스킵 (106 파일)          |
-| **타입**   | ✅ 100% | TypeScript Strict Mode                |
-| **보안**   | ✅ 안전 | 취약점 0건                            |
-| **배포**   | ✅ 정상 | GitHub Pages                          |
-| **백엔드** | ⚠️ Mock | 프로덕션 Mock API 사용 중             |
+| 항목       | 상태    | 세부사항                                   |
+| ---------- | ------- | ------------------------------------------ |
+| **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
+| **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
+| **테스트** | ✅ 통과 | 1724 통과, 0 스킵 (106 파일)               |
+| **타입**   | ✅ 100% | TypeScript Strict Mode                     |
+| **보안**   | ✅ 안전 | 취약점 0건                                 |
+| **배포**   | ✅ 정상 | GitHub Pages                               |
+| **백엔드** | ⚠️ Mock | 프로덕션 Mock API 사용 중                  |
 
 ## 빠른 시작
 
@@ -130,9 +130,9 @@ emelmujiro/
 | **PWA**             | ✅ 완료         | 오프라인 지원, 설치 가능                     |
 | **반응형**          | ✅ 완료         | 모바일/태블릿/데스크톱 최적화                |
 | **SEO**             | ✅ 완료         | React Helmet, 사이트맵, 구조화 데이터        |
-| **블로그**          | 🚧 준비 중      | 컴포넌트 구현 완료, 페이지 미연결            |
-| **문의하기**        | 🚧 준비 중      | ContactForm 컴포넌트 존재, 페이지 미연결     |
-| **실시간 채팅**     | 🚧 비활성       | WebSocket 구현 완료, ChatWidget 주석 처리    |
+| **블로그**          | ✅ 완료         | BlogCard/BlogSearch/페이지네이션 연결 완료   |
+| **문의하기**        | ✅ 완료         | ContactForm/ContactInfo 연결, 폼 제출 완료   |
+| **실시간 채팅**     | ✅ 완료         | ChatWidget 활성화, Mock WebSocket 응답       |
 | **관리자 대시보드** | 🚧 플레이스홀더 | UI + ProtectedRoute 인증 가드, API 연동 필요 |
 
 ## 주요 명령어
@@ -177,32 +177,33 @@ emelmujiro/
 
 ### 1.0 릴리스 목표
 
-블로그, 문의하기 페이지가 실제 연결되고 백엔드가 프로덕션 배포되면 1.0으로 전환합니다.
+백엔드가 프로덕션 배포되고 Mock API에서 실제 API로 전환되면 1.0으로 전환합니다.
 
-#### 프론트엔드 기능 연결
+#### 품질 개선
 
-- [ ] **블로그 페이지 연결** — BlogListPage의 "준비 중" 플레이스홀더를 실제 BlogCard/BlogSearch 컴포넌트로 교체, 페이지네이션 연결
-- [ ] **문의 페이지 연결** — ContactPage의 "준비 중" 플레이스홀더를 ContactForm/ContactInfo 컴포넌트로 교체, 폼 제출 플로우 확인
-- [ ] **채팅 시스템 재활성화** — App.tsx에서 ChatWidget 주석 해제, WebSocket 메시지 프로토콜 프론트/백 통일
+- [ ] **테스트 커버리지 개선** — 현재 커버리지 측정 후 80% 미만 파일 보강
+- [ ] **Lighthouse 점수 최적화** — Performance/Accessibility/SEO 90점 이상 달성
+- [ ] **에러 리포팅 연동** — `logger.ts`의 `reportToErrorService()` 빈 함수에 Sentry 등 연동
+- [ ] **관리자 대시보드 API 연동** — AdminDashboard 컴포넌트에 실제 통계 데이터 연결
 
 #### 백엔드 프로덕션 배포
 
 - [ ] **Django 보안 설정** — SECRET_KEY 환경변수 분리, `ALLOWED_HOSTS` / `CSRF_TRUSTED_ORIGINS` 프로덕션 도메인 설정
-- [ ] **데이터베이스** — PostgreSQL 프로덕션 인스턴스 구성, 마이그레이션 적용 (0001_initial + 0002_blogpost 필드 추가)
+- [ ] **데이터베이스** — PostgreSQL 프로덕션 인스턴스 구성, 마이그레이션 적용
 - [ ] **배포 인프라** — Docker 프로덕션 이미지 빌드 및 배포 (Railway/Fly.io/AWS 등)
 - [ ] **이메일 백엔드** — 문의 폼 알림 이메일 발송 설정 (SMTP 또는 SendGrid)
 - [ ] **Mock API 전환** — 백엔드 배포 후 프론트엔드 `USE_MOCK_API` 조건에 프로덕션 백엔드 URL 추가
 
-#### 품질 개선
-
-- [ ] **에러 리포팅 연동** — `logger.ts`의 `reportToErrorService()` 빈 함수에 Sentry 등 연동
-- [ ] **테스트 커버리지 개선** — 현재 커버리지 측정 후 80% 미만 파일 보강
-- [ ] **Lighthouse 점수 최적화** — Performance/Accessibility/SEO 90점 이상 달성
-- [ ] **관리자 대시보드 API 연동** — AdminDashboard 컴포넌트에 실제 통계 데이터 연결
-
 ### 완료된 항목
 
-- [x] **i18n 전체 전환** — BlogSearch, BlogComments, BlogCard, ProfilePage 포함 전체 컴포넌트 (v0.8.0~0.9.0)
+- [x] **블로그 페이지 연결** — BlogListPage에 BlogCard/BlogSearch/페이지네이션 연결 (v0.9.1)
+- [x] **문의 페이지 연결** — ContactPage에 ContactForm/ContactInfo 연결, 폼 제출 완료 (v0.9.1)
+- [x] **채팅 시스템 재활성화** — ChatWidget 활성화, Mock WebSocket 응답, chat i18n 키 추가 (v0.9.1)
+- [x] **빌드 최적화** — Terser → esbuild 전환, 빌드 시간 ~50% 단축 (v0.9.1)
+- [x] **라이선스 변경** — MIT → Apache 2.0 (v0.9.1)
+- [x] **백엔드 CI 수정** — blog router basename 수정, backend-test 타임아웃 추가 (v0.9.1)
+- [x] **코드 정리** — deprecated `.substr()` → `.substring()` 전체 교체, 중복 i18n 키 제거 (v0.9.1)
+- [x] **i18n 전체 전환** — 전체 컴포넌트 + chat/chatContext i18n 키 (v0.8.0~0.9.1)
 - [x] **Context Provider 성능 최적화** — 5개 Provider useMemo/useCallback 적용 (v0.9.0)
 - [x] **백엔드 마이그레이션** — BlogPost 모델 slug, author, tags, likes 필드 (v0.9.0)
 - [x] **데드 코드 제거** — environment.ts, pages/ContactPage.tsx, 중복 ErrorBoundary (v0.9.0)
@@ -215,6 +216,16 @@ emelmujiro/
 - [x] **테스트 전면 복구** — 425개 스킵 → 0 스킵, Jest → Vitest (v0.6.0~0.7.0)
 
 ## 변경 이력
+
+### 0.9.1 (2026.02.28)
+
+- **기능 연결**: BlogListPage, ContactPage, ChatWidget 실제 컴포넌트 연결 완료
+- **채팅 시스템**: ChatWidget 활성화, Mock WebSocket 에이전트 응답, chat i18n 100+ 키 추가
+- **빌드 최적화**: Terser → esbuild 전환 (빌드 시간 ~50% 단축)
+- **라이선스**: MIT → Apache License 2.0 변경, NOTICE 파일 추가
+- **백엔드 CI 수정**: blog router basename 수정, backend-test 타임아웃 10분 추가
+- **코드 정리**: deprecated `.substr()` 전체 교체, 중복 i18n 키 제거
+- **테스트**: 1724개 통과 (106 파일), 0 실패, 0 스킵
 
 ### 0.9.0 (2026.02.28)
 
