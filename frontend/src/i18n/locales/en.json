@@ -438,6 +438,11 @@
     "preparingSubtitle": "We'll be back with better content soon",
     "preparingDescription": "We're preparing quality AI insights and technology trends. Please stay tuned.",
     "backToMain": "Back to Home",
+    "noPosts": "No posts yet",
+    "noPostsDescription": "We are preparing new AI insights.",
+    "pageOf": "Page {{current}} / {{total}}",
+    "previousPage": "Previous",
+    "nextPage": "Next",
     "seo": {
       "title": "Blog | Emelmujiro",
       "description": "Sharing latest AI and IT news and insights"
@@ -624,19 +629,6 @@
     "later": "Later",
     "settingsAriaLabel": "Notification settings"
   },
-  "chat": {
-    "title": "Live Chat",
-    "open": "Open chat",
-    "close": "Close chat",
-    "online": "Online",
-    "offline": "Offline",
-    "typing": "Typing...",
-    "sendMessage": "Send Message",
-    "placeholder": "Type your message",
-    "welcome": "Hello! How can I help you?",
-    "connectionLost": "Connection lost",
-    "reconnecting": "Reconnecting..."
-  },
   "errors": {
     "404": "Page not found",
     "500": "Server error occurred",
@@ -753,33 +745,6 @@
   "blogErrors": {
     "fetchPostsFailed": "Failed to load blog posts.",
     "fetchPostFailed": "Failed to load post."
-  },
-  "chatContext": {
-    "businessHours": "Mon-Fri 09:00-18:00 (KST)",
-    "welcomeMessage": "Hello! This is Emelmujiro customer support. How can we help you?",
-    "agentName": "Support Team",
-    "offlineMessage": "You are currently offline. Your message will be sent when connected.",
-    "quickReplies": {
-      "service": "Service inquiry",
-      "techSupport": "Technical support",
-      "pricing": "Pricing inquiry",
-      "reservation": "Reservation inquiry",
-      "other": "Other"
-    },
-    "cannedResponses": {
-      "thanks": "Thank you for your inquiry.",
-      "agentConnecting": "An agent will be with you shortly.",
-      "needMoreInfo": "We need additional information.",
-      "checkResolved": "Please confirm if the issue has been resolved.",
-      "anytimeHelp": "Feel free to contact us anytime if you need further assistance."
-    },
-    "notifications": {
-      "connected": "Connected to chat service.",
-      "connectionFailed": "Failed to connect to chat service.",
-      "reconnecting": "Reconnecting to chat service...",
-      "reconnectFailed": "Failed to reconnect to chat service.",
-      "initFailed": "Failed to initialize chat service."
-    }
   },
   "share": {
     "inquiryTemplate": "Hello, I would like to inquire about the following:",
@@ -932,6 +897,145 @@
         "consultingQuestion": "How much do consulting services cost?",
         "consultingAnswer": "Costs vary depending on project scope and duration. We provide estimates through free consultations."
       }
+    }
+  },
+  "chat": {
+    "title": "Customer Support",
+    "open": "Open chat",
+    "close": "Close chat",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "send": "Send",
+    "typing": "Typing...",
+    "export": "Export",
+    "exportTranscript": "Export chat transcript",
+    "exportSuccess": "Chat transcript downloaded.",
+    "attachFile": "Attach file",
+    "addEmoji": "Add emoji",
+    "downloadFile": "Download file",
+    "retry": "Retry",
+    "scrollToBottom": "Scroll to latest message",
+    "businessHours": "Business hours: {{hours}}",
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "afterHours": "After hours",
+      "busy": "Busy",
+      "connected": "Connected",
+      "connecting": "Connecting..."
+    },
+    "quickInfo": {
+      "available": "Chat with us now!",
+      "unavailable": "Leave us a message"
+    },
+    "placeholder": {
+      "connected": "Type a message...",
+      "disconnected": "Connecting..."
+    },
+    "connectionStatus": {
+      "reconnecting": "Connecting... Messages will be sent once connected."
+    },
+    "afterHours": {
+      "title": "Outside business hours",
+      "message": "Business hours: {{hours}}"
+    },
+    "error": {
+      "sendFailed": "Failed to send message.",
+      "fileTooLarge": "File is too large. (Max 10MB)",
+      "uploadFailed": "Failed to upload file.",
+      "exportFailed": "Failed to export chat transcript."
+    },
+    "emptyState": {
+      "title": "Start a conversation",
+      "subtitle": "Feel free to ask us anything."
+    },
+    "quickReplies": {
+      "title": "Choose a quick reply",
+      "service": "Service inquiry",
+      "technical": "Technical support",
+      "pricing": "Pricing inquiry",
+      "contact": "Contact inquiry",
+      "or": "or type your message"
+    },
+    "emoji": {
+      "title": "Choose an emoji",
+      "search": "Search emoji...",
+      "noResults": "No results found",
+      "tip": "Click an emoji to add it",
+      "smileys": "Smileys",
+      "gestures": "Gestures",
+      "objects": "Objects",
+      "symbols": "Symbols"
+    },
+    "fileUpload": {
+      "title": "File Upload",
+      "invalidType": "Unsupported file type.",
+      "success": "File uploaded successfully.",
+      "failed": "File upload failed.",
+      "dropHere": "Drop your file here",
+      "dragDrop": "Drag and drop a file or",
+      "browse": "Browse files",
+      "upload": "Upload",
+      "completed": "Upload complete",
+      "uploading": "Uploading...",
+      "allowedTypes": "Supported file types:",
+      "formats": "Images, PDF, Documents, Videos, Audio"
+    },
+    "admin": {
+      "title": "Chat Admin Panel",
+      "settings": "Settings",
+      "cannedResponses": "Canned Responses",
+      "statistics": "Statistics",
+      "users": "Users",
+      "connected": "Connected",
+      "welcomeMessage": "Welcome message",
+      "maxMessageLength": "Max message length",
+      "features": "Feature settings",
+      "allowFileUpload": "Allow file upload",
+      "allowEmoji": "Allow emoji",
+      "soundEnabled": "Enable notification sound",
+      "saveSettings": "Save settings",
+      "settingsSaved": "Settings saved.",
+      "settingsSaveFailed": "Failed to save settings.",
+      "add": "Add",
+      "refresh": "Refresh",
+      "totalMessages": "Total messages",
+      "userMessages": "User messages",
+      "avgResponseTime": "Avg response time",
+      "satisfaction": "Satisfaction",
+      "businessHours": "Business status",
+      "currentlyOpen": "Currently open",
+      "currentlyClosed": "Currently closed",
+      "activeUsers": "Active users",
+      "online": "Online",
+      "anonymousUser": "Anonymous user"
+    }
+  },
+  "chatContext": {
+    "businessHours": "Weekdays 09:00 - 18:00 (KST)",
+    "welcomeMessage": "Hello! Welcome to Emelmujiro customer support. How can we help you?",
+    "agentName": "Emelmujiro Agent",
+    "offlineMessage": "You are currently offline. Messages will be sent once connected.",
+    "quickReplies": {
+      "service": "Service inquiry",
+      "techSupport": "Technical support",
+      "pricing": "Pricing",
+      "reservation": "Book a consultation",
+      "other": "Other"
+    },
+    "cannedResponses": {
+      "thanks": "Thank you. We're glad we could help.",
+      "agentConnecting": "Connecting you to an agent. Please wait a moment.",
+      "needMoreInfo": "We need more information. Could you provide more details?",
+      "checkResolved": "Has your issue been resolved? Let us know if you need further assistance.",
+      "anytimeHelp": "Feel free to contact us anytime you need help."
+    },
+    "notifications": {
+      "connected": "Connected to chat.",
+      "connectionFailed": "Failed to connect to chat.",
+      "reconnecting": "Reconnecting to chat...",
+      "reconnectFailed": "Failed to reconnect to chat.",
+      "initFailed": "Failed to initialize chat."
     }
   }
 }

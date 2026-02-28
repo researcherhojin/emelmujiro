@@ -56,8 +56,8 @@ const NotificationPrompt = lazy(
 );
 const InstallPrompt = lazy(() => import('./components/common/InstallPrompt'));
 
-// Chat Components - Temporarily disabled for future expansion
-// const ChatWidget = lazy(() => import('./components/chat/ChatWidget'));
+// Chat Components
+const ChatWidget = lazy(() => import('./components/chat/ChatWidget'));
 
 // Admin Components
 const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
@@ -143,10 +143,10 @@ const AppLayout: React.FC = memo(() => {
         <WebVitalsDashboard />
       </Suspense>
 
-      {/* Chat Widget - Temporarily disabled for future expansion */}
-      {/* <Suspense fallback={null}>
+      {/* Chat Widget */}
+      <Suspense fallback={null}>
         <ChatWidget />
-      </Suspense> */}
+      </Suspense>
     </Layout>
   );
 });

@@ -1,67 +1,129 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import BlogListPage from '../BlogListPage';
 
-// Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string, params?: Record<string, unknown>) => {
+      if (params) return `${key}:${JSON.stringify(params)}`;
+      return key;
+    },
     i18n: { language: 'ko', changeLanguage: vi.fn() },
   }),
-  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-// Mock useNavigate
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await import('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
+const mockFetchPosts = vi.fn();
+const mockBlogContext = {
+  posts: [],
+  currentPost: null,
+  loading: false,
+  error: null as string | null,
+  totalPages: 1,
+  currentPage: 1,
+  fetchPosts: mockFetchPosts,
+  fetchPostById: vi.fn(),
+  clearCurrentPost: vi.fn(),
+};
+
+vi.mock('../../../contexts/BlogContext', () => ({
+  useBlog: () => mockBlogContext,
+}));
+
+vi.mock('../BlogSearch', () => ({
+  default: ({ onSearch }: { onSearch: (results: never[]) => void }) => (
+    <input
+      data-testid="blog-search"
+      onChange={() => onSearch([])}
+      placeholder="blog.searchPlaceholder"
+    />
+  ),
+}));
+
+vi.mock('../BlogCard', () => ({
+  default: ({ post }: { post: { title: string } }) => (
+    <div data-testid="blog-card">{post.title}</div>
+  ),
+}));
 
 describe('BlogListPage', () => {
-  const renderWithProviders = (component: React.ReactElement) => {
-    return render(
+  const renderPage = () =>
+    render(
       <HelmetProvider>
-        <MemoryRouter>{component}</MemoryRouter>
+        <MemoryRouter>
+          <BlogListPage />
+        </MemoryRouter>
       </HelmetProvider>
     );
-  };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockBlogContext.posts = [];
+    mockBlogContext.loading = false;
+    mockBlogContext.error = null;
+    mockBlogContext.totalPages = 1;
+    mockBlogContext.currentPage = 1;
   });
 
-  it('renders the under construction message', () => {
-    renderWithProviders(<BlogListPage />);
-
-    expect(screen.getByText('blog.preparing')).toBeInTheDocument();
-    expect(screen.getByText('blog.preparingSubtitle')).toBeInTheDocument();
+  it('renders page title and subtitle', () => {
+    renderPage();
+    expect(screen.getByText('blog.title')).toBeInTheDocument();
+    expect(screen.getByText('blog.subtitle')).toBeInTheDocument();
   });
 
-  it('shows wait message', () => {
-    renderWithProviders(<BlogListPage />);
-
-    expect(screen.getByText('blog.preparingDescription')).toBeInTheDocument();
+  it('renders search input', () => {
+    renderPage();
+    expect(screen.getByTestId('blog-search')).toBeInTheDocument();
   });
 
-  it('renders the back to main button', () => {
-    renderWithProviders(<BlogListPage />);
-
-    const backButton = screen.getByText('blog.backToMain');
-    expect(backButton).toBeInTheDocument();
+  it('calls fetchPosts on mount', () => {
+    renderPage();
+    expect(mockFetchPosts).toHaveBeenCalledWith(1);
   });
 
-  it('navigates to home when back button is clicked', () => {
-    renderWithProviders(<BlogListPage />);
+  it('shows empty state when no posts', () => {
+    renderPage();
+    expect(screen.getByText('blog.noPosts')).toBeInTheDocument();
+    expect(screen.getByText('blog.noPostsDescription')).toBeInTheDocument();
+  });
 
-    const backButton = screen.getByText('blog.backToMain');
-    backButton.click();
+  it('renders blog cards when posts exist', () => {
+    mockBlogContext.posts = [
+      {
+        id: 1,
+        title: 'Test Post',
+        content: '',
+        excerpt: '',
+        author: '',
+        publishedAt: '',
+        slug: '',
+      },
+    ] as never[];
 
-    expect(mockNavigate).toHaveBeenCalledWith('/');
+    renderPage();
+    expect(screen.getByTestId('blog-card')).toBeInTheDocument();
+    expect(screen.getByText('Test Post')).toBeInTheDocument();
+  });
+
+  it('shows error message when error exists', () => {
+    mockBlogContext.error = 'Failed to load';
+    renderPage();
+    expect(screen.getByText('Failed to load')).toBeInTheDocument();
+  });
+
+  it('does not show pagination when only 1 page', () => {
+    renderPage();
+    expect(screen.queryByText('blog.previousPage')).not.toBeInTheDocument();
+  });
+
+  it('shows pagination when multiple pages', () => {
+    mockBlogContext.totalPages = 3;
+    mockBlogContext.currentPage = 2;
+    renderPage();
+    expect(screen.getByText('blog.previousPage')).toBeInTheDocument();
+    expect(screen.getByText('blog.nextPage')).toBeInTheDocument();
   });
 });

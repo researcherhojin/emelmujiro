@@ -278,7 +278,7 @@ export const OptimizedInput = memo<InputProps>(
     );
 
     const inputId = useMemo(
-      () => `input-${Math.random().toString(36).substr(2, 9)}`,
+      () => `input-${Math.random().toString(36).substring(2, 11)}`,
       []
     );
 

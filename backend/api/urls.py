@@ -23,7 +23,7 @@ from .auth import (
 from .swagger import schema_view
 
 router = DefaultRouter()
-router.register(r"blog-posts", BlogPostViewSet, basename="blog-posts")
+router.register(r"blog-posts", BlogPostViewSet, basename="blog")
 
 urlpatterns = [
     # API endpoints

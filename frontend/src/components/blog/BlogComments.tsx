@@ -30,7 +30,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
   const getUserId = () => {
     let userId = localStorage.getItem('userId');
     if (!userId) {
-      userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
       localStorage.setItem('userId', userId);
     }
     return userId;

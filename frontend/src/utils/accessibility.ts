@@ -85,7 +85,7 @@ export const getContrastRatio = (color1: string, color2: string): number => {
  * Generate unique ID for ARIA relationships
  */
 export const generateAriaId = (prefix: string = 'aria'): string => {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 };
 
 /**

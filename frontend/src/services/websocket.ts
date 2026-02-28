@@ -1,5 +1,9 @@
 // MessageSender type for WebSocket message sending functionality
 import logger from '../utils/logger';
+import env from '../config/env';
+
+// Use mock WebSocket if in test environment or in production (GitHub Pages has no backend)
+const USE_MOCK_WS = env.IS_TEST || env.IS_PRODUCTION;
 
 export type MessageSenderFunction = (
   message: string,
@@ -280,12 +284,9 @@ export class ChatWebSocketService {
 
     return new Promise((resolve, reject) => {
       try {
-        // For demo purposes, we'll simulate WebSocket behavior
-        // In production, replace with actual WebSocket URL
-        if (
-          process.env.NODE_ENV === 'development' ||
-          !this.config.url.startsWith('ws')
-        ) {
+        // Simulate WebSocket in dev/test/production (GitHub Pages has no backend)
+        // Only use real WebSocket when USE_MOCK_WS is false
+        if (USE_MOCK_WS || !this.config.url.startsWith('ws')) {
           this.simulateConnection(resolve, reject);
         } else {
           this.createRealConnection(resolve, reject);
@@ -404,38 +405,7 @@ export class ChatWebSocketService {
   }
 
   private simulateIncomingMessages() {
-    // Simulate random incoming messages in development mode
-    const messageTypes = [
-      'chat',
-      'notification',
-      'typing_start',
-      'typing_stop',
-      'update',
-    ];
-    const randomInterval = () => Math.random() * 10000 + 5000; // 5-15 seconds
-
-    const sendRandomMessage = () => {
-      if (!this.isManualClose) {
-        const messageType =
-          messageTypes[Math.floor(Math.random() * messageTypes.length)];
-        const message = {
-          type: messageType,
-          data: {
-            timestamp: new Date().toISOString(),
-            content: `Simulated ${messageType} message`,
-          },
-          messageId: Math.random().toString(36).substr(2, 9),
-        };
-
-        this.handleMessage(message);
-
-        // Schedule next message
-        setTimeout(sendRandomMessage, randomInterval());
-      }
-    };
-
-    // Start after initial delay
-    setTimeout(sendRandomMessage, randomInterval());
+    // No automatic random messages — responses are triggered by user sends
   }
 
   send(message: { type: string; data?: unknown }): boolean {
@@ -444,13 +414,53 @@ export class ChatWebSocketService {
       return true;
     }
 
-    // In simulation mode, just pretend we sent it
-    if (process.env.NODE_ENV === 'development') {
-      // Simulated send: message
+    // In simulation mode, simulate agent response
+    if (USE_MOCK_WS) {
+      if (message.type === 'message') {
+        this.simulateAgentResponse();
+      }
       return true;
     }
 
     return false;
+  }
+
+  private simulateAgentResponse() {
+    // Show typing indicator
+    setTimeout(() => {
+      if (this.isManualClose) return;
+      this.handleMessage({ type: 'typing_start' });
+    }, 500);
+
+    // Send agent reply after delay
+    setTimeout(
+      () => {
+        if (this.isManualClose) return;
+        this.handleMessage({ type: 'typing_stop' });
+
+        const replies = [
+          '감사합니다. 문의 내용을 확인하고 있습니다.',
+          '네, 도와드리겠습니다. 잠시만 기다려주세요.',
+          '해당 문의는 담당자에게 전달되었습니다. 빠른 시일 내에 답변 드리겠습니다.',
+          '추가 정보가 필요하시면 언제든 말씀해주세요.',
+          '확인했습니다. 자세한 안내를 드리겠습니다.',
+        ];
+        const reply = replies[Math.floor(Math.random() * replies.length)];
+
+        this.handleMessage({
+          type: 'message',
+          data: {
+            id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+            type: 'text',
+            content: reply,
+            sender: 'agent',
+            timestamp: new Date().toISOString(),
+          },
+          messageId: `msg_${Date.now()}`,
+        });
+      },
+      1500 + Math.random() * 2000
+    );
   }
 
   sendTypingIndicator(isTyping: boolean) {
