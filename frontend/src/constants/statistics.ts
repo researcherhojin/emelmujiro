@@ -64,21 +64,3 @@ export const STATISTICS: Statistics = {
     conferencesPresentations: 20,
   },
 };
-
-// 헬퍼 함수들
-export const formatNumber = (num: number): string => {
-  if (num >= 10000) {
-    return `${(num / 1000).toFixed(0)}K+`;
-  } else if (num >= 1000) {
-    return `${num.toLocaleString()}+`;
-  }
-  return `${num}+`;
-};
-
-export const getStatistic = <K extends keyof Statistics>(
-  category: K,
-  key: keyof Statistics[K]
-): number => {
-  const value = STATISTICS[category]?.[key];
-  return typeof value === 'number' ? value : 0;
-};

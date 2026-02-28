@@ -37,17 +37,3 @@ export const SERVICES: Service[] = [
     icon: 'Lightbulb',
   },
 ];
-
-export const getServiceById = (id: string): Service | undefined => {
-  return SERVICES.find((service) => service.id === id);
-};
-
-export const getServiceIcon = (iconName: string): string => {
-  // Icon mapping for different icon libraries
-  const iconMap: Record<string, string> = {
-    Brain: 'Brain',
-    GraduationCap: 'GraduationCap',
-    Lightbulb: 'Lightbulb',
-  };
-  return iconMap[iconName] || iconName;
-};

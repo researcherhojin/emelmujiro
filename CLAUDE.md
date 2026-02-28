@@ -183,7 +183,7 @@ These are mocked globally — do NOT re-mock in individual tests:
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 104 test files, 1621 tests, 0 failures, 0 skips
+- 89 test files, 1373 tests, 0 failures, 0 skips
 
 ### E2E Testing (Playwright)
 
@@ -240,7 +240,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API in production**: Always on, not configurable — GitHub Pages has no backend
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: 104 files, 1621 tests, 0 failures, 0 skips (as of 2026-03-01)
+4. **Test count**: 89 files, 1373 tests, 0 failures, 0 skips (as of 2026-03-01)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility

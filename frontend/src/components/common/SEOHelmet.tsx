@@ -64,6 +64,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         <meta property="og:type" content={type} />
         <meta property="og:site_name" content="에멜무지로" />
         <meta property="og:locale" content="ko_KR" />
+        <meta property="og:locale:alternate" content="en_US" />
 
         {/* Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />

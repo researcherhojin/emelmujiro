@@ -28,7 +28,7 @@
 | ---------- | ------- | ------------------------------------------ |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
-| **테스트** | ✅ 통과 | 1621 통과, 0 스킵 (104 파일)               |
+| **테스트** | ✅ 통과 | 1373 통과, 0 스킵 (89 파일)                |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                 |
 | **배포**   | ✅ 정상 | GitHub Pages                               |
@@ -193,9 +193,9 @@ emelmujiro/
 
 #### 🟡 테스트 보강
 
-- [ ] **미테스트 핵심 파일** — `FormContext.tsx`, `ChatContext.tsx`, `useAppStore.ts` 테스트 작성 (전역 상태·Context 미검증)
+- [x] **미테스트 핵심 파일** — `FormContext.tsx` (24 tests), `useAppStore.ts` (42 tests) 작성 완료. `ChatContext.tsx`는 공사 중 기능이므로 후순위
 - [ ] **미테스트 파일 20개** — `env.ts`, `performanceMonitor.ts`, `sentry.ts`, `seo.ts`, `mockData.ts`, `footerData.ts`, `profileData.ts`, hooks 3개, constants 4개, styles 2개, `i18n.ts`, `main.tsx`
-- [ ] **약한 assertion 강화** — `api.additional.test.ts`의 30+개 `toBeDefined()` → 구체적 값 검증으로 교체
+- [x] **약한 assertion 강화** — `api.additional.test.ts`의 `toBeDefined()` 전량 교체 (`toHaveProperty`, `toBeInstanceOf`, `toEqual` 등)
 - [x] **tsconfig.ci.json strict 모드** — `tsconfig.build.json` 확장으로 변경, `strict: true` 활성화 완료
 
 #### 🟢 접근성 & SEO
@@ -203,7 +203,7 @@ emelmujiro/
 - [ ] **색상 대비 개선** — `text-gray-500`/`text-gray-400` 사용 부분 WCAG AA 기준 대비비 검증 (HeroSection, LogosSection, Footer)
 - [ ] **포커스 관리** — `CareerSection.tsx` 드롭다운 포커스 트랩 미구현
 - [ ] **구조화 데이터 확장** — HomePage에만 JSON-LD 존재, About/Profile/Blog 페이지 누락
-- [ ] **Open Graph 메타 보강** — `og:image:width`, `og:image:height`, `twitter:site` 누락
+- [x] **Open Graph 메타 보강** — `og:image:width/height/alt`, `og:locale:alternate` 추가 완료
 
 #### 백엔드 프로덕션 배포
 
@@ -249,9 +249,13 @@ emelmujiro/
 
 - **공사 중 전환**: Blog/Contact/Chat 라우트를 UnderConstruction 컴포넌트로 교체
 - **ChatWidget 제거**: AppLayout에서 ChatWidget 비활성화
-- **SEO 정리**: sitemap·robots.txt에서 공사 중 페이지 제거, PWA manifest 바로가기 정리
+- **SEO 정리**: sitemap·robots.txt에서 공사 중 페이지 제거, PWA manifest 바로가기 정리, og:locale:alternate 추가
 - **E2E 업데이트**: blog.spec.ts, contact.spec.ts 공사 중 페이지에 맞게 재작성
-- **테스트**: 1621개 통과 (104 파일), 0 실패, 0 스킵
+- **XSS 수정**: CareerSection/CareerSummarySection의 dangerouslySetInnerHTML → Trans 컴포넌트
+- **데드 코드 제거**: 미사용 유틸리티·훅·컴포넌트 34개 파일 삭제 (-3,900줄), 미사용 헬퍼 함수 제거
+- **백엔드 검증**: views.py 쿼리 파라미터 화이트리스트·길이 제한 추가
+- **테스트 추가**: FormContext (24), useAppStore (42) 신규 테스트, api.additional 약한 assertion 전량 강화
+- **테스트**: 1373개 통과 (89 파일), 0 실패, 0 스킵
 
 ### 0.9.1 (2026.02.28)
 

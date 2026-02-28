@@ -30,35 +30,31 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       const result = await api.getBlogPosts(1);
 
       // Result should be a mock response
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
-      expect(result.data.results).toBeDefined();
-      expect(Array.isArray(result.data.results)).toBe(true);
+      expect(result).toHaveProperty('data');
+      expect(result.data.results).toBeInstanceOf(Array);
       expect(result.data.results.length).toBeGreaterThan(0);
 
       // Check structure of mock blog posts
       const firstPost = result.data.results[0];
-      expect(firstPost).toHaveProperty('id');
-      expect(firstPost).toHaveProperty('title');
-      expect(firstPost).toHaveProperty('content');
+      expect(typeof firstPost.id).toBe('number');
+      expect(firstPost.title).toEqual(expect.any(String));
+      expect(firstPost.content).toEqual(expect.any(String));
     });
 
     it('should fetch single blog post with mock data', async () => {
       const result = await api.getBlogPost(1);
 
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
-      expect(result.data.id).toBeDefined();
-      expect(result.data.title).toBeDefined();
-      expect(result.data.content).toBeDefined();
+      expect(result).toHaveProperty('data');
+      expect(typeof result.data.id).toBe('number');
+      expect(result.data.title).toEqual(expect.any(String));
+      expect(result.data.content).toEqual(expect.any(String));
     });
 
     it('should fetch blog categories with mock data', async () => {
       const result = await api.getBlogCategories();
 
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
-      expect(Array.isArray(result.data)).toBe(true);
+      expect(result).toHaveProperty('data');
+      expect(result.data).toBeInstanceOf(Array);
       expect(result.data.length).toBeGreaterThan(0);
 
       // Check structure of categories
@@ -71,18 +67,16 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
     it('should search blog posts with mock data', async () => {
       const result = await api.searchBlogPosts('tech');
 
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
-      expect(result.data.results).toBeDefined();
-      expect(Array.isArray(result.data.results)).toBe(true);
+      expect(result).toHaveProperty('data');
+      expect(result.data.results).toBeInstanceOf(Array);
     });
 
     it('should handle pagination in mock data', async () => {
       const page1 = await api.getBlogPosts(1);
       const page2 = await api.getBlogPosts(2);
 
-      expect(page1.data.results).toBeDefined();
-      expect(page2.data.results).toBeDefined();
+      expect(page1.data.results).toBeInstanceOf(Array);
+      expect(page2.data.results).toBeInstanceOf(Array);
 
       // Check pagination metadata
       expect(page1.data).toHaveProperty('count');
@@ -102,8 +96,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
 
       const result = await api.createContact(formData);
 
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
+      expect(result).toHaveProperty('data');
       expect(result.data.success).toBe(true);
       expect(result.data.name).toBe(formData.name);
       expect(result.data.email).toBe(formData.email);
@@ -118,8 +111,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
 
       const result = await api.createContact(formData);
 
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
+      expect(result).toHaveProperty('data');
       expect(result.data.success).toBe(true);
     });
 
@@ -135,8 +127,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
 
       const result = await api.createContact(formData);
 
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
+      expect(result).toHaveProperty('data');
       expect(result.data.success).toBe(true);
     });
   });
@@ -147,8 +138,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
 
       const result = await api.subscribeNewsletter(email);
 
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
+      expect(result).toHaveProperty('data');
       expect(result.data.success).toBe(true);
       expect(result.data.message).toContain('성공');
     });
@@ -173,8 +163,8 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
 
       const result = await api.getBlogPosts(1);
 
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
+      expect(result).toHaveProperty('data');
+      expect(result.data.results).toBeInstanceOf(Array);
       // Should still work even with token (mock mode),
     });
 
@@ -183,8 +173,8 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
 
       const result = await api.getBlogPosts(1);
 
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
+      expect(result).toHaveProperty('data');
+      expect(result.data.results).toBeInstanceOf(Array);
       // Should work without token (mock mode),
     });
   });
@@ -194,25 +184,22 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       const result = await api.getBlogPost(99999);
 
       // In mock mode, should still return a post
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
-      expect(result.data.id).toBeDefined();
+      expect(result).toHaveProperty('data');
+      expect(result.data).toHaveProperty('id');
     });
 
     it('should handle empty search query', async () => {
       const result = await api.searchBlogPosts('');
 
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
-      expect(result.data.results).toBeDefined();
+      expect(result).toHaveProperty('data');
+      expect(result.data.results).toBeInstanceOf(Array);
     });
 
     it('should handle special characters in search', async () => {
       const result = await api.searchBlogPosts('!@#$%^&*()');
 
-      expect(result).toBeDefined();
-      expect(result.data).toBeDefined();
-      expect(result.data.results).toBeDefined();
+      expect(result).toHaveProperty('data');
+      expect(result.data.results).toBeInstanceOf(Array);
     });
   });
 
@@ -231,7 +218,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
 
       result.data.results.forEach((post: BlogPost) => {
         const dateField = post.created_at || post.publishedAt;
-        expect(dateField).toBeDefined();
+        expect(dateField).toEqual(expect.any(String));
         const date = new Date(dateField);
         expect(date).toBeInstanceOf(Date);
         expect(date.toString()).not.toBe('Invalid Date');
@@ -244,19 +231,17 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       if (Array.isArray(categories.data)) {
         categories.data.forEach((category) => {
           if (typeof category === 'string') {
-            expect(category).toBeDefined();
             expect(typeof category).toBe('string');
+            expect(category.length).toBeGreaterThan(0);
           } else if (typeof category === 'object' && category !== null) {
             const cat = category as {
               id: string | number;
               name: string;
               slug: string;
             };
-            expect(cat.id).toBeDefined();
-            expect(cat.name).toBeDefined();
-            expect(cat.slug).toBeDefined();
             expect(typeof cat.name).toBe('string');
             expect(typeof cat.slug).toBe('string');
+            expect(cat.id).toEqual(expect.anything());
           }
         });
       }
@@ -284,8 +269,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       const results = await Promise.all(promises);
 
       results.forEach((result) => {
-        expect(result).toBeDefined();
-        expect(result.data).toBeDefined();
+        expect(result).toHaveProperty('data');
       });
     });
   });
