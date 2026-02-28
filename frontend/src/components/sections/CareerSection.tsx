@@ -8,7 +8,7 @@ import {
   LucideIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { TFunction } from 'i18next';
 
 interface Activity {
@@ -594,10 +594,12 @@ const CareerSection: React.FC = memo(() => {
           <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-6">
             {t('career.title')}
           </h2>
-          <p
-            className="text-xl text-gray-600 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: t('career.subtitle') }}
-          />
+          <p className="text-xl text-gray-600 leading-relaxed">
+            <Trans
+              i18nKey="career.subtitle"
+              components={{ strong: <strong /> }}
+            />
+          </p>
         </div>
 
         {/* Timeline */}

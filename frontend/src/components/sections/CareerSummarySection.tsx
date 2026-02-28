@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import {
   BookOpen,
   Building,
@@ -126,10 +126,12 @@ const CareerSummarySection: React.FC = memo(() => {
           <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-6">
             {t('careerSummary.title')}
           </h2>
-          <p
-            className="text-xl text-gray-600 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: t('careerSummary.subtitle') }}
-          />
+          <p className="text-xl text-gray-600 leading-relaxed">
+            <Trans
+              i18nKey="careerSummary.subtitle"
+              components={{ strong: <strong /> }}
+            />
+          </p>
         </div>
 
         {/* Stats */}

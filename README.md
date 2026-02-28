@@ -22,13 +22,13 @@
 - **LLM/생성형 AI** - LLM 기반 서비스 설계 및 개발
 - **Computer Vision** - 영상 처리 및 비전 AI 솔루션
 
-## 현재 상태 (v0.9.1)
+## 현재 상태 (v0.9.2)
 
 | 항목       | 상태    | 세부사항                                   |
 | ---------- | ------- | ------------------------------------------ |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
-| **테스트** | ✅ 통과 | 1724 통과, 0 스킵 (106 파일)               |
+| **테스트** | ✅ 통과 | 1621 통과, 0 스킵 (104 파일)               |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                 |
 | **배포**   | ✅ 정상 | GitHub Pages                               |
@@ -130,9 +130,9 @@ emelmujiro/
 | **PWA**             | ✅ 완료         | 오프라인 지원, 설치 가능                      |
 | **반응형**          | ✅ 완료         | 모바일/태블릿/데스크톱 최적화                 |
 | **SEO**             | ✅ 완료         | React Helmet, 사이트맵, 구조화 데이터         |
-| **블로그**          | ⚠️ Mock 동작    | UI 연결 완료, 백엔드 연동 시 실제 데이터 표시 |
-| **문의하기**        | ⚠️ Mock 동작    | UI 연결 완료, 백엔드 연동 시 이메일 발송      |
-| **실시간 채팅**     | ⚠️ Mock 동작    | UI 연결 완료, 백엔드 연동 시 실시간 상담      |
+| **블로그**          | 🚧 공사 중      | 백엔드 연동 전까지 공사 중 페이지 표시        |
+| **문의하기**        | 🚧 공사 중      | 백엔드 연동 전까지 공사 중 (이메일 직접 문의) |
+| **실시간 채팅**     | 🚧 공사 중      | 백엔드 연동 전까지 비활성화                   |
 | **관리자 대시보드** | 🚧 플레이스홀더 | UI + ProtectedRoute 인증 가드, API 연동 필요  |
 
 ## 주요 명령어
@@ -179,23 +179,51 @@ emelmujiro/
 
 백엔드가 프로덕션 배포되고 Mock API에서 실제 API로 전환되면 1.0으로 전환합니다.
 
-#### 품질 개선
+#### 🔴 보안 (즉시)
 
-- [ ] **테스트 커버리지 개선** — 현재 커버리지 측정 후 80% 미만 파일 보강
-- [ ] **Lighthouse 점수 최적화** — Performance/Accessibility/SEO 90점 이상 달성
-- [ ] **에러 리포팅 연동** — `logger.ts`의 `reportToErrorService()` 빈 함수에 Sentry 등 연동
-- [ ] **관리자 대시보드 API 연동** — AdminDashboard 컴포넌트에 실제 통계 데이터 연결
+- [x] **XSS 취약점 제거** — `CareerSection.tsx`, `CareerSummarySection.tsx`의 `dangerouslySetInnerHTML`을 `Trans` 컴포넌트로 대체 완료
+- [ ] **인증 토큰 보안** — `api.ts`에서 localStorage에 저장 중인 `authToken`/`refreshToken`을 httpOnly 쿠키로 이전 (XSS 공격 시 토큰 노출 위험)
+- [x] **백엔드 입력 검증** — `views.py` 쿼리 파라미터 검증 추가 (category 화이트리스트, search 길이 제한). `ContactSerializer` 검증은 이미 충분
+
+#### 🟠 데드 코드 제거
+
+- [x] **미사용 유틸리티 파일 삭제** — `utils/security.ts`, `utils/optimizeImports.ts`, `utils/backgroundSync.ts` 및 테스트 파일 삭제 완료
+- [x] **미사용 hooks 삭제** — `hooks/useAccessibility.ts`, `hooks/useApiError.ts`, `hooks/usePerformance.ts` 및 테스트 파일 삭제 완료
+- [x] **미사용 유틸리티 함수 정리** — `utils/accessibility.ts`에서 `announceToScreenReader`만 남기고 7개 미사용 함수 제거 완료
+
+#### 🟡 테스트 보강
+
+- [ ] **미테스트 핵심 파일** — `FormContext.tsx`, `ChatContext.tsx`, `useAppStore.ts` 테스트 작성 (전역 상태·Context 미검증)
+- [ ] **미테스트 파일 20개** — `env.ts`, `performanceMonitor.ts`, `sentry.ts`, `seo.ts`, `mockData.ts`, `footerData.ts`, `profileData.ts`, hooks 3개, constants 4개, styles 2개, `i18n.ts`, `main.tsx`
+- [ ] **약한 assertion 강화** — `api.additional.test.ts`의 30+개 `toBeDefined()` → 구체적 값 검증으로 교체
+- [x] **tsconfig.ci.json strict 모드** — `tsconfig.build.json` 확장으로 변경, `strict: true` 활성화 완료
+
+#### 🟢 접근성 & SEO
+
+- [ ] **색상 대비 개선** — `text-gray-500`/`text-gray-400` 사용 부분 WCAG AA 기준 대비비 검증 (HeroSection, LogosSection, Footer)
+- [ ] **포커스 관리** — `CareerSection.tsx` 드롭다운 포커스 트랩 미구현
+- [ ] **구조화 데이터 확장** — HomePage에만 JSON-LD 존재, About/Profile/Blog 페이지 누락
+- [ ] **Open Graph 메타 보강** — `og:image:width`, `og:image:height`, `twitter:site` 누락
 
 #### 백엔드 프로덕션 배포
 
 - [ ] **Django 보안 설정** — SECRET_KEY 환경변수 분리, `ALLOWED_HOSTS` / `CSRF_TRUSTED_ORIGINS` 프로덕션 도메인 설정
-- [ ] **데이터베이스** — PostgreSQL 프로덕션 인스턴스 구성, 마이그레이션 적용
+- [ ] **데이터베이스** — PostgreSQL 프로덕션 인스턴스 구성, 마이그레이션 적용, `select_related`/`prefetch_related` 추가
 - [ ] **배포 인프라** — Docker 프로덕션 이미지 빌드 및 배포 (Railway/Fly.io/AWS 등)
 - [ ] **이메일 백엔드** — 문의 폼 알림 이메일 발송 설정 (SMTP 또는 SendGrid)
 - [ ] **Mock API 전환** — 백엔드 배포 후 프론트엔드 `USE_MOCK_API` 조건에 프로덕션 백엔드 URL 추가
+- [ ] **공사 중 해제** — 백엔드 배포 후 Blog/Contact/Chat 라우트 원래 컴포넌트로 복원, sitemap·manifest·E2E 테스트 업데이트
+- [ ] **파일 업로드 보안** — 확장자 대소문자 검증, MIME 타입 확인, 파일 내용 검사 추가
+
+#### 성능 개선
+
+- [ ] **에러 리포팅 연동** — `logger.ts`의 `reportToErrorService()` 빈 함수에 Sentry 등 연동
+- [ ] **관리자 대시보드 API 연동** — AdminDashboard 컴포넌트에 실제 통계 데이터 연결
+- [ ] **Lighthouse 점수 최적화** — Performance/Accessibility/SEO 90점 이상 달성
 
 ### 완료된 항목
 
+- [x] **Blog/Contact/Chat 공사 중 전환** — 미작동 기능을 UnderConstruction 페이지로 교체, sitemap·manifest·E2E 정리 (v0.9.2)
 - [x] **블로그 페이지 연결** — BlogListPage에 BlogCard/BlogSearch/페이지네이션 연결 (v0.9.1)
 - [x] **문의 페이지 연결** — ContactPage에 ContactForm/ContactInfo 연결, 폼 제출 완료 (v0.9.1)
 - [x] **채팅 시스템 재활성화** — ChatWidget 활성화, Mock WebSocket 응답, chat i18n 키 추가 (v0.9.1)
@@ -216,6 +244,14 @@ emelmujiro/
 - [x] **테스트 전면 복구** — 425개 스킵 → 0 스킵, Jest → Vitest (v0.6.0~0.7.0)
 
 ## 변경 이력
+
+### 0.9.2 (2026.03.01)
+
+- **공사 중 전환**: Blog/Contact/Chat 라우트를 UnderConstruction 컴포넌트로 교체
+- **ChatWidget 제거**: AppLayout에서 ChatWidget 비활성화
+- **SEO 정리**: sitemap·robots.txt에서 공사 중 페이지 제거, PWA manifest 바로가기 정리
+- **E2E 업데이트**: blog.spec.ts, contact.spec.ts 공사 중 페이지에 맞게 재작성
+- **테스트**: 1621개 통과 (104 파일), 0 실패, 0 스킵
 
 ### 0.9.1 (2026.02.28)
 

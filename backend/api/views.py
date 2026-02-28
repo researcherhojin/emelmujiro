@@ -162,8 +162,13 @@ class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
         featured = self.request.query_params.get("featured", None)
 
         if category:
-            queryset = queryset.filter(category=category)
+            # Validate against known category choices
+            valid_categories = [c[0] for c in BlogPost.CATEGORY_CHOICES]
+            if category in valid_categories:
+                queryset = queryset.filter(category=category)
         if search:
+            # Limit search query length to prevent abuse
+            search = search[:200]
             queryset = queryset.filter(
                 Q(title__icontains=search) | Q(description__icontains=search) | Q(content__icontains=search)
             )

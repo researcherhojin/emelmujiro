@@ -125,7 +125,7 @@ describe('CareerSection', () => {
     const buttons = screen.queryAllByRole('button');
     expect(buttons.length).toBeGreaterThan(0);
 
-    // Check for subtitle which uses dangerouslySetInnerHTML with t('career.subtitle')
+    // Check for subtitle rendered via Trans component
     const subtitleTexts = screen.queryAllByText(/career\.subtitle/);
     expect(subtitleTexts.length).toBeGreaterThanOrEqual(0);
   });
