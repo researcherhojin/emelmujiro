@@ -5,7 +5,6 @@ module.exports = {
       url: [
         'http://localhost:5173/',
         'http://localhost:5173/#/about',
-        'http://localhost:5173/#/contact',
         'http://localhost:5173/#/profile',
       ],
       numberOfRuns: 3,

@@ -1,31 +1,43 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Blog', () => {
+test.describe('Blog (Under Construction)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/#/blog');
   });
 
-  test('displays blog preparing page', async ({ page }) => {
-    // Blog is currently a "coming soon" placeholder page
+  test('displays under construction page', async ({ page }) => {
     const heading = page.getByRole('heading', { level: 1 });
     await expect(heading).toBeVisible();
-    await expect(heading).toContainText('준비 중');
+    await expect(heading).toContainText('공사 중');
   });
 
-  test('has back to main button', async ({ page }) => {
-    const backButton = page.getByRole('button', { name: /메인으로 돌아가기/ });
-    await expect(backButton).toBeVisible();
+  test('displays blog feature description', async ({ page }) => {
+    await expect(
+      page.getByText(/블로그를 준비 중|AI 트렌드/)
+    ).toBeVisible();
   });
 
-  test('back button navigates to home', async ({ page }) => {
-    const backButton = page.getByRole('button', { name: /메인으로 돌아가기/ });
-    await backButton.click();
+  test('displays coming soon message', async ({ page }) => {
+    await expect(
+      page.getByText(/빠른 시일 내에 오픈/)
+    ).toBeVisible();
+  });
+
+  test('has home button that navigates to home', async ({ page }) => {
+    const homeButton = page.getByRole('button', { name: /홈으로 이동/ });
+    await expect(homeButton).toBeVisible();
+    await homeButton.click();
     await expect(page).toHaveURL(/\/#\//);
   });
 
-  test('displays description text', async ({ page }) => {
-    await expect(
-      page.getByText(/콘텐츠|준비하고 있/i)
-    ).toBeVisible();
+  test('has go back button', async ({ page }) => {
+    const backButton = page.getByRole('button', { name: /이전 페이지로/ });
+    await expect(backButton).toBeVisible();
+  });
+
+  test('blog/:id also shows under construction', async ({ page }) => {
+    await page.goto('/#/blog/some-post');
+    const heading = page.getByRole('heading', { level: 1 });
+    await expect(heading).toContainText('공사 중');
   });
 });

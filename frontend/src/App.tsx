@@ -38,14 +38,13 @@ const LogosSection = lazy(() => import('./components/sections/LogosSection'));
 const CTASection = lazy(() => import('./components/sections/CTASection'));
 
 // Lazy load pages for code splitting
-const ContactPage = lazy(() => import('./components/pages/ContactPage'));
 const ProfilePage = lazy(() => import('./components/pages/ProfilePage'));
 const AboutPage = lazy(() => import('./components/pages/AboutPage'));
 const SharePage = lazy(() => import('./components/pages/SharePage'));
-const BlogListPage = lazy(() => import('./components/blog/BlogListPage'));
-const BlogDetail = lazy(() => import('./components/blog/BlogDetail'));
-const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
 const NotFound = lazy(() => import('./components/common/NotFound'));
+const UnderConstruction = lazy(
+  () => import('./components/common/UnderConstruction')
+);
 
 // PWA Components
 const OfflineIndicator = lazy(
@@ -55,9 +54,6 @@ const NotificationPrompt = lazy(
   () => import('./components/common/NotificationPrompt')
 );
 const InstallPrompt = lazy(() => import('./components/common/InstallPrompt'));
-
-// Chat Components
-const ChatWidget = lazy(() => import('./components/chat/ChatWidget'));
 
 // Admin Components
 const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
@@ -142,11 +138,6 @@ const AppLayout: React.FC = memo(() => {
       <Suspense fallback={null}>
         <WebVitalsDashboard />
       </Suspense>
-
-      {/* Chat Widget */}
-      <Suspense fallback={null}>
-        <ChatWidget />
-      </Suspense>
     </Layout>
   );
 });
@@ -161,12 +152,12 @@ const router = createHashRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'about', element: <AboutPage /> },
-      { path: 'contact', element: <ContactPage /> },
+      { path: 'contact', element: <UnderConstruction featureKey="contact" /> },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'share', element: <SharePage /> },
-      { path: 'blog', element: <BlogListPage /> },
-      { path: 'blog/new', element: <BlogEditor /> },
-      { path: 'blog/:id', element: <BlogDetail /> },
+      { path: 'blog', element: <UnderConstruction featureKey="blog" /> },
+      { path: 'blog/new', element: <UnderConstruction featureKey="blog" /> },
+      { path: 'blog/:id', element: <UnderConstruction featureKey="blog" /> },
       {
         path: 'admin',
         element: (

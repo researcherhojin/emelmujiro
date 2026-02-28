@@ -4,39 +4,20 @@ const path = require('path');
 const SITE_URL = 'https://researcherhojin.github.io/emelmujiro';
 
 // Define all static routes
+// Note: /blog and /contact are excluded while under construction
 const staticRoutes = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
   { url: '/#/about', changefreq: 'weekly', priority: 0.8 },
-  { url: '/#/contact', changefreq: 'monthly', priority: 0.7 },
-  { url: '/#/blog', changefreq: 'daily', priority: 0.9 },
   { url: '/#/profile', changefreq: 'weekly', priority: 0.6 },
   { url: '/#/share', changefreq: 'monthly', priority: 0.5 },
 ];
 
-// Mock blog posts data (hardcoded for sitemap generation)
-const mockBlogPosts = [
-  { slug: 'ai-future-preparation', publishedAt: '2026-02-15' },
-  { slug: 'ml-optimization-guide', publishedAt: '2026-02-10' },
-  { slug: 'digital-transformation-start', publishedAt: '2026-02-05' },
-  { slug: 'chatgpt-automation', publishedAt: '2026-01-28' },
-  { slug: 'data-driven-decision', publishedAt: '2026-01-20' },
-  { slug: 'ai-education-design', publishedAt: '2026-01-15' },
-];
-
-// Generate dynamic routes for blog posts
-const generateBlogRoutes = () => {
-  return mockBlogPosts.map((post) => ({
-    url: `/#/blog/${post.slug}`,
-    changefreq: 'weekly',
-    priority: 0.7,
-    lastmod: post.publishedAt,
-  }));
-};
+// Blog posts excluded from sitemap while under construction
+const mockBlogPosts = [];
 
 // Generate sitemap XML
 const generateSitemap = () => {
-  const blogRoutes = generateBlogRoutes();
-  const allRoutes = [...staticRoutes, ...blogRoutes];
+  const allRoutes = [...staticRoutes];
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -77,9 +58,7 @@ Disallow: /#/admin
 Disallow: /#/editor
 
 # Allow search engines to index everything else
-Allow: /#/blog
 Allow: /#/about
-Allow: /#/contact
 Allow: /#/profile
 
 # Specific rules for major search engines

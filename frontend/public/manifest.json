@@ -33,20 +33,6 @@
   "prefer_related_applications": false,
   "shortcuts": [
     {
-      "name": "문의하기",
-      "short_name": "문의",
-      "description": "프로젝트 문의 및 상담",
-      "url": "/emelmujiro/#/contact",
-      "icons": [{ "src": "/emelmujiro/logo192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "블로그",
-      "short_name": "블로그",
-      "description": "최신 기술 블로그 글 보기",
-      "url": "/emelmujiro/#/blog",
-      "icons": [{ "src": "/emelmujiro/logo192.png", "sizes": "192x192" }]
-    },
-    {
       "name": "회사소개",
       "short_name": "소개",
       "description": "에멜무지로 회사 소개",

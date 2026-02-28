@@ -573,6 +573,18 @@
     "help": "도움말",
     "popularPages": "인기 페이지"
   },
+  "underConstruction": {
+    "title": "공사 중",
+    "description": "이 기능은 현재 준비 중입니다. 더 나은 서비스로 곧 찾아뵙겠습니다.",
+    "comingSoon": "빠른 시일 내에 오픈할 예정입니다.",
+    "goHome": "홈으로 이동",
+    "goBack": "이전 페이지로",
+    "features": {
+      "blog": "블로그를 준비 중입니다. 최신 AI 트렌드와 인사이트를 담아 곧 돌아오겠습니다.",
+      "contact": "문의 페이지를 준비 중입니다. 이메일(researcherhojin@gmail.com)로 직접 문의해 주세요.",
+      "chat": "채팅 기능을 준비 중입니다."
+    }
+  },
   "serverError": {
     "status": {
       "500": "서버 내부 오류가 발생했습니다",

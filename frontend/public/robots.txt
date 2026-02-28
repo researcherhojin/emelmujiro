@@ -15,9 +15,7 @@ Disallow: /#/admin
 Disallow: /#/editor
 
 # Allow search engines to index everything else
-Allow: /#/blog
 Allow: /#/about
-Allow: /#/contact
 Allow: /#/profile
 
 # Specific rules for major search engines

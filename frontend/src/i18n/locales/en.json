@@ -573,6 +573,18 @@
     "help": "Help",
     "popularPages": "Popular Pages"
   },
+  "underConstruction": {
+    "title": "Under Construction",
+    "description": "This feature is currently being prepared. We'll be back with a better service soon.",
+    "comingSoon": "Coming soon.",
+    "goHome": "Go Home",
+    "goBack": "Go Back",
+    "features": {
+      "blog": "We're preparing the blog. We'll be back soon with the latest AI trends and insights.",
+      "contact": "The contact page is being prepared. Please email us directly at researcherhojin@gmail.com.",
+      "chat": "The chat feature is being prepared."
+    }
+  },
   "serverError": {
     "status": {
       "500": "Internal server error occurred",

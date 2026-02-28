@@ -9,6 +9,7 @@ export { default as Footer } from './Footer';
 export { default as LazyImage } from './LazyImage';
 export { default as Navbar } from './Navbar';
 export { default as NotFound } from './NotFound';
+export { default as UnderConstruction } from './UnderConstruction';
 export { default as ScrollProgress } from './ScrollProgress';
 export { default as ScrollToTop } from './ScrollToTop';
 export { default as Section } from './Section';
