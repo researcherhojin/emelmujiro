@@ -63,6 +63,7 @@ jobs:
   backend-test:
     name: Backend Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     services:
       postgres:
