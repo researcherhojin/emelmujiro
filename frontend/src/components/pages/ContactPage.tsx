@@ -2,8 +2,7 @@ import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Construction, ArrowRight, Mail } from 'lucide-react';
 import SEOHelmet from '../common/SEOHelmet';
-
-const CONTACT_EMAIL = 'researcherhojin@gmail.com';
+import { CONTACT_EMAIL } from '../../utils/constants';
 
 const ContactPage: React.FC = memo(() => {
   const navigate = useNavigate();

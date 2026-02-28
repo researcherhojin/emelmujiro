@@ -12,7 +12,7 @@ export const INQUIRY_TYPE_MAP = {
 
 // Contact information
 export const CONTACT_EMAIL =
-  process.env.REACT_APP_CONTACT_EMAIL || 'researcherhojin@gmail.com';
+  import.meta.env.VITE_CONTACT_EMAIL || 'researcherhojin@gmail.com';
 
 // Form limits
 export const FORM_LIMITS = {

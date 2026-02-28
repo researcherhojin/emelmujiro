@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { formatDate } from '../../utils/dateFormat';
 import type { BlogPost } from '../../types';
 
@@ -9,6 +10,8 @@ interface BlogCardProps {
 }
 
 const BlogCard: React.FC<BlogCardProps> = memo(({ post }) => {
+  const { t } = useTranslation();
+
   // Error handling for missing post data
   if (!post) {
     return null;
@@ -27,13 +30,13 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post }) => {
           {image_url ? (
             <img
               src={image_url}
-              alt={`${title} 블로그 포스트 썸네일`}
+              alt={t('blog.thumbnailAlt', { title })}
               className="w-full h-48 object-cover"
               loading="lazy"
             />
           ) : (
             <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-              <span className="text-gray-400">No image available</span>
+              <span className="text-gray-400">{t('blog.noImage')}</span>
             </div>
           )}
           <div className="absolute top-4 left-4">
@@ -69,7 +72,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post }) => {
                                      hover:text-indigo-700 transition-colors
                                      inline-flex items-center group"
             >
-              자세히 보기
+              {t('blog.readMoreDetail')}
               <svg
                 className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform"
                 fill="none"

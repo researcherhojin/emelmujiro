@@ -1,4 +1,5 @@
 import i18n from '../i18n';
+import { CONTACT_EMAIL } from './constants';
 
 // SEO Configuration and utilities
 export const getSeoConfig = () => ({
@@ -126,7 +127,7 @@ export function generateStructuredData(
         '@type': 'ContactPoint',
         telephone: '+82-10-7279-0380',
         contactType: 'customer service',
-        email: 'researcherhojin@gmail.com',
+        email: CONTACT_EMAIL,
         availableLanguage: ['Korean', 'English'],
       },
     },

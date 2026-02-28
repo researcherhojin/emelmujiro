@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, Send, User, Calendar, ThumbsUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import logger from '../../utils/logger';
 
 interface Comment {
@@ -18,6 +19,7 @@ interface BlogCommentsProps {
 }
 
 const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
+  const { t, i18n } = useTranslation();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [authorName, setAuthorName] = useState('');
@@ -181,13 +183,17 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
       const hours = Math.floor(diff / (1000 * 60 * 60));
       if (hours === 0) {
         const minutes = Math.floor(diff / (1000 * 60));
-        return minutes === 0 ? '방금 전' : `${minutes}분 전`;
+        return minutes === 0
+          ? t('blog.timeJustNow')
+          : t('blog.timeMinutesAgo', { count: minutes });
       }
-      return `${hours}시간 전`;
+      return t('blog.timeHoursAgo', { count: hours });
     } else if (days < 7) {
-      return `${days}일 전`;
+      return t('blog.timeDaysAgo', { count: days });
     } else {
-      return date.toLocaleDateString('ko-KR');
+      return date.toLocaleDateString(
+        i18n.language === 'ko' ? 'ko-KR' : 'en-US'
+      );
     }
   };
 
@@ -197,7 +203,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
     <div className="mt-12">
       <h3 className="text-2xl font-bold mb-6 flex items-center">
         <MessageCircle className="mr-2" />
-        댓글 ({comments.length})
+        {t('blog.commentsCount', { count: comments.length })}
       </h3>
 
       {/* Comment form */}
@@ -210,7 +216,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
             type="text"
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
-            placeholder="이름"
+            placeholder={t('blog.namePlaceholder')}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
@@ -219,7 +225,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="댓글을 작성해주세요..."
+            placeholder={t('blog.commentPlaceholder')}
             rows={3}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
@@ -230,7 +236,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
           className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           <Send className="w-4 h-4 mr-2" />
-          댓글 작성
+          {t('blog.writeComment')}
         </button>
       </form>
 
@@ -266,7 +272,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
                     onClick={() => setReplyTo(comment.id)}
                     className="text-sm text-gray-500 hover:text-blue-600"
                   >
-                    답글
+                    {t('blog.reply')}
                   </button>
                 </div>
 
@@ -276,7 +282,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
                     <textarea
                       value={replyContent}
                       onChange={(e) => setReplyContent(e.target.value)}
-                      placeholder="답글을 작성해주세요..."
+                      placeholder={t('blog.replyPlaceholder')}
                       rows={2}
                       className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
                     />
@@ -285,7 +291,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
                         onClick={() => handleSubmitReply(comment.id)}
                         className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
                       >
-                        답글 작성
+                        {t('blog.writeReply')}
                       </button>
                       <button
                         onClick={() => {
@@ -294,7 +300,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
                         }}
                         className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 text-sm"
                       >
-                        취소
+                        {t('common.cancel')}
                       </button>
                     </div>
                   </div>
@@ -341,7 +347,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
 
       {comments.length === 0 && (
         <p className="text-center text-gray-500 py-8">
-          아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!
+          {t('blog.noCommentsYet')}
         </p>
       )}
     </div>

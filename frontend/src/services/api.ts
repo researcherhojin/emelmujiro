@@ -6,21 +6,16 @@ import axios, {
 import { BlogPost, ContactFormData } from '../types';
 import { ErrorResponse } from '../types/api.types';
 import logger from '../utils/logger';
+import env from '../config/env';
 import { mockBlogPosts, mockCategories, paginateMockData } from './mockData';
 
-// API URL 설정 (백엔드 기본 포트는 8000)
-// 프로덕션에서 백엔드가 준비되지 않은 경우 mock 데이터 사용
-const isProduction = process.env.NODE_ENV === 'production';
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
-const API_TIMEOUT = Number(process.env.REACT_APP_API_TIMEOUT) || 30000;
+// Use centralized env config instead of direct process.env access
+const API_URL = env.API_URL;
+const API_TIMEOUT = 30000;
 
 // Check if we should use mock API
-// Use mock if explicitly set, in test environment, or in production when API URL is not properly configured
-// GitHub Pages deployment doesn't have backend, so always use mock in production
-const USE_MOCK_API =
-  process.env.REACT_APP_USE_MOCK_API === 'true' ||
-  process.env.NODE_ENV === 'test' ||
-  isProduction; // Always use mock in production for GitHub Pages
+// Use mock if in test environment or in production (GitHub Pages has no backend)
+const USE_MOCK_API = env.IS_TEST || env.IS_PRODUCTION;
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -56,16 +51,12 @@ interface CustomAxiosError extends AxiosError {
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Security: Always use HTTPS in production
-    if (
-      process.env.NODE_ENV === 'production' &&
-      config.url &&
-      config.url.startsWith('http://')
-    ) {
+    if (env.IS_PRODUCTION && config.url && config.url.startsWith('http://')) {
       logger.warn('Insecure HTTP detected in production, upgrading to HTTPS');
       config.url = config.url.replace('http://', 'https://');
     }
     if (
-      process.env.NODE_ENV === 'production' &&
+      env.IS_PRODUCTION &&
       config.baseURL &&
       config.baseURL.startsWith('http://')
     ) {
@@ -119,14 +110,33 @@ axiosInstance.interceptors.response.use(
     error.userMessage = errorData?.message || getErrorMessage(status);
 
     // Log error in development
-    if (process.env.NODE_ENV === 'development') {
+    if (env.IS_DEVELOPMENT) {
       logger.error('API Error:', `${status} ${error.userMessage}`);
     }
 
-    // Handle 401 - Clear auth and redirect to login if needed
-    if (status === 401) {
-      localStorage.removeItem('authToken');
-      // window.location.href = '/login'; // Uncomment when login page exists
+    // Handle 401 - Try refresh token, then clear auth
+    if (status === 401 && originalRequest && !error._retry) {
+      error._retry = true;
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (refreshToken) {
+        try {
+          const refreshResponse = await axios.post(
+            `${API_URL}/auth/token/refresh/`,
+            { refresh: refreshToken }
+          );
+          const { access } = refreshResponse.data;
+          localStorage.setItem('authToken', access);
+          if (originalRequest.headers) {
+            originalRequest.headers.Authorization = `Bearer ${access}`;
+          }
+          return axiosInstance(originalRequest);
+        } catch {
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+        }
+      } else {
+        localStorage.removeItem('authToken');
+      }
     }
 
     return Promise.reject(error);
@@ -152,13 +162,34 @@ interface Project {
 // API methods with improved error handling
 export const api = {
   // Projects
-  getProjects: () => axiosInstance.get<Project[]>('projects/'),
-  createProject: (data: Partial<Project>) =>
-    axiosInstance.post<Project>('projects/', data),
+  getProjects: () => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: [] as Project[],
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get<Project[]>('projects/');
+  },
+  createProject: (data: Partial<Project>) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { id: Date.now(), ...data } as Project,
+        status: 201,
+        statusText: 'Created',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.post<Project>('projects/', data);
+  },
 
   // Blog
   getBlogPosts: (page: number = 1, pageSize?: number) => {
-    const size = pageSize || Number(process.env.REACT_APP_POSTS_PER_PAGE) || 6;
+    const size = pageSize || 6;
 
     // Use mock data if backend is not available
     if (USE_MOCK_API) {
@@ -319,12 +350,49 @@ export const blogService = {
   getPost: api.getBlogPost,
   searchPosts: api.searchBlogPosts,
   getCategories: api.getBlogCategories,
-  createPost: (data: Partial<BlogPost>) =>
-    axiosInstance.post<BlogPost>('blog-posts/', data),
-  updatePost: (id: number | string, data: Partial<BlogPost>) =>
-    axiosInstance.put<BlogPost>(`blog-posts/${id}/`, data),
-  deletePost: (id: number | string) =>
-    axiosInstance.delete(`blog-posts/${id}/`),
+  createPost: (data: Partial<BlogPost>) => {
+    if (USE_MOCK_API) {
+      const newPost = {
+        id: Date.now(),
+        slug: `post-${Date.now()}`,
+        ...data,
+      } as BlogPost;
+      return Promise.resolve({
+        data: newPost,
+        status: 201,
+        statusText: 'Created',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.post<BlogPost>('blog-posts/', data);
+  },
+  updatePost: (id: number | string, data: Partial<BlogPost>) => {
+    if (USE_MOCK_API) {
+      const existingPost = mockBlogPosts.find((p) => p.id === Number(id));
+      const updatedPost = { ...existingPost, ...data, id } as BlogPost;
+      return Promise.resolve({
+        data: updatedPost,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.put<BlogPost>(`blog-posts/${id}/`, data);
+  },
+  deletePost: (id: number | string) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: undefined as never,
+        status: 204,
+        statusText: 'No Content',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.delete(`blog-posts/${id}/`);
+  },
 };
 
 // Export axios instance for custom requests

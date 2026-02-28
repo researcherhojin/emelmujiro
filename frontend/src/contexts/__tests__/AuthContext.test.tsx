@@ -71,10 +71,11 @@ describe('AuthContext', () => {
   });
 
   test('handles successful login', async () => {
-    // Mock successful login response
+    // Mock successful login response (JWT access/refresh format)
     mockedAxios.post.mockResolvedValueOnce({
       data: {
-        token: 'fake-token',
+        access: 'fake-access-token',
+        refresh: 'fake-refresh-token',
         user: { email: 'test@example.com', id: 1, name: 'Test User' },
       },
     });
@@ -96,12 +97,16 @@ describe('AuthContext', () => {
     expect(screen.getByTestId('user')).toHaveTextContent('test@example.com');
 
     expect(mockedAxios.post).toHaveBeenCalledWith('/auth/login/', {
-      email: 'test@example.com',
+      username: 'test@example.com',
       password: 'password',
     });
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
       'authToken',
-      'fake-token'
+      'fake-access-token'
+    );
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+      'refreshToken',
+      'fake-refresh-token'
     );
   });
 
@@ -154,14 +159,15 @@ describe('AuthContext', () => {
     );
 
     expect(mockLocalStorage.getItem).toHaveBeenCalledWith('authToken');
-    expect(mockedAxios.get).toHaveBeenCalledWith('/auth/me/');
+    expect(mockedAxios.get).toHaveBeenCalledWith('/auth/user/');
   });
 
   test('sets loading state during auth operations', async () => {
-    // Mock successful login response
+    // Mock successful login response (JWT format)
     mockedAxios.post.mockResolvedValueOnce({
       data: {
-        token: 'fake-token',
+        access: 'fake-access-token',
+        refresh: 'fake-refresh-token',
         user: { email: 'test@example.com', id: 1, name: 'Test User' },
       },
     });

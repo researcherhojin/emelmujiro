@@ -14,6 +14,7 @@ import { ChatProvider } from './contexts/ChatContext';
 import Layout from './components/layout/Layout';
 import { PageLoading } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import ProtectedRoute from './components/common/ProtectedRoute';
 import { initializePWA } from './utils/pwaUtils';
 import { initBlogCache } from './utils/blogCache';
 import performanceMonitor, {
@@ -166,7 +167,14 @@ const router = createHashRouter([
       { path: 'blog', element: <BlogListPage /> },
       { path: 'blog/new', element: <BlogEditor /> },
       { path: 'blog/:id', element: <BlogDetail /> },
-      { path: 'admin', element: <AdminDashboard /> },
+      {
+        path: 'admin',
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
+        ),
+      },
       { path: '*', element: <NotFound /> },
     ],
   },

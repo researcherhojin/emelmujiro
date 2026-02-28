@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Mail, Phone } from 'lucide-react';
+import { CONTACT_EMAIL } from '../../utils/constants';
 
 interface ContactIconProps {
   icon: React.ReactNode;
@@ -43,8 +44,8 @@ const ContactInfo: React.FC = memo(() => {
       <ContactIcon
         icon={<Mail className="w-6 h-6" />}
         title={t('contact.info.email')}
-        value="researcherhojin@gmail.com"
-        link="mailto:researcherhojin@gmail.com"
+        value={CONTACT_EMAIL}
+        link={`mailto:${CONTACT_EMAIL}`}
       />
 
       <ContactIcon

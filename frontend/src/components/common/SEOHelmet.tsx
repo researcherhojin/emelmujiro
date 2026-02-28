@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { CONTACT_EMAIL } from '../../utils/constants';
 
 interface SEOHelmetProps {
   title?: string;
@@ -167,7 +168,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
             },
             contactPoint: {
               '@type': 'ContactPoint',
-              email: 'researcherhojin@gmail.com',
+              email: CONTACT_EMAIL,
               telephone: '+82-10-7279-0380',
               contactType: 'customer service',
               availableLanguage: ['Korean', 'English'],

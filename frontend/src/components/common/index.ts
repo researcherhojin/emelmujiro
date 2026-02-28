@@ -4,6 +4,7 @@ export { default as Card } from './Card';
 export { default as DarkModeToggle } from './DarkModeToggle';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as ErrorMessage } from './ErrorMessage';
+export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as Footer } from './Footer';
 export { default as LazyImage } from './LazyImage';
 export { default as Navbar } from './Navbar';

@@ -41,20 +41,18 @@ describe('App Component', () => {
   });
 
   test('app initializes correctly', () => {
-    render(<App />);
-    // If the app renders without throwing, it initialized correctly
-    expect(true).toBe(true);
+    const { container } = render(<App />);
+    expect(container.firstChild).toBeTruthy();
   });
 
   test('app structure is rendered', () => {
-    render(<App />);
-    // If no errors are thrown, the structure is valid
-    expect(true).toBe(true);
+    const { container } = render(<App />);
+    expect(container.innerHTML.length).toBeGreaterThan(0);
   });
 
   test('app has proper context providers', () => {
-    // This test verifies that the app can render with all providers
-    render(<App />);
-    expect(true).toBe(true);
+    // Rendering without error proves all providers are correctly nested
+    const { container } = render(<App />);
+    expect(container).toBeInTheDocument();
   });
 });

@@ -209,12 +209,13 @@ class CategoryListView(APIView):
         )
 
         category_data = []
-        for cat in categories:
+        for idx, cat in enumerate(categories, start=1):
             category_choice = dict(BlogPost.CATEGORY_CHOICES).get(cat["category"], cat["category"])
             category_data.append(
                 {
-                    "value": cat["category"],
-                    "label": category_choice,
+                    "id": idx,
+                    "name": category_choice,
+                    "slug": cat["category"],
                     "count": cat["count"],
                 }
             )

@@ -16,6 +16,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class BlogPostSerializer(serializers.ModelSerializer):
+    """Frontend BlogPost type에 맞춘 serializer"""
+
+    excerpt = serializers.CharField(source="description", read_only=True)
+    publishedAt = serializers.DateTimeField(source="date", format="%Y-%m-%d", read_only=True)
+    imageUrl = serializers.URLField(source="image_url", read_only=True)
+    views = serializers.IntegerField(source="view_count", read_only=True)
+    published = serializers.BooleanField(source="is_published", read_only=True)
     category_display = serializers.SerializerMethodField()
     formatted_date = serializers.SerializerMethodField()
     relative_date = serializers.SerializerMethodField()
@@ -25,17 +32,27 @@ class BlogPostSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "title",
-            "description",
+            "slug",
             "content",
+            "excerpt",
+            "author",
+            "publishedAt",
             "category",
             "category_display",
+            "tags",
+            "imageUrl",
+            "image_url",
             "date",
             "formatted_date",
             "relative_date",
-            "image_url",
+            "created_at",
+            "updated_at",
+            "published",
+            "views",
+            "view_count",
+            "likes",
             "link",
             "is_featured",
-            "view_count",
         ]
 
     def get_category_display(self, obj):
@@ -47,7 +64,6 @@ class BlogPostSerializer(serializers.ModelSerializer):
     def get_relative_date(self, obj):
         """상대적 시간 표시"""
         from django.utils import timezone
-        from datetime import timedelta
 
         now = timezone.now()
         diff = now - obj.date
@@ -200,8 +216,13 @@ class NewsletterSubscriptionSerializer(serializers.ModelSerializer):
 
 
 class BlogPostListSerializer(serializers.ModelSerializer):
-    """블로그 목록용 간단한 serializer"""
+    """블로그 목록용 간단한 serializer (Frontend BlogPost type 호환)"""
 
+    excerpt = serializers.CharField(source="description", read_only=True)
+    publishedAt = serializers.DateTimeField(source="date", format="%Y-%m-%d", read_only=True)
+    imageUrl = serializers.URLField(source="image_url", read_only=True)
+    views = serializers.IntegerField(source="view_count", read_only=True)
+    published = serializers.BooleanField(source="is_published", read_only=True)
     category_display = serializers.SerializerMethodField()
     formatted_date = serializers.SerializerMethodField()
 
@@ -210,14 +231,22 @@ class BlogPostListSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "title",
-            "description",
+            "slug",
+            "excerpt",
+            "author",
+            "publishedAt",
             "category",
             "category_display",
+            "tags",
+            "imageUrl",
+            "image_url",
             "date",
             "formatted_date",
-            "image_url",
-            "is_featured",
+            "published",
+            "views",
             "view_count",
+            "likes",
+            "is_featured",
         ]
 
     def get_category_display(self, obj):

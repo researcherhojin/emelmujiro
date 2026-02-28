@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+  ReactNode,
+} from 'react';
 import { api } from '../services/api';
 import i18n from '../i18n';
 
@@ -53,25 +60,38 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [formErrors, setFormErrors] = useState<Partial<ContactFormState>>({});
 
-  const updateContactForm = (field: keyof ContactFormState, value: string) => {
-    setContactForm((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field when user starts typing
-    if (formErrors[field]) {
+  const updateContactForm = useCallback(
+    (field: keyof ContactFormState, value: string) => {
+      setContactForm((prev) => ({ ...prev, [field]: value }));
+      // Clear error for this field when user starts typing
       setFormErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
+        if (prev[field]) {
+          const newErrors = { ...prev };
+          delete newErrors[field];
+          return newErrors;
+        }
+        return prev;
       });
-    }
-  };
+    },
+    []
+  );
 
-  const resetContactForm = () => {
+  const clearFormErrors = useCallback(() => {
+    setFormErrors({});
+  }, []);
+
+  const clearSubmitState = useCallback(() => {
+    setSubmitError(null);
+    setSubmitSuccess(false);
+  }, []);
+
+  const resetContactForm = useCallback(() => {
     setContactForm(initialContactForm);
     clearFormErrors();
     clearSubmitState();
-  };
+  }, [clearFormErrors, clearSubmitState]);
 
-  const validateContactForm = (): boolean => {
+  const validateContactForm = useCallback((): boolean => {
     const errors: Partial<ContactFormState> = {};
 
     // Name validation
@@ -108,9 +128,9 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
-  };
+  }, [contactForm]);
 
-  const submitContactForm = async () => {
+  const submitContactForm = useCallback(async () => {
     // Validate form first
     if (!validateContactForm()) {
       return;
@@ -169,30 +189,36 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [contactForm, validateContactForm, resetContactForm]);
 
-  const clearSubmitState = () => {
-    setSubmitError(null);
-    setSubmitSuccess(false);
-  };
-
-  const clearFormErrors = () => {
-    setFormErrors({});
-  };
-
-  const value: FormContextType = {
-    contactForm,
-    updateContactForm,
-    resetContactForm,
-    isSubmitting,
-    submitError,
-    submitSuccess,
-    submitContactForm,
-    clearSubmitState,
-    formErrors,
-    validateContactForm,
-    clearFormErrors,
-  };
+  const value = useMemo<FormContextType>(
+    () => ({
+      contactForm,
+      updateContactForm,
+      resetContactForm,
+      isSubmitting,
+      submitError,
+      submitSuccess,
+      submitContactForm,
+      clearSubmitState,
+      formErrors,
+      validateContactForm,
+      clearFormErrors,
+    }),
+    [
+      contactForm,
+      updateContactForm,
+      resetContactForm,
+      isSubmitting,
+      submitError,
+      submitSuccess,
+      submitContactForm,
+      clearSubmitState,
+      formErrors,
+      validateContactForm,
+      clearFormErrors,
+    ]
+  );
 
   return <FormContext.Provider value={value}>{children}</FormContext.Provider>;
 };

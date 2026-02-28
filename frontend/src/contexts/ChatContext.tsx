@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   useRef,
   ReactNode,
 } from 'react';
@@ -626,42 +627,71 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     };
   }, []);
 
-  const value: ChatContextType = {
-    // State
-    isOpen,
-    isMinimized,
-    isConnected,
-    isTyping,
-    messages,
-    unreadCount,
-    connectionId,
+  const value = useMemo<ChatContextType>(
+    () => ({
+      // State
+      isOpen,
+      isMinimized,
+      isConnected,
+      isTyping,
+      messages,
+      unreadCount,
+      connectionId,
 
-    // Agent info
-    agentAvailable,
-    agentName,
-    agentAvatar,
-    businessHours,
+      // Agent info
+      agentAvailable,
+      agentName,
+      agentAvatar,
+      businessHours,
 
-    // Settings
-    settings,
+      // Settings
+      settings,
 
-    // Actions
-    openChat,
-    closeChat,
-    toggleMinimize,
-    sendMessage,
-    markAsRead,
-    markAllAsRead,
-    startTyping,
-    stopTyping,
-    clearHistory,
-    exportHistory,
+      // Actions
+      openChat,
+      closeChat,
+      toggleMinimize,
+      sendMessage,
+      markAsRead,
+      markAllAsRead,
+      startTyping,
+      stopTyping,
+      clearHistory,
+      exportHistory,
 
-    // WebSocket
-    connect,
-    disconnect,
-    reconnect,
-  };
+      // WebSocket
+      connect,
+      disconnect,
+      reconnect,
+    }),
+    [
+      isOpen,
+      isMinimized,
+      isConnected,
+      isTyping,
+      messages,
+      unreadCount,
+      connectionId,
+      agentAvailable,
+      agentName,
+      agentAvatar,
+      businessHours,
+      settings,
+      openChat,
+      closeChat,
+      toggleMinimize,
+      sendMessage,
+      markAsRead,
+      markAllAsRead,
+      startTyping,
+      stopTyping,
+      clearHistory,
+      exportHistory,
+      connect,
+      disconnect,
+      reconnect,
+    ]
+  );
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

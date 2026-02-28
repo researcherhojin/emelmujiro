@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import { CONTACT_EMAIL } from '../../utils/constants';
 
 interface SEOHeadProps {
   title?: string;
@@ -55,7 +56,7 @@ const SEOHead: React.FC<SEOHeadProps> = (props) => {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      email: 'researcherhojin@gmail.com',
+      email: CONTACT_EMAIL,
       availableLanguage: ['Korean', 'English'],
     },
     sameAs: [

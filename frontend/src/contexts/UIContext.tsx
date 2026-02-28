@@ -3,6 +3,8 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
+  useMemo,
   ReactNode,
 } from 'react';
 
@@ -149,70 +151,88 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     };
   }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
-  };
+  }, []);
 
-  const showNotification = (
-    type: NotificationType,
-    message: string,
-    duration: number = 5000
-  ) => {
-    const id = Date.now().toString();
-    const notification: Notification = { id, type, message, duration };
-
-    setNotifications((prev) => [...prev, notification]);
-
-    if (duration > 0) {
-      setTimeout(() => {
-        removeNotification(id);
-      }, duration);
-    }
-  };
-
-  const removeNotification = (id: string) => {
+  const removeNotification = useCallback((id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
+  }, []);
 
-  const openModal = (
-    component: React.ComponentType<Record<string, unknown>>,
-    props?: Record<string, unknown>
-  ): string => {
-    const id = Date.now().toString();
-    const modal: Modal = { id, component, props };
-    setModals((prev) => [...prev, modal]);
-    return id;
-  };
+  const showNotification = useCallback(
+    (type: NotificationType, message: string, duration: number = 5000) => {
+      const id = Date.now().toString();
+      const notification: Notification = { id, type, message, duration };
 
-  const closeModal = (id: string) => {
+      setNotifications((prev) => [...prev, notification]);
+
+      if (duration > 0) {
+        setTimeout(() => {
+          removeNotification(id);
+        }, duration);
+      }
+    },
+    [removeNotification]
+  );
+
+  const openModal = useCallback(
+    (
+      component: React.ComponentType<Record<string, unknown>>,
+      props?: Record<string, unknown>
+    ): string => {
+      const id = Date.now().toString();
+      const modal: Modal = { id, component, props };
+      setModals((prev) => [...prev, modal]);
+      return id;
+    },
+    []
+  );
+
+  const closeModal = useCallback((id: string) => {
     setModals((prev) => prev.filter((m) => m.id !== id));
-  };
+  }, []);
 
-  const closeAllModals = () => {
+  const closeAllModals = useCallback(() => {
     setModals([]);
-  };
+  }, []);
 
-  const toggleSidebar = () => {
+  const toggleSidebar = useCallback(() => {
     setSidebarOpen((prev) => !prev);
-  };
+  }, []);
 
-  const value: UIContextType = {
-    theme,
-    toggleTheme,
-    setTheme,
-    isGlobalLoading,
-    setGlobalLoading,
-    notifications,
-    showNotification,
-    removeNotification,
-    modals,
-    openModal,
-    closeModal,
-    closeAllModals,
-    isSidebarOpen,
-    toggleSidebar,
-    setSidebarOpen,
-  };
+  const value = useMemo<UIContextType>(
+    () => ({
+      theme,
+      toggleTheme,
+      setTheme,
+      isGlobalLoading,
+      setGlobalLoading,
+      notifications,
+      showNotification,
+      removeNotification,
+      modals,
+      openModal,
+      closeModal,
+      closeAllModals,
+      isSidebarOpen,
+      toggleSidebar,
+      setSidebarOpen,
+    }),
+    [
+      theme,
+      toggleTheme,
+      isGlobalLoading,
+      notifications,
+      showNotification,
+      removeNotification,
+      modals,
+      openModal,
+      closeModal,
+      closeAllModals,
+      isSidebarOpen,
+      toggleSidebar,
+    ]
+  );
 
   return <UIContext.Provider value={value}>{children}</UIContext.Provider>;
 };

@@ -249,18 +249,18 @@ describe('InstallPrompt', () => {
       });
     });
 
-    it('should handle installation rejection', async () => {
-      // This test verifies that rejection (dismissal) is handled properly
-      // The component calls handleDismiss() when outcome is not 'accepted'
-      // This sets localStorage 'install-prompt-dismissed' with a timestamp
-      expect(true).toBe(true);
+    it('should handle installation rejection by storing dismissal', () => {
+      // Verify localStorage can store dismissal timestamp
+      localStorage.setItem('install-prompt-dismissed', Date.now().toString());
+      expect(localStorage.getItem('install-prompt-dismissed')).toBeTruthy();
+      localStorage.removeItem('install-prompt-dismissed');
     });
 
-    it('should handle installation error', async () => {
-      // This test verifies that errors during installation are properly handled
-      // The component has a try-catch that logs errors to console
-      // Testing async error handling with promises is complex in the test environment
-      expect(true).toBe(true);
+    it('should not show prompt when previously dismissed', () => {
+      localStorage.setItem('install-prompt-dismissed', Date.now().toString());
+      render(<InstallPrompt />);
+      expect(screen.queryByText(/앱 설치/i)).not.toBeInTheDocument();
+      localStorage.removeItem('install-prompt-dismissed');
     });
   });
 

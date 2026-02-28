@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CONTACT_EMAIL } from '../../utils/constants';
 
 const CTASection: React.FC = memo(() => {
   const { t } = useTranslation();
@@ -23,7 +24,7 @@ const CTASection: React.FC = memo(() => {
           </p>
 
           <a
-            href="mailto:researcherhojin@gmail.com"
+            href={`mailto:${CONTACT_EMAIL}`}
             className="inline-flex items-center justify-center px-12 py-6 text-lg font-bold text-white bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all rounded-2xl"
             aria-label={t('cta.emailAriaLabel')}
           >

@@ -132,10 +132,21 @@ export const OptimizedCard = memo<CardProps>(
       }
     }, [onClick]);
 
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent) => {
+        if ((e.key === 'Enter' || e.key === ' ') && onClick) {
+          e.preventDefault();
+          handleClick();
+        }
+      },
+      [onClick, handleClick]
+    );
+
     return (
       <motion.div
         className={cardClasses}
         onClick={handleClick}
+        onKeyDown={onClick ? handleKeyDown : undefined}
         whileHover={{ y: -4 }}
         transition={{ duration: 0.2 }}
         role={onClick ? 'button' : undefined}

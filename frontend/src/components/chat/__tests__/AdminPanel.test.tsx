@@ -615,8 +615,8 @@ describe('AdminPanel', () => {
         expect(blockButtons[0]).toBeInTheDocument();
       }
 
-      // Ensure test passes either way
-      expect(true).toBe(true);
+      // Verify the panel rendered correctly regardless of user list state
+      expect(screen.getAllByRole('dialog')[0]).toBeInTheDocument();
     });
   });
 
@@ -630,12 +630,11 @@ describe('AdminPanel', () => {
       // Business hours info is in the statistics tab, not settings
     });
 
-    it('allows toggling business hours', () => {
+    it('does not expose business hours toggle yet', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Business hours toggle is not implemented in the current AdminPanel
-      // This test should be skipped or updated when the feature is added
-      expect(true).toBe(true);
+      // Business hours toggle is not yet implemented
+      expect(screen.queryByRole('checkbox', { name: /영업시간/i })).toBeNull();
     });
   });
 
@@ -685,22 +684,20 @@ describe('AdminPanel', () => {
       expect(mockOnClose).not.toHaveBeenCalled();
     });
 
-    it('navigates tabs with arrow keys', () => {
+    it('renders tabs that can be clicked', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Arrow key navigation is not implemented in the current AdminPanel
-      // This test should be updated when the feature is added
-      expect(true).toBe(true);
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs.length).toBeGreaterThan(0);
     });
   });
 
   describe('Error Handling', () => {
-    it('shows error notification when save fails', () => {
+    it('renders without error states initially', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Error handling for save failure is not properly testable with current implementation
-      // The component catches all errors internally
-      expect(true).toBe(true);
+      // No error alerts should be visible on initial render
+      expect(screen.queryByRole('alert')).toBeNull();
     });
   });
 
@@ -720,12 +717,11 @@ describe('AdminPanel', () => {
       expect(uniqueTabTexts).toHaveLength(4);
     });
 
-    it('maintains focus trap within panel', () => {
+    it('does not have focus trap implemented yet', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
-      // Focus trap is not implemented in the current AdminPanel
-      // This test should be updated when the feature is added
-      expect(true).toBe(true);
+      // Focus trap is not yet implemented; verify dialog renders
+      expect(screen.getAllByRole('dialog')[0]).toBeInTheDocument();
     });
 
     it('announces tab changes to screen readers', () => {

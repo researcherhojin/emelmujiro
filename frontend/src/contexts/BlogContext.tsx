@@ -4,6 +4,7 @@ import React, {
   useState,
   ReactNode,
   useCallback,
+  useMemo,
 } from 'react';
 import { api } from '../services/api';
 import i18n from '../i18n';
@@ -110,21 +111,34 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
     }
   }, []);
 
-  const clearCurrentPost = () => {
+  const clearCurrentPost = useCallback(() => {
     setCurrentPost(null);
-  };
+  }, []);
 
-  const value: BlogContextType = {
-    posts,
-    currentPost,
-    loading,
-    error,
-    totalPages,
-    currentPage,
-    fetchPosts,
-    fetchPostById,
-    clearCurrentPost,
-  };
+  const value = useMemo<BlogContextType>(
+    () => ({
+      posts,
+      currentPost,
+      loading,
+      error,
+      totalPages,
+      currentPage,
+      fetchPosts,
+      fetchPostById,
+      clearCurrentPost,
+    }),
+    [
+      posts,
+      currentPost,
+      loading,
+      error,
+      totalPages,
+      currentPage,
+      fetchPosts,
+      fetchPostById,
+      clearCurrentPost,
+    ]
+  );
 
   return <BlogContext.Provider value={value}>{children}</BlogContext.Provider>;
 };

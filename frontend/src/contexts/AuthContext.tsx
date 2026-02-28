@@ -3,6 +3,8 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
+  useMemo,
   ReactNode,
 } from 'react';
 import axiosInstance from '../services/api';
@@ -46,28 +48,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const token = localStorage.getItem('authToken');
     if (token) {
       try {
-        const response = await axiosInstance.get('/auth/me/');
+        const response = await axiosInstance.get('/auth/user/');
         setUser(response.data);
       } catch {
         localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken');
         setUser(null);
       }
     }
     setLoading(false);
   };
 
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     setLoading(true);
     setError(null);
     try {
       const response = await axiosInstance.post('/auth/login/', {
-        email,
+        username: email,
         password,
       });
-      const { token, user } = response.data;
+      const { access, refresh, user: userData } = response.data;
 
-      localStorage.setItem('authToken', token);
-      setUser(user);
+      localStorage.setItem('authToken', access);
+      localStorage.setItem('refreshToken', refresh);
+      setUser(userData);
     } catch (err) {
       const error = err as Error & { userMessage?: string };
       setError(
@@ -77,58 +81,74 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(async () => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken) {
+      try {
+        await axiosInstance.post('/auth/logout/', { refresh: refreshToken });
+      } catch {
+        // Proceed with local logout even if server call fails
+      }
+    }
     localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
     setUser(null);
-  };
+  }, []);
 
-  const register = async (email: string, password: string, name: string) => {
-    setLoading(true);
+  const register = useCallback(
+    async (email: string, password: string, name: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axiosInstance.post('/auth/register/', {
+          username: email,
+          email,
+          password,
+          password_confirm: password,
+          first_name: name,
+        });
+        const { access, refresh, user: userData } = response.data;
+
+        localStorage.setItem('authToken', access);
+        localStorage.setItem('refreshToken', refresh);
+        setUser(userData);
+      } catch (err) {
+        const error = err as Error & { userMessage?: string };
+        setError(
+          error.userMessage || error.message || i18n.t('auth.registerFailed')
+        );
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  const updateUser = useCallback((userData: Partial<User>) => {
+    setUser((prev) => (prev ? { ...prev, ...userData } : null));
+  }, []);
+
+  const clearError = useCallback(() => {
     setError(null);
-    try {
-      const response = await axiosInstance.post('/auth/register/', {
-        email,
-        password,
-        name,
-      });
-      const { token, user } = response.data;
+  }, []);
 
-      localStorage.setItem('authToken', token);
-      setUser(user);
-    } catch (err) {
-      const error = err as Error & { userMessage?: string };
-      setError(
-        error.userMessage || error.message || i18n.t('auth.registerFailed')
-      );
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateUser = (userData: Partial<User>) => {
-    if (user) {
-      setUser({ ...user, ...userData });
-    }
-  };
-
-  const clearError = () => {
-    setError(null);
-  };
-
-  const value: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    loading,
-    error,
-    login,
-    logout,
-    register,
-    updateUser,
-    clearError,
-  };
+  const value = useMemo<AuthContextType>(
+    () => ({
+      user,
+      isAuthenticated: !!user,
+      loading,
+      error,
+      login,
+      logout,
+      register,
+      updateUser,
+      clearError,
+    }),
+    [user, loading, error, login, logout, register, updateUser, clearError]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

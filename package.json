@@ -1,6 +1,6 @@
 {
   "name": "emelmujiro",
-  "version": "1.0.0",
+  "version": "0.9.0",
   "description": "Emelmujiro - AI Education and Consulting Company Official Website",
   "private": true,
   "workspaces": [
@@ -35,15 +35,6 @@
   "engines": {
     "node": ">=14.0.0",
     "npm": ">=7.0.0"
-  },
-  "lint-staged": {
-    "frontend/src/**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix"
-    ],
-    "backend/**/*.py": [
-      "uv run --directory backend black --check",
-      "uv run --directory backend flake8"
-    ]
   },
   "overrides": {
     "minimatch": ">=10.2.1"

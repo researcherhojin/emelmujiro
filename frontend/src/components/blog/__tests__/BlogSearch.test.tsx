@@ -7,6 +7,19 @@ import BlogSearch from '../BlogSearch';
 import { BlogProvider } from '../../../contexts/BlogContext';
 import { api } from '../../../services/api';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, opts?: Record<string, unknown>) => {
+      if (opts && 'count' in opts) return `${opts.count} ${key}`;
+      return key;
+    },
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 // Mock the api module properly
 vi.mock('../../../services/api', () => ({
   api: {
@@ -54,7 +67,9 @@ describe('BlogSearch', () => {
 
   it('renders search input', () => {
     renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
-    expect(screen.getByPlaceholderText('블로그 검색...')).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText('blog.searchPlaceholder')
+    ).toBeInTheDocument();
   });
 
   it('handles search submission', async () => {
@@ -62,7 +77,7 @@ describe('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText(
-      '블로그 검색...'
+      'blog.searchPlaceholder'
     ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React' } });
@@ -82,7 +97,7 @@ describe('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText(
-      '블로그 검색...'
+      'blog.searchPlaceholder'
     ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: '  React  ' } });
@@ -98,7 +113,7 @@ describe('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText(
-      '블로그 검색...'
+      'blog.searchPlaceholder'
     ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: '' } });
@@ -117,7 +132,7 @@ describe('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText(
-      '블로그 검색...'
+      'blog.searchPlaceholder'
     ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React & TypeScript' } });
@@ -133,7 +148,7 @@ describe('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText(
-      '블로그 검색...'
+      'blog.searchPlaceholder'
     ) as HTMLInputElement;
 
     // Type some text
@@ -179,7 +194,7 @@ describe('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText(
-      '블로그 검색...'
+      'blog.searchPlaceholder'
     ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React' } });
@@ -203,7 +218,7 @@ describe('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
 
     const input = screen.getByPlaceholderText(
-      '블로그 검색...'
+      'blog.searchPlaceholder'
     ) as HTMLInputElement;
 
     // Focus the input
@@ -244,7 +259,7 @@ describe('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText(
-      '블로그 검색...'
+      'blog.searchPlaceholder'
     ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React' } });
@@ -262,7 +277,7 @@ describe('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
 
     const input = screen.getByPlaceholderText(
-      '블로그 검색...'
+      'blog.searchPlaceholder'
     ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'TypeScript' } });
@@ -274,7 +289,7 @@ describe('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText(
-      '블로그 검색...'
+      'blog.searchPlaceholder'
     ) as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: '' } });

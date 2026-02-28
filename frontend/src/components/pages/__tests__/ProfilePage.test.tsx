@@ -3,6 +3,16 @@ import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import ProfilePage from '../ProfilePage';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 // Mock useNavigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -71,25 +81,24 @@ describe('ProfilePage Component', () => {
     it('renders profile page with title', () => {
       renderWithRouter(<ProfilePage />);
 
-      expect(screen.getByText('이호진')).toBeInTheDocument();
-      expect(screen.getByText('AI Researcher & Educator')).toBeInTheDocument();
+      expect(screen.getByText('profilePage.name')).toBeInTheDocument();
+      expect(screen.getByText('profilePage.role')).toBeInTheDocument();
     });
 
     it('renders profile description', () => {
       renderWithRouter(<ProfilePage />);
 
-      // Check for the presence of key sections instead
       expect(
-        screen.getByRole('heading', { level: 1, name: '이호진' })
+        screen.getByRole('heading', { level: 1, name: 'profilePage.name' })
       ).toBeInTheDocument();
     });
 
     it('renders all navigation tabs', () => {
       renderWithRouter(<ProfilePage />);
 
-      expect(screen.getByText('경력')).toBeInTheDocument();
-      expect(screen.getByText('학력')).toBeInTheDocument();
-      expect(screen.getByText('프로젝트')).toBeInTheDocument();
+      expect(screen.getByText('profilePage.tabCareer')).toBeInTheDocument();
+      expect(screen.getByText('profilePage.tabEducation')).toBeInTheDocument();
+      expect(screen.getByText('profilePage.tabProjects')).toBeInTheDocument();
     });
 
     it('renders statistics section', () => {
@@ -106,7 +115,7 @@ describe('ProfilePage Component', () => {
     it('switches to education tab', () => {
       renderWithRouter(<ProfilePage />);
 
-      const educationTab = screen.getByText('학력');
+      const educationTab = screen.getByText('profilePage.tabEducation');
       fireEvent.click(educationTab);
 
       expect(screen.getByText('한양대학교')).toBeInTheDocument();
@@ -118,7 +127,7 @@ describe('ProfilePage Component', () => {
 
       const buttons = screen.getAllByRole('button');
       const projectsTab = buttons.find((btn) =>
-        btn.textContent?.includes('Code프로젝트')
+        btn.textContent?.includes('profilePage.tabProjects')
       );
       expect(projectsTab).toBeDefined();
       fireEvent.click(projectsTab!);
@@ -130,13 +139,13 @@ describe('ProfilePage Component', () => {
     it('maintains active tab styling', () => {
       renderWithRouter(<ProfilePage />);
 
-      // Look for tab buttons by text content - be more specific to avoid duplicates
+      // Look for tab buttons by text content
       const buttons = screen.getAllByRole('button');
       const careerTab = buttons.find((btn) =>
-        btn.textContent?.includes('Briefcase경력')
+        btn.textContent?.includes('profilePage.tabCareer')
       );
       const educationTab = buttons.find((btn) =>
-        btn.textContent?.includes('GraduationCap학력')
+        btn.textContent?.includes('profilePage.tabEducation')
       );
 
       // Check that buttons exist
@@ -159,10 +168,9 @@ describe('ProfilePage Component', () => {
     it('displays all career items', () => {
       renderWithRouter(<ProfilePage />);
 
-      // Check for career section existence using more specific query
       const buttons = screen.getAllByRole('button');
       const careerTab = buttons.find((btn) =>
-        btn.textContent?.includes('Briefcase경력')
+        btn.textContent?.includes('profilePage.tabCareer')
       );
       expect(careerTab).toBeInTheDocument();
       expect(careerTab).toHaveClass('text-gray-900');
@@ -181,7 +189,7 @@ describe('ProfilePage Component', () => {
     it('displays education items when tab is selected', () => {
       renderWithRouter(<ProfilePage />);
 
-      const educationTab = screen.getByText('학력');
+      const educationTab = screen.getByText('profilePage.tabEducation');
       fireEvent.click(educationTab);
 
       expect(screen.getByText('한양대학교')).toBeInTheDocument();
@@ -191,7 +199,7 @@ describe('ProfilePage Component', () => {
     it('displays education descriptions', () => {
       renderWithRouter(<ProfilePage />);
 
-      const educationTab = screen.getByText('학력');
+      const educationTab = screen.getByText('profilePage.tabEducation');
       fireEvent.click(educationTab);
 
       expect(screen.getByText(/인공지능융합대학원/)).toBeInTheDocument();
@@ -205,7 +213,7 @@ describe('ProfilePage Component', () => {
 
       const buttons = screen.getAllByRole('button');
       const projectsTab = buttons.find((btn) =>
-        btn.textContent?.includes('Code프로젝트')
+        btn.textContent?.includes('profilePage.tabProjects')
       );
       expect(projectsTab).toBeDefined();
       fireEvent.click(projectsTab!);
@@ -219,7 +227,7 @@ describe('ProfilePage Component', () => {
 
       const buttons = screen.getAllByRole('button');
       const projectsTab = buttons.find((btn) =>
-        btn.textContent?.includes('Code프로젝트')
+        btn.textContent?.includes('profilePage.tabProjects')
       );
       expect(projectsTab).toBeDefined();
       fireEvent.click(projectsTab!);
@@ -257,8 +265,8 @@ describe('ProfilePage Component', () => {
 
       // Check that the component renders without errors
       // Since icons are mocked, check for actual content
-      expect(screen.getByText('이호진')).toBeInTheDocument();
-      expect(screen.getByText('AI Researcher & Educator')).toBeInTheDocument();
+      expect(screen.getByText('profilePage.name')).toBeInTheDocument();
+      expect(screen.getByText('profilePage.role')).toBeInTheDocument();
     });
   });
 });

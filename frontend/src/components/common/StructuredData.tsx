@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { CONTACT_EMAIL } from '../../utils/constants';
 
 type SchemaType =
   | 'Organization'
@@ -51,7 +52,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
         '@type': 'ContactPoint',
         telephone: '+82-10-7279-0380',
         contactType: 'customer service',
-        email: 'researcherhojin@gmail.com',
+        email: CONTACT_EMAIL,
         availableLanguage: ['Korean', 'English'],
       },
       sameAs: ['https://github.com/researcherhojin', 'https://emelmujiro.com'],
@@ -133,7 +134,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
         '@type': 'Organization',
         name: '에멜무지로',
       },
-      email: 'researcherhojin@gmail.com',
+      email: CONTACT_EMAIL,
       telephone: '+82-10-7279-0380',
       url: 'https://researcherhojin.github.io/emelmujiro/#/profile',
       sameAs: ['https://github.com/researcherhojin'],
@@ -169,7 +170,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
         'AI 교육 및 컨설팅 전문 기업. 맞춤형 AI 솔루션과 교육 프로그램을 제공합니다.',
       url: 'https://researcherhojin.github.io/emelmujiro',
       telephone: '+82-10-7279-0380',
-      email: 'researcherhojin@gmail.com',
+      email: CONTACT_EMAIL,
       address: {
         '@type': 'PostalAddress',
         addressCountry: 'KR',

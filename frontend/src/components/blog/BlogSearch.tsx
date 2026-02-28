@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { BlogPost } from '../../types';
 import { useBlog } from '../../contexts/BlogContext';
 import { api } from '../../services/api';
@@ -10,6 +11,7 @@ interface BlogSearchProps {
 }
 
 const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
+  const { t } = useTranslation();
   const { posts } = useBlog();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<BlogPost[]>([]);
@@ -131,7 +133,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
             onChange={handleSearchChange}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-            placeholder="블로그 검색..."
+            placeholder={t('blog.searchPlaceholder')}
             className="w-full pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {searchTerm && (
@@ -151,12 +153,14 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
         <div className="absolute top-full mt-2 w-full bg-white border rounded-lg shadow-lg z-10">
           <div className="p-2">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-500">최근 검색</span>
+              <span className="text-sm text-gray-500">
+                {t('blog.recentSearches')}
+              </span>
               <button
                 onClick={clearRecentSearches}
                 className="text-xs text-blue-600 hover:text-blue-800"
               >
-                모두 지우기
+                {t('blog.clearAll')}
               </button>
             </div>
             {recentSearches.map((term, index) => (
@@ -176,9 +180,11 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
       {searchTerm && (
         <div className="mt-2 text-sm text-gray-600">
           {searchResults.length > 0 ? (
-            <span>{searchResults.length}개의 검색 결과</span>
+            <span>
+              {t('blog.searchResults', { count: searchResults.length })}
+            </span>
           ) : (
-            <span>검색 결과가 없습니다</span>
+            <span>{t('blog.noSearchResults')}</span>
           )}
         </div>
       )}

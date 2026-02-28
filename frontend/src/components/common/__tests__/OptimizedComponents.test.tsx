@@ -95,6 +95,36 @@ describe('OptimizedCard', () => {
     expect(card).toBeInTheDocument();
   });
 
+  it('calls onClick on Enter key press', () => {
+    const onClick = vi.fn();
+    const { container } = render(
+      <OptimizedCard title="Keyboard" onClick={onClick} />
+    );
+
+    const card = container.querySelector('[role="button"]')!;
+    fireEvent.keyDown(card, { key: 'Enter' });
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onClick on Space key press', () => {
+    const onClick = vi.fn();
+    const { container } = render(
+      <OptimizedCard title="Keyboard" onClick={onClick} />
+    );
+
+    const card = container.querySelector('[role="button"]')!;
+    fireEvent.keyDown(card, { key: ' ' });
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not add keyboard handler when no onClick', () => {
+    const { container } = render(<OptimizedCard title="No Click" />);
+
+    const card = container.firstChild;
+    expect(card).not.toHaveAttribute('role');
+    expect(card).not.toHaveAttribute('tabindex');
+  });
+
   it('has displayName set to OptimizedCard', () => {
     expect(OptimizedCard.displayName).toBe('OptimizedCard');
   });

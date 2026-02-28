@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 from django.core.validators import URLValidator
 from django.contrib.auth.models import User
 import uuid
@@ -20,15 +21,19 @@ class BlogPost(models.Model):
     ]
 
     title = models.CharField(max_length=200, verbose_name="제목")
+    slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="슬러그")
     description = models.TextField(verbose_name="설명")
     content = models.TextField(verbose_name="내용")
+    author = models.CharField(max_length=100, default="이호진", verbose_name="작성자")
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, verbose_name="카테고리")
+    tags = models.JSONField(default=list, blank=True, verbose_name="태그")
     date = models.DateTimeField(default=timezone.now, verbose_name="작성일")
     image_url = models.URLField(blank=True, null=True, validators=[URLValidator()], verbose_name="이미지 URL")
     link = models.URLField(blank=True, null=True, validators=[URLValidator()], verbose_name="관련 링크")
     is_published = models.BooleanField(default=True, verbose_name="공개 여부")
     is_featured = models.BooleanField(default=False, verbose_name="추천 글")
     view_count = models.PositiveIntegerField(default=0, verbose_name="조회수")
+    likes = models.PositiveIntegerField(default=0, verbose_name="좋아요")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성일")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="수정일")
 
@@ -36,6 +41,19 @@ class BlogPost(models.Model):
         ordering = ["-date"]
         verbose_name = "블로그 포스트"
         verbose_name_plural = "블로그 포스트"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title, allow_unicode=True)
+            if not base_slug:
+                base_slug = f"post-{self.pk or 'new'}"
+            slug = base_slug
+            counter = 1
+            while BlogPost.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title

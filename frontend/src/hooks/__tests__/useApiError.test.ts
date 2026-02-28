@@ -392,12 +392,10 @@ describe('useApiError', () => {
     });
   });
 
-  // Note: retryApiCall is not implemented in the current version
-  // These tests are commented out until the feature is added
   describe('retryApiCall', () => {
-    it('would test retry logic if implemented', () => {
-      // Placeholder for future implementation
-      expect(true).toBe(true);
+    it('hook does not expose retry logic yet', () => {
+      const { result } = renderHook(() => useApiError());
+      expect(result.current).not.toHaveProperty('retryApiCall');
     });
   });
 });

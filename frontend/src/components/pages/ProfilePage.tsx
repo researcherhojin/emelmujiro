@@ -8,6 +8,7 @@ import {
   Code,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
 import {
@@ -28,6 +29,7 @@ type ProjectCategory =
   | 'research';
 
 const ProfilePage: React.FC = memo(() => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('career');
   const [projectFilter, setProjectFilter] = useState<ProjectCategory>('all');
   const navigate = useNavigate();
@@ -52,9 +54,9 @@ const ProfilePage: React.FC = memo(() => {
   return (
     <>
       <SEOHelmet
-        title="대표 프로필 - 이호진"
-        description="AI/ML 전문가, 풀스택 개발자, IT 교육 전문가. 에멜무지로 대표 이호진의 경력과 전문 분야를 소개합니다."
-        keywords="이호진, AI 전문가, 머신러닝 전문가, IT 강사, 에멜무지로 대표, 프로그래밍 교육, 인공지능 컨설팅"
+        title={t('profilePage.seoTitle')}
+        description={t('profilePage.seoDescription')}
+        keywords={t('profilePage.seoKeywords')}
         url="https://researcherhojin.github.io/emelmujiro/profile"
       />
       <StructuredData type="Person" />
@@ -68,17 +70,17 @@ const ProfilePage: React.FC = memo(() => {
                 CEO PROFILE
               </span>
               <h1 className="mt-4 text-5xl sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white">
-                이호진
+                {t('profilePage.name')}
               </h1>
               <p className="mt-6 text-xl font-medium text-gray-600 dark:text-gray-400">
-                AI Researcher & Educator
+                {t('profilePage.role')}
               </p>
               <div className="mt-8 flex justify-center">
                 <button
                   onClick={handleBackClick}
                   className="inline-flex items-center px-6 py-3 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all focus:outline-none"
                 >
-                  ← 메인으로 돌아가기
+                  ← {t('profilePage.backToMain')}
                 </button>
               </div>
             </div>
@@ -90,7 +92,7 @@ const ProfilePage: React.FC = memo(() => {
                   {projectStats.totalProjects}
                 </div>
                 <p className="text-base font-medium text-gray-600 dark:text-gray-400">
-                  완료 프로젝트
+                  {t('profilePage.completedProjects')}
                 </p>
               </div>
               <div className="text-center bg-gray-50 dark:bg-gray-800 rounded-3xl p-8 border-2 border-gray-100 dark:border-gray-700">
@@ -98,7 +100,7 @@ const ProfilePage: React.FC = memo(() => {
                   {projectStats.totalStudents}
                 </div>
                 <p className="text-base font-medium text-gray-600 dark:text-gray-400">
-                  누적 교육생
+                  {t('profilePage.totalStudents')}
                 </p>
               </div>
               <div className="text-center bg-gray-50 dark:bg-gray-800 rounded-3xl p-8 border-2 border-gray-100 dark:border-gray-700">
@@ -106,7 +108,7 @@ const ProfilePage: React.FC = memo(() => {
                   {projectStats.partnerCompanies}
                 </div>
                 <p className="text-base font-medium text-gray-600 dark:text-gray-400">
-                  협력 기업
+                  {t('profilePage.partnerCompanies')}
                 </p>
               </div>
               <div className="text-center bg-gray-50 dark:bg-gray-800 rounded-3xl p-8 border-2 border-gray-100 dark:border-gray-700">
@@ -114,7 +116,7 @@ const ProfilePage: React.FC = memo(() => {
                   {projectStats.yearsOfExperience}
                 </div>
                 <p className="text-base font-medium text-gray-600 dark:text-gray-400">
-                  교육 경력
+                  {t('profilePage.educationCareer')}
                 </p>
               </div>
             </div>
@@ -136,7 +138,7 @@ const ProfilePage: React.FC = memo(() => {
                   style={{ outline: 'none', boxShadow: 'none' }}
                 >
                   <Briefcase className="w-4 h-4 inline-block mr-2" />
-                  경력
+                  {t('profilePage.tabCareer')}
                 </button>
                 <button
                   onClick={() => handleTabChange('education')}
@@ -148,7 +150,7 @@ const ProfilePage: React.FC = memo(() => {
                   style={{ outline: 'none', boxShadow: 'none' }}
                 >
                   <GraduationCap className="w-4 h-4 inline-block mr-2" />
-                  학력
+                  {t('profilePage.tabEducation')}
                 </button>
                 <button
                   onClick={() => handleTabChange('projects')}
@@ -160,7 +162,7 @@ const ProfilePage: React.FC = memo(() => {
                   style={{ outline: 'none', boxShadow: 'none' }}
                 >
                   <Code className="w-4 h-4 inline-block mr-2" />
-                  프로젝트
+                  {t('profilePage.tabProjects')}
                 </button>
               </nav>
             </div>
@@ -174,12 +176,11 @@ const ProfilePage: React.FC = memo(() => {
               <div className="space-y-8">
                 <div className="text-center mb-12">
                   <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
-                    경력 사항
+                    {t('profilePage.careerHistory')}
                   </h2>
                 </div>
 
                 <div className="relative">
-                  {/* Timeline Line - 모바일에서는 숨김 */}
                   <div className="hidden md:block absolute left-[140px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700"></div>
 
                   <div className="space-y-6 md:space-y-8">
@@ -188,7 +189,6 @@ const ProfilePage: React.FC = memo(() => {
                         key={index}
                         className="flex flex-col md:flex-row gap-4 md:gap-8 items-start group relative"
                       >
-                        {/* Period - 개선된 타이포그래피 */}
                         <div className="flex-shrink-0 w-full md:w-[120px] md:text-right">
                           <div className="inline-block md:block px-4 py-2 md:p-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent rounded-lg md:rounded-none">
                             <div className="text-sm font-bold text-gray-900 dark:text-white md:text-gray-600 md:dark:text-gray-400 tracking-wide">
@@ -197,10 +197,8 @@ const ProfilePage: React.FC = memo(() => {
                           </div>
                         </div>
 
-                        {/* Timeline Dot - 모바일에서는 숨김 */}
                         <div className="hidden md:block absolute left-[134px] top-3 w-4 h-4 bg-white dark:bg-gray-900 border-3 border-gray-400 dark:border-gray-500 group-hover:border-gray-900 dark:group-hover:border-white rounded-full shadow-md z-10 transition-all"></div>
 
-                        {/* Content Card - 개선된 레이아웃 */}
                         <div className="flex-grow bg-white dark:bg-gray-800 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-grow">
@@ -214,7 +212,7 @@ const ProfilePage: React.FC = memo(() => {
                             {item.current && (
                               <span className="flex-shrink-0 ml-4 inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 dark:bg-green-900 text-black dark:text-white">
                                 <Clock className="w-3 h-3 mr-1" />
-                                재직중
+                                {t('profilePage.currentlyEmployed')}
                               </span>
                             )}
                           </div>
@@ -233,12 +231,11 @@ const ProfilePage: React.FC = memo(() => {
               <div className="space-y-8">
                 <div className="text-center mb-12">
                   <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
-                    학력 사항
+                    {t('profilePage.educationHistory')}
                   </h2>
                 </div>
 
                 <div className="relative">
-                  {/* Timeline Line - 모바일에서는 숨김 */}
                   <div className="hidden md:block absolute left-[140px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700"></div>
 
                   <div className="space-y-6 md:space-y-8">
@@ -247,7 +244,6 @@ const ProfilePage: React.FC = memo(() => {
                         key={index}
                         className="flex flex-col md:flex-row gap-4 md:gap-8 items-start group relative"
                       >
-                        {/* Period - 개선된 타이포그래피 */}
                         <div className="flex-shrink-0 w-full md:w-[120px] md:text-right">
                           <div className="inline-block md:block px-4 py-2 md:p-0 bg-gray-100 dark:bg-gray-800 md:bg-transparent rounded-lg md:rounded-none">
                             <div className="text-sm font-bold text-gray-900 dark:text-white md:text-gray-600 md:dark:text-gray-400 tracking-wide whitespace-pre-line">
@@ -256,10 +252,8 @@ const ProfilePage: React.FC = memo(() => {
                           </div>
                         </div>
 
-                        {/* Timeline Dot - 모바일에서는 숨김 */}
                         <div className="hidden md:block absolute left-[134px] top-3 w-4 h-4 bg-white dark:bg-gray-900 border-3 border-gray-400 dark:border-gray-500 group-hover:border-gray-900 dark:group-hover:border-white rounded-full shadow-md z-10 transition-all"></div>
 
-                        {/* Content Card - 개선된 레이아웃 */}
                         <div className="flex-grow bg-white dark:bg-gray-800 p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
                           <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
                             {item.school}
@@ -278,51 +272,51 @@ const ProfilePage: React.FC = memo(() => {
 
                 <div className="mt-16">
                   <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-8 text-center">
-                    자격 및 인증
+                    {t('profilePage.certificationsTitle')}
                   </h3>
 
                   <div className="grid md:grid-cols-2 gap-8">
                     <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
                       <Award className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors mb-4" />
                       <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                        ADsP
+                        {t('profilePage.adspTitle')}
                       </h4>
                       <p className="text-gray-600 dark:text-gray-400">
-                        데이터 분석 준전문가
+                        {t('profilePage.adspDescription')}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-                        한국데이터산업진흥원 (2025.03)
+                        {t('profilePage.adspIssuer')}
                       </p>
                     </div>
 
                     <div className="group bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all">
                       <Building className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors mb-4" />
                       <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                        NCS 직무능력
+                        {t('profilePage.ncsTitle')}
                       </h4>
                       <ul className="space-y-2">
                         <li className="flex justify-between text-sm">
                           <span className="text-gray-600 dark:text-gray-400">
-                            정보기술전략·계획
+                            {t('profilePage.ncsStrategy')}
                           </span>
                           <span className="font-bold text-gray-900 dark:text-white">
-                            57점
+                            {t('profilePage.ncsScore')}
                           </span>
                         </li>
                         <li className="flex justify-between text-sm">
                           <span className="text-gray-600 dark:text-gray-400">
-                            정보기술개발
+                            {t('profilePage.ncsDevelopment')}
                           </span>
                           <span className="font-bold text-gray-900 dark:text-white">
-                            57점
+                            {t('profilePage.ncsScore')}
                           </span>
                         </li>
                         <li className="flex justify-between text-sm">
                           <span className="text-gray-600 dark:text-gray-400">
-                            인공지능
+                            {t('profilePage.ncsAI')}
                           </span>
                           <span className="font-bold text-gray-900 dark:text-white">
-                            57점
+                            {t('profilePage.ncsScore')}
                           </span>
                         </li>
                       </ul>
@@ -336,10 +330,9 @@ const ProfilePage: React.FC = memo(() => {
               <div className="space-y-8">
                 <div className="text-center mb-8">
                   <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-6">
-                    주요 프로젝트
+                    {t('profilePage.majorProjects')}
                   </h2>
 
-                  {/* 카테고리 필터 버튼들 */}
                   <div className="flex flex-wrap justify-center gap-2 mb-8">
                     {projectCategories.map((category) => (
                       <button
@@ -379,7 +372,7 @@ const ProfilePage: React.FC = memo(() => {
                           </h3>
                           {project.highlight && (
                             <span className="inline-block mt-1 px-2 py-1 text-xs font-bold bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">
-                              진행중
+                              {t('profilePage.inProgress')}
                             </span>
                           )}
                         </div>
@@ -404,11 +397,10 @@ const ProfilePage: React.FC = memo(() => {
                   ))}
                 </div>
 
-                {/* 프로젝트가 없을 때 메시지 */}
                 {filteredProjects.length === 0 && (
                   <div className="text-center py-12">
                     <p className="text-gray-500 dark:text-gray-400">
-                      해당 카테고리에 프로젝트가 없습니다.
+                      {t('profilePage.noProjectsInCategory')}
                     </p>
                   </div>
                 )}

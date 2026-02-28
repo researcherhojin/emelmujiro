@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail, Phone, ExternalLink, X } from 'lucide-react';
 import { getServices, type ServiceDetail } from '../../data/footerData';
+import { CONTACT_EMAIL } from '../../utils/constants';
 
 interface ServiceModalProps {
   isOpen: boolean;
@@ -271,7 +272,7 @@ const Footer: React.FC = memo(() => {
                     className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0"
                     aria-hidden="true"
                   />
-                  <span className="break-all">researcherhojin@gmail.com</span>
+                  <span className="break-all">{CONTACT_EMAIL}</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                   <Phone

@@ -2,6 +2,19 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import BlogComments from '../BlogComments';
 
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, opts?: Record<string, unknown>) => {
+      if (opts && 'count' in opts) return `${key}(${opts.count})`;
+      return key;
+    },
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 // Mock localStorage comments
 const mockComments = {
   '1': [
@@ -40,9 +53,8 @@ describe('BlogComments', () => {
   it('renders comments section', () => {
     render(<BlogComments {...defaultProps} />);
 
-    // BlogComments가 h3로 렌더링하는지 확인
     const heading = screen.getByRole('heading', { level: 3 });
-    expect(heading).toHaveTextContent('댓글');
+    expect(heading).toHaveTextContent('blog.commentsCount');
   });
 
   it('displays comments from localStorage', () => {
@@ -61,17 +73,16 @@ describe('BlogComments', () => {
   it('shows empty state when no comments', () => {
     render(<BlogComments {...defaultProps} />);
 
-    const emptyMessage = screen.getByText(/첫 번째 댓글을 작성해보세요/i);
+    const emptyMessage = screen.getByText('blog.noCommentsYet');
     expect(emptyMessage).toBeInTheDocument();
   });
 
   it('handles comment submission', () => {
     render(<BlogComments {...defaultProps} />);
 
-    // Find form inputs - 실제 placeholder 텍스트에 맞게 수정
-    const nameInput = screen.getByPlaceholderText('이름');
-    const contentInput = screen.getByPlaceholderText('댓글을 작성해주세요...');
-    const submitButton = screen.getByText(/댓글 작성/i);
+    const nameInput = screen.getByPlaceholderText('blog.namePlaceholder');
+    const contentInput = screen.getByPlaceholderText('blog.commentPlaceholder');
+    const submitButton = screen.getByText('blog.writeComment');
 
     // Fill and submit form
     fireEvent.change(nameInput, { target: { value: 'Test User' } });
@@ -88,7 +99,9 @@ describe('BlogComments', () => {
   it('validates required fields', () => {
     render(<BlogComments {...defaultProps} />);
 
-    const submitButton = screen.getByRole('button', { name: /댓글 작성/i });
+    const submitButton = screen.getByRole('button', {
+      name: /blog\.writeComment/,
+    });
     const initialCommentCount = screen.queryAllByTestId('comment-item').length;
 
     // Try to submit empty form
@@ -102,11 +115,13 @@ describe('BlogComments', () => {
   it('clears form after successful submission', () => {
     render(<BlogComments {...defaultProps} />);
 
-    const nameInput = screen.getByPlaceholderText('이름') as HTMLInputElement;
+    const nameInput = screen.getByPlaceholderText(
+      'blog.namePlaceholder'
+    ) as HTMLInputElement;
     const contentInput = screen.getByPlaceholderText(
-      '댓글을 작성해주세요...'
+      'blog.commentPlaceholder'
     ) as HTMLTextAreaElement;
-    const submitButton = screen.getByText(/댓글 작성/i);
+    const submitButton = screen.getByText('blog.writeComment');
 
     // Fill form
     fireEvent.change(nameInput, { target: { value: 'Test User' } });
@@ -127,7 +142,7 @@ describe('BlogComments', () => {
     render(<BlogComments {...defaultProps} />);
 
     // Should show empty state
-    const emptyMessage = screen.getByText(/첫 번째 댓글을 작성해보세요/i);
+    const emptyMessage = screen.getByText('blog.noCommentsYet');
     expect(emptyMessage).toBeInTheDocument();
   });
 
@@ -157,14 +172,14 @@ describe('BlogComments', () => {
     render(<BlogComments {...defaultProps} />);
 
     // Find and click reply button
-    const replyButtons = screen.getAllByText('답글');
+    const replyButtons = screen.getAllByText('blog.reply');
     fireEvent.click(replyButtons[0]);
 
     // Reply form should be visible with correct placeholder
-    const replyInput = screen.getByPlaceholderText('답글을 작성해주세요...');
+    const replyInput = screen.getByPlaceholderText('blog.replyPlaceholder');
     expect(replyInput).toBeInTheDocument();
 
     // Reply submit button should be visible
-    expect(screen.getByText(/답글 작성/i)).toBeInTheDocument();
+    expect(screen.getByText('blog.writeReply')).toBeInTheDocument();
   });
 });
