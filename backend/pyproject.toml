@@ -18,7 +18,7 @@ dependencies = [
     "django-extensions==4.1",
     "djangorestframework-simplejwt==5.5.1",
     "ipython==8.37.0",
-    "drf-yasg==1.21.10",
+    "drf-yasg==1.21.15",
     "gunicorn==23.0.0",
     "psycopg2-binary==2.9.10",
     "whitenoise==6.9.0",
