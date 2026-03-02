@@ -42,6 +42,11 @@ const AboutPage: React.FC = memo(() => {
       titleKey: 'about.timeline.2025.title',
       descriptionKey: 'about.timeline.2025.description',
     },
+    {
+      year: '2026',
+      titleKey: 'about.timeline.2026.title',
+      descriptionKey: 'about.timeline.2026.description',
+    },
   ];
 
   const companyValues: CompanyValue[] = [
