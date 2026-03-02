@@ -50,7 +50,7 @@ jobs:
 
       - name: Upload test coverage
         if: always()
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: frontend-coverage
           path: frontend/coverage/
@@ -141,7 +141,7 @@ jobs:
           VITE_API_URL: https://api.emelmujiro.com
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v8
+        uses: actions/upload-artifact@v7
         with:
           name: frontend-build
           path: frontend/build/
@@ -186,3 +186,15 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # ========================================
+  # Deploy Backend (placeholder — activate after choosing platform)
+  # ========================================
+  # deploy-backend:
+  #   name: Deploy Backend
+  #   needs: [backend-test]
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v5
+  #     # Platform-specific deploy steps here (Railway / Fly.io / Render / AWS)
