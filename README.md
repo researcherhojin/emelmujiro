@@ -168,95 +168,35 @@ emelmujiro/
 | `make test`       | 프론트/백 전체 테스트 |
 | `make lint`       | 프론트/백 전체 린트   |
 
-## 향후 작업 (Roadmap)
+## Roadmap → 1.0
 
-### 1.0 릴리스 목표
+백엔드 프로덕션 배포 + Mock API 전환이 완료되면 1.0으로 전환합니다.
 
-백엔드가 프로덕션 배포되고 Mock API에서 실제 API로 전환되면 1.0으로 전환합니다.
+#### 🔴 보안
 
-#### 🔴 보안 (즉시)
+- [ ] **인증 토큰 보안** — `api.ts`에서 localStorage에 저장 중인 `authToken`/`refreshToken`을 httpOnly 쿠키로 이전 (백엔드 배포 필요)
+- [ ] **파일 업로드 보안** — 확장자 대소문자 검증, MIME 타입 확인, 파일 내용 검사 추가
 
-- [x] **XSS 취약점 제거** — `CareerSection.tsx`, `CareerSummarySection.tsx`의 `dangerouslySetInnerHTML`을 `Trans` 컴포넌트로 대체 완료
-- [x] **P0 보안 수정** — unsafe `JSON.parse` try-catch 래핑, CSP `style-src` 강화, 외부 링크 `noopener noreferrer` 일괄 적용, `Math.random` → `crypto.randomUUID`, `document.execCommand` 제거
-- [ ] **인증 토큰 보안** — `api.ts`에서 localStorage에 저장 중인 `authToken`/`refreshToken`을 httpOnly 쿠키로 이전 (XSS 공격 시 토큰 노출 위험, 백엔드 배포 필요)
-- [x] **백엔드 입력 검증** — `views.py` 쿼리 파라미터 검증 추가 (category 화이트리스트, search 길이 제한). `ContactSerializer` 검증은 이미 충분
-
-#### 🟠 데드 코드 제거
-
-- [x] **미사용 유틸리티 파일 삭제** — `utils/security.ts`, `utils/optimizeImports.ts`, `utils/backgroundSync.ts` 및 테스트 파일 삭제 완료
-- [x] **미사용 hooks 삭제** — `hooks/useAccessibility.ts`, `hooks/useApiError.ts`, `hooks/usePerformance.ts` 및 테스트 파일 삭제 완료
-- [x] **미사용 유틸리티 함수 정리** — `utils/accessibility.ts`에서 `announceToScreenReader`만 남기고 7개 미사용 함수 제거 완료
-- [x] **고아 페이지/유틸/상수/섹션 삭제** — `pages/`, `utils/seo.ts`, `utils/seoConfig.ts`, `reportWebVitals.ts`, `constants/{services,skills,statistics}.ts`, `styles/{commonStyles,theme}.ts`, `sections/{AboutSection,BlogSection}.tsx` 및 테스트 전부 삭제 (v0.9.4)
-- [x] **미사용 의존성 제거** — `@tanstack/react-virtual`, `terser`, `@types/react-router-dom`, `i18next-http-backend` 제거 (v0.9.4)
-- [x] **i18n 이중 초기화 수정** — `src/i18n/index.ts` 삭제, `src/i18n.ts`만 유지 (v0.9.4)
-- [x] **CRA 잔재 제거** — `react-app-env.d.ts` 삭제, `REACT_APP_*` env vars → `getEnvVar()` / `import.meta.env.VITE_*` 마이그레이션 (v0.9.4)
-- [x] **중복 HelmetProvider 제거** — `main.tsx`에서 제거, `App.tsx`만 유지 (v0.9.4)
-- [x] **Dependabot 설정 정리** — React 19.x, `@babel/*`, `eslint-plugin-jest` 블록 제거 (v0.9.4)
-- [x] **dead script/config 제거** — `test:ci:local` 스크립트, `lint-staged` 블록, `frontend/.github/` 삭제 (v0.9.4)
-- [x] **백엔드 데드 코드** — `BlogPostListSerializer`, `ContactAttemptSerializer` 삭제, `send-test-email` URL `DEBUG` 가드 (v0.9.4)
-
-#### 🟡 테스트 보강
-
-- [x] **미테스트 핵심 파일** — `FormContext.tsx` (24 tests), `useAppStore.ts` (42 tests) 작성 완료. `ChatContext.tsx`는 공사 중 기능이므로 후순위
-- [x] **미테스트 파일 커버** — `env.ts`, `performanceMonitor.ts`, `sentry.ts`, `seo.ts`, `mockData.ts`, `footerData.ts`, `profileData.ts`, `i18n.ts`, hooks, styles 등 11개 파일 테스트 작성 완료. `ChatContext.tsx`만 보류 (공사 중 기능)
-- [x] **약한 assertion 강화** — `api.additional.test.ts`의 `toBeDefined()` 전량 교체 (`toHaveProperty`, `toBeInstanceOf`, `toEqual` 등)
-- [x] **tsconfig.ci.json strict 모드** — `tsconfig.build.json` 확장으로 변경, `strict: true` 활성화 완료
-
-#### 🟢 접근성 & SEO
-
-- [x] **색상 대비 개선** — `text-gray-500`/`text-gray-400` → WCAG AA 기준 충족 색상으로 교체 완료 (HeroSection, Footer 등)
-- [x] **구조화 데이터 확장** — AboutPage, ProfilePage에 JSON-LD 구조화 데이터 추가 완료
-- [x] **Open Graph 메타 보강** — `og:image:width/height/alt`, `og:locale:alternate` 추가 완료
-
-#### 백엔드 프로덕션 배포
+#### 🟠 백엔드 배포
 
 - [ ] **Django 보안 설정** — SECRET_KEY 환경변수 분리, `ALLOWED_HOSTS` / `CSRF_TRUSTED_ORIGINS` 프로덕션 도메인 설정
 - [ ] **데이터베이스** — PostgreSQL 프로덕션 인스턴스 구성, 마이그레이션 적용, `select_related`/`prefetch_related` 추가
 - [ ] **배포 인프라** — Docker 프로덕션 이미지 빌드 및 배포 (Railway/Fly.io/AWS 등)
 - [ ] **이메일 백엔드** — 문의 폼 알림 이메일 발송 설정 (SMTP 또는 SendGrid)
-- [ ] **Mock API 전환** — 백엔드 배포 후 프론트엔드 `USE_MOCK_API` 조건에 프로덕션 백엔드 URL 추가
-- [ ] **공사 중 해제** — 백엔드 배포 후 Blog/Contact/Chat 라우트 원래 컴포넌트로 복원, sitemap·manifest·E2E 테스트 업데이트
-- [ ] **파일 업로드 보안** — 확장자 대소문자 검증, MIME 타입 확인, 파일 내용 검사 추가
+- [ ] **Mock API 전환** — 프론트엔드 `USE_MOCK_API` 조건에 프로덕션 백엔드 URL 추가
+- [ ] **공사 중 해제** — Blog/Contact/Chat 라우트 원래 컴포넌트로 복원, sitemap·manifest·E2E 테스트 업데이트
 
-#### 프론트엔드 개선
+#### 🟡 프론트엔드
 
 - [ ] **에러 리포팅 연동** — `logger.ts`의 `reportToErrorService()` 빈 함수에 Sentry 연동
 - [ ] **관리자 대시보드 API 연동** — AdminDashboard 컴포넌트에 실제 통계 데이터 연결 (백엔드 필요)
 - [ ] **Lighthouse 90점+ 최적화** — Performance/Accessibility/SEO 종합 점수 달성
 - [ ] **ChatContext.tsx 테스트** — Chat 기능 활성화 시 WebSocket 포함 테스트 작성
-- [ ] **환경변수 정리** — `VITE_USE_MOCK_API` 실제 반영 (현재 설정해도 무시됨), `global.d.ts` stale 선언 정리
+- [ ] **환경변수 정리** — `VITE_USE_MOCK_API` 실제 반영 (현재 무시됨), `global.d.ts` stale 선언 정리
 
-#### 🔵 CI/CD 개선
+#### 🔵 CI/CD
 
 - [ ] **artifact 버전 통일** — `upload-artifact@v7` / `download-artifact@v8` → 동일 메이저 버전으로 맞추기
-
-### 완료된 항목
-
-- [x] **Dead code 대규모 정리** — 22개 파일 삭제, 미사용 의존성 4개 제거, 환경변수 마이그레이션, 중복 제거 (v0.9.4)
-- [x] **P0 보안 일괄 수정** — JSON.parse 안전 처리, CSP 강화, noopener/noreferrer, crypto.randomUUID, execCommand 제거 (v0.9.2)
-- [x] **i18n 완전 전환** — SEOHelmet, StructuredData, NotFound, OfflineIndicator 등 잔여 컴포넌트 전량 전환 (v0.9.2)
-- [x] **WCAG AA 색상 대비** — HeroSection, Footer 등 저대비 텍스트 일괄 수정 (v0.9.2)
-- [x] **구조화 데이터 확장** — AboutPage, ProfilePage에 JSON-LD 추가 (v0.9.2)
-- [x] **테스트 대폭 확장** — 89 → 100 파일, 1373 → 1792 tests (+419). 미테스트 파일 11개 신규 커버 (v0.9.2)
-- [x] **Blog/Contact/Chat 공사 중 전환** — 미작동 기능을 UnderConstruction 페이지로 교체, sitemap·manifest·E2E 정리 (v0.9.2)
-- [x] **블로그 페이지 연결** — BlogListPage에 BlogCard/BlogSearch/페이지네이션 연결 (v0.9.1)
-- [x] **문의 페이지 연결** — ContactPage에 ContactForm/ContactInfo 연결, 폼 제출 완료 (v0.9.1)
-- [x] **채팅 시스템 재활성화** — ChatWidget 활성화, Mock WebSocket 응답, chat i18n 키 추가 (v0.9.1)
-- [x] **빌드 최적화** — Terser → esbuild 전환, 빌드 시간 ~50% 단축 (v0.9.1)
-- [x] **라이선스 변경** — MIT → Apache 2.0 (v0.9.1)
-- [x] **백엔드 CI 수정** — blog router basename 수정, backend-test 타임아웃 추가 (v0.9.1)
-- [x] **코드 정리** — deprecated `.substr()` → `.substring()` 전체 교체, 중복 i18n 키 제거 (v0.9.1)
-- [x] **i18n 전체 전환** — 전체 컴포넌트 + chat/chatContext i18n 키 (v0.8.0~0.9.1)
-- [x] **Context Provider 성능 최적화** — 5개 Provider useMemo/useCallback 적용 (v0.9.0)
-- [x] **백엔드 마이그레이션** — BlogPost 모델 slug, author, tags, likes 필드 (v0.9.0)
-- [x] **데드 코드 제거** — environment.ts, pages/ContactPage.tsx, 중복 ErrorBoundary (v0.9.0)
-- [x] **Admin 인증 가드** — ProtectedRoute 컴포넌트, /admin 라우트 보호 (v0.9.0)
-- [x] **CONTACT_EMAIL 상수 통일** — 8개 파일 → constants.ts 중앙 관리 (v0.9.0)
-- [x] **Pre-commit 훅 수정** — 루트에서 프론트+백엔드 lint-staged 통합 실행 (v0.9.0)
-- [x] **Placeholder 테스트 교체** — 19개 expect(true).toBe(true) → 실제 assertion (v0.9.0)
-- [x] **CI/CD 안정화** — artifact v4, tsconfig.build.json, VITE\_ prefix (v0.8.0)
-- [x] **보안 강화** — CSP, Trivy, minimatch, Docker npm ci (v0.7.0~0.8.0)
-- [x] **테스트 전면 복구** — 425개 스킵 → 0 스킵, Jest → Vitest (v0.6.0~0.7.0)
 
 ## 변경 이력
 
