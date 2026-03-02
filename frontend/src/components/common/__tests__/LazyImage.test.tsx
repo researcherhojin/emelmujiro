@@ -25,13 +25,14 @@ describe('LazyImage Component', () => {
   it('creates IntersectionObserver on mount', () => {
     // Mock to capture the IntersectionObserver instance
     const mockObserve = vi.fn();
-    global.IntersectionObserver = vi
-      .fn()
-      .mockImplementation((_callback, _options) => ({
+
+    global.IntersectionObserver = vi.fn(function (this: any) {
+      return {
         observe: mockObserve,
         unobserve: vi.fn(),
         disconnect: vi.fn(),
-      }));
+      };
+    }) as any;
 
     render(<LazyImage src="test.jpg" alt="Test image" />);
 

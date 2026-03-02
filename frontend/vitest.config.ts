@@ -14,12 +14,7 @@ export default defineConfig({
     testTimeout: process.env.CI ? 15000 : 10000, // 15s in CI, 10s locally
     hookTimeout: process.env.CI ? 15000 : 10000, // 15s in CI, 10s locally
     pool: 'forks', // Use forks pool for better isolation
-    poolOptions: {
-      forks: {
-        maxForks: process.env.CI ? 2 : undefined, // Limit forks in CI to manage memory
-        isolate: true, // Enable isolation for each test file
-      },
-    },
+    maxForks: process.env.CI ? 2 : undefined, // Limit forks in CI to manage memory
     isolate: true, // Enable isolation for better test stability
     clearMocks: true, // Clear all mocks between tests
     restoreMocks: true, // Restore all mocks between tests

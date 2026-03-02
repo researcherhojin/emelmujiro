@@ -25,7 +25,7 @@ const UnderConstruction: React.FC<UnderConstructionProps> = memo(
       : t('underConstruction.description');
 
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900 px-4 sm:px-6 lg:px-8 pt-20">
+      <main className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900 px-4 sm:px-6 lg:px-8 pt-32">
         {/* Icon */}
         <div className="text-center mb-8">
           <Construction
