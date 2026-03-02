@@ -21,7 +21,7 @@
 - **LLM/생성형 AI** - LLM 기반 서비스 설계 및 개발
 - **Computer Vision** - 영상 처리 및 비전 AI 솔루션
 
-## 현재 상태 (v0.9.1)
+## 현재 상태 (v0.9.5)
 
 | 항목       | 상태    | 세부사항                                   |
 | ---------- | ------- | ------------------------------------------ |
@@ -62,23 +62,23 @@ uv run python manage.py runserver
 ## 기술 스택
 
 **Frontend**
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-7.1-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss&logoColor=white)
-![Zustand](https://img.shields.io/badge/Zustand-5-orange)
-![i18next](https://img.shields.io/badge/i18next-25-26A69A?logo=i18next&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-E91E63)
-![React Router](https://img.shields.io/badge/React_Router-7-CA4245?logo=reactrouter&logoColor=white)
-![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?logo=vitest&logoColor=white)
-![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-5.0-orange)
+![i18next](https://img.shields.io/badge/i18next-25.5-26A69A?logo=i18next&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.34-E91E63)
+![React Router](https://img.shields.io/badge/React_Router-7.8-CA4245?logo=reactrouter&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-4.0-6E9F18?logo=vitest&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-1.55-2EAD33?logo=playwright&logoColor=white)
 
 **Backend**
-![Django](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)
-![DRF](https://img.shields.io/badge/DRF-3.16-A30000)
+![Django](https://img.shields.io/badge/Django-5.2.11-092E20?logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-3.16.1-A30000)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white)
-![Channels](https://img.shields.io/badge/Channels-4-092E20?logo=django&logoColor=white)
+![Redis](<https://img.shields.io/badge/Redis-7_(optional)-DC382D?logo=redis&logoColor=white>)
+![Channels](https://img.shields.io/badge/Channels-4.3-092E20?logo=django&logoColor=white)
 
 **DevOps**
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
@@ -127,7 +127,7 @@ emelmujiro/
 | **SEO**             | ✅ 완료         | React Helmet, 사이트맵, 구조화 데이터         |
 | **블로그**          | 🚧 공사 중      | 백엔드 연동 전까지 공사 중 페이지 표시        |
 | **문의하기**        | 🚧 공사 중      | 백엔드 연동 전까지 공사 중 (이메일 직접 문의) |
-| **실시간 채팅**     | 🚧 공사 중      | 백엔드 연동 전까지 비활성화                   |
+| **실시간 채팅**     | ⏸️ 1.0 이후     | WebSocket/Redis 필요, 1.0 범위에서 제외       |
 | **관리자 대시보드** | 🚧 플레이스홀더 | UI + ProtectedRoute 인증 가드, API 연동 필요  |
 
 ## 주요 명령어
@@ -210,6 +210,16 @@ emelmujiro/
 - [x] **artifact 버전 통일** — `upload-artifact@v7` 사용 (v8 미존재로 복구)
 
 ## 변경 이력
+
+### 0.9.5 (2026.03.03)
+
+- **CI 긴급 수정**: `upload-artifact@v8` → `@v7` 복구 (v8 미존재)
+- **Django 보안 강화**: SECRET_KEY 프로덕션 필수화 (`ImproperlyConfigured`), `CSRF_TRUSTED_ORIGINS` 추가, Channel Layers Redis/InMemory 분기
+- **파일 업로드 보안**: `api/validators.py` 신규 — 대소문자 무관 확장자, MIME 타입, 파일 크기 검증
+- **Mock API 전환 개선**: `USE_MOCK_API`가 `VITE_API_URL` 기반으로 자동 전환
+- **Docker 정리**: Redis `profiles: ["chat"]`로 옵셔널화, `REDIS_URL` 환경변수 제거
+- **배포 준비**: `.env.example` 통합, README 배포 플랫폼 비교표, CI `deploy-backend` 주석 placeholder
+- **테스트**: 1529개 통과 (90 파일), 0 실패, 0 스킵
 
 ### 0.9.4 (2026.03.02)
 
