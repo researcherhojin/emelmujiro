@@ -172,21 +172,25 @@ emelmujiro/
 
 백엔드 프로덕션 배포 + Mock API 전환이 완료되면 1.0으로 전환합니다.
 
-**1.0 범위**: Blog + Contact + Auth + Admin Dashboard (Chat/WebSocket은 제외)
+**1.0 범위**: Blog + Contact + Auth + Admin Dashboard (Chat/WebSocket은 1.0 이후)
 
-#### 🔴 보안
+### 남은 작업
 
-- [ ] **인증 토큰 보안** — `api.ts`에서 localStorage에 저장 중인 `authToken`/`refreshToken`을 httpOnly 쿠키로 이전 (백엔드 배포 필요)
-- [x] **파일 업로드 보안** — 확장자 대소문자 검증, MIME 타입 확인, 파일 크기 검사 (`api/validators.py`)
+| 순서 | 작업                     | 의존성 | 상태   |
+| ---- | ------------------------ | ------ | ------ |
+| 1    | **배포 플랫폼 선택**     | —      | 미결정 |
+| 2    | **백엔드 배포**          | #1     | 대기   |
+| 3    | **공사 중 해제**         | #2     | 대기   |
+| 4    | **이메일 백엔드**        | #2     | 대기   |
+| 5    | **인증 토큰 보안**       | #2     | 대기   |
+| 6    | **관리자 대시보드 연동** | #2     | 대기   |
 
-#### 🟠 백엔드 배포
-
-- [x] **Django 보안 설정** — SECRET_KEY 프로덕션 강제, `ALLOWED_HOSTS` / `CSRF_TRUSTED_ORIGINS` 도메인 설정, Redis 선택적 분기
-- [ ] **데이터베이스** — PostgreSQL 프로덕션 인스턴스 구성, 마이그레이션 적용, `select_related`/`prefetch_related` 추가
-- [ ] **배포 플랫폼 선택 및 배포** — 아래 비교표 참고
-- [ ] **이메일 백엔드** — 문의 폼 알림 이메일 발송 설정 (SMTP 또는 SendGrid)
-- [x] **Mock API 전환 로직** — `USE_MOCK_API` 조건 개선 (`VITE_API_URL` 기반 자동 전환)
-- [ ] **공사 중 해제** — Blog/Contact 라우트 원래 컴포넌트로 복원 (Chat은 1.0 이후), sitemap·manifest·E2E 업데이트
+- **#1 배포 플랫폼 선택** — 아래 비교표 참고, PostgreSQL + Django 배포
+- **#2 백엔드 배포** — DB 마이그레이션, `select_related`/`prefetch_related`, 도메인 설정
+- **#3 공사 중 해제** — Blog/Contact 라우트 복원, sitemap·manifest·E2E 업데이트
+- **#4 이메일 백엔드** — Contact 알림 이메일 (SMTP/SendGrid), 현재는 DB 저장만
+- **#5 인증 토큰 보안** — `api.ts` localStorage → httpOnly 쿠키 이전
+- **#6 관리자 대시보드 연동** — AdminDashboard에 실제 통계 데이터 연결
 
 #### 배포 플랫폼 비교
 
@@ -197,17 +201,16 @@ emelmujiro/
 | Render        | 750시간/월      | 내장         | GitHub 자동 배포           | 무료 인스턴스 sleep |
 | AWS (EC2+RDS) | 12개월 프리티어 | RDS          | 가장 유연, 프로덕션급      | 설정 복잡           |
 
-#### 🟡 프론트엔드
+### 완료된 항목
 
-- [x] **에러 리포팅 연동** — `logger.ts`의 `reportToErrorService()` Sentry `captureException` 연동 완료
-- [ ] **관리자 대시보드 API 연동** — AdminDashboard 컴포넌트에 실제 통계 데이터 연결 (백엔드 필요)
-- [x] **Lighthouse 90점+ 최적화** — Performance 기준 0.8→0.9 상향 완료
-- [ ] **ChatContext.tsx 테스트** — Chat 기능 활성화 시 WebSocket 포함 테스트 작성 (1.0 이후)
-- [x] **환경변수 정리** — `VITE_USE_MOCK_API` dead code 삭제, `global.d.ts` stale 선언 3개 정리 완료
-
-#### 🔵 CI/CD
-
-- [x] **artifact 버전 통일** — `upload-artifact@v7` 사용 (v8 미존재로 복구)
+- [x] **Django 보안 설정** — SECRET_KEY 프로덕션 강제, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS, Redis 분기
+- [x] **파일 업로드 보안** — 확장자/MIME/크기 검증 (`api/validators.py`)
+- [x] **Mock API 전환 로직** — `VITE_API_URL` 기반 자동 전환
+- [x] **CI artifact 복구** — `upload-artifact@v7` (v8 미존재)
+- [x] **Docker Redis 옵셔널화** — `profiles: ["chat"]`
+- [x] **에러 리포팅** — Sentry 연동
+- [x] **Lighthouse 90점+** — Performance 0.9 달성
+- [x] **환경변수 정리** — dead code 삭제, `global.d.ts` 정리
 
 ## 변경 이력
 
