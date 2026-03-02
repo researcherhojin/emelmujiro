@@ -9,7 +9,7 @@ Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Cons
 - **Live Site**: https://researcherhojin.github.io/emelmujiro
 - **Frontend Dev**: http://localhost:5173 (Vite) — **NOT port 3000**
 - **Backend Dev**: http://localhost:8000 (Django)
-- **Production ALWAYS uses Mock API** — GitHub Pages cannot reach the backend. See `USE_MOCK_API` in `frontend/src/services/api.ts`.
+- **Mock API** — Controlled by `USE_MOCK_API` in `frontend/src/services/api.ts`. Mock is active when `VITE_API_URL` is unset or equals the placeholder `https://api.emelmujiro.com/api`. Set `VITE_API_URL` to a real backend URL to disable mock.
 
 ## Essential Commands
 
@@ -85,9 +85,9 @@ lsof -ti:8000 | xargs kill -9
 ### Monorepo Structure
 
 - `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x + PWA (vite-plugin-pwa)
-- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`)
+- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Chat/Redis excluded from 1.0 scope
 - Root `package.json` uses npm workspaces pointing to `frontend/`
-- Docker support: `docker-compose.yml` (prod: backend + frontend/nginx + PostgreSQL + Redis) and `docker-compose.dev.yml` (dev with hot-reload)
+- Docker support: `docker-compose.yml` (prod: backend + frontend/nginx + PostgreSQL; Redis only with `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload)
 
 ### Routing
 
@@ -111,7 +111,7 @@ The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`
 
 ### Mock API System
 
-`frontend/src/services/api.ts` uses centralized env config from `src/config/env.ts`. `USE_MOCK_API` is `env.IS_TEST || env.IS_PRODUCTION`. Mock data lives in `src/services/mockData.ts`. Every API method (blog, contact, newsletter, health) has a mock path.
+`frontend/src/services/api.ts` uses centralized env config from `src/config/env.ts`. `USE_MOCK_API` is `env.IS_TEST || !env.API_URL || env.API_URL === PLACEHOLDER_API`. When `VITE_API_URL` is set to a real deployed backend URL, mock is automatically disabled. Mock data lives in `src/services/mockData.ts`. Every API method (blog, contact, newsletter, health) has a mock path.
 
 ### API Client
 
@@ -123,7 +123,7 @@ Axios-based client in `src/services/api.ts`. 30s timeout with automatic retry on
 
 ### Environment Variables
 
-`frontend/src/config/env.ts` exports `getEnvVar()` helper that checks `VITE_` prefixed vars first, falls back to `REACT_APP_` prefixed vars. New env vars should use the `VITE_` prefix. Key frontend env vars: `VITE_API_URL`, `VITE_WS_URL`, `VITE_SENTRY_DSN`, `VITE_ENABLE_SENTRY`, `VITE_ENABLE_ANALYTICS`, `VITE_ENABLE_PWA`, `VITE_GA_TRACKING_ID`, `VITE_VAPID_PUBLIC_KEY`, `VITE_CONTACT_EMAIL`. Backend env vars documented in `backend/env_example.txt`.
+`frontend/src/config/env.ts` exports `getEnvVar()` helper that checks `VITE_` prefixed vars first, falls back to `REACT_APP_` prefixed vars. New env vars should use the `VITE_` prefix. Key frontend env vars: `VITE_API_URL`, `VITE_WS_URL`, `VITE_SENTRY_DSN`, `VITE_ENABLE_SENTRY`, `VITE_ENABLE_ANALYTICS`, `VITE_ENABLE_PWA`, `VITE_GA_TRACKING_ID`, `VITE_VAPID_PUBLIC_KEY`, `VITE_CONTACT_EMAIL`. Backend env vars documented in `backend/.env.example`.
 
 ### Contact Email
 
@@ -214,7 +214,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Pipelines
 
-- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages. Backend tests run against PostgreSQL 15 (timeout: 10min). Node 22, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/upload-artifact@v7` and `actions/download-artifact@v8`.
+- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages. Backend tests run against PostgreSQL 15 (timeout: 10min). Node 22, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/upload-artifact@v7` and `actions/download-artifact@v8`. Has a commented `deploy-backend` job placeholder for future backend deployment.
 - **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy v0.34.1) + bundle size check (<10MB). Posts summary comment on PR.
 
 ## Critical Configuration
@@ -247,9 +247,12 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 
 ### Backend Django Config
 
+- `SECRET_KEY` **required** in production (`DEBUG=False`); raises `ImproperlyConfigured` if missing
 - Database: SQLite in dev, PostgreSQL when `DATABASE_URL` is set
+- Channel Layers: Redis when `REDIS_URL` is set, InMemoryChannelLayer otherwise
 - JWT: access 30min, refresh 7 days, rotation + blacklist
 - DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr
+- File upload validation: `api/validators.py` — case-insensitive extension, MIME type, size (5MB)
 - API docs: Swagger at `/api/docs/`, ReDoc at `/api/redoc/` (drf-yasg)
 - Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`. `/api/send-test-email/` only registered when `DEBUG=True`
 - Timezone: `Asia/Seoul`, language: `ko-kr`
@@ -267,7 +270,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 ## Common Pitfalls
 
 1. **Wrong port**: Frontend is 5173, not 3000
-2. **Mock API in production**: Always on, not configurable — GitHub Pages has no backend
+2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
 4. **Test count**: 90 files, 1529 tests, 0 failures, 0 skips (as of 2026-03-02)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)

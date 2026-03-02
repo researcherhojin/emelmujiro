@@ -15,16 +15,15 @@ services:
     environment:
       - DEBUG=${DEBUG:-False}
       - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-emelmujiro}
-      - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
       - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://frontend}
+      # REDIS_URL is only needed when running with the "chat" profile
+      # - REDIS_URL=redis://redis:6379/0
     env_file:
       - ./backend/.env
     depends_on:
       db:
-        condition: service_healthy
-      redis:
         condition: service_healthy
     volumes:
       - static_volume:/app/staticfiles
@@ -89,6 +88,7 @@ services:
       timeout: 5s
       retries: 5
 
+  # Redis — only started with: docker compose --profile chat up
   redis:
     image: redis:7-alpine
     container_name: emelmujiro-redis
@@ -105,6 +105,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    profiles:
+      - chat
 
   # Nginx (production profile only)
   nginx:
