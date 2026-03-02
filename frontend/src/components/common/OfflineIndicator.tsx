@@ -1,5 +1,6 @@
 import React, { useState, useEffect, memo } from 'react';
 import { WifiOff, Wifi, AlertCircle, RefreshCw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface OfflineIndicatorState {
   isOnline: boolean;
@@ -8,6 +9,7 @@ interface OfflineIndicatorState {
 }
 
 const OfflineIndicator: React.FC = memo(() => {
+  const { t } = useTranslation();
   const [state, setState] = useState<OfflineIndicatorState>({
     isOnline: navigator.onLine,
     syncStatus: 'idle',
@@ -127,11 +129,11 @@ const OfflineIndicator: React.FC = memo(() => {
     if (!isOnline) {
       return {
         icon: <WifiOff className="w-4 h-4" />,
-        title: '오프라인 상태',
+        title: t('offline.status'),
         message:
           pendingRequests > 0
-            ? `${pendingRequests}개 요청이 대기 중입니다`
-            : '일부 기능이 제한될 수 있습니다',
+            ? t('offline.pendingRequests', { count: pendingRequests })
+            : t('offline.limitedFeatures'),
         bgColor: 'bg-red-500',
         showActions: true,
       };
@@ -141,24 +143,24 @@ const OfflineIndicator: React.FC = memo(() => {
       case 'syncing':
         return {
           icon: <RefreshCw className="w-4 h-4 animate-spin" />,
-          title: '동기화 중',
-          message: '데이터를 업데이트하고 있습니다...',
+          title: t('offline.syncing'),
+          message: t('offline.syncingMessage'),
           bgColor: 'bg-blue-500',
           showActions: false,
         };
       case 'success':
         return {
           icon: <Wifi className="w-4 h-4" />,
-          title: '온라인 연결됨',
-          message: '모든 기능을 사용할 수 있습니다',
+          title: t('offline.onlineConnected'),
+          message: t('offline.allFeaturesAvailable'),
           bgColor: 'bg-green-500',
           showActions: false,
         };
       case 'error':
         return {
           icon: <AlertCircle className="w-4 h-4" />,
-          title: '동기화 오류',
-          message: '일부 데이터 동기화에 실패했습니다',
+          title: t('offline.syncError'),
+          message: t('offline.syncErrorMessage'),
           bgColor: 'bg-orange-500',
           showActions: true,
         };
@@ -203,7 +205,7 @@ const OfflineIndicator: React.FC = memo(() => {
         <button
           onClick={handleDismiss}
           className="flex-shrink-0 text-white/70 hover:text-white transition-colors"
-          aria-label="알림 닫기"
+          aria-label={t('offline.dismissAlert')}
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path
@@ -222,18 +224,18 @@ const OfflineIndicator: React.FC = memo(() => {
             onClick={handleRetry}
             className="flex-1 bg-white/10 hover:bg-white/20 text-xs py-2 px-3 rounded
                        transition-colors duration-200 font-medium"
-            aria-label="연결 상태 다시 확인"
+            aria-label={t('offline.retryConnection')}
           >
-            다시 시도
+            {t('offline.retry')}
           </button>
           {!state.isOnline && (
             <button
               onClick={() => setShowIndicator(false)}
               className="bg-white/10 hover:bg-white/20 text-xs py-2 px-3 rounded
                          transition-colors duration-200"
-              aria-label="알림 숨기기"
+              aria-label={t('offline.hideAlert')}
             >
-              숨기기
+              {t('offline.hide')}
             </button>
           )}
         </div>

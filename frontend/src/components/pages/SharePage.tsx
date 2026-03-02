@@ -58,13 +58,16 @@ ${t('share.inquiryFooter')}
 
   const handleSaveForLater = () => {
     // Save to local storage or favorites
-    const savedItems = JSON.parse(
-      localStorage.getItem('saved-content') || '[]'
-    );
+    let savedItems: SharedContent[] = [];
+    try {
+      savedItems = JSON.parse(localStorage.getItem('saved-content') || '[]');
+    } catch {
+      savedItems = [];
+    }
     const newItem = {
       ...sharedContent,
       savedAt: new Date().toISOString(),
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
     };
 
     savedItems.unshift(newItem);

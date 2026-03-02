@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { CONTACT_EMAIL } from '../../utils/constants';
 
 interface SEOHelmetProps {
@@ -25,10 +26,10 @@ interface SEOHelmetProps {
 
 const SEOHelmet: React.FC<SEOHelmetProps> = memo(
   ({
-    title = '에멜무지로',
-    description = 'AI 기술의 대중화를 선도하는 전문 컨설팅 기업',
-    keywords = 'AI 컨설팅, 머신러닝, 딥러닝, LLM, 기업 교육, AI 솔루션, 에멜무지로, emelmujiro, ChatGPT, 프롬프트 엔지니어링, 인공지능 교육, AI 전문가, 이호진',
-    author = '에멜무지로',
+    title,
+    description,
+    keywords,
+    author,
     image = 'https://researcherhojin.github.io/emelmujiro/og-image.png',
     url = 'https://researcherhojin.github.io/emelmujiro',
     type = 'website',
@@ -44,32 +45,41 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     modifiedTime,
     article,
   }) => {
-    const siteTitle = title === '에멜무지로' ? title : `${title} | 에멜무지로`;
+    const { t } = useTranslation();
+    const siteName = t('common.companyName');
+    const resolvedTitle = title || siteName;
+    const resolvedDescription = description || t('seo.site.description');
+    const resolvedKeywords = keywords || t('seo.seoHead.defaultKeywords');
+    const resolvedAuthor = author || siteName;
+    const siteTitle =
+      resolvedTitle === siteName
+        ? resolvedTitle
+        : `${resolvedTitle} | ${siteName}`;
 
     return (
       <Helmet>
         {/* Basic Meta Tags */}
         <title>{siteTitle}</title>
-        <meta name="description" content={description} />
-        <meta name="keywords" content={keywords} />
-        <meta name="author" content={author} />
+        <meta name="description" content={resolvedDescription} />
+        <meta name="keywords" content={resolvedKeywords} />
+        <meta name="author" content={resolvedAuthor} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta charSet="utf-8" />
 
         {/* Open Graph Meta Tags */}
         <meta property="og:title" content={siteTitle} />
-        <meta property="og:description" content={description} />
+        <meta property="og:description" content={resolvedDescription} />
         <meta property="og:image" content={image} />
         <meta property="og:url" content={url} />
         <meta property="og:type" content={type} />
-        <meta property="og:site_name" content="에멜무지로" />
+        <meta property="og:site_name" content={siteName} />
         <meta property="og:locale" content="ko_KR" />
         <meta property="og:locale:alternate" content="en_US" />
 
         {/* Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={siteTitle} />
-        <meta name="twitter:description" content={description} />
+        <meta name="twitter:description" content={resolvedDescription} />
         <meta name="twitter:image" content={image} />
 
         {/* Canonical URL */}
@@ -106,13 +116,13 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         <meta property="og:image:height" content="630" />
         <meta
           property="og:image:alt"
-          content="에멜무지로 - AI 교육 및 컨설팅 전문 기업"
+          content={`${siteName} - ${t('seo.seoHead.orgDescription')}`}
         />
 
         {/* Twitter additional tags */}
         <meta
           name="twitter:image:alt"
-          content="에멜무지로 - AI 교육 및 컨설팅 전문 기업"
+          content={`${siteName} - ${t('seo.seoHead.orgDescription')}`}
         />
 
         {/* Article specific meta tags */}
@@ -120,7 +130,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
           <>
             <meta
               property="article:author"
-              content={article.author || author}
+              content={article.author || resolvedAuthor}
             />
             {article.publishedTime && (
               <meta
@@ -159,33 +169,37 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
           {JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Organization',
-            name: '에멜무지로',
-            description: description,
+            name: siteName,
+            description: resolvedDescription,
             url: 'https://researcherhojin.github.io/emelmujiro',
             logo: 'https://researcherhojin.github.io/emelmujiro/logo512.png',
             founder: {
               '@type': 'Person',
-              name: '이호진',
+              name: t('seo.personName'),
             },
             contactPoint: {
               '@type': 'ContactPoint',
               email: CONTACT_EMAIL,
-              telephone: '+82-10-7279-0380',
+              telephone: t('contact.info.phone'),
               contactType: 'customer service',
               availableLanguage: ['Korean', 'English'],
             },
             address: {
               '@type': 'PostalAddress',
               addressCountry: 'KR',
-              addressLocality: '서울',
+              addressLocality: t('contact.info.address'),
             },
             sameAs: [
               'https://github.com/researcherhojin',
               'https://emelmujiro.com',
             ],
             foundingDate: '2022',
-            areaServed: '대한민국',
-            serviceType: ['AI 컨설팅', '기업 교육', 'LLM 솔루션 개발'],
+            areaServed: 'South Korea',
+            serviceType: [
+              t('services.consulting.title'),
+              t('services.education.title'),
+              t('services.llmGenai.title'),
+            ],
           })}
         </script>
       </Helmet>

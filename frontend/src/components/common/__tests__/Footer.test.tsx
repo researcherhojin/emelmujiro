@@ -181,10 +181,10 @@ describe('Footer Component', () => {
       );
       expect(email).toBeInTheDocument();
 
-      // 전화번호 정보 확인
+      // 전화번호 정보 확인 (i18n key returned by mock)
       const phoneSpans = container.querySelectorAll('span');
       const phone = Array.from(phoneSpans).find(
-        (span) => span.textContent === '010-7279-0380'
+        (span) => span.textContent === 'contact.info.phone'
       );
       expect(phone).toBeInTheDocument();
 

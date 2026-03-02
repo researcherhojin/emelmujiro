@@ -64,8 +64,7 @@
     <link rel="apple-touch-icon" href="/emelmujiro/logo192.png" />
 
     <!-- 보안 헤더 -->
-    <!-- CSP는 개발 환경에서 문제를 일으킬 수 있으므로 주석 처리 -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 https://api.github.com" /> -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://api.github.com https://*.sentry.io; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <!-- X-Frame-Options는 HTTP 헤더로만 설정 가능, meta 태그에서는 제거 -->
     <!-- <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" /> -->

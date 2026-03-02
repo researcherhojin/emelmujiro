@@ -17,15 +17,7 @@ vi.mock('react-router-dom', async () => {
 // Mock i18n translations
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => {
-      const translations: Record<string, string> = {
-        'common.about': '회사소개',
-        'common.blog': '블로그',
-        'common.profile': '대표 프로필',
-        'common.contact': '문의하기',
-      };
-      return translations[key] || key;
-    },
+    t: (key: string) => key,
     i18n: {
       changeLanguage: vi.fn(),
       language: 'ko',
@@ -41,24 +33,26 @@ describe('Navbar Component', () => {
 
   test('renders logo', () => {
     renderWithProviders(<Navbar />);
-    expect(screen.getByText('에멜무지로')).toBeInTheDocument();
+    expect(screen.getByText('common.companyName')).toBeInTheDocument();
   });
 
   test('renders navigation items', () => {
     renderWithProviders(<Navbar />);
     expect(
-      screen.getByRole('button', { name: '회사소개' })
+      screen.getByRole('button', { name: 'common.about' })
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '블로그' })).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: '대표 프로필' })
+      screen.getByRole('button', { name: 'common.blog' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'common.profile' })
     ).toBeInTheDocument();
   });
 
   test('navigates on menu item click', () => {
     renderWithProviders(<Navbar />);
 
-    const aboutButton = screen.getByRole('button', { name: '회사소개' });
+    const aboutButton = screen.getByRole('button', { name: 'common.about' });
     fireEvent.click(aboutButton);
     expect(mockNavigate).toHaveBeenCalledWith('/about');
   });
@@ -68,17 +62,17 @@ describe('Navbar Component', () => {
 
     // Mobile menu should not be visible initially
     expect(
-      screen.queryByText('회사소개', { selector: '.md\\:hidden button' })
+      screen.queryByText('common.about', { selector: '.md\\:hidden button' })
     ).not.toBeInTheDocument();
 
     // Click mobile menu button - find by aria-label
     const menuButton = screen.getByRole('button', {
-      name: '메뉴',
+      name: 'accessibility.menu',
     });
     fireEvent.click(menuButton);
 
     // Mobile menu should now be visible
-    const mobileMenuItems = screen.getAllByText('회사소개');
+    const mobileMenuItems = screen.getAllByText('common.about');
     expect(mobileMenuItems.length).toBeGreaterThan(1); // One in desktop, one in mobile
   });
 
@@ -87,7 +81,9 @@ describe('Navbar Component', () => {
 
     // Find all links and check for the logo link
     const links = screen.getAllByRole('link');
-    const logoLink = links.find((link) => link.textContent === '에멜무지로');
+    const logoLink = links.find(
+      (link) => link.textContent === 'common.companyName'
+    );
 
     expect(logoLink).toBeInTheDocument();
     expect(logoLink).toHaveAttribute('href', '#/');

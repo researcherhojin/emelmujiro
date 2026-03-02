@@ -60,6 +60,7 @@ const ProfilePage: React.FC = memo(() => {
         url="https://researcherhojin.github.io/emelmujiro/profile"
       />
       <StructuredData type="Person" />
+      <StructuredData type="Breadcrumb" />
 
       <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* Hero Section */}

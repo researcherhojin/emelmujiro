@@ -3,6 +3,15 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import DarkModeToggle from '../DarkModeToggle';
 
+// Mock i18n
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 // Mock UI Context
 const mockToggleTheme = vi.fn();
 const mockUIContextValue = {
@@ -36,8 +45,8 @@ describe('DarkModeToggle', () => {
 
     const button = screen.getByRole('button');
     expect(button).toBeInTheDocument();
-    expect(button).toHaveAttribute('aria-label', 'Switch to dark mode');
-    expect(button).toHaveAttribute('title', '다크 모드로 전환');
+    expect(button).toHaveAttribute('aria-label', 'accessibility.darkMode');
+    expect(button).toHaveAttribute('title', 'accessibility.darkMode');
   });
 
   it('renders correctly in dark mode', () => {
@@ -45,8 +54,8 @@ describe('DarkModeToggle', () => {
     render(<DarkModeToggle />);
 
     const button = screen.getByRole('button');
-    expect(button).toHaveAttribute('aria-label', 'Switch to light mode');
-    expect(button).toHaveAttribute('title', '라이트 모드로 전환');
+    expect(button).toHaveAttribute('aria-label', 'accessibility.lightMode');
+    expect(button).toHaveAttribute('title', 'accessibility.lightMode');
   });
 
   it('calls toggleTheme when clicked', () => {
@@ -74,7 +83,10 @@ describe('DarkModeToggle', () => {
     const toggleButton = screen.getByRole('button');
     expect(toggleButton).toBeInTheDocument();
     // Button should have proper attributes for light mode
-    expect(toggleButton).toHaveAttribute('aria-label', 'Switch to dark mode');
+    expect(toggleButton).toHaveAttribute(
+      'aria-label',
+      'accessibility.darkMode'
+    );
   });
 
   it('shows correct icons for dark mode', () => {
@@ -85,6 +97,9 @@ describe('DarkModeToggle', () => {
     const toggleButton = screen.getByRole('button');
     expect(toggleButton).toBeInTheDocument();
     // Button should have proper attributes for dark mode
-    expect(toggleButton).toHaveAttribute('aria-label', 'Switch to light mode');
+    expect(toggleButton).toHaveAttribute(
+      'aria-label',
+      'accessibility.lightMode'
+    );
   });
 });

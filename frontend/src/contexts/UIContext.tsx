@@ -161,7 +161,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
   const showNotification = useCallback(
     (type: NotificationType, message: string, duration: number = 5000) => {
-      const id = Date.now().toString();
+      const id = crypto.randomUUID();
       const notification: Notification = { id, type, message, duration };
 
       setNotifications((prev) => [...prev, notification]);
@@ -180,7 +180,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
       component: React.ComponentType<Record<string, unknown>>,
       props?: Record<string, unknown>
     ): string => {
-      const id = Date.now().toString();
+      const id = crypto.randomUUID();
       const modal: Modal = { id, component, props };
       setModals((prev) => [...prev, modal]);
       return id;

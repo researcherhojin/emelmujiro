@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import SEOHelmet from '../common/SEOHelmet';
+import StructuredData from '../common/StructuredData';
 import { Target, Users, Lightbulb, TrendingUp } from 'lucide-react';
 
 interface TimelineItem {
@@ -73,6 +74,8 @@ const AboutPage: React.FC = memo(() => {
         description={t('about.seo.description')}
         url="https://researcherhojin.github.io/emelmujiro/about"
       />
+      <StructuredData type="Organization" />
+      <StructuredData type="Breadcrumb" />
 
       <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* Hero Section */}

@@ -49,7 +49,8 @@
       "partners": "Partner Companies",
       "satisfaction": "Course Satisfaction"
     },
-    "expertise": "5 Years of Proven Expertise"
+    "expertise": "5 Years of Proven Expertise",
+    "since": "Since 2022 •"
   },
   "services": {
     "sectionLabel": "WHAT WE DO",
@@ -345,7 +346,7 @@
     },
     "info": {
       "email": "researcherhojin@gmail.com",
-      "phone": "+82-10-1234-5678",
+      "phone": "+82-10-7279-0380",
       "address": "Gangnam-gu, Seoul",
       "hours": "Weekdays 09:00 - 18:00",
       "emailLabel": "Email",
@@ -653,6 +654,22 @@
       "pattern": "Invalid format"
     }
   },
+  "offline": {
+    "status": "Offline",
+    "pendingRequests": "{{count}} requests pending",
+    "limitedFeatures": "Some features may be limited",
+    "syncing": "Syncing",
+    "syncingMessage": "Updating data...",
+    "onlineConnected": "Online Connected",
+    "allFeaturesAvailable": "All features are available",
+    "syncError": "Sync Error",
+    "syncErrorMessage": "Failed to sync some data",
+    "dismissAlert": "Dismiss alert",
+    "retryConnection": "Retry connection",
+    "retry": "Retry",
+    "hideAlert": "Hide alert",
+    "hide": "Hide"
+  },
   "pwa": {
     "install": "Install App",
     "installApp": "Install App",
@@ -686,7 +703,8 @@
     "closeModal": "Close modal",
     "careerSection": "Career details",
     "careerTimeline": "Career timeline by year",
-    "careerStats": "Career statistics"
+    "careerStats": "Career statistics",
+    "scrollToTop": "Scroll to top"
   },
   "footerServices": {
     "education": {

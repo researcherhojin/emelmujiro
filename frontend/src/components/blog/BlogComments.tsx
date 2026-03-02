@@ -30,7 +30,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
   const getUserId = () => {
     let userId = localStorage.getItem('userId');
     if (!userId) {
-      userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+      userId = crypto.randomUUID();
       localStorage.setItem('userId', userId);
     }
     return userId;
@@ -80,7 +80,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
     if (!newComment.trim() || !authorName.trim()) return;
 
     const comment: Comment = {
-      id: `comment_${Date.now()}`,
+      id: crypto.randomUUID(),
       postId,
       author: authorName,
       content: newComment,
@@ -102,7 +102,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
     if (!replyContent.trim() || !authorName.trim()) return;
 
     const reply: Comment = {
-      id: `reply_${Date.now()}`,
+      id: crypto.randomUUID(),
       postId,
       author: authorName,
       content: replyContent,

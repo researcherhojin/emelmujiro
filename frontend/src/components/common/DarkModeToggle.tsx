@@ -1,9 +1,16 @@
 import React, { memo } from 'react';
 import { Sun, Moon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useUI } from '../../contexts/UIContext';
 
 const DarkModeToggle: React.FC = memo(() => {
   const { theme, toggleTheme } = useUI();
+  const { t } = useTranslation();
+
+  const label =
+    theme === 'light'
+      ? t('accessibility.darkMode')
+      : t('accessibility.lightMode');
 
   return (
     <button
@@ -12,10 +19,8 @@ const DarkModeToggle: React.FC = memo(() => {
                  transition-all duration-200 ease-in-out group
                  focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
                  dark:focus:ring-offset-dark-900"
-      aria-label={
-        theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
-      }
-      title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
+      aria-label={label}
+      title={label}
     >
       <div className="relative w-5 h-5">
         {/* Sun icon for light mode */}

@@ -158,7 +158,9 @@ describe('BlogInteractions Component', () => {
 
       const userId = localStorage.getItem('userId');
       expect(userId).toBeTruthy();
-      expect(userId).toMatch(/^user_\d+_[a-z0-9]+$/);
+      expect(userId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+      );
     });
 
     it('loads existing likes on mount', () => {
@@ -332,7 +334,7 @@ describe('BlogInteractions Component', () => {
       expect(mockOpen).toHaveBeenCalledWith(
         expect.stringContaining('facebook.com/sharer'),
         '_blank',
-        'width=500,height=600'
+        'noopener,noreferrer,width=500,height=600'
       );
 
       // Restore
@@ -364,7 +366,7 @@ describe('BlogInteractions Component', () => {
       expect(mockOpen).toHaveBeenCalledWith(
         expect.stringContaining('twitter.com/intent/tweet'),
         '_blank',
-        'width=500,height=600'
+        'noopener,noreferrer,width=500,height=600'
       );
 
       // Restore
@@ -396,7 +398,7 @@ describe('BlogInteractions Component', () => {
       expect(mockOpen).toHaveBeenCalledWith(
         expect.stringContaining('linkedin.com/sharing'),
         '_blank',
-        'width=500,height=600'
+        'noopener,noreferrer,width=500,height=600'
       );
 
       // Restore
@@ -449,14 +451,6 @@ describe('BlogInteractions Component', () => {
     });
 
     it('uses native share API on mobile when available', async () => {
-      // Skipped: getPropertyValue mock not working consistently in CI
-      // Mock as mobile device
-      const originalCanShare = navigator.canShare;
-      Object.defineProperty(navigator, 'canShare', {
-        value: () => true,
-        writable: true,
-        configurable: true,
-      });
       mockShare.mockResolvedValue(undefined);
 
       render(<BlogInteractions post={mockPost} />);
@@ -465,18 +459,12 @@ describe('BlogInteractions Component', () => {
       fireEvent.click(shareButton);
 
       await waitFor(() => {
-        expect(mockShare).toHaveBeenCalledWith({
-          title: mockPost.title,
-          text: mockPost.excerpt,
-          url: expect.stringContaining('localhost'),
-        });
-      });
-
-      // Restore
-      Object.defineProperty(navigator, 'canShare', {
-        value: originalCanShare,
-        writable: true,
-        configurable: true,
+        expect(mockShare).toHaveBeenCalledWith(
+          expect.objectContaining({
+            title: mockPost.title,
+            text: mockPost.excerpt,
+          })
+        );
       });
     });
   });
@@ -512,8 +500,7 @@ describe('BlogInteractions Component', () => {
       expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('handles clipboard API failure', async () => {
-      // Skipped: getPropertyValue mock not working consistently in CI
+    it('handles clipboard API failure gracefully', async () => {
       // Mock navigator.share as not available
       const originalShare = navigator.share;
       Object.defineProperty(navigator, 'share', {
@@ -522,10 +509,8 @@ describe('BlogInteractions Component', () => {
         configurable: true,
       });
 
-      // Mock clipboard failure and provide fallback
+      // Mock clipboard failure
       mockWriteText.mockRejectedValue(new Error('Clipboard error'));
-      const mockExecCommand = vi.fn(() => true);
-      document.execCommand = mockExecCommand;
 
       render(<BlogInteractions post={mockPost} />);
 

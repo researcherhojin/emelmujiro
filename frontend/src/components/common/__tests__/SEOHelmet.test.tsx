@@ -2,6 +2,15 @@ import React from 'react';
 import { vi, describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 // Mock react-helmet-async with a Helmet that captures data
 const mockHelmetData: Record<string, any> = {};
 
@@ -66,21 +75,21 @@ describe('SEOHelmet', () => {
     renderWithHelmet(<SEOHelmet />);
 
     const data = getHelmetData();
-    expect(data.title).toBe('에멜무지로');
+    expect(data.title).toBe('common.companyName');
   });
 
   it('appends site name to custom title', () => {
     renderWithHelmet(<SEOHelmet title="About Us" />);
 
     const data = getHelmetData();
-    expect(data.title).toBe('About Us | 에멜무지로');
+    expect(data.title).toBe('About Us | common.companyName');
   });
 
   it('does not duplicate site name when title is the default', () => {
-    renderWithHelmet(<SEOHelmet title="에멜무지로" />);
+    renderWithHelmet(<SEOHelmet title="common.companyName" />);
 
     const data = getHelmetData();
-    expect(data.title).toBe('에멜무지로');
+    expect(data.title).toBe('common.companyName');
   });
 
   it('sets description meta tag', () => {
@@ -102,7 +111,7 @@ describe('SEOHelmet', () => {
     );
 
     const data = getHelmetData();
-    expect(data['og:title']).toBe('Test Page | 에멜무지로');
+    expect(data['og:title']).toBe('Test Page | common.companyName');
     expect(data['og:description']).toBe('Test description');
     expect(data['og:image']).toBe('https://example.com/img.png');
     expect(data['og:url']).toBe('https://example.com/page');
@@ -116,7 +125,7 @@ describe('SEOHelmet', () => {
 
     const data = getHelmetData();
     expect(data['twitter:card']).toBe('summary_large_image');
-    expect(data['twitter:title']).toBe('Twitter Test | 에멜무지로');
+    expect(data['twitter:title']).toBe('Twitter Test | common.companyName');
     expect(data['twitter:description']).toBe('Twitter desc');
   });
 

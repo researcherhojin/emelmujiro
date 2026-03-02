@@ -150,9 +150,14 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
       setSubmitSuccess(true);
 
       // Store in localStorage for offline support
-      const savedContacts = JSON.parse(
-        localStorage.getItem('savedContacts') || '[]'
-      );
+      let savedContacts = [];
+      try {
+        savedContacts = JSON.parse(
+          localStorage.getItem('savedContacts') || '[]'
+        );
+      } catch {
+        savedContacts = [];
+      }
       savedContacts.push({
         ...contactForm,
         timestamp: new Date().toISOString(),
@@ -172,9 +177,14 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
 
       // Save to localStorage for later sync if offline
       if (!navigator.onLine) {
-        const pendingContacts = JSON.parse(
-          localStorage.getItem('pendingContacts') || '[]'
-        );
+        let pendingContacts = [];
+        try {
+          pendingContacts = JSON.parse(
+            localStorage.getItem('pendingContacts') || '[]'
+          );
+        } catch {
+          pendingContacts = [];
+        }
         pendingContacts.push({
           ...contactForm,
           timestamp: new Date().toISOString(),

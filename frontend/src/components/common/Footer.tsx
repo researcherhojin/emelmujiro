@@ -279,7 +279,7 @@ const Footer: React.FC = memo(() => {
                     className="w-4 h-4 mr-2 flex-shrink-0"
                     aria-hidden="true"
                   />
-                  <span>010-7279-0380</span>
+                  <span>{t('contact.info.phone')}</span>
                 </div>
               </div>
             </div>

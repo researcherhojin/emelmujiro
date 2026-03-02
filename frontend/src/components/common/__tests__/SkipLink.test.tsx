@@ -6,6 +6,15 @@ import { vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import SkipLink from '../SkipLink';
 
+// Mock i18n
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 // Mock scrollIntoView globally for JSDOM
 if (!Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = vi.fn();
@@ -67,17 +76,17 @@ describe('SkipLink Component', () => {
     it('renders skip link with correct text', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toBeInTheDocument();
-      expect(skipLink).toHaveTextContent('Skip to main content');
+      expect(skipLink).toHaveTextContent('accessibility.skipToContent');
       expect(skipLink.tagName).toBe('A');
     });
 
     it('has correct href attribute pointing to main content', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveAttribute('href', '#main-content');
     });
@@ -85,7 +94,7 @@ describe('SkipLink Component', () => {
     it('is initially visually hidden', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveClass('sr-only');
     });
@@ -93,7 +102,7 @@ describe('SkipLink Component', () => {
     it('becomes visible on focus', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveClass('focus:not-sr-only');
     });
@@ -103,7 +112,7 @@ describe('SkipLink Component', () => {
     it('applies correct accessibility classes', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveClass('sr-only', 'focus:not-sr-only');
     });
@@ -111,7 +120,7 @@ describe('SkipLink Component', () => {
     it('applies correct positioning classes', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveClass(
         'focus:absolute',
@@ -124,7 +133,7 @@ describe('SkipLink Component', () => {
     it('applies correct visual styling classes', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveClass(
         'bg-blue-600',
@@ -138,7 +147,7 @@ describe('SkipLink Component', () => {
     it('applies correct focus styles', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveClass(
         'focus:outline-none',
@@ -153,7 +162,7 @@ describe('SkipLink Component', () => {
     it('handles Enter key press correctly', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Simulate Enter key press
@@ -167,7 +176,7 @@ describe('SkipLink Component', () => {
     it('prevents default behavior on Enter key press', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       fireEvent.keyDown(skipLink, { key: 'Enter' });
@@ -181,7 +190,7 @@ describe('SkipLink Component', () => {
     it('ignores other key presses', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Test various keys that should not trigger the action
@@ -199,7 +208,7 @@ describe('SkipLink Component', () => {
     it('handles case-sensitive key comparison', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Test different cases of 'enter'
@@ -219,7 +228,7 @@ describe('SkipLink Component', () => {
     it('finds and focuses main content element', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       fireEvent.keyDown(skipLink, { key: 'Enter' });
 
@@ -230,7 +239,7 @@ describe('SkipLink Component', () => {
     it('scrolls to main content with smooth behavior', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       fireEvent.keyDown(skipLink, { key: 'Enter' });
 
@@ -243,7 +252,7 @@ describe('SkipLink Component', () => {
 
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Should not throw error when element is not found
@@ -261,7 +270,7 @@ describe('SkipLink Component', () => {
 
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Should not throw error
@@ -282,7 +291,7 @@ describe('SkipLink Component', () => {
 
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Should not throw error
@@ -299,7 +308,7 @@ describe('SkipLink Component', () => {
       // Skip links should be the first focusable element on the page
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toBeInTheDocument();
       expect(skipLink).toHaveAttribute('href', '#main-content');
@@ -308,20 +317,18 @@ describe('SkipLink Component', () => {
     it('provides clear and descriptive link text', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
-      expect(skipLink).toHaveTextContent('Skip to main content');
+      expect(skipLink).toHaveTextContent('accessibility.skipToContent');
 
-      // Text should be meaningful and descriptive
-      expect(skipLink.textContent?.toLowerCase()).toContain('skip');
-      expect(skipLink.textContent?.toLowerCase()).toContain('main');
-      expect(skipLink.textContent?.toLowerCase()).toContain('content');
+      // Text should be the i18n key
+      expect(skipLink.textContent).toBe('accessibility.skipToContent');
     });
 
     it('is keyboard accessible', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Should be focusable
@@ -336,7 +343,7 @@ describe('SkipLink Component', () => {
     it('has sufficient color contrast', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Blue background with white text should provide good contrast
@@ -346,7 +353,7 @@ describe('SkipLink Component', () => {
     it('has visible focus indicator', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       expect(skipLink).toHaveClass(
@@ -362,7 +369,7 @@ describe('SkipLink Component', () => {
     it('is available to screen readers when focused', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Should have sr-only class but become visible on focus
@@ -372,7 +379,7 @@ describe('SkipLink Component', () => {
     it('provides semantic link role', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toBeInTheDocument();
     });
@@ -381,7 +388,7 @@ describe('SkipLink Component', () => {
       render(<SkipLink />);
 
       // Should be found by accessible name
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toBeInTheDocument();
     });
@@ -391,7 +398,7 @@ describe('SkipLink Component', () => {
     it('appears above other content when focused', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveClass('focus:z-50');
     });
@@ -399,7 +406,7 @@ describe('SkipLink Component', () => {
     it('has proper spacing and padding', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveClass('px-4', 'py-2');
     });
@@ -407,7 +414,7 @@ describe('SkipLink Component', () => {
     it('has rounded corners for better appearance', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveClass('rounded-md');
     });
@@ -415,7 +422,7 @@ describe('SkipLink Component', () => {
     it('is positioned consistently', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveClass('focus:top-4', 'focus:left-4');
     });
@@ -425,7 +432,7 @@ describe('SkipLink Component', () => {
     it('completes full navigation flow successfully', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // 1. User tabs to skip link
@@ -443,7 +450,7 @@ describe('SkipLink Component', () => {
     it('works with multiple interactions', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Multiple Enter presses should all work
@@ -460,7 +467,7 @@ describe('SkipLink Component', () => {
     it('handles rapid key presses', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Simulate rapid Enter key presses
@@ -475,7 +482,7 @@ describe('SkipLink Component', () => {
     it('handles mixed keyboard inputs', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Mix of different keys
@@ -492,7 +499,7 @@ describe('SkipLink Component', () => {
     it('maintains functionality when DOM changes', () => {
       render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Remove and re-add main content
@@ -520,7 +527,7 @@ describe('SkipLink Component', () => {
       rerender(<SkipLink />);
 
       // Should still be rendered correctly
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toBeInTheDocument();
     });
@@ -528,7 +535,7 @@ describe('SkipLink Component', () => {
     it('handles event listeners efficiently', () => {
       const { unmount } = render(<SkipLink />);
 
-      const skipLinks = screen.getAllByText(/skip to main content/i);
+      const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
 
       // Test that event handler works

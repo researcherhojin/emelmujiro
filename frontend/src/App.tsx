@@ -75,11 +75,7 @@ const HomePage: React.FC = memo(() => {
   return (
     <>
       <Suspense fallback={null}>
-        <SEOHelmet
-          title="AI 기반 소프트웨어 개발 및 IT 교육 전문가"
-          description="최신 기술로 비즈니스의 미래를 설계합니다. AI, 머신러닝, 딥러닝을 활용한 맞춤형 솔루션을 제공합니다."
-          url="https://researcherhojin.github.io/emelmujiro"
-        />
+        <SEOHelmet url="https://researcherhojin.github.io/emelmujiro" />
         <StructuredData type="Organization" />
         <StructuredData type="Website" />
         <StructuredData type="LocalBusiness" />

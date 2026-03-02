@@ -1,5 +1,15 @@
+import { vi } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import OfflineIndicator from '../OfflineIndicator';
+
+// Mock i18n
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
 
 describe('OfflineIndicator', () => {
   beforeEach(() => {
@@ -19,7 +29,7 @@ describe('OfflineIndicator', () => {
     render(<OfflineIndicator />);
 
     // Should not render anything when online
-    const offlineMessage = screen.queryByText(/오프라인 상태/i);
+    const offlineMessage = screen.queryByText('offline.status');
     expect(offlineMessage).not.toBeInTheDocument();
   });
 
@@ -31,7 +41,7 @@ describe('OfflineIndicator', () => {
 
     render(<OfflineIndicator />);
 
-    expect(screen.getByText(/오프라인 상태/i)).toBeInTheDocument();
+    expect(screen.getByText('offline.status')).toBeInTheDocument();
   });
 
   it('responds to online event', () => {
@@ -43,7 +53,7 @@ describe('OfflineIndicator', () => {
     render(<OfflineIndicator />);
 
     // Initially offline
-    expect(screen.getByText(/오프라인 상태/i)).toBeInTheDocument();
+    expect(screen.getByText('offline.status')).toBeInTheDocument();
 
     // Simulate going online
     act(() => {
@@ -57,7 +67,7 @@ describe('OfflineIndicator', () => {
     });
 
     // Should hide indicator
-    const offlineMessage = screen.queryByText(/오프라인 상태/i);
+    const offlineMessage = screen.queryByText('offline.status');
     expect(offlineMessage).not.toBeInTheDocument();
   });
 
@@ -70,7 +80,7 @@ describe('OfflineIndicator', () => {
     render(<OfflineIndicator />);
 
     // Initially online (no indicator)
-    expect(screen.queryByText(/오프라인 상태/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('offline.status')).not.toBeInTheDocument();
 
     // Simulate going offline
     act(() => {
@@ -84,6 +94,6 @@ describe('OfflineIndicator', () => {
     });
 
     // Should show indicator
-    expect(screen.getByText(/오프라인 상태/i)).toBeInTheDocument();
+    expect(screen.getByText('offline.status')).toBeInTheDocument();
   });
 });

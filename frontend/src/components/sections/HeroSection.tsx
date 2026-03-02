@@ -105,7 +105,7 @@ const HeroSection: React.FC = memo(() => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="hidden sm:inline">Since 2022 • </span>
+                <span className="hidden sm:inline">{t('hero.since')} </span>
                 {t('hero.expertise')}
               </span>
             </div>

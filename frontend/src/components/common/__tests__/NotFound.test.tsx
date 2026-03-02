@@ -3,6 +3,15 @@ import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import NotFound from '../NotFound';
 
+// Mock i18n
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await import('react-router-dom');
@@ -36,7 +45,7 @@ describe('NotFound', () => {
     );
 
     expect(screen.getByText('404')).toBeInTheDocument();
-    expect(screen.getByText('페이지를 찾을 수 없습니다')).toBeInTheDocument();
+    expect(screen.getByText('notFound.title')).toBeInTheDocument();
   });
 
   it('renders button to navigate home', () => {
@@ -47,7 +56,7 @@ describe('NotFound', () => {
     );
 
     const homeButton = screen.getByRole('button', {
-      name: /홈페이지로 이동/i,
+      name: /notFound\.goHome/i,
     });
     expect(homeButton).toBeInTheDocument();
 
@@ -64,7 +73,7 @@ describe('NotFound', () => {
     );
 
     const backButton = screen.getByRole('button', {
-      name: /이전 페이지로 돌아가기/i,
+      name: /notFound\.goBack/i,
     });
     expect(backButton).toBeInTheDocument();
 
@@ -90,7 +99,7 @@ describe('NotFound', () => {
       'text-gray-900'
     );
 
-    const message = screen.getByText('페이지를 찾을 수 없습니다');
+    const message = screen.getByText('notFound.title');
     expect(message).toBeInTheDocument();
   });
 
@@ -102,16 +111,16 @@ describe('NotFound', () => {
     );
 
     const aboutButton = screen.getByRole('button', {
-      name: /회사소개 페이지로 이동/i,
+      name: 'common.about',
     });
     const profileButton = screen.getByRole('button', {
-      name: /대표 프로필 페이지로 이동/i,
+      name: 'common.representativeProfile',
     });
     const contactButton = screen.getByRole('button', {
-      name: /문의하기 페이지로 이동/i,
+      name: 'common.contact',
     });
     const blogButton = screen.getByRole('button', {
-      name: /블로그 페이지로 이동/i,
+      name: 'common.blog',
     });
 
     expect(aboutButton).toBeInTheDocument();

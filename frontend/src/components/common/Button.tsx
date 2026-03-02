@@ -27,7 +27,8 @@ interface ExternalLinkProps extends BaseButtonProps {
 }
 
 interface ButtonElementProps
-  extends BaseButtonProps,
+  extends
+    BaseButtonProps,
     Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseButtonProps> {
   to?: never;
   href?: never;
@@ -129,7 +130,7 @@ const Button: React.FC<ButtonProps> = memo((props) => {
       <>
         {iconPosition === 'left' && iconElement}
         {!loading && children}
-        {loading && <span>Loading...</span>}
+        {loading && <span aria-live="polite">...</span>}
         {iconPosition === 'right' && iconElement}
       </>
     ),

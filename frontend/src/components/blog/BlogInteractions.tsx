@@ -18,7 +18,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   const getUserId = () => {
     let userId = localStorage.getItem('userId');
     if (!userId) {
-      userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+      userId = crypto.randomUUID();
       localStorage.setItem('userId', userId);
     }
     return userId;
@@ -123,40 +123,40 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   const shareToKakao = () => {
     // Note: Kakao SDK would need to be initialized in index.html
     const kakaoUrl = `https://story.kakao.com/share?url=${encodeURIComponent(shareUrl)}`;
-    window.open(kakaoUrl, '_blank', 'width=500,height=600');
+    window.open(kakaoUrl, '_blank', 'noopener,noreferrer,width=500,height=600');
   };
 
   const shareToFacebook = () => {
     const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-    window.open(fbUrl, '_blank', 'width=500,height=600');
+    window.open(fbUrl, '_blank', 'noopener,noreferrer,width=500,height=600');
   };
 
   const shareToTwitter = () => {
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`;
-    window.open(twitterUrl, '_blank', 'width=500,height=600');
+    window.open(
+      twitterUrl,
+      '_blank',
+      'noopener,noreferrer,width=500,height=600'
+    );
   };
 
   const shareToLinkedIn = () => {
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-    window.open(linkedInUrl, '_blank', 'width=500,height=600');
+    window.open(
+      linkedInUrl,
+      '_blank',
+      'noopener,noreferrer,width=500,height=600'
+    );
   };
 
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2000);
     } catch {
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = shareUrl;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2000);
+      // Clipboard API not available — silently fail
     }
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const nativeShare = async () => {

@@ -3,6 +3,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { HelmetProvider } from 'react-helmet-async';
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 // Override the global react-helmet-async mock to capture script content
 let capturedJsonLd = '';
 
@@ -56,7 +65,7 @@ describe('StructuredData', () => {
 
     expect(data['@context']).toBe('https://schema.org');
     expect(data['@type']).toBe('Organization');
-    expect(data.name).toBe('에멜무지로');
+    expect(data.name).toBe('common.companyName');
   });
 
   it('renders Website schema when type is Website', () => {
@@ -64,7 +73,7 @@ describe('StructuredData', () => {
     const data = getJsonLd();
 
     expect(data['@type']).toBe('WebSite');
-    expect(data.name).toBe('에멜무지로');
+    expect(data.name).toBe('common.companyName');
     expect(data.inLanguage).toBe('ko-KR');
   });
 
@@ -73,7 +82,7 @@ describe('StructuredData', () => {
     const data = getJsonLd();
 
     expect(data['@type']).toBe('Person');
-    expect(data.name).toBe('이호진');
+    expect(data.name).toBe('seo.personName');
     expect(data.alternateName).toBe('Hojin Lee');
     expect(data.jobTitle).toBe('AI Researcher & Educator');
   });
@@ -85,7 +94,7 @@ describe('StructuredData', () => {
     expect(data['@type']).toBe('BreadcrumbList');
     expect(data.itemListElement).toBeDefined();
     expect(data.itemListElement.length).toBeGreaterThan(0);
-    expect(data.itemListElement[0].name).toBe('홈');
+    expect(data.itemListElement[0].name).toBe('common.home');
   });
 
   it('renders Service schema with custom service props', () => {
@@ -135,8 +144,8 @@ describe('StructuredData', () => {
     const data = getJsonLd();
 
     expect(data['@type']).toBe('LocalBusiness');
-    expect(data.name).toBe('에멜무지로');
-    expect(data.telephone).toBe('+82-10-7279-0380');
+    expect(data.name).toBe('common.companyName');
+    expect(data.telephone).toBe('contact.info.phone');
   });
 
   it('renders SearchAction schema', () => {

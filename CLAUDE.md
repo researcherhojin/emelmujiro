@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform (v0.9.2). Frontend is React/TypeScript deployed to GitHub Pages; backend is Django (not yet deployed to production). Licensed under Apache 2.0.
+Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform (v0.9.1). Frontend is React/TypeScript deployed to GitHub Pages; backend is Django (not yet deployed to production). Licensed under Apache 2.0.
 
 - **Live Site**: https://researcherhojin.github.io/emelmujiro
 - **Frontend Dev**: http://localhost:5173 (Vite) — **NOT port 3000**
@@ -183,7 +183,7 @@ These are mocked globally — do NOT re-mock in individual tests:
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 89 test files, 1373 tests, 0 failures, 0 skips
+- 100 test files, 1792 tests, 0 failures, 0 skips
 
 ### E2E Testing (Playwright)
 
@@ -240,7 +240,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API in production**: Always on, not configurable — GitHub Pages has no backend
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: 89 files, 1373 tests, 0 failures, 0 skips (as of 2026-03-01)
+4. **Test count**: 100 files, 1792 tests, 0 failures, 0 skips (as of 2026-03-02)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility

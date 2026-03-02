@@ -97,7 +97,7 @@ const Navbar: React.FC = memo(() => {
             className="text-2xl font-black text-gray-900 dark:text-white hover:text-gray-800 dark:hover:text-gray-100 transition-colors tracking-tight select-none focus:outline-none border-none bg-transparent"
             style={{ outline: 'none', boxShadow: 'none' }}
           >
-            에멜무지로
+            {t('common.companyName')}
           </Link>
 
           {/* Desktop Navigation */}
@@ -145,7 +145,7 @@ const Navbar: React.FC = memo(() => {
               onClick={toggleMenu}
               className="inline-flex items-center justify-center p-2 text-gray-700 dark:text-gray-300
                               hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
-              aria-label="메뉴"
+              aria-label={t('accessibility.menu')}
             >
               {isOpen ? (
                 <X className="w-6 h-6" />

@@ -49,7 +49,8 @@
       "partners": "협력사 기업",
       "satisfaction": "강의 만족도"
     },
-    "expertise": "5년의 검증된 전문성"
+    "expertise": "5년의 검증된 전문성",
+    "since": "Since 2022 •"
   },
   "services": {
     "sectionLabel": "WHAT WE DO",
@@ -345,7 +346,7 @@
     },
     "info": {
       "email": "researcherhojin@gmail.com",
-      "phone": "+82-10-1234-5678",
+      "phone": "+82-10-7279-0380",
       "address": "서울특별시 강남구",
       "hours": "평일 09:00 - 18:00",
       "emailLabel": "이메일",
@@ -653,6 +654,22 @@
       "pattern": "올바른 형식이 아닙니다"
     }
   },
+  "offline": {
+    "status": "오프라인 상태",
+    "pendingRequests": "{{count}}개 요청이 대기 중입니다",
+    "limitedFeatures": "일부 기능이 제한될 수 있습니다",
+    "syncing": "동기화 중",
+    "syncingMessage": "데이터를 업데이트하고 있습니다...",
+    "onlineConnected": "온라인 연결됨",
+    "allFeaturesAvailable": "모든 기능을 사용할 수 있습니다",
+    "syncError": "동기화 오류",
+    "syncErrorMessage": "일부 데이터 동기화에 실패했습니다",
+    "dismissAlert": "알림 닫기",
+    "retryConnection": "연결 상태 다시 확인",
+    "retry": "다시 시도",
+    "hideAlert": "알림 숨기기",
+    "hide": "숨기기"
+  },
   "pwa": {
     "install": "앱 설치",
     "installApp": "앱 설치하기",
@@ -686,7 +703,8 @@
     "closeModal": "모달 닫기",
     "careerSection": "경력 상세",
     "careerTimeline": "연도별 경력",
-    "careerStats": "경력 통계"
+    "careerStats": "경력 통계",
+    "scrollToTop": "맨 위로 이동"
   },
   "footerServices": {
     "education": {

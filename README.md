@@ -22,13 +22,13 @@
 - **LLM/생성형 AI** - LLM 기반 서비스 설계 및 개발
 - **Computer Vision** - 영상 처리 및 비전 AI 솔루션
 
-## 현재 상태 (v0.9.2)
+## 현재 상태 (v0.9.1)
 
 | 항목       | 상태    | 세부사항                                   |
 | ---------- | ------- | ------------------------------------------ |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
-| **테스트** | ✅ 통과 | 1373 통과, 0 스킵 (89 파일)                |
+| **테스트** | ✅ 통과 | 1792 통과, 0 스킵 (100 파일)               |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                 |
 | **배포**   | ✅ 정상 | GitHub Pages                               |
@@ -182,7 +182,8 @@ emelmujiro/
 #### 🔴 보안 (즉시)
 
 - [x] **XSS 취약점 제거** — `CareerSection.tsx`, `CareerSummarySection.tsx`의 `dangerouslySetInnerHTML`을 `Trans` 컴포넌트로 대체 완료
-- [ ] **인증 토큰 보안** — `api.ts`에서 localStorage에 저장 중인 `authToken`/`refreshToken`을 httpOnly 쿠키로 이전 (XSS 공격 시 토큰 노출 위험)
+- [x] **P0 보안 수정** — unsafe `JSON.parse` try-catch 래핑, CSP `style-src` 강화, 외부 링크 `noopener noreferrer` 일괄 적용, `Math.random` → `crypto.randomUUID`, `document.execCommand` 제거
+- [ ] **인증 토큰 보안** — `api.ts`에서 localStorage에 저장 중인 `authToken`/`refreshToken`을 httpOnly 쿠키로 이전 (XSS 공격 시 토큰 노출 위험, 백엔드 배포 필요)
 - [x] **백엔드 입력 검증** — `views.py` 쿼리 파라미터 검증 추가 (category 화이트리스트, search 길이 제한). `ContactSerializer` 검증은 이미 충분
 
 #### 🟠 데드 코드 제거
@@ -194,15 +195,14 @@ emelmujiro/
 #### 🟡 테스트 보강
 
 - [x] **미테스트 핵심 파일** — `FormContext.tsx` (24 tests), `useAppStore.ts` (42 tests) 작성 완료. `ChatContext.tsx`는 공사 중 기능이므로 후순위
-- [ ] **미테스트 파일 20개** — `env.ts`, `performanceMonitor.ts`, `sentry.ts`, `seo.ts`, `mockData.ts`, `footerData.ts`, `profileData.ts`, hooks 3개, constants 4개, styles 2개, `i18n.ts`, `main.tsx`
+- [x] **미테스트 파일 커버** — `env.ts`, `performanceMonitor.ts`, `sentry.ts`, `seo.ts`, `mockData.ts`, `footerData.ts`, `profileData.ts`, `i18n.ts`, hooks, styles 등 11개 파일 테스트 작성 완료. `ChatContext.tsx`만 보류 (공사 중 기능)
 - [x] **약한 assertion 강화** — `api.additional.test.ts`의 `toBeDefined()` 전량 교체 (`toHaveProperty`, `toBeInstanceOf`, `toEqual` 등)
 - [x] **tsconfig.ci.json strict 모드** — `tsconfig.build.json` 확장으로 변경, `strict: true` 활성화 완료
 
 #### 🟢 접근성 & SEO
 
-- [ ] **색상 대비 개선** — `text-gray-500`/`text-gray-400` 사용 부분 WCAG AA 기준 대비비 검증 (HeroSection, LogosSection, Footer)
-- [ ] **포커스 관리** — `CareerSection.tsx` 드롭다운 포커스 트랩 미구현
-- [ ] **구조화 데이터 확장** — HomePage에만 JSON-LD 존재, About/Profile/Blog 페이지 누락
+- [x] **색상 대비 개선** — `text-gray-500`/`text-gray-400` → WCAG AA 기준 충족 색상으로 교체 완료 (HeroSection, Footer 등)
+- [x] **구조화 데이터 확장** — AboutPage, ProfilePage에 JSON-LD 구조화 데이터 추가 완료
 - [x] **Open Graph 메타 보강** — `og:image:width/height/alt`, `og:locale:alternate` 추가 완료
 
 #### 백엔드 프로덕션 배포
@@ -215,14 +215,20 @@ emelmujiro/
 - [ ] **공사 중 해제** — 백엔드 배포 후 Blog/Contact/Chat 라우트 원래 컴포넌트로 복원, sitemap·manifest·E2E 테스트 업데이트
 - [ ] **파일 업로드 보안** — 확장자 대소문자 검증, MIME 타입 확인, 파일 내용 검사 추가
 
-#### 성능 개선
+#### 프론트엔드 개선
 
-- [ ] **에러 리포팅 연동** — `logger.ts`의 `reportToErrorService()` 빈 함수에 Sentry 등 연동
-- [ ] **관리자 대시보드 API 연동** — AdminDashboard 컴포넌트에 실제 통계 데이터 연결
-- [ ] **Lighthouse 점수 최적화** — Performance/Accessibility/SEO 90점 이상 달성
+- [ ] **에러 리포팅 연동** — `logger.ts`의 `reportToErrorService()` 빈 함수에 Sentry 연동
+- [ ] **관리자 대시보드 API 연동** — AdminDashboard 컴포넌트에 실제 통계 데이터 연결 (백엔드 필요)
+- [ ] **Lighthouse 90점+ 최적화** — Performance/Accessibility/SEO 종합 점수 달성
+- [ ] **ChatContext.tsx 테스트** — Chat 기능 활성화 시 WebSocket 포함 테스트 작성
 
 ### 완료된 항목
 
+- [x] **P0 보안 일괄 수정** — JSON.parse 안전 처리, CSP 강화, noopener/noreferrer, crypto.randomUUID, execCommand 제거 (v0.9.2)
+- [x] **i18n 완전 전환** — SEOHelmet, StructuredData, NotFound, OfflineIndicator 등 잔여 컴포넌트 전량 전환 (v0.9.2)
+- [x] **WCAG AA 색상 대비** — HeroSection, Footer 등 저대비 텍스트 일괄 수정 (v0.9.2)
+- [x] **구조화 데이터 확장** — AboutPage, ProfilePage에 JSON-LD 추가 (v0.9.2)
+- [x] **테스트 대폭 확장** — 89 → 100 파일, 1373 → 1792 tests (+419). 미테스트 파일 11개 신규 커버 (v0.9.2)
 - [x] **Blog/Contact/Chat 공사 중 전환** — 미작동 기능을 UnderConstruction 페이지로 교체, sitemap·manifest·E2E 정리 (v0.9.2)
 - [x] **블로그 페이지 연결** — BlogListPage에 BlogCard/BlogSearch/페이지네이션 연결 (v0.9.1)
 - [x] **문의 페이지 연결** — ContactPage에 ContactForm/ContactInfo 연결, 폼 제출 완료 (v0.9.1)
@@ -245,17 +251,21 @@ emelmujiro/
 
 ## 변경 이력
 
-### 0.9.2 (2026.03.01)
+### 0.9.2 (2026.03.01~02)
 
-- **공사 중 전환**: Blog/Contact/Chat 라우트를 UnderConstruction 컴포넌트로 교체
-- **ChatWidget 제거**: AppLayout에서 ChatWidget 비활성화
-- **SEO 정리**: sitemap·robots.txt에서 공사 중 페이지 제거, PWA manifest 바로가기 정리, og:locale:alternate 추가
-- **E2E 업데이트**: blog.spec.ts, contact.spec.ts 공사 중 페이지에 맞게 재작성
+- **P0 보안 수정**: unsafe `JSON.parse` try-catch 래핑, CSP `style-src` 강화, 외부 링크 `noopener noreferrer` 일괄 적용, `Math.random` → `crypto.randomUUID`, `document.execCommand` 제거
+- **i18n 완전 전환**: SEOHelmet, StructuredData, NotFound, OfflineIndicator, ScrollToTop, SkipLink 등 잔여 컴포넌트 전량 i18n 키 전환
+- **접근성**: WCAG AA 색상 대비 미충족 텍스트 일괄 수정 (HeroSection, Footer 등 `text-gray-500/400` → 고대비 색상)
+- **SEO 확장**: AboutPage, ProfilePage에 JSON-LD 구조화 데이터 추가, sitemap·robots.txt 정리, og:locale:alternate 추가
+- **공사 중 전환**: Blog/Contact/Chat 라우트를 UnderConstruction 컴포넌트로 교체, ChatWidget 비활성화
 - **XSS 수정**: CareerSection/CareerSummarySection의 dangerouslySetInnerHTML → Trans 컴포넌트
 - **데드 코드 제거**: 미사용 유틸리티·훅·컴포넌트 34개 파일 삭제 (-3,900줄), 미사용 헬퍼 함수 제거
 - **백엔드 검증**: views.py 쿼리 파라미터 화이트리스트·길이 제한 추가
-- **테스트 추가**: FormContext (24), useAppStore (42) 신규 테스트, api.additional 약한 assertion 전량 강화
-- **테스트**: 1373개 통과 (89 파일), 0 실패, 0 스킵
+- **테스트 대폭 확장**: 89 → 100 파일, 1373 → 1792 tests (+419 tests)
+  - 신규: `i18n.ts`, `env.ts`, `performanceMonitor.ts`, `sentry.ts`, `seo.ts`, `mockData.ts`, `footerData.ts`, `profileData.ts`, hooks, styles 등 11개 파일
+  - 기존 강화: FormContext (24), useAppStore (42) 신규 테스트, api.additional 약한 assertion 전량 강화
+- **E2E 업데이트**: blog.spec.ts, contact.spec.ts 공사 중 페이지에 맞게 재작성
+- **테스트**: 1792개 통과 (100 파일), 0 실패, 0 스킵
 
 ### 0.9.1 (2026.02.28)
 

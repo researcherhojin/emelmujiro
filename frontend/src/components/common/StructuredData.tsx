@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { CONTACT_EMAIL } from '../../utils/constants';
 
 type SchemaType =
@@ -34,23 +35,25 @@ interface StructuredDataProps {
 
 const StructuredData: React.FC<StructuredDataProps> = memo(
   ({ type = 'Organization', article, service }) => {
+    const { t } = useTranslation();
+    const siteName = t('common.companyName');
+
     const organizationSchema = {
       '@context': 'https://schema.org',
       '@type': 'Organization',
-      name: '에멜무지로',
+      name: siteName,
       alternateName: 'Emelmujiro',
       url: 'https://researcherhojin.github.io/emelmujiro',
       logo: 'https://researcherhojin.github.io/emelmujiro/logo192.png',
-      description:
-        'AI 교육 및 컨설팅 전문 기업. 2022년부터 축적한 AI 교육 노하우와 실무 프로젝트 경험을 바탕으로 맞춤형 AI 솔루션 제공',
+      description: t('seo.site.description'),
       address: {
         '@type': 'PostalAddress',
         addressCountry: 'KR',
-        addressLocality: '서울',
+        addressLocality: t('contact.info.address'),
       },
       contactPoint: {
         '@type': 'ContactPoint',
-        telephone: '+82-10-7279-0380',
+        telephone: t('contact.info.phone'),
         contactType: 'customer service',
         email: CONTACT_EMAIL,
         availableLanguage: ['Korean', 'English'],
@@ -58,14 +61,8 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       sameAs: ['https://github.com/researcherhojin', 'https://emelmujiro.com'],
       founder: {
         '@type': 'Person',
-        name: '이호진',
-        jobTitle: '대표',
-        alumniOf: [
-          {
-            '@type': 'EducationalOrganization',
-            name: '서울시립대학교',
-          },
-        ],
+        name: t('seo.personName'),
+        jobTitle: 'CEO',
       },
       foundingDate: '2022',
       numberOfEmployees: {
@@ -77,19 +74,23 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
         '@type': 'Country',
         name: 'South Korea',
       },
-      serviceType: ['AI 컨설팅', '기업 교육', 'LLM 솔루션 개발'],
+      serviceType: [
+        t('services.consulting.title'),
+        t('services.education.title'),
+        t('services.llmGenai.title'),
+      ],
     };
 
     const websiteSchema = {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: '에멜무지로',
+      name: siteName,
       url: 'https://researcherhojin.github.io/emelmujiro',
-      description: 'AI 교육 및 컨설팅 전문 기업 에멜무지로의 공식 웹사이트',
+      description: t('seo.site.description'),
       inLanguage: 'ko-KR',
       publisher: {
         '@type': 'Organization',
-        name: '에멜무지로',
+        name: siteName,
       },
     };
 
@@ -100,25 +101,25 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
         {
           '@type': 'ListItem',
           position: 1,
-          name: '홈',
+          name: t('common.home'),
           item: 'https://researcherhojin.github.io/emelmujiro',
         },
         {
           '@type': 'ListItem',
           position: 2,
-          name: '회사소개',
+          name: t('common.about'),
           item: 'https://researcherhojin.github.io/emelmujiro/#/about',
         },
         {
           '@type': 'ListItem',
           position: 3,
-          name: '대표 프로필',
+          name: t('common.representativeProfile'),
           item: 'https://researcherhojin.github.io/emelmujiro/#/profile',
         },
         {
           '@type': 'ListItem',
           position: 4,
-          name: '문의하기',
+          name: t('common.contact'),
           item: 'https://researcherhojin.github.io/emelmujiro/#/contact',
         },
       ],
@@ -127,29 +128,17 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
     const personSchema = {
       '@context': 'https://schema.org',
       '@type': 'Person',
-      name: '이호진',
+      name: t('seo.personName'),
       alternateName: 'Hojin Lee',
       jobTitle: 'AI Researcher & Educator',
       worksFor: {
         '@type': 'Organization',
-        name: '에멜무지로',
+        name: siteName,
       },
       email: CONTACT_EMAIL,
-      telephone: '+82-10-7279-0380',
+      telephone: t('contact.info.phone'),
       url: 'https://researcherhojin.github.io/emelmujiro/#/profile',
       sameAs: ['https://github.com/researcherhojin'],
-      alumniOf: [
-        {
-          '@type': 'EducationalOrganization',
-          name: '한양대학교',
-          department: '인공지능융합대학원',
-        },
-        {
-          '@type': 'EducationalOrganization',
-          name: '경북대학교',
-          department: '축산생명공학과',
-        },
-      ],
       knowsAbout: [
         'AI',
         'Machine Learning',
@@ -157,7 +146,6 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
         'Python',
         'Django',
         'React',
-        '교육',
       ],
     };
 
@@ -165,17 +153,15 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       '@context': 'https://schema.org',
       '@type': 'LocalBusiness',
       '@id': 'https://researcherhojin.github.io/emelmujiro/#business',
-      name: '에멜무지로',
-      description:
-        'AI 교육 및 컨설팅 전문 기업. 맞춤형 AI 솔루션과 교육 프로그램을 제공합니다.',
+      name: siteName,
+      description: t('seo.site.description'),
       url: 'https://researcherhojin.github.io/emelmujiro',
-      telephone: '+82-10-7279-0380',
+      telephone: t('contact.info.phone'),
       email: CONTACT_EMAIL,
       address: {
         '@type': 'PostalAddress',
         addressCountry: 'KR',
-        addressLocality: '서울',
-        addressRegion: '서울특별시',
+        addressLocality: t('contact.info.address'),
       },
       geo: {
         '@type': 'GeoCoordinates',
@@ -187,22 +173,22 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       servesCuisine: null,
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
-        name: 'AI 교육 및 컨설팅 서비스',
+        name: `${t('services.education.title')} & ${t('services.consulting.title')}`,
         itemListElement: [
           {
             '@type': 'Offer',
             itemOffered: {
               '@type': 'Service',
-              name: 'AI 컨설팅',
-              description: '기업 맞춤형 AI 솔루션 컨설팅',
+              name: t('services.consulting.title'),
+              description: t('services.consulting.description'),
             },
           },
           {
             '@type': 'Offer',
             itemOffered: {
               '@type': 'Service',
-              name: 'AI 교육',
-              description: '실무진 대상 AI 활용 교육 프로그램',
+              name: t('services.education.title'),
+              description: t('services.education.description'),
             },
           },
         ],
@@ -212,35 +198,33 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
     const serviceSchema = {
       '@context': 'https://schema.org',
       '@type': 'Service',
-      name: service?.name || 'AI 컨설팅 서비스',
-      description:
-        service?.description ||
-        'AI 기술을 활용한 기업 맞춤형 솔루션 개발 및 교육',
+      name: service?.name || t('services.consulting.title'),
+      description: service?.description || t('seo.site.description'),
       provider: {
         '@type': 'Organization',
-        name: '에멜무지로',
+        name: siteName,
         url: 'https://researcherhojin.github.io/emelmujiro',
       },
       serviceType: service?.serviceType || 'AI Consulting',
-      areaServed: service?.areaServed || '대한민국',
+      areaServed: service?.areaServed || 'South Korea',
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
-        name: 'AI 서비스 목록',
+        name: t('footer.services'),
         itemListElement: [
           {
             '@type': 'Offer',
             itemOffered: {
               '@type': 'Service',
-              name: 'ChatGPT 활용 교육',
-              description: '실무진 대상 ChatGPT 및 LLM 활용 교육',
+              name: t('services.llmGenai.title'),
+              description: t('services.llmGenai.description'),
             },
           },
           {
             '@type': 'Offer',
             itemOffered: {
               '@type': 'Service',
-              name: 'AI 솔루션 개발',
-              description: '기업 맞춤형 AI 솔루션 설계 및 개발',
+              name: t('services.consulting.title'),
+              description: t('services.consulting.description'),
             },
           },
         ],
@@ -258,11 +242,11 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
             'https://researcherhojin.github.io/emelmujiro/og-image.png',
           author: {
             '@type': 'Person',
-            name: article.author || '이호진',
+            name: article.author || t('seo.personName'),
           },
           publisher: {
             '@type': 'Organization',
-            name: '에멜무지로',
+            name: siteName,
             logo: {
               '@type': 'ImageObject',
               url: 'https://researcherhojin.github.io/emelmujiro/logo192.png',
@@ -283,7 +267,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       '@id': 'https://researcherhojin.github.io/emelmujiro/#website',
-      name: '에멜무지로',
+      name: siteName,
       url: 'https://researcherhojin.github.io/emelmujiro',
       potentialAction: {
         '@type': 'SearchAction',
