@@ -4,17 +4,7 @@
 
 [![CI/CD Pipeline](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19.2.4-blue)](https://react.dev/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-
-![React](https://img.shields.io/badge/React-19.2.4-61DAFB?logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-7.3.1-646CFF?logo=vite&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4.19-06B6D4?logo=tailwindcss&logoColor=white)
-![Zustand](https://img.shields.io/badge/Zustand-5.0.11-orange)
-![Django](https://img.shields.io/badge/Django-5.2.11-092E20?logo=django&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
 **[Live Site](https://researcherhojin.github.io/emelmujiro)** | **[Report Bug](https://github.com/researcherhojin/emelmujiro/issues)**
 
@@ -71,36 +61,32 @@ uv run python manage.py runserver
 
 ## 기술 스택
 
-### Frontend
+**Frontend**
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-5-orange)
+![i18next](https://img.shields.io/badge/i18next-25-26A69A?logo=i18next&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-E91E63)
+![React Router](https://img.shields.io/badge/React_Router-7-CA4245?logo=reactrouter&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?logo=vitest&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)
 
-| 기술          | 버전    |
-| ------------- | ------- |
-| React         | 19.2.4  |
-| TypeScript    | 5.9.3   |
-| Vite          | 7.3.1   |
-| Vitest        | 4.0.18  |
-| Tailwind CSS  | 3.4.19  |
-| Zustand       | 5.0.11  |
-| i18next       | 25.8.13 |
-| Framer Motion | 12.34.3 |
-| React Router  | 7.13.1  |
+**Backend**
+![Django](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-3.16-A30000)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white)
+![Channels](https://img.shields.io/badge/Channels-4-092E20?logo=django&logoColor=white)
 
-### Backend
-
-| 기술       | 버전   |
-| ---------- | ------ |
-| Django     | 5.2.11 |
-| DRF        | 3.16.1 |
-| PostgreSQL | 15     |
-| Redis      | 7      |
-| Channels   | 4.3.1  |
-
-### DevOps
-
-- **CI/CD**: GitHub Actions (Node 22, Python 3.12)
-- **배포**: GitHub Pages (프론트엔드)
-- **컨테이너**: Docker + Docker Compose
-- **패키지 관리**: npm (프론트엔드), uv (백엔드)
+**DevOps**
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Deploy-222?logo=github&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![Node](https://img.shields.io/badge/Node-22-5FA04E?logo=nodedotjs&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![uv](https://img.shields.io/badge/uv-Package_Manager-DE5FE9)
 
 ## 프로젝트 구조
 
@@ -200,16 +186,14 @@ emelmujiro/
 - [x] **미사용 유틸리티 파일 삭제** — `utils/security.ts`, `utils/optimizeImports.ts`, `utils/backgroundSync.ts` 및 테스트 파일 삭제 완료
 - [x] **미사용 hooks 삭제** — `hooks/useAccessibility.ts`, `hooks/useApiError.ts`, `hooks/usePerformance.ts` 및 테스트 파일 삭제 완료
 - [x] **미사용 유틸리티 함수 정리** — `utils/accessibility.ts`에서 `announceToScreenReader`만 남기고 7개 미사용 함수 제거 완료
-- [ ] **고아 페이지 삭제** — `src/pages/HomePage.tsx`, `NotFound.tsx`, `ServerError.tsx` 및 테스트 파일 3개 (App.tsx에서 미사용, CRA 잔재)
-- [ ] **미사용 의존성 제거** — `@tanstack/react-virtual` (미사용), `terser` (esbuild 전환 후 불필요), `@types/react-router-dom@^5.3.3` (v7과 불일치)
-- [ ] **미사용 유틸/상수 정리** — `utils/seo.ts`, `utils/seoConfig.ts`, `reportWebVitals.ts` (CRA 잔재), `constants/services.ts`, `constants/skills.ts`, `styles/commonStyles.ts`, `styles/theme.ts` (테스트만 참조, 프로덕션 코드 미사용)
-- [ ] **i18n 이중 초기화 수정** — `src/i18n.ts`와 `src/i18n/index.ts` 두 곳에서 `.init()` 호출 → 단일화
-- [ ] **CRA 잔재 제거** — `src/react-app-env.d.ts` (`react-scripts` 참조), `REACT_APP_*` env vars → `VITE_*` 통일
-- [ ] **중복 HelmetProvider 제거** — `main.tsx`와 `App.tsx` 모두에서 래핑 → 하나만 유지
-- [ ] **Dependabot 설정 정리** — React 19.x 블록 제거 (이미 사용 중), `@babel/*`/`eslint-plugin-jest` 블록 제거 (미설치)
-- [ ] **dead script 제거** — `frontend/package.json`의 `test:ci:local` (존재하지 않는 스크립트 참조)
-- [ ] **미사용 sections 정리** — `components/sections/AboutSection.tsx`, `BlogSection.tsx` (프로덕션 미참조)
-- [ ] **백엔드 데드 코드** — `BlogPostListSerializer`, `ContactAttemptSerializer` (미사용), `NotificationConsumer` 빈 스텁, `send-test-email` URL 조건부 등록
+- [x] **고아 페이지/유틸/상수/섹션 삭제** — `pages/`, `utils/seo.ts`, `utils/seoConfig.ts`, `reportWebVitals.ts`, `constants/{services,skills,statistics}.ts`, `styles/{commonStyles,theme}.ts`, `sections/{AboutSection,BlogSection}.tsx` 및 테스트 전부 삭제 (v0.9.4)
+- [x] **미사용 의존성 제거** — `@tanstack/react-virtual`, `terser`, `@types/react-router-dom`, `i18next-http-backend` 제거 (v0.9.4)
+- [x] **i18n 이중 초기화 수정** — `src/i18n/index.ts` 삭제, `src/i18n.ts`만 유지 (v0.9.4)
+- [x] **CRA 잔재 제거** — `react-app-env.d.ts` 삭제, `REACT_APP_*` env vars → `getEnvVar()` / `import.meta.env.VITE_*` 마이그레이션 (v0.9.4)
+- [x] **중복 HelmetProvider 제거** — `main.tsx`에서 제거, `App.tsx`만 유지 (v0.9.4)
+- [x] **Dependabot 설정 정리** — React 19.x, `@babel/*`, `eslint-plugin-jest` 블록 제거 (v0.9.4)
+- [x] **dead script/config 제거** — `test:ci:local` 스크립트, `lint-staged` 블록, `frontend/.github/` 삭제 (v0.9.4)
+- [x] **백엔드 데드 코드** — `BlogPostListSerializer`, `ContactAttemptSerializer` 삭제, `send-test-email` URL `DEBUG` 가드 (v0.9.4)
 
 #### 🟡 테스트 보강
 
@@ -240,16 +224,15 @@ emelmujiro/
 - [ ] **관리자 대시보드 API 연동** — AdminDashboard 컴포넌트에 실제 통계 데이터 연결 (백엔드 필요)
 - [ ] **Lighthouse 90점+ 최적화** — Performance/Accessibility/SEO 종합 점수 달성
 - [ ] **ChatContext.tsx 테스트** — Chat 기능 활성화 시 WebSocket 포함 테스트 작성
-- [ ] **환경변수 정리** — `VITE_USE_MOCK_API` 실제 반영 (현재 설정해도 무시됨), `global.d.ts` stale 선언 정리, `REACT_APP_*` → `VITE_*` 일괄 전환
-- [ ] **Lighthouse CI 워크플로우 업데이트** — `frontend/.github/workflows/lighthouse-ci.yml` 액션 v3→v7, Node 18→22
+- [ ] **환경변수 정리** — `VITE_USE_MOCK_API` 실제 반영 (현재 설정해도 무시됨), `global.d.ts` stale 선언 정리
 
 #### 🔵 CI/CD 개선
 
 - [ ] **artifact 버전 통일** — `upload-artifact@v7` / `download-artifact@v8` → 동일 메이저 버전으로 맞추기
-- [ ] **lint-staged 중복 설정 제거** — `frontend/package.json`의 `lint-staged` 블록 제거 (루트 `.lintstagedrc.js`가 우선)
 
 ### 완료된 항목
 
+- [x] **Dead code 대규모 정리** — 22개 파일 삭제, 미사용 의존성 4개 제거, 환경변수 마이그레이션, 중복 제거 (v0.9.4)
 - [x] **P0 보안 일괄 수정** — JSON.parse 안전 처리, CSP 강화, noopener/noreferrer, crypto.randomUUID, execCommand 제거 (v0.9.2)
 - [x] **i18n 완전 전환** — SEOHelmet, StructuredData, NotFound, OfflineIndicator 등 잔여 컴포넌트 전량 전환 (v0.9.2)
 - [x] **WCAG AA 색상 대비** — HeroSection, Footer 등 저대비 텍스트 일괄 수정 (v0.9.2)
@@ -276,6 +259,15 @@ emelmujiro/
 - [x] **테스트 전면 복구** — 425개 스킵 → 0 스킵, Jest → Vitest (v0.6.0~0.7.0)
 
 ## 변경 이력
+
+### 0.9.4 (2026.03.02)
+
+- **Dead code 대규모 정리**: 22개 고아/미사용 파일 삭제 (-5,270줄), 미사용 의존성 4개 제거
+- **환경변수 마이그레이션**: `REACT_APP_*` → `getEnvVar()` / `import.meta.env.VITE_*` 전환
+- **중복 제거**: HelmetProvider 이중 래핑 수정, i18n 이중 초기화 제거, lint-staged 중복 설정 제거
+- **백엔드 정리**: 미사용 serializer 삭제, `send-test-email` URL `DEBUG` 가드
+- **README 리팩토링**: 기술 스택을 카테고리별 인라인 배지로 전환, shields.io 배지 추가
+- **테스트**: 1551개 통과 (90 파일), 0 실패, 0 스킵
 
 ### 0.9.3 (2026.03.02)
 
