@@ -183,13 +183,6 @@ class ContactSerializer(serializers.ModelSerializer):
         return value.strip() if value else value
 
 
-class ContactAttemptSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ContactAttempt
-        fields = ["ip_address", "email", "attempt_count", "last_attempt", "is_blocked"]
-        read_only_fields = ["last_attempt"]
-
-
 class NewsletterSubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsletterSubscription
@@ -215,42 +208,3 @@ class NewsletterSubscriptionSerializer(serializers.ModelSerializer):
         return value.strip() if value else value
 
 
-class BlogPostListSerializer(serializers.ModelSerializer):
-    """블로그 목록용 간단한 serializer (Frontend BlogPost type 호환)"""
-
-    excerpt = serializers.CharField(source="description", read_only=True)
-    publishedAt = serializers.DateTimeField(source="date", format="%Y-%m-%d", read_only=True)
-    imageUrl = serializers.URLField(source="image_url", read_only=True)
-    views = serializers.IntegerField(source="view_count", read_only=True)
-    published = serializers.BooleanField(source="is_published", read_only=True)
-    category_display = serializers.SerializerMethodField()
-    formatted_date = serializers.SerializerMethodField()
-
-    class Meta:
-        model = BlogPost
-        fields = [
-            "id",
-            "title",
-            "slug",
-            "excerpt",
-            "author",
-            "publishedAt",
-            "category",
-            "category_display",
-            "tags",
-            "imageUrl",
-            "image_url",
-            "date",
-            "formatted_date",
-            "published",
-            "views",
-            "view_count",
-            "likes",
-            "is_featured",
-        ]
-
-    def get_category_display(self, obj):
-        return obj.get_category_display()
-
-    def get_formatted_date(self, obj):
-        return obj.date.strftime("%Y.%m.%d")

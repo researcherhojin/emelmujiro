@@ -7,6 +7,15 @@
 [![React](https://img.shields.io/badge/React-19.2.4-blue)](https://react.dev/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
+![React](https://img.shields.io/badge/React-19.2.4-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-7.3.1-646CFF?logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4.19-06B6D4?logo=tailwindcss&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-5.0.11-orange)
+![Django](https://img.shields.io/badge/Django-5.2.11-092E20?logo=django&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+
 **[Live Site](https://researcherhojin.github.io/emelmujiro)** | **[Report Bug](https://github.com/researcherhojin/emelmujiro/issues)**
 
 </div>
@@ -28,7 +37,7 @@
 | ---------- | ------- | ------------------------------------------ |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
-| **테스트** | ✅ 통과 | 1792 통과, 0 스킵 (100 파일)               |
+| **테스트** | ✅ 통과 | 1551 통과, 0 스킵 (90 파일)                |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                 |
 | **배포**   | ✅ 정상 | GitHub Pages                               |

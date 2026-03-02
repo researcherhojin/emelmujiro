@@ -123,7 +123,7 @@ Axios-based client in `src/services/api.ts`. 30s timeout with automatic retry on
 
 ### Environment Variables
 
-`frontend/src/config/env.ts` provides a `getEnvVar()` helper that checks `VITE_` prefixed vars first, falls back to `REACT_APP_` prefixed vars. New env vars should use the `VITE_` prefix. Key frontend env vars: `VITE_API_URL`, `VITE_WS_URL`, `VITE_SENTRY_DSN`, `VITE_ENABLE_SENTRY`, `VITE_ENABLE_ANALYTICS`, `VITE_ENABLE_PWA`, `VITE_GA_TRACKING_ID`, `VITE_VAPID_PUBLIC_KEY`, `VITE_CONTACT_EMAIL`. Backend env vars documented in `backend/env_example.txt`.
+`frontend/src/config/env.ts` exports `getEnvVar()` helper that checks `VITE_` prefixed vars first, falls back to `REACT_APP_` prefixed vars. New env vars should use the `VITE_` prefix. Key frontend env vars: `VITE_API_URL`, `VITE_WS_URL`, `VITE_SENTRY_DSN`, `VITE_ENABLE_SENTRY`, `VITE_ENABLE_ANALYTICS`, `VITE_ENABLE_PWA`, `VITE_GA_TRACKING_ID`, `VITE_VAPID_PUBLIC_KEY`, `VITE_CONTACT_EMAIL`. Backend env vars documented in `backend/env_example.txt`.
 
 ### Contact Email
 
@@ -154,7 +154,7 @@ vi.mock('react-i18next', () => ({
 }));
 ```
 
-The `initReactI18next` export is required because `src/i18n.ts` imports it. For non-React files that call `i18n.t()` directly (e.g., `seoConfig.ts`, `footerData.ts`), mock the i18n module itself:
+The `initReactI18next` export is required because `src/i18n.ts` imports it. For non-React files that call `i18n.t()` directly (e.g., `footerData.ts`), mock the i18n module itself:
 
 ```typescript
 vi.mock('../../i18n', () => ({
@@ -196,7 +196,7 @@ These are mocked globally — do NOT re-mock in individual tests:
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 100 test files, 1792 tests, 0 failures, 0 skips
+- 90 test files, 1551 tests, 0 failures, 0 skips
 
 ### E2E Testing (Playwright)
 
@@ -251,7 +251,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - JWT: access 30min, refresh 7 days, rotation + blacklist
 - DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr
 - API docs: Swagger at `/api/docs/`, ReDoc at `/api/redoc/` (drf-yasg)
-- Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`
+- Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`. `/api/send-test-email/` only registered when `DEBUG=True`
 - Timezone: `Asia/Seoul`, language: `ko-kr`
 - File upload: 5MB max; allowed extensions: `.jpg`, `.jpeg`, `.png`, `.gif`, `.pdf`, `.doc`, `.docx`
 - CI uses `uv sync --frozen` (lockfile must be up to date)
@@ -262,14 +262,14 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 
 ### Dependabot
 
-`.github/dependabot.yml` runs weekly updates (Mondays 04:00) for npm, pip, GitHub Actions, and Docker. **Blocked major version updates**: Tailwind CSS, ESLint plugins, `framer-motion`. Secrets template in `.github/SECRETS-TEMPLATE.md`.
+`.github/dependabot.yml` runs weekly updates (Mondays 04:00) for npm, pip, GitHub Actions, and Docker. **Blocked major version updates**: `tailwindcss`, `framer-motion`, `web-vitals`, `lint-staged`, `@types/node`. Secrets template in `.github/SECRETS-TEMPLATE.md`.
 
 ## Common Pitfalls
 
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API in production**: Always on, not configurable — GitHub Pages has no backend
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: 100 files, 1792 tests, 0 failures, 0 skips (as of 2026-03-02)
+4. **Test count**: 90 files, 1551 tests, 0 failures, 0 skips (as of 2026-03-02)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility

@@ -5,13 +5,11 @@
   "homepage": "https://researcherhojin.github.io/emelmujiro",
   "dependencies": {
     "@sentry/react": "^10.11.0",
-    "@tanstack/react-virtual": "^3.13.12",
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.34.3",
     "i18next": "^25.5.2",
     "i18next-browser-languagedetector": "^8.2.0",
-    "i18next-http-backend": "^3.0.2",
     "immer": "^11.1.4",
     "lucide-react": "^0.575.0",
     "react": "^19.1.1",
@@ -35,7 +33,6 @@
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "@types/react-helmet-async": "^1.0.1",
-    "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^8.56.0",
     "@typescript-eslint/parser": "^8.56.0",
     "@vitejs/plugin-react": "^5.0.2",
@@ -58,7 +55,6 @@
     "sitemap": "^9.0.1",
     "source-map-explorer": "^2.5.3",
     "tailwindcss": "^3.4.19",
-    "terser": "^5.44.0",
     "typescript": "^5.9.2",
     "vite": "^7.1.5",
     "vite-plugin-pwa": "^1.0.3",
@@ -72,7 +68,6 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ci": "vitest run --bail=1 --no-coverage",
-    "test:ci:local": "./scripts/test-ci-local.sh",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
@@ -105,15 +100,6 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
-    ]
-  },
-  "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "src/**/*.{json,css,md}": [
-      "prettier --write"
     ]
   },
   "proxy": "http://127.0.0.1:8000",

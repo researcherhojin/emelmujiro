@@ -1,7 +1,7 @@
 // Vite environment variables configuration
 // This file centralizes all environment variables for easy migration
 
-const getEnvVar = (key: string, defaultValue: string = ''): string => {
+export const getEnvVar = (key: string, defaultValue: string = ''): string => {
   // Support both Vite and legacy process.env for gradual migration
   const viteKey = key.replace('REACT_APP_', 'VITE_');
 

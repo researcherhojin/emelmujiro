@@ -24,7 +24,6 @@ from .models import BlogPost, Contact, ContactAttempt, SiteVisit, NewsletterSubs
 from .serializers import (
     BlogPostSerializer,
     ContactSerializer,
-    ContactAttemptSerializer,
     NewsletterSubscriptionSerializer,
 )
 

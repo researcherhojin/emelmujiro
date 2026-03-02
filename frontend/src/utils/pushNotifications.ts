@@ -1,8 +1,8 @@
 // Push Notification utilities
+import env from '../config/env';
 import logger from './logger';
 
-const PUBLIC_VAPID_KEY =
-  process.env.REACT_APP_VAPID_PUBLIC_KEY || 'YOUR_PUBLIC_VAPID_KEY';
+const PUBLIC_VAPID_KEY = env.VAPID_PUBLIC_KEY || 'YOUR_PUBLIC_VAPID_KEY';
 
 interface NotificationOptions {
   icon?: string;

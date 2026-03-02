@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
@@ -35,8 +36,6 @@ urlpatterns = [
     path("categories/", CategoryListView.as_view(), name="category-list"),
     # Health check
     path("health/", health_check, name="health-check"),
-    # Test email (debug only)
-    path("send-test-email/", send_test_email, name="send-test-email"),
     # Authentication endpoints
     path("auth/register/", register, name="register"),
     path("auth/login/", login, name="login"),
@@ -56,3 +55,8 @@ urlpatterns = [
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     path("schema/", schema_view.without_ui(cache_timeout=0), name="schema-json"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        path("send-test-email/", send_test_email, name="send-test-email"),
+    ]

@@ -13,6 +13,17 @@ import {
   showNotification,
 } from '../pushNotifications';
 
+// Mock env config
+vi.mock('../../config/env', () => ({
+  __esModule: true,
+  default: {
+    VAPID_PUBLIC_KEY: '',
+  },
+  env: {
+    VAPID_PUBLIC_KEY: '',
+  },
+}));
+
 // Mock logger
 vi.mock('../logger', () => ({
   __esModule: true,
@@ -485,18 +496,7 @@ describe('pushNotifications', () => {
   });
 
   describe('environment variable handling', () => {
-    const originalEnv = process.env.REACT_APP_VAPID_PUBLIC_KEY;
-
-    afterEach(() => {
-      if (originalEnv) {
-        process.env.REACT_APP_VAPID_PUBLIC_KEY = originalEnv;
-      } else {
-        delete process.env.REACT_APP_VAPID_PUBLIC_KEY;
-      }
-    });
-
-    it('should use environment VAPID key when available', async () => {
-      process.env.REACT_APP_VAPID_PUBLIC_KEY = 'test-vapid-key';
+    it('should use VAPID key from env config when subscribing', async () => {
       Object.defineProperty(global.Notification, 'permission', {
         value: 'granted',
         writable: true,
@@ -508,8 +508,7 @@ describe('pushNotifications', () => {
       expect(mockRegistration.pushManager.subscribe).toHaveBeenCalled();
     });
 
-    it('should use default VAPID key when environment variable not set', async () => {
-      delete process.env.REACT_APP_VAPID_PUBLIC_KEY;
+    it('should use default VAPID key when env config has no value', async () => {
       Object.defineProperty(global.Notification, 'permission', {
         value: 'granted',
         writable: true,
