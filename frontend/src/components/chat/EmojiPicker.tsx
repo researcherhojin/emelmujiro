@@ -293,6 +293,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
                 whileTap={{ scale: 0.9 }}
                 onClick={() => handleEmojiSelect(emoji)}
                 className="p-2 text-xl hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                aria-label={t('chat.emoji.select', { emoji })}
                 title={emoji}
               >
                 {emoji}

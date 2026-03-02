@@ -38,7 +38,7 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
             }}
             role="button"
             tabIndex={0}
-            aria-label="Close modal"
+            aria-label={t('accessibility.closeModalOverlay')}
           ></div>
 
           <div className="inline-block align-bottom bg-white dark:bg-dark-900 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">

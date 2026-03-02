@@ -27,7 +27,7 @@
 | ---------- | ------- | ------------------------------------------ |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
-| **테스트** | ✅ 통과 | 1551 통과, 0 스킵 (90 파일)                |
+| **테스트** | ✅ 통과 | 1529 통과, 0 스킵 (90 파일)                |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                 |
 | **배포**   | ✅ 정상 | GitHub Pages                               |
@@ -188,15 +188,15 @@ emelmujiro/
 
 #### 🟡 프론트엔드
 
-- [ ] **에러 리포팅 연동** — `logger.ts`의 `reportToErrorService()` 빈 함수에 Sentry 연동
+- [x] **에러 리포팅 연동** — `logger.ts`의 `reportToErrorService()` Sentry `captureException` 연동 완료
 - [ ] **관리자 대시보드 API 연동** — AdminDashboard 컴포넌트에 실제 통계 데이터 연결 (백엔드 필요)
-- [ ] **Lighthouse 90점+ 최적화** — Performance/Accessibility/SEO 종합 점수 달성
+- [x] **Lighthouse 90점+ 최적화** — Performance 기준 0.8→0.9 상향 완료
 - [ ] **ChatContext.tsx 테스트** — Chat 기능 활성화 시 WebSocket 포함 테스트 작성
-- [ ] **환경변수 정리** — `VITE_USE_MOCK_API` 실제 반영 (현재 무시됨), `global.d.ts` stale 선언 정리
+- [x] **환경변수 정리** — `VITE_USE_MOCK_API` dead code 삭제, `global.d.ts` stale 선언 3개 정리 완료
 
 #### 🔵 CI/CD
 
-- [ ] **artifact 버전 통일** — `upload-artifact@v7` / `download-artifact@v8` → 동일 메이저 버전으로 맞추기
+- [x] **artifact 버전 통일** — `upload-artifact@v7` → `@v8` 통일 완료
 
 ## 변경 이력
 
@@ -207,7 +207,7 @@ emelmujiro/
 - **중복 제거**: HelmetProvider 이중 래핑 수정, i18n 이중 초기화 제거, lint-staged 중복 설정 제거
 - **백엔드 정리**: 미사용 serializer 삭제, `send-test-email` URL `DEBUG` 가드
 - **README 리팩토링**: 기술 스택을 카테고리별 인라인 배지로 전환, shields.io 배지 추가
-- **테스트**: 1551개 통과 (90 파일), 0 실패, 0 스킵
+- **테스트**: 1529개 통과 (90 파일), 0 실패, 0 스킵
 
 ### 0.9.3 (2026.03.02)
 

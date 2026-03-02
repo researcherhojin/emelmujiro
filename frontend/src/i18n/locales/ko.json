@@ -705,10 +705,14 @@
     "footerCompanyInfo": "회사 정보",
     "footerContactCta": "문의하기",
     "closeModal": "모달 닫기",
+    "closeModalOverlay": "모달 배경 클릭하여 닫기",
     "careerSection": "경력 상세",
     "careerTimeline": "연도별 경력",
     "careerStats": "경력 통계",
-    "scrollToTop": "맨 위로 이동"
+    "scrollToTop": "맨 위로 이동",
+    "mainContent": "주요 콘텐츠",
+    "keyboardShortcuts": "키보드 단축키",
+    "closeShareMenu": "공유 메뉴 닫기"
   },
   "footerServices": {
     "education": {
@@ -999,7 +1003,8 @@
       "smileys": "표정",
       "gestures": "제스처",
       "objects": "사물",
-      "symbols": "기호"
+      "symbols": "기호",
+      "select": "이모지 선택: {{emoji}}"
     },
     "fileUpload": {
       "title": "파일 업로드",

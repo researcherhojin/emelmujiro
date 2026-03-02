@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../common/Navbar';
 import Footer from '../common/Footer';
 import SkipLink from '../common/SkipLink';
@@ -12,6 +13,7 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Define keyboard shortcuts
@@ -93,7 +95,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         className="flex-grow focus:outline-none"
         tabIndex={-1}
         role="main"
-        aria-label="Main content"
+        aria-label={t('accessibility.mainContent')}
       >
         {children || <Outlet />}
       </main>
@@ -103,7 +105,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <PWAInstallButton />
 
       {/* Keyboard shortcuts help (visible only to screen readers) */}
-      <div className="sr-only" aria-label="Keyboard shortcuts">
+      <div
+        className="sr-only"
+        aria-label={t('accessibility.keyboardShortcuts')}
+      >
         <h2>Keyboard Shortcuts</h2>
         <ul>
           <li>Press / to focus search</li>

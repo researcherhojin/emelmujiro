@@ -705,10 +705,14 @@
     "footerCompanyInfo": "Company information",
     "footerContactCta": "Contact us",
     "closeModal": "Close modal",
+    "closeModalOverlay": "Click overlay to close modal",
     "careerSection": "Career details",
     "careerTimeline": "Career timeline by year",
     "careerStats": "Career statistics",
-    "scrollToTop": "Scroll to top"
+    "scrollToTop": "Scroll to top",
+    "mainContent": "Main content",
+    "keyboardShortcuts": "Keyboard shortcuts",
+    "closeShareMenu": "Close share menu"
   },
   "footerServices": {
     "education": {
@@ -999,7 +1003,8 @@
       "smileys": "Smileys",
       "gestures": "Gestures",
       "objects": "Objects",
-      "symbols": "Symbols"
+      "symbols": "Symbols",
+      "select": "Select emoji: {{emoji}}"
     },
     "fileUpload": {
       "title": "File Upload",

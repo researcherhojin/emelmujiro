@@ -3,6 +3,7 @@
  * 프로덕션에서는 console.log를 비활성화
  */
 import { getEnvVar } from '../config/env';
+import { captureException } from './sentry';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -114,14 +115,11 @@ class Logger {
     }
   }
 
-  // 에러 리포팅 서비스로 전송 (Sentry, LogRocket 등)
-  private reportToErrorService(_message: string, _error: unknown): void {
-    // 실제 구현 시 Sentry 등의 서비스 연동
-    // if (window.Sentry) {
-    //   window.Sentry.captureException(error, {
-    //     tags: { message }
-    //   });
-    // }
+  // 에러 리포팅 서비스로 전송 (Sentry)
+  private reportToErrorService(message: string, error: unknown): void {
+    captureException(error instanceof Error ? error : new Error(message), {
+      message,
+    });
   }
 
   // 네트워크 요청 로깅

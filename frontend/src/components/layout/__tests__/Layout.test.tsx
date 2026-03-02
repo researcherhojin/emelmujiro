@@ -62,7 +62,7 @@ describe('Layout', () => {
     const main = screen.getByRole('main');
     expect(main).toBeInTheDocument();
     expect(main).toHaveAttribute('id', 'main-content');
-    expect(main).toHaveAttribute('aria-label', 'Main content');
+    expect(main).toHaveAttribute('aria-label', 'accessibility.mainContent');
     expect(main).toHaveAttribute('tabindex', '-1');
   });
 

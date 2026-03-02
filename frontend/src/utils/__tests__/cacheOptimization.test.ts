@@ -1,5 +1,4 @@
-import { vi } from 'vitest';
-import { StorageCache, preloadCriticalResources } from '../cacheOptimization';
+import { StorageCache } from '../cacheOptimization';
 
 describe('StorageCache', () => {
   beforeEach(() => {
@@ -84,66 +83,5 @@ describe('StorageCache', () => {
       const result = cache.get('test-key');
       expect(result).toBeNull();
     });
-  });
-});
-
-describe('preloadCriticalResources', () => {
-  let originalEnv: typeof process.env;
-
-  beforeEach(() => {
-    originalEnv = { ...process.env };
-    // Clear any existing link elements
-    document.head.innerHTML = '';
-    // Mock fetch
-    global.fetch = vi.fn();
-  });
-
-  afterEach(() => {
-    // Restore original env
-    Object.keys(process.env).forEach((key) => {
-      delete process.env[key];
-    });
-    Object.assign(process.env, originalEnv);
-    vi.restoreAllMocks();
-  });
-
-  it('should skip preloading in development mode', () => {
-    (process.env as any).NODE_ENV = 'development';
-    preloadCriticalResources();
-
-    expect(global.fetch).not.toHaveBeenCalled();
-  });
-
-  it('should not attempt to preload resources in production (Vite handles this)', async () => {
-    (process.env as any).NODE_ENV = 'production';
-    (process.env as any).PUBLIC_URL = '/emelmujiro';
-
-    (global.fetch as any).mockResolvedValue({
-      ok: true,
-    });
-
-    preloadCriticalResources();
-
-    // Wait for async operations
-    await new Promise((resolve) => setTimeout(resolve, 10));
-
-    // In Vite setup, preloadCriticalResources does nothing
-    // Asset loading is handled by Vite's build system
-    expect(global.fetch).not.toHaveBeenCalled();
-  });
-
-  it('should not throw errors even in production', async () => {
-    (process.env as any).NODE_ENV = 'production';
-
-    (global.fetch as any).mockRejectedValue(new Error('Network error'));
-
-    // Should not throw
-    expect(() => preloadCriticalResources()).not.toThrow();
-
-    // Wait for async operations
-    await new Promise((resolve) => setTimeout(resolve, 10));
-
-    // Fetch should not have been called since Vite handles asset loading
-    expect(global.fetch).not.toHaveBeenCalled();
   });
 });

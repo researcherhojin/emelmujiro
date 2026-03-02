@@ -3,11 +3,8 @@
 // 환경 변수 타입 정의
 interface ImportMetaEnv {
   readonly VITE_API_URL: string;
-  readonly VITE_API_TIMEOUT: string;
-  readonly VITE_USE_MOCK_API: string;
   readonly VITE_GA_TRACKING_ID: string;
   readonly VITE_SENTRY_DSN: string;
-  readonly VITE_APP_VERSION: string;
 }
 
 interface ImportMeta {

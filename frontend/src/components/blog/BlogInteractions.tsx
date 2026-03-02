@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Share2, Bookmark, Link2, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { BlogPost } from '../../types';
 import logger from '../../utils/logger';
 
@@ -8,6 +9,7 @@ interface BlogInteractionsProps {
 }
 
 const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
+  const { t } = useTranslation();
   const [likes, setLikes] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -225,7 +227,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
               onKeyDown={(e) => e.key === 'Escape' && setShowShareMenu(false)}
               role="button"
               tabIndex={0}
-              aria-label="Close share menu"
+              aria-label={t('accessibility.closeShareMenu')}
             />
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
               <button

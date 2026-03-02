@@ -1,143 +1,6 @@
 // Cache optimization utilities for better performance
 import logger from './logger';
 
-interface CacheConfig {
-  maxAge: number;
-  maxEntries: number;
-  compression?: boolean;
-}
-
-interface CacheEntry<T> {
-  data: T;
-  timestamp: number;
-  expiresAt: number;
-  size?: number;
-}
-
-class LRUCache<T> {
-  private cache = new Map<string, CacheEntry<T>>();
-  private usage = new Map<string, number>();
-  private maxEntries: number;
-  private maxAge: number;
-  private usageCounter = 0;
-
-  constructor(config: CacheConfig) {
-    this.maxEntries = config.maxEntries;
-    this.maxAge = config.maxAge;
-  }
-
-  set(key: string, data: T): void {
-    const now = Date.now();
-    const entry: CacheEntry<T> = {
-      data,
-      timestamp: now,
-      expiresAt: now + this.maxAge,
-      size: this.calculateSize(data),
-    };
-
-    // Remove expired entries before adding new one
-    this.cleanup();
-
-    // If at capacity, remove least recently used
-    if (this.cache.size >= this.maxEntries) {
-      this.evictLRU();
-    }
-
-    this.cache.set(key, entry);
-    this.usage.set(key, ++this.usageCounter);
-  }
-
-  get(key: string): T | null {
-    const entry = this.cache.get(key);
-
-    if (!entry) {
-      return null;
-    }
-
-    // Check if expired
-    if (Date.now() > entry.expiresAt) {
-      this.delete(key);
-      return null;
-    }
-
-    // Update usage
-    this.usage.set(key, ++this.usageCounter);
-    return entry.data;
-  }
-
-  delete(key: string): boolean {
-    this.usage.delete(key);
-    return this.cache.delete(key);
-  }
-
-  clear(): void {
-    this.cache.clear();
-    this.usage.clear();
-    this.usageCounter = 0;
-  }
-
-  private cleanup(): void {
-    const now = Date.now();
-    const entries = Array.from(this.cache.entries());
-    entries.forEach(([key, entry]) => {
-      if (now > entry.expiresAt) {
-        this.delete(key);
-      }
-    });
-  }
-
-  private evictLRU(): void {
-    let lruKey = '';
-    let lruUsage = Infinity;
-
-    const usageEntries = Array.from(this.usage.entries());
-    usageEntries.forEach(([key, usage]) => {
-      if (usage < lruUsage) {
-        lruUsage = usage;
-        lruKey = key;
-      }
-    });
-
-    if (lruKey) {
-      this.delete(lruKey);
-    }
-  }
-
-  private calculateSize(data: T): number {
-    try {
-      return JSON.stringify(data).length;
-    } catch {
-      return 1;
-    }
-  }
-
-  getCacheStats() {
-    return {
-      size: this.cache.size,
-      maxEntries: this.maxEntries,
-      usage: this.usageCounter,
-    };
-  }
-}
-
-// API response cache
-export const apiCache = new LRUCache<unknown>({
-  maxAge: 5 * 60 * 1000, // 5 minutes
-  maxEntries: 100,
-});
-
-// Static asset cache
-export const staticCache = new LRUCache<string>({
-  maxAge: 30 * 60 * 1000, // 30 minutes
-  maxEntries: 50,
-});
-
-// Component cache for expensive computations
-export const componentCache = new LRUCache<React.ReactNode>({
-  maxAge: 10 * 60 * 1000, // 10 minutes
-  maxEntries: 25,
-});
-
 // Browser storage utilities
 export class StorageCache {
   private storageType: 'localStorage' | 'sessionStorage';
@@ -248,19 +111,6 @@ export class StorageCache {
 export const persistentCache = new StorageCache('localStorage');
 export const sessionCache = new StorageCache('sessionStorage');
 
-// Preload critical resources
-export const preloadCriticalResources = () => {
-  // Skip preloading in development mode
-  if (process.env.NODE_ENV === 'development') {
-    return;
-  }
-
-  // Vite handles asset loading differently than Create React App
-  // The main JS and CSS are already loaded via script/link tags in index.html
-  // So we don't need to manually preload them
-  // This function is kept for backward compatibility but does nothing in Vite setup
-};
-
 // Performance observer for monitoring cache efficiency
 export const observeCachePerformance = () => {
   if ('PerformanceObserver' in window) {
@@ -292,9 +142,6 @@ export const initializeCacheOptimization = () => {
   // Cleanup expired storage cache entries
   persistentCache.cleanup();
   sessionCache.cleanup();
-
-  // Preload critical resources
-  preloadCriticalResources();
 
   // Start performance monitoring
   if (process.env.NODE_ENV === 'development') {

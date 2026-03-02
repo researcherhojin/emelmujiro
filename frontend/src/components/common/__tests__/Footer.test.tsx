@@ -645,7 +645,9 @@ describe('Footer Component', () => {
         );
 
         // Click backdrop to close modal
-        const backdrop = screen.getByLabelText('Close modal');
+        const backdrop = screen.getByLabelText(
+          'accessibility.closeModalOverlay'
+        );
         fireEvent.click(backdrop);
 
         await waitFor(
@@ -679,7 +681,9 @@ describe('Footer Component', () => {
         );
 
         // Press Escape to close modal
-        const backdrop = screen.getByLabelText('Close modal');
+        const backdrop = screen.getByLabelText(
+          'accessibility.closeModalOverlay'
+        );
         fireEvent.keyDown(backdrop, { key: 'Escape' });
 
         await waitFor(
@@ -798,13 +802,17 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            const backdrop = screen.getByLabelText('Close modal');
+            const backdrop = screen.getByLabelText(
+              'accessibility.closeModalOverlay'
+            );
             expect(backdrop).toBeInTheDocument();
           },
           { timeout: 3000 }
         );
 
-        const backdrop = screen.getByLabelText('Close modal');
+        const backdrop = screen.getByLabelText(
+          'accessibility.closeModalOverlay'
+        );
         expect(backdrop).toHaveAttribute('role', 'button');
         expect(backdrop).toHaveAttribute('tabIndex', '0');
       },
