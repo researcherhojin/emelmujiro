@@ -1,8 +1,8 @@
 from pathlib import Path
 import os
 import sys
-import secrets
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 # .env 파일 로드
 load_dotenv()
@@ -10,13 +10,20 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", secrets.token_urlsafe(50))
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = "insecure-dev-key-do-not-use-in-production"
+    else:
+        raise ImproperlyConfigured("SECRET_KEY must be set in production")
+
+ALLOWED_HOSTS = os.environ.get(
+    "ALLOWED_HOSTS", "api.emelmujiro.com,localhost,127.0.0.1"
+).split(",")
 
 # Add testserver for Django test client
 if "test" in sys.argv:
@@ -76,17 +83,22 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-# Channels configuration
-REDIS_HOST = os.environ.get("REDIS_HOST", "127.0.0.1")
-REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [(REDIS_HOST, REDIS_PORT)],
+# Channels configuration — Redis when available, in-memory fallback
+if os.environ.get("REDIS_URL"):
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [os.environ["REDIS_URL"]],
+            },
         },
-    },
-}
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        },
+    }
 
 # Database configuration
 DATABASE_URL = os.environ.get("DATABASE_URL")
@@ -167,6 +179,12 @@ CORS_ALLOWED_ORIGINS = os.environ.get(
 ).split(",")
 
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF 신뢰 출처
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "CSRF_TRUSTED_ORIGINS",
+    "https://researcherhojin.github.io,https://api.emelmujiro.com",
+).split(",")
 
 CORS_ALLOW_METHODS = [
     "DELETE",

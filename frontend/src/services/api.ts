@@ -14,8 +14,11 @@ const API_URL = env.API_URL;
 const API_TIMEOUT = 30000;
 
 // Check if we should use mock API
-// Use mock if in test environment or in production (GitHub Pages has no backend)
-const USE_MOCK_API = env.IS_TEST || env.IS_PRODUCTION;
+// Mock is used in tests, or when no real backend URL is configured.
+// When VITE_API_URL points to an actual deployed backend, mock is disabled.
+const PLACEHOLDER_API = 'https://api.emelmujiro.com/api';
+const USE_MOCK_API =
+  env.IS_TEST || !env.API_URL || env.API_URL === PLACEHOLDER_API;
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
