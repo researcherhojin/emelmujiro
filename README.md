@@ -4,7 +4,7 @@
 
 [![CI/CD Pipeline](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19.1.1-blue)](https://react.dev/)
+[![React](https://img.shields.io/badge/React-19.2.4-blue)](https://react.dev/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 **[Live Site](https://researcherhojin.github.io/emelmujiro)** | **[Report Bug](https://github.com/researcherhojin/emelmujiro/issues)**
@@ -66,21 +66,21 @@ uv run python manage.py runserver
 
 | 기술          | 버전    |
 | ------------- | ------- |
-| React         | 19.1.1  |
-| TypeScript    | 5.9.2   |
-| Vite          | 7.1.5   |
-| Vitest        | 3.2.4   |
-| Tailwind CSS  | 3.4.17  |
-| Zustand       | 5.0.8   |
-| i18next       | 25.5.2  |
-| Framer Motion | 11.18.2 |
-| React Router  | 7.8.2   |
+| React         | 19.2.4  |
+| TypeScript    | 5.9.3   |
+| Vite          | 7.3.1   |
+| Vitest        | 4.0.18  |
+| Tailwind CSS  | 3.4.19  |
+| Zustand       | 5.0.11  |
+| i18next       | 25.8.13 |
+| Framer Motion | 12.34.3 |
+| React Router  | 7.13.1  |
 
 ### Backend
 
 | 기술       | 버전   |
 | ---------- | ------ |
-| Django     | 5.2.6  |
+| Django     | 5.2.11 |
 | DRF        | 3.16.1 |
 | PostgreSQL | 15     |
 | Redis      | 7      |
@@ -191,6 +191,16 @@ emelmujiro/
 - [x] **미사용 유틸리티 파일 삭제** — `utils/security.ts`, `utils/optimizeImports.ts`, `utils/backgroundSync.ts` 및 테스트 파일 삭제 완료
 - [x] **미사용 hooks 삭제** — `hooks/useAccessibility.ts`, `hooks/useApiError.ts`, `hooks/usePerformance.ts` 및 테스트 파일 삭제 완료
 - [x] **미사용 유틸리티 함수 정리** — `utils/accessibility.ts`에서 `announceToScreenReader`만 남기고 7개 미사용 함수 제거 완료
+- [ ] **고아 페이지 삭제** — `src/pages/HomePage.tsx`, `NotFound.tsx`, `ServerError.tsx` 및 테스트 파일 3개 (App.tsx에서 미사용, CRA 잔재)
+- [ ] **미사용 의존성 제거** — `@tanstack/react-virtual` (미사용), `terser` (esbuild 전환 후 불필요), `@types/react-router-dom@^5.3.3` (v7과 불일치)
+- [ ] **미사용 유틸/상수 정리** — `utils/seo.ts`, `utils/seoConfig.ts`, `reportWebVitals.ts` (CRA 잔재), `constants/services.ts`, `constants/skills.ts`, `styles/commonStyles.ts`, `styles/theme.ts` (테스트만 참조, 프로덕션 코드 미사용)
+- [ ] **i18n 이중 초기화 수정** — `src/i18n.ts`와 `src/i18n/index.ts` 두 곳에서 `.init()` 호출 → 단일화
+- [ ] **CRA 잔재 제거** — `src/react-app-env.d.ts` (`react-scripts` 참조), `REACT_APP_*` env vars → `VITE_*` 통일
+- [ ] **중복 HelmetProvider 제거** — `main.tsx`와 `App.tsx` 모두에서 래핑 → 하나만 유지
+- [ ] **Dependabot 설정 정리** — React 19.x 블록 제거 (이미 사용 중), `@babel/*`/`eslint-plugin-jest` 블록 제거 (미설치)
+- [ ] **dead script 제거** — `frontend/package.json`의 `test:ci:local` (존재하지 않는 스크립트 참조)
+- [ ] **미사용 sections 정리** — `components/sections/AboutSection.tsx`, `BlogSection.tsx` (프로덕션 미참조)
+- [ ] **백엔드 데드 코드** — `BlogPostListSerializer`, `ContactAttemptSerializer` (미사용), `NotificationConsumer` 빈 스텁, `send-test-email` URL 조건부 등록
 
 #### 🟡 테스트 보강
 
@@ -221,6 +231,13 @@ emelmujiro/
 - [ ] **관리자 대시보드 API 연동** — AdminDashboard 컴포넌트에 실제 통계 데이터 연결 (백엔드 필요)
 - [ ] **Lighthouse 90점+ 최적화** — Performance/Accessibility/SEO 종합 점수 달성
 - [ ] **ChatContext.tsx 테스트** — Chat 기능 활성화 시 WebSocket 포함 테스트 작성
+- [ ] **환경변수 정리** — `VITE_USE_MOCK_API` 실제 반영 (현재 설정해도 무시됨), `global.d.ts` stale 선언 정리, `REACT_APP_*` → `VITE_*` 일괄 전환
+- [ ] **Lighthouse CI 워크플로우 업데이트** — `frontend/.github/workflows/lighthouse-ci.yml` 액션 v3→v7, Node 18→22
+
+#### 🔵 CI/CD 개선
+
+- [ ] **artifact 버전 통일** — `upload-artifact@v7` / `download-artifact@v8` → 동일 메이저 버전으로 맞추기
+- [ ] **lint-staged 중복 설정 제거** — `frontend/package.json`의 `lint-staged` 블록 제거 (루트 `.lintstagedrc.js`가 우선)
 
 ### 완료된 항목
 
@@ -250,6 +267,13 @@ emelmujiro/
 - [x] **테스트 전면 복구** — 425개 스킵 → 0 스킵, Jest → Vitest (v0.6.0~0.7.0)
 
 ## 변경 이력
+
+### 0.9.3 (2026.03.02)
+
+- **About 타임라인**: 2026년 "AI 솔루션 전문화" 항목 추가 (ko/en 번역)
+- **문서 업데이트**: CLAUDE.md 전면 개선 (CI 버전 정보 수정, 누락 명령어 추가, Tailwind/Prettier/Codecov/Dependabot 설정 문서화)
+- **README 버전 갱신**: 프론트엔드/백엔드 의존성 버전을 실제 설치 버전으로 업데이트
+- **의존성 업데이트**: Django 5.2.6→5.2.11, drf-yasg 1.21.10→1.21.15 등 백엔드 의존성 갱신 (uv.lock)
 
 ### 0.9.2 (2026.03.01~02)
 

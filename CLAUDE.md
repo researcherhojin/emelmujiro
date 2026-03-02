@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform (v0.9.1). Frontend is React/TypeScript deployed to GitHub Pages; backend is Django (not yet deployed to production). Licensed under Apache 2.0.
+Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform. Frontend is React/TypeScript deployed to GitHub Pages; backend is Django (not yet deployed to production). Licensed under Apache 2.0.
 
 - **Live Site**: https://researcherhojin.github.io/emelmujiro
 - **Frontend Dev**: http://localhost:5173 (Vite) — **NOT port 3000**
@@ -19,12 +19,16 @@ All frontend commands run from `frontend/`. Root commands use npm workspaces.
 # Development (from root)
 npm run dev                # Frontend + Backend concurrently
 npm run dev:clean          # Kill ports first, then start
+npm run dev:safe           # Like dev but kills all if one fails
+npm run dev:frontend       # Frontend only
+npm run dev:backend        # Backend only
 
 # Frontend (from frontend/)
 npm run dev                # Vite dev server (port 5173)
 npm run build              # generate:sitemap → tsc -p tsconfig.build.json → vite build
 npm run lint:fix           # ESLint auto-fix
 npm run type-check         # TypeScript check
+npm run type-check:watch   # TypeScript watch mode
 npm run validate           # lint + type-check + test:coverage
 npm run test:coverage      # Single run with coverage report
 npm run analyze:bundle     # source-map-explorer on build output
@@ -32,12 +36,15 @@ npm run clean              # Remove build/ and node_modules/.cache
 npm run clean:all          # Also removes coverage, playwright-report, test-results
 npm run preview            # Preview production build locally
 npm run format             # Prettier format all source files
+npm run format:check       # Prettier check without writing (for CI)
 
 # Testing (from frontend/)
 npm test                   # Vitest watch mode
 npm run test:run           # Single run
 npm run test:ci            # CI-optimized (--bail=1, no coverage)
 npm run test:ui            # Interactive Vitest UI
+npm run test:e2e           # Playwright E2E tests
+npm run test:e2e:ui        # Playwright UI mode
 # Run a specific test file:
 CI=true npm test -- --run src/components/common/__tests__/Button.test.tsx
 # Note: `npm test` from root runs BOTH frontend AND backend tests
@@ -61,6 +68,12 @@ make dev-local             # npm run dev (non-Docker)
 make dev-docker            # docker-compose dev up
 make test                  # Frontend + backend tests
 make lint                  # Frontend + backend lint
+make kill-ports            # Kill processes on 5173/8000
+make logs                  # Tail Docker Compose logs
+make down                  # Stop Docker Compose
+make migrate               # Run Django migrations (Docker)
+make shell                 # Open Django shell (Docker)
+make createsuperuser       # Create Django superuser (Docker)
 
 # Kill stuck dev ports
 lsof -ti:5173 | xargs kill -9
@@ -110,7 +123,7 @@ Axios-based client in `src/services/api.ts`. 30s timeout with automatic retry on
 
 ### Environment Variables
 
-`frontend/src/config/env.ts` provides a `getEnvVar()` helper that checks `VITE_` prefixed vars first, falls back to `REACT_APP_` prefixed vars. New env vars should use the `VITE_` prefix.
+`frontend/src/config/env.ts` provides a `getEnvVar()` helper that checks `VITE_` prefixed vars first, falls back to `REACT_APP_` prefixed vars. New env vars should use the `VITE_` prefix. Key frontend env vars: `VITE_API_URL`, `VITE_WS_URL`, `VITE_SENTRY_DSN`, `VITE_ENABLE_SENTRY`, `VITE_ENABLE_ANALYTICS`, `VITE_ENABLE_PWA`, `VITE_GA_TRACKING_ID`, `VITE_VAPID_PUBLIC_KEY`, `VITE_CONTACT_EMAIL`. Backend env vars documented in `backend/env_example.txt`.
 
 ### Contact Email
 
@@ -187,7 +200,11 @@ These are mocked globally — do NOT re-mock in individual tests:
 
 ### E2E Testing (Playwright)
 
-Config in `frontend/playwright.config.ts`. Tests in `frontend/e2e/`.
+Config in `frontend/playwright.config.ts`. Tests in `frontend/e2e/`. Runs on Chromium, Firefox, WebKit, Mobile Chrome (Pixel 5), Mobile Safari (iPhone 12). `baseURL`: `http://localhost:5173`. CI: `retries: 2`, `workers: 1`, `forbidOnly: true`.
+
+### Codecov
+
+Coverage target: **60%** minimum, 5% threshold for drop. Separate flags for `frontend` and `backend`. Config in `codecov.yml`.
 
 ## CI/CD
 
@@ -197,8 +214,8 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Pipelines
 
-- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages. Backend tests run against PostgreSQL 15 (timeout: 10min). Node 22, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/upload-artifact@v4` and `actions/download-artifact@v4` (must match versions).
-- **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy v0.28.0) + bundle size check (<10MB). Posts summary comment on PR.
+- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages. Backend tests run against PostgreSQL 15 (timeout: 10min). Node 22, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/upload-artifact@v7` and `actions/download-artifact@v8`.
+- **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy v0.34.1) + bundle size check (<10MB). Posts summary comment on PR.
 
 ## Critical Configuration
 
@@ -214,11 +231,15 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Tailwind CSS 3.x
 
-Downgraded from 4.x. PostCSS config (`frontend/postcss.config.js`) must use `tailwindcss: {}`, NOT `@tailwindcss/postcss`.
+Downgraded from 4.x. PostCSS config (`frontend/postcss.config.js`) must use `tailwindcss: {}`, NOT `@tailwindcss/postcss`. Uses `darkMode: 'class'` (class-based, not media query). Custom colors: `dark.800/850/900/950`, `primary.400/500/600`, `success`, `warning`, `error`. Custom animations: `scroll` (40s, logos) and `scroll-reverse`.
+
+### Prettier
+
+Root `.prettierrc` is the canonical config: `printWidth: 100` for JS/TS, per-file overrides for md (80), html (120), package.json (120). `frontend/.prettierrc` exists with `printWidth: 80` but the root config's overrides take precedence for JS/TS files when run from root (lint-staged runs from root).
 
 ### ESLint
 
-ESLint 9 **flat config** format in `frontend/eslint.config.mjs` (not `.eslintrc`). Plugins: `@typescript-eslint`, `react`, `react-hooks`, `jsx-a11y`, `testing-library`. Test files have relaxed rules (no-unused-vars off, no-explicit-any off, no-console off). Unused vars prefixed with `_` are allowed.
+ESLint 9 **flat config** format in `frontend/eslint.config.mjs` (not `.eslintrc`). Plugins: `@typescript-eslint`, `react`, `react-hooks`, `jsx-a11y`, `testing-library`. Production code: `no-console: ['warn', { allow: ['warn', 'error'] }]` — only `console.warn` and `console.error` are allowed. Test files have relaxed rules (no-unused-vars off, no-explicit-any off, no-console off, testing-library rules off). Unused vars prefixed with `_` are allowed.
 
 ### Pre-commit Hooks
 
@@ -234,6 +255,14 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - Timezone: `Asia/Seoul`, language: `ko-kr`
 - File upload: 5MB max; allowed extensions: `.jpg`, `.jpeg`, `.png`, `.gif`, `.pdf`, `.doc`, `.docx`
 - CI uses `uv sync --frozen` (lockfile must be up to date)
+
+### Pre-deploy Check
+
+`scripts/pre-deploy-check.sh` runs a comprehensive checklist before production deploy: env files, TypeScript, ESLint, console.log scan, tests, build, SEO assets (robots.txt, sitemap, manifest, favicon), API key scan, npm audit, git status, large image check (>500KB), bundle size.
+
+### Dependabot
+
+`.github/dependabot.yml` runs weekly updates (Mondays 04:00) for npm, pip, GitHub Actions, and Docker. **Blocked major version updates**: Tailwind CSS, ESLint plugins, `framer-motion`. Secrets template in `.github/SECRETS-TEMPLATE.md`.
 
 ## Common Pitfalls
 
