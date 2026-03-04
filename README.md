@@ -221,6 +221,7 @@ emelmujiro/
   - CSP `connect-src`에 `cdn.jsdelivr.net` 추가, 무효 `frame-ancestors` 제거
   - 카카오톡 인앱 브라우저 → 외부 브라우저 리다이렉트
 - **PWA 제거**: 서비스 워커 캐시 이슈로 PWA 전체 제거 (vite-plugin-pwa, SW, 오프라인 지원)
+- **데드 코드 정리**: 미사용 i18n 키, 고립된 locale 하위 디렉토리(16파일), 미사용 타입 선언, stale 코멘트 제거
 - **README 리팩토링**: 기술 스택 테이블 형식 전환, CONTRIBUTING.md 최신화
 - **버전 동기화**: root/frontend package.json 버전 통일 (0.9.7)
 

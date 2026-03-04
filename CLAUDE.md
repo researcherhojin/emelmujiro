@@ -87,7 +87,7 @@ lsof -ti:8000 | xargs kill -9
 - `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x
 - `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Chat/Redis excluded from 1.0 scope
 - Root `package.json` uses npm workspaces pointing to `frontend/`
-- Docker support: `docker-compose.yml` (prod: backend + frontend/nginx + PostgreSQL; Redis only with `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload)
+- Docker support: `docker-compose.yml` (prod: backend + frontend/nginx + SQLite default; Redis only with `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload)
 
 ### Routing
 
