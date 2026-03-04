@@ -226,7 +226,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 - Build pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` (sitemap must succeed)
 - esbuild minifier (switched from Terser for ~10x faster builds). `esbuild.drop: ['console', 'debugger']` in production
 - Manual chunks: react-vendor, ui-vendor, i18n
-- PWA via `vite-plugin-pwa`: service worker with Workbox, runtime caching for fonts
+- PWA via `vite-plugin-pwa`: service worker with Workbox (`skipWaiting: true`, `clientsClaim: true`), runtime caching for fonts (1yr) and app (1 day)
 - Dev server proxies `/api` to `http://127.0.0.1:8000` (`strictPort: false` — tries next port if busy)
 
 ### Tailwind CSS 3.x
@@ -272,7 +272,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: 90 files, 1529 tests, 0 failures, 0 skips (as of 2026-03-02)
+4. **Test count**: 90 files, 1531 tests, 0 failures, 0 skips (as of 2026-03-04)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility

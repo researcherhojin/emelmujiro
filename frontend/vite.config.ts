@@ -42,6 +42,8 @@ export default defineConfig({
         ],
       },
       workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
         globPatterns: [
           '**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff,woff2}',
         ],
@@ -85,7 +87,7 @@ export default defineConfig({
               cacheName: 'app-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+                maxAgeSeconds: 60 * 60 * 24, // 1 day
               },
               cacheableResponse: {
                 statuses: [0, 200],

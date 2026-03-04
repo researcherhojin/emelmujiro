@@ -1,8 +1,8 @@
-# 🤝 Contributing to Emelmujiro
+# Contributing to Emelmujiro
 
-우선 Emelmujiro 프로젝트에 기여하고자 하는 관심에 감사드립니다!
+Emelmujiro 프로젝트에 기여하고자 하는 관심에 감사드립니다!
 
-## 📋 기여 방법
+## 기여 방법
 
 ### 1. 이슈 생성
 
@@ -12,188 +12,115 @@
 ### 2. Fork & Clone
 
 ```bash
-# Fork 후 클론
 git clone https://github.com/[your-username]/emelmujiro.git
 cd emelmujiro
-
-# Upstream 추가
 git remote add upstream https://github.com/researcherhojin/emelmujiro.git
 ```
 
 ### 3. 브랜치 생성
 
 ```bash
-# 기능 개발
-git checkout -b feature/your-feature-name
-
-# 버그 수정
-git checkout -b fix/bug-description
+git checkout -b feature/your-feature-name   # 기능 개발
+git checkout -b fix/bug-description         # 버그 수정
 ```
 
 ### 4. 개발 환경 설정
 
 ```bash
-# Frontend 의존성 설치
-cd frontend
+# Frontend (npm workspaces — 루트에서 실행)
 npm install
 
-# Backend 의존성 설치
-cd ../backend
-pip install -r requirements.txt
+# Backend (uv 필요)
+cd backend
+uv sync --dev
 ```
 
-### 5. 코드 작성
+### 5. 개발 서버 실행
 
-- TypeScript를 사용해주세요 (Frontend)
-- ESLint와 Prettier 규칙을 준수해주세요
-- 테스트를 작성해주세요
-- 커밋 메시지는 다음 형식을 따라주세요:
-  - `feat:` 새로운 기능
-  - `fix:` 버그 수정
-  - `docs:` 문서 수정
-  - `style:` 코드 포맷팅
-  - `refactor:` 코드 리팩토링
-  - `test:` 테스트 추가/수정
-  - `chore:` 빌드 과정 또는 보조 도구 수정
+```bash
+npm run dev              # Frontend(5173) + Backend(8000) 동시 실행
+npm run dev:frontend     # Frontend만
+npm run dev:backend      # Backend만
+```
 
-### 6. 테스트
+### 6. 코드 작성 규칙
+
+- **TypeScript** 100% 사용 (`any` 최소화)
+- **함수형 컴포넌트** + hooks 패턴
+- **Tailwind CSS** 유틸리티 클래스 우선 사용
+- **i18n**: 모든 UI 문자열은 `useTranslation()` 사용 (하드코딩 금지)
+- **ESLint + Prettier** 규칙 준수 (pre-commit 훅이 자동 실행)
+
+### 7. 커밋 메시지
+
+[Conventional Commits](https://www.conventionalcommits.org/) 형식을 따라주세요. PR 체크에서 검증됩니다.
+
+```
+feat(frontend): add dark mode toggle
+fix(api): handle 401 token refresh
+docs(readme): update tech stack section
+test(blog): add BlogCard snapshot tests
+refactor(store): simplify auth slice
+chore(deps): bump vite to 7.1
+```
+
+### 8. 테스트
 
 ```bash
 # Frontend 테스트
-npm test
+cd frontend
+npm run test:run         # 단일 실행
+npm test                 # Watch 모드
+npm run test:coverage    # 커버리지 리포트
 
-# Lint 검사
-npm run lint
+# 전체 검증 (lint + type-check + test)
+npm run validate
 
-# TypeScript 타입 체크
-npm run type-check
+# E2E 테스트
+npm run test:e2e
+
+# Backend 테스트
+cd backend
+uv run python manage.py test
 ```
 
-### 7. Pull Request
-
-- main 브랜치로 PR을 생성해주세요
-- PR 템플릿을 작성해주세요
-- 모든 CI 체크가 통과하는지 확인해주세요
-
-## 🎨 코드 스타일
-
-### TypeScript/JavaScript
-
-- 함수형 컴포넌트 사용 (React)
-- Props에 TypeScript 인터페이스 정의
-- async/await 사용 권장
-- 100% TypeScript 사용 (any 타입 최소화)
-
-### CSS
-
-- Tailwind CSS 유틸리티 클래스 우선 사용
-- 커스텀 CSS는 최소화
-
-## 🛠 개발 가이드
-
-### 컴포넌트 개발
+모든 새로운 컴포넌트에 테스트 파일이 필요합니다. `renderWithProviders` 유틸리티를 사용해주세요:
 
 ```tsx
-// LazyImage 컴포넌트 사용 예시
-<LazyImage
-  src="/image.jpg"
-  webpSrc="/image.webp"
-  srcSet="/image-320w.jpg 320w, /image-640w.jpg 640w"
-  sizes="(max-width: 768px) 100vw, 50vw"
-  priority={true} // Above-the-fold 이미지용
-  alt="Description"
-/>
-```
+import { renderWithProviders } from '@/test-utils/renderWithProviders';
 
-### 테스트 작성
-
-- 모든 새로운 컴포넌트는 테스트 파일 필수
-- `renderWithProviders` 유틸리티 사용
-- 테스트 커버리지 80% 이상 유지
-
-```tsx
-import { renderWithProviders } from '@/test-utils';
-
-test('component renders correctly', () => {
+test('renders correctly', () => {
   const { getByText } = renderWithProviders(<Component />);
   expect(getByText('Expected Text')).toBeInTheDocument();
 });
 ```
 
-### 성능 최적화
+### 9. Pull Request
 
-- 이미지: LazyImage 컴포넌트 사용
-- 컴포넌트: React.lazy로 코드 스플리팅
-- 메모이제이션: useMemo, useCallback 적절히 활용
+- `main` 브랜치로 PR을 생성해주세요
+- 모든 CI 체크(lint, type-check, test, build)가 통과하는지 확인해주세요
+- PR 설명에 변경 사항과 테스트 계획을 포함해주세요
 
-### 개발 스크립트
+## 프로젝트 구조
 
-```bash
-npm run dev              # 개발 서버
-npm run validate         # 전체 검증 (lint + type-check + test)
-npm run analyze          # 번들 분석
-npm run test:coverage    # 테스트 커버리지
+```
+emelmujiro/
+├── frontend/               # React 19 + TypeScript + Vite
+│   ├── src/
+│   │   ├── components/     # React 컴포넌트 (pages, common, sections, layout)
+│   │   ├── store/          # Zustand 상태 관리
+│   │   ├── services/       # API 서비스 (Mock + Real)
+│   │   ├── contexts/       # React Context (UI, Auth, Blog, Form, Chat)
+│   │   ├── i18n/           # 다국어 지원 (ko/en)
+│   │   └── test-utils/     # 테스트 유틸리티 + MSW 목 서버
+│   └── e2e/                # Playwright E2E 테스트
+├── backend/                # Django 5 + DRF
+│   ├── api/                # REST API (단일 앱)
+│   └── config/             # Django 설정
+└── .github/workflows/      # CI/CD 파이프라인
 ```
 
-## 📦 의존성 관리
-
-### 업데이트 정책
-
-1. **Patch 업데이트**: 즉시 적용
-2. **Minor 업데이트**: 테스트 후 적용 (1주 이내)
-3. **Major 업데이트**: 별도 브랜치에서 테스트 (2주 검토)
-
-### 현재 주요 의존성
-
-- React: 18.3.x (19.x 마이그레이션 예정)
-- TypeScript: 5.9.x
-- Tailwind CSS: 3.3.x
-- Framer Motion: 11.x
-
-### 의존성 업데이트 프로세스
-
-```bash
-# 1. 업데이트 가능한 패키지 확인
-npm outdated
-
-# 2. 안전한 업데이트 (patch/minor)
-npm update
-
-# 3. Major 업데이트 (주의 필요)
-npm install package@latest
-
-# 4. 테스트 실행
-npm test
-npm run type-check
-npm run build
-```
-
-### 보안 취약점 관리
-
-```bash
-# 취약점 확인
-npm audit
-
-# 자동 수정 시도 (주의: breaking changes 가능)
-npm audit fix
-
-# 상세 리포트
-npm audit --json
-```
-
-현재 알려진 이슈:
-
-- 모든 보안 취약점 해결 완료 ✅ (Vite 마이그레이션 완료)
-
-## 📝 문서화
-
-- 복잡한 로직에는 주석 추가
-- README 업데이트 필요시 함께 수정
-- API 변경사항은 문서화
-
-## ❓ 질문이 있으신가요?
+## 질문이 있으신가요?
 
 - [GitHub Issues](https://github.com/researcherhojin/emelmujiro/issues)에 질문을 남겨주세요
 - 이메일: researcherhojin@gmail.com
-
-감사합니다! 🙏
