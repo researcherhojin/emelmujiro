@@ -87,7 +87,7 @@ lsof -ti:8000 | xargs kill -9
 - `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x
 - `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Chat/Redis excluded from 1.0 scope
 - Root `package.json` uses npm workspaces pointing to `frontend/`
-- Docker support: `docker-compose.yml` (prod: backend + frontend/nginx + SQLite default; Redis only with `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload)
+- Docker support: `docker-compose.yml` (prod: backend + frontend/nginx + PostgreSQL; Redis only with `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload)
 
 ### Routing
 
@@ -271,7 +271,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: 83 files, 1383 tests, 0 failures, 0 skips (as of 2026-03-05)
+4. **Test count**: 73 test files, 1233 tests, 0 failures, 0 skips (as of 2026-03-05)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility

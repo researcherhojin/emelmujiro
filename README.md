@@ -27,7 +27,7 @@
 | ---------- | ------- | ------------------------------------------ |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
-| **테스트** | ✅ 통과 | 1383 통과, 0 스킵 (83 파일)                |
+| **테스트** | ✅ 통과 | 1233 통과, 0 스킵 (73 파일)                |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                 |
 | **배포**   | ✅ 정상 | GitHub Pages                               |
@@ -207,12 +207,13 @@ emelmujiro/
 - [x] 에러 리포팅 — Sentry 연동 (기본 비활성)
 - [x] Lighthouse 90점+ — Performance 0.9 달성
 - [x] PWA 제거 — 서비스 워커 캐시 이슈로 전체 제거, 데드 코드 정리
+- [x] 코드베이스 딥 오딧 — 고립 컴포넌트 21개 삭제, dead CSS 20개 클래스 제거, stale 환경변수 수정
 - [x] 환경변수 정리 — dead code 삭제, `global.d.ts` 정리
 - [x] CI/CD 안정화 — `upload-artifact@v7`, Docker Redis 옵셔널화
 
 ## 변경 이력
 
-### 0.9.7 (2026.03.04)
+### 0.9.7 (2026.03.04 ~ 03.05)
 
 - **Android(갤럭시) 호환성 개선**
   - Viewport: `viewport-fit=cover`, `100dvh` 동적 뷰포트 단위 적용
@@ -221,7 +222,13 @@ emelmujiro/
   - CSP `connect-src`에 `cdn.jsdelivr.net` 추가, 무효 `frame-ancestors` 제거
   - 카카오톡 인앱 브라우저 → 외부 브라우저 리다이렉트
 - **PWA 제거**: 서비스 워커 캐시 이슈로 PWA 전체 제거 (vite-plugin-pwa, SW, 오프라인 지원)
-- **데드 코드 정리**: 미사용 i18n 키, 고립된 locale 하위 디렉토리(16파일), 미사용 타입 선언, stale 코멘트 제거
+- **코드베이스 딥 오딧** (-3,580 lines)
+  - 고립된 컴포넌트 21개 삭제 (Loading, PageLoading, ScrollProgress, ScrollToTop, Section, ErrorMessage, LazyImage, SEOHead, layout/SEO, i18nFormatters, common/index)
+  - index.html: CRA `%PUBLIC_URL%` → Vite 경로 수정, Zustand 테마 감지 수정, dead script 제거
+  - Dead CSS 20개 클래스 + 미사용 CSS 변수 제거 (btn-primary/secondary, card, section-heading 등)
+  - stale `REACT_APP_` 환경변수 참조 수정 (logger.ts, handlers.ts, api.test.ts)
+  - 미사용 타입 3개 삭제 (ContactApiData, MockEvent, UnknownError)
+  - 미사용 i18n 키, 고립된 locale 하위 디렉토리(16파일), stale 코멘트 제거
 - **README 리팩토링**: 기술 스택 테이블 형식 전환, CONTRIBUTING.md 최신화
 - **버전 동기화**: root/frontend package.json 버전 통일 (0.9.7)
 
@@ -235,7 +242,7 @@ emelmujiro/
 
 ### 0.9.0 ~ 0.9.4 (2026.02.28 ~ 03.02)
 
-- i18n 전체 전환, P0 보안 수정, 접근성 개선, dead code 정리, 테스트 확장 (1718 → 1531)
+- i18n 전체 전환, P0 보안 수정, 접근성 개선, dead code 정리, 테스트 확장 (1718 → 1233)
 - Blog/Contact/Chat 공사 중 전환, Admin ProtectedRoute, Pre-commit 훅
 
 ### 0.8.0 이전 (2025.09 ~ 2026.02)
