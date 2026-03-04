@@ -61,13 +61,36 @@ uv run python manage.py runserver
 
 ## 기술 스택
 
-| Layer        | Technology                                                                                         |
-| :----------- | :------------------------------------------------------------------------------------------------- |
-| **Frontend** | React 19 · TypeScript · Vite · Tailwind CSS 3 · Zustand · Framer Motion · i18next · React Router 7 |
-| **Testing**  | Vitest · Playwright · MSW · Testing Library                                                        |
-| **Backend**  | Django 5 · Django REST Framework · JWT Auth · Channels                                             |
-| **Database** | PostgreSQL 15 · Redis (optional)                                                                   |
-| **Infra**    | GitHub Actions CI/CD · GitHub Pages · Docker Compose · Node 22 · Python 3.12 · uv                  |
+**Frontend**<br/>
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-5-433e38?logo=react&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-E91E63)
+![i18next](https://img.shields.io/badge/i18next-25-26A69A?logo=i18next&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-7-CA4245?logo=reactrouter&logoColor=white)
+
+**Testing**<br/>
+![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?logo=vitest&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-1.55-2EAD33?logo=playwright&logoColor=white)
+![MSW](https://img.shields.io/badge/MSW-2-FF6A33?logo=mockserviceworker&logoColor=white)
+![Testing Library](https://img.shields.io/badge/Testing_Library-16-E33332?logo=testinglibrary&logoColor=white)
+
+**Backend**<br/>
+![Django](https://img.shields.io/badge/Django-5-092E20?logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-3.16-A30000)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white)
+![Channels](https://img.shields.io/badge/Channels-4-092E20?logo=django&logoColor=white)
+
+**Infra**<br/>
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Deploy-222?logo=github&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![Node](https://img.shields.io/badge/Node-22-5FA04E?logo=nodedotjs&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![uv](https://img.shields.io/badge/uv-Package_Manager-DE5FE9)
 
 ## 프로젝트 구조
 
