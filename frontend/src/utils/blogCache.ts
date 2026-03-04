@@ -23,8 +23,6 @@ const MAX_CACHED_POSTS = 50;
 
 // Check if blog caching is available
 export function isBlogCacheAvailable(): boolean {
-  // Only check for localStorage support, not ServiceWorker
-  // ServiceWorker registration happens asynchronously later
   return typeof Storage !== 'undefined';
 }
 

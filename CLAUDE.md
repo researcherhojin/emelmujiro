@@ -177,7 +177,7 @@ Vitest with jsdom environment. Config in `frontend/vitest.config.ts`. Setup file
 These are mocked globally — do NOT re-mock in individual tests:
 
 - `lucide-react` (Proxy-based, any icon name works), `framer-motion` (motion/AnimatePresence), `react-helmet-async`
-- Browser APIs: `matchMedia`, `IntersectionObserver`, `ResizeObserver`, `localStorage`, `sessionStorage`, `navigator.serviceWorker`, `Notification`, `fetch`, `requestAnimationFrame`, `performance`, `window.gtag`
+- Browser APIs: `matchMedia`, `IntersectionObserver`, `ResizeObserver`, `localStorage`, `sessionStorage`, `navigator.serviceWorker`, `fetch`, `requestAnimationFrame`, `performance`, `window.gtag`
 - Window: `alert`, `confirm`, `prompt`, `scrollTo`, `CSS.supports`, `location`, `history`, `innerWidth` (1024), `innerHeight` (768)
 - Navigator: `onLine` (true), `language` (`'ko-KR'`)
 - DOM: `Element.prototype.scrollIntoView`, `classList` patches, `document.querySelector/querySelectorAll/getElementById`
@@ -196,7 +196,7 @@ These are mocked globally — do NOT re-mock in individual tests:
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 83 test files, 1386 tests, 0 failures, 0 skips
+- 83 test files, 1383 tests, 0 failures, 0 skips
 
 ### E2E Testing (Playwright)
 
@@ -271,7 +271,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: 83 files, 1386 tests, 0 failures, 0 skips (as of 2026-03-04)
+4. **Test count**: 83 files, 1383 tests, 0 failures, 0 skips (as of 2026-03-05)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
