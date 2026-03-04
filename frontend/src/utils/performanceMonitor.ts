@@ -1,5 +1,4 @@
 import logger from './logger';
-// import { onCLS, onFCP, onINP, onLCP, onTTFB, Metric } from 'web-vitals';
 
 interface PerformanceMetrics {
   FCP?: number; // First Contentful Paint
@@ -285,9 +284,6 @@ class PerformanceMonitor {
         }
       });
     }
-
-    // Could also send to custom monitoring endpoint
-    // this.sendToMonitoringService(metrics);
   }
 
   /**

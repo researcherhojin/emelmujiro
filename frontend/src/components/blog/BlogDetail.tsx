@@ -6,7 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { PageLoading } from '../common/UnifiedLoading';
 import ErrorBoundary from '../common/ErrorBoundary';
-import SEO from '../layout/SEO';
+import SEOHelmet from '../common/SEOHelmet';
 import BlogInteractions from './BlogInteractions';
 import BlogComments from './BlogComments';
 import { useBlog } from '../../contexts/BlogContext';
@@ -61,11 +61,10 @@ const BlogDetailPage: React.FC = memo(() => {
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50 pt-20">
         {post && (
-          <SEO
+          <SEOHelmet
             title={`${post.title} | ${t('blogDetail.blogTitle')}`}
             description={post.excerpt || post.title}
             keywords={`${post.category}, ${t('blogDetail.blogKeywords')}`}
-            ogImage={post.image_url}
           />
         )}
         <div className="max-w-4xl mx-auto px-4 py-12">

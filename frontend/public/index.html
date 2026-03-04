@@ -2,8 +2,8 @@
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/emelmujiro/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#111827" />
     <meta
       name="google-site-verification"
@@ -35,7 +35,10 @@
       property="og:description"
       content="최신 기술로 비즈니스의 미래를 설계합니다"
     />
-    <meta property="og:image" content="%PUBLIC_URL%/og-image.png" />
+    <meta
+      property="og:image"
+      content="https://researcherhojin.github.io/emelmujiro/og-image.png"
+    />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -51,14 +54,13 @@
       name="twitter:description"
       content="최신 기술로 비즈니스의 미래를 설계합니다"
     />
-    <meta name="twitter:image" content="%PUBLIC_URL%/og-image.png" />
+    <meta
+      name="twitter:image"
+      content="https://researcherhojin.github.io/emelmujiro/og-image.png"
+    />
 
     <!-- 보안 헤더 -->
-    <!-- CSP는 개발 환경에서 문제를 일으킬 수 있으므로 주석 처리 -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 https://api.github.com" /> -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <!-- X-Frame-Options는 HTTP 헤더로만 설정 가능, meta 태그에서는 제거 -->
-    <!-- <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" /> -->
     <meta
       http-equiv="Referrer-Policy"
       content="strict-origin-when-cross-origin"
@@ -68,7 +70,6 @@
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
-    <link rel="dns-prefetch" href="https://api.github.com" />
 
     <!-- Fonts with optimized loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -91,18 +92,14 @@
       />
     </noscript>
 
-    <!-- 기타 -->
     <meta name="format-detection" content="telephone=no" />
-    <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <meta name="robots" content="index,follow" />
-    <meta name="googlebot" content="index,follow" />
     <link
       rel="canonical"
       href="https://researcherhojin.github.io/emelmujiro/"
     />
+
     <!-- Critical CSS inline for above-the-fold content -->
     <style>
-      /* Critical CSS for faster first paint */
       body {
         font-family:
           'Pretendard',
@@ -116,6 +113,7 @@
       }
       .min-h-screen {
         min-height: 100vh;
+        min-height: 100dvh;
       }
       .flex {
         display: flex;
@@ -126,15 +124,6 @@
       .bg-white {
         background-color: white;
       }
-      .text-4xl {
-        font-size: 2.25rem;
-      }
-      .font-black {
-        font-weight: 900;
-      }
-      .text-gray-900 {
-        color: rgb(17 24 39);
-      }
     </style>
 
     <title>에멜무지로 | AI 기반 소프트웨어 개발 및 IT 교육 전문가</title>
@@ -142,7 +131,6 @@
   <body>
     <noscript>자바스크립트를 활성화해주세요.</noscript>
     <div id="root">
-      <!-- Loading skeleton for better perceived performance -->
       <div class="min-h-screen flex items-center justify-center bg-white">
         <div class="animate-pulse">
           <div class="h-8 bg-gray-200 rounded w-48 mb-4"></div>
@@ -151,68 +139,29 @@
       </div>
     </div>
 
-    <!-- Preload critical resources and performance optimizations -->
     <script>
-      // Performance timing
-      window.performanceStart = Date.now();
-
-      // Network status detection
-      if ('connection' in navigator) {
-        const connection = navigator.connection;
-        if (connection && connection.effectiveType) {
-          document.documentElement.setAttribute(
-            'data-connection',
-            connection.effectiveType
-          );
-
-          // Adjust loading strategy based on connection
-          if (
-            connection.effectiveType === 'slow-2g' ||
-            connection.effectiveType === '2g'
-          ) {
-            document.documentElement.classList.add('slow-connection');
-          }
-        }
+      // Theme detection — read from Zustand persisted store
+      try {
+        var stored = localStorage.getItem('app-store');
+        var savedTheme = stored ? JSON.parse(stored).state && JSON.parse(stored).state.theme : null;
+      } catch (e) {
+        var savedTheme = null;
       }
-
-      // Performance observer for Web Vitals
-      if ('PerformanceObserver' in window) {
-        try {
-          const observer = new PerformanceObserver((list) => {
-            for (const entry of list.getEntries()) {
-              // Performance metrics are tracked but not logged
-              if (entry.name === 'first-contentful-paint') {
-                // FCP tracked
-              } else if (entry.name === 'largest-contentful-paint') {
-                // LCP tracked
-              }
-            }
-          });
-
-          observer.observe({
-            entryTypes: ['paint', 'largest-contentful-paint'],
-          });
-        } catch (e) {
-          // Performance observer not supported
-        }
-      }
-
-      // Theme detection and initialization
-      const savedTheme = localStorage.getItem('theme');
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light';
-      const theme = savedTheme || systemTheme;
+      var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      var theme = savedTheme || systemTheme;
 
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
       }
 
-      // Update theme color meta tag
-      const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+      var themeColorMeta = document.querySelector('meta[name="theme-color"]');
       if (themeColorMeta) {
-        themeColorMeta.content = theme === 'dark' ? '#1F2937' : '#111827';
+        themeColorMeta.content = theme === 'dark' ? '#0f172a' : '#111827';
+      }
+
+      // KakaoTalk in-app browser redirect
+      if (/KAKAOTALK/i.test(navigator.userAgent)) {
+        location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(location.href);
       }
     </script>
   </body>

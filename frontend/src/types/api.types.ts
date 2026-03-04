@@ -26,23 +26,3 @@ export interface ErrorResponse {
   details?: Record<string, unknown>;
   status?: number;
 }
-
-export interface ContactApiData {
-  name: string;
-  email: string;
-  phone: string;
-  company: string;
-  inquiry_type: string;
-  message: string;
-}
-
-export interface MockEvent {
-  preventDefault: () => void;
-  target: {
-    value?: string;
-    name?: string;
-    files?: FileList;
-  };
-}
-
-export type UnknownError = Error | ApiError | unknown;

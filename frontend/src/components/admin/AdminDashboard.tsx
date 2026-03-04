@@ -15,7 +15,6 @@ import {
   Eye,
 } from 'lucide-react';
 import logger from '../../utils/logger';
-// import { api } from '../../services/api'; // Currently using mock data
 
 interface DashboardStats {
   totalUsers: number;

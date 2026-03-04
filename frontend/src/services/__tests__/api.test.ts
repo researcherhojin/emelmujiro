@@ -1,8 +1,6 @@
 import { vi } from 'vitest';
 import { InternalAxiosRequestConfig } from 'axios';
 
-// Set test environment to use real axios (not mock API),
-vi.stubEnv('REACT_APP_USE_MOCK_API', 'false');
 vi.stubEnv('NODE_ENV', 'development');
 
 // Mock axios properly

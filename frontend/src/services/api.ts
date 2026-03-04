@@ -75,9 +75,6 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Development logging can be enabled if needed
-    // logger.debug('API Request:', `${config.method?.toUpperCase()} ${config.url}`);
-
     return config;
   },
   (error: AxiosError) => {
@@ -87,10 +84,7 @@ axiosInstance.interceptors.request.use(
 
 // Response interceptor
 axiosInstance.interceptors.response.use(
-  (response) => {
-    // Development logging can be enabled if needed
-    return response;
-  },
+  (response) => response,
   async (error: CustomAxiosError) => {
     const originalRequest = error.config;
 
