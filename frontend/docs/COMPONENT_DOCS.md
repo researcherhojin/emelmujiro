@@ -114,7 +114,6 @@ src/components/
 **Features:**
 
 - Responsive form layout
-- Offline mode support
 - Form validation
 - Accessibility compliant
 
@@ -146,7 +145,6 @@ src/components/
 - Auto-displays after 10 seconds
 - Handles browser notification permissions
 - Stores dismissal in localStorage
-- PWA notification support
 
 ## Performance Optimizations
 

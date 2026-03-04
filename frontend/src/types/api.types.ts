@@ -36,28 +36,12 @@ export interface ContactApiData {
   message: string;
 }
 
-export interface ServiceWorkerData {
-  tag: string;
-  data: Record<string, unknown>;
-}
-
 export interface MockEvent {
   preventDefault: () => void;
   target: {
     value?: string;
     name?: string;
     files?: FileList;
-  };
-}
-
-export interface ExtendedServiceWorkerRegistration
-  extends ServiceWorkerRegistration {
-  sync?: {
-    register: (tag: string) => Promise<void>;
-    getTags: () => Promise<string[]>;
-  };
-  periodicSync?: {
-    register: (tag: string, options?: { minInterval: number }) => Promise<void>;
   };
 }
 

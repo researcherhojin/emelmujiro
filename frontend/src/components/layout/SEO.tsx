@@ -64,12 +64,7 @@ const SEOComponent: React.FC<SEOProps> = ({
       {/* 캐노니컬 URL */}
       {canonical && <link rel="canonical" href={canonical} />}
 
-      {/* PWA 관련 메타 태그 */}
       <meta name="application-name" content="에멜무지로" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-      <meta name="apple-mobile-web-app-title" content="에멜무지로" />
-      <meta name="mobile-web-app-capable" content="yes" />
     </Helmet>
   );
 };

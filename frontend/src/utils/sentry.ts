@@ -77,10 +77,6 @@ export function initSentry(): void {
           'grecaptcha',
           'fb_xd_fragment',
           '__tcfapi',
-
-          // Service Worker
-          'Failed to register a ServiceWorker',
-          'No matching service worker detected',
         ],
 
         // 블랙리스트 URL

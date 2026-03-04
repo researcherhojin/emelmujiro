@@ -487,43 +487,15 @@ global.IntersectionObserver =
 // Mock scrollTo
 window.scrollTo = vi.fn();
 
-// Mock Service Worker with complete API
-const mockServiceWorkerRegistration = {
-  installing: null,
-  waiting: null,
-  active: null,
-  onupdatefound: null,
-  unregister: vi.fn().mockResolvedValue(true),
-  pushManager: {
-    getSubscription: vi.fn().mockResolvedValue(null),
-    subscribe: vi.fn().mockResolvedValue({}),
-  },
-};
-
-const mockReady = Promise.resolve(mockServiceWorkerRegistration);
-
+// Mock navigator.serviceWorker (minimal — PWA removed, but main.tsx cleanup and blogCache still reference it)
 Object.defineProperty(navigator, 'serviceWorker', {
   writable: true,
   value: {
-    register: vi.fn(() => Promise.resolve(mockServiceWorkerRegistration)),
-    ready: mockReady,
-    controller: null,
-    getRegistration: vi.fn(() =>
-      Promise.resolve(mockServiceWorkerRegistration)
-    ),
     getRegistrations: vi.fn(() => Promise.resolve([])),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
   },
 });
-
-// Ensure ready.then is always available
-if (!navigator.serviceWorker.ready || !navigator.serviceWorker.ready.then) {
-  Object.defineProperty(navigator.serviceWorker, 'ready', {
-    value: mockReady,
-    writable: true,
-  });
-}
 
 // Mock classList - ensure it's always available
 // Create a proper classList mock
@@ -767,14 +739,6 @@ global.requestAnimationFrame = vi.fn((cb: FrameRequestCallback) =>
 global.cancelAnimationFrame = vi.fn((id: number) =>
   clearTimeout(id)
 ) as unknown as typeof cancelAnimationFrame;
-
-// Mock Notification API
-global.Notification = {
-  permission: 'default' as NotificationPermission,
-  requestPermission: vi
-    .fn()
-    .mockResolvedValue('granted' as NotificationPermission),
-} as unknown as typeof Notification;
 
 // Mock navigator properties
 Object.defineProperty(navigator, 'onLine', {

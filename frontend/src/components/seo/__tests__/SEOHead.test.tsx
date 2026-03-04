@@ -185,13 +185,12 @@ describe('SEOHead', () => {
     expect(data.name).toBe('Emelmujiro');
   });
 
-  it('renders PWA meta tags', () => {
+  it('renders meta tags', () => {
     const { getByTestId } = renderWithProviders(<SEOHead />);
 
     const helmet = getByTestId('helmet');
     const helmetData = JSON.parse(helmet.getAttribute('data-helmet') || '{}');
 
-    expect(helmetData['mobile-web-app-capable']).toBe('yes');
     expect(helmetData['theme-color']).toMatch(/^#[0-9a-fA-F]{6}$/);
   });
 

@@ -656,26 +656,6 @@
     "errorId": "Error ID:",
     "time": "Time:"
   },
-  "notification": {
-    "settings": "Notification Settings",
-    "closeSettings": "Close settings",
-    "blogUpdates": "Blog Updates",
-    "blogUpdatesDesc": "Notify when new posts are published",
-    "contactResponse": "Contact Response",
-    "contactResponseDesc": "Notify when inquiry responses arrive",
-    "systemAlerts": "System Alerts",
-    "systemAlertsDesc": "Important system updates",
-    "marketing": "Marketing",
-    "marketingDesc": "Promotions and event information",
-    "save": "Save",
-    "cancel": "Cancel",
-    "enableTitle": "Enable Notifications",
-    "enableDescription": "Don't miss new blog posts and important updates. You can change this anytime in settings.",
-    "enabling": "Setting up...",
-    "allow": "Allow",
-    "later": "Later",
-    "settingsAriaLabel": "Notification settings"
-  },
   "errors": {
     "404": "Page not found",
     "500": "Server error occurred",
@@ -687,29 +667,6 @@
       "maxLength": "Maximum {{max}} characters allowed",
       "pattern": "Invalid format"
     }
-  },
-  "offline": {
-    "status": "Offline",
-    "pendingRequests": "{{count}} requests pending",
-    "limitedFeatures": "Some features may be limited",
-    "syncing": "Syncing",
-    "syncingMessage": "Updating data...",
-    "onlineConnected": "Online Connected",
-    "allFeaturesAvailable": "All features are available",
-    "syncError": "Sync Error",
-    "syncErrorMessage": "Failed to sync some data",
-    "dismissAlert": "Dismiss alert",
-    "retryConnection": "Retry connection",
-    "retry": "Retry",
-    "hideAlert": "Hide alert",
-    "hide": "Hide"
-  },
-  "pwa": {
-    "install": "Install App",
-    "installApp": "Install App",
-    "update": "Update Available",
-    "offline": "Offline Mode",
-    "online": "Online Connected"
   },
   "accessibility": {
     "skipToContent": "Skip to Content",

@@ -17,7 +17,6 @@ interface Window {
   dataLayer?: unknown[];
   __REDUX_DEVTOOLS_EXTENSION__?: () => unknown;
   __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: unknown;
-  workbox?: unknown;
 }
 
 // 모듈 선언
@@ -52,22 +51,6 @@ declare module '*.module.css' {
 declare module '*.module.scss' {
   const classes: { readonly [key: string]: string };
   export default classes;
-}
-
-// Service Worker 타입
-interface ServiceWorkerConfig {
-  onSuccess?: (registration: ServiceWorkerRegistration) => void;
-  onUpdate?: (registration: ServiceWorkerRegistration) => void;
-}
-
-// PWA 이벤트 타입
-interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[];
-  readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed';
-    platform: string;
-  }>;
-  prompt(): Promise<void>;
 }
 
 // 네트워크 정보 API

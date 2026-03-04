@@ -35,19 +35,6 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
-// Mock navigator.serviceWorker
-Object.defineProperty(navigator, 'serviceWorker', {
-  value: {
-    register: vi.fn(),
-    ready: Promise.resolve({
-      sync: {
-        register: vi.fn(),
-      },
-    }),
-  },
-  writable: true,
-});
-
 describe('blogCache', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -55,7 +42,7 @@ describe('blogCache', () => {
   });
 
   describe('isBlogCacheAvailable', () => {
-    it('should return true when localStorage and serviceWorker are available', () => {
+    it('should return true when localStorage is available', () => {
       expect(isBlogCacheAvailable()).toBe(true);
     });
   });

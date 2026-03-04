@@ -182,13 +182,8 @@ const SEOHead: React.FC<SEOHeadProps> = (props) => {
       <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
       <link rel="dns-prefetch" href="https://www.google-analytics.com" />
 
-      {/* PWA tags */}
-      <meta name="mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="application-name" content={siteTitle} />
-      <meta name="apple-mobile-web-app-title" content={siteTitle} />
       <meta name="theme-color" content="#3B82F6" />
-      <meta name="msapplication-TileColor" content="#3B82F6" />
     </Helmet>
   );
 };

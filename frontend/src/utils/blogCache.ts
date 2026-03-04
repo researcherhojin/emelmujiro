@@ -1,4 +1,4 @@
-// Blog caching utilities for offline reading
+// Blog caching utilities using localStorage
 import logger from './logger';
 
 export interface BlogPost {
@@ -50,15 +50,6 @@ export async function cacheBlogPost(post: BlogPost): Promise<boolean> {
     ].slice(0, MAX_CACHED_POSTS);
 
     localStorage.setItem(CACHE_KEY, JSON.stringify(updatedCache));
-
-    // Also cache via service worker if available
-    if ('serviceWorker' in navigator) {
-      const registration = await navigator.serviceWorker.ready;
-      registration.active?.postMessage({
-        type: 'PRELOAD_BLOG_POSTS',
-        data: { posts: [post] },
-      });
-    }
 
     logger.info(`Blog post cached: ${post.title}`);
     return true;
@@ -175,7 +166,7 @@ export function getBlogCacheStats() {
   };
 }
 
-// Preload popular or recent blog posts for offline reading
+// Preload popular or recent blog posts
 export async function preloadBlogPosts(posts: BlogPost[]): Promise<number> {
   let successCount = 0;
 
@@ -236,11 +227,6 @@ export function initBlogCache(): void {
     cleanupBlogCache();
     logger.info('Blog cache initialized');
   } else {
-    // Log why cache is not available for debugging
-    if (typeof Storage === 'undefined') {
-      logger.warn('Blog cache not available: localStorage not supported');
-    } else if (!('serviceWorker' in navigator)) {
-      logger.warn('Blog cache not available: ServiceWorker not supported');
-    }
+    logger.warn('Blog cache not available: localStorage not supported');
   }
 }

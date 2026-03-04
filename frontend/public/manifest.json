@@ -11,77 +11,18 @@
     {
       "src": "/emelmujiro/logo192.png",
       "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any"
+      "sizes": "192x192"
     },
     {
       "src": "/emelmujiro/logo512.png",
       "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any"
+      "sizes": "512x512"
     }
   ],
   "start_url": "/emelmujiro",
-  "scope": "/emelmujiro",
-  "display": "standalone",
+  "display": "browser",
   "theme_color": "#111827",
   "background_color": "#ffffff",
-  "orientation": "portrait-primary",
-  "categories": ["business", "education", "productivity"],
   "lang": "ko-KR",
-  "dir": "ltr",
-  "prefer_related_applications": false,
-  "shortcuts": [
-    {
-      "name": "회사소개",
-      "short_name": "소개",
-      "description": "에멜무지로 회사 소개",
-      "url": "/emelmujiro/#/about",
-      "icons": [{ "src": "/emelmujiro/logo192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "대표 프로필",
-      "short_name": "프로필",
-      "description": "대표 이력 및 전문 분야",
-      "url": "/emelmujiro/#/profile",
-      "icons": [{ "src": "/emelmujiro/logo192.png", "sizes": "192x192" }]
-    }
-  ],
-  "share_target": {
-    "action": "/emelmujiro/#/share",
-    "method": "GET",
-    "enctype": "application/x-www-form-urlencoded",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
-    }
-  },
-  "screenshots": [
-    {
-      "src": "/emelmujiro/logo512.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "form_factor": "wide"
-    },
-    {
-      "src": "/emelmujiro/logo192.png",
-      "type": "image/png",
-      "sizes": "192x192",
-      "form_factor": "narrow"
-    }
-  ],
-  "protocol_handlers": [
-    {
-      "protocol": "web+emelmujiro",
-      "url": "/emelmujiro/#/%s"
-    }
-  ],
-  "related_applications": [],
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
-  "launch_handler": {
-    "client_mode": "focus-existing"
-  }
+  "dir": "ltr"
 }

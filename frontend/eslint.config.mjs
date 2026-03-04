@@ -17,8 +17,6 @@ export default [
       'build/**',
       'node_modules/**',
       'coverage/**',
-      'public/service-worker.js',
-      'public/service-worker-enhanced.js',
       'sitemap-generator.js',
       '*.config.js',
       '*.config.mjs',

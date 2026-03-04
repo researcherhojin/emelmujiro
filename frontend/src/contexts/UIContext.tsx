@@ -99,7 +99,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     }
     localStorage.setItem('theme', theme);
 
-    // Update meta theme-color for PWA
+    // Update meta theme-color
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
       metaThemeColor.setAttribute(
