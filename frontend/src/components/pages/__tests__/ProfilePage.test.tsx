@@ -65,6 +65,12 @@ vi.mock('lucide-react', () => {
       React.createElement('span', { className }, 'User'),
     Clock: ({ className }: { className?: string }) =>
       React.createElement('span', { className }, 'Clock'),
+    Trophy: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'Trophy'),
+    Medal: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'Medal'),
+    Building2: ({ className }: { className?: string }) =>
+      React.createElement('span', { className }, 'Building2'),
   };
 });
 
@@ -83,6 +89,26 @@ describe('ProfilePage Component', () => {
 
       expect(screen.getByText('profilePage.name')).toBeInTheDocument();
       expect(screen.getByText('profilePage.role')).toBeInTheDocument();
+    });
+
+    it('renders section label via i18n', () => {
+      renderWithRouter(<ProfilePage />);
+
+      expect(screen.getByText('profilePage.sectionLabel')).toBeInTheDocument();
+    });
+
+    it('renders achievement highlights', () => {
+      renderWithRouter(<ProfilePage />);
+
+      expect(
+        screen.getByText('achievements.items.championAward.highlight')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('achievements.items.daconWin.highlight')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('achievements.items.corporateTraining.highlight')
+      ).toBeInTheDocument();
     });
 
     it('renders profile description', () => {

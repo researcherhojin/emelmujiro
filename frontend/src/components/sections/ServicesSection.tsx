@@ -40,7 +40,7 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(({ service }) => {
       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
         {t(service.titleKey)}
       </h3>
-      <p className="text-base leading-relaxed text-gray-600 dark:text-gray-400 mb-6">
+      <p className="text-base leading-relaxed text-gray-600 dark:text-gray-400 mb-6 break-keep">
         {t(service.descriptionKey)}
       </p>
       <ul className="space-y-3">
@@ -109,7 +109,7 @@ const ServicesSection: React.FC = memo(() => {
           <h3 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-6">
             {t('services.title')}
           </h3>
-          <p className="text-xl font-medium text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl font-medium text-gray-600 dark:text-gray-400 max-w-3xl mx-auto break-keep">
             {t('services.subtitle')}
           </p>
         </div>

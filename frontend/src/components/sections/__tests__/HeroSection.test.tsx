@@ -49,8 +49,12 @@ describe('HeroSection Component', () => {
   test('renders call to action button', () => {
     renderWithRouter(<HeroSection />);
 
-    // HeroSection now only has one CTA button with an arrow
-    const ctaButton = screen.getByText(/common.inquireProject/);
-    expect(ctaButton).toBeInTheDocument();
+    // HeroSection has a mailto CTA link
+    const ctaLink = screen.getByText(/common.inquireByEmail/);
+    expect(ctaLink).toBeInTheDocument();
+    expect(ctaLink.closest('a')).toHaveAttribute(
+      'href',
+      expect.stringContaining('mailto:')
+    );
   });
 });

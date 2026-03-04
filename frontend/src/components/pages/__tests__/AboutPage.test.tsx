@@ -128,14 +128,18 @@ describe('AboutPage', () => {
     renderWithRouter();
 
     expect(screen.getByText('about.ctaTitle')).toBeInTheDocument();
-    expect(screen.getByText('common.inquireProject')).toBeInTheDocument();
+    expect(screen.getByText('common.inquireByEmail')).toBeInTheDocument();
   });
 
-  it('has contact button that can be clicked', () => {
+  it('has email link in CTA section', () => {
     renderWithRouter();
 
-    const contactButton = screen.getByText('common.inquireProject');
-    expect(contactButton).toBeInTheDocument();
+    const emailLink = screen.getByText('common.inquireByEmail');
+    expect(emailLink).toBeInTheDocument();
+    expect(emailLink.closest('a')).toHaveAttribute(
+      'href',
+      expect.stringContaining('mailto:')
+    );
   });
 
   it('renders with proper semantic structure', () => {

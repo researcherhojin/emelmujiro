@@ -157,8 +157,8 @@ const Footer: React.FC = memo(() => {
 
   const handleModalContactClick = useCallback(() => {
     setIsServiceModalOpen(false);
-    handleNavigate('/contact');
-  }, [handleNavigate]);
+    window.location.href = `mailto:${CONTACT_EMAIL}`;
+  }, []);
 
   return (
     <>
@@ -250,13 +250,12 @@ const Footer: React.FC = memo(() => {
                   </button>
                 </li>
                 <li>
-                  <button
-                    onClick={() => handleNavigate('/contact')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all focus:outline-none border-none bg-transparent"
-                    style={{ outline: 'none', boxShadow: 'none' }}
+                  <a
+                    href={`mailto:${CONTACT_EMAIL}`}
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all"
                   >
                     {t('common.contact')}
-                  </button>
+                  </a>
                 </li>
               </ul>
             </nav>
@@ -292,8 +291,8 @@ const Footer: React.FC = memo(() => {
               <p className="text-gray-700 dark:text-gray-300 text-base mb-6 leading-relaxed">
                 {t('footer.ctaQuestion')}
               </p>
-              <button
-                onClick={() => handleNavigate('/contact')}
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="inline-flex items-center px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-base font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {t('common.contact')}
@@ -301,7 +300,7 @@ const Footer: React.FC = memo(() => {
                   className="ml-2 w-3 h-3 flex-shrink-0"
                   aria-hidden="true"
                 />
-              </button>
+              </a>
             </div>
           </div>
 

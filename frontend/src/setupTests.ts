@@ -243,6 +243,8 @@ vi.mock('lucide-react', () => {
     'CalendarCheck',
     'Code2',
     'Lightbulb',
+    'Trophy',
+    'Medal',
   ];
 
   // Create all icon exports

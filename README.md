@@ -21,13 +21,13 @@
 - **LLM/생성형 AI** - LLM 기반 서비스 설계 및 개발
 - **Computer Vision** - 영상 처리 및 비전 AI 솔루션
 
-## 현재 상태 (v0.9.5)
+## 현재 상태 (v0.9.6)
 
 | 항목       | 상태    | 세부사항                                   |
 | ---------- | ------- | ------------------------------------------ |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
-| **테스트** | ✅ 통과 | 1529 통과, 0 스킵 (90 파일)                |
+| **테스트** | ✅ 통과 | 1531 통과, 0 스킵 (90 파일)                |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                 |
 | **배포**   | ✅ 정상 | GitHub Pages                               |
@@ -213,6 +213,22 @@ emelmujiro/
 - [x] **환경변수 정리** — dead code 삭제, `global.d.ts` 정리
 
 ## 변경 이력
+
+### 0.9.6 (2026.03.04)
+
+- **ProfilePage UX 리팩토링**: AboutPage와 동일한 디자인 패턴으로 전면 통일
+  - 섹션 배경색 교차: Hero(white) → Stats+Achievements(gray-50) → Tab Nav(white) → Tab Content(gray-50)
+  - 성과 하이라이트(Trophy/Medal/Building2) 3열 카드 행 추가
+  - Stats 카드에 아이콘 + hover 인터랙션 추가, 모바일 반응형 개선 (text-3xl~5xl)
+  - 경력/학력 타임라인을 AboutPage 여정 스타일로 통일 (period | card 레이아웃)
+  - 모바일 경력 탭: 기간을 카드 위에 세로 스택 배치 (긴 날짜 범위 대응)
+  - 탭 콘텐츠 제목에 섹션 라벨 추가 (CAREER / EDUCATION / PROJECTS)
+  - 자격/인증 카드 스타일 통일 (border-2 + hover:border-gray-900)
+- **Hero CTA 변경**: 문의하기 → 이메일 직접 문의 (mailto 링크)
+- **i18n 확장**: `profilePage.sectionLabel`, `careerLabel`, `educationLabel`, `projectsLabel`, `achievements` 키 추가 (ko/en)
+- **데드코드 정리**: 미사용 `AchievementsSection` 컴포넌트 + 테스트 삭제
+- **break-keep 적용**: HeroSection, CTASection, ServicesSection 한국어 텍스트 줄바꿈 개선
+- **테스트**: 1531개 통과 (90 파일), 0 실패, 0 스킵
 
 ### 0.9.5 (2026.03.03)
 

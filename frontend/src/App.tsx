@@ -95,7 +95,7 @@ const HomePage: React.FC = memo(() => {
             <ServicesSection />
           </div>
 
-          {/* Partner Logos */}
+          {/* Partner Logos + Achievement Pills */}
           <LogosSection />
 
           {/* Call to Action */}

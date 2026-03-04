@@ -158,8 +158,9 @@
     "title": "Emelmujiro",
     "subtitle": "AI Education & Solution Development Startup",
     "mission": {
+      "sectionLabel": "OUR MISSION",
       "title": "Our Mission",
-      "description": "Emelmujiro was founded in December 2024 as an AI education and consulting company.\nThrough practice-focused AI education and custom solution development,\nwe aim to be a partner that supports and grows with our clients' digital innovation."
+      "description": "With AI education and consulting built for real work,\nwe drive our clients' business growth together."
     },
     "vision": {
       "title": "Our Vision",
@@ -173,23 +174,23 @@
     "timeline": {
       "2022": {
         "title": "AI Education Begins",
-        "description": "Started AI education at universities and corporations including Seoul National University, UOS, and LG Electronics through MoResearch Lab and Hancom"
+        "description": "University & corporate AI training at SNU, UOS, LG, etc."
       },
       "2023": {
-        "title": "Education Expansion",
-        "description": "Conducted AI/ML education projects for major enterprises including Samsung, Hyundai E&C, LG Electronics, and Kakao"
+        "title": "Enterprise Training & Projects",
+        "description": "AI/ML training & projects at Samsung, Hyundai E&C, Kakao, etc."
       },
       "2024": {
         "title": "Specialization & Founding",
-        "description": "Specialized AI course instructor at Likelion, founded Emelmujiro in December"
+        "description": "AI expert instructor, Emelmujiro founded"
       },
       "2025": {
-        "title": "Continued Growth",
-        "description": "Industrial AI workforce capacity building education and expansion of custom corporate training"
+        "title": "Education Diversification",
+        "description": "Corporate training, KDT, industrial AI upskilling & more"
       },
       "2026": {
-        "title": "AI Solution Specialization",
-        "description": "Custom AI solutions for manufacturing, finance, and education industries with LLM/Computer Vision-based enterprise AI internalization support"
+        "title": "Education & Solutions",
+        "description": "Advancing corporate AI training & launching custom solutions"
       }
     },
     "values": {
@@ -198,23 +199,26 @@
       "subtitle": "Four core values that Emelmujiro pursues",
       "practical": {
         "title": "Practice-Focused Education",
-        "description": "Balanced theory and practice for immediately applicable real-world training"
+        "description": "Theory and practice balanced for immediate real-world use"
       },
       "custom": {
         "title": "Custom Curriculum",
-        "description": "Step-by-step education programs designed to match client level and goals"
+        "description": "Step-by-step programs tailored to client goals"
       },
       "latest": {
-        "title": "Latest Technology",
-        "description": "Hands-on training with latest AI tools including ChatGPT and Claude"
+        "title": "Generative AI Skills",
+        "description": "LLM-driven workflow innovation & AX training"
       },
       "growth": {
         "title": "Continuous Growth",
-        "description": "Ongoing learning and feedback support after training"
+        "description": "Ongoing learning and feedback after training"
       }
     },
     "achievements": {
       "title": "Key Achievements"
+    },
+    "cta": {
+      "sectionLabel": "GET IN TOUCH"
     },
     "ctaTitle": "Ready to Grow Together?",
     "ctaSubtitle": "Partner with Emelmujiro for AI innovation",
@@ -467,6 +471,28 @@
     "relatedImage": "related image",
     "author": "Author:"
   },
+  "achievements": {
+    "sectionLabel": "KEY ACHIEVEMENTS",
+    "title": "Key Achievements",
+    "subtitle": "We've built trust through proven education outcomes",
+    "items": {
+      "championAward": {
+        "title": "Award-Winning Team",
+        "description": "National AI competition by KEIT",
+        "highlight": "AI Champion Award"
+      },
+      "daconWin": {
+        "title": "Winning Team",
+        "description": "Dacon AI competition",
+        "highlight": "Dacon Winner"
+      },
+      "corporateTraining": {
+        "title": "Enterprise AI Training",
+        "description": "Samsung · LG · SKT and more",
+        "highlight": "Corporate Training"
+      }
+    }
+  },
   "logos": {
     "sectionLabel": "TRUSTED BY",
     "title": "Companies We've Worked With",
@@ -533,6 +559,7 @@
     "quoteDescription": "My goal is to break down complex AI technology so anyone can understand it, and provide practical education that can be immediately applied to real work. Let's explore the infinite possibilities of AI together."
   },
   "profilePage": {
+    "sectionLabel": "CEO PROFILE",
     "seoTitle": "CEO Profile - Hojin Lee",
     "seoDescription": "AI/ML Expert, Full-stack Developer, IT Education Specialist. Introducing the career and expertise of Hojin Lee, CEO of Emelmujiro.",
     "seoKeywords": "Hojin Lee, AI expert, machine learning expert, IT instructor, Emelmujiro CEO, programming education, AI consulting",
@@ -546,7 +573,9 @@
     "tabCareer": "Career",
     "tabEducation": "Education",
     "tabProjects": "Projects",
+    "careerLabel": "CAREER",
     "careerHistory": "Career History",
+    "educationLabel": "EDUCATION",
     "educationHistory": "Education History",
     "currentlyEmployed": "Current",
     "certificationsTitle": "Certifications",
@@ -558,6 +587,7 @@
     "ncsDevelopment": "IT Development",
     "ncsAI": "Artificial Intelligence",
     "ncsScore": "57 pts",
+    "projectsLabel": "PROJECTS",
     "majorProjects": "Major Projects",
     "inProgress": "In Progress",
     "noProjectsInCategory": "No projects in this category."

@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CONTACT_EMAIL } from '../../utils/constants';
 
 const HeroSection: React.FC = memo(() => {
   const { t } = useTranslation();
@@ -31,7 +32,7 @@ const HeroSection: React.FC = memo(() => {
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 leading-relaxed max-w-xl font-medium">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 leading-relaxed max-w-xl font-medium break-keep">
               {t('hero.descriptionLine1')}
               <br className="hidden sm:block" />
               <span className="block sm:inline">
@@ -42,10 +43,10 @@ const HeroSection: React.FC = memo(() => {
             {/* CTA Button - Single */}
             <div className="flex flex-col sm:flex-row gap-4">
               <a
-                href="#/contact"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg font-bold text-white bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all rounded-xl sm:rounded-2xl"
               >
-                {t('common.inquireProject')}
+                {t('common.inquireByEmail')}
               </a>
             </div>
           </div>

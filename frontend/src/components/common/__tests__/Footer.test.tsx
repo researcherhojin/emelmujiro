@@ -157,18 +157,26 @@ describe('Footer Component', () => {
       expect(hasMenuHeader).toBe(true);
 
       const buttons = container.querySelectorAll('button');
-      const menuItems = [
+      const buttonMenuItems = [
         'common.home',
         'common.services',
         'common.representativeProfile',
-        'common.contact',
       ];
-      menuItems.forEach((item) => {
+      buttonMenuItems.forEach((item) => {
         const hasItem = Array.from(buttons).some((btn) =>
           btn.textContent?.includes(item)
         );
         expect(hasItem).toBe(true);
       });
+
+      // 'common.contact' is now an <a> mailto link
+      const links = container.querySelectorAll('a');
+      const hasContactLink = Array.from(links).some(
+        (a) =>
+          a.textContent?.includes('common.contact') &&
+          a.getAttribute('href')?.includes('mailto:')
+      );
+      expect(hasContactLink).toBe(true);
     });
 
     test('renders contact information with icons', () => {
@@ -240,36 +248,36 @@ describe('Footer Component', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
-    test('navigates to contact page when contact link is clicked', () => {
+    test('renders contact mailto link in navigation', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      const contactButtons = container.querySelectorAll('button');
-      // There are multiple 'common.contact' buttons; find the one in the nav section
-      const contactButton = Array.from(contactButtons).find(
-        (btn) =>
-          btn.textContent === 'common.contact' &&
-          btn.className.includes('text-sm')
+      const links = container.querySelectorAll('a');
+      const contactLink = Array.from(links).find(
+        (a) =>
+          a.textContent === 'common.contact' && a.className.includes('text-sm')
       );
-      expect(contactButton).toBeTruthy();
-      fireEvent.click(contactButton!);
-
-      expect(mockNavigate).toHaveBeenCalledWith('/contact');
+      expect(contactLink).toBeTruthy();
+      expect(contactLink).toHaveAttribute(
+        'href',
+        expect.stringContaining('mailto:')
+      );
     });
 
-    test('navigates to contact page when CTA button is clicked', () => {
+    test('renders CTA mailto link', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      // CTA 버튼은 ExternalLink 아이콘을 포함한 버튼
-      const buttons = container.querySelectorAll('button');
-      const ctaButton = Array.from(buttons).find((btn) => {
-        const hasText = btn.textContent?.includes('common.contact');
-        const hasIcon = btn.querySelector('[data-testid="external-link-icon"]');
+      // CTA is now an <a> mailto link with ExternalLink icon
+      const links = container.querySelectorAll('a');
+      const ctaLink = Array.from(links).find((a) => {
+        const hasText = a.textContent?.includes('common.contact');
+        const hasIcon = a.querySelector('[data-testid="external-link-icon"]');
         return hasText && hasIcon;
       });
-      expect(ctaButton).toBeTruthy();
-      fireEvent.click(ctaButton!);
-
-      expect(mockNavigate).toHaveBeenCalledWith('/contact');
+      expect(ctaLink).toBeTruthy();
+      expect(ctaLink).toHaveAttribute(
+        'href',
+        expect.stringContaining('mailto:')
+      );
     });
 
     test('scrolls to hero section when home is clicked on same page', () => {
@@ -618,7 +626,8 @@ describe('Footer Component', () => {
 
         fireEvent.click(modalContactButton!);
 
-        expect(mockNavigate).toHaveBeenCalledWith('/contact');
+        // Modal contact now triggers mailto instead of navigate
+        expect(mockNavigate).not.toHaveBeenCalledWith('/contact');
 
         // NOTE: Modal closing animation timing is flaky in tests
         // Consider adding waitFor or adjusting timing for more reliable tests

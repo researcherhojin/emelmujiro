@@ -158,8 +158,9 @@
     "title": "에멜무지로",
     "subtitle": "AI 교육과 솔루션 개발 전문 스타트업",
     "mission": {
+      "sectionLabel": "OUR MISSION",
       "title": "우리의 미션",
-      "description": "에멜무지로는 2024년 12월에 설립된 AI 교육 및 컨설팅 전문 기업입니다.\n실무 중심의 AI 교육과 맞춤형 솔루션 개발을 통해\n고객사의 디지털 혁신을 지원하고 함께 성장하는 파트너가 되겠습니다."
+      "description": "실무에 바로 적용되는 AI 교육과 컨설팅으로\n고객사의 비즈니스 성장을 함께 만들어갑니다."
     },
     "vision": {
       "title": "우리의 비전",
@@ -173,23 +174,23 @@
     "timeline": {
       "2022": {
         "title": "AI 교육 시작",
-        "description": "모두의연구소, 한글과컴퓨터에서 서울대, 서울시립대, LG전자 등 대학/기업 AI 교육 시작"
+        "description": "서울대·서울시립대·LG전자 등 대학/기업 교육"
       },
       "2023": {
-        "title": "교육 확대",
-        "description": "삼성전자, 현대건설, LG전자, 카카오 등 대기업 AI/ML 교육 프로젝트 수행"
+        "title": "대기업 교육 및 프로젝트 진행",
+        "description": "삼성전자·현대건설·카카오 등 AI/ML 교육 및 프로젝트"
       },
       "2024": {
         "title": "전문화 및 창업",
-        "description": "멋쟁이사자처럼 AI 과정 전문 강사 활동, 12월 에멜무지로 설립"
+        "description": "AI 전문 강사 활동, 에멜무지로 설립"
       },
       "2025": {
-        "title": "지속적 성장",
-        "description": "산업전문인력 AI역량강화 교육 및 기업 맞춤형 교육 확대"
+        "title": "교육 사업 다각화",
+        "description": "기업 교육·KDT·산업 AI 역량강화 등 전방위 확대"
       },
       "2026": {
-        "title": "AI 솔루션 전문화",
-        "description": "제조·금융·교육 등 산업별 맞춤형 AI 솔루션 개발 및 LLM/Computer Vision 기반 기업 AI 내재화 지원"
+        "title": "교육 및 솔루션 병행",
+        "description": "기업 AI 교육과 맞춤형 솔루션 개발 착수"
       }
     },
     "values": {
@@ -198,23 +199,26 @@
       "subtitle": "에멜무지로가 추구하는 4가지 핵심 가치입니다",
       "practical": {
         "title": "실무 중심 교육",
-        "description": "이론과 실습을 균형있게 구성하여 현업에서 바로 활용 가능한 실무 적용 교육"
+        "description": "현업 즉시 적용 가능한 실습 교육"
       },
       "custom": {
         "title": "맞춤형 커리큘럼",
-        "description": "고객사의 수준과 목표에 맞춰 설계된 단계별 맞춤 교육 프로그램"
+        "description": "고객사 목표에 맞춘 단계별 설계"
       },
       "latest": {
-        "title": "최신 기술 활용",
-        "description": "ChatGPT, Claude 등 최신 AI 도구 활용법 실습 교육"
+        "title": "생성형 AI 역량",
+        "description": "LLM 활용 업무 혁신과 AX 실습"
       },
       "growth": {
         "title": "지속적인 성장",
-        "description": "교육 후에도 지속적인 학습과 피드백 제공"
+        "description": "교육 후 지속적 학습과 피드백"
       }
     },
     "achievements": {
       "title": "주요 성과"
+    },
+    "cta": {
+      "sectionLabel": "GET IN TOUCH"
     },
     "ctaTitle": "함께 성장할 준비가 되셨나요?",
     "ctaSubtitle": "AI 혁신의 파트너, 에멜무지로와 함께하세요",
@@ -467,6 +471,28 @@
     "relatedImage": "관련 이미지",
     "author": "작성자:"
   },
+  "achievements": {
+    "sectionLabel": "KEY ACHIEVEMENTS",
+    "title": "주요 성과",
+    "subtitle": "검증된 교육 성과로 신뢰를 쌓아왔습니다",
+    "items": {
+      "championAward": {
+        "title": "수상 팀 배출",
+        "description": "KEIT 주관 국가 AI 경진대회",
+        "highlight": "AI 챔피언상"
+      },
+      "daconWin": {
+        "title": "우승 팀 배출",
+        "description": "데이콘 AI 경진대회",
+        "highlight": "데이콘 우승"
+      },
+      "corporateTraining": {
+        "title": "대기업 AI 교육",
+        "description": "삼성전자 · LG전자 · SKT 등",
+        "highlight": "기업 교육"
+      }
+    }
+  },
   "logos": {
     "sectionLabel": "TRUSTED BY",
     "title": "함께한 기업 및 기관",
@@ -533,6 +559,7 @@
     "quoteDescription": "복잡한 AI 기술을 누구나 이해할 수 있도록 쉽게 풀어내고, 실제 업무에 바로 적용할 수 있는 실용적인 교육을 제공하는 것이 저의 목표입니다. 함께 AI의 무한한 가능성을 탐험해보세요."
   },
   "profilePage": {
+    "sectionLabel": "CEO PROFILE",
     "seoTitle": "대표 프로필 - 이호진",
     "seoDescription": "AI/ML 전문가, 풀스택 개발자, IT 교육 전문가. 에멜무지로 대표 이호진의 경력과 전문 분야를 소개합니다.",
     "seoKeywords": "이호진, AI 전문가, 머신러닝 전문가, IT 강사, 에멜무지로 대표, 프로그래밍 교육, 인공지능 컨설팅",
@@ -546,7 +573,9 @@
     "tabCareer": "경력",
     "tabEducation": "학력",
     "tabProjects": "프로젝트",
+    "careerLabel": "CAREER",
     "careerHistory": "경력 사항",
+    "educationLabel": "EDUCATION",
     "educationHistory": "학력 사항",
     "currentlyEmployed": "재직중",
     "certificationsTitle": "자격 및 인증",
@@ -558,6 +587,7 @@
     "ncsDevelopment": "정보기술개발",
     "ncsAI": "인공지능",
     "ncsScore": "57점",
+    "projectsLabel": "PROJECTS",
     "majorProjects": "주요 프로젝트",
     "inProgress": "진행중",
     "noProjectsInCategory": "해당 카테고리에 프로젝트가 없습니다."
