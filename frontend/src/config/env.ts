@@ -40,12 +40,9 @@ export const env = {
   // Feature Flags
   ENABLE_ANALYTICS: getEnvVar('REACT_APP_ENABLE_ANALYTICS', 'false') === 'true',
   ENABLE_SENTRY: getEnvVar('REACT_APP_ENABLE_SENTRY', 'false') === 'true',
-  ENABLE_PWA: getEnvVar('REACT_APP_ENABLE_PWA', 'true') === 'true',
-
   // Third Party Keys
   SENTRY_DSN: getEnvVar('REACT_APP_SENTRY_DSN', ''),
   GA_TRACKING_ID: getEnvVar('REACT_APP_GA_TRACKING_ID', ''),
-  VAPID_PUBLIC_KEY: getEnvVar('REACT_APP_VAPID_PUBLIC_KEY', ''),
 
   // App Configuration
   APP_NAME: getEnvVar('REACT_APP_APP_NAME', 'Emelmujiro'),

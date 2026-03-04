@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
 // https://vitejs.dev/config/
@@ -9,94 +8,6 @@ export default defineConfig({
   plugins: [
     react(),
     tsconfigPaths(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'inline',
-      strategies: 'generateSW',
-      includeAssets: [
-        'favicon.ico',
-        'logo192.png',
-        'logo512.png',
-        'offline.html',
-      ],
-      manifest: {
-        name: '에멜무지로',
-        short_name: 'Emelmujiro',
-        description: 'AI 교육 & 컨설팅 플랫폼',
-        theme_color: '#000000',
-        background_color: '#ffffff',
-        display: 'standalone',
-        start_url: '/emelmujiro/',
-        scope: '/emelmujiro/',
-        icons: [
-          {
-            src: 'logo192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'logo512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-        ],
-      },
-      workbox: {
-        skipWaiting: true,
-        clientsClaim: true,
-        globPatterns: [
-          '**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff,woff2}',
-        ],
-        navigateFallback: '/emelmujiro/index.html',
-        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
-        cleanupOutdatedCaches: true,
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'gstatic-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            urlPattern:
-              /^https:\/\/researcherhojin\.github\.io\/emelmujiro\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'app-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24, // 1 day
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-        ],
-      },
-    }),
   ],
   base: '/emelmujiro/',
   server: {

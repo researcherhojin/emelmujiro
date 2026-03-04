@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import Navbar from '../common/Navbar';
 import Footer from '../common/Footer';
 import SkipLink from '../common/SkipLink';
-import PWAInstallButton from '../common/PWAInstallButton';
 import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { announceToScreenReader } from '../../utils/accessibility';
 
@@ -101,8 +100,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </main>
 
       <Footer />
-
-      <PWAInstallButton />
 
       {/* Keyboard shortcuts help (visible only to screen readers) */}
       <div

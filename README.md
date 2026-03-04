@@ -27,7 +27,7 @@
 | ---------- | ------- | ------------------------------------------ |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
-| **테스트** | ✅ 통과 | 1531 통과, 0 스킵 (90 파일)                |
+| **테스트** | ✅ 통과 | 1386 통과, 0 스킵 (83 파일)                |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                 |
 | **배포**   | ✅ 정상 | GitHub Pages                               |
@@ -124,7 +124,7 @@ emelmujiro/
 | **프로필**          | ✅ 완료         | CEO 경력/학력/프로젝트 포트폴리오             |
 | **다크 모드**       | ✅ 완료         | 시스템 설정 연동                              |
 | **다국어 (i18n)**   | ✅ 완료         | 전체 컴포넌트 i18n 전환 완료 (ko/en)          |
-| **PWA**             | ✅ 완료         | 오프라인 지원, 설치 가능                      |
+| **PWA**             | ❌ 제거됨       | 서비스 워커 캐시 이슈로 제거                  |
 | **반응형**          | ✅ 완료         | 모바일/태블릿/데스크톱 최적화                 |
 | **SEO**             | ✅ 완료         | React Helmet, 사이트맵, 구조화 데이터         |
 | **블로그**          | 🚧 공사 중      | 백엔드 연동 전까지 공사 중 페이지 표시        |
@@ -204,7 +204,7 @@ emelmujiro/
 - [x] Django 보안 설정 — SECRET_KEY 프로덕션 강제, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS
 - [x] 파일 업로드 보안 — 확장자/MIME/크기 검증 (`api/validators.py`)
 - [x] Mock API 전환 로직 — `VITE_API_URL` 기반 자동 전환
-- [x] Android/갤럭시 호환성 — PWA 캐시, viewport, CSS 접두사, 카카오톡 인앱 리다이렉트
+- [x] Android/갤럭시 호환성 — viewport, CSS 접두사, 카카오톡 인앱 리다이렉트
 - [x] 에러 리포팅 — Sentry 연동 (기본 비활성)
 - [x] Lighthouse 90점+ — Performance 0.9 달성
 - [x] 환경변수 정리 — dead code 삭제, `global.d.ts` 정리
@@ -215,12 +215,12 @@ emelmujiro/
 ### 0.9.7 (2026.03.04)
 
 - **Android(갤럭시) 호환성 개선**
-  - PWA: `skipWaiting` + `clientsClaim` 추가, 앱 캐시 만료 7일 → 1일
   - Viewport: `viewport-fit=cover`, `100dvh` 동적 뷰포트 단위 적용
   - CSS: `-webkit-text-size-adjust`, `-webkit-backface-visibility` 접두사 추가
   - `prefers-reduced-motion` 미디어 쿼리 추가 (저사양 기기 성능 개선)
   - CSP `connect-src`에 `cdn.jsdelivr.net` 추가, 무효 `frame-ancestors` 제거
   - 카카오톡 인앱 브라우저 → 외부 브라우저 리다이렉트
+- **PWA 제거**: 서비스 워커 캐시 이슈로 PWA 전체 제거 (vite-plugin-pwa, SW, 오프라인 지원)
 - **README 리팩토링**: 기술 스택 테이블 형식 전환, CONTRIBUTING.md 최신화
 - **버전 동기화**: root/frontend package.json 버전 통일 (0.9.7)
 

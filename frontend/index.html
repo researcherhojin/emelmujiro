@@ -53,16 +53,6 @@
     />
     <meta name="twitter:image" content="/og-image.png" />
 
-    <!-- PWA 지원 -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
-    <meta name="apple-mobile-web-app-title" content="에멜무지로" />
-    <link rel="apple-touch-icon" href="/emelmujiro/logo192.png" />
-
     <!-- 보안 헤더 -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://api.github.com https://*.sentry.io https://cdn.jsdelivr.net; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
@@ -79,13 +69,6 @@
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
     <link rel="dns-prefetch" href="https://api.github.com" />
 
-    <!-- Prefetch critical resources -->
-    <link rel="prefetch" href="/offline.html" />
-    <link rel="prefetch" href="/manifest.json" />
-
-    <!-- Preload critical images -->
-    <link rel="preload" href="/logo192.png" as="image" type="image/png" />
-    <link rel="preload" href="/logo512.png" as="image" type="image/png" />
 
     <!-- Fonts with optimized loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -117,8 +100,6 @@
       rel="canonical"
       href="https://researcherhojin.github.io/emelmujiro/"
     />
-    <link rel="manifest" href="/manifest.json" />
-
     <!-- Critical CSS inline for above-the-fold content -->
     <style>
       /* Critical CSS for faster first paint */
@@ -274,27 +255,6 @@
       // Performance timing
       window.performanceStart = Date.now();
 
-      // Service Worker registration is handled by Vite PWA plugin
-      // The Vite PWA plugin will automatically register the service worker
-      // and manage caching strategies
-
-      // Font loading is handled by CSS link tag above
-      // The @font-face rules in the CSS file will handle the font loading
-
-      // Critical image preloading
-      if (window.requestIdleCallback) {
-        requestIdleCallback(() => {
-          const criticalImages = [
-            '/emelmujiro/logo192.png',
-            '/emelmujiro/logo512.png',
-          ];
-
-          criticalImages.forEach((src) => {
-            const img = new Image();
-            img.src = src;
-          });
-        });
-      }
 
       // Network status detection
       if ('connection' in navigator) {

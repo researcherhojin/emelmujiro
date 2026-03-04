@@ -17,10 +17,8 @@ describe('env config', () => {
       expect(env).toHaveProperty('WS_URL');
       expect(env).toHaveProperty('ENABLE_ANALYTICS');
       expect(env).toHaveProperty('ENABLE_SENTRY');
-      expect(env).toHaveProperty('ENABLE_PWA');
       expect(env).toHaveProperty('SENTRY_DSN');
       expect(env).toHaveProperty('GA_TRACKING_ID');
-      expect(env).toHaveProperty('VAPID_PUBLIC_KEY');
       expect(env).toHaveProperty('APP_NAME');
       expect(env).toHaveProperty('APP_VERSION');
       expect(env).toHaveProperty('PUBLIC_URL');
@@ -44,7 +42,6 @@ describe('env config', () => {
       expect(env.PUBLIC_URL).toBe('/emelmujiro');
       expect(env.SENTRY_DSN).toBe('');
       expect(env.GA_TRACKING_ID).toBe('');
-      expect(env.VAPID_PUBLIC_KEY).toBe('');
     });
 
     it('should have feature flags as booleans', async () => {
@@ -52,7 +49,6 @@ describe('env config', () => {
 
       expect(typeof env.ENABLE_ANALYTICS).toBe('boolean');
       expect(typeof env.ENABLE_SENTRY).toBe('boolean');
-      expect(typeof env.ENABLE_PWA).toBe('boolean');
     });
 
     it('should default ENABLE_ANALYTICS and ENABLE_SENTRY to false', async () => {
@@ -60,12 +56,6 @@ describe('env config', () => {
 
       expect(env.ENABLE_ANALYTICS).toBe(false);
       expect(env.ENABLE_SENTRY).toBe(false);
-    });
-
-    it('should default ENABLE_PWA to true', async () => {
-      const { env } = await import('../env');
-
-      expect(env.ENABLE_PWA).toBe(true);
     });
 
     it('should have API_URL as a string containing /api', async () => {

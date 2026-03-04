@@ -84,7 +84,7 @@ lsof -ti:8000 | xargs kill -9
 
 ### Monorepo Structure
 
-- `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x + PWA (vite-plugin-pwa)
+- `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x
 - `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Chat/Redis excluded from 1.0 scope
 - Root `package.json` uses npm workspaces pointing to `frontend/`
 - Docker support: `docker-compose.yml` (prod: backend + frontend/nginx + PostgreSQL; Redis only with `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload)
@@ -123,7 +123,7 @@ Axios-based client in `src/services/api.ts`. 30s timeout with automatic retry on
 
 ### Environment Variables
 
-`frontend/src/config/env.ts` exports `getEnvVar()` helper that checks `VITE_` prefixed vars first, falls back to `REACT_APP_` prefixed vars. New env vars should use the `VITE_` prefix. Key frontend env vars: `VITE_API_URL`, `VITE_WS_URL`, `VITE_SENTRY_DSN`, `VITE_ENABLE_SENTRY`, `VITE_ENABLE_ANALYTICS`, `VITE_ENABLE_PWA`, `VITE_GA_TRACKING_ID`, `VITE_VAPID_PUBLIC_KEY`, `VITE_CONTACT_EMAIL`. Backend env vars documented in `backend/.env.example`.
+`frontend/src/config/env.ts` exports `getEnvVar()` helper that checks `VITE_` prefixed vars first, falls back to `REACT_APP_` prefixed vars. New env vars should use the `VITE_` prefix. Key frontend env vars: `VITE_API_URL`, `VITE_WS_URL`, `VITE_SENTRY_DSN`, `VITE_ENABLE_SENTRY`, `VITE_ENABLE_ANALYTICS`, `VITE_GA_TRACKING_ID`, `VITE_CONTACT_EMAIL`. Backend env vars documented in `backend/.env.example`.
 
 ### Contact Email
 
@@ -196,7 +196,7 @@ These are mocked globally — do NOT re-mock in individual tests:
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 90 test files, 1531 tests, 0 failures, 0 skips
+- 83 test files, 1386 tests, 0 failures, 0 skips
 
 ### E2E Testing (Playwright)
 
@@ -226,7 +226,6 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 - Build pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` (sitemap must succeed)
 - esbuild minifier (switched from Terser for ~10x faster builds). `esbuild.drop: ['console', 'debugger']` in production
 - Manual chunks: react-vendor, ui-vendor, i18n
-- PWA via `vite-plugin-pwa`: service worker with Workbox (`skipWaiting: true`, `clientsClaim: true`), runtime caching for fonts (1yr) and app (1 day)
 - Dev server proxies `/api` to `http://127.0.0.1:8000` (`strictPort: false` — tries next port if busy)
 
 ### Tailwind CSS 3.x
@@ -272,7 +271,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: 90 files, 1531 tests, 0 failures, 0 skips (as of 2026-03-04)
+4. **Test count**: 83 files, 1386 tests, 0 failures, 0 skips (as of 2026-03-04)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility

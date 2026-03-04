@@ -22,18 +22,11 @@ module.exports = {
         'categories:accessibility': ['error', { minScore: 0.9 }],
         'categories:best-practices': ['error', { minScore: 0.9 }],
         'categories:seo': ['error', { minScore: 0.9 }],
-        'categories:pwa': ['warn', { minScore: 0.9 }],
-
         // Specific metric assertions
         'first-contentful-paint': ['error', { maxNumericValue: 2000 }],
         'largest-contentful-paint': ['error', { maxNumericValue: 3500 }],
         'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
         'total-blocking-time': ['error', { maxNumericValue: 300 }],
-
-        // PWA specific
-        'service-worker': 'error',
-        'works-offline': 'warn',
-        'installable-manifest': 'error',
 
         // Accessibility
         'color-contrast': 'error',

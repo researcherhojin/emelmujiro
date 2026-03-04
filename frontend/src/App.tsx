@@ -15,7 +15,6 @@ import Layout from './components/layout/Layout';
 import { PageLoading } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import ProtectedRoute from './components/common/ProtectedRoute';
-import { initializePWA } from './utils/pwaUtils';
 import { initBlogCache } from './utils/blogCache';
 import performanceMonitor, {
   markPerformance,
@@ -45,15 +44,6 @@ const NotFound = lazy(() => import('./components/common/NotFound'));
 const UnderConstruction = lazy(
   () => import('./components/common/UnderConstruction')
 );
-
-// PWA Components
-const OfflineIndicator = lazy(
-  () => import('./components/common/OfflineIndicator')
-);
-const NotificationPrompt = lazy(
-  () => import('./components/common/NotificationPrompt')
-);
-const InstallPrompt = lazy(() => import('./components/common/InstallPrompt'));
 
 // Admin Components
 const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
@@ -119,17 +109,6 @@ const AppLayout: React.FC = memo(() => {
         </Suspense>
       </ErrorBoundary>
 
-      {/* PWA Components */}
-      <Suspense fallback={null}>
-        <OfflineIndicator />
-      </Suspense>
-      <Suspense fallback={null}>
-        <NotificationPrompt />
-      </Suspense>
-      <Suspense fallback={null}>
-        <InstallPrompt />
-      </Suspense>
-
       {/* Development tools */}
       <Suspense fallback={null}>
         <WebVitalsDashboard />
@@ -168,14 +147,12 @@ const router = createHashRouter([
 ]);
 
 // Initialize once outside of component to prevent duplicate calls in StrictMode
-let pwaInitialized = false;
-if (!pwaInitialized) {
-  pwaInitialized = true;
+let appInitialized = false;
+if (!appInitialized) {
+  appInitialized = true;
   // Mark app initialization
   markPerformance('app-init-start');
 
-  // Initialize PWA features
-  initializePWA();
   // Initialize blog cache
   initBlogCache();
 

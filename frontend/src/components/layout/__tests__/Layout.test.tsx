@@ -17,10 +17,6 @@ vi.mock('../../common/SkipLink', () => ({
   default: () => <a data-testid="skip-link">Skip to content</a>,
 }));
 
-vi.mock('../../common/PWAInstallButton', () => ({
-  default: () => <button data-testid="pwa-install">Install</button>,
-}));
-
 vi.mock('../../../hooks/useKeyboardNavigation', () => ({
   useKeyboardNavigation: vi.fn(),
 }));
@@ -47,13 +43,12 @@ const renderLayout = (children?: React.ReactNode) => {
 };
 
 describe('Layout', () => {
-  it('renders the Navbar, Footer, SkipLink, and PWAInstallButton', () => {
+  it('renders the Navbar, Footer, and SkipLink', () => {
     renderLayout();
 
     expect(screen.getByTestId('navbar')).toBeInTheDocument();
     expect(screen.getByTestId('footer')).toBeInTheDocument();
     expect(screen.getByTestId('skip-link')).toBeInTheDocument();
-    expect(screen.getByTestId('pwa-install')).toBeInTheDocument();
   });
 
   it('renders a main element with correct accessibility attributes', () => {

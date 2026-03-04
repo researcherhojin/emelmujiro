@@ -20,10 +20,6 @@ vi.mock('../utils/cacheOptimization', () => ({
   initializeCacheOptimization: vi.fn(),
 }));
 
-vi.mock('../serviceWorkerRegistration', () => ({
-  register: vi.fn(),
-}));
-
 describe('Index', () => {
   let rootElement: HTMLDivElement;
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
@@ -106,35 +102,11 @@ describe('Index', () => {
     expect(mockRender).toHaveBeenCalled();
   });
 
-  it('registers service worker', async () => {
-    // Get the mocked register function
-    const { register } = await import('../serviceWorkerRegistration');
-
-    // Since the service worker registration only happens in production,
-    // and we're in test environment, we'll just verify the mock exists
-    // and can be called with the expected parameters
-    expect(register).toBeDefined();
-    expect(typeof register).toBe('function');
-
-    // Manually call register to test the expected behavior
-    const mockConfig = {
-      onUpdate: vi.fn(),
-      onSuccess: vi.fn(),
-    };
-
-    // Call the mocked register function
-    (register as any)(mockConfig);
-
-    // Verify it was called with the config
-    expect(register).toHaveBeenCalledWith(mockConfig);
-  });
-
   it('initializes performance monitoring', async () => {
     // Test that the mocked functions are available
     const { initPerformanceMonitoring } = await import('../utils/webVitals');
-    const { initializeCacheOptimization } = await import(
-      '../utils/cacheOptimization'
-    );
+    const { initializeCacheOptimization } =
+      await import('../utils/cacheOptimization');
 
     // These functions should be defined as mocks
     expect(initPerformanceMonitoring).toBeDefined();
@@ -183,50 +155,5 @@ describe('Index', () => {
     // Check that root element is missing
     const root = document.getElementById('root');
     expect(root).toBeNull();
-  });
-
-  it('handles service worker update callback', () => {
-    const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const mockReload = vi.fn();
-
-    // Mock window.location.reload
-    Object.defineProperty(window.location, 'reload', {
-      value: mockReload,
-      writable: true,
-    });
-
-    // Test the confirm dialog behavior
-    const result = window.confirm(
-      '새로운 버전이 있습니다. 페이지를 새로고침하시겠습니까?'
-    );
-    expect(result).toBe(true);
-    expect(mockConfirm).toHaveBeenCalled();
-
-    mockConfirm.mockRestore();
-  });
-
-  it('handles service worker update cancellation', () => {
-    const mockConfirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
-    const mockReload = vi.fn();
-
-    // Mock window.location.reload
-    Object.defineProperty(window.location, 'reload', {
-      value: mockReload,
-      writable: true,
-    });
-
-    // Test the confirm dialog behavior when user cancels
-    const result = window.confirm(
-      '새로운 버전이 있습니다. 페이지를 새로고침하시겠습니까?'
-    );
-    expect(result).toBe(false);
-    expect(mockConfirm).toHaveBeenCalled();
-
-    // When user cancels, reload should not be called
-    if (!result) {
-      expect(mockReload).not.toHaveBeenCalled();
-    }
-
-    mockConfirm.mockRestore();
   });
 });
