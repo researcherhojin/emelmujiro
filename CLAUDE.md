@@ -248,7 +248,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 ### Backend Django Config
 
 - `SECRET_KEY` **required** in production (`DEBUG=False`); raises `ImproperlyConfigured` if missing
-- Database: SQLite in dev, PostgreSQL when `DATABASE_URL` is set
+- Database: SQLite (프로덕션 포함). `DATABASE_URL` 설정 시 PostgreSQL도 가능하나, 현재 규모에서는 SQLite로 충분
 - Channel Layers: Redis when `REDIS_URL` is set, InMemoryChannelLayer otherwise
 - JWT: access 30min, refresh 7 days, rotation + blacklist
 - DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr

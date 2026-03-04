@@ -80,9 +80,7 @@ uv run python manage.py runserver
 **Backend**<br/>
 ![Django](https://img.shields.io/badge/Django-5-092E20?logo=django&logoColor=white)
 ![DRF](https://img.shields.io/badge/DRF-3.16-A30000)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white)
-![Channels](https://img.shields.io/badge/Channels-4-092E20?logo=django&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
 
 **Infra**<br/>
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
@@ -176,45 +174,41 @@ emelmujiro/
 
 백엔드 프로덕션 배포 + Mock API 전환이 완료되면 1.0으로 전환합니다.
 
-**1.0 범위**: Blog + Contact + Auth + Admin Dashboard (Chat/WebSocket은 1.0 이후)
+- **DB**: SQLite (트래픽 규모상 충분, 별도 DB 서비스 불필요)
+- **1.0 범위**: Blog + Contact + Auth + Admin Dashboard
+- **1.0 이후**: 실시간 채팅 (WebSocket/Redis/Channels)
 
 ### 남은 작업
 
-| 순서 | 작업                     | 의존성 | 상태   |
-| ---- | ------------------------ | ------ | ------ |
-| 1    | **배포 플랫폼 선택**     | —      | 미결정 |
-| 2    | **백엔드 배포**          | #1     | 대기   |
-| 3    | **공사 중 해제**         | #2     | 대기   |
-| 4    | **이메일 백엔드**        | #2     | 대기   |
-| 5    | **인증 토큰 보안**       | #2     | 대기   |
-| 6    | **관리자 대시보드 연동** | #2     | 대기   |
+| 순서 | 작업                         | 의존성 | 상태   | 구체적 할 일                                                                                                                                                                  |
+| ---- | ---------------------------- | ------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | **배포 플랫폼 선택 & 배포**  | —      | 미결정 | Django + SQLite 배포. 플랫폼 후보: Railway / Render / Fly.io (아래 비교표 참고). `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `VITE_API_URL` 설정                                 |
+| 2    | **프론트엔드 Mock API 해제** | #1     | 대기   | `VITE_API_URL`을 배포된 백엔드 URL로 설정 → Mock 자동 비활성화. `api.ts` 실제 연동 검증                                                                                       |
+| 3    | **공사 중 페이지 해제**      | #2     | 대기   | `App.tsx` 라우트를 원래 컴포넌트로 복원 (`BlogListPage`, `ContactPage` 등). `AppLayout`에 `ChatWidget` 제외 유지. `generate-sitemap.js`, `manifest.json`, E2E 테스트 업데이트 |
+| 4    | **이메일 발송 연동**         | #1     | 대기   | Contact 폼 제출 시 알림 이메일 발송. SMTP 또는 SendGrid 연동. 현재는 DB 저장만 됨                                                                                             |
+| 5    | **인증 토큰 보안 강화**      | #1     | 대기   | `api.ts`의 JWT 토큰 저장을 `localStorage` → `httpOnly` 쿠키로 이전. Django `SESSION_COOKIE_HTTPONLY=True` 설정                                                                |
+| 6    | **관리자 대시보드 연동**     | #2     | 대기   | `AdminDashboard`에 실제 통계 API 연결 (방문자 수, 문의 건수, 블로그 글 수 등). 현재는 플레이스홀더 UI만 존재                                                                  |
 
-- **#1 배포 플랫폼 선택** — 아래 비교표 참고, PostgreSQL + Django 배포
-- **#2 백엔드 배포** — DB 마이그레이션, `select_related`/`prefetch_related`, 도메인 설정
-- **#3 공사 중 해제** — Blog/Contact 라우트 복원, sitemap·manifest·E2E 업데이트
-- **#4 이메일 백엔드** — Contact 알림 이메일 (SMTP/SendGrid), 현재는 DB 저장만
-- **#5 인증 토큰 보안** — `api.ts` localStorage → httpOnly 쿠키 이전
-- **#6 관리자 대시보드 연동** — AdminDashboard에 실제 통계 데이터 연결
+#### 배포 플랫폼 비교 (Django + SQLite)
 
-#### 배포 플랫폼 비교
+| 플랫폼  | 무료 티어    | SQLite 지원            | 장점                       | 단점                     |
+| ------- | ------------ | ---------------------- | -------------------------- | ------------------------ |
+| Railway | $5 크레딧/월 | Persistent Volume      | 가장 간편한 배포           | 무료 크레딧 소진 가능    |
+| Render  | 750시간/월   | Persistent Disk (유료) | GitHub 자동 배포           | 무료 인스턴스 15분 sleep |
+| Fly.io  | 256MB VM     | Persistent Volume      | 글로벌 엣지, 커스텀 도메인 | 설정 다소 복잡           |
 
-| 플랫폼        | 무료 티어       | PostgreSQL   | 장점                       | 단점                |
-| ------------- | --------------- | ------------ | -------------------------- | ------------------- |
-| Railway       | $5 크레딧/월    | 내장         | 가장 간편한 Django 배포    | 무료 사라질 수 있음 |
-| Fly.io        | 256MB VM        | Fly Postgres | 글로벌 엣지, 커스텀 도메인 | 설정 다소 복잡      |
-| Render        | 750시간/월      | 내장         | GitHub 자동 배포           | 무료 인스턴스 sleep |
-| AWS (EC2+RDS) | 12개월 프리티어 | RDS          | 가장 유연, 프로덕션급      | 설정 복잡           |
+> **참고**: SQLite는 파일 기반 DB이므로 배포 시 Persistent Volume/Disk가 필요합니다. 컨테이너 재시작 시 데이터 유실을 방지하기 위해 반드시 영구 스토리지에 `db.sqlite3`를 마운트해야 합니다.
 
 ### 완료된 항목
 
-- [x] **Django 보안 설정** — SECRET_KEY 프로덕션 강제, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS, Redis 분기
-- [x] **파일 업로드 보안** — 확장자/MIME/크기 검증 (`api/validators.py`)
-- [x] **Mock API 전환 로직** — `VITE_API_URL` 기반 자동 전환
-- [x] **CI artifact 복구** — `upload-artifact@v7` (v8 미존재)
-- [x] **Docker Redis 옵셔널화** — `profiles: ["chat"]`
-- [x] **에러 리포팅** — Sentry 연동
-- [x] **Lighthouse 90점+** — Performance 0.9 달성
-- [x] **환경변수 정리** — dead code 삭제, `global.d.ts` 정리
+- [x] Django 보안 설정 — SECRET_KEY 프로덕션 강제, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS
+- [x] 파일 업로드 보안 — 확장자/MIME/크기 검증 (`api/validators.py`)
+- [x] Mock API 전환 로직 — `VITE_API_URL` 기반 자동 전환
+- [x] Android/갤럭시 호환성 — PWA 캐시, viewport, CSS 접두사, 카카오톡 인앱 리다이렉트
+- [x] 에러 리포팅 — Sentry 연동 (기본 비활성)
+- [x] Lighthouse 90점+ — Performance 0.9 달성
+- [x] 환경변수 정리 — dead code 삭제, `global.d.ts` 정리
+- [x] CI/CD 안정화 — `upload-artifact@v7`, Docker Redis 옵셔널화
 
 ## 변경 이력
 
