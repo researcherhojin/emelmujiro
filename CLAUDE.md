@@ -214,7 +214,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 69 test files, 1107 tests, 0 failures, 0 skips. Backend: 67 tests, 0 failures
+- 69 test files, 1107 tests, 0 failures, 0 skips. Backend: 69 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
@@ -272,7 +272,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - Database: SQLite by default. Set `DATABASE_URL` for PostgreSQL — parsed via `urllib.parse.urlparse` (no `dj-database-url` dependency)
 - Channel Layers: Redis when `REDIS_URL` is set, InMemoryChannelLayer otherwise
 - WebSocket: `ChatConsumer` requires authentication (rejects `AnonymousUser` in `connect()`); client message types are whitelisted via `ALLOWED_MESSAGE_TYPES` to prevent arbitrary handler dispatch
-- JWT: access 30min, refresh 7 days, rotation + blacklist
+- JWT: access 30min, refresh 7 days, rotation + blacklist. `rest_framework_simplejwt.token_blacklist` is in INSTALLED_APPS — logout endpoint blacklists refresh tokens
 - DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr
 - File upload validation: `api/validators.py` — case-insensitive extension, MIME type, size (5MB)
 - API docs: Swagger at `/api/docs/`, ReDoc at `/api/redoc/` (drf-yasg)
@@ -295,7 +295,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 69 files / 1107 tests, Backend 67 tests, 0 failures (as of 2026-03-07)
+4. **Test count**: Frontend 69 files / 1107 tests, Backend 69 tests, 0 failures (as of 2026-03-07)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility

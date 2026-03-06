@@ -189,6 +189,10 @@ class ContactSerializer(serializers.ModelSerializer):
 
 
 class NewsletterSubscriptionSerializer(serializers.ModelSerializer):
+    # Override email to remove auto-generated UniqueValidator.
+    # The view handles duplicate/resubscription logic itself.
+    email = serializers.EmailField()
+
     class Meta:
         model = NewsletterSubscription
         fields = ["email", "name"]

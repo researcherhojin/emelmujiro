@@ -34,6 +34,7 @@ if "test" in sys.argv:
 # Application definition
 CUSTOM_APPS = [
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "channels",
     "api",

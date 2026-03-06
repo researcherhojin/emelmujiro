@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework.response import Response
 from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import BlogPost, Contact, ContactAttempt, SiteVisit, NewsletterSubscription
 from .views import get_client_ip, _is_valid_ip
 from datetime import datetime, timezone, timedelta
@@ -394,14 +395,26 @@ class NewsletterAPITestCase(APITestCase):
         self.assertEqual(NewsletterSubscription.objects.count(), 1)
 
     def test_duplicate_newsletter_subscription(self):
-        """Test duplicate newsletter subscription is rejected by serializer (unique email)"""
+        """Test duplicate newsletter subscription returns 200 (already subscribed)"""
         NewsletterSubscription.objects.create(email="subscriber@example.com", name="First Subscriber")
         url = reverse("newsletter-subscribe")
         data = {"email": "subscriber@example.com", "name": "Second Subscriber"}
         response: Response = self.client.post(url, data, format="json")  # type: ignore
-        # Serializer's unique constraint rejects before the view's custom logic runs
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # View's resubscription logic handles duplicates gracefully
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(NewsletterSubscription.objects.count(), 1)
+
+    def test_resubscribe_inactive_newsletter(self):
+        """Test resubscribing an inactive newsletter subscription reactivates it"""
+        sub = NewsletterSubscription.objects.create(
+            email="inactive@example.com", name="Inactive", is_active=False
+        )
+        url = reverse("newsletter-subscribe")
+        data = {"email": "inactive@example.com", "name": "Resubscriber"}
+        response: Response = self.client.post(url, data, format="json")  # type: ignore
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        sub.refresh_from_db()
+        self.assertTrue(sub.is_active)
 
     def test_invalid_email_newsletter(self):
         """Test newsletter with invalid email"""
@@ -637,15 +650,21 @@ class AuthenticationAPITestCase(APITestCase):
         response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_logout_requires_refresh_token(self):
-        """Test logout requires a refresh token in the request body"""
+    def test_logout_success(self):
+        """Test successful logout blacklists the refresh token"""
+        self.client.force_authenticate(user=self.user)
+        refresh = RefreshToken.for_user(self.user)
+        url = reverse("logout")
+        data = {"refresh": str(refresh)}
+        response: Response = self.client.post(url, data, format="json")  # type: ignore
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_logout_invalid_token(self):
+        """Test logout with invalid refresh token returns 400"""
         self.client.force_authenticate(user=self.user)
         url = reverse("logout")
-        # Without token_blacklist app, logout with a token returns 400
-        # but the endpoint still validates that refresh token is provided
-        data = {"refresh": "some-token"}
+        data = {"refresh": "invalid-token"}
         response: Response = self.client.post(url, data, format="json")  # type: ignore
-        # Returns 400 because token_blacklist is not installed
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_logout_missing_token(self):

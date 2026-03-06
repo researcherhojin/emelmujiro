@@ -27,7 +27,7 @@
 | ---------- | ------- | --------------------------------------------- |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                           |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분    |
-| **테스트** | ✅ 통과 | Frontend 1107 통과 (69 파일), Backend 67 통과 |
+| **테스트** | ✅ 통과 | Frontend 1107 통과 (69 파일), Backend 69 통과 |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                        |
 | **보안**   | ✅ 안전 | 취약점 0건                                    |
 | **배포**   | ✅ 정상 | GitHub Pages                                  |
@@ -255,6 +255,8 @@ Django `SESSION_COOKIE_HTTPONLY=True` 설정
 - [x] i18n 완전 전환 — api.ts 에러맵, BlogEditor, 인라인 스타일/hex 색상 → Tailwind
 - [x] setTimeout 메모리 누수 수정 — ChatContext reconnect 타이머 `useRef` 추적 + cleanup
 - [x] 리팩토링 백로그 전량 해소 — C5~C7, H7, M5/M7~M9, BE1~BE7 (총 16건 완료, 이슈 아님 2건)
+- [x] JWT 로그아웃 토큰 블랙리스트 — `token_blacklist` 앱 INSTALLED_APPS 등록, 마이그레이션 적용
+- [x] 뉴스레터 재구독 버그 수정 — serializer UniqueValidator 제거, view 재구독 로직 정상화
 
 ## 리팩토링 백로그
 
@@ -270,7 +272,7 @@ Django `SESSION_COOKIE_HTTPONLY=True` 설정
 | ~~H2~~ | ~~`UserRateThrottle` 미사용 임포트 제거~~ ✅                                                            | ~~`views.py`~~                               |
 | ~~H3~~ | ~~`get_client_ip()` 중복 — middleware에서 views.get_client_ip 위임으로 통일~~ ✅                        | ~~`views.py`, `middleware.py`~~              |
 | ~~H4~~ | ~~`process.env.NODE_ENV` 직접 사용 → `env.IS_DEVELOPMENT` 전환~~ ✅                                     | ~~`WebVitalsDashboard.tsx`, `webVitals.ts`~~ |
-| ~~H5~~ | ~~백엔드 테스트 14→67개 확장 — auth, blog, contact, newsletter, category, model, utility 전수 커버~~ ✅ | ~~`api/tests.py`~~                           |
+| ~~H5~~ | ~~백엔드 테스트 14→69개 확장 — auth, blog, contact, newsletter, category, model, utility 전수 커버~~ ✅ | ~~`api/tests.py`~~                           |
 
 #### Medium
 
@@ -310,16 +312,16 @@ Django `SESSION_COOKIE_HTTPONLY=True` 설정
 
 #### High
 
-| #      | 설명                                                                                                    | 파일                      |
-| ------ | ------------------------------------------------------------------------------------------------------- | ------------------------- |
-| ~~H1~~ | ~~예외 상세 `str(e)` 클라이언트 노출 → 로그만 남기고 일반 메시지 반환~~ ✅                              | ~~`views.py`, `auth.py`~~ |
-| ~~H2~~ | ~~테스트 `category="ai_development"` → `"ai"`, `is_featured` → `featured` 수정~~ ✅                     | ~~`tests.py`~~            |
-| ~~H3~~ | ~~뉴스레터 중복 구독 테스트 — serializer unique 제약으로 400 반환 확인, docstring 수정~~ ✅ (이슈 아님) | ~~`tests.py`~~            |
-| ~~H4~~ | ~~`mark_notification_read` 등 `pass` 스텁 → `logger.info` + TODO 주석 추가~~ ✅                         | ~~`consumers.py`~~        |
-| ~~H5~~ | ~~`BlogPost` 인덱스 추가: `(is_published, -date)`, `(category)`. 마이그레이션 생성~~ ✅                 | ~~`models.py`~~           |
-| ~~H6~~ | ~~미사용 임포트 `django.db.models`, `json` 제거~~ ✅                                                    | ~~`views.py`~~            |
-| ~~H7~~ | ~~`logger.ts` `process.env.NODE_ENV` → `env.IS_DEVELOPMENT` 전환 + 테스트 수정~~ ✅                     | ~~`logger.ts`~~           |
-| ~~H8~~ | ~~`FormContext.tsx` 빈 catch 블록 → `logger.warn()` 추가~~ ✅                                           | ~~`FormContext.tsx`~~     |
+| #      | 설명                                                                                    | 파일                             |
+| ------ | --------------------------------------------------------------------------------------- | -------------------------------- |
+| ~~H1~~ | ~~예외 상세 `str(e)` 클라이언트 노출 → 로그만 남기고 일반 메시지 반환~~ ✅              | ~~`views.py`, `auth.py`~~        |
+| ~~H2~~ | ~~테스트 `category="ai_development"` → `"ai"`, `is_featured` → `featured` 수정~~ ✅     | ~~`tests.py`~~                   |
+| ~~H3~~ | ~~뉴스레터 중복 구독 — serializer UniqueValidator 제거, view 재구독 로직 정상 동작~~ ✅ | ~~`serializers.py`, `tests.py`~~ |
+| ~~H4~~ | ~~`mark_notification_read` 등 `pass` 스텁 → `logger.info` + TODO 주석 추가~~ ✅         | ~~`consumers.py`~~               |
+| ~~H5~~ | ~~`BlogPost` 인덱스 추가: `(is_published, -date)`, `(category)`. 마이그레이션 생성~~ ✅ | ~~`models.py`~~                  |
+| ~~H6~~ | ~~미사용 임포트 `django.db.models`, `json` 제거~~ ✅                                    | ~~`views.py`~~                   |
+| ~~H7~~ | ~~`logger.ts` `process.env.NODE_ENV` → `env.IS_DEVELOPMENT` 전환 + 테스트 수정~~ ✅     | ~~`logger.ts`~~                  |
+| ~~H8~~ | ~~`FormContext.tsx` 빈 catch 블록 → `logger.warn()` 추가~~ ✅                           | ~~`FormContext.tsx`~~            |
 
 #### Medium
 
