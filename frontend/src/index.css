@@ -132,11 +132,9 @@
     transition: all 200ms;
   }
 
-  /* Focus states for better accessibility */
-  button:focus,
-  a:focus,
-  input:focus,
-  textarea:focus {
+  /* Focus states for form inputs — keyboard navigation only */
+  input:focus-visible,
+  textarea:focus-visible {
     outline: none;
     box-shadow:
       0 0 0 2px var(--color-gray-900),
@@ -144,10 +142,8 @@
   }
 
   /* Dark mode focus states */
-  .dark button:focus,
-  .dark a:focus,
-  .dark input:focus,
-  .dark textarea:focus {
+  .dark input:focus-visible,
+  .dark textarea:focus-visible {
     box-shadow:
       0 0 0 2px var(--color-gray-100),
       0 0 0 4px var(--color-dark-900);

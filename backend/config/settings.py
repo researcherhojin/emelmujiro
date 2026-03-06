@@ -104,18 +104,18 @@ else:
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
     # Production: Parse DATABASE_URL (e.g. postgresql://user:pass@host:port/dbname)
-    import re
+    from urllib.parse import urlparse
 
-    db_match = re.match(r"postgresql://([^:]+):([^@]+)@([^:]+):(\d+)/(.+)", DATABASE_URL)
-    if db_match:
+    db_url = urlparse(DATABASE_URL)
+    if db_url.scheme.startswith("postgres"):
         DATABASES = {
             "default": {
                 "ENGINE": "django.db.backends.postgresql",
-                "USER": db_match.group(1),
-                "PASSWORD": db_match.group(2),
-                "HOST": db_match.group(3),
-                "PORT": db_match.group(4),
-                "NAME": db_match.group(5),
+                "USER": db_url.username or "",
+                "PASSWORD": db_url.password or "",
+                "HOST": db_url.hostname or "localhost",
+                "PORT": str(db_url.port or 5432),
+                "NAME": db_url.path.lstrip("/"),
             }
         }
     else:

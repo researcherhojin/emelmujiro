@@ -163,6 +163,8 @@ vi.mock('lucide-react', () => {
     'UserMinus',
     'UserCheck',
     'UserX',
+    'UserRound',
+    'FileText',
     'Bell',
     'BellOff',
     'Inbox',

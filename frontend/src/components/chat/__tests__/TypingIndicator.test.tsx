@@ -3,19 +3,6 @@ import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import TypingIndicator from '../TypingIndicator';
 
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({
-      children,
-      ...props
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <div {...props}>{children}</div>,
-  },
-}));
-
 // Mock lucide-react
 vi.mock('lucide-react', () => ({
   Bot: ({ className }: { className?: string }) => (

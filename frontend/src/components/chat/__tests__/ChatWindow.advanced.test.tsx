@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import { vi } from 'vitest';
 import {
   render,
@@ -10,31 +10,6 @@ import {
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import ChatWindow from '../ChatWindow';
-
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({
-      children,
-      ...props
-    }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => (
-      <div {...props}>{children}</div>
-    ),
-    button: ({
-      children,
-      ...props
-    }: PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement>>) => (
-      <button {...props}>{children}</button>
-    ),
-    textarea: ({
-      children,
-      ...props
-    }: PropsWithChildren<
-      React.TextareaHTMLAttributes<HTMLTextAreaElement>
-    >) => <textarea {...props}>{children}</textarea>,
-  },
-  AnimatePresence: ({ children }: PropsWithChildren) => <>{children}</>,
-}));
 
 // Mock lucide-react
 vi.mock('lucide-react', () => ({
@@ -57,6 +32,31 @@ vi.mock('lucide-react', () => ({
   AlertCircle: () => <span>AlertCircle</span>,
   CheckCircle: () => <span>CheckCircle</span>,
   Clock: () => <span>Clock</span>,
+}));
+
+// Mock framer-motion
+vi.mock('framer-motion', () => ({
+  motion: {
+    div: ({
+      children,
+      ...props
+    }: React.PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => (
+      <div {...props}>{children}</div>
+    ),
+    button: ({
+      children,
+      ...props
+    }: React.PropsWithChildren<
+      React.ButtonHTMLAttributes<HTMLButtonElement>
+    >) => <button {...props}>{children}</button>,
+    textarea: ({
+      children,
+      ...props
+    }: React.PropsWithChildren<
+      React.TextareaHTMLAttributes<HTMLTextAreaElement>
+    >) => <textarea {...props}>{children}</textarea>,
+  },
+  AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }));
 
 // Mock contexts

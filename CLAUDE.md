@@ -52,6 +52,7 @@ CI=true npm test -- --run src/components/common/__tests__/Button.test.tsx
 # Backend (from backend/ — uses uv)
 uv sync                    # Install dependencies
 uv sync --dev              # Install with dev dependencies
+uv run python manage.py migrate  # Run migrations (required for first setup)
 uv run python manage.py runserver
 uv run python manage.py test
 uv run black .             # Format (line length 120)
@@ -87,7 +88,7 @@ lsof -ti:8000 | xargs kill -9
 - `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x
 - `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Chat/Redis excluded from 1.0 scope
 - Root `package.json` uses npm workspaces pointing to `frontend/`
-- Docker support: `docker-compose.yml` (prod: backend + frontend/nginx + PostgreSQL; Redis only with `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload)
+- Docker support: `docker-compose.yml` (prod: backend + frontend/nginx + PostgreSQL; Redis only with `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload). Production `docker-compose.yml` passes `VITE_API_URL` as build arg; `frontend/Dockerfile` declares `ARG VITE_API_URL` + `ENV VITE_API_URL` before `npm run build` so Vite can inline it
 
 ### Routing
 
@@ -101,13 +102,13 @@ Blog, Contact, Chat features are **not functional** on GitHub Pages (mock data o
 - `/blog`, `/blog/new`, `/blog/:id` → `<UnderConstruction featureKey="blog" />`
 - `ChatWidget` removed from `AppLayout` entirely
 
-The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`) accepts a `featureKey` prop (`blog` | `contact` | `chat`) for feature-specific i18n descriptions. Original component files (`ContactPage.tsx`, `BlogListPage.tsx`, `BlogDetail.tsx`, `BlogEditor.tsx`, `ChatWidget.tsx`) are **preserved** — they have their own tests that import them directly. Provider hierarchy (`BlogProvider`, `FormProvider`, `ChatProvider`) is also retained for existing test compatibility. Navbar and footer links to `/blog` and `/contact` are intentionally kept — they navigate to the under construction pages.
+The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`) accepts a `featureKey` prop (`blog` | `contact` | `chat`) for feature-specific i18n descriptions. Original component files (`ContactPage.tsx`, `BlogListPage.tsx`, `BlogDetail.tsx`, `BlogEditor.tsx`, `ChatWidget.tsx`) are **preserved** — they have their own tests that import them directly. Provider hierarchy (`BlogProvider`, `FormProvider`) is retained for existing test compatibility. `ChatProvider` still exists in `src/contexts/` for test compatibility but is removed from `App.tsx`. Navbar and footer links to `/blog` and `/contact` are intentionally kept — they navigate to the under construction pages.
 
 ### State Management
 
-- **Zustand** (`src/store/useAppStore.ts`) — Global state with 4 slices: UI (theme, notifications), Auth (user, tokens), Blog (posts), Chat (messages). Uses `devtools` + `persist` + `immer` middleware. Persists `theme`, `user`, `isAuthenticated` to localStorage (key: `'app-store'`). Exports named selector hooks: `useTheme`, `useUser`, `useNotifications`, `usePosts`, `useMessages`.
-- **React Context** — Component-level state via UIContext, AuthContext, BlogContext, FormContext, ChatContext (all in `src/contexts/`). All providers use `useMemo` for value objects and `useCallback` for functions to prevent unnecessary re-renders.
-- **Pattern**: Zustand for cross-cutting global state, Context for provider-scoped component state.
+- **React Context** — All state management via UIContext, AuthContext, BlogContext, FormContext, ChatContext (all in `src/contexts/`). All providers use `useMemo` for value objects and `useCallback` for functions to prevent unnecessary re-renders.
+- Zustand store and dependencies (`zustand`, `immer`) fully removed — was unused dead code.
+- **Types** — `src/types/index.ts` exports only used types: `BlogPost`, `ContactFormData`, `PaginatedResponse`, `ErrorResponse`. `api.types.ts` was merged into `index.ts` and deleted.
 
 ### Mock API System
 
@@ -115,11 +116,11 @@ The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`
 
 ### API Client
 
-Axios-based client in `src/services/api.ts`. 30s timeout with automatic retry on timeout. JWT tokens stored in localStorage (`authToken`, `refreshToken`); 401 responses trigger automatic token refresh before clearing auth. HTTP is upgraded to HTTPS in production.
+Axios-based client in `src/services/api.ts`. All API methods (projects, blog, contact, newsletter, auth, health) are centralized in the `api` object with mock support. Auth methods (`getUser`, `login`, `logout`, `register`) are part of the `api` object — `AuthContext` imports `{ api }` not the default axios instance. 30s timeout with automatic retry on timeout. JWT tokens stored in localStorage (`authToken`, `refreshToken`); 401 responses trigger automatic token refresh before clearing auth. HTTP is upgraded to HTTPS in production.
 
 ### Sentry
 
-`@sentry/react` v10 is integrated via `src/utils/sentry.ts`. Only active when `ENABLE_SENTRY=true` and `SENTRY_DSN` is set (both default to off). No action needed unless enabling error tracking.
+`@sentry/react` v10 is integrated via `src/utils/sentry.ts`. `initSentry()` is called in `main.tsx`. Only active when `ENABLE_SENTRY=true` and `SENTRY_DSN` is set (both default to off). No action needed unless enabling error tracking. `main.tsx` uses `env.IS_DEVELOPMENT` / `env.IS_PRODUCTION` from `src/config/env.ts` instead of `process.env.NODE_ENV`.
 
 ### Environment Variables
 
@@ -131,7 +132,7 @@ Axios-based client in `src/services/api.ts`. 30s timeout with automatic retry on
 
 ### Provider Hierarchy
 
-`App.tsx` wraps the app in: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > BlogProvider > FormProvider > ChatProvider > RouterProvider`.
+`App.tsx` wraps the app in: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > BlogProvider > FormProvider > RouterProvider`. ChatProvider was removed from the hierarchy (chat is under construction).
 
 ### Route Protection
 
@@ -139,7 +140,24 @@ Axios-based client in `src/services/api.ts`. 30s timeout with automatic retry on
 
 ### i18n
 
-Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false`. All UI strings, data files, contexts, and SEO modules use i18n — no hardcoded Korean in components.
+Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false`. All UI strings, data files, contexts, and SEO modules use i18n — no hardcoded Korean in components. Non-React files that need translations (e.g., `websocket.ts`, `ChatContext.tsx`) import `i18n` directly and call `i18n.t()`. The `blogPosts.ts` mock data file is an exception — it contains Korean content strings as placeholder blog post data, not UI strings.
+
+**Data file i18n pattern** — Non-React data files (`footerData.ts`, `profileData.ts`, `constants.ts`) import the i18n instance directly and use getter functions so translations resolve at call time (not at module load):
+
+```typescript
+import i18n from '../i18n';
+export const getCareerData = () => [
+  { period: i18n.t('profileData.career.0.period'), ... },
+];
+```
+
+When adding new data files with translatable strings, follow this getter function pattern. Components must call the getter each render (e.g., `const careers = getCareerData()`), not store the result in a module-level constant. For test files that import these data modules, mock i18n:
+
+```typescript
+vi.mock('../../i18n', () => ({
+  default: { t: (key: string) => key, language: 'ko' },
+}));
+```
 
 **Test mocking pattern** — Every test for a component using `useTranslation()` must mock `react-i18next`. The standard mock:
 
@@ -174,9 +192,11 @@ Vitest with jsdom environment. Config in `frontend/vitest.config.ts`. Setup file
 
 ### Global Test Mocks (setupTests.ts)
 
-These are mocked globally — do NOT re-mock in individual tests:
+These are mocked globally — do NOT re-mock in individual tests (with one exception noted below):
 
-- `lucide-react` (Proxy-based, any icon name works), `framer-motion` (motion/AnimatePresence), `react-helmet-async`
+- `lucide-react` (Proxy-based, any icon name works — renders `<svg data-testid="icon-{Name}" />`), `framer-motion` (motion/AnimatePresence), `react-helmet-async`
+  - **Exception**: Chat component tests (`ChatWindow`, `AdminPanel`, `MessageList`, `FileUpload`, `EmojiPicker`) must keep local `framer-motion` and/or `lucide-react` mocks because: (a) global framer-motion Proxy passes motion-specific props to DOM causing React warnings; (b) chat tests match icon names as text content (`screen.getByText('Send')`) which doesn't work with the global SVG mock
+  - Non-chat tests should use the global mock and query icons via `data-testid="icon-{Name}"` (e.g., `icon-Mail`, `icon-Phone`, `icon-ExternalLink`)
 - Browser APIs: `matchMedia`, `IntersectionObserver`, `ResizeObserver`, `localStorage`, `sessionStorage`, `navigator.serviceWorker`, `fetch`, `requestAnimationFrame`, `performance`, `window.gtag`
 - Window: `alert`, `confirm`, `prompt`, `scrollTo`, `CSS.supports`, `location`, `history`, `innerWidth` (1024), `innerHeight` (768)
 - Navigator: `onLine` (true), `language` (`'ko-KR'`)
@@ -196,7 +216,7 @@ These are mocked globally — do NOT re-mock in individual tests:
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 73 test files, 1233 tests, 0 failures, 0 skips
+- 69 test files, 1109 tests, 0 failures, 0 skips
 
 ### E2E Testing (Playwright)
 
@@ -230,7 +250,11 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Tailwind CSS 3.x
 
-Downgraded from 4.x. PostCSS config (`frontend/postcss.config.js`) must use `tailwindcss: {}`, NOT `@tailwindcss/postcss`. Uses `darkMode: 'class'` (class-based, not media query). Custom colors: `dark.800/850/900/950`, `primary.400/500/600`, `success`, `warning`, `error`. Custom animations: `scroll` (40s, logos) and `scroll-reverse`.
+Downgraded from 4.x. PostCSS config (`frontend/postcss.config.js`) must use `tailwindcss: {}`, NOT `@tailwindcss/postcss`. Uses `darkMode: 'class'` (class-based, not media query). Custom colors: `dark.800/850/900/950`, `primary.400/500/600`, `success`, `warning`, `error`. Custom animations: `scroll` (32s, logos, `translateX(-33.333%)`) and `scroll-reverse` — logos are tripled (3 copies) for seamless infinite scrolling.
+
+**Focus styles** — Global CSS (`index.css`) applies focus ring (`box-shadow`) only to `input:focus-visible` and `textarea:focus-visible`. Buttons and links have NO global focus ring — use `outline-none focus:outline-none` on individual elements. Do NOT add `button:focus` or `a:focus` box-shadow rules to global CSS; this causes persistent focus boxes on mouse click.
+
+**Dynamic Tailwind classes** — Never use `bg-${color}-600` or similar dynamic class interpolation; Tailwind purges them at build time. Use static color maps instead (see `UnifiedLoading.tsx` `bgColorClasses`/`colorClasses` pattern).
 
 ### Prettier
 
@@ -247,8 +271,9 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 ### Backend Django Config
 
 - `SECRET_KEY` **required** in production (`DEBUG=False`); raises `ImproperlyConfigured` if missing
-- Database: SQLite (프로덕션 포함). `DATABASE_URL` 설정 시 PostgreSQL도 가능하나, 현재 규모에서는 SQLite로 충분
+- Database: SQLite by default. Set `DATABASE_URL` for PostgreSQL — parsed via `urllib.parse.urlparse` (no `dj-database-url` dependency)
 - Channel Layers: Redis when `REDIS_URL` is set, InMemoryChannelLayer otherwise
+- WebSocket: `ChatConsumer` requires authentication (rejects `AnonymousUser` in `connect()`); client message types are whitelisted via `ALLOWED_MESSAGE_TYPES` to prevent arbitrary handler dispatch
 - JWT: access 30min, refresh 7 days, rotation + blacklist
 - DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr
 - File upload validation: `api/validators.py` — case-insensitive extension, MIME type, size (5MB)
@@ -271,9 +296,9 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: 73 test files, 1233 tests, 0 failures, 0 skips (as of 2026-03-05)
+4. **Test count**: 69 test files, 1109 tests, 0 failures, 0 skips (as of 2026-03-07)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
-6. **React 19 compatibility**: Some libraries are incompatible; mock problematic components in tests
+6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
 8. **minimatch override**: Root and frontend `package.json` both have `overrides` to force `minimatch>=10.2.1` for security. Don't remove these
 9. **Conventional commits required**: PR checks validate commit message format (`type(scope): description`)
@@ -282,3 +307,8 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 12. **Sitemap generation in build**: `npm run build` first runs `scripts/generate-sitemap.js`. If this script fails, the entire build fails
 13. **Under construction routes**: `/blog`, `/contact`, and chat are currently under construction. The original page components and their tests still exist but are not routed in `App.tsx`. When re-enabling, update `App.tsx` routes, restore `ChatWidget` in `AppLayout`, and update `generate-sitemap.js`, `manifest.json`, `lighthouserc.js`, and E2E tests (`e2e/blog.spec.ts`, `e2e/contact.spec.ts`)
 14. **Backend blog router**: `backend/api/urls.py` registers BlogPostViewSet with `basename="blog"` (NOT `"blog-posts"`). DRF generates URL names as `blog-list` and `blog-detail`
+15. **No dynamic Tailwind classes**: `bg-${var}-600` is purged at build time. Always use static class maps
+16. **No global focus box-shadow on buttons/links**: Only `input`/`textarea` have global focus ring in `index.css`. Adding `button:focus` box-shadow to global CSS will cause persistent focus boxes on mouse click
+17. **setTimeout cleanup**: All `setTimeout` calls in components and contexts must store the timer ID in a `useRef(null)` and `clearTimeout` in the useEffect cleanup to prevent memory leaks. Already applied in: `UIContext`, `FormContext`, `Navbar`, `Footer`, `BlogInteractions`, `BlogSearch`, `ChatContext` (reconnect timer). Follow the same pattern for any new `setTimeout` usage
+18. **Comments in English**: All code comments must be in English. Korean comments were converted to English across the entire codebase (sentry.ts, logger.ts, BlogContext.tsx, api.ts, global.d.ts, etc.). Do not add Korean comments
+19. **Logger has no named exports**: `logger.ts` only exports `default` (singleton instance). Import as `import logger from '../utils/logger'`, not destructured

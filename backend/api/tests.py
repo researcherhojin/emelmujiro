@@ -17,7 +17,7 @@ class BlogPostAPITestCase(APITestCase):
             title="Test Blog Post",
             description="Test description",
             content="Test content",
-            category="ai_development",
+            category="ai",
             date=datetime.now(timezone.utc),
             image_url="https://example.com/image.jpg",
             is_featured=True,

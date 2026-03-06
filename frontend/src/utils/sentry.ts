@@ -13,7 +13,7 @@ interface ErrorInfo {
   digest?: string;
 }
 
-// Sentry 초기화
+// Initialize Sentry
 export function initSentry(): void {
   if (env.ENABLE_SENTRY && env.SENTRY_DSN) {
     try {
@@ -22,19 +22,19 @@ export function initSentry(): void {
         environment: env.NODE_ENV,
         tracesSampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
 
-        // 에러 필터링
+        // Error filtering
         beforeSend(event, _hint) {
-          // 개발자 도구가 열려있을 때 에러 무시
+          // Ignore errors when DevTools is open
           if ((window as WindowWithDevTools).__REACT_DEVTOOLS_GLOBAL_HOOK__) {
             return null;
           }
 
-          // 네트워크 에러 필터링
+          // Filter network errors
           if (event.exception?.values?.[0]?.type === 'NetworkError') {
             return null;
           }
 
-          // 사용자 취소 에러 필터링
+          // Filter user cancellation errors
           if (
             event.exception?.values?.[0]?.value?.includes('cancelled') ||
             event.exception?.values?.[0]?.value?.includes('aborted')
@@ -42,7 +42,7 @@ export function initSentry(): void {
             return null;
           }
 
-          // 확장 프로그램으로 인한 에러 필터링
+          // Filter browser extension errors
           if (
             event.exception?.values?.[0]?.value?.includes('extension://') ||
             event.exception?.values?.[0]?.value?.includes('chrome-extension://')
@@ -53,41 +53,41 @@ export function initSentry(): void {
           return event;
         },
 
-        // 무시할 에러들
+        // Errors to ignore
         ignoreErrors: [
-          // 네트워크 관련
+          // Network-related
           'Network request failed',
           'NetworkError',
           'Failed to fetch',
           'Load failed',
           'The request timed out',
 
-          // 사용자 액션
+          // User actions
           'ResizeObserver loop limit exceeded',
           'ResizeObserver loop completed with undelivered notifications',
           'Non-Error promise rejection captured',
 
-          // 브라우저 확장 프로그램
+          // Browser extensions
           'extension://',
           'chrome-extension://',
           'moz-extension://',
 
-          // 알려진 서드파티 에러
+          // Known third-party errors
           'top.GLOBALS',
           'grecaptcha',
           'fb_xd_fragment',
           '__tcfapi',
         ],
 
-        // 블랙리스트 URL
+        // Deny-listed URLs
         denyUrls: [
-          // 브라우저 확장 프로그램
+          // Browser extensions
           /extensions\//i,
           /^chrome:\/\//i,
           /^chrome-extension:\/\//i,
           /^moz-extension:\/\//i,
 
-          // 서드파티 스크립트
+          // Third-party scripts
           /graph\.facebook\.com/i,
           /connect\.facebook\.net/i,
           /google-analytics\.com/i,
@@ -103,7 +103,7 @@ export function initSentry(): void {
   }
 }
 
-// 사용자 컨텍스트 설정
+// Set user context
 export function setSentryUser(
   user: {
     id?: string;
@@ -116,7 +116,7 @@ export function setSentryUser(
   }
 }
 
-// 추가 컨텍스트 설정
+// Set additional context
 export function setSentryContext(
   key: string,
   context: Record<string, unknown>
@@ -126,7 +126,7 @@ export function setSentryContext(
   }
 }
 
-// 에러 캡처
+// Capture exception
 export function captureException(
   error: Error | unknown,
   context?: Record<string, unknown>
@@ -143,12 +143,12 @@ export function captureException(
       Sentry.captureException(error);
     }
   } else {
-    // 개발 환경에서는 콘솔에 출력
+    // Log to console in development
     logger.error('Error captured:', { error, context });
   }
 }
 
-// 메시지 캡처
+// Capture message
 export function captureMessage(
   message: string,
   level: Sentry.SeverityLevel = 'info',
@@ -166,13 +166,13 @@ export function captureMessage(
       Sentry.captureMessage(message, level);
     }
   } else {
-    // 개발 환경에서는 콘솔에 출력
+    // Log to console in development
 
     logger.info(`[${level.toUpperCase()}] ${message}`, context);
   }
 }
 
-// 브레드크럼 추가
+// Add breadcrumb
 export function addBreadcrumb(breadcrumb: {
   message?: string;
   category?: string;
@@ -185,18 +185,18 @@ export function addBreadcrumb(breadcrumb: {
   }
 }
 
-// 트랜잭션 시작
+// Start transaction
 export function startTransaction(name: string, op: string): string | null {
   if (env.ENABLE_SENTRY) {
     try {
-      // Sentry v7+ 방식으로 트랜잭션 시작
+      // Start transaction using Sentry v7+ API
       Sentry.startSpan(
         {
           name,
           op,
         },
         () => {
-          // 스팬 내부에서 실행할 작업이 있다면 여기에 추가
+          // Add span operations here if needed
         }
       );
 
@@ -209,7 +209,7 @@ export function startTransaction(name: string, op: string): string | null {
   return null;
 }
 
-// React Error Boundary와 함께 사용할 에러 리포터
+// Error reporter for use with React Error Boundary
 export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
   if (env.ENABLE_SENTRY) {
     Sentry.withScope((scope) => {
@@ -224,7 +224,7 @@ export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
   }
 }
 
-// 성능 모니터링
+// Performance monitoring
 export function measurePerformance(
   name: string,
   callback: () => void | Promise<void>
@@ -239,21 +239,21 @@ export function measurePerformance(
       }
     });
   } else {
-    // Sentry가 비활성화된 경우에도 콜백 실행
+    // Execute callback even when Sentry is disabled
     Promise.resolve(callback()).catch((error) => {
       logger.error(`Performance measurement failed for ${name}:`, error);
     });
   }
 }
 
-// Sentry 플러시 (앱 종료 시 사용)
+// Flush Sentry (used on app shutdown)
 export async function flushSentry(): Promise<void> {
   if (env.ENABLE_SENTRY) {
     await Sentry.flush(2000);
   }
 }
 
-// 기본 내보내기
+// Default export
 const sentryUtils = {
   initSentry,
   setSentryUser,

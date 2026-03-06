@@ -298,7 +298,8 @@ describe('sentry', () => {
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
 
       // Ensure React DevTools hook is not present
-      delete (window as Record<string, unknown>).__REACT_DEVTOOLS_GLOBAL_HOOK__;
+      delete (window as unknown as Record<string, unknown>)
+        .__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
       initSentry();
 

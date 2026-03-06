@@ -73,7 +73,7 @@ vi.mock('lucide-react', () => ({
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue,
+    t: (key: string, opts?: unknown) => (typeof opts === 'string' ? opts : key),
   }),
 }));
 
@@ -96,18 +96,18 @@ describe('FileUpload', () => {
   it('renders file upload component', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
-    expect(screen.getByText('파일 업로드')).toBeInTheDocument();
-    expect(screen.getByText('파일을 끌어다 놓거나')).toBeInTheDocument();
-    expect(screen.getByText('파일 선택')).toBeInTheDocument();
+    expect(screen.getByText('chat.fileUpload.title')).toBeInTheDocument();
+    expect(screen.getByText('chat.fileUpload.dragDrop')).toBeInTheDocument();
+    expect(screen.getByText('chat.fileUpload.browse')).toBeInTheDocument();
   });
 
   it('shows file types and size info', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
-    expect(screen.getByText('지원 파일 형식:')).toBeInTheDocument();
     expect(
-      screen.getByText(/이미지, PDF, 문서, 동영상, 음성파일/)
+      screen.getByText('chat.fileUpload.allowedTypes')
     ).toBeInTheDocument();
+    expect(screen.getByText(/chat\.fileUpload\.formats/)).toBeInTheDocument();
   });
 
   it('handles file selection via click', () => {
@@ -166,7 +166,7 @@ describe('FileUpload', () => {
 
     expect(mockShowNotification).toHaveBeenCalledWith(
       'error',
-      '지원하지 않는 파일 형식입니다.'
+      'chat.fileUpload.invalidType'
     );
   });
 
@@ -192,7 +192,7 @@ describe('FileUpload', () => {
 
     expect(mockShowNotification).toHaveBeenCalledWith(
       'error',
-      '파일 크기가 너무 큽니다. (최대 10 MB)'
+      'chat.fileUpload.fileTooLarge'
     );
   });
 
@@ -296,7 +296,7 @@ describe('FileUpload', () => {
 
     fireEvent.change(fileInput);
 
-    const uploadButton = screen.getByText('업로드');
+    const uploadButton = screen.getByText('chat.fileUpload.upload');
     fireEvent.click(uploadButton);
 
     // Wait for upload to complete (1200ms + buffer)
@@ -322,7 +322,7 @@ describe('FileUpload', () => {
     fireEvent.change(fileInput);
     expect(screen.getByText('test.pdf')).toBeInTheDocument();
 
-    const cancelButton = screen.getByText('취소');
+    const cancelButton = screen.getByText('common.cancel');
     fireEvent.click(cancelButton);
 
     expect(screen.queryByText('test.pdf')).not.toBeInTheDocument();
@@ -331,7 +331,7 @@ describe('FileUpload', () => {
   it('calls onClose when close button is clicked', () => {
     render(<FileUpload onUpload={mockOnUpload} onClose={mockOnClose} />);
 
-    const closeButton = screen.getByLabelText(/닫기|close/i);
+    const closeButton = screen.getByLabelText('common.close');
     fireEvent.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalled();
@@ -350,12 +350,12 @@ describe('FileUpload', () => {
 
     fireEvent.change(fileInput);
 
-    const uploadButton = screen.getByText('업로드');
+    const uploadButton = screen.getByText('chat.fileUpload.upload');
     fireEvent.click(uploadButton);
 
     // Check for loading state
     await waitFor(() => {
-      expect(screen.getByText('업로드 중...')).toBeInTheDocument();
+      expect(screen.getByText('chat.fileUpload.uploading')).toBeInTheDocument();
     });
   });
 
@@ -417,14 +417,14 @@ describe('FileUpload', () => {
 
     fireEvent.change(fileInput);
 
-    const uploadButton = screen.getByText('업로드');
+    const uploadButton = screen.getByText('chat.fileUpload.upload');
     fireEvent.click(uploadButton);
 
     await waitFor(
       () => {
         expect(mockShowNotification).toHaveBeenCalledWith(
           'success',
-          '파일이 성공적으로 업로드되었습니다.'
+          'chat.fileUpload.success'
         );
       },
       { timeout: 2000 }

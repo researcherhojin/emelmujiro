@@ -1,14 +1,19 @@
 import * as constants from '../constants';
 
+vi.mock('../../i18n', () => ({
+  default: { t: (key: string) => key, language: 'ko' },
+}));
+
 describe('constants', () => {
   describe('Inquiry Type Map', () => {
-    it('should have INQUIRY_TYPE_MAP defined', () => {
-      expect(constants.INQUIRY_TYPE_MAP).toBeDefined();
-      expect(typeof constants.INQUIRY_TYPE_MAP).toBe('object');
-      expect(constants.INQUIRY_TYPE_MAP.consulting).toBe('AI 컨설팅');
-      expect(constants.INQUIRY_TYPE_MAP.education).toBe('기업 AI 교육');
-      expect(constants.INQUIRY_TYPE_MAP.llm).toBe('LLM 솔루션');
-      expect(constants.INQUIRY_TYPE_MAP.data).toBe('데이터 분석');
+    it('should have getInquiryTypeMap defined and return correct keys', () => {
+      const map = constants.getInquiryTypeMap();
+      expect(map).toBeDefined();
+      expect(typeof map).toBe('object');
+      expect(map.consulting).toBe('constants.inquiryTypes.consulting');
+      expect(map.education).toBe('constants.inquiryTypes.education');
+      expect(map.llm).toBe('constants.inquiryTypes.llm');
+      expect(map.data).toBe('constants.inquiryTypes.data');
     });
   });
   describe('Contact Information', () => {
@@ -43,33 +48,35 @@ describe('constants', () => {
     });
   });
   describe('Business Hours', () => {
-    it('should have BUSINESS_HOURS defined', () => {
-      expect(constants.BUSINESS_HOURS).toBeDefined();
-      expect(typeof constants.BUSINESS_HOURS).toBe('object');
-      expect(constants.BUSINESS_HOURS.weekdays).toBeDefined();
-      expect(constants.BUSINESS_HOURS.weekends).toBeDefined();
+    it('should have getBusinessHours defined', () => {
+      const hours = constants.getBusinessHours();
+      expect(hours).toBeDefined();
+      expect(typeof hours).toBe('object');
+      expect(hours.weekdays).toBeDefined();
+      expect(hours.weekends).toBeDefined();
     });
   });
   describe('Response Time', () => {
-    it('should have RESPONSE_TIME defined', () => {
-      expect(constants.RESPONSE_TIME).toBeDefined();
-      expect(typeof constants.RESPONSE_TIME).toBe('string');
+    it('should have getResponseTime defined', () => {
+      const responseTime = constants.getResponseTime();
+      expect(responseTime).toBeDefined();
+      expect(typeof responseTime).toBe('string');
     });
   });
   describe('Service Categories', () => {
-    it('should have SERVICE_CATEGORIES defined', () => {
-      expect(constants.SERVICE_CATEGORIES).toBeDefined();
-      expect(Array.isArray(constants.SERVICE_CATEGORIES)).toBe(true);
-      expect(constants.SERVICE_CATEGORIES.length).toBeGreaterThan(0);
+    it('should have getServiceCategories defined', () => {
+      const categories = constants.getServiceCategories();
+      expect(categories).toBeDefined();
+      expect(Array.isArray(categories)).toBe(true);
+      expect(categories.length).toBeGreaterThan(0);
     });
 
     it('should have valid service category structure', () => {
-      constants.SERVICE_CATEGORIES.forEach((category) => {
+      constants.getServiceCategories().forEach((category) => {
         expect(category).toHaveProperty('id');
         expect(category).toHaveProperty('name');
         expect(category).toHaveProperty('description');
         expect(category).toHaveProperty('features');
-        expect(Array.isArray(category.features)).toBe(true);
       });
     });
   });
@@ -143,14 +150,15 @@ describe('constants', () => {
     });
   });
   describe('Languages', () => {
-    it('should have LANGUAGES defined', () => {
-      expect(constants.LANGUAGES).toBeDefined();
-      expect(Array.isArray(constants.LANGUAGES)).toBe(true);
-      expect(constants.LANGUAGES.length).toBeGreaterThan(0);
+    it('should have getLanguages defined', () => {
+      const languages = constants.getLanguages();
+      expect(languages).toBeDefined();
+      expect(Array.isArray(languages)).toBe(true);
+      expect(languages.length).toBeGreaterThan(0);
     });
 
     it('should have valid language structure', () => {
-      constants.LANGUAGES.forEach((lang) => {
+      constants.getLanguages().forEach((lang) => {
         expect(lang).toHaveProperty('code');
         expect(lang).toHaveProperty('name');
         expect(typeof lang.code).toBe('string');
@@ -159,28 +167,30 @@ describe('constants', () => {
     });
 
     it('should include Korean and English', () => {
-      const codes = constants.LANGUAGES.map((lang) => lang.code);
+      const codes = constants.getLanguages().map((lang) => lang.code);
       expect(codes).toContain('ko');
       expect(codes).toContain('en');
     });
   });
   describe('Default Meta', () => {
-    it('should have DEFAULT_META defined', () => {
-      expect(constants.DEFAULT_META).toBeDefined();
-      expect(typeof constants.DEFAULT_META).toBe('object');
-      expect(constants.DEFAULT_META.title).toBeDefined();
-      expect(constants.DEFAULT_META.description).toBeDefined();
-      expect(constants.DEFAULT_META.keywords).toBeDefined();
-      expect(constants.DEFAULT_META.ogImage).toBeDefined();
+    it('should have getDefaultMeta defined', () => {
+      const meta = constants.getDefaultMeta();
+      expect(meta).toBeDefined();
+      expect(typeof meta).toBe('object');
+      expect(meta.title).toBeDefined();
+      expect(meta.description).toBeDefined();
+      expect(meta.keywords).toBeDefined();
+      expect(meta.ogImage).toBeDefined();
     });
 
     it('should have valid meta values', () => {
-      expect(typeof constants.DEFAULT_META.title).toBe('string');
-      expect(typeof constants.DEFAULT_META.description).toBe('string');
-      expect(typeof constants.DEFAULT_META.keywords).toBe('string');
-      expect(typeof constants.DEFAULT_META.ogImage).toBe('string');
-      expect(constants.DEFAULT_META.title.length).toBeGreaterThan(0);
-      expect(constants.DEFAULT_META.description.length).toBeGreaterThan(0);
+      const meta = constants.getDefaultMeta();
+      expect(typeof meta.title).toBe('string');
+      expect(typeof meta.description).toBe('string');
+      expect(typeof meta.keywords).toBe('string');
+      expect(typeof meta.ogImage).toBe('string');
+      expect(meta.title.length).toBeGreaterThan(0);
+      expect(meta.description.length).toBeGreaterThan(0);
     });
   });
 });

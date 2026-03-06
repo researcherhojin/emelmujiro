@@ -1,4 +1,4 @@
-// Chat 컴포넌트 일괄 export
+// Chat component barrel exports
 export { default as ChatWidget } from './ChatWidget';
 export { default as ChatWindow } from './ChatWindow';
 export { default as MessageList } from './MessageList';

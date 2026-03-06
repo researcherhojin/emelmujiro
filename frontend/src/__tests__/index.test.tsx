@@ -5,19 +5,9 @@ import ReactDOM from 'react-dom/client';
 // Mock CSS imports to prevent parsing errors
 vi.mock('../index.css', () => ({}));
 
-// Mock the required modules before importing index
-vi.mock('react-helmet-async', () => ({
-  HelmetProvider: ({ children }: { children: React.ReactNode }) => children,
-  Helmet: () => null,
-}));
-
 vi.mock('../utils/webVitals', () => ({
   initPerformanceMonitoring: vi.fn(),
   checkPerformanceBudget: vi.fn(),
-}));
-
-vi.mock('../utils/cacheOptimization', () => ({
-  initializeCacheOptimization: vi.fn(),
 }));
 
 describe('Index', () => {
@@ -105,14 +95,10 @@ describe('Index', () => {
   it('initializes performance monitoring', async () => {
     // Test that the mocked functions are available
     const { initPerformanceMonitoring } = await import('../utils/webVitals');
-    const { initializeCacheOptimization } =
-      await import('../utils/cacheOptimization');
 
     // These functions should be defined as mocks
     expect(initPerformanceMonitoring).toBeDefined();
-    expect(initializeCacheOptimization).toBeDefined();
     expect(typeof initPerformanceMonitoring).toBe('function');
-    expect(typeof initializeCacheOptimization).toBe('function');
   });
 
   it('renders App component in StrictMode with HelmetProvider', () => {

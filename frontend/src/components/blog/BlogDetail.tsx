@@ -85,13 +85,7 @@ const BlogDetailPage: React.FC = memo(() => {
             )}
             <div className="p-8">
               <div className="mb-6">
-                <span
-                  className="inline-block px-3 py-1 text-sm rounded-full mb-4 font-medium"
-                  style={{
-                    backgroundColor: '#E0E7FF',
-                    color: '#4F46E5',
-                  }}
-                >
+                <span className="inline-block px-3 py-1 text-sm rounded-full mb-4 font-medium bg-indigo-100 text-indigo-600">
                   {post?.category}
                 </span>
                 <time

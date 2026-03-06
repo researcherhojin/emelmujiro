@@ -72,7 +72,3 @@ export const getServices = (): Services => ({
     ],
   },
 });
-
-// For backward compatibility, export a static reference
-// Components should prefer getServices() for dynamic language support
-export const services: Services = getServices();

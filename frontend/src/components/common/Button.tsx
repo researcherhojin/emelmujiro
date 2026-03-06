@@ -137,7 +137,7 @@ const Button: React.FC<ButtonProps> = memo((props) => {
     [children, iconElement, iconPosition, loading]
   );
 
-  // Link 컴포넌트로 렌더링
+  // Render as Link component
   if ('to' in props && props.to) {
     return (
       <Link to={props.to} className={baseClasses}>
@@ -146,7 +146,7 @@ const Button: React.FC<ButtonProps> = memo((props) => {
     );
   }
 
-  // 외부 링크로 렌더링
+  // Render as external link
   if ('href' in props && props.href) {
     return (
       <a
@@ -160,7 +160,7 @@ const Button: React.FC<ButtonProps> = memo((props) => {
     );
   }
 
-  // 일반 버튼으로 렌더링
+  // Render as regular button
   const {
     onClick,
     disabled = false,

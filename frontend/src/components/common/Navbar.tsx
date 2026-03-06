@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ const Navbar: React.FC = memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,6 +24,13 @@ const Navbar: React.FC = memo(() => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Cleanup scroll timer on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
   }, []);
 
   const navItems: NavItem[] = [
@@ -36,26 +44,22 @@ const Navbar: React.FC = memo(() => {
       setIsOpen(false);
 
       if (path.startsWith('/#')) {
-        // 홈페이지의 특정 섹션으로 이동
         const sectionId = path.substring(2);
         if (location.pathname !== '/') {
-          // 다른 페이지에 있다면 홈으로 이동 후 스크롤
           navigate('/');
-          setTimeout(() => {
+          scrollTimerRef.current = setTimeout(() => {
             const element = document.getElementById(sectionId);
             if (element) {
               element.scrollIntoView({ behavior: 'smooth' });
             }
           }, 100);
         } else {
-          // 이미 홈페이지에 있다면 바로 스크롤
           const element = document.getElementById(sectionId);
           if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
           }
         }
       } else {
-        // 일반 페이지로 이동
         navigate(path);
       }
     },
@@ -95,7 +99,6 @@ const Navbar: React.FC = memo(() => {
           <Link
             to="/"
             className="text-2xl font-black text-gray-900 dark:text-white hover:text-gray-800 dark:hover:text-gray-100 transition-colors tracking-tight select-none focus:outline-none border-none bg-transparent"
-            style={{ outline: 'none', boxShadow: 'none' }}
           >
             {t('common.companyName')}
           </Link>
@@ -111,7 +114,6 @@ const Navbar: React.FC = memo(() => {
                     ? 'text-gray-900 dark:text-white'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                 }`}
-                style={{ outline: 'none', boxShadow: 'none' }}
               >
                 <span className="relative">
                   {item.label}

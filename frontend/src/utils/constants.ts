@@ -1,14 +1,15 @@
 /**
  * Application-wide constants
  */
+import i18n from '../i18n';
 
 // Inquiry type mappings
-export const INQUIRY_TYPE_MAP = {
-  consulting: 'AI 컨설팅',
-  education: '기업 AI 교육',
-  llm: 'LLM 솔루션',
-  data: '데이터 분석',
-} as const;
+export const getInquiryTypeMap = () => ({
+  consulting: i18n.t('constants.inquiryTypes.consulting'),
+  education: i18n.t('constants.inquiryTypes.education'),
+  llm: i18n.t('constants.inquiryTypes.llm'),
+  data: i18n.t('constants.inquiryTypes.data'),
+});
 
 // Contact information
 export const CONTACT_EMAIL =
@@ -24,41 +25,49 @@ export const FORM_LIMITS = {
 } as const;
 
 // Business hours
-export const BUSINESS_HOURS = {
+export const getBusinessHours = () => ({
   weekdays: '09:00 - 18:00',
-  weekends: '휴무',
-} as const;
+  weekends: i18n.t('constants.businessHours.weekends'),
+});
 
 // Response times
-export const RESPONSE_TIME = '24시간 이내';
+export const getResponseTime = () => i18n.t('constants.responseTime');
 
 // Service categories
-export const SERVICE_CATEGORIES = [
+export const getServiceCategories = () => [
   {
     id: 'consulting',
-    name: 'AI 컨설팅',
-    description: '비즈니스 맞춤형 AI 솔루션 제공',
-    features: ['AI 도입 전략 수립', '기술 검토 및 평가', 'ROI 분석'],
+    name: i18n.t('constants.serviceCategories.consulting.name'),
+    description: i18n.t('constants.serviceCategories.consulting.description'),
+    features: i18n.t('constants.serviceCategories.consulting.features', {
+      returnObjects: true,
+    }) as string[],
   },
   {
     id: 'education',
-    name: '기업 AI 교육',
-    description: '실무 중심의 AI 교육 프로그램',
-    features: ['맞춤형 커리큘럼', '실습 위주 교육', '사후 멘토링'],
+    name: i18n.t('constants.serviceCategories.education.name'),
+    description: i18n.t('constants.serviceCategories.education.description'),
+    features: i18n.t('constants.serviceCategories.education.features', {
+      returnObjects: true,
+    }) as string[],
   },
   {
     id: 'llm',
-    name: 'LLM 솔루션',
-    description: '대규모 언어 모델 구축 및 최적화',
-    features: ['커스텀 LLM 개발', 'Fine-tuning', 'API 통합'],
+    name: i18n.t('constants.serviceCategories.llm.name'),
+    description: i18n.t('constants.serviceCategories.llm.description'),
+    features: i18n.t('constants.serviceCategories.llm.features', {
+      returnObjects: true,
+    }) as string[],
   },
   {
     id: 'data',
-    name: '데이터 분석',
-    description: '데이터 기반 인사이트 도출',
-    features: ['데이터 파이프라인', '예측 모델링', '시각화 대시보드'],
+    name: i18n.t('constants.serviceCategories.data.name'),
+    description: i18n.t('constants.serviceCategories.data.description'),
+    features: i18n.t('constants.serviceCategories.data.features', {
+      returnObjects: true,
+    }) as string[],
   },
-] as const;
+];
 
 // Animation durations (ms)
 export const ANIMATION_DURATION = {
@@ -96,16 +105,15 @@ export const STORAGE_KEYS = {
 } as const;
 
 // Supported languages
-export const LANGUAGES = [
-  { code: 'ko', name: '한국어' },
-  { code: 'en', name: 'English' },
-] as const;
+export const getLanguages = () => [
+  { code: 'ko', name: i18n.t('constants.languages.ko') },
+  { code: 'en', name: i18n.t('constants.languages.en') },
+];
 
 // Default meta tags
-export const DEFAULT_META = {
-  title: '에멜무지로 - AI 기반 소프트웨어 개발 및 IT 교육 전문가',
-  description:
-    'AI 기술을 활용한 맞춤형 솔루션 개발, 기업 교육, LLM 구축 등 종합 IT 서비스를 제공합니다.',
-  keywords: 'AI, 인공지능, 머신러닝, 딥러닝, LLM, 기업교육, IT컨설팅',
+export const getDefaultMeta = () => ({
+  title: i18n.t('constants.defaultMeta.title'),
+  description: i18n.t('constants.defaultMeta.description'),
+  keywords: i18n.t('constants.defaultMeta.keywords'),
   ogImage: '/og-image.png',
-} as const;
+});

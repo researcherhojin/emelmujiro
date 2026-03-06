@@ -8,18 +8,18 @@ import {
   SkeletonCard,
 } from './SkeletonLoader';
 
-// 통합된 로딩 타입
+// Unified loading variant type
 export type LoadingVariant =
-  | 'spinner' // 기본 스피너
-  | 'page' // 페이지 로딩 (전체 화면)
-  | 'inline' // 인라인 로딩 (작은 크기)
-  | 'skeleton-hero' // Hero 스켈레톤
-  | 'skeleton-services' // Services 스켈레톤
-  | 'skeleton-blog' // Blog 스켈레톤
-  | 'skeleton-form' // Form 스켈레톤
-  | 'skeleton-card' // Card 스켈레톤
-  | 'dots' // 점 애니메이션
-  | 'pulse'; // 펄스 애니메이션
+  | 'spinner'
+  | 'page'
+  | 'inline'
+  | 'skeleton-hero'
+  | 'skeleton-services'
+  | 'skeleton-blog'
+  | 'skeleton-form'
+  | 'skeleton-card'
+  | 'dots'
+  | 'pulse';
 
 interface UnifiedLoadingProps {
   variant?: LoadingVariant;
@@ -39,7 +39,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
     className = '',
     color = 'indigo',
   }) => {
-    // 크기 매핑
+    // Size mapping
     const sizeClasses = {
       sm: 'w-8 h-8',
       md: 'w-12 h-12',
@@ -47,7 +47,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
       xl: 'w-20 h-20',
     };
 
-    // 색상 매핑
+    // Color mapping
     const colorClasses = {
       indigo: 'border-indigo-600',
       blue: 'border-blue-600',
@@ -55,7 +55,14 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
       green: 'border-green-600',
     };
 
-    // 전체 화면 래퍼
+    const bgColorClasses = {
+      indigo: 'bg-indigo-600',
+      blue: 'bg-blue-600',
+      gray: 'bg-gray-600',
+      green: 'bg-green-600',
+    };
+
+    // Full-screen wrapper
     const FullScreenWrapper: React.FC<{ children: React.ReactNode }> = ({
       children,
     }) => {
@@ -72,7 +79,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
       return <>{children}</>;
     };
 
-    // 스켈레톤 로더 렌더링
+    // Skeleton loader rendering
     if (variant.startsWith('skeleton-')) {
       switch (variant) {
         case 'skeleton-hero':
@@ -88,7 +95,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
       }
     }
 
-    // 점 애니메이션
+    // Dots animation
     if (variant === 'dots') {
       return (
         <FullScreenWrapper>
@@ -99,7 +106,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
             {[0, 1, 2].map((index) => (
               <motion.div
                 key={index}
-                className={`w-3 h-3 bg-${color}-600 rounded-full`}
+                className={`w-3 h-3 ${bgColorClasses[color as keyof typeof bgColorClasses] || bgColorClasses.indigo} rounded-full`}
                 animate={{
                   y: [0, -10, 0],
                   opacity: [1, 0.5, 1],
@@ -118,7 +125,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
       );
     }
 
-    // 펄스 애니메이션
+    // Pulse animation
     if (variant === 'pulse') {
       return (
         <FullScreenWrapper>
@@ -127,7 +134,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
             data-testid="loading-pulse"
           >
             <motion.div
-              className={`${sizeClasses[size]} bg-${color}-600 rounded-full`}
+              className={`${sizeClasses[size]} ${bgColorClasses[color as keyof typeof bgColorClasses] || bgColorClasses.indigo} rounded-full`}
               data-testid="pulse-element"
               animate={{
                 scale: [1, 1.5, 1],
@@ -145,7 +152,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
       );
     }
 
-    // 인라인 로딩
+    // Inline loading
     if (variant === 'inline') {
       return (
         <span
@@ -169,7 +176,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
       );
     }
 
-    // 기본 스피너 (spinner, page)
+    // Default spinner (spinner, page)
     return (
       <FullScreenWrapper>
         <div
@@ -206,10 +213,10 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
 
 UnifiedLoading.displayName = 'UnifiedLoading';
 
-// 편의를 위한 프리셋 컴포넌트들
-export const PageLoading: React.FC<{ message?: string }> = ({
-  message = '페이지를 불러오는 중...',
-}) => <UnifiedLoading variant="page" message={message} />;
+// Convenience preset components
+export const PageLoading: React.FC<{ message?: string }> = ({ message }) => (
+  <UnifiedLoading variant="page" message={message} />
+);
 
 export const InlineLoading: React.FC<{ message?: string }> = ({ message }) => (
   <UnifiedLoading variant="inline" message={message} size="sm" />

@@ -2,11 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import env from './config/env';
+import { initSentry } from './utils/sentry';
 import {
   initPerformanceMonitoring,
   checkPerformanceBudget,
 } from './utils/webVitals';
-import { initializeCacheOptimization } from './utils/cacheOptimization';
+
+// Initialize Sentry error tracking (no-op unless VITE_ENABLE_SENTRY=true and VITE_SENTRY_DSN is set)
+initSentry();
 
 const rootElement = document.getElementById('root');
 
@@ -32,16 +36,13 @@ if ('serviceWorker' in navigator) {
   }
 }
 
-// Initialize cache optimization
-initializeCacheOptimization();
-
 // Initialize enhanced performance monitoring
 initPerformanceMonitoring({
-  enableLogging: process.env.NODE_ENV === 'development',
-  sampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1,
+  enableLogging: env.IS_DEVELOPMENT,
+  sampleRate: env.IS_PRODUCTION ? 0.1 : 1,
 });
 
 // Check performance budgets
-if (process.env.NODE_ENV === 'development') {
+if (env.IS_DEVELOPMENT) {
   checkPerformanceBudget();
 }

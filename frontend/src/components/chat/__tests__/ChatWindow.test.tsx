@@ -3,6 +3,31 @@ import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
+// Mock lucide-react icons
+vi.mock('lucide-react', () => ({
+  X: () => <span>X</span>,
+  Minimize2: () => <span>Minimize2</span>,
+  Maximize2: () => <span>Maximize2</span>,
+  Send: () => <span>Send</span>,
+  Paperclip: () => <span>Paperclip</span>,
+  Smile: () => <span>Smile</span>,
+  Mic: () => <span>Mic</span>,
+  MicOff: () => <span>MicOff</span>,
+  Image: () => <span>Image</span>,
+  File: () => <span>File</span>,
+  MoreVertical: () => <span>MoreVertical</span>,
+  Settings: () => <span>Settings</span>,
+  Download: () => <span>Download</span>,
+  Trash2: () => <span>Trash2</span>,
+  Volume2: () => <span>Volume2</span>,
+  VolumeX: () => <span>VolumeX</span>,
+  Bell: () => <span>Bell</span>,
+  BellOff: () => <span>BellOff</span>,
+  AlertCircle: () => <span>AlertCircle</span>,
+  CheckCircle: () => <span>CheckCircle</span>,
+  Clock: () => <span>Clock</span>,
+}));
+
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
@@ -28,31 +53,6 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
     <>{children}</>
   ),
-}));
-
-// Mock lucide-react icons
-vi.mock('lucide-react', () => ({
-  X: () => <span>X</span>,
-  Minimize2: () => <span>Minimize2</span>,
-  Maximize2: () => <span>Maximize2</span>,
-  Send: () => <span>Send</span>,
-  Paperclip: () => <span>Paperclip</span>,
-  Smile: () => <span>Smile</span>,
-  Mic: () => <span>Mic</span>,
-  MicOff: () => <span>MicOff</span>,
-  Image: () => <span>Image</span>,
-  File: () => <span>File</span>,
-  MoreVertical: () => <span>MoreVertical</span>,
-  Settings: () => <span>Settings</span>,
-  Download: () => <span>Download</span>,
-  Trash2: () => <span>Trash2</span>,
-  Volume2: () => <span>Volume2</span>,
-  VolumeX: () => <span>VolumeX</span>,
-  Bell: () => <span>Bell</span>,
-  BellOff: () => <span>BellOff</span>,
-  AlertCircle: () => <span>AlertCircle</span>,
-  CheckCircle: () => <span>CheckCircle</span>,
-  Clock: () => <span>Clock</span>,
 }));
 
 // Mock child components

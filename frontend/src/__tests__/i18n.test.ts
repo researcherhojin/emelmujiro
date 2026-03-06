@@ -64,8 +64,6 @@ describe('i18n configuration', () => {
       'about',
       'footer',
       'career',
-      'careerSummary',
-      'quickIntro',
       'contact',
       'contactPage',
       'blog',

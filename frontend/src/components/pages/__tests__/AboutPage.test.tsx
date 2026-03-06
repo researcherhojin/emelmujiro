@@ -5,46 +5,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import AboutPage from '../AboutPage';
 import React from 'react';
 
-// Type definitions for motion component props
-interface MotionComponentProps {
-  children?: React.ReactNode;
-  className?: string;
-  [key: string]: unknown;
-}
-
-// Mock framer-motion to avoid animation issues in tests
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: MotionComponentProps) => (
-      <div {...props}>{children}</div>
-    ),
-    section: ({ children, ...props }: MotionComponentProps) => (
-      <section {...props}>{children}</section>
-    ),
-    h1: ({ children, ...props }: MotionComponentProps) => (
-      <h1 {...props}>{children}</h1>
-    ),
-    h2: ({ children, ...props }: MotionComponentProps) => (
-      <h2 {...props}>{children}</h2>
-    ),
-    h3: ({ children, ...props }: MotionComponentProps) => (
-      <h3 {...props}>{children}</h3>
-    ),
-    p: ({ children, ...props }: MotionComponentProps) => (
-      <p {...props}>{children}</p>
-    ),
-    article: ({ children, ...props }: MotionComponentProps) => (
-      <article {...props}>{children}</article>
-    ),
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
-  useAnimation: () => ({
-    start: vi.fn(),
-    set: vi.fn(),
-  }),
-  useInView: () => true,
-}));
-
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -55,6 +15,7 @@ vi.mock('react-i18next', () => ({
     i18n: { language: 'ko', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: any) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
 describe('AboutPage', () => {

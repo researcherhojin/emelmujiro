@@ -21,13 +21,13 @@
 - **LLM/생성형 AI** - LLM 기반 서비스 설계 및 개발
 - **Computer Vision** - 영상 처리 및 비전 AI 솔루션
 
-## 현재 상태 (v0.9.7)
+## 현재 상태 (v0.9.8)
 
 | 항목       | 상태    | 세부사항                                   |
 | ---------- | ------- | ------------------------------------------ |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
-| **테스트** | ✅ 통과 | 1233 통과, 0 스킵 (73 파일)                |
+| **테스트** | ✅ 통과 | 1109 통과, 0 스킵 (69 파일)                |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                 |
 | **배포**   | ✅ 정상 | GitHub Pages                               |
@@ -66,7 +66,6 @@ uv run python manage.py runserver
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)
-![Zustand](https://img.shields.io/badge/Zustand-5-433e38?logo=react&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-E91E63)
 ![i18next](https://img.shields.io/badge/i18next-25-26A69A?logo=i18next&logoColor=white)
 ![React Router](https://img.shields.io/badge/React_Router-7-CA4245?logo=reactrouter&logoColor=white)
@@ -97,24 +96,43 @@ emelmujiro/
 ├── frontend/               # React 앱
 │   ├── src/
 │   │   ├── components/     # React 컴포넌트
-│   │   ├── store/          # Zustand 상태 관리
-│   │   ├── services/       # API 서비스 (Mock + Real)
-│   │   ├── contexts/       # React Context
-│   │   ├── hooks/          # Custom Hooks
-│   │   ├── i18n/           # 다국어 (ko/en)
-│   │   ├── config/         # 환경변수 설정
-│   │   └── test-utils/     # 테스트 유틸리티
+│   │   │   ├── common/     #   공통 (Button, Footer, Navbar, UnifiedLoading, ProtectedRoute 등)
+│   │   │   ├── home/       #   홈 (Hero, Services, Stats, LogosSection, CTA 등)
+│   │   │   ├── blog/       #   블로그 (BlogListPage, BlogDetail, BlogEditor, BlogComments 등)
+│   │   │   ├── chat/       #   채팅 (ChatWidget, ChatWindow, MessageList, AdminPanel 등)
+│   │   │   └── profile/    #   프로필 (ProfilePage + 5개 서브컴포넌트)
+│   │   ├── pages/          # 페이지 컴포넌트 (About, Contact, Share, Admin, NotFound)
+│   │   ├── services/       # API 서비스 (Mock + Real, Axios 기반)
+│   │   ├── contexts/       # React Context 5개 (UI, Auth, Blog, Form, Chat)
+│   │   ├── hooks/          # Custom Hooks (useScrollAnimation, useDebounce 등)
+│   │   ├── i18n/           # 다국어 (ko/en JSON)
+│   │   ├── config/         # 환경변수 설정 (env.ts)
+│   │   ├── constants/      # 상수 (partners, navigation)
+│   │   ├── data/           # 정적 데이터 (blogPosts, services, footerData)
+│   │   ├── types/          # TypeScript 타입 정의
+│   │   ├── utils/          # 유틸리티 (logger, sentry, webVitals)
+│   │   └── test-utils/     # 테스트 유틸리티 (renderWithProviders, MSW, 팩토리)
 │   ├── e2e/                # Playwright E2E 테스트
 │   └── vitest.config.ts
 ├── backend/                # Django API
-│   ├── api/                # REST API (단일 앱)
-│   ├── config/             # Django 설정
+│   ├── api/                # REST API (단일 앱: models, views, serializers, urls)
+│   ├── config/             # Django 설정 (settings.py, urls.py, asgi.py)
 │   └── pyproject.toml      # uv 의존성 관리
-├── .github/workflows/      # CI/CD 파이프라인
+├── .github/workflows/      # CI/CD 파이프라인 (main-ci-cd.yml, pr-checks.yml)
 ├── Makefile                # 개발 편의 명령어
 ├── docker-compose.yml      # 프로덕션 Docker
 └── docker-compose.dev.yml  # 개발 Docker
 ```
+
+### 아키텍처 개요
+
+- **라우팅**: `createHashRouter` (HashRouter) — GitHub Pages 호환. 모든 페이지 `React.lazy` + `Suspense`로 코드 스플리팅
+- **상태 관리**: React Context 5개 (`UIContext`, `AuthContext`, `BlogContext`, `FormContext`, `ChatContext`). 모든 Provider는 `useMemo`/`useCallback`으로 불필요한 리렌더 방지
+- **API**: Axios 기반 클라이언트 (`services/api.ts`). Mock/Real 자동 전환 (`VITE_API_URL` 설정 여부). JWT 401 자동 갱신. 30초 타임아웃 + 타임아웃 재시도
+- **i18n**: `react-i18next` + 브라우저 언어 감지. 폴백 언어: 한국어(`ko`). 모든 UI 문자열 i18n 키 사용
+- **테스트**: Vitest (단위/통합) + Playwright (E2E). `setupTests.ts`에서 브라우저 API/라이브러리 전역 모킹. `renderWithProviders`로 Provider 래핑 자동화
+- **빌드**: `sitemap 생성 → TypeScript 컴파일 → Vite 빌드`. esbuild minifier 사용. 프로덕션 시 `console`/`debugger` 자동 제거
+- **배포**: GitHub Actions → GitHub Pages. `base: '/emelmujiro/'` (서브패스)
 
 ## 주요 기능
 
@@ -173,6 +191,7 @@ emelmujiro/
 
 백엔드 프로덕션 배포 + Mock API 전환이 완료되면 1.0으로 전환합니다.
 
+- **도메인**: `emelmujiro.com` 확보 완료 — 백엔드 API(`api.emelmujiro.com`) 및 프론트엔드 커스텀 도메인으로 활용 예정
 - **DB**: SQLite (트래픽 규모상 충분, 별도 DB 서비스 불필요)
 - **1.0 범위**: Blog + Contact + Auth + Admin Dashboard
 - **1.0 이후**: 실시간 채팅 (WebSocket/Redis/Channels)
@@ -210,8 +229,107 @@ emelmujiro/
 - [x] 코드베이스 딥 오딧 — 고립 컴포넌트 21개 삭제, dead CSS 20개 클래스 제거, stale 환경변수 수정
 - [x] 환경변수 정리 — dead code 삭제, `global.d.ts` 정리
 - [x] CI/CD 안정화 — `upload-artifact@v7`, Docker Redis 옵셔널화
+- [x] Zustand 전체 제거 — store(227줄) + 테스트 42개 삭제, immer/zustand 의존성 제거
+- [x] 소스 코드 영어 주석 통일 — 15+ 파일 한국어 주석 → 영어 전환
+- [x] i18n 완전 전환 — api.ts 에러맵, BlogEditor, 인라인 스타일/hex 색상 → Tailwind
+- [x] setTimeout 메모리 누수 수정 — ChatContext reconnect 타이머 `useRef` 추적 + cleanup
+- [x] 리팩토링 백로그 전량 해소 — C5~C7, H7, M5/M7~M9, BE1~BE7 (총 16건 완료, 이슈 아님 2건)
+
+## 리팩토링 백로그
+
+2026.03.07 전체 코드베이스 감사(2회)에서 식별된 항목입니다. ~~취소선~~은 완료된 항목입니다. **Critical/Backend 전량 해소 완료.**
+
+### 즉시 수정 (Critical)
+
+| #      | 설명                                                                                          | 파일                     |
+| ------ | --------------------------------------------------------------------------------------------- | ------------------------ |
+| ~~C1~~ | ~~Footer `scrollToSection`이 HashRouter에서 `window.location.pathname` 사용~~ ✅              | ~~`Footer.tsx`~~         |
+| ~~C2~~ | ~~BlogEditor에서 동일한 `window.location.pathname` HashRouter 버그~~ ✅                       | ~~`BlogEditor.tsx`~~     |
+| C3     | ESLint `"^10.0.2"` → `"^9.0.0"`으로 고정 (v10 시 플러그인 호환성 깨짐)                        | `package.json`           |
+| ~~C4~~ | ~~AdminDashboard 동적 Tailwind 클래스 `bg-${color}-100` — 빌드 시 purge됨~~ ✅                | ~~`AdminDashboard.tsx`~~ |
+| ~~C5~~ | ~~TypeScript 컴파일 에러 8건 (`useRef(null)`, FormContext.test mock, sentry.test 캐스트)~~ ✅ | ~~다수~~                 |
+| ~~C6~~ | ~~FileUpload.tsx 하드코딩 한국어 폴백 11개 → i18n 키 이동~~ ✅                                | ~~`FileUpload.tsx`~~     |
+| ~~C7~~ | ~~`docker-compose.yml` 환경변수 `REACT_APP_API_URL` → `VITE_API_URL` 수정~~ ✅                | ~~`docker-compose.yml`~~ |
+
+### 높은 우선순위
+
+| #      | 설명                                                                                                           | 파일                               |
+| ------ | -------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| ~~H1~~ | ~~Zustand store 전체 미사용 — 제거 완료 (227줄 + 테스트 42개)~~                                                | ~~삭제됨~~                         |
+| ~~H2~~ | ~~`types/` 정리: 중복 타입 통합, 미사용 타입 9개 제거, `api.types.ts` 삭제, `zustand`/`immer` 의존성 제거~~ ✅ | ~~`types/`~~                       |
+| ~~H3~~ | ~~성능 모니터링 이중화 — `performanceMonitor.ts`(352줄) 삭제, `webVitals.ts` + `WebVitalsDashboard` 유지~~ ✅  | ~~`utils/`~~                       |
+| ~~H4~~ | ~~Sentry `initSentry()` 미호출 — `main.tsx`에 초기화 호출 추가~~ ✅                                            | ~~`main.tsx`~~                     |
+| ~~H5~~ | ~~소스 코드 한국어 주석 → 영어 전환 (15+ 파일)~~ ✅                                                            | ~~다수~~                           |
+| H6     | `renderWithProviders` 2개 구현 (HashRouter vs MemoryRouter) — 테스트 라우팅 불일치                             | `test-utils/`                      |
+| ~~H7~~ | ~~Dockerfile Python 3.14 → 3.12로 수정 (CI와 일치)~~ ✅                                                        | ~~`Dockerfile`, `Dockerfile.dev`~~ |
+
+### 중간 우선순위
+
+| #      | 설명                                                                                       | 파일                            |
+| ------ | ------------------------------------------------------------------------------------------ | ------------------------------- |
+| ~~M1~~ | ~~하드코딩 한국어 → i18n 키 이동 (api.ts 에러맵 13개 메시지 → `apiErrors.*` i18n 키)~~ ✅  | ~~`api.ts`, locale files~~      |
+| ~~M2~~ | ~~인라인 스타일 `outline/boxShadow` 11곳 → Tailwind `shadow-none` 클래스 전환~~ ✅         | ~~Footer, Navbar, ProfilePage~~ |
+| ~~M3~~ | ~~하드코딩 hex 색상 `#E0E7FF`/`#4F46E5` → Tailwind `bg-indigo-100 text-indigo-600`~~ ✅    | ~~BlogCard, BlogDetail~~        |
+| ~~M4~~ | ~~App.tsx 무의미한 `markPerformance` 0ms 측정 제거 — H3에서 함께 처리~~ ✅                 | ~~`App.tsx`~~                   |
+| ~~M5~~ | ~~`main.tsx`에서 `process.env.NODE_ENV` → `env.IS_DEVELOPMENT` 통일~~ ✅                   | ~~`main.tsx`~~                  |
+| ~~M6~~ | ~~Footer 테스트 중복 ("closes modal when X button is clicked" 2회) 제거~~ ✅               | ~~`Footer.test.tsx`~~           |
+| ~~M7~~ | ~~Footer 테스트에서 lucide-react 불필요 재모킹 제거 (글로벌 모킹 사용)~~ ✅                | ~~`Footer.test.tsx`~~           |
+| ~~M8~~ | ~~`docker-compose.dev.yml` API URL `localhost` — 브라우저 접근이므로 정상~~ ✅ (이슈 아님) | ~~`docker-compose.dev.yml`~~    |
+| ~~M9~~ | ~~BlogSearch `setTimeout` 미정리 → `useRef` 기반 타이머 추적 + cleanup~~ ✅                | ~~`BlogSearch.tsx`~~            |
+
+### 낮은 우선순위
+
+| #   | 설명                                                                              | 파일                      |
+| --- | --------------------------------------------------------------------------------- | ------------------------- |
+| L1  | `window.confirm()`/`alert()` → 커스텀 모달/토스트                                 | AdminDashboard, SharePage |
+| L2  | BlogSearch input `aria-label` 누락                                                | `BlogSearch.tsx`          |
+| L3  | 대형 컴포넌트 분할 후보: AdminPanel(589줄), MessageList(458줄), BlogEditor(443줄) | `components/`             |
+
+### Backend
+
+| #       | 설명                                                                                       | 파일                       |
+| ------- | ------------------------------------------------------------------------------------------ | -------------------------- |
+| ~~BE1~~ | ~~bare `except:` → 구체적 예외 타입 (`re.error`, `TypeError`)으로 교체~~ ✅                | ~~`api/views.py`~~         |
+| ~~BE2~~ | ~~WebSocket `ChatConsumer` 인증 추가 + 메시지 타입 화이트리스트~~ ✅                       | ~~`api/consumers.py`~~     |
+| ~~BE3~~ | ~~`create_blog_posts.py` 하드코딩 자격증명 → 랜덤 비밀번호 출력~~ ✅                       | ~~`create_blog_posts.py`~~ |
+| ~~BE4~~ | ~~테스트 데이터 카테고리 `ai_development` → `ai`로 수정~~ ✅                               | ~~`api/tests.py`~~         |
+| ~~BE5~~ | ~~미사용 의존성 `django-ratelimit` 제거~~ ✅                                               | ~~`pyproject.toml`~~       |
+| ~~BE6~~ | ~~DB URL 파싱 → `urllib.parse.urlparse` (stdlib) 사용~~ ✅                                 | ~~`config/settings.py`~~   |
+| ~~BE7~~ | ~~에러 응답 형식 확인 — `details`는 validation 에러에만 존재, 일관성 정상~~ ✅ (이슈 아님) | ~~`api/views.py`~~         |
 
 ## 변경 이력
+
+### 0.9.8 (2026.03.07)
+
+- **로고 시스템 리뉴얼**
+  - 파트너사 로고 20개 최신화 및 파일명 통일 (`상호명+Logo.확장자`)
+  - LogosSection 리팩토링: LogoItem/ScrollRow 서브컴포넌트 추출, 3x 복제 무한 스크롤, 그라디언트 페이드 마스크
+  - 스크롤 속도 32s, Row 1(대기업 중심) / Row 2(교육/공공) 재배치
+- **컴포넌트 분할**: ProfilePage (497→120줄, 5개 서브컴포넌트), ServiceModal을 Footer에서 분리
+- **API 패턴 통일**: AuthContext가 axiosInstance 대신 `api` 객체 사용으로 전환
+- **데드 코드 제거**: `cacheOptimization.ts`(155줄), `blogCache.ts`(231줄), ChatProvider를 App.tsx에서 제거
+- **리팩토링 백로그 전량 해소** (16건 완료, 2건 이슈 아님 확인)
+  - **C5**: React 19 `useRef(null)` 필수 인자 수정 (BlogInteractions, Footer, Navbar, FormContext) + FormContext.test mock 타입 수정 + sentry.test 이중 캐스트 수정
+  - **C6**: FileUpload.tsx 하드코딩 한국어 폴백 16건 → i18n 키 이동 + 테스트 assertion 업데이트
+  - **C7**: `docker-compose.yml` `REACT_APP_API_URL` → `VITE_API_URL` + Dockerfile에 `ARG`/`ENV` 추가
+  - **H7**: Dockerfile Python 3.14 → 3.12 (CI와 일치)
+  - **M5**: `main.tsx` `process.env.NODE_ENV` → `env.IS_DEVELOPMENT`/`env.IS_PRODUCTION`
+  - **M7**: Footer 테스트 로컬 lucide-react 모킹 제거 → 글로벌 모킹 사용 (`data-testid="icon-{Name}"`)
+  - **M9**: BlogSearch `setTimeout` → `useRef` 기반 타이머 추적 + cleanup
+  - **BE1**: bare `except:` → 구체적 예외 타입 (`re.error`, `TypeError`)
+  - **BE2**: ChatConsumer 인증 필수화 + 메시지 타입 화이트리스트 (`ALLOWED_MESSAGE_TYPES`)
+  - **BE3**: `create_blog_posts.py` 하드코딩 자격증명 → 랜덤 비밀번호 출력
+  - **BE4**: 테스트 카테고리 `ai_development` → `ai` 수정
+  - **BE5**: 미사용 `django-ratelimit` 의존성 제거
+  - **BE6**: DB URL 파싱 수동 regex → `urllib.parse.urlparse` (stdlib)
+  - **M8, BE7**: 이슈 아님 확인 (M8: 브라우저 접근이므로 localhost 정상, BE7: details는 validation 에러에만 존재)
+- **i18n 완성도 강화**: BlogEditor + FileUpload 하드코딩 한국어 → i18n 키 전환
+- **코드 품질 개선**
+  - 소스 코드 한국어 주석 → 영어 전환 (15+ 파일)
+  - setTimeout 메모리 누수 전수 수정 (UIContext, FormContext, Navbar, Footer, BlogInteractions, BlogSearch, ChatContext)
+- **CLAUDE.md 업데이트**: React 19 useRef 패턴, Docker 빌드 arg, ChatConsumer 보안, 글로벌 lucide-react mock testid 등 반영
+- **도메인 확보**: `emelmujiro.com` — 백엔드 배포 시 사용 예정
+- **테스트**: 69 파일, 1109 테스트, 0 실패
 
 ### 0.9.7 (2026.03.04 ~ 03.05)
 

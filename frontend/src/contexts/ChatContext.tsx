@@ -167,6 +167,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   // WebSocket connection
   const wsRef = useRef<ChatWebSocketService | null>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const messageQueueRef = useRef<ChatMessage[]>([]);
 
   // Load persisted data on mount
@@ -614,7 +615,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   const reconnect = () => {
     disconnect();
-    setTimeout(connect, 1000);
+    reconnectTimerRef.current = setTimeout(connect, 1000);
   };
 
   // Cleanup on unmount
@@ -623,6 +624,9 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       disconnect();
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
+      }
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
       }
     };
   }, []);

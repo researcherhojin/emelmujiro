@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Save, X, Eye, Download, Upload } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -10,6 +10,7 @@ import logger from '../../utils/logger';
 const BlogEditor: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ const BlogEditor: React.FC = () => {
     content: '',
     category: '',
     tags: '',
-    author: '이호진',
+    author: '',
     image_url: '',
   });
 
@@ -28,12 +29,11 @@ const BlogEditor: React.FC = () => {
     setIsAdmin(adminMode);
 
     // URL parameter for admin mode activation
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('admin') === 'true') {
+    if (searchParams.get('admin') === 'true') {
       localStorage.setItem('adminMode', 'true');
       setIsAdmin(true);
     }
-  }, []);
+  }, [searchParams]);
 
   // Handle form changes
   const handleChange = (
@@ -67,7 +67,7 @@ const BlogEditor: React.FC = () => {
         content: formData.content,
         author: formData.author,
         publishedAt: new Date().toISOString().split('T')[0],
-        category: formData.category || '일반',
+        category: formData.category || t('blogEditor.defaultCategory'),
         tags: formData.tags
           ? formData.tags.split(',').map((tag) => tag.trim())
           : [],
@@ -97,7 +97,7 @@ const BlogEditor: React.FC = () => {
         content: '',
         category: '',
         tags: '',
-        author: '이호진',
+        author: '',
         image_url: '',
       });
 
@@ -170,12 +170,12 @@ const BlogEditor: React.FC = () => {
   // Categories
   const categories = [
     'AI',
-    '웹개발',
-    '프론트엔드',
+    t('blogEditor.categories.webDev'),
+    t('blogEditor.categories.frontend'),
     'DevOps',
-    '교육',
-    '프로그래밍',
-    '일반',
+    t('blogEditor.categories.education'),
+    t('blogEditor.categories.programming'),
+    t('blogEditor.defaultCategory'),
   ];
 
   if (!isAdmin) {
@@ -190,13 +190,12 @@ const BlogEditor: React.FC = () => {
           </p>
           <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
             <p className="text-sm text-gray-500 mb-4">
-              관리자 모드를 활성화하려면 URL에{' '}
+              {t('blogEditor.adminInstruction')}{' '}
               <code className="bg-gray-100 px-2 py-1 rounded">?admin=true</code>
-              를 추가하세요.
             </p>
             <button
               onClick={() => {
-                window.location.href = window.location.pathname + '?admin=true';
+                navigate('/blog/new?admin=true');
               }}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
@@ -319,7 +318,7 @@ const BlogEditor: React.FC = () => {
                   value={formData.tags}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="React, TypeScript, 웹개발"
+                  placeholder={t('blogEditor.tagsPlaceholder')}
                 />
               </div>
 
@@ -347,7 +346,7 @@ const BlogEditor: React.FC = () => {
                   onChange={handleChange}
                   rows={15}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                  placeholder="## 제목&#10;&#10;내용을 작성하세요...&#10;&#10;- 리스트 항목&#10;- **굵은 글씨**&#10;- *기울임*"
+                  placeholder={t('blogEditor.contentPlaceholder')}
                 />
               </div>
 
@@ -413,7 +412,7 @@ const BlogEditor: React.FC = () => {
               )}
 
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {formData.content || '*내용을 입력하세요...*'}
+                {formData.content || `*${t('blogEditor.contentFallback')}*`}
               </ReactMarkdown>
             </article>
           </div>

@@ -66,14 +66,13 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
 
   const validateFile = (file: File): string | null => {
     if (!allowedTypes.includes(file.type)) {
-      return t('chat.fileUpload.invalidType', '지원하지 않는 파일 형식입니다.');
+      return t('chat.fileUpload.invalidType');
     }
 
     if (file.size > maxFileSize) {
-      return t(
-        'chat.fileUpload.fileTooLarge',
-        `파일 크기가 너무 큽니다. (최대 ${formatFileSize(maxFileSize)})`
-      );
+      return t('chat.fileUpload.fileTooLarge', {
+        maxSize: formatFileSize(maxFileSize),
+      });
     }
 
     return null;
@@ -173,10 +172,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
       setSelectedFile(null);
       setUploadProgress(null);
 
-      showNotification(
-        'success',
-        t('chat.fileUpload.success', '파일이 성공적으로 업로드되었습니다.')
-      );
+      showNotification('success', t('chat.fileUpload.success'));
 
       if (onClose) {
         onClose();
@@ -191,10 +187,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
       }
 
       setUploadProgress(null);
-      showNotification(
-        'error',
-        t('chat.fileUpload.failed', '파일 업로드에 실패했습니다.')
-      );
+      showNotification('error', t('chat.fileUpload.failed'));
     }
   };
 
@@ -228,12 +221,12 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('chat.fileUpload.title', '파일 업로드')}
+          {t('chat.fileUpload.title')}
         </h3>
         <button
           onClick={handleCancel}
           className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          aria-label={t('common.close', '닫기')}
+          aria-label={t('common.close')}
         >
           <X className="w-4 h-4 text-gray-500" />
         </button>
@@ -267,14 +260,14 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
           <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
           <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
             {isDragActive
-              ? t('chat.fileUpload.dropHere', '여기에 파일을 놓아주세요')
-              : t('chat.fileUpload.dragDrop', '파일을 끌어다 놓거나')}
+              ? t('chat.fileUpload.dropHere')
+              : t('chat.fileUpload.dragDrop')}
           </p>
           <button
             onClick={handleBrowseClick}
             className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
           >
-            {t('chat.fileUpload.browse', '파일 선택')}
+            {t('chat.fileUpload.browse')}
           </button>
         </div>
       )}
@@ -303,7 +296,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
             <button
               onClick={() => setSelectedFile(null)}
               className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-              aria-label={t('common.remove', '제거')}
+              aria-label={t('common.remove')}
             >
               <X className="w-4 h-4 text-gray-500" />
             </button>
@@ -314,13 +307,13 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
               onClick={handleUpload}
               className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 px-3 rounded-lg transition-colors"
             >
-              {t('chat.fileUpload.upload', '업로드')}
+              {t('chat.fileUpload.upload')}
             </button>
             <button
               onClick={handleCancel}
               className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
             >
-              {t('common.cancel', '취소')}
+              {t('common.cancel')}
             </button>
           </div>
         </motion.div>
@@ -344,8 +337,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {uploadProgress === 100
-                  ? t('chat.fileUpload.completed', '업로드 완료')
-                  : t('chat.fileUpload.uploading', '업로드 중...')}
+                  ? t('chat.fileUpload.completed')
+                  : t('chat.fileUpload.uploading')}
               </p>
               <div className="mt-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <motion.div
@@ -363,11 +356,11 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
       {/* File Type Info */}
       <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
         <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-          {t('chat.fileUpload.allowedTypes', '지원 파일 형식:')}
+          {t('chat.fileUpload.allowedTypes')}
         </p>
         <p className="text-xs text-gray-600 dark:text-gray-300">
-          {t('chat.fileUpload.formats', '이미지, PDF, 문서, 동영상, 음성파일')}{' '}
-          (최대 {formatFileSize(maxFileSize)})
+          {t('chat.fileUpload.formats')} (
+          {t('chat.fileUpload.maxSize', { size: formatFileSize(maxFileSize) })})
         </p>
       </div>
 

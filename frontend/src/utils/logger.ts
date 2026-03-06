@@ -1,6 +1,6 @@
 /**
- * 환경별 로깅 유틸리티
- * 프로덕션에서는 console.log를 비활성화
+ * Environment-aware logging utility
+ * Disables console.log in production
  */
 import { getEnvVar } from '../config/env';
 import { captureException } from './sentry';
@@ -70,14 +70,14 @@ class Logger {
     if (this.shouldLog('error')) {
       console.error(this.formatMessage('error', message), error || '');
 
-      // 프로덕션에서는 에러 리포팅 서비스로 전송
+      // Send to error reporting service in production
       if (!this.isDevelopment && error) {
         this.reportToErrorService(message, error);
       }
     }
   }
 
-  // 그룹 로깅
+  // Group logging
   group(label: string): void {
     if (this.isDevelopment) {
       // eslint-disable-next-line no-console
@@ -92,7 +92,7 @@ class Logger {
     }
   }
 
-  // 테이블 로깅
+  // Table logging
   table(data: unknown): void {
     if (this.isDevelopment) {
       // eslint-disable-next-line no-console
@@ -100,7 +100,7 @@ class Logger {
     }
   }
 
-  // 성능 측정
+  // Performance measurement
   time(label: string): void {
     if (this.isDevelopment) {
       // eslint-disable-next-line no-console
@@ -115,14 +115,14 @@ class Logger {
     }
   }
 
-  // 에러 리포팅 서비스로 전송 (Sentry)
+  // Send to error reporting service (Sentry)
   private reportToErrorService(message: string, error: unknown): void {
     captureException(error instanceof Error ? error : new Error(message), {
       message,
     });
   }
 
-  // 네트워크 요청 로깅
+  // Network request logging
   logRequest(method: string, url: string, data?: unknown): void {
     if (this.isDevelopment) {
       this.group(`🌐 ${method} ${url}`);
@@ -133,7 +133,7 @@ class Logger {
     }
   }
 
-  // 네트워크 응답 로깅
+  // Network response logging
   logResponse(
     method: string,
     url: string,
@@ -151,21 +151,10 @@ class Logger {
   }
 }
 
-// 싱글톤 인스턴스
+// Singleton instance
 const logger = new Logger({
   enableInProduction: getEnvVar('ENABLE_LOGGING') === 'true',
   logLevel: (getEnvVar('LOG_LEVEL') as LogLevel) || 'error',
 });
 
 export default logger;
-
-// 개별 함수로도 export (바인딩 필요)
-export const debug = logger.debug.bind(logger);
-export const info = logger.info.bind(logger);
-export const warn = logger.warn.bind(logger);
-export const error = logger.error.bind(logger);
-export const group = logger.group.bind(logger);
-export const groupEnd = logger.groupEnd.bind(logger);
-export const table = logger.table.bind(logger);
-export const time = logger.time.bind(logger);
-export const timeEnd = logger.timeEnd.bind(logger);

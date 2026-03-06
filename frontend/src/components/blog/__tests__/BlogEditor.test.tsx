@@ -149,20 +149,24 @@ describe('BlogEditor Component', () => {
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       expect(titleInput.value).toBe('Test Title');
 
-      // Find content textarea by placeholder text (hardcoded in component)
+      // Find content textarea by placeholder (i18n key returned by mock t())
       const contentTextarea = screen.getByPlaceholderText(
-        /## 제목/
+        'blogEditor.contentPlaceholder'
       ) as HTMLTextAreaElement;
       fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
       expect(contentTextarea.value).toBe('Test Content');
     });
 
-    it('has default author value', () => {
+    it('has empty default author value', () => {
       renderWithRouter(<BlogEditor />);
 
-      // Find author input by its label
-      const authorInput = screen.getByDisplayValue('이호진');
+      // Author field should be empty by default (no hardcoded name)
+      const authorInputs = screen.getAllByRole('textbox');
+      const authorInput = authorInputs.find(
+        (input) => (input as HTMLInputElement).name === 'author'
+      ) as HTMLInputElement;
       expect(authorInput).toBeInTheDocument();
+      expect(authorInput.value).toBe('');
     });
   });
 
@@ -177,7 +181,7 @@ describe('BlogEditor Component', () => {
       // Initially preview is shown
       expect(screen.getByTestId('markdown-preview')).toBeInTheDocument();
       expect(screen.getByTestId('markdown-preview')).toHaveTextContent(
-        '*내용을 입력하세요...*'
+        '*blogEditor.contentFallback*'
       );
     });
 
@@ -185,7 +189,7 @@ describe('BlogEditor Component', () => {
       renderWithRouter(<BlogEditor />);
 
       const contentTextarea = screen.getByPlaceholderText(
-        /## 제목/
+        'blogEditor.contentPlaceholder'
       ) as HTMLTextAreaElement;
       fireEvent.change(contentTextarea, {
         target: { value: '# Test Markdown' },
@@ -230,7 +234,7 @@ describe('BlogEditor Component', () => {
         'blogEditor.enterTitle'
       ) as HTMLInputElement;
       const contentTextarea = screen.getByPlaceholderText(
-        /## 제목/
+        'blogEditor.contentPlaceholder'
       ) as HTMLTextAreaElement;
       const categorySelect = screen.getByRole('combobox') as HTMLSelectElement;
 
@@ -253,7 +257,7 @@ describe('BlogEditor Component', () => {
       const lastPost = savedPosts[0];
       expect(lastPost?.title).toBe('Test Post');
       expect(lastPost?.content).toBe('Test Content');
-      expect(lastPost?.category).toBe('일반');
+      expect(lastPost?.category).toBe('blogEditor.defaultCategory');
 
       expect(alertSpy).toHaveBeenCalledWith('blogEditor.postSaved');
       expect(mockNavigate).toHaveBeenCalledWith('/blog');
@@ -273,7 +277,7 @@ describe('BlogEditor Component', () => {
         'blogEditor.enterTitle'
       ) as HTMLInputElement;
       const contentTextarea = screen.getByPlaceholderText(
-        /## 제목/
+        'blogEditor.contentPlaceholder'
       ) as HTMLTextAreaElement;
 
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });

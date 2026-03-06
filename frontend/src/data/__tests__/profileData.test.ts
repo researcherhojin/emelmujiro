@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
-  careerData,
-  educationData,
-  projects,
+  getCareerData,
+  getEducationData,
+  getProjects,
   projectStats,
-  projectCategories,
+  getProjectCategories,
 } from '../profileData';
 import type {
   CareerItem,
@@ -13,15 +13,21 @@ import type {
   ProjectStats,
 } from '../profileData';
 
+vi.mock('../../i18n', () => ({
+  default: { t: (key: string) => key, language: 'ko' },
+}));
+
 describe('profileData', () => {
-  describe('careerData', () => {
-    it('should be a non-empty array', () => {
+  describe('getCareerData', () => {
+    it('should return a non-empty array', () => {
+      const careerData = getCareerData();
       expect(careerData).toBeDefined();
       expect(Array.isArray(careerData)).toBe(true);
       expect(careerData.length).toBeGreaterThan(0);
     });
 
     it('should have valid structure for each career item', () => {
+      const careerData = getCareerData();
       careerData.forEach((item: CareerItem) => {
         expect(item.period).toBeDefined();
         expect(typeof item.period).toBe('string');
@@ -42,6 +48,7 @@ describe('profileData', () => {
     });
 
     it('should have optional current flag as boolean when present', () => {
+      const careerData = getCareerData();
       careerData.forEach((item: CareerItem) => {
         if (item.current !== undefined) {
           expect(typeof item.current).toBe('boolean');
@@ -50,6 +57,7 @@ describe('profileData', () => {
     });
 
     it('should have at least one current position', () => {
+      const careerData = getCareerData();
       const currentPositions = careerData.filter(
         (item) => item.current === true
       );
@@ -57,19 +65,22 @@ describe('profileData', () => {
     });
 
     it('should be ordered chronologically (most recent first)', () => {
+      const careerData = getCareerData();
       // The first item should have a current flag or more recent period
       expect(careerData[0].current).toBe(true);
     });
   });
 
-  describe('educationData', () => {
-    it('should be a non-empty array', () => {
+  describe('getEducationData', () => {
+    it('should return a non-empty array', () => {
+      const educationData = getEducationData();
       expect(educationData).toBeDefined();
       expect(Array.isArray(educationData)).toBe(true);
       expect(educationData.length).toBeGreaterThan(0);
     });
 
     it('should have valid structure for each education item', () => {
+      const educationData = getEducationData();
       educationData.forEach((item: EducationItem) => {
         expect(item.period).toBeDefined();
         expect(typeof item.period).toBe('string');
@@ -90,6 +101,7 @@ describe('profileData', () => {
     });
 
     it('should have unique schools or degrees', () => {
+      const educationData = getEducationData();
       const schoolDegrees = educationData.map(
         (item) => `${item.school}-${item.degree}`
       );
@@ -98,7 +110,7 @@ describe('profileData', () => {
     });
   });
 
-  describe('projects', () => {
+  describe('getProjects', () => {
     const validCategories = [
       'enterprise',
       'bootcamp',
@@ -107,13 +119,15 @@ describe('profileData', () => {
       'research',
     ];
 
-    it('should be a non-empty array', () => {
+    it('should return a non-empty array', () => {
+      const projects = getProjects();
       expect(projects).toBeDefined();
       expect(Array.isArray(projects)).toBe(true);
       expect(projects.length).toBeGreaterThan(0);
     });
 
     it('should have valid structure for each project', () => {
+      const projects = getProjects();
       projects.forEach((project: Project) => {
         expect(project.id).toBeDefined();
         expect(typeof project.id).toBe('string');
@@ -145,12 +159,14 @@ describe('profileData', () => {
     });
 
     it('should have unique project IDs', () => {
+      const projects = getProjects();
       const ids = projects.map((p) => p.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(ids.length);
     });
 
     it('should have optional highlight flag as boolean when present', () => {
+      const projects = getProjects();
       projects.forEach((project: Project) => {
         if (project.highlight !== undefined) {
           expect(typeof project.highlight).toBe('boolean');
@@ -159,11 +175,13 @@ describe('profileData', () => {
     });
 
     it('should have at least one highlighted project', () => {
+      const projects = getProjects();
       const highlighted = projects.filter((p) => p.highlight === true);
       expect(highlighted.length).toBeGreaterThan(0);
     });
 
     it('should have tags sorted alphabetically', () => {
+      const projects = getProjects();
       projects.forEach((project) => {
         const sorted = [...project.tags].sort();
         expect(project.tags).toEqual(sorted);
@@ -199,18 +217,21 @@ describe('profileData', () => {
     });
   });
 
-  describe('projectCategories', () => {
-    it('should be a non-empty array', () => {
+  describe('getProjectCategories', () => {
+    it('should return a non-empty array', () => {
+      const projectCategories = getProjectCategories();
       expect(projectCategories).toBeDefined();
       expect(Array.isArray(projectCategories)).toBe(true);
       expect(projectCategories.length).toBeGreaterThan(0);
     });
 
     it('should have an "all" category as the first entry', () => {
+      const projectCategories = getProjectCategories();
       expect(projectCategories[0].id).toBe('all');
     });
 
     it('should have valid structure for each category', () => {
+      const projectCategories = getProjectCategories();
       projectCategories.forEach((category) => {
         expect(category.id).toBeDefined();
         expect(typeof category.id).toBe('string');
@@ -225,18 +246,24 @@ describe('profileData', () => {
     });
 
     it('should have "all" count equal to total number of projects', () => {
+      const projects = getProjects();
+      const projectCategories = getProjectCategories();
       const allCategory = projectCategories.find((c) => c.id === 'all');
       expect(allCategory).toBeDefined();
       expect(allCategory!.count).toBe(projects.length);
     });
 
     it('should have individual category counts that sum to total projects', () => {
+      const projects = getProjects();
+      const projectCategories = getProjectCategories();
       const nonAllCategories = projectCategories.filter((c) => c.id !== 'all');
       const sumOfCounts = nonAllCategories.reduce((sum, c) => sum + c.count, 0);
       expect(sumOfCounts).toBe(projects.length);
     });
 
     it('should have correct counts for each category', () => {
+      const projects = getProjects();
+      const projectCategories = getProjectCategories();
       const categoryIds = [
         'enterprise',
         'bootcamp',
@@ -255,6 +282,8 @@ describe('profileData', () => {
     });
 
     it('should include all category types that exist in projects', () => {
+      const projects = getProjects();
+      const projectCategories = getProjectCategories();
       const projectCategoryTypes = new Set(projects.map((p) => p.category));
       const categoryIds = new Set(projectCategories.map((c) => c.id));
 
@@ -264,6 +293,7 @@ describe('profileData', () => {
     });
 
     it('should have unique category IDs', () => {
+      const projectCategories = getProjectCategories();
       const ids = projectCategories.map((c) => c.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(ids.length);

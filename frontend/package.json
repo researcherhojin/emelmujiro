@@ -10,7 +10,6 @@
     "framer-motion": "^12.34.3",
     "i18next": "^25.5.2",
     "i18next-browser-languagedetector": "^8.2.0",
-    "immer": "^11.1.4",
     "lucide-react": "^0.575.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -19,8 +18,7 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.8.2",
     "remark-gfm": "^4.0.1",
-    "web-vitals": "^5.1.0",
-    "zustand": "^5.0.8"
+    "web-vitals": "^5.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -39,7 +37,7 @@
     "@vitest/ui": "^4.0.18",
     "autoprefixer": "^10.4.21",
     "axios-mock-adapter": "^2.1.0",
-    "eslint": "^10.0.2",
+    "eslint": "^9.0.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",

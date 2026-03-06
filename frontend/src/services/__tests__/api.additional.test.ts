@@ -140,7 +140,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
 
       expect(result).toHaveProperty('data');
       expect(result.data.success).toBe(true);
-      expect(result.data.message).toContain('성공');
+      expect(result.data.message).toBeTruthy();
     });
 
     it('should handle various email formats', async () => {

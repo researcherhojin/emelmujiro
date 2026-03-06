@@ -28,6 +28,16 @@ vi.mock('../../services/api', () => ({
 
 const mockedApi = vi.mocked(api);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockAxiosResponse = (data: any) =>
+  ({
+    data,
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config: { headers: {} },
+  }) as any;
+
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <FormProvider>{children}</FormProvider>
 );
@@ -288,14 +298,14 @@ describe('FormContext', () => {
 
   // 13. submitContactForm calls api and sets success on resolve
   it('calls api.createContact and sets submitSuccess on successful submission', async () => {
-    mockedApi.createContact.mockResolvedValueOnce({
-      data: {
+    mockedApi.createContact.mockResolvedValueOnce(
+      mockAxiosResponse({
         id: 1,
         name: 'John',
         email: 'john@example.com',
         message: 'Valid message',
-      },
-    });
+      })
+    );
 
     const { result } = renderHook(() => useForm(), { wrapper });
 
@@ -323,14 +333,14 @@ describe('FormContext', () => {
 
   // 14. submitContactForm stores in localStorage on success
   it('stores contact in localStorage savedContacts on successful submission', async () => {
-    mockedApi.createContact.mockResolvedValueOnce({
-      data: {
+    mockedApi.createContact.mockResolvedValueOnce(
+      mockAxiosResponse({
         id: 1,
         name: 'John',
         email: 'john@example.com',
         message: 'Valid message',
-      },
-    });
+      })
+    );
 
     const { result } = renderHook(() => useForm(), { wrapper });
 
@@ -392,14 +402,14 @@ describe('FormContext', () => {
 
   // 16. clearSubmitState clears error and success
   it('clears submitError and submitSuccess via clearSubmitState', async () => {
-    mockedApi.createContact.mockResolvedValueOnce({
-      data: {
+    mockedApi.createContact.mockResolvedValueOnce(
+      mockAxiosResponse({
         id: 1,
         name: 'John',
         email: 'john@example.com',
         message: 'Valid message',
-      },
-    });
+      })
+    );
 
     const { result } = renderHook(() => useForm(), { wrapper });
 

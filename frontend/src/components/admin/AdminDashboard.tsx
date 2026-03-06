@@ -44,6 +44,7 @@ const AdminDashboard: React.FC = () => {
   });
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -51,6 +52,7 @@ const AdminDashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     setLoading(true);
+    setError(null);
     try {
       // Fetch stats and content
       // This would be replaced with actual API calls
@@ -64,25 +66,26 @@ const AdminDashboard: React.FC = () => {
       setContentItems([
         {
           id: 1,
-          title: 'AI 교육의 미래',
+          title: t('admin.mock.post1Title'),
           type: 'blog',
           status: 'published',
-          author: '관리자',
+          author: t('admin.administrator'),
           createdAt: '2024-01-15',
           views: 1234,
         },
         {
           id: 2,
-          title: '새로운 교육 프로그램 안내',
+          title: t('admin.mock.post2Title'),
           type: 'page',
           status: 'draft',
-          author: '관리자',
+          author: t('admin.administrator'),
           createdAt: '2024-01-14',
           views: 567,
         },
       ]);
-    } catch (error) {
-      logger.error('Failed to fetch dashboard data:', error);
+    } catch (err) {
+      logger.error('Failed to fetch dashboard data:', err);
+      setError(t('admin.fetchError'));
     } finally {
       setLoading(false);
     }
@@ -165,33 +168,37 @@ const AdminDashboard: React.FC = () => {
             label: t('admin.totalUsers'),
             value: stats.totalUsers,
             icon: Users,
-            color: 'blue',
+            bgClass: 'bg-blue-100',
+            textClass: 'text-blue-600',
           },
           {
             label: t('admin.totalPosts'),
             value: stats.totalPosts,
             icon: FileText,
-            color: 'green',
+            bgClass: 'bg-green-100',
+            textClass: 'text-green-600',
           },
           {
             label: t('admin.totalMessages'),
             value: stats.totalMessages,
             icon: MessageSquare,
-            color: 'purple',
+            bgClass: 'bg-purple-100',
+            textClass: 'text-purple-600',
           },
           {
             label: t('admin.totalViews'),
             value: stats.totalViews,
             icon: Eye,
-            color: 'orange',
+            bgClass: 'bg-orange-100',
+            textClass: 'text-orange-600',
           },
         ].map((stat) => {
           const Icon = stat.icon;
           return (
             <div key={stat.label} className="bg-white rounded-lg shadow-md p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 bg-${stat.color}-100 rounded-lg`}>
-                  <Icon className={`w-6 h-6 text-${stat.color}-600`} />
+                <div className={`p-3 ${stat.bgClass} rounded-lg`}>
+                  <Icon className={`w-6 h-6 ${stat.textClass}`} />
                 </div>
                 <span className="text-sm text-gray-500">+12%</span>
               </div>
@@ -357,6 +364,20 @@ const AdminDashboard: React.FC = () => {
       return (
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="flex flex-col items-center justify-center h-64 text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={fetchDashboardData}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {t('error.retry')}
+          </button>
         </div>
       );
     }

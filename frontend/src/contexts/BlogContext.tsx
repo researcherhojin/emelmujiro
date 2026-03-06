@@ -45,7 +45,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      // 먼저 API 호출 시도
+      // Try API call first
       const response = await api.getBlogPosts(page);
       const postsPerPage = Number(import.meta.env.VITE_POSTS_PER_PAGE) || 6;
 
@@ -54,7 +54,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
         setTotalPages(Math.ceil(response.data.count / postsPerPage));
         setCurrentPage(page);
       } else {
-        // API 응답이 비어있으면 로컬 데이터 사용
+        // Use local data if API response is empty
         const localPosts = await getLocalBlogPosts();
         setPosts(localPosts as BlogPost[]);
         setTotalPages(1);
@@ -62,10 +62,10 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
       }
     } catch (err) {
       logger.warn(
-        'API 호출 실패, 로컬 데이터 사용:',
+        'API call failed, falling back to local data:',
         err instanceof Error ? err.message : 'Unknown error'
       );
-      // API 실패 시 로컬 데이터로 폴백
+      // Fallback to local data on API failure
       try {
         const localPosts = await getLocalBlogPosts();
         setPosts(localPosts as BlogPost[]);
@@ -84,21 +84,21 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      // 먼저 API 호출 시도
+      // Try API call first
       const response = await api.getBlogPost(id);
       if (response.data) {
         setCurrentPost(response.data);
       } else {
-        // API 응답이 비어있으면 로컬 데이터 사용
+        // Use local data if API response is empty
         const localPost = await getLocalBlogPost(id);
         setCurrentPost(localPost as BlogPost);
       }
     } catch (err) {
       logger.warn(
-        'API 호출 실패, 로컬 데이터 사용:',
+        'API call failed, falling back to local data:',
         err instanceof Error ? err.message : 'Unknown error'
       );
-      // API 실패 시 로컬 데이터로 폴백
+      // Fallback to local data on API failure
       try {
         const localPost = await getLocalBlogPost(id);
         setCurrentPost(localPost as BlogPost);

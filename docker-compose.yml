@@ -44,7 +44,7 @@ services:
       cache_from:
         - emelmujiro/frontend:latest
       args:
-        - REACT_APP_API_URL=${REACT_APP_API_URL:-http://backend:8000}
+        - VITE_API_URL=${VITE_API_URL:-http://backend:8000/api}
     image: emelmujiro/frontend:${TAG:-latest}
     container_name: emelmujiro-frontend
     restart: unless-stopped

@@ -1,4 +1,4 @@
-// 임시 블로그 데이터 (나중에 API 연결 가능)
+// Temporary blog data (can be replaced with API later)
 import logger from '../utils/logger';
 import { BlogPost } from '../types';
 

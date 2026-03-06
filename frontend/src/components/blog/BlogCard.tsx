@@ -40,13 +40,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post }) => {
             </div>
           )}
           <div className="absolute top-4 left-4">
-            <span
-              className="inline-block px-3 py-1 text-sm rounded-full font-medium"
-              style={{
-                backgroundColor: '#E0E7FF',
-                color: '#4F46E5',
-              }}
-            >
+            <span className="inline-block px-3 py-1 text-sm rounded-full font-medium bg-indigo-100 text-indigo-600">
               {category}
             </span>
           </div>

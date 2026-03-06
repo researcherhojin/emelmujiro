@@ -1,27 +1,16 @@
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PARTNER_COMPANIES } from '../../constants';
+import { PARTNER_COMPANIES, type PartnerCompany } from '../../constants';
 
-interface Company {
-  name: string;
-  logo: string;
-  description?: string;
-}
-
-interface LogoItemProps {
-  company: Company;
-  index: number;
-}
-
-const LogoItem: React.FC<LogoItemProps> = memo(({ company, index }) => {
+const LogoItem: React.FC<{ company: PartnerCompany }> = memo(({ company }) => {
   const { t } = useTranslation();
   return (
-    <div key={index} className="flex-shrink-0 px-8">
-      <div className="flex items-center justify-center w-40 h-24 group">
+    <div className="flex-shrink-0 px-8">
+      <div className="flex items-center justify-center w-40 h-24">
         <img
           src={company.logo}
           alt={t('logos.logoAlt', { name: company.name })}
-          className="h-12 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
+          className="h-12 w-auto object-contain opacity-60 group-hover:opacity-40 hover:!opacity-100 transition-opacity duration-300"
           loading="lazy"
         />
       </div>
@@ -31,22 +20,48 @@ const LogoItem: React.FC<LogoItemProps> = memo(({ company, index }) => {
 
 LogoItem.displayName = 'LogoItem';
 
+interface ScrollRowProps {
+  companies: PartnerCompany[];
+  direction?: 'left' | 'right';
+  rowKey: string;
+}
+
+const ScrollRow: React.FC<ScrollRowProps> = memo(
+  ({ companies, direction = 'left', rowKey }) => {
+    const animationClass =
+      direction === 'left' ? 'animate-scroll' : 'animate-scroll-reverse';
+
+    return (
+      <div className="relative overflow-hidden group">
+        {/* Left/right fade masks */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-10" />
+
+        <div className={`flex ${animationClass} hover:pause`}>
+          {/* Render 3 copies for seamless looping */}
+          {[0, 1, 2].map((copy) =>
+            companies.map((company, index) => (
+              <LogoItem key={`${rowKey}-${copy}-${index}`} company={company} />
+            ))
+          )}
+        </div>
+      </div>
+    );
+  }
+);
+
+ScrollRow.displayName = 'ScrollRow';
+
 const LogosSection: React.FC = memo(() => {
   const { t } = useTranslation();
-  const partnerCompanies = PARTNER_COMPANIES;
 
-  // Memoize the row splitting logic
-  const { duplicatedFirstRow, duplicatedSecondRow } = useMemo(() => {
-    const halfLength = Math.ceil(partnerCompanies.length / 2);
-    const firstRow = partnerCompanies.slice(0, halfLength);
-    const secondRow = partnerCompanies.slice(halfLength);
-
-    // Duplicate for infinite scrolling
+  const { firstRow, secondRow } = useMemo(() => {
+    const half = Math.ceil(PARTNER_COMPANIES.length / 2);
     return {
-      duplicatedFirstRow: [...firstRow, ...firstRow],
-      duplicatedSecondRow: [...secondRow, ...secondRow],
+      firstRow: PARTNER_COMPANIES.slice(0, half),
+      secondRow: PARTNER_COMPANIES.slice(half),
     };
-  }, [partnerCompanies]);
+  }, []);
 
   return (
     <section
@@ -64,25 +79,9 @@ const LogosSection: React.FC = memo(() => {
         </div>
       </div>
 
-      {/* Infinite sliding container */}
-      <div className="relative space-y-8">
-        {/* First row */}
-        <div className="relative">
-          <div className="flex animate-scroll hover:pause">
-            {duplicatedFirstRow.map((company, index) => (
-              <LogoItem key={`row1-${index}`} company={company} index={index} />
-            ))}
-          </div>
-        </div>
-
-        {/* Second row - reverse animation */}
-        <div className="relative">
-          <div className="flex animate-scroll-reverse hover:pause">
-            {duplicatedSecondRow.map((company, index) => (
-              <LogoItem key={`row2-${index}`} company={company} index={index} />
-            ))}
-          </div>
-        </div>
+      <div className="space-y-8">
+        <ScrollRow companies={firstRow} direction="left" rowKey="row1" />
+        <ScrollRow companies={secondRow} direction="right" rowKey="row2" />
       </div>
     </section>
   );

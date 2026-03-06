@@ -80,7 +80,7 @@ describe('AdminDashboard', () => {
       ).toBeInTheDocument();
     });
     expect(screen.getByText('admin.newContent')).toBeInTheDocument();
-    expect(screen.getByText('AI 교육의 미래')).toBeInTheDocument();
+    expect(screen.getByText('admin.mock.post1Title')).toBeInTheDocument();
   });
 
   it('displays content table with correct columns', async () => {
@@ -120,7 +120,9 @@ describe('AdminDashboard', () => {
 
     // Content should be removed after deletion
     await waitFor(() => {
-      expect(screen.queryByText('AI 교육의 미래')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('admin.mock.post1Title')
+      ).not.toBeInTheDocument();
     });
 
     confirmSpy.mockRestore();
@@ -142,7 +144,7 @@ describe('AdminDashboard', () => {
     fireEvent.click(deleteButtons[0]);
 
     // Content should still be present
-    expect(screen.getByText('AI 교육의 미래')).toBeInTheDocument();
+    expect(screen.getByText('admin.mock.post1Title')).toBeInTheDocument();
 
     confirmSpy.mockRestore();
   });

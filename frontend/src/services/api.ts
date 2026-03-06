@@ -3,10 +3,10 @@ import axios, {
   AxiosError,
   InternalAxiosRequestConfig,
 } from 'axios';
-import { BlogPost, ContactFormData } from '../types';
-import { ErrorResponse } from '../types/api.types';
+import { BlogPost, ContactFormData, ErrorResponse } from '../types';
 import logger from '../utils/logger';
 import env from '../config/env';
+import i18n from '../i18n';
 import { mockBlogPosts, mockCategories, paginateMockData } from './mockData';
 
 // Use centralized env config instead of direct process.env access
@@ -26,22 +26,22 @@ const axiosInstance: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // CORS 쿠키 지원
+  withCredentials: true, // CORS cookie support
 });
 
-// Error message mapping
+// Error message mapping (i18n)
 const getErrorMessage = (status: number): string => {
-  const errorMessages: Record<number, string> = {
-    400: '입력값을 확인해주세요.',
-    401: '인증이 필요합니다.',
-    403: '권한이 없습니다.',
-    404: '요청한 리소스를 찾을 수 없습니다.',
-    429: '너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요.',
-    500: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-    502: '서버가 응답하지 않습니다.',
-    503: '서비스를 일시적으로 사용할 수 없습니다.',
+  const errorKeys: Record<number, string> = {
+    400: 'apiErrors.400',
+    401: 'apiErrors.401',
+    403: 'apiErrors.403',
+    404: 'apiErrors.404',
+    429: 'apiErrors.429',
+    500: 'apiErrors.500',
+    502: 'apiErrors.502',
+    503: 'apiErrors.503',
   };
-  return errorMessages[status] || '알 수 없는 오류가 발생했습니다.';
+  return i18n.t(errorKeys[status] || 'apiErrors.unknown');
 };
 
 // Custom error interface
@@ -97,7 +97,7 @@ axiosInstance.interceptors.response.use(
 
     // Handle network errors
     if (!error.response) {
-      error.message = '네트워크 연결을 확인해주세요.';
+      error.message = i18n.t('apiErrors.network');
       return Promise.reject(error);
     }
 
@@ -284,7 +284,7 @@ export const api = {
         data: {
           ...data,
           success: true,
-          message: '문의가 성공적으로 접수되었습니다.',
+          message: i18n.t('apiErrors.contactSuccess'),
           id: Date.now(),
         },
         status: 201,
@@ -301,8 +301,7 @@ export const api = {
       // Add specific handling for contact errors
       const axiosError = error as CustomAxiosError;
       if (axiosError.response?.status === 429) {
-        axiosError.userMessage =
-          '너무 많은 문의를 보내셨습니다. 1시간 후에 다시 시도해주세요.';
+        axiosError.userMessage = i18n.t('apiErrors.contactRateLimit');
       }
       throw axiosError;
     }
@@ -314,7 +313,7 @@ export const api = {
       return Promise.resolve({
         data: {
           success: true,
-          message: '뉴스레터 구독이 성공적으로 완료되었습니다.',
+          message: i18n.t('apiErrors.newsletterSuccess'),
           email,
         },
         status: 201,
@@ -324,6 +323,70 @@ export const api = {
       });
     }
     return axiosInstance.post('newsletter/', { email });
+  },
+
+  // Auth
+  getUser: () => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { id: 1, email: 'mock@user.com', name: 'Mock User' },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get('/auth/user/');
+  },
+  login: (email: string, password: string) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: {
+          access: 'mock-access-token',
+          refresh: 'mock-refresh-token',
+          user: { id: 1, email, name: 'Mock User' },
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.post('/auth/login/', { username: email, password });
+  },
+  logout: (refreshToken: string) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: {},
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.post('/auth/logout/', { refresh: refreshToken });
+  },
+  register: (email: string, password: string, name: string) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: {
+          access: 'mock-access-token',
+          refresh: 'mock-refresh-token',
+          user: { id: 1, email, name },
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.post('/auth/register/', {
+      username: email,
+      email,
+      password,
+      password_confirm: password,
+      first_name: name,
+    });
   },
 
   // Health check

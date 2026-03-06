@@ -4,7 +4,7 @@ vi.mock('../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },
 }));
 
-import { getServices, services } from '../footerData';
+import { getServices } from '../footerData';
 import type { Services, ServiceDetail } from '../footerData';
 
 describe('footerData', () => {
@@ -129,22 +129,6 @@ describe('footerData', () => {
       const uniqueIcons = new Set(icons);
 
       expect(uniqueIcons.size).toBe(icons.length);
-    });
-  });
-
-  describe('services (static export)', () => {
-    it('should be defined and have the same keys as getServices()', () => {
-      expect(services).toBeDefined();
-      expect(Object.keys(services).sort()).toEqual(expectedKeys.sort());
-    });
-
-    it('should have valid ServiceDetail objects', () => {
-      Object.values(services).forEach((service: ServiceDetail) => {
-        expect(service).toHaveProperty('title');
-        expect(service).toHaveProperty('description');
-        expect(service).toHaveProperty('icon');
-        expect(service).toHaveProperty('details');
-      });
     });
   });
 

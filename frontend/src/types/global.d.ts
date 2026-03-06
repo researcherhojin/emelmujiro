@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-// 환경 변수 타입 정의
+// Environment variable type definitions
 interface ImportMetaEnv {
   readonly VITE_API_URL: string;
   readonly VITE_GA_TRACKING_ID: string;
@@ -11,7 +11,7 @@ interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
-// Window 객체 확장
+// Window object extension
 interface Window {
   gtag?: (...args: unknown[]) => void;
   dataLayer?: unknown[];
@@ -19,7 +19,7 @@ interface Window {
   __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: unknown;
 }
 
-// 모듈 선언
+// Module declarations
 declare module '*.svg' {
   import React = require('react');
   export const ReactComponent: React.FC<React.SVGProps<SVGSVGElement>>;
@@ -42,7 +42,7 @@ declare module '*.json' {
   export default content;
 }
 
-// CSS 모듈 타입
+// CSS module types
 declare module '*.module.css' {
   const classes: { readonly [key: string]: string };
   export default classes;
@@ -53,7 +53,7 @@ declare module '*.module.scss' {
   export default classes;
 }
 
-// 네트워크 정보 API
+// Network Information API
 interface NetworkInformation {
   readonly downlink: number;
   readonly effectiveType: '2g' | '3g' | '4g' | 'slow-2g';
@@ -79,7 +79,7 @@ interface Navigator {
   readonly webkitConnection?: NetworkInformation;
 }
 
-// Web Vitals 타입
+// Web Vitals types
 interface WebVitalsMetric {
   id: string;
   name: 'CLS' | 'FCP' | 'FID' | 'INP' | 'LCP' | 'TTFB';
@@ -96,7 +96,7 @@ interface WebVitalsMetric {
     | 'restore';
 }
 
-// 커스텀 이벤트 타입
+// Custom event types
 interface CustomEventMap {
   languageChanged: CustomEvent<{ language: string }>;
   themeChanged: CustomEvent<{ theme: 'light' | 'dark' | 'system' }>;

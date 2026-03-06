@@ -1,22 +1,20 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { AuthProvider, useAuth } from '../AuthContext';
-import axiosInstance from '../../services/api';
 
-// Mock axios
-vi.mock('../../services/api', () => ({
-  __esModule: true,
-  default: {
-    post: vi.fn(),
-    get: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn() },
-      response: { use: vi.fn() },
-    },
-  },
+// Must use vi.hoisted so the mock object is available when vi.mock is hoisted
+const mockApi = vi.hoisted(() => ({
+  getUser: vi.fn(),
+  login: vi.fn(),
+  logout: vi.fn(),
+  register: vi.fn(),
 }));
 
-const mockedAxios = axiosInstance as any;
+vi.mock('../../services/api', () => ({
+  __esModule: true,
+  api: mockApi,
+  default: {},
+}));
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
@@ -71,8 +69,7 @@ describe('AuthContext', () => {
   });
 
   test('handles successful login', async () => {
-    // Mock successful login response (JWT access/refresh format)
-    mockedAxios.post.mockResolvedValueOnce({
+    mockApi.login.mockResolvedValueOnce({
       data: {
         access: 'fake-access-token',
         refresh: 'fake-refresh-token',
@@ -96,10 +93,7 @@ describe('AuthContext', () => {
 
     expect(screen.getByTestId('user')).toHaveTextContent('test@example.com');
 
-    expect(mockedAxios.post).toHaveBeenCalledWith('/auth/login/', {
-      username: 'test@example.com',
-      password: 'password',
-    });
+    expect(mockApi.login).toHaveBeenCalledWith('test@example.com', 'password');
     expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
       'authToken',
       'fake-access-token'
@@ -114,7 +108,7 @@ describe('AuthContext', () => {
     // Start with authenticated user
     mockLocalStorage.getItem.mockReturnValue('fake-token');
     // Mock the checkAuth call that happens on mount
-    mockedAxios.get.mockRejectedValueOnce(new Error('ignored'));
+    mockApi.getUser.mockRejectedValueOnce(new Error('ignored'));
 
     render(
       <AuthProvider>
@@ -139,8 +133,7 @@ describe('AuthContext', () => {
   test('checks auth status on mount', async () => {
     mockLocalStorage.getItem.mockReturnValue('existing-token');
 
-    // Mock the checkAuth API call - returns user data directly
-    mockedAxios.get.mockResolvedValueOnce({
+    mockApi.getUser.mockResolvedValueOnce({
       data: { email: 'existing@example.com', id: 1, name: 'Existing User' },
     });
 
@@ -159,12 +152,11 @@ describe('AuthContext', () => {
     );
 
     expect(mockLocalStorage.getItem).toHaveBeenCalledWith('authToken');
-    expect(mockedAxios.get).toHaveBeenCalledWith('/auth/user/');
+    expect(mockApi.getUser).toHaveBeenCalled();
   });
 
   test('sets loading state during auth operations', async () => {
-    // Mock successful login response (JWT format)
-    mockedAxios.post.mockResolvedValueOnce({
+    mockApi.login.mockResolvedValueOnce({
       data: {
         access: 'fake-access-token',
         refresh: 'fake-refresh-token',
@@ -182,7 +174,6 @@ describe('AuthContext', () => {
 
     fireEvent.click(loginButton);
 
-    // Loading state should have been true during operation
     // After successful login, loading should be false
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
@@ -192,7 +183,6 @@ describe('AuthContext', () => {
   });
 
   test('handles failed login attempts', async () => {
-    // Mock failed login response
     const error = {
       response: {
         status: 401,
@@ -200,7 +190,7 @@ describe('AuthContext', () => {
       },
       message: 'Invalid credentials',
     };
-    mockedAxios.post.mockRejectedValueOnce(error);
+    mockApi.login.mockRejectedValueOnce(error);
 
     render(
       <AuthProvider>
@@ -210,10 +200,8 @@ describe('AuthContext', () => {
 
     const loginButton = screen.getByText('Login');
 
-    // Attempt login which should fail
     fireEvent.click(loginButton);
 
-    // Should remain unauthenticated after failed login
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
     });

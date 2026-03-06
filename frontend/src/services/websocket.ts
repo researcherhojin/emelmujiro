@@ -1,6 +1,7 @@
 // MessageSender type for WebSocket message sending functionality
 import logger from '../utils/logger';
 import env from '../config/env';
+import i18n from '../i18n';
 
 // Use mock WebSocket if in test environment or in production (GitHub Pages has no backend)
 const USE_MOCK_WS = env.IS_TEST || env.IS_PRODUCTION;
@@ -439,11 +440,11 @@ export class ChatWebSocketService {
         this.handleMessage({ type: 'typing_stop' });
 
         const replies = [
-          '감사합니다. 문의 내용을 확인하고 있습니다.',
-          '네, 도와드리겠습니다. 잠시만 기다려주세요.',
-          '해당 문의는 담당자에게 전달되었습니다. 빠른 시일 내에 답변 드리겠습니다.',
-          '추가 정보가 필요하시면 언제든 말씀해주세요.',
-          '확인했습니다. 자세한 안내를 드리겠습니다.',
+          i18n.t('chat.autoReply.checking'),
+          i18n.t('chat.autoReply.willHelp'),
+          i18n.t('chat.autoReply.forwarded'),
+          i18n.t('chat.autoReply.askMore'),
+          i18n.t('chat.autoReply.confirmed'),
         ];
         const reply = replies[Math.floor(Math.random() * replies.length)];
 

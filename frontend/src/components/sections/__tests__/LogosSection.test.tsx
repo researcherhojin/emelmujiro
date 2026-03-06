@@ -75,13 +75,13 @@ describe('LogosSection', () => {
     expect(altTexts).toContain('logos.logoAlt Company D');
   });
 
-  it('duplicates logos for infinite scrolling (logos appear twice)', () => {
+  it('triplicates logos for seamless infinite scrolling', () => {
     render(<LogosSection />);
 
     const images = screen.getAllByRole('img');
     // 4 companies split into 2 rows: first row has ceil(4/2)=2, second row has 2
-    // Each row is duplicated: (2*2) + (2*2) = 8 total images
-    expect(images).toHaveLength(8);
+    // Each row is tripled: (2*3) + (2*3) = 12 total images
+    expect(images).toHaveLength(12);
   });
 
   it('renders images with lazy loading', () => {

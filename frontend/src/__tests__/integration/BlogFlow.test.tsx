@@ -4,12 +4,6 @@ import { InternalAxiosRequestConfig } from 'axios';
 import App from '../../App';
 import { blogService } from '../../services/api';
 
-// Mock react-helmet-async
-vi.mock('react-helmet-async', () => ({
-  HelmetProvider: ({ children }: { children: React.ReactNode }) => children,
-  Helmet: () => null,
-}));
-
 // Mock SEOHelmet to prevent issues
 vi.mock('../../components/common/SEOHelmet', () => ({
   default: function MockSEOHelmet() {

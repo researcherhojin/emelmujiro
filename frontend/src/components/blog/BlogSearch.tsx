@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { BlogPost } from '../../types';
@@ -17,6 +17,16 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
   const [searchResults, setSearchResults] = useState<BlogPost[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const blurTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  // Cleanup blur timer on unmount
+  useEffect(() => {
+    return () => {
+      if (blurTimerRef.current) {
+        clearTimeout(blurTimerRef.current);
+      }
+    };
+  }, []);
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -132,7 +142,12 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
             value={searchTerm}
             onChange={handleSearchChange}
             onFocus={() => setShowSuggestions(true)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+            onBlur={() => {
+              blurTimerRef.current = setTimeout(
+                () => setShowSuggestions(false),
+                200
+              );
+            }}
             placeholder={t('blog.searchPlaceholder')}
             className="w-full pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />

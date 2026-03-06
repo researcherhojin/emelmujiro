@@ -12,13 +12,21 @@ import Footer from '../Footer';
 // Set higher timeout for modal tests - increased for CI environment
 const MODAL_TEST_TIMEOUT = 15000;
 
-// Mock useNavigate
+// Mock useNavigate and useLocation
 const mockNavigate = vi.fn();
+let mockPathname = '/';
 vi.mock('react-router-dom', async () => {
   const actual = await import('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
+    useLocation: () => ({
+      pathname: mockPathname,
+      search: '',
+      hash: '',
+      state: null,
+      key: 'default',
+    }),
   };
 });
 
@@ -43,49 +51,7 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-// Mock lucide-react icons
-vi.mock('lucide-react', () => ({
-  Mail: ({ className }: { className?: string }) => (
-    <div data-testid="mail-icon" className={className}>
-      Mail
-    </div>
-  ),
-  Phone: ({ className }: { className?: string }) => (
-    <div data-testid="phone-icon" className={className}>
-      Phone
-    </div>
-  ),
-  ExternalLink: ({ className }: { className?: string }) => (
-    <div data-testid="external-link-icon" className={className}>
-      ExternalLink
-    </div>
-  ),
-  X: ({ className }: { className?: string }) => (
-    <div data-testid="x-icon" className={className}>
-      X
-    </div>
-  ),
-  Code2: ({ className }: { className?: string }) => (
-    <div data-testid="code2-icon" className={className}>
-      Code2
-    </div>
-  ),
-  GraduationCap: ({ className }: { className?: string }) => (
-    <div data-testid="graduation-cap-icon" className={className}>
-      GraduationCap
-    </div>
-  ),
-  MessageSquare: ({ className }: { className?: string }) => (
-    <div data-testid="message-square-icon" className={className}>
-      MessageSquare
-    </div>
-  ),
-  Eye: ({ className }: { className?: string }) => (
-    <div data-testid="eye-icon" className={className}>
-      Eye
-    </div>
-  ),
-}));
+// lucide-react uses global mock from setupTests.ts (data-testid="icon-{Name}")
 
 // Mock scroll methods
 const mockScrollIntoView = vi.fn();
@@ -101,6 +67,7 @@ describe('Footer Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPathname = '/';
     // Mock getElementById
     vi.spyOn(document, 'getElementById').mockReturnValue({
       scrollIntoView: mockScrollIntoView,
@@ -114,7 +81,7 @@ describe('Footer Component', () => {
   describe('Basic Rendering', () => {
     test('renders company name', () => {
       const { container } = renderWithRouter(<Footer />);
-      // 회사명은 h3 태그에 있고, 'common.companyName' i18n key를 포함하는 것을 찾음
+      // Company name is in an h3 tag with the 'common.companyName' i18n key
       const headings = container.querySelectorAll('h3');
       const companyName = Array.from(headings).find(
         (h) => h.textContent === 'common.companyName'
@@ -182,33 +149,33 @@ describe('Footer Component', () => {
     test('renders contact information with icons', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      // 이메일 정보 확인 (span 태그에 있음)
+      // Check email info (in span tag)
       const emailSpans = container.querySelectorAll('span');
       const email = Array.from(emailSpans).find(
         (span) => span.textContent === 'researcherhojin@gmail.com'
       );
       expect(email).toBeInTheDocument();
 
-      // 전화번호 정보 확인 (i18n key returned by mock)
+      // Check phone number info (i18n key returned by mock)
       const phoneSpans = container.querySelectorAll('span');
       const phone = Array.from(phoneSpans).find(
         (span) => span.textContent === 'contact.info.phone'
       );
       expect(phone).toBeInTheDocument();
 
-      // Mail과 Phone 아이콘 확인 (lucide-react icons are mocked as div with data-testid)
+      // Check Mail and Phone icons (lucide-react icons are mocked as div with data-testid)
       expect(
-        container.querySelector('[data-testid="mail-icon"]')
+        container.querySelector('[data-testid="icon-Mail"]')
       ).toBeInTheDocument();
       expect(
-        container.querySelector('[data-testid="phone-icon"]')
+        container.querySelector('[data-testid="icon-Phone"]')
       ).toBeInTheDocument();
     });
 
     test('renders contact CTA section', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      // CTA 텍스트 (i18n key)
+      // CTA text (i18n key)
       const paragraphs = container.querySelectorAll('p');
       const ctaText = Array.from(paragraphs).find(
         (p) => p.textContent === 'footer.ctaQuestion'
@@ -216,19 +183,19 @@ describe('Footer Component', () => {
       expect(ctaText).toBeInTheDocument();
       expect(ctaText?.textContent).toBe('footer.ctaQuestion');
 
-      // ExternalLink 아이콘 확인
+      // Check ExternalLink icon
       expect(
-        container.querySelector('[data-testid="external-link-icon"]')
+        container.querySelector('[data-testid="icon-ExternalLink"]')
       ).toBeInTheDocument();
     });
 
     test('renders copyright with current year', () => {
       const { container } = renderWithRouter(<Footer />);
 
-      // copyright는 text-center 안의 p 태그에 있음
+      // Copyright is in the first p tag within the border-t section
       // With the mock, t('footer.copyright', { year: currentYear }) returns 'footer.copyright'
-      const centerDiv = container.querySelector('.text-center');
-      const copyright = centerDiv?.querySelector('p');
+      const bottomSection = container.querySelector('.border-t.space-y-3');
+      const copyright = bottomSection?.querySelector('p');
       expect(copyright).toBeInTheDocument();
       expect(copyright?.textContent).toBe('footer.copyright');
     });
@@ -270,7 +237,7 @@ describe('Footer Component', () => {
       const links = container.querySelectorAll('a');
       const ctaLink = Array.from(links).find((a) => {
         const hasText = a.textContent?.includes('common.contact');
-        const hasIcon = a.querySelector('[data-testid="external-link-icon"]');
+        const hasIcon = a.querySelector('[data-testid="icon-ExternalLink"]');
         return hasText && hasIcon;
       });
       expect(ctaLink).toBeTruthy();
@@ -281,11 +248,7 @@ describe('Footer Component', () => {
     });
 
     test('scrolls to hero section when home is clicked on same page', () => {
-      // Mock current pathname as '/'
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: { pathname: '/' },
-      });
+      mockPathname = '/';
 
       const { container } = renderWithRouter(<Footer />);
 
@@ -303,11 +266,7 @@ describe('Footer Component', () => {
     test(
       'navigates and scrolls to hero section when home is clicked from different page',
       async () => {
-        // Mock current pathname as different page
-        Object.defineProperty(window, 'location', {
-          writable: true,
-          value: { pathname: '/profile' },
-        });
+        mockPathname = '/profile';
 
         vi.useFakeTimers();
         const { container } = renderWithRouter(<Footer />);
@@ -333,10 +292,7 @@ describe('Footer Component', () => {
     );
 
     test('scrolls to services section when services link is clicked', () => {
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: { pathname: '/' },
-      });
+      mockPathname = '/';
 
       const { container } = renderWithRouter(<Footer />);
 
@@ -344,7 +300,7 @@ describe('Footer Component', () => {
       const servicesButtons = Array.from(buttons).filter(
         (btn) => btn.textContent === 'common.services'
       );
-      const servicesButton = servicesButtons[0]; // Navigation 서비스
+      const servicesButton = servicesButtons[0]; // Navigation services button
       expect(servicesButton).toBeTruthy();
       fireEvent.click(servicesButton);
 
@@ -385,7 +341,7 @@ describe('Footer Component', () => {
         expect(hasMainService).toBe(true);
 
         const messageSquareIcon = container.querySelector(
-          '[data-testid="message-square-icon"]'
+          '[data-testid="icon-MessageSquare"]'
         );
         expect(messageSquareIcon).toBeInTheDocument();
       },
@@ -417,7 +373,7 @@ describe('Footer Component', () => {
         );
 
         const graduationIcon = container.querySelector(
-          '[data-testid="graduation-cap-icon"]'
+          '[data-testid="icon-GraduationCap"]'
         );
         expect(graduationIcon).toBeInTheDocument();
       },
@@ -448,7 +404,7 @@ describe('Footer Component', () => {
           { timeout: 3000 }
         );
 
-        const code2Icon = container.querySelector('[data-testid="code2-icon"]');
+        const code2Icon = container.querySelector('[data-testid="icon-Code2"]');
         expect(code2Icon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
@@ -480,7 +436,7 @@ describe('Footer Component', () => {
           { timeout: 3000 }
         );
 
-        const eyeIcon = container.querySelector('[data-testid="eye-icon"]');
+        const eyeIcon = container.querySelector('[data-testid="icon-Eye"]');
         expect(eyeIcon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
@@ -509,7 +465,7 @@ describe('Footer Component', () => {
           { timeout: 3000 }
         );
 
-        const closeButton = container.querySelector('[data-testid="x-icon"]');
+        const closeButton = container.querySelector('[data-testid="icon-X"]');
         expect(closeButton).toBeTruthy();
         fireEvent.click(closeButton!);
 
@@ -529,40 +485,6 @@ describe('Footer Component', () => {
   });
 
   describe('Service Modal Interactions', () => {
-    test(
-      'closes modal when X button is clicked',
-      async () => {
-        const { container } = renderWithRouter(<Footer />);
-
-        // Open modal
-        const llmButtons = screen.getAllByText('services.llmGenai.title');
-        fireEvent.click(llmButtons[0]);
-
-        await waitFor(
-          () => {
-            expect(
-              screen.getByText('footerServices.llmGenai.description')
-            ).toBeInTheDocument();
-          },
-          { timeout: 3000 }
-        );
-
-        // Close modal
-        const closeButton = screen.getByTestId('x-icon');
-        fireEvent.click(closeButton);
-
-        await waitFor(
-          () => {
-            expect(
-              screen.queryByText('footerServices.llmGenai.description')
-            ).not.toBeInTheDocument();
-          },
-          { timeout: 3000 }
-        );
-      },
-      MODAL_TEST_TIMEOUT
-    );
-
     test(
       'closes modal when close button is clicked',
       async () => {
@@ -840,10 +762,7 @@ describe('Footer Component', () => {
 
   describe('Error Handling', () => {
     test('handles missing DOM element gracefully in scroll function', () => {
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: { pathname: '/' },
-      });
+      mockPathname = '/';
 
       // Mock getElementById to return null
       vi.spyOn(document, 'getElementById').mockReturnValue(null);

@@ -8,12 +8,6 @@ vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
-      initial,
-      animate,
-      exit,
-      whileHover,
-      whileTap,
-      transition,
       ...props
     }: {
       children?: React.ReactNode;
@@ -22,12 +16,6 @@ vi.mock('framer-motion', () => ({
     button: ({
       children,
       onClick,
-      initial,
-      animate,
-      exit,
-      whileHover,
-      whileTap,
-      transition,
       ...props
     }: {
       children?: React.ReactNode;
@@ -41,20 +29,6 @@ vi.mock('framer-motion', () => ({
   },
   AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
     <>{children}</>
-  ),
-}));
-
-// Mock lucide-react icons
-vi.mock('lucide-react', () => ({
-  Search: ({ className }: { className?: string }) => (
-    <div data-testid="search-icon" className={className}>
-      Search
-    </div>
-  ),
-  X: ({ className }: { className?: string }) => (
-    <div data-testid="x-icon" className={className}>
-      X
-    </div>
   ),
 }));
 

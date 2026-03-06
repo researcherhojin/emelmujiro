@@ -3,6 +3,11 @@ import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import ProfilePage from '../ProfilePage';
 
+// Mock i18n module (used by data files like profileData.ts)
+vi.mock('../../../i18n', () => ({
+  default: { t: (key: string) => key, language: 'ko' },
+}));
+
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -36,43 +41,6 @@ vi.mock('../../common/StructuredData', () => ({
     return null;
   },
 }));
-
-// Mock lucide-react icons used in ProfilePage
-vi.mock('lucide-react', () => {
-  const React = require('react');
-  return {
-    MapPin: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'MapPin'),
-    Mail: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'Mail'),
-    Briefcase: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'Briefcase'),
-    GraduationCap: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'GraduationCap'),
-    Code: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'Code'),
-    Star: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'Star'),
-    Award: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'Award'),
-    ChevronLeft: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'ChevronLeft'),
-    Calendar: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'Calendar'),
-    Building: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'Building'),
-    User: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'User'),
-    Clock: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'Clock'),
-    Trophy: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'Trophy'),
-    Medal: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'Medal'),
-    Building2: ({ className }: { className?: string }) =>
-      React.createElement('span', { className }, 'Building2'),
-  };
-});
 
 describe('ProfilePage Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
@@ -144,8 +112,12 @@ describe('ProfilePage Component', () => {
       const educationTab = screen.getByText('profilePage.tabEducation');
       fireEvent.click(educationTab);
 
-      expect(screen.getByText('한양대학교')).toBeInTheDocument();
-      expect(screen.getByText('경북대학교')).toBeInTheDocument();
+      expect(
+        screen.getByText('profileData.education.0.school')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('profileData.education.1.school')
+      ).toBeInTheDocument();
     });
 
     it('switches to projects tab', () => {
@@ -205,8 +177,10 @@ describe('ProfilePage Component', () => {
     it('shows current position badge', () => {
       renderWithRouter(<ProfilePage />);
 
-      // Check for career items structure
-      const periodElements = screen.getAllByText(/\d{4}/);
+      // Check for career items structure (periods are i18n keys like profileData.career.0.period)
+      const periodElements = screen.getAllByText(
+        /profileData\.career\.\d+\.period/
+      );
       expect(periodElements.length).toBeGreaterThan(0);
     });
   });
@@ -218,8 +192,12 @@ describe('ProfilePage Component', () => {
       const educationTab = screen.getByText('profilePage.tabEducation');
       fireEvent.click(educationTab);
 
-      expect(screen.getByText('한양대학교')).toBeInTheDocument();
-      expect(screen.getByText('경북대학교')).toBeInTheDocument();
+      expect(
+        screen.getByText('profileData.education.0.school')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('profileData.education.1.school')
+      ).toBeInTheDocument();
     });
 
     it('displays education descriptions', () => {
@@ -228,8 +206,12 @@ describe('ProfilePage Component', () => {
       const educationTab = screen.getByText('profilePage.tabEducation');
       fireEvent.click(educationTab);
 
-      expect(screen.getByText(/인공지능융합대학원/)).toBeInTheDocument();
-      expect(screen.getByText(/축산생명공학/)).toBeInTheDocument();
+      expect(
+        screen.getByText('profileData.education.0.degree')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('profileData.education.1.degree')
+      ).toBeInTheDocument();
     });
   });
 
@@ -260,7 +242,7 @@ describe('ProfilePage Component', () => {
 
       // Projects content should be visible
       expect(
-        screen.getByText('AI 컴퓨터비전(CV) 심화 과정')
+        screen.getByText('profileData.projects.0.title')
       ).toBeInTheDocument();
     });
   });

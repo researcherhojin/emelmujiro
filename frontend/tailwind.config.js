@@ -26,16 +26,16 @@ module.exports = {
       },
       // Minimal animations - only for logos section
       animation: {
-        scroll: 'scroll 40s linear infinite',
-        'scroll-reverse': 'scroll-reverse 40s linear infinite',
+        scroll: 'scroll 32s linear infinite',
+        'scroll-reverse': 'scroll-reverse 32s linear infinite',
       },
       keyframes: {
         scroll: {
           '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(-33.333%)' },
         },
         'scroll-reverse': {
-          '0%': { transform: 'translateX(-50%)' },
+          '0%': { transform: 'translateX(-33.333%)' },
           '100%': { transform: 'translateX(0)' },
         },
       },

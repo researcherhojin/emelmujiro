@@ -6,9 +6,18 @@ from datetime import datetime
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
+    # Allowed message types that clients can send
+    ALLOWED_MESSAGE_TYPES = {"chat_message", "typing_indicator"}
+
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"].get("room_name", "general")
         self.room_group_name = f"chat_{self.room_name}"
+
+        # Require authentication
+        user = self.scope.get("user")
+        if not user or isinstance(user, AnonymousUser):
+            await self.close()
+            return
 
         # Join room group
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -44,9 +53,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
+        try:
+            text_data_json = json.loads(text_data)
+        except json.JSONDecodeError:
+            return
+
         message = text_data_json.get("message", "")
         message_type = text_data_json.get("type", "chat_message")
+
+        # Validate message type to prevent arbitrary handler dispatch
+        if message_type not in self.ALLOWED_MESSAGE_TYPES:
+            message_type = "chat_message"
 
         # Send message to room group
         await self.channel_layer.group_send(

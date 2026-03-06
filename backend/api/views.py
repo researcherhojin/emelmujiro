@@ -77,7 +77,7 @@ def _is_valid_ip(ip: str) -> bool:
         ipv6_pattern = r"^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$"
 
         return bool(re.match(ipv4_pattern, ip) or re.match(ipv6_pattern, ip))
-    except:
+    except (re.error, TypeError):
         return False
 
 

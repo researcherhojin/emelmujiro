@@ -13,30 +13,6 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-// Mock lucide-react icons
-vi.mock('lucide-react', () => ({
-  Share2: ({ className }: { className?: string }) => (
-    <div data-testid="share-icon" className={className}>
-      Share
-    </div>
-  ),
-  MessageCircle: ({ className }: { className?: string }) => (
-    <div data-testid="message-icon" className={className}>
-      Message
-    </div>
-  ),
-  Mail: ({ className }: { className?: string }) => (
-    <div data-testid="mail-icon" className={className}>
-      Mail
-    </div>
-  ),
-  ExternalLink: ({ className }: { className?: string }) => (
-    <div data-testid="link-icon" className={className}>
-      Link
-    </div>
-  ),
-}));
-
 const mockNavigate = vi.fn();
 let mockSearchParams = '';
 

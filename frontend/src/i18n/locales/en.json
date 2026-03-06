@@ -19,6 +19,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "close": "Close",
+    "remove": "Remove",
     "back": "Back",
     "next": "Next",
     "previous": "Previous",
@@ -237,7 +238,14 @@
     "copyright": "© {{year}} Emelmujiro. All rights reserved.",
     "socialMedia": "Social Media",
     "mainServices": "Main Services",
-    "ctaQuestion": "Planning an AI project?"
+    "ctaQuestion": "Planning an AI project?",
+    "businessInfo": {
+      "representative": "CEO",
+      "businessNumber": "Business Registration No.",
+      "address": "Address",
+      "representativeName": "이호진",
+      "businessNumberValue": "174-29-01733"
+    }
   },
   "career": {
     "title": "Career Details",
@@ -274,49 +282,6 @@
       "review": "Review",
       "employment": "Employment",
       "activity": "Activity"
-    }
-  },
-  "careerSummary": {
-    "title": "Career Summary",
-    "subtitle": "Introducing <strong>5 years of experience</strong> in AI education and business development.",
-    "viewDetail": "View Career Details",
-    "highlights": {
-      "2025": {
-        "title": "Business Expansion & Graduate School",
-        "description": "Strengthening AI technology expertise and business growth"
-      },
-      "2024": {
-        "title": "Graduate School & Business Growth",
-        "description": "Enrolled in Hanyang University AI Convergence Graduate School, expanding corporate education"
-      },
-      "2023": {
-        "title": "Peak Education Activity",
-        "description": "AI education for major enterprises including Samsung, LG Electronics, Hyundai E&C"
-      },
-      "2022": {
-        "title": "Growth as AI Education Expert",
-        "description": "Education content development and corporate education specialist activities"
-      }
-    }
-  },
-  "quickIntro": {
-    "items": {
-      "consulting": {
-        "title": "AI Consulting",
-        "description": "Practical AI solutions for business challenges"
-      },
-      "education": {
-        "title": "Corporate AI Education",
-        "description": "Systematic AI capability building for practitioners"
-      },
-      "llm": {
-        "title": "LLM Solutions",
-        "description": "Business innovation with latest language models"
-      },
-      "data": {
-        "title": "Data Analysis",
-        "description": "Analysis for business insight extraction"
-      }
     }
   },
   "contact": {
@@ -456,6 +421,10 @@
       "title": "Blog | Emelmujiro",
       "description": "Sharing latest AI and IT news and insights"
     },
+    "share": "Share",
+    "kakaoTalk": "KakaoTalk",
+    "linkCopied": "Copied!",
+    "copyLink": "Copy Link",
     "categories": {
       "all": "All",
       "ai": "AI/ML",
@@ -668,6 +637,21 @@
       "pattern": "Invalid format"
     }
   },
+  "apiErrors": {
+    "400": "Please check your input.",
+    "401": "Authentication required.",
+    "403": "You do not have permission.",
+    "404": "The requested resource was not found.",
+    "429": "Too many requests. Please try again later.",
+    "500": "A server error occurred. Please try again later.",
+    "502": "The server is not responding.",
+    "503": "The service is temporarily unavailable.",
+    "unknown": "An unknown error occurred.",
+    "network": "Please check your network connection.",
+    "contactSuccess": "Your inquiry has been submitted successfully.",
+    "contactRateLimit": "Too many inquiries. Please try again in 1 hour.",
+    "newsletterSuccess": "Newsletter subscription completed successfully."
+  },
   "accessibility": {
     "skipToContent": "Skip to Content",
     "menu": "Menu",
@@ -832,7 +816,12 @@
     "userManagementPage": "User Management Page",
     "messagesPage": "Messages Page",
     "analyticsPage": "Analytics Page",
-    "settingsPage": "Settings Page"
+    "settingsPage": "Settings Page",
+    "fetchError": "Failed to load dashboard data.",
+    "mock": {
+      "post1Title": "The Future of AI Education",
+      "post2Title": "New Education Program Announcement"
+    }
   },
   "blogEditor": {
     "titleContentRequired": "Title and content are required.",
@@ -865,7 +854,18 @@
     "instruction2": "You can backup posts using JSON export",
     "instruction3": "You can add multiple posts by editing the JSON file",
     "instruction4": "For production, we recommend adding directly to the file",
-    "instruction5": "You can write rich content using Markdown syntax"
+    "instruction5": "You can write rich content using Markdown syntax",
+    "defaultCategory": "General",
+    "adminInstruction": "To activate admin mode, add the following to the URL:",
+    "tagsPlaceholder": "React, TypeScript, Web Dev",
+    "contentPlaceholder": "## Title\n\nWrite your content here...\n\n- List item\n- **Bold text**\n- *Italic*",
+    "contentFallback": "Enter your content...",
+    "categories": {
+      "webDev": "Web Dev",
+      "frontend": "Frontend",
+      "education": "Education",
+      "programming": "Programming"
+    }
   },
   "seo": {
     "personName": "Hojin Lee",
@@ -925,6 +925,13 @@
     }
   },
   "chat": {
+    "autoReply": {
+      "checking": "Thank you. We are reviewing your inquiry.",
+      "willHelp": "Yes, we will help you. Please wait a moment.",
+      "forwarded": "Your inquiry has been forwarded to the person in charge. We will respond as soon as possible.",
+      "askMore": "If you need additional information, please feel free to ask.",
+      "confirmed": "Confirmed. We will provide you with detailed guidance."
+    },
     "title": "Customer Support",
     "open": "Open chat",
     "close": "Close chat",
@@ -1005,6 +1012,8 @@
       "completed": "Upload complete",
       "uploading": "Uploading...",
       "allowedTypes": "Supported file types:",
+      "fileTooLarge": "File is too large. (Max {{maxSize}})",
+      "maxSize": "Max {{size}}",
       "formats": "Images, PDF, Documents, Videos, Audio"
     },
     "admin": {
@@ -1037,6 +1046,61 @@
       "anonymousUser": "Anonymous user"
     }
   },
+  "constants": {
+    "inquiryTypes": {
+      "consulting": "AI Consulting",
+      "education": "Corporate AI Education",
+      "llm": "LLM Solutions",
+      "data": "Data Analysis"
+    },
+    "businessHours": {
+      "weekends": "Closed"
+    },
+    "responseTime": "Within 24 hours",
+    "serviceCategories": {
+      "consulting": {
+        "name": "AI Consulting",
+        "description": "Custom AI solutions for your business",
+        "features": [
+          "AI adoption strategy",
+          "Technical review & evaluation",
+          "ROI analysis"
+        ]
+      },
+      "education": {
+        "name": "Corporate AI Education",
+        "description": "Practice-focused AI training programs",
+        "features": [
+          "Custom curriculum",
+          "Hands-on training",
+          "Post-training mentoring"
+        ]
+      },
+      "llm": {
+        "name": "LLM Solutions",
+        "description": "Large language model building & optimization",
+        "features": ["Custom LLM development", "Fine-tuning", "API integration"]
+      },
+      "data": {
+        "name": "Data Analysis",
+        "description": "Data-driven insight extraction",
+        "features": [
+          "Data pipeline",
+          "Predictive modeling",
+          "Visualization dashboard"
+        ]
+      }
+    },
+    "languages": {
+      "ko": "한국어",
+      "en": "English"
+    },
+    "defaultMeta": {
+      "title": "Emelmujiro - AI Software Development & IT Education Expert",
+      "description": "We provide comprehensive IT services including custom solution development, corporate education, and LLM implementation using AI technology.",
+      "keywords": "AI, artificial intelligence, machine learning, deep learning, LLM, corporate education, IT consulting"
+    }
+  },
   "chatContext": {
     "businessHours": "Weekdays 09:00 - 18:00 (KST)",
     "welcomeMessage": "Hello! Welcome to Emelmujiro customer support. How can we help you?",
@@ -1063,5 +1127,123 @@
       "reconnectFailed": "Failed to reconnect to chat.",
       "initFailed": "Failed to initialize chat."
     }
+  },
+  "profileData": {
+    "career": [
+      {
+        "period": "2024.12 ~ Present",
+        "company": "Emelmujiro",
+        "position": "CEO",
+        "description": "Founded AI education & consulting company · LLM/RAG-based solution development"
+      },
+      {
+        "period": "2023.05 ~ Present",
+        "company": "Likelion",
+        "position": "AI Expert Instructor",
+        "description": "AI Engineer Advanced Bootcamp · Tekit Startup Station · KOFAC AI Education · Industrial AI Upskilling Program"
+      },
+      {
+        "period": "2023.05 ~ 2024.09",
+        "company": "Elice",
+        "position": "AI/Data Analysis Expert Instructor",
+        "description": "Samsung Electronics Spotfire Data Analysis · LG Electronics Data Science Project · Python/ML Fundamentals · Hyundai E&C ML/DL Course"
+      },
+      {
+        "period": "2022.10 ~ 2024.09",
+        "company": "Cobslab",
+        "position": "Lead Researcher / Expert Instructor",
+        "description": "AI education content development and instruction for major enterprises and government agencies including Samsung and LG"
+      },
+      {
+        "period": "2022.04 ~ 2023.02",
+        "company": "Modulabs / Hancom",
+        "position": "AI Education Instructor",
+        "description": "SNU & UOS AI Education · SKT Computer Vision · KETI Nanomaterials AI Course · Seoul Education Office Teacher AI Training"
+      },
+      {
+        "period": "2022.06",
+        "company": "Coconut Silo",
+        "position": "Researcher",
+        "description": "Data Lab · Data Voucher Program Prototype Development"
+      },
+      {
+        "period": "2021.05 ~ 2021.08",
+        "company": "Seoul Youth Center",
+        "position": "Front-End Developer",
+        "description": "Social enterprise project execution · Web front-end development"
+      }
+    ],
+    "education": [
+      {
+        "period": "2024.09 ~ 2026.06\n(Expected)",
+        "school": "Hanyang University",
+        "degree": "M.S. in AI Systems, Graduate School of AI Convergence",
+        "description": "Computer Vision · Advisor: Prof. Donghyun Cho"
+      },
+      {
+        "period": "2013.03 ~ 2021.02",
+        "school": "Kyungpook National University",
+        "degree": "B.S. in Animal Science & Biotechnology",
+        "description": "Minor: Food Science & Applied Engineering"
+      }
+    ],
+    "projects": [
+      {
+        "title": "AI Computer Vision (CV) Advanced Course",
+        "description": "Operated Likelion AI Engineer Advanced Bootcamp Cohorts 1-3 · Led hands-on projects with YOLO, RT-DETR, SAM · Produced AI Champion Award and Dacon competition winning teams"
+      },
+      {
+        "title": "Enterprise & Public Institution AI Education",
+        "description": "Samsung Electronics, LG Electronics, Hyundai E&C, SKT, SNU, Seoul Education Office, etc. · Designed and operated project-based education in CV, ML/DL, Data Analysis, and Generative AI",
+        "tags": { "3": "Generative AI" }
+      },
+      {
+        "title": "ICT Complex Piuda Project",
+        "description": "Planned and developed \"E-eum\" AI learning support service for borderline intellectual functioning youth · LLM-based plain language conversion system · Top 15 out of 270 teams, 3rd place in category",
+        "tags": { "3": "Social Impact" }
+      },
+      {
+        "title": "Generative AI Educator Training",
+        "description": "KOFAC School Consulting Program · ChatGPT utilization training for teachers and parents at 6 K-12 schools",
+        "tags": {
+          "0": "AI Literacy",
+          "2": "Education Innovation",
+          "3": "Generative AI"
+        }
+      },
+      {
+        "title": "Tekit Startup Station",
+        "description": "Operated Likelion Tekit Startup Station Cohorts 7-10 · AI service design and development mentoring for aspiring IT entrepreneurs · Produced multiple teams selected for government startup support programs",
+        "tags": {
+          "0": "AI Services",
+          "1": "MVP Development",
+          "2": "Mentoring",
+          "3": "Startup Education"
+        }
+      },
+      {
+        "title": "Industrial AI Upskilling Program",
+        "description": "Collaboration with Nano Convergence Industry Research Association · Nanomaterial big data AI convergence education · SECOM semiconductor process failure prediction · CNT/resin composite structural analysis simulation",
+        "tags": {
+          "0": "Big Data",
+          "1": "Industrial AI",
+          "2": "Simulation",
+          "3": "Manufacturing AI"
+        }
+      },
+      {
+        "title": "Visual Python Open Source Development",
+        "description": "2022 Open Source Contribution Academy · Visual Python ML/Statistics module development",
+        "tags": { "2": "Visualization", "3": "Open Source" }
+      }
+    ],
+    "categories": [
+      { "label": "All" },
+      { "label": "Enterprise" },
+      { "label": "Bootcamp" },
+      { "label": "Education Innovation" },
+      { "label": "Startup" },
+      { "label": "R&D" }
+    ]
   }
 }

@@ -5,27 +5,6 @@ import '@testing-library/jest-dom'; // Add this import to fix TypeScript errors
 import QuickReplies from '../QuickReplies';
 import { useChatContext } from '../../../contexts/ChatContext';
 
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    button: ({
-      children,
-      onClick,
-      className,
-      ...props
-    }: {
-      children?: React.ReactNode;
-      onClick?: () => void;
-      className?: string;
-      [key: string]: unknown;
-    }) => (
-      <button onClick={onClick} className={className} {...props}>
-        {children}
-      </button>
-    ),
-  },
-}));
-
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   MessageSquare: ({ className }: { className?: string }) => (

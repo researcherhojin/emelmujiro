@@ -150,8 +150,8 @@ describe('BlogComments', () => {
     localStorage.setItem('blogComments', JSON.stringify(mockComments));
     render(<BlogComments {...defaultProps} />);
 
-    // Like 버튼은 ThumbsUp 아이콘과 숫자로 구성됨
-    // 첫 번째 댓글의 likes는 2
+    // Like button is composed of ThumbsUp icon and count
+    // First comment has 2 likes
     const likeButtons = screen.getAllByRole('button');
     // Find the button that contains the likes count
     const firstLikeButton = likeButtons.find((button) =>

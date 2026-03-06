@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
   ReactNode,
 } from 'react';
 
@@ -84,6 +85,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [modals, setModals] = useState<Modal[]>([]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const notificationTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map()
+  );
 
   // Apply theme to document root
   useEffect(() => {
@@ -109,10 +113,21 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     }
 
     // Re-enable transitions after a brief moment
-    setTimeout(() => {
+    const timerId = setTimeout(() => {
       root.style.removeProperty('--theme-transition');
     }, 100);
+
+    return () => clearTimeout(timerId);
   }, [theme]);
+
+  // Cleanup all notification timers on unmount
+  useEffect(() => {
+    const timers = notificationTimers.current;
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer));
+      timers.clear();
+    };
+  }, []);
 
   // Listen for system theme changes
   useEffect(() => {
@@ -156,6 +171,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   }, []);
 
   const removeNotification = useCallback((id: string) => {
+    const timer = notificationTimers.current.get(id);
+    if (timer) {
+      clearTimeout(timer);
+      notificationTimers.current.delete(id);
+    }
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   }, []);
 
@@ -167,9 +187,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
       setNotifications((prev) => [...prev, notification]);
 
       if (duration > 0) {
-        setTimeout(() => {
+        const timerId = setTimeout(() => {
+          notificationTimers.current.delete(id);
           removeNotification(id);
         }, duration);
+        notificationTimers.current.set(id, timerId);
       }
     },
     [removeNotification]

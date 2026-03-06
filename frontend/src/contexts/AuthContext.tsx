@@ -7,7 +7,7 @@ import React, {
   useMemo,
   ReactNode,
 } from 'react';
-import axiosInstance from '../services/api';
+import { api } from '../services/api';
 import i18n from '../i18n';
 
 interface User {
@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const token = localStorage.getItem('authToken');
     if (token) {
       try {
-        const response = await axiosInstance.get('/auth/user/');
+        const response = await api.getUser();
         setUser(response.data);
       } catch {
         localStorage.removeItem('authToken');
@@ -63,10 +63,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axiosInstance.post('/auth/login/', {
-        username: email,
-        password,
-      });
+      const response = await api.login(email, password);
       const { access, refresh, user: userData } = response.data;
 
       localStorage.setItem('authToken', access);
@@ -87,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const refreshToken = localStorage.getItem('refreshToken');
     if (refreshToken) {
       try {
-        await axiosInstance.post('/auth/logout/', { refresh: refreshToken });
+        await api.logout(refreshToken);
       } catch {
         // Proceed with local logout even if server call fails
       }
@@ -102,13 +99,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axiosInstance.post('/auth/register/', {
-          username: email,
-          email,
-          password,
-          password_confirm: password,
-          first_name: name,
-        });
+        const response = await api.register(email, password, name);
         const { access, refresh, user: userData } = response.data;
 
         localStorage.setItem('authToken', access);

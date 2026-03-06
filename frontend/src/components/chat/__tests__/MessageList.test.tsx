@@ -5,27 +5,6 @@ import '@testing-library/jest-dom';
 import MessageList from '../MessageList';
 import { ChatProvider } from '../../../contexts/ChatContext';
 
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({
-      children,
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <div>{children}</div>,
-    span: ({
-      children,
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <span>{children}</span>,
-  },
-  AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
-    <>{children}</>
-  ),
-}));
-
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   Bot: () => <span>Bot</span>,
@@ -48,6 +27,27 @@ vi.mock('lucide-react', () => ({
   Copy: () => <span>Copy</span>,
   Share2: () => <span>Share2</span>,
   MoreVertical: () => <span>MoreVertical</span>,
+}));
+
+// Mock framer-motion
+vi.mock('framer-motion', () => ({
+  motion: {
+    div: ({
+      children,
+    }: {
+      children?: React.ReactNode;
+      [key: string]: unknown;
+    }) => <div>{children}</div>,
+    span: ({
+      children,
+    }: {
+      children?: React.ReactNode;
+      [key: string]: unknown;
+    }) => <span>{children}</span>,
+  },
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
 // Mock LazyImage component

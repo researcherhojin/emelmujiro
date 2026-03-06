@@ -25,7 +25,10 @@ except User.DoesNotExist:
     print("Admin user not found. Creating one...")
     import secrets
 
-    author = User.objects.create_superuser("admin", "admin@emelmujiro.com", secrets.token_urlsafe(16))
+    password = secrets.token_urlsafe(16)
+    author = User.objects.create_superuser("admin", "admin@emelmujiro.com", password)
+    print(f"Created admin user with password: {password}")
+    print("Save this password — it will not be shown again.")
 
 # BlogPost 모델의 CATEGORY_CHOICES 활용
 # ai, ml, ds, nlp, cv, rl, education, career, project, other
@@ -1446,4 +1449,3 @@ print("\n✅ Blog posts created successfully!")
 print(f"Total posts: {BlogPost.objects.count()}")
 print("\nYou can now access the admin panel at http://localhost:8000/admin/")
 print("Username: admin")
-print("Password: admin123")

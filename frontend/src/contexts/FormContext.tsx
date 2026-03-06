@@ -3,7 +3,9 @@ import React, {
   useContext,
   useState,
   useCallback,
+  useEffect,
   useMemo,
+  useRef,
   ReactNode,
 } from 'react';
 import { api } from '../services/api';
@@ -59,6 +61,16 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [formErrors, setFormErrors] = useState<Partial<ContactFormState>>({});
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) {
+        clearTimeout(resetTimerRef.current);
+      }
+    };
+  }, []);
 
   const updateContactForm = useCallback(
     (field: keyof ContactFormState, value: string) => {
@@ -166,7 +178,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
       localStorage.setItem('savedContacts', JSON.stringify(savedContacts));
 
       // Reset form after successful submission
-      setTimeout(() => {
+      resetTimerRef.current = setTimeout(() => {
         resetContactForm();
       }, 2000);
     } catch (error) {

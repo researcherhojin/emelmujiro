@@ -93,7 +93,7 @@ describe('BlogInteractions Component', () => {
       expect(buttons.length).toBeGreaterThanOrEqual(3); // At least like, bookmark, and share buttons
 
       // Check for share button with text
-      expect(screen.getByText('공유')).toBeInTheDocument();
+      expect(screen.getByText('blog.share')).toBeInTheDocument();
     });
 
     it('displays initial like count as 0', () => {
@@ -267,13 +267,13 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText(/공유/);
+      const shareButton = screen.getByText(/blog\.share/);
       fireEvent.click(shareButton);
 
       expect(screen.getByText('Facebook')).toBeInTheDocument();
       expect(screen.getByText('Twitter')).toBeInTheDocument();
       expect(screen.getByText('LinkedIn')).toBeInTheDocument();
-      expect(screen.getByText(/링크 복사/)).toBeInTheDocument();
+      expect(screen.getByText(/blog\.copyLink/)).toBeInTheDocument();
 
       // Restore
       Object.defineProperty(navigator, 'share', {
@@ -295,7 +295,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText(/공유/);
+      const shareButton = screen.getByText(/blog\.share/);
 
       // Click to show menu
       fireEvent.click(shareButton);
@@ -325,7 +325,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText(/공유/);
+      const shareButton = screen.getByText(/blog\.share/);
       fireEvent.click(shareButton);
 
       const facebookButton = screen.getByText('Facebook');
@@ -357,7 +357,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText(/공유/);
+      const shareButton = screen.getByText(/blog\.share/);
       fireEvent.click(shareButton);
 
       const twitterButton = screen.getByText('Twitter');
@@ -389,7 +389,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText(/공유/);
+      const shareButton = screen.getByText(/blog\.share/);
       fireEvent.click(shareButton);
 
       const linkedinButton = screen.getByText('LinkedIn');
@@ -423,10 +423,10 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText(/공유/);
+      const shareButton = screen.getByText(/blog\.share/);
       fireEvent.click(shareButton);
 
-      const copyButton = screen.getByText('링크 복사');
+      const copyButton = screen.getByText('blog.copyLink');
       fireEvent.click(copyButton);
 
       await waitFor(() => {
@@ -455,7 +455,7 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText(/공유/);
+      const shareButton = screen.getByText(/blog\.share/);
       fireEvent.click(shareButton);
 
       await waitFor(() => {
@@ -514,10 +514,10 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText(/공유/);
+      const shareButton = screen.getByText(/blog\.share/);
       fireEvent.click(shareButton);
 
-      const copyButton = screen.getByText(/링크 복사/);
+      const copyButton = screen.getByText(/blog\.copyLink/);
       fireEvent.click(copyButton);
 
       await waitFor(() => {

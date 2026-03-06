@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Heart, Share2, Bookmark, Link2, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { BlogPost } from '../../types';
@@ -15,6 +15,14 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  // Cleanup copy timer on unmount
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
 
   // Generate unique user ID
   const getUserId = () => {
@@ -158,7 +166,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
       // Clipboard API not available — silently fail
     }
     setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
+    copyTimerRef.current = setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const nativeShare = async () => {
@@ -215,7 +223,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
           className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-600"
         >
           <Share2 className="w-5 h-5" />
-          <span className="font-medium">공유</span>
+          <span className="font-medium">{t('blog.share')}</span>
         </button>
 
         {/* Share menu */}
@@ -237,7 +245,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
                 }}
                 className="block w-full text-left px-4 py-2 hover:bg-gray-100"
               >
-                카카오톡
+                {t('blog.kakaoTalk')}
               </button>
               <button
                 onClick={() => {
@@ -277,12 +285,12 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
                   {copiedLink ? (
                     <>
                       <Check className="w-4 h-4 mr-2 text-green-600" />
-                      복사됨!
+                      {t('blog.linkCopied')}
                     </>
                   ) : (
                     <>
                       <Link2 className="w-4 h-4 mr-2" />
-                      링크 복사
+                      {t('blog.copyLink')}
                     </>
                   )}
                 </span>

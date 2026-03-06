@@ -12,45 +12,6 @@ import UnifiedLoading, {
 } from '../UnifiedLoading';
 import type { LoadingVariant } from '../UnifiedLoading';
 
-// Mock framer-motion
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({
-      children,
-      className,
-      'data-testid': dataTestId,
-      ...props
-    }: React.PropsWithChildren<
-      React.HTMLAttributes<HTMLDivElement> & { 'data-testid'?: string }
-    >) => (
-      <div className={className} data-testid={dataTestId} {...props}>
-        {children}
-      </div>
-    ),
-    span: ({
-      children,
-      className,
-      'data-testid': dataTestId,
-      ...props
-    }: React.PropsWithChildren<
-      React.HTMLAttributes<HTMLSpanElement> & { 'data-testid'?: string }
-    >) => (
-      <span className={className} data-testid={dataTestId} {...props}>
-        {children}
-      </span>
-    ),
-    p: ({
-      children,
-      className,
-      ...props
-    }: React.PropsWithChildren<React.HTMLAttributes<HTMLParagraphElement>>) => (
-      <p className={className} {...props}>
-        {children}
-      </p>
-    ),
-  },
-}));
-
 // Mock SkeletonLoader components
 vi.mock('../SkeletonLoader', () => ({
   SkeletonHero: ({ className }: { className?: string }) => (
@@ -524,12 +485,11 @@ describe('UnifiedLoading Component', () => {
 
   describe('Preset Components', () => {
     describe('PageLoading', () => {
-      it('renders page loading with default message', () => {
+      it('renders page loading without default message', () => {
         const { container } = render(<PageLoading />);
 
         const message = container.querySelector('p');
-        expect(message).toBeInTheDocument();
-        expect(message?.textContent).toBe('페이지를 불러오는 중...');
+        expect(message).toBeNull();
       });
 
       it('renders page loading with custom message', () => {
