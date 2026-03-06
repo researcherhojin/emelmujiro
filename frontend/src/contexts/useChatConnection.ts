@@ -12,7 +12,10 @@ interface ConnectionState {
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   setUnreadCount: React.Dispatch<React.SetStateAction<number>>;
   isOpen: boolean;
-  showNotification: (type: string, message: string) => void;
+  showNotification: (
+    type: 'success' | 'error' | 'warning' | 'info',
+    message: string
+  ) => void;
 }
 
 export function useChatConnection(state: ConnectionState) {

@@ -1,15 +1,7 @@
 import React from 'react';
 import { Save } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-interface ChatSettings {
-  welcomeMessage: string;
-  maxMessageLength: number;
-  allowFileUpload: boolean;
-  allowEmoji: boolean;
-  soundEnabled: boolean;
-  cannedResponses: string[];
-}
+import type { ChatSettings } from '../../contexts/chatHelpers';
 
 interface AdminSettingsTabProps {
   editingSettings: ChatSettings;
