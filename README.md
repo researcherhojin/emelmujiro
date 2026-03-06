@@ -23,15 +23,15 @@
 
 ## 현재 상태 (v0.9.8)
 
-| 항목       | 상태    | 세부사항                                   |
-| ---------- | ------- | ------------------------------------------ |
-| **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
-| **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
-| **테스트** | ✅ 통과 | 1107 통과, 0 스킵 (69 파일)                |
-| **타입**   | ✅ 100% | TypeScript Strict Mode                     |
-| **보안**   | ✅ 안전 | 취약점 0건                                 |
-| **배포**   | ✅ 정상 | GitHub Pages                               |
-| **백엔드** | ⚠️ Mock | 프로덕션 Mock API 사용 중                  |
+| 항목       | 상태    | 세부사항                                      |
+| ---------- | ------- | --------------------------------------------- |
+| **빌드**   | ✅ 정상 | Vite + esbuild 빌드                           |
+| **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분    |
+| **테스트** | ✅ 통과 | Frontend 1107 통과 (69 파일), Backend 67 통과 |
+| **타입**   | ✅ 100% | TypeScript Strict Mode                        |
+| **보안**   | ✅ 안전 | 취약점 0건                                    |
+| **배포**   | ✅ 정상 | GitHub Pages                                  |
+| **백엔드** | ⚠️ Mock | 프로덕션 Mock API 사용 중                     |
 
 ## 빠른 시작
 
@@ -257,6 +257,42 @@ Django `SESSION_COOKIE_HTTPONLY=True` 설정
 - [x] 리팩토링 백로그 전량 해소 — C5~C7, H7, M5/M7~M9, BE1~BE7 (총 16건 완료, 이슈 아님 2건)
 
 ## 리팩토링 백로그
+
+### 4차 감사 (2026.03.07)
+
+전체 코드베이스 4차 감사 (프론트엔드 + 백엔드 심층 탐색). ~~취소선~~은 완료된 항목입니다.
+
+#### High
+
+| #      | 설명                                                                                                    | 파일                                         |
+| ------ | ------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| ~~H1~~ | ~~비밀번호 최소 길이 불일치 — `auth.py` 8자 vs `settings.py` 12자 → 12자로 통일~~ ✅                    | ~~`auth.py`~~                                |
+| ~~H2~~ | ~~`UserRateThrottle` 미사용 임포트 제거~~ ✅                                                            | ~~`views.py`~~                               |
+| ~~H3~~ | ~~`get_client_ip()` 중복 — middleware에서 views.get_client_ip 위임으로 통일~~ ✅                        | ~~`views.py`, `middleware.py`~~              |
+| ~~H4~~ | ~~`process.env.NODE_ENV` 직접 사용 → `env.IS_DEVELOPMENT` 전환~~ ✅                                     | ~~`WebVitalsDashboard.tsx`, `webVitals.ts`~~ |
+| ~~H5~~ | ~~백엔드 테스트 14→67개 확장 — auth, blog, contact, newsletter, category, model, utility 전수 커버~~ ✅ | ~~`api/tests.py`~~                           |
+
+#### Medium
+
+| #      | 설명                                                                                          | 파일                             |
+| ------ | --------------------------------------------------------------------------------------------- | -------------------------------- |
+| M1     | `SharePage.tsx:87` 빈 catch 블록 — localStorage JSON.parse 폴백이므로 실질 이슈 아님          | `SharePage.tsx`                  |
+| ~~M2~~ | ~~`middleware.py:112` `UnicodeDecodeError` 무시 → 로깅 추가~~ ✅                              | ~~`middleware.py`~~              |
+| M3     | `key={index}` anti-pattern 14곳 — 정적 리스트이므로 실질 이슈 아닐 수 있으나 일관성 개선 가능 | 다수 컴포넌트                    |
+| M4     | WebSocket 메시지 큐 무한 성장 가능 — max size + FIFO eviction 필요                            | `websocket.ts`                   |
+| M5     | `Math.random()` ID 생성 → `crypto.randomUUID()` 통일                                          | `chatHelpers.ts`, `websocket.ts` |
+| M6     | Navbar/Footer 스크롤 로직 중복 — 커스텀 훅 추출 후보                                          | `Navbar.tsx`, `Footer.tsx`       |
+
+#### Low
+
+| #   | 설명                                                                                          | 파일                        |
+| --- | --------------------------------------------------------------------------------------------- | --------------------------- |
+| L1  | 매직넘버 (86400초, `"3/hour"` 등) → 상수 추출                                                 | `views.py`, `middleware.py` |
+| L2  | icon-only 버튼 `aria-label` 누락 (Footer, AdminDashboard)                                     | 다수                        |
+| L3  | `BlogPost.date` vs `created_at`/`updated_at` 3개 날짜 필드 — 용도 문서화 필요                 | `models.py`                 |
+| L4  | Serializer 필드 중복 노출: `publishedAt`/`date`, `imageUrl`/`image_url`, `views`/`view_count` | `serializers.py`            |
+
+---
 
 ### 3차 감사 (2026.03.07)
 

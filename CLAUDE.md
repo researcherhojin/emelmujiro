@@ -102,13 +102,13 @@ Blog, Contact, Chat features are **not functional** on GitHub Pages (mock data o
 - `/blog`, `/blog/new`, `/blog/:id` → `<UnderConstruction featureKey="blog" />`
 - `ChatWidget` removed from `AppLayout` entirely
 
-The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`) accepts a `featureKey` prop (`blog` | `contact` | `chat`) for feature-specific i18n descriptions. Original component files (`ContactPage.tsx`, `BlogListPage.tsx`, `BlogDetail.tsx`, `BlogEditor.tsx`, `ChatWidget.tsx`) are **preserved** — they have their own tests that import them directly. Provider hierarchy (`BlogProvider`, `FormProvider`) is retained for existing test compatibility. `ChatProvider` still exists in `src/contexts/` for test compatibility but is removed from `App.tsx`. Navbar and footer links to `/blog` and `/contact` are intentionally kept — they navigate to the under construction pages.
+The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`) accepts a `featureKey` prop (`blog` | `contact` | `chat`) for feature-specific i18n descriptions. Original component files (`ContactPage.tsx`, `BlogListPage.tsx`, `BlogDetail.tsx`, `BlogEditor.tsx`, `ChatWidget.tsx`) are **preserved** — they have their own tests that import them directly. Provider hierarchy (`BlogProvider`, `FormProvider`) is retained for existing test compatibility. `ChatProvider` still exists in `src/contexts/` for test compatibility but is removed from `App.tsx` provider hierarchy. Navbar and footer links to `/blog` and `/contact` are intentionally kept — they navigate to the under construction pages.
 
 ### State Management
 
 - **React Context** — All state management via UIContext, AuthContext, BlogContext, FormContext, ChatContext (all in `src/contexts/`). All providers use `useMemo` for value objects and `useCallback` for functions to prevent unnecessary re-renders.
-- Zustand store and dependencies (`zustand`, `immer`) fully removed — was unused dead code.
-- **Types** — `src/types/index.ts` exports only used types: `BlogPost`, `ContactFormData`, `PaginatedResponse`, `ErrorResponse`. `api.types.ts` was merged into `index.ts` and deleted.
+- **ChatContext split** — `ChatContext.tsx` (373 lines) imports types/helpers from `chatHelpers.ts` (types, defaults, utilities) and delegates WebSocket logic to `useChatConnection.ts` (custom hook). Consumer code imports from `ChatContext.tsx` which re-exports all types.
+- **Types** — `src/types/index.ts` exports: `BlogPost`, `ContactFormData`, `PaginatedResponse`, `ErrorResponse`.
 
 ### Mock API System
 
@@ -116,7 +116,7 @@ The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`
 
 ### API Client
 
-Axios-based client in `src/services/api.ts`. All API methods (projects, blog, contact, newsletter, auth, health) are centralized in the `api` object with mock support. Auth methods (`getUser`, `login`, `logout`, `register`) are part of the `api` object — `AuthContext` imports `{ api }` not the default axios instance. 30s timeout with automatic retry on timeout. JWT tokens stored in localStorage (`authToken`, `refreshToken`); 401 responses trigger automatic token refresh before clearing auth. HTTP is upgraded to HTTPS in production.
+Axios-based client in `src/services/api.ts`. All API methods (blog, contact, newsletter, auth, health) are centralized in the `api` object with mock support. Auth methods (`getUser`, `login`, `logout`, `register`) are part of the `api` object — `AuthContext` imports `{ api }` not the default axios instance. 30s timeout with automatic retry on timeout. JWT tokens stored in localStorage (`authToken`, `refreshToken`); 401 responses trigger automatic token refresh before clearing auth. HTTP is upgraded to HTTPS in production.
 
 ### Sentry
 
@@ -132,7 +132,7 @@ Axios-based client in `src/services/api.ts`. All API methods (projects, blog, co
 
 ### Provider Hierarchy
 
-`App.tsx` wraps the app in: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > BlogProvider > FormProvider > RouterProvider`. ChatProvider was removed from the hierarchy (chat is under construction).
+`App.tsx` wraps the app in: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > BlogProvider > FormProvider > RouterProvider`. ChatProvider is excluded (chat is under construction).
 
 ### Route Protection
 
@@ -194,7 +194,7 @@ Vitest with jsdom environment. Config in `frontend/vitest.config.ts`. Setup file
 
 These are mocked globally — do NOT re-mock in individual tests (with one exception noted below):
 
-- `lucide-react` (Proxy-based, any icon name works — renders `<svg data-testid="icon-{Name}" />`), `framer-motion` (motion/AnimatePresence), `react-helmet-async`
+- `lucide-react` (cached Proxy — creates and caches icon components on demand, renders `<svg data-testid="icon-{Name}" />`), `framer-motion` (motion/AnimatePresence), `react-helmet-async`
   - **Exception**: Chat component tests (`ChatWindow`, `AdminPanel`, `MessageList`, `FileUpload`, `EmojiPicker`) must keep local `framer-motion` and/or `lucide-react` mocks because: (a) global framer-motion Proxy passes motion-specific props to DOM causing React warnings; (b) chat tests match icon names as text content (`screen.getByText('Send')`) which doesn't work with the global SVG mock
   - Non-chat tests should use the global mock and query icons via `data-testid="icon-{Name}"` (e.g., `icon-Mail`, `icon-Phone`, `icon-ExternalLink`)
 - Browser APIs: `matchMedia`, `IntersectionObserver`, `ResizeObserver`, `localStorage`, `sessionStorage`, `navigator.serviceWorker`, `fetch`, `requestAnimationFrame`, `performance`, `window.gtag`
@@ -206,9 +206,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 ### Test Utilities
 
 - `renderWithProviders` in `src/test-utils/renderWithProviders.tsx` — Wraps component in all providers (HelmetProvider, UIProvider, AuthProvider, BlogProvider, FormProvider, MemoryRouter). Uses `MemoryRouter` (not HashRouter) — correct for tests since it's controllable and doesn't require hash prefix. ChatProvider is excluded due to WebSocket complexity.
-- `renderWithSelectiveProviders` in `src/test-utils/test-utils.tsx` — Selective provider wrapping via flags (`includeRouter`, `includeUI`, `includeAuth`, etc.).
-- Individual wrappers: `renderWithBlogProvider`, `renderWithAuthProvider`, `renderWithUIProvider`, `renderWithFormProvider`, `renderWithRouter`.
-- Data factories: `createMockBlogPost`, `createMockUser`, `createMockComment` in `test-utils.tsx`.
+- Individual wrappers: `renderWithBlogProvider`, `renderWithAuthProvider`, `renderWithUIProvider`, `renderWithFormProvider`, `renderWithRouter` (in `renderWithProviders.tsx`).
 - Async helpers: `flushPromises`, `nextTick`, `waitForPendingOperations` in `cleanup.ts`.
 - `src/test-utils/` also has: MSW mock server setup (`mocks/server.ts`, `mocks/handlers.ts`), polyfills, cleanup helpers.
 
@@ -216,7 +214,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 69 test files, 1107 tests, 0 failures, 0 skips. Backend: 14 tests, 0 failures
+- 69 test files, 1107 tests, 0 failures, 0 skips. Backend: 67 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
@@ -297,7 +295,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: 69 test files, 1107 tests, 0 failures, 0 skips (as of 2026-03-07)
+4. **Test count**: Frontend 69 files / 1107 tests, Backend 67 tests, 0 failures (as of 2026-03-07)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
@@ -313,3 +311,5 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 17. **setTimeout cleanup**: All `setTimeout` calls in components and contexts must store the timer ID in a `useRef(null)` and `clearTimeout` in the useEffect cleanup to prevent memory leaks. Already applied in: `UIContext`, `FormContext`, `Navbar`, `Footer`, `BlogInteractions`, `BlogSearch`, `ChatContext` (reconnect timer). Follow the same pattern for any new `setTimeout` usage
 18. **Comments in English**: All code comments must be in English. Korean comments were converted to English across the entire codebase (sentry.ts, logger.ts, BlogContext.tsx, api.ts, global.d.ts, etc.). Do not add Korean comments
 19. **Logger has no named exports**: `logger.ts` only exports `default` (singleton instance). Import as `import logger from '../utils/logger'`, not destructured. Uses `env.IS_DEVELOPMENT` from `config/env.ts` — do NOT use `process.env.NODE_ENV` directly in frontend code
+20. **No `window.alert()` in components**: Use inline toast state pattern instead (`ToastState` interface + `useRef` timer + auto-dismiss + `role="alert"` element). Already applied in `BlogEditor.tsx` and `SharePage.tsx`. Tests assert via `screen.getByRole('alert')`, not `alertSpy`
+21. **Backend tests need `DATABASE_URL=""`**: If `DATABASE_URL` is set (e.g., pointing to Docker PostgreSQL), backend tests will fail to connect. Run `DATABASE_URL="" uv run python manage.py test` to use SQLite
