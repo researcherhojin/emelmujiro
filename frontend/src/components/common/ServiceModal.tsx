@@ -69,7 +69,7 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
                   </h4>
                   <ul className="space-y-2">
                     {service.details.map((detail, index) => (
-                      <li key={index} className="flex items-start">
+                      <li key={`detail-${index}`} className="flex items-start">
                         <div className="w-1.5 h-1.5 bg-gray-500 dark:bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                         <span className="text-sm text-gray-700 dark:text-gray-300">
                           {detail}

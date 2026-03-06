@@ -47,7 +47,7 @@ const EditorPreview: React.FC<EditorPreviewProps> = ({
           <div className="flex gap-2 mb-4">
             {tags.split(',').map((tag, index) => (
               <span
-                key={index}
+                key={tag.trim()}
                 className="text-sm bg-gray-100 px-2 py-1 rounded"
               >
                 #{tag.trim()}

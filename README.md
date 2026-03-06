@@ -280,7 +280,7 @@ Django `SESSION_COOKIE_HTTPONLY=True` 설정
 | ------ | ------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | ~~M1~~ | ~~`SharePage.tsx:87` 빈 catch 블록 — localStorage JSON.parse 폴백이므로 실질 이슈 아님~~ ✅ (이슈 아님) | ~~`SharePage.tsx`~~                  |
 | ~~M2~~ | ~~`middleware.py:112` `UnicodeDecodeError` 무시 → 로깅 추가~~ ✅                                        | ~~`middleware.py`~~                  |
-| M3     | `key={index}` anti-pattern 14곳 — 정적 리스트이므로 실질 이슈 아님 (이슈 아님)                          | 다수 컴포넌트                        |
+| ~~M3~~ | ~~`key={index}` anti-pattern 19곳 → 데이터 필드 / prefix 기반 안정 키로 전량 교체~~ ✅                  | ~~다수 컴포넌트~~                    |
 | ~~M4~~ | ~~WebSocket 메시지 큐 — maxQueueSize 100 + FIFO eviction 추가~~ ✅                                      | ~~`websocket.ts`~~                   |
 | ~~M5~~ | ~~`Math.random()` ID 생성 → `crypto.randomUUID()` 통일~~ ✅                                             | ~~`chatHelpers.ts`, `websocket.ts`~~ |
 | ~~M6~~ | ~~Navbar/Footer 스크롤 로직 중복 → `useScrollToSection` 훅 추출~~ ✅                                    | ~~`Navbar.tsx`, `Footer.tsx`~~       |
@@ -345,12 +345,12 @@ Django `SESSION_COOKIE_HTTPONLY=True` 설정
 | #      | 설명                                                                                              | 파일                    |
 | ------ | ------------------------------------------------------------------------------------------------- | ----------------------- |
 | ~~L1~~ | ~~`scrollBehavior: 'smooth'` 인라인 스타일 제거 (Tailwind `scroll-smooth` 중복)~~ ✅              | ~~`MessageList.tsx`~~   |
-| L2     | AboutPage 349줄 — 섹션별 분할 후보 (현재 규모 허용 범위)                                          | `AboutPage.tsx`         |
-| L3     | BlogComments 357줄 — CommentItem/ReplySection 분할 후보 (현재 규모 허용 범위)                     | `BlogComments.tsx`      |
+| ~~L2~~ | ~~AboutPage 349줄 → 6개 섹션 컴포넌트 추출 (같은 파일 내)~~ ✅                                    | ~~`AboutPage.tsx`~~     |
+| ~~L3~~ | ~~BlogComments 357줄 → CommentItem/ReplyItem 서브 컴포넌트 추출 (같은 파일 내)~~ ✅               | ~~`BlogComments.tsx`~~  |
 | ~~L4~~ | ~~`notificationTimers` Map — 실제로는 remove 시 정리됨~~ ✅ (이슈 아님)                           | ~~`UIContext.tsx`~~     |
 | ~~L5~~ | ~~Swagger 이메일 → `CONTACT_EMAIL` 환경변수 전환~~ ✅                                             | ~~`api/swagger.py`~~    |
 | ~~L6~~ | ~~스팸 필터/rate limiting 테스트 추가 (67개 테스트로 확장). WebSocket 테스트는 1.0 이후 범위~~ ✅ | ~~Backend 테스트 전반~~ |
-| L7     | E2E 4개 파일만 — 다크모드, 언어 전환 미테스트                                                     | `e2e/`                  |
+| ~~L7~~ | ~~E2E 다크모드 4개 + 언어 전환 4개 테스트 추가 (`accessibility.spec.ts`)~~ ✅                     | ~~`e2e/`~~              |
 
 ---
 

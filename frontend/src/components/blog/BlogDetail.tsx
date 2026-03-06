@@ -108,7 +108,7 @@ const BlogDetailPage: React.FC = memo(() => {
                     <div className="flex gap-2">
                       {post.tags.map((tag, index) => (
                         <span
-                          key={index}
+                          key={tag}
                           className="text-sm bg-gray-100 px-2 py-1 rounded"
                         >
                           #{tag}

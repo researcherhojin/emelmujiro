@@ -164,7 +164,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
               <div className="flex flex-wrap gap-2 mt-2">
                 {message.quickReplies.map((reply, index) => (
                   <button
-                    key={index}
+                    key={reply}
                     onClick={() => onSendQuickReply(reply)}
                     className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
                   >

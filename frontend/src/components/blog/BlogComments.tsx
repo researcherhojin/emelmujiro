@@ -18,6 +18,151 @@ interface BlogCommentsProps {
   postId: string | number;
 }
 
+interface ReplyItemProps {
+  reply: Comment;
+  parentId: string;
+  userId: string;
+  formatDate: (dateString: string) => string;
+  toggleLike: (commentId: string, isReply?: boolean, parentId?: string) => void;
+}
+
+const ReplyItem: React.FC<ReplyItemProps> = ({
+  reply,
+  parentId,
+  userId,
+  formatDate,
+  toggleLike,
+}) => (
+  <div key={reply.id} className="bg-gray-50 p-3 rounded">
+    <div className="flex items-center mb-1">
+      <User className="w-3 h-3 mr-1 text-gray-500" />
+      <span className="font-medium text-sm">{reply.author}</span>
+      <span className="mx-2 text-gray-300">•</span>
+      <span className="text-xs text-gray-500">{formatDate(reply.date)}</span>
+    </div>
+    <p className="text-sm text-gray-700 mb-2">{reply.content}</p>
+    <button
+      onClick={() => toggleLike(reply.id, true, parentId)}
+      className={`flex items-center space-x-1 text-xs ${
+        reply.likedBy?.includes(userId)
+          ? 'text-blue-600'
+          : 'text-gray-500 hover:text-blue-600'
+      }`}
+    >
+      <ThumbsUp className="w-3 h-3" />
+      <span>{reply.likes}</span>
+    </button>
+  </div>
+);
+
+interface CommentItemProps {
+  comment: Comment;
+  userId: string;
+  replyTo: string | null;
+  replyContent: string;
+  formatDate: (dateString: string) => string;
+  toggleLike: (commentId: string, isReply?: boolean, parentId?: string) => void;
+  setReplyTo: (id: string | null) => void;
+  setReplyContent: (content: string) => void;
+  handleSubmitReply: (commentId: string) => void;
+  t: (key: string) => string;
+}
+
+const CommentItem: React.FC<CommentItemProps> = ({
+  comment,
+  userId,
+  replyTo,
+  replyContent,
+  formatDate,
+  toggleLike,
+  setReplyTo,
+  setReplyContent,
+  handleSubmitReply,
+  t,
+}) => (
+  <div key={comment.id} className="bg-white p-4 rounded-lg border">
+    <div className="flex items-start justify-between">
+      <div className="flex-1">
+        <div className="flex items-center mb-2">
+          <User className="w-4 h-4 mr-2 text-gray-500" />
+          <span className="font-medium">{comment.author}</span>
+          <span className="mx-2 text-gray-300">•</span>
+          <Calendar className="w-4 h-4 mr-1 text-gray-500" />
+          <span className="text-sm text-gray-500">
+            {formatDate(comment.date)}
+          </span>
+        </div>
+        <p className="text-gray-700 mb-3">{comment.content}</p>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => toggleLike(comment.id)}
+            className={`flex items-center space-x-1 text-sm ${
+              comment.likedBy?.includes(userId)
+                ? 'text-blue-600'
+                : 'text-gray-500 hover:text-blue-600'
+            }`}
+          >
+            <ThumbsUp className="w-4 h-4" />
+            <span>{comment.likes}</span>
+          </button>
+          <button
+            onClick={() => setReplyTo(comment.id)}
+            className="text-sm text-gray-500 hover:text-blue-600"
+          >
+            {t('blog.reply')}
+          </button>
+        </div>
+
+        {/* Reply form */}
+        {replyTo === comment.id && (
+          <div className="mt-4 ml-4 p-3 bg-gray-50 rounded">
+            <textarea
+              value={replyContent}
+              onChange={(e) => setReplyContent(e.target.value)}
+              placeholder={t('blog.replyPlaceholder')}
+              rows={2}
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+            />
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handleSubmitReply(comment.id)}
+                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+              >
+                {t('blog.writeReply')}
+              </button>
+              <button
+                onClick={() => {
+                  setReplyTo(null);
+                  setReplyContent('');
+                }}
+                className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 text-sm"
+              >
+                {t('common.cancel')}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Replies */}
+        {comment.replies && comment.replies.length > 0 && (
+          <div className="mt-4 ml-8 space-y-3">
+            {comment.replies.map((reply) => (
+              <ReplyItem
+                key={reply.id}
+                reply={reply}
+                parentId={comment.id}
+                userId={userId}
+                formatDate={formatDate}
+                toggleLike={toggleLike}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+);
+
 const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
   const { t, i18n } = useTranslation();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -243,105 +388,19 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
       {/* Comments list */}
       <div className="space-y-6">
         {comments.map((comment) => (
-          <div key={comment.id} className="bg-white p-4 rounded-lg border">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center mb-2">
-                  <User className="w-4 h-4 mr-2 text-gray-500" />
-                  <span className="font-medium">{comment.author}</span>
-                  <span className="mx-2 text-gray-300">•</span>
-                  <Calendar className="w-4 h-4 mr-1 text-gray-500" />
-                  <span className="text-sm text-gray-500">
-                    {formatDate(comment.date)}
-                  </span>
-                </div>
-                <p className="text-gray-700 mb-3">{comment.content}</p>
-                <div className="flex items-center space-x-4">
-                  <button
-                    onClick={() => toggleLike(comment.id)}
-                    className={`flex items-center space-x-1 text-sm ${
-                      comment.likedBy?.includes(userId)
-                        ? 'text-blue-600'
-                        : 'text-gray-500 hover:text-blue-600'
-                    }`}
-                  >
-                    <ThumbsUp className="w-4 h-4" />
-                    <span>{comment.likes}</span>
-                  </button>
-                  <button
-                    onClick={() => setReplyTo(comment.id)}
-                    className="text-sm text-gray-500 hover:text-blue-600"
-                  >
-                    {t('blog.reply')}
-                  </button>
-                </div>
-
-                {/* Reply form */}
-                {replyTo === comment.id && (
-                  <div className="mt-4 ml-4 p-3 bg-gray-50 rounded">
-                    <textarea
-                      value={replyContent}
-                      onChange={(e) => setReplyContent(e.target.value)}
-                      placeholder={t('blog.replyPlaceholder')}
-                      rows={2}
-                      className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-                    />
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleSubmitReply(comment.id)}
-                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                      >
-                        {t('blog.writeReply')}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setReplyTo(null);
-                          setReplyContent('');
-                        }}
-                        className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 text-sm"
-                      >
-                        {t('common.cancel')}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Replies */}
-                {comment.replies && comment.replies.length > 0 && (
-                  <div className="mt-4 ml-8 space-y-3">
-                    {comment.replies.map((reply) => (
-                      <div key={reply.id} className="bg-gray-50 p-3 rounded">
-                        <div className="flex items-center mb-1">
-                          <User className="w-3 h-3 mr-1 text-gray-500" />
-                          <span className="font-medium text-sm">
-                            {reply.author}
-                          </span>
-                          <span className="mx-2 text-gray-300">•</span>
-                          <span className="text-xs text-gray-500">
-                            {formatDate(reply.date)}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-700 mb-2">
-                          {reply.content}
-                        </p>
-                        <button
-                          onClick={() => toggleLike(reply.id, true, comment.id)}
-                          className={`flex items-center space-x-1 text-xs ${
-                            reply.likedBy?.includes(userId)
-                              ? 'text-blue-600'
-                              : 'text-gray-500 hover:text-blue-600'
-                          }`}
-                        >
-                          <ThumbsUp className="w-3 h-3" />
-                          <span>{reply.likes}</span>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <CommentItem
+            key={comment.id}
+            comment={comment}
+            userId={userId}
+            replyTo={replyTo}
+            replyContent={replyContent}
+            formatDate={formatDate}
+            toggleLike={toggleLike}
+            setReplyTo={setReplyTo}
+            setReplyContent={setReplyContent}
+            handleSubmitReply={handleSubmitReply}
+            t={t}
+          />
         ))}
       </div>
 

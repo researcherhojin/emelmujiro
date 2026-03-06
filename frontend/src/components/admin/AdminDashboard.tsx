@@ -247,7 +247,7 @@ const AdminDashboard: React.FC = () => {
             },
           ].map((activity, index) => (
             <div
-              key={index}
+              key={`${activity.action}-${activity.time}`}
               className="flex items-center justify-between py-2 border-b last:border-0"
             >
               <div>

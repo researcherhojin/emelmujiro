@@ -85,7 +85,7 @@ const AdminCannedTab: React.FC<AdminCannedTabProps> = ({
       <div className="space-y-2">
         {editingSettings.cannedResponses.map((response, index) => (
           <div
-            key={index}
+            key={`canned-${response}`}
             className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
           >
             {editingIndex === index ? (

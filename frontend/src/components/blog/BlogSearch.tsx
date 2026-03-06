@@ -181,7 +181,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
             </div>
             {recentSearches.map((term, index) => (
               <button
-                key={index}
+                key={term}
                 onClick={() => applyRecentSearch(term)}
                 className="block w-full text-left px-2 py-1 hover:bg-gray-100 rounded"
               >

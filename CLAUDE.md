@@ -218,7 +218,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 ### E2E Testing (Playwright)
 
-Config in `frontend/playwright.config.ts`. Tests in `frontend/e2e/`. Runs on Chromium, Firefox, WebKit, Mobile Chrome (Pixel 5), Mobile Safari (iPhone 12). `baseURL`: `http://localhost:5173`. CI: `retries: 2`, `workers: 1`, `forbidOnly: true`.
+Config in `frontend/playwright.config.ts`. Tests in `frontend/e2e/` (5 spec files: homepage, profile, blog, contact, accessibility). Runs on Chromium, Firefox, WebKit, Mobile Chrome (Pixel 5), Mobile Safari (iPhone 12). `baseURL`: `http://localhost:5173`. CI: `retries: 2`, `workers: 1`, `forbidOnly: true`. `accessibility.spec.ts` covers dark mode toggle + persistence and language switching via `i18nextLng` localStorage key.
 
 ### Codecov
 

@@ -92,7 +92,7 @@ export const SkeletonText: React.FC<SkeletonTextProps> = ({
   <div data-testid="skeleton-text" className={`space-y-2 ${className}`}>
     {Array.from({ length: lines }, (_, i) => (
       <Skeleton
-        key={i}
+        key={`skeleton-text-${i}`}
         height={16}
         className={i === lines - 1 ? 'w-3/4' : 'w-full'}
       />
@@ -159,7 +159,7 @@ export const SkeletonServices: React.FC<ComponentProps> = ({
       <div className="grid md:grid-cols-3 gap-8">
         {[1, 2, 3].map((i) => (
           <div
-            key={i}
+            key={`skeleton-service-${i}`}
             className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow"
           >
             {/* Icon */}
@@ -191,7 +191,7 @@ export const SkeletonBlogList: React.FC<SkeletonBlogListProps> = ({
     className={`grid md:grid-cols-2 lg:grid-cols-3 gap-8 ${className}`}
   >
     {Array.from({ length: Math.max(0, count) }, (_, i) => (
-      <SkeletonCard key={i} />
+      <SkeletonCard key={`skeleton-blog-${i}`} />
     ))}
   </div>
 );
@@ -207,7 +207,7 @@ export const SkeletonNav: React.FC<ComponentProps> = ({ className = '' }) => (
     {/* Menu items */}
     <div className="hidden md:flex space-x-6">
       {[1, 2, 3, 4].map((i) => (
-        <Skeleton key={i} width={80} height={20} />
+        <Skeleton key={`skeleton-nav-${i}`} width={80} height={20} />
       ))}
     </div>
     {/* Action button */}

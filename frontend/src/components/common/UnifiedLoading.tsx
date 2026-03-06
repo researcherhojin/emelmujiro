@@ -105,7 +105,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
           >
             {[0, 1, 2].map((index) => (
               <motion.div
-                key={index}
+                key={`dot-${index}`}
                 className={`w-3 h-3 ${bgColorClasses[color as keyof typeof bgColorClasses] || bgColorClasses.indigo} rounded-full`}
                 animate={{
                   y: [0, -10, 0],

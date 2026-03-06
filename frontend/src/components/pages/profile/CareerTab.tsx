@@ -21,7 +21,7 @@ const CareerTab: React.FC = memo(() => {
       <div className="space-y-5">
         {careerData.map((item, index) => (
           <div
-            key={index}
+            key={item.company}
             className="group flex flex-col md:flex-row md:items-start gap-2 md:gap-10"
           >
             {/* Period */}

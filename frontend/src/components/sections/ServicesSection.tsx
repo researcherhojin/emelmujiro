@@ -47,7 +47,7 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(({ service }) => {
         {Array.isArray(details) &&
           details.map((detail, idx) => (
             <li
-              key={idx}
+              key={`detail-${idx}`}
               className="text-sm text-gray-500 dark:text-gray-400 flex items-start"
             >
               <span className="mr-2 text-gray-400 mt-1">•</span>
