@@ -135,7 +135,7 @@ class AuthenticationAPITestCase(APITestCase):
     """Tests for Authentication API endpoints"""
 
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass12345")
 
     def test_user_registration(self):
         """Test user registration"""
@@ -143,8 +143,8 @@ class AuthenticationAPITestCase(APITestCase):
         data = {
             "username": "newuser",
             "email": "newuser@example.com",
-            "password": "newpass123",
-            "password_confirm": "newpass123",
+            "password": "newpass123456",
+            "password_confirm": "newpass123456",
             "first_name": "New",
             "last_name": "User",
         }
@@ -157,7 +157,7 @@ class AuthenticationAPITestCase(APITestCase):
     def test_user_login(self):
         """Test user login"""
         url = reverse("login")
-        data = {"username": "testuser", "password": "testpass123"}
+        data = {"username": "testuser", "password": "testpass12345"}
         response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert response.data is not None
@@ -177,7 +177,7 @@ class AuthenticationAPITestCase(APITestCase):
         data = {
             "username": "newuser",
             "email": "newuser@example.com",
-            "password": "newpass123",
+            "password": "newpass123456",
             "password_confirm": "differentpass123",
         }
         response: Response = self.client.post(url, data, format="json")  # type: ignore

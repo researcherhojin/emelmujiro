@@ -59,13 +59,9 @@ class RequestSecurityMiddleware(MiddlewareMixin):
         return None
 
     def get_client_ip(self, request):
-        """클라이언트 IP 주소 추출"""
-        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(",")[0].strip()
-        else:
-            ip = request.META.get("REMOTE_ADDR", "")
-        return ip
+        """클라이언트 IP 주소 추출 — views.get_client_ip과 동일 로직"""
+        from api.views import get_client_ip
+        return get_client_ip(request)
 
     def is_blocked_ip(self, ip_address):
         """IP 차단 여부 확인"""
@@ -110,7 +106,7 @@ class RequestSecurityMiddleware(MiddlewareMixin):
                     if pattern.search(body_str):
                         return True
             except UnicodeDecodeError:
-                pass
+                logger.warning(f"Non-UTF-8 request body from {self.get_client_ip(request)}")
 
         return False
 

@@ -32,8 +32,8 @@ def register(request):
     if password != password_confirm:
         return Response({"error": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
 
-    if len(password) < 8:
-        return Response({"error": "Password must be at least 8 characters"}, status=status.HTTP_400_BAD_REQUEST)
+    if len(password) < 12:
+        return Response({"error": "Password must be at least 12 characters"}, status=status.HTTP_400_BAD_REQUEST)
 
     if User.objects.filter(username=username).exists():
         return Response({"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST)
@@ -155,8 +155,8 @@ def change_password(request):
     if not user.check_password(old_password):
         return Response({"error": "Invalid old password"}, status=status.HTTP_400_BAD_REQUEST)
 
-    if len(new_password) < 8:
-        return Response({"error": "Password must be at least 8 characters"}, status=status.HTTP_400_BAD_REQUEST)
+    if len(new_password) < 12:
+        return Response({"error": "Password must be at least 12 characters"}, status=status.HTTP_400_BAD_REQUEST)
 
     user.set_password(new_password)
     user.save()

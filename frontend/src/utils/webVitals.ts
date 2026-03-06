@@ -1,6 +1,7 @@
 // Enhanced Web Vitals measurement utility
 import { Metric } from 'web-vitals';
 import logger from './logger';
+import env from '../config/env';
 
 interface PerformanceMetrics {
   dnsLookup: number;
@@ -97,8 +98,7 @@ const sendToAnalytics = async (
 
 // Enhanced performance monitoring
 export const logPerformanceMetrics = (config: WebVitalsConfig = {}): void => {
-  const enablePerformanceLogging =
-    config.enableLogging ?? process.env.NODE_ENV === 'development';
+  const enablePerformanceLogging = config.enableLogging ?? env.IS_DEVELOPMENT;
 
   if (enablePerformanceLogging) {
     window.addEventListener('load', () => {
@@ -193,7 +193,7 @@ export const initPerformanceMonitoring = (
 // Get performance budget alerts
 export const checkPerformanceBudget = (): void => {
   // Different budgets for development and production
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDevelopment = env.IS_DEVELOPMENT;
   const budgets = {
     FCP: isDevelopment ? 3000 : 1800, // First Contentful Paint: 3s dev / 1.8s prod
     LCP: isDevelopment ? 4000 : 2500, // Largest Contentful Paint: 4s dev / 2.5s prod

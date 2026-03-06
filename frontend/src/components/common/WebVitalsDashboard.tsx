@@ -1,6 +1,7 @@
 import React, { useEffect, useState, memo, useRef } from 'react';
 import { onCLS, onFCP, onLCP, onTTFB, onINP, Metric } from 'web-vitals';
 import logger from '../../utils/logger';
+import env from '../../config/env';
 
 // gtag is already defined in @types/global.d.ts
 
@@ -124,7 +125,7 @@ const WebVitalsDashboard: React.FC = memo(() => {
 
       // Log to console for debugging (development only)
       // Use debug level logging to reduce console noise
-      if (process.env.NODE_ENV === 'development') {
+      if (env.IS_DEVELOPMENT) {
         logger.debug(`Web Vital [${metric.name}]:`, {
           value: formatMetricValue(metric.name, metric.value),
           rating: vitalMetric.rating,
@@ -156,7 +157,7 @@ const WebVitalsDashboard: React.FC = memo(() => {
       }
     };
 
-    if (process.env.NODE_ENV === 'development') {
+    if (env.IS_DEVELOPMENT) {
       window.addEventListener('keydown', handleKeyPress);
       return () => window.removeEventListener('keydown', handleKeyPress);
     }
@@ -165,7 +166,7 @@ const WebVitalsDashboard: React.FC = memo(() => {
   }, []);
 
   // Only show in development or if explicitly enabled
-  if (!isVisible && process.env.NODE_ENV !== 'development') {
+  if (!isVisible && !env.IS_DEVELOPMENT) {
     return null;
   }
 
@@ -174,7 +175,7 @@ const WebVitalsDashboard: React.FC = memo(() => {
   return (
     <>
       {/* Toggle Button (Development Only) */}
-      {process.env.NODE_ENV === 'development' && (
+      {env.IS_DEVELOPMENT && (
         <button
           onClick={() => setIsVisible(!isVisible)}
           className="fixed bottom-4 right-4 z-50 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors"

@@ -29,6 +29,22 @@ vi.mock('web-vitals', () => ({
   onINP: (callback: Function) => mockOnINP(callback),
 }));
 
+// Mock env config — defaults to development mode, overridden in production tests
+const mockEnv = vi.hoisted(() => ({
+  IS_DEVELOPMENT: true,
+  IS_PRODUCTION: false,
+  IS_TEST: true,
+  API_URL: '',
+  NODE_ENV: 'development',
+}));
+vi.mock('../../../config/env', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../../config/env')>();
+  return {
+    ...actual,
+    default: mockEnv,
+  };
+});
+
 // Mock console.log
 const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 
@@ -208,7 +224,13 @@ describe('WebVitalsDashboard', () => {
 
   describe('Production Mode Behavior', () => {
     beforeEach(() => {
-      process.env = { ...process.env, NODE_ENV: 'production' };
+      mockEnv.IS_DEVELOPMENT = false;
+      mockEnv.IS_PRODUCTION = true;
+    });
+
+    afterEach(() => {
+      mockEnv.IS_DEVELOPMENT = true;
+      mockEnv.IS_PRODUCTION = false;
     });
 
     test('does not render toggle button in production mode', () => {
@@ -232,7 +254,7 @@ describe('WebVitalsDashboard', () => {
 
   describe('Web Vitals Integration', () => {
     beforeEach(() => {
-      process.env = { ...process.env, NODE_ENV: 'development' };
+      mockEnv.IS_DEVELOPMENT = true;
     });
 
     test('registers all web vitals observers', () => {
