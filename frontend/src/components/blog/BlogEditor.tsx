@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Save, X, Eye, Download, Upload } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { X, Download, Upload } from 'lucide-react';
 import { BlogPost } from '../../types';
 import logger from '../../utils/logger';
+import EditorForm from './EditorForm';
+import EditorPreview from './EditorPreview';
 
 const BlogEditor: React.FC = () => {
   const { t } = useTranslation();
@@ -23,32 +23,25 @@ const BlogEditor: React.FC = () => {
     image_url: '',
   });
 
-  // Check admin mode
   useEffect(() => {
     const adminMode = localStorage.getItem('adminMode') === 'true';
     setIsAdmin(adminMode);
 
-    // URL parameter for admin mode activation
     if (searchParams.get('admin') === 'true') {
       localStorage.setItem('adminMode', 'true');
       setIsAdmin(true);
     }
   }, [searchParams]);
 
-  // Handle form changes
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Save post to localStorage
   const handleSave = () => {
     if (!formData.title || !formData.content) {
       alert(t('blogEditor.titleContentRequired'));
@@ -80,17 +73,13 @@ const BlogEditor: React.FC = () => {
         published: true,
       };
 
-      // Get existing posts from localStorage
       const postsData = localStorage.getItem('customBlogPosts');
       const existingPosts = postsData ? JSON.parse(postsData) : [];
       const updatedPosts = [newPost, ...existingPosts];
 
-      // Save to localStorage
       localStorage.setItem('customBlogPosts', JSON.stringify(updatedPosts));
-
       alert(t('blogEditor.postSaved'));
 
-      // Reset form
       setFormData({
         title: '',
         excerpt: '',
@@ -101,7 +90,6 @@ const BlogEditor: React.FC = () => {
         image_url: '',
       });
 
-      // Navigate to blog
       navigate('/blog');
     } catch (error) {
       logger.error('Failed to save post:', error);
@@ -109,7 +97,6 @@ const BlogEditor: React.FC = () => {
     }
   };
 
-  // Export posts as JSON
   const handleExport = () => {
     try {
       const customPosts = localStorage.getItem('customBlogPosts');
@@ -130,7 +117,6 @@ const BlogEditor: React.FC = () => {
     }
   };
 
-  // Import posts from JSON
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -152,7 +138,6 @@ const BlogEditor: React.FC = () => {
         const existingPosts = existingData ? JSON.parse(existingData) : [];
         const mergedPosts = [...posts, ...existingPosts];
 
-        // Remove duplicates based on ID
         const uniquePosts = mergedPosts.filter(
           (post, index, self) =>
             index === self.findIndex((p) => p.id === post.id)
@@ -167,7 +152,6 @@ const BlogEditor: React.FC = () => {
     reader.readAsText(file);
   };
 
-  // Categories
   const categories = [
     'AI',
     t('blogEditor.categories.webDev'),
@@ -194,9 +178,7 @@ const BlogEditor: React.FC = () => {
               <code className="bg-gray-100 px-2 py-1 rounded">?admin=true</code>
             </p>
             <button
-              onClick={() => {
-                navigate('/blog/new?admin=true');
-              }}
+              onClick={() => navigate('/blog/new?admin=true')}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               {t('blogEditor.activateAdmin')}
@@ -241,184 +223,25 @@ const BlogEditor: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Editor */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4">{t('blogEditor.editor')}</h2>
+          <EditorForm
+            formData={formData}
+            categories={categories}
+            showPreview={showPreview}
+            onChange={handleChange}
+            onSave={handleSave}
+            onTogglePreview={() => setShowPreview(!showPreview)}
+          />
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t('blogEditor.titleLabel')}
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={t('blogEditor.enterTitle')}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t('blogEditor.excerptLabel')}
-                </label>
-                <input
-                  type="text"
-                  name="excerpt"
-                  value={formData.excerpt}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={t('blogEditor.excerptPlaceholder')}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    {t('blogEditor.categoryLabel')}
-                  </label>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">{t('blogEditor.selectCategory')}</option>
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    {t('blogEditor.authorLabel')}
-                  </label>
-                  <input
-                    type="text"
-                    name="author"
-                    value={formData.author}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t('blogEditor.tagsLabel')}
-                </label>
-                <input
-                  type="text"
-                  name="tags"
-                  value={formData.tags}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={t('blogEditor.tagsPlaceholder')}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t('blogEditor.imageUrlLabel')}
-                </label>
-                <input
-                  type="text"
-                  name="image_url"
-                  value={formData.image_url}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={t('blogEditor.imageUrlPlaceholder')}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t('blogEditor.contentLabel')}
-                </label>
-                <textarea
-                  name="content"
-                  value={formData.content}
-                  onChange={handleChange}
-                  rows={15}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
-                  placeholder={t('blogEditor.contentPlaceholder')}
-                />
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={handleSave}
-                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center justify-center"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {t('common.save')}
-                </button>
-                <button
-                  onClick={() => setShowPreview(!showPreview)}
-                  className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center justify-center"
-                >
-                  <Eye className="w-4 h-4 mr-2" />
-                  {showPreview
-                    ? t('blogEditor.editor')
-                    : t('blogEditor.preview')}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Preview */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4">
-              {t('blogEditor.preview')}
-            </h2>
-
-            <article className="prose prose-indigo max-w-none">
-              {formData.image_url && (
-                <img
-                  src={formData.image_url}
-                  alt={formData.title}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
-                />
-              )}
-
-              {formData.category && (
-                <span className="inline-block px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full mb-2">
-                  {formData.category}
-                </span>
-              )}
-
-              <h1>{formData.title || t('blogEditor.enterTitle')}</h1>
-
-              {formData.tags && (
-                <div className="flex gap-2 mb-4">
-                  {formData.tags.split(',').map((tag, index) => (
-                    <span
-                      key={index}
-                      className="text-sm bg-gray-100 px-2 py-1 rounded"
-                    >
-                      #{tag.trim()}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {formData.excerpt && (
-                <p className="text-gray-600 italic">{formData.excerpt}</p>
-              )}
-
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {formData.content || `*${t('blogEditor.contentFallback')}*`}
-              </ReactMarkdown>
-            </article>
-          </div>
+          <EditorPreview
+            title={formData.title}
+            excerpt={formData.excerpt}
+            content={formData.content}
+            category={formData.category}
+            tags={formData.tags}
+            imageUrl={formData.image_url}
+          />
         </div>
 
-        {/* Instructions */}
         <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <h3 className="font-bold text-yellow-800 mb-2">
             {t('blogEditor.howToUse')}

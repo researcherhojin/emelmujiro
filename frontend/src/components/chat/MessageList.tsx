@@ -1,20 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Check,
-  CheckCheck,
-  Clock,
-  AlertTriangle,
-  RefreshCw,
-  Download,
-  Eye,
-  Bot,
-  Info,
-} from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Bot } from 'lucide-react';
 import { useChatContext } from '../../contexts/ChatContext';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import logger from '../../utils/logger';
+import MessageBubble from './MessageBubble';
 
 const MessageList: React.FC = () => {
   const { t } = useTranslation();
@@ -23,18 +14,15 @@ const MessageList: React.FC = () => {
   const listRef = useRef<HTMLDivElement>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (shouldAutoScroll) {
       scrollToBottom();
     }
   }, [messages, shouldAutoScroll]);
 
-  // Check if user has scrolled up to disable auto-scroll
   useEffect(() => {
     const handleScroll = () => {
       if (!listRef.current) return;
-
       const { scrollTop, scrollHeight, clientHeight } = listRef.current;
       const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
       setShouldAutoScroll(isNearBottom);
@@ -64,23 +52,6 @@ const MessageList: React.FC = () => {
     return format(messageDate, 'MM/dd HH:mm');
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'sending':
-        return <Clock className="w-3 h-3 text-gray-400" />;
-      case 'sent':
-        return <Check className="w-3 h-3 text-gray-400" />;
-      case 'delivered':
-        return <CheckCheck className="w-3 h-3 text-gray-400" />;
-      case 'read':
-        return <CheckCheck className="w-3 h-3 text-blue-500" />;
-      case 'failed':
-        return <AlertTriangle className="w-3 h-3 text-red-500" />;
-      default:
-        return null;
-    }
-  };
-
   const handleRetryMessage = async (messageId: string) => {
     const message = messages.find((m) => m.id === messageId);
     if (!message) return;
@@ -102,7 +73,6 @@ const MessageList: React.FC = () => {
     filename: string
   ) => {
     if (file instanceof File) {
-      // Create blob URL for local file
       const url = URL.createObjectURL(file);
       const a = document.createElement('a');
       a.href = url;
@@ -112,7 +82,6 @@ const MessageList: React.FC = () => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } else if (file?.url) {
-      // Direct download from URL
       const a = document.createElement('a');
       a.href = file.url;
       a.download = filename;
@@ -134,11 +103,9 @@ const MessageList: React.FC = () => {
       img.onload = () => {
         const newWindow = window.open('', '_blank');
         if (newWindow) {
-          // Safely set the document content using DOM methods
           const doc = newWindow.document;
-          doc.title = filename.replace(/[<>]/g, ''); // Sanitize filename
+          doc.title = filename.replace(/[<>]/g, '');
 
-          // Create elements safely
           const html = doc.documentElement;
           html.style.height = '100%';
 
@@ -156,7 +123,6 @@ const MessageList: React.FC = () => {
           imgElement.style.maxHeight = '100%';
           imgElement.style.objectFit = 'contain';
 
-          // Clear any existing content and append the image
           body.innerHTML = '';
           body.appendChild(imgElement);
         }
@@ -166,230 +132,12 @@ const MessageList: React.FC = () => {
     }
   };
 
-  const renderMessageContent = (message: {
-    type: string;
-    content: string;
-    file?: File | { url: string; size?: number };
-  }) => {
-    switch (message.type) {
-      case 'text':
-        return (
-          <div className="whitespace-pre-wrap break-words">
-            {message.content}
-          </div>
-        );
-
-      case 'image':
-        return (
-          <div className="space-y-2">
-            <button
-              className="cursor-pointer relative group rounded-lg overflow-hidden max-w-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onClick={() => handleImagePreview(message.file, message.content)}
-              type="button"
-              aria-label={`Preview image: ${message.content}`}
-            >
-              {message.file instanceof File ? (
-                <img
-                  src={URL.createObjectURL(message.file)}
-                  alt={message.content}
-                  className="w-full h-auto max-h-48 object-cover group-hover:opacity-90 transition-opacity"
-                />
-              ) : (
-                <div className="w-full h-32 bg-gray-200 dark:bg-gray-700 flex items-center justify-center rounded-lg">
-                  <Eye className="w-6 h-6 text-gray-400" />
-                </div>
-              )}
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
-                <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-            </button>
-            <button
-              onClick={() => handleFileDownload(message.file, message.content)}
-              className="flex items-center space-x-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              <Download className="w-4 h-4" />
-              <span>{message.content}</span>
-            </button>
-          </div>
-        );
-
-      case 'file':
-        return (
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 max-w-xs">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                <Download className="w-5 h-5 text-gray-500" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium truncate">
-                  {message.content}
-                </div>
-                {message.file?.size && (
-                  <div className="text-xs text-gray-500">
-                    {(message.file.size / 1024).toFixed(1)} KB
-                  </div>
-                )}
-              </div>
-              <button
-                onClick={() =>
-                  handleFileDownload(message.file, message.content)
-                }
-                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
-                title={t('chat.downloadFile', '파일 다운로드')}
-              >
-                <Download className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-              </button>
-            </div>
-          </div>
-        );
-
-      case 'system':
-        return (
-          <div className="text-center text-gray-600 dark:text-gray-400 italic">
-            {message.content}
-          </div>
-        );
-
-      default:
-        return <div>{message.content}</div>;
-    }
-  };
-
-  const renderMessage = (
-    message: {
-      id: string;
-      type: string;
-      content: string;
-      sender: string;
-      status: string;
-      timestamp: Date;
-      agentName?: string;
-      file?: File | { url: string };
-      quickReplies?: string[];
-    },
-    _index: number
-  ) => {
-    const isUser = message.sender === 'user';
-    const isSystem = message.sender === 'system';
-    const showAvatar = !isUser && !isSystem;
-    // Timestamp logic can be added here if needed in the future
-
-    if (isSystem) {
-      return (
-        <motion.div
-          key={message.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex justify-center my-4"
-        >
-          <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full text-sm text-gray-600 dark:text-gray-400 flex items-center space-x-2">
-            <Info className="w-4 h-4" />
-            <span>{message.content}</span>
-          </div>
-        </motion.div>
-      );
-    }
-
-    return (
-      <motion.div
-        key={message.id}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
-        onViewportEnter={() => {
-          if (!isUser && message.status !== 'read') {
-            markAsRead(message.id);
-          }
-        }}
-      >
-        <div
-          className={`flex max-w-[70%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
-        >
-          {/* Avatar */}
-          {showAvatar && (
-            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-semibold mr-3">
-              {message.agentName ? (
-                message.agentName[0]
-              ) : (
-                <Bot className="w-4 h-4" />
-              )}
-            </div>
-          )}
-
-          {/* Message Content */}
-          <div className="flex flex-col">
-            {/* Agent Name */}
-            {showAvatar && message.agentName && (
-              <div className="text-xs text-gray-500 mb-1 px-2">
-                {message.agentName}
-              </div>
-            )}
-
-            {/* Message Bubble */}
-            <div
-              className={`
-                px-4 py-2 rounded-2xl relative
-                ${
-                  isUser
-                    ? 'bg-blue-500 text-white rounded-br-md'
-                    : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 rounded-bl-md'
-                }
-                ${message.status === 'failed' ? 'border-red-300 bg-red-50 dark:bg-red-900/20' : ''}
-              `}
-            >
-              {renderMessageContent(message)}
-
-              {/* Failed Message Actions */}
-              {message.status === 'failed' && (
-                <div className="mt-2 flex items-center space-x-2">
-                  <button
-                    onClick={() => handleRetryMessage(message.id)}
-                    className="flex items-center space-x-1 text-xs text-red-600 hover:text-red-700"
-                  >
-                    <RefreshCw className="w-3 h-3" />
-                    <span>{t('chat.retry', '다시 시도')}</span>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Timestamp and Status */}
-            <div
-              className={`flex items-center mt-1 text-xs text-gray-500 ${isUser ? 'justify-end' : 'justify-start'}`}
-            >
-              <span className="mr-1">
-                {formatMessageTime(message.timestamp)}
-              </span>
-              {isUser && getStatusIcon(message.status)}
-            </div>
-
-            {/* Quick Replies */}
-            {!isUser &&
-              message.quickReplies &&
-              message.quickReplies.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {message.quickReplies.map((reply, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        // Send quick reply as a message
-                        sendMessage({
-                          type: 'text',
-                          content: reply,
-                          sender: 'user',
-                        });
-                      }}
-                      className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
-                    >
-                      {reply}
-                    </button>
-                  ))}
-                </div>
-              )}
-          </div>
-        </div>
-      </motion.div>
-    );
+  const handleSendQuickReply = (content: string) => {
+    sendMessage({
+      type: 'text',
+      content,
+      sender: 'user',
+    });
   };
 
   if (messages.length === 0) {
@@ -418,13 +166,22 @@ const MessageList: React.FC = () => {
       style={{ scrollBehavior: 'smooth' }}
     >
       <AnimatePresence>
-        {messages.map((message, index) => renderMessage(message, index))}
+        {messages.map((message) => (
+          <MessageBubble
+            key={message.id}
+            message={message}
+            formatMessageTime={formatMessageTime}
+            onRetry={handleRetryMessage}
+            onSendQuickReply={handleSendQuickReply}
+            onFileDownload={handleFileDownload}
+            onImagePreview={handleImagePreview}
+            onMarkAsRead={markAsRead}
+          />
+        ))}
       </AnimatePresence>
 
-      {/* Auto-scroll trigger */}
       <div ref={messagesEndRef} />
 
-      {/* Scroll to bottom button */}
       <AnimatePresence>
         {!shouldAutoScroll && (
           <motion.button
