@@ -102,12 +102,12 @@ Blog, Contact, Chat features are **not functional** on GitHub Pages (mock data o
 - `/blog`, `/blog/new`, `/blog/:id` → `<UnderConstruction featureKey="blog" />`
 - `ChatWidget` removed from `AppLayout` entirely
 
-The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`) accepts a `featureKey` prop (`blog` | `contact` | `chat`) for feature-specific i18n descriptions. Original component files (`ContactPage.tsx`, `BlogListPage.tsx`, `BlogDetail.tsx`, `BlogEditor.tsx`, `ChatWidget.tsx`) are **preserved** — they have their own tests that import them directly. Provider hierarchy (`BlogProvider`, `FormProvider`) is retained for existing test compatibility. `ChatProvider` still exists in `src/contexts/` for test compatibility but is removed from `App.tsx` provider hierarchy. Navbar and footer links to `/blog` and `/contact` are intentionally kept — they navigate to the under construction pages.
+The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`) accepts a `featureKey` prop (`blog` | `contact` | `chat`) for feature-specific i18n descriptions. Original component files (`ContactPage.tsx`, `BlogListPage.tsx`, `BlogDetail.tsx`, `BlogEditor.tsx`, `ChatWidget.tsx`) are **preserved** — they have their own tests that import them directly. Provider hierarchy (`BlogProvider`, `FormProvider`) is retained for existing test compatibility. `ChatProvider` exists in `src/contexts/` for test compatibility but is NOT in `App.tsx` provider hierarchy. Navbar and footer links to `/blog` and `/contact` are intentionally kept — they navigate to the under construction pages.
 
 ### State Management
 
 - **React Context** — All state management via UIContext, AuthContext, BlogContext, FormContext, ChatContext (all in `src/contexts/`). All providers use `useMemo` for value objects and `useCallback` for functions to prevent unnecessary re-renders.
-- **ChatContext split** — `ChatContext.tsx` (373 lines) imports types/helpers from `chatHelpers.ts` (types, defaults, utilities) and delegates WebSocket logic to `useChatConnection.ts` (custom hook). Consumer code imports from `ChatContext.tsx` which re-exports all types.
+- **ChatContext split** — `ChatContext.tsx` imports types/helpers from `chatHelpers.ts` (types, defaults, utilities) and delegates WebSocket logic to `useChatConnection.ts` (custom hook). Consumer code imports from `ChatContext.tsx` which re-exports all types.
 - **Types** — `src/types/index.ts` exports: `BlogPost`, `ContactFormData`, `PaginatedResponse`, `ErrorResponse`.
 
 ### Mock API System
@@ -179,6 +179,10 @@ vi.mock('../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },
 }));
 ```
+
+### Component Extraction Pattern
+
+Large components are split into sub-components within the same file (no separate files). `AboutPage.tsx` has 6 section components (`HeroSection`, `MissionSection`, etc.). `BlogComments.tsx` has `CommentItem` and `ReplyItem`. Data arrays and interfaces are at module scope above the sub-components.
 
 ### Path Alias
 
@@ -295,7 +299,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 69 files / 1107 tests, Backend 69 tests, 0 failures (as of 2026-03-07)
+4. **Test count**: Frontend 69 files / 1107 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-07)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility

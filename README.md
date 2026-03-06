@@ -226,7 +226,17 @@ Django `SESSION_COOKIE_HTTPONLY=True` 설정
 #### 6. 관리자 대시보드 연동 `대기` → #2
 
 `AdminDashboard`에 실제 통계 API 연결 (방문자 수, 문의 건수, 블로그 글 수 등).
-현재는 플레이스홀더 UI만 존재
+현재는 플레이스홀더 UI만 존재. `AdminDashboard.tsx` 458줄 — 연동 시 Sidebar/Overview/ContentManagement 하위 컴포넌트 분리 권장
+
+#### 7. Notification 모델 구현 `대기` → #1
+
+`consumers.py:251,256`에 `mark_notification_read`, `mark_all_notifications_read` 스텁 존재.
+Notification Django 모델 + REST API + WebSocket 핸들러 구현 필요. 1.0 이후 범위
+
+#### 8. BlogComments 답글 접근성 보완 `낮음`
+
+`BlogComments.tsx` 답글/좋아요 버튼에 `aria-label` 미설정.
+예: `aria-label={t('blog.replyTo', { author: comment.author })}`
 
 #### 배포 플랫폼 비교 (Django + SQLite)
 
@@ -257,8 +267,29 @@ Django `SESSION_COOKIE_HTTPONLY=True` 설정
 - [x] 리팩토링 백로그 전량 해소 — C5~C7, H7, M5/M7~M9, BE1~BE7 (총 16건 완료, 이슈 아님 2건)
 - [x] JWT 로그아웃 토큰 블랙리스트 — `token_blacklist` 앱 INSTALLED_APPS 등록, 마이그레이션 적용
 - [x] 뉴스레터 재구독 버그 수정 — serializer UniqueValidator 제거, view 재구독 로직 정상화
+- [x] key={index} anti-pattern 전량 교체 — 15개 컴포넌트 19곳, 데이터 필드/prefix 기반 안정 키
+- [x] AboutPage 섹션 분리 — 6개 섹션 컴포넌트 추출 (같은 파일 내)
+- [x] BlogComments 분리 — CommentItem/ReplyItem 서브 컴포넌트 추출
+- [x] E2E 다크모드 + 언어 전환 테스트 — `accessibility.spec.ts` 8개 테스트
+- [x] 3차 + 4차 감사 전 항목 해소 — Critical 5 / High 13 / Medium 18 / Low 11 (총 47건)
 
 ## 리팩토링 백로그
+
+### 5차 감사 (2026.03.07)
+
+전체 코드베이스 5차 감사 결과. 3차/4차 감사 항목은 **전량 해소**. 잔여 항목은 배포 단계에서 처리할 사항만 남음.
+
+**결론: 코드 품질 이슈 없음.** 아래는 배포/기능 확장 시 처리할 항목.
+
+| #   | 우선도 | 설명                                                                               | 파일                                 | 비고              |
+| --- | ------ | ---------------------------------------------------------------------------------- | ------------------------------------ | ----------------- |
+| 1   | Medium | `AdminDashboard.tsx` 458줄 — 실제 API 연동 시 하위 컴포넌트 분리                   | `AdminDashboard.tsx`                 | → 남은 작업 #6    |
+| 2   | Medium | `consumers.py` notification 스텁 — 모델 구현 필요                                  | `consumers.py:251,256`               | → 남은 작업 #7    |
+| 3   | Low    | `BlogComments.tsx` 답글/좋아요 버튼 `aria-label` 미설정                            | `BlogComments.tsx`                   | → 남은 작업 #8    |
+| 4   | Info   | `api.ts` 425줄, `websocket.ts` 560줄 — 현재 규모 허용 범위, 기능 추가 시 분리 고려 | `services/`                          | 현재 이슈 아님    |
+| 5   | Info   | TODO 주석 5개 — 모두 "backend 배포 후 연동" 대기 상태                              | `AdminDashboard.tsx`, `consumers.py` | 배포 시 자연 해소 |
+
+---
 
 ### 4차 감사 (2026.03.07)
 
