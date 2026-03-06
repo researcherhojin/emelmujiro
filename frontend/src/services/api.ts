@@ -148,42 +148,8 @@ interface PaginatedResponse<T> {
   results: T[];
 }
 
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  technologies: string[];
-  link?: string;
-}
-
 // API methods with improved error handling
 export const api = {
-  // Projects
-  getProjects: () => {
-    if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: [] as Project[],
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
-    }
-    return axiosInstance.get<Project[]>('projects/');
-  },
-  createProject: (data: Partial<Project>) => {
-    if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: { id: Date.now(), ...data } as Project,
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
-    }
-    return axiosInstance.post<Project>('projects/', data);
-  },
-
   // Blog
   getBlogPosts: (page: number = 1, pageSize?: number) => {
     const size = pageSize || 6;

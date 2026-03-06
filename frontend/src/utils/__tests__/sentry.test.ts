@@ -103,7 +103,6 @@ import {
   startTransaction,
   reportErrorBoundary,
   measurePerformance,
-  flushSentry,
 } from '../sentry';
 import logger from '../logger';
 
@@ -585,24 +584,6 @@ describe('sentry', () => {
     });
   });
 
-  describe('flushSentry', () => {
-    it('should not call Sentry.flush when Sentry is disabled', async () => {
-      mockEnv.ENABLE_SENTRY = false;
-
-      await flushSentry();
-
-      expect(mockFlush).not.toHaveBeenCalled();
-    });
-
-    it('should call Sentry.flush with 2000ms timeout when enabled', async () => {
-      mockEnv.ENABLE_SENTRY = true;
-
-      await flushSentry();
-
-      expect(mockFlush).toHaveBeenCalledWith(2000);
-    });
-  });
-
   describe('default export', () => {
     it('should export all functions', async () => {
       const sentryModule = await import('../sentry');
@@ -617,7 +598,6 @@ describe('sentry', () => {
       expect(defaultExport.startTransaction).toBe(startTransaction);
       expect(defaultExport.reportErrorBoundary).toBe(reportErrorBoundary);
       expect(defaultExport.measurePerformance).toBe(measurePerformance);
-      expect(defaultExport.flushSentry).toBe(flushSentry);
     });
   });
 });

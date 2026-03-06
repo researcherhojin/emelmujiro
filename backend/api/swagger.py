@@ -1,6 +1,10 @@
+import os
+
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+
+CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL", "researcherhojin@gmail.com")
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -45,7 +49,7 @@ schema_view = get_schema_view(
         """,
         terms_of_service="https://emelmujiro.com/terms/",
         contact=openapi.Contact(
-            name="Emelmujiro Support", email="researcherhojin@gmail.com", url="https://emelmujiro.com"
+            name="Emelmujiro Support", email=CONTACT_EMAIL, url="https://emelmujiro.com"
         ),
         license=openapi.License(name="MIT License"),
     ),

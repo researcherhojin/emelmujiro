@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { X, Download, Upload } from 'lucide-react';
+import { X, Download, Upload, CheckCircle, AlertTriangle } from 'lucide-react';
 import { BlogPost } from '../../types';
 import logger from '../../utils/logger';
 import EditorForm from './EditorForm';
 import EditorPreview from './EditorPreview';
+
+interface ToastState {
+  message: string;
+  type: 'success' | 'error';
+}
 
 const BlogEditor: React.FC = () => {
   const { t } = useTranslation();
@@ -13,6 +18,23 @@ const BlogEditor: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = useCallback(
+    (message: string, type: 'success' | 'error') => {
+      setToast({ message, type });
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = setTimeout(() => setToast(null), 3000);
+    },
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
@@ -44,7 +66,7 @@ const BlogEditor: React.FC = () => {
 
   const handleSave = () => {
     if (!formData.title || !formData.content) {
-      alert(t('blogEditor.titleContentRequired'));
+      showToast(t('blogEditor.titleContentRequired'), 'error');
       return;
     }
 
@@ -78,7 +100,7 @@ const BlogEditor: React.FC = () => {
       const updatedPosts = [newPost, ...existingPosts];
 
       localStorage.setItem('customBlogPosts', JSON.stringify(updatedPosts));
-      alert(t('blogEditor.postSaved'));
+      showToast(t('blogEditor.postSaved'), 'success');
 
       setFormData({
         title: '',
@@ -93,7 +115,7 @@ const BlogEditor: React.FC = () => {
       navigate('/blog');
     } catch (error) {
       logger.error('Failed to save post:', error);
-      alert(t('blogEditor.saveError'));
+      showToast(t('blogEditor.saveError'), 'error');
     }
   };
 
@@ -113,7 +135,7 @@ const BlogEditor: React.FC = () => {
       linkElement.click();
     } catch (error) {
       logger.error('Failed to export posts:', error);
-      alert(t('blogEditor.exportError'));
+      showToast(t('blogEditor.exportError'), 'error');
     }
   };
 
@@ -144,9 +166,12 @@ const BlogEditor: React.FC = () => {
         );
 
         localStorage.setItem('customBlogPosts', JSON.stringify(uniquePosts));
-        alert(t('blogEditor.importSuccess', { count: posts.length }));
+        showToast(
+          t('blogEditor.importSuccess', { count: posts.length }),
+          'success'
+        );
       } catch {
-        alert(t('blogEditor.importError'));
+        showToast(t('blogEditor.importError'), 'error');
       }
     };
     reader.readAsText(file);
@@ -191,6 +216,28 @@ const BlogEditor: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
+      {toast && (
+        <div
+          className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white transition-opacity ${
+            toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'
+          }`}
+          role="alert"
+        >
+          {toast.type === 'success' ? (
+            <CheckCircle className="w-5 h-5" />
+          ) : (
+            <AlertTriangle className="w-5 h-5" />
+          )}
+          <span>{toast.message}</span>
+          <button
+            onClick={() => setToast(null)}
+            className="ml-2 text-white/80 hover:text-white"
+            aria-label={t('common.close')}
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">{t('blogEditor.writePost')}</h1>

@@ -125,6 +125,10 @@ const MessageList: React.FC = () => {
 
           body.innerHTML = '';
           body.appendChild(imgElement);
+
+          newWindow.addEventListener('unload', () => URL.revokeObjectURL(url));
+        } else {
+          URL.revokeObjectURL(url);
         }
       };
     } else if (file?.url) {
@@ -163,7 +167,6 @@ const MessageList: React.FC = () => {
     <div
       ref={listRef}
       className="flex-1 overflow-y-auto px-4 py-2 scroll-smooth"
-      style={{ scrollBehavior: 'smooth' }}
     >
       <AnimatePresence>
         {messages.map((message) => (

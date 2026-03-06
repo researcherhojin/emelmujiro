@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
-from django.db.models import Count
+
 from .models import BlogPost, Contact, ContactAttempt, SiteVisit, NewsletterSubscription
 
 
@@ -29,9 +29,6 @@ class BlogPostAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = ("view_count", "created_at", "updated_at")
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).annotate(view_count_display=Count("id"))
 
 
 @admin.register(Contact)

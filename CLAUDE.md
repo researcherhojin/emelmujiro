@@ -205,7 +205,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 ### Test Utilities
 
-- `renderWithProviders` in `src/test-utils/renderWithProviders.tsx` — Wraps component in all providers (HelmetProvider, UIProvider, AuthProvider, BlogProvider, FormProvider, Router). ChatProvider is excluded due to WebSocket complexity.
+- `renderWithProviders` in `src/test-utils/renderWithProviders.tsx` — Wraps component in all providers (HelmetProvider, UIProvider, AuthProvider, BlogProvider, FormProvider, MemoryRouter). Uses `MemoryRouter` (not HashRouter) — correct for tests since it's controllable and doesn't require hash prefix. ChatProvider is excluded due to WebSocket complexity.
 - `renderWithSelectiveProviders` in `src/test-utils/test-utils.tsx` — Selective provider wrapping via flags (`includeRouter`, `includeUI`, `includeAuth`, etc.).
 - Individual wrappers: `renderWithBlogProvider`, `renderWithAuthProvider`, `renderWithUIProvider`, `renderWithFormProvider`, `renderWithRouter`.
 - Data factories: `createMockBlogPost`, `createMockUser`, `createMockComment` in `test-utils.tsx`.
@@ -216,7 +216,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 69 test files, 1109 tests, 0 failures, 0 skips
+- 69 test files, 1107 tests, 0 failures, 0 skips. Backend: 14 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
@@ -279,6 +279,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - File upload validation: `api/validators.py` — case-insensitive extension, MIME type, size (5MB)
 - API docs: Swagger at `/api/docs/`, ReDoc at `/api/redoc/` (drf-yasg)
 - Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`. `/api/send-test-email/` only registered when `DEBUG=True`
+- Custom middleware registered in MIDDLEWARE: `RequestSecurityMiddleware` (IP blocking, rate limiting, malicious pattern detection), `ContentSecurityMiddleware` (CSP + security headers), `APIResponseTimeMiddleware` (slow request logging)
 - Timezone: `Asia/Seoul`, language: `ko-kr`
 - File upload: 5MB max; allowed extensions: `.jpg`, `.jpeg`, `.png`, `.gif`, `.pdf`, `.doc`, `.docx`
 - CI uses `uv sync --frozen` (lockfile must be up to date)
@@ -296,7 +297,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: 69 test files, 1109 tests, 0 failures, 0 skips (as of 2026-03-07)
+4. **Test count**: 69 test files, 1107 tests, 0 failures, 0 skips (as of 2026-03-07)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
@@ -311,4 +312,4 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 16. **No global focus box-shadow on buttons/links**: Only `input`/`textarea` have global focus ring in `index.css`. Adding `button:focus` box-shadow to global CSS will cause persistent focus boxes on mouse click
 17. **setTimeout cleanup**: All `setTimeout` calls in components and contexts must store the timer ID in a `useRef(null)` and `clearTimeout` in the useEffect cleanup to prevent memory leaks. Already applied in: `UIContext`, `FormContext`, `Navbar`, `Footer`, `BlogInteractions`, `BlogSearch`, `ChatContext` (reconnect timer). Follow the same pattern for any new `setTimeout` usage
 18. **Comments in English**: All code comments must be in English. Korean comments were converted to English across the entire codebase (sentry.ts, logger.ts, BlogContext.tsx, api.ts, global.d.ts, etc.). Do not add Korean comments
-19. **Logger has no named exports**: `logger.ts` only exports `default` (singleton instance). Import as `import logger from '../utils/logger'`, not destructured
+19. **Logger has no named exports**: `logger.ts` only exports `default` (singleton instance). Import as `import logger from '../utils/logger'`, not destructured. Uses `env.IS_DEVELOPMENT` from `config/env.ts` — do NOT use `process.env.NODE_ENV` directly in frontend code

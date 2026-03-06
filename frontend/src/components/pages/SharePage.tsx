@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Share2, MessageCircle, Mail, ExternalLink } from 'lucide-react';
+import {
+  Share2,
+  MessageCircle,
+  Mail,
+  ExternalLink,
+  CheckCircle,
+} from 'lucide-react';
 
 interface SharedContent {
   title?: string;
@@ -15,6 +21,23 @@ const SharePage: React.FC = () => {
   const navigate = useNavigate();
   const [sharedContent, setSharedContent] = useState<SharedContent>({});
   const [isProcessing, setIsProcessing] = useState(true);
+  const [showSavedToast, setShowSavedToast] = useState(false);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showSaveSuccess = useCallback(() => {
+    setShowSavedToast(true);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => {
+      setShowSavedToast(false);
+      navigate('/');
+    }, 1500);
+  }, [navigate]);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     // Parse shared content from URL parameters
@@ -76,9 +99,7 @@ ${t('share.inquiryFooter')}
       JSON.stringify(savedItems.slice(0, 50))
     ); // Keep only 50 items
 
-    // Show success message and redirect
-    alert(t('share.saved'));
-    navigate('/');
+    showSaveSuccess();
   };
 
   if (isProcessing) {
@@ -121,6 +142,15 @@ ${t('share.inquiryFooter')}
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
+      {showSavedToast && (
+        <div
+          className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg bg-green-600 text-white"
+          role="alert"
+        >
+          <CheckCircle className="w-5 h-5" />
+          <span>{t('share.saved')}</span>
+        </div>
+      )}
       <div className="max-w-2xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">

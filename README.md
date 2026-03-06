@@ -27,7 +27,7 @@
 | ---------- | ------- | ------------------------------------------ |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                        |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분 |
-| **테스트** | ✅ 통과 | 1109 통과, 0 스킵 (69 파일)                |
+| **테스트** | ✅ 통과 | 1107 통과, 0 스킵 (69 파일)                |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                 |
 | **배포**   | ✅ 정상 | GitHub Pages                               |
@@ -198,14 +198,35 @@ emelmujiro/
 
 ### 남은 작업
 
-| 순서 | 작업                         | 의존성 | 상태   | 구체적 할 일                                                                                                                                                                  |
-| ---- | ---------------------------- | ------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | **배포 플랫폼 선택 & 배포**  | —      | 미결정 | Django + SQLite 배포. 플랫폼 후보: Railway / Render / Fly.io (아래 비교표 참고). `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `VITE_API_URL` 설정                                 |
-| 2    | **프론트엔드 Mock API 해제** | #1     | 대기   | `VITE_API_URL`을 배포된 백엔드 URL로 설정 → Mock 자동 비활성화. `api.ts` 실제 연동 검증                                                                                       |
-| 3    | **공사 중 페이지 해제**      | #2     | 대기   | `App.tsx` 라우트를 원래 컴포넌트로 복원 (`BlogListPage`, `ContactPage` 등). `AppLayout`에 `ChatWidget` 제외 유지. `generate-sitemap.js`, `manifest.json`, E2E 테스트 업데이트 |
-| 4    | **이메일 발송 연동**         | #1     | 대기   | Contact 폼 제출 시 알림 이메일 발송. SMTP 또는 SendGrid 연동. 현재는 DB 저장만 됨                                                                                             |
-| 5    | **인증 토큰 보안 강화**      | #1     | 대기   | `api.ts`의 JWT 토큰 저장을 `localStorage` → `httpOnly` 쿠키로 이전. Django `SESSION_COOKIE_HTTPONLY=True` 설정                                                                |
-| 6    | **관리자 대시보드 연동**     | #2     | 대기   | `AdminDashboard`에 실제 통계 API 연결 (방문자 수, 문의 건수, 블로그 글 수 등). 현재는 플레이스홀더 UI만 존재                                                                  |
+> 의존성 표기: `→ #N` = N번 작업 완료 후 진행 가능
+
+#### 1. 배포 플랫폼 선택 & 배포 `미결정`
+
+Django + SQLite 배포. 플랫폼 후보: Railway / Render / Fly.io (아래 비교표 참고).
+설정 필요: `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `VITE_API_URL`
+
+#### 2. 프론트엔드 Mock API 해제 `대기` → #1
+
+`VITE_API_URL`을 배포된 백엔드 URL로 설정 → Mock 자동 비활성화. `api.ts` 실제 연동 검증
+
+#### 3. 공사 중 페이지 해제 `대기` → #2
+
+`App.tsx` 라우트를 원래 컴포넌트로 복원 (`BlogListPage`, `ContactPage` 등).
+`AppLayout`에 `ChatWidget` 제외 유지. `generate-sitemap.js`, `manifest.json`, E2E 테스트 업데이트
+
+#### 4. 이메일 발송 연동 `대기` → #1
+
+Contact 폼 제출 시 알림 이메일 발송. SMTP 또는 SendGrid 연동. 현재는 DB 저장만 됨
+
+#### 5. 인증 토큰 보안 강화 `대기` → #1
+
+`api.ts`의 JWT 토큰 저장을 `localStorage` → `httpOnly` 쿠키로 이전.
+Django `SESSION_COOKIE_HTTPONLY=True` 설정
+
+#### 6. 관리자 대시보드 연동 `대기` → #2
+
+`AdminDashboard`에 실제 통계 API 연결 (방문자 수, 문의 건수, 블로그 글 수 등).
+현재는 플레이스홀더 UI만 존재
 
 #### 배포 플랫폼 비교 (Django + SQLite)
 
@@ -237,7 +258,67 @@ emelmujiro/
 
 ## 리팩토링 백로그
 
-2026.03.07 전체 코드베이스 감사(2회)에서 식별된 항목입니다. ~~취소선~~은 완료된 항목입니다. **전량 해소 완료.**
+### 3차 감사 (2026.03.07)
+
+전체 코드베이스 3차 감사에서 식별된 항목입니다. ~~취소선~~은 완료된 항목입니다.
+
+#### Critical
+
+| #      | 설명                                                                                                                             | 파일                                      |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| ~~C1~~ | ~~미들웨어 MIDDLEWARE에 미등록 → `RequestSecurityMiddleware`, `ContentSecurityMiddleware`, `APIResponseTimeMiddleware` 등록~~ ✅ | ~~`config/settings.py`, `middleware.py`~~ |
+| ~~C2~~ | ~~`security_check` 필드명 `attempted_at`/`visited_at` → `last_attempt`/`visit_time` 수정~~ ✅                                    | ~~`security_check.py`~~                   |
+| ~~C3~~ | ~~`NotificationConsumer.receive()` JSON 파싱 try-except + `notification_id` 검증 추가~~ ✅                                       | ~~`consumers.py`~~                        |
+| ~~C4~~ | ~~`MessageContent` `createObjectURL` → `useMemo` + `useEffect` cleanup으로 revoke~~ ✅                                           | ~~`MessageContent.tsx`~~                  |
+| ~~C5~~ | ~~`MessageList` `handleImagePreview` — window unload 시 `revokeObjectURL` 추가~~ ✅                                              | ~~`MessageList.tsx`~~                     |
+
+#### High
+
+| #      | 설명                                                                                                    | 파일                      |
+| ------ | ------------------------------------------------------------------------------------------------------- | ------------------------- |
+| ~~H1~~ | ~~예외 상세 `str(e)` 클라이언트 노출 → 로그만 남기고 일반 메시지 반환~~ ✅                              | ~~`views.py`, `auth.py`~~ |
+| ~~H2~~ | ~~테스트 `category="ai_development"` → `"ai"`, `is_featured` → `featured` 수정~~ ✅                     | ~~`tests.py`~~            |
+| ~~H3~~ | ~~뉴스레터 중복 구독 테스트 — serializer unique 제약으로 400 반환 확인, docstring 수정~~ ✅ (이슈 아님) | ~~`tests.py`~~            |
+| ~~H4~~ | ~~`mark_notification_read` 등 `pass` 스텁 → `logger.info` + TODO 주석 추가~~ ✅                         | ~~`consumers.py`~~        |
+| ~~H5~~ | ~~`BlogPost` 인덱스 추가: `(is_published, -date)`, `(category)`. 마이그레이션 생성~~ ✅                 | ~~`models.py`~~           |
+| ~~H6~~ | ~~미사용 임포트 `django.db.models`, `json` 제거~~ ✅                                                    | ~~`views.py`~~            |
+| ~~H7~~ | ~~`logger.ts` `process.env.NODE_ENV` → `env.IS_DEVELOPMENT` 전환 + 테스트 수정~~ ✅                     | ~~`logger.ts`~~           |
+| ~~H8~~ | ~~`FormContext.tsx` 빈 catch 블록 → `logger.warn()` 추가~~ ✅                                           | ~~`FormContext.tsx`~~     |
+
+#### Medium
+
+| #       | 설명                                                                              | 파일                     |
+| ------- | --------------------------------------------------------------------------------- | ------------------------ |
+| ~~M1~~  | ~~`test-utils.tsx` 삭제 (전체 dead code), `index.ts` re-export 정리~~ ✅          | ~~`test-utils/`~~        |
+| ~~M2~~  | ~~`Eye` 아이콘 — 실제 사용 중 (stats/view 버튼)~~ ✅ (이슈 아님)                  | ~~`AdminDashboard.tsx`~~ |
+| ~~M3~~  | ~~스텁 함수 `logger.info` + TODO 로 교체~~ ✅                                     | ~~`AdminDashboard.tsx`~~ |
+| ~~M4~~  | ~~`window.alert()` → 인라인 toast 패턴 전환 + 테스트 갱신~~ ✅                    | ~~`BlogEditor.tsx`~~     |
+| ~~M5~~  | ~~`window.alert()` → toast 컴포넌트 전환 + 테스트 갱신~~ ✅                       | ~~`SharePage.tsx`~~      |
+| ~~M6~~  | ~~ChatContext 분할: `chatHelpers.ts` + `useChatConnection.ts` (709→310줄)~~ ✅    | ~~`ChatContext.tsx`~~    |
+| ~~M7~~  | ~~`setupTests.ts` 간소화: lucide-react 캐시 Proxy (802→581줄)~~ ✅                | ~~`setupTests.ts`~~      |
+| ~~M8~~  | ~~`import.meta.env.VITE_POSTS_PER_PAGE` → `getEnvVar('POSTS_PER_PAGE')` 전환~~ ✅ | ~~`BlogContext.tsx`~~    |
+| ~~M9~~  | ~~`startTransaction()` — callback 파라미터 추가, span 내부에서 실행~~ ✅          | ~~`sentry.ts`~~          |
+| ~~M10~~ | ~~`flushSentry()` 삭제 + 테스트/default export 정리~~ ✅                          | ~~`sentry.ts`~~          |
+| ~~M11~~ | ~~`getProjects`/`createProject`/`Project` interface 삭제 + 테스트 mock 정리~~ ✅  | ~~`api.ts`~~             |
+| ~~M12~~ | ~~무의미한 `Count("id")` 어노테이션 + 미사용 `Count` 임포트 제거~~ ✅             | ~~`api/admin.py`~~       |
+
+#### Low
+
+| #      | 설명                                                                                 | 파일                  |
+| ------ | ------------------------------------------------------------------------------------ | --------------------- |
+| ~~L1~~ | ~~`scrollBehavior: 'smooth'` 인라인 스타일 제거 (Tailwind `scroll-smooth` 중복)~~ ✅ | ~~`MessageList.tsx`~~ |
+| L2     | AboutPage 349줄 — 섹션별 분할 후보 (현재 규모 허용 범위)                             | `AboutPage.tsx`       |
+| L3     | BlogComments 357줄 — CommentItem/ReplySection 분할 후보 (현재 규모 허용 범위)        | `BlogComments.tsx`    |
+| ~~L4~~ | ~~`notificationTimers` Map — 실제로는 remove 시 정리됨~~ ✅ (이슈 아님)              | ~~`UIContext.tsx`~~   |
+| ~~L5~~ | ~~Swagger 이메일 → `CONTACT_EMAIL` 환경변수 전환~~ ✅                                | ~~`api/swagger.py`~~  |
+| L6     | WebSocket, 스팸 필터, rate limiting 테스트 없음                                      | Backend 테스트 전반   |
+| L7     | E2E 4개 파일만 — 다크모드, 언어 전환 미테스트                                        | `e2e/`                |
+
+---
+
+### 1~2차 감사 (2026.03.07 이전)
+
+이전 감사에서 식별된 항목입니다. **전량 해소 완료.**
 
 ### 즉시 수정 (Critical)
 

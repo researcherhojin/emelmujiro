@@ -10,11 +10,11 @@ import re
 logger = logging.getLogger("security")
 
 
-class SecurityMiddleware(MiddlewareMixin):
-    """보안 미들웨어"""
+class RequestSecurityMiddleware(MiddlewareMixin):
+    """Request security middleware — malicious pattern detection and IP blocking"""
 
     def __init__(self, get_response):
-        self.get_response = get_response
+        super().__init__(get_response)
 
         # 악성 패턴 정의
         self.malicious_patterns = [

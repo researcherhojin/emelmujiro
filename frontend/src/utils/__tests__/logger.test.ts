@@ -144,18 +144,17 @@ describe('Logger', () => {
     });
 
     it('should not call console methods in production', async () => {
-      // Save original env
-      const originalEnv = process.env.NODE_ENV;
-
-      // Temporarily set to production
-      (process.env as any).NODE_ENV = 'production';
-
       // Clear previous calls
       consoleTimeSpy.mockClear();
       consoleTimeEndSpy.mockClear();
 
-      // Import Logger dynamically to ensure it reads the production environment
+      // Mock env module to simulate production
       vi.resetModules();
+      vi.doMock('../../config/env', () => ({
+        default: { IS_DEVELOPMENT: false },
+        getEnvVar: () => undefined,
+      }));
+
       const { default: ProdLogger } = await import('../logger');
 
       ProdLogger.time('prod-operation');
@@ -165,10 +164,8 @@ describe('Logger', () => {
       expect(consoleTimeSpy).not.toHaveBeenCalled();
       expect(consoleTimeEndSpy).not.toHaveBeenCalled();
 
-      // Restore env
-      (process.env as any).NODE_ENV = originalEnv;
-
       // Reset modules to restore normal Logger
+      vi.doUnmock('../../config/env');
       vi.resetModules();
     });
   });

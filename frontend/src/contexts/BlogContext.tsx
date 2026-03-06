@@ -7,6 +7,7 @@ import React, {
   useMemo,
 } from 'react';
 import { api } from '../services/api';
+import { getEnvVar } from '../config/env';
 import i18n from '../i18n';
 import {
   getBlogPosts as getLocalBlogPosts,
@@ -47,7 +48,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
     try {
       // Try API call first
       const response = await api.getBlogPosts(page);
-      const postsPerPage = Number(import.meta.env.VITE_POSTS_PER_PAGE) || 6;
+      const postsPerPage = Number(getEnvVar('POSTS_PER_PAGE')) || 6;
 
       if (response.data && response.data.results) {
         setPosts(response.data.results);

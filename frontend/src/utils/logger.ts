@@ -2,7 +2,7 @@
  * Environment-aware logging utility
  * Disables console.log in production
  */
-import { getEnvVar } from '../config/env';
+import env, { getEnvVar } from '../config/env';
 import { captureException } from './sentry';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -17,7 +17,7 @@ class Logger {
   private isDevelopment: boolean;
 
   constructor(config?: Partial<LoggerConfig>) {
-    this.isDevelopment = process.env.NODE_ENV === 'development';
+    this.isDevelopment = env.IS_DEVELOPMENT;
     this.config = {
       enableInProduction: false,
       logLevel: 'warn', // Only show warnings and errors by default

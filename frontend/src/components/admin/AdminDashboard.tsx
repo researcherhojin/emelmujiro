@@ -95,13 +95,13 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleCreateContent = () => {
-    // Navigate to content creation page
-    // Implementation pending
+    // TODO: navigate to content creation page when backend is deployed
+    logger.info('handleCreateContent: not yet implemented');
   };
 
-  const handleEditContent = (_id: string | number) => {
-    // Navigate to content edit page
-    // Implementation pending
+  const handleEditContent = (id: string | number) => {
+    // TODO: navigate to content edit page when backend is deployed
+    logger.info(`handleEditContent: id=${id}, not yet implemented`);
   };
 
   const handleDeleteContent = (id: string | number) => {
@@ -121,9 +121,9 @@ const AdminDashboard: React.FC = () => {
     setDeleteConfirmId(null);
   };
 
-  const handleViewContent = (_id: string | number) => {
-    // Navigate to content view page
-    // Implementation pending
+  const handleViewContent = (id: string | number) => {
+    // TODO: navigate to content view page when backend is deployed
+    logger.info(`handleViewContent: id=${id}, not yet implemented`);
   };
 
   const renderSidebar = () => (

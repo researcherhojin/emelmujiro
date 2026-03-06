@@ -13,8 +13,6 @@ vi.mock('../api', () => {
     deletePost: vi.fn(),
   };
   const mockApi = {
-    getProjects: vi.fn(),
-    createProject: vi.fn(),
     getBlogPosts: vi.fn(),
     getBlogPost: vi.fn(),
     searchBlogPosts: vi.fn(),

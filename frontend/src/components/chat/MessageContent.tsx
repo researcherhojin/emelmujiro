@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Download, Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +25,20 @@ const MessageContent: React.FC<MessageContentProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const imageObjectUrl = useMemo(
+    () =>
+      type === 'image' && file instanceof File
+        ? URL.createObjectURL(file)
+        : null,
+    [type, file]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
+    };
+  }, [imageObjectUrl]);
+
   switch (type) {
     case 'text':
       return <div className="whitespace-pre-wrap break-words">{content}</div>;
@@ -38,9 +52,9 @@ const MessageContent: React.FC<MessageContentProps> = ({
             type="button"
             aria-label={`Preview image: ${content}`}
           >
-            {file instanceof File ? (
+            {imageObjectUrl ? (
               <img
-                src={URL.createObjectURL(file)}
+                src={imageObjectUrl}
                 alt={content}
                 className="w-full h-auto max-h-48 object-cover group-hover:opacity-90 transition-opacity"
               />

@@ -41,6 +41,10 @@ class BlogPost(models.Model):
         ordering = ["-date"]
         verbose_name = "블로그 포스트"
         verbose_name_plural = "블로그 포스트"
+        indexes = [
+            models.Index(fields=["is_published", "-date"]),
+            models.Index(fields=["category"]),
+        ]
 
     def save(self, *args, **kwargs):
         if not self.slug:

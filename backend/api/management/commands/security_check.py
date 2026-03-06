@@ -131,13 +131,13 @@ class Command(BaseCommand):
         try:
             # 오늘의 통계
             today = timezone.now().date()
-            today_contacts = ContactAttempt.objects.filter(attempted_at__date=today).count()
+            today_contacts = ContactAttempt.objects.filter(last_attempt__date=today).count()
 
-            today_visits = SiteVisit.objects.filter(visited_at__date=today).count()
+            today_visits = SiteVisit.objects.filter(visit_time__date=today).count()
 
             # 주간 통계
             week_ago = timezone.now() - timedelta(days=7)
-            week_contacts = ContactAttempt.objects.filter(attempted_at__gte=week_ago).count()
+            week_contacts = ContactAttempt.objects.filter(last_attempt__gte=week_ago).count()
 
             # 차단된 IP 통계 (캐시에서 확인)
             blocked_ips_count = 0

@@ -6,7 +6,6 @@ from rest_framework.permissions import AllowAny
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
-from django.db import models
 from django.db.models import Q, F, Count
 from django.utils import timezone
 from django.core.cache import cache
@@ -17,7 +16,6 @@ from datetime import timedelta
 import requests
 import logging
 import hashlib
-import json
 import re
 
 from .models import BlogPost, Contact, ContactAttempt, SiteVisit, NewsletterSubscription
@@ -482,4 +480,5 @@ def send_test_email(request):
     except BadHeaderError:
         return Response({"error": "잘못된 이메일 헤더입니다."}, status=400)
     except Exception as e:
-        return Response({"error": f"이메일 전송 실패: {str(e)}"}, status=500)
+        logger.error(f"Email send failure: {e}")
+        return Response({"error": "이메일 전송에 실패했습니다."}, status=500)

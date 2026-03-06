@@ -212,14 +212,11 @@ describe('BlogEditor Component', () => {
 
       const saveButton = screen.getByRole('button', { name: /common\.save/ });
 
-      // Mock alert
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-
       fireEvent.click(saveButton);
 
-      expect(alertSpy).toHaveBeenCalledWith('blogEditor.titleContentRequired');
-
-      alertSpy.mockRestore();
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'blogEditor.titleContentRequired'
+      );
     });
 
     it('saves post to localStorage with valid data', () => {
@@ -244,9 +241,6 @@ describe('BlogEditor Component', () => {
 
       const saveButton = screen.getByRole('button', { name: /common\.save/ });
 
-      // Mock alert
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-
       fireEvent.click(saveButton);
 
       // Check localStorage - should have the new post
@@ -259,10 +253,10 @@ describe('BlogEditor Component', () => {
       expect(lastPost?.content).toBe('Test Content');
       expect(lastPost?.category).toBe('blogEditor.defaultCategory');
 
-      expect(alertSpy).toHaveBeenCalledWith('blogEditor.postSaved');
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'blogEditor.postSaved'
+      );
       expect(mockNavigate).toHaveBeenCalledWith('/blog');
-
-      alertSpy.mockRestore();
     });
 
     it('generates unique ID and timestamp for new posts', () => {
@@ -357,8 +351,6 @@ describe('BlogEditor Component', () => {
         'input[type="file"]'
       ) as HTMLInputElement;
 
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-
       fireEvent.change(fileInput, { target: { files: [file] } });
 
       await waitFor(() => {
@@ -380,10 +372,9 @@ describe('BlogEditor Component', () => {
       );
       expect(importedPost?.content).toBe('Imported Content');
 
-      // The mock t() with params returns `${params.count}${key}`
-      expect(alertSpy).toHaveBeenCalledWith('1blogEditor.importSuccess');
-
-      alertSpy.mockRestore();
+      // Toast shows import success message
+      const toastEl = screen.getByRole('alert');
+      expect(toastEl).toHaveTextContent('1blogEditor.importSuccess');
     });
 
     it('validates imported JSON structure', async () => {
@@ -400,16 +391,16 @@ describe('BlogEditor Component', () => {
         'input[type="file"]'
       ) as HTMLInputElement;
 
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-
       fireEvent.change(fileInput, { target: { files: [invalidFile] } });
 
       await waitFor(() => {
-        // Check that alert was called with error message
-        expect(alertSpy).toHaveBeenCalled();
+        // Toast shows import error message
+        expect(screen.getByRole('alert')).toBeInTheDocument();
       });
 
-      alertSpy.mockRestore();
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'blogEditor.importError'
+      );
     });
   });
 

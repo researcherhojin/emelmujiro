@@ -34,7 +34,6 @@ describe('SharePage', () => {
     vi.clearAllMocks();
     mockSearchParams = '';
     localStorage.clear();
-    vi.spyOn(window, 'alert').mockImplementation(() => {});
     vi.spyOn(window, 'open').mockImplementation(() => null);
   });
 
@@ -208,8 +207,8 @@ describe('SharePage', () => {
     expect(savedContent[0].title).toBe('저장할 제목');
     expect(savedContent[0].text).toBe('저장할 내용');
 
-    expect(window.alert).toHaveBeenCalledWith('share.saved');
-    expect(mockNavigate).toHaveBeenCalledWith('/');
+    // Toast shows saved message
+    expect(screen.getByRole('alert')).toHaveTextContent('share.saved');
   });
 
   it('limits saved items to 50', async () => {

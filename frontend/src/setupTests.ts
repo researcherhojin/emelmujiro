@@ -30,9 +30,8 @@ beforeEach(() => {
   sessionStorage.clear();
 });
 
-// Mock lucide-react icons - comprehensive mock for all icons
+// Mock lucide-react icons — Proxy creates and caches any icon component on demand
 vi.mock('lucide-react', () => {
-  // Create a generic icon component factory
   const createIcon = (name: string) => {
     const Component = React.forwardRef<
       SVGSVGElement,
@@ -53,241 +52,22 @@ vi.mock('lucide-react', () => {
     return Component;
   };
 
-  // Create LucideIcon type mock
-  const LucideIcon = createIcon('LucideIcon');
+  const cache: Record<string, unknown> = {};
 
-  // Common icons that might be used
-  const iconNames = [
-    'Code',
-    'GraduationCap',
-    'BarChart3',
-    'Database',
-    'CheckCircle',
-    'XCircle',
-    'AlertCircle',
-    'InfoIcon',
-    'ChevronDown',
-    'ChevronUp',
-    'ChevronLeft',
-    'ChevronRight',
-    'Menu',
-    'X',
-    'Search',
-    'Plus',
-    'Minus',
-    'Edit',
-    'Trash',
-    'Settings',
-    'User',
-    'Users',
-    'Home',
-    'Mail',
-    'Phone',
-    'Calendar',
-    'Clock',
-    'Download',
-    'Upload',
-    'File',
-    'Folder',
-    'Heart',
-    'Star',
-    'Globe',
-    'Link',
-    'Copy',
-    'Check',
-    'Save',
-    'RefreshCw',
-    'MoreVertical',
-    'MoreHorizontal',
-    'Eye',
-    'EyeOff',
-    'Lock',
-    'Unlock',
-    'Key',
-    'Shield',
-    'AlertTriangle',
-    'HelpCircle',
-    'MessageSquare',
-    'Send',
-    'Paperclip',
-    'Image',
-    'Video',
-    'Mic',
-    'Play',
-    'Pause',
-    'SkipForward',
-    'SkipBack',
-    'Volume2',
-    'VolumeX',
-    'Wifi',
-    'WifiOff',
-    'Bluetooth',
-    'Battery',
-    'BatteryLow',
-    'Power',
-    'Zap',
-    'Cloud',
-    'Sun',
-    'Moon',
-    'Droplet',
-    'Wind',
-    'Loader',
-    'ArrowUp',
-    'ArrowDown',
-    'ArrowLeft',
-    'ArrowRight',
-    'CornerUpRight',
-    'Hash',
-    'AtSign',
-    'DollarSign',
-    'Percent',
-    'Filter',
-    'SortAsc',
-    'BookOpen',
-    'Book',
-    'Bookmark',
-    'Award',
-    'Flag',
-    'MapPin',
-    'Navigation',
-    'Compass',
-    'Map',
-    'Move',
-    'Maximize',
-    'Maximize2',
-    'Minimize',
-    'Minimize2',
-    'LogIn',
-    'LogOut',
-    'UserPlus',
-    'UserMinus',
-    'UserCheck',
-    'UserX',
-    'UserRound',
-    'FileText',
-    'Bell',
-    'BellOff',
-    'Inbox',
-    'Archive',
-    'Package',
-    'ShoppingCart',
-    'CreditCard',
-    'Gift',
-    'Briefcase',
-    'Coffee',
-    'Camera',
-    'Layers',
-    'Layout',
-    'Grid',
-    'List',
-    'AlignLeft',
-    'AlignCenter',
-    'AlignRight',
-    'Bold',
-    'Italic',
-    'Underline',
-    'Link2',
-    'Unlink',
-    'Type',
-    'FileText',
-    'FilePlus',
-    'FileMinus',
-    'FolderPlus',
-    'FolderMinus',
-    'Printer',
-    'Monitor',
-    'Smartphone',
-    'Tablet',
-    'Laptop',
-    'HardDrive',
-    'Server',
-    'Cpu',
-    'Activity',
-    'BarChart',
-    'BarChart2',
-    'PieChart',
-    'TrendingUp',
-    'TrendingDown',
-    'Target',
-    'Award',
-    'ThumbsUp',
-    'ThumbsDown',
-    'ExternalLink',
-    'Github',
-    'Linkedin',
-    'Twitter',
-    'Facebook',
-    'Instagram',
-    'LayoutDashboard',
-    'Trash2',
-    'FileCode',
-    'Languages',
-    'UserCircle',
-    'Bot',
-    'MessageCircle',
-    'ArrowUpRight',
-    'Building2',
-    'GraduationCap2',
-    'Sparkles',
-    'Brain',
-    'Rocket',
-    'ChartBar',
-    'Share2',
-    'Copy2',
-    'AlertOctagon',
-    'Info',
-    'CheckCircle2',
-    'XCircle2',
-    'ArrowRight2',
-    'ArrowLeft2',
-    'Construction',
-    'Building',
-    'CalendarCheck',
-    'Code2',
-    'Lightbulb',
-    'Trophy',
-    'Medal',
-  ];
-
-  // Create all icon exports
-  const icons: Record<
-    string,
-    React.ForwardRefExoticComponent<
-      React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>
-    >
-  > = {
-    LucideIcon,
-  };
-
-  iconNames.forEach((name) => {
-    icons[name] = createIcon(name);
-  });
-
-  // Return a Proxy that creates any icon on demand
-  return new Proxy(icons, {
+  return new Proxy(cache, {
     get: (target, prop) => {
-      // Handle special module exports
       if (prop === '__esModule') return true;
       if (prop === 'default') return {};
-
-      // Return existing icon if available
-      if (prop in target) {
-        return target[prop as string];
-      }
-
-      // Return a mock component for any icon name
       if (typeof prop === 'string') {
-        return createIcon(prop);
+        if (!(prop in target)) {
+          target[prop] = createIcon(prop);
+        }
+        return target[prop];
       }
-
       return undefined;
     },
   });
 });
-
-// Import CI-specific setup if in CI environment
-// Note: Dynamic imports are not supported in test setup files
-// CI-specific setup should be handled differently in Vite
 
 // Mock framer-motion
 vi.mock('framer-motion', () => {

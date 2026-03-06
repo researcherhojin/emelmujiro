@@ -185,26 +185,27 @@ export function addBreadcrumb(breadcrumb: {
   }
 }
 
-// Start transaction
-export function startTransaction(name: string, op: string): string | null {
+// Start a traced span — wraps the callback so Sentry measures its duration
+export function startTransaction(
+  name: string,
+  op: string,
+  callback?: () => void | Promise<void>
+): string | null {
   if (env.ENABLE_SENTRY) {
     try {
-      // Start transaction using Sentry v7+ API
-      Sentry.startSpan(
-        {
-          name,
-          op,
-        },
-        () => {
-          // Add span operations here if needed
-        }
-      );
-
+      Sentry.startSpan({ name, op }, async () => {
+        if (callback) await callback();
+      });
       return name;
     } catch (error) {
       logger.warn('Failed to start transaction:', error);
       return null;
     }
+  }
+  if (callback) {
+    Promise.resolve(callback()).catch((error) => {
+      logger.error(`Transaction ${name} failed:`, error);
+    });
   }
   return null;
 }
@@ -246,13 +247,6 @@ export function measurePerformance(
   }
 }
 
-// Flush Sentry (used on app shutdown)
-export async function flushSentry(): Promise<void> {
-  if (env.ENABLE_SENTRY) {
-    await Sentry.flush(2000);
-  }
-}
-
 // Default export
 const sentryUtils = {
   initSentry,
@@ -264,7 +258,6 @@ const sentryUtils = {
   startTransaction,
   reportErrorBoundary,
   measurePerformance,
-  flushSentry,
 };
 
 export default sentryUtils;

@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -6,6 +8,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .serializers import UserSerializer
+
+logger = logging.getLogger(__name__)
 
 
 @api_view(["POST"])
@@ -98,7 +102,8 @@ def logout(request):
         else:
             return Response({"error": "Refresh token required"}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        logger.error(f"Logout error: {e}")
+        return Response({"error": "Logout failed"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET"])

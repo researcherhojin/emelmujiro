@@ -1,8 +1,11 @@
 import json
+import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -200,12 +203,18 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         # Handle any client-side notification interactions
-        text_data_json = json.loads(text_data)
+        try:
+            text_data_json = json.loads(text_data)
+        except json.JSONDecodeError:
+            await self.send(text_data=json.dumps({"error": "Invalid JSON"}))
+            return
+
         action = text_data_json.get("action")
 
         if action == "mark_read":
             notification_id = text_data_json.get("notification_id")
-            await self.mark_notification_read(notification_id)
+            if notification_id is not None:
+                await self.mark_notification_read(notification_id)
         elif action == "mark_all_read":
             await self.mark_all_notifications_read()
 
@@ -239,10 +248,10 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def mark_notification_read(self, notification_id):
-        # Mark specific notification as read
-        pass  # Implement based on your notification model
+        # TODO: Implement when notification model is added
+        logger.info(f"mark_notification_read called: id={notification_id}")
 
     @database_sync_to_async
     def mark_all_notifications_read(self):
-        # Mark all notifications as read for the user
-        pass  # Implement based on your notification model
+        # TODO: Implement when notification model is added
+        logger.info("mark_all_notifications_read called")

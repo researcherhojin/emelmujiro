@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import { api } from '../services/api';
 import i18n from '../i18n';
+import logger from '../utils/logger';
 
 interface ContactFormState {
   name: string;
@@ -167,7 +168,8 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
         savedContacts = JSON.parse(
           localStorage.getItem('savedContacts') || '[]'
         );
-      } catch {
+      } catch (e) {
+        logger.warn('Failed to parse savedContacts from localStorage', e);
         savedContacts = [];
       }
       savedContacts.push({
@@ -194,7 +196,8 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
           pendingContacts = JSON.parse(
             localStorage.getItem('pendingContacts') || '[]'
           );
-        } catch {
+        } catch (e) {
+          logger.warn('Failed to parse pendingContacts from localStorage', e);
           pendingContacts = [];
         }
         pendingContacts.push({

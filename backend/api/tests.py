@@ -43,7 +43,7 @@ class BlogPostAPITestCase(APITestCase):
     def test_filter_blog_posts_by_category(self):
         """Test filtering blog posts by category"""
         url = reverse("blog-list")
-        response: Response = self.client.get(url, {"category": "ai_development"})  # type: ignore
+        response: Response = self.client.get(url, {"category": "ai"})  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert response.data is not None
         self.assertEqual(len(response.data["results"]), 1)
@@ -51,7 +51,7 @@ class BlogPostAPITestCase(APITestCase):
     def test_featured_blog_posts(self):
         """Test filtering featured blog posts"""
         url = reverse("blog-list")
-        response: Response = self.client.get(url, {"is_featured": "true"})  # type: ignore
+        response: Response = self.client.get(url, {"featured": "true"})  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert response.data is not None
         self.assertEqual(len(response.data["results"]), 1)
@@ -122,12 +122,13 @@ class NewsletterAPITestCase(APITestCase):
         self.assertEqual(NewsletterSubscription.objects.count(), 1)
 
     def test_duplicate_newsletter_subscription(self):
-        """Test duplicate newsletter subscription"""
+        """Test duplicate newsletter subscription returns 400 (unique email constraint)"""
         NewsletterSubscription.objects.create(email="subscriber@example.com", name="First Subscriber")
         url = reverse("newsletter-subscribe")
         data = {"email": "subscriber@example.com", "name": "Second Subscriber"}
         response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(NewsletterSubscription.objects.count(), 1)
 
 
 class AuthenticationAPITestCase(APITestCase):
