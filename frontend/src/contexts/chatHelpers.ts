@@ -117,7 +117,7 @@ export const getDefaultSettings = (): ChatSettings => ({
 });
 
 export const generateMessageId = () => {
-  return `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  return `msg_${Date.now()}_${crypto.randomUUID().substring(0, 8)}`;
 };
 
 export const playNotificationSound = () => {

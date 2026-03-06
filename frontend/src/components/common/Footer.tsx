@@ -1,29 +1,22 @@
-import React, { useState, useRef, useEffect, memo, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, memo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail, Phone, ExternalLink } from 'lucide-react';
 import { getServices, type ServiceDetail } from '../../data/footerData';
 import { CONTACT_EMAIL } from '../../utils/constants';
 import ServiceModal from './ServiceModal';
+import { useScrollToSection } from '../../hooks/useScrollToSection';
 
 const Footer: React.FC = memo(() => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
+  const scrollToSection = useScrollToSection();
   const [isServiceModalOpen, setIsServiceModalOpen] = useState<boolean>(false);
   const [selectedService, setSelectedService] = useState<ServiceDetail | null>(
     null
   );
 
   const currentYear = new Date().getFullYear();
-  const scrollTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
-
-  // Cleanup scroll timer on unmount
-  useEffect(() => {
-    return () => {
-      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
-    };
-  }, []);
 
   const handleServiceClick = useCallback((serviceKey: string) => {
     const currentServices = getServices();
@@ -36,26 +29,6 @@ const Footer: React.FC = memo(() => {
       navigate(path);
     },
     [navigate]
-  );
-
-  const scrollToSection = useCallback(
-    (sectionId: string) => {
-      if (location.pathname !== '/') {
-        navigate('/');
-        scrollTimerRef.current = setTimeout(() => {
-          const element = document.getElementById(sectionId);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
-        }, 100);
-      } else {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    },
-    [navigate, location.pathname]
   );
 
   const handleModalClose = useCallback(() => {

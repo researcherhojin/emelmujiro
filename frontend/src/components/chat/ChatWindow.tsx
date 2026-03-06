@@ -88,10 +88,7 @@ const ChatWindow: React.FC = () => {
         sender: 'user',
       });
     } catch {
-      showNotification(
-        'error',
-        t('chat.error.sendFailed', '메시지 전송에 실패했습니다.')
-      );
+      showNotification('error', t('chat.error.sendFailed'));
       setInputValue(message); // Restore message on error
     }
   };

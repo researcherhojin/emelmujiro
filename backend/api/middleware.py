@@ -1,6 +1,5 @@
 import logging
 import time
-import json
 from django.http import HttpResponseForbidden, JsonResponse
 from django.core.cache import cache
 from django.utils.deprecation import MiddlewareMixin
@@ -8,6 +7,14 @@ from django.conf import settings
 import re
 
 logger = logging.getLogger("security")
+
+# Time constants (seconds)
+ONE_HOUR = 3600
+ONE_DAY = 86400
+
+# Rate limiting thresholds
+RATE_LIMIT_PER_HOUR = 100
+TEMP_BLOCK_ESCALATION_THRESHOLD = 3
 
 
 class RequestSecurityMiddleware(MiddlewareMixin):
@@ -61,6 +68,7 @@ class RequestSecurityMiddleware(MiddlewareMixin):
     def get_client_ip(self, request):
         """클라이언트 IP 주소 추출 — views.get_client_ip과 동일 로직"""
         from api.views import get_client_ip
+
         return get_client_ip(request)
 
     def is_blocked_ip(self, ip_address):
@@ -78,11 +86,11 @@ class RequestSecurityMiddleware(MiddlewareMixin):
         rate_limit_key = f"rate_limit_{ip_address}"
         current_requests = cache.get(rate_limit_key, 0)
 
-        if current_requests >= 100:  # 시간당 100회 제한
+        if current_requests >= RATE_LIMIT_PER_HOUR:
             return True
 
         # 카운터 증가
-        cache.set(rate_limit_key, current_requests + 1, 3600)  # 1시간
+        cache.set(rate_limit_key, current_requests + 1, ONE_HOUR)
         return False
 
     def contains_malicious_content(self, request):
@@ -110,7 +118,7 @@ class RequestSecurityMiddleware(MiddlewareMixin):
 
         return False
 
-    def block_ip_temporarily(self, ip_address, duration=3600):
+    def block_ip_temporarily(self, ip_address, duration=ONE_HOUR):
         """IP 임시 차단"""
         temp_block_key = f"temp_blocked_{ip_address}"
         cache.set(temp_block_key, True, duration)
@@ -118,10 +126,10 @@ class RequestSecurityMiddleware(MiddlewareMixin):
         # 차단 횟수 증가
         block_count_key = f"block_count_{ip_address}"
         block_count = cache.get(block_count_key, 0) + 1
-        cache.set(block_count_key, block_count, 86400)  # 24시간
+        cache.set(block_count_key, block_count, ONE_DAY)
 
-        # 3회 이상 차단 시 영구 차단 검토
-        if block_count >= 3:
+        # Escalation threshold check
+        if block_count >= TEMP_BLOCK_ESCALATION_THRESHOLD:
             logger.critical(f"IP {ip_address} blocked {block_count} times. Consider permanent block.")
 
     def log_request(self, request, ip_address):

@@ -28,6 +28,10 @@ from .serializers import (
 
 logger = logging.getLogger(__name__)
 
+# Time constants (seconds)
+ONE_HOUR = 3600
+ONE_DAY = 86400
+
 
 class ContactRateThrottle(AnonRateThrottle):
     """문의 폼 전용 Rate Throttle"""
@@ -187,7 +191,7 @@ class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
 
         if not cache.get(cache_key):
             BlogPost.objects.filter(id=instance.id).update(view_count=F("view_count") + 1)
-            cache.set(cache_key, True, timeout=86400)  # 24시간
+            cache.set(cache_key, True, timeout=ONE_DAY)  # 24시간
 
         return response
 

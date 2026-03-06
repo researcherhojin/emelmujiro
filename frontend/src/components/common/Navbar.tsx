@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
+import React, { useState, useEffect, memo, useCallback } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DarkModeToggle from './DarkModeToggle';
+import { useScrollToSection } from '../../hooks/useScrollToSection';
 
 interface NavItem {
   label: string;
@@ -15,7 +16,7 @@ const Navbar: React.FC = memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
-  const scrollTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const scrollToSection = useScrollToSection();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,13 +25,6 @@ const Navbar: React.FC = memo(() => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Cleanup scroll timer on unmount
-  useEffect(() => {
-    return () => {
-      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
-    };
   }, []);
 
   const navItems: NavItem[] = [
@@ -44,26 +38,12 @@ const Navbar: React.FC = memo(() => {
       setIsOpen(false);
 
       if (path.startsWith('/#')) {
-        const sectionId = path.substring(2);
-        if (location.pathname !== '/') {
-          navigate('/');
-          scrollTimerRef.current = setTimeout(() => {
-            const element = document.getElementById(sectionId);
-            if (element) {
-              element.scrollIntoView({ behavior: 'smooth' });
-            }
-          }, 100);
-        } else {
-          const element = document.getElementById(sectionId);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
-        }
+        scrollToSection(path.substring(2));
       } else {
         navigate(path);
       }
     },
-    [location.pathname, navigate]
+    [scrollToSection, navigate]
   );
 
   const isActive = useCallback(

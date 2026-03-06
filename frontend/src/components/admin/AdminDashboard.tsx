@@ -419,7 +419,10 @@ const AdminDashboard: React.FC = () => {
       <div className="ml-64 p-8">
         <div className="mb-6 flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <button className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
+            <button
+              className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+              aria-label="Notifications"
+            >
               <Bell className="w-5 h-5" />
             </button>
           </div>

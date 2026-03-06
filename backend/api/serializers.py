@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from .models import BlogPost, Contact, ContactAttempt, NewsletterSubscription
+from .models import BlogPost, Contact, NewsletterSubscription
 import re
 
 
@@ -16,7 +16,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class BlogPostSerializer(serializers.ModelSerializer):
-    """Frontend BlogPost type에 맞춘 serializer"""
+    """Frontend BlogPost type에 맞춘 serializer
+
+    camelCase aliases (publishedAt, imageUrl, views, published, excerpt) match
+    the frontend TypeScript BlogPost type. Snake_case originals (date, image_url,
+    view_count, is_published, description) are kept for admin/internal use.
+    """
 
     excerpt = serializers.CharField(source="description", read_only=True)
     publishedAt = serializers.DateTimeField(source="date", format="%Y-%m-%d", read_only=True)
@@ -206,5 +211,3 @@ class NewsletterSubscriptionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("이름에는 한글, 영문, 공백만 사용할 수 있습니다.")
 
         return value.strip() if value else value
-
-

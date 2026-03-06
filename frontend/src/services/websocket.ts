@@ -43,6 +43,7 @@ export default class WebSocketService {
   private state: 'disconnected' | 'connecting' | 'connected' = 'disconnected';
   private listeners: Map<string, Set<(...args: unknown[]) => void>> = new Map();
   private messageQueue: WebSocketMessage[] = [];
+  private readonly maxQueueSize = 100;
   private reconnectAttempts = 0;
   private autoReconnect = false;
   private maxReconnectAttempts = 5;
@@ -123,6 +124,9 @@ export default class WebSocketService {
       this.ws.send(JSON.stringify(message));
       return true;
     } else {
+      if (this.messageQueue.length >= this.maxQueueSize) {
+        this.messageQueue.shift(); // FIFO eviction
+      }
       this.messageQueue.push(message);
       return false;
     }
@@ -451,7 +455,7 @@ export class ChatWebSocketService {
         this.handleMessage({
           type: 'message',
           data: {
-            id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+            id: `msg_${Date.now()}_${crypto.randomUUID().substring(0, 8)}`,
             type: 'text',
             content: reply,
             sender: 'agent',
