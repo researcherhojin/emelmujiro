@@ -45,6 +45,9 @@ const AdminDashboard: React.FC = () => {
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<
+    string | number | null
+  >(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -102,10 +105,20 @@ const AdminDashboard: React.FC = () => {
   };
 
   const handleDeleteContent = (id: string | number) => {
-    if (window.confirm(t('admin.confirmDelete'))) {
-      // Delete content
-      setContentItems(contentItems.filter((item) => item.id !== id));
+    setDeleteConfirmId(id);
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirmId !== null) {
+      setContentItems(
+        contentItems.filter((item) => item.id !== deleteConfirmId)
+      );
+      setDeleteConfirmId(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirmId(null);
   };
 
   const handleViewContent = (_id: string | number) => {
@@ -413,6 +426,28 @@ const AdminDashboard: React.FC = () => {
         </div>
         {renderContent()}
       </div>
+
+      {deleteConfirmId !== null && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+            <p className="text-gray-800 mb-4">{t('admin.confirmDelete')}</p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors"
+              >
+                {t('common.delete')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

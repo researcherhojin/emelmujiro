@@ -86,7 +86,7 @@ describe('Navbar Component', () => {
     );
 
     expect(logoLink).toBeInTheDocument();
-    expect(logoLink).toHaveAttribute('href', '#/');
+    expect(logoLink).toHaveAttribute('href', '/');
   });
 
   test('applies scroll styles', () => {

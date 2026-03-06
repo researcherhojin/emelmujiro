@@ -237,7 +237,7 @@ emelmujiro/
 
 ## 리팩토링 백로그
 
-2026.03.07 전체 코드베이스 감사(2회)에서 식별된 항목입니다. ~~취소선~~은 완료된 항목입니다. **Critical/Backend 전량 해소 완료.**
+2026.03.07 전체 코드베이스 감사(2회)에서 식별된 항목입니다. ~~취소선~~은 완료된 항목입니다. **L3(공사 중 해제 시 검토) 제외 전량 해소.**
 
 ### 즉시 수정 (Critical)
 
@@ -245,7 +245,7 @@ emelmujiro/
 | ------ | --------------------------------------------------------------------------------------------- | ------------------------ |
 | ~~C1~~ | ~~Footer `scrollToSection`이 HashRouter에서 `window.location.pathname` 사용~~ ✅              | ~~`Footer.tsx`~~         |
 | ~~C2~~ | ~~BlogEditor에서 동일한 `window.location.pathname` HashRouter 버그~~ ✅                       | ~~`BlogEditor.tsx`~~     |
-| C3     | ESLint `"^10.0.2"` → `"^9.0.0"`으로 고정 (v10 시 플러그인 호환성 깨짐)                        | `package.json`           |
+| ~~C3~~ | ~~ESLint `"^9.0.0"` 이미 적용됨~~ ✅ (이슈 아님)                                              | ~~`package.json`~~       |
 | ~~C4~~ | ~~AdminDashboard 동적 Tailwind 클래스 `bg-${color}-100` — 빌드 시 purge됨~~ ✅                | ~~`AdminDashboard.tsx`~~ |
 | ~~C5~~ | ~~TypeScript 컴파일 에러 8건 (`useRef(null)`, FormContext.test mock, sentry.test 캐스트)~~ ✅ | ~~다수~~                 |
 | ~~C6~~ | ~~FileUpload.tsx 하드코딩 한국어 폴백 11개 → i18n 키 이동~~ ✅                                | ~~`FileUpload.tsx`~~     |
@@ -260,7 +260,7 @@ emelmujiro/
 | ~~H3~~ | ~~성능 모니터링 이중화 — `performanceMonitor.ts`(352줄) 삭제, `webVitals.ts` + `WebVitalsDashboard` 유지~~ ✅  | ~~`utils/`~~                       |
 | ~~H4~~ | ~~Sentry `initSentry()` 미호출 — `main.tsx`에 초기화 호출 추가~~ ✅                                            | ~~`main.tsx`~~                     |
 | ~~H5~~ | ~~소스 코드 한국어 주석 → 영어 전환 (15+ 파일)~~ ✅                                                            | ~~다수~~                           |
-| H6     | `renderWithProviders` 2개 구현 (HashRouter vs MemoryRouter) — 테스트 라우팅 불일치                             | `test-utils/`                      |
+| ~~H6~~ | ~~`renderWithProviders` HashRouter → MemoryRouter 통일~~ ✅                                                    | ~~`test-utils/`~~                  |
 | ~~H7~~ | ~~Dockerfile Python 3.14 → 3.12로 수정 (CI와 일치)~~ ✅                                                        | ~~`Dockerfile`, `Dockerfile.dev`~~ |
 
 ### 중간 우선순위
@@ -279,11 +279,11 @@ emelmujiro/
 
 ### 낮은 우선순위
 
-| #   | 설명                                                                              | 파일                      |
-| --- | --------------------------------------------------------------------------------- | ------------------------- |
-| L1  | `window.confirm()`/`alert()` → 커스텀 모달/토스트                                 | AdminDashboard, SharePage |
-| L2  | BlogSearch input `aria-label` 누락                                                | `BlogSearch.tsx`          |
-| L3  | 대형 컴포넌트 분할 후보: AdminPanel(589줄), MessageList(458줄), BlogEditor(443줄) | `components/`             |
+| #      | 설명                                                                                                     | 파일                     |
+| ------ | -------------------------------------------------------------------------------------------------------- | ------------------------ |
+| ~~L1~~ | ~~`window.confirm()` → 인라인 확인 모달로 전환~~ ✅                                                      | ~~`AdminDashboard.tsx`~~ |
+| ~~L2~~ | ~~BlogSearch input `aria-label` 추가~~ ✅                                                                | ~~`BlogSearch.tsx`~~     |
+| L3     | 대형 컴포넌트 분할 후보: AdminPanel(589줄), MessageList(458줄), BlogEditor(443줄) — 공사 중 해제 시 검토 | `components/`            |
 
 ### Backend
 

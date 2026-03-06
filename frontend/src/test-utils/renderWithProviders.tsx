@@ -4,7 +4,7 @@ import {
   RenderOptions,
   RenderResult,
 } from '@testing-library/react';
-import { HashRouter as Router } from 'react-router-dom';
+import { MemoryRouter as Router } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { BlogProvider } from '../contexts/BlogContext';
 import { AuthProvider } from '../contexts/AuthContext';

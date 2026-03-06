@@ -101,8 +101,7 @@ describe('AdminDashboard', () => {
     expect(screen.getByText('admin.tableDate')).toBeInTheDocument();
   });
 
-  it('handles delete content with confirmation', async () => {
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+  it('handles delete content with confirmation modal', async () => {
     renderWithProviders(<AdminDashboard />);
 
     const contentTab = screen.getByRole('button', {
@@ -116,7 +115,11 @@ describe('AdminDashboard', () => {
     const deleteButtons = screen.getAllByTitle('admin.delete');
     fireEvent.click(deleteButtons[0]);
 
-    expect(confirmSpy).toHaveBeenCalledWith('admin.confirmDelete');
+    // Confirmation modal should appear
+    expect(screen.getByText('admin.confirmDelete')).toBeInTheDocument();
+
+    // Click confirm button
+    fireEvent.click(screen.getByText('common.delete'));
 
     // Content should be removed after deletion
     await waitFor(() => {
@@ -124,12 +127,9 @@ describe('AdminDashboard', () => {
         screen.queryByText('admin.mock.post1Title')
       ).not.toBeInTheDocument();
     });
-
-    confirmSpy.mockRestore();
   });
 
-  it('cancels delete when user declines confirmation', async () => {
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+  it('cancels delete when user clicks cancel in modal', async () => {
     renderWithProviders(<AdminDashboard />);
 
     const contentTab = screen.getByRole('button', {
@@ -143,10 +143,15 @@ describe('AdminDashboard', () => {
     const deleteButtons = screen.getAllByTitle('admin.delete');
     fireEvent.click(deleteButtons[0]);
 
-    // Content should still be present
-    expect(screen.getByText('admin.mock.post1Title')).toBeInTheDocument();
+    // Confirmation modal should appear
+    expect(screen.getByText('admin.confirmDelete')).toBeInTheDocument();
 
-    confirmSpy.mockRestore();
+    // Click cancel button
+    fireEvent.click(screen.getByText('common.cancel'));
+
+    // Content should still be present and modal should be gone
+    expect(screen.getByText('admin.mock.post1Title')).toBeInTheDocument();
+    expect(screen.queryByText('admin.confirmDelete')).not.toBeInTheDocument();
   });
 
   it('switches to users tab', () => {
