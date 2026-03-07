@@ -24,6 +24,7 @@ interface ReplyItemProps {
   userId: string;
   formatDate: (dateString: string) => string;
   toggleLike: (commentId: string, isReply?: boolean, parentId?: string) => void;
+  t: (key: string, options?: Record<string, string>) => string;
 }
 
 const ReplyItem: React.FC<ReplyItemProps> = ({
@@ -32,6 +33,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
   userId,
   formatDate,
   toggleLike,
+  t,
 }) => (
   <div key={reply.id} className="bg-gray-50 p-3 rounded">
     <div className="flex items-center mb-1">
@@ -43,7 +45,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
     <p className="text-sm text-gray-700 mb-2">{reply.content}</p>
     <button
       onClick={() => toggleLike(reply.id, true, parentId)}
-      aria-label={`Like reply by ${reply.author}`}
+      aria-label={t('blog.likeReply', { author: reply.author })}
       className={`flex items-center space-x-1 text-xs ${
         reply.likedBy?.includes(userId)
           ? 'text-blue-600'
@@ -66,7 +68,7 @@ interface CommentItemProps {
   setReplyTo: (id: string | null) => void;
   setReplyContent: (content: string) => void;
   handleSubmitReply: (commentId: string) => void;
-  t: (key: string) => string;
+  t: (key: string, options?: Record<string, string>) => string;
 }
 
 const CommentItem: React.FC<CommentItemProps> = ({
@@ -97,7 +99,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
         <div className="flex items-center space-x-4">
           <button
             onClick={() => toggleLike(comment.id)}
-            aria-label={`Like comment by ${comment.author}`}
+            aria-label={t('blog.likeComment', { author: comment.author })}
             className={`flex items-center space-x-1 text-sm ${
               comment.likedBy?.includes(userId)
                 ? 'text-blue-600'
@@ -109,7 +111,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           </button>
           <button
             onClick={() => setReplyTo(comment.id)}
-            aria-label={`Reply to ${comment.author}`}
+            aria-label={t('blog.replyTo', { author: comment.author })}
             className="text-sm text-gray-500 hover:text-blue-600"
           >
             {t('blog.reply')}
@@ -157,6 +159,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                 userId={userId}
                 formatDate={formatDate}
                 toggleLike={toggleLike}
+                t={t}
               />
             ))}
           </div>
