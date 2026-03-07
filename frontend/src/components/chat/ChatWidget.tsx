@@ -171,9 +171,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = memo(({ className }) => {
                     />
                   </div>
                   <div className="text-white">
-                    <h3 className="font-semibold text-sm">
-                      {t('chat.title', '고객 지원')}
-                    </h3>
+                    <h3 className="font-semibold text-sm">{t('chat.title')}</h3>
                     <p className="text-xs opacity-90">{getStatusText()}</p>
                   </div>
                 </div>
@@ -283,15 +281,15 @@ const ChatWidget: React.FC<ChatWidgetProps> = memo(({ className }) => {
               <MessageCircle className="w-4 h-4" />
               <span>
                 {agentAvailable && businessHours.isOpen
-                  ? t('chat.quickInfo.available', '지금 채팅하세요!')
-                  : t('chat.quickInfo.unavailable', '메시지를 남겨주세요')}
+                  ? t('chat.quickInfo.available')
+                  : t('chat.quickInfo.unavailable')}
               </span>
             </div>
             {!businessHours.isOpen && (
               <div className="flex items-center space-x-2 mt-1 text-xs opacity-80">
                 <Clock className="w-3 h-3" />
                 <span>
-                  {t('chat.businessHours', `운영시간: ${businessHours.hours}`)}
+                  {t('chat.businessHours', { hours: businessHours.hours })}
                 </span>
               </div>
             )}

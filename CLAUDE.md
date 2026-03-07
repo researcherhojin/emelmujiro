@@ -126,9 +126,9 @@ Axios-based client in `src/services/api.ts`. All API methods (blog, contact, new
 
 `frontend/src/config/env.ts` exports `getEnvVar()` helper that checks `VITE_` prefixed vars first, falls back to `REACT_APP_` prefixed vars. New env vars should use the `VITE_` prefix. Key frontend env vars: `VITE_API_URL`, `VITE_WS_URL`, `VITE_SENTRY_DSN`, `VITE_ENABLE_SENTRY`, `VITE_ENABLE_ANALYTICS`, `VITE_GA_TRACKING_ID`, `VITE_CONTACT_EMAIL`. Backend env vars documented in `backend/.env.example`.
 
-### Contact Email
+### Site URL & Contact Email
 
-`CONTACT_EMAIL` is defined in `src/utils/constants.ts` using `import.meta.env.VITE_CONTACT_EMAIL` with fallback. All components import from constants — no hardcoded emails in production code.
+`SITE_URL` and `CONTACT_EMAIL` are defined in `src/utils/constants.ts`. `SITE_URL` is the canonical base URL used by all SEO components (SEOHelmet, StructuredData), page canonical links, and OG tags — **never hardcode** `https://researcherhojin.github.io/emelmujiro` in components; always import `SITE_URL`. Page components pass URLs as `url={`${SITE_URL}/#/about`}` (hash fragment required for HashRouter). `CONTACT_EMAIL` uses `import.meta.env.VITE_CONTACT_EMAIL` with fallback.
 
 ### Provider Hierarchy
 
@@ -288,7 +288,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 
 ### Pre-deploy Check
 
-`scripts/pre-deploy-check.sh` runs a comprehensive checklist before production deploy: env files, TypeScript, ESLint, console.log scan, tests, build, SEO assets (robots.txt, sitemap, manifest, favicon), API key scan, npm audit, git status, large image check (>500KB), bundle size.
+`scripts/pre-deploy-check.sh` runs a comprehensive checklist before production deploy: env files (`VITE_API_URL`, `VITE_SENTRY_DSN`, `VITE_GA_TRACKING_ID`), TypeScript, ESLint, console.log scan, tests, build, SEO assets (robots.txt, sitemap, manifest, favicon, `.nojekyll`), API key scan, npm audit, git status, large image check (>500KB), bundle size.
 
 ### Dependabot
 
@@ -299,7 +299,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 69 files / 1107 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-07)
+4. **Test count**: Frontend 69 files / 1110 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-08)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
@@ -317,3 +317,5 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 19. **Logger has no named exports**: `logger.ts` only exports `default` (singleton instance). Import as `import logger from '../utils/logger'`, not destructured. Uses `env.IS_DEVELOPMENT` from `config/env.ts` — do NOT use `process.env.NODE_ENV` directly in frontend code
 20. **No `window.alert()` in components**: Use inline toast state pattern instead (`ToastState` interface + `useRef` timer + auto-dismiss + `role="alert"` element). Already applied in `BlogEditor.tsx` and `SharePage.tsx`. Tests assert via `screen.getByRole('alert')`, not `alertSpy`
 21. **Backend tests need `DATABASE_URL=""`**: If `DATABASE_URL` is set (e.g., pointing to Docker PostgreSQL), backend tests will fail to connect. Run `DATABASE_URL="" uv run python manage.py test` to use SQLite
+22. **SEO with HashRouter**: All canonical URLs and OG URLs must include `/#/` (e.g., `${SITE_URL}/#/about`). `robots.txt` must NOT use hash fragment directives (non-standard). Sitemap URLs include `/#/`. `hreflang` alternate language tags are omitted because the SPA serves both languages from the same URL via client-side i18n. The `sameAs` field in structured data must only contain verified, existing URLs
+23. **No hardcoded site URLs in components**: Always use `SITE_URL` from `src/utils/constants.ts`. The `generate-sitemap.js` script has its own `SITE_URL` constant (Node.js, can't import from frontend)

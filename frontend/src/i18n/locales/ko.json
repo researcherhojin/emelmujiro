@@ -19,6 +19,7 @@
     "delete": "삭제",
     "edit": "수정",
     "close": "닫기",
+    "clear": "지우기",
     "remove": "제거",
     "back": "뒤로",
     "next": "다음",
@@ -1043,7 +1044,16 @@
       "currentlyClosed": "현재 운영 종료",
       "activeUsers": "활성 사용자",
       "online": "온라인",
-      "anonymousUser": "익명 사용자"
+      "anonymousUser": "익명 사용자",
+      "addCannedResponse": "새 자동 응답 추가...",
+      "noActiveUsers": "현재 활성 사용자가 없습니다.",
+      "connectionTime": "연결 시간:",
+      "lastActivity": "마지막 활동:",
+      "fiveMinAgo": "5분 전",
+      "justNow": "방금 전",
+      "refreshStats": "통계 새로고침",
+      "adminPanel": "관리자 패널",
+      "mockResponseTime": "2.3분"
     }
   },
   "constants": {

@@ -34,15 +34,15 @@ ONE_DAY = 86400
 
 
 class ContactRateThrottle(AnonRateThrottle):
-    """문의 폼 전용 Rate Throttle"""
+    """Contact form rate throttle"""
 
     scope = "contact"
-    rate = "3/hour"  # 시간당 3회로 제한 (보안 강화)
+    rate = "3/hour"
 
 
 def get_client_ip(request: HttpRequest) -> str:
-    """클라이언트 IP 주소 추출 (보안 강화)"""
-    # Proxy 헤더들을 순서대로 체크
+    """Extract client IP address (security-hardened)"""
+    # Check proxy headers in priority order
     headers = [
         "HTTP_CF_CONNECTING_IP",  # Cloudflare
         "HTTP_X_REAL_IP",  # Nginx
@@ -57,13 +57,13 @@ def get_client_ip(request: HttpRequest) -> str:
     for header in headers:
         value = request.META.get(header)
         if value:
-            # X-Forwarded-For의 경우 첫 번째 IP만 사용
+            # For X-Forwarded-For, use only the first IP
             if "FORWARDED" in header:
                 ip = value.split(",")[0].strip()
             else:
                 ip = value.strip()
 
-            # IP 유효성 검증
+            # Validate IP format
             if _is_valid_ip(ip):
                 return ip
 
@@ -71,11 +71,11 @@ def get_client_ip(request: HttpRequest) -> str:
 
 
 def _is_valid_ip(ip: str) -> bool:
-    """IP 주소 유효성 검증"""
+    """Validate IP address format"""
     try:
-        # IPv4 정규표현식
+        # IPv4 regex
         ipv4_pattern = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-        # IPv6 기본 패턴
+        # IPv6 basic pattern
         ipv6_pattern = r"^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$"
 
         return bool(re.match(ipv4_pattern, ip) or re.match(ipv6_pattern, ip))
@@ -84,17 +84,17 @@ def _is_valid_ip(ip: str) -> bool:
 
 
 def verify_recaptcha(recaptcha_response: str, request_ip: str = None) -> bool:
-    """reCAPTCHA 검증 (보안 강화)"""
+    """Verify reCAPTCHA response (security-hardened)"""
     if not settings.RECAPTCHA_PRIVATE_KEY:
-        return True  # reCAPTCHA가 설정되지 않은 경우 통과
+        return True  # Pass if reCAPTCHA is not configured
 
-    # 입력 검증
+    # Input validation
     if not recaptcha_response or len(recaptcha_response) > 1000:
         return False
 
     data = {"secret": settings.RECAPTCHA_PRIVATE_KEY, "response": recaptcha_response}
 
-    # IP 주소 추가 (선택사항)
+    # Add IP address (optional)
     if request_ip:
         data["remoteip"] = request_ip
 
@@ -102,8 +102,8 @@ def verify_recaptcha(recaptcha_response: str, request_ip: str = None) -> bool:
         response = requests.post(
             "https://www.google.com/recaptcha/api/siteverify",
             data=data,
-            timeout=10,  # 타임아웃 증가
-            headers={"User-Agent": "EmelmujiroBot/1.0"},  # User-Agent 추가
+            timeout=10,
+            headers={"User-Agent": "EmelmujiroBot/1.0"},
         )
 
         if response.status_code != 200:
@@ -113,7 +113,7 @@ def verify_recaptcha(recaptcha_response: str, request_ip: str = None) -> bool:
         result = response.json()
         success = result.get("success", False)
 
-        # 오류 코드 로깅
+        # Log error codes
         if not success:
             error_codes = result.get("error-codes", [])
             logger.warning(f"reCAPTCHA failed with errors: {error_codes}")
@@ -132,7 +132,7 @@ def verify_recaptcha(recaptcha_response: str, request_ip: str = None) -> bool:
 
 
 def log_site_visit(request: HttpRequest):
-    """사이트 방문 로그 기록"""
+    """Log site visit"""
     try:
         ip_address = get_client_ip(request)
         user_agent = request.META.get("HTTP_USER_AGENT", "")
@@ -179,24 +179,24 @@ class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset
 
     def retrieve(self, request, *args, **kwargs):
-        """개별 포스트 조회 시 조회수 증가 및 방문 로그"""
+        """Retrieve individual post with view count increment and visit log"""
         log_site_visit(request)
 
         response = super().retrieve(request, *args, **kwargs)
 
-        # 조회수 증가 (하루에 한 번만)
+        # Increment view count (once per day per IP)
         instance = self.get_object()
         ip_address = get_client_ip(request)
         cache_key = f"blog_view_{instance.id}_{hashlib.md5(ip_address.encode()).hexdigest()}"
 
         if not cache.get(cache_key):
             BlogPost.objects.filter(id=instance.id).update(view_count=F("view_count") + 1)
-            cache.set(cache_key, True, timeout=ONE_DAY)  # 24시간
+            cache.set(cache_key, True, timeout=ONE_DAY)
 
         return response
 
     def list(self, request, *args, **kwargs):
-        """목록 조회 시 방문 로그"""
+        """List posts with visit log"""
         log_site_visit(request)
         return super().list(request, *args, **kwargs)
 
@@ -239,7 +239,7 @@ class ContactView(APIView):
         ip_address = get_client_ip(request)
         user_agent = request.META.get("HTTP_USER_AGENT", "")
 
-        # reCAPTCHA 검증 (IP 포함)
+        # reCAPTCHA verification (with IP)
         recaptcha_response = request.data.get("recaptcha_token", "")
         if not verify_recaptcha(recaptcha_response, ip_address):
             return Response(
@@ -247,7 +247,7 @@ class ContactView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # 스팸 체크
+        # Spam check
         email = request.data.get("email", "")
         if self._is_spam_attempt(ip_address, email):
             return Response(
@@ -267,10 +267,10 @@ class ContactView(APIView):
             )
 
         try:
-            # 문의 데이터 저장 (IP, User Agent 포함)
+            # Save contact data (with IP and User Agent)
             contact = serializer.save(ip_address=ip_address, user_agent=user_agent)
 
-            # 이메일 발송
+            # Send email notification
             subject = f"[에멜무지로 문의] {contact.get_inquiry_type_display()} - {contact.name}"
             message = self._create_email_message(contact)
 
@@ -282,7 +282,7 @@ class ContactView(APIView):
                 fail_silently=False,
             )
 
-            # 성공적인 문의 시도 로그
+            # Log successful contact attempt
             self._log_contact_attempt(ip_address, email, True)
 
             return Response(
@@ -305,9 +305,9 @@ class ContactView(APIView):
             )
 
     def _is_spam_attempt(self, ip_address: str, email: str) -> bool:
-        """스팸 시도 체크 (보안 강화)"""
+        """Check for spam attempts (security-hardened)"""
         try:
-            # IP 기반 체크 (1시간에 3회 제한)
+            # IP-based check (limit 3 per hour)
             ip_attempts = ContactAttempt.objects.filter(
                 ip_address=ip_address,
                 last_attempt__gte=timezone.now() - timedelta(hours=1),
@@ -316,7 +316,7 @@ class ContactView(APIView):
             if ip_attempts and ip_attempts.attempt_count >= 3:
                 return True
 
-            # 이메일 기반 체크 (하루에 2회 제한)
+            # Email-based check (limit 2 per day)
             if email and self._is_valid_email(email):
                 email_attempts = ContactAttempt.objects.filter(
                     email=email, last_attempt__gte=timezone.now() - timedelta(days=1)
@@ -325,7 +325,7 @@ class ContactView(APIView):
                 if email_attempts and email_attempts.attempt_count >= 2:
                     return True
 
-            # 의심스러운 패턴 체크
+            # Suspicious pattern check
             if self._is_suspicious_content(email):
                 logger.warning(f"Suspicious email pattern detected: {email}")
                 return True
@@ -336,7 +336,7 @@ class ContactView(APIView):
             return False
 
     def _is_valid_email(self, email: str) -> bool:
-        """이메일 유효성 검증"""
+        """Validate email address"""
         try:
             validate_email(email)
             return True
@@ -344,12 +344,12 @@ class ContactView(APIView):
             return False
 
     def _is_suspicious_content(self, email: str) -> bool:
-        """의심스러운 내용 패턴 체크"""
+        """Check for suspicious content patterns"""
         suspicious_patterns = [
-            r"[0-9]{10,}",  # 너무 긴 숫자
-            r"(.)\1{5,}",  # 같은 문자 반복
-            r"test.*test",  # 테스트 패턴
-            r"spam|phishing|scam",  # 스팸 키워드
+            r"[0-9]{10,}",  # Excessively long numbers
+            r"(.)\1{5,}",  # Repeated characters
+            r"test.*test",  # Test patterns
+            r"spam|phishing|scam",  # Spam keywords
         ]
 
         for pattern in suspicious_patterns:
@@ -358,7 +358,7 @@ class ContactView(APIView):
         return False
 
     def _log_contact_attempt(self, ip_address: str, email: str, success: bool):
-        """문의 시도 로그"""
+        """Log contact attempt"""
         try:
             attempt, created = ContactAttempt.objects.get_or_create(
                 ip_address=ip_address, email=email, defaults={"attempt_count": 1}
@@ -372,7 +372,7 @@ class ContactView(APIView):
             logger.error(f"Failed to log contact attempt: {e}")
 
     def _create_email_message(self, contact: Contact) -> str:
-        """이메일 메시지 생성"""
+        """Create email message body"""
         return f"""
 에멜무지로 홈페이지를 통해 새로운 문의가 접수되었습니다.
 
@@ -406,7 +406,7 @@ class NewsletterView(APIView):
     throttle_classes = [AnonRateThrottle]
 
     def post(self, request):
-        """뉴스레터 구독"""
+        """Newsletter subscription"""
         log_site_visit(request)
 
         ip_address = get_client_ip(request)
@@ -425,7 +425,7 @@ class NewsletterView(APIView):
             email = serializer.validated_data["email"]
             name = serializer.validated_data.get("name", "")
 
-            # 이미 구독된 이메일인지 체크
+            # Check if email is already subscribed
             existing = NewsletterSubscription.objects.filter(email=email).first()
             if existing:
                 if existing.is_active:
@@ -434,7 +434,7 @@ class NewsletterView(APIView):
                         status=status.HTTP_200_OK,
                     )
                 else:
-                    # 비활성화된 구독을 재활성화
+                    # Reactivate inactive subscription
                     existing.is_active = True
                     existing.unsubscribed_at = None
                     existing.save()
@@ -443,7 +443,7 @@ class NewsletterView(APIView):
                         status=status.HTTP_200_OK,
                     )
 
-            # 새 구독 생성
+            # Create new subscription
             NewsletterSubscription.objects.create(email=email, name=name, ip_address=ip_address)
 
             return Response(
@@ -462,13 +462,13 @@ class NewsletterView(APIView):
 @api_view(["GET"])
 @throttle_classes([AnonRateThrottle])
 def health_check(request):
-    """서버 상태 체크"""
+    """Server health check"""
     return Response({"status": "healthy", "timestamp": timezone.now()})
 
 
 @api_view(["GET"])
 def send_test_email(request):
-    """개발용 테스트 이메일 (DEBUG 모드에서만)"""
+    """Test email endpoint (DEBUG mode only)"""
     if not settings.DEBUG:
         return Response({"error": "이 기능은 개발 모드에서만 사용할 수 있습니다."}, status=403)
 

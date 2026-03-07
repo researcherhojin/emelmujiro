@@ -15,7 +15,7 @@ vi.mock('lucide-react', () => ({
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue,
+    t: (key: string) => key,
   }),
 }));
 
@@ -24,7 +24,7 @@ describe('TypingIndicator', () => {
     render(<TypingIndicator />);
 
     // Check for typing text
-    expect(screen.getByText('입력 중...')).toBeInTheDocument();
+    expect(screen.getByText('chat.typing')).toBeInTheDocument();
   });
 
   it('displays bot icon', () => {
@@ -41,7 +41,7 @@ describe('TypingIndicator', () => {
     // The component should render three dots for the typing animation
     // Since the dots are rendered inside the component, we can verify
     // the typing indicator is present
-    const typingIndicator = screen.getByText('입력 중...');
+    const typingIndicator = screen.getByText('chat.typing');
     expect(typingIndicator).toBeInTheDocument();
 
     // Verify the bot icon is also present which indicates the full component is rendered
@@ -58,7 +58,7 @@ describe('TypingIndicator', () => {
     expect(botIcon).toHaveClass('w-4 h-4');
 
     // Check typing text is present
-    const typingText = screen.getByText('입력 중...');
+    const typingText = screen.getByText('chat.typing');
     expect(typingText).toBeInTheDocument();
   });
 
@@ -66,7 +66,7 @@ describe('TypingIndicator', () => {
     render(<TypingIndicator />);
 
     // Check that the typing indicator text is displayed
-    const typingText = screen.getByText('입력 중...');
+    const typingText = screen.getByText('chat.typing');
     expect(typingText).toBeInTheDocument();
 
     // Check that bot icon is displayed
@@ -78,7 +78,7 @@ describe('TypingIndicator', () => {
     render(<TypingIndicator />);
 
     // Check that the component renders without errors
-    const typingText = screen.getByText('입력 중...');
+    const typingText = screen.getByText('chat.typing');
     expect(typingText).toBeInTheDocument();
 
     // Dark mode classes are applied via Tailwind CSS

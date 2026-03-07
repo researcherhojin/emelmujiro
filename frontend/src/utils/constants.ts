@@ -11,6 +11,9 @@ export const getInquiryTypeMap = () => ({
   data: i18n.t('constants.inquiryTypes.data'),
 });
 
+// Site URL (canonical base for SEO, OG tags, structured data)
+export const SITE_URL = 'https://researcherhojin.github.io/emelmujiro';
+
 // Contact information
 export const CONTACT_EMAIL =
   import.meta.env.VITE_CONTACT_EMAIL || 'researcherhojin@gmail.com';
@@ -115,5 +118,5 @@ export const getDefaultMeta = () => ({
   title: i18n.t('constants.defaultMeta.title'),
   description: i18n.t('constants.defaultMeta.description'),
   keywords: i18n.t('constants.defaultMeta.keywords'),
-  ogImage: '/og-image.png',
+  ogImage: `${SITE_URL}/og-image.png`,
 });

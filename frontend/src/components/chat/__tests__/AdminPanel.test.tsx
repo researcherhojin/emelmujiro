@@ -519,7 +519,7 @@ describe('AdminPanel', () => {
 
     it('has refresh statistics button', () => {
       const refreshButtons = screen.queryAllByRole('button', {
-        name: /통계 새로고침/i,
+        name: /chat\.admin\.refreshStats/i,
       });
       // In StrictMode, components may render twice, so we check for at least one button
       expect(refreshButtons.length).toBeGreaterThan(0);
@@ -576,7 +576,7 @@ describe('AdminPanel', () => {
 
     it('displays user connection time', () => {
       // After clicking Users tab, check for users content
-      // The tab might show "현재 활성 사용자가 없습니다." if no users
+      // The tab might show "No active users" message if no users
       // or show actual user data
       const connectionTime = screen.queryByText(/연결 시간:/);
       const noUsersMessage = screen.queryByText(/활성 사용자가 없습니다/);
@@ -706,7 +706,7 @@ describe('AdminPanel', () => {
       renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       const dialogs = screen.getAllByRole('dialog');
-      expect(dialogs[0]).toHaveAttribute('aria-label', '관리자 패널');
+      expect(dialogs[0]).toHaveAttribute('aria-label', 'chat.admin.adminPanel');
 
       const tablists = screen.getAllByRole('tablist');
       expect(tablists[0]).toBeInTheDocument();

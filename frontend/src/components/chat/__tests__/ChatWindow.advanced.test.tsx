@@ -104,7 +104,7 @@ vi.mock('../EmojiPicker', () => ({
 // Mock i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue?: string) => defaultValue || key,
+    t: (key: string) => key,
     i18n: {
       changeLanguage: vi.fn(),
       language: 'ko',
@@ -163,7 +163,7 @@ describe('ChatWindowAdvanced', () => {
 
       expect(screen.getByTestId('message-list')).toBeInTheDocument();
       expect(
-        screen.getByPlaceholderText(/메시지를 입력하세요/i)
+        screen.getByPlaceholderText(/chat\.placeholder\.connected/i)
       ).toBeInTheDocument();
     });
 
@@ -183,7 +183,9 @@ describe('ChatWindowAdvanced', () => {
       render(<ChatWindow />);
 
       // Should show reconnecting message (there might be multiple elements)
-      const elements = screen.getAllByText(/연결 중/i);
+      const elements = screen.getAllByText(
+        /chat\.status\.connecting|chat\.connectionStatus\.reconnecting|chat\.placeholder\.disconnected/i
+      );
       expect(elements.length).toBeGreaterThan(0);
     });
   });
@@ -198,8 +200,10 @@ describe('ChatWindowAdvanced', () => {
 
       render(<ChatWindow />);
 
-      const input = screen.getByPlaceholderText(/메시지를 입력하세요/i);
-      const sendButton = screen.getByTitle(/전송/i);
+      const input = screen.getByPlaceholderText(
+        /chat\.placeholder\.connected/i
+      );
+      const sendButton = screen.getByLabelText(/chat\.send/i);
 
       // Use fireEvent instead of userEvent for better performance in CI
       fireEvent.change(input, { target: { value: 'Test message' } });
@@ -223,11 +227,13 @@ describe('ChatWindowAdvanced', () => {
 
       render(<ChatWindow />);
 
-      const input = screen.getByPlaceholderText(/메시지를 입력하세요/i);
+      const input = screen.getByPlaceholderText(
+        /chat\.placeholder\.connected/i
+      );
 
       // Use fireEvent for better CI performance
       fireEvent.change(input, { target: { value: 'Test message' } });
-      fireEvent.keyPress(input, { key: 'Enter', code: 'Enter', charCode: 13 });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter', charCode: 13 });
 
       await waitFor(() => {
         expect(sendMessage).toHaveBeenCalled();
@@ -243,7 +249,9 @@ describe('ChatWindowAdvanced', () => {
 
       render(<ChatWindow />);
 
-      const input = screen.getByPlaceholderText(/메시지를 입력하세요/i);
+      const input = screen.getByPlaceholderText(
+        /chat\.placeholder\.connected/i
+      );
 
       // Simulate Shift+Enter for multi-line
       fireEvent.change(input, { target: { value: 'Line 1' } });
@@ -259,7 +267,7 @@ describe('ChatWindowAdvanced', () => {
     it('should have file upload button', () => {
       render(<ChatWindow />);
 
-      const fileButton = screen.getByTitle(/파일 첨부/i);
+      const fileButton = screen.getByLabelText(/chat\.attachFile/i);
       expect(fileButton).toBeInTheDocument();
     });
   });
@@ -280,12 +288,12 @@ describe('ChatWindowAdvanced', () => {
     it('should render emoji button if available', async () => {
       render(<ChatWindow />);
 
-      const emojiButton = screen.queryByTitle(/이모지/i);
+      const emojiButton = screen.queryByLabelText(/chat\.addEmoji/i);
       // Emoji picker may or may not be present depending on implementation
       if (emojiButton) {
         expect(emojiButton).toBeInTheDocument();
       } else {
-        expect(screen.queryByTitle(/이모지/i)).toBeNull();
+        expect(screen.queryByLabelText(/chat\.addEmoji/i)).toBeNull();
       }
     });
   });
@@ -300,7 +308,7 @@ describe('ChatWindowAdvanced', () => {
 
       render(<ChatWindow />);
 
-      const fileButton = screen.getByTitle(/파일 첨부/i);
+      const fileButton = screen.getByLabelText(/chat\.attachFile/i);
       expect(fileButton).toBeInTheDocument();
 
       // File input is hidden, triggered by button click
@@ -315,7 +323,7 @@ describe('ChatWindowAdvanced', () => {
     it('should render without voice recording controls', () => {
       render(<ChatWindow />);
       // Voice recording is not yet implemented
-      expect(screen.queryByTitle(/음성/i)).toBeNull();
+      expect(screen.queryByLabelText(/voice/i)).toBeNull();
     });
   });
 
@@ -331,7 +339,7 @@ describe('ChatWindowAdvanced', () => {
 
     it('should render without sound notification toggle', () => {
       render(<ChatWindow />);
-      expect(screen.queryByTitle(/소리/i)).toBeNull();
+      expect(screen.queryByLabelText(/sound/i)).toBeNull();
     });
   });
 
@@ -359,7 +367,9 @@ describe('ChatWindowAdvanced', () => {
 
       render(<ChatWindow />);
 
-      const input = screen.getByPlaceholderText(/메시지를 입력하세요/i);
+      const input = screen.getByPlaceholderText(
+        /chat\.placeholder\.connected/i
+      );
 
       // Use fireEvent for better CI performance
       fireEvent.change(input, { target: { value: 'T' } });
@@ -383,7 +393,9 @@ describe('ChatWindowAdvanced', () => {
       render(<ChatWindow />);
 
       // Should show reconnecting message (there might be multiple elements)
-      const elements = screen.getAllByText(/연결 중/i);
+      const elements = screen.getAllByText(
+        /chat\.status\.connecting|chat\.connectionStatus\.reconnecting|chat\.placeholder\.disconnected/i
+      );
       expect(elements.length).toBeGreaterThan(0);
     });
 
@@ -395,7 +407,7 @@ describe('ChatWindowAdvanced', () => {
 
       render(<ChatWindow />);
 
-      expect(screen.getByText(/운영시간 외/i)).toBeInTheDocument();
+      expect(screen.getByText(/chat\.afterHours\.title/i)).toBeInTheDocument();
     });
   });
 });

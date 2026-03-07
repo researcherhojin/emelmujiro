@@ -14,6 +14,7 @@ import Layout from './components/layout/Layout';
 import { PageLoading } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import { SITE_URL } from './utils/constants';
 import './i18n';
 
 // Lazy load even more components for better code splitting
@@ -60,7 +61,7 @@ const HomePage: React.FC = memo(() => {
   return (
     <>
       <Suspense fallback={null}>
-        <SEOHelmet url="https://researcherhojin.github.io/emelmujiro" />
+        <SEOHelmet url={SITE_URL} />
         <StructuredData type="Organization" />
         <StructuredData type="Website" />
         <StructuredData type="LocalBusiness" />

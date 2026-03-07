@@ -43,6 +43,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
     <p className="text-sm text-gray-700 mb-2">{reply.content}</p>
     <button
       onClick={() => toggleLike(reply.id, true, parentId)}
+      aria-label={`Like reply by ${reply.author}`}
       className={`flex items-center space-x-1 text-xs ${
         reply.likedBy?.includes(userId)
           ? 'text-blue-600'
@@ -96,6 +97,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
         <div className="flex items-center space-x-4">
           <button
             onClick={() => toggleLike(comment.id)}
+            aria-label={`Like comment by ${comment.author}`}
             className={`flex items-center space-x-1 text-sm ${
               comment.likedBy?.includes(userId)
                 ? 'text-blue-600'
@@ -107,6 +109,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           </button>
           <button
             onClick={() => setReplyTo(comment.id)}
+            aria-label={`Reply to ${comment.author}`}
             className="text-sm text-gray-500 hover:text-blue-600"
           >
             {t('blog.reply')}

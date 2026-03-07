@@ -95,7 +95,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
             <button
               onClick={() => onFileDownload(file, content)}
               className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
-              title={t('chat.downloadFile', '파일 다운로드')}
+              aria-label={t('chat.downloadFile')}
             >
               <Download className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             </button>

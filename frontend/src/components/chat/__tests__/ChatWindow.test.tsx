@@ -211,14 +211,14 @@ describe('ChatWindow', () => {
   it('should have attachment button', () => {
     render(<ChatWindow />);
 
-    const attachButton = screen.getByTitle('chat.attachFile');
+    const attachButton = screen.getByLabelText('chat.attachFile');
     expect(attachButton).toBeInTheDocument();
   });
 
   it('should have emoji button', () => {
     render(<ChatWindow />);
 
-    const emojiButton = screen.getByTitle('chat.addEmoji');
+    const emojiButton = screen.getByLabelText('chat.addEmoji');
     expect(emojiButton).toBeInTheDocument();
   });
 
@@ -281,7 +281,7 @@ describe('ChatWindow', () => {
 
     const input = screen.getByPlaceholderText('chat.placeholder.connected');
     fireEvent.change(input, { target: { value: 'Test message' } });
-    fireEvent.keyPress(input, { key: 'Enter', code: 'Enter', charCode: 13 });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter', charCode: 13 });
 
     waitFor(() => {
       expect(input).toHaveValue('');
@@ -311,7 +311,7 @@ describe('ChatWindow', () => {
   it('should show emoji picker when emoji button is clicked', () => {
     render(<ChatWindow />);
 
-    const emojiButton = screen.getByTitle('chat.addEmoji');
+    const emojiButton = screen.getByLabelText('chat.addEmoji');
     fireEvent.click(emojiButton);
 
     expect(screen.getByTestId('emoji-picker')).toBeInTheDocument();
@@ -320,7 +320,7 @@ describe('ChatWindow', () => {
   it('should toggle emoji picker when emoji button is clicked', () => {
     render(<ChatWindow />);
 
-    const emojiButton = screen.getByTitle('chat.addEmoji');
+    const emojiButton = screen.getByLabelText('chat.addEmoji');
 
     // Click to open
     fireEvent.click(emojiButton);
@@ -335,7 +335,7 @@ describe('ChatWindow', () => {
   it('should handle file input trigger on attachment button click', () => {
     render(<ChatWindow />);
 
-    const attachButton = screen.getByTitle('chat.attachFile');
+    const attachButton = screen.getByLabelText('chat.attachFile');
     expect(attachButton).toBeInTheDocument();
     expect(attachButton).not.toBeDisabled();
   });
@@ -416,7 +416,7 @@ describe('ChatWindow', () => {
   it('should have export button', () => {
     render(<ChatWindow />);
 
-    const exportButton = screen.getByTitle('chat.exportTranscript');
+    const exportButton = screen.getByLabelText('chat.exportTranscript');
     expect(exportButton).toBeInTheDocument();
     expect(exportButton).toBeDisabled(); // Disabled when no messages
   });
@@ -437,7 +437,7 @@ describe('ChatWindow', () => {
 
     render(<ChatWindow />);
 
-    const exportButton = screen.getByTitle('chat.exportTranscript');
+    const exportButton = screen.getByLabelText('chat.exportTranscript');
     expect(exportButton).not.toBeDisabled();
   });
 
@@ -472,7 +472,7 @@ describe('ChatWindow', () => {
 
     const input = screen.getByPlaceholderText('chat.placeholder.connected');
     fireEvent.change(input, { target: { value: 'Test message' } });
-    fireEvent.keyPress(input, { key: 'Enter', code: 'Enter', charCode: 13 });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter', charCode: 13 });
 
     expect(sendMessage).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -491,7 +491,7 @@ describe('ChatWindow', () => {
 
     const input = screen.getByPlaceholderText('chat.placeholder.connected');
     fireEvent.change(input, { target: { value: 'Test message' } });
-    fireEvent.keyPress(input, {
+    fireEvent.keyDown(input, {
       key: 'Enter',
       code: 'Enter',
       charCode: 13,

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
+import { SITE_URL } from '../../utils/constants';
 import ProfileHero from './profile/ProfileHero';
 import StatsSection from './profile/StatsSection';
 import CareerTab from './profile/CareerTab';
@@ -43,7 +44,7 @@ const ProfilePage: React.FC = memo(() => {
         title={t('profilePage.seoTitle')}
         description={t('profilePage.seoDescription')}
         keywords={t('profilePage.seoKeywords')}
-        url="https://researcherhojin.github.io/emelmujiro/profile"
+        url={`${SITE_URL}/#/profile`}
       />
       <StructuredData type="Person" />
       <StructuredData type="Breadcrumb" />

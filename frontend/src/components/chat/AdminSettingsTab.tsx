@@ -21,7 +21,7 @@ const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {t('chat.admin.welcomeMessage', '환영 메시지')}
+            {t('chat.admin.welcomeMessage')}
           </label>
           <textarea
             value={editingSettings.welcomeMessage}
@@ -38,7 +38,7 @@ const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {t('chat.admin.maxMessageLength', '최대 메시지 길이')}
+            {t('chat.admin.maxMessageLength')}
           </label>
           <input
             type="number"
@@ -58,7 +58,7 @@ const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
 
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-          {t('chat.admin.features', '기능 설정')}
+          {t('chat.admin.features')}
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -75,7 +75,7 @@ const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
               className="w-4 h-4 text-blue-600 rounded"
             />
             <span className="text-sm text-gray-700 dark:text-gray-300">
-              {t('chat.admin.allowFileUpload', '파일 업로드 허용')}
+              {t('chat.admin.allowFileUpload')}
             </span>
           </label>
 
@@ -92,7 +92,7 @@ const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
               className="w-4 h-4 text-blue-600 rounded"
             />
             <span className="text-sm text-gray-700 dark:text-gray-300">
-              {t('chat.admin.allowEmoji', '이모지 사용 허용')}
+              {t('chat.admin.allowEmoji')}
             </span>
           </label>
 
@@ -109,7 +109,7 @@ const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
               className="w-4 h-4 text-blue-600 rounded"
             />
             <span className="text-sm text-gray-700 dark:text-gray-300">
-              {t('chat.admin.soundEnabled', '알림음 활성화')}
+              {t('chat.admin.soundEnabled')}
             </span>
           </label>
         </div>
@@ -120,7 +120,7 @@ const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
         className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
       >
         <Save className="w-4 h-4" />
-        <span>{t('chat.admin.saveSettings', '설정 저장')}</span>
+        <span>{t('chat.admin.saveSettings')}</span>
       </button>
     </div>
   );

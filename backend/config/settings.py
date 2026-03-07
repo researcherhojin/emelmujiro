@@ -4,7 +4,7 @@ import sys
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
 
-# .env 파일 로드
+# Load .env file
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -145,7 +145,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {
-            "min_length": 12,  # 최소 12자로 강화
+            "min_length": 12,  # Enforce minimum 12 characters
         },
     },
     {
@@ -168,15 +168,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# 정적 파일 압축 (WhiteNoise)
+# Static file compression (WhiteNoise)
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# URL 처리 설정
-APPEND_SLASH = True  # URL 끝에 슬래시 자동 추가
+# URL handling
+APPEND_SLASH = True  # Auto-append trailing slash
 
-# CORS 설정
+# CORS settings
 CORS_ALLOWED_ORIGINS = os.environ.get(
     "CORS_ALLOWED_ORIGINS",
     "http://localhost:5173,http://127.0.0.1:5173,https://researcherhojin.github.io",
@@ -184,7 +184,7 @@ CORS_ALLOWED_ORIGINS = os.environ.get(
 
 CORS_ALLOW_CREDENTIALS = True
 
-# CSRF 신뢰 출처
+# CSRF trusted origins
 CSRF_TRUSTED_ORIGINS = os.environ.get(
     "CSRF_TRUSTED_ORIGINS",
     "https://researcherhojin.github.io,https://api.emelmujiro.com",
@@ -211,25 +211,25 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-# 보안 헤더 설정
+# Security headers
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = "DENY"
     SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
-# CSRF 보호 강화
+# Enhanced CSRF protection
 CSRF_COOKIE_SECURE = False if DEBUG else True
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_AGE = 3600  # 1시간
+CSRF_COOKIE_AGE = 3600  # 1 hour
 
-# 세션 보안 강화
+# Enhanced session security
 SESSION_COOKIE_SECURE = False if DEBUG else True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 
-# JWT 설정
+# JWT settings
 from datetime import timedelta
 
 SIMPLE_JWT = {
@@ -255,7 +255,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
 
-# REST Framework 설정
+# REST Framework settings
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
     "DEFAULT_PERMISSION_CLASSES": [
@@ -283,7 +283,7 @@ REST_FRAMEWORK = {
     },
 }
 
-# Swagger 설정
+# Swagger settings
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {"Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"}},
     "USE_SESSION_AUTH": False,
@@ -295,11 +295,11 @@ SWAGGER_SETTINGS = {
     "SHOW_EXTENSIONS": True,
     "DEFAULT_MODEL_RENDERING": "model",
 }
-SESSION_COOKIE_AGE = 3600  # 1시간
+SESSION_COOKIE_AGE = 3600  # 1 hour
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 
-# HTTPS 설정 (프로덕션)
+# HTTPS settings (production)
 if not DEBUG:
     SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", 31536000))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", "True").lower() == "true"
@@ -308,18 +308,18 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 else:
-    # 개발 환경에서는 모든 HTTPS 관련 설정 비활성화
+    # Disable all HTTPS-related settings in development
     SECURE_SSL_REDIRECT = False
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
 
-# 파일 업로드 보안
+# File upload security
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 FILE_UPLOAD_PERMISSIONS = 0o644
 ALLOWED_UPLOAD_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif", ".pdf", ".doc", ".docx"]
 
-# 이메일 설정
+# Email settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_HOST = "smtp.gmail.com"
@@ -329,17 +329,17 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
-# 이메일 발송 설정
+# Email sending settings
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@emelmujiro.com")
 EMAIL_TIMEOUT = 5
 EMAIL_MAX_RETRIES = 3
 
-# reCAPTCHA 설정
+# reCAPTCHA settings
 RECAPTCHA_PUBLIC_KEY = os.environ.get("RECAPTCHA_PUBLIC_KEY")
 RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY")
 
-# 캐시 설정
+# Cache settings
 REDIS_URL = os.environ.get("REDIS_URL")
 if REDIS_URL and not DEBUG:
     CACHES = {
@@ -361,7 +361,7 @@ else:
         }
     }
 
-# 로깅 설정
+# Logging settings
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -414,21 +414,21 @@ LOGGING = {
     },
 }
 
-# 개발 모드에서만 허용되는 설정들
+# Development-only settings
 if DEBUG:
-    # 개발 도구
+    # Development tools
     INSTALLED_APPS += ["django_extensions"]
 
-    # 개발 모드에서만 허용되는 CORS 설정
+    # Allow all CORS origins in development
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    # 프로덕션 모드에서 추가 보안 설정
+    # Additional security settings for production
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-    # 프로덕션에서는 모든 로그를 파일로
+    # Route all logs to file in production
     LOGGING["loggers"]["django"]["level"] = "WARNING"
     LOGGING["loggers"]["api"]["level"] = "WARNING"
 
-# 테스트 환경에서는 SSL 리다이렉트 비활성화 (재확인)
+# Disable SSL redirect in test environment (re-confirm)
 if "test" in sys.argv:
     SECURE_SSL_REDIRECT = False

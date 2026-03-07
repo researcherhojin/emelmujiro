@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
-import { CONTACT_EMAIL } from '../../utils/constants';
+import { CONTACT_EMAIL, SITE_URL } from '../../utils/constants';
 import {
   Target,
   Users,
@@ -358,7 +358,7 @@ const AboutPage: React.FC = memo(() => {
       <SEOHelmet
         title={t('about.seo.title')}
         description={t('about.seo.description')}
-        url="https://researcherhojin.github.io/emelmujiro/about"
+        url={`${SITE_URL}/#/about`}
       />
       <StructuredData type="Organization" />
       <StructuredData type="Breadcrumb" />

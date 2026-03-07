@@ -4,6 +4,7 @@ import { Home, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SEOHelmet from './SEOHelmet';
 import StructuredData from './StructuredData';
+import { SITE_URL } from '../../utils/constants';
 
 const NotFound: React.FC = memo(() => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const NotFound: React.FC = memo(() => {
       <SEOHelmet
         title={t('notFound.title')}
         description={t('notFound.description')}
-        url="https://researcherhojin.github.io/emelmujiro/404"
+        url={`${SITE_URL}/#/404`}
         type="website"
       />
       <StructuredData type="Website" />

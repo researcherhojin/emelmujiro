@@ -16,6 +16,17 @@ describe('constants', () => {
       expect(map.data).toBe('constants.inquiryTypes.data');
     });
   });
+  describe('Site URL', () => {
+    it('should have SITE_URL defined as a valid HTTPS URL', () => {
+      expect(constants.SITE_URL).toBeDefined();
+      expect(typeof constants.SITE_URL).toBe('string');
+      expect(constants.SITE_URL).toMatch(/^https:\/\//);
+    });
+
+    it('should not have a trailing slash', () => {
+      expect(constants.SITE_URL.endsWith('/')).toBe(false);
+    });
+  });
   describe('Contact Information', () => {
     it('should have CONTACT_EMAIL defined', () => {
       expect(constants.CONTACT_EMAIL).toBeDefined();
@@ -191,6 +202,12 @@ describe('constants', () => {
       expect(typeof meta.ogImage).toBe('string');
       expect(meta.title.length).toBeGreaterThan(0);
       expect(meta.description.length).toBeGreaterThan(0);
+    });
+
+    it('should have ogImage as an absolute URL', () => {
+      const meta = constants.getDefaultMeta();
+      expect(meta.ogImage).toMatch(/^https:\/\//);
+      expect(meta.ogImage).toContain(constants.SITE_URL);
     });
   });
 });

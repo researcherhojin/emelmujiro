@@ -19,6 +19,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "close": "Close",
+    "clear": "Clear",
     "remove": "Remove",
     "back": "Back",
     "next": "Next",
@@ -1043,7 +1044,16 @@
       "currentlyClosed": "Currently closed",
       "activeUsers": "Active users",
       "online": "Online",
-      "anonymousUser": "Anonymous user"
+      "anonymousUser": "Anonymous user",
+      "addCannedResponse": "Add new canned response...",
+      "noActiveUsers": "No active users at the moment.",
+      "connectionTime": "Connected:",
+      "lastActivity": "Last activity:",
+      "fiveMinAgo": "5 min ago",
+      "justNow": "Just now",
+      "refreshStats": "Refresh statistics",
+      "adminPanel": "Admin panel",
+      "mockResponseTime": "2.3 min"
     }
   },
   "constants": {

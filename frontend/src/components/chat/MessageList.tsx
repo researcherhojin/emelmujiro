@@ -150,14 +150,9 @@ const MessageList: React.FC = () => {
         <div className="text-center text-gray-500 dark:text-gray-400">
           <Bot className="w-12 h-12 mx-auto mb-4 opacity-50" />
           <p className="text-lg font-medium mb-2">
-            {t('chat.emptyState.title', '대화를 시작해보세요')}
+            {t('chat.emptyState.title')}
           </p>
-          <p className="text-sm">
-            {t(
-              'chat.emptyState.subtitle',
-              '궁금한 것이 있으시면 언제든 물어보세요!'
-            )}
-          </p>
+          <p className="text-sm">{t('chat.emptyState.subtitle')}</p>
         </div>
       </div>
     );
@@ -193,7 +188,7 @@ const MessageList: React.FC = () => {
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={scrollToBottom}
             className="fixed bottom-20 right-8 w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors"
-            title={t('chat.scrollToBottom', '최신 메시지로 이동')}
+            aria-label={t('chat.scrollToBottom')}
           >
             <svg
               className="w-5 h-5"

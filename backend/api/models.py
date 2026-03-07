@@ -107,7 +107,7 @@ class Contact(models.Model):
 
 
 class ContactAttempt(models.Model):
-    """문의 시도 로그 - 스팸 방지용"""
+    """Contact attempt log — for spam prevention"""
 
     ip_address = models.GenericIPAddressField(verbose_name="IP 주소")
     email = models.EmailField(null=True, blank=True, verbose_name="이메일")
@@ -126,7 +126,7 @@ class ContactAttempt(models.Model):
 
 
 class SiteVisit(models.Model):
-    """사이트 방문 로그"""
+    """Site visit log"""
 
     ip_address = models.GenericIPAddressField(verbose_name="IP 주소")
     user_agent = models.TextField(verbose_name="사용자 에이전트")
@@ -148,7 +148,7 @@ class SiteVisit(models.Model):
 
 
 class NewsletterSubscription(models.Model):
-    """뉴스레터 구독"""
+    """Newsletter subscription"""
 
     email = models.EmailField(unique=True, verbose_name="이메일")
     name = models.CharField(max_length=100, blank=True, verbose_name="이름")

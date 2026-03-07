@@ -32,7 +32,7 @@ vi.mock('lucide-react', () => ({
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue,
+    t: (key: string) => key,
   }),
 }));
 
@@ -66,19 +66,17 @@ describe('QuickReplies', () => {
   it('renders quick replies component', () => {
     renderQuickReplies();
 
-    expect(screen.getByText('빠른 답변을 선택하세요')).toBeInTheDocument();
-    expect(
-      screen.getByText('또는 직접 메시지를 입력하세요')
-    ).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.title')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.or')).toBeInTheDocument();
   });
 
   it('displays all default quick reply options', () => {
     renderQuickReplies();
 
-    expect(screen.getByText('서비스 문의')).toBeInTheDocument();
-    expect(screen.getByText('기술 지원')).toBeInTheDocument();
-    expect(screen.getByText('요금 문의')).toBeInTheDocument();
-    expect(screen.getByText('연락처 문의')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.service')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.technical')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.pricing')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.contact')).toBeInTheDocument();
   });
 
   it('renders icons for each quick reply', () => {
@@ -93,26 +91,38 @@ describe('QuickReplies', () => {
   it('calls onSelect when a quick reply is clicked', () => {
     renderQuickReplies();
 
-    const serviceButton = screen.getByText('서비스 문의');
+    const serviceButton = screen.getByText('chat.quickReplies.service');
     fireEvent.click(serviceButton);
 
-    expect(mockOnSelect).toHaveBeenCalledWith('서비스 문의');
+    expect(mockOnSelect).toHaveBeenCalledWith('chat.quickReplies.service');
     expect(mockOnSelect).toHaveBeenCalledTimes(1);
   });
 
   it('handles multiple quick reply selections', () => {
     renderQuickReplies();
 
-    fireEvent.click(screen.getByText('서비스 문의'));
-    fireEvent.click(screen.getByText('기술 지원'));
-    fireEvent.click(screen.getByText('요금 문의'));
-    fireEvent.click(screen.getByText('연락처 문의'));
+    fireEvent.click(screen.getByText('chat.quickReplies.service'));
+    fireEvent.click(screen.getByText('chat.quickReplies.technical'));
+    fireEvent.click(screen.getByText('chat.quickReplies.pricing'));
+    fireEvent.click(screen.getByText('chat.quickReplies.contact'));
 
     expect(mockOnSelect).toHaveBeenCalledTimes(4);
-    expect(mockOnSelect).toHaveBeenNthCalledWith(1, '서비스 문의');
-    expect(mockOnSelect).toHaveBeenNthCalledWith(2, '기술 지원');
-    expect(mockOnSelect).toHaveBeenNthCalledWith(3, '요금 문의');
-    expect(mockOnSelect).toHaveBeenNthCalledWith(4, '연락처 문의');
+    expect(mockOnSelect).toHaveBeenNthCalledWith(
+      1,
+      'chat.quickReplies.service'
+    );
+    expect(mockOnSelect).toHaveBeenNthCalledWith(
+      2,
+      'chat.quickReplies.technical'
+    );
+    expect(mockOnSelect).toHaveBeenNthCalledWith(
+      3,
+      'chat.quickReplies.pricing'
+    );
+    expect(mockOnSelect).toHaveBeenNthCalledWith(
+      4,
+      'chat.quickReplies.contact'
+    );
   });
 
   it('applies correct color classes to buttons', () => {
@@ -135,10 +145,10 @@ describe('QuickReplies', () => {
     expect(buttons).toHaveLength(4);
 
     // Verify the buttons are the expected quick replies
-    expect(screen.getByText('서비스 문의')).toBeInTheDocument();
-    expect(screen.getByText('기술 지원')).toBeInTheDocument();
-    expect(screen.getByText('요금 문의')).toBeInTheDocument();
-    expect(screen.getByText('연락처 문의')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.service')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.technical')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.pricing')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.contact')).toBeInTheDocument();
   });
 
   it('has hover and focus states', () => {
@@ -167,10 +177,10 @@ describe('QuickReplies', () => {
     vi.mocked(useChatContext).mockReturnValue({
       settings: {
         quickReplies: [
-          '서비스 문의',
-          '기술 지원',
-          '요금 문의',
-          '연락처 문의',
+          'chat.quickReplies.service',
+          'chat.quickReplies.technical',
+          'chat.quickReplies.pricing',
+          'chat.quickReplies.contact',
           'Custom Reply 1',
           'Custom Reply 2',
         ] as string[],
@@ -187,10 +197,10 @@ describe('QuickReplies', () => {
     vi.mocked(useChatContext).mockReturnValue({
       settings: {
         quickReplies: [
-          '서비스 문의',
-          '기술 지원',
-          '요금 문의',
-          '연락처 문의',
+          'chat.quickReplies.service',
+          'chat.quickReplies.technical',
+          'chat.quickReplies.pricing',
+          'chat.quickReplies.contact',
           'Custom Reply',
         ] as string[],
       },
@@ -208,10 +218,10 @@ describe('QuickReplies', () => {
     vi.mocked(useChatContext).mockReturnValue({
       settings: {
         quickReplies: [
-          '서비스 문의',
-          '기술 지원',
-          '요금 문의',
-          '연락처 문의',
+          'chat.quickReplies.service',
+          'chat.quickReplies.technical',
+          'chat.quickReplies.pricing',
+          'chat.quickReplies.contact',
         ] as string[],
       },
     } as any);
@@ -222,10 +232,10 @@ describe('QuickReplies', () => {
     const buttons = screen.getAllByRole('button');
     expect(buttons).toHaveLength(4);
 
-    // Verify the standard replies are present (using default Korean text)
-    expect(screen.getByText('서비스 문의')).toBeInTheDocument();
-    expect(screen.getByText('기술 지원')).toBeInTheDocument();
-    expect(screen.getByText('요금 문의')).toBeInTheDocument();
-    expect(screen.getByText('연락처 문의')).toBeInTheDocument();
+    // Verify the standard replies are present
+    expect(screen.getByText('chat.quickReplies.service')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.technical')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.pricing')).toBeInTheDocument();
+    expect(screen.getByText('chat.quickReplies.contact')).toBeInTheDocument();
   });
 });

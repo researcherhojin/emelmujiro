@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { CONTACT_EMAIL } from '../../utils/constants';
+import { CONTACT_EMAIL, SITE_URL } from '../../utils/constants';
 
 interface SEOHelmetProps {
   title?: string;
@@ -12,7 +12,6 @@ interface SEOHelmetProps {
   url?: string;
   type?: string;
   lang?: string;
-  alternateLanguages?: { lang: string; url: string }[];
   publishedTime?: string;
   modifiedTime?: string;
   article?: {
@@ -30,17 +29,10 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     description,
     keywords,
     author,
-    image = 'https://researcherhojin.github.io/emelmujiro/og-image.png',
-    url = 'https://researcherhojin.github.io/emelmujiro',
+    image = `${SITE_URL}/og-image.png`,
+    url = SITE_URL,
     type = 'website',
     lang = 'ko',
-    alternateLanguages = [
-      { lang: 'ko', url: 'https://researcherhojin.github.io/emelmujiro' },
-      {
-        lang: 'en',
-        url: 'https://researcherhojin.github.io/emelmujiro?lang=en',
-      },
-    ],
     publishedTime,
     modifiedTime,
     article,
@@ -85,16 +77,8 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         {/* Canonical URL */}
         <link rel="canonical" href={url} />
 
-        {/* Language and hreflang */}
+        {/* Language */}
         <html lang={lang} />
-        {alternateLanguages?.map(({ lang: langCode, url: langUrl }) => (
-          <link
-            key={langCode}
-            rel="alternate"
-            hrefLang={langCode}
-            href={langUrl}
-          />
-        ))}
         <link rel="alternate" hrefLang="x-default" href={url} />
 
         {/* Additional SEO Tags */}
@@ -161,7 +145,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
           <meta name="article:modified_time" content={modifiedTime} />
         )}
 
-        {/* 언어 설정 */}
+        {/* Content language */}
         <meta httpEquiv="content-language" content={lang} />
 
         {/* Schema.org JSON-LD */}
@@ -171,8 +155,8 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
             '@type': 'Organization',
             name: siteName,
             description: resolvedDescription,
-            url: 'https://researcherhojin.github.io/emelmujiro',
-            logo: 'https://researcherhojin.github.io/emelmujiro/logo512.png',
+            url: SITE_URL,
+            logo: `${SITE_URL}/logo512.png`,
             founder: {
               '@type': 'Person',
               name: t('seo.personName'),
@@ -189,10 +173,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
               addressCountry: 'KR',
               addressLocality: t('contact.info.address'),
             },
-            sameAs: [
-              'https://github.com/researcherhojin',
-              'https://emelmujiro.com',
-            ],
+            sameAs: ['https://github.com/researcherhojin'],
             foundingDate: '2022',
             areaServed: 'South Korea',
             serviceType: [

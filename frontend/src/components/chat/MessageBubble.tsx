@@ -145,7 +145,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                   className="flex items-center space-x-1 text-xs text-red-600 hover:text-red-700"
                 >
                   <RefreshCw className="w-3 h-3" />
-                  <span>{t('chat.retry', '다시 시도')}</span>
+                  <span>{t('chat.retry')}</span>
                 </button>
               </div>
             )}

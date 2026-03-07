@@ -131,10 +131,7 @@ const ChatWindow: React.FC = () => {
     const maxSize = 10 * 1024 * 1024; // 10MB limit
 
     if (file.size > maxSize) {
-      showNotification(
-        'error',
-        t('chat.error.fileTooLarge', '파일 크기가 너무 큽니다. (최대 10MB)')
-      );
+      showNotification('error', t('chat.error.fileTooLarge'));
       return;
     }
 
@@ -146,10 +143,7 @@ const ChatWindow: React.FC = () => {
         sender: 'user',
       });
     } catch {
-      showNotification(
-        'error',
-        t('chat.error.uploadFailed', '파일 업로드에 실패했습니다.')
-      );
+      showNotification('error', t('chat.error.uploadFailed'));
     }
 
     // Reset file input
@@ -181,15 +175,9 @@ const ChatWindow: React.FC = () => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      showNotification(
-        'success',
-        t('chat.exportSuccess', '채팅 기록을 다운로드했습니다.')
-      );
+      showNotification('success', t('chat.exportSuccess'));
     } catch {
-      showNotification(
-        'error',
-        t('chat.error.exportFailed', '채팅 기록 내보내기에 실패했습니다.')
-      );
+      showNotification('error', t('chat.error.exportFailed'));
     }
   };
 
@@ -203,10 +191,7 @@ const ChatWindow: React.FC = () => {
           <div className="flex items-center space-x-2 text-yellow-700 dark:text-yellow-300">
             <AlertCircle className="w-4 h-4" />
             <span className="text-xs">
-              {t(
-                'chat.connectionStatus.reconnecting',
-                '연결 중... 메시지는 연결 후 전송됩니다.'
-              )}
+              {t('chat.connectionStatus.reconnecting')}
             </span>
           </div>
         </div>
@@ -218,12 +203,9 @@ const ChatWindow: React.FC = () => {
           <div className="flex items-center space-x-2 text-blue-700 dark:text-blue-300">
             <Clock className="w-4 h-4" />
             <div className="text-xs">
-              <div>{t('chat.afterHours.title', '운영시간 외입니다')}</div>
+              <div>{t('chat.afterHours.title')}</div>
               <div className="text-blue-600 dark:text-blue-400">
-                {t(
-                  'chat.afterHours.message',
-                  `운영시간: ${businessHours.hours}`
-                )}
+                {t('chat.afterHours.message')}
               </div>
             </div>
           </div>
@@ -271,7 +253,7 @@ const ChatWindow: React.FC = () => {
             onClick={handleFileSelect}
             disabled={!isConnected}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title={t('chat.attachFile', '파일 첨부')}
+            aria-label={t('chat.attachFile')}
           >
             <Paperclip className="w-5 h-5 text-gray-500" />
           </button>
@@ -282,11 +264,11 @@ const ChatWindow: React.FC = () => {
               ref={inputRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               placeholder={
                 isConnected
-                  ? t('chat.placeholder.connected', '메시지를 입력하세요...')
-                  : t('chat.placeholder.disconnected', '연결 중...')
+                  ? t('chat.placeholder.connected')
+                  : t('chat.placeholder.disconnected')
               }
               disabled={!isConnected}
               className="
@@ -316,7 +298,7 @@ const ChatWindow: React.FC = () => {
             <button
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-              title={t('chat.addEmoji', '이모지 추가')}
+              aria-label={t('chat.addEmoji')}
             >
               <Smile className="w-4 h-4 text-gray-500" />
             </button>
@@ -333,7 +315,7 @@ const ChatWindow: React.FC = () => {
               disabled:cursor-not-allowed
               transition-colors
             "
-            title={t('chat.send', '전송')}
+            aria-label={t('chat.send')}
           >
             <Send className="w-5 h-5 text-white" />
           </button>
@@ -346,12 +328,12 @@ const ChatWindow: React.FC = () => {
               {isConnected ? (
                 <>
                   <CheckCircle className="w-3 h-3 inline mr-1 text-green-500" />
-                  {t('chat.status.connected', '연결됨')}
+                  {t('chat.status.connected')}
                 </>
               ) : (
                 <>
                   <AlertCircle className="w-3 h-3 inline mr-1 text-yellow-500" />
-                  {t('chat.status.connecting', '연결 중...')}
+                  {t('chat.status.connecting')}
                 </>
               )}
             </span>
@@ -361,10 +343,10 @@ const ChatWindow: React.FC = () => {
             onClick={handleExportChat}
             disabled={messages.length === 0}
             className="flex items-center space-x-1 hover:text-gray-700 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            title={t('chat.exportTranscript', '대화 내용 내보내기')}
+            aria-label={t('chat.exportTranscript')}
           >
             <Download className="w-3 h-3" />
-            <span>{t('chat.export', '내보내기')}</span>
+            <span>{t('chat.export')}</span>
           </button>
         </div>
       </div>

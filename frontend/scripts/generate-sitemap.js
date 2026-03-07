@@ -3,7 +3,7 @@ const path = require('path');
 
 const SITE_URL = 'https://researcherhojin.github.io/emelmujiro';
 
-// Define all static routes
+// Define all static routes with hash fragments (HashRouter)
 // Note: /blog and /contact are excluded while under construction
 const staticRoutes = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
@@ -40,26 +40,20 @@ ${allRoutes
 };
 
 // Generate robots.txt
+// Note: Hash fragments (#) are not standardized in robots.txt directives.
+// Since this is a HashRouter SPA, crawlers that don't execute JS won't
+// discover sub-pages anyway. Keep robots.txt simple with just Allow: /
+// and the sitemap reference.
 const generateRobotsTxt = () => {
   const robotsTxt = `# Robots.txt for Emelmujiro
 # https://researcherhojin.github.io/emelmujiro
 
 User-agent: *
 Allow: /
+Crawl-delay: 1
 
 # Sitemap location
 Sitemap: ${SITE_URL}/sitemap.xml
-
-# Crawl-delay for respectful crawling
-Crawl-delay: 1
-
-# Disallow admin routes (if any)
-Disallow: /#/admin
-Disallow: /#/editor
-
-# Allow search engines to index everything else
-Allow: /#/about
-Allow: /#/profile
 
 # Specific rules for major search engines
 User-agent: Googlebot
@@ -67,14 +61,6 @@ Allow: /
 Crawl-delay: 0
 
 User-agent: Bingbot
-Allow: /
-Crawl-delay: 1
-
-User-agent: Slurp
-Allow: /
-Crawl-delay: 1
-
-User-agent: DuckDuckBot
 Allow: /
 Crawl-delay: 1`;
 

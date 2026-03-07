@@ -2,6 +2,7 @@ import React, { memo, useState, useCallback, ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle } from 'lucide-react';
 import SEOHelmet from '../common/SEOHelmet';
+import { SITE_URL } from '../../utils/constants';
 import ContactForm from '../contact/ContactForm';
 import ContactInfo from '../contact/ContactInfo';
 import { useForm } from '../../contexts/FormContext';
@@ -42,7 +43,7 @@ const ContactPage: React.FC = memo(() => {
       <SEOHelmet
         title={t('contact.title') + ' | ' + t('common.companyName')}
         description={t('contact.subtitle')}
-        url="https://researcherhojin.github.io/emelmujiro/contact"
+        url={`${SITE_URL}/#/contact`}
       />
 
       <div className="min-h-screen bg-white dark:bg-gray-900">

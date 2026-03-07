@@ -1,36 +1,36 @@
 #!/bin/bash
 
 # =====================================================
-# 🚀 프로덕션 배포 전 최종 체크 스크립트
+# Pre-production deployment check script
 # =====================================================
-# 이 스크립트는 배포 전 모든 필수 사항을 자동으로 검증합니다
+# Validates all required items before deployment
 #
-# 사용법: ./scripts/pre-deploy-check.sh
+# Usage: ./scripts/pre-deploy-check.sh
 # =====================================================
 
-set -e  # 에러 발생 시 즉시 종료
+set -e  # Exit on error
 
-# 색상 정의
+# Color definitions
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# 아이콘 정의
+# Icon definitions
 CHECK="✅"
 CROSS="❌"
 WARNING="⚠️"
 ROCKET="🚀"
 INFO="ℹ️"
 
-# 결과 저장
+# Result tracking
 ERRORS=0
 WARNINGS=0
 CHECKS_PASSED=0
 TOTAL_CHECKS=0
 
-# 체크 함수
+# Check function
 check() {
     local description=$1
     local command=$2
@@ -57,35 +57,34 @@ check() {
     fi
 }
 
-# 헤더 출력
+# Header
 echo "======================================================"
-echo -e "${BLUE}${ROCKET} 프로덕션 배포 전 체크리스트 ${ROCKET}${NC}"
+echo -e "${BLUE}${ROCKET} Pre-production deployment checklist ${ROCKET}${NC}"
 echo "======================================================"
-echo -e "${INFO} 시작 시간: $(date '+%Y-%m-%d %H:%M:%S')"
+echo -e "${INFO} Start time: $(date '+%Y-%m-%d %H:%M:%S')"
 echo ""
 
 # =====================================================
-# 1. 환경 설정 체크
+# 1. Environment configuration check
 # =====================================================
-echo -e "${BLUE}📋 1. 환경 설정 체크${NC}"
+echo -e "${BLUE}📋 1. Environment configuration${NC}"
 echo "------------------------------------------------------"
 
-check ".env.production 파일 존재" "[ -f frontend/.env.production ]"
-check "PUBLIC_URL 설정 확인" "grep -q 'PUBLIC_URL=' frontend/.env.production"
-check "REACT_APP_API_URL 설정" "grep -q 'REACT_APP_API_URL=' frontend/.env.production"
-check "Sentry DSN 설정" "grep -q 'REACT_APP_SENTRY_DSN=' frontend/.env.production" true
-check "Google Analytics ID" "grep -q 'REACT_APP_GOOGLE_ANALYTICS_ID=' frontend/.env.production" true
+check ".env.production file exists" "[ -f frontend/.env.production ]"
+check "VITE_API_URL configured" "grep -q 'VITE_API_URL=' frontend/.env.production"
+check "VITE_SENTRY_DSN configured" "grep -q 'VITE_SENTRY_DSN=' frontend/.env.production" true
+check "VITE_GA_TRACKING_ID configured" "grep -q 'VITE_GA_TRACKING_ID=' frontend/.env.production" true
 
 echo ""
 
 # =====================================================
-# 2. 코드 품질 체크
+# 2. Code quality check
 # =====================================================
-echo -e "${BLUE}📋 2. 코드 품질 체크${NC}"
+echo -e "${BLUE}📋 2. Code quality${NC}"
 echo "------------------------------------------------------"
 
-# TypeScript 컴파일 체크
-echo -n "TypeScript 컴파일 체크... "
+# TypeScript compilation check
+echo -n "TypeScript compilation... "
 cd frontend
 if npx tsc --noEmit 2>/dev/null; then
     echo -e "${GREEN}${CHECK} No errors${NC}"
@@ -97,8 +96,8 @@ fi
 cd ..
 TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 
-# ESLint 체크
-echo -n "ESLint 체크... "
+# ESLint check
+echo -n "ESLint check... "
 cd frontend
 ESLINT_OUTPUT=$(npx eslint src --ext .js,.jsx,.ts,.tsx --quiet 2>&1 || true)
 if [ -z "$ESLINT_OUTPUT" ]; then
@@ -113,8 +112,8 @@ fi
 cd ..
 TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 
-# 콘솔 로그 체크
-echo -n "console.log 제거 확인... "
+# Console.log check
+echo -n "console.log removal check... "
 CONSOLE_LOGS=$(grep -r "console.log" frontend/src --include="*.tsx" --include="*.ts" --exclude-dir=__tests__ | wc -l)
 if [ "$CONSOLE_LOGS" -eq 0 ]; then
     echo -e "${GREEN}${CHECK} No console.log found${NC}"
@@ -128,12 +127,12 @@ TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 echo ""
 
 # =====================================================
-# 3. 테스트 실행
+# 3. Test execution
 # =====================================================
-echo -e "${BLUE}📋 3. 테스트 실행${NC}"
+echo -e "${BLUE}📋 3. Tests${NC}"
 echo "------------------------------------------------------"
 
-echo -n "단위 테스트 실행... "
+echo -n "Running unit tests... "
 cd frontend
 TEST_OUTPUT=$(CI=true npm test -- --watchAll=false --passWithNoTests 2>&1 || true)
 TEST_PASSED=$(echo "$TEST_OUTPUT" | grep -oE "[0-9]+ passed" | grep -oE "[0-9]+" || echo "0")
@@ -152,18 +151,18 @@ TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 echo ""
 
 # =====================================================
-# 4. 빌드 테스트
+# 4. Build test
 # =====================================================
-echo -e "${BLUE}📋 4. 빌드 테스트${NC}"
+echo -e "${BLUE}📋 4. Build${NC}"
 echo "------------------------------------------------------"
 
-echo -n "프로덕션 빌드 테스트... "
+echo -n "Production build test... "
 cd frontend
 if npm run build > /dev/null 2>&1; then
     echo -e "${GREEN}${CHECK} Build successful${NC}"
     CHECKS_PASSED=$((CHECKS_PASSED + 1))
 
-    # 빌드 사이즈 체크
+    # Build size check
     BUILD_SIZE=$(du -sh build 2>/dev/null | cut -f1)
     echo -e "  ${INFO} Build size: $BUILD_SIZE"
 else
@@ -176,27 +175,28 @@ TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 echo ""
 
 # =====================================================
-# 5. SEO & 접근성 체크
+# 5. SEO & Accessibility check
 # =====================================================
-echo -e "${BLUE}📋 5. SEO & 접근성${NC}"
+echo -e "${BLUE}📋 5. SEO & Accessibility${NC}"
 echo "------------------------------------------------------"
 
-check "robots.txt 파일 존재" "[ -f frontend/public/robots.txt ]"
-check "sitemap.xml 파일 존재" "[ -f frontend/public/sitemap.xml ]"
-check "manifest.json 파일 존재" "[ -f frontend/public/manifest.json ]"
-check "favicon.ico 파일 존재" "[ -f frontend/public/favicon.ico ]"
-check "Open Graph 이미지" "[ -f frontend/public/og-image.png ]" true
+check "robots.txt exists" "[ -f frontend/public/robots.txt ]"
+check "sitemap.xml exists" "[ -f frontend/public/sitemap.xml ]"
+check "manifest.json exists" "[ -f frontend/public/manifest.json ]"
+check "favicon.ico exists" "[ -f frontend/public/favicon.ico ]"
+check "Open Graph image exists" "[ -f frontend/public/og-image.png ]" true
+check ".nojekyll exists" "[ -f frontend/public/.nojekyll ]"
 
 echo ""
 
 # =====================================================
-# 6. 보안 체크
+# 6. Security check
 # =====================================================
-echo -e "${BLUE}📋 6. 보안 체크${NC}"
+echo -e "${BLUE}📋 6. Security${NC}"
 echo "------------------------------------------------------"
 
-# API 키 노출 체크
-echo -n "하드코딩된 API 키 체크... "
+# API key exposure check
+echo -n "Hardcoded API key check... "
 API_KEYS=$(grep -r "api[_-]key\|apikey\|api_secret\|secret_key" frontend/src --include="*.tsx" --include="*.ts" -i | grep -v "process.env" | wc -l)
 if [ "$API_KEYS" -eq 0 ]; then
     echo -e "${GREEN}${CHECK} No exposed API keys${NC}"
@@ -207,8 +207,8 @@ else
 fi
 TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 
-# 민감한 정보 체크
-echo -n "민감한 정보 노출 체크... "
+# Sensitive data check
+echo -n "Sensitive data exposure check... "
 SENSITIVE=$(grep -r "password\|token\|secret" frontend/src --include="*.tsx" --include="*.ts" | grep -v "process.env" | grep -v "interface" | grep -v "type" | wc -l)
 if [ "$SENSITIVE" -lt 5 ]; then
     echo -e "${GREEN}${CHECK} Minimal sensitive data exposure${NC}"
@@ -222,13 +222,13 @@ TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 echo ""
 
 # =====================================================
-# 7. 의존성 체크
+# 7. Dependency check
 # =====================================================
-echo -e "${BLUE}📋 7. 의존성 체크${NC}"
+echo -e "${BLUE}📋 7. Dependencies${NC}"
 echo "------------------------------------------------------"
 
-# 취약점 체크
-echo -n "npm 보안 취약점 체크... "
+# Vulnerability check
+echo -n "npm security vulnerability check... "
 cd frontend
 AUDIT_OUTPUT=$(npm audit --production 2>&1 || true)
 VULNERABILITIES=$(echo "$AUDIT_OUTPUT" | grep -oE "[0-9]+ vulnerabilities" | grep -oE "[0-9]+" || echo "0")
@@ -245,13 +245,13 @@ TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 echo ""
 
 # =====================================================
-# 8. Git 상태 체크
+# 8. Git status check
 # =====================================================
-echo -e "${BLUE}📋 8. Git 상태${NC}"
+echo -e "${BLUE}📋 8. Git status${NC}"
 echo "------------------------------------------------------"
 
-# 커밋되지 않은 변경사항 체크
-echo -n "커밋되지 않은 변경사항... "
+# Uncommitted changes check
+echo -n "Uncommitted changes... "
 UNCOMMITTED=$(git status --porcelain | wc -l)
 if [ "$UNCOMMITTED" -eq 0 ]; then
     echo -e "${GREEN}${CHECK} Working directory clean${NC}"
@@ -262,25 +262,25 @@ else
 fi
 TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 
-# 현재 브랜치 확인
+# Current branch
 CURRENT_BRANCH=$(git branch --show-current)
 echo -e "  ${INFO} Current branch: $CURRENT_BRANCH"
 
 echo ""
 
 # =====================================================
-# 9. 성능 체크
+# 9. Performance check
 # =====================================================
-echo -e "${BLUE}📋 9. 성능 체크${NC}"
+echo -e "${BLUE}📋 9. Performance${NC}"
 echo "------------------------------------------------------"
 
-# 번들 사이즈 체크
+# Bundle size check
 if [ -f frontend/build/static/js/*.js ]; then
     BUNDLE_SIZE=$(du -sh frontend/build/static/js/*.js 2>/dev/null | awk '{sum+=$1} END {print sum}')
     echo -e "  ${INFO} JavaScript bundle size: ${BUNDLE_SIZE}KB"
 fi
 
-# 이미지 최적화 체크
+# Image optimization check
 LARGE_IMAGES=$(find frontend/public -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -size +500k 2>/dev/null | wc -l)
 if [ "$LARGE_IMAGES" -eq 0 ]; then
     echo -e "  ${CHECK} All images optimized (<500KB)"
@@ -294,32 +294,32 @@ TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 echo ""
 
 # =====================================================
-# 최종 결과
+# Final results
 # =====================================================
 echo "======================================================"
-echo -e "${BLUE}📊 최종 결과${NC}"
+echo -e "${BLUE}📊 Results${NC}"
 echo "======================================================"
 
 PERCENTAGE=$((CHECKS_PASSED * 100 / TOTAL_CHECKS))
 
-echo -e "총 체크 항목: $TOTAL_CHECKS"
-echo -e "${GREEN}통과: $CHECKS_PASSED${NC}"
-echo -e "${YELLOW}경고: $WARNINGS${NC}"
-echo -e "${RED}실패: $ERRORS${NC}"
-echo -e "통과율: ${PERCENTAGE}%"
+echo -e "Total checks: $TOTAL_CHECKS"
+echo -e "${GREEN}Passed: $CHECKS_PASSED${NC}"
+echo -e "${YELLOW}Warnings: $WARNINGS${NC}"
+echo -e "${RED}Failed: $ERRORS${NC}"
+echo -e "Pass rate: ${PERCENTAGE}%"
 echo ""
 
 if [ "$ERRORS" -eq 0 ]; then
     if [ "$WARNINGS" -eq 0 ]; then
-        echo -e "${GREEN}${ROCKET} 완벽합니다! 배포 준비가 완료되었습니다.${NC}"
+        echo -e "${GREEN}${ROCKET} All clear! Ready to deploy.${NC}"
         exit 0
     else
-        echo -e "${YELLOW}${WARNING} 경고가 있지만 배포 가능합니다.${NC}"
-        echo "경고 사항을 검토하고 필요시 수정하세요."
+        echo -e "${YELLOW}${WARNING} Warnings found but deployment is possible.${NC}"
+        echo "Review warnings and fix if necessary."
         exit 0
     fi
 else
-    echo -e "${RED}${CROSS} 배포 전 수정이 필요한 항목이 있습니다.${NC}"
-    echo "위의 실패 항목을 확인하고 수정 후 다시 실행하세요."
+    echo -e "${RED}${CROSS} Issues found that must be fixed before deployment.${NC}"
+    echo "Fix the failed items above and run again."
     exit 1
 fi

@@ -29,15 +29,15 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-          {t('chat.admin.statistics', '채팅 통계')}
+          {t('chat.admin.statistics')}
         </h3>
         <button
           className="flex items-center space-x-2 text-blue-600 hover:text-blue-700"
-          aria-label="통계 새로고침"
+          aria-label={t('chat.admin.refreshStats')}
           role="button"
         >
           <RefreshCw className="w-4 h-4" />
-          <span>{t('chat.admin.refresh', '새로고침')}</span>
+          <span>{t('chat.admin.refresh')}</span>
         </button>
       </div>
 
@@ -53,7 +53,7 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
                 {stats.totalMessages}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {t('chat.admin.totalMessages', '총 메시지')}
+                {t('chat.admin.totalMessages')}
               </div>
             </div>
           </div>
@@ -70,7 +70,7 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
                 {stats.userMessages}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {t('chat.admin.userMessages', '사용자 메시지')}
+                {t('chat.admin.userMessages')}
               </div>
             </div>
           </div>
@@ -87,7 +87,7 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
                 {stats.averageResponseTime}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {t('chat.admin.avgResponseTime', '평균 응답시간')}
+                {t('chat.admin.avgResponseTime')}
               </div>
             </div>
           </div>
@@ -104,7 +104,7 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
                 {stats.satisfactionRating}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {t('chat.admin.satisfaction', '만족도')}
+                {t('chat.admin.satisfaction')}
               </div>
             </div>
           </div>
@@ -113,7 +113,7 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
 
       <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
         <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-          {t('chat.admin.businessHours', '운영 현황')}
+          {t('chat.admin.businessHours')}
         </h4>
         <div className="flex items-center space-x-4 text-sm">
           <div className="flex items-center space-x-2">
@@ -122,8 +122,8 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
             />
             <span className="text-gray-600 dark:text-gray-400">
               {businessHours.isOpen
-                ? t('chat.admin.currentlyOpen', '현재 운영 중')
-                : t('chat.admin.currentlyClosed', '현재 운영 종료')}
+                ? t('chat.admin.currentlyOpen')
+                : t('chat.admin.currentlyClosed')}
             </span>
           </div>
           <div className="text-gray-600 dark:text-gray-400">

@@ -15,7 +15,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
 
   const emojiCategories = {
     smileys: {
-      name: t('chat.emoji.smileys', '표정'),
+      name: t('chat.emoji.smileys'),
       emojis: [
         '😀',
         '😃',
@@ -70,7 +70,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
       ],
     },
     gestures: {
-      name: t('chat.emoji.gestures', '제스처'),
+      name: t('chat.emoji.gestures'),
       emojis: [
         '👍',
         '👎',
@@ -115,7 +115,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
       ],
     },
     objects: {
-      name: t('chat.emoji.objects', '사물'),
+      name: t('chat.emoji.objects'),
       emojis: [
         '💻',
         '🖥️',
@@ -160,7 +160,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
       ],
     },
     symbols: {
-      name: t('chat.emoji.symbols', '기호'),
+      name: t('chat.emoji.symbols'),
       emojis: [
         '❤️',
         '🧡',
@@ -226,12 +226,12 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
         <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {t('chat.emoji.title', '이모지 선택')}
+          {t('chat.emoji.title')}
         </h3>
         <button
           onClick={onClose}
           className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          aria-label={t('common.close', '닫기')}
+          aria-label={t('common.close')}
         >
           <X className="w-4 h-4 text-gray-500" />
         </button>
@@ -245,14 +245,14 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t('chat.emoji.search', '이모지 검색...')}
+            placeholder={t('chat.emoji.search')}
             className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-              aria-label={t('common.clear', '지우기')}
+              aria-label={t('common.clear')}
             >
               <X className="w-3 h-3 text-gray-400" />
             </button>
@@ -302,7 +302,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
           </div>
         ) : (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            {t('chat.emoji.noResults', '검색 결과가 없습니다')}
+            {t('chat.emoji.noResults')}
           </div>
         )}
       </div>
@@ -310,7 +310,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
       {/* Footer */}
       <div className="p-3 border-t border-gray-200 dark:border-gray-700 text-center">
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          {t('chat.emoji.tip', '이모지를 클릭하여 추가하세요')}
+          {t('chat.emoji.tip')}
         </p>
       </div>
     </motion.div>

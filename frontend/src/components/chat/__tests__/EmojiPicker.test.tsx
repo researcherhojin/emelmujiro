@@ -35,7 +35,7 @@ vi.mock('framer-motion', () => ({
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue,
+    t: (key: string) => key,
   }),
 }));
 
@@ -50,17 +50,19 @@ describe('EmojiPicker', () => {
   it('renders emoji picker component', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    expect(screen.getByText('이모지 선택')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('이모지 검색...')).toBeInTheDocument();
+    expect(screen.getByText('chat.emoji.title')).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText('chat.emoji.search')
+    ).toBeInTheDocument();
   });
 
   it('displays emoji categories', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    expect(screen.getByText('표정')).toBeInTheDocument();
-    expect(screen.getByText('제스처')).toBeInTheDocument();
-    expect(screen.getByText('사물')).toBeInTheDocument();
-    expect(screen.getByText('기호')).toBeInTheDocument();
+    expect(screen.getByText('chat.emoji.smileys')).toBeInTheDocument();
+    expect(screen.getByText('chat.emoji.gestures')).toBeInTheDocument();
+    expect(screen.getByText('chat.emoji.objects')).toBeInTheDocument();
+    expect(screen.getByText('chat.emoji.symbols')).toBeInTheDocument();
   });
 
   it('displays emojis from active category', () => {
@@ -76,7 +78,7 @@ describe('EmojiPicker', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
     // Click on gestures category
-    const gesturesButton = screen.getByText('제스처');
+    const gesturesButton = screen.getByText('chat.emoji.gestures');
     fireEvent.click(gesturesButton);
 
     // Should show gesture emojis
@@ -98,7 +100,7 @@ describe('EmojiPicker', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
     // Find and click the close button by aria-label
-    const closeButton = screen.getByLabelText('닫기');
+    const closeButton = screen.getByLabelText('common.close');
     fireEvent.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalled();
@@ -107,7 +109,7 @@ describe('EmojiPicker', () => {
   it('filters emojis based on search term', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText('이모지 검색...');
+    const searchInput = screen.getByPlaceholderText('chat.emoji.search');
     fireEvent.change(searchInput, { target: { value: '😀' } });
 
     // Should only show matching emoji
@@ -119,24 +121,24 @@ describe('EmojiPicker', () => {
   it('shows no results message when search has no matches', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText('이모지 검색...');
+    const searchInput = screen.getByPlaceholderText('chat.emoji.search');
     fireEvent.change(searchInput, { target: { value: 'xyz123' } });
 
-    expect(screen.getByText('검색 결과가 없습니다')).toBeInTheDocument();
+    expect(screen.getByText('chat.emoji.noResults')).toBeInTheDocument();
   });
 
   it('clears search when clear button is clicked', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
     const searchInput = screen.getByPlaceholderText(
-      '이모지 검색...'
+      'chat.emoji.search'
     ) as HTMLInputElement;
     fireEvent.change(searchInput, { target: { value: 'test' } });
 
     expect(searchInput.value).toBe('test');
 
     // Clear button is rendered when search has value
-    const clearButton = screen.getByLabelText('지우기');
+    const clearButton = screen.getByLabelText('common.clear');
     fireEvent.click(clearButton);
 
     expect(searchInput.value).toBe('');
@@ -146,7 +148,7 @@ describe('EmojiPicker', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
     // First category button should be active by default
-    const smileyButton = screen.getByText('표정');
+    const smileyButton = screen.getByText('chat.emoji.smileys');
 
     expect(smileyButton.className).toContain('bg-blue-50');
   });
@@ -154,7 +156,7 @@ describe('EmojiPicker', () => {
   it('handles switching to objects category', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const objectsButton = screen.getByText('사물');
+    const objectsButton = screen.getByText('chat.emoji.objects');
     fireEvent.click(objectsButton);
 
     // Should show object emojis
@@ -166,7 +168,7 @@ describe('EmojiPicker', () => {
   it('handles switching to symbols category', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const symbolsButton = screen.getByText('기호');
+    const symbolsButton = screen.getByText('chat.emoji.symbols');
     fireEvent.click(symbolsButton);
 
     // Should show symbol emojis
@@ -178,7 +180,7 @@ describe('EmojiPicker', () => {
   it('maintains search across category switches', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText('이모지 검색...');
+    const searchInput = screen.getByPlaceholderText('chat.emoji.search');
     fireEvent.change(searchInput, { target: { value: '💻' } });
 
     // Should show the computer emoji even though it's in objects category
@@ -189,7 +191,7 @@ describe('EmojiPicker', () => {
     fireEvent.change(searchInput, { target: { value: '' } });
 
     // Now we can switch categories
-    const gesturesButton = screen.getByText('제스처');
+    const gesturesButton = screen.getByText('chat.emoji.gestures');
     fireEvent.click(gesturesButton);
 
     // Should show gesture emojis now that search is cleared
@@ -199,7 +201,7 @@ describe('EmojiPicker', () => {
   it('shows all matching emojis from all categories when searching', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText('이모지 검색...');
+    const searchInput = screen.getByPlaceholderText('chat.emoji.search');
     // Search for heart emoji which exists in symbols
     fireEvent.change(searchInput, { target: { value: '❤' } });
 
@@ -209,7 +211,7 @@ describe('EmojiPicker', () => {
   it('handles emoji selection from search results', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText('이모지 검색...');
+    const searchInput = screen.getByPlaceholderText('chat.emoji.search');
     fireEvent.change(searchInput, { target: { value: '💻' } });
 
     const emoji = screen.getByText('💻');

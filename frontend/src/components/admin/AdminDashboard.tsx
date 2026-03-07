@@ -344,6 +344,7 @@ const AdminDashboard: React.FC = () => {
                         onClick={() => handleViewContent(item.id)}
                         className="text-blue-600 hover:text-blue-900"
                         title={t('admin.view')}
+                        aria-label={`${t('admin.view')} ${item.title}`}
                       >
                         <Eye className="w-4 h-4" />
                       </button>
@@ -351,6 +352,7 @@ const AdminDashboard: React.FC = () => {
                         onClick={() => handleEditContent(item.id)}
                         className="text-green-600 hover:text-green-900"
                         title={t('admin.edit')}
+                        aria-label={`${t('admin.edit')} ${item.title}`}
                       >
                         <Edit className="w-4 h-4" />
                       </button>
@@ -358,6 +360,7 @@ const AdminDashboard: React.FC = () => {
                         onClick={() => handleDeleteContent(item.id)}
                         className="text-red-600 hover:text-red-900"
                         title={t('admin.delete')}
+                        aria-label={`${t('admin.delete')} ${item.title}`}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

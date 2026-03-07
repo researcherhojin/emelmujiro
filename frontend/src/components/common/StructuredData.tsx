@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { CONTACT_EMAIL } from '../../utils/constants';
+import { CONTACT_EMAIL, SITE_URL } from '../../utils/constants';
 
 type SchemaType =
   | 'Organization'
@@ -43,8 +43,8 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       '@type': 'Organization',
       name: siteName,
       alternateName: 'Emelmujiro',
-      url: 'https://researcherhojin.github.io/emelmujiro',
-      logo: 'https://researcherhojin.github.io/emelmujiro/logo192.png',
+      url: SITE_URL,
+      logo: `${SITE_URL}/logo192.png`,
       description: t('seo.site.description'),
       address: {
         '@type': 'PostalAddress',
@@ -58,7 +58,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
         email: CONTACT_EMAIL,
         availableLanguage: ['Korean', 'English'],
       },
-      sameAs: ['https://github.com/researcherhojin', 'https://emelmujiro.com'],
+      sameAs: ['https://github.com/researcherhojin'],
       founder: {
         '@type': 'Person',
         name: t('seo.personName'),
@@ -85,7 +85,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: siteName,
-      url: 'https://researcherhojin.github.io/emelmujiro',
+      url: SITE_URL,
       description: t('seo.site.description'),
       inLanguage: 'ko-KR',
       publisher: {
@@ -94,6 +94,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       },
     };
 
+    // Breadcrumb only includes pages that are live (not under construction)
     const breadcrumbSchema = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -102,25 +103,19 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
           '@type': 'ListItem',
           position: 1,
           name: t('common.home'),
-          item: 'https://researcherhojin.github.io/emelmujiro',
+          item: SITE_URL,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: t('common.about'),
-          item: 'https://researcherhojin.github.io/emelmujiro/#/about',
+          item: `${SITE_URL}/#/about`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: t('common.representativeProfile'),
-          item: 'https://researcherhojin.github.io/emelmujiro/#/profile',
-        },
-        {
-          '@type': 'ListItem',
-          position: 4,
-          name: t('common.contact'),
-          item: 'https://researcherhojin.github.io/emelmujiro/#/contact',
+          item: `${SITE_URL}/#/profile`,
         },
       ],
     };
@@ -137,7 +132,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       },
       email: CONTACT_EMAIL,
       telephone: t('contact.info.phone'),
-      url: 'https://researcherhojin.github.io/emelmujiro/#/profile',
+      url: `${SITE_URL}/#/profile`,
       sameAs: ['https://github.com/researcherhojin'],
       knowsAbout: [
         'AI',
@@ -152,10 +147,10 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
     const localBusinessSchema = {
       '@context': 'https://schema.org',
       '@type': 'LocalBusiness',
-      '@id': 'https://researcherhojin.github.io/emelmujiro/#business',
+      '@id': `${SITE_URL}/#business`,
       name: siteName,
       description: t('seo.site.description'),
-      url: 'https://researcherhojin.github.io/emelmujiro',
+      url: SITE_URL,
       telephone: t('contact.info.phone'),
       email: CONTACT_EMAIL,
       address: {
@@ -170,7 +165,6 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       },
       openingHours: 'Mo-Fr 09:00-18:00',
       priceRange: '$$',
-      servesCuisine: null,
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
         name: `${t('services.education.title')} & ${t('services.consulting.title')}`,
@@ -203,7 +197,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       provider: {
         '@type': 'Organization',
         name: siteName,
-        url: 'https://researcherhojin.github.io/emelmujiro',
+        url: SITE_URL,
       },
       serviceType: service?.serviceType || 'AI Consulting',
       areaServed: service?.areaServed || 'South Korea',
@@ -237,9 +231,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
           '@type': 'Article',
           headline: article.title,
           description: article.description,
-          image:
-            article.image ||
-            'https://researcherhojin.github.io/emelmujiro/og-image.png',
+          image: article.image || `${SITE_URL}/og-image.png`,
           author: {
             '@type': 'Person',
             name: article.author || t('seo.personName'),
@@ -249,35 +241,28 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
             name: siteName,
             logo: {
               '@type': 'ImageObject',
-              url: 'https://researcherhojin.github.io/emelmujiro/logo192.png',
+              url: `${SITE_URL}/logo192.png`,
             },
           },
           datePublished: article.publishedTime,
           dateModified: article.modifiedTime || article.publishedTime,
           mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': 'https://researcherhojin.github.io/emelmujiro',
+            '@id': SITE_URL,
           },
           articleSection: article.category,
           keywords: article.tags?.join(', '),
         }
       : {};
 
+    // SearchAction schema — currently points to the home page since blog is
+    // under construction. Update the urlTemplate when blog is re-enabled.
     const searchActionSchema = {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      '@id': 'https://researcherhojin.github.io/emelmujiro/#website',
+      '@id': `${SITE_URL}/#website`,
       name: siteName,
-      url: 'https://researcherhojin.github.io/emelmujiro',
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: {
-          '@type': 'EntryPoint',
-          urlTemplate:
-            'https://researcherhojin.github.io/emelmujiro/#/blog?search={search_term_string}',
-        },
-        'query-input': 'required name=search_term_string',
-      },
+      url: SITE_URL,
     };
 
     const schemas: Record<SchemaType, Record<string, unknown>> = {

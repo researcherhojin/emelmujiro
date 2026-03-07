@@ -13,12 +13,12 @@ const AdminUsersTab: React.FC<AdminUsersTabProps> = ({ connectionId }) => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-          {t('chat.admin.activeUsers', '활성 사용자')}
+          {t('chat.admin.activeUsers')}
         </h3>
         <div className="flex items-center space-x-2 text-sm text-gray-500">
           <Users className="w-4 h-4" />
           <span>
-            {connectionId ? '1' : '0'} {t('chat.admin.online', '온라인')}
+            {connectionId ? '1' : '0'} {t('chat.admin.online')}
           </span>
         </div>
       </div>
@@ -34,11 +34,14 @@ const AdminUsersTab: React.FC<AdminUsersTabProps> = ({ connectionId }) => {
             </div>
             <div>
               <div className="font-medium text-gray-900 dark:text-white">
-                {t('chat.admin.anonymousUser', '익명 사용자')}
+                {t('chat.admin.anonymousUser')}
               </div>
               <div className="text-sm text-gray-500">
-                <span>연결 시간:</span> 5분 전<br />
-                <span>마지막 활동:</span> 방금 전
+                <span>{t('chat.admin.connectionTime')}</span>{' '}
+                {t('chat.admin.fiveMinAgo')}
+                <br />
+                <span>{t('chat.admin.lastActivity')}</span>{' '}
+                {t('chat.admin.justNow')}
               </div>
             </div>
             <div className="ml-auto">
@@ -51,7 +54,7 @@ const AdminUsersTab: React.FC<AdminUsersTabProps> = ({ connectionId }) => {
         </div>
       ) : (
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-          {t('chat.admin.noActiveUsers', '현재 활성 사용자가 없습니다.')}
+          {t('chat.admin.noActiveUsers')}
         </div>
       )}
     </div>

@@ -56,7 +56,7 @@ const AdminCannedTab: React.FC<AdminCannedTabProps> = ({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-          {t('chat.admin.cannedResponses', '자동 응답 관리')}
+          {t('chat.admin.cannedResponses')}
         </h3>
       </div>
 
@@ -65,12 +65,9 @@ const AdminCannedTab: React.FC<AdminCannedTabProps> = ({
           type="text"
           value={newCannedResponse}
           onChange={(e) => setNewCannedResponse(e.target.value)}
-          placeholder={t(
-            'chat.admin.addCannedResponse',
-            '새 자동 응답 추가...'
-          )}
+          placeholder={t('chat.admin.addCannedResponse')}
           className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-          onKeyPress={(e) => e.key === 'Enter' && handleAdd()}
+          onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
         />
         <button
           onClick={handleAdd}
@@ -78,7 +75,7 @@ const AdminCannedTab: React.FC<AdminCannedTabProps> = ({
           className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors flex items-center space-x-2"
         >
           <Plus className="w-4 h-4" />
-          <span>{t('chat.admin.add', '추가')}</span>
+          <span>{t('chat.admin.add')}</span>
         </button>
       </div>
 
@@ -95,11 +92,12 @@ const AdminCannedTab: React.FC<AdminCannedTabProps> = ({
                   value={editingValue}
                   onChange={(e) => setEditingValue(e.target.value)}
                   className="flex-1 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-600 text-gray-900 dark:text-white"
-                  onKeyPress={(e) => e.key === 'Enter' && handleSave()}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSave()}
                 />
                 <button
                   onClick={handleSave}
                   className="text-green-600 hover:text-green-700 p-1"
+                  aria-label={t('common.save')}
                 >
                   <Check className="w-4 h-4" />
                 </button>
@@ -109,6 +107,7 @@ const AdminCannedTab: React.FC<AdminCannedTabProps> = ({
                     setEditingValue('');
                   }}
                   className="text-gray-500 hover:text-gray-700 p-1"
+                  aria-label={t('common.cancel')}
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -121,12 +120,14 @@ const AdminCannedTab: React.FC<AdminCannedTabProps> = ({
                 <button
                   onClick={() => handleEdit(index)}
                   className="text-blue-600 hover:text-blue-700 p-1"
+                  aria-label={t('admin.edit')}
                 >
                   <Edit3 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(index)}
                   className="text-red-600 hover:text-red-700 p-1"
+                  aria-label={t('admin.delete')}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

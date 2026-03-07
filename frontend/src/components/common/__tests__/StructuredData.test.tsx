@@ -153,8 +153,7 @@ describe('StructuredData', () => {
     const data = getJsonLd();
 
     expect(data['@type']).toBe('WebSite');
-    expect(data.potentialAction).toBeDefined();
-    expect(data.potentialAction['@type']).toBe('SearchAction');
+    expect(data.name).toBe('common.companyName');
   });
 
   it('has displayName set to StructuredData', () => {

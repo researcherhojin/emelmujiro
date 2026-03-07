@@ -131,10 +131,10 @@ class SiteVisitAdmin(admin.ModelAdmin):
     referer_short.short_description = "참조 URL"
 
     def has_add_permission(self, request):
-        return False  # 수동 추가 불가
+        return False
 
     def has_change_permission(self, request, obj=None):
-        return False  # 수정 불가
+        return False
 
 
 @admin.register(NewsletterSubscription)
@@ -173,7 +173,7 @@ class NewsletterSubscriptionAdmin(admin.ModelAdmin):
     deactivate_subscriptions.short_description = "선택된 구독 비활성화"
 
 
-# Admin 사이트 커스터마이징
+# Admin site customization
 admin.site.site_header = "에멜무지로 관리자"
 admin.site.site_title = "에멜무지로 Admin"
 admin.site.index_title = "에멜무지로 관리 패널"

@@ -25,14 +25,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const [editingSettings, setEditingSettings] = useState(settings);
 
   const tabs = [
-    { id: 'settings', label: t('chat.admin.settings', '설정'), icon: Settings },
+    { id: 'settings', label: t('chat.admin.settings'), icon: Settings },
     {
       id: 'canned',
-      label: t('chat.admin.cannedResponses', '자동 응답'),
+      label: t('chat.admin.cannedResponses'),
       icon: MessageSquare,
     },
-    { id: 'stats', label: t('chat.admin.statistics', '통계'), icon: BarChart3 },
-    { id: 'users', label: t('chat.admin.users', '사용자'), icon: Users },
+    { id: 'stats', label: t('chat.admin.statistics'), icon: BarChart3 },
+    { id: 'users', label: t('chat.admin.users'), icon: Users },
   ] as const;
 
   const handleSaveSettings = () => {
@@ -41,15 +41,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
         'chat-admin-settings',
         JSON.stringify(editingSettings)
       );
-      showNotification(
-        'success',
-        t('chat.admin.settingsSaved', '설정이 저장되었습니다.')
-      );
+      showNotification('success', t('chat.admin.settingsSaved'));
     } catch {
-      showNotification(
-        'error',
-        t('chat.admin.settingsSaveFailed', '설정 저장에 실패했습니다.')
-      );
+      showNotification('error', t('chat.admin.settingsSaveFailed'));
     }
   };
 
@@ -60,7 +54,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
     return {
       totalMessages,
       userMessages,
-      averageResponseTime: '2.3분',
+      averageResponseTime: t('chat.admin.mockResponseTime'),
       satisfactionRating: '4.7/5',
     };
   };
@@ -84,14 +78,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
         onClick={(e) => e.stopPropagation()}
         className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
         role="dialog"
-        aria-label="관리자 패널"
+        aria-label={t('chat.admin.adminPanel')}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3">
             <Settings className="w-6 h-6 text-blue-600" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {t('chat.admin.title', '채팅 관리자 패널')}
+              {t('chat.admin.title')}
             </h2>
           </div>
           <div className="flex items-center space-x-2">
@@ -99,7 +93,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
               {connectionId && (
                 <span className="flex items-center space-x-1">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  <span>{t('chat.admin.connected', '연결됨')}</span>
+                  <span>{t('chat.admin.connected')}</span>
                 </span>
               )}
             </div>
