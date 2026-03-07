@@ -218,7 +218,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 69 test files, 1107 tests, 0 failures, 0 skips. Backend: 69 tests, 0 failures
+- 69 test files, 1110 tests, 0 failures, 0 skips. Backend: 69 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
