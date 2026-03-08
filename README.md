@@ -89,50 +89,75 @@ uv run python manage.py runserver
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![uv](https://img.shields.io/badge/uv-Package_Manager-DE5FE9)
 
-## 프로젝트 구조
+## 아키텍처
+
+### 시스템 구성도
+
+```mermaid
+graph LR
+    subgraph Client["브라우저"]
+        React["React 19 SPA<br/>(HashRouter)"]
+    end
+
+    subgraph Frontend["GitHub Pages"]
+        Static["정적 빌드<br/>/emelmujiro/"]
+    end
+
+    subgraph Backend["Django 5 (미배포)"]
+        DRF["DRF API"]
+        WS["WebSocket<br/>(Channels)"]
+        DB[(SQLite)]
+    end
+
+    React -->|"VITE_API_URL 미설정"| Mock["Mock API<br/>(mockData.ts)"]
+    React -->|"VITE_API_URL 설정"| DRF
+    React -.->|"1.0 이후"| WS
+    DRF --> DB
+    WS --> DB
+
+    style Mock fill:#FEF3C7,stroke:#D97706
+    style WS fill:#E5E7EB,stroke:#9CA3AF,stroke-dasharray: 5 5
+```
+
+### 핵심 설계 결정
+
+| 영역           | 선택                                                                | 이유                                                            |
+| -------------- | ------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 라우팅         | `createHashRouter` + `React.lazy`                                   | GitHub Pages 호환, 코드 스플리팅                                |
+| 상태 관리      | React Context 5개 (UI, Auth, Blog, Form, Chat)                      | `useMemo`/`useCallback`으로 리렌더 방지, 외부 라이브러리 불필요 |
+| API 클라이언트 | Axios + Mock/Real 자동 전환                                         | `VITE_API_URL` 유무로 결정, JWT 401 자동 갱신                   |
+| i18n           | `react-i18next` + 크롤러 한국어 강제                                | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
+| 테스트         | Vitest (1110) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
+| 빌드           | sitemap → `tsc` → Vite (esbuild)                                    | 프로덕션 시 `console`/`debugger` 자동 제거                      |
+| 배포           | GitHub Actions → GitHub Pages                                       | `base: '/emelmujiro/'` 서브패스                                 |
+| Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router` | ChatProvider는 under construction으로 제외                      |
+
+### 프로젝트 구조
 
 ```
 emelmujiro/
-├── frontend/               # React 앱
+├── frontend/               # React 19 + TypeScript + Vite + Tailwind 3.x
 │   ├── src/
-│   │   ├── components/     # React 컴포넌트
-│   │   │   ├── common/     #   공통 (Button, Footer, Navbar, UnifiedLoading, ProtectedRoute 등)
-│   │   │   ├── home/       #   홈 (Hero, Services, Stats, LogosSection, CTA 등)
-│   │   │   ├── blog/       #   블로그 (BlogListPage, BlogDetail, BlogEditor, BlogComments 등)
-│   │   │   ├── chat/       #   채팅 (ChatWidget, ChatWindow, MessageList, AdminPanel 등)
-│   │   │   └── profile/    #   프로필 (ProfilePage + 5개 서브컴포넌트)
-│   │   ├── pages/          # 페이지 컴포넌트 (About, Contact, Share, Admin, NotFound)
-│   │   ├── services/       # API 서비스 (Mock + Real, Axios 기반)
+│   │   ├── components/     # common/ home/ blog/ chat/ layout/ pages/ profile/
 │   │   ├── contexts/       # React Context 5개 (UI, Auth, Blog, Form, Chat)
-│   │   ├── hooks/          # Custom Hooks (useScrollAnimation, useDebounce 등)
+│   │   ├── services/       # API 클라이언트 (Mock + Real, Axios)
 │   │   ├── i18n/           # 다국어 (ko/en JSON)
-│   │   ├── config/         # 환경변수 설정 (env.ts)
-│   │   ├── constants/      # 상수 (partners, navigation)
+│   │   ├── config/         # 환경변수 (env.ts)
+│   │   ├── hooks/          # useScrollAnimation, useDebounce 등
 │   │   ├── data/           # 정적 데이터 (blogPosts, services, footerData)
 │   │   ├── types/          # TypeScript 타입 정의
-│   │   ├── utils/          # 유틸리티 (logger, sentry, webVitals)
-│   │   └── test-utils/     # 테스트 유틸리티 (renderWithProviders, MSW, 팩토리)
-│   ├── e2e/                # Playwright E2E 테스트
+│   │   ├── utils/          # logger, sentry, webVitals
+│   │   └── test-utils/     # renderWithProviders, MSW
+│   ├── e2e/                # Playwright E2E 테스트 (5 spec)
 │   └── vitest.config.ts
-├── backend/                # Django API
-│   ├── api/                # REST API (단일 앱: models, views, serializers, urls)
-│   ├── config/             # Django 설정 (settings.py, urls.py, asgi.py)
+├── backend/                # Django 5 + DRF + JWT
+│   ├── api/                # 단일 앱: models, views, serializers, urls
+│   ├── config/             # settings.py, urls.py, asgi.py
 │   └── pyproject.toml      # uv 의존성 관리
-├── .github/workflows/      # CI/CD 파이프라인 (main-ci-cd.yml, pr-checks.yml)
-├── Makefile                # 개발 편의 명령어
-├── docker-compose.yml      # 프로덕션 Docker
-└── docker-compose.dev.yml  # 개발 Docker
+├── .github/workflows/      # main-ci-cd.yml, pr-checks.yml
+├── docker-compose.yml      # 프로덕션 (backend + nginx + PostgreSQL)
+└── docker-compose.dev.yml  # 개발 (hot-reload)
 ```
-
-### 아키텍처 개요
-
-- **라우팅**: `createHashRouter` (HashRouter) — GitHub Pages 호환. 모든 페이지 `React.lazy` + `Suspense`로 코드 스플리팅
-- **상태 관리**: React Context 5개 (`UIContext`, `AuthContext`, `BlogContext`, `FormContext`, `ChatContext`). 모든 Provider는 `useMemo`/`useCallback`으로 불필요한 리렌더 방지
-- **API**: Axios 기반 클라이언트 (`services/api.ts`). Mock/Real 자동 전환 (`VITE_API_URL` 설정 여부). JWT 401 자동 갱신. 30초 타임아웃 + 타임아웃 재시도
-- **i18n**: `react-i18next` + 브라우저 언어 감지. 폴백 언어: 한국어(`ko`). 모든 UI 문자열 i18n 키 사용
-- **테스트**: Vitest (단위/통합) + Playwright (E2E). `setupTests.ts`에서 브라우저 API/라이브러리 전역 모킹. `renderWithProviders`로 Provider 래핑 자동화
-- **빌드**: `sitemap 생성 → TypeScript 컴파일 → Vite 빌드`. esbuild minifier 사용. 프로덕션 시 `console`/`debugger` 자동 제거
-- **배포**: GitHub Actions → GitHub Pages. `base: '/emelmujiro/'` (서브패스)
 
 ## 주요 기능
 
@@ -191,367 +216,122 @@ emelmujiro/
 
 백엔드 프로덕션 배포 + Mock API 전환이 완료되면 1.0으로 전환합니다.
 
-- **도메인**: `emelmujiro.com` 확보 완료 — 백엔드 API(`api.emelmujiro.com`) 및 프론트엔드 커스텀 도메인으로 활용 예정
-- **DB**: SQLite (트래픽 규모상 충분, 별도 DB 서비스 불필요)
+- **도메인**: `emelmujiro.com` 확보 완료 — `api.emelmujiro.com` 백엔드 + 커스텀 도메인 예정
+- **DB**: SQLite (트래픽 규모상 충분) — Persistent Volume 필수 (컨테이너 재시작 시 데이터 보존)
 - **1.0 범위**: Blog + Contact + Auth + Admin Dashboard
-- **1.0 이후**: 실시간 채팅 (WebSocket/Redis/Channels)
+- **1.0 이후**: 실시간 채팅 (WebSocket/Redis/Channels), Notification 모델
 
-### 남은 작업
+> **코드 품질 작업은 전량 완료.** 남은 항목은 배포 및 기능 연동만 해당합니다.
 
-> **코드 품질 작업은 전량 완료.** 남은 항목은 배포 및 기능 연동 작업만 해당합니다.
->
-> 의존성 표기: `→ #N` = N번 작업 완료 후 진행 가능
+### 배포 체인
 
-#### 배포 체인 (순서대로 진행)
+```mermaid
+graph LR
+    D["#1 백엔드 배포<br/>(핵심 블로커)"] --> M["#2 Mock API 해제"]
+    D --> E["#4 이메일 연동"]
+    D --> S["#5 JWT → httpOnly"]
+    M --> U["#3 공사 중 해제"]
+    M --> A["#6 Admin 대시보드"]
+```
 
-> **#1 배포가 핵심 블로커** — 아래 #2~#6은 전부 배포 완료 후 순차 진행 가능
+| #   | 작업                | 상태   | 설명                                                                                      |
+| --- | ------------------- | ------ | ----------------------------------------------------------------------------------------- |
+| 1   | **백엔드 배포**     | 미결정 | Django + SQLite 배포 (Railway / Render / Fly.io). `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` |
+| 2   | Mock API 해제       | → #1   | `VITE_API_URL` 설정 → Mock 자동 비활성화                                                  |
+| 3   | 공사 중 페이지 해제 | → #2   | `App.tsx` 라우트 복원, sitemap/manifest/E2E 업데이트                                      |
+| 4   | 이메일 발송 연동    | → #1   | Contact 폼 SMTP/SendGrid 연동 (현재 DB 저장만)                                            |
+| 5   | JWT 토큰 보안       | → #1   | `localStorage` → `httpOnly` 쿠키 이전                                                     |
+| 6   | Admin 대시보드 연동 | → #2   | 실제 통계 API 연결, 458줄 컴포넌트 분리 권장                                              |
 
-##### 1. 배포 플랫폼 선택 & 배포 `미결정` ⬅️ 핵심 블로커
+### 배포 플랫폼 비교
 
-Django + SQLite 배포. 플랫폼 후보: Railway / Render / Fly.io (아래 비교표 참고).
-설정 필요: `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `VITE_API_URL`
+| 플랫폼  | 무료 티어    | SQLite 지원            | 장점             | 단점                     |
+| ------- | ------------ | ---------------------- | ---------------- | ------------------------ |
+| Railway | $5 크레딧/월 | Persistent Volume      | 가장 간편한 배포 | 무료 크레딧 소진 가능    |
+| Render  | 750시간/월   | Persistent Disk (유료) | GitHub 자동 배포 | 무료 인스턴스 15분 sleep |
+| Fly.io  | 256MB VM     | Persistent Volume      | 글로벌 엣지      | 설정 다소 복잡           |
 
-##### 2. 프론트엔드 Mock API 해제 `대기` → #1
+### SEO 개선 (배포 후)
 
-`VITE_API_URL`을 배포된 백엔드 URL로 설정 → Mock 자동 비활성화. `api.ts` 실제 연동 검증
+현재 HashRouter + 클라이언트 렌더링의 SEO 한계 (크롤러 한국어 강제는 해결 완료):
 
-##### 3. 공사 중 페이지 해제 `대기` → #2
+| 작업                   | 효과                                              | 비고                       |
+| ---------------------- | ------------------------------------------------- | -------------------------- |
+| **BrowserRouter 전환** | `/#/about` → `/about` — 개별 URL 인식             | 서버 사이드 catch-all 필요 |
+| **SSG / Prerendering** | 정적 HTML 생성 → 크롤러 완성된 HTML 수신          | react-snap 또는 Next.js    |
+| **`hreflang` 적용**    | `/ko/about`, `/en/about` + `hreflang` 다국어 태그 | 다국어 SEO 표준            |
 
-`App.tsx` 라우트를 원래 컴포넌트로 복원 (`BlogListPage`, `ContactPage` 등).
-`AppLayout`에 `ChatWidget` 제외 유지. `generate-sitemap.js`, `manifest.json`, E2E 테스트 업데이트
+### 1.0 이후
 
-##### 4. 이메일 발송 연동 `대기` → #1
-
-Contact 폼 제출 시 알림 이메일 발송. SMTP 또는 SendGrid 연동. 현재는 DB 저장만 됨
-
-##### 5. 인증 토큰 보안 강화 `대기` → #1
-
-`api.ts`의 JWT 토큰 저장을 `localStorage` → `httpOnly` 쿠키로 이전.
-Django `SESSION_COOKIE_HTTPONLY=True` 설정
-
-##### 6. 관리자 대시보드 연동 `대기` → #2
-
-`AdminDashboard`에 실제 통계 API 연결 (방문자 수, 문의 건수, 블로그 글 수 등).
-현재는 플레이스홀더 UI만 존재. `AdminDashboard.tsx` 458줄 — 연동 시 Sidebar/Overview/ContentManagement 하위 컴포넌트 분리 권장
-
-#### SEO 개선 (배포 후)
-
-현재 GitHub Pages + HashRouter + 클라이언트 i18n 구조의 SEO 한계:
-
-- **HashRouter**: `/#/about` 등 hash fragment는 서버에 전송되지 않아 Google이 각 페이지를 개별 URL로 인식하기 어려움
-- **클라이언트 렌더링**: 메타태그가 JS 실행 후 설정됨 → 일부 크롤러가 미인식 가능
-- **해결 완료**: 검색 크롤러(Googlebot 등) 방문 시 i18n을 한국어로 강제하여, 한국어 검색 시 한국어 콘텐츠 노출 (`i18n.ts` bot detection)
-
-백엔드 배포 후 근본적 해결 가능:
-
-| 작업                   | 효과                                                                   | 비고                                            |
-| ---------------------- | ---------------------------------------------------------------------- | ----------------------------------------------- |
-| **BrowserRouter 전환** | `/#/about` → `/about` — 각 페이지를 개별 URL로 인식                    | 서버 사이드 라우팅(catch-all) 필요              |
-| **SSG / Prerendering** | 빌드 시 각 경로의 정적 HTML 생성 → 크롤러가 완성된 HTML 수신           | `react-snap`, `prerender.io`, 또는 Next.js 전환 |
-| **`hreflang` 적용**    | 한국어/영어 별도 URL 패턴 (`/ko/about`, `/en/about`) + `hreflang` 태그 | 다국어 SEO 표준                                 |
-
-#### 1.0 이후
-
-##### 7. Notification 모델 구현 `대기` → #1
-
-`consumers.py:251,256`에 `mark_notification_read`, `mark_all_notifications_read` 스텁 존재.
-Notification Django 모델 + REST API + WebSocket 핸들러 구현 필요
-
-##### 9. 실시간 채팅 구현
-
-WebSocket/Redis/Channels 전체 구현. `ChatWidget`을 `AppLayout`에 복원. 현재 프론트엔드 UI + ChatContext는 완성 상태
-
-#### 배포 플랫폼 비교 (Django + SQLite)
-
-| 플랫폼  | 무료 티어    | SQLite 지원            | 장점                       | 단점                     |
-| ------- | ------------ | ---------------------- | -------------------------- | ------------------------ |
-| Railway | $5 크레딧/월 | Persistent Volume      | 가장 간편한 배포           | 무료 크레딧 소진 가능    |
-| Render  | 750시간/월   | Persistent Disk (유료) | GitHub 자동 배포           | 무료 인스턴스 15분 sleep |
-| Fly.io  | 256MB VM     | Persistent Volume      | 글로벌 엣지, 커스텀 도메인 | 설정 다소 복잡           |
-
-> **참고**: SQLite는 파일 기반 DB이므로 배포 시 Persistent Volume/Disk가 필요합니다. 컨테이너 재시작 시 데이터 유실을 방지하기 위해 반드시 영구 스토리지에 `db.sqlite3`를 마운트해야 합니다.
-
-### 완료된 항목
-
-- [x] Django 보안 설정 — SECRET_KEY 프로덕션 강제, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS
-- [x] 파일 업로드 보안 — 확장자/MIME/크기 검증 (`api/validators.py`)
-- [x] Mock API 전환 로직 — `VITE_API_URL` 기반 자동 전환
-- [x] Android/갤럭시 호환성 — viewport, CSS 접두사, 카카오톡 인앱 리다이렉트
-- [x] 에러 리포팅 — Sentry 연동 (기본 비활성)
-- [x] Lighthouse 90점+ — Performance 0.9 달성
-- [x] PWA 제거 — 서비스 워커 캐시 이슈로 전체 제거, 데드 코드 정리
-- [x] 코드베이스 딥 오딧 — 고립 컴포넌트 21개 삭제, dead CSS 20개 클래스 제거, stale 환경변수 수정
-- [x] 환경변수 정리 — dead code 삭제, `global.d.ts` 정리
-- [x] CI/CD 안정화 — `upload-artifact@v7`, Docker Redis 옵셔널화
-- [x] Zustand 전체 제거 — store(227줄) + 테스트 42개 삭제, immer/zustand 의존성 제거
-- [x] 소스 코드 영어 주석 통일 — 전체 코드베이스 한국어 주석/docstring → 영어 전환 (frontend + backend 전 파일)
-- [x] i18n 완전 전환 — api.ts 에러맵, BlogEditor, 인라인 스타일/hex 색상 → Tailwind
-- [x] i18n 한국어 fallback 제거 — `t('key', '한국어')` 패턴 전량 제거 (chat 컴포넌트 10개 파일, 50+ 건)
-- [x] 접근성 개선 — icon-only 버튼 `title=` → `aria-label=` 전환 (ChatWindow, MessageList, MessageContent)
-- [x] `onKeyPress` 폐기 API 제거 — `onKeyDown`으로 전량 교체 (ChatWindow, AdminCannedTab + 테스트)
-- [x] BlogComments 접근성 보완 — 답글/좋아요 버튼 하드코딩 aria-label → i18n 키 전환 (`blog.likeComment`, `blog.likeReply`, `blog.replyTo`)
-- [x] setTimeout 메모리 누수 수정 — ChatContext reconnect 타이머 `useRef` 추적 + cleanup
-- [x] 리팩토링 백로그 전량 해소 — C5~C7, H7, M5/M7~M9, BE1~BE7 (총 16건 완료, 이슈 아님 2건)
-- [x] JWT 로그아웃 토큰 블랙리스트 — `token_blacklist` 앱 INSTALLED_APPS 등록, 마이그레이션 적용
-- [x] 뉴스레터 재구독 버그 수정 — serializer UniqueValidator 제거, view 재구독 로직 정상화
-- [x] key={index} anti-pattern 전량 교체 — 15개 컴포넌트 19곳, 데이터 필드/prefix 기반 안정 키
-- [x] AboutPage 섹션 분리 — 6개 섹션 컴포넌트 추출 (같은 파일 내)
-- [x] BlogComments 분리 — CommentItem/ReplyItem 서브 컴포넌트 추출
-- [x] E2E 다크모드 + 언어 전환 테스트 — `accessibility.spec.ts` 8개 테스트
-- [x] 3차 + 4차 감사 전 항목 해소 — Critical 5 / High 13 / Medium 18 / Low 11 (총 47건)
-- [x] ESLint 경고 전량 해소 — 21건 (unused-vars 7, exhaustive-deps 11, jsx-a11y 2, anchor-is-valid 1) → 0건
-- [x] ESLint 워크스페이스 호이스팅 수정 — root `package.json`에 eslint devDep 추가
-- [x] TypeScript 빌드 오류 수정 — `BlogFlow.test.tsx` `vi.mocked()` 전환
-- [x] ChatContext `useCallback` 래핑 — 10개 함수 안정적 참조 보장
+- **Notification 모델** — `consumers.py:251,256` 스텁 → Django 모델 + REST API + WebSocket 핸들러
+- **실시간 채팅** — WebSocket/Redis/Channels 구현, `ChatWidget` AppLayout 복원 (프론트엔드 UI 완성 상태)
 
 ## 리팩토링 백로그
 
+> **전량 해소 완료.** 8차에 걸친 코드 감사를 통해 식별된 모든 항목을 해결했습니다.
+
+| 감사  | 날짜        | 해결 건수 | 주요 내용                                                                 |
+| ----- | ----------- | --------- | ------------------------------------------------------------------------- |
+| 8차   | 2026.03.09  | 8건       | TS 빌드 오류, ESLint 워크스페이스 호이스팅, ESLint 경고 21건 → 0건        |
+| 7차   | 2026.03.09  | 18건      | SEO 크롤러 한국어 강제, slug 원자성, MD5→SHA256, Docker non-root          |
+| 6차   | 2026.03.08  | 7건       | i18n fallback 제거 50+건, `title→aria-label`, `onKeyPress→onKeyDown`      |
+| 5차   | 2026.03.07  | 확인      | 3~4차 전량 해소 확인, 배포 대기 항목만 잔여                               |
+| 4차   | 2026.03.07  | 15건      | 비밀번호 정책, `key={index}` 19곳 교체, `crypto.randomUUID()` 통일        |
+| 3차   | 2026.03.07  | 47건      | 미들웨어 미등록, ObjectURL 누수, JWT 블랙리스트, 컴포넌트 분할            |
+| 1~2차 | ~2026.03.07 | 21건      | HashRouter 버그, Zustand 제거, i18n 전환, Sentry 초기화, Docker 버전 통일 |
+
+**총 해결: Critical 12 / High 18 / Medium 37 / Low 22 / Backend 7 / 이슈 아님 6건**
+
+<details>
+<summary>감사 상세 기록 (클릭하여 펼치기)</summary>
+
 ### 8차 감사 (2026.03.09)
 
-7차 감사 후속 작업. TypeScript 빌드 오류, ESLint 워크스페이스 해상도 문제 수정, ESLint 경고 21건 전량 해소.
-
-#### Error (빌드/린트 차단)
-
-| #   | 카테고리   | 설명                                                                               | 파일                               | 상태    |
-| --- | ---------- | ---------------------------------------------------------------------------------- | ---------------------------------- | ------- |
-| E1  | TypeScript | ~~`BlogFlow.test.tsx` 수동 타입캐스트 → `vi.mocked()` 전환 (`tsc --noEmit` 실패)~~ | `BlogFlow.test.tsx`                | ✅ 완료 |
-| E2  | ESLint     | ~~`eslint-plugin-react` 워크스페이스 호이스팅 → root에 eslint devDep 추가~~        | `package.json`                     | ✅ 완료 |
-| E3  | ESLint     | ~~`SharePage.tsx`, `FormContext.tsx` `no-useless-assignment` 오류 2건~~            | `SharePage.tsx`, `FormContext.tsx` | ✅ 완료 |
-
-#### Warning (ESLint 경고 21건 → 0건)
-
-| #   | 카테고리          | 설명                                                                     | 파일                                                                                        | 상태    |
-| --- | ----------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ------- |
-| W1  | `no-unused-vars`  | ~~미사용 `index` 파라미터 7건 제거~~                                     | BlogDetail, BlogSearch, MessageBubble, CareerTab, EducationTab, ProjectsTab, AdminDashboard | ✅ 완료 |
-| W2  | `exhaustive-deps` | ~~ChatContext 10개 함수 `useCallback` 래핑~~                             | `ChatContext.tsx`                                                                           | ✅ 완료 |
-| W3  | `exhaustive-deps` | ~~AdminDashboard `fetchDashboardData` → `useCallback` + useEffect deps~~ | `AdminDashboard.tsx`                                                                        | ✅ 완료 |
-| W4  | `jsx-a11y`        | ~~ContactPage 에러 div에 `role="alert"`, `onKeyDown`, `tabIndex` 추가~~  | `ContactPage.tsx`                                                                           | ✅ 완료 |
-| W5  | `anchor-is-valid` | ~~Layout.test.tsx mock SkipLink에 `href` 추가~~                          | `Layout.test.tsx`                                                                           | ✅ 완료 |
+- **E1** `BlogFlow.test.tsx` 수동 타입캐스트 → `vi.mocked()` (TS 빌드 수정)
+- **E2** `eslint-plugin-react` 워크스페이스 호이스팅 → root에 eslint devDep 추가
+- **E3** `SharePage.tsx`, `FormContext.tsx` `no-useless-assignment` 오류
+- **W1** 미사용 `index` 파라미터 7건 제거
+- **W2** ChatContext 10개 함수 `useCallback` 래핑
+- **W3** AdminDashboard `fetchDashboardData` → `useCallback`
+- **W4** ContactPage 에러 div `role="alert"`, `onKeyDown`, `tabIndex`
+- **W5** Layout.test.tsx mock SkipLink `href` 추가
 
 ### 7차 감사 (2026.03.09)
 
-전체 코드베이스 7차 감사 결과. SEO 크롤러 한국어 강제, i18n/테스트/백엔드 코드 품질 점검.
-
-#### High
-
-| #   | 카테고리 | 설명                                                                                         | 파일                        | 상태         |
-| --- | -------- | -------------------------------------------------------------------------------------------- | --------------------------- | ------------ |
-| H1  | i18n     | ~~`WebVitalsDashboard.tsx` 하드코딩 영어 문자열 7건~~ — 개발 전용 컴포넌트, i18n 불필요      | `WebVitalsDashboard.tsx`    | ✅ 이슈 아님 |
-| H2  | i18n     | ~~`Layout.tsx` sr-only 키보드 단축키 도움말 하드코딩 영어 6건 → i18n 키 전환~~               | `Layout.tsx`                | ✅ 완료      |
-| H3  | Test     | ~~`BlogFlow.test.tsx` 빈 `waitFor()` 콜백 + 무의미 assertion → 실질적 assertion으로 재작성~~ | `BlogFlow.test.tsx`         | ✅ 완료      |
-| H4  | Test     | ~~`test-utils/cleanup.ts`, `test-utils/test-helpers.tsx` 미사용 dead code 삭제~~             | `test-utils/`               | ✅ 완료      |
-| H5  | Test     | ~~`BlogInteractions.test.tsx` 약한 assertion → `toHaveTextContent` 기반 정밀 assertion~~     | `BlogInteractions.test.tsx` | ✅ 완료      |
-
-#### Medium
-
-| #   | 카테고리 | 설명                                                                                        | 파일              | 상태         |
-| --- | -------- | ------------------------------------------------------------------------------------------- | ----------------- | ------------ |
-| M1  | Backend  | ~~`BlogPost.save()` slug 생성 비원자적 유니크 체크 → IntegrityError retry 추가~~            | `models.py`       | ✅ 완료      |
-| M2  | Backend  | ~~`ContactView._is_spam_attempt` 넓은 `Exception` catch → fail-closed (True 반환)~~         | `views.py`        | ✅ 완료      |
-| M3  | Backend  | ~~`user_agent` TextField 길이 제한 없음 → CharField(max_length=500) + 마이그레이션~~        | `models.py`       | ✅ 완료      |
-| M4  | Config   | ~~`package.json` engines `node >= 14` → `>= 22` (CI와 일치)~~                               | `package.json`    | ✅ 완료      |
-| M5  | Config   | ~~`env.ts`에서 `process.env.NODE_ENV` 직접 사용 → MODE 상수로 통합~~                        | `config/env.ts`   | ✅ 완료      |
-| M6  | Chat     | ~~`ChatContext.tsx` sendMessage() 오프라인 setTimeout → useRef 추적 + cleanup~~             | `ChatContext.tsx` | ✅ 완료      |
-| M7  | Test     | `setupTests.ts` classList 모킹 — 용도 분리 확인 (createElement vs querySelector), 이슈 아님 | `setupTests.ts`   | ✅ 이슈 아님 |
-
-#### Low
-
-| #   | 카테고리 | 설명                                                                      | 파일                  | 상태    |
-| --- | -------- | ------------------------------------------------------------------------- | --------------------- | ------- |
-| L1  | Backend  | ~~`views.py:190` MD5 해싱 → SHA256 전환~~                                 | `views.py`            | ✅ 완료 |
-| L2  | Docker   | ~~`Dockerfile.dev` root 사용자 → non-root appuser 전환~~                  | `Dockerfile.dev`      | ✅ 완료 |
-| L3  | Docker   | ~~Node 버전 불일치 → `24-alpine` 통일~~                                   | `Dockerfile.dev`      | ✅ 완료 |
-| L4  | Audio    | ~~`chatHelpers.ts` AudioContext 미해제 → `oscillator.onended`에서 close~~ | `chatHelpers.ts`      | ✅ 완료 |
-| L5  | Test     | ~~`BlogSearch.test.tsx` 하드코딩 setTimeout → `waitFor()` 전환~~          | `BlogSearch.test.tsx` | ✅ 완료 |
-| L6  | Perf     | ~~`BlogComments.tsx`, `EditorPreview.tsx` → `React.memo()` 적용~~         | 각 컴포넌트           | ✅ 완료 |
+- **H1~H5** Layout sr-only i18n 전환, BlogFlow 실질 assertion, dead test-utils 삭제, BlogInteractions 정밀 assertion
+- **M1~M7** slug IntegrityError retry, spam fail-closed, user_agent CharField, Node engines 22, env.ts MODE 통합, ChatContext setTimeout useRef
+- **L1~L6** MD5→SHA256, Dockerfile.dev non-root, Node 24-alpine, AudioContext close, BlogSearch waitFor, React.memo 적용
 
 ### 6차 감사 (2026.03.08)
 
-전체 코드베이스 6차 감사 결과. i18n 한국어 fallback, 한국어 주석/docstring, 접근성, 폐기 API를 전량 해소.
-
-**결론: 코드 품질 이슈 없음.** 모든 검사 항목 통과.
-
-| #   | 카테고리       | 설명                                                                         | 파일                                                                                                                                | 상태    |
-| --- | -------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 1   | i18n           | `t('key', '한국어')` 한국어 fallback 전량 제거 (50+ 건)                      | chat 컴포넌트 10개 파일                                                                                                             | ✅ 완료 |
-| 2   | i18n           | `common.clear`, `chat.admin.mockResponseTime` 누락 키 추가                   | `ko.json`, `en.json`                                                                                                                | ✅ 완료 |
-| 3   | Accessibility  | icon-only 버튼 `title=` → `aria-label=` 전환 (6개 버튼)                      | `ChatWindow`, `MessageList`, `MessageContent`                                                                                       | ✅ 완료 |
-| 4   | Deprecation    | `onKeyPress` → `onKeyDown` 전환 (3곳)                                        | `ChatWindow`, `AdminCannedTab`                                                                                                      | ✅ 완료 |
-| 5   | Comments       | Backend Python 한국어 주석/docstring → 영어 (100+ 건)                        | `views.py`, `middleware.py`, `serializers.py`, `admin.py`, `swagger.py`, `models.py`, `security_check.py`, `settings.py`, `urls.py` | ✅ 완료 |
-| 6   | Test Alignment | 테스트 mock/assertion i18n 키 기반으로 통일 (7개 테스트 파일, 34+ assertion) | `ChatWindow.*.test.tsx`, `EmojiPicker.test.tsx`, `QuickReplies.test.tsx`, `TypingIndicator.test.tsx`, `AdminPanel.test.tsx`         | ✅ 완료 |
-| 7   | Accessibility  | `BlogComments.tsx` 답글/좋아요 `aria-label` 하드코딩 영어 → i18n 키 전환     | `BlogComments.tsx`, `ko.json`, `en.json`                                                                                            | ✅ 완료 |
+i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown` 3곳, Backend 한국어 주석 100+건 영어 전환, 테스트 i18n 키 통일 34+ assertion, BlogComments aria-label i18n
 
 ### 5차 감사 (2026.03.07)
 
-전체 코드베이스 5차 감사 결과. 3차/4차 감사 항목은 **전량 해소**. 잔여 항목은 배포 단계에서 처리할 사항만 남음.
-
-**결론: 코드 품질 이슈 없음.** 아래는 배포/기능 확장 시 처리할 항목.
-
-| #     | 우선도  | 설명                                                                               | 파일                                 | 비고               |
-| ----- | ------- | ---------------------------------------------------------------------------------- | ------------------------------------ | ------------------ |
-| 1     | Medium  | `AdminDashboard.tsx` 458줄 — 실제 API 연동 시 하위 컴포넌트 분리                   | `AdminDashboard.tsx`                 | → 남은 작업 #6     |
-| 2     | Medium  | `consumers.py` notification 스텁 — 모델 구현 필요                                  | `consumers.py:251,256`               | → 남은 작업 #7     |
-| ~~3~~ | ~~Low~~ | ~~`BlogComments.tsx` 답글/좋아요 버튼 `aria-label` 미설정~~ ✅ (6차 감사에서 해소) | ~~`BlogComments.tsx`~~               | ~~→ 남은 작업 #8~~ |
-| 4     | Info    | `api.ts` 425줄, `websocket.ts` 560줄 — 현재 규모 허용 범위, 기능 추가 시 분리 고려 | `services/`                          | 현재 이슈 아님     |
-| 5     | Info    | TODO 주석 5개 — 모두 "backend 배포 후 연동" 대기 상태                              | `AdminDashboard.tsx`, `consumers.py` | 배포 시 자연 해소  |
-
----
+3~4차 전량 해소 확인. 잔여: AdminDashboard 분리(→배포 #6), Notification 스텁(→1.0 이후), 대형 서비스 파일 분리(현재 이슈 아님)
 
 ### 4차 감사 (2026.03.07)
 
-전체 코드베이스 4차 감사 (프론트엔드 + 백엔드 심층 탐색). ~~취소선~~은 완료된 항목입니다.
-
-#### High
-
-| #      | 설명                                                                                                    | 파일                                         |
-| ------ | ------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| ~~H1~~ | ~~비밀번호 최소 길이 불일치 — `auth.py` 8자 vs `settings.py` 12자 → 12자로 통일~~ ✅                    | ~~`auth.py`~~                                |
-| ~~H2~~ | ~~`UserRateThrottle` 미사용 임포트 제거~~ ✅                                                            | ~~`views.py`~~                               |
-| ~~H3~~ | ~~`get_client_ip()` 중복 — middleware에서 views.get_client_ip 위임으로 통일~~ ✅                        | ~~`views.py`, `middleware.py`~~              |
-| ~~H4~~ | ~~`process.env.NODE_ENV` 직접 사용 → `env.IS_DEVELOPMENT` 전환~~ ✅                                     | ~~`WebVitalsDashboard.tsx`, `webVitals.ts`~~ |
-| ~~H5~~ | ~~백엔드 테스트 14→69개 확장 — auth, blog, contact, newsletter, category, model, utility 전수 커버~~ ✅ | ~~`api/tests.py`~~                           |
-
-#### Medium
-
-| #      | 설명                                                                                                    | 파일                                 |
-| ------ | ------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| ~~M1~~ | ~~`SharePage.tsx:87` 빈 catch 블록 — localStorage JSON.parse 폴백이므로 실질 이슈 아님~~ ✅ (이슈 아님) | ~~`SharePage.tsx`~~                  |
-| ~~M2~~ | ~~`middleware.py:112` `UnicodeDecodeError` 무시 → 로깅 추가~~ ✅                                        | ~~`middleware.py`~~                  |
-| ~~M3~~ | ~~`key={index}` anti-pattern 19곳 → 데이터 필드 / prefix 기반 안정 키로 전량 교체~~ ✅                  | ~~다수 컴포넌트~~                    |
-| ~~M4~~ | ~~WebSocket 메시지 큐 — maxQueueSize 100 + FIFO eviction 추가~~ ✅                                      | ~~`websocket.ts`~~                   |
-| ~~M5~~ | ~~`Math.random()` ID 생성 → `crypto.randomUUID()` 통일~~ ✅                                             | ~~`chatHelpers.ts`, `websocket.ts`~~ |
-| ~~M6~~ | ~~Navbar/Footer 스크롤 로직 중복 → `useScrollToSection` 훅 추출~~ ✅                                    | ~~`Navbar.tsx`, `Footer.tsx`~~       |
-
-#### Low
-
-| #      | 설명                                                                                       | 파일                            |
-| ------ | ------------------------------------------------------------------------------------------ | ------------------------------- |
-| ~~L1~~ | ~~매직넘버 → `ONE_HOUR`, `ONE_DAY`, `RATE_LIMIT_PER_HOUR` 등 상수 추출~~ ✅                | ~~`views.py`, `middleware.py`~~ |
-| ~~L2~~ | ~~icon-only 버튼 `aria-label` 추가 (AdminDashboard Bell 버튼)~~ ✅                         | ~~`AdminDashboard.tsx`~~        |
-| ~~L3~~ | ~~`BlogPost.date` vs `created_at`/`updated_at` 3개 날짜 필드 — 용도 주석 문서화~~ ✅       | ~~`models.py`~~                 |
-| ~~L4~~ | ~~Serializer 필드 중복 — camelCase/snake_case 이중 노출 의도 문서화 (프론트엔드 호환)~~ ✅ | ~~`serializers.py`~~            |
-
----
+- **H1~H5** 비밀번호 12자 통일, 미사용 import, get_client_ip 중복, process.env→env.IS_DEVELOPMENT, 백엔드 69 테스트
+- **M1~M6** key={index} 19곳 교체, WebSocket 큐 100 cap, crypto.randomUUID, useScrollToSection 훅
+- **L1~L4** 매직넘버 상수화, Bell aria-label, date 필드 문서화, serializer camelCase 문서화
 
 ### 3차 감사 (2026.03.07)
 
-전체 코드베이스 3차 감사에서 식별된 항목입니다. ~~취소선~~은 완료된 항목입니다.
+- **C1~C5** 미들웨어 등록, security_check 필드명, NotificationConsumer JSON 검증, ObjectURL revoke
+- **H1~H8** str(e) 노출 제거, 뉴스레터 재구독, BlogPost 인덱스, logger.ts env 전환
+- **M1~M12** dead test-utils, window.alert→toast, ChatContext 분할(709→310줄), setupTests lucide Proxy, Sentry 정리, api.ts dead code
+- **L1~L7** 인라인 스타일 제거, AboutPage/BlogComments 분리, Swagger CONTACT_EMAIL, E2E 8개 테스트
 
-#### Critical
+### 1~2차 감사
 
-| #      | 설명                                                                                                                             | 파일                                      |
-| ------ | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| ~~C1~~ | ~~미들웨어 MIDDLEWARE에 미등록 → `RequestSecurityMiddleware`, `ContentSecurityMiddleware`, `APIResponseTimeMiddleware` 등록~~ ✅ | ~~`config/settings.py`, `middleware.py`~~ |
-| ~~C2~~ | ~~`security_check` 필드명 `attempted_at`/`visited_at` → `last_attempt`/`visit_time` 수정~~ ✅                                    | ~~`security_check.py`~~                   |
-| ~~C3~~ | ~~`NotificationConsumer.receive()` JSON 파싱 try-except + `notification_id` 검증 추가~~ ✅                                       | ~~`consumers.py`~~                        |
-| ~~C4~~ | ~~`MessageContent` `createObjectURL` → `useMemo` + `useEffect` cleanup으로 revoke~~ ✅                                           | ~~`MessageContent.tsx`~~                  |
-| ~~C5~~ | ~~`MessageList` `handleImagePreview` — window unload 시 `revokeObjectURL` 추가~~ ✅                                              | ~~`MessageList.tsx`~~                     |
+- **C1~C7** HashRouter 버그, 동적 Tailwind, TS 컴파일 8건, FileUpload i18n, docker-compose VITE_API_URL
+- **H1~H7** Zustand 제거, types 정리, performanceMonitor 삭제, Sentry init, 한국어→영어, MemoryRouter, Dockerfile 3.12
+- **M1~M9** api.ts i18n 에러맵, 인라인 스타일→Tailwind, hex→Tailwind, process.env 통일, Footer 테스트 정리
+- **L1~L3** window.confirm→모달, BlogSearch aria-label, 컴포넌트 분할(AdminPanel/MessageList/BlogEditor)
+- **BE1~BE7** bare except, ChatConsumer 인증, 하드코딩 자격증명, 카테고리 수정, django-ratelimit 제거, urlparse
 
-#### High
-
-| #      | 설명                                                                                    | 파일                             |
-| ------ | --------------------------------------------------------------------------------------- | -------------------------------- |
-| ~~H1~~ | ~~예외 상세 `str(e)` 클라이언트 노출 → 로그만 남기고 일반 메시지 반환~~ ✅              | ~~`views.py`, `auth.py`~~        |
-| ~~H2~~ | ~~테스트 `category="ai_development"` → `"ai"`, `is_featured` → `featured` 수정~~ ✅     | ~~`tests.py`~~                   |
-| ~~H3~~ | ~~뉴스레터 중복 구독 — serializer UniqueValidator 제거, view 재구독 로직 정상 동작~~ ✅ | ~~`serializers.py`, `tests.py`~~ |
-| ~~H4~~ | ~~`mark_notification_read` 등 `pass` 스텁 → `logger.info` + TODO 주석 추가~~ ✅         | ~~`consumers.py`~~               |
-| ~~H5~~ | ~~`BlogPost` 인덱스 추가: `(is_published, -date)`, `(category)`. 마이그레이션 생성~~ ✅ | ~~`models.py`~~                  |
-| ~~H6~~ | ~~미사용 임포트 `django.db.models`, `json` 제거~~ ✅                                    | ~~`views.py`~~                   |
-| ~~H7~~ | ~~`logger.ts` `process.env.NODE_ENV` → `env.IS_DEVELOPMENT` 전환 + 테스트 수정~~ ✅     | ~~`logger.ts`~~                  |
-| ~~H8~~ | ~~`FormContext.tsx` 빈 catch 블록 → `logger.warn()` 추가~~ ✅                           | ~~`FormContext.tsx`~~            |
-
-#### Medium
-
-| #       | 설명                                                                              | 파일                     |
-| ------- | --------------------------------------------------------------------------------- | ------------------------ |
-| ~~M1~~  | ~~`test-utils.tsx` 삭제 (전체 dead code), `index.ts` re-export 정리~~ ✅          | ~~`test-utils/`~~        |
-| ~~M2~~  | ~~`Eye` 아이콘 — 실제 사용 중 (stats/view 버튼)~~ ✅ (이슈 아님)                  | ~~`AdminDashboard.tsx`~~ |
-| ~~M3~~  | ~~스텁 함수 `logger.info` + TODO 로 교체~~ ✅                                     | ~~`AdminDashboard.tsx`~~ |
-| ~~M4~~  | ~~`window.alert()` → 인라인 toast 패턴 전환 + 테스트 갱신~~ ✅                    | ~~`BlogEditor.tsx`~~     |
-| ~~M5~~  | ~~`window.alert()` → toast 컴포넌트 전환 + 테스트 갱신~~ ✅                       | ~~`SharePage.tsx`~~      |
-| ~~M6~~  | ~~ChatContext 분할: `chatHelpers.ts` + `useChatConnection.ts` (709→310줄)~~ ✅    | ~~`ChatContext.tsx`~~    |
-| ~~M7~~  | ~~`setupTests.ts` 간소화: lucide-react 캐시 Proxy (802→581줄)~~ ✅                | ~~`setupTests.ts`~~      |
-| ~~M8~~  | ~~`import.meta.env.VITE_POSTS_PER_PAGE` → `getEnvVar('POSTS_PER_PAGE')` 전환~~ ✅ | ~~`BlogContext.tsx`~~    |
-| ~~M9~~  | ~~`startTransaction()` — callback 파라미터 추가, span 내부에서 실행~~ ✅          | ~~`sentry.ts`~~          |
-| ~~M10~~ | ~~`flushSentry()` 삭제 + 테스트/default export 정리~~ ✅                          | ~~`sentry.ts`~~          |
-| ~~M11~~ | ~~`getProjects`/`createProject`/`Project` interface 삭제 + 테스트 mock 정리~~ ✅  | ~~`api.ts`~~             |
-| ~~M12~~ | ~~무의미한 `Count("id")` 어노테이션 + 미사용 `Count` 임포트 제거~~ ✅             | ~~`api/admin.py`~~       |
-
-#### Low
-
-| #      | 설명                                                                                              | 파일                    |
-| ------ | ------------------------------------------------------------------------------------------------- | ----------------------- |
-| ~~L1~~ | ~~`scrollBehavior: 'smooth'` 인라인 스타일 제거 (Tailwind `scroll-smooth` 중복)~~ ✅              | ~~`MessageList.tsx`~~   |
-| ~~L2~~ | ~~AboutPage 349줄 → 6개 섹션 컴포넌트 추출 (같은 파일 내)~~ ✅                                    | ~~`AboutPage.tsx`~~     |
-| ~~L3~~ | ~~BlogComments 357줄 → CommentItem/ReplyItem 서브 컴포넌트 추출 (같은 파일 내)~~ ✅               | ~~`BlogComments.tsx`~~  |
-| ~~L4~~ | ~~`notificationTimers` Map — 실제로는 remove 시 정리됨~~ ✅ (이슈 아님)                           | ~~`UIContext.tsx`~~     |
-| ~~L5~~ | ~~Swagger 이메일 → `CONTACT_EMAIL` 환경변수 전환~~ ✅                                             | ~~`api/swagger.py`~~    |
-| ~~L6~~ | ~~스팸 필터/rate limiting 테스트 추가 (67개 테스트로 확장). WebSocket 테스트는 1.0 이후 범위~~ ✅ | ~~Backend 테스트 전반~~ |
-| ~~L7~~ | ~~E2E 다크모드 4개 + 언어 전환 4개 테스트 추가 (`accessibility.spec.ts`)~~ ✅                     | ~~`e2e/`~~              |
-
----
-
-### 1~2차 감사 (2026.03.07 이전)
-
-이전 감사에서 식별된 항목입니다. **전량 해소 완료.**
-
-### 즉시 수정 (Critical)
-
-| #      | 설명                                                                                          | 파일                     |
-| ------ | --------------------------------------------------------------------------------------------- | ------------------------ |
-| ~~C1~~ | ~~Footer `scrollToSection`이 HashRouter에서 `window.location.pathname` 사용~~ ✅              | ~~`Footer.tsx`~~         |
-| ~~C2~~ | ~~BlogEditor에서 동일한 `window.location.pathname` HashRouter 버그~~ ✅                       | ~~`BlogEditor.tsx`~~     |
-| ~~C3~~ | ~~ESLint `"^9.0.0"` 이미 적용됨~~ ✅ (이슈 아님)                                              | ~~`package.json`~~       |
-| ~~C4~~ | ~~AdminDashboard 동적 Tailwind 클래스 `bg-${color}-100` — 빌드 시 purge됨~~ ✅                | ~~`AdminDashboard.tsx`~~ |
-| ~~C5~~ | ~~TypeScript 컴파일 에러 8건 (`useRef(null)`, FormContext.test mock, sentry.test 캐스트)~~ ✅ | ~~다수~~                 |
-| ~~C6~~ | ~~FileUpload.tsx 하드코딩 한국어 폴백 11개 → i18n 키 이동~~ ✅                                | ~~`FileUpload.tsx`~~     |
-| ~~C7~~ | ~~`docker-compose.yml` 환경변수 `REACT_APP_API_URL` → `VITE_API_URL` 수정~~ ✅                | ~~`docker-compose.yml`~~ |
-
-### 높은 우선순위
-
-| #      | 설명                                                                                                           | 파일                               |
-| ------ | -------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| ~~H1~~ | ~~Zustand store 전체 미사용 — 제거 완료 (227줄 + 테스트 42개)~~                                                | ~~삭제됨~~                         |
-| ~~H2~~ | ~~`types/` 정리: 중복 타입 통합, 미사용 타입 9개 제거, `api.types.ts` 삭제, `zustand`/`immer` 의존성 제거~~ ✅ | ~~`types/`~~                       |
-| ~~H3~~ | ~~성능 모니터링 이중화 — `performanceMonitor.ts`(352줄) 삭제, `webVitals.ts` + `WebVitalsDashboard` 유지~~ ✅  | ~~`utils/`~~                       |
-| ~~H4~~ | ~~Sentry `initSentry()` 미호출 — `main.tsx`에 초기화 호출 추가~~ ✅                                            | ~~`main.tsx`~~                     |
-| ~~H5~~ | ~~소스 코드 한국어 주석 → 영어 전환 (15+ 파일)~~ ✅                                                            | ~~다수~~                           |
-| ~~H6~~ | ~~`renderWithProviders` HashRouter → MemoryRouter 통일~~ ✅                                                    | ~~`test-utils/`~~                  |
-| ~~H7~~ | ~~Dockerfile Python 3.14 → 3.12로 수정 (CI와 일치)~~ ✅                                                        | ~~`Dockerfile`, `Dockerfile.dev`~~ |
-
-### 중간 우선순위
-
-| #      | 설명                                                                                       | 파일                            |
-| ------ | ------------------------------------------------------------------------------------------ | ------------------------------- |
-| ~~M1~~ | ~~하드코딩 한국어 → i18n 키 이동 (api.ts 에러맵 13개 메시지 → `apiErrors.*` i18n 키)~~ ✅  | ~~`api.ts`, locale files~~      |
-| ~~M2~~ | ~~인라인 스타일 `outline/boxShadow` 11곳 → Tailwind `shadow-none` 클래스 전환~~ ✅         | ~~Footer, Navbar, ProfilePage~~ |
-| ~~M3~~ | ~~하드코딩 hex 색상 `#E0E7FF`/`#4F46E5` → Tailwind `bg-indigo-100 text-indigo-600`~~ ✅    | ~~BlogCard, BlogDetail~~        |
-| ~~M4~~ | ~~App.tsx 무의미한 `markPerformance` 0ms 측정 제거 — H3에서 함께 처리~~ ✅                 | ~~`App.tsx`~~                   |
-| ~~M5~~ | ~~`main.tsx`에서 `process.env.NODE_ENV` → `env.IS_DEVELOPMENT` 통일~~ ✅                   | ~~`main.tsx`~~                  |
-| ~~M6~~ | ~~Footer 테스트 중복 ("closes modal when X button is clicked" 2회) 제거~~ ✅               | ~~`Footer.test.tsx`~~           |
-| ~~M7~~ | ~~Footer 테스트에서 lucide-react 불필요 재모킹 제거 (글로벌 모킹 사용)~~ ✅                | ~~`Footer.test.tsx`~~           |
-| ~~M8~~ | ~~`docker-compose.dev.yml` API URL `localhost` — 브라우저 접근이므로 정상~~ ✅ (이슈 아님) | ~~`docker-compose.dev.yml`~~    |
-| ~~M9~~ | ~~BlogSearch `setTimeout` 미정리 → `useRef` 기반 타이머 추적 + cleanup~~ ✅                | ~~`BlogSearch.tsx`~~            |
-
-### 낮은 우선순위
-
-| #      | 설명                                                                                      | 파일                     |
-| ------ | ----------------------------------------------------------------------------------------- | ------------------------ |
-| ~~L1~~ | ~~`window.confirm()` → 인라인 확인 모달로 전환~~ ✅                                       | ~~`AdminDashboard.tsx`~~ |
-| ~~L2~~ | ~~BlogSearch input `aria-label` 추가~~ ✅                                                 | ~~`BlogSearch.tsx`~~     |
-| ~~L3~~ | ~~대형 컴포넌트 분할: AdminPanel(589→175), MessageList(458→215), BlogEditor(443→265)~~ ✅ | ~~`components/`~~        |
-
-### Backend
-
-| #       | 설명                                                                                       | 파일                       |
-| ------- | ------------------------------------------------------------------------------------------ | -------------------------- |
-| ~~BE1~~ | ~~bare `except:` → 구체적 예외 타입 (`re.error`, `TypeError`)으로 교체~~ ✅                | ~~`api/views.py`~~         |
-| ~~BE2~~ | ~~WebSocket `ChatConsumer` 인증 추가 + 메시지 타입 화이트리스트~~ ✅                       | ~~`api/consumers.py`~~     |
-| ~~BE3~~ | ~~`create_blog_posts.py` 하드코딩 자격증명 → 랜덤 비밀번호 출력~~ ✅                       | ~~`create_blog_posts.py`~~ |
-| ~~BE4~~ | ~~테스트 데이터 카테고리 `ai_development` → `ai`로 수정~~ ✅                               | ~~`api/tests.py`~~         |
-| ~~BE5~~ | ~~미사용 의존성 `django-ratelimit` 제거~~ ✅                                               | ~~`pyproject.toml`~~       |
-| ~~BE6~~ | ~~DB URL 파싱 → `urllib.parse.urlparse` (stdlib) 사용~~ ✅                                 | ~~`config/settings.py`~~   |
-| ~~BE7~~ | ~~에러 응답 형식 확인 — `details`는 validation 에러에만 존재, 일관성 정상~~ ✅ (이슈 아님) | ~~`api/views.py`~~         |
+</details>
 
 ## 변경 이력
 
