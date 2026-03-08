@@ -35,8 +35,9 @@ interface StructuredDataProps {
 
 const StructuredData: React.FC<StructuredDataProps> = memo(
   ({ type = 'Organization', article, service }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const siteName = t('common.companyName');
+    const inLanguage = i18n.language === 'en' ? 'en-US' : 'ko-KR';
 
     const organizationSchema = {
       '@context': 'https://schema.org',
@@ -87,7 +88,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       name: siteName,
       url: SITE_URL,
       description: t('seo.site.description'),
-      inLanguage: 'ko-KR',
+      inLanguage,
       publisher: {
         '@type': 'Organization',
         name: siteName,

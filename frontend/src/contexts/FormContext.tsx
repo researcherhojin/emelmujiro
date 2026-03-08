@@ -191,7 +191,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
 
       // Save to localStorage for later sync if offline
       if (!navigator.onLine) {
-        let pendingContacts = [];
+        let pendingContacts;
         try {
           pendingContacts = JSON.parse(
             localStorage.getItem('pendingContacts') || '[]'

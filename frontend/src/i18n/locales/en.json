@@ -687,6 +687,18 @@
     "scrollToTop": "Scroll to top",
     "mainContent": "Main content",
     "keyboardShortcuts": "Keyboard shortcuts",
+    "shortcutFocusSearch": "Press / to focus search",
+    "shortcutGoHome": "Press Alt+H to go home",
+    "shortcutGoBlog": "Press Alt+B to go to blog",
+    "shortcutGoContact": "Press Alt+C to go to contact",
+    "shortcutGoProfile": "Press Alt+P to go to profile",
+    "shortcutCloseModal": "Press Escape to close modals",
+    "searchFocused": "Search input focused",
+    "navigatedToHome": "Navigated to home page",
+    "navigatedToBlog": "Navigated to blog page",
+    "navigatedToContact": "Navigated to contact page",
+    "navigatedToProfile": "Navigated to profile page",
+    "pageLoaded": "Page loaded: {{title}}",
     "closeShareMenu": "Close share menu"
   },
   "footerServices": {

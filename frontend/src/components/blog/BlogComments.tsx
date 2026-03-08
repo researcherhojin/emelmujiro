@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { MessageCircle, Send, User, Calendar, ThumbsUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import logger from '../../utils/logger';
@@ -419,4 +419,4 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
   );
 };
 
-export default BlogComments;
+export default memo(BlogComments);

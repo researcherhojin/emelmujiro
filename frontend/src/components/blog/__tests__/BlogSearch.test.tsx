@@ -121,10 +121,10 @@ describe('BlogSearch', () => {
       fireEvent.submit(input.form);
     }
 
-    // Empty search should return empty array or not be called
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    // Since empty search is filtered out, onSearch may not be called
-    // or called with empty array
+    // Empty search is filtered out — onSearch should not be called
+    await waitFor(() => {
+      expect(onSearch).not.toHaveBeenCalled();
+    });
   });
 
   it('handles search with special characters', async () => {

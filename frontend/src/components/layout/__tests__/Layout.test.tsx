@@ -14,7 +14,11 @@ vi.mock('../../common/Footer', () => ({
 }));
 
 vi.mock('../../common/SkipLink', () => ({
-  default: () => <a data-testid="skip-link">Skip to content</a>,
+  default: () => (
+    <a href="#main-content" data-testid="skip-link">
+      Skip to content
+    </a>
+  ),
 }));
 
 vi.mock('../../../hooks/useKeyboardNavigation', () => ({
@@ -81,18 +85,26 @@ describe('Layout', () => {
   it('includes keyboard shortcuts help for screen readers', () => {
     renderLayout();
 
-    expect(screen.getByText('Keyboard Shortcuts')).toBeInTheDocument();
-    expect(screen.getByText('Press / to focus search')).toBeInTheDocument();
-    expect(screen.getByText('Press Alt+H to go home')).toBeInTheDocument();
-    expect(screen.getByText('Press Alt+B to go to blog')).toBeInTheDocument();
     expect(
-      screen.getByText('Press Alt+C to go to contact')
+      screen.getByText('accessibility.keyboardShortcuts')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('Press Alt+P to go to profile')
+      screen.getByText('accessibility.shortcutFocusSearch')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('Press Escape to close modals')
+      screen.getByText('accessibility.shortcutGoHome')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('accessibility.shortcutGoBlog')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('accessibility.shortcutGoContact')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('accessibility.shortcutGoProfile')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('accessibility.shortcutCloseModal')
     ).toBeInTheDocument();
   });
 

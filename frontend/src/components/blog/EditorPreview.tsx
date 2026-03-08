@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useTranslation } from 'react-i18next';
@@ -45,7 +45,7 @@ const EditorPreview: React.FC<EditorPreviewProps> = ({
 
         {tags && (
           <div className="flex gap-2 mb-4">
-            {tags.split(',').map((tag, index) => (
+            {tags.split(',').map((tag) => (
               <span
                 key={tag.trim()}
                 className="text-sm bg-gray-100 px-2 py-1 rounded"
@@ -66,4 +66,4 @@ const EditorPreview: React.FC<EditorPreviewProps> = ({
   );
 };
 
-export default EditorPreview;
+export default memo(EditorPreview);

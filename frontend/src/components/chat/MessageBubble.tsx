@@ -162,7 +162,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
             message.quickReplies &&
             message.quickReplies.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
-                {message.quickReplies.map((reply, index) => (
+                {message.quickReplies.map((reply) => (
                   <button
                     key={reply}
                     onClick={() => onSendQuickReply(reply)}

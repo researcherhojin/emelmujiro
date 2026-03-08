@@ -28,7 +28,6 @@ vi.mock('../../services/api', () => ({
 
 const mockedApi = vi.mocked(api);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockAxiosResponse = (data: any) =>
   ({
     data,

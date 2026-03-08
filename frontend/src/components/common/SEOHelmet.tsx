@@ -32,12 +32,13 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     image = `${SITE_URL}/og-image.png`,
     url = SITE_URL,
     type = 'website',
-    lang = 'ko',
+    lang,
     publishedTime,
     modifiedTime,
     article,
   }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const resolvedLang = lang || i18n.language || 'ko';
     const siteName = t('common.companyName');
     const resolvedTitle = title || siteName;
     const resolvedDescription = description || t('seo.site.description');
@@ -65,8 +66,14 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         <meta property="og:url" content={url} />
         <meta property="og:type" content={type} />
         <meta property="og:site_name" content={siteName} />
-        <meta property="og:locale" content="ko_KR" />
-        <meta property="og:locale:alternate" content="en_US" />
+        <meta
+          property="og:locale"
+          content={resolvedLang === 'en' ? 'en_US' : 'ko_KR'}
+        />
+        <meta
+          property="og:locale:alternate"
+          content={resolvedLang === 'en' ? 'ko_KR' : 'en_US'}
+        />
 
         {/* Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -78,7 +85,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         <link rel="canonical" href={url} />
 
         {/* Language */}
-        <html lang={lang} />
+        <html lang={resolvedLang} />
         <link rel="alternate" hrefLang="x-default" href={url} />
 
         {/* Additional SEO Tags */}
@@ -146,7 +153,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         )}
 
         {/* Content language */}
-        <meta httpEquiv="content-language" content={lang} />
+        <meta httpEquiv="content-language" content={resolvedLang} />
 
         {/* Schema.org JSON-LD */}
         <script type="application/ld+json">

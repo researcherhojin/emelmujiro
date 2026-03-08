@@ -81,7 +81,7 @@ ${t('share.inquiryFooter')}
 
   const handleSaveForLater = () => {
     // Save to local storage or favorites
-    let savedItems: SharedContent[] = [];
+    let savedItems: SharedContent[];
     try {
       savedItems = JSON.parse(localStorage.getItem('saved-content') || '[]');
     } catch {

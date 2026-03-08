@@ -1,7 +1,10 @@
-FROM node:24.6.0-alpine3.21
+FROM node:24-alpine
 
 # Update packages for security
 RUN apk update && apk upgrade
+
+# Create non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 WORKDIR /app
 
@@ -13,6 +16,12 @@ RUN npm install
 
 # Copy source code
 COPY . .
+
+# Set ownership
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
 
 # Expose port
 EXPOSE 5173

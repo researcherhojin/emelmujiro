@@ -1,6 +1,19 @@
 // Vite environment variables configuration
 // This file centralizes all environment variables for easy migration
 
+// Resolve current mode from Vite's import.meta.env (preferred).
+// Falls back to process.env.NODE_ENV for test runners (Vitest sets both).
+const MODE: string =
+  typeof import.meta !== 'undefined' && import.meta.env?.MODE
+    ? import.meta.env.MODE
+    : typeof process !== 'undefined' && process.env?.NODE_ENV
+      ? process.env.NODE_ENV
+      : 'development';
+
+const IS_PRODUCTION = MODE === 'production';
+const IS_DEVELOPMENT = MODE === 'development';
+const IS_TEST = MODE === 'test';
+
 export const getEnvVar = (key: string, defaultValue: string = ''): string => {
   // Support both Vite and legacy process.env for gradual migration
   const viteKey = key.replace('REACT_APP_', 'VITE_');
@@ -26,15 +39,13 @@ export const env = {
   // API Configuration
   API_URL: getEnvVar(
     'REACT_APP_API_URL',
-    process.env.NODE_ENV === 'production'
+    IS_PRODUCTION
       ? 'https://api.emelmujiro.com/api'
       : 'http://localhost:8000/api'
   ),
   WS_URL: getEnvVar(
     'REACT_APP_WS_URL',
-    process.env.NODE_ENV === 'production'
-      ? 'wss://api.emelmujiro.com/ws'
-      : 'ws://localhost:8000/ws'
+    IS_PRODUCTION ? 'wss://api.emelmujiro.com/ws' : 'ws://localhost:8000/ws'
   ),
 
   // Feature Flags
@@ -50,12 +61,10 @@ export const env = {
   PUBLIC_URL: getEnvVar('REACT_APP_PUBLIC_URL', '/emelmujiro'),
 
   // Environment
-  NODE_ENV: import.meta?.env?.MODE || process.env.NODE_ENV || 'development',
-  IS_PRODUCTION:
-    (import.meta?.env?.PROD ?? process.env.NODE_ENV === 'production') || false,
-  IS_DEVELOPMENT:
-    (import.meta?.env?.DEV ?? process.env.NODE_ENV === 'development') || false,
-  IS_TEST: process.env.NODE_ENV === 'test',
+  NODE_ENV: MODE,
+  IS_PRODUCTION,
+  IS_DEVELOPMENT,
+  IS_TEST,
 };
 
 export default env;

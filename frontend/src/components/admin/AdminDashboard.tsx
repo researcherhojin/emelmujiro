@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
@@ -49,11 +49,7 @@ const AdminDashboard: React.FC = () => {
     string | number | null
   >(null);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -92,7 +88,12 @@ const AdminDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const handleCreateContent = () => {
     // TODO: navigate to content creation page when backend is deployed
@@ -245,7 +246,7 @@ const AdminDashboard: React.FC = () => {
               action: t('admin.inquiryReceived'),
               user: 'guest456',
             },
-          ].map((activity, index) => (
+          ].map((activity) => (
             <div
               key={`${activity.action}-${activity.time}`}
               className="flex items-center justify-between py-2 border-b last:border-0"

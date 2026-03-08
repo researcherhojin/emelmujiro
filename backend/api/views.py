@@ -187,7 +187,7 @@ class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
         # Increment view count (once per day per IP)
         instance = self.get_object()
         ip_address = get_client_ip(request)
-        cache_key = f"blog_view_{instance.id}_{hashlib.md5(ip_address.encode()).hexdigest()}"
+        cache_key = f"blog_view_{instance.id}_{hashlib.sha256(ip_address.encode()).hexdigest()[:16]}"
 
         if not cache.get(cache_key):
             BlogPost.objects.filter(id=instance.id).update(view_count=F("view_count") + 1)
@@ -332,8 +332,9 @@ class ContactView(APIView):
 
             return False
         except Exception as e:
-            logger.error(f"Spam check failed: {e}")
-            return False
+            # Fail closed: treat as spam when the check itself fails (e.g. DB error)
+            logger.error(f"Spam check failed (blocking request): {e}")
+            return True
 
     def _is_valid_email(self, email: str) -> bool:
         """Validate email address"""

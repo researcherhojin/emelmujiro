@@ -12,7 +12,24 @@ import {
   waitFor,
 } from '@testing-library/react';
 import WebVitalsDashboard from '../WebVitalsDashboard';
-import { setupCommonMocks, findButton } from '../../../test-utils/test-helpers';
+
+// Inline helpers (previously in test-helpers.tsx)
+const findButton = (
+  container: HTMLElement,
+  labelPattern: RegExp
+): HTMLElement | null => {
+  return container.querySelector(`button[aria-label]`)
+    ? Array.from(
+        container.querySelectorAll<HTMLElement>('button[aria-label]')
+      ).find((btn) =>
+        labelPattern.test(btn.getAttribute('aria-label') || '')
+      ) || null
+    : null;
+};
+
+const setupCommonMocks = () => {
+  vi.clearAllMocks();
+};
 
 // Mock web-vitals library
 const mockOnCLS = vi.fn();

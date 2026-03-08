@@ -25,7 +25,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         );
         if (searchInput) {
           searchInput.focus();
-          announceToScreenReader('Search input focused');
+          announceToScreenReader(t('accessibility.searchFocused'));
         }
       },
       description: 'Focus search',
@@ -35,7 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       altKey: true,
       handler: () => {
         navigate('/');
-        announceToScreenReader('Navigated to home page');
+        announceToScreenReader(t('accessibility.navigatedToHome'));
       },
       description: 'Go to home',
     },
@@ -44,7 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       altKey: true,
       handler: () => {
         navigate('/blog');
-        announceToScreenReader('Navigated to blog page');
+        announceToScreenReader(t('accessibility.navigatedToBlog'));
       },
       description: 'Go to blog',
     },
@@ -53,7 +53,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       altKey: true,
       handler: () => {
         navigate('/contact');
-        announceToScreenReader('Navigated to contact page');
+        announceToScreenReader(t('accessibility.navigatedToContact'));
       },
       description: 'Go to contact',
     },
@@ -62,7 +62,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       altKey: true,
       handler: () => {
         navigate('/profile');
-        announceToScreenReader('Navigated to profile page');
+        announceToScreenReader(t('accessibility.navigatedToProfile'));
       },
       description: 'Go to profile',
     },
@@ -71,8 +71,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Announce page changes to screen readers
   useEffect(() => {
     const title = document.title;
-    announceToScreenReader(`Page loaded: ${title}`);
-  }, []);
+    announceToScreenReader(t('accessibility.pageLoaded', { title }));
+  }, [t]);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-dark-950 theme-transition">
@@ -106,14 +106,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         className="sr-only"
         aria-label={t('accessibility.keyboardShortcuts')}
       >
-        <h2>Keyboard Shortcuts</h2>
+        <h2>{t('accessibility.keyboardShortcuts')}</h2>
         <ul>
-          <li>Press / to focus search</li>
-          <li>Press Alt+H to go home</li>
-          <li>Press Alt+B to go to blog</li>
-          <li>Press Alt+C to go to contact</li>
-          <li>Press Alt+P to go to profile</li>
-          <li>Press Escape to close modals</li>
+          <li>{t('accessibility.shortcutFocusSearch')}</li>
+          <li>{t('accessibility.shortcutGoHome')}</li>
+          <li>{t('accessibility.shortcutGoBlog')}</li>
+          <li>{t('accessibility.shortcutGoContact')}</li>
+          <li>{t('accessibility.shortcutGoProfile')}</li>
+          <li>{t('accessibility.shortcutCloseModal')}</li>
         </ul>
       </div>
     </div>

@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, IntegrityError
 from django.utils import timezone
 from django.utils.text import slugify
 from django.core.validators import URLValidator
@@ -60,7 +60,21 @@ class BlogPost(models.Model):
                 slug = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug
-        super().save(*args, **kwargs)
+        # Retry on IntegrityError from concurrent slug creation
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                super().save(*args, **kwargs)
+                return
+            except IntegrityError:
+                if attempt == max_retries - 1:
+                    raise
+                # Regenerate slug with a higher counter
+                base_slug = slugify(self.title, allow_unicode=True) or f"post-{self.pk or 'new'}"
+                counter = 1
+                while BlogPost.objects.filter(slug=f"{base_slug}-{counter}").exists():
+                    counter += 1
+                self.slug = f"{base_slug}-{counter}"
 
     def __str__(self):
         return self.title
@@ -90,7 +104,7 @@ class Contact(models.Model):
     subject = models.CharField(max_length=200, verbose_name="제목")
     message = models.TextField(verbose_name="내용")
     ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name="IP 주소")
-    user_agent = models.TextField(blank=True, verbose_name="사용자 에이전트")
+    user_agent = models.CharField(max_length=500, blank=True, verbose_name="사용자 에이전트")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="문의일")
     is_processed = models.BooleanField(default=False, verbose_name="처리 여부")
     processed_at = models.DateTimeField(null=True, blank=True, verbose_name="처리일")

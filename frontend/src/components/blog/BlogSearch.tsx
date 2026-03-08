@@ -179,7 +179,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
                 {t('blog.clearAll')}
               </button>
             </div>
-            {recentSearches.map((term, index) => (
+            {recentSearches.map((term) => (
               <button
                 key={term}
                 onClick={() => applyRecentSearch(term)}

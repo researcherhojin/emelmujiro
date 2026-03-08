@@ -687,6 +687,18 @@
     "scrollToTop": "맨 위로 이동",
     "mainContent": "주요 콘텐츠",
     "keyboardShortcuts": "키보드 단축키",
+    "shortcutFocusSearch": "/ 키를 눌러 검색 포커스",
+    "shortcutGoHome": "Alt+H를 눌러 홈으로 이동",
+    "shortcutGoBlog": "Alt+B를 눌러 블로그로 이동",
+    "shortcutGoContact": "Alt+C를 눌러 문의하기로 이동",
+    "shortcutGoProfile": "Alt+P를 눌러 프로필로 이동",
+    "shortcutCloseModal": "Escape를 눌러 모달 닫기",
+    "searchFocused": "검색 입력란에 포커스됨",
+    "navigatedToHome": "홈 페이지로 이동됨",
+    "navigatedToBlog": "블로그 페이지로 이동됨",
+    "navigatedToContact": "문의하기 페이지로 이동됨",
+    "navigatedToProfile": "프로필 페이지로 이동됨",
+    "pageLoaded": "페이지 로드 완료: {{title}}",
     "closeShareMenu": "공유 메뉴 닫기"
   },
   "footerServices": {

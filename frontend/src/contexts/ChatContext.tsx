@@ -65,6 +65,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   // Settings
   const [settings] = useState<ChatSettings>(getDefaultSettings);
+  const offlineReplyTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   // WebSocket connection hook
   const ws = useChatConnection({
@@ -98,6 +99,8 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     return () => {
       clearInterval(interval);
       clearTimeout(timer);
+      if (offlineReplyTimerRef.current)
+        clearTimeout(offlineReplyTimerRef.current);
       document.removeEventListener('click', handleUserInteraction);
       document.removeEventListener('keydown', handleUserInteraction);
     };
@@ -165,7 +168,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     setBusinessHours(getDefaultBusinessHours());
   };
 
-  const openChat = () => {
+  const openChat = useCallback(() => {
     setIsOpen(true);
     setIsMinimized(false);
     setIsInitialMount(false);
@@ -181,68 +184,80 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       };
       setMessages([welcomeMsg]);
     }
-  };
+  }, [messages.length, settings.welcomeMessage]);
 
-  const closeChat = () => {
+  const stopTyping = useCallback(() => {
+    ws.sendTypingStop();
+
+    if (ws.typingTimeoutRef.current) {
+      clearTimeout(ws.typingTimeoutRef.current);
+      ws.typingTimeoutRef.current = null;
+    }
+  }, [ws]);
+
+  const closeChat = useCallback(() => {
     setIsOpen(false);
     setIsMinimized(false);
     stopTyping();
-  };
+  }, [stopTyping]);
 
-  const toggleMinimize = () => {
+  const toggleMinimize = useCallback(() => {
     setIsMinimized((prev) => !prev);
-  };
+  }, []);
 
-  const sendMessage = async (
-    messageData: Omit<ChatMessage, 'id' | 'timestamp' | 'status'>
-  ) => {
-    const message: ChatMessage = {
-      ...messageData,
-      id: generateMessageId(),
-      timestamp: new Date(),
-      status: 'sending',
-    };
+  const sendMessage = useCallback(
+    async (messageData: Omit<ChatMessage, 'id' | 'timestamp' | 'status'>) => {
+      const message: ChatMessage = {
+        ...messageData,
+        id: generateMessageId(),
+        timestamp: new Date(),
+        status: 'sending',
+      };
 
-    setMessages((prev) => [...prev, message]);
+      setMessages((prev) => [...prev, message]);
 
-    try {
-      if (isConnected && ws.isWsConnected()) {
-        const success = ws.sendViaWebSocket(message);
-        if (success) {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === message.id ? { ...msg, status: 'sent' } : msg
-            )
-          );
+      try {
+        if (isConnected && ws.isWsConnected()) {
+          const success = ws.sendViaWebSocket(message);
+          if (success) {
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === message.id ? { ...msg, status: 'sent' } : msg
+              )
+            );
+          } else {
+            throw new Error('Failed to send message via WebSocket');
+          }
         } else {
-          throw new Error('Failed to send message via WebSocket');
+          ws.queueMessage(message);
+
+          if (offlineReplyTimerRef.current)
+            clearTimeout(offlineReplyTimerRef.current);
+          offlineReplyTimerRef.current = setTimeout(() => {
+            const autoReply: ChatMessage = {
+              id: generateMessageId(),
+              type: 'system',
+              content: i18n.t('chatContext.offlineMessage'),
+              sender: 'system',
+              timestamp: new Date(),
+              status: 'read',
+            };
+            setMessages((prev) => [...prev, autoReply]);
+          }, 1000);
         }
-      } else {
-        ws.queueMessage(message);
-
-        setTimeout(() => {
-          const autoReply: ChatMessage = {
-            id: generateMessageId(),
-            type: 'system',
-            content: i18n.t('chatContext.offlineMessage'),
-            sender: 'system',
-            timestamp: new Date(),
-            status: 'read',
-          };
-          setMessages((prev) => [...prev, autoReply]);
-        }, 1000);
+      } catch (error) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === message.id ? { ...msg, status: 'failed' } : msg
+          )
+        );
+        throw error;
       }
-    } catch (error) {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === message.id ? { ...msg, status: 'failed' } : msg
-        )
-      );
-      throw error;
-    }
-  };
+    },
+    [isConnected, ws, offlineReplyTimerRef]
+  );
 
-  const markAsRead = (messageId: string) => {
+  const markAsRead = useCallback((messageId: string) => {
     setMessages((prev) =>
       prev.map((msg) =>
         msg.id === messageId && msg.sender !== 'user'
@@ -251,18 +266,18 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       )
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
-  };
+  }, []);
 
-  const markAllAsRead = () => {
+  const markAllAsRead = useCallback(() => {
     setMessages((prev) =>
       prev.map((msg) =>
         msg.sender !== 'user' ? { ...msg, status: 'read' } : msg
       )
     );
     setUnreadCount(0);
-  };
+  }, []);
 
-  const startTyping = () => {
+  const startTyping = useCallback(() => {
     ws.sendTypingStart();
 
     if (ws.typingTimeoutRef.current) {
@@ -272,24 +287,15 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     ws.typingTimeoutRef.current = setTimeout(() => {
       stopTyping();
     }, 3000);
-  };
+  }, [ws, stopTyping]);
 
-  const stopTyping = () => {
-    ws.sendTypingStop();
-
-    if (ws.typingTimeoutRef.current) {
-      clearTimeout(ws.typingTimeoutRef.current);
-      ws.typingTimeoutRef.current = null;
-    }
-  };
-
-  const clearHistory = () => {
+  const clearHistory = useCallback(() => {
     setMessages([]);
     setUnreadCount(0);
     localStorage.removeItem('chat-history');
-  };
+  }, []);
 
-  const exportHistory = (): string => {
+  const exportHistory = useCallback((): string => {
     const exportData = {
       timestamp: new Date().toISOString(),
       messages,
@@ -297,7 +303,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       businessHours,
     };
     return JSON.stringify(exportData, null, 2);
-  };
+  }, [messages, agentName, agentAvailable, businessHours]);
 
   // Cleanup on unmount
   useEffect(() => {

@@ -152,6 +152,11 @@ export const playNotificationSound = () => {
 
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 0.5);
+
+    // Release AudioContext after sound finishes
+    oscillator.onended = () => {
+      audioContext.close();
+    };
   } catch (error) {
     // Silently fail for autoplay restrictions
     if (error instanceof Error && !error.message.includes('user gesture')) {

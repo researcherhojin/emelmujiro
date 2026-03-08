@@ -98,27 +98,26 @@ describe('BlogInteractions Component', () => {
 
     it('displays initial like count as 0', () => {
       render(<BlogInteractions post={mockPost} />);
-      const zeroElements = screen.queryAllByText('0');
-      expect(zeroElements.length).toBeGreaterThanOrEqual(1);
+      // Like button is the first button; its span child shows the count
+      const buttons = screen.getAllByRole('button');
+      const likeButton = buttons[0];
+      expect(likeButton).toHaveTextContent('0');
     });
   });
 
   describe('Like Functionality', () => {
     it('increments likes when like button is clicked', () => {
-      // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
-      // Find the like button (first button with a number)
       const buttons = screen.getAllByRole('button');
-      const likeButton = buttons[0]; // First button is the like button
-      fireEvent.click(likeButton);
+      const likeButton = buttons[0];
+      expect(likeButton).toHaveTextContent('0');
 
-      const oneElements = screen.queryAllByText('1');
-      expect(oneElements.length).toBeGreaterThanOrEqual(1);
+      fireEvent.click(likeButton);
+      expect(likeButton).toHaveTextContent('1');
     });
 
     it('toggles like state', () => {
-      // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
       const buttons = screen.getAllByRole('button');
@@ -126,17 +125,14 @@ describe('BlogInteractions Component', () => {
 
       // Like
       fireEvent.click(likeButton);
-      const oneElements = screen.queryAllByText('1');
-      expect(oneElements.length).toBeGreaterThanOrEqual(1);
+      expect(likeButton).toHaveTextContent('1');
 
       // Unlike
       fireEvent.click(likeButton);
-      const zeroElements2 = screen.queryAllByText('0');
-      expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
+      expect(likeButton).toHaveTextContent('0');
     });
 
     it('persists likes in localStorage', () => {
-      // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
       const buttons = screen.getAllByRole('button');
@@ -149,7 +145,6 @@ describe('BlogInteractions Component', () => {
     });
 
     it('generates and stores unique user ID', () => {
-      // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
       const buttons = screen.getAllByRole('button');
@@ -171,12 +166,12 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      const fiveElements = screen.queryAllByText('5');
-      expect(fiveElements.length).toBeGreaterThanOrEqual(1);
+      const buttons = screen.getAllByRole('button');
+      const likeButton = buttons[0];
+      expect(likeButton).toHaveTextContent('5');
     });
 
     it('prevents duplicate likes from same user', () => {
-      // Skipped: State updates not working in test environment
       const userId = 'user_123';
       localStorage.setItem('userId', userId);
 
@@ -190,20 +185,17 @@ describe('BlogInteractions Component', () => {
       const buttons = screen.getAllByRole('button');
       const likeButton = buttons[0];
 
-      // Should be already liked
-      const oneElements = screen.queryAllByText('1');
-      expect(oneElements.length).toBeGreaterThanOrEqual(1);
+      // Should be already liked with count 1
+      expect(likeButton).toHaveTextContent('1');
 
       // Click to unlike
       fireEvent.click(likeButton);
-      const zeroElements2 = screen.queryAllByText('0');
-      expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
+      expect(likeButton).toHaveTextContent('0');
     });
   });
 
   describe('Bookmark Functionality', () => {
     it('toggles bookmark state', () => {
-      // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
       const buttons = screen.getAllByRole('button');
@@ -224,7 +216,6 @@ describe('BlogInteractions Component', () => {
     });
 
     it('loads existing bookmarks on mount', () => {
-      // Skipped: State updates not working in test environment
       const existingBookmarks = [{ id: mockPost.id, title: mockPost.title }];
       localStorage.setItem('bookmarks', JSON.stringify(existingBookmarks));
 
@@ -240,7 +231,6 @@ describe('BlogInteractions Component', () => {
     });
 
     it('stores bookmark with post metadata', () => {
-      // Skipped: State updates not working in test environment
       render(<BlogInteractions post={mockPost} />);
 
       const buttons = screen.getAllByRole('button');
@@ -260,7 +250,6 @@ describe('BlogInteractions Component', () => {
 
   describe('Share Functionality', () => {
     it('shows share menu when share button is clicked', () => {
-      // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available to trigger share menu
       const originalShare = navigator.share;
       delete (navigator as unknown as { share?: typeof navigator.share }).share;
@@ -284,7 +273,6 @@ describe('BlogInteractions Component', () => {
     });
 
     it('shows and hides share menu', () => {
-      // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
       Object.defineProperty(navigator, 'share', {
@@ -314,7 +302,6 @@ describe('BlogInteractions Component', () => {
     });
 
     it('shares to Facebook', () => {
-      // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
       Object.defineProperty(navigator, 'share', {
@@ -346,7 +333,6 @@ describe('BlogInteractions Component', () => {
     });
 
     it('shares to Twitter', () => {
-      // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
       Object.defineProperty(navigator, 'share', {
@@ -378,7 +364,6 @@ describe('BlogInteractions Component', () => {
     });
 
     it('shares to LinkedIn', () => {
-      // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
       Object.defineProperty(navigator, 'share', {
@@ -410,7 +395,6 @@ describe('BlogInteractions Component', () => {
     });
 
     it('copies link to clipboard', async () => {
-      // Skipped: getPropertyValue mock not working consistently in CI
       // Mock navigator.share as not available
       const originalShare = navigator.share;
       Object.defineProperty(navigator, 'share', {
@@ -479,12 +463,10 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      // Should render with default values
-      const zeroElements2 = screen.queryAllByText('0');
-      expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
-      // Check for first button (like button)
+      // Should render with default values (like count = 0)
       const buttons = screen.getAllByRole('button');
-      expect(buttons[0]).toBeInTheDocument();
+      const likeButton = buttons[0];
+      expect(likeButton).toHaveTextContent('0');
 
       // Restore
       Storage.prototype.getItem = originalGetItem;
@@ -495,9 +477,9 @@ describe('BlogInteractions Component', () => {
 
       render(<BlogInteractions post={mockPost} />);
 
-      // Should render with default values
-      const zeroElements2 = screen.queryAllByText('0');
-      expect(zeroElements2.length).toBeGreaterThanOrEqual(1);
+      // Should render with default values (like count = 0)
+      const buttons = screen.getAllByRole('button');
+      expect(buttons[0]).toHaveTextContent('0');
     });
 
     it('handles clipboard API failure gracefully', async () => {

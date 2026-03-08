@@ -83,7 +83,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = memo(
                 {project.description}
               </p>
               <div className="flex flex-wrap gap-2">
-                {project.tags.map((tag, index) => (
+                {project.tags.map((tag) => (
                   <span
                     key={tag}
                     className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium"

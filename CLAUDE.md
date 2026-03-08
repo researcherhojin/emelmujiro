@@ -142,6 +142,8 @@ Axios-based client in `src/services/api.ts`. All API methods (blog, contact, new
 
 Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false`. All UI strings, data files, contexts, and SEO modules use i18n — no hardcoded Korean in components. Non-React files that need translations (e.g., `websocket.ts`, `ChatContext.tsx`) import `i18n` directly and call `i18n.t()`. The `blogPosts.ts` mock data file is an exception — it contains Korean content strings as placeholder blog post data, not UI strings.
 
+**SEO bot detection** — `i18n.ts` detects search engine bots (Googlebot, Bingbot, etc.) via `navigator.userAgent` and forces them to use `['htmlTag']` detection order (resolving to `ko` from `index.html`'s `lang="ko"`). This ensures Korean content is indexed by search engines regardless of the bot's `Accept-Language` header. Non-bot users get the normal detection order: `localStorage → navigator → htmlTag`. Bot detection also disables localStorage caching to prevent stale language preferences.
+
 **Data file i18n pattern** — Non-React data files (`footerData.ts`, `profileData.ts`, `constants.ts`) import the i18n instance directly and use getter functions so translations resolve at call time (not at module load):
 
 ```typescript
@@ -211,8 +213,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - `renderWithProviders` in `src/test-utils/renderWithProviders.tsx` — Wraps component in all providers (HelmetProvider, UIProvider, AuthProvider, BlogProvider, FormProvider, MemoryRouter). Uses `MemoryRouter` (not HashRouter) — correct for tests since it's controllable and doesn't require hash prefix. ChatProvider is excluded due to WebSocket complexity.
 - Individual wrappers: `renderWithBlogProvider`, `renderWithAuthProvider`, `renderWithUIProvider`, `renderWithFormProvider`, `renderWithRouter` (in `renderWithProviders.tsx`).
-- Async helpers: `flushPromises`, `nextTick`, `waitForPendingOperations` in `cleanup.ts`.
-- `src/test-utils/` also has: MSW mock server setup (`mocks/server.ts`, `mocks/handlers.ts`), polyfills, cleanup helpers.
+- `src/test-utils/` also has: MSW mock server setup (`mocks/server.ts`, `mocks/handlers.ts`), polyfills.
 
 ### CI Test Config
 
@@ -299,7 +300,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 69 files / 1110 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-08)
+4. **Test count**: Frontend 69 files / 1110 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-09)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
@@ -319,3 +320,5 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 21. **Backend tests need `DATABASE_URL=""`**: If `DATABASE_URL` is set (e.g., pointing to Docker PostgreSQL), backend tests will fail to connect. Run `DATABASE_URL="" uv run python manage.py test` to use SQLite
 22. **SEO with HashRouter**: All canonical URLs and OG URLs must include `/#/` (e.g., `${SITE_URL}/#/about`). `robots.txt` must NOT use hash fragment directives (non-standard). Sitemap URLs include `/#/`. `hreflang` alternate language tags are omitted because the SPA serves both languages from the same URL via client-side i18n. The `sameAs` field in structured data must only contain verified, existing URLs
 23. **No hardcoded site URLs in components**: Always use `SITE_URL` from `src/utils/constants.ts`. The `generate-sitemap.js` script has its own `SITE_URL` constant (Node.js, can't import from frontend)
+24. **ESLint workspace hoisting**: `eslint` must be in root `package.json` devDependencies alongside `eslint-plugin-react` (which npm hoists to root `node_modules/`). The plugin does `require('eslint/package.json')` — if eslint is only in `frontend/node_modules/`, the plugin can't find it. Don't remove eslint from root devDependencies
+25. **ESLint zero warnings policy**: All ESLint warnings have been resolved (0 errors, 0 warnings as of 2026-03-09). Maintain this — don't introduce new warnings. Use `useCallback` for functions passed to context `useMemo`, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements

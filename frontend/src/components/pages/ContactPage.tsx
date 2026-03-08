@@ -76,8 +76,13 @@ const ContactPage: React.FC = memo(() => {
           {/* Error Message */}
           {submitError && (
             <div
+              role="alert"
               className="max-w-2xl mx-auto mb-8 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 cursor-pointer"
               onClick={clearSubmitState}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') clearSubmitState();
+              }}
+              tabIndex={0}
             >
               {submitError}
             </div>

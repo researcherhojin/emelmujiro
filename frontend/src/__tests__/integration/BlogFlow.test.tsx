@@ -39,9 +39,7 @@ vi.mock('../../services/api', () => ({
   },
 }));
 
-const mockedBlogService = blogService as any;
-
-// framer-motion is already mocked in src/__mocks__/framer-motion.js
+const mockedBlogService = vi.mocked(blogService);
 
 // Mock Navbar and other complex components to simplify tests
 vi.mock('../../components/common/Navbar', () => ({
@@ -98,49 +96,45 @@ describe('Blog Flow Integration Tests', () => {
   test('app renders without crashing', async () => {
     render(<App />);
 
-    // Wait for the app to render
-    await waitFor(
-      () => {
-        // App should render without crashing
-      },
-      { timeout: 3000 }
-    );
+    // App should render and display the root element
+    await waitFor(() => {
+      expect(
+        document.getElementById('root') || document.body.firstChild
+      ).toBeTruthy();
+    });
   });
 
-  test('handles navigation when available', async () => {
+  test('renders navigation links', async () => {
     render(<App />);
 
-    // Wait for initial render
     await waitFor(() => {
-      // Check if any links are rendered
       const links = screen.queryAllByRole('link');
-      expect(links.length >= 0).toBe(true);
+      expect(links.length).toBeGreaterThan(0);
     });
   });
 
-  test('displays content based on route', async () => {
+  test('renders main content area', async () => {
     render(<App />);
 
-    // Wait for content to load
     await waitFor(() => {
-      // App renders successfully
+      const main = screen.getByRole('main');
+      expect(main).toBeInTheDocument();
     });
   });
 
-  test('handles errors gracefully', async () => {
-    // Mock an error response
+  test('handles errors gracefully without crashing', async () => {
     mockedBlogService.getPosts.mockRejectedValue(new Error('Network error'));
 
     render(<App />);
 
-    // Wait for render
+    // App should still render a main content area even with API errors
     await waitFor(() => {
-      // App should still render even with errors
+      const main = screen.getByRole('main');
+      expect(main).toBeInTheDocument();
     });
   });
 
   test('renders with mobile viewport', async () => {
-    // Mock mobile viewport
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
@@ -149,14 +143,20 @@ describe('Blog Flow Integration Tests', () => {
 
     render(<App />);
 
-    // Wait for render
     await waitFor(() => {
-      // App should render in mobile view
+      const main = screen.getByRole('main');
+      expect(main).toBeInTheDocument();
+    });
+
+    // Restore default
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1024,
     });
   });
 
   test('mocked blog service is configured correctly', () => {
-    // Verify mocks are set up
     expect(mockedBlogService.getPosts).toBeDefined();
     expect(mockedBlogService.getPost).toBeDefined();
     expect(mockedBlogService.searchPosts).toBeDefined();
