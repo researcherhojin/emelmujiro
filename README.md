@@ -230,7 +230,9 @@ graph LR
     D["#1 백엔드 배포<br/>(핵심 블로커)"] --> M["#2 Mock API 해제"]
     D --> E["#4 이메일 연동"]
     D --> S["#5 JWT → httpOnly"]
-    M --> U["#3 공사 중 해제"]
+    D --> F["#7 초기 데이터"]
+    D --> C["#8 커스텀 도메인"]
+    M --> U["#3 블로그 공사 중 해제"]
     M --> A["#6 Admin 대시보드"]
 ```
 
@@ -238,10 +240,12 @@ graph LR
 | --- | ------------------- | ------ | ----------------------------------------------------------------------------------------- |
 | 1   | **백엔드 배포**     | 미결정 | Django + SQLite 배포 (Railway / Render / Fly.io). `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` |
 | 2   | Mock API 해제       | → #1   | `VITE_API_URL` 설정 → Mock 자동 비활성화                                                  |
-| 3   | 공사 중 페이지 해제 | → #2   | `App.tsx` 라우트 복원, sitemap/manifest/E2E 업데이트                                      |
+| 3   | 블로그 공사 중 해제 | → #2   | `App.tsx` 블로그 라우트 복원, sitemap/manifest/E2E 업데이트                               |
 | 4   | 이메일 발송 연동    | → #1   | Contact 폼 SMTP/SendGrid 연동 (현재 Google Form 임베드 사용 중)                           |
 | 5   | JWT 토큰 보안       | → #1   | `localStorage` → `httpOnly` 쿠키 이전                                                     |
 | 6   | Admin 대시보드 연동 | → #2   | 실제 통계 API 연결, 458줄 컴포넌트 분리 권장                                              |
+| 7   | 초기 데이터 fixture | → #1   | `createsuperuser` + 블로그 포스트 fixture (`manage.py loaddata`)                          |
+| 8   | 커스텀 도메인 설정  | → #1   | GitHub Pages CNAME + DNS 설정 (`emelmujiro.com`), `SITE_URL` 업데이트                     |
 
 ### 배포 플랫폼 비교
 
@@ -260,6 +264,66 @@ graph LR
 | **BrowserRouter 전환** | `/#/about` → `/about` — 개별 URL 인식             | 서버 사이드 catch-all 필요 |
 | **SSG / Prerendering** | 정적 HTML 생성 → 크롤러 완성된 HTML 수신          | react-snap 또는 Next.js    |
 | **`hreflang` 적용**    | `/ko/about`, `/en/about` + `hreflang` 다국어 태그 | 다국어 SEO 표준            |
+
+### 백엔드 배포 후 전환 가이드
+
+백엔드 서버가 프로덕션에 배포되면 아래 순서대로 작업합니다:
+
+**1단계: 백엔드 설정**
+
+```bash
+# 배포 플랫폼에서 환경변수 설정
+DJANGO_SECRET_KEY=<생성된 시크릿 키>
+DEBUG=False
+ALLOWED_HOSTS=api.emelmujiro.com
+CSRF_TRUSTED_ORIGINS=https://emelmujiro.com,https://researcherhojin.github.io
+CORS_ALLOWED_ORIGINS=https://emelmujiro.com,https://researcherhojin.github.io
+DATABASE_URL=  # SQLite 사용 시 비워두기, Persistent Volume 경로 설정 필요
+
+# 초기 데이터
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py loaddata <fixture파일>  # 블로그 초기 포스트 (선택)
+```
+
+**2단계: 프론트엔드 Mock API 해제**
+
+```bash
+# frontend/.env 또는 GitHub Actions secrets에 설정
+VITE_API_URL=https://api.emelmujiro.com/api
+
+# 이 값이 설정되면 Mock API가 자동으로 비활성화됨
+# (src/config/env.ts → USE_MOCK_API = false)
+```
+
+**3단계: 블로그 공사 중 페이지 해제**
+
+```tsx
+// frontend/src/App.tsx — UnderConstruction을 원본 컴포넌트로 교체
+const BlogListPage = lazy(() => import('./components/blog/BlogListPage'));
+const BlogDetail = lazy(() => import('./components/blog/BlogDetail'));
+const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
+
+// 라우트 변경
+{ path: 'blog', element: <BlogListPage /> },
+{ path: 'blog/new', element: <BlogEditor /> },
+{ path: 'blog/:id', element: <BlogDetail /> },
+```
+
+**4단계: 추가 업데이트**
+
+- `generate-sitemap.js` — 블로그 URL 활성화
+- `manifest.json` — 블로그 관련 shortcut 복원
+- `e2e/blog.spec.ts`, `e2e/contact.spec.ts` — E2E 테스트 업데이트
+- 이메일 발송: `EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` 설정 (또는 SendGrid)
+- Contact 페이지: Google Form → 백엔드 API 전환 여부 결정
+
+**5단계: 커스텀 도메인 (선택)**
+
+- DNS: `emelmujiro.com` CNAME → `researcherhojin.github.io`
+- GitHub Pages: Settings → Custom domain → `emelmujiro.com`
+- `frontend/src/utils/constants.ts` → `SITE_URL` 업데이트
+- `frontend/public/CNAME` 파일 생성
 
 ### Google Form 자동 메일 설정 (TODO)
 
