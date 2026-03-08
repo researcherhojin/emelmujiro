@@ -248,10 +248,21 @@
     <!-- Preload critical resources and performance optimizations -->
     <script>
       // Redirect KakaoTalk in-app browser to external browser
+      // Uses intent scheme for Android KakaoTalk, falls back to normal page load
       if (/KAKAOTALK/i.test(navigator.userAgent)) {
-        location.href =
-          'kakaotalk://web/openExternal?url=' +
-          encodeURIComponent(location.href);
+        var currentUrl = location.href;
+        if (/Android/i.test(navigator.userAgent)) {
+          // Android: use intent scheme which is more reliable than kakaotalk:// scheme
+          location.href =
+            'intent://' +
+            currentUrl.replace(/https?:\/\//, '') +
+            '#Intent;scheme=https;package=com.android.chrome;end';
+        } else {
+          // iOS: kakaotalk scheme works reliably
+          location.href =
+            'kakaotalk://web/openExternal?url=' +
+            encodeURIComponent(currentUrl);
+        }
       }
 
       // Performance timing
