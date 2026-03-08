@@ -43,15 +43,15 @@ const ContactInfo: React.FC = memo(() => {
     <div className="space-y-6">
       <ContactIcon
         icon={<Mail className="w-6 h-6" />}
-        title={t('contact.info.email')}
+        title={t('contact.info.emailLabel')}
         value={CONTACT_EMAIL}
         link={`mailto:${CONTACT_EMAIL}`}
       />
 
       <ContactIcon
         icon={<Phone className="w-6 h-6" />}
-        title={t('contact.info.phone')}
-        value={t('contact.info.phoneValue')}
+        title={t('contact.info.phoneLabel')}
+        value={t('contact.info.phone')}
       />
 
       <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-xl">

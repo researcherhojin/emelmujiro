@@ -288,6 +288,12 @@
   "contact": {
     "title": "Contact Us",
     "subtitle": "Want to discuss your project?",
+    "googleForm": {
+      "description": "Please fill out the form below and we will get back to you via the contact information you provide.",
+      "loading": "Loading form...",
+      "openInNewTab": "Open in new tab",
+      "formTitle": "Online Meeting Request"
+    },
     "form": {
       "name": "Name",
       "email": "Email",

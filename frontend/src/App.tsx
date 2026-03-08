@@ -37,9 +37,10 @@ const ProfilePage = lazy(() => import('./components/pages/ProfilePage'));
 const AboutPage = lazy(() => import('./components/pages/AboutPage'));
 const SharePage = lazy(() => import('./components/pages/SharePage'));
 const NotFound = lazy(() => import('./components/common/NotFound'));
-const UnderConstruction = lazy(
-  () => import('./components/common/UnderConstruction')
-);
+const BlogListPage = lazy(() => import('./components/blog/BlogListPage'));
+const BlogDetail = lazy(() => import('./components/blog/BlogDetail'));
+const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
+const ContactPage = lazy(() => import('./components/pages/ContactPage'));
 
 // Admin Components
 const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
@@ -123,12 +124,12 @@ const router = createHashRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'about', element: <AboutPage /> },
-      { path: 'contact', element: <UnderConstruction featureKey="contact" /> },
+      { path: 'contact', element: <ContactPage /> },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'share', element: <SharePage /> },
-      { path: 'blog', element: <UnderConstruction featureKey="blog" /> },
-      { path: 'blog/new', element: <UnderConstruction featureKey="blog" /> },
-      { path: 'blog/:id', element: <UnderConstruction featureKey="blog" /> },
+      { path: 'blog', element: <BlogListPage /> },
+      { path: 'blog/new', element: <BlogEditor /> },
+      { path: 'blog/:id', element: <BlogDetail /> },
       {
         path: 'admin',
         element: (

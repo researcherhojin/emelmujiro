@@ -91,7 +91,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       <main
         id="main-content"
-        className="flex-grow focus:outline-none"
+        className="flex-grow pt-20 focus:outline-none"
         tabIndex={-1}
         role="main"
         aria-label={t('accessibility.mainContent')}

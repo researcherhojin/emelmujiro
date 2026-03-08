@@ -53,8 +53,8 @@ describe('ContactInfo', () => {
   it('displays the phone section with translated title', () => {
     render(<ContactInfo />);
 
+    expect(screen.getByText('contact.info.phoneLabel')).toBeInTheDocument();
     expect(screen.getByText('contact.info.phone')).toBeInTheDocument();
-    expect(screen.getByText('contact.info.phoneValue')).toBeInTheDocument();
   });
 
   it('displays business hours section', () => {
@@ -80,7 +80,7 @@ describe('ContactInfo', () => {
     const emailLink = screen.getByRole('link');
     expect(emailLink).toHaveAttribute(
       'aria-label',
-      'contact.info.email: researcherhojin@gmail.com'
+      'contact.info.emailLabel: researcherhojin@gmail.com'
     );
   });
 });

@@ -324,6 +324,10 @@ describe('FormContext', () => {
     expect(mockedApi.createContact).toHaveBeenCalledWith({
       name: 'John',
       email: 'john@example.com',
+      phone: '',
+      company: '',
+      subject: 'general',
+      inquiryType: 'general',
       message: 'This is a valid message for the form.',
     });
     expect(result.current.submitSuccess).toBe(true);

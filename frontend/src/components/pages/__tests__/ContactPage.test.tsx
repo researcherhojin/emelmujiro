@@ -13,35 +13,6 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-const mockFormContext = {
-  contactForm: {
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    inquiryType: 'consulting',
-    message: '',
-  },
-  updateContactForm: vi.fn(),
-  resetContactForm: vi.fn(),
-  isSubmitting: false,
-  submitError: null as string | null,
-  submitSuccess: false,
-  submitContactForm: vi.fn(),
-  clearSubmitState: vi.fn(),
-  formErrors: {},
-  validateContactForm: vi.fn(() => true),
-  clearFormErrors: vi.fn(),
-};
-
-vi.mock('../../../contexts/FormContext', () => ({
-  useForm: () => mockFormContext,
-}));
-
-vi.mock('../../contact/ContactForm', () => ({
-  default: () => <div data-testid="contact-form">ContactForm</div>,
-}));
-
 vi.mock('../../contact/ContactInfo', () => ({
   default: () => <div data-testid="contact-info">ContactInfo</div>,
 }));
@@ -56,21 +27,31 @@ describe('ContactPage', () => {
       </HelmetProvider>
     );
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockFormContext.submitSuccess = false;
-    mockFormContext.submitError = null;
-  });
-
   it('renders page title and subtitle', () => {
     renderPage();
     expect(screen.getByText('contact.title')).toBeInTheDocument();
     expect(screen.getByText('contact.subtitle')).toBeInTheDocument();
   });
 
-  it('renders ContactForm component', () => {
+  it('renders Google Form description', () => {
     renderPage();
-    expect(screen.getByTestId('contact-form')).toBeInTheDocument();
+    expect(
+      screen.getByText('contact.googleForm.description')
+    ).toBeInTheDocument();
+  });
+
+  it('renders Google Form iframe', () => {
+    renderPage();
+    const iframe = document.querySelector('iframe');
+    expect(iframe).toBeInTheDocument();
+    expect(iframe?.src).toContain('docs.google.com/forms');
+  });
+
+  it('renders open in new tab link', () => {
+    renderPage();
+    const link = screen.getByText('contact.googleForm.openInNewTab');
+    expect(link).toBeInTheDocument();
+    expect(link.closest('a')).toHaveAttribute('target', '_blank');
   });
 
   it('renders ContactInfo component', () => {
@@ -78,23 +59,10 @@ describe('ContactPage', () => {
     expect(screen.getByTestId('contact-info')).toBeInTheDocument();
   });
 
-  it('shows success message when form is submitted', () => {
-    mockFormContext.submitSuccess = true;
-    renderPage();
-    expect(screen.getByText('contactPage.successMessage')).toBeInTheDocument();
-    expect(screen.getByText('contactPage.successDetail')).toBeInTheDocument();
-  });
-
-  it('shows error message when submission fails', () => {
-    mockFormContext.submitError = 'Network error';
-    renderPage();
-    expect(screen.getByText('Network error')).toBeInTheDocument();
-  });
-
-  it('does not show success/error by default', () => {
+  it('renders form title', () => {
     renderPage();
     expect(
-      screen.queryByText('contactPage.successMessage')
-    ).not.toBeInTheDocument();
+      screen.getByText('contact.googleForm.formTitle')
+    ).toBeInTheDocument();
   });
 });

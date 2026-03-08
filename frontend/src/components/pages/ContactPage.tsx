@@ -1,42 +1,18 @@
-import React, { memo, useState, useCallback, ChangeEvent } from 'react';
+import React, { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import SEOHelmet from '../common/SEOHelmet';
 import { SITE_URL } from '../../utils/constants';
-import ContactForm from '../contact/ContactForm';
 import ContactInfo from '../contact/ContactInfo';
-import { useForm } from '../../contexts/FormContext';
+
+const GOOGLE_FORM_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSe8rXKQBFzJQbG9G-Gq2uT4dWogpga87eWGpbyhN2-vou0bBA/viewform?embedded=true';
+const GOOGLE_FORM_LINK =
+  'https://docs.google.com/forms/d/e/1FAIpQLSe8rXKQBFzJQbG9G-Gq2uT4dWogpga87eWGpbyhN2-vou0bBA/viewform?usp=dialog';
 
 const ContactPage: React.FC = memo(() => {
   const { t } = useTranslation();
-  const {
-    contactForm,
-    updateContactForm,
-    isSubmitting,
-    submitError,
-    submitSuccess,
-    submitContactForm,
-    clearSubmitState,
-  } = useForm();
-  const [isOnline] = useState(navigator.onLine);
-
-  const handleInputChange = useCallback(
-    (
-      e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    ) => {
-      const { name, value } = e.target;
-      updateContactForm(name as keyof typeof contactForm, value);
-    },
-    [updateContactForm]
-  );
-
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      await submitContactForm();
-    },
-    [submitContactForm]
-  );
+  const [iframeLoaded, setIframeLoaded] = useState(false);
 
   return (
     <>
@@ -50,67 +26,56 @@ const ContactPage: React.FC = memo(() => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-4">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
               {t('contact.title')}
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               {t('contact.subtitle')}
             </p>
+            <p className="text-base text-gray-500 dark:text-gray-400 mt-2">
+              {t('contact.googleForm.description')}
+            </p>
           </div>
-
-          {/* Success Message */}
-          {submitSuccess && (
-            <div className="max-w-2xl mx-auto mb-8 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl">
-              <div className="flex items-center gap-3 mb-2">
-                <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
-                <h3 className="text-lg font-semibold text-green-800 dark:text-green-200">
-                  {t('contactPage.successMessage')}
-                </h3>
-              </div>
-              <p className="text-green-700 dark:text-green-300 ml-9">
-                {t('contactPage.successDetail')}
-              </p>
-            </div>
-          )}
-
-          {/* Error Message */}
-          {submitError && (
-            <div
-              role="alert"
-              className="max-w-2xl mx-auto mb-8 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 cursor-pointer"
-              onClick={clearSubmitState}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') clearSubmitState();
-              }}
-              tabIndex={0}
-            >
-              {submitError}
-            </div>
-          )}
 
           {/* Main Content */}
           <div className="grid lg:grid-cols-3 gap-12">
-            {/* Contact Form */}
+            {/* Google Form Embed */}
             <div className="lg:col-span-2">
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8">
-                <ContactForm
-                  formData={{
-                    name: contactForm.name,
-                    email: contactForm.email,
-                    phone: contactForm.phone,
-                    company: contactForm.company,
-                    inquiryType: contactForm.inquiryType as
-                      | 'consulting'
-                      | 'education'
-                      | 'llm'
-                      | 'data',
-                    message: contactForm.message,
-                  }}
-                  isSubmitting={isSubmitting}
-                  isOnline={isOnline}
-                  onInputChange={handleInputChange}
-                  onSubmit={handleSubmit}
-                />
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 sm:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {t('contact.googleForm.formTitle')}
+                  </h2>
+                  <a
+                    href={GOOGLE_FORM_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                    aria-label={t('contact.googleForm.openInNewTab')}
+                  >
+                    {t('contact.googleForm.openInNewTab')}
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
+
+                <div className="relative">
+                  {!iframeLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-xl">
+                      <p className="text-gray-500 dark:text-gray-400">
+                        {t('contact.googleForm.loading')}
+                      </p>
+                    </div>
+                  )}
+                  <iframe
+                    src={GOOGLE_FORM_URL}
+                    title={t('contact.googleForm.formTitle')}
+                    className="w-full rounded-xl border-0"
+                    style={{ height: '1200px' }}
+                    onLoad={() => setIframeLoaded(true)}
+                  >
+                    {t('contact.googleForm.loading')}
+                  </iframe>
+                </div>
               </div>
             </div>
 

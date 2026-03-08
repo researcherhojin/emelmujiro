@@ -157,6 +157,15 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
       await api.createContact({
         name: contactForm.name,
         email: contactForm.email,
+        phone: contactForm.phone,
+        company: contactForm.company,
+        subject: contactForm.inquiryType || 'general',
+        inquiryType:
+          (contactForm.inquiryType as
+            | 'consulting'
+            | 'education'
+            | 'llm'
+            | 'data') || undefined,
         message: contactForm.message,
       });
 

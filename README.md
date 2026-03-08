@@ -161,18 +161,18 @@ emelmujiro/
 
 ## 주요 기능
 
-| 기능                | 상태            | 설명                                          |
-| ------------------- | --------------- | --------------------------------------------- |
-| **홈페이지**        | ✅ 완료         | Hero, 서비스 소개, 통계, CTA                  |
-| **프로필**          | ✅ 완료         | CEO 경력/학력/프로젝트 포트폴리오             |
-| **다크 모드**       | ✅ 완료         | 시스템 설정 연동                              |
-| **다국어 (i18n)**   | ✅ 완료         | 전체 컴포넌트 i18n 전환 완료 (ko/en)          |
-| **반응형**          | ✅ 완료         | 모바일/태블릿/데스크톱 최적화                 |
-| **SEO**             | ✅ 완료         | React Helmet, 사이트맵, 구조화 데이터         |
-| **블로그**          | 🚧 공사 중      | 백엔드 연동 전까지 공사 중 페이지 표시        |
-| **문의하기**        | 🚧 공사 중      | 백엔드 연동 전까지 공사 중 (이메일 직접 문의) |
-| **실시간 채팅**     | ⏸️ 1.0 이후     | WebSocket/Redis 필요, 1.0 범위에서 제외       |
-| **관리자 대시보드** | 🚧 플레이스홀더 | UI + ProtectedRoute 인증 가드, API 연동 필요  |
+| 기능                | 상태            | 설명                                         |
+| ------------------- | --------------- | -------------------------------------------- |
+| **홈페이지**        | ✅ 완료         | Hero, 서비스 소개, 통계, CTA                 |
+| **프로필**          | ✅ 완료         | CEO 경력/학력/프로젝트 포트폴리오            |
+| **다크 모드**       | ✅ 완료         | 시스템 설정 연동                             |
+| **다국어 (i18n)**   | ✅ 완료         | 전체 컴포넌트 i18n 전환 완료 (ko/en)         |
+| **반응형**          | ✅ 완료         | 모바일/태블릿/데스크톱 최적화                |
+| **SEO**             | ✅ 완료         | React Helmet, 사이트맵, 구조화 데이터        |
+| **블로그**          | 🚧 공사 중      | 백엔드 연동 전까지 공사 중 페이지 표시       |
+| **문의하기**        | ✅ Google Form  | Google Form 임베드 (자동 메일 설정 TODO)     |
+| **실시간 채팅**     | ⏸️ 1.0 이후     | WebSocket/Redis 필요, 1.0 범위에서 제외      |
+| **관리자 대시보드** | 🚧 플레이스홀더 | UI + ProtectedRoute 인증 가드, API 연동 필요 |
 
 ## 주요 명령어
 
@@ -239,7 +239,7 @@ graph LR
 | 1   | **백엔드 배포**     | 미결정 | Django + SQLite 배포 (Railway / Render / Fly.io). `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` |
 | 2   | Mock API 해제       | → #1   | `VITE_API_URL` 설정 → Mock 자동 비활성화                                                  |
 | 3   | 공사 중 페이지 해제 | → #2   | `App.tsx` 라우트 복원, sitemap/manifest/E2E 업데이트                                      |
-| 4   | 이메일 발송 연동    | → #1   | Contact 폼 SMTP/SendGrid 연동 (현재 DB 저장만)                                            |
+| 4   | 이메일 발송 연동    | → #1   | Contact 폼 SMTP/SendGrid 연동 (현재 Google Form 임베드 사용 중)                           |
 | 5   | JWT 토큰 보안       | → #1   | `localStorage` → `httpOnly` 쿠키 이전                                                     |
 | 6   | Admin 대시보드 연동 | → #2   | 실제 통계 API 연결, 458줄 컴포넌트 분리 권장                                              |
 
@@ -260,6 +260,87 @@ graph LR
 | **BrowserRouter 전환** | `/#/about` → `/about` — 개별 URL 인식             | 서버 사이드 catch-all 필요 |
 | **SSG / Prerendering** | 정적 HTML 생성 → 크롤러 완성된 HTML 수신          | react-snap 또는 Next.js    |
 | **`hreflang` 적용**    | `/ko/about`, `/en/about` + `hreflang` 다국어 태그 | 다국어 SEO 표준            |
+
+### Google Form 자동 메일 설정 (TODO)
+
+현재 `/contact` 페이지는 Google Form 임베드 사용 중. 아래 설정을 완료하면 신청자 + 운영자 양쪽에 자동 메일 발송:
+
+- [ ] **Google Forms 설정** → 응답 → "응답자에게 응답 사본 보내기" → "항상" 활성화
+- [ ] **Google Forms 설정** → 응답 → "새로운 응답에 대한 이메일 알림 받기" 체크
+- [ ] **Apps Script 등록** — Google Forms 편집 → ⋮ → 스크립트 편집기 → 아래 코드 추가:
+
+<details>
+<summary>Apps Script 코드 (접기/펼치기)</summary>
+
+```javascript
+function onFormSubmit(e) {
+  var responses = e.namedValues;
+  var email = responses['이메일 (필수)'][0];
+  var name = responses['성함 / 기관명 (필수)'][0];
+  var field = responses['상담 분야 (필수)'][0];
+  var request = responses['요청 내용 (필수)'][0];
+  var schedule = responses['희망 일정 (필수)'][0];
+
+  // 1. Confirmation email to the submitter
+  var userSubject = '[에멜무지로] 온라인 미팅 신청이 접수되었습니다';
+  var userBody =
+    name +
+    '님, 안녕하세요.\n\n' +
+    '에멜무지로에 문의해 주셔서 감사합니다.\n' +
+    '접수하신 내용을 확인 후, 기재하신 연락처로 빠른 시일 내에 회신드리겠습니다.\n\n' +
+    '── 접수 내용 ──\n' +
+    '상담 분야: ' +
+    field +
+    '\n' +
+    '요청 내용: ' +
+    request +
+    '\n' +
+    '희망 일정: ' +
+    schedule +
+    '\n\n' +
+    '감사합니다.\n에멜무지로 드림';
+
+  MailApp.sendEmail(email, userSubject, userBody);
+
+  // 2. Notification email to the operator
+  var adminEmail = 'researcherhojin@gmail.com';
+  var adminSubject = '[에멜무지로] 새 미팅 신청: ' + name + ' (' + field + ')';
+  var adminBody =
+    '새로운 온라인 미팅 신청이 접수되었습니다.\n\n' +
+    '성함/기관명: ' +
+    name +
+    '\n' +
+    '이메일: ' +
+    email +
+    '\n' +
+    '연락처: ' +
+    (responses['연락처 (선택)'] || ['미입력'])[0] +
+    '\n' +
+    '상담 분야: ' +
+    field +
+    '\n' +
+    '요청 내용: ' +
+    request +
+    '\n' +
+    '희망 일정: ' +
+    schedule +
+    '\n' +
+    '예산 범위: ' +
+    (responses['예산 범위 (선택)'] || ['미입력'])[0] +
+    '\n' +
+    '기타 의견: ' +
+    (responses['기타 의견이나 제안사항이 있다면 자유롭게 적어 주십시오.'] || [
+      '없음',
+    ])[0];
+
+  MailApp.sendEmail(adminEmail, adminSubject, adminBody);
+}
+```
+
+</details>
+
+- [ ] **트리거 설정** — 스크립트 편집기 → 시계 아이콘 → + 트리거 추가 → 함수: `onFormSubmit`, 이벤트: "양식 제출 시" → 저장
+- [ ] **테스트 제출** — 양식 제출 후 신청자 메일 + 운영자 메일(researcherhojin@gmail.com) 수신 확인
 
 ### 1.0 이후
 
