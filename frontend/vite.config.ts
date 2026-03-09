@@ -4,6 +4,26 @@ import legacy from '@vitejs/plugin-legacy';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
 
+// Strip localhost CSP entries from production builds
+function stripLocalhostCsp(): import('vite').Plugin {
+  return {
+    name: 'strip-localhost-csp',
+    transformIndexHtml(html, ctx) {
+      if (ctx.bundle) {
+        // Production build: remove localhost/127.0.0.1 from CSP connect-src
+        return html.replace(
+          /http:\/\/localhost:8000\s*/g,
+          ''
+        ).replace(
+          /http:\/\/127\.0\.0\.1:8000\s*/g,
+          ''
+        );
+      }
+      return html;
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -13,6 +33,7 @@ export default defineConfig({
       additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
     }),
     tsconfigPaths(),
+    stripLocalhostCsp(),
   ],
   base: '/emelmujiro/',
   server: {

@@ -4,10 +4,11 @@ const path = require('path');
 const SITE_URL = 'https://researcherhojin.github.io/emelmujiro';
 
 // Define all static routes with hash fragments (HashRouter)
-// Note: /blog and /contact are excluded while under construction
+// Note: /blog is excluded while under construction
 const staticRoutes = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
   { url: '/#/about', changefreq: 'weekly', priority: 0.8 },
+  { url: '/#/contact', changefreq: 'weekly', priority: 0.7 },
   { url: '/#/profile', changefreq: 'weekly', priority: 0.6 },
   { url: '/#/share', changefreq: 'monthly', priority: 0.5 },
 ];

@@ -27,7 +27,7 @@
 | ---------- | ------- | --------------------------------------------- |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                           |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분    |
-| **테스트** | ✅ 통과 | Frontend 1110 통과 (69 파일), Backend 69 통과 |
+| **테스트** | ✅ 통과 | Frontend 1109 통과 (69 파일), Backend 69 통과 |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                        |
 | **보안**   | ✅ 안전 | 취약점 0건                                    |
 | **배포**   | ✅ 정상 | GitHub Pages                                  |
@@ -127,7 +127,7 @@ graph LR
 | 상태 관리      | React Context 5개 (UI, Auth, Blog, Form, Chat)                      | `useMemo`/`useCallback`으로 리렌더 방지, 외부 라이브러리 불필요 |
 | API 클라이언트 | Axios + Mock/Real 자동 전환                                         | `VITE_API_URL` 유무로 결정, JWT 401 자동 갱신                   |
 | i18n           | `react-i18next` + 크롤러 한국어 강제                                | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
-| 테스트         | Vitest (1110) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
+| 테스트         | Vitest (1109) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
 | 빌드           | sitemap → `tsc` → Vite (esbuild)                                    | 프로덕션 시 `console`/`debugger` 자동 제거                      |
 | 배포           | GitHub Actions → GitHub Pages                                       | `base: '/emelmujiro/'` 서브패스                                 |
 | Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router` | ChatProvider는 under construction으로 제외                      |
@@ -415,20 +415,29 @@ function onFormSubmit(e) {
 
 > **전량 해소 완료.** 8차에 걸친 코드 감사를 통해 식별된 모든 항목을 해결했습니다.
 
-| 감사  | 날짜        | 해결 건수 | 주요 내용                                                                 |
-| ----- | ----------- | --------- | ------------------------------------------------------------------------- |
-| 8차   | 2026.03.09  | 8건       | TS 빌드 오류, ESLint 워크스페이스 호이스팅, ESLint 경고 21건 → 0건        |
-| 7차   | 2026.03.09  | 18건      | SEO 크롤러 한국어 강제, slug 원자성, MD5→SHA256, Docker non-root          |
-| 6차   | 2026.03.08  | 7건       | i18n fallback 제거 50+건, `title→aria-label`, `onKeyPress→onKeyDown`      |
-| 5차   | 2026.03.07  | 확인      | 3~4차 전량 해소 확인, 배포 대기 항목만 잔여                               |
-| 4차   | 2026.03.07  | 15건      | 비밀번호 정책, `key={index}` 19곳 교체, `crypto.randomUUID()` 통일        |
-| 3차   | 2026.03.07  | 47건      | 미들웨어 미등록, ObjectURL 누수, JWT 블랙리스트, 컴포넌트 분할            |
-| 1~2차 | ~2026.03.07 | 21건      | HashRouter 버그, Zustand 제거, i18n 전환, Sentry 초기화, Docker 버전 통일 |
+| 감사  | 날짜        | 해결 건수 | 주요 내용                                                                                     |
+| ----- | ----------- | --------- | --------------------------------------------------------------------------------------------- |
+| 9차   | 2026.03.09  | 5건       | CSP localhost 제거, sitemap/Lighthouse에 /contact 추가, UnderConstruction dead type/test 제거 |
+| 8차   | 2026.03.09  | 8건       | TS 빌드 오류, ESLint 워크스페이스 호이스팅, ESLint 경고 21건 → 0건                            |
+| 7차   | 2026.03.09  | 18건      | SEO 크롤러 한국어 강제, slug 원자성, MD5→SHA256, Docker non-root                              |
+| 6차   | 2026.03.08  | 7건       | i18n fallback 제거 50+건, `title→aria-label`, `onKeyPress→onKeyDown`                          |
+| 5차   | 2026.03.07  | 확인      | 3~4차 전량 해소 확인, 배포 대기 항목만 잔여                                                   |
+| 4차   | 2026.03.07  | 15건      | 비밀번호 정책, `key={index}` 19곳 교체, `crypto.randomUUID()` 통일                            |
+| 3차   | 2026.03.07  | 47건      | 미들웨어 미등록, ObjectURL 누수, JWT 블랙리스트, 컴포넌트 분할                                |
+| 1~2차 | ~2026.03.07 | 21건      | HashRouter 버그, Zustand 제거, i18n 전환, Sentry 초기화, Docker 버전 통일                     |
 
-**총 해결: Critical 12 / High 18 / Medium 37 / Low 22 / Backend 7 / 이슈 아님 6건**
+**총 해결: Critical 12 / High 20 / Medium 38 / Low 22 / Backend 7 / 이슈 아님 6건**
 
 <details>
 <summary>감사 상세 기록 (클릭하여 펼치기)</summary>
+
+### 9차 감사 (2026.03.09)
+
+- **H1** `UnderConstruction` featureKey 타입에서 `'contact'` 제거 (dead type — /contact는 Google Form 사용)
+- **H2** `UnderConstruction.test.tsx` contact feature 테스트 제거 (dead test)
+- **H3** `generate-sitemap.js`에 `/#/contact` 추가 (실제 운영 중인 페이지 누락)
+- **M1** `vite.config.ts`에 `stripLocalhostCsp` 플러그인 추가 — 프로덕션 빌드에서 CSP `localhost` 항목 자동 제거
+- **M2** `lighthouserc.js`에 `/#/contact` URL 추가
 
 ### 8차 감사 (2026.03.09)
 
@@ -496,7 +505,7 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
   - setTimeout 메모리 누수 전수 수정 (UIContext, FormContext, Navbar, Footer, BlogInteractions, BlogSearch, ChatContext)
 - **CLAUDE.md 업데이트**: React 19 useRef 패턴, Docker 빌드 arg, ChatConsumer 보안, 글로벌 lucide-react mock testid 등 반영
 - **도메인 확보**: `emelmujiro.com` — 백엔드 배포 시 사용 예정
-- **테스트**: 69 파일, 1110 테스트, 0 실패
+- **테스트**: 69 파일, 1109 테스트, 0 실패
 
 ### 0.9.7 (2026.03.04 ~ 03.05)
 
@@ -505,7 +514,7 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
   - CSS: `-webkit-text-size-adjust`, `-webkit-backface-visibility` 접두사 추가
   - `prefers-reduced-motion` 미디어 쿼리 추가 (저사양 기기 성능 개선)
   - CSP `connect-src`에 `cdn.jsdelivr.net` 추가, 무효 `frame-ancestors` 제거
-  - 카카오톡 인앱 브라우저 → 외부 브라우저 리다이렉트
+  - 카카오톡 인앱 브라우저 → 외부 브라우저 안내 배너 (리다이렉트 시 백지 이슈 → 배너 방식으로 전환)
 - **PWA 제거**: 서비스 워커 캐시 이슈로 PWA 전체 제거 (vite-plugin-pwa, SW, 오프라인 지원)
 - **코드베이스 딥 오딧** (-3,580 lines)
   - 고립된 컴포넌트 21개 삭제 (Loading, PageLoading, ScrollProgress, ScrollToTop, Section, ErrorMessage, LazyImage, SEOHead, layout/SEO, i18nFormatters, common/index)

@@ -4,7 +4,7 @@ import { Construction, Home, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface UnderConstructionProps {
-  featureKey?: 'blog' | 'contact' | 'chat';
+  featureKey?: 'blog' | 'chat';
 }
 
 const UnderConstruction: React.FC<UnderConstructionProps> = memo(

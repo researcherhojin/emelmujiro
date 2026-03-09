@@ -1,37 +1,28 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Contact Page (Under Construction)', () => {
+test.describe('Contact Page (Google Form)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/#/contact');
   });
 
-  test('displays under construction page', async ({ page }) => {
+  test('displays contact page heading', async ({ page }) => {
     const heading = page.getByRole('heading', { level: 1 });
     await expect(heading).toBeVisible();
-    await expect(heading).toContainText('공사 중');
   });
 
-  test('displays contact feature description with email', async ({ page }) => {
-    await expect(
-      page.getByText(/문의 페이지를 준비 중|researcherhojin@gmail\.com/)
-    ).toBeVisible();
+  test('displays Google Form iframe', async ({ page }) => {
+    const iframe = page.locator('iframe[src*="docs.google.com/forms"]');
+    await expect(iframe).toBeVisible();
   });
 
-  test('displays coming soon message', async ({ page }) => {
-    await expect(
-      page.getByText(/빠른 시일 내에 오픈/)
-    ).toBeVisible();
+  test('has open in new tab link', async ({ page }) => {
+    const link = page.locator('a[href*="docs.google.com/forms"]');
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute('target', '_blank');
   });
 
-  test('has home button that navigates to home', async ({ page }) => {
-    const homeButton = page.getByRole('button', { name: /홈으로 이동/ });
-    await expect(homeButton).toBeVisible();
-    await homeButton.click();
-    await expect(page).toHaveURL(/\/#\//);
-  });
-
-  test('has go back button', async ({ page }) => {
-    const backButton = page.getByRole('button', { name: /이전 페이지로/ });
-    await expect(backButton).toBeVisible();
+  test('displays contact info sidebar', async ({ page }) => {
+    // ContactInfo renders email and other contact details
+    await expect(page.getByText(/researcherhojin@gmail\.com/)).toBeVisible();
   });
 });

@@ -73,18 +73,6 @@ describe('UnderConstruction', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders contact feature description', () => {
-    render(
-      <MemoryRouter>
-        <UnderConstruction featureKey="contact" />
-      </MemoryRouter>
-    );
-
-    expect(
-      screen.getByText('underConstruction.features.contact')
-    ).toBeInTheDocument();
-  });
-
   it('renders chat feature description', () => {
     render(
       <MemoryRouter>
