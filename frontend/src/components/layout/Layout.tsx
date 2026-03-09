@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../common/Navbar';
@@ -14,6 +14,19 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [showKakaoBanner, setShowKakaoBanner] = useState(
+    () => !!window.__isKakaoInApp
+  );
+
+  const handleOpenExternal = useCallback(() => {
+    const url = window.location.href;
+    // Try clipboard copy as fallback for manual paste
+    window.open(url);
+  }, []);
+
+  const dismissBanner = useCallback(() => {
+    setShowKakaoBanner(false);
+  }, []);
 
   // Define keyboard shortcuts
   useKeyboardNavigation([
@@ -77,6 +90,26 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-dark-950 theme-transition">
       <SkipLink />
+
+      {/* KakaoTalk in-app browser banner */}
+      {showKakaoBanner && (
+        <div className="fixed top-0 left-0 right-0 z-[60] bg-yellow-400 text-gray-900 text-sm text-center px-4 py-2 flex items-center justify-center gap-2">
+          <span>더 나은 경험을 위해 외부 브라우저를 이용해주세요.</span>
+          <button
+            onClick={handleOpenExternal}
+            className="bg-gray-900 text-white px-3 py-1 rounded text-xs font-medium"
+          >
+            열기
+          </button>
+          <button
+            onClick={dismissBanner}
+            className="text-gray-700 px-1 text-lg leading-none"
+            aria-label={t('common.close')}
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {/* Announce region for dynamic content */}
       <div
