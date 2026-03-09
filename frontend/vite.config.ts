@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import legacy from '@vitejs/plugin-legacy';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
 
@@ -7,6 +8,10 @@ import path from 'path';
 export default defineConfig({
   plugins: [
     react(),
+    legacy({
+      targets: ['defaults', 'not IE 11', 'Chrome >= 64', 'Samsung >= 9.2'],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+    }),
     tsconfigPaths(),
   ],
   base: '/emelmujiro/',
