@@ -48,6 +48,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
+    target: ['chrome64', 'safari12', 'firefox63', 'edge79'],
     sourcemap: process.env.NODE_ENV !== 'production',
     minify: 'esbuild',
     rollupOptions: {

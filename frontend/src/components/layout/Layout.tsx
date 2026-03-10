@@ -20,8 +20,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleOpenExternal = useCallback(() => {
     const url = window.location.href;
-    // Try clipboard copy as fallback for manual paste
-    window.open(url);
+    if (/Android/i.test(navigator.userAgent)) {
+      // Intent scheme forces the default external browser on Android
+      location.href =
+        'intent://' +
+        url.replace(/^https?:\/\//, '') +
+        '#Intent;scheme=https;end';
+    } else {
+      window.open(url);
+    }
   }, []);
 
   const dismissBanner = useCallback(() => {
@@ -94,12 +101,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* KakaoTalk in-app browser banner */}
       {showKakaoBanner && (
         <div className="fixed top-0 left-0 right-0 z-[60] bg-yellow-400 text-gray-900 text-sm text-center px-4 py-2 flex items-center justify-center gap-2">
-          <span>더 나은 경험을 위해 외부 브라우저를 이용해주세요.</span>
+          <span>{t('common.kakaoBanner')}</span>
           <button
             onClick={handleOpenExternal}
             className="bg-gray-900 text-white px-3 py-1 rounded text-xs font-medium"
           >
-            열기
+            {t('common.openExternal')}
           </button>
           <button
             onClick={dismissBanner}

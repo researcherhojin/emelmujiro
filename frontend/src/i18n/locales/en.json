@@ -33,7 +33,9 @@
     "inquireEducation": "Inquire About Training",
     "menu": "Menu",
     "representativeProfile": "CEO Profile",
-    "goBack": "Go Back"
+    "goBack": "Go Back",
+    "kakaoBanner": "For a better experience, please use an external browser.",
+    "openExternal": "Open"
   },
   "hero": {
     "badge": "AI EDUCATION & CONSULTING",

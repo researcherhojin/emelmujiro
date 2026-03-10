@@ -114,29 +114,22 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
-      .min-h-screen {
-        min-height: 100vh;
-        min-height: 100dvh;
-      }
-      .flex {
-        display: flex;
-      }
-      .items-center {
-        align-items: center;
-      }
-      .bg-white {
-        background-color: white;
-      }
-      .text-4xl {
-        font-size: 2.25rem;
-      }
-      .font-black {
-        font-weight: 900;
-      }
-      .text-gray-900 {
-        color: rgb(17 24 39);
-      }
     </style>
+
+    <!-- Global error handler for debugging blank page issues (catches inline script errors) -->
+    <script>
+      window.__appLoaded = false;
+      window.onerror = function(msg) {
+        if (window.__appLoaded) return;
+        var root = document.getElementById('root');
+        if (root) {
+          root.innerHTML = '<div style="padding:40px 20px;text-align:center;font-family:-apple-system,sans-serif">' +
+            '<p style="font-size:16px;color:#333;margin-bottom:12px">페이지를 불러오는 중 오류가 발생했습니다.</p>' +
+            '<p style="font-size:13px;color:#888;margin-bottom:16px">' + msg + '</p>' +
+            '<a href="' + location.href + '" style="color:#4F46E5;font-size:14px">새로고침</a></div>';
+        }
+      };
+    </script>
 
     <title>에멜무지로 | AI 기반 소프트웨어 개발 및 IT 교육 전문가</title>
 
@@ -236,85 +229,94 @@
       <p>AI 기반 소프트웨어 개발 및 IT 교육 전문가 | 에멜무지로. 기업 맞춤형 AI 솔루션 개발, 실전 교육, 전략 컨설팅을 제공합니다.</p>
     </noscript>
     <div id="root">
-      <!-- Loading skeleton for better perceived performance -->
-      <div class="min-h-screen flex items-center justify-center bg-white">
-        <div class="animate-pulse">
-          <div class="h-8 bg-gray-200 rounded w-48 mb-4"></div>
-          <div class="h-4 bg-gray-200 rounded w-32"></div>
+      <!-- Loading skeleton — uses inline styles so it's visible before Tailwind CSS loads -->
+      <div id="loading-fallback" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif">
+        <div>
+          <div style="height:32px;background:#e5e7eb;border-radius:6px;width:192px;margin-bottom:16px"></div>
+          <div style="height:16px;background:#e5e7eb;border-radius:6px;width:128px"></div>
         </div>
       </div>
     </div>
 
-    <!-- Preload critical resources and performance optimizations -->
     <script>
       // KakaoTalk in-app browser detection
-      // Previously redirected to external browser, but location.href change
-      // causes blank page on Android KakaoTalk. Now loads normally in-app
-      // and shows a banner to open in external browser instead.
       window.__isKakaoInApp = /KAKAOTALK/i.test(navigator.userAgent);
 
       // Performance timing
       window.performanceStart = Date.now();
 
-
       // Network status detection
-      if ('connection' in navigator) {
-        const connection = navigator.connection;
-        if (connection && connection.effectiveType) {
-          document.documentElement.setAttribute(
-            'data-connection',
-            connection.effectiveType
-          );
-
-          // Adjust loading strategy based on connection
-          if (
-            connection.effectiveType === 'slow-2g' ||
-            connection.effectiveType === '2g'
-          ) {
-            document.documentElement.classList.add('slow-connection');
+      try {
+        if ('connection' in navigator) {
+          var conn = navigator.connection;
+          if (conn && conn.effectiveType) {
+            document.documentElement.setAttribute('data-connection', conn.effectiveType);
+            if (conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g') {
+              document.documentElement.classList.add('slow-connection');
+            }
           }
         }
-      }
+      } catch (e) {}
 
-      // Performance observer for Web Vitals
-      if ('PerformanceObserver' in window) {
-        try {
-          const observer = new PerformanceObserver((list) => {
-            for (const entry of list.getEntries()) {
-              // Performance metrics are tracked but not logged
-              if (entry.name === 'first-contentful-paint') {
-                // FCP tracked
-              } else if (entry.name === 'largest-contentful-paint') {
-                // LCP tracked
+      // Theme detection — wrapped in try-catch for WebViews that restrict localStorage
+      try {
+        var savedTheme = localStorage.getItem('theme');
+        var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        var theme = savedTheme || systemTheme;
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+        var themeColorMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeColorMeta) {
+          themeColorMeta.content = theme === 'dark' ? '#1F2937' : '#111827';
+        }
+      } catch (e) {}
+
+      // KakaoTalk WebView fallback: if module scripts don't execute,
+      // force-load the legacy bundle from plain <script> context.
+      // Some WebViews claim module support (skip nomodule) but fail to
+      // actually execute type="module" scripts — this closes that gap.
+      if (window.__isKakaoInApp) {
+        document.addEventListener('DOMContentLoaded', function() {
+          setTimeout(function() {
+            if (!window.__appLoaded) {
+              var p = document.getElementById('vite-legacy-polyfill');
+              var e = document.getElementById('vite-legacy-entry');
+              if (p && e) {
+                var s = document.createElement('script');
+                s.src = p.getAttribute('src');
+                s.onload = function() {
+                  System.import(e.getAttribute('data-src'));
+                };
+                document.body.appendChild(s);
               }
             }
-          });
+          }, 2000);
+        });
+      }
 
-          observer.observe({
-            entryTypes: ['paint', 'largest-contentful-paint'],
-          });
-        } catch (e) {
-          // Performance observer not supported
+      // General fallback: if nothing loads within 10 seconds, show a message
+      setTimeout(function() {
+        if (window.__appLoaded) return;
+        var fallback = document.getElementById('loading-fallback');
+        if (fallback) {
+          // On Android, use intent scheme to force external browser
+          var href = location.href;
+          if (/Android/i.test(navigator.userAgent)) {
+            href = 'intent://' + href.replace(/^https?:\/\//, '') + '#Intent;scheme=https;end';
+          }
+          fallback.innerHTML =
+            '<div style="text-align:center;padding:20px">' +
+            '<p style="font-size:16px;color:#333;margin-bottom:12px">' +
+            '페이지를 불러올 수 없습니다.</p>' +
+            '<p style="font-size:13px;color:#888;margin-bottom:16px">' +
+            '외부 브라우저에서 열어주세요.</p>' +
+            '<a href="' + href + '" ' +
+            'style="display:inline-block;padding:10px 24px;background:#4F46E5;color:#fff;' +
+            'border-radius:8px;text-decoration:none;font-size:14px">' +
+            '브라우저에서 열기</a></div>';
         }
-      }
-
-      // Theme detection and initialization
-      const savedTheme = localStorage.getItem('theme');
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light';
-      const theme = savedTheme || systemTheme;
-
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      }
-
-      // Update theme color meta tag
-      const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-      if (themeColorMeta) {
-        themeColorMeta.content = theme === 'dark' ? '#1F2937' : '#111827';
-      }
+      }, 10000);
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

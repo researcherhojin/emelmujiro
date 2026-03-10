@@ -107,6 +107,20 @@ The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`
 
 `/contact` uses a Google Form iframe embed instead of the backend API. `ContactPage.tsx` embeds `https://docs.google.com/forms/d/e/.../viewform?embedded=true`. The original `ContactForm` component and `FormContext` are preserved for test compatibility but not used in the live route. CSP in `index.html` includes `frame-src https://docs.google.com` to allow the iframe. The "open in new tab" link uses the `?usp=dialog` variant. i18n keys: `contact.googleForm.*` (description, loading, openInNewTab, formTitle).
 
+### KakaoTalk In-App Browser Support
+
+Galaxy Android의 KakaoTalk 인앱 WebView에서 `type="module"` 스크립트가 실행되지 않는 문제를 다층 폴백으로 해결:
+
+1. **Vite legacy plugin** — `nomodule` 폴백 번들 생성 (module 미지원 브라우저용)
+2. **Vite built-in detection** — 모던 번들 실패 시 legacy 번들 동적 로딩 (`type="module"` 내부)
+3. **KakaoTalk-specific fallback** — `index.html`의 plain `<script>`에서 DOMContentLoaded + 2초 후 `window.__appLoaded` 확인, false면 `vite-legacy-polyfill`/`vite-legacy-entry`를 동적으로 로딩. `type="module"`이나 `nomodule`에 의존하지 않아 WebView 모듈 지원 버그를 우회
+4. **10초 general fallback** — 아무것도 로드되지 않으면 "외부 브라우저에서 열기" 메시지 표시
+5. **`window.onerror` handler** — `<head>` 최상단에 에러 핸들러가 인라인 스크립트 에러를 시각적으로 표시
+
+Key files: `index.html` (detection + fallbacks), `main.tsx` (`window.__appLoaded = true`), `Layout.tsx` (KakaoTalk banner + Android `intent://` scheme for external browser), `global.d.ts` (`__isKakaoInApp`, `__appLoaded`, `performanceStart` types).
+
+Loading skeleton uses **inline styles** (not Tailwind classes) so it's visible before CSS loads. Layout banner uses `t('common.kakaoBanner')` / `t('common.openExternal')` i18n keys.
+
 ### State Management
 
 - **React Context** — All state management via UIContext, AuthContext, BlogContext, FormContext, ChatContext (all in `src/contexts/`). All providers use `useMemo` for value objects and `useCallback` for functions to prevent unnecessary re-renders.
@@ -252,6 +266,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 - Build pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` (sitemap must succeed)
 - esbuild minifier (switched from Terser for ~10x faster builds). `esbuild.drop: ['console', 'debugger']` in production
 - Manual chunks: react-vendor, ui-vendor, i18n
+- `build.target: ['chrome64', 'safari12', 'firefox63', 'edge79']` — ensures modern bundle compatibility with older WebViews. Matches the legacy plugin's modern browser detection level (Chrome 64+)
 - `@vitejs/plugin-legacy` generates `nomodule` fallback bundles for older Chromium-based browsers (KakaoTalk in-app WebView, Samsung Internet ≥9.2)
 - `stripLocalhostCsp` custom plugin strips `localhost:8000`/`127.0.0.1:8000` from CSP `connect-src` in production builds (kept in dev for direct API calls)
 - Dev server proxies `/api` to `http://127.0.0.1:8000` (`strictPort: false` — tries next port if busy)
@@ -305,7 +320,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 69 files / 1109 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-09)
+4. **Test count**: Frontend 69 files / 1109 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-10)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
@@ -327,3 +342,4 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 23. **No hardcoded site URLs in components**: Always use `SITE_URL` from `src/utils/constants.ts`. The `generate-sitemap.js` script has its own `SITE_URL` constant (Node.js, can't import from frontend)
 24. **ESLint workspace hoisting**: `eslint` must be in root `package.json` devDependencies alongside `eslint-plugin-react` (which npm hoists to root `node_modules/`). The plugin does `require('eslint/package.json')` — if eslint is only in `frontend/node_modules/`, the plugin can't find it. Don't remove eslint from root devDependencies
 25. **ESLint zero warnings policy**: All ESLint warnings have been resolved (0 errors, 0 warnings as of 2026-03-09). Maintain this — don't introduce new warnings. Use `useCallback` for functions passed to context `useMemo`, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements
+26. **KakaoTalk WebView `__appLoaded` pattern**: `main.tsx` sets `window.__appLoaded = true` before `root.render()`. `index.html` inline scripts check this flag for fallback decisions. Loading skeleton must use **inline styles** (not Tailwind classes) because Tailwind CSS may not load if JS fails. The KakaoTalk banner in `Layout.tsx` uses `intent://` scheme on Android to force external browser — do NOT use `location.href` with regular URLs (causes blank page in Android KakaoTalk)

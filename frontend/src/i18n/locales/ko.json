@@ -33,7 +33,9 @@
     "inquireEducation": "교육 문의하기",
     "menu": "메뉴",
     "representativeProfile": "대표 프로필",
-    "goBack": "뒤로 가기"
+    "goBack": "뒤로 가기",
+    "kakaoBanner": "더 나은 경험을 위해 외부 브라우저를 이용해주세요.",
+    "openExternal": "열기"
   },
   "hero": {
     "badge": "AI EDUCATION & CONSULTING",
