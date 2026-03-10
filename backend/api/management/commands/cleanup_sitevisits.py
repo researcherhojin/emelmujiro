@@ -26,7 +26,7 @@ class Command(BaseCommand):
         dry_run = options["dry_run"]
         cutoff = timezone.now() - timedelta(days=days)
 
-        queryset = SiteVisit.objects.filter(visited_at__lt=cutoff)
+        queryset = SiteVisit.objects.filter(visit_time__lt=cutoff)
         count = queryset.count()
 
         if dry_run:

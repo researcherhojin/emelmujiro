@@ -103,34 +103,8 @@ export function initSentry(): void {
   }
 }
 
-// Set user context
-export function setSentryUser(
-  user: {
-    id?: string;
-    email?: string;
-    username?: string;
-  } | null
-): void {
-  if (env.ENABLE_SENTRY) {
-    Sentry.setUser(user);
-  }
-}
-
-// Set additional context
-export function setSentryContext(
-  key: string,
-  context: Record<string, unknown>
-): void {
-  if (env.ENABLE_SENTRY) {
-    Sentry.setContext(key, context);
-  }
-}
-
 // Capture exception
-export function captureException(
-  error: Error | unknown,
-  context?: Record<string, unknown>
-): void {
+export function captureException(error: Error | unknown, context?: Record<string, unknown>): void {
   if (env.ENABLE_SENTRY) {
     if (context) {
       Sentry.withScope((scope) => {
@@ -148,68 +122,6 @@ export function captureException(
   }
 }
 
-// Capture message
-export function captureMessage(
-  message: string,
-  level: Sentry.SeverityLevel = 'info',
-  context?: Record<string, unknown>
-): void {
-  if (env.ENABLE_SENTRY) {
-    if (context) {
-      Sentry.withScope((scope) => {
-        Object.keys(context).forEach((key) => {
-          scope.setExtra(key, context[key]);
-        });
-        Sentry.captureMessage(message, level);
-      });
-    } else {
-      Sentry.captureMessage(message, level);
-    }
-  } else {
-    // Log to console in development
-
-    logger.info(`[${level.toUpperCase()}] ${message}`, context);
-  }
-}
-
-// Add breadcrumb
-export function addBreadcrumb(breadcrumb: {
-  message?: string;
-  category?: string;
-  level?: Sentry.SeverityLevel;
-  data?: Record<string, unknown>;
-  timestamp?: number;
-}): void {
-  if (env.ENABLE_SENTRY) {
-    Sentry.addBreadcrumb(breadcrumb);
-  }
-}
-
-// Start a traced span — wraps the callback so Sentry measures its duration
-export function startTransaction(
-  name: string,
-  op: string,
-  callback?: () => void | Promise<void>
-): string | null {
-  if (env.ENABLE_SENTRY) {
-    try {
-      Sentry.startSpan({ name, op }, async () => {
-        if (callback) await callback();
-      });
-      return name;
-    } catch (error) {
-      logger.warn('Failed to start transaction:', error);
-      return null;
-    }
-  }
-  if (callback) {
-    Promise.resolve(callback()).catch((error) => {
-      logger.error(`Transaction ${name} failed:`, error);
-    });
-  }
-  return null;
-}
-
 // Error reporter for use with React Error Boundary
 export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
   if (env.ENABLE_SENTRY) {
@@ -225,39 +137,11 @@ export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
   }
 }
 
-// Performance monitoring
-export function measurePerformance(
-  name: string,
-  callback: () => void | Promise<void>
-): void {
-  if (env.ENABLE_SENTRY) {
-    Sentry.startSpan({ name, op: 'custom' }, async () => {
-      try {
-        await callback();
-      } catch (error) {
-        captureException(error, { operation: name });
-        throw error;
-      }
-    });
-  } else {
-    // Execute callback even when Sentry is disabled
-    Promise.resolve(callback()).catch((error) => {
-      logger.error(`Performance measurement failed for ${name}:`, error);
-    });
-  }
-}
-
 // Default export
 const sentryUtils = {
   initSentry,
-  setSentryUser,
-  setSentryContext,
   captureException,
-  captureMessage,
-  addBreadcrumb,
-  startTransaction,
   reportErrorBoundary,
-  measurePerformance,
 };
 
 export default sentryUtils;

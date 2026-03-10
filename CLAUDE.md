@@ -236,7 +236,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 69 test files, 1109 tests, 0 failures, 0 skips. Backend: 69 tests, 0 failures
+- 67 test files, 1060 tests, 0 failures, 0 skips. Backend: 69 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
@@ -322,7 +322,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 69 files / 1109 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-10)
+4. **Test count**: Frontend 67 files / 1060 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-10)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint 10 flat config**: Upgraded from v9 to v10. Root `package.json` eslint version must match frontend's (both `^10.x`). Don't downgrade — plugins are compatible with ESLint 10

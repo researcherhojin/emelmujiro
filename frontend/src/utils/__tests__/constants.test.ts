@@ -47,12 +47,8 @@ describe('constants', () => {
     });
 
     it('should have valid form limits', () => {
-      expect(constants.FORM_LIMITS.name.min).toBeLessThanOrEqual(
-        constants.FORM_LIMITS.name.max
-      );
-      expect(constants.FORM_LIMITS.email.min).toBeLessThanOrEqual(
-        constants.FORM_LIMITS.email.max
-      );
+      expect(constants.FORM_LIMITS.name.min).toBeLessThanOrEqual(constants.FORM_LIMITS.name.max);
+      expect(constants.FORM_LIMITS.email.min).toBeLessThanOrEqual(constants.FORM_LIMITS.email.max);
       expect(constants.FORM_LIMITS.message.min).toBeLessThanOrEqual(
         constants.FORM_LIMITS.message.max
       );
@@ -89,75 +85,6 @@ describe('constants', () => {
         expect(category).toHaveProperty('description');
         expect(category).toHaveProperty('features');
       });
-    });
-  });
-  describe('Animation Duration', () => {
-    it('should have ANIMATION_DURATION defined', () => {
-      expect(constants.ANIMATION_DURATION).toBeDefined();
-      expect(typeof constants.ANIMATION_DURATION).toBe('object');
-      expect(constants.ANIMATION_DURATION.fast).toBeDefined();
-      expect(constants.ANIMATION_DURATION.normal).toBeDefined();
-      expect(constants.ANIMATION_DURATION.slow).toBeDefined();
-    });
-
-    it('should have valid animation durations', () => {
-      expect(constants.ANIMATION_DURATION.fast).toBeLessThan(
-        constants.ANIMATION_DURATION.normal
-      );
-      expect(constants.ANIMATION_DURATION.normal).toBeLessThan(
-        constants.ANIMATION_DURATION.slow
-      );
-    });
-  });
-  describe('Breakpoints', () => {
-    it('should have BREAKPOINTS defined', () => {
-      expect(constants.BREAKPOINTS).toBeDefined();
-      expect(typeof constants.BREAKPOINTS).toBe('object');
-      expect(constants.BREAKPOINTS.xs).toBeDefined();
-      expect(constants.BREAKPOINTS.sm).toBeDefined();
-      expect(constants.BREAKPOINTS.md).toBeDefined();
-      expect(constants.BREAKPOINTS.lg).toBeDefined();
-      expect(constants.BREAKPOINTS.xl).toBeDefined();
-    });
-
-    it('should have ascending breakpoint values', () => {
-      expect(constants.BREAKPOINTS.xs).toBeLessThan(constants.BREAKPOINTS.sm);
-      expect(constants.BREAKPOINTS.sm).toBeLessThan(constants.BREAKPOINTS.md);
-      expect(constants.BREAKPOINTS.md).toBeLessThan(constants.BREAKPOINTS.lg);
-      expect(constants.BREAKPOINTS.lg).toBeLessThan(constants.BREAKPOINTS.xl);
-    });
-  });
-  describe('API Endpoints', () => {
-    it('should have API_ENDPOINTS defined', () => {
-      expect(constants.API_ENDPOINTS).toBeDefined();
-      expect(typeof constants.API_ENDPOINTS).toBe('object');
-      expect(constants.API_ENDPOINTS.blog).toBeDefined();
-      expect(constants.API_ENDPOINTS.contact).toBeDefined();
-      expect(constants.API_ENDPOINTS.newsletter).toBeDefined();
-      expect(constants.API_ENDPOINTS.auth).toBeDefined();
-    });
-
-    it('should have valid API endpoint paths', () => {
-      Object.values(constants.API_ENDPOINTS).forEach((endpoint) => {
-        expect(typeof endpoint).toBe('string');
-        expect(endpoint).toMatch(/^\/api\//);
-      });
-    });
-  });
-  describe('Storage Keys', () => {
-    it('should have STORAGE_KEYS defined', () => {
-      expect(constants.STORAGE_KEYS).toBeDefined();
-      expect(typeof constants.STORAGE_KEYS).toBe('object');
-      expect(constants.STORAGE_KEYS.authToken).toBeDefined();
-      expect(constants.STORAGE_KEYS.userPreferences).toBeDefined();
-      expect(constants.STORAGE_KEYS.theme).toBeDefined();
-      expect(constants.STORAGE_KEYS.language).toBeDefined();
-    });
-
-    it('should have unique storage keys', () => {
-      const values = Object.values(constants.STORAGE_KEYS);
-      const uniqueValues = new Set(values);
-      expect(uniqueValues.size).toBe(values.length);
     });
   });
   describe('Languages', () => {

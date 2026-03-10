@@ -15,8 +15,7 @@ export const getInquiryTypeMap = () => ({
 export const SITE_URL = 'https://researcherhojin.github.io/emelmujiro';
 
 // Contact information
-export const CONTACT_EMAIL =
-  import.meta.env.VITE_CONTACT_EMAIL || 'researcherhojin@gmail.com';
+export const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'researcherhojin@gmail.com';
 
 // Form limits
 export const FORM_LIMITS = {
@@ -71,41 +70,6 @@ export const getServiceCategories = () => [
     }) as string[],
   },
 ];
-
-// Animation durations (ms)
-export const ANIMATION_DURATION = {
-  fast: 200,
-  normal: 300,
-  slow: 500,
-} as const;
-
-// Breakpoints
-export const BREAKPOINTS = {
-  xs: 320,
-  sm: 640,
-  md: 768,
-  lg: 1024,
-  xl: 1280,
-  '2xl': 1536,
-} as const;
-
-// API endpoints
-export const API_ENDPOINTS = {
-  blog: '/api/blog',
-  contact: '/api/contact',
-  newsletter: '/api/newsletter',
-  auth: '/api/auth',
-} as const;
-
-// Storage keys
-export const STORAGE_KEYS = {
-  authToken: 'authToken',
-  userPreferences: 'userPreferences',
-  theme: 'theme',
-  language: 'language',
-  pendingContact: 'pendingContact',
-  notificationDismissed: 'notificationBannerDismissed',
-} as const;
 
 // Supported languages
 export const getLanguages = () => [

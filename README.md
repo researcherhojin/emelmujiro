@@ -27,7 +27,7 @@
 | ---------- | ------- | --------------------------------------------- |
 | **빌드**   | ✅ 정상 | Vite + esbuild 빌드                           |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분    |
-| **테스트** | ✅ 통과 | Frontend 1109 통과 (69 파일), Backend 69 통과 |
+| **테스트** | ✅ 통과 | Frontend 1060 통과 (67 파일), Backend 69 통과 |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                        |
 | **보안**   | ✅ 안전 | 취약점 0건                                    |
 | **배포**   | ✅ 정상 | GitHub Pages                                  |
@@ -127,7 +127,7 @@ graph LR
 | 상태 관리      | React Context 5개 (UI, Auth, Blog, Form, Chat)                      | `useMemo`/`useCallback`으로 리렌더 방지, 외부 라이브러리 불필요 |
 | API 클라이언트 | Axios + Mock/Real 자동 전환                                         | `VITE_API_URL` 유무로 결정, JWT 401 자동 갱신                   |
 | i18n           | `react-i18next` + 크롤러 한국어 강제                                | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
-| 테스트         | Vitest (1109) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
+| 테스트         | Vitest (1060) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
 | 빌드           | sitemap → `tsc` → Vite (esbuild)                                    | 프로덕션 시 `console`/`debugger` 자동 제거                      |
 | 배포           | GitHub Actions → GitHub Pages                                       | `base: '/emelmujiro/'` 서브패스                                 |
 | Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router` | ChatProvider는 under construction으로 제외                      |
@@ -576,7 +576,7 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
   - setTimeout 메모리 누수 전수 수정 (UIContext, FormContext, Navbar, Footer, BlogInteractions, BlogSearch, ChatContext)
 - **CLAUDE.md 업데이트**: React 19 useRef 패턴, Docker 빌드 arg, ChatConsumer 보안, 글로벌 lucide-react mock testid 등 반영
 - **도메인 확보**: `emelmujiro.com` — 백엔드 배포 시 사용 예정
-- **테스트**: 69 파일, 1109 테스트, 0 실패
+- **테스트**: 67 파일, 1060 테스트, 0 실패
 
 ### 0.9.7 (2026.03.04 ~ 03.05)
 

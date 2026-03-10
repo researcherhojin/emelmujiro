@@ -55,26 +55,3 @@ schema_view = get_schema_view(
     permission_classes=[permissions.AllowAny],
     authentication_classes=[],
 )
-
-# Custom parameters for common use
-auth_header = openapi.Parameter(
-    "Authorization",
-    openapi.IN_HEADER,
-    description="JWT Token (Bearer <token>)",
-    type=openapi.TYPE_STRING,
-    required=True,
-)
-
-page_param = openapi.Parameter(
-    "page", openapi.IN_QUERY, description="Page number", type=openapi.TYPE_INTEGER, default=1
-)
-
-page_size_param = openapi.Parameter(
-    "page_size", openapi.IN_QUERY, description="Number of items per page", type=openapi.TYPE_INTEGER, default=10
-)
-
-search_param = openapi.Parameter("search", openapi.IN_QUERY, description="Search query", type=openapi.TYPE_STRING)
-
-category_param = openapi.Parameter(
-    "category", openapi.IN_QUERY, description="Category filter", type=openapi.TYPE_STRING
-)

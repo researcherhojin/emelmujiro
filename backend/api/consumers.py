@@ -134,34 +134,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
         )
 
-    async def file_upload(self, event):
-        # Handle file upload notification
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "file_upload",
-                    "user": event["user"],
-                    "file_name": event.get("file_name", ""),
-                    "file_url": event.get("file_url", ""),
-                    "file_type": event.get("file_type", ""),
-                    "timestamp": event["timestamp"],
-                }
-            )
-        )
-
-    async def system_message(self, event):
-        # Send system message
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "system_message",
-                    "message": event["message"],
-                    "level": event.get("level", "info"),
-                    "timestamp": event["timestamp"],
-                }
-            )
-        )
-
     @database_sync_to_async
     def get_username(self):
         user = self.scope.get("user")

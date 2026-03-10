@@ -1,24 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Use vi.hoisted() so these are available when vi.mock factories run (they are hoisted)
-const {
-  mockInit,
-  mockSetUser,
-  mockSetContext,
-  mockCaptureException,
-  mockCaptureMessage,
-  mockAddBreadcrumb,
-  mockWithScope,
-  mockStartSpan,
-  mockFlush,
-  mockEnv,
-} = vi.hoisted(() => {
+const { mockInit, mockCaptureException, mockWithScope, mockEnv } = vi.hoisted(() => {
   const mockInit = vi.fn();
-  const mockSetUser = vi.fn();
-  const mockSetContext = vi.fn();
   const mockCaptureException = vi.fn();
-  const mockCaptureMessage = vi.fn();
-  const mockAddBreadcrumb = vi.fn();
   const mockWithScope = vi.fn((callback: (scope: unknown) => void) => {
     const scope = {
       setExtra: vi.fn(),
@@ -27,12 +12,6 @@ const {
     callback(scope);
     return scope;
   });
-  const mockStartSpan = vi.fn(
-    (_options: unknown, callback: () => void | Promise<void>) => {
-      return callback();
-    }
-  );
-  const mockFlush = vi.fn().mockResolvedValue(true);
   const mockEnv = {
     ENABLE_SENTRY: false,
     SENTRY_DSN: '',
@@ -51,14 +30,8 @@ const {
 
   return {
     mockInit,
-    mockSetUser,
-    mockSetContext,
     mockCaptureException,
-    mockCaptureMessage,
-    mockAddBreadcrumb,
     mockWithScope,
-    mockStartSpan,
-    mockFlush,
     mockEnv,
   };
 });
@@ -66,14 +39,8 @@ const {
 // Mock @sentry/react
 vi.mock('@sentry/react', () => ({
   init: mockInit,
-  setUser: mockSetUser,
-  setContext: mockSetContext,
   captureException: mockCaptureException,
-  captureMessage: mockCaptureMessage,
-  addBreadcrumb: mockAddBreadcrumb,
   withScope: mockWithScope,
-  startSpan: mockStartSpan,
-  flush: mockFlush,
 }));
 
 // Mock logger to prevent console output
@@ -93,17 +60,7 @@ vi.mock('../../config/env', () => ({
 }));
 
 // Import after mocks
-import {
-  initSentry,
-  setSentryUser,
-  setSentryContext,
-  captureException,
-  captureMessage,
-  addBreadcrumb,
-  startTransaction,
-  reportErrorBoundary,
-  measurePerformance,
-} from '../sentry';
+import { initSentry, captureException, reportErrorBoundary } from '../sentry';
 import logger from '../logger';
 
 describe('sentry', () => {
@@ -123,12 +80,6 @@ describe('sentry', () => {
       callback(scope);
       return scope;
     });
-    mockStartSpan.mockImplementation(
-      (_options: unknown, callback: () => void | Promise<void>) => {
-        return callback();
-      }
-    );
-    mockFlush.mockResolvedValue(true);
   });
 
   describe('initSentry', () => {
@@ -201,9 +152,7 @@ describe('sentry', () => {
       const callArgs = mockInit.mock.calls[0][0];
       expect(callArgs.ignoreErrors).toContain('Network request failed');
       expect(callArgs.ignoreErrors).toContain('Failed to fetch');
-      expect(callArgs.ignoreErrors).toContain(
-        'ResizeObserver loop limit exceeded'
-      );
+      expect(callArgs.ignoreErrors).toContain('ResizeObserver loop limit exceeded');
     });
 
     it('should include denyUrls for extensions and third-party scripts', () => {
@@ -226,10 +175,7 @@ describe('sentry', () => {
 
       initSentry();
 
-      expect(logger.error).toHaveBeenCalledWith(
-        'Failed to initialize Sentry:',
-        expect.any(Error)
-      );
+      expect(logger.error).toHaveBeenCalledWith('Failed to initialize Sentry:', expect.any(Error));
     });
 
     it('should configure beforeSend to filter NetworkError', () => {
@@ -284,9 +230,7 @@ describe('sentry', () => {
 
       const extensionEvent = {
         exception: {
-          values: [
-            { type: 'Error', value: 'Error from chrome-extension://abc' },
-          ],
+          values: [{ type: 'Error', value: 'Error from chrome-extension://abc' }],
         },
       };
       expect(beforeSend(extensionEvent, {})).toBeNull();
@@ -297,8 +241,7 @@ describe('sentry', () => {
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
 
       // Ensure React DevTools hook is not present
-      delete (window as unknown as Record<string, unknown>)
-        .__REACT_DEVTOOLS_GLOBAL_HOOK__;
+      delete (window as unknown as Record<string, unknown>).__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
       initSentry();
 
@@ -311,52 +254,6 @@ describe('sentry', () => {
         },
       };
       expect(beforeSend(normalEvent, {})).toEqual(normalEvent);
-    });
-  });
-
-  describe('setSentryUser', () => {
-    it('should not call Sentry.setUser when Sentry is disabled', () => {
-      mockEnv.ENABLE_SENTRY = false;
-
-      setSentryUser({ id: '1', email: 'test@test.com' });
-
-      expect(mockSetUser).not.toHaveBeenCalled();
-    });
-
-    it('should call Sentry.setUser when Sentry is enabled', () => {
-      mockEnv.ENABLE_SENTRY = true;
-      const user = { id: '1', email: 'test@test.com', username: 'tester' };
-
-      setSentryUser(user);
-
-      expect(mockSetUser).toHaveBeenCalledWith(user);
-    });
-
-    it('should call Sentry.setUser with null to clear user', () => {
-      mockEnv.ENABLE_SENTRY = true;
-
-      setSentryUser(null);
-
-      expect(mockSetUser).toHaveBeenCalledWith(null);
-    });
-  });
-
-  describe('setSentryContext', () => {
-    it('should not call Sentry.setContext when Sentry is disabled', () => {
-      mockEnv.ENABLE_SENTRY = false;
-
-      setSentryContext('page', { name: 'home' });
-
-      expect(mockSetContext).not.toHaveBeenCalled();
-    });
-
-    it('should call Sentry.setContext when Sentry is enabled', () => {
-      mockEnv.ENABLE_SENTRY = true;
-      const context = { name: 'home', path: '/' };
-
-      setSentryContext('page', context);
-
-      expect(mockSetContext).toHaveBeenCalledWith('page', context);
     });
   });
 
@@ -408,119 +305,6 @@ describe('sentry', () => {
     });
   });
 
-  describe('captureMessage', () => {
-    it('should not call Sentry.captureMessage when Sentry is disabled', () => {
-      mockEnv.ENABLE_SENTRY = false;
-
-      captureMessage('test message');
-
-      expect(mockCaptureMessage).not.toHaveBeenCalled();
-    });
-
-    it('should log message to logger when Sentry is disabled', () => {
-      mockEnv.ENABLE_SENTRY = false;
-
-      captureMessage('test message', 'warning');
-
-      expect(logger.info).toHaveBeenCalledWith(
-        '[WARNING] test message',
-        undefined
-      );
-    });
-
-    it('should call Sentry.captureMessage directly without context', () => {
-      mockEnv.ENABLE_SENTRY = true;
-
-      captureMessage('test message', 'info');
-
-      expect(mockCaptureMessage).toHaveBeenCalledWith('test message', 'info');
-      expect(mockWithScope).not.toHaveBeenCalled();
-    });
-
-    it('should use info as default severity level', () => {
-      mockEnv.ENABLE_SENTRY = true;
-
-      captureMessage('test message');
-
-      expect(mockCaptureMessage).toHaveBeenCalledWith('test message', 'info');
-    });
-
-    it('should call Sentry.captureMessage with scope when context is provided', () => {
-      mockEnv.ENABLE_SENTRY = true;
-      const context = { page: 'home' };
-
-      captureMessage('test message', 'warning', context);
-
-      expect(mockWithScope).toHaveBeenCalled();
-      const scopeCallback = mockWithScope.mock.calls[0][0];
-      const mockScope = { setExtra: vi.fn() };
-      scopeCallback(mockScope);
-      expect(mockScope.setExtra).toHaveBeenCalledWith('page', 'home');
-    });
-  });
-
-  describe('addBreadcrumb', () => {
-    it('should not call Sentry.addBreadcrumb when Sentry is disabled', () => {
-      mockEnv.ENABLE_SENTRY = false;
-
-      addBreadcrumb({ message: 'navigated', category: 'navigation' });
-
-      expect(mockAddBreadcrumb).not.toHaveBeenCalled();
-    });
-
-    it('should call Sentry.addBreadcrumb when Sentry is enabled', () => {
-      mockEnv.ENABLE_SENTRY = true;
-      const breadcrumb = {
-        message: 'navigated to /about',
-        category: 'navigation',
-        level: 'info' as const,
-        data: { from: '/', to: '/about' },
-      };
-
-      addBreadcrumb(breadcrumb);
-
-      expect(mockAddBreadcrumb).toHaveBeenCalledWith(breadcrumb);
-    });
-  });
-
-  describe('startTransaction', () => {
-    it('should return null when Sentry is disabled', () => {
-      mockEnv.ENABLE_SENTRY = false;
-
-      const result = startTransaction('test-transaction', 'navigation');
-
-      expect(result).toBeNull();
-      expect(mockStartSpan).not.toHaveBeenCalled();
-    });
-
-    it('should call Sentry.startSpan and return name when Sentry is enabled', () => {
-      mockEnv.ENABLE_SENTRY = true;
-
-      const result = startTransaction('test-transaction', 'navigation');
-
-      expect(mockStartSpan).toHaveBeenCalledWith(
-        { name: 'test-transaction', op: 'navigation' },
-        expect.any(Function)
-      );
-      expect(result).toBe('test-transaction');
-    });
-
-    it('should return null and log warning if startSpan throws', () => {
-      mockEnv.ENABLE_SENTRY = true;
-      mockStartSpan.mockImplementationOnce(() => {
-        throw new Error('Span failed');
-      });
-
-      const result = startTransaction('failing-transaction', 'custom');
-
-      expect(result).toBeNull();
-      expect(logger.warn).toHaveBeenCalledWith(
-        'Failed to start transaction:',
-        expect.any(Error)
-      );
-    });
-  });
-
   describe('reportErrorBoundary', () => {
     it('should not call Sentry when disabled', () => {
       mockEnv.ENABLE_SENTRY = false;
@@ -558,46 +342,14 @@ describe('sentry', () => {
     });
   });
 
-  describe('measurePerformance', () => {
-    it('should execute callback even when Sentry is disabled', async () => {
-      mockEnv.ENABLE_SENTRY = false;
-      const callback = vi.fn();
-
-      measurePerformance('test-op', callback);
-
-      // Wait for the Promise.resolve(callback()) to settle
-      await vi.waitFor(() => {
-        expect(callback).toHaveBeenCalled();
-      });
-    });
-
-    it('should use Sentry.startSpan when enabled', () => {
-      mockEnv.ENABLE_SENTRY = true;
-      const callback = vi.fn();
-
-      measurePerformance('test-op', callback);
-
-      expect(mockStartSpan).toHaveBeenCalledWith(
-        { name: 'test-op', op: 'custom' },
-        expect.any(Function)
-      );
-    });
-  });
-
   describe('default export', () => {
     it('should export all functions', async () => {
       const sentryModule = await import('../sentry');
       const defaultExport = sentryModule.default;
 
       expect(defaultExport.initSentry).toBe(initSentry);
-      expect(defaultExport.setSentryUser).toBe(setSentryUser);
-      expect(defaultExport.setSentryContext).toBe(setSentryContext);
       expect(defaultExport.captureException).toBe(captureException);
-      expect(defaultExport.captureMessage).toBe(captureMessage);
-      expect(defaultExport.addBreadcrumb).toBe(addBreadcrumb);
-      expect(defaultExport.startTransaction).toBe(startTransaction);
       expect(defaultExport.reportErrorBoundary).toBe(reportErrorBoundary);
-      expect(defaultExport.measurePerformance).toBe(measurePerformance);
     });
   });
 });
