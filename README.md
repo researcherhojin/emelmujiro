@@ -578,8 +578,16 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
 
 ## 변경 이력
 
-### 0.9.8 (2026.03.07)
+### 0.9.8 (2026.03.07 ~ 03.10)
 
+- **KakaoTalk Android 흰 화면 근본 수정**
+  - 기존 다층 폴백(legacy 번들 강제 로딩, 2초/5초 타임아웃) → `document.write()` 즉시 리다이렉트 전환
+  - `main.tsx`에서 React 초기화 완전 차단, `intent://` 외부 브라우저 열기
+  - iOS KakaoTalk(WKWebView)은 정상 동작하므로 Android만 적용
+  - 5초 일반 폴백도 `#root` 직접 타겟으로 수정 (React가 스켈레톤 제거 후에도 동작)
+- **배포 방식 정리**: GitHub Pages 소스를 `deploy-pages@v4` (GitHub Actions) 확인, `gh-pages` 브랜치는 `main`과 동기화하여 백업용으로 유지
+- **Prettier 일괄 포맷팅**: 124개 소스 파일 코드 스타일 통일
+- **17차 코드 감사 완료** (상세 → 리팩토링 백로그 참조)
 - **로고 시스템 리뉴얼**
   - 파트너사 로고 20개 최신화 및 파일명 통일 (`상호명+Logo.확장자`)
   - LogosSection 리팩토링: LogoItem/ScrollRow 서브컴포넌트 추출, 3x 복제 무한 스크롤, 그라디언트 페이드 마스크
@@ -587,7 +595,7 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
 - **컴포넌트 분할**: ProfilePage (497→120줄, 5개 서브컴포넌트), ServiceModal을 Footer에서 분리
 - **API 패턴 통일**: AuthContext가 axiosInstance 대신 `api` 객체 사용으로 전환
 - **데드 코드 제거**: `cacheOptimization.ts`(155줄), `blogCache.ts`(231줄), ChatProvider를 App.tsx에서 제거
-- **리팩토링 백로그 전량 해소** — 16건 완료, 2건 이슈 아님 (상세 → 리팩토링 백로그 참조)
+- **리팩토링 백로그 전량 해소** — 17차 감사 완료 (상세 → 리팩토링 백로그 참조)
 - **i18n 완성도 강화**: BlogEditor + FileUpload 하드코딩 한국어 → i18n 키 전환
 - **코드 품질 개선**
   - 소스 코드 한국어 주석 → 영어 전환 (15+ 파일)
