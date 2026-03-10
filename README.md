@@ -129,7 +129,7 @@ graph LR
 | i18n           | `react-i18next` + 크롤러 한국어 강제                                | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
 | 테스트         | Vitest (1060) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
 | 빌드           | sitemap → `tsc` → Vite (esbuild)                                    | 프로덕션 시 `console`/`debugger` 자동 제거                      |
-| 배포           | GitHub Actions → GitHub Pages                                       | `base: '/emelmujiro/'` 서브패스                                 |
+| 배포           | GitHub Actions → `deploy-pages@v4` → GitHub Pages                   | `main` push 시 자동 배포, `base: '/emelmujiro/'` 서브패스       |
 | Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router` | ChatProvider는 under construction으로 제외                      |
 
 ### 프로젝트 구조
@@ -176,19 +176,19 @@ emelmujiro/
 
 ## 주요 명령어
 
-| 명령어                   | 설명                                 |
-| ------------------------ | ------------------------------------ |
-| `npm run dev`            | 개발 서버 시작                       |
-| `npm run build`          | 프로덕션 빌드 (sitemap → tsc → vite) |
-| `npm test`               | 테스트 실행 (watch)                  |
-| `npm run test:run`       | 테스트 단일 실행                     |
-| `npm run test:ci`        | CI 테스트 실행                       |
-| `npm run deploy`         | GitHub Pages 배포                    |
-| `npm run type-check`     | TypeScript 체크                      |
-| `npm run lint:fix`       | ESLint 자동 수정                     |
-| `npm run validate`       | lint + type-check + test             |
-| `npm run test:coverage`  | 테스트 커버리지 리포트               |
-| `npm run analyze:bundle` | 번들 크기 분석                       |
+| 명령어                   | 설명                                                |
+| ------------------------ | --------------------------------------------------- |
+| `npm run dev`            | 개발 서버 시작                                      |
+| `npm run build`          | 프로덕션 빌드 (sitemap → tsc → vite)                |
+| `npm test`               | 테스트 실행 (watch)                                 |
+| `npm run test:run`       | 테스트 단일 실행                                    |
+| `npm run test:ci`        | CI 테스트 실행                                      |
+| `npm run deploy`         | GitHub Pages 수동 배포 (보통 main push로 자동 배포) |
+| `npm run type-check`     | TypeScript 체크                                     |
+| `npm run lint:fix`       | ESLint 자동 수정                                    |
+| `npm run validate`       | lint + type-check + test                            |
+| `npm run test:coverage`  | 테스트 커버리지 리포트                              |
+| `npm run analyze:bundle` | 번들 크기 분석                                      |
 
 ### 백엔드 명령어
 
@@ -214,7 +214,7 @@ emelmujiro/
 
 ## 앞으로 할 것
 
-> **코드 품질 작업은 15차 감사로 전량 완료.** 아래는 기능 구현 및 배포 관련 남은 작업입니다.
+> **코드 품질 작업은 17차 감사로 전량 완료.** 아래는 기능 구현 및 배포 관련 남은 작업입니다.
 >
 > **1.0 범위**: Blog + Contact + Auth + Admin Dashboard | **1.0 이후**: 실시간 채팅, Notification
 
