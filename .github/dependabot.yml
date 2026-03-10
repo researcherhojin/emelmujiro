@@ -23,6 +23,8 @@ updates:
         dependency-type: "development"
         patterns:
           - "*"
+        exclude-patterns:
+          - "tailwindcss"
     labels:
       - "dependencies"
       - "frontend"
