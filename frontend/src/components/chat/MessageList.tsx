@@ -68,10 +68,7 @@ const MessageList: React.FC = () => {
     }
   };
 
-  const handleFileDownload = (
-    file: File | { url: string } | undefined,
-    filename: string
-  ) => {
+  const handleFileDownload = (file: File | { url: string } | undefined, filename: string) => {
     if (file instanceof File) {
       const url = URL.createObjectURL(file);
       const a = document.createElement('a');
@@ -92,10 +89,7 @@ const MessageList: React.FC = () => {
     }
   };
 
-  const handleImagePreview = (
-    file: File | { url: string } | undefined,
-    filename: string
-  ) => {
+  const handleImagePreview = (file: File | { url: string } | undefined, filename: string) => {
     if (file instanceof File) {
       const url = URL.createObjectURL(file);
       const img = new Image();
@@ -104,7 +98,7 @@ const MessageList: React.FC = () => {
         const newWindow = window.open('', '_blank');
         if (newWindow) {
           const doc = newWindow.document;
-          doc.title = filename.replace(/[<>]/g, '');
+          doc.title = filename.replace(/[<>"'&]/g, '');
 
           const html = doc.documentElement;
           html.style.height = '100%';
@@ -123,7 +117,7 @@ const MessageList: React.FC = () => {
           imgElement.style.maxHeight = '100%';
           imgElement.style.objectFit = 'contain';
 
-          body.innerHTML = '';
+          while (body.firstChild) body.removeChild(body.firstChild);
           body.appendChild(imgElement);
 
           newWindow.addEventListener('unload', () => URL.revokeObjectURL(url));
@@ -149,9 +143,7 @@ const MessageList: React.FC = () => {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="text-center text-gray-500 dark:text-gray-400">
           <Bot className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p className="text-lg font-medium mb-2">
-            {t('chat.emptyState.title')}
-          </p>
+          <p className="text-lg font-medium mb-2">{t('chat.emptyState.title')}</p>
           <p className="text-sm">{t('chat.emptyState.subtitle')}</p>
         </div>
       </div>
@@ -159,10 +151,7 @@ const MessageList: React.FC = () => {
   }
 
   return (
-    <div
-      ref={listRef}
-      className="flex-1 overflow-y-auto px-4 py-2 scroll-smooth"
-    >
+    <div ref={listRef} className="flex-1 overflow-y-auto px-4 py-2 scroll-smooth">
       <AnimatePresence>
         {messages.map((message) => (
           <MessageBubble
@@ -190,12 +179,7 @@ const MessageList: React.FC = () => {
             className="fixed bottom-20 right-8 w-10 h-10 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors"
             aria-label={t('chat.scrollToBottom')}
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

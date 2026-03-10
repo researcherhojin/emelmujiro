@@ -282,7 +282,7 @@ Downgraded from 4.x. PostCSS config (`frontend/postcss.config.js`) must use `tai
 
 ### Prettier
 
-Root `.prettierrc` is the canonical config: `printWidth: 100` for JS/TS, per-file overrides for md (80), html (120), package.json (120). `frontend/.prettierrc` exists with `printWidth: 80` but the root config's overrides take precedence for JS/TS files when run from root (lint-staged runs from root).
+Root `.prettierrc` is the canonical config: `printWidth: 100` for JS/TS, per-file overrides for md (80), html (120), package.json (120). `frontend/.prettierrc` also uses `printWidth: 100` (aligned with root).
 
 ### ESLint
 
@@ -297,13 +297,14 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - `SECRET_KEY` **required** in production (`DEBUG=False`); raises `ImproperlyConfigured` if missing
 - Database: SQLite by default. Set `DATABASE_URL` for PostgreSQL — parsed via `urllib.parse.urlparse` (no `dj-database-url` dependency)
 - Channel Layers: Redis when `REDIS_URL` is set, InMemoryChannelLayer otherwise
-- WebSocket: `ChatConsumer` requires authentication (rejects `AnonymousUser` in `connect()`); client message types are whitelisted via `ALLOWED_MESSAGE_TYPES` to prevent arbitrary handler dispatch
+- WebSocket: `ChatConsumer` requires authentication (rejects `AnonymousUser` in `connect()`); client message types are whitelisted via `ALLOWED_MESSAGE_TYPES` — invalid types are rejected with error (not silently defaulted)
 - JWT: access 30min, refresh 7 days, rotation + blacklist. `rest_framework_simplejwt.token_blacklist` is in INSTALLED_APPS — logout endpoint blacklists refresh tokens
-- DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr
+- DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr. Pagination: `StandardPagination` (page_size=10, max_page_size=100, `?page_size=N` query param)
 - File upload validation: `api/validators.py` — case-insensitive extension, MIME type, size (5MB)
 - API docs: Swagger at `/api/docs/`, ReDoc at `/api/redoc/` (drf-yasg)
 - Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`. `/api/send-test-email/` only registered when `DEBUG=True`
 - Custom middleware registered in MIDDLEWARE: `RequestSecurityMiddleware` (IP blocking, rate limiting, malicious pattern detection), `ContentSecurityMiddleware` (CSP + security headers), `APIResponseTimeMiddleware` (slow request logging)
+- Management commands: `cleanup_sitevisits` (delete old SiteVisit records, `--days 90` default, `--dry-run` option)
 - Timezone: `Asia/Seoul`, language: `ko-kr`
 - File upload: 5MB max; allowed extensions: `.jpg`, `.jpeg`, `.png`, `.gif`, `.pdf`, `.doc`, `.docx`
 - CI uses `uv sync --frozen --extra dev` (lockfile must be up to date; `--extra dev` installs black, flake8, pytest from `[project.optional-dependencies]`)

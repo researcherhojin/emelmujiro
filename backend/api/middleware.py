@@ -154,7 +154,7 @@ class ContentSecurityMiddleware(MiddlewareMixin):
             "font-src 'self' https://fonts.gstatic.com; "
             "img-src 'self' data: https:; "
             "connect-src 'self' https://api.github.com; "
-            "frame-src 'none'; "
+            "frame-src https://www.google.com https://recaptcha.google.com; "
             "object-src 'none'; "
             "base-uri 'self';"
         )

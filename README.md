@@ -214,7 +214,7 @@ emelmujiro/
 
 ## 앞으로 할 것
 
-> **코드 품질 작업은 13차 감사로 전량 완료.** 아래는 기능 구현 및 배포 관련 남은 작업입니다.
+> **코드 품질 작업은 15차 감사로 전량 완료.** 아래는 기능 구현 및 배포 관련 남은 작업입니다.
 
 ### 즉시 실행 가능 (백엔드 배포 불필요)
 
@@ -238,6 +238,7 @@ emelmujiro/
 | B6  | **Admin 대시보드 API 연동**  | B2     | 실제 통계 API 연결, 458줄 컴포넌트 분리 권장                                              |
 | B7  | **초기 데이터 fixture**      | B1     | `createsuperuser` + 블로그 포스트 fixture (`manage.py loaddata`)                          |
 | B8  | **커스텀 도메인**            | B1     | GitHub Pages CNAME + DNS (`emelmujiro.com`), `SITE_URL` 업데이트                          |
+| B9  | **SiteVisit 정기 정리**      | B1     | `manage.py cleanup_sitevisits --days 90` cron 등록 (명령어 구현 완료)                     |
 
 ### 장기 개선 사항
 
@@ -448,10 +449,11 @@ function onFormSubmit(e) {
 
 ## 리팩토링 백로그
 
-> **전량 해소 완료.** 14차에 걸친 코드 감사를 통해 식별된 모든 항목을 해결했습니다.
+> **전량 해소 완료.** 15차에 걸친 코드 감사를 통해 식별된 모든 항목을 해결했습니다.
 
 | 감사  | 날짜        | 해결 건수 | 주요 내용                                                                                                                                                                                                                   |
 | ----- | ----------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15차  | 2026.03.10  | 6건       | Prettier 설정 충돌 해소, MessageList XSS 강화(innerHTML→DOM, 파일명 sanitize), CSP frame-src reCAPTCHA 허용, 페이지네이션 MAX_PAGE_SIZE 보호, SiteVisit 정리 명령어                                                         |
 | 14차  | 2026.03.10  | 8건       | WebSocket timezone.now() 통일, ContactAttempt 원자적 증가(F()), 잘못된 메시지 타입 거부, 클립보드 실패 시 복사 표시 방지, SESSION_SAVE_EVERY_REQUEST 제거, tsconfig.ci strict, Dependabot 루트 npm, Dockerfile.dev non-root |
 | 13차  | 2026.03.10  | 9건       | GH Actions 최신 안정 버전 통일 (checkout/setup-node@v6, cache@v5, artifact@v6), Lighthouse URL 프리뷰 포트, Dependabot vitest+백엔드 그룹, Codecov 플래그 분리, 이메일 설정 안전장치                                        |
 | 12차  | 2026.03.10  | 5건       | SEO 하드코딩 영어→i18n 전환 (StructuredData/SEOHelmet), ESLint 9→10 업그레이드, global.d.ts 타입 보강, backend uv.lock 동기화                                                                                               |
@@ -466,10 +468,19 @@ function onFormSubmit(e) {
 | 3차   | 2026.03.07  | 47건      | 미들웨어 미등록, ObjectURL 누수, JWT 블랙리스트, 컴포넌트 분할                                                                                                                                                              |
 | 1~2차 | ~2026.03.07 | 21건      | HashRouter 버그, Zustand 제거, i18n 전환, Sentry 초기화, Docker 버전 통일                                                                                                                                                   |
 
-**총 해결: Critical 12 / High 26 / Medium 48 / Low 27 / Backend 7 / 이슈 아님 6건**
+**총 해결: Critical 12 / High 26 / Medium 52 / Low 29 / Backend 7 / 이슈 아님 6건**
 
 <details>
 <summary>감사 상세 기록 (클릭하여 펼치기)</summary>
+
+### 15차 감사 (2026.03.10)
+
+- **M1** `frontend/.prettierrc` printWidth: 80 → 100 — 루트 설정과 일치시켜 충돌 제거
+- **M2** MessageList.tsx `innerHTML = ''` → DOM `removeChild` 루프로 XSS 안전하게 변경
+- **M3** MessageList.tsx 파일명 sanitize 강화 — `<>` 뿐 아니라 `"'&`도 제거
+- **M4** 백엔드 CSP `frame-src 'none'` → `frame-src https://www.google.com https://recaptcha.google.com` (reCAPTCHA iframe 허용)
+- **L1** DRF 페이지네이션 `MAX_PAGE_SIZE=100` 보호 — 커스텀 `StandardPagination` 클래스로 `page_size` 쿼리 파라미터 + 상한 적용
+- **L2** `manage.py cleanup_sitevisits` 명령어 추가 — `--days 90` (기본), `--dry-run` 옵션으로 SiteVisit 테이블 정리
 
 ### 14차 감사 (2026.03.10)
 
