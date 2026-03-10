@@ -366,8 +366,9 @@ class ContactView(APIView):
             )
 
             if not created:
-                attempt.attempt_count += 1
-                attempt.save()
+                ContactAttempt.objects.filter(pk=attempt.pk).update(
+                    attempt_count=F("attempt_count") + 1
+                )
 
         except Exception as e:
             logger.error(f"Failed to log contact attempt: {e}")

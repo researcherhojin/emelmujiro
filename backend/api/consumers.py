@@ -3,7 +3,7 @@ import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
-from datetime import datetime
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "type": "connection_established",
                     "message": "Welcome to the chat!",
                     "room": self.room_name,
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": timezone.now().isoformat(),
                 }
             )
         )
@@ -42,14 +42,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Notify others that a user joined
         await self.channel_layer.group_send(
             self.room_group_name,
-            {"type": "user_joined", "user": await self.get_username(), "timestamp": datetime.now().isoformat()},
+            {"type": "user_joined", "user": await self.get_username(), "timestamp": timezone.now().isoformat()},
         )
 
     async def disconnect(self, close_code):
         # Notify others that a user left
         await self.channel_layer.group_send(
             self.room_group_name,
-            {"type": "user_left", "user": await self.get_username(), "timestamp": datetime.now().isoformat()},
+            {"type": "user_left", "user": await self.get_username(), "timestamp": timezone.now().isoformat()},
         )
 
         # Leave room group
@@ -64,9 +64,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = text_data_json.get("message", "")
         message_type = text_data_json.get("type", "chat_message")
 
-        # Validate message type to prevent arbitrary handler dispatch
+        # Reject invalid message types instead of silently defaulting
         if message_type not in self.ALLOWED_MESSAGE_TYPES:
-            message_type = "chat_message"
+            await self.send(text_data=json.dumps({"error": f"Invalid message type: {message_type}"}))
+            return
 
         # Send message to room group
         await self.channel_layer.group_send(
@@ -75,7 +76,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "type": message_type,
                 "message": message,
                 "user": await self.get_username(),
-                "timestamp": datetime.now().isoformat(),
+                "timestamp": timezone.now().isoformat(),
                 "room": self.room_name,
             },
         )
@@ -189,7 +190,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     {
                         "type": "connection_established",
                         "message": "Notification channel connected",
-                        "timestamp": datetime.now().isoformat(),
+                        "timestamp": timezone.now().isoformat(),
                     }
                 )
             )
@@ -229,7 +230,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     "message": event.get("message"),
                     "level": event.get("level", "info"),
                     "url": event.get("url"),
-                    "timestamp": event.get("timestamp", datetime.now().isoformat()),
+                    "timestamp": event.get("timestamp", timezone.now().isoformat()),
                 }
             )
         )
@@ -241,7 +242,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 {
                     "type": "notification_update",
                     "count": event.get("count", 0),
-                    "timestamp": event.get("timestamp", datetime.now().isoformat()),
+                    "timestamp": event.get("timestamp", timezone.now().isoformat()),
                 }
             )
         )

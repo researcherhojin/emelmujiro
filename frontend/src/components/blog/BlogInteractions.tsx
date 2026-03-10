@@ -162,11 +162,11 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
+      setCopiedLink(true);
+      copyTimerRef.current = setTimeout(() => setCopiedLink(false), 2000);
     } catch {
-      // Clipboard API not available — silently fail
+      logger.warn('Clipboard API not available');
     }
-    setCopiedLink(true);
-    copyTimerRef.current = setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const nativeShare = async () => {
