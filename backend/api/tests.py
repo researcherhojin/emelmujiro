@@ -9,7 +9,6 @@ from .models import BlogPost, Contact, ContactAttempt, SiteVisit, NewsletterSubs
 from .views import get_client_ip, _is_valid_ip
 from datetime import datetime, timezone, timedelta
 from django.utils import timezone as django_timezone
-from typing import cast, Any, Dict
 
 # Disable throttling for all tests to avoid rate-limit interference
 NO_THROTTLE = {

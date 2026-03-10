@@ -214,8 +214,9 @@ class CategoryListView(APIView):
         )
 
         category_data = []
+        category_choices_dict = dict(BlogPost.CATEGORY_CHOICES)
         for idx, cat in enumerate(categories, start=1):
-            category_choice = dict(BlogPost.CATEGORY_CHOICES).get(cat["category"], cat["category"])
+            category_choice = category_choices_dict.get(cat["category"], cat["category"])
             category_data.append(
                 {
                     "id": idx,
