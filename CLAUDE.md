@@ -137,7 +137,7 @@ Axios-based client in `src/services/api.ts`. All API methods (blog, contact, new
 
 ### Sentry
 
-`@sentry/react` v10 is integrated via `src/utils/sentry.ts`. `initSentry()` is called in `main.tsx`. Only active when `ENABLE_SENTRY=true` and `SENTRY_DSN` is set (both default to off). No action needed unless enabling error tracking. `main.tsx` uses `env.IS_DEVELOPMENT` / `env.IS_PRODUCTION` from `src/config/env.ts` instead of `process.env.NODE_ENV`.
+`@sentry/react` v10 is integrated via `src/utils/sentry.ts`. Only three functions are exported: `initSentry` (called in `main.tsx`), `captureException` (used by `logger.ts`), `reportErrorBoundary`. Only active when `ENABLE_SENTRY=true` and `SENTRY_DSN` is set (both default to off). No action needed unless enabling error tracking. `main.tsx` uses `env.IS_DEVELOPMENT` / `env.IS_PRODUCTION` from `src/config/env.ts` instead of `process.env.NODE_ENV`.
 
 ### Environment Variables
 
