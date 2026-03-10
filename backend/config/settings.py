@@ -21,9 +21,7 @@ if not SECRET_KEY:
     else:
         raise ImproperlyConfigured("SECRET_KEY must be set in production")
 
-ALLOWED_HOSTS = os.environ.get(
-    "ALLOWED_HOSTS", "api.emelmujiro.com,localhost,127.0.0.1"
-).split(",")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "api.emelmujiro.com,localhost,127.0.0.1").split(",")
 
 # Add testserver for Django test client
 if "test" in sys.argv:
@@ -230,7 +228,7 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 
 # JWT settings
-from datetime import timedelta
+from datetime import timedelta  # noqa: E402
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),

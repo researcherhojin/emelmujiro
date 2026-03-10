@@ -2,6 +2,7 @@
 """
 AI 관련 블로그 포스트 생성 스크립트
 """
+
 import os
 import sys
 import django
@@ -12,9 +13,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 django.setup()
 
-from api.models import BlogPost
-from django.contrib.auth import get_user_model
-from django.utils import timezone
+from api.models import BlogPost  # noqa: E402
+from django.contrib.auth import get_user_model  # noqa: E402
+from django.utils import timezone  # noqa: E402
 
 User = get_user_model()
 

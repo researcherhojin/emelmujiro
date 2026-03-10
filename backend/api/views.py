@@ -25,7 +25,6 @@ from .serializers import (
     NewsletterSubscriptionSerializer,
 )
 
-
 logger = logging.getLogger(__name__)
 
 # Time constants (seconds)

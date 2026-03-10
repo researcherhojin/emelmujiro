@@ -48,9 +48,7 @@ schema_view = get_schema_view(
         ```
         """,
         terms_of_service="https://emelmujiro.com/terms/",
-        contact=openapi.Contact(
-            name="Emelmujiro Support", email=CONTACT_EMAIL, url="https://emelmujiro.com"
-        ),
+        contact=openapi.Contact(name="Emelmujiro Support", email=CONTACT_EMAIL, url="https://emelmujiro.com"),
         license=openapi.License(name="MIT License"),
     ),
     public=True,

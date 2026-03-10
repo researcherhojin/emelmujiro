@@ -106,9 +106,9 @@ class Command(BaseCommand):
         temp_block_key = f"temp_blocked_{ip_address}"
         if cache.get(temp_block_key):
             cache.delete(temp_block_key)
-            self.stdout.write(f"✅ 임시 차단이 해제되었습니다.")
+            self.stdout.write("✅ 임시 차단이 해제되었습니다.")
         else:
-            self.stdout.write(f"ℹ️  임시 차단 상태가 아닙니다.")
+            self.stdout.write("ℹ️  임시 차단 상태가 아닙니다.")
 
         # Reset rate limiting
         rate_limit_key = f"rate_limit_{ip_address}"

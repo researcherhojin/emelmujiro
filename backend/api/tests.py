@@ -163,14 +163,14 @@ class BlogPostModelTestCase(TestCase):
 
     def test_default_ordering(self):
         """Test posts are ordered by -date by default"""
-        old_post = BlogPost.objects.create(
+        BlogPost.objects.create(
             title="Old Post",
             description="D",
             content="C",
             category="ai",
             date=django_timezone.now() - timedelta(days=10),
         )
-        new_post = BlogPost.objects.create(
+        BlogPost.objects.create(
             title="New Post",
             description="D",
             content="C",
@@ -406,9 +406,7 @@ class NewsletterAPITestCase(APITestCase):
 
     def test_resubscribe_inactive_newsletter(self):
         """Test resubscribing an inactive newsletter subscription reactivates it"""
-        sub = NewsletterSubscription.objects.create(
-            email="inactive@example.com", name="Inactive", is_active=False
-        )
+        sub = NewsletterSubscription.objects.create(email="inactive@example.com", name="Inactive", is_active=False)
         url = reverse("newsletter-subscribe")
         data = {"email": "inactive@example.com", "name": "Resubscriber"}
         response: Response = self.client.post(url, data, format="json")  # type: ignore
