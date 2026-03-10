@@ -254,7 +254,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Pipelines
 
-- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages. Backend tests run against PostgreSQL 15 (timeout: 10min). Node 22, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). All GitHub Actions pinned to `@v4`. Has a commented `deploy-backend` job placeholder for future backend deployment.
+- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages. Backend tests run against PostgreSQL 15 (timeout: 10min). Node 22, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/checkout@v6`, `setup-node@v6`, `cache@v5`, `upload-artifact@v6`, `download-artifact@v6`. Has a commented `deploy-backend` job placeholder for future backend deployment.
 - **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy v0.35.0) + bundle size check (<10MB). Posts summary comment on PR.
 
 ## Critical Configuration
