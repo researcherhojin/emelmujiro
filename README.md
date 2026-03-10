@@ -215,18 +215,32 @@ emelmujiro/
 ## 앞으로 할 것
 
 > **코드 품질 작업은 15차 감사로 전량 완료.** 아래는 기능 구현 및 배포 관련 남은 작업입니다.
+>
+> **1.0 범위**: Blog + Contact + Auth + Admin Dashboard | **1.0 이후**: 실시간 채팅, Notification
 
 ### 즉시 실행 가능 (백엔드 배포 불필요)
 
-| #   | 작업                           | 우선순위 | 설명                                                                                  |
-| --- | ------------------------------ | -------- | ------------------------------------------------------------------------------------- |
-| A1  | **Google Form 자동 메일 설정** | 높음     | Apps Script 트리거 등록 → 신청자 확인 메일 + 운영자 알림 메일 (README 하단 코드 참조) |
-| A2  | **Google Analytics 연동**      | 중간     | `VITE_GA_TRACKING_ID` 설정, gtag 이벤트 추적 (CTA 클릭, 페이지 뷰, 언어 전환)         |
-| A3  | **Sentry 활성화**              | 중간     | `VITE_SENTRY_DSN` + `VITE_ENABLE_SENTRY=true` 설정 → 프로덕션 에러 모니터링 시작      |
-| A4  | **OG 이미지 최신화**           | 낮음     | `public/og-image.png` 디자인 업데이트 (현재 기본 이미지)                              |
-| A5  | **Lighthouse CI 자동화**       | 낮음     | GitHub Actions에 LHCI 스텝 추가 (`npm run preview` → lhci autorun)                    |
+| #   | 작업                           | 우선순위 | 설명                                                                      |
+| --- | ------------------------------ | -------- | ------------------------------------------------------------------------- |
+| A1  | **Google Form 자동 메일 설정** | 높음     | Apps Script 트리거 등록 → 신청자 확인 메일 + 운영자 알림 메일 (하단 참조) |
+| A2  | **Google Analytics 연동**      | 중간     | `VITE_GA_TRACKING_ID` 설정, gtag 이벤트 추적 (CTA 클릭, 페이지 뷰)        |
+| A3  | **Sentry 활성화**              | 중간     | `VITE_SENTRY_DSN` + `VITE_ENABLE_SENTRY=true` 설정                        |
+| A4  | **OG 이미지 최신화**           | 낮음     | `public/og-image.png` 디자인 업데이트                                     |
+| A5  | **Lighthouse CI 자동화**       | 낮음     | GitHub Actions에 LHCI 스텝 추가 (`npm run preview` → lhci autorun)        |
 
 ### 백엔드 배포 후 실행
+
+```mermaid
+graph LR
+    B1["B1 백엔드 배포<br/>(핵심 블로커)"] --> B2["B2 Mock API 해제"]
+    B1 --> B4["B4 이메일 연동"]
+    B1 --> B5["B5 JWT → httpOnly"]
+    B1 --> B7["B7 초기 데이터"]
+    B1 --> B8["B8 커스텀 도메인"]
+    B1 --> B9["B9 SiteVisit 정리"]
+    B2 --> B3["B3 블로그 해제"]
+    B2 --> B6["B6 Admin 대시보드"]
+```
 
 | #   | 작업                         | 의존성 | 설명                                                                                      |
 | --- | ---------------------------- | ------ | ----------------------------------------------------------------------------------------- |
@@ -235,55 +249,13 @@ emelmujiro/
 | B3  | **블로그 공사 중 해제**      | B2     | `App.tsx` 라우트 복원, sitemap/manifest/E2E 업데이트                                      |
 | B4  | **이메일 발송 연동**         | B1     | Contact 폼 SMTP/SendGrid 연동 (현재 Google Form 임베드 사용 중)                           |
 | B5  | **JWT → httpOnly 쿠키**      | B1     | `localStorage` → `httpOnly` 쿠키 이전 (XSS 방어 강화)                                     |
-| B6  | **Admin 대시보드 API 연동**  | B2     | 실제 통계 API 연결, 458줄 컴포넌트 분리 권장                                              |
+| B6  | **Admin 대시보드 API 연동**  | B2     | 실제 통계 API 연결, 컴포넌트 분리 권장                                                    |
 | B7  | **초기 데이터 fixture**      | B1     | `createsuperuser` + 블로그 포스트 fixture (`manage.py loaddata`)                          |
 | B8  | **커스텀 도메인**            | B1     | GitHub Pages CNAME + DNS (`emelmujiro.com`), `SITE_URL` 업데이트                          |
 | B9  | **SiteVisit 정기 정리**      | B1     | `manage.py cleanup_sitevisits --days 90` cron 등록 (명령어 구현 완료)                     |
 
-### 장기 개선 사항
-
-| #   | 작업                      | 설명                                                               |
-| --- | ------------------------- | ------------------------------------------------------------------ |
-| C1  | **BrowserRouter 전환**    | `/#/about` → `/about` — 서버 사이드 catch-all 필요, SEO 개선       |
-| C2  | **SSG / Prerendering**    | 정적 HTML 생성 → 크롤러 완성된 HTML 수신 (react-snap 또는 Next.js) |
-| C3  | **`hreflang` 다국어 SEO** | `/ko/about`, `/en/about` + `hreflang` 태그                         |
-| C4  | **실시간 채팅**           | WebSocket/Redis/Channels 구현, `ChatWidget` AppLayout 복원         |
-| C5  | **Notification 모델**     | `consumers.py` 스텁 → Django 모델 + REST API + WebSocket 핸들러    |
-
-## Roadmap → 1.0
-
-백엔드 프로덕션 배포 + Mock API 전환이 완료되면 1.0으로 전환합니다.
-
-- **도메인**: `emelmujiro.com` 확보 완료 — `api.emelmujiro.com` 백엔드 + 커스텀 도메인 예정
-- **DB**: SQLite (트래픽 규모상 충분) — Persistent Volume 필수 (컨테이너 재시작 시 데이터 보존)
-- **1.0 범위**: Blog + Contact + Auth + Admin Dashboard
-- **1.0 이후**: 실시간 채팅 (WebSocket/Redis/Channels), Notification 모델
-
-### 배포 체인
-
-```mermaid
-graph LR
-    D["#1 백엔드 배포<br/>(핵심 블로커)"] --> M["#2 Mock API 해제"]
-    D --> E["#4 이메일 연동"]
-    D --> S["#5 JWT → httpOnly"]
-    D --> F["#7 초기 데이터"]
-    D --> C["#8 커스텀 도메인"]
-    M --> U["#3 블로그 공사 중 해제"]
-    M --> A["#6 Admin 대시보드"]
-```
-
-| #   | 작업                | 상태   | 설명                                                                                      |
-| --- | ------------------- | ------ | ----------------------------------------------------------------------------------------- |
-| 1   | **백엔드 배포**     | 미결정 | Django + SQLite 배포 (Railway / Render / Fly.io). `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` |
-| 2   | Mock API 해제       | → #1   | `VITE_API_URL` 설정 → Mock 자동 비활성화                                                  |
-| 3   | 블로그 공사 중 해제 | → #2   | `App.tsx` 블로그 라우트 복원, sitemap/manifest/E2E 업데이트                               |
-| 4   | 이메일 발송 연동    | → #1   | Contact 폼 SMTP/SendGrid 연동 (현재 Google Form 임베드 사용 중)                           |
-| 5   | JWT 토큰 보안       | → #1   | `localStorage` → `httpOnly` 쿠키 이전                                                     |
-| 6   | Admin 대시보드 연동 | → #2   | 실제 통계 API 연결, 458줄 컴포넌트 분리 권장                                              |
-| 7   | 초기 데이터 fixture | → #1   | `createsuperuser` + 블로그 포스트 fixture (`manage.py loaddata`)                          |
-| 8   | 커스텀 도메인 설정  | → #1   | GitHub Pages CNAME + DNS 설정 (`emelmujiro.com`), `SITE_URL` 업데이트                     |
-
-### 배포 플랫폼 비교
+<details>
+<summary>배포 플랫폼 비교</summary>
 
 | 플랫폼  | 무료 티어    | SQLite 지원            | 장점             | 단점                     |
 | ------- | ------------ | ---------------------- | ---------------- | ------------------------ |
@@ -291,25 +263,28 @@ graph LR
 | Render  | 750시간/월   | Persistent Disk (유료) | GitHub 자동 배포 | 무료 인스턴스 15분 sleep |
 | Fly.io  | 256MB VM     | Persistent Volume      | 글로벌 엣지      | 설정 다소 복잡           |
 
-### SEO 개선 (배포 후)
+</details>
 
-현재 HashRouter + 클라이언트 렌더링의 SEO 한계 (크롤러 한국어 강제는 해결 완료):
+### 장기 개선 사항
 
-| 작업                   | 효과                                              | 비고                       |
-| ---------------------- | ------------------------------------------------- | -------------------------- |
-| **BrowserRouter 전환** | `/#/about` → `/about` — 개별 URL 인식             | 서버 사이드 catch-all 필요 |
-| **SSG / Prerendering** | 정적 HTML 생성 → 크롤러 완성된 HTML 수신          | react-snap 또는 Next.js    |
-| **`hreflang` 적용**    | `/ko/about`, `/en/about` + `hreflang` 다국어 태그 | 다국어 SEO 표준            |
+| #   | 작업                      | 설명                                                                                 |
+| --- | ------------------------- | ------------------------------------------------------------------------------------ |
+| C1  | **BrowserRouter 전환**    | `/#/about` → `/about` — 서버 사이드 catch-all 필요, SEO 개선                         |
+| C2  | **SSG / Prerendering**    | 정적 HTML 생성 → 크롤러 완성된 HTML 수신 (react-snap 또는 Next.js)                   |
+| C3  | **`hreflang` 다국어 SEO** | `/ko/about`, `/en/about` + `hreflang` 태그                                           |
+| C4  | **실시간 채팅**           | WebSocket/Redis/Channels 구현, `ChatWidget` AppLayout 복원 (프론트엔드 UI 완성 상태) |
+| C5  | **Notification 모델**     | `consumers.py:251,256` 스텁 → Django 모델 + REST API + WebSocket 핸들러              |
 
-### 백엔드 배포 후 전환 가이드
+## 배포 가이드
 
-백엔드 서버가 프로덕션에 배포되면 아래 순서대로 작업합니다:
+<details>
+<summary>백엔드 배포 후 전환 가이드 (클릭하여 펼치기)</summary>
 
-**1단계: 백엔드 설정**
+### 1단계: 백엔드 설정
 
 ```bash
 # 배포 플랫폼에서 환경변수 설정
-DJANGO_SECRET_KEY=<생성된 시크릿 키>
+SECRET_KEY=<생성된 시크릿 키>
 DEBUG=False
 ALLOWED_HOSTS=api.emelmujiro.com
 CSRF_TRUSTED_ORIGINS=https://emelmujiro.com,https://researcherhojin.github.io
@@ -322,7 +297,7 @@ python manage.py createsuperuser
 python manage.py loaddata <fixture파일>  # 블로그 초기 포스트 (선택)
 ```
 
-**2단계: 프론트엔드 Mock API 해제**
+### 2단계: 프론트엔드 Mock API 해제
 
 ```bash
 # frontend/.env 또는 GitHub Actions secrets에 설정
@@ -332,7 +307,7 @@ VITE_API_URL=https://api.emelmujiro.com/api
 # (src/config/env.ts → USE_MOCK_API = false)
 ```
 
-**3단계: 블로그 공사 중 페이지 해제**
+### 3단계: 블로그 공사 중 페이지 해제
 
 ```tsx
 // frontend/src/App.tsx — UnderConstruction을 원본 컴포넌트로 교체
@@ -346,7 +321,7 @@ const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
 { path: 'blog/:id', element: <BlogDetail /> },
 ```
 
-**4단계: 추가 업데이트**
+### 4단계: 추가 업데이트
 
 - `generate-sitemap.js` — 블로그 URL 활성화
 - `manifest.json` — 블로그 관련 shortcut 복원
@@ -354,23 +329,23 @@ const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
 - 이메일 발송: `EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` 설정 (또는 SendGrid)
 - Contact 페이지: Google Form → 백엔드 API 전환 여부 결정
 
-**5단계: 커스텀 도메인 (선택)**
+### 5단계: 커스텀 도메인 (선택)
 
 - DNS: `emelmujiro.com` CNAME → `researcherhojin.github.io`
 - GitHub Pages: Settings → Custom domain → `emelmujiro.com`
 - `frontend/src/utils/constants.ts` → `SITE_URL` 업데이트
 - `frontend/public/CNAME` 파일 생성
 
-### Google Form 자동 메일 설정 (TODO)
+</details>
+
+<details>
+<summary>Google Form 자동 메일 설정 (클릭하여 펼치기)</summary>
 
 현재 `/contact` 페이지는 Google Form 임베드 사용 중. 아래 설정을 완료하면 신청자 + 운영자 양쪽에 자동 메일 발송:
 
 - [ ] **Google Forms 설정** → 응답 → "응답자에게 응답 사본 보내기" → "항상" 활성화
 - [ ] **Google Forms 설정** → 응답 → "새로운 응답에 대한 이메일 알림 받기" 체크
 - [ ] **Apps Script 등록** — Google Forms 편집 → ⋮ → 스크립트 편집기 → 아래 코드 추가:
-
-<details>
-<summary>Apps Script 코드 (접기/펼치기)</summary>
 
 ```javascript
 function onFormSubmit(e) {
@@ -399,7 +374,6 @@ function onFormSubmit(e) {
     schedule +
     '\n\n' +
     '감사합니다.\n에멜무지로 드림';
-
   MailApp.sendEmail(email, userSubject, userBody);
 
   // 2. Notification email to the operator
@@ -432,20 +406,14 @@ function onFormSubmit(e) {
     (responses['기타 의견이나 제안사항이 있다면 자유롭게 적어 주십시오.'] || [
       '없음',
     ])[0];
-
   MailApp.sendEmail(adminEmail, adminSubject, adminBody);
 }
 ```
 
-</details>
-
 - [ ] **트리거 설정** — 스크립트 편집기 → 시계 아이콘 → + 트리거 추가 → 함수: `onFormSubmit`, 이벤트: "양식 제출 시" → 저장
 - [ ] **테스트 제출** — 양식 제출 후 신청자 메일 + 운영자 메일(researcherhojin@gmail.com) 수신 확인
 
-### 1.0 이후
-
-- **Notification 모델** — `consumers.py:251,256` 스텁 → Django 모델 + REST API + WebSocket 핸들러
-- **실시간 채팅** — WebSocket/Redis/Channels 구현, `ChatWidget` AppLayout 복원 (프론트엔드 UI 완성 상태)
+</details>
 
 ## 리팩토링 백로그
 
@@ -457,7 +425,7 @@ function onFormSubmit(e) {
 | 14차  | 2026.03.10  | 8건       | WebSocket timezone.now() 통일, ContactAttempt 원자적 증가(F()), 잘못된 메시지 타입 거부, 클립보드 실패 시 복사 표시 방지, SESSION_SAVE_EVERY_REQUEST 제거, tsconfig.ci strict, Dependabot 루트 npm, Dockerfile.dev non-root |
 | 13차  | 2026.03.10  | 9건       | GH Actions 최신 안정 버전 통일 (checkout/setup-node@v6, cache@v5, artifact@v6), Lighthouse URL 프리뷰 포트, Dependabot vitest+백엔드 그룹, Codecov 플래그 분리, 이메일 설정 안전장치                                        |
 | 12차  | 2026.03.10  | 5건       | SEO 하드코딩 영어→i18n 전환 (StructuredData/SEOHelmet), ESLint 9→10 업그레이드, global.d.ts 타입 보강, backend uv.lock 동기화                                                                                               |
-| 11차  | 2026.03.11  | 7건       | CI 파이프라인 수정 (uv --extra dev, Trivy 0.35.0, SECRET_KEY), Django 5.2.12 보안패치, react-helmet-async v3, 백엔드 black/flake8 수정                                                                                      |
+| 11차  | 2026.03.10  | 7건       | CI 파이프라인 수정 (uv --extra dev, Trivy 0.35.0, SECRET_KEY), Django 5.2.12 보안패치, react-helmet-async v3, 백엔드 black/flake8 수정                                                                                      |
 | 10차  | 2026.03.10  | 8건       | KakaoTalk 인앱 브라우저 백지 문제 해결 (다층 폴백), 배너 i18n 전환, Android intent 스킴, 인라인 스타일 스켈레톤                                                                                                             |
 | 9차   | 2026.03.09  | 5건       | CSP localhost 제거, sitemap/Lighthouse에 /contact 추가, UnderConstruction dead type/test 제거                                                                                                                               |
 | 8차   | 2026.03.09  | 8건       | TS 빌드 오류, ESLint 워크스페이스 호이스팅, ESLint 경고 21건 → 0건                                                                                                                                                          |
@@ -513,7 +481,7 @@ function onFormSubmit(e) {
 - **M2** `global.d.ts` Window 인터페이스에 `__legacyFailed` 타입 추가 (KakaoTalk fallback용)
 - **L1** backend `uv.lock` redis 7.2.1 → 7.3.0 동기화, en.json/ko.json SEO i18n 키 추가
 
-### 11차 감사 (2026.03.11)
+### 11차 감사 (2026.03.10)
 
 - **H1** CI `uv sync --frozen` → `uv sync --frozen --extra dev` — black/flake8/pytest가 `[project.optional-dependencies]`에 있어 설치 누락
 - **H2** Django 5.2.11 → 5.2.12 보안 패치 (CVE-2026-25673: DoS via slow URL normalization)
@@ -641,7 +609,7 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
 
 ### 0.9.0 ~ 0.9.4 (2026.02.28 ~ 03.02)
 
-- i18n 전체 전환, P0 보안 수정, 접근성 개선, dead code 정리, 테스트 확장 (1718 → 1233)
+- i18n 전체 전환, P0 보안 수정, 접근성 개선, dead code 정리, 테스트 정리 (1718 → 1233)
 - Blog/Contact/Chat 공사 중 전환, Admin ProtectedRoute, Pre-commit 훅
 
 ### 0.8.0 이전 (2025.09 ~ 2026.02)
