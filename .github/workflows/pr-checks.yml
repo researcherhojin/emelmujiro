@@ -143,6 +143,10 @@ jobs:
 
       - name: Test backend changes
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
+        env:
+          SECRET_KEY: test-secret-key
+          DEBUG: "True"
+          DATABASE_URL: ""
         run: |
           cd backend
           uv sync --frozen --extra dev
