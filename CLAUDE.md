@@ -109,17 +109,22 @@ The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`
 
 ### KakaoTalk In-App Browser Support
 
-Multi-layer fallback for Galaxy Android KakaoTalk in-app WebView where `type="module"` scripts fail to execute:
+Android KakaoTalk in-app WebView fails to render the React app (module scripts partially execute then crash, wiping the loading skeleton with no recovery). The solution is an **immediate redirect** strategy — no attempt is made to render the React app in this WebView.
 
-1. **Vite legacy plugin** — generates `nomodule` fallback bundles for browsers without module support
-2. **Vite built-in detection** — dynamically loads legacy bundle when modern bundle fails (inside `type="module"`)
-3. **KakaoTalk-specific fallback** — plain `<script>` in `index.html` checks `window.__appLoaded` after DOMContentLoaded + 2s; if false, dynamically loads `vite-legacy-polyfill`/`vite-legacy-entry`. Bypasses WebView module support bugs by not relying on `type="module"` or `nomodule`
-4. **5s general fallback** — shows "open in external browser" message if nothing loads
-5. **`window.onerror` handler** — error handler at top of `<head>` visually displays inline script errors
+**Android KakaoTalk** (`__isKakaoAndroid`): `index.html` detects KakaoTalk + Android via user agent, then uses `document.write()` to immediately render a static "open in external browser" page with `intent://` scheme. React initialization is fully skipped in `main.tsx`. `#root` is hidden via `display:none` as a safety net. This runs before any framework JS loads — pure inline HTML/CSS, no dependencies.
 
-Key files: `index.html` (detection + fallbacks), `App.tsx` (`AppLoaded` component sets `window.__appLoaded = true` via `useEffect` after successful render), `Layout.tsx` (KakaoTalk banner + Android `intent://` scheme for external browser), `global.d.ts` (`__isKakaoInApp`, `__appLoaded`, `__legacyFailed`, `performanceStart` types).
+**iOS KakaoTalk**: Uses WKWebView (Safari engine) which supports ES modules fine — no redirect, React app loads normally. `__isKakaoInApp` is still set for the `Layout.tsx` banner hint.
 
-Loading skeleton uses **inline styles** (not Tailwind classes) so it's visible before CSS loads. Layout banner uses `t('common.kakaoBanner')` / `t('common.openExternal')` i18n keys.
+**Other fallbacks** (non-KakaoTalk browsers):
+
+- `@vitejs/plugin-legacy` generates `nomodule` fallback bundles for older browsers
+- Vite's built-in modern browser detection loads legacy chunks when needed
+- `window.onerror` handler in `<head>` displays inline script errors
+- 5-second general fallback targets `#root` directly (not `#loading-fallback`, which React may have already removed) and shows a reload prompt
+
+Key files: `index.html` (detection + redirect + fallbacks), `main.tsx` (`__isKakaoAndroid` guard), `App.tsx` (`AppLoaded` component sets `window.__appLoaded = true`), `Layout.tsx` (KakaoTalk banner for iOS), `global.d.ts` (`__isKakaoInApp`, `__isKakaoAndroid`, `__appLoaded`, `__legacyFailed`, `performanceStart` types).
+
+Loading skeleton uses **inline styles** (not Tailwind classes) so it's visible before CSS loads.
 
 ### State Management
 
@@ -346,4 +351,4 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 25. **ESLint zero warnings policy**: All ESLint warnings have been resolved (0 errors, 0 warnings as of 2026-03-10). Maintain this — don't introduce new warnings. Use `useCallback` for functions passed to context `useMemo`, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements
 26. **Backend dev deps use `--extra dev`**: Dev tools (black, flake8, pytest) are in `[project.optional-dependencies]` not `[tool.uv.dev-dependencies]`. Use `uv sync --extra dev` (not `uv sync --dev`). CI uses `uv sync --frozen --extra dev`
 27. **react-helmet-async v3 ships own types**: `@types/react-helmet-async` is deprecated and removed. The custom `src/@types/react-helmet-async.d.ts` is also removed. Do not re-add either
-28. **KakaoTalk WebView `__appLoaded` pattern**: `App.tsx` has an `AppLoaded` component that sets `window.__appLoaded = true` via `useEffect` — this ensures the flag is only set after React successfully renders (NOT before `root.render()` which would bypass fallbacks if React crashes). `index.html` inline scripts check this flag for fallback decisions. Loading skeleton must use **inline styles** (not Tailwind classes) because Tailwind CSS may not load if JS fails. The KakaoTalk banner in `Layout.tsx` uses `intent://` scheme on Android to force external browser — do NOT use `location.href` with regular URLs (causes blank page in Android KakaoTalk)
+28. **KakaoTalk Android WebView — immediate redirect, no React**: Android KakaoTalk in-app browser gets a static `document.write()` redirect page in `index.html` — React never initializes (`main.tsx` checks `window.__isKakaoAndroid`). Do NOT try to make React work in this WebView; module scripts fail unpredictably. iOS KakaoTalk (WKWebView/Safari) works fine — only Android is redirected. The `intent://` scheme is used to open the external browser on Android. `__appLoaded` pattern still exists for non-KakaoTalk fallbacks: `App.tsx`'s `AppLoaded` component sets it after successful render, and the 5-second fallback targets `#root` directly
