@@ -228,6 +228,37 @@
       <h1>에멜무지로 | AI 교육 &amp; 컨설팅</h1>
       <p>AI 기반 소프트웨어 개발 및 IT 교육 전문가 | 에멜무지로. 기업 맞춤형 AI 솔루션 개발, 실전 교육, 전략 컨설팅을 제공합니다.</p>
     </noscript>
+
+    <!-- KakaoTalk Android in-app browser: immediately show "open in browser" page.
+         This runs BEFORE React or any framework JS, so it always works.
+         iOS KakaoTalk uses WKWebView (Safari engine) which supports ES modules fine,
+         so only Android is redirected. -->
+    <script>
+      window.__isKakaoInApp = /KAKAOTALK/i.test(navigator.userAgent);
+      window.__isKakaoAndroid = window.__isKakaoInApp && /Android/i.test(navigator.userAgent);
+      if (window.__isKakaoAndroid) {
+        var href = 'intent://' + location.href.replace(/^https?:\/\//, '') + '#Intent;scheme=https;end';
+        document.write(
+          '<div id="kakao-redirect" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif">' +
+          '<div style="text-align:center;padding:20px;max-width:320px">' +
+          '<div style="width:64px;height:64px;margin:0 auto 20px;border-radius:16px;background:linear-gradient(135deg,#4F46E5,#7C3AED);display:flex;align-items:center;justify-content:center">' +
+          '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+          '</div>' +
+          '<p style="font-size:18px;font-weight:600;color:#111827;margin:0 0 8px">에멜무지로</p>' +
+          '<p style="font-size:14px;color:#6B7280;margin:0 0 24px;line-height:1.5">' +
+          '카카오톡 브라우저에서는 페이지가<br/>정상적으로 표시되지 않을 수 있습니다.' +
+          '</p>' +
+          '<a href="' + href + '" ' +
+          'style="display:inline-block;width:100%;padding:14px 24px;background:#4F46E5;color:#fff;' +
+          'border-radius:12px;text-decoration:none;font-size:15px;font-weight:500;' +
+          'box-sizing:border-box">' +
+          '외부 브라우저에서 열기</a>' +
+          '<p style="font-size:12px;color:#9CA3AF;margin:16px 0 0">Chrome 또는 Samsung Internet에서<br/>최적의 경험을 제공합니다.</p>' +
+          '</div></div>'
+        );
+      }
+    </script>
+
     <div id="root">
       <!-- Loading skeleton — uses inline styles so it's visible before Tailwind CSS loads -->
       <div id="loading-fallback" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif">
@@ -239,11 +270,15 @@
     </div>
 
     <script>
-      // KakaoTalk in-app browser detection
-      window.__isKakaoInApp = /KAKAOTALK/i.test(navigator.userAgent);
-
       // Performance timing
       window.performanceStart = Date.now();
+
+      // If KakaoTalk detected, stop here — don't load the React app at all
+      if (window.__isKakaoAndroid) {
+        // Hide #root so React doesn't flash if module scripts somehow execute
+        var r = document.getElementById('root');
+        if (r) r.style.display = 'none';
+      }
 
       // Network status detection
       try {
@@ -272,56 +307,27 @@
         }
       } catch (e) {}
 
-      // KakaoTalk WebView fallback: if module scripts don't execute,
-      // force-load the legacy bundle from plain <script> context.
-      // Some WebViews claim module support (skip nomodule) but fail to
-      // actually execute type="module" scripts — this closes that gap.
-      if (window.__isKakaoInApp) {
-        document.addEventListener('DOMContentLoaded', function() {
-          setTimeout(function() {
-            if (!window.__appLoaded) {
-              var p = document.getElementById('vite-legacy-polyfill');
-              var e = document.getElementById('vite-legacy-entry');
-              if (p && e) {
-                var s = document.createElement('script');
-                s.crossOrigin = 'anonymous';
-                s.src = p.getAttribute('src');
-                s.onload = function() {
-                  System.import(e.getAttribute('data-src'));
-                };
-                s.onerror = function() {
-                  // Legacy polyfill failed — show external browser prompt
-                  window.__legacyFailed = true;
-                };
-                document.body.appendChild(s);
-              }
-            }
-          }, 2000);
-        });
-      }
-
-      // General fallback: if nothing loads within 5 seconds, show a message
-      setTimeout(function() {
-        if (window.__appLoaded) return;
-        var fallback = document.getElementById('loading-fallback');
-        if (fallback) {
-          // On Android, use intent scheme to force external browser
-          var href = location.href;
-          if (/Android/i.test(navigator.userAgent)) {
-            href = 'intent://' + href.replace(/^https?:\/\//, '') + '#Intent;scheme=https;end';
+      // General fallback: if nothing loads within 5 seconds, show a message.
+      // Targets #root directly (not #loading-fallback) because React may have
+      // already replaced #root's children during a failed render attempt.
+      if (!window.__isKakaoAndroid) {
+        setTimeout(function() {
+          if (window.__appLoaded) return;
+          var root = document.getElementById('root');
+          if (root) {
+            var href = location.href;
+            root.innerHTML =
+              '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif">' +
+              '<div style="text-align:center;padding:20px">' +
+              '<p style="font-size:16px;color:#333;margin-bottom:12px">' +
+              '페이지를 불러오는 중 문제가 발생했습니다.</p>' +
+              '<a href="' + href + '" ' +
+              'style="display:inline-block;padding:10px 24px;background:#4F46E5;color:#fff;' +
+              'border-radius:8px;text-decoration:none;font-size:14px">' +
+              '새로고침</a></div></div>';
           }
-          fallback.innerHTML =
-            '<div style="text-align:center;padding:20px">' +
-            '<p style="font-size:16px;color:#333;margin-bottom:12px">' +
-            '페이지를 불러올 수 없습니다.</p>' +
-            '<p style="font-size:13px;color:#888;margin-bottom:16px">' +
-            '외부 브라우저에서 열어주세요.</p>' +
-            '<a href="' + href + '" ' +
-            'style="display:inline-block;padding:10px 24px;background:#4F46E5;color:#fff;' +
-            'border-radius:8px;text-decoration:none;font-size:14px">' +
-            '브라우저에서 열기</a></div>';
-        }
-      }, 5000);
+        }, 5000);
+      }
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
