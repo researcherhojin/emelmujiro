@@ -8,15 +8,21 @@ coverage:
 
   status:
     project:
-      default:
+      frontend:
         target: 60%
         threshold: 5%
         base: auto
         flags:
           - frontend
-          - backend
         paths:
           - frontend/src
+      backend:
+        target: 60%
+        threshold: 5%
+        base: auto
+        flags:
+          - backend
+        paths:
           - backend
 
     patch:
@@ -48,6 +54,8 @@ ignore:
   - "**/*.test.tsx"
   - "**/*.spec.js"
   - "**/*.spec.ts"
+  - "**/*.spec.tsx"
+  - "**/*.test.jsx"
   - "**/test-utils/**"
   - "**/mock/**"
   - "frontend/src/setupTests.ts"

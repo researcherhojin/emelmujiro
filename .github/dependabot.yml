@@ -19,6 +19,7 @@ updates:
           - "@testing-library/*"
           - "jest*"
           - "playwright*"
+          - "vitest*"
       dev-dependencies:
         dependency-type: "development"
         patterns:
@@ -57,6 +58,22 @@ updates:
       day: "monday"
       time: "04:00"
     open-pull-requests-limit: 10
+    groups:
+      django:
+        patterns:
+          - "django*"
+          - "djangorestframework*"
+          - "drf-*"
+      testing:
+        patterns:
+          - "pytest*"
+          - "coverage*"
+      dev-tools:
+        patterns:
+          - "black"
+          - "flake8*"
+          - "isort"
+          - "ruff"
     labels:
       - "dependencies"
       - "backend"

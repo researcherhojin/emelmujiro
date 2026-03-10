@@ -212,6 +212,43 @@ emelmujiro/
 | `make test`       | 프론트/백 전체 테스트 |
 | `make lint`       | 프론트/백 전체 린트   |
 
+## 앞으로 할 것
+
+> **코드 품질 작업은 13차 감사로 전량 완료.** 아래는 기능 구현 및 배포 관련 남은 작업입니다.
+
+### 즉시 실행 가능 (백엔드 배포 불필요)
+
+| #   | 작업                           | 우선순위 | 설명                                                                                  |
+| --- | ------------------------------ | -------- | ------------------------------------------------------------------------------------- |
+| A1  | **Google Form 자동 메일 설정** | 높음     | Apps Script 트리거 등록 → 신청자 확인 메일 + 운영자 알림 메일 (README 하단 코드 참조) |
+| A2  | **Google Analytics 연동**      | 중간     | `VITE_GA_TRACKING_ID` 설정, gtag 이벤트 추적 (CTA 클릭, 페이지 뷰, 언어 전환)         |
+| A3  | **Sentry 활성화**              | 중간     | `VITE_SENTRY_DSN` + `VITE_ENABLE_SENTRY=true` 설정 → 프로덕션 에러 모니터링 시작      |
+| A4  | **OG 이미지 최신화**           | 낮음     | `public/og-image.png` 디자인 업데이트 (현재 기본 이미지)                              |
+| A5  | **Lighthouse CI 자동화**       | 낮음     | GitHub Actions에 LHCI 스텝 추가 (`npm run preview` → lhci autorun)                    |
+
+### 백엔드 배포 후 실행
+
+| #   | 작업                         | 의존성 | 설명                                                                                      |
+| --- | ---------------------------- | ------ | ----------------------------------------------------------------------------------------- |
+| B1  | **백엔드 프로덕션 배포**     | —      | Django + SQLite 배포 (Railway / Render / Fly.io), `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` |
+| B2  | **Mock API → Real API 전환** | B1     | `VITE_API_URL=https://api.emelmujiro.com/api` 설정 → Mock 자동 비활성화                   |
+| B3  | **블로그 공사 중 해제**      | B2     | `App.tsx` 라우트 복원, sitemap/manifest/E2E 업데이트                                      |
+| B4  | **이메일 발송 연동**         | B1     | Contact 폼 SMTP/SendGrid 연동 (현재 Google Form 임베드 사용 중)                           |
+| B5  | **JWT → httpOnly 쿠키**      | B1     | `localStorage` → `httpOnly` 쿠키 이전 (XSS 방어 강화)                                     |
+| B6  | **Admin 대시보드 API 연동**  | B2     | 실제 통계 API 연결, 458줄 컴포넌트 분리 권장                                              |
+| B7  | **초기 데이터 fixture**      | B1     | `createsuperuser` + 블로그 포스트 fixture (`manage.py loaddata`)                          |
+| B8  | **커스텀 도메인**            | B1     | GitHub Pages CNAME + DNS (`emelmujiro.com`), `SITE_URL` 업데이트                          |
+
+### 장기 개선 사항
+
+| #   | 작업                      | 설명                                                               |
+| --- | ------------------------- | ------------------------------------------------------------------ |
+| C1  | **BrowserRouter 전환**    | `/#/about` → `/about` — 서버 사이드 catch-all 필요, SEO 개선       |
+| C2  | **SSG / Prerendering**    | 정적 HTML 생성 → 크롤러 완성된 HTML 수신 (react-snap 또는 Next.js) |
+| C3  | **`hreflang` 다국어 SEO** | `/ko/about`, `/en/about` + `hreflang` 태그                         |
+| C4  | **실시간 채팅**           | WebSocket/Redis/Channels 구현, `ChatWidget` AppLayout 복원         |
+| C5  | **Notification 모델**     | `consumers.py` 스텁 → Django 모델 + REST API + WebSocket 핸들러    |
+
 ## Roadmap → 1.0
 
 백엔드 프로덕션 배포 + Mock API 전환이 완료되면 1.0으로 전환합니다.
@@ -220,8 +257,6 @@ emelmujiro/
 - **DB**: SQLite (트래픽 규모상 충분) — Persistent Volume 필수 (컨테이너 재시작 시 데이터 보존)
 - **1.0 범위**: Blog + Contact + Auth + Admin Dashboard
 - **1.0 이후**: 실시간 채팅 (WebSocket/Redis/Channels), Notification 모델
-
-> **코드 품질 작업은 전량 완료.** 남은 항목은 배포 및 기능 연동만 해당합니다.
 
 ### 배포 체인
 
@@ -413,10 +448,11 @@ function onFormSubmit(e) {
 
 ## 리팩토링 백로그
 
-> **전량 해소 완료.** 12차에 걸친 코드 감사를 통해 식별된 모든 항목을 해결했습니다.
+> **전량 해소 완료.** 13차에 걸친 코드 감사를 통해 식별된 모든 항목을 해결했습니다.
 
 | 감사  | 날짜        | 해결 건수 | 주요 내용                                                                                                                              |
 | ----- | ----------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 13차  | 2026.03.10  | 9건       | GH Actions v5/v7/v8→v4 통일, Lighthouse URL 프리뷰 포트, Dependabot vitest+백엔드 그룹, Codecov 플래그 분리, 이메일 설정 안전장치      |
 | 12차  | 2026.03.10  | 5건       | SEO 하드코딩 영어→i18n 전환 (StructuredData/SEOHelmet), ESLint 9→10 업그레이드, global.d.ts 타입 보강, backend uv.lock 동기화          |
 | 11차  | 2026.03.11  | 7건       | CI 파이프라인 수정 (uv --extra dev, Trivy 0.35.0, SECRET_KEY), Django 5.2.12 보안패치, react-helmet-async v3, 백엔드 black/flake8 수정 |
 | 10차  | 2026.03.10  | 8건       | KakaoTalk 인앱 브라우저 백지 문제 해결 (다층 폴백), 배너 i18n 전환, Android intent 스킴, 인라인 스타일 스켈레톤                        |
@@ -429,10 +465,22 @@ function onFormSubmit(e) {
 | 3차   | 2026.03.07  | 47건      | 미들웨어 미등록, ObjectURL 누수, JWT 블랙리스트, 컴포넌트 분할                                                                         |
 | 1~2차 | ~2026.03.07 | 21건      | HashRouter 버그, Zustand 제거, i18n 전환, Sentry 초기화, Docker 버전 통일                                                              |
 
-**총 해결: Critical 12 / High 22 / Medium 40 / Low 23 / Backend 7 / 이슈 아님 6건**
+**총 해결: Critical 12 / High 24 / Medium 45 / Low 24 / Backend 7 / 이슈 아님 6건**
 
 <details>
 <summary>감사 상세 기록 (클릭하여 펼치기)</summary>
+
+### 13차 감사 (2026.03.10)
+
+- **H1** GitHub Actions 버전 통일: checkout/setup-node/cache v5→v4, upload-artifact v7→v4, download-artifact v8→v4 (main-ci-cd.yml + pr-checks.yml)
+- **H2** `DEFAULT_FROM_EMAIL` None 방지 — `EMAIL_HOST_USER or "noreply@emelmujiro.com"` 폴백 추가, `ADMIN_EMAIL` 기본값 실제 이메일로 수정
+- **M1** Lighthouse CI URL: dev 포트 5173 → preview 포트 4173 (프로덕션 빌드 테스트)
+- **M2** Dependabot: frontend testing 그룹에 `vitest*` 추가
+- **M3** Dependabot: backend pip 의존성 그룹핑 (django, testing, dev-tools)
+- **M4** Codecov: project status를 frontend/backend 별도 플래그로 분리 (프론트만 변경 시 백엔드 커버리지 불요)
+- **M5** Codecov: ignore 패턴에 `*.spec.tsx`, `*.test.jsx` 추가
+- **L1** 백엔드 미사용 import 제거 (admin.py, tests.py), CategoryListView dict 캐싱
+- **L2** Docker Node 24→22 LTS (Dockerfile + Dockerfile.dev)
 
 ### 12차 감사 (2026.03.10)
 
