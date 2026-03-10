@@ -143,6 +143,14 @@ const router = createHashRouter([
   },
 ]);
 
+// Signal to index.html fallback scripts that the app rendered successfully
+function AppLoaded() {
+  useEffect(() => {
+    window.__appLoaded = true;
+  }, []);
+  return null;
+}
+
 const App: React.FC = () => {
   return (
     <HelmetProvider>
@@ -152,6 +160,7 @@ const App: React.FC = () => {
             <BlogProvider>
               <FormProvider>
                 <RouterProvider router={router} />
+                <AppLoaded />
               </FormProvider>
             </BlogProvider>
           </AuthProvider>

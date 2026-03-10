@@ -20,9 +20,6 @@ if (!rootElement) {
 
 const root = ReactDOM.createRoot(rootElement);
 
-// Signal that JS loaded successfully (disables the 10s timeout fallback in index.html)
-window.__appLoaded = true;
-
 root.render(
   <React.StrictMode>
     <App />
