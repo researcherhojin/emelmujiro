@@ -172,7 +172,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
               '@type': 'ContactPoint',
               email: CONTACT_EMAIL,
               telephone: t('contact.info.phone'),
-              contactType: 'customer service',
+              contactType: t('seo.contactType'),
               availableLanguage: ['Korean', 'English'],
             },
             address: {
@@ -182,7 +182,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
             },
             sameAs: ['https://github.com/researcherhojin'],
             foundingDate: '2022',
-            areaServed: 'South Korea',
+            areaServed: t('seo.countryName'),
             serviceType: [
               t('services.consulting.title'),
               t('services.education.title'),

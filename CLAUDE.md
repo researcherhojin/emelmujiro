@@ -114,10 +114,10 @@ Multi-layer fallback for Galaxy Android KakaoTalk in-app WebView where `type="mo
 1. **Vite legacy plugin** — generates `nomodule` fallback bundles for browsers without module support
 2. **Vite built-in detection** — dynamically loads legacy bundle when modern bundle fails (inside `type="module"`)
 3. **KakaoTalk-specific fallback** — plain `<script>` in `index.html` checks `window.__appLoaded` after DOMContentLoaded + 2s; if false, dynamically loads `vite-legacy-polyfill`/`vite-legacy-entry`. Bypasses WebView module support bugs by not relying on `type="module"` or `nomodule`
-4. **10s general fallback** — shows "open in external browser" message if nothing loads
+4. **5s general fallback** — shows "open in external browser" message if nothing loads
 5. **`window.onerror` handler** — error handler at top of `<head>` visually displays inline script errors
 
-Key files: `index.html` (detection + fallbacks), `main.tsx` (`window.__appLoaded = true`), `Layout.tsx` (KakaoTalk banner + Android `intent://` scheme for external browser), `global.d.ts` (`__isKakaoInApp`, `__appLoaded`, `performanceStart` types).
+Key files: `index.html` (detection + fallbacks), `App.tsx` (`AppLoaded` component sets `window.__appLoaded = true` via `useEffect` after successful render), `Layout.tsx` (KakaoTalk banner + Android `intent://` scheme for external browser), `global.d.ts` (`__isKakaoInApp`, `__appLoaded`, `__legacyFailed`, `performanceStart` types).
 
 Loading skeleton uses **inline styles** (not Tailwind classes) so it's visible before CSS loads. Layout banner uses `t('common.kakaoBanner')` / `t('common.openExternal')` i18n keys.
 
@@ -269,6 +269,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 - `build.target: ['chrome64', 'safari12', 'firefox63', 'edge79']` — ensures modern bundle compatibility with older WebViews. Matches the legacy plugin's modern browser detection level (Chrome 64+)
 - `@vitejs/plugin-legacy` generates `nomodule` fallback bundles for older Chromium-based browsers (KakaoTalk in-app WebView, Samsung Internet ≥9.2)
 - `stripLocalhostCsp` custom plugin strips `localhost:8000`/`127.0.0.1:8000` from CSP `connect-src` in production builds (kept in dev for direct API calls)
+- CSP `script-src` includes `'unsafe-eval'` — **required** by SystemJS polyfill in `@vitejs/plugin-legacy` legacy bundles (`new Function()`). Cannot be removed while KakaoTalk in-app browser legacy fallback is active. `'unsafe-inline'` is also required for `index.html` inline scripts (error handler, theme detection, KakaoTalk fallback)
 - Dev server proxies `/api` to `http://127.0.0.1:8000` (`strictPort: false` — tries next port if busy)
 
 ### Tailwind CSS 3.x
@@ -285,7 +286,7 @@ Root `.prettierrc` is the canonical config: `printWidth: 100` for JS/TS, per-fil
 
 ### ESLint
 
-ESLint 9 **flat config** format in `frontend/eslint.config.mjs` (not `.eslintrc`). Plugins: `@typescript-eslint`, `react`, `react-hooks`, `jsx-a11y`, `testing-library`. Production code: `no-console: ['warn', { allow: ['warn', 'error'] }]` — only `console.warn` and `console.error` are allowed. Test files have relaxed rules (no-unused-vars off, no-explicit-any off, no-console off, testing-library rules off). Unused vars prefixed with `_` are allowed.
+ESLint 10 **flat config** format in `frontend/eslint.config.mjs` (not `.eslintrc`). Plugins: `@typescript-eslint`, `react`, `react-hooks`, `jsx-a11y`, `testing-library`. Production code: `no-console: ['warn', { allow: ['warn', 'error'] }]` — only `console.warn` and `console.error` are allowed. Test files have relaxed rules (no-unused-vars off, no-explicit-any off, no-console off, testing-library rules off). Unused vars prefixed with `_` are allowed.
 
 ### Pre-commit Hooks
 
@@ -323,7 +324,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 4. **Test count**: Frontend 69 files / 1109 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-11)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
-7. **ESLint must stay on v9**: Plugins (jsx-a11y, react, react-hooks) don't support ESLint 10 yet. Don't upgrade ESLint major version without checking plugin compatibility
+7. **ESLint 10 flat config**: Upgraded from v9 to v10. Root `package.json` eslint version must match frontend's (both `^10.x`). Don't downgrade — plugins are compatible with ESLint 10
 8. **minimatch override**: Root and frontend `package.json` both have `overrides` to force `minimatch>=10.2.1` for security. Don't remove these
 9. **Conventional commits required**: PR checks validate commit message format (`type(scope): description`)
 10. **Build uses separate tsconfig**: `tsconfig.build.json` excludes test types and files; the build script runs `tsc -p tsconfig.build.json`. Don't add test-only types (like `@testing-library/jest-dom`) to `tsconfig.build.json`. `tsconfig.ci.json` extends `tsconfig.build.json` with `strict: true` (only relaxes `noUnusedLocals`/`noUnusedParameters`)
@@ -340,8 +341,8 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 21. **Backend tests need `DATABASE_URL=""`**: If `DATABASE_URL` is set (e.g., pointing to Docker PostgreSQL), backend tests will fail to connect. Run `DATABASE_URL="" uv run python manage.py test` to use SQLite
 22. **SEO with HashRouter**: All canonical URLs and OG URLs must include `/#/` (e.g., `${SITE_URL}/#/about`). `robots.txt` must NOT use hash fragment directives (non-standard). Sitemap URLs include `/#/`. `hreflang` alternate language tags are omitted because the SPA serves both languages from the same URL via client-side i18n. The `sameAs` field in structured data must only contain verified, existing URLs
 23. **No hardcoded site URLs in components**: Always use `SITE_URL` from `src/utils/constants.ts`. The `generate-sitemap.js` script has its own `SITE_URL` constant (Node.js, can't import from frontend)
-24. **ESLint workspace hoisting**: `eslint` must be in root `package.json` devDependencies alongside `eslint-plugin-react` (which npm hoists to root `node_modules/`). The plugin does `require('eslint/package.json')` — if eslint is only in `frontend/node_modules/`, the plugin can't find it. Don't remove eslint from root devDependencies
+24. **ESLint workspace hoisting**: `eslint` must be in root `package.json` devDependencies (same major version as frontend) alongside `eslint-plugin-react` (which npm hoists to root `node_modules/`). The plugin does `require('eslint/package.json')` — if eslint is only in `frontend/node_modules/`, the plugin can't find it. Don't remove eslint from root devDependencies
 25. **ESLint zero warnings policy**: All ESLint warnings have been resolved (0 errors, 0 warnings as of 2026-03-11). Maintain this — don't introduce new warnings. Use `useCallback` for functions passed to context `useMemo`, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements
 26. **Backend dev deps use `--extra dev`**: Dev tools (black, flake8, pytest) are in `[project.optional-dependencies]` not `[tool.uv.dev-dependencies]`. Use `uv sync --extra dev` (not `uv sync --dev`). CI uses `uv sync --frozen --extra dev`
 27. **react-helmet-async v3 ships own types**: `@types/react-helmet-async` is deprecated and removed. The custom `src/@types/react-helmet-async.d.ts` is also removed. Do not re-add either
-28. **KakaoTalk WebView `__appLoaded` pattern**: `main.tsx` sets `window.__appLoaded = true` before `root.render()`. `index.html` inline scripts check this flag for fallback decisions. Loading skeleton must use **inline styles** (not Tailwind classes) because Tailwind CSS may not load if JS fails. The KakaoTalk banner in `Layout.tsx` uses `intent://` scheme on Android to force external browser — do NOT use `location.href` with regular URLs (causes blank page in Android KakaoTalk)
+28. **KakaoTalk WebView `__appLoaded` pattern**: `App.tsx` has an `AppLoaded` component that sets `window.__appLoaded = true` via `useEffect` — this ensures the flag is only set after React successfully renders (NOT before `root.render()` which would bypass fallbacks if React crashes). `index.html` inline scripts check this flag for fallback decisions. Loading skeleton must use **inline styles** (not Tailwind classes) because Tailwind CSS may not load if JS fails. The KakaoTalk banner in `Layout.tsx` uses `intent://` scheme on Android to force external browser — do NOT use `location.href` with regular URLs (causes blank page in Android KakaoTalk)

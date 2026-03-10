@@ -55,7 +55,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       contactPoint: {
         '@type': 'ContactPoint',
         telephone: t('contact.info.phone'),
-        contactType: 'customer service',
+        contactType: t('seo.contactType'),
         email: CONTACT_EMAIL,
         availableLanguage: ['Korean', 'English'],
       },
@@ -73,7 +73,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       },
       areaServed: {
         '@type': 'Country',
-        name: 'South Korea',
+        name: t('seo.countryName'),
       },
       serviceType: [
         t('services.consulting.title'),
@@ -125,8 +125,8 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       '@context': 'https://schema.org',
       '@type': 'Person',
       name: t('seo.personName'),
-      alternateName: 'Hojin Lee',
-      jobTitle: 'AI Researcher & Educator',
+      alternateName: t('seo.personAlternateName'),
+      jobTitle: t('seo.personJobTitle'),
       worksFor: {
         '@type': 'Organization',
         name: siteName,
@@ -136,12 +136,12 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       url: `${SITE_URL}/#/profile`,
       sameAs: ['https://github.com/researcherhojin'],
       knowsAbout: [
-        'AI',
-        'Machine Learning',
-        'Deep Learning',
-        'Python',
-        'Django',
-        'React',
+        t('seo.knowsAbout.ai'),
+        t('seo.knowsAbout.ml'),
+        t('seo.knowsAbout.dl'),
+        t('seo.knowsAbout.python'),
+        t('seo.knowsAbout.django'),
+        t('seo.knowsAbout.react'),
       ],
     };
 
@@ -200,8 +200,8 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
         name: siteName,
         url: SITE_URL,
       },
-      serviceType: service?.serviceType || 'AI Consulting',
-      areaServed: service?.areaServed || 'South Korea',
+      serviceType: service?.serviceType || t('services.consulting.title'),
+      areaServed: service?.areaServed || t('seo.countryName'),
       hasOfferCatalog: {
         '@type': 'OfferCatalog',
         name: t('footer.services'),

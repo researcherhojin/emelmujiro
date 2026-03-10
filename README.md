@@ -413,10 +413,11 @@ function onFormSubmit(e) {
 
 ## 리팩토링 백로그
 
-> **전량 해소 완료.** 11차에 걸친 코드 감사를 통해 식별된 모든 항목을 해결했습니다.
+> **전량 해소 완료.** 12차에 걸친 코드 감사를 통해 식별된 모든 항목을 해결했습니다.
 
 | 감사  | 날짜        | 해결 건수 | 주요 내용                                                                                                                              |
 | ----- | ----------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 12차  | 2026.03.10  | 5건       | SEO 하드코딩 영어→i18n 전환 (StructuredData/SEOHelmet), ESLint 9→10 업그레이드, global.d.ts 타입 보강, backend uv.lock 동기화          |
 | 11차  | 2026.03.11  | 7건       | CI 파이프라인 수정 (uv --extra dev, Trivy 0.35.0, SECRET_KEY), Django 5.2.12 보안패치, react-helmet-async v3, 백엔드 black/flake8 수정 |
 | 10차  | 2026.03.10  | 8건       | KakaoTalk 인앱 브라우저 백지 문제 해결 (다층 폴백), 배너 i18n 전환, Android intent 스킴, 인라인 스타일 스켈레톤                        |
 | 9차   | 2026.03.09  | 5건       | CSP localhost 제거, sitemap/Lighthouse에 /contact 추가, UnderConstruction dead type/test 제거                                          |
@@ -428,10 +429,18 @@ function onFormSubmit(e) {
 | 3차   | 2026.03.07  | 47건      | 미들웨어 미등록, ObjectURL 누수, JWT 블랙리스트, 컴포넌트 분할                                                                         |
 | 1~2차 | ~2026.03.07 | 21건      | HashRouter 버그, Zustand 제거, i18n 전환, Sentry 초기화, Docker 버전 통일                                                              |
 
-**총 해결: Critical 12 / High 20 / Medium 38 / Low 22 / Backend 7 / 이슈 아님 6건**
+**총 해결: Critical 12 / High 22 / Medium 40 / Low 23 / Backend 7 / 이슈 아님 6건**
 
 <details>
 <summary>감사 상세 기록 (클릭하여 펼치기)</summary>
+
+### 12차 감사 (2026.03.10)
+
+- **H1** StructuredData.tsx 하드코딩 영어 6건 → i18n `t()` 호출 전환 (contactType, countryName, personAlternateName, personJobTitle, knowsAbout)
+- **H2** SEOHelmet.tsx 하드코딩 영어 2건 → i18n `t()` 호출 전환 (contactType, countryName)
+- **M1** ESLint 9 → 10 업그레이드 (root + frontend package.json 동기화, CLAUDE.md 문서 반영)
+- **M2** `global.d.ts` Window 인터페이스에 `__legacyFailed` 타입 추가 (KakaoTalk fallback용)
+- **L1** backend `uv.lock` redis 7.2.1 → 7.3.0 동기화, en.json/ko.json SEO i18n 키 추가
 
 ### 11차 감사 (2026.03.11)
 
@@ -537,7 +546,7 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
   - CSS: `-webkit-text-size-adjust`, `-webkit-backface-visibility` 접두사 추가
   - `prefers-reduced-motion` 미디어 쿼리 추가 (저사양 기기 성능 개선)
   - CSP `connect-src`에 `cdn.jsdelivr.net` 추가, 무효 `frame-ancestors` 제거
-  - 카카오톡 인앱 브라우저 다층 폴백 시스템: legacy 번들 강제 로딩 + `intent://` 외부 브라우저 + 10초 타임아웃 폴백
+  - 카카오톡 인앱 브라우저 다층 폴백 시스템: legacy 번들 강제 로딩 + `intent://` 외부 브라우저 + 5초 타임아웃 폴백
   - 로딩 스켈레톤 인라인 스타일 전환 (Tailwind CSS 로드 전 가시성 보장)
   - 배너 하드코딩 한국어 → i18n 키 전환, `window.onerror` 에러 핸들러 추가
 - **PWA 제거**: 서비스 워커 캐시 이슈로 PWA 전체 제거 (vite-plugin-pwa, SW, 오프라인 지원)

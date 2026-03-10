@@ -893,6 +893,18 @@
   },
   "seo": {
     "personName": "Hojin Lee",
+    "personAlternateName": "Hojin Lee",
+    "personJobTitle": "AI Researcher & Educator",
+    "contactType": "Customer Service",
+    "countryName": "South Korea",
+    "knowsAbout": {
+      "ai": "Artificial Intelligence",
+      "ml": "Machine Learning",
+      "dl": "Deep Learning",
+      "python": "Python",
+      "django": "Django",
+      "react": "React"
+    },
     "site": {
       "name": "Emelmujiro",
       "title": "Emelmujiro | AI Innovation Partner",

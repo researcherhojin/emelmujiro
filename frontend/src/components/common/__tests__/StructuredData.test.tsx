@@ -83,8 +83,8 @@ describe('StructuredData', () => {
 
     expect(data['@type']).toBe('Person');
     expect(data.name).toBe('seo.personName');
-    expect(data.alternateName).toBe('Hojin Lee');
-    expect(data.jobTitle).toBe('AI Researcher & Educator');
+    expect(data.alternateName).toBe('seo.personAlternateName');
+    expect(data.jobTitle).toBe('seo.personJobTitle');
   });
 
   it('renders Breadcrumb schema when type is Breadcrumb', () => {

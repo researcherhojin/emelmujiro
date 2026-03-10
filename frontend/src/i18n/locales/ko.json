@@ -893,6 +893,18 @@
   },
   "seo": {
     "personName": "이호진",
+    "personAlternateName": "이호진",
+    "personJobTitle": "AI 연구자 및 교육자",
+    "contactType": "고객 서비스",
+    "countryName": "대한민국",
+    "knowsAbout": {
+      "ai": "인공지능",
+      "ml": "머신러닝",
+      "dl": "딥러닝",
+      "python": "Python",
+      "django": "Django",
+      "react": "React"
+    },
     "site": {
       "name": "에멜무지로",
       "title": "에멜무지로 | AI 혁신 파트너",
