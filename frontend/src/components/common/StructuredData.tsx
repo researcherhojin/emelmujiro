@@ -281,9 +281,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
 
     return (
       <Helmet>
-        <script type="application/ld+json">
-          {JSON.stringify(selectedSchema)}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(selectedSchema)}</script>
       </Helmet>
     );
   }

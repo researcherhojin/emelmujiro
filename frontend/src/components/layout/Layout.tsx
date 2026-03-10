@@ -14,18 +14,13 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [showKakaoBanner, setShowKakaoBanner] = useState(
-    () => !!window.__isKakaoInApp
-  );
+  const [showKakaoBanner, setShowKakaoBanner] = useState(() => !!window.__isKakaoInApp);
 
   const handleOpenExternal = useCallback(() => {
     const url = window.location.href;
     if (/Android/i.test(navigator.userAgent)) {
       // Intent scheme forces the default external browser on Android
-      location.href =
-        'intent://' +
-        url.replace(/^https?:\/\//, '') +
-        '#Intent;scheme=https;end';
+      location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;end';
     } else {
       window.open(url);
     }
@@ -40,9 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     {
       key: '/',
       handler: () => {
-        const searchInput = document.querySelector<HTMLInputElement>(
-          'input[type="search"]'
-        );
+        const searchInput = document.querySelector<HTMLInputElement>('input[type="search"]');
         if (searchInput) {
           searchInput.focus();
           announceToScreenReader(t('accessibility.searchFocused'));
@@ -142,10 +135,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Footer />
 
       {/* Keyboard shortcuts help (visible only to screen readers) */}
-      <div
-        className="sr-only"
-        aria-label={t('accessibility.keyboardShortcuts')}
-      >
+      <div className="sr-only" aria-label={t('accessibility.keyboardShortcuts')}>
         <h2>{t('accessibility.keyboardShortcuts')}</h2>
         <ul>
           <li>{t('accessibility.shortcutFocusSearch')}</li>

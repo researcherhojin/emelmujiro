@@ -53,9 +53,6 @@ describe('HeroSection Component', () => {
     // HeroSection has a mailto CTA link
     const ctaLink = screen.getByText(/common.inquireByEmail/);
     expect(ctaLink).toBeInTheDocument();
-    expect(ctaLink.closest('a')).toHaveAttribute(
-      'href',
-      expect.stringContaining('mailto:')
-    );
+    expect(ctaLink.closest('a')).toHaveAttribute('href', expect.stringContaining('mailto:'));
   });
 });

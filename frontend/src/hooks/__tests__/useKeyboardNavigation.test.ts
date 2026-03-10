@@ -81,9 +81,7 @@ describe('useKeyboardNavigation', () => {
 
   it('handles ctrlKey modifier — calls handler when Ctrl is held', () => {
     const handler = vi.fn();
-    renderHook(() =>
-      useKeyboardNavigation([{ key: 's', ctrlKey: true, handler }])
-    );
+    renderHook(() => useKeyboardNavigation([{ key: 's', ctrlKey: true, handler }]));
 
     fireWindowKeyDown('s', { ctrlKey: true });
 
@@ -92,9 +90,7 @@ describe('useKeyboardNavigation', () => {
 
   it('handles altKey modifier — calls handler when Alt is held', () => {
     const handler = vi.fn();
-    renderHook(() =>
-      useKeyboardNavigation([{ key: 'h', altKey: true, handler }])
-    );
+    renderHook(() => useKeyboardNavigation([{ key: 'h', altKey: true, handler }]));
 
     fireWindowKeyDown('h', { altKey: true });
 
@@ -103,9 +99,7 @@ describe('useKeyboardNavigation', () => {
 
   it('handles shiftKey modifier — calls handler when Shift is held', () => {
     const handler = vi.fn();
-    renderHook(() =>
-      useKeyboardNavigation([{ key: 'Tab', shiftKey: true, handler }])
-    );
+    renderHook(() => useKeyboardNavigation([{ key: 'Tab', shiftKey: true, handler }]));
 
     fireWindowKeyDown('Tab', { shiftKey: true });
 
@@ -114,9 +108,7 @@ describe('useKeyboardNavigation', () => {
 
   it('does NOT call handler when ctrlKey modifier does not match (requires Ctrl but not held)', () => {
     const handler = vi.fn();
-    renderHook(() =>
-      useKeyboardNavigation([{ key: 's', ctrlKey: true, handler }])
-    );
+    renderHook(() => useKeyboardNavigation([{ key: 's', ctrlKey: true, handler }]));
 
     fireWindowKeyDown('s'); // no Ctrl
 
@@ -136,9 +128,7 @@ describe('useKeyboardNavigation', () => {
 
   it('does NOT call handler when altKey modifier does not match', () => {
     const handler = vi.fn();
-    renderHook(() =>
-      useKeyboardNavigation([{ key: 'h', altKey: true, handler }])
-    );
+    renderHook(() => useKeyboardNavigation([{ key: 'h', altKey: true, handler }]));
 
     fireWindowKeyDown('h'); // no Alt
 
@@ -147,9 +137,7 @@ describe('useKeyboardNavigation', () => {
 
   it('does NOT call handler when shiftKey modifier does not match', () => {
     const handler = vi.fn();
-    renderHook(() =>
-      useKeyboardNavigation([{ key: 'Tab', shiftKey: true, handler }])
-    );
+    renderHook(() => useKeyboardNavigation([{ key: 'Tab', shiftKey: true, handler }]));
 
     fireWindowKeyDown('Tab'); // no Shift
 
@@ -206,9 +194,7 @@ describe('useKeyboardNavigation', () => {
     const addSpy = vi.spyOn(window, 'addEventListener');
     const removeSpy = vi.spyOn(window, 'removeEventListener');
 
-    const { unmount } = renderHook(() =>
-      useKeyboardNavigation([{ key: 'q', handler }])
-    );
+    const { unmount } = renderHook(() => useKeyboardNavigation([{ key: 'q', handler }]));
 
     expect(addSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
 
@@ -232,9 +218,7 @@ describe('useKeyboardNavigation', () => {
   it('handles all three modifiers required simultaneously', () => {
     const handler = vi.fn();
     renderHook(() =>
-      useKeyboardNavigation([
-        { key: 'z', ctrlKey: true, altKey: true, shiftKey: true, handler },
-      ])
+      useKeyboardNavigation([{ key: 'z', ctrlKey: true, altKey: true, shiftKey: true, handler }])
     );
 
     fireWindowKeyDown('z', { ctrlKey: true, altKey: true, shiftKey: true });

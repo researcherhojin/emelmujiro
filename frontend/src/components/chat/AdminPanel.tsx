@@ -19,9 +19,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const { showNotification } = useUI();
   const { settings, messages, businessHours, connectionId } = useChatContext();
 
-  const [activeTab, setActiveTab] = useState<
-    'settings' | 'canned' | 'stats' | 'users'
-  >('settings');
+  const [activeTab, setActiveTab] = useState<'settings' | 'canned' | 'stats' | 'users'>('settings');
   const [editingSettings, setEditingSettings] = useState(settings);
 
   const tabs = [
@@ -37,10 +35,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
 
   const handleSaveSettings = () => {
     try {
-      localStorage.setItem(
-        'chat-admin-settings',
-        JSON.stringify(editingSettings)
-      );
+      localStorage.setItem('chat-admin-settings', JSON.stringify(editingSettings));
       showNotification('success', t('chat.admin.settingsSaved'));
     } catch {
       showNotification('error', t('chat.admin.settingsSaveFailed'));
@@ -107,10 +102,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Tabs */}
-        <div
-          className="flex border-b border-gray-200 dark:border-gray-700"
-          role="tablist"
-        >
+        <div className="flex border-b border-gray-200 dark:border-gray-700" role="tablist">
           {tabs.map((tab) => {
             const IconComponent = tab.icon;
             return (
@@ -154,12 +146,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
               setEditingSettings={setEditingSettings}
             />
           )}
-          {activeTab === 'stats' && (
-            <AdminStatsTab stats={stats} businessHours={businessHours} />
-          )}
-          {activeTab === 'users' && (
-            <AdminUsersTab connectionId={connectionId} />
-          )}
+          {activeTab === 'stats' && <AdminStatsTab stats={stats} businessHours={businessHours} />}
+          {activeTab === 'users' && <AdminUsersTab connectionId={connectionId} />}
         </div>
       </motion.div>
     </motion.div>

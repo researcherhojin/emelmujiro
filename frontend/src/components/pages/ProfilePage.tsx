@@ -12,13 +12,7 @@ import EducationTab from './profile/EducationTab';
 import ProjectsTab from './profile/ProjectsTab';
 
 type TabType = 'career' | 'education' | 'projects';
-type ProjectCategory =
-  | 'all'
-  | 'enterprise'
-  | 'bootcamp'
-  | 'education'
-  | 'startup'
-  | 'research';
+type ProjectCategory = 'all' | 'enterprise' | 'bootcamp' | 'education' | 'startup' | 'research';
 
 const ProfilePage: React.FC = memo(() => {
   const { t } = useTranslation();

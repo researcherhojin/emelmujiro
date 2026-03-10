@@ -83,10 +83,7 @@ describe('DarkModeToggle', () => {
     const toggleButton = screen.getByRole('button');
     expect(toggleButton).toBeInTheDocument();
     // Button should have proper attributes for light mode
-    expect(toggleButton).toHaveAttribute(
-      'aria-label',
-      'accessibility.darkMode'
-    );
+    expect(toggleButton).toHaveAttribute('aria-label', 'accessibility.darkMode');
   });
 
   it('shows correct icons for dark mode', () => {
@@ -97,9 +94,6 @@ describe('DarkModeToggle', () => {
     const toggleButton = screen.getByRole('button');
     expect(toggleButton).toBeInTheDocument();
     // Button should have proper attributes for dark mode
-    expect(toggleButton).toHaveAttribute(
-      'aria-label',
-      'accessibility.lightMode'
-    );
+    expect(toggleButton).toHaveAttribute('aria-label', 'accessibility.lightMode');
   });
 });

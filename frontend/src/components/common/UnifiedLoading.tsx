@@ -63,9 +63,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
     };
 
     // Full-screen wrapper
-    const FullScreenWrapper: React.FC<{ children: React.ReactNode }> = ({
-      children,
-    }) => {
+    const FullScreenWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       if (fullScreen || variant === 'page') {
         return (
           <div
@@ -155,10 +153,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
     // Inline loading
     if (variant === 'inline') {
       return (
-        <span
-          className={`inline-flex items-center ${className}`}
-          data-testid="loading-inline"
-        >
+        <span className={`inline-flex items-center ${className}`} data-testid="loading-inline">
           <motion.span
             className={`inline-block w-4 h-4 border-2 ${colorClasses[color as keyof typeof colorClasses] || colorClasses.indigo} border-t-transparent rounded-full`}
             data-testid="inline-spinner"
@@ -169,9 +164,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
               ease: 'linear',
             }}
           />
-          {message && (
-            <span className="ml-2 text-sm text-gray-600">{message}</span>
-          )}
+          {message && <span className="ml-2 text-sm text-gray-600">{message}</span>}
         </span>
       );
     }

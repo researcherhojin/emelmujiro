@@ -19,11 +19,7 @@ export const getEnvVar = (key: string, defaultValue: string = ''): string => {
   const viteKey = key.replace('REACT_APP_', 'VITE_');
 
   // Check Vite env first
-  if (
-    typeof import.meta !== 'undefined' &&
-    import.meta.env &&
-    import.meta.env[viteKey]
-  ) {
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[viteKey]) {
     return import.meta.env[viteKey];
   }
 
@@ -39,9 +35,7 @@ export const env = {
   // API Configuration
   API_URL: getEnvVar(
     'REACT_APP_API_URL',
-    IS_PRODUCTION
-      ? 'https://api.emelmujiro.com/api'
-      : 'http://localhost:8000/api'
+    IS_PRODUCTION ? 'https://api.emelmujiro.com/api' : 'http://localhost:8000/api'
   ),
   WS_URL: getEnvVar(
     'REACT_APP_WS_URL',

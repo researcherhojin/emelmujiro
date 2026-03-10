@@ -68,12 +68,8 @@ describe('ProfilePage Component', () => {
     it('renders achievement highlights', () => {
       renderWithRouter(<ProfilePage />);
 
-      expect(
-        screen.getByText('achievements.items.championAward.highlight')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('achievements.items.daconWin.highlight')
-      ).toBeInTheDocument();
+      expect(screen.getByText('achievements.items.championAward.highlight')).toBeInTheDocument();
+      expect(screen.getByText('achievements.items.daconWin.highlight')).toBeInTheDocument();
       expect(
         screen.getByText('achievements.items.corporateTraining.highlight')
       ).toBeInTheDocument();
@@ -112,12 +108,8 @@ describe('ProfilePage Component', () => {
       const educationTab = screen.getByText('profilePage.tabEducation');
       fireEvent.click(educationTab);
 
-      expect(
-        screen.getByText('profileData.education.0.school')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('profileData.education.1.school')
-      ).toBeInTheDocument();
+      expect(screen.getByText('profileData.education.0.school')).toBeInTheDocument();
+      expect(screen.getByText('profileData.education.1.school')).toBeInTheDocument();
     });
 
     it('switches to projects tab', () => {
@@ -139,9 +131,7 @@ describe('ProfilePage Component', () => {
 
       // Look for tab buttons by text content
       const buttons = screen.getAllByRole('button');
-      const careerTab = buttons.find((btn) =>
-        btn.textContent?.includes('profilePage.tabCareer')
-      );
+      const careerTab = buttons.find((btn) => btn.textContent?.includes('profilePage.tabCareer'));
       const educationTab = buttons.find((btn) =>
         btn.textContent?.includes('profilePage.tabEducation')
       );
@@ -167,9 +157,7 @@ describe('ProfilePage Component', () => {
       renderWithRouter(<ProfilePage />);
 
       const buttons = screen.getAllByRole('button');
-      const careerTab = buttons.find((btn) =>
-        btn.textContent?.includes('profilePage.tabCareer')
-      );
+      const careerTab = buttons.find((btn) => btn.textContent?.includes('profilePage.tabCareer'));
       expect(careerTab).toBeInTheDocument();
       expect(careerTab).toHaveClass('text-gray-900');
     });
@@ -178,9 +166,7 @@ describe('ProfilePage Component', () => {
       renderWithRouter(<ProfilePage />);
 
       // Check for career items structure (periods are i18n keys like profileData.career.0.period)
-      const periodElements = screen.getAllByText(
-        /profileData\.career\.\d+\.period/
-      );
+      const periodElements = screen.getAllByText(/profileData\.career\.\d+\.period/);
       expect(periodElements.length).toBeGreaterThan(0);
     });
   });
@@ -192,12 +178,8 @@ describe('ProfilePage Component', () => {
       const educationTab = screen.getByText('profilePage.tabEducation');
       fireEvent.click(educationTab);
 
-      expect(
-        screen.getByText('profileData.education.0.school')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('profileData.education.1.school')
-      ).toBeInTheDocument();
+      expect(screen.getByText('profileData.education.0.school')).toBeInTheDocument();
+      expect(screen.getByText('profileData.education.1.school')).toBeInTheDocument();
     });
 
     it('displays education descriptions', () => {
@@ -206,12 +188,8 @@ describe('ProfilePage Component', () => {
       const educationTab = screen.getByText('profilePage.tabEducation');
       fireEvent.click(educationTab);
 
-      expect(
-        screen.getByText('profileData.education.0.degree')
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText('profileData.education.1.degree')
-      ).toBeInTheDocument();
+      expect(screen.getByText('profileData.education.0.degree')).toBeInTheDocument();
+      expect(screen.getByText('profileData.education.1.degree')).toBeInTheDocument();
     });
   });
 
@@ -241,9 +219,7 @@ describe('ProfilePage Component', () => {
       fireEvent.click(projectsTab!);
 
       // Projects content should be visible
-      expect(
-        screen.getByText('profileData.projects.0.title')
-      ).toBeInTheDocument();
+      expect(screen.getByText('profileData.projects.0.title')).toBeInTheDocument();
     });
   });
 

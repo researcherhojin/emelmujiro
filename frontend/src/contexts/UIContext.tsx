@@ -37,11 +37,7 @@ interface UIContextType {
 
   // Notifications
   notifications: Notification[];
-  showNotification: (
-    type: NotificationType,
-    message: string,
-    duration?: number
-  ) => void;
+  showNotification: (type: NotificationType, message: string, duration?: number) => void;
   removeNotification: (id: string) => void;
 
   // Modals
@@ -85,9 +81,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [modals, setModals] = useState<Modal[]>([]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const notificationTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(
-    new Map()
-  );
+  const notificationTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   // Apply theme to document root
   useEffect(() => {
@@ -106,10 +100,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     // Update meta theme-color
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute(
-        'content',
-        theme === 'dark' ? '#0f172a' : '#ffffff'
-      );
+      metaThemeColor.setAttribute('content', theme === 'dark' ? '#0f172a' : '#ffffff');
     }
 
     // Re-enable transitions after a brief moment

@@ -1,13 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  Share2,
-  MessageCircle,
-  Mail,
-  ExternalLink,
-  CheckCircle,
-} from 'lucide-react';
+import { Share2, MessageCircle, Mail, ExternalLink, CheckCircle } from 'lucide-react';
 
 interface SharedContent {
   title?: string;
@@ -94,10 +88,7 @@ ${t('share.inquiryFooter')}
     };
 
     savedItems.unshift(newItem);
-    localStorage.setItem(
-      'saved-content',
-      JSON.stringify(savedItems.slice(0, 50))
-    ); // Keep only 50 items
+    localStorage.setItem('saved-content', JSON.stringify(savedItems.slice(0, 50))); // Keep only 50 items
 
     showSaveSuccess();
   };
@@ -107,16 +98,13 @@ ${t('share.inquiryFooter')}
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">
-            {t('share.processing')}
-          </p>
+          <p className="text-gray-600 dark:text-gray-300">{t('share.processing')}</p>
         </div>
       </div>
     );
   }
 
-  const hasContent =
-    sharedContent.title || sharedContent.text || sharedContent.url;
+  const hasContent = sharedContent.title || sharedContent.text || sharedContent.url;
 
   if (!hasContent) {
     return (
@@ -126,9 +114,7 @@ ${t('share.inquiryFooter')}
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {t('share.noContent')}
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            {t('share.noContentDescription')}
-          </p>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">{t('share.noContentDescription')}</p>
           <button
             onClick={() => navigate('/')}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
@@ -160,9 +146,7 @@ ${t('share.inquiryFooter')}
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             {t('share.title')}
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            {t('share.howToUse')}
-          </p>
+          <p className="text-gray-600 dark:text-gray-300">{t('share.howToUse')}</p>
         </div>
 
         {/* Shared Content Display */}
@@ -254,9 +238,7 @@ ${t('share.inquiryFooter')}
 
         {/* Additional Options */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            {t('share.otherOptions')}
-          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{t('share.otherOptions')}</p>
           <div className="flex flex-wrap justify-center gap-4">
             <button
               onClick={() => navigate('/blog')}

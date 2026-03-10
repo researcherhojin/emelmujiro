@@ -58,9 +58,7 @@ const EducationTab: React.FC = memo(() => {
             <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
               {t('profilePage.adspTitle')}
             </h4>
-            <p className="text-gray-600 dark:text-gray-400">
-              {t('profilePage.adspDescription')}
-            </p>
+            <p className="text-gray-600 dark:text-gray-400">{t('profilePage.adspDescription')}</p>
             <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
               {t('profilePage.adspIssuer')}
             </p>
@@ -89,9 +87,7 @@ const EducationTab: React.FC = memo(() => {
                 </span>
               </li>
               <li className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">
-                  {t('profilePage.ncsAI')}
-                </span>
+                <span className="text-gray-600 dark:text-gray-400">{t('profilePage.ncsAI')}</span>
                 <span className="font-bold text-gray-900 dark:text-white">
                   {t('profilePage.ncsScore')}
                 </span>

@@ -56,8 +56,7 @@ interface FormProviderProps {
 }
 
 export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
-  const [contactForm, setContactForm] =
-    useState<ContactFormState>(initialContactForm);
+  const [contactForm, setContactForm] = useState<ContactFormState>(initialContactForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -73,21 +72,18 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
     };
   }, []);
 
-  const updateContactForm = useCallback(
-    (field: keyof ContactFormState, value: string) => {
-      setContactForm((prev) => ({ ...prev, [field]: value }));
-      // Clear error for this field when user starts typing
-      setFormErrors((prev) => {
-        if (prev[field]) {
-          const newErrors = { ...prev };
-          delete newErrors[field];
-          return newErrors;
-        }
-        return prev;
-      });
-    },
-    []
-  );
+  const updateContactForm = useCallback((field: keyof ContactFormState, value: string) => {
+    setContactForm((prev) => ({ ...prev, [field]: value }));
+    // Clear error for this field when user starts typing
+    setFormErrors((prev) => {
+      if (prev[field]) {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      }
+      return prev;
+    });
+  }, []);
 
   const clearFormErrors = useCallback(() => {
     setFormErrors({});
@@ -161,11 +157,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
         company: contactForm.company,
         subject: contactForm.inquiryType || 'general',
         inquiryType:
-          (contactForm.inquiryType as
-            | 'consulting'
-            | 'education'
-            | 'llm'
-            | 'data') || undefined,
+          (contactForm.inquiryType as 'consulting' | 'education' | 'llm' | 'data') || undefined,
         message: contactForm.message,
       });
 
@@ -174,9 +166,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
       // Store in localStorage for offline support
       let savedContacts = [];
       try {
-        savedContacts = JSON.parse(
-          localStorage.getItem('savedContacts') || '[]'
-        );
+        savedContacts = JSON.parse(localStorage.getItem('savedContacts') || '[]');
       } catch (e) {
         logger.warn('Failed to parse savedContacts from localStorage', e);
         savedContacts = [];
@@ -194,17 +184,13 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
       }, 2000);
     } catch (error) {
       const err = error as Error & { userMessage?: string };
-      setSubmitError(
-        err.userMessage || err.message || i18n.t('formValidation.submitFailed')
-      );
+      setSubmitError(err.userMessage || err.message || i18n.t('formValidation.submitFailed'));
 
       // Save to localStorage for later sync if offline
       if (!navigator.onLine) {
         let pendingContacts;
         try {
-          pendingContacts = JSON.parse(
-            localStorage.getItem('pendingContacts') || '[]'
-          );
+          pendingContacts = JSON.parse(localStorage.getItem('pendingContacts') || '[]');
         } catch (e) {
           logger.warn('Failed to parse pendingContacts from localStorage', e);
           pendingContacts = [];
@@ -214,10 +200,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
           timestamp: new Date().toISOString(),
           synced: false,
         });
-        localStorage.setItem(
-          'pendingContacts',
-          JSON.stringify(pendingContacts)
-        );
+        localStorage.setItem('pendingContacts', JSON.stringify(pendingContacts));
         setSubmitError(i18n.t('formValidation.offlineMessage'));
       }
     } finally {

@@ -1,10 +1,4 @@
-import {
-  LucideIcon,
-  GraduationCap,
-  Code2,
-  MessageSquare,
-  Eye,
-} from 'lucide-react';
+import { LucideIcon, GraduationCap, Code2, MessageSquare, Eye } from 'lucide-react';
 import i18n from '../i18n';
 
 export interface ServiceDetail {

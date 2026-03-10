@@ -99,9 +99,7 @@ const Navbar: React.FC = memo(() => {
                   {item.label}
                   <span
                     className={`absolute -bottom-2 left-0 right-0 h-[2px] bg-gray-900 dark:bg-white transition-transform duration-200 origin-left ${
-                      isActive(item.path)
-                        ? 'scale-x-100'
-                        : 'scale-x-0 hover:scale-x-100'
+                      isActive(item.path) ? 'scale-x-100' : 'scale-x-0 hover:scale-x-100'
                     }`}
                   />
                 </span>
@@ -129,11 +127,7 @@ const Navbar: React.FC = memo(() => {
                               hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
               aria-label={t('accessibility.menu')}
             >
-              {isOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>

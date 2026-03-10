@@ -44,10 +44,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     const resolvedDescription = description || t('seo.site.description');
     const resolvedKeywords = keywords || t('seo.seoHead.defaultKeywords');
     const resolvedAuthor = author || siteName;
-    const siteTitle =
-      resolvedTitle === siteName
-        ? resolvedTitle
-        : `${resolvedTitle} | ${siteName}`;
+    const siteTitle = resolvedTitle === siteName ? resolvedTitle : `${resolvedTitle} | ${siteName}`;
 
     return (
       <Helmet>
@@ -66,14 +63,8 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         <meta property="og:url" content={url} />
         <meta property="og:type" content={type} />
         <meta property="og:site_name" content={siteName} />
-        <meta
-          property="og:locale"
-          content={resolvedLang === 'en' ? 'en_US' : 'ko_KR'}
-        />
-        <meta
-          property="og:locale:alternate"
-          content={resolvedLang === 'en' ? 'ko_KR' : 'en_US'}
-        />
+        <meta property="og:locale" content={resolvedLang === 'en' ? 'en_US' : 'ko_KR'} />
+        <meta property="og:locale:alternate" content={resolvedLang === 'en' ? 'ko_KR' : 'en_US'} />
 
         {/* Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -119,25 +110,14 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         {/* Article specific meta tags */}
         {type === 'article' && article && (
           <>
-            <meta
-              property="article:author"
-              content={article.author || resolvedAuthor}
-            />
+            <meta property="article:author" content={article.author || resolvedAuthor} />
             {article.publishedTime && (
-              <meta
-                property="article:published_time"
-                content={article.publishedTime}
-              />
+              <meta property="article:published_time" content={article.publishedTime} />
             )}
             {article.modifiedTime && (
-              <meta
-                property="article:modified_time"
-                content={article.modifiedTime}
-              />
+              <meta property="article:modified_time" content={article.modifiedTime} />
             )}
-            {article.section && (
-              <meta property="article:section" content={article.section} />
-            )}
+            {article.section && <meta property="article:section" content={article.section} />}
             {article.tags?.map((tag) => (
               <meta key={tag} property="article:tag" content={tag} />
             ))}
@@ -145,12 +125,8 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         )}
 
         {/* Publication dates for any content */}
-        {publishedTime && (
-          <meta name="article:published_time" content={publishedTime} />
-        )}
-        {modifiedTime && (
-          <meta name="article:modified_time" content={modifiedTime} />
-        )}
+        {publishedTime && <meta name="article:published_time" content={publishedTime} />}
+        {modifiedTime && <meta name="article:modified_time" content={modifiedTime} />}
 
         {/* Content language */}
         <meta httpEquiv="content-language" content={resolvedLang} />

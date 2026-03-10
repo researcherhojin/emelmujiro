@@ -33,10 +33,7 @@ describe('CTASection', () => {
     render(<CTASection />);
     const ctaLink = screen.getByText('common.inquireByEmail');
     expect(ctaLink).toBeInTheDocument();
-    expect(ctaLink.closest('a')).toHaveAttribute(
-      'href',
-      'mailto:researcherhojin@gmail.com'
-    );
+    expect(ctaLink.closest('a')).toHaveAttribute('href', 'mailto:researcherhojin@gmail.com');
   });
 
   it('has correct aria-label on the section', () => {

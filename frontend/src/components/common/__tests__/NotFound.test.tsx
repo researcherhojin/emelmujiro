@@ -92,12 +92,7 @@ describe('NotFound', () => {
     // Check that the 404 heading is rendered with updated styles
     const heading = screen.getByText('404');
     expect(heading).toBeInTheDocument();
-    expect(heading).toHaveClass(
-      'text-8xl',
-      'sm:text-9xl',
-      'font-black',
-      'text-gray-900'
-    );
+    expect(heading).toHaveClass('text-8xl', 'sm:text-9xl', 'font-black', 'text-gray-900');
 
     const message = screen.getByText('notFound.title');
     expect(message).toBeInTheDocument();

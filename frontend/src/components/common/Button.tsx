@@ -44,8 +44,7 @@ const VARIANTS = {
     'bg-white dark:bg-dark-800 border-2 border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700 hover:border-gray-400 dark:hover:border-dark-500',
   outline:
     'bg-transparent border-2 border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100 hover:bg-gray-900 dark:hover:bg-gray-100 hover:text-white dark:hover:text-gray-900',
-  ghost:
-    'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800',
+  ghost: 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-800',
   danger:
     'bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800 focus:ring-red-600 dark:focus:ring-red-500',
 };
@@ -119,9 +118,7 @@ const Button: React.FC<ButtonProps> = memo((props) => {
       );
     }
 
-    return (
-      <span className={iconPosition === 'left' ? 'mr-2' : 'ml-2'}>{icon}</span>
-    );
+    return <span className={iconPosition === 'left' ? 'mr-2' : 'ml-2'}>{icon}</span>;
   }, [icon, loading, iconPosition]);
 
   // Memoize content rendering
@@ -149,12 +146,7 @@ const Button: React.FC<ButtonProps> = memo((props) => {
   // Render as external link
   if ('href' in props && props.href) {
     return (
-      <a
-        href={props.href}
-        className={baseClasses}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a href={props.href} className={baseClasses} target="_blank" rel="noopener noreferrer">
         {content}
       </a>
     );
@@ -176,12 +168,7 @@ const Button: React.FC<ButtonProps> = memo((props) => {
     ...buttonProps
   } = props as ButtonElementProps;
   return (
-    <button
-      className={baseClasses}
-      onClick={onClick}
-      disabled={disabled}
-      {...buttonProps}
-    >
+    <button className={baseClasses} onClick={onClick} disabled={disabled} {...buttonProps}>
       {content}
     </button>
   );

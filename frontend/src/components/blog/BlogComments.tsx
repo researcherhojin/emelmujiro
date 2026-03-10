@@ -47,9 +47,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
       onClick={() => toggleLike(reply.id, true, parentId)}
       aria-label={t('blog.likeReply', { author: reply.author })}
       className={`flex items-center space-x-1 text-xs ${
-        reply.likedBy?.includes(userId)
-          ? 'text-blue-600'
-          : 'text-gray-500 hover:text-blue-600'
+        reply.likedBy?.includes(userId) ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'
       }`}
     >
       <ThumbsUp className="w-3 h-3" />
@@ -91,9 +89,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           <span className="font-medium">{comment.author}</span>
           <span className="mx-2 text-gray-300">•</span>
           <Calendar className="w-4 h-4 mr-1 text-gray-500" />
-          <span className="text-sm text-gray-500">
-            {formatDate(comment.date)}
-          </span>
+          <span className="text-sm text-gray-500">{formatDate(comment.date)}</span>
         </div>
         <p className="text-gray-700 mb-3">{comment.content}</p>
         <div className="flex items-center space-x-4">
@@ -278,11 +274,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
   };
 
   // Toggle like on comment
-  const toggleLike = (
-    commentId: string,
-    isReply: boolean = false,
-    parentId?: string
-  ) => {
+  const toggleLike = (commentId: string, isReply: boolean = false, parentId?: string) => {
     const userId = getUserId();
 
     const updatedComments = comments.map((comment) => {
@@ -293,9 +285,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
         return {
           ...comment,
           likes: isLiked ? comment.likes - 1 : comment.likes + 1,
-          likedBy: isLiked
-            ? likedBy.filter((id) => id !== userId)
-            : [...likedBy, userId],
+          likedBy: isLiked ? likedBy.filter((id) => id !== userId) : [...likedBy, userId],
         };
       } else if (isReply && comment.id === parentId) {
         return {
@@ -308,9 +298,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
               return {
                 ...reply,
                 likes: isLiked ? reply.likes - 1 : reply.likes + 1,
-                likedBy: isLiked
-                  ? likedBy.filter((id) => id !== userId)
-                  : [...likedBy, userId],
+                likedBy: isLiked ? likedBy.filter((id) => id !== userId) : [...likedBy, userId],
               };
             }
             return reply;
@@ -334,17 +322,13 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
       const hours = Math.floor(diff / (1000 * 60 * 60));
       if (hours === 0) {
         const minutes = Math.floor(diff / (1000 * 60));
-        return minutes === 0
-          ? t('blog.timeJustNow')
-          : t('blog.timeMinutesAgo', { count: minutes });
+        return minutes === 0 ? t('blog.timeJustNow') : t('blog.timeMinutesAgo', { count: minutes });
       }
       return t('blog.timeHoursAgo', { count: hours });
     } else if (days < 7) {
       return t('blog.timeDaysAgo', { count: days });
     } else {
-      return date.toLocaleDateString(
-        i18n.language === 'ko' ? 'ko-KR' : 'en-US'
-      );
+      return date.toLocaleDateString(i18n.language === 'ko' ? 'ko-KR' : 'en-US');
     }
   };
 
@@ -358,10 +342,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
       </h3>
 
       {/* Comment form */}
-      <form
-        onSubmit={handleSubmitComment}
-        className="mb-8 p-4 bg-gray-50 rounded-lg"
-      >
+      <form onSubmit={handleSubmitComment} className="mb-8 p-4 bg-gray-50 rounded-lg">
         <div className="mb-4">
           <input
             type="text"
@@ -411,9 +392,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
       </div>
 
       {comments.length === 0 && (
-        <p className="text-center text-gray-500 py-8">
-          {t('blog.noCommentsYet')}
-        </p>
+        <p className="text-center text-gray-500 py-8">{t('blog.noCommentsYet')}</p>
       )}
     </div>
   );

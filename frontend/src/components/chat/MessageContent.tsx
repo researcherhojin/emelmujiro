@@ -6,14 +6,8 @@ interface MessageContentProps {
   type: string;
   content: string;
   file?: File | { url: string; size?: number };
-  onFileDownload: (
-    file: File | { url: string } | undefined,
-    filename: string
-  ) => void;
-  onImagePreview: (
-    file: File | { url: string } | undefined,
-    filename: string
-  ) => void;
+  onFileDownload: (file: File | { url: string } | undefined, filename: string) => void;
+  onImagePreview: (file: File | { url: string } | undefined, filename: string) => void;
 }
 
 const MessageContent: React.FC<MessageContentProps> = ({
@@ -26,10 +20,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
   const { t } = useTranslation();
 
   const imageObjectUrl = useMemo(
-    () =>
-      type === 'image' && file instanceof File
-        ? URL.createObjectURL(file)
-        : null,
+    () => (type === 'image' && file instanceof File ? URL.createObjectURL(file) : null),
     [type, file]
   );
 
@@ -87,9 +78,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium truncate">{content}</div>
               {file?.size && (
-                <div className="text-xs text-gray-500">
-                  {(file.size / 1024).toFixed(1)} KB
-                </div>
+                <div className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</div>
               )}
             </div>
             <button
@@ -104,11 +93,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
       );
 
     case 'system':
-      return (
-        <div className="text-center text-gray-600 dark:text-gray-400 italic">
-          {content}
-        </div>
-      );
+      return <div className="text-center text-gray-600 dark:text-gray-400 italic">{content}</div>;
 
     default:
       return <div>{content}</div>;

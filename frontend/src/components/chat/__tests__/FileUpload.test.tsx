@@ -6,12 +6,9 @@ import FileUpload from '../FileUpload';
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({
-      children,
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <div>{children}</div>,
+    div: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <div>{children}</div>
+    ),
     button: ({
       children,
       onClick,
@@ -21,9 +18,7 @@ vi.mock('framer-motion', () => ({
       [key: string]: unknown;
     }) => <button onClick={onClick}>{children}</button>,
   },
-  AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
-    <>{children}</>
-  ),
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock lucide-react icons
@@ -104,9 +99,7 @@ describe('FileUpload', () => {
   it('shows file types and size info', () => {
     render(<FileUpload onUpload={mockOnUpload} />);
 
-    expect(
-      screen.getByText('chat.fileUpload.allowedTypes')
-    ).toBeInTheDocument();
+    expect(screen.getByText('chat.fileUpload.allowedTypes')).toBeInTheDocument();
     expect(screen.getByText(/chat\.fileUpload\.formats/)).toBeInTheDocument();
   });
 
@@ -164,10 +157,7 @@ describe('FileUpload', () => {
 
     fireEvent.change(fileInput);
 
-    expect(mockShowNotification).toHaveBeenCalledWith(
-      'error',
-      'chat.fileUpload.invalidType'
-    );
+    expect(mockShowNotification).toHaveBeenCalledWith('error', 'chat.fileUpload.invalidType');
   });
 
   it('validates file size', () => {
@@ -190,10 +180,7 @@ describe('FileUpload', () => {
 
     fireEvent.change(fileInput);
 
-    expect(mockShowNotification).toHaveBeenCalledWith(
-      'error',
-      'chat.fileUpload.fileTooLarge'
-    );
+    expect(mockShowNotification).toHaveBeenCalledWith('error', 'chat.fileUpload.fileTooLarge');
   });
 
   it('displays correct icon for image files', () => {
@@ -422,10 +409,7 @@ describe('FileUpload', () => {
 
     await waitFor(
       () => {
-        expect(mockShowNotification).toHaveBeenCalledWith(
-          'success',
-          'chat.fileUpload.success'
-        );
+        expect(mockShowNotification).toHaveBeenCalledWith('success', 'chat.fileUpload.success');
       },
       { timeout: 2000 }
     );

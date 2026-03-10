@@ -38,15 +38,9 @@ describe('Navbar Component', () => {
 
   test('renders navigation items', () => {
     renderWithProviders(<Navbar />);
-    expect(
-      screen.getByRole('button', { name: 'common.about' })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'common.blog' })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'common.profile' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'common.about' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'common.blog' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'common.profile' })).toBeInTheDocument();
   });
 
   test('navigates on menu item click', () => {
@@ -81,9 +75,7 @@ describe('Navbar Component', () => {
 
     // Find all links and check for the logo link
     const links = screen.getAllByRole('link');
-    const logoLink = links.find(
-      (link) => link.textContent === 'common.companyName'
-    );
+    const logoLink = links.find((link) => link.textContent === 'common.companyName');
 
     expect(logoLink).toBeInTheDocument();
     expect(logoLink).toHaveAttribute('href', '/');

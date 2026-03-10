@@ -91,18 +91,14 @@ describe('BlogEditor Component', () => {
       localStorage.removeItem('adminMode');
       renderWithRouter(<BlogEditor />);
       expect(screen.getByText('blogEditor.adminRequired')).toBeInTheDocument();
-      expect(
-        screen.queryByText('blogEditor.writePost')
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText('blogEditor.writePost')).not.toBeInTheDocument();
     });
 
     it('renders editor when in admin mode', () => {
       localStorage.setItem('adminMode', 'true');
       renderWithRouter(<BlogEditor />);
       expect(screen.getByText('blogEditor.writePost')).toBeInTheDocument();
-      expect(
-        screen.queryByText('blogEditor.adminRequired')
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText('blogEditor.adminRequired')).not.toBeInTheDocument();
     });
 
     it('activates admin mode via URL parameter', () => {
@@ -143,9 +139,7 @@ describe('BlogEditor Component', () => {
       renderWithRouter(<BlogEditor />);
 
       // Find title input by placeholder (i18n key returned by mock t())
-      const titleInput = screen.getByPlaceholderText(
-        'blogEditor.enterTitle'
-      ) as HTMLInputElement;
+      const titleInput = screen.getByPlaceholderText('blogEditor.enterTitle') as HTMLInputElement;
       fireEvent.change(titleInput, { target: { value: 'Test Title' } });
       expect(titleInput.value).toBe('Test Title');
 
@@ -196,9 +190,7 @@ describe('BlogEditor Component', () => {
       });
 
       // Preview is already shown by default
-      expect(screen.getByTestId('markdown-preview')).toHaveTextContent(
-        '# Test Markdown'
-      );
+      expect(screen.getByTestId('markdown-preview')).toHaveTextContent('# Test Markdown');
     });
   });
 
@@ -214,9 +206,7 @@ describe('BlogEditor Component', () => {
 
       fireEvent.click(saveButton);
 
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'blogEditor.titleContentRequired'
-      );
+      expect(screen.getByRole('alert')).toHaveTextContent('blogEditor.titleContentRequired');
     });
 
     it('saves post to localStorage with valid data', () => {
@@ -227,9 +217,7 @@ describe('BlogEditor Component', () => {
 
       renderWithRouter(<BlogEditor />);
 
-      const titleInput = screen.getByPlaceholderText(
-        'blogEditor.enterTitle'
-      ) as HTMLInputElement;
+      const titleInput = screen.getByPlaceholderText('blogEditor.enterTitle') as HTMLInputElement;
       const contentTextarea = screen.getByPlaceholderText(
         'blogEditor.contentPlaceholder'
       ) as HTMLTextAreaElement;
@@ -244,18 +232,14 @@ describe('BlogEditor Component', () => {
       fireEvent.click(saveButton);
 
       // Check localStorage - should have the new post
-      const savedPosts = JSON.parse(
-        localStorage.getItem('customBlogPosts') || '[]'
-      ) as BlogPost[];
+      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
       expect(savedPosts.length).toBe(1);
       const lastPost = savedPosts[0];
       expect(lastPost?.title).toBe('Test Post');
       expect(lastPost?.content).toBe('Test Content');
       expect(lastPost?.category).toBe('blogEditor.defaultCategory');
 
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'blogEditor.postSaved'
-      );
+      expect(screen.getByRole('alert')).toHaveTextContent('blogEditor.postSaved');
       expect(mockNavigate).toHaveBeenCalledWith('/blog');
     });
 
@@ -267,9 +251,7 @@ describe('BlogEditor Component', () => {
 
       renderWithRouter(<BlogEditor />);
 
-      const titleInput = screen.getByPlaceholderText(
-        'blogEditor.enterTitle'
-      ) as HTMLInputElement;
+      const titleInput = screen.getByPlaceholderText('blogEditor.enterTitle') as HTMLInputElement;
       const contentTextarea = screen.getByPlaceholderText(
         'blogEditor.contentPlaceholder'
       ) as HTMLTextAreaElement;
@@ -283,9 +265,7 @@ describe('BlogEditor Component', () => {
 
       fireEvent.click(saveButton);
 
-      const savedPosts = JSON.parse(
-        localStorage.getItem('customBlogPosts') || '[]'
-      ) as BlogPost[];
+      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
       expect(savedPosts.length).toBe(1);
       const lastPost = savedPosts[0];
       expect(lastPost?.id).toBeDefined();
@@ -311,12 +291,8 @@ describe('BlogEditor Component', () => {
 
       // Mock createElement and click
       const linkElement = document.createElement('a');
-      const createElementSpy = vi
-        .spyOn(document, 'createElement')
-        .mockReturnValue(linkElement);
-      const clickSpy = vi
-        .spyOn(linkElement, 'click')
-        .mockImplementation(() => {});
+      const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue(linkElement);
+      const clickSpy = vi.spyOn(linkElement, 'click').mockImplementation(() => {});
 
       const exportButton = screen.getByRole('button', {
         name: /blogEditor\.exportJSON/,
@@ -336,40 +312,26 @@ describe('BlogEditor Component', () => {
       renderWithRouter(<BlogEditor />);
 
       const file = new File(
-        [
-          JSON.stringify([
-            { id: 1, title: 'Imported Post', content: 'Imported Content' },
-          ]),
-        ],
+        [JSON.stringify([{ id: 1, title: 'Imported Post', content: 'Imported Content' }])],
         'posts.json',
         { type: 'application/json' }
       );
 
       // We need to interact with the file input directly
       // For file inputs, we still need direct access as Testing Library doesn't provide a good alternative
-      const fileInput = document.querySelector(
-        'input[type="file"]'
-      ) as HTMLInputElement;
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [file] } });
 
       await waitFor(() => {
-        const savedPosts = JSON.parse(
-          localStorage.getItem('customBlogPosts') || '[]'
-        );
+        const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]');
         // Check that the imported post was added
-        const importedPost = savedPosts.find(
-          (p: BlogPost) => p.title === 'Imported Post'
-        );
+        const importedPost = savedPosts.find((p: BlogPost) => p.title === 'Imported Post');
         expect(importedPost).toBeDefined();
       });
 
-      const savedPosts = JSON.parse(
-        localStorage.getItem('customBlogPosts') || '[]'
-      ) as BlogPost[];
-      const importedPost = savedPosts.find(
-        (p: BlogPost) => p.title === 'Imported Post'
-      );
+      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
+      const importedPost = savedPosts.find((p: BlogPost) => p.title === 'Imported Post');
       expect(importedPost?.content).toBe('Imported Content');
 
       // Toast shows import success message
@@ -387,9 +349,7 @@ describe('BlogEditor Component', () => {
 
       // We need to interact with the file input directly
       // For file inputs, we still need direct access as Testing Library doesn't provide a good alternative
-      const fileInput = document.querySelector(
-        'input[type="file"]'
-      ) as HTMLInputElement;
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
 
       fireEvent.change(fileInput, { target: { files: [invalidFile] } });
 
@@ -398,9 +358,7 @@ describe('BlogEditor Component', () => {
         expect(screen.getByRole('alert')).toBeInTheDocument();
       });
 
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'blogEditor.importError'
-      );
+      expect(screen.getByRole('alert')).toHaveTextContent('blogEditor.importError');
     });
   });
 

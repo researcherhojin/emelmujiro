@@ -25,11 +25,7 @@ export const announceToScreenReader = (
   // Remove after announcement
   const timeoutId = setTimeout(() => {
     // Check if document still exists before removing
-    if (
-      typeof document !== 'undefined' &&
-      document.body &&
-      document.body.contains(announcement)
-    ) {
+    if (typeof document !== 'undefined' && document.body && document.body.contains(announcement)) {
       document.body.removeChild(announcement);
     }
   }, 1000);
@@ -37,11 +33,7 @@ export const announceToScreenReader = (
   // Return cleanup function for testing
   return () => {
     clearTimeout(timeoutId);
-    if (
-      typeof document !== 'undefined' &&
-      document.body &&
-      document.body.contains(announcement)
-    ) {
+    if (typeof document !== 'undefined' && document.body && document.body.contains(announcement)) {
       document.body.removeChild(announcement);
     }
   };

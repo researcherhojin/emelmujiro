@@ -80,9 +80,7 @@ vi.mock('react-router-dom', async () => {
 import { useBlog } from '../../../contexts/BlogContext';
 vi.mock('../../../contexts/BlogContext', () => ({
   useBlog: vi.fn(),
-  BlogProvider: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
+  BlogProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 import BlogDetail from '../BlogDetail';
@@ -216,9 +214,7 @@ describe('BlogDetail Component', () => {
     renderComponent();
 
     expect(screen.getByText('Test Blog Post')).toBeInTheDocument();
-    expect(screen.getByTestId('markdown-content')).toHaveTextContent(
-      'This is test content'
-    );
+    expect(screen.getByTestId('markdown-content')).toHaveTextContent('This is test content');
     // Author is shown with t('blogDetail.author') prefix (which returns key)
     expect(screen.getByText(/blogDetail\.author/)).toBeInTheDocument();
     expect(screen.getByText('Technology')).toBeInTheDocument();

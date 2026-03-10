@@ -33,21 +33,20 @@ beforeEach(() => {
 // Mock lucide-react icons — Proxy creates and caches any icon component on demand
 vi.mock('lucide-react', () => {
   const createIcon = (name: string) => {
-    const Component = React.forwardRef<
-      SVGSVGElement,
-      React.SVGProps<SVGSVGElement>
-    >((props, ref) => {
-      return React.createElement(
-        'svg',
-        {
-          ...props,
-          ref,
-          'data-testid': `icon-${name}`,
-          'aria-label': name,
-        },
-        React.createElement('title', null, name)
-      );
-    });
+    const Component = React.forwardRef<SVGSVGElement, React.SVGProps<SVGSVGElement>>(
+      (props, ref) => {
+        return React.createElement(
+          'svg',
+          {
+            ...props,
+            ref,
+            'data-testid': `icon-${name}`,
+            'aria-label': name,
+          },
+          React.createElement('title', null, name)
+        );
+      }
+    );
     Component.displayName = name;
     return Component;
   };
@@ -76,40 +75,30 @@ vi.mock('framer-motion', () => {
   // Create motion components that just render the element with props
   const createMotionComponent = (element: string) => {
     return React.forwardRef(
-      (
-        props: React.PropsWithChildren<Record<string, unknown>>,
-        ref: React.Ref<HTMLElement>
-      ) => {
+      (props: React.PropsWithChildren<Record<string, unknown>>, ref: React.Ref<HTMLElement>) => {
         const { children, ...rest } = props;
         // Remove motion-specific props
-        const filteredProps = Object.keys(rest).reduce(
-          (acc: Record<string, unknown>, key) => {
-            if (
-              !key.startsWith('animate') &&
-              !key.startsWith('initial') &&
-              !key.startsWith('exit') &&
-              !key.startsWith('transition') &&
-              !key.startsWith('whileHover') &&
-              !key.startsWith('whileTap') &&
-              !key.startsWith('whileDrag') &&
-              !key.startsWith('whileFocus') &&
-              !key.startsWith('whileInView') &&
-              !key.startsWith('variants') &&
-              !key.startsWith('layout') &&
-              !key.startsWith('drag')
-            ) {
-              acc[key] = rest[key];
-            }
-            return acc;
-          },
-          {}
-        );
+        const filteredProps = Object.keys(rest).reduce((acc: Record<string, unknown>, key) => {
+          if (
+            !key.startsWith('animate') &&
+            !key.startsWith('initial') &&
+            !key.startsWith('exit') &&
+            !key.startsWith('transition') &&
+            !key.startsWith('whileHover') &&
+            !key.startsWith('whileTap') &&
+            !key.startsWith('whileDrag') &&
+            !key.startsWith('whileFocus') &&
+            !key.startsWith('whileInView') &&
+            !key.startsWith('variants') &&
+            !key.startsWith('layout') &&
+            !key.startsWith('drag')
+          ) {
+            acc[key] = rest[key];
+          }
+          return acc;
+        }, {});
 
-        return React.createElement(
-          element,
-          { ...filteredProps, ref },
-          children
-        );
+        return React.createElement(element, { ...filteredProps, ref }, children);
       }
     );
   };
@@ -136,11 +125,7 @@ vi.mock('framer-motion', () => {
       destroy: vi.fn(),
       isAnimating: () => false,
     }),
-    useTransform: (
-      value: unknown,
-      _inputRange: unknown[],
-      _outputRange: unknown[]
-    ) => value,
+    useTransform: (value: unknown, _inputRange: unknown[], _outputRange: unknown[]) => value,
     useSpring: (value: unknown) => value,
     useScroll: () => ({
       scrollX: { get: () => 0 },
@@ -249,8 +234,7 @@ class MockIntersectionObserver implements IntersectionObserver {
     public callback: IntersectionObserverCallback,
     public options?: IntersectionObserverInit
   ) {
-    this.root =
-      (options?.root instanceof Element ? options.root : null) || null;
+    this.root = (options?.root instanceof Element ? options.root : null) || null;
     this.rootMargin = options?.rootMargin || '0px';
     this.thresholds = Array.isArray(options?.threshold)
       ? options.threshold
@@ -263,8 +247,7 @@ class MockIntersectionObserver implements IntersectionObserver {
   takeRecords = vi.fn(() => []);
 }
 
-global.IntersectionObserver =
-  MockIntersectionObserver as unknown as typeof IntersectionObserver;
+global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
 // Mock scrollTo
 window.scrollTo = vi.fn();
@@ -468,8 +451,7 @@ Object.defineProperty(window, 'history', {
 });
 
 // Also set globalHistory for compatibility
-(global as unknown as { globalHistory: History }).globalHistory =
-  window.history;
+(global as unknown as { globalHistory: History }).globalHistory = window.history;
 
 // Suppress console errors and warnings in tests
 const originalError = console.error;
@@ -492,10 +474,7 @@ beforeAll(() => {
 
   console.warn = vi.fn((...args) => {
     const message = args[0]?.toString() || '';
-    if (
-      message.includes('componentWillReceiveProps') ||
-      message.includes('componentWillUpdate')
-    ) {
+    if (message.includes('componentWillReceiveProps') || message.includes('componentWillUpdate')) {
       return;
     }
     originalWarn.apply(console, args);
@@ -536,8 +515,7 @@ Object.defineProperty(navigator, 'language', {
 // Mock window.gtag for Google Analytics
 // gtag is already defined in @types/global.d.ts
 
-(global as typeof globalThis & { gtag?: ReturnType<typeof vi.fn> }).gtag =
-  vi.fn();
+(global as typeof globalThis & { gtag?: ReturnType<typeof vi.fn> }).gtag = vi.fn();
 
 // Mock fetch if not available
 if (!global.fetch) {

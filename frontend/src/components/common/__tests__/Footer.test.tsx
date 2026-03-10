@@ -83,9 +83,7 @@ describe('Footer Component', () => {
       const { container } = renderWithRouter(<Footer />);
       // Company name is in an h3 tag with the 'common.companyName' i18n key
       const headings = container.querySelectorAll('h3');
-      const companyName = Array.from(headings).find(
-        (h) => h.textContent === 'common.companyName'
-      );
+      const companyName = Array.from(headings).find((h) => h.textContent === 'common.companyName');
       expect(companyName).toBeInTheDocument();
       expect(companyName?.textContent).toBe('common.companyName');
     });
@@ -107,9 +105,7 @@ describe('Footer Component', () => {
         'services.computerVision.title',
       ];
       serviceNames.forEach((name) => {
-        const hasService = Array.from(buttons).some(
-          (btn) => btn.textContent === name
-        );
+        const hasService = Array.from(buttons).some((btn) => btn.textContent === name);
         expect(hasService).toBe(true);
       });
     });
@@ -118,21 +114,13 @@ describe('Footer Component', () => {
       const { container } = renderWithRouter(<Footer />);
 
       const menuHeaders = container.querySelectorAll('h3');
-      const hasMenuHeader = Array.from(menuHeaders).some(
-        (h) => h.textContent === 'common.menu'
-      );
+      const hasMenuHeader = Array.from(menuHeaders).some((h) => h.textContent === 'common.menu');
       expect(hasMenuHeader).toBe(true);
 
       const buttons = container.querySelectorAll('button');
-      const buttonMenuItems = [
-        'common.home',
-        'common.services',
-        'common.representativeProfile',
-      ];
+      const buttonMenuItems = ['common.home', 'common.services', 'common.representativeProfile'];
       buttonMenuItems.forEach((item) => {
-        const hasItem = Array.from(buttons).some((btn) =>
-          btn.textContent?.includes(item)
-        );
+        const hasItem = Array.from(buttons).some((btn) => btn.textContent?.includes(item));
         expect(hasItem).toBe(true);
       });
 
@@ -140,8 +128,7 @@ describe('Footer Component', () => {
       const links = container.querySelectorAll('a');
       const hasContactLink = Array.from(links).some(
         (a) =>
-          a.textContent?.includes('common.contact') &&
-          a.getAttribute('href')?.includes('mailto:')
+          a.textContent?.includes('common.contact') && a.getAttribute('href')?.includes('mailto:')
       );
       expect(hasContactLink).toBe(true);
     });
@@ -164,12 +151,8 @@ describe('Footer Component', () => {
       expect(phone).toBeInTheDocument();
 
       // Check Mail and Phone icons (lucide-react icons are mocked as div with data-testid)
-      expect(
-        container.querySelector('[data-testid="icon-Mail"]')
-      ).toBeInTheDocument();
-      expect(
-        container.querySelector('[data-testid="icon-Phone"]')
-      ).toBeInTheDocument();
+      expect(container.querySelector('[data-testid="icon-Mail"]')).toBeInTheDocument();
+      expect(container.querySelector('[data-testid="icon-Phone"]')).toBeInTheDocument();
     });
 
     test('renders contact CTA section', () => {
@@ -177,16 +160,12 @@ describe('Footer Component', () => {
 
       // CTA text (i18n key)
       const paragraphs = container.querySelectorAll('p');
-      const ctaText = Array.from(paragraphs).find(
-        (p) => p.textContent === 'footer.ctaQuestion'
-      );
+      const ctaText = Array.from(paragraphs).find((p) => p.textContent === 'footer.ctaQuestion');
       expect(ctaText).toBeInTheDocument();
       expect(ctaText?.textContent).toBe('footer.ctaQuestion');
 
       // Check ExternalLink icon
-      expect(
-        container.querySelector('[data-testid="icon-ExternalLink"]')
-      ).toBeInTheDocument();
+      expect(container.querySelector('[data-testid="icon-ExternalLink"]')).toBeInTheDocument();
     });
 
     test('renders copyright with current year', () => {
@@ -220,14 +199,10 @@ describe('Footer Component', () => {
 
       const links = container.querySelectorAll('a');
       const contactLink = Array.from(links).find(
-        (a) =>
-          a.textContent === 'common.contact' && a.className.includes('text-sm')
+        (a) => a.textContent === 'common.contact' && a.className.includes('text-sm')
       );
       expect(contactLink).toBeTruthy();
-      expect(contactLink).toHaveAttribute(
-        'href',
-        expect.stringContaining('mailto:')
-      );
+      expect(contactLink).toHaveAttribute('href', expect.stringContaining('mailto:'));
     });
 
     test('renders CTA mailto link', () => {
@@ -241,10 +216,7 @@ describe('Footer Component', () => {
         return hasText && hasIcon;
       });
       expect(ctaLink).toBeTruthy();
-      expect(ctaLink).toHaveAttribute(
-        'href',
-        expect.stringContaining('mailto:')
-      );
+      expect(ctaLink).toHaveAttribute('href', expect.stringContaining('mailto:'));
     });
 
     test('scrolls to hero section when home is clicked on same page', () => {
@@ -253,9 +225,7 @@ describe('Footer Component', () => {
       const { container } = renderWithRouter(<Footer />);
 
       const buttons = container.querySelectorAll('button');
-      const homeButton = Array.from(buttons).find(
-        (btn) => btn.textContent === 'common.home'
-      );
+      const homeButton = Array.from(buttons).find((btn) => btn.textContent === 'common.home');
       expect(homeButton).toBeTruthy();
       fireEvent.click(homeButton!);
 
@@ -272,9 +242,7 @@ describe('Footer Component', () => {
         const { container } = renderWithRouter(<Footer />);
 
         const buttons = container.querySelectorAll('button');
-        const homeButton = Array.from(buttons).find(
-          (btn) => btn.textContent === 'common.home'
-        );
+        const homeButton = Array.from(buttons).find((btn) => btn.textContent === 'common.home');
         expect(homeButton).toBeTruthy();
         fireEvent.click(homeButton!);
 
@@ -325,9 +293,8 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             // Modal description comes from footerData.ts (now uses i18n.t() keys)
-            const modalText = Array.from(container.querySelectorAll('p')).find(
-              (p) =>
-                p.textContent?.includes('footerServices.llmGenai.description')
+            const modalText = Array.from(container.querySelectorAll('p')).find((p) =>
+              p.textContent?.includes('footerServices.llmGenai.description')
             );
             expect(modalText).toBeInTheDocument();
           },
@@ -340,9 +307,7 @@ describe('Footer Component', () => {
         );
         expect(hasMainService).toBe(true);
 
-        const messageSquareIcon = container.querySelector(
-          '[data-testid="icon-MessageSquare"]'
-        );
+        const messageSquareIcon = container.querySelector('[data-testid="icon-MessageSquare"]');
         expect(messageSquareIcon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
@@ -363,18 +328,15 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             // Modal description comes from footerData.ts (now uses i18n.t() keys)
-            const modalText = Array.from(container.querySelectorAll('p')).find(
-              (p) =>
-                p.textContent?.includes('footerServices.education.description')
+            const modalText = Array.from(container.querySelectorAll('p')).find((p) =>
+              p.textContent?.includes('footerServices.education.description')
             );
             expect(modalText).toBeInTheDocument();
           },
           { timeout: 3000 }
         );
 
-        const graduationIcon = container.querySelector(
-          '[data-testid="icon-GraduationCap"]'
-        );
+        const graduationIcon = container.querySelector('[data-testid="icon-GraduationCap"]');
         expect(graduationIcon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
@@ -395,9 +357,8 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             // Modal description comes from footerData.ts (now uses i18n.t() keys)
-            const modalText = Array.from(container.querySelectorAll('p')).find(
-              (p) =>
-                p.textContent?.includes('footerServices.consulting.description')
+            const modalText = Array.from(container.querySelectorAll('p')).find((p) =>
+              p.textContent?.includes('footerServices.consulting.description')
             );
             expect(modalText).toBeInTheDocument();
           },
@@ -425,11 +386,8 @@ describe('Footer Component', () => {
         await waitFor(
           () => {
             // Modal description comes from footerData.ts (now uses i18n.t() keys)
-            const modalText = Array.from(container.querySelectorAll('p')).find(
-              (p) =>
-                p.textContent?.includes(
-                  'footerServices.computerVision.description'
-                )
+            const modalText = Array.from(container.querySelectorAll('p')).find((p) =>
+              p.textContent?.includes('footerServices.computerVision.description')
             );
             expect(modalText).toBeInTheDocument();
           },
@@ -456,9 +414,8 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            const modalText = Array.from(container.querySelectorAll('p')).find(
-              (p) =>
-                p.textContent?.includes('footerServices.llmGenai.description')
+            const modalText = Array.from(container.querySelectorAll('p')).find((p) =>
+              p.textContent?.includes('footerServices.llmGenai.description')
             );
             expect(modalText).toBeInTheDocument();
           },
@@ -471,9 +428,8 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            const modalText = Array.from(container.querySelectorAll('p')).find(
-              (p) =>
-                p.textContent?.includes('footerServices.llmGenai.description')
+            const modalText = Array.from(container.querySelectorAll('p')).find((p) =>
+              p.textContent?.includes('footerServices.llmGenai.description')
             );
             expect(modalText).toBeFalsy();
           },
@@ -496,9 +452,7 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            expect(
-              screen.getByText('footerServices.llmGenai.description')
-            ).toBeInTheDocument();
+            expect(screen.getByText('footerServices.llmGenai.description')).toBeInTheDocument();
           },
           { timeout: 3000 }
         );
@@ -533,9 +487,7 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            expect(
-              screen.getByText('footerServices.llmGenai.description')
-            ).toBeInTheDocument();
+            expect(screen.getByText('footerServices.llmGenai.description')).toBeInTheDocument();
           },
           { timeout: 3000 }
         );
@@ -568,17 +520,13 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            expect(
-              screen.getByText('footerServices.llmGenai.description')
-            ).toBeInTheDocument();
+            expect(screen.getByText('footerServices.llmGenai.description')).toBeInTheDocument();
           },
           { timeout: 3000 }
         );
 
         // Click backdrop to close modal
-        const backdrop = screen.getByLabelText(
-          'accessibility.closeModalOverlay'
-        );
+        const backdrop = screen.getByLabelText('accessibility.closeModalOverlay');
         fireEvent.click(backdrop);
 
         await waitFor(
@@ -604,17 +552,13 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            expect(
-              screen.getByText('footerServices.llmGenai.description')
-            ).toBeInTheDocument();
+            expect(screen.getByText('footerServices.llmGenai.description')).toBeInTheDocument();
           },
           { timeout: 3000 }
         );
 
         // Press Escape to close modal
-        const backdrop = screen.getByLabelText(
-          'accessibility.closeModalOverlay'
-        );
+        const backdrop = screen.getByLabelText('accessibility.closeModalOverlay');
         fireEvent.keyDown(backdrop, { key: 'Escape' });
 
         await waitFor(
@@ -641,18 +585,11 @@ describe('Footer Component', () => {
 
         // Service details come from footerData.ts (hardcoded Korean)
         await waitFor(
-          () =>
-            expect(
-              screen.getByText('footerServices.llmGenai.details.0')
-            ).toBeInTheDocument(),
+          () => expect(screen.getByText('footerServices.llmGenai.details.0')).toBeInTheDocument(),
           { timeout: 3000 }
         );
-        expect(
-          screen.getByText('footerServices.llmGenai.details.1')
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText('footerServices.llmGenai.details.5')
-        ).toBeInTheDocument();
+        expect(screen.getByText('footerServices.llmGenai.details.1')).toBeInTheDocument();
+        expect(screen.getByText('footerServices.llmGenai.details.5')).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
     );
@@ -662,28 +599,20 @@ describe('Footer Component', () => {
       async () => {
         const { container } = renderWithRouter(<Footer />);
 
-        const aiEducationButtons = screen.getAllByText(
-          'services.education.title'
-        );
+        const aiEducationButtons = screen.getAllByText('services.education.title');
         const aiEducationButton = aiEducationButtons[0];
         fireEvent.click(aiEducationButton);
 
         await waitFor(
           () => {
             // Modal description from footerData.ts (hardcoded Korean)
-            expect(
-              screen.getByText('footerServices.education.description')
-            ).toBeInTheDocument();
+            expect(screen.getByText('footerServices.education.description')).toBeInTheDocument();
           },
           { timeout: 3000 }
         );
 
-        expect(
-          screen.getByText('footerServices.education.details.0')
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText('footerServices.education.details.3')
-        ).toBeInTheDocument();
+        expect(screen.getByText('footerServices.education.details.0')).toBeInTheDocument();
+        expect(screen.getByText('footerServices.education.details.3')).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
     );
@@ -712,9 +641,7 @@ describe('Footer Component', () => {
 
       const ctaButtons = screen.getAllByText(/common.contact/);
       // Find the CTA button that has inline-flex class (not the nav button)
-      const ctaButton = ctaButtons.find((btn) =>
-        btn.className.includes('inline-flex')
-      );
+      const ctaButton = ctaButtons.find((btn) => btn.className.includes('inline-flex'));
       expect(ctaButton).toBeTruthy();
       expect(ctaButton).toHaveClass('inline-flex');
       expect(ctaButton).toHaveClass('items-center');
@@ -733,17 +660,13 @@ describe('Footer Component', () => {
 
         await waitFor(
           () => {
-            const backdrop = screen.getByLabelText(
-              'accessibility.closeModalOverlay'
-            );
+            const backdrop = screen.getByLabelText('accessibility.closeModalOverlay');
             expect(backdrop).toBeInTheDocument();
           },
           { timeout: 3000 }
         );
 
-        const backdrop = screen.getByLabelText(
-          'accessibility.closeModalOverlay'
-        );
+        const backdrop = screen.getByLabelText('accessibility.closeModalOverlay');
         expect(backdrop).toHaveAttribute('role', 'button');
         expect(backdrop).toHaveAttribute('tabIndex', '0');
       },

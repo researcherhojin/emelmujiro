@@ -38,8 +38,7 @@ vi.mock('react-helmet-async', () => ({
           mockHelmetData.lang = props.lang;
         } else if (
           child.type === React.Fragment ||
-          (typeof child.type === 'symbol' &&
-            child.type === Symbol.for('react.fragment'))
+          (typeof child.type === 'symbol' && child.type === Symbol.for('react.fragment'))
         ) {
           React.Children.forEach(props.children, processChild);
         }
@@ -48,13 +47,9 @@ vi.mock('react-helmet-async', () => ({
 
     React.Children.forEach(children, processChild);
 
-    return (
-      <div data-testid="helmet" data-helmet={JSON.stringify(mockHelmetData)} />
-    );
+    return <div data-testid="helmet" data-helmet={JSON.stringify(mockHelmetData)} />;
   },
-  HelmetProvider: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
+  HelmetProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 import { HelmetProvider } from 'react-helmet-async';
@@ -119,9 +114,7 @@ describe('SEOHelmet', () => {
   });
 
   it('sets Twitter Card meta tags', () => {
-    renderWithHelmet(
-      <SEOHelmet title="Twitter Test" description="Twitter desc" />
-    );
+    renderWithHelmet(<SEOHelmet title="Twitter Test" description="Twitter desc" />);
 
     const data = getHelmetData();
     expect(data['twitter:card']).toBe('summary_large_image');

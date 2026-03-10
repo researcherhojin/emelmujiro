@@ -153,9 +153,7 @@ describe('BlogInteractions Component', () => {
 
       const userId = localStorage.getItem('userId');
       expect(userId).toBeTruthy();
-      expect(userId).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-      );
+      expect(userId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('loads existing likes on mount', () => {
@@ -414,9 +412,7 @@ describe('BlogInteractions Component', () => {
       fireEvent.click(copyButton);
 
       await waitFor(() => {
-        expect(mockWriteText).toHaveBeenCalledWith(
-          expect.stringContaining('/blog/1')
-        );
+        expect(mockWriteText).toHaveBeenCalledWith(expect.stringContaining('/blog/1'));
       });
 
       // The clipboard write might succeed but the UI update might not happen in tests

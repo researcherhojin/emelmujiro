@@ -59,9 +59,7 @@ describe('blogPosts data', () => {
     });
 
     it('should filter by tags', () => {
-      const postsWithTags = blogPosts.filter(
-        (p) => p.tags && p.tags.length > 0
-      );
+      const postsWithTags = blogPosts.filter((p) => p.tags && p.tags.length > 0);
       const nonExistentResults = blogPosts.filter(
         (p) => p.tags && p.tags.includes('non-existent-tag-xyz-123')
       );
@@ -71,12 +69,8 @@ describe('blogPosts data', () => {
 
       // If posts have tags, test filtering works
       const hasTaggedPosts = postsWithTags.length > 0;
-      const tagToTest = hasTaggedPosts
-        ? postsWithTags[0].tags?.[0] || 'test-tag'
-        : 'test-tag';
-      const taggedPosts = blogPosts.filter(
-        (p) => p.tags && p.tags.includes(tagToTest)
-      );
+      const tagToTest = hasTaggedPosts ? postsWithTags[0].tags?.[0] || 'test-tag' : 'test-tag';
+      const taggedPosts = blogPosts.filter((p) => p.tags && p.tags.includes(tagToTest));
 
       // This will be 0 if no posts have tags, which is correct
       expect(taggedPosts.length).toBeGreaterThanOrEqual(hasTaggedPosts ? 1 : 0);
@@ -93,16 +87,12 @@ describe('blogPosts data', () => {
     });
 
     it('should find posts by content keyword', () => {
-      const results = blogPosts.filter((p) =>
-        p.content.toLowerCase().includes('ai')
-      );
+      const results = blogPosts.filter((p) => p.content.toLowerCase().includes('ai'));
       expect(results.length).toBeGreaterThan(0);
     });
 
     it('should find posts by tag', () => {
-      const postsWithTags = blogPosts.filter(
-        (p) => p.tags && p.tags.length > 0
-      );
+      const postsWithTags = blogPosts.filter((p) => p.tags && p.tags.length > 0);
       const nonExistentResults = blogPosts.filter(
         (p) => p.tags && p.tags.includes('non-existent-tag-xyz-123')
       );
@@ -115,14 +105,10 @@ describe('blogPosts data', () => {
       const tagToSearch = hasTaggedPosts
         ? postsWithTags[0].tags?.[0] || 'search-tag'
         : 'search-tag';
-      const searchResults = blogPosts.filter(
-        (p) => p.tags && p.tags.includes(tagToSearch)
-      );
+      const searchResults = blogPosts.filter((p) => p.tags && p.tags.includes(tagToSearch));
 
       // Verify results match expectation
-      expect(searchResults.length).toBeGreaterThanOrEqual(
-        hasTaggedPosts ? 1 : 0
-      );
+      expect(searchResults.length).toBeGreaterThanOrEqual(hasTaggedPosts ? 1 : 0);
     });
   });
 

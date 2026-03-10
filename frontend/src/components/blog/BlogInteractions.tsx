@@ -48,9 +48,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
 
       // Load bookmarks
       const bookmarksData = localStorage.getItem('bookmarks');
-      const bookmarks: Array<{ id: number }> = bookmarksData
-        ? JSON.parse(bookmarksData)
-        : [];
+      const bookmarks: Array<{ id: number }> = bookmarksData ? JSON.parse(bookmarksData) : [];
       setIsBookmarked(bookmarks.some((b) => b.id === post.id));
     } catch (error) {
       logger.error('Failed to load interactions:', error);
@@ -71,9 +69,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
       if (isLiked) {
         // Unlike
         postLikeData.count = Math.max(0, postLikeData.count - 1);
-        postLikeData.users = postLikeData.users.filter(
-          (id: string) => id !== userId
-        );
+        postLikeData.users = postLikeData.users.filter((id: string) => id !== userId);
       } else {
         // Like
         postLikeData.count += 1;
@@ -143,20 +139,12 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
 
   const shareToTwitter = () => {
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`;
-    window.open(
-      twitterUrl,
-      '_blank',
-      'noopener,noreferrer,width=500,height=600'
-    );
+    window.open(twitterUrl, '_blank', 'noopener,noreferrer,width=500,height=600');
   };
 
   const shareToLinkedIn = () => {
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-    window.open(
-      linkedInUrl,
-      '_blank',
-      'noopener,noreferrer,width=500,height=600'
-    );
+    window.open(linkedInUrl, '_blank', 'noopener,noreferrer,width=500,height=600');
   };
 
   const copyLink = async () => {
@@ -192,9 +180,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
         <button
           onClick={toggleLike}
           className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-            isLiked
-              ? 'bg-red-50 text-red-600'
-              : 'hover:bg-gray-100 text-gray-600'
+            isLiked ? 'bg-red-50 text-red-600' : 'hover:bg-gray-100 text-gray-600'
           }`}
         >
           <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
@@ -205,14 +191,10 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
         <button
           onClick={toggleBookmark}
           className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-            isBookmarked
-              ? 'bg-yellow-50 text-yellow-600'
-              : 'hover:bg-gray-100 text-gray-600'
+            isBookmarked ? 'bg-yellow-50 text-yellow-600' : 'hover:bg-gray-100 text-gray-600'
           }`}
         >
-          <Bookmark
-            className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`}
-          />
+          <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
         </button>
       </div>
 

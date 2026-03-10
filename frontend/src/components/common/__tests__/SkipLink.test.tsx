@@ -122,12 +122,7 @@ describe('SkipLink Component', () => {
 
       const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
-      expect(skipLink).toHaveClass(
-        'focus:absolute',
-        'focus:top-4',
-        'focus:left-4',
-        'focus:z-50'
-      );
+      expect(skipLink).toHaveClass('focus:absolute', 'focus:top-4', 'focus:left-4', 'focus:z-50');
     });
 
     it('applies correct visual styling classes', () => {
@@ -135,13 +130,7 @@ describe('SkipLink Component', () => {
 
       const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
-      expect(skipLink).toHaveClass(
-        'bg-blue-600',
-        'text-white',
-        'px-4',
-        'py-2',
-        'rounded-md'
-      );
+      expect(skipLink).toHaveClass('bg-blue-600', 'text-white', 'px-4', 'py-2', 'rounded-md');
     });
 
     it('applies correct focus styles', () => {
@@ -285,9 +274,7 @@ describe('SkipLink Component', () => {
       elementWithoutScroll.id = 'main-content';
       elementWithoutScroll.focus = vi.fn();
 
-      vi.spyOn(document, 'getElementById').mockReturnValue(
-        elementWithoutScroll
-      );
+      vi.spyOn(document, 'getElementById').mockReturnValue(elementWithoutScroll);
 
       render(<SkipLink />);
 

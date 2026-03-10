@@ -27,8 +27,7 @@ const mockedApi = api as any;
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
-  const { posts, loading, error, currentPage, totalPages, fetchPosts } =
-    useBlog();
+  const { posts, loading, error, currentPage, totalPages, fetchPosts } = useBlog();
 
   return (
     <div>

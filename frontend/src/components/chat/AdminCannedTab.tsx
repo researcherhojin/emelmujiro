@@ -8,10 +8,7 @@ interface AdminCannedTabProps {
   setEditingSettings: React.Dispatch<React.SetStateAction<ChatSettings>>;
 }
 
-const AdminCannedTab: React.FC<AdminCannedTabProps> = ({
-  editingSettings,
-  setEditingSettings,
-}) => {
+const AdminCannedTab: React.FC<AdminCannedTabProps> = ({ editingSettings, setEditingSettings }) => {
   const { t } = useTranslation();
   const [newCannedResponse, setNewCannedResponse] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -114,9 +111,7 @@ const AdminCannedTab: React.FC<AdminCannedTabProps> = ({
               </>
             ) : (
               <>
-                <span className="flex-1 text-gray-900 dark:text-white">
-                  {response}
-                </span>
+                <span className="flex-1 text-gray-900 dark:text-white">{response}</span>
                 <button
                   onClick={() => handleEdit(index)}
                   className="text-blue-600 hover:text-blue-700 p-1"

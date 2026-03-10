@@ -160,9 +160,7 @@ describe('Type definitions', () => {
     });
 
     it('should handle discriminated unions', () => {
-      type ApiResponse<T> =
-        | { status: 'success'; data: T }
-        | { status: 'error'; error: string };
+      type ApiResponse<T> = { status: 'success'; data: T } | { status: 'error'; error: string };
 
       const successResponse: ApiResponse<BlogPost> = {
         status: 'success',

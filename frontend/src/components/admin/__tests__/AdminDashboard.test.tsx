@@ -75,9 +75,7 @@ describe('AdminDashboard', () => {
     fireEvent.click(contentTab);
 
     await waitFor(() => {
-      expect(
-        screen.getByRole('heading', { name: 'admin.contentManagement' })
-      ).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'admin.contentManagement' })).toBeInTheDocument();
     });
     expect(screen.getByText('admin.newContent')).toBeInTheDocument();
     expect(screen.getByText('admin.mock.post1Title')).toBeInTheDocument();
@@ -123,9 +121,7 @@ describe('AdminDashboard', () => {
 
     // Content should be removed after deletion
     await waitFor(() => {
-      expect(
-        screen.queryByText('admin.mock.post1Title')
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText('admin.mock.post1Title')).not.toBeInTheDocument();
     });
   });
 

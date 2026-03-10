@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react';
 import { api } from '../services/api';
 import { getEnvVar } from '../config/env';
 import i18n from '../i18n';

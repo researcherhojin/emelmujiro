@@ -7,10 +7,7 @@ const DarkModeToggle: React.FC = memo(() => {
   const { theme, toggleTheme } = useUI();
   const { t } = useTranslation();
 
-  const label =
-    theme === 'light'
-      ? t('accessibility.darkMode')
-      : t('accessibility.lightMode');
+  const label = theme === 'light' ? t('accessibility.darkMode') : t('accessibility.lightMode');
 
   return (
     <button

@@ -6,12 +6,7 @@ import {
   projectStats,
   getProjectCategories,
 } from '../profileData';
-import type {
-  CareerItem,
-  EducationItem,
-  Project,
-  ProjectStats,
-} from '../profileData';
+import type { CareerItem, EducationItem, Project, ProjectStats } from '../profileData';
 
 vi.mock('../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },
@@ -58,9 +53,7 @@ describe('profileData', () => {
 
     it('should have at least one current position', () => {
       const careerData = getCareerData();
-      const currentPositions = careerData.filter(
-        (item) => item.current === true
-      );
+      const currentPositions = careerData.filter((item) => item.current === true);
       expect(currentPositions.length).toBeGreaterThan(0);
     });
 
@@ -102,22 +95,14 @@ describe('profileData', () => {
 
     it('should have unique schools or degrees', () => {
       const educationData = getEducationData();
-      const schoolDegrees = educationData.map(
-        (item) => `${item.school}-${item.degree}`
-      );
+      const schoolDegrees = educationData.map((item) => `${item.school}-${item.degree}`);
       const unique = new Set(schoolDegrees);
       expect(unique.size).toBe(schoolDegrees.length);
     });
   });
 
   describe('getProjects', () => {
-    const validCategories = [
-      'enterprise',
-      'bootcamp',
-      'education',
-      'startup',
-      'research',
-    ];
+    const validCategories = ['enterprise', 'bootcamp', 'education', 'startup', 'research'];
 
     it('should return a non-empty array', () => {
       const projects = getProjects();
@@ -264,13 +249,7 @@ describe('profileData', () => {
     it('should have correct counts for each category', () => {
       const projects = getProjects();
       const projectCategories = getProjectCategories();
-      const categoryIds = [
-        'enterprise',
-        'bootcamp',
-        'education',
-        'startup',
-        'research',
-      ];
+      const categoryIds = ['enterprise', 'bootcamp', 'education', 'startup', 'research'];
 
       categoryIds.forEach((catId) => {
         const categoryEntry = projectCategories.find((c) => c.id === catId);

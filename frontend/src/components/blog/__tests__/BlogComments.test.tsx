@@ -115,9 +115,7 @@ describe('BlogComments', () => {
   it('clears form after successful submission', () => {
     render(<BlogComments {...defaultProps} />);
 
-    const nameInput = screen.getByPlaceholderText(
-      'blog.namePlaceholder'
-    ) as HTMLInputElement;
+    const nameInput = screen.getByPlaceholderText('blog.namePlaceholder') as HTMLInputElement;
     const contentInput = screen.getByPlaceholderText(
       'blog.commentPlaceholder'
     ) as HTMLTextAreaElement;
@@ -154,9 +152,7 @@ describe('BlogComments', () => {
     // First comment has 2 likes
     const likeButtons = screen.getAllByRole('button');
     // Find the button that contains the likes count
-    const firstLikeButton = likeButtons.find((button) =>
-      button.textContent?.includes('2')
-    );
+    const firstLikeButton = likeButtons.find((button) => button.textContent?.includes('2'));
 
     // Click like button
     expect(firstLikeButton).toBeDefined();

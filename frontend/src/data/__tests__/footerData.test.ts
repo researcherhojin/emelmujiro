@@ -8,12 +8,7 @@ import { getServices } from '../footerData';
 import type { Services, ServiceDetail } from '../footerData';
 
 describe('footerData', () => {
-  const expectedKeys = [
-    'ai-education',
-    'ai-consulting',
-    'llm-genai',
-    'computer-vision',
-  ];
+  const expectedKeys = ['ai-education', 'ai-consulting', 'llm-genai', 'computer-vision'];
 
   describe('getServices()', () => {
     it('should return an object with all expected service keys', () => {
@@ -37,30 +32,28 @@ describe('footerData', () => {
     it('should have required fields for each service', () => {
       const result = getServices();
 
-      Object.entries(result).forEach(
-        ([key, service]: [string, ServiceDetail]) => {
-          expect(service.title).toBeDefined();
-          expect(typeof service.title).toBe('string');
-          expect(service.title.trim()).not.toBe('');
+      Object.entries(result).forEach(([key, service]: [string, ServiceDetail]) => {
+        expect(service.title).toBeDefined();
+        expect(typeof service.title).toBe('string');
+        expect(service.title.trim()).not.toBe('');
 
-          expect(service.description).toBeDefined();
-          expect(typeof service.description).toBe('string');
-          expect(service.description.trim()).not.toBe('');
+        expect(service.description).toBeDefined();
+        expect(typeof service.description).toBe('string');
+        expect(service.description.trim()).not.toBe('');
 
-          expect(service.icon).toBeDefined();
-          // lucide-react icons are globally mocked as Proxy objects in setupTests.ts
-          expect(service.icon).toBeTruthy();
+        expect(service.icon).toBeDefined();
+        // lucide-react icons are globally mocked as Proxy objects in setupTests.ts
+        expect(service.icon).toBeTruthy();
 
-          expect(service.details).toBeDefined();
-          expect(Array.isArray(service.details)).toBe(true);
-          expect(service.details.length).toBeGreaterThan(0);
+        expect(service.details).toBeDefined();
+        expect(Array.isArray(service.details)).toBe(true);
+        expect(service.details.length).toBeGreaterThan(0);
 
-          service.details.forEach((detail) => {
-            expect(typeof detail).toBe('string');
-            expect(detail.trim()).not.toBe('');
-          });
-        }
-      );
+        service.details.forEach((detail) => {
+          expect(typeof detail).toBe('string');
+          expect(detail.trim()).not.toBe('');
+        });
+      });
     });
 
     it('should have 6 details for each service', () => {
@@ -74,30 +67,18 @@ describe('footerData', () => {
     it('should use i18n translation keys for titles', () => {
       const result = getServices();
 
-      expect(result['ai-education'].title).toBe(
-        'footerServices.education.title'
-      );
-      expect(result['ai-consulting'].title).toBe(
-        'footerServices.consulting.title'
-      );
+      expect(result['ai-education'].title).toBe('footerServices.education.title');
+      expect(result['ai-consulting'].title).toBe('footerServices.consulting.title');
       expect(result['llm-genai'].title).toBe('footerServices.llmGenai.title');
-      expect(result['computer-vision'].title).toBe(
-        'footerServices.computerVision.title'
-      );
+      expect(result['computer-vision'].title).toBe('footerServices.computerVision.title');
     });
 
     it('should use i18n translation keys for descriptions', () => {
       const result = getServices();
 
-      expect(result['ai-education'].description).toBe(
-        'footerServices.education.description'
-      );
-      expect(result['ai-consulting'].description).toBe(
-        'footerServices.consulting.description'
-      );
-      expect(result['llm-genai'].description).toBe(
-        'footerServices.llmGenai.description'
-      );
+      expect(result['ai-education'].description).toBe('footerServices.education.description');
+      expect(result['ai-consulting'].description).toBe('footerServices.consulting.description');
+      expect(result['llm-genai'].description).toBe('footerServices.llmGenai.description');
       expect(result['computer-vision'].description).toBe(
         'footerServices.computerVision.description'
       );

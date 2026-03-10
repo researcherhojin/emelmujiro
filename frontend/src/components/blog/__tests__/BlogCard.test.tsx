@@ -61,9 +61,7 @@ describe('BlogCard Component', () => {
 
     await waitFor(() => {
       const links = screen.getAllByRole('link');
-      const blogLink = links.find((link) =>
-        link.getAttribute('href')?.includes('/blog/')
-      );
+      const blogLink = links.find((link) => link.getAttribute('href')?.includes('/blog/'));
       expect(blogLink).toBeInTheDocument();
     });
   });

@@ -39,9 +39,7 @@ i18n
     // When a bot visits, skip navigator detection and fall through to htmlTag
     // (which is 'ko' from index.html), ensuring Korean content for crawlers.
     detection: {
-      order: isBot
-        ? ['htmlTag']
-        : ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+      order: isBot ? ['htmlTag'] : ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
       caches: isBot ? [] : ['localStorage'],
     },
 

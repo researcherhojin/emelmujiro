@@ -108,9 +108,7 @@ const QuickReplies: React.FC<QuickRepliesProps> = ({ onSelect }) => {
       )}
 
       <div className="mt-3 text-center">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          {t('chat.quickReplies.or')}
-        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{t('chat.quickReplies.or')}</p>
       </div>
     </div>
   );

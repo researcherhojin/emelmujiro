@@ -116,10 +116,7 @@ describe('FormContext', () => {
     act(() => {
       result.current.updateContactForm('name', 'John');
       result.current.updateContactForm('email', 'john@example.com');
-      result.current.updateContactForm(
-        'message',
-        'Hello world, this is a long enough message.'
-      );
+      result.current.updateContactForm('message', 'Hello world, this is a long enough message.');
     });
 
     // Validate to produce errors (or not) and then reset
@@ -146,10 +143,7 @@ describe('FormContext', () => {
 
     act(() => {
       result.current.updateContactForm('email', 'test@example.com');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     let isValid = false;
@@ -168,10 +162,7 @@ describe('FormContext', () => {
     act(() => {
       result.current.updateContactForm('name', 'John');
       result.current.updateContactForm('email', 'not-an-email');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     let isValid = false;
@@ -199,9 +190,7 @@ describe('FormContext', () => {
     });
 
     expect(isValid).toBe(false);
-    expect(result.current.formErrors.message).toBe(
-      'formValidation.messageMinLength'
-    );
+    expect(result.current.formErrors.message).toBe('formValidation.messageMinLength');
   });
 
   // 9. validateContactForm returns false with long message (>1000 chars)
@@ -222,9 +211,7 @@ describe('FormContext', () => {
     });
 
     expect(isValid).toBe(false);
-    expect(result.current.formErrors.message).toBe(
-      'formValidation.messageMaxLength'
-    );
+    expect(result.current.formErrors.message).toBe('formValidation.messageMaxLength');
   });
 
   // 10. validateContactForm passes with valid data
@@ -257,10 +244,7 @@ describe('FormContext', () => {
       result.current.updateContactForm('name', 'John Doe');
       result.current.updateContactForm('email', 'john@example.com');
       result.current.updateContactForm('phone', '');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     let isValid = false;
@@ -280,10 +264,7 @@ describe('FormContext', () => {
       result.current.updateContactForm('name', 'John Doe');
       result.current.updateContactForm('email', 'john@example.com');
       result.current.updateContactForm('phone', 'abc-def');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     let isValid = false;
@@ -311,10 +292,7 @@ describe('FormContext', () => {
     act(() => {
       result.current.updateContactForm('name', 'John');
       result.current.updateContactForm('email', 'john@example.com');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     await act(async () => {
@@ -350,10 +328,7 @@ describe('FormContext', () => {
     act(() => {
       result.current.updateContactForm('name', 'John');
       result.current.updateContactForm('email', 'john@example.com');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     await act(async () => {
@@ -366,9 +341,9 @@ describe('FormContext', () => {
     );
 
     // Verify the stored data contains the form values
-    const savedCall = (
-      localStorage.setItem as ReturnType<typeof vi.fn>
-    ).mock.calls.find((call: unknown[]) => call[0] === 'savedContacts');
+    const savedCall = (localStorage.setItem as ReturnType<typeof vi.fn>).mock.calls.find(
+      (call: unknown[]) => call[0] === 'savedContacts'
+    );
     expect(savedCall).toBeDefined();
     const savedData = JSON.parse(savedCall![1] as string);
     expect(savedData).toHaveLength(1);
@@ -388,10 +363,7 @@ describe('FormContext', () => {
     act(() => {
       result.current.updateContactForm('name', 'John');
       result.current.updateContactForm('email', 'john@example.com');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     await act(async () => {
@@ -420,10 +392,7 @@ describe('FormContext', () => {
     act(() => {
       result.current.updateContactForm('name', 'John');
       result.current.updateContactForm('email', 'john@example.com');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     await act(async () => {
@@ -468,10 +437,7 @@ describe('FormContext', () => {
     act(() => {
       result.current.updateContactForm('name', 'John');
       result.current.updateContactForm('email', 'john@example.com');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     await act(async () => {
@@ -515,10 +481,7 @@ describe('FormContext', () => {
 
     act(() => {
       result.current.updateContactForm('name', 'John');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     let isValid = false;
@@ -527,9 +490,7 @@ describe('FormContext', () => {
     });
 
     expect(isValid).toBe(false);
-    expect(result.current.formErrors.email).toBe(
-      'formValidation.emailRequired'
-    );
+    expect(result.current.formErrors.email).toBe('formValidation.emailRequired');
   });
 
   // Additional: validateContactForm returns false when name is too short (1 char)
@@ -539,10 +500,7 @@ describe('FormContext', () => {
     act(() => {
       result.current.updateContactForm('name', 'J');
       result.current.updateContactForm('email', 'john@example.com');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     let isValid = false;
@@ -562,10 +520,7 @@ describe('FormContext', () => {
       result.current.updateContactForm('name', 'John Doe');
       result.current.updateContactForm('email', 'john@example.com');
       result.current.updateContactForm('phone', '+82-10-1234-5678');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     let isValid = false;
@@ -588,10 +543,7 @@ describe('FormContext', () => {
     act(() => {
       result.current.updateContactForm('name', 'John');
       result.current.updateContactForm('email', 'john@example.com');
-      result.current.updateContactForm(
-        'message',
-        'This is a valid message for the form.'
-      );
+      result.current.updateContactForm('message', 'This is a valid message for the form.');
     });
 
     await act(async () => {
@@ -616,8 +568,6 @@ describe('FormContext', () => {
     });
 
     expect(isValid).toBe(false);
-    expect(result.current.formErrors.message).toBe(
-      'formValidation.messageRequired'
-    );
+    expect(result.current.formErrors.message).toBe('formValidation.messageRequired');
   });
 });

@@ -1,8 +1,4 @@
-import axios, {
-  AxiosInstance,
-  AxiosError,
-  InternalAxiosRequestConfig,
-} from 'axios';
+import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { BlogPost, ContactFormData, ErrorResponse } from '../types';
 import logger from '../utils/logger';
 import env from '../config/env';
@@ -17,8 +13,7 @@ const API_TIMEOUT = 30000;
 // Mock is used in tests, or when no real backend URL is configured.
 // When VITE_API_URL points to an actual deployed backend, mock is disabled.
 const PLACEHOLDER_API = 'https://api.emelmujiro.com/api';
-const USE_MOCK_API =
-  env.IS_TEST || !env.API_URL || env.API_URL === PLACEHOLDER_API;
+const USE_MOCK_API = env.IS_TEST || !env.API_URL || env.API_URL === PLACEHOLDER_API;
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -58,14 +53,8 @@ axiosInstance.interceptors.request.use(
       logger.warn('Insecure HTTP detected in production, upgrading to HTTPS');
       config.url = config.url.replace('http://', 'https://');
     }
-    if (
-      env.IS_PRODUCTION &&
-      config.baseURL &&
-      config.baseURL.startsWith('http://')
-    ) {
-      logger.warn(
-        'Insecure HTTP in baseURL detected in production, upgrading to HTTPS'
-      );
+    if (env.IS_PRODUCTION && config.baseURL && config.baseURL.startsWith('http://')) {
+      logger.warn('Insecure HTTP in baseURL detected in production, upgrading to HTTPS');
       config.baseURL = config.baseURL.replace('http://', 'https://');
     }
 
@@ -117,10 +106,9 @@ axiosInstance.interceptors.response.use(
       const refreshToken = localStorage.getItem('refreshToken');
       if (refreshToken) {
         try {
-          const refreshResponse = await axios.post(
-            `${API_URL}/auth/token/refresh/`,
-            { refresh: refreshToken }
-          );
+          const refreshResponse = await axios.post(`${API_URL}/auth/token/refresh/`, {
+            refresh: refreshToken,
+          });
           const { access } = refreshResponse.data;
           localStorage.setItem('authToken', access);
           if (originalRequest.headers) {
@@ -171,9 +159,7 @@ export const api = {
   },
   getBlogPost: (id: number | string) => {
     if (USE_MOCK_API) {
-      const post = mockBlogPosts.find(
-        (p) => p.id === Number(id) || p.slug === id
-      );
+      const post = mockBlogPosts.find((p) => p.id === Number(id) || p.slug === id);
       if (!post) {
         // Instead of rejecting, return a default post for testing
         const defaultPost = {
@@ -212,10 +198,7 @@ export const api = {
         (post) =>
           post.title.toLowerCase().includes(query.toLowerCase()) ||
           post.content.toLowerCase().includes(query.toLowerCase()) ||
-          (post.tags &&
-            post.tags.some((tag) =>
-              tag.toLowerCase().includes(query.toLowerCase())
-            ))
+          (post.tags && post.tags.some((tag) => tag.toLowerCase().includes(query.toLowerCase())))
       );
       return Promise.resolve({
         data: paginateMockData(filtered, 1, 10),
@@ -225,9 +208,7 @@ export const api = {
         config: {} as InternalAxiosRequestConfig,
       });
     }
-    return axiosInstance.get<PaginatedResponse<BlogPost>>(
-      `blog-posts/?search=${query}`
-    );
+    return axiosInstance.get<PaginatedResponse<BlogPost>>(`blog-posts/?search=${query}`);
   },
   getBlogCategories: () => {
     if (USE_MOCK_API) {

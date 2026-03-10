@@ -1,14 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-  Check,
-  CheckCheck,
-  Clock,
-  AlertTriangle,
-  RefreshCw,
-  Bot,
-  Info,
-} from 'lucide-react';
+import { Check, CheckCheck, Clock, AlertTriangle, RefreshCw, Bot, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import MessageContent from './MessageContent';
 
@@ -29,14 +21,8 @@ interface MessageBubbleProps {
   formatMessageTime: (date: Date) => string;
   onRetry: (messageId: string) => void;
   onSendQuickReply: (content: string) => void;
-  onFileDownload: (
-    file: File | { url: string } | undefined,
-    filename: string
-  ) => void;
-  onImagePreview: (
-    file: File | { url: string } | undefined,
-    filename: string
-  ) => void;
+  onFileDownload: (file: File | { url: string } | undefined, filename: string) => void;
+  onImagePreview: (file: File | { url: string } | undefined, filename: string) => void;
   onMarkAsRead: (messageId: string) => void;
 }
 
@@ -99,24 +85,16 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         }
       }}
     >
-      <div
-        className={`flex max-w-[70%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
-      >
+      <div className={`flex max-w-[70%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
         {showAvatar && (
           <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-semibold mr-3">
-            {message.agentName ? (
-              message.agentName[0]
-            ) : (
-              <Bot className="w-4 h-4" />
-            )}
+            {message.agentName ? message.agentName[0] : <Bot className="w-4 h-4" />}
           </div>
         )}
 
         <div className="flex flex-col">
           {showAvatar && message.agentName && (
-            <div className="text-xs text-gray-500 mb-1 px-2">
-              {message.agentName}
-            </div>
+            <div className="text-xs text-gray-500 mb-1 px-2">{message.agentName}</div>
           )}
 
           <div
@@ -158,21 +136,19 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
             {isUser && getStatusIcon(message.status)}
           </div>
 
-          {!isUser &&
-            message.quickReplies &&
-            message.quickReplies.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {message.quickReplies.map((reply) => (
-                  <button
-                    key={reply}
-                    onClick={() => onSendQuickReply(reply)}
-                    className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
-                  >
-                    {reply}
-                  </button>
-                ))}
-              </div>
-            )}
+          {!isUser && message.quickReplies && message.quickReplies.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {message.quickReplies.map((reply) => (
+                <button
+                  key={reply}
+                  onClick={() => onSendQuickReply(reply)}
+                  className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
+                >
+                  {reply}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

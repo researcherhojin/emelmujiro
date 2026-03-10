@@ -37,23 +37,15 @@ describe('ServicesSection Component', () => {
     expect(screen.getByText('services.education.title')).toBeInTheDocument();
     expect(screen.getByText('services.consulting.title')).toBeInTheDocument();
     expect(screen.getByText('services.llmGenai.title')).toBeInTheDocument();
-    expect(
-      screen.getByText('services.computerVision.title')
-    ).toBeInTheDocument();
+    expect(screen.getByText('services.computerVision.title')).toBeInTheDocument();
   });
 
   test('renders service descriptions', () => {
     renderWithRouter(<ServicesSection />);
 
-    expect(
-      screen.getByText('services.education.description')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('services.consulting.description')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('services.llmGenai.description')
-    ).toBeInTheDocument();
+    expect(screen.getByText('services.education.description')).toBeInTheDocument();
+    expect(screen.getByText('services.consulting.description')).toBeInTheDocument();
+    expect(screen.getByText('services.llmGenai.description')).toBeInTheDocument();
   });
 
   test('renders service details keys', () => {
@@ -68,14 +60,8 @@ describe('ServicesSection Component', () => {
   test('service cards have proper content', () => {
     renderWithRouter(<ServicesSection />);
 
-    expect(
-      screen.getByText('services.education.description')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('services.consulting.description')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('services.computerVision.description')
-    ).toBeInTheDocument();
+    expect(screen.getByText('services.education.description')).toBeInTheDocument();
+    expect(screen.getByText('services.consulting.description')).toBeInTheDocument();
+    expect(screen.getByText('services.computerVision.description')).toBeInTheDocument();
   });
 });

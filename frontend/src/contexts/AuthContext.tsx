@@ -71,9 +71,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(userData);
     } catch (err) {
       const error = err as Error & { userMessage?: string };
-      setError(
-        error.userMessage || error.message || i18n.t('auth.loginFailed')
-      );
+      setError(error.userMessage || error.message || i18n.t('auth.loginFailed'));
       throw err;
     } finally {
       setLoading(false);
@@ -94,29 +92,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
   }, []);
 
-  const register = useCallback(
-    async (email: string, password: string, name: string) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await api.register(email, password, name);
-        const { access, refresh, user: userData } = response.data;
+  const register = useCallback(async (email: string, password: string, name: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.register(email, password, name);
+      const { access, refresh, user: userData } = response.data;
 
-        localStorage.setItem('authToken', access);
-        localStorage.setItem('refreshToken', refresh);
-        setUser(userData);
-      } catch (err) {
-        const error = err as Error & { userMessage?: string };
-        setError(
-          error.userMessage || error.message || i18n.t('auth.registerFailed')
-        );
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
+      localStorage.setItem('authToken', access);
+      localStorage.setItem('refreshToken', refresh);
+      setUser(userData);
+    } catch (err) {
+      const error = err as Error & { userMessage?: string };
+      setError(error.userMessage || error.message || i18n.t('auth.registerFailed'));
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const updateUser = useCallback((userData: Partial<User>) => {
     setUser((prev) => (prev ? { ...prev, ...userData } : null));

@@ -21,14 +21,11 @@ const BlogEditor: React.FC = () => {
   const [toast, setToast] = useState<ToastState | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const showToast = useCallback(
-    (message: string, type: 'success' | 'error') => {
-      setToast({ message, type });
-      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-      toastTimerRef.current = setTimeout(() => setToast(null), 3000);
-    },
-    []
-  );
+  const showToast = useCallback((message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToast(null), 3000);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -56,9 +53,7 @@ const BlogEditor: React.FC = () => {
   }, [searchParams]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -83,9 +78,7 @@ const BlogEditor: React.FC = () => {
         author: formData.author,
         publishedAt: new Date().toISOString().split('T')[0],
         category: formData.category || t('blogEditor.defaultCategory'),
-        tags: formData.tags
-          ? formData.tags.split(',').map((tag) => tag.trim())
-          : [],
+        tags: formData.tags ? formData.tags.split(',').map((tag) => tag.trim()) : [],
         image_url:
           formData.image_url ||
           `https://source.unsplash.com/800x400/?${formData.category || 'technology'}`,
@@ -124,8 +117,7 @@ const BlogEditor: React.FC = () => {
       const customPosts = localStorage.getItem('customBlogPosts');
       const posts = customPosts ? JSON.parse(customPosts) : [];
       const dataStr = JSON.stringify(posts, null, 2);
-      const dataUri =
-        'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
       const exportFileDefaultName = `blog-posts-${new Date().toISOString().split('T')[0]}.json`;
 
@@ -161,15 +153,11 @@ const BlogEditor: React.FC = () => {
         const mergedPosts = [...posts, ...existingPosts];
 
         const uniquePosts = mergedPosts.filter(
-          (post, index, self) =>
-            index === self.findIndex((p) => p.id === post.id)
+          (post, index, self) => index === self.findIndex((p) => p.id === post.id)
         );
 
         localStorage.setItem('customBlogPosts', JSON.stringify(uniquePosts));
-        showToast(
-          t('blogEditor.importSuccess', { count: posts.length }),
-          'success'
-        );
+        showToast(t('blogEditor.importSuccess', { count: posts.length }), 'success');
       } catch {
         showToast(t('blogEditor.importError'), 'error');
       }
@@ -191,12 +179,8 @@ const BlogEditor: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 pt-20">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-          <h2 className="text-2xl font-bold mb-4">
-            {t('blogEditor.adminRequired')}
-          </h2>
-          <p className="text-gray-600 mb-8">
-            {t('blogEditor.adminDescription')}
-          </p>
+          <h2 className="text-2xl font-bold mb-4">{t('blogEditor.adminRequired')}</h2>
+          <p className="text-gray-600 mb-8">{t('blogEditor.adminDescription')}</p>
           <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
             <p className="text-sm text-gray-500 mb-4">
               {t('blogEditor.adminInstruction')}{' '}
@@ -245,12 +229,7 @@ const BlogEditor: React.FC = () => {
             <label className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer flex items-center">
               <Upload className="w-4 h-4 mr-2" />
               {t('blogEditor.importJSON')}
-              <input
-                type="file"
-                accept=".json"
-                onChange={handleImport}
-                className="hidden"
-              />
+              <input type="file" accept=".json" onChange={handleImport} className="hidden" />
             </label>
             <button
               onClick={handleExport}
@@ -290,9 +269,7 @@ const BlogEditor: React.FC = () => {
         </div>
 
         <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h3 className="font-bold text-yellow-800 mb-2">
-            {t('blogEditor.howToUse')}
-          </h3>
+          <h3 className="font-bold text-yellow-800 mb-2">{t('blogEditor.howToUse')}</h3>
           <ul className="text-sm text-yellow-700 space-y-1">
             <li>• {t('blogEditor.instruction1')}</li>
             <li>• {t('blogEditor.instruction2')}</li>

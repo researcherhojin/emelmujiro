@@ -32,22 +32,14 @@ vi.mock('lucide-react', () => ({
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({
-      children,
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <div>{children}</div>,
-    span: ({
-      children,
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <span>{children}</span>,
+    div: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <div>{children}</div>
+    ),
+    span: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <span>{children}</span>
+    ),
   },
-  AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
-    <>{children}</>
-  ),
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock LazyImage component
@@ -137,9 +129,7 @@ const mockChatContext = {
 };
 vi.mock('../../../contexts/ChatContext', () => ({
   useChatContext: () => mockChatContext,
-  ChatProvider: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
+  ChatProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 describe('MessageList', () => {
@@ -263,9 +253,7 @@ describe('MessageList', () => {
     // Find the actual button element that contains the RefreshCw icon
     // In the component, RefreshCw is likely rendered inside a button
     const allButtons = screen.getAllByRole('button');
-    const retryButton = allButtons.find((button) =>
-      button.textContent?.includes('RefreshCw')
-    );
+    const retryButton = allButtons.find((button) => button.textContent?.includes('RefreshCw'));
 
     expect(retryButton).toBeDefined();
     if (retryButton) {

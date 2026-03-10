@@ -23,9 +23,7 @@ const HeroSection: React.FC = memo(() => {
 
             {/* Main Headline - Typography focused */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-8 sm:mb-10 leading-[1.1] sm:leading-[1.05] tracking-tight">
-              <span className="block text-gray-900 dark:text-white">
-                {t('hero.titleLine1')}
-              </span>
+              <span className="block text-gray-900 dark:text-white">{t('hero.titleLine1')}</span>
               <span className="block text-gray-900 dark:text-white mt-2 sm:mt-3">
                 {t('hero.titleLine2')}
               </span>
@@ -35,9 +33,7 @@ const HeroSection: React.FC = memo(() => {
             <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-10 sm:mb-12 leading-relaxed max-w-xl font-medium break-keep">
               {t('hero.descriptionLine1')}
               <br className="hidden sm:block" />
-              <span className="block sm:inline">
-                {t('hero.descriptionLine2')}
-              </span>
+              <span className="block sm:inline">{t('hero.descriptionLine2')}</span>
             </p>
 
             {/* CTA Button - Single */}

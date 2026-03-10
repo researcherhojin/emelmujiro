@@ -1,12 +1,6 @@
 import React from 'react';
 import { vi } from 'vitest';
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  within,
-} from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import ChatWindow from '../ChatWindow';
@@ -46,15 +40,15 @@ vi.mock('framer-motion', () => ({
     button: ({
       children,
       ...props
-    }: React.PropsWithChildren<
-      React.ButtonHTMLAttributes<HTMLButtonElement>
-    >) => <button {...props}>{children}</button>,
+    }: React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement>>) => (
+      <button {...props}>{children}</button>
+    ),
     textarea: ({
       children,
       ...props
-    }: React.PropsWithChildren<
-      React.TextareaHTMLAttributes<HTMLTextAreaElement>
-    >) => <textarea {...props}>{children}</textarea>,
+    }: React.PropsWithChildren<React.TextareaHTMLAttributes<HTMLTextAreaElement>>) => (
+      <textarea {...props}>{children}</textarea>
+    ),
   },
   AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }));
@@ -162,9 +156,7 @@ describe('ChatWindowAdvanced', () => {
       render(<ChatWindow />);
 
       expect(screen.getByTestId('message-list')).toBeInTheDocument();
-      expect(
-        screen.getByPlaceholderText(/chat\.placeholder\.connected/i)
-      ).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/chat\.placeholder\.connected/i)).toBeInTheDocument();
     });
 
     it('should render with connected state', () => {
@@ -200,9 +192,7 @@ describe('ChatWindowAdvanced', () => {
 
       render(<ChatWindow />);
 
-      const input = screen.getByPlaceholderText(
-        /chat\.placeholder\.connected/i
-      );
+      const input = screen.getByPlaceholderText(/chat\.placeholder\.connected/i);
       const sendButton = screen.getByLabelText(/chat\.send/i);
 
       // Use fireEvent instead of userEvent for better performance in CI
@@ -227,9 +217,7 @@ describe('ChatWindowAdvanced', () => {
 
       render(<ChatWindow />);
 
-      const input = screen.getByPlaceholderText(
-        /chat\.placeholder\.connected/i
-      );
+      const input = screen.getByPlaceholderText(/chat\.placeholder\.connected/i);
 
       // Use fireEvent for better CI performance
       fireEvent.change(input, { target: { value: 'Test message' } });
@@ -249,9 +237,7 @@ describe('ChatWindowAdvanced', () => {
 
       render(<ChatWindow />);
 
-      const input = screen.getByPlaceholderText(
-        /chat\.placeholder\.connected/i
-      );
+      const input = screen.getByPlaceholderText(/chat\.placeholder\.connected/i);
 
       // Simulate Shift+Enter for multi-line
       fireEvent.change(input, { target: { value: 'Line 1' } });
@@ -367,9 +353,7 @@ describe('ChatWindowAdvanced', () => {
 
       render(<ChatWindow />);
 
-      const input = screen.getByPlaceholderText(
-        /chat\.placeholder\.connected/i
-      );
+      const input = screen.getByPlaceholderText(/chat\.placeholder\.connected/i);
 
       // Use fireEvent for better CI performance
       fireEvent.change(input, { target: { value: 'T' } });

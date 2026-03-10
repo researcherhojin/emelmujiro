@@ -48,10 +48,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
   const saveToRecentSearches = (term: string) => {
     if (!term.trim()) return;
 
-    const updated = [term, ...recentSearches.filter((s) => s !== term)].slice(
-      0,
-      5
-    );
+    const updated = [term, ...recentSearches.filter((s) => s !== term)].slice(0, 5);
     setRecentSearches(updated);
     localStorage.setItem('recentSearches', JSON.stringify(updated));
   };
@@ -86,8 +83,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
           post.content.toLowerCase().includes(lowerTerm) ||
           (post.excerpt && post.excerpt.toLowerCase().includes(lowerTerm)) ||
           (post.category && post.category.toLowerCase().includes(lowerTerm)) ||
-          (post.tags &&
-            post.tags.some((tag) => tag.toLowerCase().includes(lowerTerm)))
+          (post.tags && post.tags.some((tag) => tag.toLowerCase().includes(lowerTerm)))
       );
 
       setSearchResults(results);
@@ -143,10 +139,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
             onChange={handleSearchChange}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => {
-              blurTimerRef.current = setTimeout(
-                () => setShowSuggestions(false),
-                200
-              );
+              blurTimerRef.current = setTimeout(() => setShowSuggestions(false), 200);
             }}
             placeholder={t('blog.searchPlaceholder')}
             aria-label={t('blog.searchPlaceholder')}
@@ -169,9 +162,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
         <div className="absolute top-full mt-2 w-full bg-white border rounded-lg shadow-lg z-10">
           <div className="p-2">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-500">
-                {t('blog.recentSearches')}
-              </span>
+              <span className="text-sm text-gray-500">{t('blog.recentSearches')}</span>
               <button
                 onClick={clearRecentSearches}
                 className="text-xs text-blue-600 hover:text-blue-800"
@@ -196,9 +187,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
       {searchTerm && (
         <div className="mt-2 text-sm text-gray-600">
           {searchResults.length > 0 ? (
-            <span>
-              {t('blog.searchResults', { count: searchResults.length })}
-            </span>
+            <span>{t('blog.searchResults', { count: searchResults.length })}</span>
           ) : (
             <span>{t('blog.noSearchResults')}</span>
           )}

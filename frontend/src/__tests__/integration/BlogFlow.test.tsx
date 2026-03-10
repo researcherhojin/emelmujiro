@@ -98,9 +98,7 @@ describe('Blog Flow Integration Tests', () => {
 
     // App should render and display the root element
     await waitFor(() => {
-      expect(
-        document.getElementById('root') || document.body.firstChild
-      ).toBeTruthy();
+      expect(document.getElementById('root') || document.body.firstChild).toBeTruthy();
     });
   });
 

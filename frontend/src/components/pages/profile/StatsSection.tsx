@@ -1,13 +1,5 @@
 import React, { memo } from 'react';
-import {
-  Briefcase,
-  GraduationCap,
-  Building,
-  Clock,
-  Trophy,
-  Medal,
-  Building2,
-} from 'lucide-react';
+import { Briefcase, GraduationCap, Building, Clock, Trophy, Medal, Building2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { projectStats } from '../../../data/profileData';
 

@@ -35,9 +35,7 @@ describe('ContactPage', () => {
 
   it('renders Google Form description', () => {
     renderPage();
-    expect(
-      screen.getByText('contact.googleForm.description')
-    ).toBeInTheDocument();
+    expect(screen.getByText('contact.googleForm.description')).toBeInTheDocument();
   });
 
   it('renders Google Form iframe', () => {
@@ -61,8 +59,6 @@ describe('ContactPage', () => {
 
   it('renders form title', () => {
     renderPage();
-    expect(
-      screen.getByText('contact.googleForm.formTitle')
-    ).toBeInTheDocument();
+    expect(screen.getByText('contact.googleForm.formTitle')).toBeInTheDocument();
   });
 });

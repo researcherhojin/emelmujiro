@@ -24,10 +24,7 @@ const AdminUsersTab: React.FC<AdminUsersTabProps> = ({ connectionId }) => {
       </div>
 
       {connectionId ? (
-        <div
-          className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg"
-          data-testid="active-users-list"
-        >
+        <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg" data-testid="active-users-list">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
               U
@@ -37,11 +34,9 @@ const AdminUsersTab: React.FC<AdminUsersTabProps> = ({ connectionId }) => {
                 {t('chat.admin.anonymousUser')}
               </div>
               <div className="text-sm text-gray-500">
-                <span>{t('chat.admin.connectionTime')}</span>{' '}
-                {t('chat.admin.fiveMinAgo')}
+                <span>{t('chat.admin.connectionTime')}</span> {t('chat.admin.fiveMinAgo')}
                 <br />
-                <span>{t('chat.admin.lastActivity')}</span>{' '}
-                {t('chat.admin.justNow')}
+                <span>{t('chat.admin.lastActivity')}</span> {t('chat.admin.justNow')}
               </div>
             </div>
             <div className="ml-auto">

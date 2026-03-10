@@ -1,12 +1,6 @@
 import React from 'react';
 import { vi } from 'vitest';
-import {
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-  render,
-} from '@testing-library/react';
+import { screen, fireEvent, waitFor, act, render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ChatWidget from '../ChatWidget';
 
@@ -177,9 +171,7 @@ describe('ChatWidget', () => {
     const allCloseButtons = screen.getAllByLabelText('chat.close');
     // The header close button should be the one that's NOT the floating button
     // The floating button has role="button" explicitly set
-    const headerCloseButton = allCloseButtons.find(
-      (btn) => btn.getAttribute('role') !== 'button'
-    );
+    const headerCloseButton = allCloseButtons.find((btn) => btn.getAttribute('role') !== 'button');
     expect(headerCloseButton).toBeTruthy();
     fireEvent.click(headerCloseButton!);
 

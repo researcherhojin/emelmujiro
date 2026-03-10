@@ -19,10 +19,7 @@ interface AdminStatsTabProps {
   businessHours: BusinessHours;
 }
 
-const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
-  stats,
-  businessHours,
-}) => {
+const AdminStatsTab: React.FC<AdminStatsTabProps> = ({ stats, businessHours }) => {
   const { t } = useTranslation();
 
   return (
@@ -46,10 +43,7 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
           <div className="flex items-center space-x-2">
             <MessageSquare className="w-5 h-5 text-blue-600" />
             <div>
-              <div
-                className="text-2xl font-bold text-blue-600"
-                data-testid="total-messages-count"
-              >
+              <div className="text-2xl font-bold text-blue-600" data-testid="total-messages-count">
                 {stats.totalMessages}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -63,10 +57,7 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
           <div className="flex items-center space-x-2">
             <User className="w-5 h-5 text-green-600" />
             <div>
-              <div
-                className="text-2xl font-bold text-green-600"
-                data-testid="active-users-count"
-              >
+              <div className="text-2xl font-bold text-green-600" data-testid="active-users-count">
                 {stats.userMessages}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -80,10 +71,7 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
           <div className="flex items-center space-x-2">
             <Clock className="w-5 h-5 text-purple-600" />
             <div>
-              <div
-                className="text-2xl font-bold text-purple-600"
-                data-testid="avg-response-time"
-              >
+              <div className="text-2xl font-bold text-purple-600" data-testid="avg-response-time">
                 {stats.averageResponseTime}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -97,10 +85,7 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
           <div className="flex items-center space-x-2">
             <BarChart3 className="w-5 h-5 text-amber-600" />
             <div>
-              <div
-                className="text-2xl font-bold text-amber-600"
-                data-testid="satisfaction-rate"
-              >
+              <div className="text-2xl font-bold text-amber-600" data-testid="satisfaction-rate">
                 {stats.satisfactionRating}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -126,9 +111,7 @@ const AdminStatsTab: React.FC<AdminStatsTabProps> = ({
                 : t('chat.admin.currentlyClosed')}
             </span>
           </div>
-          <div className="text-gray-600 dark:text-gray-400">
-            {businessHours.hours}
-          </div>
+          <div className="text-gray-600 dark:text-gray-400">{businessHours.hours}</div>
         </div>
       </div>
     </div>

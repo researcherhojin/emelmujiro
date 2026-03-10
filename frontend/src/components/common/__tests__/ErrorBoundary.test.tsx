@@ -71,9 +71,7 @@ describe('ErrorBoundary Component', () => {
 
     expect(screen.getByText('errorBoundary.title')).toBeInTheDocument();
     expect(screen.getByText('errorBoundary.message')).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'errorBoundary.retry' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'errorBoundary.retry' })).toBeInTheDocument();
   });
 
   it('logs error to console', async () => {
@@ -87,10 +85,7 @@ describe('ErrorBoundary Component', () => {
 
     // Check that logger.error was called with the error
     expect(logger.error).toHaveBeenCalled();
-    expect(logger.error).toHaveBeenCalledWith(
-      'Error caught by boundary:',
-      expect.any(Error)
-    );
+    expect(logger.error).toHaveBeenCalledWith('Error caught by boundary:', expect.any(Error));
     expect(logger.debug).toHaveBeenCalled();
   });
 

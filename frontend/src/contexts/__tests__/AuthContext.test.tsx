@@ -94,14 +94,8 @@ describe('AuthContext', () => {
     expect(screen.getByTestId('user')).toHaveTextContent('test@example.com');
 
     expect(mockApi.login).toHaveBeenCalledWith('test@example.com', 'password');
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-      'authToken',
-      'fake-access-token'
-    );
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-      'refreshToken',
-      'fake-refresh-token'
-    );
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('authToken', 'fake-access-token');
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('refreshToken', 'fake-refresh-token');
   });
 
   test('handles logout', async () => {
@@ -147,9 +141,7 @@ describe('AuthContext', () => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
     });
 
-    expect(screen.getByTestId('user')).toHaveTextContent(
-      'existing@example.com'
-    );
+    expect(screen.getByTestId('user')).toHaveTextContent('existing@example.com');
 
     expect(mockLocalStorage.getItem).toHaveBeenCalledWith('authToken');
     expect(mockApi.getUser).toHaveBeenCalled();
@@ -208,10 +200,7 @@ describe('AuthContext', () => {
 
     expect(screen.getByTestId('user')).toHaveTextContent('no-user');
 
-    expect(mockLocalStorage.setItem).not.toHaveBeenCalledWith(
-      'authToken',
-      expect.any(String)
-    );
+    expect(mockLocalStorage.setItem).not.toHaveBeenCalledWith('authToken', expect.any(String));
   });
 
   test('throws error when used outside provider', () => {

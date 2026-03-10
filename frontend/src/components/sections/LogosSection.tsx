@@ -26,29 +26,26 @@ interface ScrollRowProps {
   rowKey: string;
 }
 
-const ScrollRow: React.FC<ScrollRowProps> = memo(
-  ({ companies, direction = 'left', rowKey }) => {
-    const animationClass =
-      direction === 'left' ? 'animate-scroll' : 'animate-scroll-reverse';
+const ScrollRow: React.FC<ScrollRowProps> = memo(({ companies, direction = 'left', rowKey }) => {
+  const animationClass = direction === 'left' ? 'animate-scroll' : 'animate-scroll-reverse';
 
-    return (
-      <div className="relative overflow-hidden group">
-        {/* Left/right fade masks */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-10" />
+  return (
+    <div className="relative overflow-hidden group">
+      {/* Left/right fade masks */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-10" />
 
-        <div className={`flex ${animationClass} hover:pause`}>
-          {/* Render 3 copies for seamless looping */}
-          {[0, 1, 2].map((copy) =>
-            companies.map((company, index) => (
-              <LogoItem key={`${rowKey}-${copy}-${index}`} company={company} />
-            ))
-          )}
-        </div>
+      <div className={`flex ${animationClass} hover:pause`}>
+        {/* Render 3 copies for seamless looping */}
+        {[0, 1, 2].map((copy) =>
+          companies.map((company, index) => (
+            <LogoItem key={`${rowKey}-${copy}-${index}`} company={company} />
+          ))
+        )}
       </div>
-    );
-  }
-);
+    </div>
+  );
+});
 
 ScrollRow.displayName = 'ScrollRow';
 

@@ -20,10 +20,7 @@ interface WebVitalsData {
   INP: VitalMetric | null;
 }
 
-const getMetricRating = (
-  name: string,
-  value: number
-): 'good' | 'needs-improvement' | 'poor' => {
+const getMetricRating = (name: string, value: number): 'good' | 'needs-improvement' | 'poor' => {
   const thresholds: Record<string, { good: number; poor: number }> = {
     CLS: { good: 0.1, poor: 0.25 },
     FCP: { good: 1800, poor: 3000 },
@@ -81,9 +78,7 @@ const MetricCard: React.FC<{ metric: VitalMetric }> = memo(({ metric }) => {
         <h3 className="text-lg font-semibold">{metric.name}</h3>
         <span className="text-2xl">{ratingIcons[metric.rating]}</span>
       </div>
-      <div className="text-2xl font-bold mb-2">
-        {formatMetricValue(metric.name, metric.value)}
-      </div>
+      <div className="text-2xl font-bold mb-2">{formatMetricValue(metric.name, metric.value)}</div>
       <p className="text-sm opacity-75">{getMetricDescription(metric.name)}</p>
       <div className="mt-2 text-xs opacity-50">
         Measured at: {new Date(metric.timestamp).toLocaleTimeString()}
@@ -207,19 +202,14 @@ const WebVitalsDashboard: React.FC = memo(() => {
           {hasMetrics ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {Object.entries(metrics).map(
-                ([key, metric]) =>
-                  metric && <MetricCard key={key} metric={metric} />
+                ([key, metric]) => metric && <MetricCard key={key} metric={metric} />
               )}
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               <p className="mb-2">Collecting metrics...</p>
-              <p className="text-sm">
-                Navigate around the site to generate metrics
-              </p>
-              <p className="text-xs mt-4 opacity-50">
-                Press Ctrl+Shift+V to toggle this dashboard
-              </p>
+              <p className="text-sm">Navigate around the site to generate metrics</p>
+              <p className="text-xs mt-4 opacity-50">Press Ctrl+Shift+V to toggle this dashboard</p>
             </div>
           )}
 
@@ -230,25 +220,15 @@ const WebVitalsDashboard: React.FC = memo(() => {
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <span className="text-green-600">Good: </span>
-                  {
-                    Object.values(metrics).filter((m) => m?.rating === 'good')
-                      .length
-                  }
+                  {Object.values(metrics).filter((m) => m?.rating === 'good').length}
                 </div>
                 <div>
                   <span className="text-yellow-600">Needs Improvement: </span>
-                  {
-                    Object.values(metrics).filter(
-                      (m) => m?.rating === 'needs-improvement'
-                    ).length
-                  }
+                  {Object.values(metrics).filter((m) => m?.rating === 'needs-improvement').length}
                 </div>
                 <div>
                   <span className="text-red-600">Poor: </span>
-                  {
-                    Object.values(metrics).filter((m) => m?.rating === 'poor')
-                      .length
-                  }
+                  {Object.values(metrics).filter((m) => m?.rating === 'poor').length}
                 </div>
               </div>
             </div>

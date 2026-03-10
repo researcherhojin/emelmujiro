@@ -1,14 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Send,
-  Paperclip,
-  Smile,
-  Download,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-} from 'lucide-react';
+import { Send, Paperclip, Smile, Download, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { useUI } from '../../contexts/UIContext';
 import { useChatContext } from '../../contexts/ChatContext';
 import MessageList from './MessageList';
@@ -67,8 +59,7 @@ const ChatWindow: React.FC = () => {
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.style.height = 'auto';
-      inputRef.current.style.height =
-        Math.min(inputRef.current.scrollHeight, 100) + 'px';
+      inputRef.current.style.height = Math.min(inputRef.current.scrollHeight, 100) + 'px';
     }
   }, [inputValue]);
 
@@ -121,9 +112,7 @@ const ChatWindow: React.FC = () => {
     }
   };
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -190,9 +179,7 @@ const ChatWindow: React.FC = () => {
         <div className="bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200 dark:border-yellow-800 px-4 py-2">
           <div className="flex items-center space-x-2 text-yellow-700 dark:text-yellow-300">
             <AlertCircle className="w-4 h-4" />
-            <span className="text-xs">
-              {t('chat.connectionStatus.reconnecting')}
-            </span>
+            <span className="text-xs">{t('chat.connectionStatus.reconnecting')}</span>
           </div>
         </div>
       )}
@@ -204,9 +191,7 @@ const ChatWindow: React.FC = () => {
             <Clock className="w-4 h-4" />
             <div className="text-xs">
               <div>{t('chat.afterHours.title')}</div>
-              <div className="text-blue-600 dark:text-blue-400">
-                {t('chat.afterHours.message')}
-              </div>
+              <div className="text-blue-600 dark:text-blue-400">{t('chat.afterHours.message')}</div>
             </div>
           </div>
         </div>
@@ -266,9 +251,7 @@ const ChatWindow: React.FC = () => {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder={
-                isConnected
-                  ? t('chat.placeholder.connected')
-                  : t('chat.placeholder.disconnected')
+                isConnected ? t('chat.placeholder.connected') : t('chat.placeholder.disconnected')
               }
               disabled={!isConnected}
               className="
@@ -354,10 +337,7 @@ const ChatWindow: React.FC = () => {
       {/* Emoji Picker */}
       <AnimatePresence>
         {showEmojiPicker && (
-          <EmojiPicker
-            onSelect={handleEmojiSelect}
-            onClose={() => setShowEmojiPicker(false)}
-          />
+          <EmojiPicker onSelect={handleEmojiSelect} onClose={() => setShowEmojiPicker(false)} />
         )}
       </AnimatePresence>
 

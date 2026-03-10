@@ -1,13 +1,6 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  MessageCircle,
-  X,
-  Minimize2,
-  Maximize2,
-  Clock,
-  Users,
-} from 'lucide-react';
+import { MessageCircle, X, Minimize2, Maximize2, Clock, Users } from 'lucide-react';
 import { useUI } from '../../contexts/UIContext';
 import { useChatContext } from '../../contexts/ChatContext';
 import ChatWindow from './ChatWindow';
@@ -68,10 +61,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = memo(({ className }) => {
   // Handle click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        widgetRef.current &&
-        !widgetRef.current.contains(event.target as Node)
-      ) {
+      if (widgetRef.current && !widgetRef.current.contains(event.target as Node)) {
         if (isOpen && !isMinimized) {
           // Don't auto-close, just minimize instead
           toggleMinimize();
@@ -81,8 +71,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = memo(({ className }) => {
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () =>
-        document.removeEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
     }
 
     // Return undefined for the case when isOpen is false
@@ -179,9 +168,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = memo(({ className }) => {
                   <button
                     onClick={toggleMinimize}
                     className="p-1 rounded-full hover:bg-white/20 transition-colors"
-                    aria-label={
-                      isMinimized ? t('chat.maximize') : t('chat.minimize')
-                    }
+                    aria-label={isMinimized ? t('chat.maximize') : t('chat.minimize')}
                   >
                     {isMinimized ? (
                       <Maximize2 className="w-4 h-4 text-white" />
@@ -250,11 +237,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = memo(({ className }) => {
           }}
           transition={{ duration: 0.3 }}
         >
-          {isOpen ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <MessageCircle className="w-6 h-6" />
-          )}
+          {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
         </motion.div>
 
         {/* Ripple effect on hover */}
@@ -288,9 +271,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = memo(({ className }) => {
             {!businessHours.isOpen && (
               <div className="flex items-center space-x-2 mt-1 text-xs opacity-80">
                 <Clock className="w-3 h-3" />
-                <span>
-                  {t('chat.businessHours', { hours: businessHours.hours })}
-                </span>
+                <span>{t('chat.businessHours', { hours: businessHours.hours })}</span>
               </div>
             )}
             <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-4 border-l-gray-900 dark:border-l-gray-100 border-y-4 border-y-transparent" />
@@ -301,10 +282,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = memo(({ className }) => {
       {/* Admin Panel */}
       <AnimatePresence>
         {showAdminPanel && (
-          <AdminPanel
-            isOpen={showAdminPanel}
-            onClose={() => setShowAdminPanel(false)}
-          />
+          <AdminPanel isOpen={showAdminPanel} onClose={() => setShowAdminPanel(false)} />
         )}
       </AnimatePresence>
     </div>

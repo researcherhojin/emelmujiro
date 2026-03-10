@@ -12,10 +12,7 @@ interface ConnectionState {
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   setUnreadCount: React.Dispatch<React.SetStateAction<number>>;
   isOpen: boolean;
-  showNotification: (
-    type: 'success' | 'error' | 'warning' | 'info',
-    message: string
-  ) => void;
+  showNotification: (type: 'success' | 'error' | 'warning' | 'info', message: string) => void;
 }
 
 export function useChatConnection(state: ConnectionState) {
@@ -43,18 +40,13 @@ export function useChatConnection(state: ConnectionState) {
             if (messageQueueRef.current.length > 0) {
               messageQueueRef.current.forEach((message) => {
                 state.setMessages((prev) =>
-                  prev.map((msg) =>
-                    msg.id === message.id ? { ...msg, status: 'sent' } : msg
-                  )
+                  prev.map((msg) => (msg.id === message.id ? { ...msg, status: 'sent' } : msg))
                 );
               });
               messageQueueRef.current = [];
             }
 
-            state.showNotification(
-              'success',
-              i18n.t('chatContext.notifications.connected')
-            );
+            state.showNotification('success', i18n.t('chatContext.notifications.connected'));
           },
 
           onClose: () => {
@@ -65,17 +57,10 @@ export function useChatConnection(state: ConnectionState) {
           onError: (error: Event) => {
             logger.error('WebSocket error:', error);
             state.setIsConnected(false);
-            state.showNotification(
-              'error',
-              i18n.t('chatContext.notifications.connectionFailed')
-            );
+            state.showNotification('error', i18n.t('chatContext.notifications.connectionFailed'));
           },
 
-          onMessage: (data: {
-            type: string;
-            data?: unknown;
-            messageId?: string;
-          }) => {
+          onMessage: (data: { type: string; data?: unknown; messageId?: string }) => {
             if (data.type === 'message' && data.data) {
               const messageData = data.data as Partial<ChatMessage> & {
                 timestamp?: string | Date;
@@ -87,9 +72,7 @@ export function useChatConnection(state: ConnectionState) {
                 content: messageData.content || '',
                 sender: messageData.sender || 'agent',
                 status: messageData.status || 'delivered',
-                timestamp: messageData.timestamp
-                  ? new Date(messageData.timestamp)
-                  : new Date(),
+                timestamp: messageData.timestamp ? new Date(messageData.timestamp) : new Date(),
               };
 
               state.setMessages((prev) => [...prev, message]);
@@ -100,9 +83,7 @@ export function useChatConnection(state: ConnectionState) {
             } else if (data.type === 'message_delivered' && data.messageId) {
               state.setMessages((prev) =>
                 prev.map((msg) =>
-                  msg.id === data.messageId
-                    ? { ...msg, status: 'delivered' }
-                    : msg
+                  msg.id === data.messageId ? { ...msg, status: 'delivered' } : msg
                 )
               );
             }
@@ -112,17 +93,11 @@ export function useChatConnection(state: ConnectionState) {
           onTypingStop: () => state.setIsTyping(false),
 
           onReconnect: () => {
-            state.showNotification(
-              'info',
-              i18n.t('chatContext.notifications.reconnecting')
-            );
+            state.showNotification('info', i18n.t('chatContext.notifications.reconnecting'));
           },
 
           onReconnectFailed: () => {
-            state.showNotification(
-              'error',
-              i18n.t('chatContext.notifications.reconnectFailed')
-            );
+            state.showNotification('error', i18n.t('chatContext.notifications.reconnectFailed'));
           },
         }
       );
@@ -134,10 +109,7 @@ export function useChatConnection(state: ConnectionState) {
     } catch (error) {
       logger.error('WebSocket initialization failed:', error);
       state.setIsConnected(false);
-      state.showNotification(
-        'error',
-        i18n.t('chatContext.notifications.initFailed')
-      );
+      state.showNotification('error', i18n.t('chatContext.notifications.initFailed'));
     }
   }, [state]);
 
@@ -179,10 +151,7 @@ export function useChatConnection(state: ConnectionState) {
     }
   }, []);
 
-  const isWsConnected = useCallback(
-    () => wsRef.current?.isConnected() ?? false,
-    []
-  );
+  const isWsConnected = useCallback(() => wsRef.current?.isConnected() ?? false, []);
 
   const cleanup = useCallback(() => {
     disconnect();

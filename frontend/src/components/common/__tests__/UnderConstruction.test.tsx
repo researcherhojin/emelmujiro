@@ -53,12 +53,8 @@ describe('UnderConstruction', () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByText('underConstruction.description')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('underConstruction.comingSoon')
-    ).toBeInTheDocument();
+    expect(screen.getByText('underConstruction.description')).toBeInTheDocument();
+    expect(screen.getByText('underConstruction.comingSoon')).toBeInTheDocument();
   });
 
   it('renders blog feature description', () => {
@@ -68,9 +64,7 @@ describe('UnderConstruction', () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByText('underConstruction.features.blog')
-    ).toBeInTheDocument();
+    expect(screen.getByText('underConstruction.features.blog')).toBeInTheDocument();
   });
 
   it('renders chat feature description', () => {
@@ -80,9 +74,7 @@ describe('UnderConstruction', () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByText('underConstruction.features.chat')
-    ).toBeInTheDocument();
+    expect(screen.getByText('underConstruction.features.chat')).toBeInTheDocument();
   });
 
   it('navigates home on button click', () => {

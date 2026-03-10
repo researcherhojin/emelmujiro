@@ -8,25 +8,23 @@ interface ProtectedRouteProps {
   requiredRole?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = memo(
-  ({ children, requiredRole }) => {
-    const { user, isAuthenticated, loading } = useAuth();
+const ProtectedRoute: React.FC<ProtectedRouteProps> = memo(({ children, requiredRole }) => {
+  const { user, isAuthenticated, loading } = useAuth();
 
-    if (loading) {
-      return <PageLoading />;
-    }
-
-    if (!isAuthenticated) {
-      return <Navigate to="/" replace />;
-    }
-
-    if (requiredRole && user?.role !== requiredRole) {
-      return <Navigate to="/" replace />;
-    }
-
-    return <>{children}</>;
+  if (loading) {
+    return <PageLoading />;
   }
-);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (requiredRole && user?.role !== requiredRole) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+});
 
 ProtectedRoute.displayName = 'ProtectedRoute';
 

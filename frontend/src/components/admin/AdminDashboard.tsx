@@ -45,9 +45,7 @@ const AdminDashboard: React.FC = () => {
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deleteConfirmId, setDeleteConfirmId] = useState<
-    string | number | null
-  >(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | number | null>(null);
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
@@ -111,9 +109,7 @@ const AdminDashboard: React.FC = () => {
 
   const confirmDelete = () => {
     if (deleteConfirmId !== null) {
-      setContentItems(
-        contentItems.filter((item) => item.id !== deleteConfirmId)
-      );
+      setContentItems(contentItems.filter((item) => item.id !== deleteConfirmId));
       setDeleteConfirmId(null);
     }
   };
@@ -151,9 +147,7 @@ const AdminDashboard: React.FC = () => {
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={`w-full px-6 py-3 flex items-center space-x-3 hover:bg-gray-800 transition-colors ${
-                activeTab === item.id
-                  ? 'bg-gray-800 border-l-4 border-blue-500'
-                  : ''
+                activeTab === item.id ? 'bg-gray-800 border-l-4 border-blue-500' : ''
               }`}
             >
               <Icon className="w-5 h-5" />
@@ -173,9 +167,7 @@ const AdminDashboard: React.FC = () => {
 
   const renderOverview = () => (
     <div>
-      <h1 className="text-3xl font-bold mb-8">
-        {t('admin.dashboardOverview')}
-      </h1>
+      <h1 className="text-3xl font-bold mb-8">{t('admin.dashboardOverview')}</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {[
           {
@@ -216,9 +208,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
                 <span className="text-sm text-gray-500">+12%</span>
               </div>
-              <h3 className="text-2xl font-bold mb-1">
-                {stat.value.toLocaleString()}
-              </h3>
+              <h3 className="text-2xl font-bold mb-1">{stat.value.toLocaleString()}</h3>
               <p className="text-gray-600">{stat.label}</p>
             </div>
           );
@@ -226,9 +216,7 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4">
-          {t('admin.recentActivity')}
-        </h2>
+        <h2 className="text-xl font-semibold mb-4">{t('admin.recentActivity')}</h2>
         <div className="space-y-4">
           {[
             {
@@ -308,9 +296,7 @@ const AdminDashboard: React.FC = () => {
               {contentItems.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {item.title}
-                    </div>
+                    <div className="text-sm font-medium text-gray-900">{item.title}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">

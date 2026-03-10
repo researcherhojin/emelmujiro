@@ -63,9 +63,7 @@ describe('AboutPage', () => {
     expect(screen.getByText('about.values.title')).toBeInTheDocument();
 
     // Check for actual core value items from the component (i18n keys)
-    expect(
-      screen.getByText('about.values.practical.title')
-    ).toBeInTheDocument();
+    expect(screen.getByText('about.values.practical.title')).toBeInTheDocument();
     expect(screen.getByText('about.values.custom.title')).toBeInTheDocument();
     expect(screen.getByText('about.values.latest.title')).toBeInTheDocument();
   });
@@ -97,10 +95,7 @@ describe('AboutPage', () => {
 
     const emailLink = screen.getByText('common.inquireByEmail');
     expect(emailLink).toBeInTheDocument();
-    expect(emailLink.closest('a')).toHaveAttribute(
-      'href',
-      expect.stringContaining('mailto:')
-    );
+    expect(emailLink.closest('a')).toHaveAttribute('href', expect.stringContaining('mailto:'));
   });
 
   it('renders with proper semantic structure', () => {
@@ -116,9 +111,7 @@ describe('AboutPage', () => {
     renderWithRouter();
 
     // Check that value items are rendered (i18n keys)
-    expect(
-      screen.getByText('about.values.practical.title')
-    ).toBeInTheDocument();
+    expect(screen.getByText('about.values.practical.title')).toBeInTheDocument();
     expect(screen.getByText('about.values.custom.title')).toBeInTheDocument();
     expect(screen.getByText('about.values.latest.title')).toBeInTheDocument();
   });
@@ -135,14 +128,8 @@ describe('AboutPage', () => {
   it('displays all value descriptions', () => {
     renderWithRouter();
 
-    expect(
-      screen.getByText('about.values.practical.description')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('about.values.custom.description')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('about.values.latest.description')
-    ).toBeInTheDocument();
+    expect(screen.getByText('about.values.practical.description')).toBeInTheDocument();
+    expect(screen.getByText('about.values.custom.description')).toBeInTheDocument();
+    expect(screen.getByText('about.values.latest.description')).toBeInTheDocument();
   });
 });

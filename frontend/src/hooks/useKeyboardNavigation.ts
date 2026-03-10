@@ -17,13 +17,10 @@ export const useKeyboardNavigation = (shortcuts: KeyboardShortcut[]) => {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       for (const shortcut of shortcuts) {
-        const matchesKey =
-          event.key === shortcut.key || event.code === shortcut.key;
+        const matchesKey = event.key === shortcut.key || event.code === shortcut.key;
         const matchesCtrl = shortcut.ctrlKey ? event.ctrlKey : !event.ctrlKey;
         const matchesAlt = shortcut.altKey ? event.altKey : !event.altKey;
-        const matchesShift = shortcut.shiftKey
-          ? event.shiftKey
-          : !event.shiftKey;
+        const matchesShift = shortcut.shiftKey ? event.shiftKey : !event.shiftKey;
 
         if (matchesKey && matchesCtrl && matchesAlt && matchesShift) {
           event.preventDefault();

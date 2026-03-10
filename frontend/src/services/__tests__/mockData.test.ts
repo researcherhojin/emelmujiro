@@ -81,12 +81,8 @@ describe('mockData', () => {
 
     it('should have valid ISO timestamps for created_at and updated_at', () => {
       mockBlogPosts.forEach((post) => {
-        expect(post.created_at).toMatch(
-          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/
-        );
-        expect(post.updated_at).toMatch(
-          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/
-        );
+        expect(post.created_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+        expect(post.updated_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
       });
     });
 
@@ -157,9 +153,7 @@ describe('mockData', () => {
     });
 
     it('should cover all categories used by blog posts', () => {
-      const postCategories = new Set(
-        mockBlogPosts.map((post) => post.category)
-      );
+      const postCategories = new Set(mockBlogPosts.map((post) => post.category));
       const categoryNames = new Set(mockCategories.map((cat) => cat.name));
       postCategories.forEach((category) => {
         expect(categoryNames.has(category!)).toBe(true);
@@ -228,10 +222,7 @@ describe('mockData', () => {
         const result = paginateMockData(mockBlogPosts, 1, 2);
 
         expect(result.results[0]).toHaveProperty('id', mockBlogPosts[0].id);
-        expect(result.results[0]).toHaveProperty(
-          'title',
-          mockBlogPosts[0].title
-        );
+        expect(result.results[0]).toHaveProperty('title', mockBlogPosts[0].title);
         expect(result.results[1]).toHaveProperty('id', mockBlogPosts[1].id);
       });
 
@@ -257,9 +248,7 @@ describe('mockData', () => {
         const result = paginateMockData(dataWithCreatedAt, 1, 10);
 
         // Should keep the existing createdAt, not overwrite with created_at
-        expect(
-          (result.results[0] as (typeof dataWithCreatedAt)[0]).createdAt
-        ).toBe('2024-02-02');
+        expect((result.results[0] as (typeof dataWithCreatedAt)[0]).createdAt).toBe('2024-02-02');
       });
 
       it('should not add createdAt if item has no created_at', () => {

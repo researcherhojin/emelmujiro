@@ -50,8 +50,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
     if (type.startsWith('image/')) return FileImage;
     if (type.startsWith('video/')) return FileVideo;
     if (type.startsWith('audio/')) return FileAudio;
-    if (type === 'application/pdf' || type.includes('document'))
-      return FileText;
+    if (type === 'application/pdf' || type.includes('document')) return FileText;
 
     return File;
   };
@@ -259,9 +258,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
         >
           <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
           <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
-            {isDragActive
-              ? t('chat.fileUpload.dropHere')
-              : t('chat.fileUpload.dragDrop')}
+            {isDragActive ? t('chat.fileUpload.dropHere') : t('chat.fileUpload.dragDrop')}
           </p>
           <button
             onClick={handleBrowseClick}
@@ -321,11 +318,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUpload, onClose }) => {
 
       {/* Upload Progress */}
       {uploadProgress !== null && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="space-y-3"
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
               {uploadProgress === 100 ? (

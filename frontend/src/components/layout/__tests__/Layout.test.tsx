@@ -36,10 +36,7 @@ const renderLayout = (children?: React.ReactNode) => {
     <HelmetProvider>
       <MemoryRouter>
         <Routes>
-          <Route
-            path="/"
-            element={children ? <Layout>{children}</Layout> : <Layout />}
-          />
+          <Route path="/" element={children ? <Layout>{children}</Layout> : <Layout />} />
         </Routes>
       </MemoryRouter>
     </HelmetProvider>
@@ -85,27 +82,13 @@ describe('Layout', () => {
   it('includes keyboard shortcuts help for screen readers', () => {
     renderLayout();
 
-    expect(
-      screen.getByText('accessibility.keyboardShortcuts')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('accessibility.shortcutFocusSearch')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('accessibility.shortcutGoHome')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('accessibility.shortcutGoBlog')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('accessibility.shortcutGoContact')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('accessibility.shortcutGoProfile')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('accessibility.shortcutCloseModal')
-    ).toBeInTheDocument();
+    expect(screen.getByText('accessibility.keyboardShortcuts')).toBeInTheDocument();
+    expect(screen.getByText('accessibility.shortcutFocusSearch')).toBeInTheDocument();
+    expect(screen.getByText('accessibility.shortcutGoHome')).toBeInTheDocument();
+    expect(screen.getByText('accessibility.shortcutGoBlog')).toBeInTheDocument();
+    expect(screen.getByText('accessibility.shortcutGoContact')).toBeInTheDocument();
+    expect(screen.getByText('accessibility.shortcutGoProfile')).toBeInTheDocument();
+    expect(screen.getByText('accessibility.shortcutCloseModal')).toBeInTheDocument();
   });
 
   it('applies min-h-screen and flex layout classes to the wrapper div', () => {

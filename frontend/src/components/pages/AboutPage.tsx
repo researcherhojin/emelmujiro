@@ -3,15 +3,7 @@ import { useTranslation } from 'react-i18next';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
 import { CONTACT_EMAIL, SITE_URL } from '../../utils/constants';
-import {
-  Target,
-  Users,
-  Lightbulb,
-  TrendingUp,
-  Trophy,
-  Medal,
-  Building2,
-} from 'lucide-react';
+import { Target, Users, Lightbulb, TrendingUp, Trophy, Medal, Building2 } from 'lucide-react';
 
 interface TimelineItem {
   year: string;
@@ -123,10 +115,7 @@ const MissionSection: React.FC = () => {
 const TimelineSection: React.FC = () => {
   const { t } = useTranslation();
   return (
-    <section
-      aria-label={t('accessibility.timelineSection')}
-      className="py-20 px-4 sm:px-6 lg:px-8"
-    >
+    <section aria-label={t('accessibility.timelineSection')} className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
@@ -142,10 +131,7 @@ const TimelineSection: React.FC = () => {
 
         <div className="space-y-5">
           {timeline.map((item) => (
-            <div
-              key={item.year}
-              className="group flex items-start gap-6 md:gap-10"
-            >
+            <div key={item.year} className="group flex items-start gap-6 md:gap-10">
               {/* Year */}
               <div className="flex-shrink-0 w-16 md:w-24 pt-6 text-right">
                 <span className="text-xl md:text-3xl font-black text-gray-300 dark:text-gray-600 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
@@ -281,10 +267,7 @@ const AchievementSection: React.FC = () => {
         {/* Achievement highlights row */}
         <div className="grid md:grid-cols-3 gap-6 mt-12">
           <div className="flex flex-col items-center text-center gap-1">
-            <Trophy
-              className="w-6 h-6 text-gray-400 dark:text-gray-500 mb-1"
-              aria-hidden="true"
-            />
+            <Trophy className="w-6 h-6 text-gray-400 dark:text-gray-500 mb-1" aria-hidden="true" />
             <p className="text-base font-bold text-gray-900 dark:text-white">
               {t('achievements.items.championAward.highlight')}
             </p>
@@ -293,10 +276,7 @@ const AchievementSection: React.FC = () => {
             </p>
           </div>
           <div className="flex flex-col items-center text-center gap-1">
-            <Medal
-              className="w-6 h-6 text-gray-400 dark:text-gray-500 mb-1"
-              aria-hidden="true"
-            />
+            <Medal className="w-6 h-6 text-gray-400 dark:text-gray-500 mb-1" aria-hidden="true" />
             <p className="text-base font-bold text-gray-900 dark:text-white">
               {t('achievements.items.daconWin.highlight')}
             </p>

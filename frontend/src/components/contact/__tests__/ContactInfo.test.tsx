@@ -13,12 +13,8 @@ vi.mock('react-i18next', () => ({
 }));
 
 vi.mock('lucide-react', () => ({
-  Mail: (props: Record<string, unknown>) => (
-    <div data-testid="mail-icon" {...props} />
-  ),
-  Phone: (props: Record<string, unknown>) => (
-    <div data-testid="phone-icon" {...props} />
-  ),
+  Mail: (props: Record<string, unknown>) => <div data-testid="mail-icon" {...props} />,
+  Phone: (props: Record<string, unknown>) => <div data-testid="phone-icon" {...props} />,
 }));
 
 describe('ContactInfo', () => {
@@ -34,10 +30,7 @@ describe('ContactInfo', () => {
       name: /researcherhojin@gmail\.com/i,
     });
     expect(emailLink).toBeInTheDocument();
-    expect(emailLink).toHaveAttribute(
-      'href',
-      'mailto:researcherhojin@gmail.com'
-    );
+    expect(emailLink).toHaveAttribute('href', 'mailto:researcherhojin@gmail.com');
   });
 
   it('displays the email icon', () => {
@@ -69,9 +62,7 @@ describe('ContactInfo', () => {
     render(<ContactInfo />);
 
     expect(screen.getByText('contact.info.quickResponse')).toBeInTheDocument();
-    expect(
-      screen.getByText('contact.info.responseMessage')
-    ).toBeInTheDocument();
+    expect(screen.getByText('contact.info.responseMessage')).toBeInTheDocument();
   });
 
   it('renders the email link with correct aria-label', () => {

@@ -28,11 +28,7 @@ const EditorPreview: React.FC<EditorPreviewProps> = ({
 
       <article className="prose prose-indigo max-w-none">
         {imageUrl && (
-          <img
-            src={imageUrl}
-            alt={title}
-            className="w-full h-48 object-cover rounded-lg mb-4"
-          />
+          <img src={imageUrl} alt={title} className="w-full h-48 object-cover rounded-lg mb-4" />
         )}
 
         {category && (
@@ -46,10 +42,7 @@ const EditorPreview: React.FC<EditorPreviewProps> = ({
         {tags && (
           <div className="flex gap-2 mb-4">
             {tags.split(',').map((tag) => (
-              <span
-                key={tag.trim()}
-                className="text-sm bg-gray-100 px-2 py-1 rounded"
-              >
+              <span key={tag.trim()} className="text-sm bg-gray-100 px-2 py-1 rounded">
                 #{tag.trim()}
               </span>
             ))}

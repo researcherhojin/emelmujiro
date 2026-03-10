@@ -309,9 +309,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose }) => {
 
       {/* Footer */}
       <div className="p-3 border-t border-gray-200 dark:border-gray-700 text-center">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          {t('chat.emoji.tip')}
-        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{t('chat.emoji.tip')}</p>
       </div>
     </motion.div>
   );

@@ -107,22 +107,10 @@ describe('QuickReplies', () => {
     fireEvent.click(screen.getByText('chat.quickReplies.contact'));
 
     expect(mockOnSelect).toHaveBeenCalledTimes(4);
-    expect(mockOnSelect).toHaveBeenNthCalledWith(
-      1,
-      'chat.quickReplies.service'
-    );
-    expect(mockOnSelect).toHaveBeenNthCalledWith(
-      2,
-      'chat.quickReplies.technical'
-    );
-    expect(mockOnSelect).toHaveBeenNthCalledWith(
-      3,
-      'chat.quickReplies.pricing'
-    );
-    expect(mockOnSelect).toHaveBeenNthCalledWith(
-      4,
-      'chat.quickReplies.contact'
-    );
+    expect(mockOnSelect).toHaveBeenNthCalledWith(1, 'chat.quickReplies.service');
+    expect(mockOnSelect).toHaveBeenNthCalledWith(2, 'chat.quickReplies.technical');
+    expect(mockOnSelect).toHaveBeenNthCalledWith(3, 'chat.quickReplies.pricing');
+    expect(mockOnSelect).toHaveBeenNthCalledWith(4, 'chat.quickReplies.contact');
   });
 
   it('applies correct color classes to buttons', () => {

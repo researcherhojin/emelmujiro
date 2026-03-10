@@ -6,13 +6,9 @@ import EmojiPicker from '../EmojiPicker';
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({
-      children,
-      ...props
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <div {...props}>{children}</div>,
+    div: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <div {...props}>{children}</div>
+    ),
     button: ({
       children,
       onClick,
@@ -27,9 +23,7 @@ vi.mock('framer-motion', () => ({
       </button>
     ),
   },
-  AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
-    <>{children}</>
-  ),
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock react-i18next
@@ -51,9 +45,7 @@ describe('EmojiPicker', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
     expect(screen.getByText('chat.emoji.title')).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText('chat.emoji.search')
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('chat.emoji.search')).toBeInTheDocument();
   });
 
   it('displays emoji categories', () => {
@@ -130,9 +122,7 @@ describe('EmojiPicker', () => {
   it('clears search when clear button is clicked', () => {
     render(<EmojiPicker onSelect={mockOnSelect} onClose={mockOnClose} />);
 
-    const searchInput = screen.getByPlaceholderText(
-      'chat.emoji.search'
-    ) as HTMLInputElement;
+    const searchInput = screen.getByPlaceholderText('chat.emoji.search') as HTMLInputElement;
     fireEvent.change(searchInput, { target: { value: 'test' } });
 
     expect(searchInput.value).toBe('test');

@@ -17,9 +17,7 @@ interface EditorFormProps {
   categories: string[];
   showPreview: boolean;
   onChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
   onSave: () => void;
   onTogglePreview: () => void;
@@ -41,9 +39,7 @@ const EditorForm: React.FC<EditorFormProps> = ({
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">
-            {t('blogEditor.titleLabel')}
-          </label>
+          <label className="block text-sm font-medium mb-1">{t('blogEditor.titleLabel')}</label>
           <input
             type="text"
             name="title"
@@ -55,9 +51,7 @@ const EditorForm: React.FC<EditorFormProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">
-            {t('blogEditor.excerptLabel')}
-          </label>
+          <label className="block text-sm font-medium mb-1">{t('blogEditor.excerptLabel')}</label>
           <input
             type="text"
             name="excerpt"
@@ -89,9 +83,7 @@ const EditorForm: React.FC<EditorFormProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              {t('blogEditor.authorLabel')}
-            </label>
+            <label className="block text-sm font-medium mb-1">{t('blogEditor.authorLabel')}</label>
             <input
               type="text"
               name="author"
@@ -103,9 +95,7 @@ const EditorForm: React.FC<EditorFormProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">
-            {t('blogEditor.tagsLabel')}
-          </label>
+          <label className="block text-sm font-medium mb-1">{t('blogEditor.tagsLabel')}</label>
           <input
             type="text"
             name="tags"
@@ -117,9 +107,7 @@ const EditorForm: React.FC<EditorFormProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">
-            {t('blogEditor.imageUrlLabel')}
-          </label>
+          <label className="block text-sm font-medium mb-1">{t('blogEditor.imageUrlLabel')}</label>
           <input
             type="text"
             name="image_url"
@@ -131,9 +119,7 @@ const EditorForm: React.FC<EditorFormProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">
-            {t('blogEditor.contentLabel')}
-          </label>
+          <label className="block text-sm font-medium mb-1">{t('blogEditor.contentLabel')}</label>
           <textarea
             name="content"
             value={formData.content}

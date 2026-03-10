@@ -34,9 +34,7 @@ describe('i18n configuration', () => {
       const languages = i18n.languages;
       const supportedLanguages = ['ko', 'en', 'ko-KR', 'en-US', 'en-GB'];
       languages.forEach((lang) => {
-        expect(
-          supportedLanguages.some((s) => lang.startsWith(s.slice(0, 2)))
-        ).toBe(true);
+        expect(supportedLanguages.some((s) => lang.startsWith(s.slice(0, 2)))).toBe(true);
       });
     });
   });
@@ -156,9 +154,7 @@ describe('i18n configuration', () => {
   describe('react configuration', () => {
     it('should have useSuspense set to false', () => {
       const options = i18n.options;
-      expect(
-        (options as { react?: { useSuspense?: boolean } }).react?.useSuspense
-      ).toBe(false);
+      expect((options as { react?: { useSuspense?: boolean } }).react?.useSuspense).toBe(false);
     });
   });
 
@@ -206,9 +202,7 @@ describe('i18n configuration', () => {
   describe('detection configuration', () => {
     it('should have detection order configured', () => {
       const options = i18n.options;
-      const detection = options.detection as
-        | { order?: string[]; caches?: string[] }
-        | undefined;
+      const detection = options.detection as { order?: string[]; caches?: string[] } | undefined;
       expect(detection?.order).toEqual([
         'localStorage',
         'navigator',
@@ -220,9 +214,7 @@ describe('i18n configuration', () => {
 
     it('should cache language to localStorage', () => {
       const options = i18n.options;
-      const detection = options.detection as
-        | { order?: string[]; caches?: string[] }
-        | undefined;
+      const detection = options.detection as { order?: string[]; caches?: string[] } | undefined;
       expect(detection?.caches).toContain('localStorage');
     });
   });

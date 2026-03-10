@@ -119,8 +119,7 @@ const ContactForm: React.FC<ContactFormProps> = memo(
             htmlFor="inquiryType"
             className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
-            {t('contact.form.inquiryType')}{' '}
-            <span className="text-red-500">*</span>
+            {t('contact.form.inquiryType')} <span className="text-red-500">*</span>
           </label>
           <select
             id="inquiryType"
@@ -164,9 +163,7 @@ const ContactForm: React.FC<ContactFormProps> = memo(
           <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
             <div className="flex items-center space-x-2 text-yellow-800 dark:text-yellow-200">
               <WifiOff className="w-5 h-5" />
-              <span className="font-medium">
-                {t('contact.form.offlineMode')}
-              </span>
+              <span className="font-medium">{t('contact.form.offlineMode')}</span>
             </div>
             <p className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
               {t('contact.form.offlineMessage')}

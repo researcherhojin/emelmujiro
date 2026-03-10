@@ -24,12 +24,7 @@ import {
 import { useChatConnection } from './useChatConnection';
 
 // Re-export types for consumers
-export type {
-  ChatMessage,
-  BusinessHours,
-  ChatSettings,
-  ChatContextType,
-} from './chatHelpers';
+export type { ChatMessage, BusinessHours, ChatSettings, ChatContextType } from './chatHelpers';
 export type { MessageType, MessageSender, MessageStatus } from './chatHelpers';
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -59,9 +54,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const [agentAvailable] = useState(true);
   const [agentName] = useState(i18n.t('chatContext.agentName'));
   const [agentAvatar] = useState<string>();
-  const [businessHours, setBusinessHours] = useState<BusinessHours>(
-    getDefaultBusinessHours
-  );
+  const [businessHours, setBusinessHours] = useState<BusinessHours>(getDefaultBusinessHours);
 
   // Settings
   const [settings] = useState<ChatSettings>(getDefaultSettings);
@@ -99,8 +92,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
     return () => {
       clearInterval(interval);
       clearTimeout(timer);
-      if (offlineReplyTimerRef.current)
-        clearTimeout(offlineReplyTimerRef.current);
+      if (offlineReplyTimerRef.current) clearTimeout(offlineReplyTimerRef.current);
       document.removeEventListener('click', handleUserInteraction);
       document.removeEventListener('keydown', handleUserInteraction);
     };
@@ -118,8 +110,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   useEffect(() => {
     if (isInitialMount || messages.length === 0) return;
 
-    const hasUserInteracted =
-      document.body.getAttribute('data-user-interacted') === 'true';
+    const hasUserInteracted = document.body.getAttribute('data-user-interacted') === 'true';
     if (!hasUserInteracted) return;
 
     const lastMessage = messages[messages.length - 1];
@@ -221,9 +212,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
           const success = ws.sendViaWebSocket(message);
           if (success) {
             setMessages((prev) =>
-              prev.map((msg) =>
-                msg.id === message.id ? { ...msg, status: 'sent' } : msg
-              )
+              prev.map((msg) => (msg.id === message.id ? { ...msg, status: 'sent' } : msg))
             );
           } else {
             throw new Error('Failed to send message via WebSocket');
@@ -231,8 +220,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
         } else {
           ws.queueMessage(message);
 
-          if (offlineReplyTimerRef.current)
-            clearTimeout(offlineReplyTimerRef.current);
+          if (offlineReplyTimerRef.current) clearTimeout(offlineReplyTimerRef.current);
           offlineReplyTimerRef.current = setTimeout(() => {
             const autoReply: ChatMessage = {
               id: generateMessageId(),
@@ -247,9 +235,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
         }
       } catch (error) {
         setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === message.id ? { ...msg, status: 'failed' } : msg
-          )
+          prev.map((msg) => (msg.id === message.id ? { ...msg, status: 'failed' } : msg))
         );
         throw error;
       }
@@ -260,9 +246,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const markAsRead = useCallback((messageId: string) => {
     setMessages((prev) =>
       prev.map((msg) =>
-        msg.id === messageId && msg.sender !== 'user'
-          ? { ...msg, status: 'read' }
-          : msg
+        msg.id === messageId && msg.sender !== 'user' ? { ...msg, status: 'read' } : msg
       )
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
@@ -270,9 +254,7 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
 
   const markAllAsRead = useCallback(() => {
     setMessages((prev) =>
-      prev.map((msg) =>
-        msg.sender !== 'user' ? { ...msg, status: 'read' } : msg
-      )
+      prev.map((msg) => (msg.sender !== 'user' ? { ...msg, status: 'read' } : msg))
     );
     setUnreadCount(0);
   }, []);

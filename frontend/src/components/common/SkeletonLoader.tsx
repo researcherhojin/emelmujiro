@@ -33,16 +33,8 @@ const Skeleton: React.FC<SkeletonProps> = ({
   rounded = true,
   'data-testid': dataTestId,
 }) => {
-  const widthStyle = width
-    ? typeof width === 'number'
-      ? `${width}px`
-      : width
-    : undefined;
-  const heightStyle = height
-    ? typeof height === 'number'
-      ? `${height}px`
-      : height
-    : undefined;
+  const widthStyle = width ? (typeof width === 'number' ? `${width}px` : width) : undefined;
+  const heightStyle = height ? (typeof height === 'number' ? `${height}px` : height) : undefined;
 
   const roundedClass = circle ? 'rounded-full' : rounded ? 'rounded' : '';
 
@@ -85,10 +77,7 @@ export const SkeletonCard: React.FC<ComponentProps> = ({ className = '' }) => (
 );
 
 // Skeleton Text component
-export const SkeletonText: React.FC<SkeletonTextProps> = ({
-  lines = 3,
-  className = '',
-}) => (
+export const SkeletonText: React.FC<SkeletonTextProps> = ({ lines = 3, className = '' }) => (
   <div data-testid="skeleton-text" className={`space-y-2 ${className}`}>
     {Array.from({ length: lines }, (_, i) => (
       <Skeleton
@@ -101,13 +90,8 @@ export const SkeletonText: React.FC<SkeletonTextProps> = ({
 );
 
 // Skeleton List Item component
-export const SkeletonListItem: React.FC<ComponentProps> = ({
-  className = '',
-}) => (
-  <div
-    data-testid="skeleton-list-item"
-    className={`flex items-center space-x-4 p-4 ${className}`}
-  >
+export const SkeletonListItem: React.FC<ComponentProps> = ({ className = '' }) => (
+  <div data-testid="skeleton-list-item" className={`flex items-center space-x-4 p-4 ${className}`}>
     {/* Avatar */}
     <Skeleton width={48} height={48} circle />
     {/* Content */}
@@ -145,9 +129,7 @@ export const SkeletonHero: React.FC<ComponentProps> = ({ className = '' }) => (
 );
 
 // Skeleton Services component
-export const SkeletonServices: React.FC<ComponentProps> = ({
-  className = '',
-}) => (
+export const SkeletonServices: React.FC<ComponentProps> = ({ className = '' }) => (
   <div data-testid="skeleton-services" className={`py-16 ${className}`}>
     <div className="max-w-6xl mx-auto px-4">
       {/* Section header */}
@@ -198,10 +180,7 @@ export const SkeletonBlogList: React.FC<SkeletonBlogListProps> = ({
 
 // Skeleton Navigation component
 export const SkeletonNav: React.FC<ComponentProps> = ({ className = '' }) => (
-  <nav
-    data-testid="skeleton-nav"
-    className={`flex items-center justify-between p-4 ${className}`}
-  >
+  <nav data-testid="skeleton-nav" className={`flex items-center justify-between p-4 ${className}`}>
     {/* Logo */}
     <Skeleton width={120} height={32} />
     {/* Menu items */}

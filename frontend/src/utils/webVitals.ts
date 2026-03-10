@@ -113,8 +113,7 @@ export const logPerformanceMetrics = (config: WebVitalsConfig = {}): void => {
               dnsLookup: perfData.domainLookupEnd - perfData.domainLookupStart,
               tcpConnection: perfData.connectEnd - perfData.connectStart,
               domContentLoaded:
-                perfData.domContentLoadedEventEnd -
-                perfData.domContentLoadedEventStart,
+                perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
               totalLoadTime: perfData.loadEventEnd - perfData.fetchStart,
             };
 
@@ -135,10 +134,7 @@ export const logPerformanceMetrics = (config: WebVitalsConfig = {}): void => {
               url: window.location.href,
             };
 
-            window.localStorage.setItem(
-              'performanceMetrics',
-              JSON.stringify(metricsWithTimestamp)
-            );
+            window.localStorage.setItem('performanceMetrics', JSON.stringify(metricsWithTimestamp));
 
             // Report to analytics if configured
             if (config.enableReporting && config.reportingEndpoint) {
@@ -154,9 +150,7 @@ export const logPerformanceMetrics = (config: WebVitalsConfig = {}): void => {
 };
 
 // Initialize comprehensive performance monitoring
-export const initPerformanceMonitoring = (
-  config: WebVitalsConfig = {}
-): void => {
+export const initPerformanceMonitoring = (config: WebVitalsConfig = {}): void => {
   // Start Web Vitals monitoring
   measureWebVitals(undefined, config);
 
@@ -207,13 +201,9 @@ export const checkPerformanceBudget = (): void => {
     if (budget && metric.value > budget) {
       // Only log as warning in development, error in production
       if (isDevelopment) {
-        logger.warn(
-          `Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`
-        );
+        logger.warn(`Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`);
       } else {
-        logger.error(
-          `Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`
-        );
+        logger.error(`Performance budget exceeded for ${metric.name}: ${metric.value} > ${budget}`);
       }
     }
   });

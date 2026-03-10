@@ -12,12 +12,8 @@ vi.mock('react-i18next', () => ({
 }));
 
 vi.mock('lucide-react', () => ({
-  Send: (props: Record<string, unknown>) => (
-    <div data-testid="send-icon" {...props} />
-  ),
-  WifiOff: (props: Record<string, unknown>) => (
-    <div data-testid="wifioff-icon" {...props} />
-  ),
+  Send: (props: Record<string, unknown>) => <div data-testid="send-icon" {...props} />,
+  WifiOff: (props: Record<string, unknown>) => <div data-testid="wifioff-icon" {...props} />,
 }));
 
 const defaultFormData = {
@@ -48,24 +44,12 @@ describe('ContactForm', () => {
       />
     );
 
-    expect(
-      screen.getByLabelText('contact.form.nameAriaLabel')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('contact.form.emailAriaLabel')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('contact.form.phoneAriaLabel')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('contact.form.companyAriaLabel')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('contact.form.inquiryTypeAriaLabel')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText('contact.form.messageAriaLabel')
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText('contact.form.nameAriaLabel')).toBeInTheDocument();
+    expect(screen.getByLabelText('contact.form.emailAriaLabel')).toBeInTheDocument();
+    expect(screen.getByLabelText('contact.form.phoneAriaLabel')).toBeInTheDocument();
+    expect(screen.getByLabelText('contact.form.companyAriaLabel')).toBeInTheDocument();
+    expect(screen.getByLabelText('contact.form.inquiryTypeAriaLabel')).toBeInTheDocument();
+    expect(screen.getByLabelText('contact.form.messageAriaLabel')).toBeInTheDocument();
   });
 
   it('renders the form with correct aria-label', () => {
@@ -79,10 +63,7 @@ describe('ContactForm', () => {
       />
     );
 
-    expect(screen.getByRole('form')).toHaveAttribute(
-      'aria-label',
-      'contact.form.ariaLabel'
-    );
+    expect(screen.getByRole('form')).toHaveAttribute('aria-label', 'contact.form.ariaLabel');
   });
 
   it('displays formData values in the inputs', () => {
@@ -105,24 +86,12 @@ describe('ContactForm', () => {
       />
     );
 
-    expect(screen.getByLabelText('contact.form.nameAriaLabel')).toHaveValue(
-      'John Doe'
-    );
-    expect(screen.getByLabelText('contact.form.emailAriaLabel')).toHaveValue(
-      'john@example.com'
-    );
-    expect(screen.getByLabelText('contact.form.phoneAriaLabel')).toHaveValue(
-      '010-1234-5678'
-    );
-    expect(screen.getByLabelText('contact.form.companyAriaLabel')).toHaveValue(
-      'Acme Corp'
-    );
-    expect(
-      screen.getByLabelText('contact.form.inquiryTypeAriaLabel')
-    ).toHaveValue('education');
-    expect(screen.getByLabelText('contact.form.messageAriaLabel')).toHaveValue(
-      'Hello there'
-    );
+    expect(screen.getByLabelText('contact.form.nameAriaLabel')).toHaveValue('John Doe');
+    expect(screen.getByLabelText('contact.form.emailAriaLabel')).toHaveValue('john@example.com');
+    expect(screen.getByLabelText('contact.form.phoneAriaLabel')).toHaveValue('010-1234-5678');
+    expect(screen.getByLabelText('contact.form.companyAriaLabel')).toHaveValue('Acme Corp');
+    expect(screen.getByLabelText('contact.form.inquiryTypeAriaLabel')).toHaveValue('education');
+    expect(screen.getByLabelText('contact.form.messageAriaLabel')).toHaveValue('Hello there');
   });
 
   it('calls onInputChange when typing in inputs', () => {
@@ -217,8 +186,6 @@ describe('ContactForm', () => {
       />
     );
 
-    expect(
-      screen.queryByText('contact.form.offlineMode')
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText('contact.form.offlineMode')).not.toBeInTheDocument();
   });
 });

@@ -31,28 +31,17 @@ vi.mock('lucide-react', () => ({
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({
-      children,
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <div>{children}</div>,
-    button: ({
-      children,
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <button>{children}</button>,
-    textarea: ({
-      children,
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => <textarea>{children}</textarea>,
+    div: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <div>{children}</div>
+    ),
+    button: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <button>{children}</button>
+    ),
+    textarea: ({ children }: { children?: React.ReactNode; [key: string]: unknown }) => (
+      <textarea>{children}</textarea>
+    ),
   },
-  AnimatePresence: ({ children }: { children?: React.ReactNode }) => (
-    <>{children}</>
-  ),
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock child components
@@ -72,13 +61,7 @@ vi.mock('../TypingIndicator', () => ({
 
 vi.mock('../EmojiPicker', () => ({
   __esModule: true,
-  default: ({
-    onSelect,
-    onClose,
-  }: {
-    onSelect: (emoji: string) => void;
-    onClose: () => void;
-  }) => (
+  default: ({ onSelect, onClose }: { onSelect: (emoji: string) => void; onClose: () => void }) => (
     <div data-testid="emoji-picker">
       <button onClick={() => onSelect('😀')}>😀</button>
       <button onClick={onClose}>Close</button>
@@ -88,13 +71,7 @@ vi.mock('../EmojiPicker', () => ({
 
 vi.mock('../FileUpload', () => ({
   __esModule: true,
-  default: ({
-    onUpload,
-    onClose,
-  }: {
-    onUpload?: (file: File) => void;
-    onClose?: () => void;
-  }) => (
+  default: ({ onUpload, onClose }: { onUpload?: (file: File) => void; onClose?: () => void }) => (
     <div data-testid="file-upload">
       <input
         type="file"
@@ -223,15 +200,11 @@ describe('ChatWindow', () => {
   });
 
   it('should show disconnected banner when not connected', () => {
-    mockUseChatContext.mockReturnValue(
-      createMockChatContext({ isConnected: false })
-    );
+    mockUseChatContext.mockReturnValue(createMockChatContext({ isConnected: false }));
 
     render(<ChatWindow />);
 
-    expect(
-      screen.getByText('chat.connectionStatus.reconnecting')
-    ).toBeInTheDocument();
+    expect(screen.getByText('chat.connectionStatus.reconnecting')).toBeInTheDocument();
   });
 
   it('should show business hours notice when closed', () => {
@@ -263,9 +236,7 @@ describe('ChatWindow', () => {
 
     // Find send button by its accessible role and icon
     const sendButtons = screen.getAllByRole('button');
-    const sendButton = sendButtons.find((button) =>
-      button.textContent?.includes('Send')
-    );
+    const sendButton = sendButtons.find((button) => button.textContent?.includes('Send'));
     if (sendButton) {
       fireEvent.click(sendButton);
     }
@@ -295,9 +266,7 @@ describe('ChatWindow', () => {
 
     // Find send button by its accessible role and icon
     const sendButtons = screen.getAllByRole('button');
-    const sendButton = sendButtons.find((button) =>
-      button.textContent?.includes('Send')
-    );
+    const sendButton = sendButtons.find((button) => button.textContent?.includes('Send'));
 
     // Try to send empty message
     if (sendButton) {
@@ -351,9 +320,7 @@ describe('ChatWindow', () => {
   });
 
   it('should show typing indicator when agent is typing', () => {
-    mockUseChatContext.mockReturnValue(
-      createMockChatContext({ isTyping: true })
-    );
+    mockUseChatContext.mockReturnValue(createMockChatContext({ isTyping: true }));
 
     render(<ChatWindow />);
 
@@ -389,10 +356,7 @@ describe('ChatWindow', () => {
     // Find and click a quick reply button from the QuickReplies component
     const quickReplyButtons = screen.getAllByRole('button');
     const quickReplyButton = quickReplyButtons.find(
-      (btn) =>
-        btn.textContent &&
-        btn.textContent !== 'Send' &&
-        btn.textContent !== 'Upload'
+      (btn) => btn.textContent && btn.textContent !== 'Send' && btn.textContent !== 'Upload'
     );
 
     // Test that a quick reply button exists and can be clicked
@@ -407,9 +371,7 @@ describe('ChatWindow', () => {
     render(<ChatWindow />);
 
     const sendButtons = screen.getAllByRole('button');
-    const sendButton = sendButtons.find((button) =>
-      button.textContent?.includes('Send')
-    );
+    const sendButton = sendButtons.find((button) => button.textContent?.includes('Send'));
     expect(sendButton).toBeInTheDocument();
   });
 
@@ -442,21 +404,15 @@ describe('ChatWindow', () => {
   });
 
   it('should show connection status when disconnected', () => {
-    mockUseChatContext.mockReturnValue(
-      createMockChatContext({ isConnected: false })
-    );
+    mockUseChatContext.mockReturnValue(createMockChatContext({ isConnected: false }));
 
     render(<ChatWindow />);
 
-    expect(
-      screen.getByText('chat.connectionStatus.reconnecting')
-    ).toBeInTheDocument();
+    expect(screen.getByText('chat.connectionStatus.reconnecting')).toBeInTheDocument();
   });
 
   it('should disable input when disconnected', () => {
-    mockUseChatContext.mockReturnValue(
-      createMockChatContext({ isConnected: false })
-    );
+    mockUseChatContext.mockReturnValue(createMockChatContext({ isConnected: false }));
 
     render(<ChatWindow />);
 

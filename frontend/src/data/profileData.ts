@@ -129,12 +129,7 @@ export const getProjects = (): Project[] => [
     period: '2025',
     description: i18n.t('profileData.projects.2.description'),
     category: 'research',
-    tags: [
-      'FastAPI',
-      'LLM',
-      'React',
-      i18n.t('profileData.projects.2.tags.3'),
-    ].sort(),
+    tags: ['FastAPI', 'LLM', 'React', i18n.t('profileData.projects.2.tags.3')].sort(),
   },
   {
     id: 'teacher-training',

@@ -17,9 +17,9 @@ vi.mock('framer-motion', () => ({
     button: ({
       children,
       ...props
-    }: React.PropsWithChildren<
-      React.ButtonHTMLAttributes<HTMLButtonElement>
-    >) => <button {...props}>{children}</button>,
+    }: React.PropsWithChildren<React.ButtonHTMLAttributes<HTMLButtonElement>>) => (
+      <button {...props}>{children}</button>
+    ),
   },
   AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
 }));
@@ -110,8 +110,7 @@ const translations: Record<string, string> = {
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue?: string) =>
-      translations[key] || defaultValue || key,
+    t: (key: string, defaultValue?: string) => translations[key] || defaultValue || key,
     i18n: {
       changeLanguage: vi.fn(),
       language: 'ko',
@@ -144,8 +143,7 @@ vi.mock('../../../contexts/ChatContext', () => ({
 }));
 
 // Mock notification state
-let mockNotifications: Array<{ id: string; type: string; message: string }> =
-  [];
+let mockNotifications: Array<{ id: string; type: string; message: string }> = [];
 
 // Mock UIContext
 vi.mock('../../../contexts/UIContext', () => ({
@@ -251,9 +249,7 @@ describe('AdminPanel', () => {
 
       // Check if settings tab is selected (has blue-600 class)
       const tabs = screen.getAllByRole('tab');
-      const settingsButton = tabs.find((tab) =>
-        tab.textContent?.includes('설정')
-      );
+      const settingsButton = tabs.find((tab) => tab.textContent?.includes('설정'));
       expect(settingsButton).toBeDefined();
       expect(settingsButton).toHaveClass('text-blue-600');
 
@@ -273,9 +269,7 @@ describe('AdminPanel', () => {
       expect(cannedTabs[0]).toHaveAttribute('aria-selected', 'true');
 
       // Verify canned responses content is displayed
-      expect(
-        screen.getByPlaceholderText('새 자동 응답 추가...')
-      ).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('새 자동 응답 추가...')).toBeInTheDocument();
     });
 
     it('switches to statistics tab', () => {
@@ -494,8 +488,7 @@ describe('AdminPanel', () => {
 
       // Check for either testid
       const userCount =
-        screen.queryByTestId('active-users-count') ||
-        screen.queryByTestId('user-messages-count');
+        screen.queryByTestId('active-users-count') || screen.queryByTestId('user-messages-count');
       expect(userCount).toBeInTheDocument();
     });
 
@@ -597,8 +590,7 @@ describe('AdminPanel', () => {
       const usersContent = screen.queryByText('사용자 목록');
 
       // At least one of these should be present if the tab is working
-      const hasUsersTabContent =
-        lastActivity || noUsersMessage || activeUsersTitle || usersContent;
+      const hasUsersTabContent = lastActivity || noUsersMessage || activeUsersTitle || usersContent;
       expect(hasUsersTabContent).toBeTruthy();
     });
 
@@ -654,9 +646,7 @@ describe('AdminPanel', () => {
     });
 
     it('calls onClose when clicking outside panel', () => {
-      const { container } = renderWithProviders(
-        <AdminPanel isOpen={true} onClose={mockOnClose} />
-      );
+      const { container } = renderWithProviders(<AdminPanel isOpen={true} onClose={mockOnClose} />);
 
       const backdrop = container.querySelector('.backdrop');
       if (backdrop) {

@@ -4,14 +4,8 @@ import { UIProvider, useUI } from '../UIContext';
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
-  const {
-    theme,
-    isSidebarOpen,
-    isGlobalLoading,
-    toggleTheme,
-    toggleSidebar,
-    setGlobalLoading,
-  } = useUI();
+  const { theme, isSidebarOpen, isGlobalLoading, toggleTheme, toggleSidebar, setGlobalLoading } =
+    useUI();
 
   return (
     <div>

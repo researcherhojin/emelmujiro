@@ -16,13 +16,7 @@ const BlogDetailPage: React.FC = memo(() => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const {
-    currentPost: post,
-    loading,
-    error,
-    fetchPostById,
-    clearCurrentPost,
-  } = useBlog();
+  const { currentPost: post, loading, error, fetchPostById, clearCurrentPost } = useBlog();
 
   useEffect(() => {
     if (id) {
@@ -88,10 +82,7 @@ const BlogDetailPage: React.FC = memo(() => {
                 <span className="inline-block px-3 py-1 text-sm rounded-full mb-4 font-medium bg-indigo-100 text-indigo-600">
                   {post?.category}
                 </span>
-                <time
-                  dateTime={post?.date}
-                  className="text-sm text-gray-500 ml-4"
-                >
+                <time dateTime={post?.date} className="text-sm text-gray-500 ml-4">
                   {post?.date && formatDate(post.date)}
                 </time>
               </div>
@@ -107,10 +98,7 @@ const BlogDetailPage: React.FC = memo(() => {
                     <span className="mx-2">•</span>
                     <div className="flex gap-2">
                       {post.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-sm bg-gray-100 px-2 py-1 rounded"
-                        >
+                        <span key={tag} className="text-sm bg-gray-100 px-2 py-1 rounded">
                           #{tag}
                         </span>
                       ))}
@@ -121,9 +109,7 @@ const BlogDetailPage: React.FC = memo(() => {
 
               {/* Content with Markdown support */}
               <div className="prose prose-indigo max-w-none">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {post?.content || ''}
-                </ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{post?.content || ''}</ReactMarkdown>
               </div>
 
               {/* Like and Share buttons */}

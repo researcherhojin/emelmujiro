@@ -32,9 +32,7 @@ vi.mock('react-helmet-async', () => ({
 
     return <div data-testid="helmet-sd" data-json-ld={capturedJsonLd} />;
   },
-  HelmetProvider: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
+  HelmetProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 import StructuredData from '../StructuredData';

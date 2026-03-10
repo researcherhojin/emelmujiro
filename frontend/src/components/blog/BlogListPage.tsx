@@ -11,8 +11,7 @@ import { PageLoading } from '../common/UnifiedLoading';
 
 const BlogListPage: React.FC = memo(() => {
   const { t } = useTranslation();
-  const { posts, loading, error, totalPages, currentPage, fetchPosts } =
-    useBlog();
+  const { posts, loading, error, totalPages, currentPage, fetchPosts } = useBlog();
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
 
   useEffect(() => {
@@ -65,9 +64,7 @@ const BlogListPage: React.FC = memo(() => {
           </div>
 
           {/* Error */}
-          {error && (
-            <div className="text-center text-red-500 mb-8">{error}</div>
-          )}
+          {error && <div className="text-center text-red-500 mb-8">{error}</div>}
 
           {/* Posts Grid */}
           {filteredPosts.length > 0 ? (
@@ -83,9 +80,7 @@ const BlogListPage: React.FC = memo(() => {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   {t('blog.noPosts')}
                 </h2>
-                <p className="text-gray-500 dark:text-gray-400">
-                  {t('blog.noPostsDescription')}
-                </p>
+                <p className="text-gray-500 dark:text-gray-400">{t('blog.noPostsDescription')}</p>
               </div>
             )
           )}

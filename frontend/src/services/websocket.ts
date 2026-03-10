@@ -6,10 +6,7 @@ import i18n from '../i18n';
 // Use mock WebSocket if in test environment or in production (GitHub Pages has no backend)
 const USE_MOCK_WS = env.IS_TEST || env.IS_PRODUCTION;
 
-export type MessageSenderFunction = (
-  message: string,
-  attachment?: File
-) => Promise<void>;
+export type MessageSenderFunction = (message: string, attachment?: File) => Promise<void>;
 
 export interface WebSocketConfig {
   url: string;
@@ -73,10 +70,7 @@ export default class WebSocketService {
         this.state = 'disconnected';
         this.emit('disconnect', event);
 
-        if (
-          this.autoReconnect &&
-          this.reconnectAttempts < this.maxReconnectAttempts
-        ) {
+        if (this.autoReconnect && this.reconnectAttempts < this.maxReconnectAttempts) {
           this.attemptReconnect();
         }
       };
@@ -116,11 +110,7 @@ export default class WebSocketService {
   }
 
   send(message: WebSocketMessage): boolean {
-    if (
-      this.state === 'connected' &&
-      this.ws &&
-      this.ws.readyState === WebSocket.OPEN
-    ) {
+    if (this.state === 'connected' && this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
       return true;
     } else {
@@ -133,11 +123,7 @@ export default class WebSocketService {
   }
 
   sendBinary(data: ArrayBuffer): boolean {
-    if (
-      this.state === 'connected' &&
-      this.ws &&
-      this.ws.readyState === WebSocket.OPEN
-    ) {
+    if (this.state === 'connected' && this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(data);
       return true;
     }
@@ -193,11 +179,7 @@ export default class WebSocketService {
     return this.reconnectAttempts;
   }
 
-  setAutoReconnect(
-    enabled: boolean,
-    maxAttempts?: number,
-    delay?: number
-  ): void {
+  setAutoReconnect(enabled: boolean, maxAttempts?: number, delay?: number): void {
     this.autoReconnect = enabled;
     if (maxAttempts !== undefined) {
       this.maxReconnectAttempts = maxAttempts;
@@ -277,10 +259,7 @@ export class ChatWebSocketService {
   }
 
   connect(): Promise<void> {
-    if (
-      this.isConnecting ||
-      (this.ws && this.ws.readyState === WebSocket.OPEN)
-    ) {
+    if (this.isConnecting || (this.ws && this.ws.readyState === WebSocket.OPEN)) {
       return Promise.resolve();
     }
 
@@ -303,10 +282,7 @@ export class ChatWebSocketService {
     });
   }
 
-  private simulateConnection(
-    resolve: () => void,
-    _reject: (error: unknown) => void
-  ) {
+  private simulateConnection(resolve: () => void, _reject: (error: unknown) => void) {
     // Simulate connection delay
     setTimeout(
       () => {
@@ -330,10 +306,7 @@ export class ChatWebSocketService {
     ); // Random delay 1-3 seconds
   }
 
-  private createRealConnection(
-    resolve: () => void,
-    reject: (error: unknown) => void
-  ) {
+  private createRealConnection(resolve: () => void, reject: (error: unknown) => void) {
     this.ws = new WebSocket(this.config.url);
 
     this.ws.onopen = () => {
@@ -382,11 +355,7 @@ export class ChatWebSocketService {
     };
   }
 
-  private handleMessage(message: {
-    type: string;
-    data?: unknown;
-    messageId?: string;
-  }) {
+  private handleMessage(message: { type: string; data?: unknown; messageId?: string }) {
     // Handle different message types
     switch (message.type) {
       case 'pong':

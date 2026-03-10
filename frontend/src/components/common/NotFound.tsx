@@ -31,9 +31,7 @@ const NotFound: React.FC = memo(() => {
       <main className="min-h-screen flex flex-col items-center justify-center bg-white px-4 sm:px-6 lg:px-8">
         {/* Error Code */}
         <div className="text-center mb-8">
-          <h1 className="text-8xl sm:text-9xl font-black text-gray-900 mb-4 tracking-tight">
-            404
-          </h1>
+          <h1 className="text-8xl sm:text-9xl font-black text-gray-900 mb-4 tracking-tight">404</h1>
           <div className="w-24 h-1 bg-gray-900 mx-auto mb-8 rounded-full"></div>
         </div>
 
@@ -42,9 +40,7 @@ const NotFound: React.FC = memo(() => {
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
             {t('notFound.title')}
           </h2>
-          <p className="text-lg text-gray-600 whitespace-pre-line">
-            {t('notFound.description')}
-          </p>
+          <p className="text-lg text-gray-600 whitespace-pre-line">{t('notFound.description')}</p>
         </div>
 
         {/* Action Buttons */}
@@ -70,9 +66,7 @@ const NotFound: React.FC = memo(() => {
 
         {/* Helpful Links */}
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            {t('notFound.popularPages')}
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('notFound.popularPages')}</h3>
           <nav
             className="flex flex-wrap justify-center gap-4"
             aria-label={t('notFound.popularPages')}

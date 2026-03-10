@@ -240,9 +240,7 @@ describe('webVitals', () => {
       window.dispatchEvent(new Event('load'));
       vi.runAllTimers();
 
-      expect(performanceMock.getEntriesByType).toHaveBeenCalledWith(
-        'navigation'
-      );
+      expect(performanceMock.getEntriesByType).toHaveBeenCalledWith('navigation');
       expect(performanceMock.getEntriesByType).toHaveBeenCalledWith('paint');
     });
 
@@ -267,9 +265,7 @@ describe('webVitals', () => {
         value: undefined,
       });
 
-      expect(() =>
-        logPerformanceMetrics({ enableLogging: true })
-      ).not.toThrow();
+      expect(() => logPerformanceMetrics({ enableLogging: true })).not.toThrow();
     });
 
     it('should handle missing performance entries', async () => {
@@ -290,9 +286,7 @@ describe('webVitals', () => {
       vi.runAllTimers();
 
       // Should not throw even with empty entries
-      expect(performanceMock.getEntriesByType).toHaveBeenCalledWith(
-        'navigation'
-      );
+      expect(performanceMock.getEntriesByType).toHaveBeenCalledWith('navigation');
     });
 
     it('should store metrics in localStorage when configured', async () => {
@@ -325,10 +319,7 @@ describe('webVitals', () => {
       window.dispatchEvent(new Event('load'));
       vi.runAllTimers();
 
-      expect(setItemSpy).toHaveBeenCalledWith(
-        'performanceMetrics',
-        expect.any(String)
-      );
+      expect(setItemSpy).toHaveBeenCalledWith('performanceMetrics', expect.any(String));
 
       setItemSpy.mockRestore();
     });
@@ -362,10 +353,7 @@ describe('webVitals', () => {
       vi.runAllTimers();
 
       // The source uses logger.warn('Performance Metrics:', metrics)
-      expect(mockLoggerWarn).toHaveBeenCalledWith(
-        'Performance Metrics:',
-        expect.any(Object)
-      );
+      expect(mockLoggerWarn).toHaveBeenCalledWith('Performance Metrics:', expect.any(Object));
     });
 
     it('should calculate correct timing values', async () => {
@@ -426,9 +414,7 @@ describe('webVitals', () => {
         navigationStart: 0,
         loadEventEnd: 2000,
       };
-      const mockPaintTiming = [
-        { name: 'first-contentful-paint', startTime: 800 },
-      ];
+      const mockPaintTiming = [{ name: 'first-contentful-paint', startTime: 800 }];
 
       const performanceMock = {
         getEntriesByType: vi.fn((type: string) => {

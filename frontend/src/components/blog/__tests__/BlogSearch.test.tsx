@@ -67,18 +67,14 @@ describe('BlogSearch', () => {
 
   it('renders search input', () => {
     renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
-    expect(
-      screen.getByPlaceholderText('blog.searchPlaceholder')
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('blog.searchPlaceholder')).toBeInTheDocument();
   });
 
   it('handles search submission', async () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText(
-      'blog.searchPlaceholder'
-    ) as HTMLInputElement;
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React' } });
 
@@ -96,9 +92,7 @@ describe('BlogSearch', () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText(
-      'blog.searchPlaceholder'
-    ) as HTMLInputElement;
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: '  React  ' } });
 
@@ -112,9 +106,7 @@ describe('BlogSearch', () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText(
-      'blog.searchPlaceholder'
-    ) as HTMLInputElement;
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: '' } });
     if (input.form) {
@@ -131,9 +123,7 @@ describe('BlogSearch', () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText(
-      'blog.searchPlaceholder'
-    ) as HTMLInputElement;
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React & TypeScript' } });
 
@@ -147,9 +137,7 @@ describe('BlogSearch', () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText(
-      'blog.searchPlaceholder'
-    ) as HTMLInputElement;
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
 
     // Type some text
     fireEvent.change(input, { target: { value: 'React' } });
@@ -193,9 +181,7 @@ describe('BlogSearch', () => {
 
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText(
-      'blog.searchPlaceholder'
-    ) as HTMLInputElement;
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React' } });
     if (input.form) {
@@ -210,16 +196,11 @@ describe('BlogSearch', () => {
 
   it('shows recent searches when focused', () => {
     // Set some recent searches in localStorage
-    localStorage.setItem(
-      'recentSearches',
-      JSON.stringify(['React', 'TypeScript'])
-    );
+    localStorage.setItem('recentSearches', JSON.stringify(['React', 'TypeScript']));
 
     renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
 
-    const input = screen.getByPlaceholderText(
-      'blog.searchPlaceholder'
-    ) as HTMLInputElement;
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
 
     // Focus the input
     fireEvent.focus(input);
@@ -258,9 +239,7 @@ describe('BlogSearch', () => {
 
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText(
-      'blog.searchPlaceholder'
-    ) as HTMLInputElement;
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'React' } });
     if (input.form) {
@@ -276,9 +255,7 @@ describe('BlogSearch', () => {
   it('updates search term', () => {
     renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
 
-    const input = screen.getByPlaceholderText(
-      'blog.searchPlaceholder'
-    ) as HTMLInputElement;
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: 'TypeScript' } });
     expect(input.value).toBe('TypeScript');
@@ -288,9 +265,7 @@ describe('BlogSearch', () => {
     const onSearch = vi.fn();
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
-    const input = screen.getByPlaceholderText(
-      'blog.searchPlaceholder'
-    ) as HTMLInputElement;
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
 
     fireEvent.change(input, { target: { value: '' } });
     if (input.form) {

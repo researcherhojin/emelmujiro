@@ -37,11 +37,7 @@ class Logger {
     return messageLevelIndex >= currentLevelIndex;
   }
 
-  private formatMessage(
-    level: LogLevel,
-    message: string,
-    _data?: unknown
-  ): string {
+  private formatMessage(level: LogLevel, message: string, _data?: unknown): string {
     const timestamp = new Date().toISOString();
     return `[${timestamp}] [${level.toUpperCase()}] ${message}`;
   }
@@ -134,12 +130,7 @@ class Logger {
   }
 
   // Network response logging
-  logResponse(
-    method: string,
-    url: string,
-    status: number,
-    data?: unknown
-  ): void {
+  logResponse(method: string, url: string, status: number, data?: unknown): void {
     if (this.isDevelopment) {
       const emoji = status >= 200 && status < 300 ? '✅' : '❌';
       this.group(`${emoji} ${method} ${url} - ${status}`);

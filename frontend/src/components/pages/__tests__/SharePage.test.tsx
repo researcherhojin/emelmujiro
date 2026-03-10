@@ -143,9 +143,7 @@ describe('SharePage', () => {
 
     // Click the button with 'share.sendInquiry' text
     const buttons = screen.getAllByRole('button');
-    const inquiryButton = buttons.find((btn) =>
-      btn.textContent?.includes('share.sendInquiry')
-    );
+    const inquiryButton = buttons.find((btn) => btn.textContent?.includes('share.sendInquiry'));
     expect(inquiryButton).toBeDefined();
     if (inquiryButton) fireEvent.click(inquiryButton);
 
@@ -170,9 +168,7 @@ describe('SharePage', () => {
     );
 
     const buttons = screen.getAllByRole('button');
-    const viewButton = buttons.find((btn) =>
-      btn.textContent?.includes('share.viewOriginal')
-    );
+    const viewButton = buttons.find((btn) => btn.textContent?.includes('share.viewOriginal'));
     expect(viewButton).toBeDefined();
     if (viewButton) fireEvent.click(viewButton);
 
@@ -194,15 +190,11 @@ describe('SharePage', () => {
     );
 
     const buttons = screen.getAllByRole('button');
-    const saveButton = buttons.find((btn) =>
-      btn.textContent?.includes('share.saveLater')
-    );
+    const saveButton = buttons.find((btn) => btn.textContent?.includes('share.saveLater'));
     expect(saveButton).toBeDefined();
     if (saveButton) fireEvent.click(saveButton);
 
-    const savedContent = JSON.parse(
-      localStorage.getItem('saved-content') || '[]'
-    );
+    const savedContent = JSON.parse(localStorage.getItem('saved-content') || '[]');
     expect(savedContent).toHaveLength(1);
     expect(savedContent[0].title).toBe('저장할 제목');
     expect(savedContent[0].text).toBe('저장할 내용');
@@ -230,15 +222,11 @@ describe('SharePage', () => {
     );
 
     const buttons = screen.getAllByRole('button');
-    const saveButton = buttons.find((btn) =>
-      btn.textContent?.includes('share.saveLater')
-    );
+    const saveButton = buttons.find((btn) => btn.textContent?.includes('share.saveLater'));
     expect(saveButton).toBeDefined();
     if (saveButton) fireEvent.click(saveButton);
 
-    const savedContent = JSON.parse(
-      localStorage.getItem('saved-content') || '[]'
-    );
+    const savedContent = JSON.parse(localStorage.getItem('saved-content') || '[]');
     expect(savedContent).toHaveLength(50);
     expect(savedContent[0].title).toBe('New Item');
   });

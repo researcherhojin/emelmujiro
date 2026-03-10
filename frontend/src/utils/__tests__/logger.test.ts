@@ -33,14 +33,10 @@ describe('Logger', () => {
     consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     consoleGroupSpy = vi.spyOn(console, 'group').mockImplementation(() => {});
-    consoleGroupEndSpy = vi
-      .spyOn(console, 'groupEnd')
-      .mockImplementation(() => {});
+    consoleGroupEndSpy = vi.spyOn(console, 'groupEnd').mockImplementation(() => {});
     consoleTableSpy = vi.spyOn(console, 'table').mockImplementation(() => {});
     consoleTimeSpy = vi.spyOn(console, 'time').mockImplementation(() => {});
-    consoleTimeEndSpy = vi
-      .spyOn(console, 'timeEnd')
-      .mockImplementation(() => {});
+    consoleTimeEndSpy = vi.spyOn(console, 'timeEnd').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -56,37 +52,25 @@ describe('Logger', () => {
   describe('log levels', () => {
     it('should log debug messages', () => {
       Logger.debug('Debug message', { data: 'test' });
-      expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[DEBUG]'),
-        {
-          data: 'test',
-        }
-      );
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('[DEBUG]'), {
+        data: 'test',
+      });
     });
 
     it('should log info messages', () => {
       Logger.info('Info message');
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[INFO]'),
-        ''
-      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('[INFO]'), '');
     });
 
     it('should log warning messages', () => {
       Logger.warn('Warning message');
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[WARN]'),
-        ''
-      );
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('[WARN]'), '');
     });
 
     it('should log error messages', () => {
       const error = new Error('Test error');
       Logger.error('Error occurred', error);
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[ERROR]'),
-        error
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('[ERROR]'), error);
     });
   });
 
