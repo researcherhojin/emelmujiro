@@ -43,7 +43,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: siteName,
-      alternateName: 'Emelmujiro',
+      alternateName: ['Emelmujiro', 'emelmujiro', `${siteName} AI`],
       url: SITE_URL,
       logo: `${SITE_URL}/logo192.png`,
       description: t('seo.site.description'),
@@ -232,7 +232,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
           '@type': 'Article',
           headline: article.title,
           description: article.description,
-          image: article.image || `${SITE_URL}/og-image.png`,
+          image: article.image || `${SITE_URL}/logo512.png`,
           author: {
             '@type': 'Person',
             name: article.author || t('seo.personName'),

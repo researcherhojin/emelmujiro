@@ -29,7 +29,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     description,
     keywords,
     author,
-    image = `${SITE_URL}/og-image.png`,
+    image = `${SITE_URL}/logo512.png`,
     url = SITE_URL,
     type = 'website',
     lang,

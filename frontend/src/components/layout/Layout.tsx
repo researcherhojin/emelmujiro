@@ -22,7 +22,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       // Intent scheme forces the default external browser on Android
       location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;end';
     } else {
-      window.open(url);
+      // iOS KakaoTalk: use official kakaotalk:// scheme to open external browser
+      location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);
     }
   }, []);
 

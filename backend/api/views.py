@@ -36,7 +36,7 @@ class ContactRateThrottle(AnonRateThrottle):
     """Contact form rate throttle"""
 
     scope = "contact"
-    rate = "3/hour"
+    rate = "5/hour"
 
 
 def get_client_ip(request: HttpRequest) -> str:
@@ -361,14 +361,15 @@ class ContactView(APIView):
     def _log_contact_attempt(self, ip_address: str, email: str, success: bool):
         """Log contact attempt"""
         try:
+            normalized_email = (email or "").strip().lower()
             attempt, created = ContactAttempt.objects.get_or_create(
-                ip_address=ip_address, email=email, defaults={"attempt_count": 1}
+                ip_address=ip_address,
+                email=normalized_email,
+                defaults={"attempt_count": 1},
             )
 
             if not created:
-                ContactAttempt.objects.filter(pk=attempt.pk).update(
-                    attempt_count=F("attempt_count") + 1
-                )
+                ContactAttempt.objects.filter(pk=attempt.pk).update(attempt_count=F("attempt_count") + 1)
 
         except Exception as e:
             logger.error(f"Failed to log contact attempt: {e}")
