@@ -113,19 +113,18 @@ The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`
 
 React app loads normally in **all** browsers including KakaoTalk's in-app WebView. `@vitejs/plugin-legacy` generates `nomodule` fallback bundles (Chrome 64+, Samsung 9.2+) that cover KakaoTalk's Android Chromium WebView automatically.
 
-**Detection flags**: `index.html` sets `window.__isKakaoInApp` and `window.__isKakaoAndroid` via user agent detection. These are used by `Layout.tsx` to show a dismissible banner suggesting users open in an external browser for the best experience. React initialization is **not** blocked for any browser.
+**Detection flags**: `index.html` sets `window.__isKakaoInApp` and `window.__isKakaoAndroid` via user agent detection. React initialization is **not** blocked for any browser.
 
-**External browser opening**: `Layout.tsx` `handleOpenExternal` uses platform-specific schemes — Android: `intent://...#Intent;scheme=https;end` (forces Chrome), iOS: `kakaotalk://web/openExternal?url=...` (official KakaoTalk scheme). Do NOT use `window.open()` for iOS KakaoTalk — it opens within the in-app browser instead of externally.
+**iOS KakaoTalk banner**: `Layout.tsx` shows a dismissible banner **only on iOS** KakaoTalk (`__isKakaoInApp && !__isKakaoAndroid`). The "open externally" button uses `kakaotalk://web/openExternal?url=...` (official KakaoTalk scheme). Do NOT use `window.open()` — it opens within the in-app browser instead of externally. Android KakaoTalk does not show the banner; the legacy plugin handles rendering.
 
-**Fallbacks** (all browsers):
+**Error visibility** (all browsers, especially Android KakaoTalk):
 
-- `@vitejs/plugin-legacy` generates `nomodule` fallback bundles for older browsers
-- Vite's built-in modern browser detection loads legacy chunks when needed
-- `window.onerror` handler in `<head>` displays inline script errors
-- 5-second general fallback targets `#root` directly (not `#loading-fallback`, which React may have already removed) and shows a reload prompt
+- `window.onerror` + `unhandledrejection` handlers capture errors into `window.__errors` and render them on-screen via `__showError()` — shows error text, reload button, and (on Android KakaoTalk only) an `intent://` "외부 브라우저에서 열기" button
+- 5-second general fallback calls `__showError()` with the same UI if `window.__appLoaded` is still false
+- `@vitejs/plugin-legacy` generates `nomodule` fallback bundles for older browsers, but note: Android KakaoTalk WebView may support `type="module"` (Chrome 64+) while still being buggy — in that case the modern bundle loads and may fail, and the `nomodule` legacy bundle will NOT load. The error handlers above cover this gap
 - `main.tsx` serviceWorker cleanup is wrapped in try-catch — some in-app browsers throw when accessing `navigator.serviceWorker` despite `'serviceWorker' in navigator` being true
 
-Key files: `index.html` (detection + fallbacks), `App.tsx` (`AppLoaded` component sets `window.__appLoaded = true`), `Layout.tsx` (KakaoTalk banner + external browser schemes), `global.d.ts` (`__isKakaoInApp`, `__isKakaoAndroid`, `__appLoaded`, `__legacyFailed`, `performanceStart` types).
+Key files: `index.html` (detection + error handlers + fallbacks), `App.tsx` (`AppLoaded` component sets `window.__appLoaded = true`), `Layout.tsx` (iOS KakaoTalk banner), `global.d.ts` (`__isKakaoInApp`, `__isKakaoAndroid`, `__appLoaded`, `__legacyFailed`, `performanceStart` types).
 
 Loading skeleton uses **inline styles** (not Tailwind classes) so it's visible before CSS loads.
 
@@ -354,6 +353,6 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 25. **ESLint zero warnings policy**: All ESLint warnings have been resolved (0 errors, 0 warnings as of 2026-03-10). Maintain this — don't introduce new warnings. Use `useCallback` for functions passed to context `useMemo`, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements
 26. **Backend dev deps use `--extra dev`**: Dev tools (black, flake8, pytest) are in `[project.optional-dependencies]` not `[tool.uv.dev-dependencies]`. Use `uv sync --extra dev` (not `uv sync --dev`). CI uses `uv sync --frozen --extra dev`
 27. **react-helmet-async v3 ships own types**: `@types/react-helmet-async` is deprecated and removed. The custom `src/@types/react-helmet-async.d.ts` is also removed. Do not re-add either
-28. **KakaoTalk WebView — React loads normally**: As of 2026-03-12, the Android KakaoTalk redirect was removed. React app renders in all browsers; `@vitejs/plugin-legacy` nomodule bundles cover older WebViews. `Layout.tsx` shows a dismissible banner for KakaoTalk users suggesting they open in an external browser. `__appLoaded` pattern: `App.tsx`'s `AppLoaded` component sets it after successful render; the 5-second fallback targets `#root` directly
+28. **KakaoTalk WebView — React loads normally, errors visible**: React app renders in all browsers. iOS KakaoTalk shows a dismissible banner with `kakaotalk://web/openExternal` scheme. Android KakaoTalk has no banner (legacy plugin covers it), but if rendering fails, `__showError()` displays the error on-screen with an `intent://` "외부 브라우저에서 열기" button. `window.onerror` + `unhandledrejection` both feed into `__showError()`. The 5-second fallback also uses `__showError()` for consistent UI
 29. **OG image uses logo512.png**: No dedicated `og-image.png` exists. All OG/Twitter image references (`index.html`, `SEOHelmet.tsx`, `StructuredData.tsx`, `constants.ts`) point to `logo512.png` (1024x1024). Replace references when a proper 1200x630 OG image is designed
 30. **FAQPage/Course schemas are static only**: FAQPage and Course JSON-LD are in `index.html` as static markup (crawlers read these without JS). Do NOT add them to `StructuredData.tsx` — that creates duplicate structured data when React renders

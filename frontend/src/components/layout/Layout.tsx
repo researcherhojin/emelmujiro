@@ -14,17 +14,15 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [showKakaoBanner, setShowKakaoBanner] = useState(() => !!window.__isKakaoInApp);
+  // Show banner only on iOS KakaoTalk — Android renders fine via legacy plugin
+  const [showKakaoBanner, setShowKakaoBanner] = useState(
+    () => !!window.__isKakaoInApp && !window.__isKakaoAndroid
+  );
 
   const handleOpenExternal = useCallback(() => {
     const url = window.location.href;
-    if (/Android/i.test(navigator.userAgent)) {
-      // Intent scheme forces the default external browser on Android
-      location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;end';
-    } else {
-      // iOS KakaoTalk: use official kakaotalk:// scheme to open external browser
-      location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);
-    }
+    // iOS KakaoTalk: use official kakaotalk:// scheme to open external browser
+    location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);
   }, []);
 
   const dismissBanner = useCallback(() => {

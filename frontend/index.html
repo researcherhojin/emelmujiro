@@ -120,19 +120,33 @@
       }
     </style>
 
-    <!-- Global error handler for debugging blank page issues (catches inline script errors) -->
+    <!-- Global error handler for debugging blank page issues -->
     <script>
       window.__appLoaded = false;
-      window.onerror = function(msg) {
+      window.__errors = [];
+      function __showError(msg) {
         if (window.__appLoaded) return;
+        window.__errors.push(msg);
         var root = document.getElementById('root');
-        if (root) {
-          root.innerHTML = '<div style="padding:40px 20px;text-align:center;font-family:-apple-system,sans-serif">' +
-            '<p style="font-size:16px;color:#333;margin-bottom:12px">페이지를 불러오는 중 오류가 발생했습니다.</p>' +
-            '<p style="font-size:13px;color:#888;margin-bottom:16px">' + msg + '</p>' +
-            '<a href="' + location.href + '" style="color:#4F46E5;font-size:14px">새로고침</a></div>';
-        }
-      };
+        if (!root) return;
+        var href = location.href;
+        var isKakaoAndroid = window.__isKakaoAndroid;
+        var intentHref = 'intent://' + href.replace(/^https?:\/\//, '') + '#Intent;scheme=https;end';
+        root.innerHTML =
+          '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif">' +
+          '<div style="text-align:center;padding:20px;max-width:360px">' +
+          '<p style="font-size:16px;color:#333;margin-bottom:8px">페이지를 불러오는 중 오류가 발생했습니다.</p>' +
+          '<p style="font-size:12px;color:#999;margin-bottom:16px;word-break:break-all">' + window.__errors.join('<br>') + '</p>' +
+          (isKakaoAndroid
+            ? '<a href="' + intentHref + '" style="display:inline-block;padding:10px 24px;background:#FDE047;color:#333;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;margin-bottom:8px">외부 브라우저에서 열기</a><br>'
+            : '') +
+          '<a href="' + href + '" style="display:inline-block;padding:10px 24px;background:#4F46E5;color:#fff;border-radius:8px;text-decoration:none;font-size:14px;margin-top:8px">새로고침</a>' +
+          '</div></div>';
+      }
+      window.onerror = function(msg) { __showError(String(msg)); };
+      window.addEventListener('unhandledrejection', function(e) {
+        __showError(e.reason ? String(e.reason) : 'Promise rejected');
+      });
     </script>
 
     <title>에멜무지로 | AI 교육 · 컨설팅 · 솔루션 개발 전문 기업</title>
@@ -356,24 +370,11 @@
         }
       } catch (e) {}
 
-      // General fallback: if nothing loads within 5 seconds, show a message.
-      // Targets #root directly (not #loading-fallback) because React may have
-      // already replaced #root's children during a failed render attempt.
+      // General fallback: if nothing loads within 5 seconds, show a message
+      // with any captured errors and an external browser link for KakaoTalk Android.
       setTimeout(function() {
         if (window.__appLoaded) return;
-        var root = document.getElementById('root');
-        if (root) {
-          var href = location.href;
-          root.innerHTML =
-            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif">' +
-            '<div style="text-align:center;padding:20px">' +
-            '<p style="font-size:16px;color:#333;margin-bottom:12px">' +
-            '페이지를 불러오는 중 문제가 발생했습니다.</p>' +
-            '<a href="' + href + '" ' +
-            'style="display:inline-block;padding:10px 24px;background:#4F46E5;color:#fff;' +
-            'border-radius:8px;text-decoration:none;font-size:14px">' +
-            '새로고침</a></div></div>';
-        }
+        __showError('5초 내에 앱이 로드되지 않았습니다.');
       }, 5000);
     </script>
     <script type="module" src="/src/main.tsx"></script>

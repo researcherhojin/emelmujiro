@@ -419,27 +419,27 @@ function onFormSubmit(e) {
 
 > **전량 해소 완료.** 18차에 걸친 코드 감사를 통해 식별된 모든 항목을 해결했습니다.
 
-| 감사  | 날짜        | 해결 건수 | 주요 내용                                                                                                                                                                                                                                                  |
-| ----- | ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 18차  | 2026.03.12  | 9건       | KakaoTalk 리다이렉트 제거→React 정상 로딩, 깨진 og-image→logo512 교체, SEO 강화(FAQPage/Course 스키마, 메타 태그), ContactRateThrottle 불일치 수정, docker SECRET_KEY 플레이스홀더 제거, ContactAttempt email 정규화, SW try-catch, iOS 외부 브라우저 스킴 |
-| 17차  | 2026.03.10  | 3건       | KakaoTalk Android 흰 화면 근본 수정 — 다층 폴백 → `document.write()` 즉시 리다이렉트 전환, `main.tsx` React 초기화 차단, 5초 폴백 `#root` 직접 타겟으로 수정                                                                                               |
-| 16차  | 2026.03.10  | 7건       | cleanup_sitevisits 필드명 버그 수정, 미도달 WebSocket 핸들러 제거, 미사용 swagger 파라미터/sentry 함수/constants 제거, API 테스트 4파일→2파일 통합 (-955줄)                                                                                                |
-| 15차  | 2026.03.10  | 6건       | Prettier 설정 충돌 해소, MessageList XSS 강화(innerHTML→DOM, 파일명 sanitize), CSP frame-src reCAPTCHA 허용, 페이지네이션 MAX_PAGE_SIZE 보호, SiteVisit 정리 명령어                                                                                        |
-| 14차  | 2026.03.10  | 8건       | WebSocket timezone.now() 통일, ContactAttempt 원자적 증가(F()), 잘못된 메시지 타입 거부, 클립보드 실패 시 복사 표시 방지, SESSION_SAVE_EVERY_REQUEST 제거, tsconfig.ci strict, Dependabot 루트 npm, Dockerfile.dev non-root                                |
-| 13차  | 2026.03.10  | 9건       | GH Actions 최신 안정 버전 통일 (checkout/setup-node@v6, cache@v5, artifact@v6), Lighthouse URL 프리뷰 포트, Dependabot vitest+백엔드 그룹, Codecov 플래그 분리, 이메일 설정 안전장치                                                                       |
-| 12차  | 2026.03.10  | 5건       | SEO 하드코딩 영어→i18n 전환 (StructuredData/SEOHelmet), ESLint 9→10 업그레이드, global.d.ts 타입 보강, backend uv.lock 동기화                                                                                                                              |
-| 11차  | 2026.03.10  | 7건       | CI 파이프라인 수정 (uv --extra dev, Trivy 0.35.0, SECRET_KEY), Django 5.2.12 보안패치, react-helmet-async v3, 백엔드 black/flake8 수정                                                                                                                     |
-| 10차  | 2026.03.10  | 8건       | KakaoTalk 인앱 브라우저 백지 문제 해결 (다층 폴백), 배너 i18n 전환, Android intent 스킴, 인라인 스타일 스켈레톤                                                                                                                                            |
-| 9차   | 2026.03.09  | 5건       | CSP localhost 제거, sitemap/Lighthouse에 /contact 추가, UnderConstruction dead type/test 제거                                                                                                                                                              |
-| 8차   | 2026.03.09  | 8건       | TS 빌드 오류, ESLint 워크스페이스 호이스팅, ESLint 경고 21건 → 0건                                                                                                                                                                                         |
-| 7차   | 2026.03.09  | 18건      | SEO 크롤러 한국어 강제, slug 원자성, MD5→SHA256, Docker non-root                                                                                                                                                                                           |
-| 6차   | 2026.03.08  | 7건       | i18n fallback 제거 50+건, `title→aria-label`, `onKeyPress→onKeyDown`                                                                                                                                                                                       |
-| 5차   | 2026.03.07  | 확인      | 3~4차 전량 해소 확인, 배포 대기 항목만 잔여                                                                                                                                                                                                                |
-| 4차   | 2026.03.07  | 15건      | 비밀번호 정책, `key={index}` 19곳 교체, `crypto.randomUUID()` 통일                                                                                                                                                                                         |
-| 3차   | 2026.03.07  | 47건      | 미들웨어 미등록, ObjectURL 누수, JWT 블랙리스트, 컴포넌트 분할                                                                                                                                                                                             |
-| 1~2차 | ~2026.03.07 | 21건      | HashRouter 버그, Zustand 제거, i18n 전환, Sentry 초기화, Docker 버전 통일                                                                                                                                                                                  |
+| 감사  | 날짜        | 해결 건수 | 주요 내용                                                                                                                                                                                                                   |
+| ----- | ----------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 18차  | 2026.03.12  | 10건      | KakaoTalk 리다이렉트 제거→React 정상 로딩, og-image→logo512 교체, SEO 강화, ContactRateThrottle 수정, docker SECRET_KEY, email 정규화, SW try-catch, iOS 배너 전용화, Android 에러 가시성 강화                              |
+| 17차  | 2026.03.10  | 3건       | KakaoTalk Android 흰 화면 근본 수정 — 다층 폴백 → `document.write()` 즉시 리다이렉트 전환, `main.tsx` React 초기화 차단, 5초 폴백 `#root` 직접 타겟으로 수정                                                                |
+| 16차  | 2026.03.10  | 7건       | cleanup_sitevisits 필드명 버그 수정, 미도달 WebSocket 핸들러 제거, 미사용 swagger 파라미터/sentry 함수/constants 제거, API 테스트 4파일→2파일 통합 (-955줄)                                                                 |
+| 15차  | 2026.03.10  | 6건       | Prettier 설정 충돌 해소, MessageList XSS 강화(innerHTML→DOM, 파일명 sanitize), CSP frame-src reCAPTCHA 허용, 페이지네이션 MAX_PAGE_SIZE 보호, SiteVisit 정리 명령어                                                         |
+| 14차  | 2026.03.10  | 8건       | WebSocket timezone.now() 통일, ContactAttempt 원자적 증가(F()), 잘못된 메시지 타입 거부, 클립보드 실패 시 복사 표시 방지, SESSION_SAVE_EVERY_REQUEST 제거, tsconfig.ci strict, Dependabot 루트 npm, Dockerfile.dev non-root |
+| 13차  | 2026.03.10  | 9건       | GH Actions 최신 안정 버전 통일 (checkout/setup-node@v6, cache@v5, artifact@v6), Lighthouse URL 프리뷰 포트, Dependabot vitest+백엔드 그룹, Codecov 플래그 분리, 이메일 설정 안전장치                                        |
+| 12차  | 2026.03.10  | 5건       | SEO 하드코딩 영어→i18n 전환 (StructuredData/SEOHelmet), ESLint 9→10 업그레이드, global.d.ts 타입 보강, backend uv.lock 동기화                                                                                               |
+| 11차  | 2026.03.10  | 7건       | CI 파이프라인 수정 (uv --extra dev, Trivy 0.35.0, SECRET_KEY), Django 5.2.12 보안패치, react-helmet-async v3, 백엔드 black/flake8 수정                                                                                      |
+| 10차  | 2026.03.10  | 8건       | KakaoTalk 인앱 브라우저 백지 문제 해결 (다층 폴백), 배너 i18n 전환, Android intent 스킴, 인라인 스타일 스켈레톤                                                                                                             |
+| 9차   | 2026.03.09  | 5건       | CSP localhost 제거, sitemap/Lighthouse에 /contact 추가, UnderConstruction dead type/test 제거                                                                                                                               |
+| 8차   | 2026.03.09  | 8건       | TS 빌드 오류, ESLint 워크스페이스 호이스팅, ESLint 경고 21건 → 0건                                                                                                                                                          |
+| 7차   | 2026.03.09  | 18건      | SEO 크롤러 한국어 강제, slug 원자성, MD5→SHA256, Docker non-root                                                                                                                                                            |
+| 6차   | 2026.03.08  | 7건       | i18n fallback 제거 50+건, `title→aria-label`, `onKeyPress→onKeyDown`                                                                                                                                                        |
+| 5차   | 2026.03.07  | 확인      | 3~4차 전량 해소 확인, 배포 대기 항목만 잔여                                                                                                                                                                                 |
+| 4차   | 2026.03.07  | 15건      | 비밀번호 정책, `key={index}` 19곳 교체, `crypto.randomUUID()` 통일                                                                                                                                                          |
+| 3차   | 2026.03.07  | 47건      | 미들웨어 미등록, ObjectURL 누수, JWT 블랙리스트, 컴포넌트 분할                                                                                                                                                              |
+| 1~2차 | ~2026.03.07 | 21건      | HashRouter 버그, Zustand 제거, i18n 전환, Sentry 초기화, Docker 버전 통일                                                                                                                                                   |
 
-**총 해결: Critical 13 / High 28 / Medium 58 / Low 38 / Backend 7 / 이슈 아님 6건**
+**총 해결: Critical 13 / High 28 / Medium 58 / Low 39 / Backend 7 / 이슈 아님 6건**
 
 <details>
 <summary>감사 상세 기록 (클릭하여 펼치기)</summary>
@@ -453,8 +453,9 @@ function onFormSubmit(e) {
 - **M4** docker-compose.yml `SECRET_KEY` — 약한 플레이스홀더 기본값 → `${SECRET_KEY:?SECRET_KEY must be set}` (미설정 시 에러)
 - **L1** `ContactAttempt._log_contact_attempt` email 정규화 — `(email or "").strip().lower()` 적용 (empty string vs None 일관성, unique_together 제약조건 보호)
 - **L2** `main.tsx` serviceWorker 해제 코드 try-catch 래핑 — 인앱 브라우저에서 `navigator.serviceWorker` 접근 시 예외 발생 가능, Promise `.catch()` 추가
-- **L3** `Layout.tsx` iOS 외부 브라우저 열기 — `window.open()` → `kakaotalk://web/openExternal?url=...` 공식 스킴 전환 (인앱 내부가 아닌 실제 외부 브라우저 실행)
-- **L4** CLAUDE.md KakaoTalk 섹션 업데이트 — 리다이렉트 전략 → 정상 로딩 전략 반영, 외부 브라우저 스킴 문서화, OG 이미지/StructuredData 피트폴 추가 (#28~#30)
+- **L3** `Layout.tsx` 배너를 iOS KakaoTalk 전용으로 변경 — `__isKakaoInApp && !__isKakaoAndroid` 조건, `kakaotalk://web/openExternal` 스킴 사용
+- **L4** Android KakaoTalk 에러 가시성 강화 — `window.onerror` + `unhandledrejection` → `__showError()`로 에러 텍스트 + `intent://` 외부 브라우저 버튼 표시, 5초 폴백도 동일 UI 사용
+- **L5** CLAUDE.md KakaoTalk 섹션 업데이트 — 리다이렉트 전략 → 정상 로딩 전략 반영, iOS 배너/Android 에러 가시성 문서화, OG 이미지/StructuredData 피트폴 추가 (#28~#30)
 
 ### 17차 감사 (2026.03.10)
 
