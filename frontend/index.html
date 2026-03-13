@@ -321,12 +321,42 @@
       </nav>
     </noscript>
 
-    <!-- KakaoTalk detection — sets flags for Layout.tsx banner.
-         React app loads normally in all browsers; legacy plugin provides
-         nomodule fallback for older WebViews (Chrome 64+, Samsung 9.2+). -->
+    <!-- KakaoTalk detection — sets flags for Layout.tsx banner (iOS) and
+         Android redirect below. -->
     <script>
       window.__isKakaoInApp = /KAKAOTALK/i.test(navigator.userAgent);
       window.__isKakaoAndroid = window.__isKakaoInApp && /Android/i.test(navigator.userAgent);
+    </script>
+
+    <!-- Android KakaoTalk in-app browser: show "open in external browser" page
+         immediately, BEFORE React loads. The in-app Chromium WebView supports
+         type="module" (Chrome 64+) so the modern bundle loads instead of the
+         nomodule legacy bundle — but it often fails silently, producing a blank
+         page. Redirecting to an external browser is the only reliable fix.
+         iOS KakaoTalk uses WKWebView (Safari) which handles ES modules fine,
+         so only Android is redirected. -->
+    <script>
+      if (window.__isKakaoAndroid) {
+        var href = 'intent://' + location.href.replace(/^https?:\/\//, '') + '#Intent;scheme=https;end';
+        document.write(
+          '<div id="kakao-redirect" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif">' +
+          '<div style="text-align:center;padding:20px;max-width:320px">' +
+          '<div style="width:64px;height:64px;margin:0 auto 20px;border-radius:16px;background:linear-gradient(135deg,#4F46E5,#7C3AED);display:flex;align-items:center;justify-content:center">' +
+          '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+          '</div>' +
+          '<p style="font-size:18px;font-weight:600;color:#111827;margin:0 0 8px">\uc5d0\uba5c\ubb34\uc9c0\ub85c</p>' +
+          '<p style="font-size:14px;color:#6B7280;margin:0 0 24px;line-height:1.5">' +
+          '\uce74\uce74\uc624\ud1a1 \ube0c\ub77c\uc6b0\uc800\uc5d0\uc11c\ub294 \ud398\uc774\uc9c0\uac00<br/>\uc815\uc0c1\uc801\uc73c\ub85c \ud45c\uc2dc\ub418\uc9c0 \uc54a\uc744 \uc218 \uc788\uc2b5\ub2c8\ub2e4.' +
+          '</p>' +
+          '<a href="' + href + '" ' +
+          'style="display:inline-block;width:100%;padding:14px 24px;background:#4F46E5;color:#fff;' +
+          'border-radius:12px;text-decoration:none;font-size:15px;font-weight:500;' +
+          'box-sizing:border-box">' +
+          '\uc678\ubd80 \ube0c\ub77c\uc6b0\uc800\uc5d0\uc11c \uc5f4\uae30</a>' +
+          '<p style="font-size:12px;color:#9CA3AF;margin:16px 0 0">Chrome \ub610\ub294 Samsung Internet\uc5d0\uc11c<br/>\ucd5c\uc801\uc758 \uacbd\ud5d8\uc744 \uc81c\uacf5\ud569\ub2c8\ub2e4.</p>' +
+          '</div></div>'
+        );
+      }
     </script>
 
     <div id="root">
@@ -342,6 +372,12 @@
     <script>
       // Performance timing
       window.performanceStart = Date.now();
+
+      // If Android KakaoTalk, hide #root so React doesn't flash over the redirect page
+      if (window.__isKakaoAndroid) {
+        var r = document.getElementById('root');
+        if (r) r.style.display = 'none';
+      }
 
       // Network status detection
       try {
@@ -372,10 +408,13 @@
 
       // General fallback: if nothing loads within 5 seconds, show a message
       // with any captured errors and an external browser link for KakaoTalk Android.
-      setTimeout(function() {
-        if (window.__appLoaded) return;
-        __showError('5초 내에 앱이 로드되지 않았습니다.');
-      }, 5000);
+      // Skip for Android KakaoTalk — that path uses the document.write() redirect above.
+      if (!window.__isKakaoAndroid) {
+        setTimeout(function() {
+          if (window.__appLoaded) return;
+          __showError('5초 내에 앱이 로드되지 않았습니다.');
+        }, 5000);
+      }
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

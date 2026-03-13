@@ -86,6 +86,14 @@ HomePage.displayName = 'HomePage';
 
 // App Layout component that includes the accessibility-enhanced layout
 const AppLayout: React.FC = memo(() => {
+  // Signal to index.html fallback scripts that visible content rendered.
+  // Must be here (inside the router layout), NOT as a sibling to RouterProvider,
+  // because we need to confirm that the layout (Navbar, Footer, page content)
+  // actually mounted — not just that the provider tree initialized.
+  useEffect(() => {
+    window.__appLoaded = true;
+  }, []);
+
   return (
     <Layout>
       <ScrollToTop />
@@ -132,14 +140,6 @@ const router = createHashRouter([
   },
 ]);
 
-// Signal to index.html fallback scripts that the app rendered successfully
-function AppLoaded() {
-  useEffect(() => {
-    window.__appLoaded = true;
-  }, []);
-  return null;
-}
-
 const App: React.FC = () => {
   return (
     <HelmetProvider>
@@ -149,7 +149,6 @@ const App: React.FC = () => {
             <BlogProvider>
               <FormProvider>
                 <RouterProvider router={router} />
-                <AppLoaded />
               </FormProvider>
             </BlogProvider>
           </AuthProvider>
