@@ -355,13 +355,20 @@
         if (!linksEl) return;
         var href = location.href;
         var isAndroid = /Android/i.test(navigator.userAgent);
-        var intentHref = 'intent://' + href.replace(/^https?:\/\//, '') + '#Intent;scheme=https;end';
+        var isKakao = window.__isKakaoInApp;
+        // KakaoTalk official scheme (works on both iOS & Android KakaoTalk)
+        var kakaoExternal = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(href);
+        // Android intent:// as fallback for non-KakaoTalk in-app browsers
+        var intentHref = 'intent://' + href.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end';
         var btnStyle = 'display:inline-block;width:100%;padding:14px 24px;border-radius:12px;text-decoration:none;font-size:15px;font-weight:500;box-sizing:border-box;margin-bottom:8px;';
         var html = '';
-        if (isAndroid) {
+        if (isKakao) {
+          // Use KakaoTalk's official openExternal scheme
+          html += '<a href="' + kakaoExternal + '" style="' + btnStyle + 'background:#4F46E5;color:#fff">외부 브라우저에서 열기</a>';
+        } else if (isAndroid) {
           html += '<a href="' + intentHref + '" style="' + btnStyle + 'background:#4F46E5;color:#fff">외부 브라우저에서 열기</a>';
         }
-        html += '<a href="' + href + '" style="' + btnStyle + 'background:' + (isAndroid ? '#E5E7EB' : '#4F46E5') + ';color:' + (isAndroid ? '#333' : '#fff') + '">새로고침</a>';
+        html += '<a href="' + href + '" style="' + btnStyle + 'background:' + (isAndroid || isKakao ? '#E5E7EB' : '#4F46E5') + ';color:' + (isAndroid || isKakao ? '#333' : '#fff') + '">새로고침</a>';
         linksEl.innerHTML = html;
       })();
 
