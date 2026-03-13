@@ -327,55 +327,11 @@
 
     <!-- KakaoTalk detection — sets flags for Layout.tsx banner (iOS) and
          Android redirect below. Also detects generic in-app browsers. -->
+    <!-- KakaoTalk detection — sets flags for Layout.tsx iOS banner and
+         error handler fallback links. React loads normally in all browsers. -->
     <script>
       window.__isKakaoInApp = /KAKAOTALK/i.test(navigator.userAgent);
       window.__isKakaoAndroid = window.__isKakaoInApp && /Android/i.test(navigator.userAgent);
-      // Detect any in-app browser (KakaoTalk, Naver, Line, Facebook, Instagram, etc.)
-      window.__isInAppBrowser = window.__isKakaoInApp || /NAVER|Line\/|FBAN|FBAV|Instagram|Daum/i.test(navigator.userAgent);
-    </script>
-
-    <!-- Android KakaoTalk / in-app browser redirect page (hidden by default).
-         Shown immediately for Android KakaoTalk, or after 5s timeout for other
-         in-app browsers where React fails to render. Uses static HTML (no
-         document.write) so it works even if the WebView restricts dynamic writes. -->
-    <div id="kakao-redirect" style="display:none;min-height:100vh;align-items:center;justify-content:center;background:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif">
-      <div style="text-align:center;padding:20px;max-width:320px">
-        <div style="width:64px;height:64px;margin:0 auto 20px;border-radius:16px;background:linear-gradient(135deg,#4F46E5,#7C3AED);display:flex;align-items:center;justify-content:center">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </div>
-        <p style="font-size:18px;font-weight:600;color:#111827;margin:0 0 8px">에멜무지로</p>
-        <p style="font-size:14px;color:#6B7280;margin:0 0 24px;line-height:1.5">
-          이 브라우저에서는 페이지가<br/>정상적으로 표시되지 않을 수 있습니다.
-        </p>
-        <p id="kakao-redirect-links"></p>
-        <p style="font-size:12px;color:#9CA3AF;margin:16px 0 0">Chrome 또는 Samsung Internet에서<br/>최적의 경험을 제공합니다.</p>
-      </div>
-    </div>
-
-    <script>
-      // Build redirect links — intent:// for Android, reload for others
-      (function() {
-        var linksEl = document.getElementById('kakao-redirect-links');
-        if (!linksEl) return;
-        var href = location.href;
-        var isAndroid = /Android/i.test(navigator.userAgent);
-        var isKakao = window.__isKakaoInApp;
-        // KakaoTalk official scheme (works on both iOS & Android KakaoTalk)
-        var kakaoExternal = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(href);
-        // Android intent:// as fallback for non-KakaoTalk in-app browsers
-        var intentHref = 'intent://' + href.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end';
-        var btnStyle = 'display:inline-block;width:100%;padding:14px 24px;border-radius:12px;text-decoration:none;font-size:15px;font-weight:500;box-sizing:border-box;margin-bottom:8px;';
-        var html = '';
-        if (isKakao) {
-          // Use KakaoTalk's official openExternal scheme
-          html += '<a href="' + kakaoExternal + '" style="' + btnStyle + 'background:#4F46E5;color:#fff">외부 브라우저에서 열기</a>';
-        } else if (isAndroid) {
-          html += '<a href="' + intentHref + '" style="' + btnStyle + 'background:#4F46E5;color:#fff">외부 브라우저에서 열기</a>';
-        }
-        html += '<a href="' + href + '" style="' + btnStyle + 'background:' + (isAndroid || isKakao ? '#E5E7EB' : '#4F46E5') + ';color:' + (isAndroid || isKakao ? '#333' : '#fff') + '">새로고침</a>';
-        linksEl.innerHTML = html;
-      })();
-
     </script>
 
     <div id="root">
@@ -427,7 +383,6 @@
         if (!root) return;
         var href = location.href;
         var isKakao = window.__isKakaoInApp;
-        var isInApp = window.__isInAppBrowser;
         var kakaoExternal = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(href);
         var errText = window.__errors.length
           ? window.__errors.join('<br>')
