@@ -19,6 +19,7 @@ interface Window {
   __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: unknown;
   __isKakaoInApp?: boolean;
   __isKakaoAndroid?: boolean;
+  __isInAppBrowser?: boolean;
   __appLoaded?: boolean;
   __legacyFailed?: boolean;
   performanceStart?: number;
