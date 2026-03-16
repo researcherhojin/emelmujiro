@@ -64,7 +64,7 @@ uv run python manage.py runserver
 **Frontend**<br/>
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-E91E63)
 ![i18next](https://img.shields.io/badge/i18next-25-26A69A?logo=i18next&logoColor=white)
@@ -85,7 +85,7 @@ uv run python manage.py runserver
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
 ![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Deploy-222?logo=github&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
-![Node](https://img.shields.io/badge/Node-22-5FA04E?logo=nodedotjs&logoColor=white)
+![Node](https://img.shields.io/badge/Node-24-5FA04E?logo=nodedotjs&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![uv](https://img.shields.io/badge/uv-Package_Manager-DE5FE9)
 
@@ -273,7 +273,7 @@ graph LR
 | C2  | **SSG / Prerendering**    | 정적 HTML 생성 → 크롤러 완성된 HTML 수신 (react-snap 또는 Next.js)                   |
 | C3  | **`hreflang` 다국어 SEO** | `/ko/about`, `/en/about` + `hreflang` 태그                                           |
 | C4  | **실시간 채팅**           | WebSocket/Redis/Channels 구현, `ChatWidget` AppLayout 복원 (프론트엔드 UI 완성 상태) |
-| C5  | **Notification 모델**     | `consumers.py:251,256` 스텁 → Django 모델 + REST API + WebSocket 핸들러              |
+| C5  | **Notification 모델**     | `consumers.py:224,230` 스텁 → Django 모델 + REST API + WebSocket 핸들러              |
 
 ## 배포 가이드
 
@@ -503,7 +503,7 @@ function onFormSubmit(e) {
 
 ### 13차 감사 (2026.03.10)
 
-- **H1** GitHub Actions 최신 안정 버전 통일: checkout@v6, setup-node@v6, cache@v5, upload-artifact@v6, download-artifact@v6 (main-ci-cd.yml + pr-checks.yml)
+- **H1** GitHub Actions 최신 안정 버전 통일: checkout@v6, setup-node@v6, cache@v5, upload-artifact@v7, download-artifact@v8, configure-pages@v5 (main-ci-cd.yml + pr-checks.yml)
 - **H2** `DEFAULT_FROM_EMAIL` None 방지 — `EMAIL_HOST_USER or "noreply@emelmujiro.com"` 폴백 추가, `ADMIN_EMAIL` 기본값 실제 이메일로 수정
 - **M1** Lighthouse CI URL: dev 포트 5173 → preview 포트 4173 (프로덕션 빌드 테스트)
 - **M2** Dependabot: frontend testing 그룹에 `vitest*` 추가
@@ -600,7 +600,7 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
 
 ## 변경 이력
 
-### 0.9.8 (2026.03.07 ~ 03.13)
+### 0.9.8 (2026.03.07 ~ 03.16)
 
 - **KakaoTalk 인앱 브라우저 최종 수정**
   - ~~기존: `document.write()` 리다이렉트로 React 차단~~ → **React 정상 로딩으로 전환** (`@vitejs/plugin-legacy` nomodule 폴백이 구형 WebView 커버)
@@ -632,6 +632,8 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
   - 소스 코드 한국어 주석 → 영어 전환 (15+ 파일)
   - setTimeout 메모리 누수 전수 수정 (UIContext, FormContext, Navbar, Footer, BlogInteractions, BlogSearch, ChatContext)
 - **CLAUDE.md 업데이트**: React 19 useRef 패턴, Docker 빌드 arg, ChatConsumer 보안, 글로벌 lucide-react mock testid 등 반영
+- **보안 패치**: black 26.1.0→26.3.1 (CVE-2026-32274), PyJWT 2.11.0→2.12.1 (CVE-2026-32597)
+- **의존성 업데이트**: `@vitejs/plugin-legacy` 7.2.1→8.0.0, `actions/upload-artifact` v6→v7, `actions/download-artifact` v6→v8, `actions/configure-pages` v4→v5, dev-dependencies 4개 업데이트
 - **도메인 확보**: `emelmujiro.com` — 백엔드 배포 시 사용 예정
 - **테스트**: 67 파일, 1060 테스트, 0 실패
 

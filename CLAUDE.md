@@ -262,7 +262,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Pipelines
 
-- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages via `actions/deploy-pages@v4` (NOT the `gh-pages` branch — GitHub Pages source is set to "GitHub Actions"). Backend tests run against PostgreSQL 15 (timeout: 10min). Node 22, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/checkout@v6`, `setup-node@v6`, `cache@v5`, `upload-artifact@v6`, `download-artifact@v6`. Has a commented `deploy-backend` job placeholder for future backend deployment. The `gh-pages` branch exists as a manual fallback (synced with `main`) but is not used for deployment.
+- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages via `actions/deploy-pages@v4` (NOT the `gh-pages` branch — GitHub Pages source is set to "GitHub Actions"). Backend tests run against PostgreSQL 15 (timeout: 10min). Node 24, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/checkout@v6`, `setup-node@v6`, `cache@v5`, `upload-artifact@v7`, `download-artifact@v8`, `configure-pages@v5`. Has a commented `deploy-backend` job placeholder for future backend deployment. The `gh-pages` branch exists as a manual fallback (synced with `main`) but is not used for deployment.
 - **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy v0.35.0) + bundle size check (<10MB). Posts summary comment on PR.
 
 ## Critical Configuration
