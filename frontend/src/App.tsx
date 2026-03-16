@@ -29,7 +29,6 @@ const AboutPage = lazy(() => import('./components/pages/AboutPage'));
 const SharePage = lazy(() => import('./components/pages/SharePage'));
 const NotFound = lazy(() => import('./components/common/NotFound'));
 const ContactPage = lazy(() => import('./components/pages/ContactPage'));
-const UnderConstruction = lazy(() => import('./components/common/UnderConstruction'));
 const BlogListPage = lazy(() => import('./components/blog/BlogListPage'));
 const BlogDetail = lazy(() => import('./components/blog/BlogDetail'));
 const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
