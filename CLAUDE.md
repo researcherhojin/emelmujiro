@@ -4,12 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform. Frontend is React/TypeScript deployed to GitHub Pages; backend is Django (not yet deployed to production). Licensed under Apache 2.0.
+Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform. Frontend is React/TypeScript deployed to GitHub Pages; backend is Django deployed on Mac Mini via Docker + Cloudflare Tunnel. Licensed under Apache 2.0.
 
 - **Live Site**: https://researcherhojin.github.io/emelmujiro
+- **Backend API**: https://api.emelmujiro.com (Mac Mini + Cloudflare Tunnel)
 - **Frontend Dev**: http://localhost:5173 (Vite) — **NOT port 3000**
 - **Backend Dev**: http://localhost:8000 (Django)
-- **Mock API** — Controlled by `USE_MOCK_API` in `frontend/src/services/api.ts`. Mock is active when `VITE_API_URL` is unset or equals the placeholder `https://api.emelmujiro.com/api`. Set `VITE_API_URL` to a real backend URL to disable mock.
+- **Mock API** — Controlled by `USE_MOCK_API` in `frontend/src/services/api.ts`. Mock is active only in tests (`IS_TEST`) or when `env.API_URL` is empty. Production builds default to `https://api.emelmujiro.com/api` and use the real backend.
 
 ## Essential Commands
 
@@ -90,20 +91,19 @@ lsof -ti:8000 | xargs kill -9
 - `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x
 - `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Chat/Redis excluded from 1.0 scope
 - Root `package.json` uses npm workspaces pointing to `frontend/`
-- Docker support: `docker-compose.yml` (prod: backend + frontend/nginx + PostgreSQL; Redis only with `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload). Production `docker-compose.yml` passes `VITE_API_URL` as build arg; `frontend/Dockerfile` declares `ARG VITE_API_URL` + `ENV VITE_API_URL` before `npm run build` so Vite can inline it
+- Docker support: `docker-compose.yml` (prod: backend with SQLite by default; PostgreSQL via `--profile postgres`, Redis via `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload, same profile system). SQLite data persists in `sqlite_data` Docker volume (`SQLITE_DIR=/app/data`). `frontend/Dockerfile` declares `ARG VITE_API_URL` + `ENV VITE_API_URL` before `npm run build` so Vite can inline it
 
 ### Routing
 
 Uses `createHashRouter` (HashRouter) in `frontend/src/App.tsx`. All pages are lazy-loaded. Routes: `/`, `/about`, `/contact`, `/profile`, `/share`, `/blog`, `/blog/:id`, `/blog/new`, `/admin` (protected, requires admin role), `*` (404 NotFound).
 
+### Blog (Active)
+
+Blog routes (`/blog`, `/blog/new`, `/blog/:id`) are now connected to the real backend API (`api.emelmujiro.com`). `BlogListPage`, `BlogDetail`, `BlogEditor` components are lazy-loaded in `App.tsx`. Blog data is fetched via `BlogContext` → `api.ts` → Django REST API.
+
 ### Under Construction Pages
 
-Blog and Chat features are **not functional** on GitHub Pages (mock data only, hardcoded responses). These routes render `UnderConstruction` component instead of the original pages:
-
-- `/blog`, `/blog/new`, `/blog/:id` → `<UnderConstruction featureKey="blog" />`
-- `ChatWidget` removed from `AppLayout` entirely
-
-The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`) accepts a `featureKey` prop (`blog` | `chat`) for feature-specific i18n descriptions. Original component files (`BlogListPage.tsx`, `BlogDetail.tsx`, `BlogEditor.tsx`, `ChatWidget.tsx`) are **preserved** — they have their own tests that import them directly. Provider hierarchy (`BlogProvider`, `FormProvider`) is retained for existing test compatibility. `ChatProvider` exists in `src/contexts/` for test compatibility but is NOT in `App.tsx` provider hierarchy. Navbar and footer links to `/blog` and `/contact` are intentionally kept.
+Chat feature is **not functional** (1.0 이후 scope). `ChatWidget` is removed from `AppLayout` entirely. `ChatProvider` exists in `src/contexts/` for test compatibility but is NOT in `App.tsx` provider hierarchy. The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`) is still available for future use.
 
 ### Contact Page (Google Form)
 
@@ -137,7 +137,7 @@ Loading skeleton uses **inline styles** (not Tailwind classes) so it's visible b
 
 ### Mock API System
 
-`frontend/src/services/api.ts` uses centralized env config from `src/config/env.ts`. `USE_MOCK_API` is `env.IS_TEST || !env.API_URL || env.API_URL === PLACEHOLDER_API`. When `VITE_API_URL` is set to a real deployed backend URL, mock is automatically disabled. Mock data lives in `src/services/mockData.ts`. Every API method (blog, contact, newsletter, health) has a mock path.
+`frontend/src/services/api.ts` uses centralized env config from `src/config/env.ts`. `USE_MOCK_API` is `env.IS_TEST || !env.API_URL` — mock is only used in tests or when no API URL is configured. Production builds default to `https://api.emelmujiro.com/api`. Mock data lives in `src/services/mockData.ts`. Every API method (blog, contact, newsletter, health) has a mock path.
 
 ### API Client
 
@@ -328,7 +328,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 ## Common Pitfalls
 
 1. **Wrong port**: Frontend is 5173, not 3000
-2. **Mock API**: On by default (GitHub Pages has no backend). Set `VITE_API_URL` to a real backend URL to disable
+2. **Mock API**: Active only in tests or when `env.API_URL` is empty. Production uses `api.emelmujiro.com` (Mac Mini backend)
 3. **Build output**: `build/`, not `dist/`
 4. **Test count**: Frontend 67 files / 1060 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
@@ -339,7 +339,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 10. **Build uses separate tsconfig**: `tsconfig.build.json` excludes test types and files; the build script runs `tsc -p tsconfig.build.json`. Don't add test-only types (like `@testing-library/jest-dom`) to `tsconfig.build.json`. `tsconfig.ci.json` extends `tsconfig.build.json` with `strict: true` (only relaxes `noUnusedLocals`/`noUnusedParameters`)
 11. **CI cache**: Both `node_modules/` and `frontend/node_modules/` are cached using `hashFiles('package-lock.json')` (root lock file, not `frontend/package-lock.json` which doesn't exist in npm workspaces)
 12. **Sitemap generation in build**: `npm run build` first runs `scripts/generate-sitemap.js`. If this script fails, the entire build fails
-13. **Under construction routes**: `/blog` and chat are currently under construction. `/contact` uses Google Form embed (see "Contact Page" section). The original blog/chat page components and their tests still exist but are not routed in `App.tsx`. When re-enabling blog, update `App.tsx` routes, restore `ChatWidget` in `AppLayout`, and update `generate-sitemap.js`, `manifest.json`, `lighthouserc.js`, and E2E tests (`e2e/blog.spec.ts`). When switching `/contact` back to the backend API form, update `App.tsx`, `ContactPage.tsx`, and `e2e/contact.spec.ts`
+13. **Under construction routes**: Chat is under construction (1.0 이후). `/blog` is now active (connected to real backend). `/contact` uses Google Form embed (see "Contact Page" section). When re-enabling chat, restore `ChatWidget` in `AppLayout` and add `ChatProvider` to `App.tsx` provider hierarchy. When switching `/contact` back to the backend API form, update `App.tsx`, `ContactPage.tsx`, and `e2e/contact.spec.ts`
 14. **Backend blog router**: `backend/api/urls.py` registers BlogPostViewSet with `basename="blog"` (NOT `"blog-posts"`). DRF generates URL names as `blog-list` and `blog-detail`
 15. **No dynamic Tailwind classes**: `bg-${var}-600` is purged at build time. Always use static class maps
 16. **No global focus box-shadow on buttons/links**: Only `input`/`textarea` have global focus ring in `index.css`. Adding `button:focus` box-shadow to global CSS will cause persistent focus boxes on mouse click
