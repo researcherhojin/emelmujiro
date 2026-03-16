@@ -5,7 +5,7 @@
   "homepage": "https://researcherhojin.github.io/emelmujiro",
   "dependencies": {
     "@sentry/react": "^10.11.0",
-    "@vitejs/plugin-legacy": "^7.2.1",
+    "@vitejs/plugin-legacy": "^8.0.0",
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.34.3",
