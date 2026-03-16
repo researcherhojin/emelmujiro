@@ -4,17 +4,14 @@ const path = require('path');
 const SITE_URL = 'https://researcherhojin.github.io/emelmujiro';
 
 // Define all static routes with hash fragments (HashRouter)
-// Note: /blog is excluded while under construction
 const staticRoutes = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
   { url: '/#/about', changefreq: 'weekly', priority: 0.8 },
   { url: '/#/contact', changefreq: 'weekly', priority: 0.7 },
+  { url: '/#/blog', changefreq: 'daily', priority: 0.8 },
   { url: '/#/profile', changefreq: 'weekly', priority: 0.6 },
   { url: '/#/share', changefreq: 'monthly', priority: 0.5 },
 ];
-
-// Blog posts excluded from sitemap while under construction
-const mockBlogPosts = [];
 
 // Generate sitemap XML
 const generateSitemap = () => {
@@ -105,10 +102,7 @@ const main = () => {
     // Log statistics
     console.log(`\n📊 Statistics:`);
     console.log(`   - Static routes: ${staticRoutes.length}`);
-    console.log(`   - Blog routes: ${mockBlogPosts.length}`);
-    console.log(
-      `   - Total URLs: ${staticRoutes.length + mockBlogPosts.length}`
-    );
+    console.log(`   - Total URLs: ${staticRoutes.length}`);
   } catch (error) {
     console.error('❌ Error generating sitemap:', error);
     process.exit(1);
