@@ -213,7 +213,7 @@ Large components are split into sub-components within the same file (no separate
 
 ### Path Alias
 
-`@/` maps to `frontend/src/` (configured in both `tsconfig.json` and `vite.config.ts`).
+`@/` maps to `frontend/src/` (configured in `tsconfig.json`; Vite 8 resolves via native `resolve.tsconfigPaths: true` — `vite-tsconfig-paths` plugin removed).
 
 ## Testing
 
@@ -272,9 +272,9 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 - `base: '/emelmujiro/'` — Required for GitHub Pages subpath
 - Build output: `build/` (not `dist/`)
 - Build pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` (sitemap must succeed)
-- esbuild minifier (switched from Terser for ~10x faster builds). `esbuild.drop: ['console', 'debugger']` in production
-- Manual chunks: react-vendor, ui-vendor, i18n
-- `build.target: ['chrome64', 'safari12', 'firefox63', 'edge79']` — ensures modern bundle compatibility with older WebViews. Matches the legacy plugin's modern browser detection level (Chrome 64+)
+- Vite 8 uses oxc bundler (rolldown). `esbuild` options are ignored — console/debugger stripping is handled by oxc automatically in production
+- Manual chunks use a function (not object) in `rollupOptions.output.manualChunks`: react-vendor, ui-vendor, i18n
+- `build.target` is omitted — `@vitejs/plugin-legacy` sets targets automatically via its `targets` option (Chrome 64+)
 - `@vitejs/plugin-legacy` generates `nomodule` fallback bundles for older Chromium-based browsers (KakaoTalk in-app WebView, Samsung Internet ≥9.2)
 - `stripLocalhostCsp` custom plugin strips `localhost:8000`/`127.0.0.1:8000` from CSP `connect-src` in production builds (kept in dev for direct API calls)
 - CSP `script-src` includes `'unsafe-eval'` — **required** by SystemJS polyfill in `@vitejs/plugin-legacy` legacy bundles (`new Function()`). Cannot be removed while KakaoTalk in-app browser legacy fallback is active. `'unsafe-inline'` is also required for `index.html` inline scripts (error handler, theme detection, KakaoTalk fallback)

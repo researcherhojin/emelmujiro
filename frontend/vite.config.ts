@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import legacy from '@vitejs/plugin-legacy';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
 
 // Strip localhost CSP entries from production builds
@@ -32,7 +31,6 @@ export default defineConfig({
       targets: ['defaults', 'not IE 11', 'Chrome >= 64', 'Samsung >= 9.2'],
       additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
     }),
-    tsconfigPaths(),
     stripLocalhostCsp(),
   ],
   base: '/emelmujiro/',
@@ -48,23 +46,25 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
-    target: ['chrome64', 'safari12', 'firefox63', 'edge79'],
     sourcemap: process.env.NODE_ENV !== 'production',
-    minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['framer-motion', 'lucide-react'],
-          i18n: ['i18next', 'react-i18next'],
+        manualChunks(id) {
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom/')) {
+            return 'react-vendor';
+          }
+          if (id.includes('node_modules/framer-motion/') || id.includes('node_modules/lucide-react/')) {
+            return 'ui-vendor';
+          }
+          if (id.includes('node_modules/i18next/') || id.includes('node_modules/react-i18next/')) {
+            return 'i18n';
+          }
         },
       },
     },
   },
-  esbuild: {
-    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
-  },
   resolve: {
+    tsconfigPaths: true,
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
