@@ -600,7 +600,7 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
 
 ## 변경 이력
 
-### 0.9.8 (2026.03.07 ~ 03.16)
+### 0.9.8 (2026.03.07 ~ 03.17)
 
 - **KakaoTalk 인앱 브라우저 최종 수정**
   - ~~기존: `document.write()` 리다이렉트로 React 차단~~ → **React 정상 로딩으로 전환** (`@vitejs/plugin-legacy` nomodule 폴백이 구형 WebView 커버)
@@ -642,6 +642,11 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
 - **보안 패치**: black 26.1.0→26.3.1 (CVE-2026-32274), PyJWT 2.11.0→2.12.1 (CVE-2026-32597)
 - **Node.js 22→24 LTS**: CI, Docker, engines 전체 업그레이드
 - **의존성 업데이트**: `actions/upload-artifact` v6→v7, `actions/download-artifact` v6→v8, `actions/configure-pages` v4→v5, @sentry/react, axios, framer-motion, i18next, vitest, jsdom 28→29 등
+- **코드베이스 정리**
+  - Dependabot Node 24 ignore 규칙 제거 (npm + Docker) — Node 24가 프로젝트 표준
+  - `contact.services.*` dead i18n 키 제거 (ko.json, en.json 각 30줄)
+  - `BlogPost.link` 미사용 모델 필드 제거 + 마이그레이션
+  - `create_blog_posts.py` 미사용 시드 스크립트 삭제 (1,452줄)
 - **도메인 확보**: `emelmujiro.com` — 백엔드 배포 시 사용 예정
 - **테스트**: 67 파일, 1060 테스트, 0 실패
 

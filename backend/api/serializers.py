@@ -56,7 +56,6 @@ class BlogPostSerializer(serializers.ModelSerializer):
             "views",
             "view_count",
             "likes",
-            "link",
             "is_featured",
         ]
 

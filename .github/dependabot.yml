@@ -39,9 +39,6 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "web-vitals"
         update-types: ["version-update:semver-major"]
-      # Ignore unstable Node 24
-      - dependency-name: "node"
-        versions: ["24.x"]
       # Dev dependencies with major changes
       - dependency-name: "lint-staged"
         update-types: ["version-update:semver-major"]
@@ -123,11 +120,6 @@ updates:
       - "dependencies"
       - "docker"
       - "frontend"
-    ignore:
-      # Ignore Node 24 until it's stable
-      - dependency-name: "node"
-        versions: ["24-alpine", "24.*"]
-
   - package-ecosystem: "docker"
     directory: "/backend"
     schedule:

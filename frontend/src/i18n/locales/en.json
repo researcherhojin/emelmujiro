@@ -339,36 +339,6 @@
       "weekends": "Saturday - Sunday: Closed",
       "quickResponse": "Quick Response Time",
       "responseMessage": "We typically respond within 24 hours."
-    },
-    "services": {
-      "consulting": {
-        "title": "AI Consulting",
-        "description": "Custom AI solutions for your business",
-        "feature1": "AI adoption strategy",
-        "feature2": "Technical review & evaluation",
-        "feature3": "ROI analysis"
-      },
-      "education": {
-        "title": "Corporate AI Education",
-        "description": "Practice-focused AI training programs",
-        "feature1": "Custom curriculum",
-        "feature2": "Hands-on training",
-        "feature3": "Post-training mentoring"
-      },
-      "llm": {
-        "title": "LLM Solutions",
-        "description": "Large language model building & optimization",
-        "feature1": "Custom LLM development",
-        "feature2": "Fine-tuning",
-        "feature3": "API integration"
-      },
-      "data": {
-        "title": "Data Analysis",
-        "description": "Data-driven insight extraction",
-        "feature1": "Data pipeline",
-        "feature2": "Predictive modeling",
-        "feature3": "Visualization dashboard"
-      }
     }
   },
   "contactPage": {
@@ -1106,20 +1076,12 @@
       "consulting": {
         "name": "AI Consulting",
         "description": "Custom AI solutions for your business",
-        "features": [
-          "AI adoption strategy",
-          "Technical review & evaluation",
-          "ROI analysis"
-        ]
+        "features": ["AI adoption strategy", "Technical review & evaluation", "ROI analysis"]
       },
       "education": {
         "name": "Corporate AI Education",
         "description": "Practice-focused AI training programs",
-        "features": [
-          "Custom curriculum",
-          "Hands-on training",
-          "Post-training mentoring"
-        ]
+        "features": ["Custom curriculum", "Hands-on training", "Post-training mentoring"]
       },
       "llm": {
         "name": "LLM Solutions",
@@ -1129,11 +1091,7 @@
       "data": {
         "name": "Data Analysis",
         "description": "Data-driven insight extraction",
-        "features": [
-          "Data pipeline",
-          "Predictive modeling",
-          "Visualization dashboard"
-        ]
+        "features": ["Data pipeline", "Predictive modeling", "Visualization dashboard"]
       }
     },
     "languages": {

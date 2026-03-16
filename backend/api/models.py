@@ -32,7 +32,6 @@ class BlogPost(models.Model):
     # updated_at: auto-set last modification time (internal audit)
     date = models.DateTimeField(default=timezone.now, verbose_name="작성일")
     image_url = models.URLField(blank=True, null=True, validators=[URLValidator()], verbose_name="이미지 URL")
-    link = models.URLField(blank=True, null=True, validators=[URLValidator()], verbose_name="관련 링크")
     is_published = models.BooleanField(default=True, verbose_name="공개 여부")
     is_featured = models.BooleanField(default=False, verbose_name="추천 글")
     view_count = models.PositiveIntegerField(default=0, verbose_name="조회수")
