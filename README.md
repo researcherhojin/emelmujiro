@@ -128,7 +128,7 @@ graph LR
 | API 클라이언트 | Axios + Mock/Real 자동 전환                                         | `VITE_API_URL` 유무로 결정, JWT 401 자동 갱신                   |
 | i18n           | `react-i18next` + 크롤러 한국어 강제                                | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
 | 테스트         | Vitest (1060) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
-| 빌드           | sitemap → `tsc` → Vite (esbuild)                                    | 프로덕션 시 `console`/`debugger` 자동 제거                      |
+| 빌드           | sitemap → `tsc` → Vite 8 (oxc/rolldown)                             | 프로덕션 시 `console`/`debugger` 자동 제거                      |
 | 배포           | GitHub Actions → `deploy-pages@v4` → GitHub Pages                   | `main` push 시 자동 배포, `base: '/emelmujiro/'` 서브패스       |
 | Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router` | ChatProvider는 under construction으로 제외                      |
 
@@ -226,7 +226,7 @@ emelmujiro/
 | A2  | **Google Analytics 연동**      | 중간     | `VITE_GA_TRACKING_ID` 설정, gtag 이벤트 추적 (CTA 클릭, 페이지 뷰)        |
 | A3  | **Sentry 활성화**              | 중간     | `VITE_SENTRY_DSN` + `VITE_ENABLE_SENTRY=true` 설정                        |
 | A4  | **OG 이미지 제작**             | 낮음     | 1200x630 전용 이미지 디자인 (현재 `logo512.png` 사용 중)                  |
-| A5  | **Lighthouse CI 자동화**       | 낮음     | GitHub Actions에 LHCI 스텝 추가 (`npm run preview` → lhci autorun)        |
+| A5  | ~~**Lighthouse CI 자동화**~~   | ✅ 완료  | `pr-checks.yml`에 LHCI job 추가 완료                                      |
 
 ### 백엔드 배포 후 실행
 
@@ -632,8 +632,16 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
   - 소스 코드 한국어 주석 → 영어 전환 (15+ 파일)
   - setTimeout 메모리 누수 전수 수정 (UIContext, FormContext, Navbar, Footer, BlogInteractions, BlogSearch, ChatContext)
 - **CLAUDE.md 업데이트**: React 19 useRef 패턴, Docker 빌드 arg, ChatConsumer 보안, 글로벌 lucide-react mock testid 등 반영
+- **Vite 8 마이그레이션**
+  - Vite 7→8 (oxc/rolldown 번들러), `@vitejs/plugin-react` 5→6, `@vitejs/plugin-legacy` 7→8
+  - `manualChunks` 객체 → 함수로 변환, `vite-tsconfig-paths` 제거 → 네이티브 `resolve.tsconfigPaths`
+  - tailwindcss `^3.4.19`로 고정 (4.x는 PostCSS 플러그인 구조 변경으로 blocked)
+- **Lighthouse CI 자동화** (A5)
+  - `lighthouserc.js` 수정: `startServerCommand` + `/emelmujiro/` base path URL 반영
+  - `pr-checks.yml`에 Lighthouse CI job 추가, PR 코멘트에 결과 표시
 - **보안 패치**: black 26.1.0→26.3.1 (CVE-2026-32274), PyJWT 2.11.0→2.12.1 (CVE-2026-32597)
-- **의존성 업데이트**: `@vitejs/plugin-legacy` 7.2.1→8.0.0, `actions/upload-artifact` v6→v7, `actions/download-artifact` v6→v8, `actions/configure-pages` v4→v5, dev-dependencies 4개 업데이트
+- **Node.js 22→24 LTS**: CI, Docker, engines 전체 업그레이드
+- **의존성 업데이트**: `actions/upload-artifact` v6→v7, `actions/download-artifact` v6→v8, `actions/configure-pages` v4→v5, @sentry/react, axios, framer-motion, i18next, vitest, jsdom 28→29 등
 - **도메인 확보**: `emelmujiro.com` — 백엔드 배포 시 사용 예정
 - **테스트**: 67 파일, 1060 테스트, 0 실패
 
