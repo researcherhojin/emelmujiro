@@ -33,8 +33,8 @@ RUN adduser --disabled-password --gecos '' appuser && \
 # Switch to non-root user
 USER appuser
 
-# Collect static files
-RUN uv run python manage.py collectstatic --noinput
+# Collect static files (SECRET_KEY needed at build time for Django to load settings)
+RUN SECRET_KEY=build-only-placeholder SECURE_SSL_REDIRECT=False uv run python manage.py collectstatic --noinput
 
 # Run gunicorn
 CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--threads", "2", "--timeout", "120", "config.wsgi:application"]
