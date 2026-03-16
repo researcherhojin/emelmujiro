@@ -4,12 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform. Frontend is React/TypeScript deployed to GitHub Pages; backend is Django (not yet deployed to production). Licensed under Apache 2.0.
+Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform. Frontend is React/TypeScript deployed to GitHub Pages; backend is Django deployed on Mac Mini via Docker + Cloudflare Tunnel. Licensed under Apache 2.0.
 
 - **Live Site**: https://researcherhojin.github.io/emelmujiro
+- **Backend API**: https://api.emelmujiro.com (Mac Mini + Cloudflare Tunnel)
 - **Frontend Dev**: http://localhost:5173 (Vite) — **NOT port 3000**
 - **Backend Dev**: http://localhost:8000 (Django)
-- **Mock API** — Controlled by `USE_MOCK_API` in `frontend/src/services/api.ts`. Mock is active when `VITE_API_URL` is unset or equals the placeholder `https://api.emelmujiro.com/api`. Set `VITE_API_URL` to a real backend URL to disable mock.
+- **Mock API** — Controlled by `USE_MOCK_API` in `frontend/src/services/api.ts`. Mock is active only in tests (`IS_TEST`) or when `env.API_URL` is empty. Production builds default to `https://api.emelmujiro.com/api` and use the real backend.
 
 ## Essential Commands
 
