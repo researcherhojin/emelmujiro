@@ -25,8 +25,8 @@
 
 | 항목       | 상태    | 세부사항                                      |
 | ---------- | ------- | --------------------------------------------- |
-| **빌드**   | ✅ 정상 | Vite + esbuild 빌드                           |
-| **CI/CD**  | ✅ 정상 | GitHub Actions (Node 22, Python 3.12) ~2분    |
+| **빌드**   | ✅ 정상 | Vite 8 (oxc/rolldown) 빌드                    |
+| **CI/CD**  | ✅ 정상 | GitHub Actions (Node 24, Python 3.12) ~2분    |
 | **테스트** | ✅ 통과 | Frontend 1060 통과 (67 파일), Backend 69 통과 |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                        |
 | **보안**   | ✅ 안전 | 취약점 0건                                    |
