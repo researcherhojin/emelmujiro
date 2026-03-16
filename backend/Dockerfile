@@ -25,8 +25,9 @@ RUN uv sync --frozen --no-dev
 # Copy project
 COPY . .
 
-# Create non-root user
+# Create non-root user and data directory for SQLite
 RUN adduser --disabled-password --gecos '' appuser && \
+    mkdir -p /app/data && \
     chown -R appuser:appuser /app
 
 # Switch to non-root user

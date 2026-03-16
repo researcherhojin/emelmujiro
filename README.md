@@ -23,15 +23,15 @@
 
 ## 현재 상태 (v0.9.8)
 
-| 항목       | 상태    | 세부사항                                      |
-| ---------- | ------- | --------------------------------------------- |
-| **빌드**   | ✅ 정상 | Vite 8 (oxc/rolldown) 빌드                    |
-| **CI/CD**  | ✅ 정상 | GitHub Actions (Node 24, Python 3.12) ~2분    |
-| **테스트** | ✅ 통과 | Frontend 1060 통과 (67 파일), Backend 69 통과 |
-| **타입**   | ✅ 100% | TypeScript Strict Mode                        |
-| **보안**   | ✅ 안전 | 취약점 0건                                    |
-| **배포**   | ✅ 정상 | GitHub Pages                                  |
-| **백엔드** | ⚠️ Mock | 프로덕션 Mock API 사용 중                     |
+| 항목       | 상태       | 세부사항                                          |
+| ---------- | ---------- | ------------------------------------------------- |
+| **빌드**   | ✅ 정상    | Vite 8 (oxc/rolldown) 빌드                        |
+| **CI/CD**  | ✅ 정상    | GitHub Actions (Node 24, Python 3.12) ~2분        |
+| **테스트** | ✅ 통과    | Frontend 1060 통과 (67 파일), Backend 69 통과     |
+| **타입**   | ✅ 100%    | TypeScript Strict Mode                            |
+| **보안**   | ✅ 안전    | 취약점 0건                                        |
+| **배포**   | ✅ 정상    | GitHub Pages (프론트) + Mac Mini (백엔드 준비 중) |
+| **백엔드** | 🚧 배포 중 | Mac Mini Docker 배포 진행 중 (현재 Mock API)      |
 
 ## 빠른 시작
 
@@ -99,38 +99,37 @@ graph LR
         React["React 19 SPA<br/>(HashRouter)"]
     end
 
-    subgraph Frontend["GitHub Pages"]
+    subgraph Frontend["GitHub Pages (CDN)"]
         Static["정적 빌드<br/>/emelmujiro/"]
     end
 
-    subgraph Backend["Django 5 (미배포)"]
-        DRF["DRF API"]
-        WS["WebSocket<br/>(Channels)"]
+    subgraph MacMini["Mac Mini M2 Pro (Docker)"]
+        Tunnel["Cloudflare Tunnel"]
+        DRF["Django 5 + DRF"]
         DB[(SQLite)]
     end
 
-    React -->|"VITE_API_URL 미설정"| Mock["Mock API<br/>(mockData.ts)"]
-    React -->|"VITE_API_URL 설정"| DRF
-    React -.->|"1.0 이후"| WS
+    React --> Static
+    React -->|"api.emelmujiro.com"| Tunnel
+    Tunnel --> DRF
     DRF --> DB
-    WS --> DB
 
-    style Mock fill:#FEF3C7,stroke:#D97706
-    style WS fill:#E5E7EB,stroke:#9CA3AF,stroke-dasharray: 5 5
+    style Tunnel fill:#F3E8FF,stroke:#7C3AED
+    style MacMini fill:#ECFDF5,stroke:#059669
 ```
 
 ### 핵심 설계 결정
 
-| 영역           | 선택                                                                | 이유                                                            |
-| -------------- | ------------------------------------------------------------------- | --------------------------------------------------------------- |
-| 라우팅         | `createHashRouter` + `React.lazy`                                   | GitHub Pages 호환, 코드 스플리팅                                |
-| 상태 관리      | React Context 5개 (UI, Auth, Blog, Form, Chat)                      | `useMemo`/`useCallback`으로 리렌더 방지, 외부 라이브러리 불필요 |
-| API 클라이언트 | Axios + Mock/Real 자동 전환                                         | `VITE_API_URL` 유무로 결정, JWT 401 자동 갱신                   |
-| i18n           | `react-i18next` + 크롤러 한국어 강제                                | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
-| 테스트         | Vitest (1060) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
-| 빌드           | sitemap → `tsc` → Vite 8 (oxc/rolldown)                             | 프로덕션 시 `console`/`debugger` 자동 제거                      |
-| 배포           | GitHub Actions → `deploy-pages@v4` → GitHub Pages                   | `main` push 시 자동 배포, `base: '/emelmujiro/'` 서브패스       |
-| Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router` | ChatProvider는 under construction으로 제외                      |
+| 영역           | 선택                                                                       | 이유                                                            |
+| -------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 라우팅         | `createHashRouter` + `React.lazy`                                          | GitHub Pages 호환, 코드 스플리팅                                |
+| 상태 관리      | React Context 5개 (UI, Auth, Blog, Form, Chat)                             | `useMemo`/`useCallback`으로 리렌더 방지, 외부 라이브러리 불필요 |
+| API 클라이언트 | Axios + Mock/Real 자동 전환                                                | `VITE_API_URL` 유무로 결정, JWT 401 자동 갱신                   |
+| i18n           | `react-i18next` + 크롤러 한국어 강제                                       | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
+| 테스트         | Vitest (1060) + Playwright E2E (5 spec)                                    | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
+| 빌드           | sitemap → `tsc` → Vite 8 (oxc/rolldown)                                    | 프로덕션 시 `console`/`debugger` 자동 제거                      |
+| 배포           | 프론트: GitHub Pages (CDN) / 백엔드: Mac Mini (Docker + Cloudflare Tunnel) | 프론트 CDN 유지, 백엔드 자체 호스팅으로 비용 최소화             |
+| Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router`        | ChatProvider는 under construction으로 제외                      |
 
 ### 프로젝트 구조
 
@@ -228,11 +227,13 @@ emelmujiro/
 | A4  | **OG 이미지 제작**             | 낮음     | 1200x630 전용 이미지 디자인 (현재 `logo512.png` 사용 중)                  |
 | A5  | ~~**Lighthouse CI 자동화**~~   | ✅ 완료  | `pr-checks.yml`에 LHCI job 추가 완료                                      |
 
-### 백엔드 배포 후 실행
+### 백엔드 배포 (Mac Mini)
+
+> **배포 전략**: 프론트엔드는 GitHub Pages (CDN, HTTPS 무료) 유지, 백엔드만 Mac Mini M2 Pro/32GB에 Docker로 배포. Cloudflare Tunnel로 외부 노출.
 
 ```mermaid
 graph LR
-    B1["B1 백엔드 배포<br/>(핵심 블로커)"] --> B2["B2 Mock API 해제"]
+    B1["B1 Mac Mini 세팅<br/>(Docker + Tunnel)"] --> B2["B2 Mock API 해제"]
     B1 --> B4["B4 이메일 연동"]
     B1 --> B5["B5 JWT → httpOnly"]
     B1 --> B7["B7 초기 데이터"]
@@ -242,26 +243,31 @@ graph LR
     B2 --> B6["B6 Admin 대시보드"]
 ```
 
-| #   | 작업                         | 의존성 | 설명                                                                                      |
-| --- | ---------------------------- | ------ | ----------------------------------------------------------------------------------------- |
-| B1  | **백엔드 프로덕션 배포**     | —      | Django + SQLite 배포 (Railway / Render / Fly.io), `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` |
-| B2  | **Mock API → Real API 전환** | B1     | `VITE_API_URL=https://api.emelmujiro.com/api` 설정 → Mock 자동 비활성화                   |
-| B3  | **블로그 공사 중 해제**      | B2     | `App.tsx` 라우트 복원, sitemap/manifest/E2E 업데이트                                      |
-| B4  | **이메일 발송 연동**         | B1     | Contact 폼 SMTP/SendGrid 연동 (현재 Google Form 임베드 사용 중)                           |
-| B5  | **JWT → httpOnly 쿠키**      | B1     | `localStorage` → `httpOnly` 쿠키 이전 (XSS 방어 강화)                                     |
-| B6  | **Admin 대시보드 API 연동**  | B2     | 실제 통계 API 연결, 컴포넌트 분리 권장                                                    |
-| B7  | **초기 데이터 fixture**      | B1     | `createsuperuser` + 블로그 포스트 fixture (`manage.py loaddata`)                          |
-| B8  | **커스텀 도메인**            | B1     | GitHub Pages CNAME + DNS (`emelmujiro.com`), `SITE_URL` 업데이트                          |
-| B9  | **SiteVisit 정기 정리**      | B1     | `manage.py cleanup_sitevisits --days 90` cron 등록 (명령어 구현 완료)                     |
+| #   | 작업                         | 의존성 | 설명                                                                       |
+| --- | ---------------------------- | ------ | -------------------------------------------------------------------------- |
+| B1  | **Mac Mini 백엔드 배포**     | —      | Docker Compose (Django + SQLite), Cloudflare Tunnel (`api.emelmujiro.com`) |
+| B2  | **Mock API → Real API 전환** | B1     | `VITE_API_URL=https://api.emelmujiro.com/api` 설정 → Mock 자동 비활성화    |
+| B3  | **블로그 공사 중 해제**      | B2     | `App.tsx` 라우트 복원, sitemap/manifest/E2E 업데이트                       |
+| B4  | **이메일 발송 연동**         | B1     | Contact 폼 SMTP/SendGrid 연동 (현재 Google Form 임베드 사용 중)            |
+| B5  | **JWT → httpOnly 쿠키**      | B1     | `localStorage` → `httpOnly` 쿠키 이전 (XSS 방어 강화)                      |
+| B6  | **Admin 대시보드 API 연동**  | B2     | 실제 통계 API 연결, 컴포넌트 분리 권장                                     |
+| B7  | **초기 데이터 fixture**      | B1     | `createsuperuser` + 블로그 포스트 fixture (`manage.py loaddata`)           |
+| B8  | **커스텀 도메인**            | B1     | GitHub Pages CNAME + DNS (`emelmujiro.com`), `SITE_URL` 업데이트           |
+| B9  | **SiteVisit 정기 정리**      | B1     | `manage.py cleanup_sitevisits --days 90` cron 등록 (명령어 구현 완료)      |
 
 <details>
-<summary>배포 플랫폼 비교</summary>
+<summary>Mac Mini vs 클라우드 비교</summary>
 
-| 플랫폼  | 무료 티어    | SQLite 지원            | 장점             | 단점                     |
-| ------- | ------------ | ---------------------- | ---------------- | ------------------------ |
-| Railway | $5 크레딧/월 | Persistent Volume      | 가장 간편한 배포 | 무료 크레딧 소진 가능    |
-| Render  | 750시간/월   | Persistent Disk (유료) | GitHub 자동 배포 | 무료 인스턴스 15분 sleep |
-| Fly.io  | 256MB VM     | Persistent Volume      | 글로벌 엣지      | 설정 다소 복잡           |
+| 항목      | Mac Mini (선택)                      | 클라우드 (AWS/GCP 등)    |
+| --------- | ------------------------------------ | ------------------------ |
+| 월 비용   | 전기세만 (~₩3,000~5,000)             | 월 ₩30,000~수십만원      |
+| 성능      | M2 Pro + 32GB (클라우드 ₩100,000+급) | 돈 내는 만큼 확장        |
+| 안정성    | 정전/인터넷 끊김에 취약 (UPS 권장)   | 99.9% 가용성             |
+| 외부 접근 | Cloudflare Tunnel (무료, HTTPS 자동) | 기본 제공                |
+| 확장성    | 트래픽 폭증 시 한계                  | 자동 확장 가능           |
+| 적합 용도 | 개인 프로젝트, 소규모 서비스         | 상용 서비스, 글로벌 대상 |
+
+**현재 선택 이유**: 개인 프로젝트 + 소규모 트래픽 + 비용 최소화. SQLite로 운영 부담 최소화 (DB 컨테이너 불필요, 백업은 파일 복사 한 줄). 서비스가 커지면 같은 Docker 이미지를 클라우드에 올리고 `DATABASE_URL`만 바꿔 PostgreSQL로 전환 가능.
 
 </details>
 
@@ -278,36 +284,191 @@ graph LR
 ## 배포 가이드
 
 <details>
-<summary>백엔드 배포 후 전환 가이드 (클릭하여 펼치기)</summary>
+<summary>Mac Mini 보안 체크리스트 (클릭하여 펼치기)</summary>
 
-### 1단계: 백엔드 설정
+> Mac Mini를 외부에 노출하면 보안이 중요합니다. Cloudflare Tunnel을 사용하면 공유기 포트를 열 필요가 없어 공격 표면이 크게 줄어들지만, 아래 항목들을 반드시 점검해야 합니다.
+
+#### 네트워크 보안
+
+| 항목                    | 설정                                   | 이유                                                           |
+| ----------------------- | -------------------------------------- | -------------------------------------------------------------- |
+| **포트 직접 노출 금지** | 공유기 포트포워딩 사용하지 않음        | Cloudflare Tunnel만 사용하면 외부에서 Mac Mini IP를 알 수 없음 |
+| **DDoS 방어**           | Cloudflare 기본 제공                   | 터널 경유 트래픽은 Cloudflare 프록시를 거침                    |
+| **macOS 방화벽**        | 시스템 설정 → 네트워크 → 방화벽 → 켜기 | 불필요한 인바운드 연결 차단                                    |
+| **공유기 방화벽**       | 외부 → 내부 차단 기본값 유지           | 포트포워딩 설정 절대 하지 않음                                 |
+
+#### SSH 보안
+
+| 항목                    | 설정                                                   | 이유                                             |
+| ----------------------- | ------------------------------------------------------ | ------------------------------------------------ |
+| **키 기반 인증만 허용** | `/etc/ssh/sshd_config`에서 `PasswordAuthentication no` | 브루트포스 공격 차단                             |
+| **root 로그인 금지**    | `PermitRootLogin no`                                   | 기본값이지만 확인 필수                           |
+| **SSH 포트**            | 기본 22번 유지 (외부 미노출이므로)                     | Cloudflare Tunnel 경유 시 SSH도 터널로 접근 가능 |
 
 ```bash
-# 배포 플랫폼에서 환경변수 설정
-SECRET_KEY=<생성된 시크릿 키>
-DEBUG=False
-ALLOWED_HOSTS=api.emelmujiro.com
-CSRF_TRUSTED_ORIGINS=https://emelmujiro.com,https://researcherhojin.github.io
-CORS_ALLOWED_ORIGINS=https://emelmujiro.com,https://researcherhojin.github.io
-DATABASE_URL=  # SQLite 사용 시 비워두기, Persistent Volume 경로 설정 필요
+# MacBook에서 SSH 키 생성 (아직 없는 경우)
+ssh-keygen -t ed25519 -C "your-email@example.com"
 
-# 초기 데이터
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py loaddata <fixture파일>  # 블로그 초기 포스트 (선택)
+# Mac Mini에 공개키 복사
+ssh-copy-id user@mac-mini.local
+
+# Mac Mini에서 비밀번호 로그인 비활성화
+sudo sed -i '' 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+sudo launchctl stop com.openssh.sshd
+sudo launchctl start com.openssh.sshd
 ```
 
-### 2단계: 프론트엔드 Mock API 해제
+#### 애플리케이션 보안
+
+| 항목                     | 설정                                                  | 이유                                   |
+| ------------------------ | ----------------------------------------------------- | -------------------------------------- |
+| **SECRET_KEY**           | `secrets.token_urlsafe(50)` 이상                      | 약한 키는 세션 위조/CSRF 우회 가능     |
+| **DEBUG=False**          | 프로덕션 필수                                         | True일 경우 스택 트레이스, 설정값 노출 |
+| **ALLOWED_HOSTS**        | `api.emelmujiro.com` 만 허용                          | Host 헤더 공격 방지                    |
+| **CORS**                 | `researcherhojin.github.io`, `emelmujiro.com` 만 허용 | 임의 도메인에서 API 호출 차단          |
+| **CSRF_TRUSTED_ORIGINS** | CORS와 동일                                           | Django CSRF 검증                       |
+| **Rate Limiting**        | 이미 구현됨 (anon 100/hr, contact 5/hr)               | 무차별 대입 방지                       |
+| **HTTPS 강제**           | Cloudflare Tunnel이 자동 처리                         | 평문 통신 차단                         |
+
+#### Docker 보안
+
+| 항목                  | 설정                                                                | 이유                         |
+| --------------------- | ------------------------------------------------------------------- | ---------------------------- |
+| **SQLite 파일 보호**  | Docker 볼륨(`sqlite_data`)에 저장, 컨테이너 외부에서 직접 접근 불가 | DB 파일 변조 방지            |
+| **non-root 컨테이너** | Dockerfile에서 `USER appuser` (이미 적용됨)                         | 컨테이너 탈출 시 피해 최소화 |
+| **이미지 업데이트**   | 정기적으로 `docker compose pull && docker compose up -d`            | 베이스 이미지 보안 패치      |
+| **볼륨 백업**         | `sqlite_data` 볼륨 정기 백업                                        | 데이터 유실 방지             |
 
 ```bash
-# frontend/.env 또는 GitHub Actions secrets에 설정
+# SQLite 백업 (cron 등록 권장) — 파일 하나 복사하면 끝
+docker cp emelmujiro-backend:/app/data/db.sqlite3 ~/backups/emelmujiro_$(date +%Y%m%d).sqlite3
+```
+
+#### 물리/운영 보안
+
+| 항목                     | 설정                                                  | 이유                            |
+| ------------------------ | ----------------------------------------------------- | ------------------------------- |
+| **UPS (무정전전원장치)** | 소형 UPS 연결                                         | 정전 시 DB 손상 방지, 안전 종료 |
+| **자동 업데이트**        | macOS 자동 업데이트 활성화                            | OS 보안 패치                    |
+| **FileVault**            | 시스템 설정 → 개인 정보 보호 및 보안 → FileVault 켜기 | 디스크 암호화 (도난 대비)       |
+| **자동 잠금**            | 화면 보호기 + 즉시 암호 요구                          | 물리적 접근 차단                |
+
+</details>
+
+<details>
+<summary>개발/배포 워크플로우 (클릭하여 펼치기)</summary>
+
+> **원칙**: 코드 작업은 MacBook에서, Mac Mini는 배포만 담당. Mac Mini에서 직접 코드를 수정하지 않음.
+
+```
+MacBook (개발)                          Mac Mini (배포)
+┌─────────────────────┐                ┌──────────────────────┐
+│ 코드 작성/테스트     │                │ git pull             │
+│ git push → GitHub   │───────────────→│ docker compose up -d │
+│ CI 통과 확인        │                │ 서비스 운영          │
+└─────────────────────┘                └──────────────────────┘
+        │                                       │
+        ▼                                       ▼
+  GitHub Pages                          Cloudflare Tunnel
+  (프론트엔드 자동 배포)                (api.emelmujiro.com)
+```
+
+**배포 과정:**
+
+1. MacBook에서 코드 작성, 테스트, `git push`
+2. GitHub Actions CI 통과 → 프론트엔드 자동 배포 (GitHub Pages)
+3. Mac Mini에서 `git pull && docker compose up -d --build` (수동 또는 자동화)
+
+**자동 배포 (선택):**
+
+```bash
+# Mac Mini에 cron 또는 GitHub Webhook 설정으로 자동화 가능
+# 간단한 방법: cron으로 5분마다 pull + rebuild
+*/5 * * * * cd ~/emelmujiro && git pull --ff-only && docker compose up -d --build 2>&1 | logger -t emelmujiro
+```
+
+</details>
+
+<details>
+<summary>Mac Mini 배포 가이드 (클릭하여 펼치기)</summary>
+
+### Phase 1: Mac Mini 기본 세팅
+
+```bash
+# 1. SSH 활성화
+# 시스템 설정 → 일반 → 공유 → 원격 로그인 켜기
+
+# 2. Docker Desktop 설치
+# https://www.docker.com/products/docker-desktop/ 에서 Apple Silicon 버전 다운로드
+
+# 3. 프로젝트 클론
+git clone https://github.com/researcherhojin/emelmujiro.git
+cd emelmujiro
+
+# 4. 환경변수 설정
+cp backend/.env.example backend/.env
+# backend/.env 편집 — SECRET_KEY 생성, ALLOWED_HOSTS 등 설정
+
+# 5. Docker Compose 실행 (SQLite — DB 컨테이너 불필요)
+SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_urlsafe(50))") \
+docker compose up -d
+
+# 6. DB 마이그레이션 + 관리자 계정
+docker exec emelmujiro-backend uv run python manage.py migrate
+docker exec -it emelmujiro-backend uv run python manage.py createsuperuser
+
+# 7. 동작 확인
+curl http://localhost:8000/api/health/
+
+# 참고: PostgreSQL이 필요해지면 프로필로 추가 가능
+# docker compose --profile postgres up -d
+# DATABASE_URL=postgresql://postgres:postgres@db:5432/emelmujiro
+```
+
+### Phase 2: Cloudflare Tunnel (외부 접근)
+
+```bash
+# 1. cloudflared 설치
+brew install cloudflared
+
+# 2. Cloudflare 로그인
+cloudflared tunnel login
+
+# 3. 터널 생성
+cloudflared tunnel create emelmujiro
+
+# 4. DNS 연결 (api.emelmujiro.com → 터널)
+cloudflared tunnel route dns emelmujiro api.emelmujiro.com
+
+# 5. 설정 파일 (~/.cloudflared/config.yml)
+cat > ~/.cloudflared/config.yml << 'EOF'
+tunnel: <터널 ID>
+credentials-file: ~/.cloudflared/<터널 ID>.json
+
+ingress:
+  - hostname: api.emelmujiro.com
+    service: http://localhost:8000
+  - service: http_status:404
+EOF
+
+# 6. 터널 실행 (테스트)
+cloudflared tunnel run emelmujiro
+
+# 7. 서비스 등록 (자동 시작)
+sudo cloudflared service install
+```
+
+### Phase 3: 프론트엔드 연결
+
+```bash
+# GitHub Actions secrets 또는 frontend/.env에 설정
 VITE_API_URL=https://api.emelmujiro.com/api
 
 # 이 값이 설정되면 Mock API가 자동으로 비활성화됨
 # (src/config/env.ts → USE_MOCK_API = false)
 ```
 
-### 3단계: 블로그 공사 중 페이지 해제
+### Phase 4: 블로그 공사 중 페이지 해제
 
 ```tsx
 // frontend/src/App.tsx — UnderConstruction을 원본 컴포넌트로 교체
@@ -321,7 +482,7 @@ const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
 { path: 'blog/:id', element: <BlogDetail /> },
 ```
 
-### 4단계: 추가 업데이트
+### Phase 5: 추가 업데이트
 
 - `generate-sitemap.js` — 블로그 URL 활성화
 - `manifest.json` — 블로그 관련 shortcut 복원
@@ -329,10 +490,25 @@ const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
 - 이메일 발송: `EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` 설정 (또는 SendGrid)
 - Contact 페이지: Google Form → 백엔드 API 전환 여부 결정
 
-### 5단계: 커스텀 도메인 (선택)
+### Phase 6: 운영 안정화
 
-- DNS: `emelmujiro.com` CNAME → `researcherhojin.github.io`
-- GitHub Pages: Settings → Custom domain → `emelmujiro.com`
+```bash
+# Docker 자동 시작 (Docker Desktop → Settings → General → Start Docker Desktop when you sign in)
+
+# UPS(무정전전원장치) 연결 권장 — 정전 시 안전 종료
+
+# MacBook에서 접근 (같은 네트워크)
+# http://mac-mini.local:8000/api/health/
+# ssh mac-mini.local
+
+# 외부에서 접근 (Cloudflare Tunnel 경유)
+# https://api.emelmujiro.com/api/health/
+```
+
+### 커스텀 도메인 (선택)
+
+- Cloudflare DNS: `emelmujiro.com` → GitHub Pages
+- `api.emelmujiro.com` → Cloudflare Tunnel → Mac Mini
 - `frontend/src/utils/constants.ts` → `SITE_URL` 업데이트
 - `frontend/public/CNAME` 파일 생성
 
