@@ -25,11 +25,12 @@ dependencies = [
     "channels-redis==4.3.0",
     "daphne==4.2.1",
     "redis==7.3.0",
+    "PyJWT>=2.12.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "black>=24.0.0",
+    "black>=26.3.1",
     "isort>=5.13.0",
     "flake8>=7.0.0",
     "pytest>=8.0.0",
