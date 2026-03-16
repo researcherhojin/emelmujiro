@@ -11,18 +11,16 @@ services:
       - "8000:8000"
     environment:
       - DEBUG=True
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/emelmujiro_dev
-      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=
+      # REDIS_URL is only needed when running with the "chat" profile
+      # - REDIS_URL=redis://redis:6379/0
     env_file:
       - ./backend/.env.dev
-    depends_on:
-      - db
-      - redis
     volumes:
       - ./backend:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/media
-    command: python manage.py runserver 0.0.0.0:8000
+    command: uv run python manage.py runserver 0.0.0.0:8000
     networks:
       - emelmujiro-network
 
@@ -44,6 +42,7 @@ services:
     networks:
       - emelmujiro-network
 
+  # PostgreSQL — only started with: docker compose --profile postgres up
   db:
     image: postgres:15-alpine
     container_name: emelmujiro-db-dev
@@ -58,7 +57,10 @@ services:
       - "5432:5432"
     networks:
       - emelmujiro-network
+    profiles:
+      - postgres
 
+  # Redis — only started with: docker compose --profile chat up
   redis:
     image: redis:7-alpine
     container_name: emelmujiro-redis-dev
@@ -70,6 +72,8 @@ services:
       - redis_data_dev:/data
     networks:
       - emelmujiro-network
+    profiles:
+      - chat
 
 volumes:
   postgres_data_dev:

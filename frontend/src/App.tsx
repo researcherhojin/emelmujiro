@@ -30,6 +30,9 @@ const SharePage = lazy(() => import('./components/pages/SharePage'));
 const NotFound = lazy(() => import('./components/common/NotFound'));
 const ContactPage = lazy(() => import('./components/pages/ContactPage'));
 const UnderConstruction = lazy(() => import('./components/common/UnderConstruction'));
+const BlogListPage = lazy(() => import('./components/blog/BlogListPage'));
+const BlogDetail = lazy(() => import('./components/blog/BlogDetail'));
+const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
 
 // Admin Components
 const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
@@ -124,9 +127,9 @@ const router = createHashRouter([
       { path: 'contact', element: <ContactPage /> },
       { path: 'profile', element: <ProfilePage /> },
       { path: 'share', element: <SharePage /> },
-      { path: 'blog', element: <UnderConstruction featureKey="blog" /> },
-      { path: 'blog/new', element: <UnderConstruction featureKey="blog" /> },
-      { path: 'blog/:id', element: <UnderConstruction featureKey="blog" /> },
+      { path: 'blog', element: <BlogListPage /> },
+      { path: 'blog/new', element: <BlogEditor /> },
+      { path: 'blog/:id', element: <BlogDetail /> },
       {
         path: 'admin',
         element: (

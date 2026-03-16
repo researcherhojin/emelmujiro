@@ -128,11 +128,13 @@ if DATABASE_URL:
             }
         }
 else:
-    # Development: SQLite
+    # SQLite — use /app/data/ in Docker (persistent volume), BASE_DIR locally
+    SQLITE_DIR = Path(os.environ.get("SQLITE_DIR", BASE_DIR))
+    SQLITE_DIR.mkdir(parents=True, exist_ok=True)
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+            "NAME": SQLITE_DIR / "db.sqlite3",
         }
     }
 

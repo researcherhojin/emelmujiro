@@ -14,7 +14,8 @@ services:
       - "${BACKEND_PORT:-8000}:8000"
     environment:
       - DEBUG=${DEBUG:-False}
-      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-emelmujiro}
+      - DATABASE_URL=
+      - SQLITE_DIR=/app/data
       - SECRET_KEY=${SECRET_KEY:?SECRET_KEY must be set}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
       - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://frontend}
@@ -22,12 +23,10 @@ services:
       # - REDIS_URL=redis://redis:6379/0
     env_file:
       - ./backend/.env
-    depends_on:
-      db:
-        condition: service_healthy
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+      - sqlite_data:/app/data
     networks:
       - emelmujiro-network
     healthcheck:
@@ -66,6 +65,7 @@ services:
       timeout: 10s
       retries: 3
 
+  # PostgreSQL — only started with: docker compose --profile postgres up
   db:
     image: postgres:15-alpine
     container_name: emelmujiro-db
@@ -79,7 +79,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
     networks:
       - emelmujiro-network
     healthcheck:
@@ -87,6 +87,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    profiles:
+      - postgres
 
   # Redis — only started with: docker compose --profile chat up
   redis:
@@ -152,6 +154,8 @@ volumes:
   static_volume:
     driver: local
   media_volume:
+    driver: local
+  sqlite_data:
     driver: local
 
 networks:
