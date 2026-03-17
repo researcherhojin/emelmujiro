@@ -271,7 +271,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Pipelines
 
-- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages via `actions/deploy-pages@v4` (backup; production uses Mac Mini nginx). Backend tests run against PostgreSQL 15 (timeout: 10min). Node 24, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/checkout@v6`, `setup-node@v6`, `cache@v5`, `upload-artifact@v7`, `download-artifact@v8`, `configure-pages@v5`. After CI passes, update Mac Mini manually: `cd frontend && git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run build`.
+- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages via `actions/deploy-pages@v4` (backup; production uses Mac Mini nginx) → **deploy-mac-mini** (webhook trigger to Mac Mini for auto-deploy). Backend tests run against PostgreSQL 15 (timeout: 10min). Node 24, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/checkout@v6`, `setup-node@v6`, `cache@v5`, `upload-artifact@v7`, `download-artifact@v8`, `configure-pages@v5`.
 - **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy v0.35.0) + bundle size check (<10MB) + Lighthouse CI (performance/a11y/SEO audit via `@lhci/cli`, config in `frontend/lighthouserc.js`). Posts summary comment on PR.
 
 ## Critical Configuration
@@ -368,6 +368,10 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 - **Dockerfile**: Backend `collectstatic` uses a placeholder `SECRET_KEY` at build time (`RUN SECRET_KEY=build-only-placeholder ...`) because Django requires it to load settings.
 
 - **Docker Desktop**: Must be running before `docker compose up`. Enable "Start Docker Desktop when you sign in" in Docker Desktop settings for auto-start on boot.
+
+- **Auto-deploy**: `scripts/deploy-webhook.js` (Node.js HTTP server on port 9000) receives deploy requests from GitHub Actions via `https://deploy.emelmujiro.com/deploy`. Authenticated with `X-Deploy-Secret` header (timing-safe comparison). Triggers `scripts/auto-deploy.sh` (git pull → frontend build → backend docker rebuild). Runs as launchd daemon (`com.emelmujiro.deploy-webhook`). Requires `DEPLOY_SECRET` env var and `deploy.emelmujiro.com` Cloudflare Tunnel route.
+
+- **Maintenance page**: `scripts/maintenance-worker.js` is a Cloudflare Worker that returns a branded 503 page when the origin is unreachable. Deploy via Cloudflare Dashboard → Workers. Routes: `emelmujiro.com/*` and `api.emelmujiro.com/*`. API requests get JSON error response; browser requests get HTML.
 
 ### Pre-deploy Check
 
