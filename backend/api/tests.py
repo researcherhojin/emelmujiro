@@ -5,8 +5,8 @@ from rest_framework.test import APITestCase
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import BlogPost, Contact, ContactAttempt, SiteVisit, NewsletterSubscription
-from .views import get_client_ip, _is_valid_ip
+from .models import BlogPost, Contact, ContactAttempt, Notification, SiteVisit, NewsletterSubscription
+from .views import get_client_ip, _is_valid_ip, send_user_notification
 from datetime import datetime, timezone, timedelta
 from django.utils import timezone as django_timezone
 
@@ -751,8 +751,12 @@ class AdminAPITestCase(APITestCase):
     """Tests for Admin API endpoints (admin_stats, admin_content)"""
 
     def setUp(self):
-        self.admin = User.objects.create_superuser(username="admin", email="admin@example.com", password="adminpass12345")
-        self.staff = User.objects.create_user(username="staff", email="staff@example.com", password="staffpass12345", is_staff=True)
+        self.admin = User.objects.create_superuser(
+            username="admin", email="admin@example.com", password="adminpass12345"
+        )
+        self.staff = User.objects.create_user(
+            username="staff", email="staff@example.com", password="staffpass12345", is_staff=True
+        )
         self.user = User.objects.create_user(username="regular", email="regular@example.com", password="userpass12345")
         self.post = BlogPost.objects.create(
             title="Admin Test Post",
@@ -832,7 +836,9 @@ class CookieJWTAuthenticationTestCase(APITestCase):
     """Tests for CookieJWTAuthentication (httpOnly cookie auth)"""
 
     def setUp(self):
-        self.user = User.objects.create_user(username="cookieuser", email="cookie@example.com", password="testpass12345")
+        self.user = User.objects.create_user(
+            username="cookieuser", email="cookie@example.com", password="testpass12345"
+        )
         self.refresh = RefreshToken.for_user(self.user)
         self.access_token = str(self.refresh.access_token)
 
@@ -874,7 +880,9 @@ class TokenRefreshTestCase(APITestCase):
     """Tests for custom token_refresh endpoint (cookie + body support)"""
 
     def setUp(self):
-        self.user = User.objects.create_user(username="refreshuser", email="refresh@example.com", password="testpass12345")
+        self.user = User.objects.create_user(
+            username="refreshuser", email="refresh@example.com", password="testpass12345"
+        )
         self.refresh = RefreshToken.for_user(self.user)
 
     def test_refresh_via_body(self):
@@ -938,7 +946,9 @@ class TokenRefreshTestCase(APITestCase):
         """Logout endpoint clears JWT cookies"""
         # Login first to get cookies
         login_url = reverse("login")
-        login_resp = self.client.post(login_url, {"username": "refreshuser", "password": "testpass12345"}, format="json")
+        login_resp = self.client.post(
+            login_url, {"username": "refreshuser", "password": "testpass12345"}, format="json"
+        )
         refresh_token = login_resp.data["refresh"]
         # Authenticate for logout
         access_token = login_resp.data["access"]
@@ -1003,3 +1013,175 @@ class UtilityFunctionTestCase(TestCase):
     def test_is_valid_ip_v6(self):
         """Test valid IPv6 address"""
         self.assertTrue(_is_valid_ip("2001:0db8:85a3:0000:0000:8a2e:0370:7334"))
+
+
+class NotificationModelTestCase(TestCase):
+    """Tests for Notification model"""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="notiuser", password="testpass123")
+
+    def test_create_notification(self):
+        """Test creating a notification"""
+        notification = Notification.objects.create(
+            user=self.user,
+            title="Test Notification",
+            message="Test message",
+            level="info",
+            notification_type="system",
+        )
+        self.assertEqual(notification.title, "Test Notification")
+        self.assertFalse(notification.is_read)
+        self.assertIsNone(notification.read_at)
+
+    def test_notification_str(self):
+        """Test notification string representation"""
+        notification = Notification.objects.create(user=self.user, title="Hello", message="World")
+        self.assertIn("안읽음", str(notification))
+        self.assertIn("Hello", str(notification))
+
+    def test_notification_ordering(self):
+        """Test notifications are ordered by -created_at"""
+        n1 = Notification.objects.create(user=self.user, title="First", message="msg")
+        n2 = Notification.objects.create(user=self.user, title="Second", message="msg")
+        notifications = list(Notification.objects.filter(user=self.user))
+        self.assertEqual(notifications[0].id, n2.id)
+        self.assertEqual(notifications[1].id, n1.id)
+
+
+class NotificationAPITestCase(APITestCase):
+    """Tests for Notification API endpoints"""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="notiuser", password="testpass123")
+        self.other_user = User.objects.create_user(username="otheruser", password="testpass123")
+        self.notification = Notification.objects.create(
+            user=self.user,
+            title="Test Alert",
+            message="Something happened",
+            level="info",
+            notification_type="system",
+        )
+        # Create notification for other user (should not be visible)
+        Notification.objects.create(
+            user=self.other_user,
+            title="Other Alert",
+            message="Other message",
+        )
+
+    def _auth(self, user=None):
+        """Authenticate as user"""
+        target = user or self.user
+        refresh = RefreshToken.for_user(target)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+
+    def test_list_requires_auth(self):
+        """Test listing notifications requires authentication"""
+        url = reverse("notification-list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_list_own_notifications(self):
+        """Test listing only own notifications"""
+        self._auth()
+        url = reverse("notification-list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["title"], "Test Alert")
+
+    def test_retrieve_notification(self):
+        """Test retrieving a single notification"""
+        self._auth()
+        url = reverse("notification-detail", kwargs={"pk": self.notification.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title"], "Test Alert")
+
+    def test_cannot_retrieve_other_user_notification(self):
+        """Test cannot access other user's notification"""
+        self._auth()
+        other_notif = Notification.objects.filter(user=self.other_user).first()
+        url = reverse("notification-detail", kwargs={"pk": other_notif.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_mark_read(self):
+        """Test marking a notification as read"""
+        self._auth()
+        url = reverse("notification-detail", kwargs={"pk": self.notification.pk})
+        response = self.client.patch(url, {"is_read": True}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.notification.refresh_from_db()
+        self.assertTrue(self.notification.is_read)
+        self.assertIsNotNone(self.notification.read_at)
+
+    def test_mark_all_read(self):
+        """Test marking all notifications as read"""
+        Notification.objects.create(user=self.user, title="Second", message="msg")
+        self._auth()
+        url = reverse("notification-mark-all-read")
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["marked"], 2)
+        self.assertEqual(Notification.objects.filter(user=self.user, is_read=False).count(), 0)
+
+    def test_unread_count(self):
+        """Test getting unread count"""
+        Notification.objects.create(user=self.user, title="Second", message="msg")
+        self._auth()
+        url = reverse("notification-unread-count")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 2)
+
+    def test_unread_count_after_read(self):
+        """Test unread count decreases after marking read"""
+        self._auth()
+        # Mark as read
+        url = reverse("notification-detail", kwargs={"pk": self.notification.pk})
+        self.client.patch(url, {"is_read": True}, format="json")
+        # Check count
+        url = reverse("notification-unread-count")
+        response = self.client.get(url)
+        self.assertEqual(response.data["count"], 0)
+
+
+class SendUserNotificationTestCase(TestCase):
+    """Tests for send_user_notification utility"""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="notiuser", password="testpass123")
+
+    def test_send_notification_creates_record(self):
+        """Test that send_user_notification creates a Notification"""
+        notification = send_user_notification(
+            user=self.user,
+            title="New Post",
+            message="A new blog post was published",
+            level="info",
+            notification_type="blog",
+        )
+        self.assertIsNotNone(notification.id)
+        self.assertEqual(notification.user, self.user)
+        self.assertEqual(notification.title, "New Post")
+        self.assertEqual(notification.level, "info")
+
+    def test_send_notification_by_user_id(self):
+        """Test sending notification by user ID"""
+        notification = send_user_notification(
+            user=self.user.id,
+            title="By ID",
+            message="Sent by user ID",
+        )
+        self.assertEqual(notification.user, self.user)
+
+    def test_send_notification_with_url(self):
+        """Test sending notification with URL"""
+        notification = send_user_notification(
+            user=self.user,
+            title="Click here",
+            message="Check this out",
+            url="https://emelmujiro.com/blog/1",
+        )
+        self.assertEqual(notification.url, "https://emelmujiro.com/blog/1")

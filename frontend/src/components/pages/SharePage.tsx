@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Share2, MessageCircle, Mail, ExternalLink, CheckCircle } from 'lucide-react';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 
 interface SharedContent {
   title?: string;
@@ -12,7 +13,7 @@ interface SharedContent {
 const SharePage: React.FC = () => {
   const { t } = useTranslation();
   const location = useLocation();
-  const navigate = useNavigate();
+  const { localizedNavigate } = useLocalizedPath();
   const [sharedContent, setSharedContent] = useState<SharedContent>({});
   const [isProcessing, setIsProcessing] = useState(true);
   const [showSavedToast, setShowSavedToast] = useState(false);
@@ -23,9 +24,9 @@ const SharePage: React.FC = () => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     toastTimerRef.current = setTimeout(() => {
       setShowSavedToast(false);
-      navigate('/');
+      localizedNavigate('/');
     }, 1500);
-  }, [navigate]);
+  }, [localizedNavigate]);
 
   useEffect(() => {
     return () => {
@@ -59,7 +60,7 @@ ${t('share.fieldLink')}: ${sharedContent.url || ''}
 ${t('share.inquiryFooter')}
     `.trim();
 
-    navigate('/contact', {
+    localizedNavigate('/contact', {
       state: {
         prefilledMessage: message,
         subject: sharedContent.title || t('share.defaultSubject'),
@@ -116,7 +117,7 @@ ${t('share.inquiryFooter')}
           </h1>
           <p className="text-gray-600 dark:text-gray-300 mb-6">{t('share.noContentDescription')}</p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => localizedNavigate('/')}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
           >
             {t('share.goHome')}
@@ -228,7 +229,7 @@ ${t('share.inquiryFooter')}
           </button>
 
           <button
-            onClick={() => navigate('/')}
+            onClick={() => localizedNavigate('/')}
             className="bg-gray-600 hover:bg-gray-700 text-white p-4 rounded-lg font-medium
                        transition-colors flex items-center justify-center space-x-2"
           >
@@ -241,19 +242,19 @@ ${t('share.inquiryFooter')}
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{t('share.otherOptions')}</p>
           <div className="flex flex-wrap justify-center gap-4">
             <button
-              onClick={() => navigate('/blog')}
+              onClick={() => localizedNavigate('/blog')}
               className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
             >
               {t('share.browseBlog')}
             </button>
             <button
-              onClick={() => navigate('/about')}
+              onClick={() => localizedNavigate('/about')}
               className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
             >
               {t('share.aboutCompany')}
             </button>
             <button
-              onClick={() => navigate('/contact')}
+              onClick={() => localizedNavigate('/contact')}
               className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
             >
               {t('share.directInquiry')}

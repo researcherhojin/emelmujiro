@@ -26,7 +26,7 @@ npm run dev:backend        # Backend only
 
 # Frontend (from frontend/)
 npm run dev                # Vite dev server (port 5173)
-npm run build              # generate:sitemap → tsc -p tsconfig.build.json → vite build
+npm run build              # generate:sitemap → tsc → vite build → prerender → cp 404.html
 npm run lint:fix           # ESLint auto-fix
 npm run type-check         # TypeScript check
 npm run type-check:watch   # TypeScript watch mode
@@ -94,13 +94,15 @@ lsof -ti:8000 | xargs kill -9
 ### Monorepo Structure
 
 - `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x
-- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Chat/Redis excluded from 1.0 scope
+- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Chat/Redis excluded from 1.0 scope. Notification model + REST API + WebSocket consumer are implemented
 - Root `package.json` uses npm workspaces pointing to `frontend/`
 - Docker support: `docker-compose.yml` (prod: backend with SQLite by default; PostgreSQL via `--profile postgres`, Redis via `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload, same profile system). SQLite data persists in `sqlite_data` Docker volume (`SQLITE_DIR=/app/data`). Frontend runs as standalone `nginx:alpine` container with volume-mounted build output (not via docker-compose). `frontend/Dockerfile` exists for self-contained image builds but is not used in current deployment
 
 ### Routing
 
 Uses `createBrowserRouter` (BrowserRouter) in `frontend/src/App.tsx`. All pages are lazy-loaded. Routes: `/`, `/about`, `/contact`, `/profile`, `/share`, `/blog`, `/blog/:id`, `/blog/new`, `/admin` (protected, requires admin role), `*` (404 NotFound). Production nginx uses `try_files $uri $uri/ /index.html` for SPA routing (all routes return HTTP 200). The build script still creates `404.html` (`cp build/index.html build/404.html`) as a GitHub Pages fallback.
+
+**Language-prefixed routes** — `LanguageLayout` component detects the `:lang` URL param and calls `i18n.changeLanguage()`. Korean (default) has no prefix (`/about`), English uses `/en` prefix (`/en/about`). Both language variants share the same `pageRoutes` array. The `useLocalizedPath` hook (`src/hooks/useLocalizedPath.ts`) provides `localizedPath()`, `localizedNavigate()`, and `switchLanguagePath()` for language-aware navigation. All internal links in components use these utilities instead of raw `navigate()`/`<Link>`.
 
 ### Blog (Active)
 
@@ -156,6 +158,14 @@ Axios-based client in `src/services/api.ts`. All API methods (blog, contact, new
 
 `src/utils/analytics.ts` exports `initAnalytics()` (called in `main.tsx`), `trackPageView(path)` (called in `ScrollToTop` on route change), and `trackCtaClick(location)` (used on CTA buttons in `HeroSection` and `CTASection`). Only active when `VITE_ENABLE_ANALYTICS=true` and `VITE_GA_TRACKING_ID` is set. CSP in `index.html` includes `https://www.googletagmanager.com` in `script-src` and Google Analytics domains in `connect-src`.
 
+### SSG / Prerendering
+
+`scripts/prerender.js` runs after `vite build` using Playwright (headless Chromium) to generate static HTML for each route in each language. The script starts a local static server, navigates to each route, waits for `window.__appLoaded === true`, marks `<div id="root">` with `data-prerendered="true"`, and captures the rendered HTML. Output: `build/<route>/index.html` for Korean, `build/en/<route>/index.html` for English (12 files total = 6 routes × 2 languages). `main.tsx` detects `data-prerendered` and uses `ReactDOM.hydrateRoot()` instead of `createRoot()`. `build:no-prerender` script skips the prerender step for faster local iteration. The shared route list is exported from `generate-sitemap.js` and imported by `prerender.js`.
+
+### Notification System
+
+Backend: `Notification` model (`api/models.py`) with fields: user, title, message, level (info/success/warning/error), notification_type (system/blog/contact/admin), url, is_read, read_at. `NotificationViewSet` provides REST API at `/api/notifications/` (list, retrieve, mark read, mark_all_read, unread_count). `send_user_notification(user, title, message, ...)` utility in `views.py` creates a DB record and pushes via WebSocket channel layer. `NotificationConsumer` (`consumers.py`) handles real-time mark_read/mark_all_read via `ws/notifications/` and sends unread count updates back. No frontend notification UI yet — backend only.
+
 ### Environment Variables
 
 `frontend/src/config/env.ts` exports `getEnvVar()` helper that checks `VITE_` prefixed vars first, falls back to `REACT_APP_` prefixed vars. New env vars should use the `VITE_` prefix. Key frontend env vars: `VITE_API_URL`, `VITE_WS_URL`, `VITE_SENTRY_DSN`, `VITE_ENABLE_SENTRY`, `VITE_ENABLE_ANALYTICS`, `VITE_GA_TRACKING_ID`, `VITE_CONTACT_EMAIL`. Backend env vars documented in `backend/.env.example`.
@@ -176,7 +186,7 @@ Axios-based client in `src/services/api.ts`. All API methods (blog, contact, new
 
 Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false`. All UI strings, data files, contexts, and SEO modules use i18n — no hardcoded Korean in components. Non-React files that need translations (e.g., `websocket.ts`, `ChatContext.tsx`) import `i18n` directly and call `i18n.t()`. The `blogPosts.ts` mock data file is an exception — it contains Korean content strings as placeholder blog post data, not UI strings.
 
-**SEO bot detection** — `i18n.ts` detects search engine bots (Googlebot, Bingbot, etc.) via `navigator.userAgent` and forces them to use `['htmlTag']` detection order (resolving to `ko` from `index.html`'s `lang="ko"`). This ensures Korean content is indexed by search engines regardless of the bot's `Accept-Language` header. Non-bot users get the normal detection order: `localStorage → navigator → htmlTag`. Bot detection also disables localStorage caching to prevent stale language preferences.
+**SEO bot detection** — `i18n.ts` detects search engine bots (Googlebot, Bingbot, etc.) via `navigator.userAgent`. A custom `urlPrefix` detector reads the language from the URL path (`/en/*` → `en`, otherwise `undefined` → falls back). Detection order: bots use `['urlPrefix', 'htmlTag']`, users use `['urlPrefix', 'localStorage', 'navigator', 'htmlTag']`. URL prefix always takes highest priority so `/en/about` renders English content regardless of other settings. Bot detection disables localStorage caching.
 
 **Data file i18n pattern** — Non-React data files (`footerData.ts`, `profileData.ts`, `constants.ts`) import the i18n instance directly and use getter functions so translations resolve at call time (not at module load):
 
@@ -253,7 +263,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 67 test files, 1048 tests, 0 failures, 0 skips. Backend: 90 tests, 0 failures
+- 67 test files, 1048 tests, 0 failures, 0 skips. Backend: 104 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
@@ -280,7 +290,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 - `base: '/'` — Custom domain `emelmujiro.com` (no subpath needed). `frontend/public/CNAME` file kept for GitHub Pages backup
 - Build output: `build/` (not `dist/`)
-- Build pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` (sitemap must succeed)
+- Build pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` → `prerender.js` → `cp 404.html` (sitemap and prerender must succeed)
 - Vite 8 uses oxc bundler (rolldown). `esbuild` options are ignored — console/debugger stripping is handled by oxc automatically in production
 - Manual chunks use a function (not object) in `rollupOptions.output.manualChunks`: react-vendor, ui-vendor, i18n
 - `build.target` is omitted — `@vitejs/plugin-legacy` sets targets automatically via its `targets` option (Chrome 64+)
@@ -319,7 +329,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr. Pagination: `StandardPagination` (page_size=10, max_page_size=100, `?page_size=N` query param)
 - File upload validation: `api/validators.py` — case-insensitive extension, MIME type, size (5MB)
 - API docs: Swagger at `/api/docs/`, ReDoc at `/api/redoc/` (drf-yasg)
-- Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`, `/api/admin/stats/` (admin only — returns totalUsers/totalPosts/totalMessages/totalViews), `/api/admin/content/` (admin only — returns blog post list). `/api/send-test-email/` only registered when `DEBUG=True`
+- Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/notifications/` (authenticated — list, retrieve, mark_all_read, unread_count), `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`, `/api/admin/stats/` (admin only — returns totalUsers/totalPosts/totalMessages/totalViews), `/api/admin/content/` (admin only — returns blog post list). `/api/send-test-email/` only registered when `DEBUG=True`
 - UserSerializer includes a `role` field (read-only): returns `"admin"` (superuser), `"staff"`, or `"user"`
 - Custom middleware registered in MIDDLEWARE: `RequestSecurityMiddleware` (IP blocking, rate limiting, malicious pattern detection), `ContentSecurityMiddleware` (CSP + security headers), `APIResponseTimeMiddleware` (slow request logging)
 - Management commands: `cleanup_sitevisits` (delete old SiteVisit records, `--days 90` default, `--dry-run` option)
@@ -404,7 +414,7 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 19. **Logger has no named exports**: `logger.ts` only exports `default` (singleton instance). Import as `import logger from '../utils/logger'`, not destructured. Uses `env.IS_DEVELOPMENT` from `config/env.ts` — do NOT use `process.env.NODE_ENV` directly in frontend code
 20. **No `window.alert()` in components**: Use inline toast state pattern instead (`ToastState` interface + `useRef` timer + auto-dismiss + `role="alert"` element). Already applied in `BlogEditor.tsx` and `SharePage.tsx`. Tests assert via `screen.getByRole('alert')`, not `alertSpy`
 21. **Backend tests need `DATABASE_URL=""`**: If `DATABASE_URL` is set (e.g., pointing to Docker PostgreSQL), backend tests will fail to connect. Run `DATABASE_URL="" uv run python manage.py test` to use SQLite
-22. **SEO with BrowserRouter**: All canonical URLs and OG URLs use clean paths (e.g., `${SITE_URL}/about`). Production nginx `try_files` returns 200 for all SPA routes. `hreflang` alternate language tags are omitted because the SPA serves both languages from the same URL via client-side i18n. The `sameAs` field in structured data must only contain verified, existing URLs
+22. **SEO with BrowserRouter**: All canonical URLs and OG URLs use clean paths (e.g., `${SITE_URL}/about`). Production nginx `try_files` returns 200 for all SPA routes. `hreflang` alternate links are generated by `SEOHelmet` for each page (ko, en, x-default). Korean URLs have no prefix (`/about`), English URLs use `/en` prefix (`/en/about`). The sitemap includes bilingual entries with `xhtml:link` alternates. The `sameAs` field in structured data must only contain verified, existing URLs
 23. **No hardcoded site URLs in components**: Always use `SITE_URL` from `src/utils/constants.ts`. The `generate-sitemap.js` script has its own `SITE_URL` constant (Node.js, can't import from frontend)
 24. **ESLint workspace hoisting**: `eslint` must be in root `package.json` devDependencies (same major version as frontend) alongside `eslint-plugin-react` (which npm hoists to root `node_modules/`). The plugin does `require('eslint/package.json')` — if eslint is only in `frontend/node_modules/`, the plugin can't find it. Don't remove eslint from root devDependencies
 25. **ESLint zero warnings policy**: All ESLint warnings have been resolved (0 errors, 0 warnings as of 2026-03-10). Maintain this — don't introduce new warnings. Use `useCallback` for functions passed to context `useMemo`, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements

@@ -2,6 +2,7 @@ import React, { useEffect, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { PageLoading } from '../common/UnifiedLoading';
@@ -16,6 +17,7 @@ const BlogDetailPage: React.FC = memo(() => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { localizedNavigate } = useLocalizedPath();
   const { currentPost: post, loading, error, fetchPostById, clearCurrentPost } = useBlog();
 
   useEffect(() => {
@@ -31,7 +33,7 @@ const BlogDetailPage: React.FC = memo(() => {
   }
 
   if (error && error.includes('404')) {
-    navigate('/404', { replace: true });
+    localizedNavigate('/404', { replace: true });
     return null;
   }
 

@@ -14,18 +14,31 @@ const resources = {
   },
 };
 
-// Search engine crawlers (Googlebot, Bingbot, etc.) have no localStorage and
-// their navigator.language is English, which causes i18n to render English
-// content. Force Korean for bots so that Korean search results show Korean
-// meta tags and page content.
+// Search engine crawlers (Googlebot, Bingbot, etc.) should respect the URL
+// language prefix. For /en/* paths, they get English; for /* paths, Korean.
+// Non-bot users also get URL-based detection first.
 const isBot =
   typeof navigator !== 'undefined' &&
   /Googlebot|bingbot|Baiduspider|yandex|DuckDuckBot|Slurp|Twitterbot|facebookexternalhit|LinkedInBot|Discordbot/i.test(
     navigator.userAgent
   );
 
+// Custom path detector: reads language from URL prefix (/en/*)
+const pathDetector = {
+  name: 'urlPrefix',
+  lookup(): string | undefined {
+    if (typeof window === 'undefined') return undefined;
+    const match = window.location.pathname.match(/^\/(en)(\/|$)/);
+    return match ? match[1] : undefined;
+  },
+};
+
+// Register the custom detector
+const customDetector = new LanguageDetector();
+customDetector.addDetector(pathDetector);
+
 i18n
-  .use(LanguageDetector)
+  .use(customDetector)
   .use(initReactI18next)
   .init({
     resources,
@@ -36,10 +49,13 @@ i18n
       escapeValue: false,
     },
 
-    // When a bot visits, skip navigator detection and fall through to htmlTag
-    // (which is 'ko' from index.html), ensuring Korean content for crawlers.
+    // URL prefix takes highest priority for language detection.
+    // Bots: URL prefix → htmlTag (falls back to 'ko' from index.html).
+    // Users: URL prefix → localStorage → navigator → htmlTag.
     detection: {
-      order: isBot ? ['htmlTag'] : ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+      order: isBot
+        ? ['urlPrefix', 'htmlTag']
+        : ['urlPrefix', 'localStorage', 'navigator', 'htmlTag'],
       caches: isBot ? [] : ['localStorage'],
     },
 

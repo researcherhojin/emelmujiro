@@ -1,6 +1,13 @@
 import React, { lazy, Suspense, useEffect, memo } from 'react';
-import { createBrowserRouter, RouterProvider, useLocation, Outlet } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useLocation,
+  useParams,
+  Outlet,
+} from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { BlogProvider } from './contexts/BlogContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { UIProvider } from './contexts/UIContext';
@@ -88,6 +95,27 @@ const HomePage: React.FC = memo(() => {
 
 HomePage.displayName = 'HomePage';
 
+/**
+ * LanguageLayout — Sets i18n language based on the :lang URL param.
+ * Korean (default): no prefix. English: /en prefix.
+ */
+const LanguageLayout: React.FC = memo(() => {
+  const { lang } = useParams();
+  const { i18n } = useTranslation();
+  const targetLang = lang || 'ko';
+
+  useEffect(() => {
+    if (i18n.language !== targetLang) {
+      i18n.changeLanguage(targetLang);
+    }
+    document.documentElement.lang = targetLang;
+  }, [targetLang, i18n]);
+
+  return <Outlet />;
+});
+
+LanguageLayout.displayName = 'LanguageLayout';
+
 // App Layout component that includes the accessibility-enhanced layout
 const AppLayout: React.FC = memo(() => {
   // Signal to index.html fallback scripts that visible content rendered.
@@ -117,29 +145,47 @@ const AppLayout: React.FC = memo(() => {
 
 AppLayout.displayName = 'AppLayout';
 
-// Create router
+// Page routes shared between default (ko) and /en layouts
+const pageRoutes = [
+  { index: true, element: <HomePage /> },
+  { path: 'about', element: <AboutPage /> },
+  { path: 'contact', element: <ContactPage /> },
+  { path: 'profile', element: <ProfilePage /> },
+  { path: 'share', element: <SharePage /> },
+  { path: 'blog', element: <BlogListPage /> },
+  { path: 'blog/new', element: <BlogEditor /> },
+  { path: 'blog/:id', element: <BlogDetail /> },
+  {
+    path: 'admin',
+    element: (
+      <ProtectedRoute requiredRole="admin">
+        <AdminDashboard />
+      </ProtectedRoute>
+    ),
+  },
+  { path: '*', element: <NotFound /> },
+];
+
+// Create router with language-prefixed routes
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <AppLayout />,
+    element: <LanguageLayout />,
     children: [
-      { index: true, element: <HomePage /> },
-      { path: 'about', element: <AboutPage /> },
-      { path: 'contact', element: <ContactPage /> },
-      { path: 'profile', element: <ProfilePage /> },
-      { path: 'share', element: <SharePage /> },
-      { path: 'blog', element: <BlogListPage /> },
-      { path: 'blog/new', element: <BlogEditor /> },
-      { path: 'blog/:id', element: <BlogDetail /> },
       {
-        path: 'admin',
-        element: (
-          <ProtectedRoute requiredRole="admin">
-            <AdminDashboard />
-          </ProtectedRoute>
-        ),
+        path: '/',
+        element: <AppLayout />,
+        children: pageRoutes,
       },
-      { path: '*', element: <NotFound /> },
+    ],
+  },
+  {
+    path: '/:lang',
+    element: <LanguageLayout />,
+    children: [
+      {
+        element: <AppLayout />,
+        children: pageRoutes,
+      },
     ],
   },
 ]);

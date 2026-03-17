@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { formatDate } from '../../utils/dateFormat';
 import type { BlogPost } from '../../types';
 
@@ -11,6 +12,7 @@ interface BlogCardProps {
 
 const BlogCard: React.FC<BlogCardProps> = memo(({ post }) => {
   const { t } = useTranslation();
+  const { localizedPath } = useLocalizedPath();
 
   // Error handling for missing post data
   if (!post) {
@@ -25,7 +27,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post }) => {
       className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-lg
                      dark:shadow-gray-900/30 transition-all duration-300 h-full flex flex-col"
     >
-      <Link to={`/blog/${id}`} className="block flex-grow">
+      <Link to={localizedPath(`/blog/${id}`)} className="block flex-grow">
         <div className="relative">
           {image_url ? (
             <img

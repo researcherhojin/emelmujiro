@@ -1,7 +1,7 @@
 import React, { useState, memo, useCallback } from 'react';
 import { Briefcase, GraduationCap, Code } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
 import { SITE_URL } from '../../utils/constants';
@@ -18,11 +18,11 @@ const ProfilePage: React.FC = memo(() => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('career');
   const [projectFilter, setProjectFilter] = useState<ProjectCategory>('all');
-  const navigate = useNavigate();
+  const { localizedNavigate } = useLocalizedPath();
 
   const handleBackClick = useCallback(() => {
-    navigate('/');
-  }, [navigate]);
+    localizedNavigate('/');
+  }, [localizedNavigate]);
 
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);

@@ -27,7 +27,7 @@
 | ---------- | ------- | ---------------------------------------------------------- |
 | **빌드**   | ✅ 정상 | Vite 8 (oxc/rolldown) 빌드                                 |
 | **CI/CD**  | ✅ 정상 | GitHub Actions → Mac Mini 자동 배포 (webhook)              |
-| **테스트** | ✅ 통과 | Frontend 1048 통과 (67 파일), Backend 90 통과              |
+| **테스트** | ✅ 통과 | Frontend 1048 통과 (67 파일), Backend 104 통과             |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                                 |
 | **배포**   | ✅ 정상 | Mac Mini Docker + Cloudflare Tunnel (프론트 + 백엔드 통합) |
@@ -128,9 +128,9 @@ graph LR
 | 라우팅         | `createBrowserRouter` + `React.lazy`                                | 클린 URL (`/about`), nginx `try_files` SPA 폴백, 코드 스플리팅  |
 | 상태 관리      | React Context 5개 (UI, Auth, Blog, Form, Chat)                      | `useMemo`/`useCallback`으로 리렌더 방지, 외부 라이브러리 불필요 |
 | API 클라이언트 | Axios + Mock/Real 자동 전환                                         | `VITE_API_URL` 유무로 결정, httpOnly 쿠키 JWT, 401 자동 갱신    |
-| i18n           | `react-i18next` + 크롤러 한국어 강제                                | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
+| i18n           | `react-i18next` + URL 기반 언어 라우팅                              | `/about` (ko), `/en/about` (en), hreflang SEO                   |
 | 테스트         | Vitest (1048) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
-| 빌드           | sitemap → `tsc` → Vite 8 (oxc/rolldown)                             | 프로덕션 시 `console`/`debugger` 자동 제거                      |
+| 빌드           | sitemap → `tsc` → Vite 8 → Playwright 프리렌더                      | SSG: 12 정적 HTML (6 routes × 2 langs), hydration               |
 | 배포           | 프론트 + 백엔드: Mac Mini (Docker + Cloudflare Tunnel)              | 전체 자체 호스팅으로 비용 최소화, nginx SPA 라우팅 200 보장     |
 | Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router` | ChatProvider는 under construction으로 제외                      |
 
@@ -168,9 +168,10 @@ emelmujiro/
 | **홈페이지**         | ✅ 완료        | Hero, 서비스 소개, 통계, CTA                      |
 | **프로필**           | ✅ 완료        | CEO 경력/학력/프로젝트 포트폴리오                 |
 | **다크 모드**        | ✅ 완료        | 시스템 설정 연동                                  |
-| **다국어 (i18n)**    | ✅ 완료        | 전체 컴포넌트 i18n 전환 완료 (ko/en)              |
+| **다국어 (i18n)**    | ✅ 완료        | URL 기반 언어 라우팅 (`/about`, `/en/about`)      |
 | **반응형**           | ✅ 완료        | 모바일/태블릿/데스크톱 최적화                     |
-| **SEO**              | ✅ 완료        | React Helmet, 사이트맵, 구조화 데이터             |
+| **SEO**              | ✅ 완료        | SSG 프리렌더, hreflang, 사이트맵, 구조화 데이터   |
+| **알림 시스템**      | ✅ 백엔드 완료 | Notification 모델 + REST API + WebSocket          |
 | **블로그**           | ✅ 활성        | 실제 백엔드 API 연동 (Mac Mini)                   |
 | **문의하기**         | ✅ Google Form | Google Form 임베드 (자동 메일 설정 TODO)          |
 | **JWT 인증**         | ✅ 완료        | httpOnly 쿠키 기반 JWT (XSS 방어 강화)            |
@@ -219,7 +220,7 @@ emelmujiro/
 
 ## 앞으로 할 것
 
-> **1.0 범위**: Blog ✅ + Contact (Google Form) ✅ + Auth (httpOnly JWT) ✅ + Admin Dashboard ✅ — 남은: A1, A4, B4 | **1.0 이후**: 실시간 채팅, Notification, SSG
+> **1.0 범위**: Blog ✅ + Contact (Google Form) ✅ + Auth (httpOnly JWT) ✅ + Admin Dashboard ✅ + SSG ✅ + hreflang ✅ + Notification 백엔드 ✅ — 남은: A1, A4, B4 | **1.0 이후**: 실시간 채팅, 알림 프론트엔드 UI
 
 | #   | 작업                           | 우선순위 | 설명                                                                      |
 | --- | ------------------------------ | -------- | ------------------------------------------------------------------------- |
@@ -227,10 +228,8 @@ emelmujiro/
 | A4  | **OG 이미지 제작**             | 낮음     | 1200x630 전용 이미지 디자인 (현재 `logo512.png` 사용 중)                  |
 | B4  | **이메일 발송 연동**           | 중간     | Contact 폼 SMTP/SendGrid 연동 (현재 Google Form 임베드 사용 중)           |
 | D8  | **SiteVisit cron 실제 등록**   | 낮음     | `scripts/cleanup-sitevisits.sh` 작성 완료, Mac Mini crontab 등록 필요     |
-| C2  | **SSG / Prerendering**         | 장기     | 정적 HTML 생성 → 크롤러 완성된 HTML 수신 (react-snap 또는 Next.js)        |
-| C3  | **`hreflang` 다국어 SEO**      | 장기     | `/ko/about`, `/en/about` + `hreflang` 태그                                |
 | C4  | **실시간 채팅**                | 1.0 이후 | WebSocket/Redis/Channels 구현, `ChatWidget` AppLayout 복원                |
-| C5  | **Notification 모델**          | 1.0 이후 | `consumers.py` 스텁 → Django 모델 + REST API + WebSocket 핸들러           |
+| E1  | **알림 프론트엔드 UI**         | 1.0 이후 | Navbar 알림 벨 아이콘 + 드롭다운 (C5 백엔드 API 연동)                     |
 
 <details>
 <summary>Mac Mini vs 클라우드 비교</summary>
@@ -699,6 +698,26 @@ function onFormSubmit(e) {
 **총 해결: Critical 13 / High 29 / Medium 59 / Low 41 / Backend 7 / 이슈 아님 6건**
 
 ## 변경 이력
+
+### 0.9.11 (2026.03.17)
+
+- **SSG / Prerendering** (C2 완료)
+  - Playwright 기반 `scripts/prerender.js` — 빌드 후 6 routes × 2 languages = 12 정적 HTML 생성
+  - `main.tsx` 조건부 hydration (`data-prerendered` → `hydrateRoot`), `build:no-prerender` 스크립트 추가
+  - 크롤러가 완전한 React 렌더 결과 (nav, content, footer, meta tags) 즉시 수신
+- **hreflang 다국어 SEO** (C3 완료)
+  - URL 기반 언어 라우팅: `/about` (ko), `/en/about` (en) — `LanguageLayout` 컴포넌트
+  - `useLocalizedPath` 훅 — 10개 컴포넌트의 내부 링크 언어 인식 (`localizedNavigate`, `localizedPath`)
+  - `SEOHelmet`에 hreflang 태그 3개 (ko, en, x-default), Navbar에 🌐 언어 전환 버튼
+  - 사이트맵 12 URL (6 routes × 2 languages) + `xhtml:link` alternates
+  - i18n 감지 순서 변경: `urlPrefix → localStorage → navigator → htmlTag`
+- **Notification 모델** (C5 완료)
+  - `Notification` Django 모델 (user, title, message, level, type, url, is_read)
+  - REST API: `/api/notifications/` (list, retrieve, mark_all_read, unread_count)
+  - `send_user_notification()` 유틸리티 — DB 생성 + WebSocket 푸시
+  - `NotificationConsumer` 스텁 구현 (mark_read, mark_all_read, get_unread_count)
+  - Admin 패널 등록 (`NotificationAdmin`)
+- **테스트**: Frontend 67 파일, 1048 테스트, 0 실패 / Backend 104 테스트, 0 실패
 
 ### 0.9.10 (2026.03.17)
 

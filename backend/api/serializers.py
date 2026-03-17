@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from .models import BlogPost, Contact, NewsletterSubscription
+from .models import BlogPost, Contact, Notification, NewsletterSubscription
 import re
 
 
@@ -97,6 +97,25 @@ class BlogPostSerializer(serializers.ModelSerializer):
             return f"{minutes}분 전"
         else:
             return "방금 전"
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    """Notification serializer"""
+
+    class Meta:
+        model = Notification
+        fields = [
+            "id",
+            "title",
+            "message",
+            "level",
+            "notification_type",
+            "url",
+            "is_read",
+            "read_at",
+            "created_at",
+        ]
+        read_only_fields = ["id", "title", "message", "level", "notification_type", "url", "created_at"]
 
 
 class ContactSerializer(serializers.ModelSerializer):

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { X, Download, Upload, CheckCircle, AlertTriangle } from 'lucide-react';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { BlogPost } from '../../types';
 import logger from '../../utils/logger';
 import EditorForm from './EditorForm';
@@ -14,7 +15,7 @@ interface ToastState {
 
 const BlogEditor: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { localizedNavigate } = useLocalizedPath();
   const [searchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -105,7 +106,7 @@ const BlogEditor: React.FC = () => {
         image_url: '',
       });
 
-      navigate('/blog');
+      localizedNavigate('/blog');
     } catch (error) {
       logger.error('Failed to save post:', error);
       showToast(t('blogEditor.saveError'), 'error');
@@ -187,7 +188,7 @@ const BlogEditor: React.FC = () => {
               <code className="bg-gray-100 px-2 py-1 rounded">?admin=true</code>
             </p>
             <button
-              onClick={() => navigate('/blog/new?admin=true')}
+              onClick={() => localizedNavigate('/blog/new?admin=true')}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               {t('blogEditor.activateAdmin')}
@@ -239,7 +240,7 @@ const BlogEditor: React.FC = () => {
               {t('blogEditor.exportJSON')}
             </button>
             <button
-              onClick={() => navigate('/blog')}
+              onClick={() => localizedNavigate('/blog')}
               className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center"
             >
               <X className="w-4 h-4 mr-2" />

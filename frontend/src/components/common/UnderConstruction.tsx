@@ -1,19 +1,19 @@
 import React, { memo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Construction, Home, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 
 interface UnderConstructionProps {
   featureKey?: 'blog' | 'chat';
 }
 
 const UnderConstruction: React.FC<UnderConstructionProps> = memo(({ featureKey }) => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
+  const { localizedNavigate } = useLocalizedPath();
 
   const handleGoHome = useCallback(() => {
-    navigate('/');
-  }, [navigate]);
+    localizedNavigate('/');
+  }, [localizedNavigate]);
 
   const handleGoBack = useCallback(() => {
     window.history.back();

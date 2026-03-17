@@ -203,13 +203,7 @@ describe('i18n configuration', () => {
     it('should have detection order configured', () => {
       const options = i18n.options;
       const detection = options.detection as { order?: string[]; caches?: string[] } | undefined;
-      expect(detection?.order).toEqual([
-        'localStorage',
-        'navigator',
-        'htmlTag',
-        'path',
-        'subdomain',
-      ]);
+      expect(detection?.order).toEqual(['urlPrefix', 'localStorage', 'navigator', 'htmlTag']);
     });
 
     it('should cache language to localStorage', () => {

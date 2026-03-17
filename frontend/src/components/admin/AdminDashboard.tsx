@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import {
   LayoutDashboard,
   Users,
@@ -345,7 +345,7 @@ const DeleteConfirmModal: React.FC<DeleteModalProps> = ({ onConfirm, onCancel })
 
 const AdminDashboard: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { localizedNavigate } = useLocalizedPath();
   const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
@@ -423,9 +423,9 @@ const AdminDashboard: React.FC = () => {
         return (
           <AdminContentTable
             items={contentItems}
-            onCreate={() => navigate('/blog/new')}
-            onView={(id) => navigate(`/blog/${id}`)}
-            onEdit={(id) => navigate(`/blog/${id}`)}
+            onCreate={() => localizedNavigate('/blog/new')}
+            onView={(id) => localizedNavigate(`/blog/${id}`)}
+            onEdit={(id) => localizedNavigate(`/blog/${id}`)}
             onDelete={(id) => setDeleteConfirmId(id)}
           />
         );

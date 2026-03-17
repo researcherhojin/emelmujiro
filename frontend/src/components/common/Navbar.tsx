@@ -1,9 +1,10 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Globe } from 'lucide-react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DarkModeToggle from './DarkModeToggle';
 import { useScrollToSection } from '../../hooks/useScrollToSection';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 
 interface NavItem {
   label: string;
@@ -17,6 +18,7 @@ const Navbar: React.FC = memo(() => {
   const location = useLocation();
   const { t } = useTranslation();
   const scrollToSection = useScrollToSection();
+  const { currentLang, localizedPath, switchLanguagePath } = useLocalizedPath();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,9 +30,9 @@ const Navbar: React.FC = memo(() => {
   }, []);
 
   const navItems: NavItem[] = [
-    { label: t('common.about'), path: '/about' },
-    { label: t('common.blog'), path: '/blog' },
-    { label: t('common.profile'), path: '/profile' },
+    { label: t('common.about'), path: localizedPath('/about') },
+    { label: t('common.blog'), path: localizedPath('/blog') },
+    { label: t('common.profile'), path: localizedPath('/profile') },
   ];
 
   const handleNavigation = useCallback(
@@ -58,8 +60,13 @@ const Navbar: React.FC = memo(() => {
 
   const handleContactClick = useCallback(() => {
     setIsOpen(false);
-    navigate('/contact');
-  }, [navigate]);
+    navigate(localizedPath('/contact'));
+  }, [navigate, localizedPath]);
+
+  const handleLanguageSwitch = useCallback(() => {
+    const targetLang = currentLang === 'ko' ? 'en' : 'ko';
+    navigate(switchLanguagePath(targetLang));
+  }, [currentLang, navigate, switchLanguagePath]);
 
   const toggleMenu = useCallback(() => {
     setIsOpen((prev) => !prev);
@@ -77,7 +84,7 @@ const Navbar: React.FC = memo(() => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link
-            to="/"
+            to={localizedPath('/')}
             className="text-2xl font-black text-gray-900 dark:text-white hover:text-gray-800 dark:hover:text-gray-100 transition-colors tracking-tight select-none focus:outline-none border-none bg-transparent"
           >
             {t('common.companyName')}
@@ -106,6 +113,16 @@ const Navbar: React.FC = memo(() => {
               </button>
             ))}
 
+            {/* Language Switch */}
+            <button
+              onClick={handleLanguageSwitch}
+              className="flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-none border-none bg-transparent"
+              aria-label={t('common.switchLanguage')}
+            >
+              <Globe className="w-4 h-4" />
+              <span>{currentLang === 'ko' ? 'EN' : 'KO'}</span>
+            </button>
+
             {/* Dark Mode Toggle */}
             <DarkModeToggle />
 
@@ -120,6 +137,14 @@ const Navbar: React.FC = memo(() => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-3">
+            <button
+              onClick={handleLanguageSwitch}
+              className="flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-none border-none bg-transparent"
+              aria-label={t('common.switchLanguage')}
+            >
+              <Globe className="w-4 h-4" />
+              <span>{currentLang === 'ko' ? 'EN' : 'KO'}</span>
+            </button>
             <DarkModeToggle />
             <button
               onClick={toggleMenu}

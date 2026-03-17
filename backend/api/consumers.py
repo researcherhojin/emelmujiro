@@ -188,8 +188,27 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             notification_id = text_data_json.get("notification_id")
             if notification_id is not None:
                 await self.mark_notification_read(notification_id)
+                count = await self.get_unread_count()
+                await self.send(
+                    text_data=json.dumps(
+                        {
+                            "type": "notification_update",
+                            "count": count,
+                            "timestamp": timezone.now().isoformat(),
+                        }
+                    )
+                )
         elif action == "mark_all_read":
             await self.mark_all_notifications_read()
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "notification_update",
+                        "count": 0,
+                        "timestamp": timezone.now().isoformat(),
+                    }
+                )
+            )
 
     async def send_notification(self, event):
         # Send notification to WebSocket
@@ -220,11 +239,26 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         )
 
     @database_sync_to_async
+    def get_unread_count(self):
+        from .models import Notification
+
+        return Notification.objects.filter(user=self.user, is_read=False).count()
+
+    @database_sync_to_async
     def mark_notification_read(self, notification_id):
-        # TODO: Implement when notification model is added
-        logger.info(f"mark_notification_read called: id={notification_id}")
+        from .models import Notification
+
+        try:
+            notification = Notification.objects.get(id=notification_id, user=self.user)
+            if not notification.is_read:
+                notification.is_read = True
+                notification.read_at = timezone.now()
+                notification.save(update_fields=["is_read", "read_at"])
+        except Notification.DoesNotExist:
+            logger.warning(f"Notification {notification_id} not found for user {self.user.id}")
 
     @database_sync_to_async
     def mark_all_notifications_read(self):
-        # TODO: Implement when notification model is added
-        logger.info("mark_all_notifications_read called")
+        from .models import Notification
+
+        Notification.objects.filter(user=self.user, is_read=False).update(is_read=True, read_at=timezone.now())

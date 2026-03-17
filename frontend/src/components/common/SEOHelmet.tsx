@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { CONTACT_EMAIL, SITE_URL } from '../../utils/constants';
+import { stripLangPrefix } from '../../hooks/useLocalizedPath';
 
 interface SEOHelmetProps {
   title?: string;
@@ -38,6 +40,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     article,
   }) => {
     const { t, i18n } = useTranslation();
+    const location = useLocation();
     const resolvedLang = lang || i18n.language || 'ko';
     const siteName = t('common.companyName');
     const resolvedTitle = title || siteName;
@@ -45,6 +48,11 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     const resolvedKeywords = keywords || t('seo.seoHead.defaultKeywords');
     const resolvedAuthor = author || siteName;
     const siteTitle = resolvedTitle === siteName ? resolvedTitle : `${resolvedTitle} | ${siteName}`;
+
+    // Build hreflang URLs: /about (ko), /en/about (en)
+    const basePath = stripLangPrefix(location.pathname);
+    const koUrl = `${SITE_URL}${basePath === '/' ? '' : basePath}`;
+    const enUrl = `${SITE_URL}/en${basePath === '/' ? '' : basePath}`;
 
     return (
       <Helmet>
@@ -77,7 +85,11 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
 
         {/* Language */}
         <html lang={resolvedLang} />
-        <link rel="alternate" hrefLang="x-default" href={url} />
+
+        {/* hreflang alternate links for multilingual SEO */}
+        <link rel="alternate" hrefLang="ko" href={koUrl} />
+        <link rel="alternate" hrefLang="en" href={enUrl} />
+        <link rel="alternate" hrefLang="x-default" href={koUrl} />
 
         {/* Additional SEO Tags */}
         <meta

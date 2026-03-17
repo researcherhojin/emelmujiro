@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils import timezone
 
-from .models import BlogPost, Contact, ContactAttempt, SiteVisit, NewsletterSubscription
+from .models import BlogPost, Contact, ContactAttempt, Notification, SiteVisit, NewsletterSubscription
 
 
 @admin.register(BlogPost)
@@ -170,6 +170,26 @@ class NewsletterSubscriptionAdmin(admin.ModelAdmin):
 
     activate_subscriptions.short_description = "선택된 구독 활성화"
     deactivate_subscriptions.short_description = "선택된 구독 비활성화"
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ("title", "user", "level", "notification_type", "is_read", "created_at")
+    list_filter = ("level", "notification_type", "is_read", "created_at")
+    search_fields = ("title", "message", "user__username")
+    readonly_fields = ("created_at", "read_at")
+    actions = ["mark_as_read", "mark_as_unread"]
+
+    def mark_as_read(self, request, queryset):
+        queryset.filter(is_read=False).update(is_read=True, read_at=timezone.now())
+        self.message_user(request, f"{queryset.count()}개의 알림이 읽음 처리되었습니다.")
+
+    def mark_as_unread(self, request, queryset):
+        queryset.update(is_read=False, read_at=None)
+        self.message_user(request, f"{queryset.count()}개의 알림이 안읽음 처리되었습니다.")
+
+    mark_as_read.short_description = "선택된 알림을 읽음 처리"
+    mark_as_unread.short_description = "선택된 알림을 안읽음 처리"
 
 
 # Admin site customization

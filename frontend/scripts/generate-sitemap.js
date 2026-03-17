@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const SITE_URL = 'https://emelmujiro.com';
+const LANGUAGES = ['ko', 'en'];
 
 // Define all static routes (BrowserRouter — clean URLs)
 const staticRoutes = [
@@ -13,33 +14,60 @@ const staticRoutes = [
   { url: '/share', changefreq: 'monthly', priority: 0.5 },
 ];
 
-// Generate sitemap XML
+/**
+ * Build the full URL for a route in a given language.
+ * Korean (default): no prefix. English: /en prefix.
+ */
+function buildLangUrl(routeUrl, lang) {
+  const prefix = lang === 'ko' ? '' : `/${lang}`;
+  const urlPath = routeUrl === '/' ? '' : routeUrl;
+  return `${SITE_URL}${prefix}${urlPath}`;
+}
+
+/**
+ * Generate xhtml:link hreflang alternates for a route.
+ */
+function generateHreflangLinks(routeUrl) {
+  const links = LANGUAGES.map(
+    (lang) =>
+      `    <xhtml:link rel="alternate" hreflang="${lang}" href="${buildLangUrl(routeUrl, lang)}" />`
+  );
+  // x-default points to Korean (default language)
+  links.push(
+    `    <xhtml:link rel="alternate" hreflang="x-default" href="${buildLangUrl(routeUrl, 'ko')}" />`
+  );
+  return links.join('\n');
+}
+
+// Generate sitemap XML with bilingual hreflang links
 const generateSitemap = () => {
-  const allRoutes = [...staticRoutes];
+  // Generate URL entries for each language
+  const urlEntries = [];
+
+  for (const route of staticRoutes) {
+    for (const lang of LANGUAGES) {
+      urlEntries.push(`  <url>
+    <loc>${buildLangUrl(route.url, lang)}</loc>
+    <changefreq>${route.changefreq}</changefreq>
+    <priority>${route.priority}</priority>
+${generateHreflangLinks(route.url)}
+  </url>`);
+    }
+  }
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-${allRoutes
-  .map(
-    (route) => `  <url>
-    <loc>${SITE_URL}${route.url}</loc>
-    <changefreq>${route.changefreq}</changefreq>
-    <priority>${route.priority}</priority>
-    ${route.lastmod ? `<lastmod>${route.lastmod}</lastmod>` : ''}
-  </url>`
-  )
-  .join('\n')}
+${urlEntries.join('\n')}
 </urlset>`;
 
   return sitemap;
 };
 
 // Generate robots.txt
-// BrowserRouter with clean URLs. GitHub Pages serves 404.html (copy of
-// index.html) for non-root paths, so the SPA handles all routing.
 const generateRobotsTxt = () => {
   const robotsTxt = `# Robots.txt for Emelmujiro
 # https://emelmujiro.com
@@ -98,9 +126,11 @@ const main = () => {
     );
 
     // Log statistics
+    const totalUrls = staticRoutes.length * LANGUAGES.length;
     console.log(`\n📊 Statistics:`);
     console.log(`   - Static routes: ${staticRoutes.length}`);
-    console.log(`   - Total URLs: ${staticRoutes.length}`);
+    console.log(`   - Languages: ${LANGUAGES.join(', ')}`);
+    console.log(`   - Total URLs: ${totalUrls}`);
   } catch (error) {
     console.error('❌ Error generating sitemap:', error);
     process.exit(1);
@@ -112,4 +142,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { generateSitemap, generateRobotsTxt };
+module.exports = { generateSitemap, generateRobotsTxt, staticRoutes, LANGUAGES };

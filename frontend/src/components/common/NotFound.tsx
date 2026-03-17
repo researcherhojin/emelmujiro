@@ -1,18 +1,18 @@
 import React, { memo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Home, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import SEOHelmet from './SEOHelmet';
 import StructuredData from './StructuredData';
 import { SITE_URL } from '../../utils/constants';
 
 const NotFound: React.FC = memo(() => {
-  const navigate = useNavigate();
   const { t } = useTranslation();
+  const { localizedNavigate } = useLocalizedPath();
 
   const handleGoHome = useCallback(() => {
-    navigate('/');
-  }, [navigate]);
+    localizedNavigate('/');
+  }, [localizedNavigate]);
 
   const handleGoBack = useCallback(() => {
     window.history.back();
@@ -72,28 +72,28 @@ const NotFound: React.FC = memo(() => {
             aria-label={t('notFound.popularPages')}
           >
             <button
-              onClick={() => navigate('/about')}
+              onClick={() => localizedNavigate('/about')}
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               {t('common.about')}
             </button>
             <span className="text-gray-300">|</span>
             <button
-              onClick={() => navigate('/profile')}
+              onClick={() => localizedNavigate('/profile')}
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               {t('common.representativeProfile')}
             </button>
             <span className="text-gray-300">|</span>
             <button
-              onClick={() => navigate('/contact')}
+              onClick={() => localizedNavigate('/contact')}
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               {t('common.contact')}
             </button>
             <span className="text-gray-300">|</span>
             <button
-              onClick={() => navigate('/blog')}
+              onClick={() => localizedNavigate('/blog')}
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               {t('common.blog')}

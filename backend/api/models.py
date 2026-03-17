@@ -160,6 +160,46 @@ class SiteVisit(models.Model):
         return f"{self.ip_address} - {self.page_path} ({self.visit_time.strftime('%Y-%m-%d %H:%M')})"
 
 
+class Notification(models.Model):
+    """User notification"""
+
+    LEVEL_CHOICES = [
+        ("info", "Info"),
+        ("success", "Success"),
+        ("warning", "Warning"),
+        ("error", "Error"),
+    ]
+
+    TYPE_CHOICES = [
+        ("system", "시스템"),
+        ("blog", "블로그"),
+        ("contact", "문의"),
+        ("admin", "관리자"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications", verbose_name="사용자")
+    title = models.CharField(max_length=200, verbose_name="제목")
+    message = models.TextField(verbose_name="내용")
+    level = models.CharField(max_length=10, choices=LEVEL_CHOICES, default="info", verbose_name="레벨")
+    notification_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="system", verbose_name="유형")
+    url = models.URLField(blank=True, verbose_name="링크")
+    is_read = models.BooleanField(default=False, verbose_name="읽음 여부")
+    read_at = models.DateTimeField(null=True, blank=True, verbose_name="읽은 시간")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성일")
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "알림"
+        verbose_name_plural = "알림"
+        indexes = [
+            models.Index(fields=["user", "is_read", "-created_at"]),
+        ]
+
+    def __str__(self):
+        status = "읽음" if self.is_read else "안읽음"
+        return f"[{status}] {self.title} → {self.user.username}"
+
+
 class NewsletterSubscription(models.Model):
     """Newsletter subscription"""
 

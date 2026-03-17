@@ -62,7 +62,8 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "npm run generate:sitemap && tsc -p tsconfig.build.json && vite build && cp build/index.html build/404.html",
+    "build": "npm run generate:sitemap && tsc -p tsconfig.build.json && vite build && node scripts/prerender.js && cp build/index.html build/404.html",
+    "build:no-prerender": "npm run generate:sitemap && tsc -p tsconfig.build.json && vite build && cp build/index.html build/404.html",
     "preview": "vite preview",
     "test": "vitest",
     "test:ci": "vitest run --bail=1 --no-coverage",

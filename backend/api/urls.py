@@ -8,6 +8,7 @@ from .views import (
     BlogPostViewSet,
     ContactView,
     NewsletterView,
+    NotificationViewSet,
     health_check,
     CategoryListView,
     send_test_email,
@@ -27,6 +28,7 @@ from .swagger import schema_view
 
 router = DefaultRouter()
 router.register(r"blog-posts", BlogPostViewSet, basename="blog")
+router.register(r"notifications", NotificationViewSet, basename="notification")
 
 urlpatterns = [
     # API endpoints

@@ -1,42 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
-    <loc>https://emelmujiro.com/</loc>
+    <loc>https://emelmujiro.com</loc>
     <changefreq>daily</changefreq>
     <priority>1</priority>
-    
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com" />
+  </url>
+  <url>
+    <loc>https://emelmujiro.com/en</loc>
+    <changefreq>daily</changefreq>
+    <priority>1</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com" />
   </url>
   <url>
     <loc>https://emelmujiro.com/about</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com/about" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com/about" />
+  </url>
+  <url>
+    <loc>https://emelmujiro.com/en/about</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com/about" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com/about" />
   </url>
   <url>
     <loc>https://emelmujiro.com/contact</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-    
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com/contact" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com/contact" />
+  </url>
+  <url>
+    <loc>https://emelmujiro.com/en/contact</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com/contact" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com/contact" />
   </url>
   <url>
     <loc>https://emelmujiro.com/blog</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
-    
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com/blog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en/blog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com/blog" />
+  </url>
+  <url>
+    <loc>https://emelmujiro.com/en/blog</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com/blog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en/blog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com/blog" />
   </url>
   <url>
     <loc>https://emelmujiro.com/profile</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com/profile" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en/profile" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com/profile" />
+  </url>
+  <url>
+    <loc>https://emelmujiro.com/en/profile</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com/profile" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en/profile" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com/profile" />
   </url>
   <url>
     <loc>https://emelmujiro.com/share</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com/share" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en/share" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com/share" />
+  </url>
+  <url>
+    <loc>https://emelmujiro.com/en/share</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://emelmujiro.com/share" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://emelmujiro.com/en/share" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://emelmujiro.com/share" />
   </url>
 </urlset>

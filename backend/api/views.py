@@ -1,8 +1,8 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, throttle_classes, permission_classes
+from rest_framework.decorators import api_view, throttle_classes, permission_classes, action
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.throttling import AnonRateThrottle
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
@@ -18,10 +18,11 @@ import logging
 import hashlib
 import re
 
-from .models import BlogPost, Contact, ContactAttempt, SiteVisit, NewsletterSubscription
+from .models import BlogPost, Contact, ContactAttempt, Notification, SiteVisit, NewsletterSubscription
 from .serializers import (
     BlogPostSerializer,
     ContactSerializer,
+    NotificationSerializer,
     NewsletterSubscriptionSerializer,
 )
 
@@ -489,6 +490,95 @@ def send_test_email(request):
     except Exception as e:
         logger.error(f"Email send failure: {e}")
         return Response({"error": "이메일 전송에 실패했습니다."}, status=500)
+
+
+class NotificationViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """Notification API — list, retrieve, mark read"""
+
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user)
+
+    def perform_update(self, serializer):
+        # Only allow marking as read via update
+        if serializer.validated_data.get("is_read") and not serializer.instance.is_read:
+            serializer.save(read_at=timezone.now())
+        else:
+            serializer.save()
+
+    @action(detail=False, methods=["post"])
+    def mark_all_read(self, request):
+        """Mark all unread notifications as read"""
+        count = Notification.objects.filter(user=request.user, is_read=False).update(
+            is_read=True, read_at=timezone.now()
+        )
+        return Response({"marked": count})
+
+    @action(detail=False, methods=["get"])
+    def unread_count(self, request):
+        """Get count of unread notifications"""
+        count = Notification.objects.filter(user=request.user, is_read=False).count()
+        return Response({"count": count})
+
+
+def send_user_notification(user, title, message, level="info", notification_type="system", url=""):
+    """Create a notification and send via WebSocket if possible.
+
+    Args:
+        user: User instance or user ID
+        title: Notification title
+        message: Notification message body
+        level: info/success/warning/error
+        notification_type: system/blog/contact/admin
+        url: Optional link URL
+
+    Returns:
+        The created Notification instance
+    """
+    from django.contrib.auth.models import User as UserModel
+
+    if isinstance(user, int):
+        user = UserModel.objects.get(pk=user)
+
+    notification = Notification.objects.create(
+        user=user,
+        title=title,
+        message=message,
+        level=level,
+        notification_type=notification_type,
+        url=url,
+    )
+
+    # Try to send via WebSocket channel layer
+    try:
+        from channels.layers import get_channel_layer
+        from asgiref.sync import async_to_sync
+
+        channel_layer = get_channel_layer()
+        if channel_layer:
+            async_to_sync(channel_layer.group_send)(
+                f"notifications_{user.id}",
+                {
+                    "type": "send_notification",
+                    "id": notification.id,
+                    "title": title,
+                    "message": message,
+                    "level": level,
+                    "url": url,
+                    "timestamp": notification.created_at.isoformat(),
+                },
+            )
+    except Exception as e:
+        logger.warning(f"Failed to send WebSocket notification: {e}")
+
+    return notification
 
 
 @api_view(["GET"])

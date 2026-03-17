@@ -19,13 +19,19 @@ if (!rootElement) {
   throw new Error('Failed to find the root element');
 }
 
-const root = ReactDOM.createRoot(rootElement);
-
-root.render(
+const appElement = (
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
+
+// Use hydrateRoot when the page was prerendered (contains rendered content beyond the loading skeleton).
+// The data-prerendered attribute is injected by the prerender script.
+if (rootElement.hasAttribute('data-prerendered')) {
+  ReactDOM.hydrateRoot(rootElement, appElement);
+} else {
+  ReactDOM.createRoot(rootElement).render(appElement);
+}
 
 // Unregister any existing service workers from previous PWA setup.
 // Wrapped in try-catch because some in-app browsers (KakaoTalk, Line, etc.)

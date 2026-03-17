@@ -52,12 +52,17 @@ vi.mock('react-helmet-async', () => ({
   HelmetProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import SEOHelmet from '../SEOHelmet';
 
-// Helper to render with HelmetProvider
+// Helper to render with HelmetProvider + MemoryRouter (SEOHelmet uses useLocation)
 const renderWithHelmet = (ui: React.ReactElement) => {
-  return render(<HelmetProvider>{ui}</HelmetProvider>);
+  return render(
+    <MemoryRouter>
+      <HelmetProvider>{ui}</HelmetProvider>
+    </MemoryRouter>
+  );
 };
 
 const getHelmetData = () => {
