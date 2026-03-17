@@ -21,17 +21,6 @@
 - **LLM/생성형 AI** — LLM 기반 서비스 설계 및 개발
 - **Computer Vision** — 영상 처리 및 비전 AI 솔루션
 
-## 현재 상태 (v1.0)
-
-| 항목         | 상태    | 세부사항                                        |
-| ------------ | ------- | ----------------------------------------------- |
-| **빌드**     | ✅ 정상 | Vite 8 + SSG 프리렌더 12 routes                 |
-| **CI/CD**    | ✅ 정상 | GitHub Actions → Mac Mini 자동 배포             |
-| **테스트**   | ✅ 통과 | Frontend 880 (58 파일), Backend 104             |
-| **모니터링** | ✅ 활성 | Sentry 에러 모니터링 + Google Analytics         |
-| **SEO**      | ✅ 완료 | Search Console + 사이트맵 + 구조화 데이터       |
-| **배포**     | ✅ 정상 | Mac Mini Docker + Cloudflare Tunnel + 자동 배포 |
-
 ## 빠른 시작
 
 ```bash
@@ -104,22 +93,6 @@ graph LR
     style MacMini fill:#ECFDF5,stroke:#059669
     style CF fill:#FEF3C7,stroke:#D97706
 ```
-
-## 주요 기능
-
-| 기능                 | 상태    | 설명                                            |
-| -------------------- | ------- | ----------------------------------------------- |
-| **홈페이지**         | ✅      | Hero, 서비스 소개, 통계, CTA                    |
-| **프로필**           | ✅      | CEO 경력/학력/프로젝트 포트폴리오               |
-| **블로그**           | ✅      | 실제 백엔드 API 연동, 프리미엄 UI               |
-| **문의하기**         | ✅      | Google Form 임베드                              |
-| **다국어 (i18n)**    | ✅      | URL 기반 언어 라우팅 (`/about`, `/en/about`)    |
-| **SEO**              | ✅      | SSG 프리렌더, hreflang, 사이트맵, 구조화 데이터 |
-| **JWT 인증**         | ✅      | httpOnly 쿠키 기반 (XSS 방어)                   |
-| **관리자 대시보드**  | ✅      | 통계 + 콘텐츠 관리                              |
-| **Google Analytics** | ✅      | 페이지 뷰 + CTA 클릭 추적                       |
-| **Sentry**           | ✅      | 에러 모니터링 + ErrorBoundary 연동              |
-| **알림 시스템**      | ✅ (BE) | Notification 모델 + REST API + WebSocket        |
 
 ## 앞으로 할 것
 
