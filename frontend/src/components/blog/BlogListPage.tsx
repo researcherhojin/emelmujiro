@@ -86,7 +86,7 @@ const BlogListPage: React.FC = memo(() => {
                 <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
                   {t('blog.comingSoonDescription')}
                 </p>
-                <Construction className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600" />
+                <Construction className="w-20 h-20 mx-auto text-gray-300 dark:text-gray-600" />
               </div>
             )
           )}
