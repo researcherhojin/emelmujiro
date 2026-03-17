@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { Share2, MessageCircle, Mail, ExternalLink, CheckCircle } from 'lucide-react';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
+import SEOHelmet from '../common/SEOHelmet';
+import { SITE_URL } from '../../utils/constants';
 
 interface SharedContent {
   title?: string;
@@ -129,6 +131,11 @@ ${t('share.inquiryFooter')}
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
+      <SEOHelmet
+        title={t('share.title')}
+        description={t('share.howToUse')}
+        url={`${SITE_URL}/share`}
+      />
       {showSavedToast && (
         <div
           className="fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg bg-green-600 text-white"

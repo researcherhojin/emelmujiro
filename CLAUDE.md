@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform. Both frontend (React/TypeScript) and backend (Django) are deployed on Mac Mini via Docker + Cloudflare Tunnel. Licensed under Apache 2.0.
 
+- **GitHub**: https://github.com/researcherhojin/emelmujiro
 - **Live Site**: https://emelmujiro.com (Mac Mini nginx + Cloudflare Tunnel)
 - **Backend API**: https://api.emelmujiro.com (Mac Mini Django + Cloudflare Tunnel)
 - **Frontend Dev**: http://localhost:5173 (Vite) — **NOT port 3000**

@@ -45,7 +45,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       name: siteName,
       alternateName: ['Emelmujiro', 'emelmujiro', `${siteName} AI`],
       url: SITE_URL,
-      logo: `${SITE_URL}/logo192.png`,
+      logo: `${SITE_URL}/logo512.png`,
       description: t('seo.site.description'),
       address: {
         '@type': 'PostalAddress',
@@ -242,7 +242,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
             name: siteName,
             logo: {
               '@type': 'ImageObject',
-              url: `${SITE_URL}/logo192.png`,
+              url: `${SITE_URL}/logo512.png`,
             },
           },
           datePublished: article.publishedTime,

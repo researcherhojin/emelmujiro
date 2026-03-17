@@ -8,9 +8,11 @@ import remarkGfm from 'remark-gfm';
 import { PageLoading } from '../common/UnifiedLoading';
 import ErrorBoundary from '../common/ErrorBoundary';
 import SEOHelmet from '../common/SEOHelmet';
+import StructuredData from '../common/StructuredData';
 import BlogInteractions from './BlogInteractions';
 import BlogComments from './BlogComments';
 import { useBlog } from '../../contexts/BlogContext';
+import { SITE_URL } from '../../utils/constants';
 import { formatDate } from '../../utils/dateFormat';
 
 const BlogDetailPage: React.FC = memo(() => {
@@ -57,11 +59,35 @@ const BlogDetailPage: React.FC = memo(() => {
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {post && (
-          <SEOHelmet
-            title={`${post.title} | ${t('blogDetail.blogTitle')}`}
-            description={post.excerpt || post.title}
-            keywords={`${post.category}, ${t('blogDetail.blogKeywords')}`}
-          />
+          <>
+            <SEOHelmet
+              title={`${post.title} | ${t('blogDetail.blogTitle')}`}
+              description={post.excerpt || post.title}
+              keywords={`${post.category}, ${t('blogDetail.blogKeywords')}`}
+              url={`${SITE_URL}/blog/${id}`}
+              type="article"
+              article={{
+                author: post.author,
+                publishedTime: post.date,
+                modifiedTime: post.updated_at || post.date,
+                section: post.category,
+                tags: post.tags,
+              }}
+            />
+            <StructuredData
+              type="Article"
+              article={{
+                title: post.title,
+                description: post.excerpt || post.title,
+                author: post.author,
+                publishedTime: post.date,
+                modifiedTime: post.updated_at || post.date,
+                category: post.category,
+                tags: post.tags,
+                image: post.image_url,
+              }}
+            />
+          </>
         )}
         <div className="max-w-4xl mx-auto px-4 py-12">
           <button

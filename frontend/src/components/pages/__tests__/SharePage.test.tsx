@@ -22,6 +22,7 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     useNavigate: () => mockNavigate,
     useLocation: () => ({
+      pathname: '/share',
       search: mockSearchParams,
     }),
   };
