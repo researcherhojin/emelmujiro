@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, Construction } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SEOHelmet from '../common/SEOHelmet';
 import { SITE_URL } from '../../utils/constants';
 import BlogCard from './BlogCard';
@@ -38,6 +38,9 @@ const BlogListPage: React.FC = memo(() => {
     return <PageLoading />;
   }
 
+  const featuredPost = filteredPosts.length > 0 ? filteredPosts[0] : null;
+  const remainingPosts = filteredPosts.length > 1 ? filteredPosts.slice(1) : [];
+
   return (
     <>
       <SEOHelmet
@@ -46,64 +49,82 @@ const BlogListPage: React.FC = memo(() => {
         url={`${SITE_URL}/blog`}
       />
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-white dark:bg-gray-950">
         {/* Hero Section */}
-        <section className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center">
-            <p className="text-sm font-semibold tracking-[0.2em] text-gray-400 dark:text-gray-500 uppercase mb-4">
+        <section className="border-b border-gray-100 dark:border-gray-800/50">
+          <div className="max-w-5xl mx-auto px-6 sm:px-8 pt-24 pb-16 sm:pt-32 sm:pb-20">
+            <p className="text-[11px] font-medium tracking-[0.25em] text-gray-400 dark:text-gray-500 uppercase mb-5">
               {t('blog.sectionLabel')}
             </p>
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-gray-900 dark:text-white tracking-tight leading-[1.1] mb-5">
               {t('blog.title')}
             </h1>
-            <p className="text-lg text-gray-500 dark:text-gray-400">{t('blog.subtitle')}</p>
+            <p className="text-lg sm:text-xl text-gray-400 dark:text-gray-500 font-light max-w-xl">
+              {t('blog.subtitle')}
+            </p>
           </div>
         </section>
 
         {/* Content Section */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <section className="max-w-5xl mx-auto px-6 sm:px-8 py-16 sm:py-20">
           {/* Error */}
-          {error && <div className="text-center text-red-500 mb-8">{error}</div>}
+          {error && (
+            <div className="text-center text-red-500 dark:text-red-400 mb-12 text-sm">{error}</div>
+          )}
 
-          {/* Posts Grid */}
+          {/* Posts */}
           {filteredPosts.length > 0 ? (
             <>
-              <div className="max-w-xl mx-auto mb-12">
+              {/* Search */}
+              <div className="max-w-md mx-auto mb-16">
                 <BlogSearch onSearch={handleSearch} />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredPosts.map((post) => (
-                  <BlogCard key={post.id} post={post} />
-                ))}
-              </div>
+
+              {/* Featured Post */}
+              {featuredPost && (
+                <div className="mb-16">
+                  <BlogCard post={featuredPost} featured />
+                </div>
+              )}
+
+              {/* Grid */}
+              {remainingPosts.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                  {remainingPosts.map((post, index) => (
+                    <BlogCard key={post.id} post={{ ...post, _index: index } as BlogPost} />
+                  ))}
+                </div>
+              )}
             </>
           ) : (
             !loading && (
-              <div className="text-center py-16">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+              <div className="text-center py-24">
+                <p className="text-[11px] font-medium tracking-[0.25em] text-gray-300 dark:text-gray-600 uppercase mb-6">
+                  COMING SOON
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-4 tracking-tight">
                   {t('blog.comingSoon')}
                 </h2>
-                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
+                <p className="text-gray-400 dark:text-gray-500 max-w-md mx-auto leading-relaxed">
                   {t('blog.comingSoonDescription')}
                 </p>
-                <Construction className="w-20 h-20 mx-auto text-gray-300 dark:text-gray-600" />
               </div>
             )
           )}
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-4 mt-12">
+            <div className="flex items-center justify-center gap-6 mt-20">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage <= 1}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 rounded-full border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300"
               >
                 <ChevronLeft className="w-4 h-4 mr-1" />
                 {t('blog.previousPage')}
               </button>
 
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-gray-400 dark:text-gray-500 tabular-nums">
                 {t('blog.pageOf', {
                   current: currentPage,
                   total: totalPages,
@@ -113,7 +134,7 @@ const BlogListPage: React.FC = memo(() => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage >= totalPages}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 rounded-full border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300"
               >
                 {t('blog.nextPage')}
                 <ChevronRight className="w-4 h-4 ml-1" />

@@ -143,7 +143,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
             }}
             placeholder={t('blog.searchPlaceholder')}
             aria-label={t('blog.searchPlaceholder')}
-            className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-10 py-3 border border-gray-200 dark:border-gray-700 rounded-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 focus:bg-white dark:focus:bg-gray-800 transition-all duration-300"
           />
           {searchTerm && (
             <button
@@ -159,7 +159,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
 
       {/* Search suggestions */}
       {showSuggestions && recentSearches.length > 0 && (
-        <div className="absolute top-full mt-2 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
+        <div className="absolute top-full mt-2 w-full bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50 z-10">
           <div className="p-2">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-gray-500 dark:text-gray-400">

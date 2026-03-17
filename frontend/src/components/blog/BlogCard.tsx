@@ -8,82 +8,154 @@ import type { BlogPost } from '../../types';
 
 interface BlogCardProps {
   post: BlogPost;
+  featured?: boolean;
 }
 
-const BlogCard: React.FC<BlogCardProps> = memo(({ post }) => {
+const preventImageAction = (e: React.MouseEvent | React.DragEvent) => {
+  e.preventDefault();
+};
+
+const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
   const { t } = useTranslation();
   const { localizedPath } = useLocalizedPath();
 
-  // Error handling for missing post data
   if (!post) {
     return null;
   }
 
-  const { id, title, excerpt, date, image_url, category } = post;
+  const { id, title, excerpt, date, image_url, category, readTime } = post;
+
+  if (featured) {
+    return (
+      <motion.article
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+        className="group"
+      >
+        <Link to={localizedPath(`/blog/${id}`)} className="block">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
+            <div className="relative aspect-[16/10] lg:aspect-auto overflow-hidden">
+              {image_url ? (
+                <img
+                  src={image_url}
+                  alt={t('blog.thumbnailAlt', { title })}
+                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
+                  loading="lazy"
+                  draggable="false"
+                  onContextMenu={preventImageAction}
+                  onDragStart={preventImageAction}
+                />
+              ) : (
+                <div className="w-full h-full min-h-[280px] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900" />
+              )}
+            </div>
+            <div className="flex flex-col justify-center p-8 lg:p-12">
+              <div className="flex items-center gap-3 mb-4">
+                {category && (
+                  <span className="text-xs font-medium tracking-widest uppercase text-gray-400 dark:text-gray-500">
+                    {category}
+                  </span>
+                )}
+                {category && date && (
+                  <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
+                )}
+                {date && (
+                  <time
+                    dateTime={date}
+                    className="text-xs tracking-wide text-gray-400 dark:text-gray-500"
+                  >
+                    {formatDate(date)}
+                  </time>
+                )}
+              </div>
+              <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-white mb-4 leading-tight group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-300">
+                {title}
+              </h2>
+              <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 mb-6">
+                {excerpt || ''}
+              </p>
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors duration-300">
+                  {t('blog.readMoreDetail')}
+                  <span className="inline-block ml-1.5 transition-transform duration-300 group-hover:translate-x-1">
+                    &rarr;
+                  </span>
+                </span>
+                {readTime && (
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                    {readTime} min read
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </Link>
+      </motion.article>
+    );
+  }
 
   return (
     <motion.article
-      whileHover={{ y: -5 }}
-      className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-lg
-                     dark:shadow-gray-900/30 transition-all duration-300 h-full flex flex-col"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+      className="group h-full"
     >
-      <Link to={localizedPath(`/blog/${id}`)} className="block flex-grow">
-        <div className="relative">
-          {image_url ? (
-            <img
-              src={image_url}
-              alt={t('blog.thumbnailAlt', { title })}
-              className="w-full h-48 object-cover"
-              loading="lazy"
-            />
-          ) : (
-            <div className="w-full h-48 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-              <span className="text-gray-400 dark:text-gray-500">{t('blog.noImage')}</span>
+      <Link to={localizedPath(`/blog/${id}`)} className="block h-full">
+        <div className="h-full bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 transition-all duration-500 ease-out hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700">
+          <div className="relative aspect-[16/10] overflow-hidden">
+            {image_url ? (
+              <img
+                src={image_url}
+                alt={t('blog.thumbnailAlt', { title })}
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
+                loading="lazy"
+                draggable="false"
+                onContextMenu={preventImageAction}
+                onDragStart={preventImageAction}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900" />
+            )}
+          </div>
+
+          <div className="p-6 lg:p-7 flex flex-col flex-grow">
+            <div className="flex items-center gap-3 mb-3">
+              {category && (
+                <span className="text-[11px] font-medium tracking-widest uppercase text-gray-400 dark:text-gray-500">
+                  {category}
+                </span>
+              )}
+              {category && date && (
+                <span className="w-0.5 h-0.5 rounded-full bg-gray-300 dark:bg-gray-600" />
+              )}
+              {date && (
+                <time
+                  dateTime={date}
+                  className="text-[11px] tracking-wide text-gray-400 dark:text-gray-500"
+                >
+                  {formatDate(date)}
+                </time>
+              )}
             </div>
-          )}
-          <div className="absolute top-4 left-4">
-            <span className="inline-block px-3 py-1 text-sm rounded-full font-medium bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-300">
-              {category}
-            </span>
-          </div>
-        </div>
 
-        <div className="p-6 flex flex-col flex-grow">
-          <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
-            <time dateTime={date || ''}>{date && formatDate(date)}</time>
-          </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2.5 leading-snug line-clamp-2 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-300">
+              {title}
+            </h3>
 
-          <h3
-            className="text-xl font-bold text-gray-900 dark:text-white mb-3
-                                 line-clamp-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-          >
-            {title}
-          </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 mb-5">
+              {excerpt || ''}
+            </p>
 
-          <p className="text-gray-600 dark:text-gray-400 line-clamp-3 mb-4">{excerpt || ''}</p>
-
-          <div className="mt-auto">
-            <span
-              className="text-indigo-600 dark:text-indigo-400 text-sm font-medium
-                                     hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors
-                                     inline-flex items-center group"
-            >
-              {t('blog.readMoreDetail')}
-              <svg
-                className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </span>
+            <div className="mt-auto">
+              <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors duration-300">
+                {t('blog.readMoreDetail')}
+                <span className="inline-block ml-1 transition-transform duration-300 group-hover:translate-x-1">
+                  &rarr;
+                </span>
+              </span>
+            </div>
           </div>
         </div>
       </Link>
