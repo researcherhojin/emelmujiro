@@ -87,15 +87,15 @@ describe('AboutPage', () => {
     renderWithRouter();
 
     expect(screen.getByText('about.ctaTitle')).toBeInTheDocument();
-    expect(screen.getByText('common.inquireByEmail')).toBeInTheDocument();
+    expect(screen.getByText('common.inquireProject')).toBeInTheDocument();
   });
 
-  it('has email link in CTA section', () => {
+  it('has link to contact page in CTA section', () => {
     renderWithRouter();
 
-    const emailLink = screen.getByText('common.inquireByEmail');
-    expect(emailLink).toBeInTheDocument();
-    expect(emailLink.closest('a')).toHaveAttribute('href', expect.stringContaining('mailto:'));
+    const ctaLink = screen.getByText('common.inquireProject');
+    expect(ctaLink).toBeInTheDocument();
+    expect(ctaLink.closest('a')).toHaveAttribute('href', '/contact');
   });
 
   it('renders with proper semantic structure', () => {

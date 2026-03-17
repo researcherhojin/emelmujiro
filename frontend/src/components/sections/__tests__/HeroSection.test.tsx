@@ -47,12 +47,12 @@ describe('HeroSection Component', () => {
     expect(screen.getByText(/hero.descriptionLine1/)).toBeInTheDocument();
   });
 
-  test('renders call to action button', () => {
+  test('renders call to action button linking to contact page', () => {
     renderWithRouter(<HeroSection />);
 
-    // HeroSection has a mailto CTA link
-    const ctaLink = screen.getByText(/common.inquireByEmail/);
+    // HeroSection has a CTA Link to /contact
+    const ctaLink = screen.getByText(/common.inquireProject/);
     expect(ctaLink).toBeInTheDocument();
-    expect(ctaLink.closest('a')).toHaveAttribute('href', expect.stringContaining('mailto:'));
+    expect(ctaLink.closest('a')).toHaveAttribute('href', '/contact');
   });
 });

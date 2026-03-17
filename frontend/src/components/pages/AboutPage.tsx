@@ -1,9 +1,11 @@
 import React, { memo } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
-import { CONTACT_EMAIL, SITE_URL } from '../../utils/constants';
+import { SITE_URL } from '../../utils/constants';
 import { Target, Users, Lightbulb, TrendingUp, Trophy, Medal, Building2 } from 'lucide-react';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 
 interface TimelineItem {
   year: string;
@@ -304,6 +306,7 @@ const AchievementSection: React.FC = () => {
 
 const CTASection: React.FC = () => {
   const { t } = useTranslation();
+  const { localizedPath } = useLocalizedPath();
   return (
     <section
       aria-label={t('accessibility.aboutCtaSection')}
@@ -319,12 +322,12 @@ const CTASection: React.FC = () => {
         <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-8 break-keep">
           {t('about.ctaSubtitle')}
         </p>
-        <a
-          href={`mailto:${CONTACT_EMAIL}`}
+        <Link
+          to={localizedPath('/contact')}
           className="inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-base sm:text-lg font-bold text-white bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all rounded-2xl"
         >
-          {t('common.inquireByEmail')}
-        </a>
+          {t('common.inquireProject')}
+        </Link>
       </div>
     </section>
   );

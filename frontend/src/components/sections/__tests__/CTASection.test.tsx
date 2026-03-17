@@ -1,6 +1,7 @@
 import React from 'react';
 import { vi, describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import CTASection from '../CTASection';
 
 // Mock react-i18next
@@ -13,41 +14,38 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
+const renderWithRouter = (component: React.ReactElement) => {
+  return render(<BrowserRouter>{component}</BrowserRouter>);
+};
+
 describe('CTASection', () => {
   it('renders the section label', () => {
-    render(<CTASection />);
+    renderWithRouter(<CTASection />);
     expect(screen.getByText('cta.sectionLabel')).toBeInTheDocument();
   });
 
   it('renders the title', () => {
-    render(<CTASection />);
+    renderWithRouter(<CTASection />);
     expect(screen.getByText('cta.title')).toBeInTheDocument();
   });
 
   it('renders the subtitle', () => {
-    render(<CTASection />);
+    renderWithRouter(<CTASection />);
     expect(screen.getByText('cta.subtitle')).toBeInTheDocument();
   });
 
-  it('renders the email CTA link', () => {
-    render(<CTASection />);
-    const ctaLink = screen.getByText('common.inquireByEmail');
+  it('renders the CTA link to contact page', () => {
+    renderWithRouter(<CTASection />);
+    const ctaLink = screen.getByText('common.inquireProject');
     expect(ctaLink).toBeInTheDocument();
-    expect(ctaLink.closest('a')).toHaveAttribute('href', 'mailto:researcherhojin@gmail.com');
+    expect(ctaLink.closest('a')).toHaveAttribute('href', '/contact');
   });
 
   it('has correct aria-label on the section', () => {
-    render(<CTASection />);
+    renderWithRouter(<CTASection />);
     const section = screen.getByLabelText('accessibility.ctaSection');
     expect(section).toBeInTheDocument();
     expect(section.tagName).toBe('SECTION');
-  });
-
-  it('has correct aria-label on the email link', () => {
-    render(<CTASection />);
-    const link = screen.getByLabelText('cta.emailAriaLabel');
-    expect(link).toBeInTheDocument();
-    expect(link.tagName).toBe('A');
   });
 
   it('has displayName set', () => {
@@ -55,7 +53,7 @@ describe('CTASection', () => {
   });
 
   it('renders headings at correct levels', () => {
-    render(<CTASection />);
+    renderWithRouter(<CTASection />);
     const h2 = screen.getByText('cta.sectionLabel');
     expect(h2.tagName).toBe('H2');
 

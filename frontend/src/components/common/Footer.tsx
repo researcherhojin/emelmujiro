@@ -1,16 +1,18 @@
 import React, { useState, memo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail, Phone, ExternalLink } from 'lucide-react';
 import { getServices, type ServiceDetail } from '../../data/footerData';
 import { CONTACT_EMAIL } from '../../utils/constants';
 import ServiceModal from './ServiceModal';
 import { useScrollToSection } from '../../hooks/useScrollToSection';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 
 const Footer: React.FC = memo(() => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const scrollToSection = useScrollToSection();
+  const { localizedPath } = useLocalizedPath();
   const [isServiceModalOpen, setIsServiceModalOpen] = useState<boolean>(false);
   const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
 
@@ -35,8 +37,8 @@ const Footer: React.FC = memo(() => {
 
   const handleModalContactClick = useCallback(() => {
     setIsServiceModalOpen(false);
-    window.location.href = `mailto:${CONTACT_EMAIL}`;
-  }, []);
+    navigate(localizedPath('/contact'));
+  }, [navigate, localizedPath]);
 
   return (
     <>
@@ -115,12 +117,12 @@ const Footer: React.FC = memo(() => {
                   </button>
                 </li>
                 <li>
-                  <a
-                    href={`mailto:${CONTACT_EMAIL}`}
+                  <Link
+                    to={localizedPath('/contact')}
                     className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all"
                   >
                     {t('common.contact')}
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </nav>
@@ -150,13 +152,13 @@ const Footer: React.FC = memo(() => {
               <p className="text-gray-700 dark:text-gray-300 text-base mb-6 leading-relaxed">
                 {t('footer.ctaQuestion')}
               </p>
-              <a
-                href={`mailto:${CONTACT_EMAIL}`}
+              <Link
+                to={localizedPath('/contact')}
                 className="inline-flex items-center px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-base font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {t('common.contact')}
                 <ExternalLink className="ml-2 w-3 h-3 flex-shrink-0" aria-hidden="true" />
-              </a>
+              </Link>
             </div>
           </div>
 
