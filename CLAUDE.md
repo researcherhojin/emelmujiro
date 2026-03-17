@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform. Frontend is React/TypeScript deployed to GitHub Pages; backend is Django deployed on Mac Mini via Docker + Cloudflare Tunnel. Licensed under Apache 2.0.
+Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform. Both frontend (React/TypeScript) and backend (Django) are deployed on Mac Mini via Docker + Cloudflare Tunnel. Licensed under Apache 2.0.
 
-- **Live Site**: https://emelmujiro.com
-- **Backend API**: https://api.emelmujiro.com (Mac Mini + Cloudflare Tunnel)
+- **Live Site**: https://emelmujiro.com (Mac Mini nginx + Cloudflare Tunnel)
+- **Backend API**: https://api.emelmujiro.com (Mac Mini Django + Cloudflare Tunnel)
 - **Frontend Dev**: http://localhost:5173 (Vite) — **NOT port 3000**
 - **Backend Dev**: http://localhost:8000 (Django)
 - **Mock API** — Controlled by `USE_MOCK_API` in `frontend/src/services/api.ts`. Mock is active only in tests (`IS_TEST`) or when `env.API_URL` is empty. Production builds default to `https://api.emelmujiro.com/api` and use the real backend.
@@ -61,9 +61,14 @@ uv run flake8 .            # Lint (line length 120)
 uv run isort .             # Sort imports
 uv run ruff check .        # Fast lint
 
-# Deploy
-# Primary: push to main → GitHub Actions auto-deploys via actions/deploy-pages@v4
-# Manual fallback (from frontend/):
+# Deploy (Mac Mini — frontend update)
+cd frontend && git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run build
+# nginx volume-mounts build/ → changes are live immediately (no container restart)
+
+# Deploy (Mac Mini — backend update)
+git pull && docker compose up -d --build
+
+# GitHub Pages (backup, CI still deploys here)
 npm run deploy             # Build + deploy to GitHub Pages via gh-pages package
 
 # Makefile shortcuts (from root)
@@ -91,11 +96,11 @@ lsof -ti:8000 | xargs kill -9
 - `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x
 - `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Chat/Redis excluded from 1.0 scope
 - Root `package.json` uses npm workspaces pointing to `frontend/`
-- Docker support: `docker-compose.yml` (prod: backend with SQLite by default; PostgreSQL via `--profile postgres`, Redis via `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload, same profile system). SQLite data persists in `sqlite_data` Docker volume (`SQLITE_DIR=/app/data`). `frontend/Dockerfile` declares `ARG VITE_API_URL` + `ENV VITE_API_URL` before `npm run build` so Vite can inline it
+- Docker support: `docker-compose.yml` (prod: backend with SQLite by default; PostgreSQL via `--profile postgres`, Redis via `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload, same profile system). SQLite data persists in `sqlite_data` Docker volume (`SQLITE_DIR=/app/data`). Frontend runs as standalone `nginx:alpine` container with volume-mounted build output (not via docker-compose). `frontend/Dockerfile` exists for self-contained image builds but is not used in current deployment
 
 ### Routing
 
-Uses `createBrowserRouter` (BrowserRouter) in `frontend/src/App.tsx`. All pages are lazy-loaded. Routes: `/`, `/about`, `/contact`, `/profile`, `/share`, `/blog`, `/blog/:id`, `/blog/new`, `/admin` (protected, requires admin role), `*` (404 NotFound). GitHub Pages serves `404.html` (copy of `index.html`, created by `cp build/index.html build/404.html` in build script) for non-root paths, allowing the SPA to handle all routing with clean URLs.
+Uses `createBrowserRouter` (BrowserRouter) in `frontend/src/App.tsx`. All pages are lazy-loaded. Routes: `/`, `/about`, `/contact`, `/profile`, `/share`, `/blog`, `/blog/:id`, `/blog/new`, `/admin` (protected, requires admin role), `*` (404 NotFound). Production nginx uses `try_files $uri $uri/ /index.html` for SPA routing (all routes return HTTP 200). The build script still creates `404.html` (`cp build/index.html build/404.html`) as a GitHub Pages fallback.
 
 ### Blog (Active)
 
@@ -262,14 +267,14 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Pipelines
 
-- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages via `actions/deploy-pages@v4` (NOT the `gh-pages` branch — GitHub Pages source is set to "GitHub Actions"). Backend tests run against PostgreSQL 15 (timeout: 10min). Node 24, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/checkout@v6`, `setup-node@v6`, `cache@v5`, `upload-artifact@v7`, `download-artifact@v8`, `configure-pages@v5`. Has a commented `deploy-backend` job placeholder for future backend deployment. The `gh-pages` branch exists as a manual fallback (synced with `main`) but is not used for deployment.
+- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages via `actions/deploy-pages@v4` (backup; production uses Mac Mini nginx). Backend tests run against PostgreSQL 15 (timeout: 10min). Node 24, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/checkout@v6`, `setup-node@v6`, `cache@v5`, `upload-artifact@v7`, `download-artifact@v8`, `configure-pages@v5`. After CI passes, update Mac Mini manually: `cd frontend && git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run build`.
 - **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy v0.35.0) + bundle size check (<10MB) + Lighthouse CI (performance/a11y/SEO audit via `@lhci/cli`, config in `frontend/lighthouserc.js`). Posts summary comment on PR.
 
 ## Critical Configuration
 
 ### Vite (`frontend/vite.config.ts`)
 
-- `base: '/'` — Custom domain `emelmujiro.com` (no subpath needed). `frontend/public/CNAME` file ensures GitHub Pages uses the custom domain
+- `base: '/'` — Custom domain `emelmujiro.com` (no subpath needed). `frontend/public/CNAME` file kept for GitHub Pages backup
 - Build output: `build/` (not `dist/`)
 - Build pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` (sitemap must succeed)
 - Vite 8 uses oxc bundler (rolldown). `esbuild` options are ignored — console/debugger stripping is handled by oxc automatically in production
@@ -277,7 +282,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 - `build.target` is omitted — `@vitejs/plugin-legacy` sets targets automatically via its `targets` option (Chrome 64+)
 - `@vitejs/plugin-legacy` generates `nomodule` fallback bundles for older Chromium-based browsers (KakaoTalk in-app WebView, Samsung Internet ≥9.2)
 - `stripLocalhostCsp` custom plugin strips `localhost:8000`/`127.0.0.1:8000` from CSP `connect-src` in production builds (kept in dev for direct API calls)
-- CSP `script-src` includes `'unsafe-eval'` — **required** by SystemJS polyfill in `@vitejs/plugin-legacy` legacy bundles (`new Function()`). Cannot be removed while KakaoTalk in-app browser legacy fallback is active. `'unsafe-inline'` is also required for `index.html` inline scripts (error handler, theme detection, KakaoTalk fallback)
+- CSP `script-src` includes `'unsafe-eval'` and `data:` — **required** by `@vitejs/plugin-legacy` (SystemJS polyfill uses `new Function()`, module detection uses `data:text/javascript,...` URIs). `'unsafe-inline'` is also required for `index.html` inline scripts (error handler, theme detection, KakaoTalk fallback)
 - Dev server proxies `/api` to `http://127.0.0.1:8000` (`strictPort: false` — tries next port if busy)
 
 ### Tailwind CSS 3.x
@@ -317,24 +322,45 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - File upload: 5MB max; allowed extensions: `.jpg`, `.jpeg`, `.png`, `.gif`, `.pdf`, `.doc`, `.docx`
 - CI uses `uv sync --frozen --extra dev` (lockfile must be up to date; `--extra dev` installs black, flake8, pytest from `[project.optional-dependencies]`)
 
-### Backend Deployment (Mac Mini)
+### Deployment (Mac Mini)
 
-Backend runs on Mac Mini via Docker + Cloudflare Tunnel. Key infrastructure:
+Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 
-- **Docker**: `docker-compose.yml` with SQLite (default). Start with required env vars:
+- **Frontend**: `nginx:alpine` container serving `frontend/build/` via volume mount. Runs on port 8080 with `try_files $uri $uri/ /index.html` for SPA routing. Connected to `emelmujiro_emelmujiro-network` Docker network.
 
   ```bash
-  SECRET_KEY=<key> ALLOWED_HOSTS=localhost,127.0.0.1,api.emelmujiro.com \
-  CORS_ALLOWED_ORIGINS=http://localhost:5173,https://emelmujiro.com \
-  CSRF_TRUSTED_ORIGINS=https://emelmujiro.com,https://api.emelmujiro.com \
+  # Start frontend container (first time)
+  docker run -d --name emelmujiro-frontend --restart unless-stopped \
+    --network emelmujiro_emelmujiro-network --network-alias frontend \
+    -p 8080:80 \
+    -v /path/to/frontend/build:/usr/share/nginx/html:ro \
+    -v /path/to/frontend/nginx.conf:/etc/nginx/nginx.conf:ro \
+    nginx:alpine
+
+  # Update frontend (rebuild only, no container restart needed)
+  cd frontend && git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run build
+  ```
+
+- **Backend**: `docker-compose.yml` with SQLite (default). Start with required env vars via `backend/.env`:
+
+  ```bash
   docker compose up -d backend
   ```
 
   Note: `docker-compose.yml` `environment` section overrides `env_file` — pass env vars as shell variables to override defaults.
 
-- **Cloudflare Tunnel**: Routes `api.emelmujiro.com` → `http://localhost:8000`. Config at `/etc/cloudflared/config.yml`. Runs as launchd daemon (`/Library/LaunchDaemons/com.cloudflare.cloudflared.plist`).
+- **Cloudflare Tunnel**: Config at `/etc/cloudflared/config.yml` (edit `~/.cloudflared/config.yml` then `sudo cp`). Runs as launchd daemon (`/Library/LaunchDaemons/com.cloudflare.cloudflared.plist`). Restart with `sudo launchctl kickstart -k system/com.cloudflare.cloudflared`.
 
-- **Dockerfile**: `collectstatic` uses a placeholder `SECRET_KEY` at build time (`RUN SECRET_KEY=build-only-placeholder ...`) because Django requires it to load settings.
+  ```yaml
+  ingress:
+    - hostname: api.emelmujiro.com
+      service: http://localhost:8000
+    - hostname: emelmujiro.com
+      service: http://localhost:8080
+    - service: http_status:404
+  ```
+
+- **Dockerfile**: Backend `collectstatic` uses a placeholder `SECRET_KEY` at build time (`RUN SECRET_KEY=build-only-placeholder ...`) because Django requires it to load settings.
 
 - **Docker Desktop**: Must be running before `docker compose up`. Enable "Start Docker Desktop when you sign in" in Docker Desktop settings for auto-start on boot.
 
@@ -369,7 +395,7 @@ Backend runs on Mac Mini via Docker + Cloudflare Tunnel. Key infrastructure:
 19. **Logger has no named exports**: `logger.ts` only exports `default` (singleton instance). Import as `import logger from '../utils/logger'`, not destructured. Uses `env.IS_DEVELOPMENT` from `config/env.ts` — do NOT use `process.env.NODE_ENV` directly in frontend code
 20. **No `window.alert()` in components**: Use inline toast state pattern instead (`ToastState` interface + `useRef` timer + auto-dismiss + `role="alert"` element). Already applied in `BlogEditor.tsx` and `SharePage.tsx`. Tests assert via `screen.getByRole('alert')`, not `alertSpy`
 21. **Backend tests need `DATABASE_URL=""`**: If `DATABASE_URL` is set (e.g., pointing to Docker PostgreSQL), backend tests will fail to connect. Run `DATABASE_URL="" uv run python manage.py test` to use SQLite
-22. **SEO with BrowserRouter**: All canonical URLs and OG URLs use clean paths (e.g., `${SITE_URL}/about`). GitHub Pages serves `404.html` (copy of `index.html`) for non-root paths. `hreflang` alternate language tags are omitted because the SPA serves both languages from the same URL via client-side i18n. The `sameAs` field in structured data must only contain verified, existing URLs
+22. **SEO with BrowserRouter**: All canonical URLs and OG URLs use clean paths (e.g., `${SITE_URL}/about`). Production nginx `try_files` returns 200 for all SPA routes. `hreflang` alternate language tags are omitted because the SPA serves both languages from the same URL via client-side i18n. The `sameAs` field in structured data must only contain verified, existing URLs
 23. **No hardcoded site URLs in components**: Always use `SITE_URL` from `src/utils/constants.ts`. The `generate-sitemap.js` script has its own `SITE_URL` constant (Node.js, can't import from frontend)
 24. **ESLint workspace hoisting**: `eslint` must be in root `package.json` devDependencies (same major version as frontend) alongside `eslint-plugin-react` (which npm hoists to root `node_modules/`). The plugin does `require('eslint/package.json')` — if eslint is only in `frontend/node_modules/`, the plugin can't find it. Don't remove eslint from root devDependencies
 25. **ESLint zero warnings policy**: All ESLint warnings have been resolved (0 errors, 0 warnings as of 2026-03-10). Maintain this — don't introduce new warnings. Use `useCallback` for functions passed to context `useMemo`, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements

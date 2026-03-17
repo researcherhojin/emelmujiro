@@ -30,9 +30,8 @@
 | **테스트** | ✅ 통과 | Frontend 1042 통과 (66 파일), Backend 69 통과              |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                                 |
-| **배포**   | ✅ 정상 | GitHub Pages (프론트) + Mac Mini Docker (백엔드)           |
-| **백엔드** | ✅ 운영 | Mac Mini Docker + Cloudflare Tunnel (`api.emelmujiro.com`) |
-| **도메인** | ✅ 활성 | `emelmujiro.com` (커스텀 도메인)                           |
+| **배포**   | ✅ 정상 | Mac Mini Docker + Cloudflare Tunnel (프론트 + 백엔드 통합) |
+| **도메인** | ✅ 활성 | `emelmujiro.com` (프론트) + `api.emelmujiro.com` (백엔드)  |
 
 ## 빠른 시작
 
@@ -84,7 +83,8 @@ uv run python manage.py runserver
 
 **Infra**<br/>
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
-![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Deploy-222?logo=github&logoColor=white)
+![Cloudflare](https://img.shields.io/badge/Cloudflare-Tunnel-F38020?logo=cloudflare&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-Alpine-009639?logo=nginx&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 ![Node](https://img.shields.io/badge/Node-24-5FA04E?logo=nodedotjs&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
@@ -100,37 +100,39 @@ graph LR
         React["React 19 SPA<br/>(BrowserRouter)"]
     end
 
-    subgraph Frontend["GitHub Pages (CDN)"]
-        Static["정적 빌드<br/>emelmujiro.com"]
+    subgraph CF["Cloudflare"]
+        Tunnel["Cloudflare Tunnel"]
     end
 
     subgraph MacMini["Mac Mini M2 Pro (Docker)"]
-        Tunnel["Cloudflare Tunnel"]
-        DRF["Django 5 + DRF"]
+        Nginx["nginx:alpine<br/>emelmujiro.com<br/>(SPA try_files)"]
+        DRF["Django 5 + DRF<br/>api.emelmujiro.com"]
         DB[(SQLite)]
     end
 
-    React --> Static
+    React -->|"emelmujiro.com"| Tunnel
     React -->|"api.emelmujiro.com"| Tunnel
+    Tunnel --> Nginx
     Tunnel --> DRF
     DRF --> DB
 
     style Tunnel fill:#F3E8FF,stroke:#7C3AED
     style MacMini fill:#ECFDF5,stroke:#059669
+    style CF fill:#FEF3C7,stroke:#D97706
 ```
 
 ### 핵심 설계 결정
 
-| 영역           | 선택                                                                       | 이유                                                            |
-| -------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| 라우팅         | `createBrowserRouter` + `React.lazy`                                       | 클린 URL (`/about`), 404.html SPA 폴백, 코드 스플리팅           |
-| 상태 관리      | React Context 5개 (UI, Auth, Blog, Form, Chat)                             | `useMemo`/`useCallback`으로 리렌더 방지, 외부 라이브러리 불필요 |
-| API 클라이언트 | Axios + Mock/Real 자동 전환                                                | `VITE_API_URL` 유무로 결정, JWT 401 자동 갱신                   |
-| i18n           | `react-i18next` + 크롤러 한국어 강제                                       | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
-| 테스트         | Vitest (1042) + Playwright E2E (5 spec)                                    | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
-| 빌드           | sitemap → `tsc` → Vite 8 (oxc/rolldown)                                    | 프로덕션 시 `console`/`debugger` 자동 제거                      |
-| 배포           | 프론트: GitHub Pages (CDN) / 백엔드: Mac Mini (Docker + Cloudflare Tunnel) | 프론트 CDN 유지, 백엔드 자체 호스팅으로 비용 최소화             |
-| Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router`        | ChatProvider는 under construction으로 제외                      |
+| 영역           | 선택                                                                | 이유                                                            |
+| -------------- | ------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 라우팅         | `createBrowserRouter` + `React.lazy`                                | 클린 URL (`/about`), nginx `try_files` SPA 폴백, 코드 스플리팅  |
+| 상태 관리      | React Context 5개 (UI, Auth, Blog, Form, Chat)                      | `useMemo`/`useCallback`으로 리렌더 방지, 외부 라이브러리 불필요 |
+| API 클라이언트 | Axios + Mock/Real 자동 전환                                         | `VITE_API_URL` 유무로 결정, JWT 401 자동 갱신                   |
+| i18n           | `react-i18next` + 크롤러 한국어 강제                                | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
+| 테스트         | Vitest (1042) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
+| 빌드           | sitemap → `tsc` → Vite 8 (oxc/rolldown)                             | 프로덕션 시 `console`/`debugger` 자동 제거                      |
+| 배포           | 프론트 + 백엔드: Mac Mini (Docker + Cloudflare Tunnel)              | 전체 자체 호스팅으로 비용 최소화, nginx SPA 라우팅 200 보장     |
+| Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router` | ChatProvider는 under construction으로 제외                      |
 
 ### 프로젝트 구조
 
@@ -176,19 +178,19 @@ emelmujiro/
 
 ## 주요 명령어
 
-| 명령어                   | 설명                                                |
-| ------------------------ | --------------------------------------------------- |
-| `npm run dev`            | 개발 서버 시작                                      |
-| `npm run build`          | 프로덕션 빌드 (sitemap → tsc → vite)                |
-| `npm test`               | 테스트 실행 (watch)                                 |
-| `npm run test:run`       | 테스트 단일 실행                                    |
-| `npm run test:ci`        | CI 테스트 실행                                      |
-| `npm run deploy`         | GitHub Pages 수동 배포 (보통 main push로 자동 배포) |
-| `npm run type-check`     | TypeScript 체크                                     |
-| `npm run lint:fix`       | ESLint 자동 수정                                    |
-| `npm run validate`       | lint + type-check + test                            |
-| `npm run test:coverage`  | 테스트 커버리지 리포트                              |
-| `npm run analyze:bundle` | 번들 크기 분석                                      |
+| 명령어                   | 설명                                              |
+| ------------------------ | ------------------------------------------------- |
+| `npm run dev`            | 개발 서버 시작                                    |
+| `npm run build`          | 프로덕션 빌드 (sitemap → tsc → vite)              |
+| `npm test`               | 테스트 실행 (watch)                               |
+| `npm run test:run`       | 테스트 단일 실행                                  |
+| `npm run test:ci`        | CI 테스트 실행                                    |
+| `npm run deploy`         | GitHub Pages 수동 배포 (백업, 현재 Mac Mini 사용) |
+| `npm run type-check`     | TypeScript 체크                                   |
+| `npm run lint:fix`       | ESLint 자동 수정                                  |
+| `npm run validate`       | lint + type-check + test                          |
+| `npm run test:coverage`  | 테스트 커버리지 리포트                            |
+| `npm run analyze:bundle` | 번들 크기 분석                                    |
 
 ### 백엔드 명령어
 
@@ -228,20 +230,28 @@ emelmujiro/
 | A4  | **OG 이미지 제작**             | 낮음     | 1200x630 전용 이미지 디자인 (현재 `logo512.png` 사용 중)                  |
 | A5  | ~~**Lighthouse CI 자동화**~~   | ✅ 완료  | `pr-checks.yml`에 LHCI job 추가 완료                                      |
 
-### 백엔드 배포 (Mac Mini)
+### 배포 (Mac Mini)
 
-> **배포 전략**: 프론트엔드는 GitHub Pages (CDN, HTTPS 무료) 유지, 백엔드만 Mac Mini M2 Pro/32GB에 Docker로 배포. Cloudflare Tunnel로 외부 노출.
+> **배포 전략**: 프론트엔드 + 백엔드 모두 Mac Mini M2 Pro/32GB에서 Docker로 배포. Cloudflare Tunnel로 외부 노출 (HTTPS 자동). 프론트엔드는 nginx `try_files`로 SPA 라우팅 처리 (HTTP 200 보장).
 
 ```mermaid
 graph LR
-    B1["B1 Mac Mini 세팅<br/>(Docker + Tunnel)"] --> B2["B2 Mock API 해제"]
+    B1["✅ B1 Mac Mini 세팅"] --> B2["✅ B2 Mock API 해제"]
     B1 --> B4["B4 이메일 연동"]
     B1 --> B5["B5 JWT → httpOnly"]
-    B1 --> B7["B7 초기 데이터"]
-    B1 --> B8["B8 커스텀 도메인"]
+    B1 --> B7["✅ B7 초기 데이터"]
+    B1 --> B8["✅ B8 커스텀 도메인"]
     B1 --> B9["B9 SiteVisit 정리"]
-    B2 --> B3["B3 블로그 해제"]
+    B1 --> B10["✅ B10 프론트엔드 통합"]
+    B2 --> B3["✅ B3 블로그 해제"]
     B2 --> B6["B6 Admin 대시보드"]
+
+    style B1 fill:#D1FAE5,stroke:#059669
+    style B2 fill:#D1FAE5,stroke:#059669
+    style B3 fill:#D1FAE5,stroke:#059669
+    style B7 fill:#D1FAE5,stroke:#059669
+    style B8 fill:#D1FAE5,stroke:#059669
+    style B10 fill:#D1FAE5,stroke:#059669
 ```
 
 | #   | 작업                             | 의존성  | 설명                                                                       |
@@ -253,8 +263,9 @@ graph LR
 | B5  | **JWT → httpOnly 쿠키**          | B1      | `localStorage` → `httpOnly` 쿠키 이전 (XSS 방어 강화)                      |
 | B6  | **Admin 대시보드 API 연동**      | B2      | 실제 통계 API 연결, 컴포넌트 분리 권장                                     |
 | B7  | ~~**초기 데이터**~~              | ✅ 완료 | `createsuperuser` + Django Admin으로 블로그 포스트 생성                    |
-| B8  | ~~**커스텀 도메인**~~            | ✅ 완료 | `emelmujiro.com` CNAME + Cloudflare DNS + SITE_URL 업데이트                |
+| B8  | ~~**커스텀 도메인**~~            | ✅ 완료 | `emelmujiro.com` + `api.emelmujiro.com` Cloudflare Tunnel DNS              |
 | B9  | **SiteVisit 정기 정리**          | B1      | `manage.py cleanup_sitevisits --days 90` cron 등록 (명령어 구현 완료)      |
+| B10 | ~~**프론트엔드 Mac Mini 통합**~~ | ✅ 완료 | GitHub Pages → nginx Docker, Cloudflare Tunnel로 SPA 라우팅 200 보장       |
 
 <details>
 <summary>Mac Mini vs 클라우드 비교</summary>
@@ -274,13 +285,13 @@ graph LR
 
 ### 장기 개선 사항
 
-| #   | 작업                       | 설명                                                                                 |
-| --- | -------------------------- | ------------------------------------------------------------------------------------ |
-| C1  | ~~**BrowserRouter 전환**~~ | ✅ 완료 — `/#/about` → `/about`, 404.html SPA 폴백, SEO 클린 URL                     |
-| C2  | **SSG / Prerendering**     | 정적 HTML 생성 → 크롤러 완성된 HTML 수신 (react-snap 또는 Next.js)                   |
-| C3  | **`hreflang` 다국어 SEO**  | `/ko/about`, `/en/about` + `hreflang` 태그                                           |
-| C4  | **실시간 채팅**            | WebSocket/Redis/Channels 구현, `ChatWidget` AppLayout 복원 (프론트엔드 UI 완성 상태) |
-| C5  | **Notification 모델**      | `consumers.py:224,230` 스텁 → Django 모델 + REST API + WebSocket 핸들러              |
+| #   | 작업                       | 설명                                                                                   |
+| --- | -------------------------- | -------------------------------------------------------------------------------------- |
+| C1  | ~~**BrowserRouter 전환**~~ | ✅ 완료 — `/#/about` → `/about`, nginx `try_files` SPA 라우팅 (HTTP 200), SEO 클린 URL |
+| C2  | **SSG / Prerendering**     | 정적 HTML 생성 → 크롤러 완성된 HTML 수신 (react-snap 또는 Next.js)                     |
+| C3  | **`hreflang` 다국어 SEO**  | `/ko/about`, `/en/about` + `hreflang` 태그                                             |
+| C4  | **실시간 채팅**            | WebSocket/Redis/Channels 구현, `ChatWidget` AppLayout 복원 (프론트엔드 UI 완성 상태)   |
+| C5  | **Notification 모델**      | `consumers.py:224,230` 스텁 → Django 모델 + REST API + WebSocket 핸들러                |
 
 ## 배포 가이드
 
@@ -363,29 +374,32 @@ docker cp emelmujiro-backend:/app/data/db.sqlite3 ~/backups/emelmujiro_$(date +%
 
 ```
 MacBook (개발)                          Mac Mini (배포)
-┌─────────────────────┐                ┌──────────────────────┐
-│ 코드 작성/테스트     │                │ git pull             │
-│ git push → GitHub   │───────────────→│ docker compose up -d │
-│ CI 통과 확인        │                │ 서비스 운영          │
-└─────────────────────┘                └──────────────────────┘
-        │                                       │
-        ▼                                       ▼
-  GitHub Pages                          Cloudflare Tunnel
-  (프론트엔드 자동 배포)                (api.emelmujiro.com)
+┌─────────────────────┐                ┌───────────────────────────────┐
+│ 코드 작성/테스트     │                │ git pull                      │
+│ git push → GitHub   │───────────────→│ npm run build (frontend)      │
+│ CI 통과 확인        │                │ docker compose up -d (backend)│
+└─────────────────────┘                └───────────────────────────────┘
+                                                │
+                                                ▼
+                                        Cloudflare Tunnel
+                                        ├── emelmujiro.com → nginx:8080
+                                        └── api.emelmujiro.com → Django:8000
 ```
 
 **배포 과정:**
 
 1. MacBook에서 코드 작성, 테스트, `git push`
-2. GitHub Actions CI 통과 → 프론트엔드 자동 배포 (GitHub Pages)
-3. Mac Mini에서 `git pull && docker compose up -d --build` (수동 또는 자동화)
-
-**자동 배포 (선택):**
+2. GitHub Actions CI 통과 확인
+3. Mac Mini에서 프론트엔드 + 백엔드 업데이트:
 
 ```bash
-# Mac Mini에 cron 또는 GitHub Webhook 설정으로 자동화 가능
-# 간단한 방법: cron으로 5분마다 pull + rebuild
-*/5 * * * * cd ~/emelmujiro && git pull --ff-only && docker compose up -d --build 2>&1 | logger -t emelmujiro
+# 프론트엔드 업데이트 (nginx가 build/ 볼륨 마운트 → 컨테이너 재시작 불필요)
+cd ~/workspace/emelmujiro/frontend
+git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run build
+
+# 백엔드 업데이트 (코드 변경 시)
+cd ~/workspace/emelmujiro
+docker compose up -d --build
 ```
 
 </details>
@@ -438,8 +452,9 @@ cloudflared tunnel login
 # 3. 터널 생성
 cloudflared tunnel create emelmujiro
 
-# 4. DNS 연결 (api.emelmujiro.com → 터널)
+# 4. DNS 연결
 cloudflared tunnel route dns emelmujiro api.emelmujiro.com
+cloudflared tunnel route dns emelmujiro emelmujiro.com
 
 # 5. 설정 파일 (~/.cloudflared/config.yml)
 cat > ~/.cloudflared/config.yml << 'EOF'
@@ -449,52 +464,68 @@ credentials-file: ~/.cloudflared/<터널 ID>.json
 ingress:
   - hostname: api.emelmujiro.com
     service: http://localhost:8000
+  - hostname: emelmujiro.com
+    service: http://localhost:8080
   - service: http_status:404
 EOF
 
-# 6. 터널 실행 (테스트)
-cloudflared tunnel run emelmujiro
+# 6. 시스템 config에 복사
+sudo cp ~/.cloudflared/config.yml /etc/cloudflared/config.yml
 
 # 7. 서비스 등록 (자동 시작)
 sudo cloudflared service install
+
+# 8. 터널 재시작
+sudo launchctl kickstart -k system/com.cloudflare.cloudflared
 ```
 
-### Phase 3: 프론트엔드 연결
+### Phase 3: 프론트엔드 배포 (nginx)
 
 ```bash
-# GitHub Actions secrets 또는 frontend/.env에 설정
-VITE_API_URL=https://api.emelmujiro.com/api
+# 1. 프론트엔드 빌드
+cd ~/workspace/emelmujiro/frontend
+VITE_API_URL=https://api.emelmujiro.com/api npm run build
 
-# 이 값이 설정되면 Mock API가 자동으로 비활성화됨
-# (src/config/env.ts → USE_MOCK_API = false)
+# 2. nginx 컨테이너 시작 (build/ 볼륨 마운트)
+docker run -d \
+  --name emelmujiro-frontend \
+  --restart unless-stopped \
+  --network emelmujiro_emelmujiro-network \
+  --network-alias frontend \
+  -p 8080:80 \
+  -v $(pwd)/build:/usr/share/nginx/html:ro \
+  -v $(pwd)/nginx.conf:/etc/nginx/nginx.conf:ro \
+  nginx:alpine
+
+# 3. 확인 (모든 SPA 라우트가 200 반환)
+curl -s -o /dev/null -w "%{http_code}" https://emelmujiro.com/about  # → 200
 ```
 
-### Phase 4: 추가 업데이트 (남은 작업)
+> **업데이트 시**: `git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run build`만 실행하면 nginx가 즉시 반영 (컨테이너 재시작 불필요)
 
-- 이메일 발송: `EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` 설정 (또는 SendGrid)
-- Contact 페이지: Google Form → 백엔드 API 전환 여부 결정
-
-### Phase 6: 운영 안정화
+### Phase 4: 운영
 
 ```bash
 # Docker 자동 시작 (Docker Desktop → Settings → General → Start Docker Desktop when you sign in)
 
 # UPS(무정전전원장치) 연결 권장 — 정전 시 안전 종료
 
-# MacBook에서 접근 (같은 네트워크)
-# http://mac-mini.local:8000/api/health/
-# ssh mac-mini.local
+# 상태 확인
+docker ps  # emelmujiro-backend, emelmujiro-frontend 확인
+curl https://api.emelmujiro.com/api/health/
+curl -s -o /dev/null -w "%{http_code}" https://emelmujiro.com/about
 
-# 외부에서 접근 (Cloudflare Tunnel 경유)
-# https://api.emelmujiro.com/api/health/
+# MacBook에서 접근 (같은 네트워크)
+# http://mac-mini.local:8080/ (프론트엔드)
+# http://mac-mini.local:8000/api/health/ (백엔드)
 ```
 
 ### 커스텀 도메인 (✅ 완료)
 
-- Cloudflare DNS: `emelmujiro.com` → GitHub Pages (A 레코드)
-- `api.emelmujiro.com` → Cloudflare Tunnel → Mac Mini
+- Cloudflare Tunnel DNS: `emelmujiro.com` → Mac Mini nginx (`:8080`)
+- Cloudflare Tunnel DNS: `api.emelmujiro.com` → Mac Mini Django (`:8000`)
 - `frontend/src/utils/constants.ts` → `SITE_URL = 'https://emelmujiro.com'`
-- `frontend/public/CNAME` → `emelmujiro.com`
+- `frontend/public/CNAME` → `emelmujiro.com` (GitHub Pages 백업용)
 - `vite.config.ts` → `base: '/'`
 
 </details>
@@ -760,6 +791,20 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
 </details>
 
 ## 변경 이력
+
+### 0.9.9 (2026.03.17)
+
+- **프론트엔드 Mac Mini 통합 배포**
+  - GitHub Pages → Mac Mini nginx Docker 컨테이너로 전환
+  - Cloudflare Tunnel: `emelmujiro.com` → `localhost:8080` (nginx)
+  - nginx `try_files $uri $uri/ /index.html`로 SPA 라우팅 HTTP 200 보장 (GitHub Pages 404 문제 해결)
+  - 빌드 결과물 볼륨 마운트 → 재빌드 시 컨테이너 재시작 불필요
+- **BrowserRouter 전환** (C1 완료)
+  - `createHashRouter` → `createBrowserRouter` — 클린 URL (`/#/about` → `/about`)
+  - SEO 관련 23개 파일 URL 패턴 업데이트 (SEOHelmet, StructuredData, sitemap, E2E 등)
+- **CSP 수정**: `data:` 를 `script-src`에 추가 (`@vitejs/plugin-legacy` 모듈 감지 스크립트 허용)
+- **SQLite + Mac Mini 배포 설정**: Docker Compose SQLite 볼륨, cloudflared 서비스 등록
+- **테스트**: 66 파일, 1042 테스트, 0 실패
 
 ### 0.9.8 (2026.03.07 ~ 03.17)
 
