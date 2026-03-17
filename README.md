@@ -73,8 +73,8 @@ uv run python manage.py runserver
 ![Cloudflare](https://img.shields.io/badge/Cloudflare-Tunnel-F38020?logo=cloudflare&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-Alpine-009639?logo=nginx&logoColor=white)
-![Node](https://img.shields.io/badge/Node-25-5FA04E?logo=nodedotjs&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
+![Node](https://img.shields.io/badge/Node-24-5FA04E?logo=nodedotjs&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 
 ## 아키텍처
 
