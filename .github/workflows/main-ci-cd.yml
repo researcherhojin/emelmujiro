@@ -135,6 +135,10 @@ jobs:
         if: steps.node-cache.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Install Playwright Chromium (for prerender)
+        working-directory: ./frontend
+        run: npx playwright install --with-deps chromium
+
       - name: Build frontend
         working-directory: ./frontend
         run: CI=false npm run build
@@ -196,11 +200,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-frontend, backend-test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    continue-on-error: true # Webhook may not be configured yet
+    continue-on-error: true
 
     steps:
       - name: Trigger Mac Mini deploy
+        env:
+          DEPLOY_SECRET: ${{ secrets.MAC_MINI_DEPLOY_SECRET }}
         run: |
+          if [ -z "$DEPLOY_SECRET" ]; then
+            echo "⏭️ MAC_MINI_DEPLOY_SECRET not set — skipping Mac Mini deploy"
+            exit 0
+          fi
           curl -f -X POST https://deploy.emelmujiro.com/deploy \
-            -H "X-Deploy-Secret: ${{ secrets.MAC_MINI_DEPLOY_SECRET }}" \
+            -H "X-Deploy-Secret: $DEPLOY_SECRET" \
             --max-time 300

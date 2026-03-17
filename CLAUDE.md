@@ -396,7 +396,7 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: Active only in tests or when `env.API_URL` is empty. Production uses `api.emelmujiro.com` (Mac Mini backend)
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 67 files / 1048 tests, Backend 90 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
+4. **Test count**: Frontend 67 files / 1048 tests, Backend 104 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint 10 flat config**: Upgraded from v9 to v10. Root `package.json` eslint version must match frontend's (both `^10.x`). Don't downgrade — plugins are compatible with ESLint 10

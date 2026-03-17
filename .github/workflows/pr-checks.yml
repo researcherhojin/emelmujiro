@@ -207,7 +207,7 @@ jobs:
       - name: Build and analyze
         working-directory: ./frontend
         run: |
-          npm run build
+          npm run build:no-prerender
 
           # Check build size
           echo "Build size:"
@@ -254,7 +254,7 @@ jobs:
 
       - name: Build frontend
         working-directory: ./frontend
-        run: CI=false npm run build
+        run: CI=false npm run build:no-prerender
 
       - name: Run Lighthouse CI
         working-directory: ./frontend

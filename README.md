@@ -21,7 +21,7 @@
 - **LLM/생성형 AI** - LLM 기반 서비스 설계 및 개발
 - **Computer Vision** - 영상 처리 및 비전 AI 솔루션
 
-## 현재 상태 (v0.9.10)
+## 현재 상태 (v0.9.11)
 
 | 항목       | 상태    | 세부사항                                                   |
 | ---------- | ------- | ---------------------------------------------------------- |
@@ -185,7 +185,7 @@ emelmujiro/
 | 명령어                   | 설명                                              |
 | ------------------------ | ------------------------------------------------- |
 | `npm run dev`            | 개발 서버 시작                                    |
-| `npm run build`          | 프로덕션 빌드 (sitemap → tsc → vite)              |
+| `npm run build`          | 프로덕션 빌드 (sitemap → tsc → vite → prerender)  |
 | `npm test`               | 테스트 실행 (watch)                               |
 | `npm run test:run`       | 테스트 단일 실행                                  |
 | `npm run test:ci`        | CI 테스트 실행                                    |
@@ -220,7 +220,7 @@ emelmujiro/
 
 ## 앞으로 할 것
 
-> **1.0 범위**: Blog ✅ + Contact (Google Form) ✅ + Auth (httpOnly JWT) ✅ + Admin Dashboard ✅ + SSG ✅ + hreflang ✅ + Notification 백엔드 ✅ — 남은: A1, A4, B4 | **1.0 이후**: 실시간 채팅, 알림 프론트엔드 UI
+> **1.0 범위**: Blog ✅ + Contact (Google Form) ✅ + Auth (httpOnly JWT) ✅ + Admin Dashboard ✅ + SSG ✅ + hreflang ✅ + Notification 백엔드 ✅ — 남은: A1, A4, B4, D8 | **1.0 이후**: 실시간 채팅, 알림 프론트엔드 UI
 
 | #   | 작업                           | 우선순위 | 설명                                                                      |
 | --- | ------------------------------ | -------- | ------------------------------------------------------------------------- |
@@ -327,24 +327,24 @@ docker cp emelmujiro-backend:/app/data/db.sqlite3 ~/backups/emelmujiro_$(date +%
 > **원칙**: 코드 작업은 MacBook에서, Mac Mini는 배포만 담당. Mac Mini에서 직접 코드를 수정하지 않음.
 
 ```
-MacBook (개발)                          Mac Mini (배포)
-┌─────────────────────┐                ┌───────────────────────────────┐
-│ 코드 작성/테스트     │                │ git pull                      │
-│ git push → GitHub   │───────────────→│ npm run build (frontend)      │
-│ CI 통과 확인        │                │ docker compose up -d (backend)│
-└─────────────────────┘                └───────────────────────────────┘
-                                                │
-                                                ▼
-                                        Cloudflare Tunnel
-                                        ├── emelmujiro.com → nginx:8080
-                                        └── api.emelmujiro.com → Django:8000
+MacBook (개발)                     GitHub Actions                Mac Mini (배포)
+┌─────────────────────┐          ┌──────────────┐          ┌───────────────────────┐
+│ 코드 작성/테스트     │──push──→│ CI 테스트/빌드 │──webhook→│ auto-deploy.sh        │
+│                     │          │              │          │ (git pull → build →   │
+│                     │          │              │          │  docker rebuild)      │
+└─────────────────────┘          └──────────────┘          └───────────────────────┘
+                                                                    │
+                                                                    ▼
+                                                            Cloudflare Tunnel
+                                                            ├── emelmujiro.com → nginx:8080
+                                                            └── api.emelmujiro.com → Django:8000
 ```
 
 **배포 과정:**
 
 1. MacBook에서 코드 작성, 테스트, `git push`
-2. GitHub Actions CI 통과 확인
-3. Mac Mini에서 프론트엔드 + 백엔드 업데이트:
+2. GitHub Actions CI 통과 → Mac Mini webhook으로 자동 배포 (`scripts/auto-deploy.sh`)
+3. 수동 배포가 필요한 경우:
 
 ```bash
 # 프론트엔드 업데이트 (nginx가 build/ 볼륨 마운트 → 컨테이너 재시작 불필요)
@@ -672,7 +672,11 @@ function onFormSubmit(e) {
 
 ## 리팩토링 백로그
 
-> **전량 해소 완료.** 18차에 걸친 코드 감사를 통해 식별된 모든 항목을 해결했습니다.
+> **전량 해소 완료.** 19차에 걸친 코드 감사를 통해 식별된 모든 항목을 해결했습니다.
+> **총 해결: Critical 13 / High 29 / Medium 59 / Low 41 / Backend 7 / 이슈 아님 6건**
+
+<details>
+<summary>감사 이력 (클릭하여 펼치기)</summary>
 
 | 감사  | 날짜        | 해결 건수 | 주요 내용                                                                                                                                                                                                                          |
 | ----- | ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -695,7 +699,7 @@ function onFormSubmit(e) {
 | 3차   | 2026.03.07  | 47건      | 미들웨어 미등록, ObjectURL 누수, JWT 블랙리스트, 컴포넌트 분할                                                                                                                                                                     |
 | 1~2차 | ~2026.03.07 | 21건      | HashRouter 버그, Zustand 제거, i18n 전환, Sentry 초기화, Docker 버전 통일                                                                                                                                                          |
 
-**총 해결: Critical 13 / High 29 / Medium 59 / Low 41 / Backend 7 / 이슈 아님 6건**
+</details>
 
 ## 변경 이력
 
