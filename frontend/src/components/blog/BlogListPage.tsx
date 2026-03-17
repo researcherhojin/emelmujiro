@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, FileText } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SEOHelmet from '../common/SEOHelmet';
 import { SITE_URL } from '../../utils/constants';
 import BlogCard from './BlogCard';
@@ -46,25 +46,28 @@ const BlogListPage: React.FC = memo(() => {
         url={`${SITE_URL}/blog`}
       />
 
-      <div className="min-h-screen bg-white dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          {/* Header */}
-          <div className="text-center mb-12">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        {/* Hero Section */}
+        <section className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center">
+            <p className="text-sm font-semibold tracking-[0.2em] text-gray-400 dark:text-gray-500 uppercase mb-4">
+              {t('blog.sectionLabel')}
+            </p>
             <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
               {t('blog.title')}
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              {t('blog.subtitle')}
-            </p>
+            <p className="text-lg text-gray-500 dark:text-gray-400">{t('blog.subtitle')}</p>
           </div>
+        </section>
 
+        {/* Content Section */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           {/* Error */}
           {error && <div className="text-center text-red-500 mb-8">{error}</div>}
 
           {/* Posts Grid */}
           {filteredPosts.length > 0 ? (
             <>
-              {/* Search */}
               <div className="max-w-xl mx-auto mb-12">
                 <BlogSearch onSearch={handleSearch} />
               </div>
@@ -76,14 +79,11 @@ const BlogListPage: React.FC = memo(() => {
             </>
           ) : (
             !loading && (
-              <div className="text-center py-20">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-blue-50 dark:bg-blue-900/20 mb-6">
-                  <FileText className="w-10 h-10 text-blue-500 dark:text-blue-400" />
-                </div>
+              <div className="text-center py-16">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                   {t('blog.comingSoon')}
                 </h2>
-                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
+                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
                   {t('blog.comingSoonDescription')}
                 </p>
               </div>
@@ -119,7 +119,7 @@ const BlogListPage: React.FC = memo(() => {
               </button>
             </div>
           )}
-        </div>
+        </section>
       </div>
     </>
   );
