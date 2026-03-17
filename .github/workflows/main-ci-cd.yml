@@ -196,6 +196,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-frontend, backend-test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    continue-on-error: true # Webhook may not be configured yet
 
     steps:
       - name: Trigger Mac Mini deploy
