@@ -25,10 +25,17 @@ const appElement = (
   </React.StrictMode>
 );
 
-// Use hydrateRoot when the page was prerendered (contains rendered content beyond the loading skeleton).
-// The data-prerendered attribute is injected by the prerender script.
+// Use hydrateRoot when the page was prerendered.
+// Falls back to createRoot if hydration fails (e.g., Cloudflare injects scripts into HTML).
 if (rootElement.hasAttribute('data-prerendered')) {
-  ReactDOM.hydrateRoot(rootElement, appElement);
+  ReactDOM.hydrateRoot(rootElement, appElement, {
+    onRecoverableError: () => {
+      // Hydration mismatch detected — clear prerendered content and re-render from scratch
+      rootElement.removeAttribute('data-prerendered');
+      rootElement.innerHTML = '';
+      ReactDOM.createRoot(rootElement).render(appElement);
+    },
+  });
 } else {
   ReactDOM.createRoot(rootElement).render(appElement);
 }
