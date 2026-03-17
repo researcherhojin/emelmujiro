@@ -486,6 +486,42 @@ curl -s -o /dev/null -w "%{http_code}" https://emelmujiro.com/about
 </details>
 
 <details>
+<summary>서버 다운 시 점검 페이지 — Cloudflare Worker (클릭하여 펼치기)</summary>
+
+Mac Mini가 다운되면 Cloudflare 기본 에러 대신 브랜딩된 503 점검 페이지를 보여주는 Worker. 서버 복구 시 자동 복귀 (수동 개입 불필요).
+
+- **스크립트**: `scripts/maintenance-worker.js`
+- **동작**: 정상 응답 → 그대로 반환, 5xx/연결 실패 → 503 점검 페이지 (브라우저: HTML, API: JSON)
+- **비용**: 무료 (일 10만 요청)
+
+#### 배포
+
+1. [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Workers & Pages** → **Create Worker**
+2. Worker 이름: `emelmujiro-maintenance`
+3. `scripts/maintenance-worker.js` 내용 붙여넣기 → **Deploy**
+4. **Websites** → `emelmujiro.com` → **Workers Routes** → **Add Route**:
+
+| Route                  | Worker                   |
+| ---------------------- | ------------------------ |
+| `emelmujiro.com/*`     | `emelmujiro-maintenance` |
+| `api.emelmujiro.com/*` | `emelmujiro-maintenance` |
+
+#### 테스트
+
+```bash
+# 서버 중지 → 점검 페이지 확인
+docker stop emelmujiro-backend emelmujiro-frontend
+open https://emelmujiro.com
+curl -s https://api.emelmujiro.com/api/health/ | python3 -m json.tool
+
+# 서버 복구 → 정상 복귀 확인
+docker start emelmujiro-backend emelmujiro-frontend
+curl -s -o /dev/null -w "%{http_code}" https://emelmujiro.com  # → 200
+```
+
+</details>
+
+<details>
 <summary>Google Form 자동 메일 설정 (클릭하여 펼치기)</summary>
 
 현재 `/contact` 페이지는 Google Form 임베드 사용 중. 아래 설정을 완료하면 신청자 + 운영자 양쪽에 자동 메일 발송:
