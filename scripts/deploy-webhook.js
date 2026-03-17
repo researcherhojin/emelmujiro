@@ -40,7 +40,9 @@ const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/deploy') {
     const token = req.headers['x-deploy-secret'];
 
-    if (!token || !crypto.timingSafeEqual(Buffer.from(token), Buffer.from(SECRET))) {
+    const tokenBuf = Buffer.from(token || '');
+    const secretBuf = Buffer.from(SECRET);
+    if (tokenBuf.length !== secretBuf.length || !crypto.timingSafeEqual(tokenBuf, secretBuf)) {
       console.log(`[${timestamp()}] Unauthorized deploy attempt from ${req.socket.remoteAddress}`);
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Unauthorized' }));
