@@ -217,6 +217,16 @@ emelmujiro/
 | `make test`       | 프론트/백 전체 테스트 |
 | `make lint`       | 프론트/백 전체 린트   |
 
+## 앞으로 할 것
+
+| 작업                       | 유형     | 설명                                                      |
+| -------------------------- | -------- | --------------------------------------------------------- |
+| Google Search Console 등록 | SEO      | 사이트맵 제출, 검색 노출 시작                             |
+| Sentry DSN 등록            | 모니터링 | `VITE_ENABLE_SENTRY=true` + `VITE_SENTRY_DSN` 설정        |
+| GA Tracking ID 등록        | 분석     | `VITE_ENABLE_ANALYTICS=true` + `VITE_GA_TRACKING_ID` 설정 |
+| 블로그 글 작성             | 콘텐츠   | LLM, AI 에이전트, RAG 등 테크 블로그 글                   |
+| 카카오톡 채널 연동         | 마케팅   | 문의 채널 다변화                                          |
+
 ## 라이선스
 
 Apache License 2.0 — 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
