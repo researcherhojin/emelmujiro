@@ -33,7 +33,7 @@ export default defineConfig({
     }),
     stripLocalhostCsp(),
   ],
-  base: '/emelmujiro/',
+  base: '/',
   server: {
     port: 5173,
     strictPort: false,
@@ -74,6 +74,6 @@ export default defineConfig({
     'process.env.NODE_ENV': JSON.stringify(
       process.env.NODE_ENV || 'development'
     ),
-    'process.env.PUBLIC_URL': JSON.stringify('/emelmujiro'),
+    'process.env.PUBLIC_URL': JSON.stringify(''),
   },
 });

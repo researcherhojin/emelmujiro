@@ -179,7 +179,7 @@ APPEND_SLASH = True  # Auto-append trailing slash
 # CORS settings
 CORS_ALLOWED_ORIGINS = os.environ.get(
     "CORS_ALLOWED_ORIGINS",
-    "http://localhost:5173,http://127.0.0.1:5173,https://researcherhojin.github.io",
+    "http://localhost:5173,http://127.0.0.1:5173,https://emelmujiro.com",
 ).split(",")
 
 CORS_ALLOW_CREDENTIALS = True
@@ -187,7 +187,7 @@ CORS_ALLOW_CREDENTIALS = True
 # CSRF trusted origins
 CSRF_TRUSTED_ORIGINS = os.environ.get(
     "CSRF_TRUSTED_ORIGINS",
-    "https://researcherhojin.github.io,https://api.emelmujiro.com",
+    "https://emelmujiro.com,https://api.emelmujiro.com",
 ).split(",")
 
 CORS_ALLOW_METHODS = [

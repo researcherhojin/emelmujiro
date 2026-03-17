@@ -21,10 +21,6 @@ vi.mock('../../common/SkipLink', () => ({
   ),
 }));
 
-vi.mock('../../../hooks/useKeyboardNavigation', () => ({
-  useKeyboardNavigation: vi.fn(),
-}));
-
 vi.mock('../../../utils/accessibility', () => ({
   announceToScreenReader: vi.fn(),
 }));
@@ -77,18 +73,6 @@ describe('Layout', () => {
     expect(announceRegion).toHaveAttribute('role', 'status');
     expect(announceRegion).toHaveAttribute('aria-live', 'polite');
     expect(announceRegion).toHaveAttribute('aria-atomic', 'true');
-  });
-
-  it('includes keyboard shortcuts help for screen readers', () => {
-    renderLayout();
-
-    expect(screen.getByText('accessibility.keyboardShortcuts')).toBeInTheDocument();
-    expect(screen.getByText('accessibility.shortcutFocusSearch')).toBeInTheDocument();
-    expect(screen.getByText('accessibility.shortcutGoHome')).toBeInTheDocument();
-    expect(screen.getByText('accessibility.shortcutGoBlog')).toBeInTheDocument();
-    expect(screen.getByText('accessibility.shortcutGoContact')).toBeInTheDocument();
-    expect(screen.getByText('accessibility.shortcutGoProfile')).toBeInTheDocument();
-    expect(screen.getByText('accessibility.shortcutCloseModal')).toBeInTheDocument();
   });
 
   it('applies min-h-screen and flex layout classes to the wrapper div', () => {

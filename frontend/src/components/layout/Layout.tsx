@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../common/Navbar';
 import Footer from '../common/Footer';
 import SkipLink from '../common/SkipLink';
-import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 import { announceToScreenReader } from '../../utils/accessibility';
 
 interface LayoutProps {
@@ -13,7 +12,6 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   // Show banner only on iOS KakaoTalk — Android renders fine via legacy plugin
   const [showKakaoBanner, setShowKakaoBanner] = useState(
     () => !!window.__isKakaoInApp && !window.__isKakaoAndroid
@@ -28,57 +26,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const dismissBanner = useCallback(() => {
     setShowKakaoBanner(false);
   }, []);
-
-  // Define keyboard shortcuts
-  useKeyboardNavigation([
-    {
-      key: '/',
-      handler: () => {
-        const searchInput = document.querySelector<HTMLInputElement>('input[type="search"]');
-        if (searchInput) {
-          searchInput.focus();
-          announceToScreenReader(t('accessibility.searchFocused'));
-        }
-      },
-      description: 'Focus search',
-    },
-    {
-      key: 'h',
-      altKey: true,
-      handler: () => {
-        navigate('/');
-        announceToScreenReader(t('accessibility.navigatedToHome'));
-      },
-      description: 'Go to home',
-    },
-    {
-      key: 'b',
-      altKey: true,
-      handler: () => {
-        navigate('/blog');
-        announceToScreenReader(t('accessibility.navigatedToBlog'));
-      },
-      description: 'Go to blog',
-    },
-    {
-      key: 'c',
-      altKey: true,
-      handler: () => {
-        navigate('/contact');
-        announceToScreenReader(t('accessibility.navigatedToContact'));
-      },
-      description: 'Go to contact',
-    },
-    {
-      key: 'p',
-      altKey: true,
-      handler: () => {
-        navigate('/profile');
-        announceToScreenReader(t('accessibility.navigatedToProfile'));
-      },
-      description: 'Go to profile',
-    },
-  ]);
 
   // Announce page changes to screen readers
   useEffect(() => {
@@ -132,19 +79,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </main>
 
       <Footer />
-
-      {/* Keyboard shortcuts help (visible only to screen readers) */}
-      <div className="sr-only" aria-label={t('accessibility.keyboardShortcuts')}>
-        <h2>{t('accessibility.keyboardShortcuts')}</h2>
-        <ul>
-          <li>{t('accessibility.shortcutFocusSearch')}</li>
-          <li>{t('accessibility.shortcutGoHome')}</li>
-          <li>{t('accessibility.shortcutGoBlog')}</li>
-          <li>{t('accessibility.shortcutGoContact')}</li>
-          <li>{t('accessibility.shortcutGoProfile')}</li>
-          <li>{t('accessibility.shortcutCloseModal')}</li>
-        </ul>
-      </div>
     </div>
   );
 };

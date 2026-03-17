@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.9.7",
   "private": true,
-  "homepage": "https://researcherhojin.github.io/emelmujiro",
+  "homepage": "https://emelmujiro.com",
   "dependencies": {
     "@sentry/react": "^10.11.0",
     "@vitejs/plugin-legacy": "^8.0.0",

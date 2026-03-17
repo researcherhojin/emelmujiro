@@ -25,7 +25,7 @@ const { mockInit, mockCaptureException, mockWithScope, mockEnv } = vi.hoisted(()
     GA_TRACKING_ID: '',
     APP_NAME: 'Emelmujiro',
     APP_VERSION: '1.0.0',
-    PUBLIC_URL: '/emelmujiro',
+    PUBLIC_URL: '',
   };
 
   return {

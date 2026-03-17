@@ -39,7 +39,7 @@ describe('env config', () => {
 
       expect(env.APP_NAME).toBe('Emelmujiro');
       expect(env.APP_VERSION).toBe('1.0.0');
-      expect(env.PUBLIC_URL).toBe('/emelmujiro');
+      expect(env.PUBLIC_URL).toBe('');
       expect(env.SENTRY_DSN).toBe('');
       expect(env.GA_TRACKING_ID).toBe('');
     });

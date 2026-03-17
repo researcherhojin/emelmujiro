@@ -4,22 +4,22 @@
   "description": "AI 기반 소프트웨어 개발 및 IT 교육 전문 기업",
   "icons": [
     {
-      "src": "/emelmujiro/favicon.ico",
+      "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "/emelmujiro/logo192.png",
+      "src": "/logo192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/emelmujiro/logo512.png",
+      "src": "/logo512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
-  "start_url": "/emelmujiro",
+  "start_url": "/",
   "display": "browser",
   "theme_color": "#111827",
   "background_color": "#ffffff",

@@ -4,10 +4,10 @@ module.exports = {
       startServerCommand: 'npx vite preview --port 4173',
       startServerReadyPattern: 'Local:',
       url: [
-        'http://localhost:4173/emelmujiro/',
-        'http://localhost:4173/emelmujiro/#/about',
-        'http://localhost:4173/emelmujiro/#/contact',
-        'http://localhost:4173/emelmujiro/#/profile',
+        'http://localhost:4173/',
+        'http://localhost:4173/#/about',
+        'http://localhost:4173/#/contact',
+        'http://localhost:4173/#/profile',
       ],
       numberOfRuns: 3,
       settings: {

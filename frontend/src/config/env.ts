@@ -52,7 +52,7 @@ export const env = {
   // App Configuration
   APP_NAME: getEnvVar('REACT_APP_APP_NAME', 'Emelmujiro'),
   APP_VERSION: getEnvVar('REACT_APP_VERSION', '1.0.0'),
-  PUBLIC_URL: getEnvVar('REACT_APP_PUBLIC_URL', '/emelmujiro'),
+  PUBLIC_URL: getEnvVar('REACT_APP_PUBLIC_URL', ''),
 
   // Environment
   NODE_ENV: MODE,

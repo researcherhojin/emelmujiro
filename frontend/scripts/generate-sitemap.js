@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SITE_URL = 'https://researcherhojin.github.io/emelmujiro';
+const SITE_URL = 'https://emelmujiro.com';
 
 // Define all static routes with hash fragments (HashRouter)
 const staticRoutes = [
@@ -44,7 +44,7 @@ ${allRoutes
 // and the sitemap reference.
 const generateRobotsTxt = () => {
   const robotsTxt = `# Robots.txt for Emelmujiro
-# https://researcherhojin.github.io/emelmujiro
+# https://emelmujiro.com
 
 User-agent: *
 Allow: /
