@@ -45,11 +45,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const checkAuthStatus = async () => {
+    // Skip auth check if user has never logged in (no cookie hint).
+    // httpOnly cookies aren't readable from JS, so we use a localStorage flag
+    // that gets set on login and cleared on logout.
+    if (!localStorage.getItem('auth_hint')) {
+      setLoading(false);
+      return;
+    }
     try {
       const response = await api.getUser();
       setUser(response.data);
     } catch {
       setUser(null);
+      localStorage.removeItem('auth_hint');
     }
     setLoading(false);
   };
@@ -61,6 +69,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await api.login(email, password);
       const { user: userData } = response.data;
       setUser(userData);
+      localStorage.setItem('auth_hint', '1');
     } catch (err) {
       const error = err as Error & { userMessage?: string };
       setError(error.userMessage || error.message || i18n.t('auth.loginFailed'));
@@ -77,6 +86,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Proceed with local logout even if server call fails
     }
     setUser(null);
+    localStorage.removeItem('auth_hint');
   }, []);
 
   const register = useCallback(async (email: string, password: string, name: string) => {

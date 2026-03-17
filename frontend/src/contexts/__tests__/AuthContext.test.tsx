@@ -114,6 +114,7 @@ describe('AuthContext', () => {
   });
 
   test('checks auth status on mount', async () => {
+    localStorage.setItem('auth_hint', '1');
     mockApi.getUser.mockResolvedValueOnce({
       data: { email: 'existing@example.com', id: 1, name: 'Existing User' },
     });

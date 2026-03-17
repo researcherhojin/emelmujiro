@@ -496,15 +496,15 @@
       },
       "ncsStrategy": {
         "name": "NCS IT Strategy & Planning",
-        "score": "57 pts"
+        "score": "60.5 pts"
       },
       "ncsDev": {
         "name": "NCS IT Development",
-        "score": "57 pts"
+        "score": "60.5 pts"
       },
       "ncsAI": {
         "name": "NCS Artificial Intelligence",
-        "score": "57 pts"
+        "score": "60.5 pts"
       }
     },
     "quote": "\"Pursuing practice-focused AI education accessible even to non-technical backgrounds\"",
@@ -538,7 +538,7 @@
     "ncsStrategy": "IT Strategy & Planning",
     "ncsDevelopment": "IT Development",
     "ncsAI": "Artificial Intelligence",
-    "ncsScore": "57 pts",
+    "ncsScore": "60.5 pts",
     "projectsLabel": "PROJECTS",
     "majorProjects": "Major Projects",
     "inProgress": "In Progress",

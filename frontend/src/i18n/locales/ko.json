@@ -480,15 +480,15 @@
       },
       "ncsStrategy": {
         "name": "NCS 정보기술전략&계획",
-        "score": "57점"
+        "score": "60.5점"
       },
       "ncsDev": {
         "name": "NCS 정보기술개발",
-        "score": "57점"
+        "score": "60.5점"
       },
       "ncsAI": {
         "name": "NCS 인공지능",
-        "score": "57점"
+        "score": "60.5점"
       }
     },
     "quote": "\"비전공자도 쉽게 입문할 수 있는 실무 중심의 AI 교육을 추구합니다\"",
@@ -522,7 +522,7 @@
     "ncsStrategy": "정보기술전략·계획",
     "ncsDevelopment": "정보기술개발",
     "ncsAI": "인공지능",
-    "ncsScore": "57점",
+    "ncsScore": "60.5점",
     "projectsLabel": "PROJECTS",
     "majorProjects": "주요 프로젝트",
     "inProgress": "진행중",

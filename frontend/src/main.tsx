@@ -25,20 +25,10 @@ const appElement = (
   </React.StrictMode>
 );
 
-// Use hydrateRoot when the page was prerendered.
-// Falls back to createRoot if hydration fails (e.g., Cloudflare injects scripts into HTML).
-if (rootElement.hasAttribute('data-prerendered')) {
-  ReactDOM.hydrateRoot(rootElement, appElement, {
-    onRecoverableError: () => {
-      // Hydration mismatch detected — clear prerendered content and re-render from scratch
-      rootElement.removeAttribute('data-prerendered');
-      rootElement.innerHTML = '';
-      ReactDOM.createRoot(rootElement).render(appElement);
-    },
-  });
-} else {
-  ReactDOM.createRoot(rootElement).render(appElement);
-}
+// Always use createRoot. Prerendered HTML serves SEO (crawlers read static content),
+// but Cloudflare Tunnel injects scripts into served HTML causing hydration mismatches.
+// createRoot replaces the prerendered content with the live React app.
+ReactDOM.createRoot(rootElement).render(appElement);
 
 // Unregister any existing service workers from previous PWA setup.
 // Wrapped in try-catch because some in-app browsers (KakaoTalk, Line, etc.)
