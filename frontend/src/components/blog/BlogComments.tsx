@@ -35,14 +35,14 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
   toggleLike,
   t,
 }) => (
-  <div key={reply.id} className="bg-gray-50 p-3 rounded">
+  <div key={reply.id} className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded">
     <div className="flex items-center mb-1">
-      <User className="w-3 h-3 mr-1 text-gray-500" />
-      <span className="font-medium text-sm">{reply.author}</span>
-      <span className="mx-2 text-gray-300">•</span>
-      <span className="text-xs text-gray-500">{formatDate(reply.date)}</span>
+      <User className="w-3 h-3 mr-1 text-gray-500 dark:text-gray-400" />
+      <span className="font-medium text-sm text-gray-900 dark:text-gray-200">{reply.author}</span>
+      <span className="mx-2 text-gray-300 dark:text-gray-600">•</span>
+      <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(reply.date)}</span>
     </div>
-    <p className="text-sm text-gray-700 mb-2">{reply.content}</p>
+    <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">{reply.content}</p>
     <button
       onClick={() => toggleLike(reply.id, true, parentId)}
       aria-label={t('blog.likeReply', { author: reply.author })}
@@ -81,25 +81,30 @@ const CommentItem: React.FC<CommentItemProps> = ({
   handleSubmitReply,
   t,
 }) => (
-  <div key={comment.id} className="bg-white p-4 rounded-lg border">
+  <div
+    key={comment.id}
+    className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700"
+  >
     <div className="flex items-start justify-between">
       <div className="flex-1">
         <div className="flex items-center mb-2">
-          <User className="w-4 h-4 mr-2 text-gray-500" />
-          <span className="font-medium">{comment.author}</span>
-          <span className="mx-2 text-gray-300">•</span>
-          <Calendar className="w-4 h-4 mr-1 text-gray-500" />
-          <span className="text-sm text-gray-500">{formatDate(comment.date)}</span>
+          <User className="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" />
+          <span className="font-medium text-gray-900 dark:text-gray-200">{comment.author}</span>
+          <span className="mx-2 text-gray-300 dark:text-gray-600">•</span>
+          <Calendar className="w-4 h-4 mr-1 text-gray-500 dark:text-gray-400" />
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            {formatDate(comment.date)}
+          </span>
         </div>
-        <p className="text-gray-700 mb-3">{comment.content}</p>
+        <p className="text-gray-700 dark:text-gray-300 mb-3">{comment.content}</p>
         <div className="flex items-center space-x-4">
           <button
             onClick={() => toggleLike(comment.id)}
             aria-label={t('blog.likeComment', { author: comment.author })}
             className={`flex items-center space-x-1 text-sm ${
               comment.likedBy?.includes(userId)
-                ? 'text-blue-600'
-                : 'text-gray-500 hover:text-blue-600'
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
             }`}
           >
             <ThumbsUp className="w-4 h-4" />
@@ -108,7 +113,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           <button
             onClick={() => setReplyTo(comment.id)}
             aria-label={t('blog.replyTo', { author: comment.author })}
-            className="text-sm text-gray-500 hover:text-blue-600"
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
           >
             {t('blog.reply')}
           </button>
@@ -116,13 +121,13 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
         {/* Reply form */}
         {replyTo === comment.id && (
-          <div className="mt-4 ml-4 p-3 bg-gray-50 rounded">
+          <div className="mt-4 ml-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded">
             <textarea
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
               placeholder={t('blog.replyPlaceholder')}
               rows={2}
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
             />
             <div className="flex space-x-2">
               <button
@@ -136,7 +141,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                   setReplyTo(null);
                   setReplyContent('');
                 }}
-                className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 text-sm"
+                className="px-3 py-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-400 dark:hover:bg-gray-500 text-sm"
               >
                 {t('common.cancel')}
               </button>
@@ -336,20 +341,23 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
 
   return (
     <div className="mt-12">
-      <h3 className="text-2xl font-bold mb-6 flex items-center">
+      <h3 className="text-2xl font-bold mb-6 flex items-center text-gray-900 dark:text-white">
         <MessageCircle className="mr-2" />
         {t('blog.commentsCount', { count: comments.length })}
       </h3>
 
       {/* Comment form */}
-      <form onSubmit={handleSubmitComment} className="mb-8 p-4 bg-gray-50 rounded-lg">
+      <form
+        onSubmit={handleSubmitComment}
+        className="mb-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
+      >
         <div className="mb-4">
           <input
             type="text"
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
             placeholder={t('blog.namePlaceholder')}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -359,7 +367,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
             onChange={(e) => setNewComment(e.target.value)}
             placeholder={t('blog.commentPlaceholder')}
             rows={3}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -392,7 +400,9 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
       </div>
 
       {comments.length === 0 && (
-        <p className="text-center text-gray-500 py-8">{t('blog.noCommentsYet')}</p>
+        <p className="text-center text-gray-500 dark:text-gray-400 py-8">
+          {t('blog.noCommentsYet')}
+        </p>
       )}
     </div>
   );

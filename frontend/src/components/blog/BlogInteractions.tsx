@@ -174,13 +174,15 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   };
 
   return (
-    <div className="flex items-center justify-between py-4 border-y my-8">
+    <div className="flex items-center justify-between py-4 border-y border-gray-200 dark:border-gray-700 my-8">
       <div className="flex items-center space-x-4">
         {/* Like button */}
         <button
           onClick={toggleLike}
           className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-            isLiked ? 'bg-red-50 text-red-600' : 'hover:bg-gray-100 text-gray-600'
+            isLiked
+              ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+              : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
           }`}
         >
           <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
@@ -191,7 +193,9 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
         <button
           onClick={toggleBookmark}
           className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-            isBookmarked ? 'bg-yellow-50 text-yellow-600' : 'hover:bg-gray-100 text-gray-600'
+            isBookmarked
+              ? 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
+              : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
           }`}
         >
           <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
@@ -202,7 +206,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
       <div className="relative">
         <button
           onClick={nativeShare}
-          className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-600"
+          className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
         >
           <Share2 className="w-5 h-5" />
           <span className="font-medium">{t('blog.share')}</span>
@@ -219,13 +223,13 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
               tabIndex={0}
               aria-label={t('accessibility.closeShareMenu')}
             />
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
               <button
                 onClick={() => {
                   shareToKakao();
                   setShowShareMenu(false);
                 }}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
               >
                 {t('blog.kakaoTalk')}
               </button>
@@ -234,7 +238,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
                   shareToFacebook();
                   setShowShareMenu(false);
                 }}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
               >
                 Facebook
               </button>
@@ -243,7 +247,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
                   shareToTwitter();
                   setShowShareMenu(false);
                 }}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
               >
                 Twitter
               </button>
@@ -252,7 +256,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
                   shareToLinkedIn();
                   setShowShareMenu(false);
                 }}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
               >
                 LinkedIn
               </button>
@@ -261,7 +265,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
                   copyLink();
                   setShowShareMenu(false);
                 }}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100 border-t"
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700"
               >
                 <span className="flex items-center">
                   {copiedLink ? (

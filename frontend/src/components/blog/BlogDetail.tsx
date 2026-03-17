@@ -37,12 +37,12 @@ const BlogDetailPage: React.FC = memo(() => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-          <p className="text-red-600">{error}</p>
+          <p className="text-red-600 dark:text-red-400">{error}</p>
           <button
             onClick={() => navigate(-1)}
-            className="mt-4 text-indigo-600 hover:text-indigo-700"
+            className="mt-4 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
           >
             {t('common.goBack')}
           </button>
@@ -53,7 +53,7 @@ const BlogDetailPage: React.FC = memo(() => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
         {post && (
           <SEOHelmet
             title={`${post.title} | ${t('blogDetail.blogTitle')}`}
@@ -64,12 +64,12 @@ const BlogDetailPage: React.FC = memo(() => {
         <div className="max-w-4xl mx-auto px-4 py-12">
           <button
             onClick={() => navigate(-1)}
-            className="mb-8 text-indigo-600 hover:text-indigo-700 flex items-center group"
+            className="mb-8 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 flex items-center group"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             {t('common.goBack')}
           </button>
-          <article className="bg-white rounded-lg shadow-md overflow-hidden">
+          <article className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900/30 overflow-hidden">
             {post?.image_url && (
               <img
                 src={post.image_url}
@@ -79,17 +79,22 @@ const BlogDetailPage: React.FC = memo(() => {
             )}
             <div className="p-8">
               <div className="mb-6">
-                <span className="inline-block px-3 py-1 text-sm rounded-full mb-4 font-medium bg-indigo-100 text-indigo-600">
+                <span className="inline-block px-3 py-1 text-sm rounded-full mb-4 font-medium bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-300">
                   {post?.category}
                 </span>
-                <time dateTime={post?.date} className="text-sm text-gray-500 ml-4">
+                <time
+                  dateTime={post?.date}
+                  className="text-sm text-gray-500 dark:text-gray-400 ml-4"
+                >
                   {post?.date && formatDate(post.date)}
                 </time>
               </div>
-              <h1 className="text-3xl font-bold mb-6">{post?.title}</h1>
+              <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                {post?.title}
+              </h1>
 
               {/* Author and tags */}
-              <div className="flex items-center mb-6 text-gray-600">
+              <div className="flex items-center mb-6 text-gray-600 dark:text-gray-400">
                 <span>
                   {t('blogDetail.author')} {post?.author}
                 </span>
@@ -98,7 +103,10 @@ const BlogDetailPage: React.FC = memo(() => {
                     <span className="mx-2">•</span>
                     <div className="flex gap-2">
                       {post.tags.map((tag) => (
-                        <span key={tag} className="text-sm bg-gray-100 px-2 py-1 rounded">
+                        <span
+                          key={tag}
+                          className="text-sm bg-gray-100 dark:bg-gray-700 dark:text-gray-300 px-2 py-1 rounded"
+                        >
                           #{tag}
                         </span>
                       ))}
@@ -108,7 +116,7 @@ const BlogDetailPage: React.FC = memo(() => {
               </div>
 
               {/* Content with Markdown support */}
-              <div className="prose prose-indigo max-w-none">
+              <div className="prose prose-indigo dark:prose-invert max-w-none">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{post?.content || ''}</ReactMarkdown>
               </div>
 
