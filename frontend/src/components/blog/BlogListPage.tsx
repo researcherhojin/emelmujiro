@@ -58,29 +58,34 @@ const BlogListPage: React.FC = memo(() => {
             </p>
           </div>
 
-          {/* Search */}
-          <div className="max-w-xl mx-auto mb-12">
-            <BlogSearch onSearch={handleSearch} />
-          </div>
-
           {/* Error */}
           {error && <div className="text-center text-red-500 mb-8">{error}</div>}
 
           {/* Posts Grid */}
           {filteredPosts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredPosts.map((post) => (
-                <BlogCard key={post.id} post={post} />
-              ))}
-            </div>
+            <>
+              {/* Search */}
+              <div className="max-w-xl mx-auto mb-12">
+                <BlogSearch onSearch={handleSearch} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredPosts.map((post) => (
+                  <BlogCard key={post.id} post={post} />
+                ))}
+              </div>
+            </>
           ) : (
             !loading && (
               <div className="text-center py-20">
-                <FileText className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  {t('blog.noPosts')}
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-blue-50 dark:bg-blue-900/20 mb-6">
+                  <FileText className="w-10 h-10 text-blue-500 dark:text-blue-400" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                  {t('blog.comingSoon')}
                 </h2>
-                <p className="text-gray-500 dark:text-gray-400">{t('blog.noPostsDescription')}</p>
+                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
+                  {t('blog.comingSoonDescription')}
+                </p>
               </div>
             )
           )}

@@ -74,20 +74,15 @@ describe('BlogListPage', () => {
     expect(screen.getByText('blog.subtitle')).toBeInTheDocument();
   });
 
-  it('renders search input', () => {
-    renderPage();
-    expect(screen.getByTestId('blog-search')).toBeInTheDocument();
-  });
-
   it('calls fetchPosts on mount', () => {
     renderPage();
     expect(mockFetchPosts).toHaveBeenCalledWith(1);
   });
 
-  it('shows empty state when no posts', () => {
+  it('shows coming soon state when no posts', () => {
     renderPage();
-    expect(screen.getByText('blog.noPosts')).toBeInTheDocument();
-    expect(screen.getByText('blog.noPostsDescription')).toBeInTheDocument();
+    expect(screen.getByText('blog.comingSoon')).toBeInTheDocument();
+    expect(screen.getByText('blog.comingSoonDescription')).toBeInTheDocument();
   });
 
   it('renders blog cards when posts exist', () => {

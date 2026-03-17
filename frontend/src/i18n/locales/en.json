@@ -397,6 +397,8 @@
     "backToMain": "Back to Home",
     "noPosts": "Blog Coming Soon",
     "noPostsDescription": "We're preparing quality AI insights and tech trends. Please check back soon.",
+    "comingSoon": "Preparing the latest tech insights",
+    "comingSoonDescription": "In-depth analysis on LLMs, AI agents, RAG, and enterprise AI adoption — coming soon.",
     "pageOf": "Page {{current}} / {{total}}",
     "previousPage": "Previous",
     "nextPage": "Next",

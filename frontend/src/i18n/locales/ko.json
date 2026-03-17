@@ -381,6 +381,8 @@
     "backToMain": "메인으로 돌아가기",
     "noPosts": "블로그 준비 중",
     "noPostsDescription": "양질의 AI 인사이트와 기술 트렌드를 준비하고 있습니다. 조금만 기다려주세요.",
+    "comingSoon": "최신 기술 인사이트를 준비하고 있습니다",
+    "comingSoonDescription": "LLM, AI 에이전트, RAG 등 최신 AI 기술의 심층 분석과 기업 적용 사례를 곧 공유합니다.",
     "pageOf": "{{current}} / {{total}} 페이지",
     "previousPage": "이전",
     "nextPage": "다음",
