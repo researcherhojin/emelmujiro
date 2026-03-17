@@ -146,11 +146,15 @@ Loading skeleton uses **inline styles** (not Tailwind classes) so it's visible b
 
 ### API Client
 
-Axios-based client in `src/services/api.ts`. All API methods (blog, contact, newsletter, auth, health) are centralized in the `api` object with mock support. Auth methods (`getUser`, `login`, `logout`, `register`) are part of the `api` object — `AuthContext` imports `{ api }` not the default axios instance. 30s timeout with automatic retry on timeout. JWT tokens stored in localStorage (`authToken`, `refreshToken`); 401 responses trigger automatic token refresh before clearing auth. HTTP is upgraded to HTTPS in production.
+Axios-based client in `src/services/api.ts`. All API methods (blog, contact, newsletter, auth, health, admin) are centralized in the `api` object with mock support. Auth methods (`getUser`, `login`, `logout`, `register`) are part of the `api` object — `AuthContext` imports `{ api }` not the default axios instance. 30s timeout with automatic retry on timeout. JWT auth uses **httpOnly cookies** (not localStorage) — cookies are set by the backend and sent automatically via `withCredentials: true`. 401 responses trigger automatic cookie-based token refresh via `POST /auth/token/refresh/`. HTTP is upgraded to HTTPS in production. `api.logout()` takes no arguments (backend reads refresh token from cookie).
 
 ### Sentry
 
-`@sentry/react` v10 is integrated via `src/utils/sentry.ts`. Only three functions are exported: `initSentry` (called in `main.tsx`), `captureException` (used by `logger.ts`), `reportErrorBoundary`. Only active when `ENABLE_SENTRY=true` and `SENTRY_DSN` is set (both default to off). No action needed unless enabling error tracking. `main.tsx` uses `env.IS_DEVELOPMENT` / `env.IS_PRODUCTION` from `src/config/env.ts` instead of `process.env.NODE_ENV`.
+`@sentry/react` v10 is integrated via `src/utils/sentry.ts`. Only three functions are exported: `initSentry` (called in `main.tsx`), `captureException` (used by `logger.ts`), `reportErrorBoundary` (called by `ErrorBoundary.tsx` in `componentDidCatch`). Only active when `ENABLE_SENTRY=true` and `SENTRY_DSN` is set (both default to off). No action needed unless enabling error tracking. `main.tsx` uses `env.IS_DEVELOPMENT` / `env.IS_PRODUCTION` from `src/config/env.ts` instead of `process.env.NODE_ENV`.
+
+### Google Analytics
+
+`src/utils/analytics.ts` exports `initAnalytics()` (called in `main.tsx`), `trackPageView(path)` (called in `ScrollToTop` on route change), and `trackCtaClick(location)` (used on CTA buttons in `HeroSection` and `CTASection`). Only active when `VITE_ENABLE_ANALYTICS=true` and `VITE_GA_TRACKING_ID` is set. CSP in `index.html` includes `https://www.googletagmanager.com` in `script-src` and Google Analytics domains in `connect-src`.
 
 ### Environment Variables
 
@@ -249,7 +253,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 66 test files, 1042 tests, 0 failures, 0 skips. Backend: 69 tests, 0 failures
+- 66 test files, 1041 tests, 0 failures, 0 skips. Backend: 69 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
@@ -311,11 +315,12 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - Database: SQLite by default. Set `DATABASE_URL` for PostgreSQL — parsed via `urllib.parse.urlparse` (no `dj-database-url` dependency)
 - Channel Layers: Redis when `REDIS_URL` is set, InMemoryChannelLayer otherwise
 - WebSocket: `ChatConsumer` requires authentication (rejects `AnonymousUser` in `connect()`); client message types are whitelisted via `ALLOWED_MESSAGE_TYPES` — invalid types are rejected with error (not silently defaulted)
-- JWT: access 30min, refresh 7 days, rotation + blacklist. `rest_framework_simplejwt.token_blacklist` is in INSTALLED_APPS — logout endpoint blacklists refresh tokens
+- JWT: access 30min, refresh 7 days, rotation + blacklist. `rest_framework_simplejwt.token_blacklist` is in INSTALLED_APPS — logout endpoint blacklists refresh tokens. Auth uses **httpOnly cookies** (`access_token`, `refresh_token`) via `CookieJWTAuthentication` (`api/authentication.py`) — reads from cookie first, falls back to `Authorization` header. Cookie settings: `JWT_COOKIE_HTTPONLY=True`, `JWT_COOKIE_SECURE=True` in production, `JWT_COOKIE_SAMESITE="Lax"`. All auth endpoints (`login`, `register`, `logout`, `change_password`, `token_refresh`) set/clear cookies automatically via `_set_jwt_cookies()`/`_clear_jwt_cookies()` helpers in `auth.py`
 - DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr. Pagination: `StandardPagination` (page_size=10, max_page_size=100, `?page_size=N` query param)
 - File upload validation: `api/validators.py` — case-insensitive extension, MIME type, size (5MB)
 - API docs: Swagger at `/api/docs/`, ReDoc at `/api/redoc/` (drf-yasg)
-- Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`. `/api/send-test-email/` only registered when `DEBUG=True`
+- Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`, `/api/admin/stats/` (admin only — returns totalUsers/totalPosts/totalMessages/totalViews), `/api/admin/content/` (admin only — returns blog post list). `/api/send-test-email/` only registered when `DEBUG=True`
+- UserSerializer includes a `role` field (read-only): returns `"admin"` (superuser), `"staff"`, or `"user"`
 - Custom middleware registered in MIDDLEWARE: `RequestSecurityMiddleware` (IP blocking, rate limiting, malicious pattern detection), `ContentSecurityMiddleware` (CSP + security headers), `APIResponseTimeMiddleware` (slow request logging)
 - Management commands: `cleanup_sitevisits` (delete old SiteVisit records, `--days 90` default, `--dry-run` option)
 - Timezone: `Asia/Seoul`, language: `ko-kr`
@@ -377,7 +382,7 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: Active only in tests or when `env.API_URL` is empty. Production uses `api.emelmujiro.com` (Mac Mini backend)
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 66 files / 1042 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
+4. **Test count**: Frontend 66 files / 1041 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint 10 flat config**: Upgraded from v9 to v10. Root `package.json` eslint version must match frontend's (both `^10.x`). Don't downgrade — plugins are compatible with ESLint 10
@@ -404,3 +409,6 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 28. **KakaoTalk WebView — React loads normally, errors visible**: React app renders in all browsers including Android KakaoTalk. Do NOT block React from loading or hide `#root` for any browser. iOS KakaoTalk shows a dismissible banner with `kakaotalk://web/openExternal` scheme. If rendering fails, `__showError()` displays the error + user agent on-screen with a `kakaotalk://web/openExternal` button (for KakaoTalk) or reload button. `window.__appLoaded` must be set inside `AppLayout` (not provider level) — setting it too early suppresses all error handlers
 29. **OG image uses logo512.png**: No dedicated `og-image.png` exists. All OG/Twitter image references (`index.html`, `SEOHelmet.tsx`, `StructuredData.tsx`, `constants.ts`) point to `logo512.png` (1024x1024). Replace references when a proper 1200x630 OG image is designed
 30. **FAQPage/Course schemas are static only**: FAQPage and Course JSON-LD are in `index.html` as static markup (crawlers read these without JS). Do NOT add them to `StructuredData.tsx` — that creates duplicate structured data when React renders
+31. **Missing backend tests**: `admin_stats`, `admin_content` views, `CookieJWTAuthentication`, and `token_refresh` endpoint have NO test coverage. Frontend `analytics.ts` also has no tests. These are high-priority test gaps
+32. **AdminDashboard TODO handlers**: `handleCreateContent`, `handleEditContent`, `handleViewContent` in `AdminDashboard.tsx` are stubbed with TODO comments — navigation to blog routes not yet wired
+33. **ChatContext unused state**: `agentAvailable`, `agentName`, `agentAvatar`, `settings` use `useState` but setters are never called. These should be constants (chat is under construction, low priority)

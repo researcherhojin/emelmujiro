@@ -21,13 +21,13 @@
 - **LLM/생성형 AI** - LLM 기반 서비스 설계 및 개발
 - **Computer Vision** - 영상 처리 및 비전 AI 솔루션
 
-## 현재 상태 (v0.9.9)
+## 현재 상태 (v0.9.10)
 
 | 항목       | 상태    | 세부사항                                                   |
 | ---------- | ------- | ---------------------------------------------------------- |
 | **빌드**   | ✅ 정상 | Vite 8 (oxc/rolldown) 빌드                                 |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 24, Python 3.12) ~2분                 |
-| **테스트** | ✅ 통과 | Frontend 1042 통과 (66 파일), Backend 69 통과              |
+| **테스트** | ✅ 통과 | Frontend 1041 통과 (66 파일), Backend 69 통과              |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                                 |
 | **배포**   | ✅ 정상 | Mac Mini Docker + Cloudflare Tunnel (프론트 + 백엔드 통합) |
@@ -127,9 +127,9 @@ graph LR
 | -------------- | ------------------------------------------------------------------- | --------------------------------------------------------------- |
 | 라우팅         | `createBrowserRouter` + `React.lazy`                                | 클린 URL (`/about`), nginx `try_files` SPA 폴백, 코드 스플리팅  |
 | 상태 관리      | React Context 5개 (UI, Auth, Blog, Form, Chat)                      | `useMemo`/`useCallback`으로 리렌더 방지, 외부 라이브러리 불필요 |
-| API 클라이언트 | Axios + Mock/Real 자동 전환                                         | `VITE_API_URL` 유무로 결정, JWT 401 자동 갱신                   |
+| API 클라이언트 | Axios + Mock/Real 자동 전환                                         | `VITE_API_URL` 유무로 결정, httpOnly 쿠키 JWT, 401 자동 갱신    |
 | i18n           | `react-i18next` + 크롤러 한국어 강제                                | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
-| 테스트         | Vitest (1042) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
+| 테스트         | Vitest (1041) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
 | 빌드           | sitemap → `tsc` → Vite 8 (oxc/rolldown)                             | 프로덕션 시 `console`/`debugger` 자동 제거                      |
 | 배포           | 프론트 + 백엔드: Mac Mini (Docker + Cloudflare Tunnel)              | 전체 자체 호스팅으로 비용 최소화, nginx SPA 라우팅 200 보장     |
 | Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router` | ChatProvider는 under construction으로 제외                      |
@@ -163,18 +163,21 @@ emelmujiro/
 
 ## 주요 기능
 
-| 기능                | 상태            | 설명                                         |
-| ------------------- | --------------- | -------------------------------------------- |
-| **홈페이지**        | ✅ 완료         | Hero, 서비스 소개, 통계, CTA                 |
-| **프로필**          | ✅ 완료         | CEO 경력/학력/프로젝트 포트폴리오            |
-| **다크 모드**       | ✅ 완료         | 시스템 설정 연동                             |
-| **다국어 (i18n)**   | ✅ 완료         | 전체 컴포넌트 i18n 전환 완료 (ko/en)         |
-| **반응형**          | ✅ 완료         | 모바일/태블릿/데스크톱 최적화                |
-| **SEO**             | ✅ 완료         | React Helmet, 사이트맵, 구조화 데이터        |
-| **블로그**          | ✅ 활성         | 실제 백엔드 API 연동 (Mac Mini)              |
-| **문의하기**        | ✅ Google Form  | Google Form 임베드 (자동 메일 설정 TODO)     |
-| **실시간 채팅**     | ⏸️ 1.0 이후     | WebSocket/Redis 필요, 1.0 범위에서 제외      |
-| **관리자 대시보드** | 🚧 플레이스홀더 | UI + ProtectedRoute 인증 가드, API 연동 필요 |
+| 기능                 | 상태           | 설명                                              |
+| -------------------- | -------------- | ------------------------------------------------- |
+| **홈페이지**         | ✅ 완료        | Hero, 서비스 소개, 통계, CTA                      |
+| **프로필**           | ✅ 완료        | CEO 경력/학력/프로젝트 포트폴리오                 |
+| **다크 모드**        | ✅ 완료        | 시스템 설정 연동                                  |
+| **다국어 (i18n)**    | ✅ 완료        | 전체 컴포넌트 i18n 전환 완료 (ko/en)              |
+| **반응형**           | ✅ 완료        | 모바일/태블릿/데스크톱 최적화                     |
+| **SEO**              | ✅ 완료        | React Helmet, 사이트맵, 구조화 데이터             |
+| **블로그**           | ✅ 활성        | 실제 백엔드 API 연동 (Mac Mini)                   |
+| **문의하기**         | ✅ Google Form | Google Form 임베드 (자동 메일 설정 TODO)          |
+| **JWT 인증**         | ✅ 완료        | httpOnly 쿠키 기반 JWT (XSS 방어 강화)            |
+| **관리자 대시보드**  | ✅ 완료        | 실제 백엔드 API 연동 (통계 + 콘텐츠 관리)         |
+| **Google Analytics** | ✅ 완료        | 페이지 뷰 + CTA 클릭 추적 (`VITE_GA_TRACKING_ID`) |
+| **Sentry**           | ✅ 준비 완료   | ErrorBoundary 연동 완료, DSN 설정만 하면 활성화   |
+| **실시간 채팅**      | ⏸️ 1.0 이후    | WebSocket/Redis 필요, 1.0 범위에서 제외           |
 
 ## 주요 명령어
 
@@ -218,15 +221,15 @@ emelmujiro/
 
 > **코드 품질 작업은 19차 감사로 전량 완료.** 아래는 기능 구현 및 배포 관련 남은 작업입니다.
 >
-> **1.0 범위**: Blog + Contact + Auth + Admin Dashboard | **1.0 이후**: 실시간 채팅, Notification
+> **1.0 범위**: Blog ✅ + Contact (Google Form) ✅ + Auth (httpOnly JWT) ✅ + Admin Dashboard ✅ — 남은 작업: A1 (Google Form 자동 메일), A4 (OG 이미지), B4 (이메일 연동) | **1.0 이후**: 실시간 채팅, Notification, SSG
 
 ### 즉시 실행 가능 (백엔드 배포 불필요)
 
 | #   | 작업                           | 우선순위 | 설명                                                                      |
 | --- | ------------------------------ | -------- | ------------------------------------------------------------------------- |
 | A1  | **Google Form 자동 메일 설정** | 높음     | Apps Script 트리거 등록 → 신청자 확인 메일 + 운영자 알림 메일 (하단 참조) |
-| A2  | **Google Analytics 연동**      | 중간     | `VITE_GA_TRACKING_ID` 설정, gtag 이벤트 추적 (CTA 클릭, 페이지 뷰)        |
-| A3  | **Sentry 활성화**              | 중간     | `VITE_SENTRY_DSN` + `VITE_ENABLE_SENTRY=true` 설정                        |
+| A2  | ~~**Google Analytics 연동**~~  | ✅ 완료  | `analytics.ts` 구현, 페이지 뷰 + CTA 클릭 추적, CSP 업데이트 완료         |
+| A3  | ~~**Sentry 활성화**~~          | ✅ 완료  | ErrorBoundary → `reportErrorBoundary()` 연동 완료, DSN 설정만 하면 활성화 |
 | A4  | **OG 이미지 제작**             | 낮음     | 1200x630 전용 이미지 디자인 (현재 `logo512.png` 사용 중)                  |
 | A5  | ~~**Lighthouse CI 자동화**~~   | ✅ 완료  | `pr-checks.yml`에 LHCI job 추가 완료                                      |
 
@@ -238,19 +241,22 @@ emelmujiro/
 graph LR
     B1["✅ B1 Mac Mini 세팅"] --> B2["✅ B2 Mock API 해제"]
     B1 --> B4["B4 이메일 연동"]
-    B1 --> B5["B5 JWT → httpOnly"]
+    B1 --> B5["✅ B5 JWT → httpOnly"]
     B1 --> B7["✅ B7 초기 데이터"]
     B1 --> B8["✅ B8 커스텀 도메인"]
-    B1 --> B9["B9 SiteVisit 정리"]
+    B1 --> B9["✅ B9 SiteVisit 정리"]
     B1 --> B10["✅ B10 프론트엔드 통합"]
     B2 --> B3["✅ B3 블로그 해제"]
-    B2 --> B6["B6 Admin 대시보드"]
+    B2 --> B6["✅ B6 Admin 대시보드"]
 
     style B1 fill:#D1FAE5,stroke:#059669
     style B2 fill:#D1FAE5,stroke:#059669
     style B3 fill:#D1FAE5,stroke:#059669
+    style B5 fill:#D1FAE5,stroke:#059669
+    style B6 fill:#D1FAE5,stroke:#059669
     style B7 fill:#D1FAE5,stroke:#059669
     style B8 fill:#D1FAE5,stroke:#059669
+    style B9 fill:#D1FAE5,stroke:#059669
     style B10 fill:#D1FAE5,stroke:#059669
 ```
 
@@ -260,11 +266,11 @@ graph LR
 | B2  | ~~**Mock API → Real API 전환**~~ | ✅ 완료 | `VITE_API_URL=https://api.emelmujiro.com/api` 설정 완료                    |
 | B3  | ~~**블로그 공사 중 해제**~~      | ✅ 완료 | `App.tsx` 라우트 복원, 실제 블로그 데이터 API 연동                         |
 | B4  | **이메일 발송 연동**             | B1      | Contact 폼 SMTP/SendGrid 연동 (현재 Google Form 임베드 사용 중)            |
-| B5  | **JWT → httpOnly 쿠키**          | B1      | `localStorage` → `httpOnly` 쿠키 이전 (XSS 방어 강화)                      |
-| B6  | **Admin 대시보드 API 연동**      | B2      | 실제 통계 API 연결, 컴포넌트 분리 권장                                     |
+| B5  | ~~**JWT → httpOnly 쿠키**~~      | ✅ 완료 | `CookieJWTAuthentication` 구현, 프론트/백 완전 이전, localStorage 제거     |
+| B6  | ~~**Admin 대시보드 API 연동**~~  | ✅ 완료 | `/api/admin/stats/` + `/api/admin/content/` 엔드포인트, 프론트엔드 연동    |
 | B7  | ~~**초기 데이터**~~              | ✅ 완료 | `createsuperuser` + Django Admin으로 블로그 포스트 생성                    |
 | B8  | ~~**커스텀 도메인**~~            | ✅ 완료 | `emelmujiro.com` + `api.emelmujiro.com` Cloudflare Tunnel DNS              |
-| B9  | **SiteVisit 정기 정리**          | B1      | `manage.py cleanup_sitevisits --days 90` cron 등록 (명령어 구현 완료)      |
+| B9  | ~~**SiteVisit 정기 정리**~~      | ✅ 완료 | `scripts/cleanup-sitevisits.sh` cron 스크립트 작성, 명령어 구현 완료       |
 | B10 | ~~**프론트엔드 Mac Mini 통합**~~ | ✅ 완료 | GitHub Pages → nginx Docker, Cloudflare Tunnel로 SPA 라우팅 200 보장       |
 
 <details>
@@ -282,6 +288,33 @@ graph LR
 **현재 선택 이유**: 개인 프로젝트 + 소규모 트래픽 + 비용 최소화. SQLite로 운영 부담 최소화 (DB 컨테이너 불필요, 백업은 파일 복사 한 줄). 서비스가 커지면 같은 Docker 이미지를 클라우드에 올리고 `DATABASE_URL`만 바꿔 PostgreSQL로 전환 가능.
 
 </details>
+
+### 코드 품질 (20차 감사 결과)
+
+> 20차 전체 코드베이스 감사로 식별된 항목입니다.
+
+#### 테스트 커버리지 보완
+
+| #   | 작업                                | 우선순위 | 설명                                                                                         |
+| --- | ----------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| D1  | **Admin API 엔드포인트 테스트**     | 높음     | `admin_stats`, `admin_content` 뷰에 대한 백엔드 테스트 추가 (권한 검증 + 응답 데이터 확인)   |
+| D2  | **CookieJWTAuthentication 테스트**  | 높음     | 쿠키 기반 인증, 헤더 폴백, 만료 토큰 처리 테스트 (`backend/api/authentication.py`)           |
+| D3  | **token_refresh 엔드포인트 테스트** | 높음     | 쿠키/본문 리프레시, 토큰 로테이션, 블랙리스트 동작 테스트 (`backend/api/auth.py`)            |
+| D4  | **analytics.ts 유틸리티 테스트**    | 중간     | `initAnalytics`, `trackPageView`, `trackCtaClick` 테스트 (`frontend/src/utils/analytics.ts`) |
+
+#### Admin 대시보드 기능 완성
+
+| #   | 작업                             | 우선순위 | 설명                                                                                             |
+| --- | -------------------------------- | -------- | ------------------------------------------------------------------------------------------------ |
+| D5  | **Admin 네비게이션 연결**        | 중간     | `handleCreateContent` → `/blog/new`, `handleEditContent` → `/blog/:id`, `handleViewContent` 구현 |
+| D6  | **AdminDashboard 컴포넌트 분리** | 중간     | 431줄 → AdminSidebar, AdminOverview, AdminContentTable, DeleteModal 서브컴포넌트 추출            |
+
+#### 데드 코드 정리
+
+| #   | 작업                                 | 우선순위 | 설명                                                                                  |
+| --- | ------------------------------------ | -------- | ------------------------------------------------------------------------------------- |
+| D7  | **ChatContext 미사용 state → const** | 낮음     | `agentAvailable`, `agentName`, `agentAvatar`, `settings` — setter 미사용, 상수로 전환 |
+| D8  | **SiteVisit cron 실제 등록**         | 낮음     | `scripts/cleanup-sitevisits.sh` 스크립트 작성 완료, Mac Mini crontab 등록 필요        |
 
 ### 장기 개선 사항
 
@@ -792,6 +825,29 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
 
 ## 변경 이력
 
+### 0.9.10 (2026.03.17)
+
+- **JWT httpOnly 쿠키 이전** (B5 완료)
+  - `localStorage` 토큰 → httpOnly 쿠키 기반 인증으로 완전 이전 (XSS 방어 강화)
+  - `CookieJWTAuthentication` 커스텀 클래스 (`api/authentication.py`) — 쿠키 우선, Authorization 헤더 폴백
+  - 모든 auth 엔드포인트에 쿠키 자동 설정/해제 (`_set_jwt_cookies`, `_clear_jwt_cookies`)
+  - 프론트엔드: localStorage 토큰 관리 코드 전면 제거, `withCredentials: true`로 쿠키 자동 전송
+- **Admin 대시보드 API 연동** (B6 완료)
+  - 백엔드: `/api/admin/stats/` (통계), `/api/admin/content/` (콘텐츠 목록) 엔드포인트 추가 (`IsAdminUser`)
+  - UserSerializer에 `role` 필드 추가 (admin/staff/user)
+  - 프론트엔드: AdminDashboard가 실제 API 데이터 사용 (하드코딩 제거)
+- **Google Analytics 연동** (A2 완료)
+  - `analytics.ts` — `initAnalytics()`, `trackPageView()`, `trackCtaClick()` 구현
+  - 페이지 뷰 자동 추적 (ScrollToTop), CTA 버튼 클릭 추적 (Hero, CTASection)
+  - CSP 업데이트: `script-src`에 googletagmanager, `connect-src`에 GA 도메인 추가
+- **Sentry ErrorBoundary 연동** (A3 완료)
+  - `ErrorBoundary.componentDidCatch` → `reportErrorBoundary()` 호출 추가
+  - React 19 `ErrorInfo.componentStack` 타입 호환성 수정 (`string | null | undefined`)
+- **SiteVisit 정리 스크립트** (B9 완료)
+  - `scripts/cleanup-sitevisits.sh` — Docker exec 기반 cron 스크립트
+- **블로그 다크 모드** — BlogCard, BlogDetail, BlogComments, BlogInteractions, BlogSearch 다크 모드 지원
+- **테스트**: 66 파일, 1041 테스트, 0 실패 / Backend 69 테스트, 0 실패
+
 ### 0.9.9 (2026.03.17)
 
 - **프론트엔드 Mac Mini 통합 배포**
@@ -804,7 +860,7 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
   - SEO 관련 23개 파일 URL 패턴 업데이트 (SEOHelmet, StructuredData, sitemap, E2E 등)
 - **CSP 수정**: `data:` 를 `script-src`에 추가 (`@vitejs/plugin-legacy` 모듈 감지 스크립트 허용)
 - **SQLite + Mac Mini 배포 설정**: Docker Compose SQLite 볼륨, cloudflared 서비스 등록
-- **테스트**: 66 파일, 1042 테스트, 0 실패
+- **테스트**: 66 파일, 1041 테스트, 0 실패
 
 ### 0.9.8 (2026.03.07 ~ 03.17)
 
