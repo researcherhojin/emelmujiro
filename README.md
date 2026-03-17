@@ -486,6 +486,79 @@ curl -s -o /dev/null -w "%{http_code}" https://emelmujiro.com/about
 </details>
 
 <details>
+<summary>자동 배포 — GitHub Actions → Mac Mini Webhook (클릭하여 펼치기)</summary>
+
+GitHub에 push → CI 통과 → Mac Mini에 자동 배포. Webhook 서버가 배포 요청을 수신하고 `auto-deploy.sh` 실행.
+
+- **Webhook 서버**: `scripts/deploy-webhook.js` (Node.js, 포트 9000, 의존성 없음)
+- **배포 스크립트**: `scripts/auto-deploy.sh` (git pull → frontend build → backend rebuild)
+- **인증**: `X-Deploy-Secret` 헤더 + `DEPLOY_SECRET` 환경변수 (timing-safe 비교)
+
+#### Mac Mini 초기 설정 (1회)
+
+```bash
+# 1. 배포 시크릿 생성
+export DEPLOY_SECRET=$(python3 -c "import secrets; print(secrets.token_urlsafe(32))")
+echo "DEPLOY_SECRET=$DEPLOY_SECRET" >> ~/.zshrc
+
+# 2. Cloudflare DNS에 deploy.emelmujiro.com 추가 (CNAME → 터널 ID)
+# Cloudflare Dashboard → DNS → Add Record → CNAME → deploy → <tunnel-id>.cfargotunnel.com
+
+# 3. Cloudflare Tunnel config 수정
+# ~/.cloudflared/config.yml ingress에 추가:
+#   - hostname: deploy.emelmujiro.com
+#     service: http://localhost:9000
+
+# 4. 터널 재시작
+sudo cp ~/.cloudflared/config.yml /etc/cloudflared/config.yml
+sudo launchctl kickstart -k system/com.cloudflare.cloudflared
+
+# 5. Webhook 서버 시작 (테스트)
+DEPLOY_SECRET=$DEPLOY_SECRET node scripts/deploy-webhook.js
+
+# 6. GitHub Secrets에 등록
+# Settings → Secrets → New: MAC_MINI_DEPLOY_SECRET = (위에서 생성한 시크릿)
+```
+
+#### Webhook을 launchd 데몬으로 등록
+
+```bash
+cat > ~/Library/LaunchAgents/com.emelmujiro.deploy-webhook.plist << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.emelmujiro.deploy-webhook</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/node</string>
+        <string>$HOME/workspace/emelmujiro/scripts/deploy-webhook.js</string>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>DEPLOY_SECRET</key>
+        <string>YOUR_SECRET_HERE</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>$HOME/logs/deploy-webhook.log</string>
+    <key>StandardErrorPath</key>
+    <string>$HOME/logs/deploy-webhook.log</string>
+</dict>
+</plist>
+EOF
+
+mkdir -p ~/logs
+launchctl load ~/Library/LaunchAgents/com.emelmujiro.deploy-webhook.plist
+```
+
+</details>
+
+<details>
 <summary>서버 다운 시 점검 페이지 — Cloudflare Worker (클릭하여 펼치기)</summary>
 
 Mac Mini가 다운되면 Cloudflare 기본 에러 대신 브랜딩된 503 점검 페이지를 보여주는 Worker. 서버 복구 시 자동 복귀 (수동 개입 불필요).
