@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, memo } from 'react';
-import { createHashRouter, RouterProvider, useLocation, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, useLocation, Outlet } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { BlogProvider } from './contexts/BlogContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -116,7 +116,7 @@ const AppLayout: React.FC = memo(() => {
 AppLayout.displayName = 'AppLayout';
 
 // Create router
-const router = createHashRouter([
+const router = createBrowserRouter([
   {
     path: '/',
     element: <AppLayout />,

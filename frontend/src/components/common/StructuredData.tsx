@@ -110,13 +110,13 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
           '@type': 'ListItem',
           position: 2,
           name: t('common.about'),
-          item: `${SITE_URL}/#/about`,
+          item: `${SITE_URL}/about`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: t('common.representativeProfile'),
-          item: `${SITE_URL}/#/profile`,
+          item: `${SITE_URL}/profile`,
         },
       ],
     };
@@ -133,7 +133,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       },
       email: CONTACT_EMAIL,
       telephone: t('contact.info.phone'),
-      url: `${SITE_URL}/#/profile`,
+      url: `${SITE_URL}/profile`,
       sameAs: ['https://github.com/researcherhojin'],
       knowsAbout: [
         t('seo.knowsAbout.ai'),

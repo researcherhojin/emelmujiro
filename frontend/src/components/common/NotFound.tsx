@@ -23,7 +23,7 @@ const NotFound: React.FC = memo(() => {
       <SEOHelmet
         title={t('notFound.title')}
         description={t('notFound.description')}
-        url={`${SITE_URL}/#/404`}
+        url={`${SITE_URL}/404`}
         type="website"
       />
       <StructuredData type="Website" />

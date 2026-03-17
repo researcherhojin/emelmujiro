@@ -38,7 +38,7 @@ const ProfilePage: React.FC = memo(() => {
         title={t('profilePage.seoTitle')}
         description={t('profilePage.seoDescription')}
         keywords={t('profilePage.seoKeywords')}
-        url={`${SITE_URL}/#/profile`}
+        url={`${SITE_URL}/profile`}
       />
       <StructuredData type="Person" />
       <StructuredData type="Breadcrumb" />

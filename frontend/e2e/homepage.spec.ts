@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Homepage', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#/');
+    await page.goto('/');
   });
 
   test('has title', async ({ page }) => {
@@ -25,7 +25,7 @@ test.describe('Homepage', () => {
   });
 
   test('hero section has CTA link', async ({ page }) => {
-    const ctaLink = page.locator('a[href="#/contact"]').first();
+    const ctaLink = page.locator('a[href="/contact"]').first();
     await expect(ctaLink).toBeVisible();
     await expect(ctaLink).toContainText('프로젝트 문의하기');
   });
@@ -53,16 +53,16 @@ test.describe('Homepage', () => {
 
   test('navigation links work correctly', async ({ page }) => {
     await page.getByRole('button', { name: '소개' }).click();
-    await expect(page).toHaveURL(/#\/about/);
+    await expect(page).toHaveURL(/\/about/);
 
     await page.getByRole('button', { name: '블로그' }).click();
-    await expect(page).toHaveURL(/#\/blog/);
+    await expect(page).toHaveURL(/\/blog/);
 
     await page.getByRole('button', { name: '문의하기' }).click();
-    await expect(page).toHaveURL(/#\/contact/);
+    await expect(page).toHaveURL(/\/contact/);
 
     await page.getByText('에멜무지로').first().click();
-    await expect(page).toHaveURL(/\/#\//);
+    await expect(page).toHaveURL(/\/$/);
   });
 
   test('responsive menu works on mobile', async ({ page }) => {

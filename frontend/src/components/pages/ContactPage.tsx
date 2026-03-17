@@ -19,7 +19,7 @@ const ContactPage: React.FC = memo(() => {
       <SEOHelmet
         title={t('contact.title') + ' | ' + t('common.companyName')}
         description={t('contact.subtitle')}
-        url={`${SITE_URL}/#/contact`}
+        url={`${SITE_URL}/contact`}
       />
 
       <div className="min-h-screen bg-white dark:bg-gray-900">

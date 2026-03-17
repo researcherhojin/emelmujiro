@@ -338,7 +338,7 @@ const AboutPage: React.FC = memo(() => {
       <SEOHelmet
         title={t('about.seo.title')}
         description={t('about.seo.description')}
-        url={`${SITE_URL}/#/about`}
+        url={`${SITE_URL}/about`}
       />
       <StructuredData type="Organization" />
       <StructuredData type="Breadcrumb" />

@@ -4,37 +4,37 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
-    <loc>https://researcherhojin.github.io/emelmujiro/</loc>
+    <loc>https://emelmujiro.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1</priority>
     
   </url>
   <url>
-    <loc>https://researcherhojin.github.io/emelmujiro/#/about</loc>
+    <loc>https://emelmujiro.com/about</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     
   </url>
   <url>
-    <loc>https://researcherhojin.github.io/emelmujiro/#/contact</loc>
+    <loc>https://emelmujiro.com/contact</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     
   </url>
   <url>
-    <loc>https://researcherhojin.github.io/emelmujiro/#/blog</loc>
+    <loc>https://emelmujiro.com/blog</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     
   </url>
   <url>
-    <loc>https://researcherhojin.github.io/emelmujiro/#/profile</loc>
+    <loc>https://emelmujiro.com/profile</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
     
   </url>
   <url>
-    <loc>https://researcherhojin.github.io/emelmujiro/#/share</loc>
+    <loc>https://emelmujiro.com/share</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     

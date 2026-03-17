@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Dark Mode', () => {
   test.beforeEach(async ({ page }) => {
     // Clear any persisted theme preference before each test
-    await page.goto('/#/');
+    await page.goto('/');
     await page.evaluate(() => localStorage.removeItem('theme'));
     await page.reload();
     await page.waitForLoadState('domcontentloaded');
@@ -81,7 +81,7 @@ test.describe('Dark Mode', () => {
 test.describe('Language Switching', () => {
   test.beforeEach(async ({ page }) => {
     // Force Korean as the default language via localStorage before navigating
-    await page.goto('/#/');
+    await page.goto('/');
     await page.evaluate(() => localStorage.setItem('i18nextLng', 'ko'));
     await page.reload();
     await page.waitForLoadState('domcontentloaded');

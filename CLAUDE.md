@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform. Frontend is React/TypeScript deployed to GitHub Pages; backend is Django deployed on Mac Mini via Docker + Cloudflare Tunnel. Licensed under Apache 2.0.
 
-- **Live Site**: https://researcherhojin.github.io/emelmujiro
+- **Live Site**: https://emelmujiro.com
 - **Backend API**: https://api.emelmujiro.com (Mac Mini + Cloudflare Tunnel)
 - **Frontend Dev**: http://localhost:5173 (Vite) — **NOT port 3000**
 - **Backend Dev**: http://localhost:8000 (Django)
@@ -95,7 +95,7 @@ lsof -ti:8000 | xargs kill -9
 
 ### Routing
 
-Uses `createHashRouter` (HashRouter) in `frontend/src/App.tsx`. All pages are lazy-loaded. Routes: `/`, `/about`, `/contact`, `/profile`, `/share`, `/blog`, `/blog/:id`, `/blog/new`, `/admin` (protected, requires admin role), `*` (404 NotFound).
+Uses `createBrowserRouter` (BrowserRouter) in `frontend/src/App.tsx`. All pages are lazy-loaded. Routes: `/`, `/about`, `/contact`, `/profile`, `/share`, `/blog`, `/blog/:id`, `/blog/new`, `/admin` (protected, requires admin role), `*` (404 NotFound). GitHub Pages serves `404.html` (copy of `index.html`, created by `cp build/index.html build/404.html` in build script) for non-root paths, allowing the SPA to handle all routing with clean URLs.
 
 ### Blog (Active)
 
@@ -153,7 +153,7 @@ Axios-based client in `src/services/api.ts`. All API methods (blog, contact, new
 
 ### Site URL & Contact Email
 
-`SITE_URL` and `CONTACT_EMAIL` are defined in `src/utils/constants.ts`. `SITE_URL` is the canonical base URL used by all SEO components (SEOHelmet, StructuredData), page canonical links, and OG tags — **never hardcode** `https://researcherhojin.github.io/emelmujiro` in components; always import `SITE_URL`. Page components pass URLs as `url={`${SITE_URL}/#/about`}` (hash fragment required for HashRouter). `CONTACT_EMAIL` uses `import.meta.env.VITE_CONTACT_EMAIL` with fallback.
+`SITE_URL` and `CONTACT_EMAIL` are defined in `src/utils/constants.ts`. `SITE_URL` (`https://emelmujiro.com`) is the canonical base URL used by all SEO components (SEOHelmet, StructuredData), page canonical links, and OG tags — **never hardcode** the URL in components; always import `SITE_URL`. Page components pass URLs as `url={`${SITE_URL}/about`}` (clean paths, BrowserRouter). `CONTACT_EMAIL` uses `import.meta.env.VITE_CONTACT_EMAIL` with fallback.
 
 ### Provider Hierarchy
 
@@ -244,7 +244,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 67 test files, 1060 tests, 0 failures, 0 skips. Backend: 69 tests, 0 failures
+- 66 test files, 1042 tests, 0 failures, 0 skips. Backend: 69 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
@@ -269,7 +269,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 
 ### Vite (`frontend/vite.config.ts`)
 
-- `base: '/emelmujiro/'` — Required for GitHub Pages subpath
+- `base: '/'` — Custom domain `emelmujiro.com` (no subpath needed). `frontend/public/CNAME` file ensures GitHub Pages uses the custom domain
 - Build output: `build/` (not `dist/`)
 - Build pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` (sitemap must succeed)
 - Vite 8 uses oxc bundler (rolldown). `esbuild` options are ignored — console/debugger stripping is handled by oxc automatically in production
@@ -317,6 +317,27 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - File upload: 5MB max; allowed extensions: `.jpg`, `.jpeg`, `.png`, `.gif`, `.pdf`, `.doc`, `.docx`
 - CI uses `uv sync --frozen --extra dev` (lockfile must be up to date; `--extra dev` installs black, flake8, pytest from `[project.optional-dependencies]`)
 
+### Backend Deployment (Mac Mini)
+
+Backend runs on Mac Mini via Docker + Cloudflare Tunnel. Key infrastructure:
+
+- **Docker**: `docker-compose.yml` with SQLite (default). Start with required env vars:
+
+  ```bash
+  SECRET_KEY=<key> ALLOWED_HOSTS=localhost,127.0.0.1,api.emelmujiro.com \
+  CORS_ALLOWED_ORIGINS=http://localhost:5173,https://emelmujiro.com \
+  CSRF_TRUSTED_ORIGINS=https://emelmujiro.com,https://api.emelmujiro.com \
+  docker compose up -d backend
+  ```
+
+  Note: `docker-compose.yml` `environment` section overrides `env_file` — pass env vars as shell variables to override defaults.
+
+- **Cloudflare Tunnel**: Routes `api.emelmujiro.com` → `http://localhost:8000`. Config at `/etc/cloudflared/config.yml`. Runs as launchd daemon (`/Library/LaunchDaemons/com.cloudflare.cloudflared.plist`).
+
+- **Dockerfile**: `collectstatic` uses a placeholder `SECRET_KEY` at build time (`RUN SECRET_KEY=build-only-placeholder ...`) because Django requires it to load settings.
+
+- **Docker Desktop**: Must be running before `docker compose up`. Enable "Start Docker Desktop when you sign in" in Docker Desktop settings for auto-start on boot.
+
 ### Pre-deploy Check
 
 `scripts/pre-deploy-check.sh` runs a comprehensive checklist before production deploy: env files (`VITE_API_URL`, `VITE_SENTRY_DSN`, `VITE_GA_TRACKING_ID`), TypeScript, ESLint, console.log scan, tests, build, SEO assets (robots.txt, sitemap, manifest, favicon, `.nojekyll`), API key scan, npm audit, git status, large image check (>500KB), bundle size.
@@ -330,7 +351,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: Active only in tests or when `env.API_URL` is empty. Production uses `api.emelmujiro.com` (Mac Mini backend)
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 67 files / 1060 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
+4. **Test count**: Frontend 66 files / 1042 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint 10 flat config**: Upgraded from v9 to v10. Root `package.json` eslint version must match frontend's (both `^10.x`). Don't downgrade — plugins are compatible with ESLint 10
@@ -339,7 +360,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 10. **Build uses separate tsconfig**: `tsconfig.build.json` excludes test types and files; the build script runs `tsc -p tsconfig.build.json`. Don't add test-only types (like `@testing-library/jest-dom`) to `tsconfig.build.json`. `tsconfig.ci.json` extends `tsconfig.build.json` with `strict: true` (only relaxes `noUnusedLocals`/`noUnusedParameters`)
 11. **CI cache**: Both `node_modules/` and `frontend/node_modules/` are cached using `hashFiles('package-lock.json')` (root lock file, not `frontend/package-lock.json` which doesn't exist in npm workspaces)
 12. **Sitemap generation in build**: `npm run build` first runs `scripts/generate-sitemap.js`. If this script fails, the entire build fails
-13. **Under construction routes**: Chat is under construction (1.0 이후). `/blog` is now active (connected to real backend). `/contact` uses Google Form embed (see "Contact Page" section). When re-enabling chat, restore `ChatWidget` in `AppLayout` and add `ChatProvider` to `App.tsx` provider hierarchy. When switching `/contact` back to the backend API form, update `App.tsx`, `ContactPage.tsx`, and `e2e/contact.spec.ts`
+13. **Under construction routes**: Chat is under construction (1.0 이후). `/blog` is active (connected to real backend). `/contact` uses Google Form embed (see "Contact Page" section). When re-enabling chat, restore `ChatWidget` in `AppLayout` and add `ChatProvider` to `App.tsx` provider hierarchy. When switching `/contact` back to the backend API form, update `App.tsx`, `ContactPage.tsx`, and `e2e/contact.spec.ts`
 14. **Backend blog router**: `backend/api/urls.py` registers BlogPostViewSet with `basename="blog"` (NOT `"blog-posts"`). DRF generates URL names as `blog-list` and `blog-detail`
 15. **No dynamic Tailwind classes**: `bg-${var}-600` is purged at build time. Always use static class maps
 16. **No global focus box-shadow on buttons/links**: Only `input`/`textarea` have global focus ring in `index.css`. Adding `button:focus` box-shadow to global CSS will cause persistent focus boxes on mouse click
@@ -348,7 +369,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 19. **Logger has no named exports**: `logger.ts` only exports `default` (singleton instance). Import as `import logger from '../utils/logger'`, not destructured. Uses `env.IS_DEVELOPMENT` from `config/env.ts` — do NOT use `process.env.NODE_ENV` directly in frontend code
 20. **No `window.alert()` in components**: Use inline toast state pattern instead (`ToastState` interface + `useRef` timer + auto-dismiss + `role="alert"` element). Already applied in `BlogEditor.tsx` and `SharePage.tsx`. Tests assert via `screen.getByRole('alert')`, not `alertSpy`
 21. **Backend tests need `DATABASE_URL=""`**: If `DATABASE_URL` is set (e.g., pointing to Docker PostgreSQL), backend tests will fail to connect. Run `DATABASE_URL="" uv run python manage.py test` to use SQLite
-22. **SEO with HashRouter**: All canonical URLs and OG URLs must include `/#/` (e.g., `${SITE_URL}/#/about`). `robots.txt` must NOT use hash fragment directives (non-standard). Sitemap URLs include `/#/`. `hreflang` alternate language tags are omitted because the SPA serves both languages from the same URL via client-side i18n. The `sameAs` field in structured data must only contain verified, existing URLs
+22. **SEO with BrowserRouter**: All canonical URLs and OG URLs use clean paths (e.g., `${SITE_URL}/about`). GitHub Pages serves `404.html` (copy of `index.html`) for non-root paths. `hreflang` alternate language tags are omitted because the SPA serves both languages from the same URL via client-side i18n. The `sameAs` field in structured data must only contain verified, existing URLs
 23. **No hardcoded site URLs in components**: Always use `SITE_URL` from `src/utils/constants.ts`. The `generate-sitemap.js` script has its own `SITE_URL` constant (Node.js, can't import from frontend)
 24. **ESLint workspace hoisting**: `eslint` must be in root `package.json` devDependencies (same major version as frontend) alongside `eslint-plugin-react` (which npm hoists to root `node_modules/`). The plugin does `require('eslint/package.json')` — if eslint is only in `frontend/node_modules/`, the plugin can't find it. Don't remove eslint from root devDependencies
 25. **ESLint zero warnings policy**: All ESLint warnings have been resolved (0 errors, 0 warnings as of 2026-03-10). Maintain this — don't introduce new warnings. Use `useCallback` for functions passed to context `useMemo`, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements

@@ -3,14 +3,14 @@ const path = require('path');
 
 const SITE_URL = 'https://emelmujiro.com';
 
-// Define all static routes with hash fragments (HashRouter)
+// Define all static routes (BrowserRouter — clean URLs)
 const staticRoutes = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
-  { url: '/#/about', changefreq: 'weekly', priority: 0.8 },
-  { url: '/#/contact', changefreq: 'weekly', priority: 0.7 },
-  { url: '/#/blog', changefreq: 'daily', priority: 0.8 },
-  { url: '/#/profile', changefreq: 'weekly', priority: 0.6 },
-  { url: '/#/share', changefreq: 'monthly', priority: 0.5 },
+  { url: '/about', changefreq: 'weekly', priority: 0.8 },
+  { url: '/contact', changefreq: 'weekly', priority: 0.7 },
+  { url: '/blog', changefreq: 'daily', priority: 0.8 },
+  { url: '/profile', changefreq: 'weekly', priority: 0.6 },
+  { url: '/share', changefreq: 'monthly', priority: 0.5 },
 ];
 
 // Generate sitemap XML
@@ -38,10 +38,8 @@ ${allRoutes
 };
 
 // Generate robots.txt
-// Note: Hash fragments (#) are not standardized in robots.txt directives.
-// Since this is a HashRouter SPA, crawlers that don't execute JS won't
-// discover sub-pages anyway. Keep robots.txt simple with just Allow: /
-// and the sitemap reference.
+// BrowserRouter with clean URLs. GitHub Pages serves 404.html (copy of
+// index.html) for non-root paths, so the SPA handles all routing.
 const generateRobotsTxt = () => {
   const robotsTxt = `# Robots.txt for Emelmujiro
 # https://emelmujiro.com

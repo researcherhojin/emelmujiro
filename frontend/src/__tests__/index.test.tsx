@@ -37,14 +37,14 @@ describe('Index', () => {
     // Spy on console.error to suppress error output
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    // Mock window.location for HashRouter
+    // Mock window.location for BrowserRouter
     Object.defineProperty(window, 'location', {
       writable: true,
       configurable: true,
       value: {
-        hash: '#/',
+        hash: '',
         pathname: '/',
-        href: 'http://localhost/#/',
+        href: 'http://localhost/',
         origin: 'http://localhost',
         hostname: 'localhost',
         port: '',

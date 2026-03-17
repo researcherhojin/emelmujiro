@@ -78,7 +78,7 @@ describe('BlogInteractions Component', () => {
 
     // Mock window.location.href to include blog path
     Object.defineProperty(window, 'location', {
-      value: new URL('http://localhost/#/blog/1'),
+      value: new URL('http://localhost/blog/1'),
       writable: true,
       configurable: true,
     });

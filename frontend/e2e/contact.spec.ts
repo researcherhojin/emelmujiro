@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Contact Page (Google Form)', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#/contact');
+    await page.goto('/contact');
   });
 
   test('displays contact page heading', async ({ page }) => {

@@ -1,12 +1,12 @@
 # Robots.txt for Emelmujiro
-# https://researcherhojin.github.io/emelmujiro
+# https://emelmujiro.com
 
 User-agent: *
 Allow: /
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://researcherhojin.github.io/emelmujiro/sitemap.xml
+Sitemap: https://emelmujiro.com/sitemap.xml
 
 # Specific rules for major search engines
 User-agent: Googlebot
