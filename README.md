@@ -219,15 +219,11 @@ emelmujiro/
 
 ## 앞으로 할 것
 
-> **1.0 범위**: Blog ✅ + Contact (Google Form) ✅ + Auth (httpOnly JWT) ✅ + Admin Dashboard ✅ + SSG ✅ + hreflang ✅ + Notification 백엔드 ✅ + OG 이미지 ✅ — 남은: 운영 설정 (A1, D8) | **1.0 이후**: 알림 프론트엔드 UI
+> **1.0 범위 완료**: Blog ✅ + Contact (Google Form + 자동 메일) ✅ + Auth (httpOnly JWT) ✅ + Admin Dashboard ✅ + SSG ✅ + hreflang ✅ + Notification 백엔드 ✅ + OG 이미지 ✅ + 자동 배포 ✅ + 점검 페이지 ✅ + SiteVisit cron ✅
 
-| #   | 작업                           | 유형        | 설명                                                                      |
-| --- | ------------------------------ | ----------- | ------------------------------------------------------------------------- |
-| A1  | **Google Form 자동 메일 설정** | Google 설정 | Apps Script 트리거 등록 → 신청자 확인 메일 + 운영자 알림 메일 (하단 참조) |
-| D8  | **SiteVisit cron 등록**        | Mac Mini    | `scripts/cleanup-sitevisits.sh` 작성 완료, Mac Mini crontab 등록 필요     |
-| OP1 | **자동 배포 webhook 설정**     | Mac Mini    | `deploy.emelmujiro.com` DNS + tunnel + launchd + GitHub Secret 등록       |
-| OP2 | **Cloudflare Worker 배포**     | Cloudflare  | `scripts/maintenance-worker.js` → Cloudflare Dashboard에 등록             |
-| E1  | **알림 프론트엔드 UI**         | 1.0 이후    | Navbar 알림 벨 아이콘 + 드롭다운 (백엔드 API 연동)                        |
+| #   | 작업                   | 유형     | 설명                                          |
+| --- | ---------------------- | -------- | --------------------------------------------- |
+| E1  | **알림 프론트엔드 UI** | 1.0 이후 | Navbar 알림 벨 아이콘 + 드롭다운 (백엔드 API) |
 
 ## 배포 가이드
 
