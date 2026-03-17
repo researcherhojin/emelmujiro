@@ -43,7 +43,8 @@ i18n
   .init({
     resources,
     fallbackLng: 'ko',
-    debug: false, // Disable debug logs
+    debug: false,
+    showSupportNotice: false,
 
     interpolation: {
       escapeValue: false,
