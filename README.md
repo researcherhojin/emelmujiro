@@ -21,17 +21,17 @@
 - **LLM/생성형 AI** - LLM 기반 서비스 설계 및 개발
 - **Computer Vision** - 영상 처리 및 비전 AI 솔루션
 
-## 현재 상태 (v0.9.11)
+## 현재 상태 (v1.0)
 
-| 항목       | 상태    | 세부사항                                                   |
-| ---------- | ------- | ---------------------------------------------------------- |
-| **빌드**   | ✅ 정상 | Vite 8 (oxc/rolldown) 빌드                                 |
-| **CI/CD**  | ✅ 정상 | GitHub Actions → Mac Mini 자동 배포 (webhook)              |
-| **테스트** | ✅ 통과 | Frontend 1048 통과 (67 파일), Backend 104 통과             |
-| **타입**   | ✅ 100% | TypeScript Strict Mode                                     |
-| **보안**   | ✅ 안전 | 취약점 0건                                                 |
-| **배포**   | ✅ 정상 | Mac Mini Docker + Cloudflare Tunnel (프론트 + 백엔드 통합) |
-| **도메인** | ✅ 활성 | `emelmujiro.com` (프론트) + `api.emelmujiro.com` (백엔드)  |
+| 항목       | 상태    | 세부사항                                                          |
+| ---------- | ------- | ----------------------------------------------------------------- |
+| **빌드**   | ✅ 정상 | Vite 8 (oxc/rolldown) + SSG 프리렌더 12 routes                    |
+| **CI/CD**  | ✅ 정상 | GitHub Actions → Mac Mini 자동 배포 (webhook)                     |
+| **테스트** | ✅ 통과 | Frontend 880 통과 (58 파일), Backend 104 통과                     |
+| **타입**   | ✅ 100% | TypeScript Strict Mode                                            |
+| **보안**   | ✅ 안전 | 취약점 0건, httpOnly JWT 쿠키                                     |
+| **배포**   | ✅ 정상 | Mac Mini Docker + Cloudflare Tunnel + 자동 배포 + 점검 페이지     |
+| **도메인** | ✅ 활성 | `emelmujiro.com` + `api.emelmujiro.com` + `deploy.emelmujiro.com` |
 
 ## 빠른 시작
 

@@ -94,7 +94,7 @@ lsof -ti:8000 | xargs kill -9
 ### Monorepo Structure
 
 - `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x
-- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Notification model + REST API + WebSocket consumer are implemented
+- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Notification model + REST API + WebSocket consumer are implemented. Chat feature has been permanently removed
 - Root `package.json` uses npm workspaces pointing to `frontend/`
 - Docker support: `docker-compose.yml` (prod: backend with SQLite by default; PostgreSQL via `--profile postgres`, Redis via `--profile redis`) and `docker-compose.dev.yml` (dev with hot-reload, same profile system). SQLite data persists in `sqlite_data` Docker volume (`SQLITE_DIR=/app/data`). Frontend runs as standalone `nginx:alpine` container with volume-mounted build output (not via docker-compose). `frontend/Dockerfile` exists for self-contained image builds but is not used in current deployment
 
@@ -106,11 +106,11 @@ Uses `createBrowserRouter` (BrowserRouter) in `frontend/src/App.tsx`. All pages 
 
 ### Blog (Active)
 
-Blog routes (`/blog`, `/blog/new`, `/blog/:id`) are now connected to the real backend API (`api.emelmujiro.com`). `BlogListPage`, `BlogDetail`, `BlogEditor` components are lazy-loaded in `App.tsx`. Blog data is fetched via `BlogContext` → `api.ts` → Django REST API.
+Blog routes (`/blog`, `/blog/new`, `/blog/:id`) are now connected to the real backend API (`api.emelmujiro.com`). `BlogListPage`, `BlogDetail`, `BlogEditor` components are lazy-loaded in `App.tsx`. Blog data is fetched via `BlogContext` → `api.ts` → Django REST API. When no blog posts exist, `BlogListPage` displays a "coming soon" empty state (`blog.comingSoon` / `blog.comingSoonDescription` i18n keys).
 
-### Under Construction Pages
+### CTA Navigation
 
-The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`) is available for future use with a `featureKey` prop (currently only `'blog'` is supported).
+All CTA buttons (HeroSection, CTASection, AboutPage, Footer) navigate to `/contact` (not `mailto:` links). Uses `localizedPath('/contact')` for language-aware routing.
 
 ### Contact Page (Google Form)
 
@@ -149,6 +149,8 @@ Loading skeleton uses **inline styles** (not Tailwind classes) so it's visible b
 
 Axios-based client in `src/services/api.ts`. All API methods (blog, contact, newsletter, auth, health, admin) are centralized in the `api` object with mock support. Auth methods (`getUser`, `login`, `logout`, `register`) are part of the `api` object — `AuthContext` imports `{ api }` not the default axios instance. 30s timeout with automatic retry on timeout. JWT auth uses **httpOnly cookies** (not localStorage) — cookies are set by the backend and sent automatically via `withCredentials: true`. 401 responses trigger automatic cookie-based token refresh via `POST /auth/token/refresh/`. HTTP is upgraded to HTTPS in production. `api.logout()` takes no arguments (backend reads refresh token from cookie).
 
+**auth_hint localStorage flag** — `AuthContext` checks for `auth_hint` in localStorage on mount. If no `auth_hint` is set, `getUser()` is skipped entirely to avoid 401/400 console spam for unauthenticated visitors. `auth_hint` is set to `'1'` on successful login and cleared on logout or when `getUser()` fails.
+
 ### Sentry
 
 `@sentry/react` v10 is integrated via `src/utils/sentry.ts`. Only three functions are exported: `initSentry` (called in `main.tsx`), `captureException` (used by `logger.ts`), `reportErrorBoundary` (called by `ErrorBoundary.tsx` in `componentDidCatch`). Only active when `ENABLE_SENTRY=true` and `SENTRY_DSN` is set (both default to off). No action needed unless enabling error tracking. `main.tsx` uses `env.IS_DEVELOPMENT` / `env.IS_PRODUCTION` from `src/config/env.ts` instead of `process.env.NODE_ENV`.
@@ -159,7 +161,7 @@ Axios-based client in `src/services/api.ts`. All API methods (blog, contact, new
 
 ### SSG / Prerendering
 
-`scripts/prerender.js` runs after `vite build` using Playwright (headless Chromium) to generate static HTML for each route in each language. The script starts a local static server, navigates to each route, waits for `window.__appLoaded === true`, marks `<div id="root">` with `data-prerendered="true"`, and captures the rendered HTML. Output: `build/<route>/index.html` for Korean, `build/en/<route>/index.html` for English (12 files total = 6 routes × 2 languages). `main.tsx` detects `data-prerendered` and uses `ReactDOM.hydrateRoot()` instead of `createRoot()`. `build:no-prerender` script skips the prerender step for faster local iteration. The shared route list is exported from `generate-sitemap.js` and imported by `prerender.js`.
+`scripts/prerender.js` runs after `vite build` using Playwright (headless Chromium) to generate static HTML for each route in each language. The script starts a local static server, navigates to each route, waits for `window.__appLoaded === true`, marks `<div id="root">` with `data-prerendered="true"`, and captures the rendered HTML. Output: `build/<route>/index.html` for Korean, `build/en/<route>/index.html` for English (12 files total = 6 routes × 2 languages). `main.tsx` always uses `ReactDOM.createRoot()` (never `hydrateRoot`) — prerendered HTML serves SEO only (crawlers read the static content). Hydration was disabled because Cloudflare Tunnel injects scripts that cause hydration mismatch errors. `build:no-prerender` script skips the prerender step for faster local iteration. The shared route list is exported from `generate-sitemap.js` and imported by `prerender.js`.
 
 ### Notification System
 
@@ -183,7 +185,7 @@ Backend: `Notification` model (`api/models.py`) with fields: user, title, messag
 
 ### i18n
 
-Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false`. All UI strings, data files, contexts, and SEO modules use i18n — no hardcoded Korean in components. Non-React files that need translations (e.g., data files) import `i18n` directly and call `i18n.t()`. The `blogPosts.ts` mock data file is an exception — it contains Korean content strings as placeholder blog post data, not UI strings.
+Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false` and `showSupportNotice: false` (suppresses Locize console ad). All UI strings, data files, contexts, and SEO modules use i18n — no hardcoded Korean in components. Non-React files that need translations (e.g., data files) import `i18n` directly and call `i18n.t()`. The `blogPosts.ts` mock data file is an exception — it contains Korean content strings as placeholder blog post data, not UI strings.
 
 **SEO bot detection** — `i18n.ts` detects search engine bots (Googlebot, Bingbot, etc.) via `navigator.userAgent`. A custom `urlPrefix` detector reads the language from the URL path (`/en/*` → `en`, otherwise `undefined` → falls back). Detection order: bots use `['urlPrefix', 'htmlTag']`, users use `['urlPrefix', 'localStorage', 'navigator', 'htmlTag']`. URL prefix always takes highest priority so `/en/about` renders English content regardless of other settings. Bot detection disables localStorage caching.
 
@@ -241,7 +243,7 @@ Vitest with jsdom environment. Config in `frontend/vitest.config.ts`. Setup file
 
 ### Global Test Mocks (setupTests.ts)
 
-These are mocked globally — do NOT re-mock in individual tests (with one exception noted below):
+These are mocked globally — do NOT re-mock in individual tests:
 
 - `lucide-react` (cached Proxy — creates and caches icon components on demand, renders `<svg data-testid="icon-{Name}" />`), `framer-motion` (motion/AnimatePresence), `react-helmet-async`
   - Tests should use the global mock and query icons via `data-testid="icon-{Name}"` (e.g., `icon-Mail`, `icon-Phone`, `icon-ExternalLink`)
@@ -261,7 +263,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 58 test files, 882 tests, 0 failures, 0 skips. Backend: 104 tests, 0 failures
+- 58 test files, 880 tests, 0 failures, 0 skips. Backend: 104 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
@@ -294,7 +296,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 - `build.target` is omitted — `@vitejs/plugin-legacy` sets targets automatically via its `targets` option (Chrome 64+)
 - `@vitejs/plugin-legacy` generates `nomodule` fallback bundles for older Chromium-based browsers (KakaoTalk in-app WebView, Samsung Internet ≥9.2)
 - `stripLocalhostCsp` custom plugin strips `localhost:8000`/`127.0.0.1:8000` from CSP `connect-src` in production builds (kept in dev for direct API calls)
-- CSP `script-src` includes `'unsafe-eval'` and `data:` — **required** by `@vitejs/plugin-legacy` (SystemJS polyfill uses `new Function()`, module detection uses `data:text/javascript,...` URIs). `'unsafe-inline'` is also required for `index.html` inline scripts (error handler, theme detection, KakaoTalk fallback)
+- CSP `script-src` includes `'unsafe-eval'`, `data:`, and `https://static.cloudflareinsights.com` — `'unsafe-eval'` and `data:` are **required** by `@vitejs/plugin-legacy` (SystemJS polyfill uses `new Function()`, module detection uses `data:text/javascript,...` URIs). `'unsafe-inline'` is also required for `index.html` inline scripts (error handler, theme detection, KakaoTalk fallback). `connect-src` includes `https://cloudflareinsights.com` for Cloudflare Web Analytics
 - Dev server proxies `/api` to `http://127.0.0.1:8000` (`strictPort: false` — tries next port if busy)
 
 ### Tailwind CSS 3.x
@@ -394,7 +396,7 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: Active only in tests or when `env.API_URL` is empty. Production uses `api.emelmujiro.com` (Mac Mini backend)
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 58 files / 882 tests, Backend 104 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
+4. **Test count**: Frontend 58 files / 880 tests, Backend 104 tests, 0 failures, E2E 5 spec files (as of 2026-03-18)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint 10 flat config**: Upgraded from v9 to v10. Root `package.json` eslint version must match frontend's (both `^10.x`). Don't downgrade — plugins are compatible with ESLint 10
@@ -403,7 +405,7 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 10. **Build uses separate tsconfig**: `tsconfig.build.json` excludes test types and files; the build script runs `tsc -p tsconfig.build.json`. Don't add test-only types (like `@testing-library/jest-dom`) to `tsconfig.build.json`. `tsconfig.ci.json` extends `tsconfig.build.json` with `strict: true` (only relaxes `noUnusedLocals`/`noUnusedParameters`)
 11. **CI cache**: Both `node_modules/` and `frontend/node_modules/` are cached using `hashFiles('package-lock.json')` (root lock file, not `frontend/package-lock.json` which doesn't exist in npm workspaces)
 12. **Sitemap generation in build**: `npm run build` first runs `scripts/generate-sitemap.js`. If this script fails, the entire build fails
-13. **Under construction routes**: `/blog` is active (connected to real backend). `/contact` uses Google Form embed (see "Contact Page" section). When switching `/contact` back to the backend API form, update `App.tsx`, `ContactPage.tsx`, and `e2e/contact.spec.ts`
+13. **Active routes**: `/blog` is active (connected to real backend; shows "coming soon" state when no posts exist). `/contact` uses Google Form embed (see "Contact Page" section). When switching `/contact` back to the backend API form, update `App.tsx`, `ContactPage.tsx`, and `e2e/contact.spec.ts`
 14. **Backend blog router**: `backend/api/urls.py` registers BlogPostViewSet with `basename="blog"` (NOT `"blog-posts"`). DRF generates URL names as `blog-list` and `blog-detail`
 15. **No dynamic Tailwind classes**: `bg-${var}-600` is purged at build time. Always use static class maps
 16. **No global focus box-shadow on buttons/links**: Only `input`/`textarea` have global focus ring in `index.css`. Adding `button:focus` box-shadow to global CSS will cause persistent focus boxes on mouse click
