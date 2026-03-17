@@ -37,6 +37,11 @@ vi.mock('../../../utils/logger', () => ({
   },
 }));
 
+// Mock sentry
+vi.mock('../../../utils/sentry', () => ({
+  reportErrorBoundary: vi.fn(),
+}));
+
 // Mock console.error to avoid cluttering test output
 const originalConsoleError = console.error;
 

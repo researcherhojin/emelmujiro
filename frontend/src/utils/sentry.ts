@@ -9,7 +9,7 @@ interface WindowWithDevTools extends Window {
 }
 
 interface ErrorInfo {
-  componentStack?: string;
+  componentStack?: string | null;
   digest?: string;
 }
 

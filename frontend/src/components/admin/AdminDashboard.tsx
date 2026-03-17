@@ -15,6 +15,7 @@ import {
   Eye,
 } from 'lucide-react';
 import logger from '../../utils/logger';
+import { api, blogService } from '../../services/api';
 
 interface DashboardStats {
   totalUsers: number;
@@ -51,35 +52,12 @@ const AdminDashboard: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch stats and content
-      // This would be replaced with actual API calls
-      setStats({
-        totalUsers: 1234,
-        totalPosts: 56,
-        totalMessages: 789,
-        totalViews: 45678,
-      });
-
-      setContentItems([
-        {
-          id: 1,
-          title: t('admin.mock.post1Title'),
-          type: 'blog',
-          status: 'published',
-          author: t('admin.administrator'),
-          createdAt: '2024-01-15',
-          views: 1234,
-        },
-        {
-          id: 2,
-          title: t('admin.mock.post2Title'),
-          type: 'page',
-          status: 'draft',
-          author: t('admin.administrator'),
-          createdAt: '2024-01-14',
-          views: 567,
-        },
+      const [statsRes, contentRes] = await Promise.all([
+        api.getAdminStats(),
+        api.getAdminContent(),
       ]);
+      setStats(statsRes.data);
+      setContentItems(contentRes.data);
     } catch (err) {
       logger.error('Failed to fetch dashboard data:', err);
       setError(t('admin.fetchError'));
@@ -107,8 +85,13 @@ const AdminDashboard: React.FC = () => {
     setDeleteConfirmId(id);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteConfirmId !== null) {
+      try {
+        await blogService.deletePost(deleteConfirmId);
+      } catch (err) {
+        logger.error('Failed to delete content:', err);
+      }
       setContentItems(contentItems.filter((item) => item.id !== deleteConfirmId));
       setDeleteConfirmId(null);
     }

@@ -4,10 +4,14 @@ import './index.css';
 import App from './App';
 import env from './config/env';
 import { initSentry } from './utils/sentry';
+import { initAnalytics } from './utils/analytics';
 import { initPerformanceMonitoring, checkPerformanceBudget } from './utils/webVitals';
 
 // Initialize Sentry error tracking (no-op unless VITE_ENABLE_SENTRY=true and VITE_SENTRY_DSN is set)
 initSentry();
+
+// Initialize Google Analytics (no-op unless VITE_ENABLE_ANALYTICS=true and VITE_GA_TRACKING_ID is set)
+initAnalytics();
 
 const rootElement = document.getElementById('root');
 

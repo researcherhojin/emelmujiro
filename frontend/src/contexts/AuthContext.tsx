@@ -45,16 +45,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const checkAuthStatus = async () => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      try {
-        const response = await api.getUser();
-        setUser(response.data);
-      } catch {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('refreshToken');
-        setUser(null);
-      }
+    try {
+      const response = await api.getUser();
+      setUser(response.data);
+    } catch {
+      setUser(null);
     }
     setLoading(false);
   };
@@ -64,10 +59,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
     try {
       const response = await api.login(email, password);
-      const { access, refresh, user: userData } = response.data;
-
-      localStorage.setItem('authToken', access);
-      localStorage.setItem('refreshToken', refresh);
+      const { user: userData } = response.data;
       setUser(userData);
     } catch (err) {
       const error = err as Error & { userMessage?: string };
@@ -79,16 +71,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const logout = useCallback(async () => {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (refreshToken) {
-      try {
-        await api.logout(refreshToken);
-      } catch {
-        // Proceed with local logout even if server call fails
-      }
+    try {
+      await api.logout();
+    } catch {
+      // Proceed with local logout even if server call fails
     }
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('refreshToken');
     setUser(null);
   }, []);
 
@@ -97,10 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
     try {
       const response = await api.register(email, password, name);
-      const { access, refresh, user: userData } = response.data;
-
-      localStorage.setItem('authToken', access);
-      localStorage.setItem('refreshToken', refresh);
+      const { user: userData } = response.data;
       setUser(userData);
     } catch (err) {
       const error = err as Error & { userMessage?: string };

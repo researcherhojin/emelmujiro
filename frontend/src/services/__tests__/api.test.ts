@@ -92,9 +92,8 @@ describe('API Service', () => {
       expect(mockResponseUse).toHaveBeenCalled();
     });
 
-    it('should add auth token to requests', async () => {
-      const token = 'test-token';
-      localStorage.setItem('authToken', token);
+    it('should not inject auth headers (cookies handle auth)', async () => {
+      localStorage.setItem('authToken', 'test-token');
 
       await import('../api');
 
@@ -106,7 +105,8 @@ describe('API Service', () => {
         } as InternalAxiosRequestConfig;
 
         const result = requestInterceptor(mockConfig);
-        expect(result.headers.Authorization).toBe(`Bearer ${token}`);
+        // Auth is handled via httpOnly cookies, not Authorization header
+        expect(result.headers.Authorization).toBeUndefined();
       }
     });
 

@@ -1,8 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, throttle_classes
+from rest_framework.decorators import api_view, throttle_classes, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.throttling import AnonRateThrottle
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
@@ -489,3 +489,44 @@ def send_test_email(request):
     except Exception as e:
         logger.error(f"Email send failure: {e}")
         return Response({"error": "이메일 전송에 실패했습니다."}, status=500)
+
+
+@api_view(["GET"])
+@permission_classes([IsAdminUser])
+def admin_stats(request):
+    """Admin dashboard statistics"""
+    from django.contrib.auth.models import User
+
+    total_users = User.objects.count()
+    total_posts = BlogPost.objects.count()
+    total_messages = Contact.objects.count()
+    total_views = SiteVisit.objects.count()
+
+    return Response(
+        {
+            "totalUsers": total_users,
+            "totalPosts": total_posts,
+            "totalMessages": total_messages,
+            "totalViews": total_views,
+        }
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAdminUser])
+def admin_content(request):
+    """Admin content list (blog posts)"""
+    posts = BlogPost.objects.all().order_by("-date")
+    items = [
+        {
+            "id": post.id,
+            "title": post.title,
+            "type": "blog",
+            "status": "published" if post.is_published else "draft",
+            "author": post.author,
+            "createdAt": post.date.strftime("%Y-%m-%d"),
+            "views": post.view_count,
+        }
+        for post in posts
+    ]
+    return Response(items)

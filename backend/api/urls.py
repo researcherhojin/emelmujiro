@@ -2,7 +2,6 @@ from django.conf import settings
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
-    TokenRefreshView,
     TokenVerifyView,
 )
 from .views import (
@@ -12,6 +11,8 @@ from .views import (
     health_check,
     CategoryListView,
     send_test_email,
+    admin_stats,
+    admin_content,
 )
 from .auth import (
     register,
@@ -20,6 +21,7 @@ from .auth import (
     get_user,
     update_user,
     change_password,
+    token_refresh,
 )
 from .swagger import schema_view
 
@@ -36,6 +38,9 @@ urlpatterns = [
     path("categories/", CategoryListView.as_view(), name="category-list"),
     # Health check
     path("health/", health_check, name="health-check"),
+    # Admin endpoints
+    path("admin/stats/", admin_stats, name="admin-stats"),
+    path("admin/content/", admin_content, name="admin-content"),
     # Authentication endpoints
     path("auth/register/", register, name="register"),
     path("auth/login/", login, name="login"),
@@ -44,7 +49,7 @@ urlpatterns = [
     path("auth/user/update/", update_user, name="update_user"),
     path("auth/change-password/", change_password, name="change_password"),
     # JWT token endpoints
-    path("auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("auth/token/refresh/", token_refresh, name="token_refresh"),
     path("auth/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     # API Documentation
     path(

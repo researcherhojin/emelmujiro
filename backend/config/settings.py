@@ -229,6 +229,13 @@ SESSION_COOKIE_SECURE = False if DEBUG else True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 
+# JWT cookie settings
+JWT_COOKIE_SECURE = False if DEBUG else True
+JWT_COOKIE_HTTPONLY = True
+JWT_COOKIE_SAMESITE = "Lax"
+JWT_ACCESS_COOKIE = "access_token"
+JWT_REFRESH_COOKIE = "refresh_token"
+
 # JWT settings
 from datetime import timedelta  # noqa: E402
 
@@ -257,7 +264,10 @@ SIMPLE_JWT = {
 
 # REST Framework settings
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "api.authentication.CookieJWTAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],

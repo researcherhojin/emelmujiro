@@ -9,10 +9,19 @@ import re
 class UserSerializer(serializers.ModelSerializer):
     """User serializer for authentication"""
 
+    role = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ["id", "username", "email", "first_name", "last_name"]
+        fields = ["id", "username", "email", "first_name", "last_name", "role"]
         read_only_fields = ["id"]
+
+    def get_role(self, obj):
+        if obj.is_superuser:
+            return "admin"
+        if obj.is_staff:
+            return "staff"
+        return "user"
 
 
 class BlogPostSerializer(serializers.ModelSerializer):

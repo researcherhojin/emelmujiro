@@ -56,12 +56,6 @@ axiosInstance.interceptors.request.use(
       config.baseURL = config.baseURL.replace('http://', 'https://');
     }
 
-    // Add auth token if available
-    const token = localStorage.getItem('authToken');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
     return config;
   },
   (error: AxiosError) => {
@@ -98,27 +92,14 @@ axiosInstance.interceptors.response.use(
       logger.error('API Error:', `${status} ${error.userMessage}`);
     }
 
-    // Handle 401 - Try refresh token, then clear auth
+    // Handle 401 - Try cookie-based token refresh
     if (status === 401 && originalRequest && !error._retry) {
       error._retry = true;
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (refreshToken) {
-        try {
-          const refreshResponse = await axios.post(`${API_URL}/auth/token/refresh/`, {
-            refresh: refreshToken,
-          });
-          const { access } = refreshResponse.data;
-          localStorage.setItem('authToken', access);
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${access}`;
-          }
-          return axiosInstance(originalRequest);
-        } catch {
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('refreshToken');
-        }
-      } else {
-        localStorage.removeItem('authToken');
+      try {
+        await axiosInstance.post('/auth/token/refresh/');
+        return axiosInstance(originalRequest);
+      } catch {
+        // Refresh failed - user needs to re-login
       }
     }
 
@@ -299,7 +280,7 @@ export const api = {
     }
     return axiosInstance.post('/auth/login/', { username: email, password });
   },
-  logout: (refreshToken: string) => {
+  logout: () => {
     if (USE_MOCK_API) {
       return Promise.resolve({
         data: {},
@@ -309,7 +290,7 @@ export const api = {
         config: {} as InternalAxiosRequestConfig,
       });
     }
-    return axiosInstance.post('/auth/logout/', { refresh: refreshToken });
+    return axiosInstance.post('/auth/logout/');
   },
   register: (email: string, password: string, name: string) => {
     if (USE_MOCK_API) {
@@ -332,6 +313,32 @@ export const api = {
       password_confirm: password,
       first_name: name,
     });
+  },
+
+  // Admin
+  getAdminStats: () => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { totalUsers: 0, totalPosts: 0, totalMessages: 0, totalViews: 0 },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get('/admin/stats/');
+  },
+  getAdminContent: () => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: [],
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get('/admin/content/');
   },
 
   // Health check

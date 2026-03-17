@@ -39,32 +39,25 @@ const TestComponent: React.FC = () => {
   );
 };
 
-// Mock localStorage
-const mockLocalStorage = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-};
-Object.defineProperty(window, 'localStorage', {
-  value: mockLocalStorage,
-});
-
 describe('AuthContext', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockLocalStorage.getItem.mockReturnValue(null);
+    // Default: no authenticated user (getUser rejects)
+    mockApi.getUser.mockRejectedValue(new Error('Not authenticated'));
   });
 
-  test('provides initial state', () => {
+  test('provides initial state', async () => {
     render(
       <AuthProvider>
         <TestComponent />
       </AuthProvider>
     );
 
+    await waitFor(() => {
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    });
+
     expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
-    expect(screen.getByTestId('loading')).toHaveTextContent('false');
     expect(screen.getByTestId('user')).toHaveTextContent('no-user');
   });
 
@@ -83,8 +76,11 @@ describe('AuthContext', () => {
       </AuthProvider>
     );
 
-    const loginButton = screen.getByText('Login');
+    await waitFor(() => {
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    });
 
+    const loginButton = screen.getByText('Login');
     fireEvent.click(loginButton);
 
     await waitFor(() => {
@@ -92,17 +88,11 @@ describe('AuthContext', () => {
     });
 
     expect(screen.getByTestId('user')).toHaveTextContent('test@example.com');
-
     expect(mockApi.login).toHaveBeenCalledWith('test@example.com', 'password');
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('authToken', 'fake-access-token');
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('refreshToken', 'fake-refresh-token');
   });
 
   test('handles logout', async () => {
-    // Start with authenticated user
-    mockLocalStorage.getItem.mockReturnValue('fake-token');
-    // Mock the checkAuth call that happens on mount
-    mockApi.getUser.mockRejectedValueOnce(new Error('ignored'));
+    mockApi.logout.mockResolvedValueOnce({});
 
     render(
       <AuthProvider>
@@ -110,23 +100,20 @@ describe('AuthContext', () => {
       </AuthProvider>
     );
 
-    // Wait for the mount checkAuthStatus to settle
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
 
     const logoutButton = screen.getByText('Logout');
-
     fireEvent.click(logoutButton);
 
-    expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
+    await waitFor(() => {
+      expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
+    });
     expect(screen.getByTestId('user')).toHaveTextContent('no-user');
-    expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('authToken');
   });
 
   test('checks auth status on mount', async () => {
-    mockLocalStorage.getItem.mockReturnValue('existing-token');
-
     mockApi.getUser.mockResolvedValueOnce({
       data: { email: 'existing@example.com', id: 1, name: 'Existing User' },
     });
@@ -142,8 +129,6 @@ describe('AuthContext', () => {
     });
 
     expect(screen.getByTestId('user')).toHaveTextContent('existing@example.com');
-
-    expect(mockLocalStorage.getItem).toHaveBeenCalledWith('authToken');
     expect(mockApi.getUser).toHaveBeenCalled();
   });
 
@@ -162,8 +147,11 @@ describe('AuthContext', () => {
       </AuthProvider>
     );
 
-    const loginButton = screen.getByText('Login');
+    await waitFor(() => {
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    });
 
+    const loginButton = screen.getByText('Login');
     fireEvent.click(loginButton);
 
     // After successful login, loading should be false
@@ -190,8 +178,11 @@ describe('AuthContext', () => {
       </AuthProvider>
     );
 
-    const loginButton = screen.getByText('Login');
+    await waitFor(() => {
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    });
 
+    const loginButton = screen.getByText('Login');
     fireEvent.click(loginButton);
 
     await waitFor(() => {
@@ -199,8 +190,6 @@ describe('AuthContext', () => {
     });
 
     expect(screen.getByTestId('user')).toHaveTextContent('no-user');
-
-    expect(mockLocalStorage.setItem).not.toHaveBeenCalledWith('authToken', expect.any(String));
   });
 
   test('throws error when used outside provider', () => {

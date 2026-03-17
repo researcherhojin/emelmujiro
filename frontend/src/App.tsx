@@ -10,6 +10,7 @@ import { PageLoading } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { SITE_URL } from './utils/constants';
+import { trackPageView } from './utils/analytics';
 import './i18n';
 
 // Lazy load even more components for better code splitting
@@ -42,6 +43,7 @@ const ScrollToTop: React.FC = memo(() => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    trackPageView(pathname);
   }, [pathname]);
 
   return null;

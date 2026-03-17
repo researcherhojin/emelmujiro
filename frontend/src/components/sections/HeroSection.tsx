@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CONTACT_EMAIL } from '../../utils/constants';
+import { trackCtaClick } from '../../utils/analytics';
 
 const HeroSection: React.FC = memo(() => {
   const { t } = useTranslation();
@@ -40,6 +41,7 @@ const HeroSection: React.FC = memo(() => {
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
+                onClick={() => trackCtaClick('hero')}
                 className="inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg font-bold text-white bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all rounded-xl sm:rounded-2xl"
               >
                 {t('common.inquireByEmail')}
