@@ -18,7 +18,10 @@ git pull origin main
 # Frontend build (nginx volume mount → live immediately, no container restart)
 echo "$LOG_PREFIX Building frontend..."
 cd frontend
-VITE_API_URL=https://api.emelmujiro.com/api npm run build
+VITE_API_URL=https://api.emelmujiro.com/api \
+VITE_ENABLE_SENTRY=true \
+VITE_SENTRY_DSN=https://30ed5ac82c70649b3193bfceeaaa00dc@o4506610315100160.ingest.us.sentry.io/4511061307555840 \
+npm run build
 
 # Backend rebuild (only restarts if code changed)
 echo "$LOG_PREFIX Rebuilding backend..."
