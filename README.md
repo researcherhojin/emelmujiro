@@ -1,4 +1,4 @@
-# 에멜무지로 (Emelmujiro) - AI 교육 & 컨설팅 플랫폼
+# Emelmujiro
 
 <div align="center">
 
@@ -6,85 +6,55 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-**[Live Site](https://emelmujiro.com)** | **[Report Bug](https://github.com/researcherhojin/emelmujiro/issues)**
+**[Live Site](https://emelmujiro.com)** | **[Issues](https://github.com/researcherhojin/emelmujiro/issues)**
 
 </div>
 
-## 프로젝트 개요
+A full-stack monorepo for an AI education & consulting platform, built with React 19, Django 5, and self-hosted on a Mac Mini via Docker + Cloudflare Tunnel.
 
-**에멜무지로**는 2022년부터 축적한 AI 교육 노하우와 실무 프로젝트 경험을 바탕으로, 기업 맞춤형 AI 솔루션을 제공하는 전문 컨설팅 플랫폼입니다.
+## Tech Stack
 
-### 핵심 서비스
+**Frontend** — React 19 · TypeScript 5.9 · Vite 8 · Tailwind CSS 3.4 · Framer Motion 12 · i18next 25 · React Router 7
 
-- **AI 교육 & 강의** — 기업 맞춤 AI 교육 프로그램 설계 및 운영
-- **AI 컨설팅** — AI 도입 전략 수립부터 기술 자문까지
-- **LLM/생성형 AI** — LLM 기반 서비스 설계 및 개발
-- **Computer Vision** — 영상 처리 및 비전 AI 솔루션
+**Backend** — Django 5.2 · DRF 3.16 · SQLite · JWT (httpOnly cookies) · WebSocket (Channels)
 
-## 빠른 시작
+**Testing** — Vitest 4 (880 tests) · Playwright E2E · MSW · Testing Library
+
+**Infra** — GitHub Actions · Docker Compose · Nginx · Cloudflare Tunnel · Node 24 · Python 3.12
+
+## Getting Started
 
 ```bash
 git clone https://github.com/researcherhojin/emelmujiro.git
 cd emelmujiro && npm install
-npm run dev              # Frontend (5173) + Backend (8000)
+npm run dev              # Frontend (localhost:5173) + Backend (localhost:8000)
 ```
 
 ```bash
-# 백엔드 (별도)
+# Backend (separate setup, requires uv)
 cd backend && uv sync && uv run python manage.py migrate
 uv run python manage.py runserver
 ```
 
-## 기술 스택
-
-**Frontend**<br/>
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-E91E63)
-![i18next](https://img.shields.io/badge/i18next-25-26A69A?logo=i18next&logoColor=white)
-![React Router](https://img.shields.io/badge/React_Router-7-CA4245?logo=reactrouter&logoColor=white)
-
-**Testing**<br/>
-![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?logo=vitest&logoColor=white)
-![Playwright](https://img.shields.io/badge/Playwright-1.55-2EAD33?logo=playwright&logoColor=white)
-![MSW](https://img.shields.io/badge/MSW-2-FF6A33?logo=mockserviceworker&logoColor=white)
-![Testing Library](https://img.shields.io/badge/Testing_Library-16-E33332?logo=testinglibrary&logoColor=white)
-
-**Backend**<br/>
-![Django](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)
-![DRF](https://img.shields.io/badge/DRF-3.16-A30000)
-![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
-
-**Infra**<br/>
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
-![Cloudflare](https://img.shields.io/badge/Cloudflare-Tunnel-F38020?logo=cloudflare&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
-![Nginx](https://img.shields.io/badge/Nginx-Alpine-009639?logo=nginx&logoColor=white)
-![Node](https://img.shields.io/badge/Node-24-5FA04E?logo=nodedotjs&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
-
-## 아키텍처
+## Architecture
 
 ```mermaid
 graph LR
-    subgraph Client["브라우저"]
-        React["React 19 SPA<br/>(BrowserRouter)"]
+    subgraph Client["Browser"]
+        React["React 19 SPA"]
     end
 
     subgraph CF["Cloudflare"]
         Tunnel["Cloudflare Tunnel"]
     end
 
-    subgraph MacMini["Mac Mini M2 Pro (Docker)"]
+    subgraph MacMini["Mac Mini (Docker)"]
         Nginx["nginx:alpine<br/>emelmujiro.com"]
         DRF["Django 5 + DRF<br/>api.emelmujiro.com"]
         DB[(SQLite)]
     end
 
-    React -->|"emelmujiro.com"| Tunnel
-    React -->|"api.emelmujiro.com"| Tunnel
+    React --> Tunnel
     Tunnel --> Nginx
     Tunnel --> DRF
     DRF --> DB
@@ -94,17 +64,21 @@ graph LR
     style CF fill:#FEF3C7,stroke:#D97706
 ```
 
-## 앞으로 할 것
+## Key Features
 
-| 작업               | 유형   | 설명                                    |
-| ------------------ | ------ | --------------------------------------- |
-| 블로그 글 작성     | 콘텐츠 | LLM, AI 에이전트, RAG 등 테크 블로그 글 |
-| 카카오톡 채널 연동 | 마케팅 | 문의 채널 다변화                        |
+- **Bilingual (i18n)** — URL-based language routing (`/about` for Korean, `/en/about` for English)
+- **SSG Prerendering** — 12 static HTML pages (6 routes × 2 languages) for SEO
+- **Blog** — Django-backed blog with premium UI, Article structured data, image protection
+- **Auth** — httpOnly cookie JWT with automatic token refresh
+- **Monitoring** — Sentry error tracking + Google Analytics
+- **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
+- **Auto-deploy** — GitHub Actions → webhook → Mac Mini build
 
-## 라이선스
+## Roadmap
 
-Apache License 2.0 — [LICENSE](LICENSE)
+- [ ] Publish first blog posts (LLM, AI agents, RAG)
+- [ ] KakaoTalk channel integration
 
----
+## License
 
-**문의**: [Issues](https://github.com/researcherhojin/emelmujiro/issues) | **사이트**: [emelmujiro.com](https://emelmujiro.com)
+[Apache License 2.0](LICENSE)
