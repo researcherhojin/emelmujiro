@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Construction } from 'lucide-react';
 import SEOHelmet from '../common/SEOHelmet';
 import { SITE_URL } from '../../utils/constants';
 import BlogCard from './BlogCard';
@@ -83,9 +83,10 @@ const BlogListPage: React.FC = memo(() => {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                   {t('blog.comingSoon')}
                 </h2>
-                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-8">
                   {t('blog.comingSoonDescription')}
                 </p>
+                <Construction className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600" />
               </div>
             )
           )}
