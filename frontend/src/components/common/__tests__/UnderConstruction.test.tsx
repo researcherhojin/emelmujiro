@@ -67,16 +67,6 @@ describe('UnderConstruction', () => {
     expect(screen.getByText('underConstruction.features.blog')).toBeInTheDocument();
   });
 
-  it('renders chat feature description', () => {
-    render(
-      <MemoryRouter>
-        <UnderConstruction featureKey="chat" />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText('underConstruction.features.chat')).toBeInTheDocument();
-  });
-
   it('navigates home on button click', () => {
     render(
       <MemoryRouter>

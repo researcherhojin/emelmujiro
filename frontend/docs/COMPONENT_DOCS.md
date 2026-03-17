@@ -117,24 +117,7 @@ src/components/
 - Form validation
 - Accessibility compliant
 
-### 5. ChatWidget Component
-
-**Location:** `/src/components/chat/ChatWidget.tsx`
-
-**Props:**
-
-- `className`: string (optional)
-
-**Features:**
-
-- Real-time messaging
-- File uploads
-- Emoji picker
-- Admin panel
-- Typing indicators
-- Quick replies
-
-### 6. NotificationPermission Component
+### 5. NotificationPermission Component
 
 **Location:** `/src/components/common/NotificationPermission.tsx`
 
@@ -154,14 +137,9 @@ All major components use React.memo for preventing unnecessary re-renders:
 
 - Button
 - Card
-- ChatWidget
 - ContactForm
 - SkeletonScreen
 - BlogCard
-- EmojiPicker
-- FileUpload
-- QuickReplies
-- TypingIndicator
 
 ### Code Splitting
 
@@ -190,10 +168,7 @@ const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
 **Usage:**
 
 ```tsx
-import {
-  markPerformance,
-  measurePerformance,
-} from '@/utils/performanceMonitor';
+import { markPerformance, measurePerformance } from '@/utils/performanceMonitor';
 
 markPerformance('component-start');
 // ... component logic
@@ -228,18 +203,6 @@ measurePerformance('component-load', 'component-start', 'component-end');
 - Language settings
 - Notification system
 - Loading states
-
-### ChatProvider
-
-**Location:** `/src/contexts/ChatContext.tsx`
-
-**Provides:**
-
-- Chat state management
-- Message history
-- Connection status
-- Business hours
-- Settings management
 
 ### BlogProvider
 

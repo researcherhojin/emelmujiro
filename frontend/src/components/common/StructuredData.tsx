@@ -232,7 +232,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
           '@type': 'Article',
           headline: article.title,
           description: article.description,
-          image: article.image || `${SITE_URL}/logo512.png`,
+          image: article.image || `${SITE_URL}/og-image.png`,
           author: {
             '@type': 'Person',
             name: article.author || t('seo.personName'),

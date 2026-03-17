@@ -84,8 +84,6 @@ describe('i18n configuration', () => {
       'admin',
       'blogEditor',
       'seo',
-      'chat',
-      'chatContext',
     ];
 
     expectedKeys.forEach((key) => {

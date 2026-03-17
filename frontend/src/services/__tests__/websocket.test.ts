@@ -72,7 +72,7 @@ describe('WebSocketService', () => {
       const onConnect = vi.fn();
       wsService.on('connect', onConnect);
 
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
 
       await vi.advanceTimersByTimeAsync(10);
       expect(onConnect).toHaveBeenCalled();
@@ -80,28 +80,28 @@ describe('WebSocketService', () => {
 
     it('should handle connection with authentication', async () => {
       const token = 'test-token';
-      wsService.connect('ws://localhost:8000/ws/chat/', { token });
+      wsService.connect('ws://localhost:8000/ws/test/', { token });
 
       await vi.advanceTimersByTimeAsync(10);
       expect(wsService.isConnected()).toBe(true);
     });
 
     it('should disconnect from WebSocket server', () => {
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       wsService.disconnect();
 
       expect(wsService.isConnected()).toBe(false);
     });
 
     it('should handle reconnection', async () => {
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       // Simulate disconnect
       wsService.disconnect();
 
       // Reconnect
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       expect(wsService.isConnected()).toBe(true);
@@ -111,7 +111,7 @@ describe('WebSocketService', () => {
       const onReconnect = vi.fn();
       wsService.on('reconnect', onReconnect);
       wsService.setAutoReconnect(true);
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
 
       await vi.advanceTimersByTimeAsync(10);
 
@@ -134,7 +134,7 @@ describe('WebSocketService', () => {
 
     it('should respect max reconnect attempts', async () => {
       wsService.setAutoReconnect(true, 2, 100);
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
 
       await vi.advanceTimersByTimeAsync(10);
 
@@ -153,7 +153,7 @@ describe('WebSocketService', () => {
 
   describe('Message Handling', () => {
     it('should send message when connected', async () => {
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       const message = { type: 'chat', text: 'Hello' };
@@ -179,7 +179,7 @@ describe('WebSocketService', () => {
 
       expect(wsService.getQueueSize()).toBe(2);
 
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       expect(wsService.getQueueSize()).toBe(0);
@@ -189,7 +189,7 @@ describe('WebSocketService', () => {
       const onMessage = vi.fn();
       wsService.on('message', onMessage);
 
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       const ws = (wsService as any).ws;
@@ -211,7 +211,7 @@ describe('WebSocketService', () => {
       wsService.on('chat', onChat);
       wsService.on('notification', onNotification);
 
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       const ws = (wsService as any).ws;
@@ -240,7 +240,7 @@ describe('WebSocketService', () => {
       const onError = vi.fn();
       wsService.on('error', onError);
 
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       const ws = (wsService as any).ws;
@@ -303,7 +303,7 @@ describe('WebSocketService', () => {
     it('should track connection state', async () => {
       expect(wsService.getState()).toBe('disconnected');
 
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       expect(wsService.getState()).toBe('connecting');
 
       await vi.advanceTimersByTimeAsync(10);
@@ -314,14 +314,14 @@ describe('WebSocketService', () => {
     });
 
     it('should track connection URL', () => {
-      const url = 'ws://localhost:8000/ws/chat/';
+      const url = 'ws://localhost:8000/ws/test/';
       wsService.connect(url);
 
       expect(wsService.getUrl()).toBe(url);
     });
 
     it('should clear state on disconnect', () => {
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       wsService.disconnect();
 
       expect(wsService.getUrl()).toBeNull();
@@ -334,7 +334,7 @@ describe('WebSocketService', () => {
       const onError = vi.fn();
       wsService.on('error', onError);
 
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       const ws = (wsService as any).ws;
@@ -346,7 +346,7 @@ describe('WebSocketService', () => {
     });
 
     it('should handle send errors', async () => {
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       // Close connection to cause send error
@@ -372,7 +372,7 @@ describe('WebSocketService', () => {
         // The connect method does `new WebSocket(url)` without try-catch,
         // so it will throw when the constructor throws.
         expect(() => {
-          wsService.connect('ws://localhost:8000/ws/chat/');
+          wsService.connect('ws://localhost:8000/ws/test/');
         }).toThrow('Connection failed');
       } finally {
         // Always restore MockWebSocket
@@ -383,7 +383,7 @@ describe('WebSocketService', () => {
 
   describe('Heartbeat/Ping', () => {
     it('should send heartbeat messages', async () => {
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       const sendSpy = vi.spyOn((wsService as any).ws, 'send');
@@ -397,7 +397,7 @@ describe('WebSocketService', () => {
 
     it('should stop heartbeat on disconnect', async () => {
       wsService.enableHeartbeat(100);
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
 
       await vi.advanceTimersByTimeAsync(10);
 
@@ -414,7 +414,7 @@ describe('WebSocketService', () => {
       const onPong = vi.fn();
       wsService.on('pong', onPong);
 
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       const ws = (wsService as any).ws;
@@ -433,7 +433,7 @@ describe('WebSocketService', () => {
   describe('Message History', () => {
     it('should store message history', async () => {
       wsService.enableHistory(10);
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
 
       await vi.advanceTimersByTimeAsync(10);
 
@@ -454,7 +454,7 @@ describe('WebSocketService', () => {
 
     it('should limit history size', async () => {
       wsService.enableHistory(3);
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
 
       await vi.advanceTimersByTimeAsync(10);
 
@@ -476,7 +476,7 @@ describe('WebSocketService', () => {
 
     it('should clear history', async () => {
       wsService.enableHistory(10);
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
 
       await vi.advanceTimersByTimeAsync(10);
 
@@ -496,7 +496,7 @@ describe('WebSocketService', () => {
 
   describe('Binary Data', () => {
     it('should send binary data', async () => {
-      wsService.connect('ws://localhost:8000/ws/chat/');
+      wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
 
       const buffer = new ArrayBuffer(8);

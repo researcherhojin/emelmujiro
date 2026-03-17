@@ -94,9 +94,9 @@ lsof -ti:8000 | xargs kill -9
 ### Monorepo Structure
 
 - `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x
-- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Chat/Redis excluded from 1.0 scope. Notification model + REST API + WebSocket consumer are implemented
+- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Notification model + REST API + WebSocket consumer are implemented
 - Root `package.json` uses npm workspaces pointing to `frontend/`
-- Docker support: `docker-compose.yml` (prod: backend with SQLite by default; PostgreSQL via `--profile postgres`, Redis via `--profile chat`) and `docker-compose.dev.yml` (dev with hot-reload, same profile system). SQLite data persists in `sqlite_data` Docker volume (`SQLITE_DIR=/app/data`). Frontend runs as standalone `nginx:alpine` container with volume-mounted build output (not via docker-compose). `frontend/Dockerfile` exists for self-contained image builds but is not used in current deployment
+- Docker support: `docker-compose.yml` (prod: backend with SQLite by default; PostgreSQL via `--profile postgres`, Redis via `--profile redis`) and `docker-compose.dev.yml` (dev with hot-reload, same profile system). SQLite data persists in `sqlite_data` Docker volume (`SQLITE_DIR=/app/data`). Frontend runs as standalone `nginx:alpine` container with volume-mounted build output (not via docker-compose). `frontend/Dockerfile` exists for self-contained image builds but is not used in current deployment
 
 ### Routing
 
@@ -110,7 +110,7 @@ Blog routes (`/blog`, `/blog/new`, `/blog/:id`) are now connected to the real ba
 
 ### Under Construction Pages
 
-Chat feature is **not functional** (1.0 이후 scope). `ChatWidget` is removed from `AppLayout` entirely. `ChatProvider` exists in `src/contexts/` for test compatibility but is NOT in `App.tsx` provider hierarchy. The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`) is still available for future use.
+The `UnderConstruction` component (`src/components/common/UnderConstruction.tsx`) is available for future use with a `featureKey` prop (currently only `'blog'` is supported).
 
 ### Contact Page (Google Form)
 
@@ -138,8 +138,7 @@ Loading skeleton uses **inline styles** (not Tailwind classes) so it's visible b
 
 ### State Management
 
-- **React Context** — All state management via UIContext, AuthContext, BlogContext, FormContext, ChatContext (all in `src/contexts/`). All providers use `useMemo` for value objects and `useCallback` for functions to prevent unnecessary re-renders.
-- **ChatContext split** — `ChatContext.tsx` imports types/helpers from `chatHelpers.ts` (types, defaults, utilities) and delegates WebSocket logic to `useChatConnection.ts` (custom hook). Consumer code imports from `ChatContext.tsx` which re-exports all types.
+- **React Context** — All state management via UIContext, AuthContext, BlogContext, FormContext (all in `src/contexts/`). All providers use `useMemo` for value objects and `useCallback` for functions to prevent unnecessary re-renders.
 - **Types** — `src/types/index.ts` exports: `BlogPost`, `ContactFormData`, `PaginatedResponse`, `ErrorResponse`.
 
 ### Mock API System
@@ -176,7 +175,7 @@ Backend: `Notification` model (`api/models.py`) with fields: user, title, messag
 
 ### Provider Hierarchy
 
-`App.tsx` wraps the app in: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > BlogProvider > FormProvider > RouterProvider`. ChatProvider is excluded (chat is under construction).
+`App.tsx` wraps the app in: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > BlogProvider > FormProvider > RouterProvider`.
 
 ### Route Protection
 
@@ -184,7 +183,7 @@ Backend: `Notification` model (`api/models.py`) with fields: user, title, messag
 
 ### i18n
 
-Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false`. All UI strings, data files, contexts, and SEO modules use i18n — no hardcoded Korean in components. Non-React files that need translations (e.g., `websocket.ts`, `ChatContext.tsx`) import `i18n` directly and call `i18n.t()`. The `blogPosts.ts` mock data file is an exception — it contains Korean content strings as placeholder blog post data, not UI strings.
+Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false`. All UI strings, data files, contexts, and SEO modules use i18n — no hardcoded Korean in components. Non-React files that need translations (e.g., data files) import `i18n` directly and call `i18n.t()`. The `blogPosts.ts` mock data file is an exception — it contains Korean content strings as placeholder blog post data, not UI strings.
 
 **SEO bot detection** — `i18n.ts` detects search engine bots (Googlebot, Bingbot, etc.) via `navigator.userAgent`. A custom `urlPrefix` detector reads the language from the URL path (`/en/*` → `en`, otherwise `undefined` → falls back). Detection order: bots use `['urlPrefix', 'htmlTag']`, users use `['urlPrefix', 'localStorage', 'navigator', 'htmlTag']`. URL prefix always takes highest priority so `/en/about` renders English content regardless of other settings. Bot detection disables localStorage caching.
 
@@ -245,8 +244,7 @@ Vitest with jsdom environment. Config in `frontend/vitest.config.ts`. Setup file
 These are mocked globally — do NOT re-mock in individual tests (with one exception noted below):
 
 - `lucide-react` (cached Proxy — creates and caches icon components on demand, renders `<svg data-testid="icon-{Name}" />`), `framer-motion` (motion/AnimatePresence), `react-helmet-async`
-  - **Exception**: Chat component tests (`ChatWindow`, `AdminPanel`, `MessageList`, `FileUpload`, `EmojiPicker`) must keep local `framer-motion` and/or `lucide-react` mocks because: (a) global framer-motion Proxy passes motion-specific props to DOM causing React warnings; (b) chat tests match icon names as text content (`screen.getByText('Send')`) which doesn't work with the global SVG mock
-  - Non-chat tests should use the global mock and query icons via `data-testid="icon-{Name}"` (e.g., `icon-Mail`, `icon-Phone`, `icon-ExternalLink`)
+  - Tests should use the global mock and query icons via `data-testid="icon-{Name}"` (e.g., `icon-Mail`, `icon-Phone`, `icon-ExternalLink`)
 - Browser APIs: `matchMedia`, `IntersectionObserver`, `ResizeObserver`, `localStorage`, `sessionStorage`, `navigator.serviceWorker`, `fetch`, `requestAnimationFrame`, `performance`, `window.gtag`
 - Window: `alert`, `confirm`, `prompt`, `scrollTo`, `CSS.supports`, `location`, `history`, `innerWidth` (1024), `innerHeight` (768)
 - Navigator: `onLine` (true), `language` (`'ko-KR'`)
@@ -255,7 +253,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 ### Test Utilities
 
-- `renderWithProviders` in `src/test-utils/renderWithProviders.tsx` — Wraps component in all providers (HelmetProvider, UIProvider, AuthProvider, BlogProvider, FormProvider, MemoryRouter). Uses `MemoryRouter` (not HashRouter) — correct for tests since it's controllable and doesn't require hash prefix. ChatProvider is excluded due to WebSocket complexity.
+- `renderWithProviders` in `src/test-utils/renderWithProviders.tsx` — Wraps component in all providers (HelmetProvider, UIProvider, AuthProvider, BlogProvider, FormProvider, MemoryRouter). Uses `MemoryRouter` (not HashRouter) — correct for tests since it's controllable and doesn't require hash prefix.
 - Individual wrappers: `renderWithBlogProvider`, `renderWithAuthProvider`, `renderWithUIProvider`, `renderWithFormProvider`, `renderWithRouter` (in `renderWithProviders.tsx`).
 - `src/test-utils/` also has: MSW mock server setup (`mocks/server.ts`, `mocks/handlers.ts`), polyfills.
 
@@ -263,7 +261,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 67 test files, 1048 tests, 0 failures, 0 skips. Backend: 104 tests, 0 failures
+- 58 test files, 882 tests, 0 failures, 0 skips. Backend: 104 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
@@ -324,7 +322,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - `SECRET_KEY` **required** in production (`DEBUG=False`); raises `ImproperlyConfigured` if missing
 - Database: SQLite by default. Set `DATABASE_URL` for PostgreSQL — parsed via `urllib.parse.urlparse` (no `dj-database-url` dependency)
 - Channel Layers: Redis when `REDIS_URL` is set, InMemoryChannelLayer otherwise
-- WebSocket: `ChatConsumer` requires authentication (rejects `AnonymousUser` in `connect()`); client message types are whitelisted via `ALLOWED_MESSAGE_TYPES` — invalid types are rejected with error (not silently defaulted)
+- WebSocket: `NotificationConsumer` requires authentication (rejects `AnonymousUser` in `connect()`)
 - JWT: access 30min, refresh 7 days, rotation + blacklist. `rest_framework_simplejwt.token_blacklist` is in INSTALLED_APPS — logout endpoint blacklists refresh tokens. Auth uses **httpOnly cookies** (`access_token`, `refresh_token`) via `CookieJWTAuthentication` (`api/authentication.py`) — reads from cookie first, falls back to `Authorization` header. Cookie settings: `JWT_COOKIE_HTTPONLY=True`, `JWT_COOKIE_SECURE=True` in production, `JWT_COOKIE_SAMESITE="Lax"`. All auth endpoints (`login`, `register`, `logout`, `change_password`, `token_refresh`) set/clear cookies automatically via `_set_jwt_cookies()`/`_clear_jwt_cookies()` helpers in `auth.py`
 - DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr. Pagination: `StandardPagination` (page_size=10, max_page_size=100, `?page_size=N` query param)
 - File upload validation: `api/validators.py` — case-insensitive extension, MIME type, size (5MB)
@@ -396,7 +394,7 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: Active only in tests or when `env.API_URL` is empty. Production uses `api.emelmujiro.com` (Mac Mini backend)
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 67 files / 1048 tests, Backend 104 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
+4. **Test count**: Frontend 58 files / 882 tests, Backend 104 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint 10 flat config**: Upgraded from v9 to v10. Root `package.json` eslint version must match frontend's (both `^10.x`). Don't downgrade — plugins are compatible with ESLint 10
@@ -405,11 +403,11 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 10. **Build uses separate tsconfig**: `tsconfig.build.json` excludes test types and files; the build script runs `tsc -p tsconfig.build.json`. Don't add test-only types (like `@testing-library/jest-dom`) to `tsconfig.build.json`. `tsconfig.ci.json` extends `tsconfig.build.json` with `strict: true` (only relaxes `noUnusedLocals`/`noUnusedParameters`)
 11. **CI cache**: Both `node_modules/` and `frontend/node_modules/` are cached using `hashFiles('package-lock.json')` (root lock file, not `frontend/package-lock.json` which doesn't exist in npm workspaces)
 12. **Sitemap generation in build**: `npm run build` first runs `scripts/generate-sitemap.js`. If this script fails, the entire build fails
-13. **Under construction routes**: Chat is under construction (1.0 이후). `/blog` is active (connected to real backend). `/contact` uses Google Form embed (see "Contact Page" section). When re-enabling chat, restore `ChatWidget` in `AppLayout` and add `ChatProvider` to `App.tsx` provider hierarchy. When switching `/contact` back to the backend API form, update `App.tsx`, `ContactPage.tsx`, and `e2e/contact.spec.ts`
+13. **Under construction routes**: `/blog` is active (connected to real backend). `/contact` uses Google Form embed (see "Contact Page" section). When switching `/contact` back to the backend API form, update `App.tsx`, `ContactPage.tsx`, and `e2e/contact.spec.ts`
 14. **Backend blog router**: `backend/api/urls.py` registers BlogPostViewSet with `basename="blog"` (NOT `"blog-posts"`). DRF generates URL names as `blog-list` and `blog-detail`
 15. **No dynamic Tailwind classes**: `bg-${var}-600` is purged at build time. Always use static class maps
 16. **No global focus box-shadow on buttons/links**: Only `input`/`textarea` have global focus ring in `index.css`. Adding `button:focus` box-shadow to global CSS will cause persistent focus boxes on mouse click
-17. **setTimeout cleanup**: All `setTimeout` calls in components and contexts must store the timer ID in a `useRef(null)` and `clearTimeout` in the useEffect cleanup to prevent memory leaks. Already applied in: `UIContext`, `FormContext`, `Navbar`, `Footer`, `BlogInteractions`, `BlogSearch`, `ChatContext` (reconnect timer). Follow the same pattern for any new `setTimeout` usage
+17. **setTimeout cleanup**: All `setTimeout` calls in components and contexts must store the timer ID in a `useRef(null)` and `clearTimeout` in the useEffect cleanup to prevent memory leaks. Already applied in: `UIContext`, `FormContext`, `Navbar`, `Footer`, `BlogInteractions`, `BlogSearch`. Follow the same pattern for any new `setTimeout` usage
 18. **Comments in English**: All code comments must be in English. Korean comments were converted to English across the entire codebase (sentry.ts, logger.ts, BlogContext.tsx, api.ts, global.d.ts, etc.). Do not add Korean comments
 19. **Logger has no named exports**: `logger.ts` only exports `default` (singleton instance). Import as `import logger from '../utils/logger'`, not destructured. Uses `env.IS_DEVELOPMENT` from `config/env.ts` — do NOT use `process.env.NODE_ENV` directly in frontend code
 20. **No `window.alert()` in components**: Use inline toast state pattern instead (`ToastState` interface + `useRef` timer + auto-dismiss + `role="alert"` element). Already applied in `BlogEditor.tsx` and `SharePage.tsx`. Tests assert via `screen.getByRole('alert')`, not `alertSpy`
@@ -421,7 +419,6 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 26. **Backend dev deps use `--extra dev`**: Dev tools (black, flake8, pytest) are in `[project.optional-dependencies]` not `[tool.uv.dev-dependencies]`. Use `uv sync --extra dev` (not `uv sync --dev`). CI uses `uv sync --frozen --extra dev`
 27. **react-helmet-async v3 ships own types**: `@types/react-helmet-async` is deprecated and removed. The custom `src/@types/react-helmet-async.d.ts` is also removed. Do not re-add either
 28. **KakaoTalk WebView — React loads normally, errors visible**: React app renders in all browsers including Android KakaoTalk. Do NOT block React from loading or hide `#root` for any browser. iOS KakaoTalk shows a dismissible banner with `kakaotalk://web/openExternal` scheme. If rendering fails, `__showError()` displays the error + user agent on-screen with a `kakaotalk://web/openExternal` button (for KakaoTalk) or reload button. `window.__appLoaded` must be set inside `AppLayout` (not provider level) — setting it too early suppresses all error handlers
-29. **OG image uses logo512.png**: No dedicated `og-image.png` exists. All OG/Twitter image references (`index.html`, `SEOHelmet.tsx`, `StructuredData.tsx`, `constants.ts`) point to `logo512.png` (1024x1024). Replace references when a proper 1200x630 OG image is designed
+29. **OG image**: `og-image.png` (1200x630) is used for all OG/Twitter meta tags (`index.html`, `SEOHelmet.tsx`, `StructuredData.tsx`, `constants.ts`). Generated via `npm run generate:og-image` (`scripts/generate-og-image.js`, uses Playwright). `logo512.png` is still used for favicon, app icons, and schema.org Organization `logo` fields
 30. **FAQPage/Course schemas are static only**: FAQPage and Course JSON-LD are in `index.html` as static markup (crawlers read these without JS). Do NOT add them to `StructuredData.tsx` — that creates duplicate structured data when React renders
 31. **AdminDashboard sub-components**: `AdminSidebar`, `AdminOverview`, `AdminContentTable`, `DeleteConfirmModal` are extracted as sub-components within the same file (following the component extraction pattern). Props interfaces: `SidebarProps`, `OverviewProps`, `ContentTableProps`, `DeleteModalProps`
-32. **ChatContext static values**: `agentAvailable`, `agentName`, `agentAvatar`, `settings` are plain constants (not useState) since chat is under construction and setters were never called

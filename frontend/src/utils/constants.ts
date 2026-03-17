@@ -82,5 +82,5 @@ export const getDefaultMeta = () => ({
   title: i18n.t('constants.defaultMeta.title'),
   description: i18n.t('constants.defaultMeta.description'),
   keywords: i18n.t('constants.defaultMeta.keywords'),
-  ogImage: `${SITE_URL}/logo512.png`,
+  ogImage: `${SITE_URL}/og-image.png`,
 });

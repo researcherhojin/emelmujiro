@@ -6,9 +6,6 @@ import { BlogProvider } from '../contexts/BlogContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { UIProvider } from '../contexts/UIContext';
 import { FormProvider } from '../contexts/FormContext';
-// ChatProvider is disabled in test environment
-// ChatProvider has complex dependencies (WebSocket, timers) that cause issues in tests
-// Tests that specifically need ChatProvider should import it directly
 
 // Custom render function with all providers
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {

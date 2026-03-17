@@ -12,7 +12,7 @@ services:
     environment:
       - DEBUG=True
       - DATABASE_URL=
-      # REDIS_URL is only needed when running with the "chat" profile
+      # REDIS_URL is only needed when running with the "redis" profile
       # - REDIS_URL=redis://redis:6379/0
     env_file:
       - ./backend/.env.dev
@@ -60,7 +60,7 @@ services:
     profiles:
       - postgres
 
-  # Redis — only started with: docker compose --profile chat up
+  # Redis — only started with: docker compose --profile redis up
   redis:
     image: redis:7-alpine
     container_name: emelmujiro-redis-dev
@@ -73,7 +73,7 @@ services:
     networks:
       - emelmujiro-network
     profiles:
-      - chat
+      - redis
 
 volumes:
   postgres_data_dev:

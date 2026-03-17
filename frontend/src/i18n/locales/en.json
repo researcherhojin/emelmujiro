@@ -568,8 +568,7 @@
     "goBack": "Go Back",
     "features": {
       "blog": "We're preparing the blog. We'll be back soon with the latest AI trends and insights.",
-      "contact": "The contact page is being prepared. Please email us directly at researcherhojin@gmail.com.",
-      "chat": "The chat feature is being prepared."
+      "contact": "The contact page is being prepared. Please email us directly at researcherhojin@gmail.com."
     }
   },
   "serverError": {
@@ -931,137 +930,6 @@
       }
     }
   },
-  "chat": {
-    "autoReply": {
-      "checking": "Thank you. We are reviewing your inquiry.",
-      "willHelp": "Yes, we will help you. Please wait a moment.",
-      "forwarded": "Your inquiry has been forwarded to the person in charge. We will respond as soon as possible.",
-      "askMore": "If you need additional information, please feel free to ask.",
-      "confirmed": "Confirmed. We will provide you with detailed guidance."
-    },
-    "title": "Customer Support",
-    "open": "Open chat",
-    "close": "Close chat",
-    "minimize": "Minimize",
-    "maximize": "Maximize",
-    "send": "Send",
-    "typing": "Typing...",
-    "export": "Export",
-    "exportTranscript": "Export chat transcript",
-    "exportSuccess": "Chat transcript downloaded.",
-    "attachFile": "Attach file",
-    "addEmoji": "Add emoji",
-    "downloadFile": "Download file",
-    "retry": "Retry",
-    "scrollToBottom": "Scroll to latest message",
-    "businessHours": "Business hours: {{hours}}",
-    "status": {
-      "online": "Online",
-      "offline": "Offline",
-      "afterHours": "After hours",
-      "busy": "Busy",
-      "connected": "Connected",
-      "connecting": "Connecting..."
-    },
-    "quickInfo": {
-      "available": "Chat with us now!",
-      "unavailable": "Leave us a message"
-    },
-    "placeholder": {
-      "connected": "Type a message...",
-      "disconnected": "Connecting..."
-    },
-    "connectionStatus": {
-      "reconnecting": "Connecting... Messages will be sent once connected."
-    },
-    "afterHours": {
-      "title": "Outside business hours",
-      "message": "Business hours: {{hours}}"
-    },
-    "error": {
-      "sendFailed": "Failed to send message.",
-      "fileTooLarge": "File is too large. (Max 10MB)",
-      "uploadFailed": "Failed to upload file.",
-      "exportFailed": "Failed to export chat transcript."
-    },
-    "emptyState": {
-      "title": "Start a conversation",
-      "subtitle": "Feel free to ask us anything."
-    },
-    "quickReplies": {
-      "title": "Choose a quick reply",
-      "service": "Service inquiry",
-      "technical": "Technical support",
-      "pricing": "Pricing inquiry",
-      "contact": "Contact inquiry",
-      "or": "or type your message"
-    },
-    "emoji": {
-      "title": "Choose an emoji",
-      "search": "Search emoji...",
-      "noResults": "No results found",
-      "tip": "Click an emoji to add it",
-      "smileys": "Smileys",
-      "gestures": "Gestures",
-      "objects": "Objects",
-      "symbols": "Symbols",
-      "select": "Select emoji: {{emoji}}"
-    },
-    "fileUpload": {
-      "title": "File Upload",
-      "invalidType": "Unsupported file type.",
-      "success": "File uploaded successfully.",
-      "failed": "File upload failed.",
-      "dropHere": "Drop your file here",
-      "dragDrop": "Drag and drop a file or",
-      "browse": "Browse files",
-      "upload": "Upload",
-      "completed": "Upload complete",
-      "uploading": "Uploading...",
-      "allowedTypes": "Supported file types:",
-      "fileTooLarge": "File is too large. (Max {{maxSize}})",
-      "maxSize": "Max {{size}}",
-      "formats": "Images, PDF, Documents, Videos, Audio"
-    },
-    "admin": {
-      "title": "Chat Admin Panel",
-      "settings": "Settings",
-      "cannedResponses": "Canned Responses",
-      "statistics": "Statistics",
-      "users": "Users",
-      "connected": "Connected",
-      "welcomeMessage": "Welcome message",
-      "maxMessageLength": "Max message length",
-      "features": "Feature settings",
-      "allowFileUpload": "Allow file upload",
-      "allowEmoji": "Allow emoji",
-      "soundEnabled": "Enable notification sound",
-      "saveSettings": "Save settings",
-      "settingsSaved": "Settings saved.",
-      "settingsSaveFailed": "Failed to save settings.",
-      "add": "Add",
-      "refresh": "Refresh",
-      "totalMessages": "Total messages",
-      "userMessages": "User messages",
-      "avgResponseTime": "Avg response time",
-      "satisfaction": "Satisfaction",
-      "businessHours": "Business status",
-      "currentlyOpen": "Currently open",
-      "currentlyClosed": "Currently closed",
-      "activeUsers": "Active users",
-      "online": "Online",
-      "anonymousUser": "Anonymous user",
-      "addCannedResponse": "Add new canned response...",
-      "noActiveUsers": "No active users at the moment.",
-      "connectionTime": "Connected:",
-      "lastActivity": "Last activity:",
-      "fiveMinAgo": "5 min ago",
-      "justNow": "Just now",
-      "refreshStats": "Refresh statistics",
-      "adminPanel": "Admin panel",
-      "mockResponseTime": "2.3 min"
-    }
-  },
   "constants": {
     "inquiryTypes": {
       "consulting": "AI Consulting",
@@ -1103,33 +971,6 @@
       "title": "Emelmujiro - AI Software Development & IT Education Expert",
       "description": "We provide comprehensive IT services including custom solution development, corporate education, and LLM implementation using AI technology.",
       "keywords": "AI, artificial intelligence, machine learning, deep learning, LLM, corporate education, IT consulting"
-    }
-  },
-  "chatContext": {
-    "businessHours": "Weekdays 09:00 - 18:00 (KST)",
-    "welcomeMessage": "Hello! Welcome to Emelmujiro customer support. How can we help you?",
-    "agentName": "Emelmujiro Agent",
-    "offlineMessage": "You are currently offline. Messages will be sent once connected.",
-    "quickReplies": {
-      "service": "Service inquiry",
-      "techSupport": "Technical support",
-      "pricing": "Pricing",
-      "reservation": "Book a consultation",
-      "other": "Other"
-    },
-    "cannedResponses": {
-      "thanks": "Thank you. We're glad we could help.",
-      "agentConnecting": "Connecting you to an agent. Please wait a moment.",
-      "needMoreInfo": "We need more information. Could you provide more details?",
-      "checkResolved": "Has your issue been resolved? Let us know if you need further assistance.",
-      "anytimeHelp": "Feel free to contact us anytime you need help."
-    },
-    "notifications": {
-      "connected": "Connected to chat.",
-      "connectionFailed": "Failed to connect to chat.",
-      "reconnecting": "Reconnecting to chat...",
-      "reconnectFailed": "Failed to reconnect to chat.",
-      "initFailed": "Failed to initialize chat."
     }
   },
   "profileData": {

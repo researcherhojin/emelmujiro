@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 
 interface UnderConstructionProps {
-  featureKey?: 'blog' | 'chat';
+  featureKey?: 'blog';
 }
 
 const UnderConstruction: React.FC<UnderConstructionProps> = memo(({ featureKey }) => {

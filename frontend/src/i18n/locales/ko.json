@@ -552,8 +552,7 @@
     "goBack": "이전 페이지로",
     "features": {
       "blog": "블로그를 준비 중입니다. 최신 AI 트렌드와 인사이트를 담아 곧 돌아오겠습니다.",
-      "contact": "문의 페이지를 준비 중입니다. 이메일(researcherhojin@gmail.com)로 직접 문의해 주세요.",
-      "chat": "채팅 기능을 준비 중입니다."
+      "contact": "문의 페이지를 준비 중입니다. 이메일(researcherhojin@gmail.com)로 직접 문의해 주세요."
     }
   },
   "serverError": {
@@ -915,137 +914,6 @@
       }
     }
   },
-  "chat": {
-    "autoReply": {
-      "checking": "감사합니다. 문의 내용을 확인하고 있습니다.",
-      "willHelp": "네, 도와드리겠습니다. 잠시만 기다려주세요.",
-      "forwarded": "해당 문의는 담당자에게 전달되었습니다. 빠른 시일 내에 답변 드리겠습니다.",
-      "askMore": "추가 정보가 필요하시면 언제든 말씀해주세요.",
-      "confirmed": "확인했습니다. 자세한 안내를 드리겠습니다."
-    },
-    "title": "고객 지원",
-    "open": "채팅 열기",
-    "close": "채팅 닫기",
-    "minimize": "최소화",
-    "maximize": "최대화",
-    "send": "전송",
-    "typing": "입력 중...",
-    "export": "내보내기",
-    "exportTranscript": "대화 내용 내보내기",
-    "exportSuccess": "채팅 기록을 다운로드했습니다.",
-    "attachFile": "파일 첨부",
-    "addEmoji": "이모지 추가",
-    "downloadFile": "파일 다운로드",
-    "retry": "다시 시도",
-    "scrollToBottom": "최신 메시지로 이동",
-    "businessHours": "운영시간: {{hours}}",
-    "status": {
-      "online": "온라인",
-      "offline": "오프라인",
-      "afterHours": "운영시간 외",
-      "busy": "상담 중",
-      "connected": "연결됨",
-      "connecting": "연결 중..."
-    },
-    "quickInfo": {
-      "available": "지금 채팅하세요!",
-      "unavailable": "메시지를 남겨주세요"
-    },
-    "placeholder": {
-      "connected": "메시지를 입력하세요...",
-      "disconnected": "연결 중..."
-    },
-    "connectionStatus": {
-      "reconnecting": "연결 중... 메시지는 연결 후 전송됩니다."
-    },
-    "afterHours": {
-      "title": "운영시간 외입니다",
-      "message": "운영시간: {{hours}}"
-    },
-    "error": {
-      "sendFailed": "메시지 전송에 실패했습니다.",
-      "fileTooLarge": "파일 크기가 너무 큽니다. (최대 10MB)",
-      "uploadFailed": "파일 업로드에 실패했습니다.",
-      "exportFailed": "채팅 기록 내보내기에 실패했습니다."
-    },
-    "emptyState": {
-      "title": "대화를 시작해보세요",
-      "subtitle": "궁금한 점이 있으시면 편하게 말씀해주세요."
-    },
-    "quickReplies": {
-      "title": "빠른 답변을 선택하세요",
-      "service": "서비스 문의",
-      "technical": "기술 지원",
-      "pricing": "요금 문의",
-      "contact": "연락처 문의",
-      "or": "또는 직접 메시지를 입력하세요"
-    },
-    "emoji": {
-      "title": "이모지 선택",
-      "search": "이모지 검색...",
-      "noResults": "검색 결과가 없습니다",
-      "tip": "이모지를 클릭하여 추가하세요",
-      "smileys": "표정",
-      "gestures": "제스처",
-      "objects": "사물",
-      "symbols": "기호",
-      "select": "이모지 선택: {{emoji}}"
-    },
-    "fileUpload": {
-      "title": "파일 업로드",
-      "invalidType": "지원하지 않는 파일 형식입니다.",
-      "success": "파일이 성공적으로 업로드되었습니다.",
-      "failed": "파일 업로드에 실패했습니다.",
-      "dropHere": "여기에 파일을 놓아주세요",
-      "dragDrop": "파일을 끌어다 놓거나",
-      "browse": "파일 선택",
-      "upload": "업로드",
-      "completed": "업로드 완료",
-      "uploading": "업로드 중...",
-      "allowedTypes": "지원 파일 형식:",
-      "fileTooLarge": "파일 크기가 너무 큽니다. (최대 {{maxSize}})",
-      "maxSize": "최대 {{size}}",
-      "formats": "이미지, PDF, 문서, 동영상, 음성파일"
-    },
-    "admin": {
-      "title": "채팅 관리자 패널",
-      "settings": "설정",
-      "cannedResponses": "자동 응답",
-      "statistics": "통계",
-      "users": "사용자",
-      "connected": "연결됨",
-      "welcomeMessage": "환영 메시지",
-      "maxMessageLength": "최대 메시지 길이",
-      "features": "기능 설정",
-      "allowFileUpload": "파일 업로드 허용",
-      "allowEmoji": "이모지 사용 허용",
-      "soundEnabled": "알림음 활성화",
-      "saveSettings": "설정 저장",
-      "settingsSaved": "설정이 저장되었습니다.",
-      "settingsSaveFailed": "설정 저장에 실패했습니다.",
-      "add": "추가",
-      "refresh": "새로고침",
-      "totalMessages": "총 메시지",
-      "userMessages": "사용자 메시지",
-      "avgResponseTime": "평균 응답시간",
-      "satisfaction": "만족도",
-      "businessHours": "운영 현황",
-      "currentlyOpen": "현재 운영 중",
-      "currentlyClosed": "현재 운영 종료",
-      "activeUsers": "활성 사용자",
-      "online": "온라인",
-      "anonymousUser": "익명 사용자",
-      "addCannedResponse": "새 자동 응답 추가...",
-      "noActiveUsers": "현재 활성 사용자가 없습니다.",
-      "connectionTime": "연결 시간:",
-      "lastActivity": "마지막 활동:",
-      "fiveMinAgo": "5분 전",
-      "justNow": "방금 전",
-      "refreshStats": "통계 새로고침",
-      "adminPanel": "관리자 패널",
-      "mockResponseTime": "2.3분"
-    }
-  },
   "constants": {
     "inquiryTypes": {
       "consulting": "AI 컨설팅",
@@ -1087,33 +955,6 @@
       "title": "에멜무지로 - AI 기반 소프트웨어 개발 및 IT 교육 전문가",
       "description": "AI 기술을 활용한 맞춤형 솔루션 개발, 기업 교육, LLM 구축 등 종합 IT 서비스를 제공합니다.",
       "keywords": "AI, 인공지능, 머신러닝, 딥러닝, LLM, 기업교육, IT컨설팅"
-    }
-  },
-  "chatContext": {
-    "businessHours": "평일 09:00 - 18:00 (KST)",
-    "welcomeMessage": "안녕하세요! 에멜무지로 고객 지원입니다. 무엇을 도와드릴까요?",
-    "agentName": "에멜무지로 상담원",
-    "offlineMessage": "현재 오프라인 상태입니다. 연결 후 메시지가 전송됩니다.",
-    "quickReplies": {
-      "service": "서비스 문의",
-      "techSupport": "기술 지원",
-      "pricing": "요금 안내",
-      "reservation": "상담 예약",
-      "other": "기타 문의"
-    },
-    "cannedResponses": {
-      "thanks": "감사합니다. 도움이 되셨다면 기쁩니다.",
-      "agentConnecting": "상담원 연결 중입니다. 잠시만 기다려주세요.",
-      "needMoreInfo": "추가 정보가 필요합니다. 조금 더 자세히 설명해 주시겠어요?",
-      "checkResolved": "문제가 해결되셨나요? 추가 도움이 필요하시면 말씀해주세요.",
-      "anytimeHelp": "언제든지 도움이 필요하시면 편하게 문의해주세요."
-    },
-    "notifications": {
-      "connected": "채팅에 연결되었습니다.",
-      "connectionFailed": "채팅 연결에 실패했습니다.",
-      "reconnecting": "채팅 재연결 중...",
-      "reconnectFailed": "채팅 재연결에 실패했습니다.",
-      "initFailed": "채팅 초기화에 실패했습니다."
     }
   },
   "profileData": {
