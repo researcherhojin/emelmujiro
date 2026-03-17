@@ -39,7 +39,7 @@ const BlogDetailPage: React.FC = memo(() => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
           <p className="text-red-600 dark:text-red-400">{error}</p>
           <button
@@ -55,7 +55,7 @@ const BlogDetailPage: React.FC = memo(() => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {post && (
           <SEOHelmet
             title={`${post.title} | ${t('blogDetail.blogTitle')}`}

@@ -178,7 +178,7 @@ const BlogEditor: React.FC = () => {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
           <h2 className="text-2xl font-bold mb-4">{t('blogEditor.adminRequired')}</h2>
           <p className="text-gray-600 mb-8">{t('blogEditor.adminDescription')}</p>
@@ -200,7 +200,7 @@ const BlogEditor: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen bg-gray-50">
       {toast && (
         <div
           className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white transition-opacity ${
