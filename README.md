@@ -852,6 +852,7 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
   - D5: AdminDashboard 네비게이션 핸들러 `useNavigate` 연결
   - D6: AdminDashboard 서브컴포넌트 추출 (AdminSidebar, AdminOverview, AdminContentTable, DeleteConfirmModal)
   - D7: ChatContext 미사용 useState → 상수 전환
+- **ESLint 0 경고 복구**: ChatContext `ChatSettings` 미사용 import 제거
 - **테스트**: 67 파일, 1048 테스트, 0 실패 / Backend 90 테스트, 0 실패
 
 ### 0.9.9 (2026.03.17)

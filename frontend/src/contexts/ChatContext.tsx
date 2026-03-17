@@ -14,7 +14,6 @@ import i18n from '../i18n';
 import {
   ChatMessage,
   BusinessHours,
-  ChatSettings,
   ChatContextType,
   getDefaultBusinessHours,
   getDefaultSettings,
