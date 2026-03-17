@@ -35,24 +35,3 @@ export const renderWithProviders = (
 // Re-export everything
 export * from '@testing-library/react';
 export { renderWithProviders as render };
-
-// Additional utility functions for testing contexts
-export const renderWithBlogProvider = (ui: ReactElement): RenderResult => {
-  return rtlRender(<BlogProvider>{ui}</BlogProvider>);
-};
-
-export const renderWithAuthProvider = (ui: ReactElement): RenderResult => {
-  return rtlRender(<AuthProvider>{ui}</AuthProvider>);
-};
-
-export const renderWithUIProvider = (ui: ReactElement): RenderResult => {
-  return rtlRender(<UIProvider>{ui}</UIProvider>);
-};
-
-export const renderWithFormProvider = (ui: ReactElement): RenderResult => {
-  return rtlRender(<FormProvider>{ui}</FormProvider>);
-};
-
-export const renderWithRouter = (ui: ReactElement): RenderResult => {
-  return rtlRender(<Router>{ui}</Router>);
-};
