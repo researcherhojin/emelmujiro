@@ -219,59 +219,18 @@ emelmujiro/
 
 ## 앞으로 할 것
 
-> **코드 품질 작업은 19차 감사로 전량 완료.** 아래는 기능 구현 및 배포 관련 남은 작업입니다.
->
-> **1.0 범위**: Blog ✅ + Contact (Google Form) ✅ + Auth (httpOnly JWT) ✅ + Admin Dashboard ✅ — 남은 작업: A1 (Google Form 자동 메일), A4 (OG 이미지), B4 (이메일 연동) | **1.0 이후**: 실시간 채팅, Notification, SSG
-
-### 즉시 실행 가능 (백엔드 배포 불필요)
+> **1.0 범위**: Blog ✅ + Contact (Google Form) ✅ + Auth (httpOnly JWT) ✅ + Admin Dashboard ✅ — 남은: A1, A4, B4 | **1.0 이후**: 실시간 채팅, Notification, SSG
 
 | #   | 작업                           | 우선순위 | 설명                                                                      |
 | --- | ------------------------------ | -------- | ------------------------------------------------------------------------- |
 | A1  | **Google Form 자동 메일 설정** | 높음     | Apps Script 트리거 등록 → 신청자 확인 메일 + 운영자 알림 메일 (하단 참조) |
-| A2  | ~~**Google Analytics 연동**~~  | ✅ 완료  | `analytics.ts` 구현, 페이지 뷰 + CTA 클릭 추적, CSP 업데이트 완료         |
-| A3  | ~~**Sentry 활성화**~~          | ✅ 완료  | ErrorBoundary → `reportErrorBoundary()` 연동 완료, DSN 설정만 하면 활성화 |
 | A4  | **OG 이미지 제작**             | 낮음     | 1200x630 전용 이미지 디자인 (현재 `logo512.png` 사용 중)                  |
-| A5  | ~~**Lighthouse CI 자동화**~~   | ✅ 완료  | `pr-checks.yml`에 LHCI job 추가 완료                                      |
-
-### 배포 (Mac Mini)
-
-> **배포 전략**: 프론트엔드 + 백엔드 모두 Mac Mini M2 Pro/32GB에서 Docker로 배포. Cloudflare Tunnel로 외부 노출 (HTTPS 자동). 프론트엔드는 nginx `try_files`로 SPA 라우팅 처리 (HTTP 200 보장).
-
-```mermaid
-graph LR
-    B1["✅ B1 Mac Mini 세팅"] --> B2["✅ B2 Mock API 해제"]
-    B1 --> B4["B4 이메일 연동"]
-    B1 --> B5["✅ B5 JWT → httpOnly"]
-    B1 --> B7["✅ B7 초기 데이터"]
-    B1 --> B8["✅ B8 커스텀 도메인"]
-    B1 --> B9["✅ B9 SiteVisit 정리"]
-    B1 --> B10["✅ B10 프론트엔드 통합"]
-    B2 --> B3["✅ B3 블로그 해제"]
-    B2 --> B6["✅ B6 Admin 대시보드"]
-
-    style B1 fill:#D1FAE5,stroke:#059669
-    style B2 fill:#D1FAE5,stroke:#059669
-    style B3 fill:#D1FAE5,stroke:#059669
-    style B5 fill:#D1FAE5,stroke:#059669
-    style B6 fill:#D1FAE5,stroke:#059669
-    style B7 fill:#D1FAE5,stroke:#059669
-    style B8 fill:#D1FAE5,stroke:#059669
-    style B9 fill:#D1FAE5,stroke:#059669
-    style B10 fill:#D1FAE5,stroke:#059669
-```
-
-| #   | 작업                             | 의존성  | 설명                                                                       |
-| --- | -------------------------------- | ------- | -------------------------------------------------------------------------- |
-| B1  | ~~**Mac Mini 백엔드 배포**~~     | ✅ 완료 | Docker Compose (Django + SQLite), Cloudflare Tunnel (`api.emelmujiro.com`) |
-| B2  | ~~**Mock API → Real API 전환**~~ | ✅ 완료 | `VITE_API_URL=https://api.emelmujiro.com/api` 설정 완료                    |
-| B3  | ~~**블로그 공사 중 해제**~~      | ✅ 완료 | `App.tsx` 라우트 복원, 실제 블로그 데이터 API 연동                         |
-| B4  | **이메일 발송 연동**             | B1      | Contact 폼 SMTP/SendGrid 연동 (현재 Google Form 임베드 사용 중)            |
-| B5  | ~~**JWT → httpOnly 쿠키**~~      | ✅ 완료 | `CookieJWTAuthentication` 구현, 프론트/백 완전 이전, localStorage 제거     |
-| B6  | ~~**Admin 대시보드 API 연동**~~  | ✅ 완료 | `/api/admin/stats/` + `/api/admin/content/` 엔드포인트, 프론트엔드 연동    |
-| B7  | ~~**초기 데이터**~~              | ✅ 완료 | `createsuperuser` + Django Admin으로 블로그 포스트 생성                    |
-| B8  | ~~**커스텀 도메인**~~            | ✅ 완료 | `emelmujiro.com` + `api.emelmujiro.com` Cloudflare Tunnel DNS              |
-| B9  | ~~**SiteVisit 정기 정리**~~      | ✅ 완료 | `scripts/cleanup-sitevisits.sh` cron 스크립트 작성, 명령어 구현 완료       |
-| B10 | ~~**프론트엔드 Mac Mini 통합**~~ | ✅ 완료 | GitHub Pages → nginx Docker, Cloudflare Tunnel로 SPA 라우팅 200 보장       |
+| B4  | **이메일 발송 연동**           | 중간     | Contact 폼 SMTP/SendGrid 연동 (현재 Google Form 임베드 사용 중)           |
+| D8  | **SiteVisit cron 실제 등록**   | 낮음     | `scripts/cleanup-sitevisits.sh` 작성 완료, Mac Mini crontab 등록 필요     |
+| C2  | **SSG / Prerendering**         | 장기     | 정적 HTML 생성 → 크롤러 완성된 HTML 수신 (react-snap 또는 Next.js)        |
+| C3  | **`hreflang` 다국어 SEO**      | 장기     | `/ko/about`, `/en/about` + `hreflang` 태그                                |
+| C4  | **실시간 채팅**                | 1.0 이후 | WebSocket/Redis/Channels 구현, `ChatWidget` AppLayout 복원                |
+| C5  | **Notification 모델**          | 1.0 이후 | `consumers.py` 스텁 → Django 모델 + REST API + WebSocket 핸들러           |
 
 <details>
 <summary>Mac Mini vs 클라우드 비교</summary>
@@ -288,43 +247,6 @@ graph LR
 **현재 선택 이유**: 개인 프로젝트 + 소규모 트래픽 + 비용 최소화. SQLite로 운영 부담 최소화 (DB 컨테이너 불필요, 백업은 파일 복사 한 줄). 서비스가 커지면 같은 Docker 이미지를 클라우드에 올리고 `DATABASE_URL`만 바꿔 PostgreSQL로 전환 가능.
 
 </details>
-
-### 코드 품질 (20차 감사 결과)
-
-> 20차 전체 코드베이스 감사로 식별된 항목입니다. D1-D7 완료 (2026-03-17).
-
-#### 테스트 커버리지 보완 ✅
-
-| #   | 작업                                | 상태 | 설명                                                                |
-| --- | ----------------------------------- | ---- | ------------------------------------------------------------------- |
-| D1  | **Admin API 엔드포인트 테스트**     | ✅   | 백엔드 8개 테스트 추가 (권한 검증 + 응답 데이터 확인)               |
-| D2  | **CookieJWTAuthentication 테스트**  | ✅   | 5개 테스트 추가 (쿠키 인증, 헤더 폴백, 만료 토큰)                   |
-| D3  | **token_refresh 엔드포인트 테스트** | ✅   | 8개 테스트 추가 (쿠키/본문 리프레시, 로테이션, 블랙리스트)          |
-| D4  | **analytics.ts 유틸리티 테스트**    | ✅   | 7개 테스트 추가 (`initAnalytics`, `trackPageView`, `trackCtaClick`) |
-
-#### Admin 대시보드 기능 완성 ✅
-
-| #   | 작업                             | 상태 | 설명                                                                                 |
-| --- | -------------------------------- | ---- | ------------------------------------------------------------------------------------ |
-| D5  | **Admin 네비게이션 연결**        | ✅   | `onCreate`/`onView`/`onEdit` → `useNavigate` 연결 완료                               |
-| D6  | **AdminDashboard 컴포넌트 분리** | ✅   | AdminSidebar, AdminOverview, AdminContentTable, DeleteConfirmModal 서브컴포넌트 추출 |
-
-#### 데드 코드 정리
-
-| #   | 작업                                 | 상태 | 설명                                                                           |
-| --- | ------------------------------------ | ---- | ------------------------------------------------------------------------------ |
-| D7  | **ChatContext 미사용 state → const** | ✅   | `agentAvailable`, `agentName`, `agentAvatar`, `settings` → 상수로 전환 완료    |
-| D8  | **SiteVisit cron 실제 등록**         | 🔲   | `scripts/cleanup-sitevisits.sh` 스크립트 작성 완료, Mac Mini crontab 등록 필요 |
-
-### 장기 개선 사항
-
-| #   | 작업                       | 설명                                                                                   |
-| --- | -------------------------- | -------------------------------------------------------------------------------------- |
-| C1  | ~~**BrowserRouter 전환**~~ | ✅ 완료 — `/#/about` → `/about`, nginx `try_files` SPA 라우팅 (HTTP 200), SEO 클린 URL |
-| C2  | **SSG / Prerendering**     | 정적 HTML 생성 → 크롤러 완성된 HTML 수신 (react-snap 또는 Next.js)                     |
-| C3  | **`hreflang` 다국어 SEO**  | `/ko/about`, `/en/about` + `hreflang` 태그                                             |
-| C4  | **실시간 채팅**            | WebSocket/Redis/Channels 구현, `ChatWidget` AppLayout 복원 (프론트엔드 UI 완성 상태)   |
-| C5  | **Notification 모델**      | `consumers.py:224,230` 스텁 → Django 모델 + REST API + WebSocket 핸들러                |
 
 ## 배포 가이드
 
@@ -667,162 +589,6 @@ function onFormSubmit(e) {
 
 **총 해결: Critical 13 / High 29 / Medium 59 / Low 41 / Backend 7 / 이슈 아님 6건**
 
-<details>
-<summary>감사 상세 기록 (클릭하여 펼치기)</summary>
-
-### 19차 감사 (2026.03.13)
-
-- **H1** KakaoTalk Android 흰화면 근본 원인 수정 — `AppLoaded` 컴포넌트가 `RouterProvider` 형제로 배치되어 provider 마운트 시점에 `__appLoaded = true` 설정 → 5초 폴백 + `__showError()` 전부 무력화. `AppLoaded`를 `AppLayout`(router layout) 내부 `useEffect`로 이동하여 실제 화면 렌더링 후에만 설정
-- **M1** 미사용 kakao-redirect 정적 div + redirect links 빌드 스크립트 제거 (~50줄) — 이전 redirect-before-React 접근의 잔여 코드
-- **L1** `global.d.ts`에서 미사용 `__legacyFailed`, `__isInAppBrowser` 타입 제거, `__errors` 타입 추가
-- **L2** CLAUDE.md KakaoTalk 섹션 업데이트 — `AppLayout` 기반 `__appLoaded` 규칙 문서화, pitfall #28 강화
-
-### 18차 감사 (2026.03.12)
-
-- **H1** KakaoTalk Android 리다이렉트 제거 — `document.write()` 차단 + `main.tsx` 가드 삭제, React 앱이 모든 브라우저에서 정상 로딩 (`@vitejs/plugin-legacy` nomodule 폴백이 구형 WebView 커버). Layout.tsx 배너는 유지
-- **M1** 깨진 `og-image.png` 삭제 (UTF-8 텍스트 파일이었음) → 모든 OG/Twitter 이미지 참조를 `logo512.png`로 교체 (index.html, SEOHelmet, StructuredData, constants)
-- **M2** SEO 강화 — FAQPage 구조화 데이터 4개 Q&A (Google 리치 스니펫), Course 스키마 (교육 프로그램), Organization `alternateName`에 검색 변형 추가, 메타 title/description 키워드 보강, `og:image:type`/`og:image:alt` 추가, noscript 내비게이션 링크
-- **M3** `ContactRateThrottle.rate` 불일치 수정 — views.py `"3/hour"` → `"5/hour"` (settings.py `"contact": "5/hour"`와 일치)
-- **M4** docker-compose.yml `SECRET_KEY` — 약한 플레이스홀더 기본값 → `${SECRET_KEY:?SECRET_KEY must be set}` (미설정 시 에러)
-- **L1** `ContactAttempt._log_contact_attempt` email 정규화 — `(email or "").strip().lower()` 적용 (empty string vs None 일관성, unique_together 제약조건 보호)
-- **L2** `main.tsx` serviceWorker 해제 코드 try-catch 래핑 — 인앱 브라우저에서 `navigator.serviceWorker` 접근 시 예외 발생 가능, Promise `.catch()` 추가
-- **L3** `Layout.tsx` 배너를 iOS KakaoTalk 전용으로 변경 — `__isKakaoInApp && !__isKakaoAndroid` 조건, `kakaotalk://web/openExternal` 스킴 사용
-- **L4** Android KakaoTalk 에러 가시성 강화 — `window.onerror` + `unhandledrejection` → `__showError()`로 에러 텍스트 + `intent://` 외부 브라우저 버튼 표시, 5초 폴백도 동일 UI 사용
-- **L5** CLAUDE.md KakaoTalk 섹션 업데이트 — 리다이렉트 전략 → 정상 로딩 전략 반영, iOS 배너/Android 에러 가시성 문서화, OG 이미지/StructuredData 피트폴 추가 (#28~#30)
-
-### 17차 감사 (2026.03.10)
-
-- **H1** KakaoTalk Android 흰 화면 근본 수정 — 기존 다층 폴백(legacy 번들 강제 로딩, 2초/5초 타임아웃) 실패: module 스크립트가 부분 실행되어 React가 `#root` 스켈레톤을 제거한 후 크래시 → 모든 폴백 무력화. `document.write()` 즉시 정적 "외부 브라우저에서 열기" 페이지 + `intent://` 스킴으로 전환. iOS KakaoTalk(WKWebView)은 정상이므로 Android만 적용
-- **M1** `main.tsx`에 `window.__isKakaoAndroid` 가드 추가 — Android KakaoTalk에서 React 초기화 완전 차단 (불필요한 리소스 사용 방지)
-- **M2** 5초 일반 폴백이 `#loading-fallback` 대신 `#root`를 직접 타겟하도록 수정 — React가 이미 `#root` 내용을 교체한 경우에도 폴백 정상 표시
-
-### 16차 감사 (2026.03.10)
-
-- **C1** `cleanup_sitevisits.py` 필드명 오류: `visited_at` → `visit_time` (모델 필드명과 불일치, 런타임 FieldError)
-- **L1** ChatConsumer 미도달 핸들러 `file_upload`/`system_message` 제거 — `ALLOWED_MESSAGE_TYPES` 화이트리스트에 없어 도달 불가
-- **L2** `swagger.py` 미사용 파라미터 정의 5개 제거 (`auth_header`, `page_param`, `page_size_param`, `search_param`, `category_param`)
-- **L3** `sentry.ts` 미사용 함수 6개 제거 (`setSentryUser`, `setSentryContext`, `captureMessage`, `addBreadcrumb`, `startTransaction`, `measurePerformance`)
-- **L4** `constants.ts` 미사용 상수 4개 제거 (`ANIMATION_DURATION`, `BREAKPOINTS`, `API_ENDPOINTS`, `STORAGE_KEYS`) + 해당 테스트 제거
-- **L5** API 테스트 4파일 → 2파일 통합: `api.comprehensive.test.ts`, `api.integration.test.ts` 삭제, CRUD 테스트는 `api.additional.test.ts`로 병합
-- **L6** CLAUDE.md/README.md 테스트 수 업데이트: 69파일/1109 → 67파일/1060
-
-### 15차 감사 (2026.03.10)
-
-- **M1** `frontend/.prettierrc` printWidth: 80 → 100 — 루트 설정과 일치시켜 충돌 제거
-- **M2** MessageList.tsx `innerHTML = ''` → DOM `removeChild` 루프로 XSS 안전하게 변경
-- **M3** MessageList.tsx 파일명 sanitize 강화 — `<>` 뿐 아니라 `"'&`도 제거
-- **M4** 백엔드 CSP `frame-src 'none'` → `frame-src https://www.google.com https://recaptcha.google.com` (reCAPTCHA iframe 허용)
-- **L1** DRF 페이지네이션 `MAX_PAGE_SIZE=100` 보호 — 커스텀 `StandardPagination` 클래스로 `page_size` 쿼리 파라미터 + 상한 적용
-- **L2** `manage.py cleanup_sitevisits` 명령어 추가 — `--days 90` (기본), `--dry-run` 옵션으로 SiteVisit 테이블 정리
-
-### 14차 감사 (2026.03.10)
-
-- **H1** WebSocket `datetime.now()` → `timezone.now()` 통일 — USE_TZ=True 설정과 일치 (consumers.py 7곳)
-- **H2** ContactAttempt 경쟁 조건 수정 — `attempt_count += 1` → `F("attempt_count") + 1` 원자적 증가 (views.py)
-- **M1** 잘못된 WebSocket 메시지 타입 → 기본값 할당 대신 에러 반환 + 거부 (consumers.py)
-- **M2** BlogInteractions 클립보드 복사 실패 시 "복사됨" 상태 표시 방지 + logger.warn 추가
-- **M3** `SESSION_SAVE_EVERY_REQUEST` 제거 — 불필요한 매 요청 DB 세션 저장 (settings.py)
-- **L1** tsconfig.ci.json `strict: true` 추가 — CLAUDE.md 문서와 실제 설정 일치
-- **L2** Dependabot: 루트 npm 엔트리 추가 (eslint, husky, prettier 등 루트 의존성 업데이트)
-- **L3** Backend Dockerfile.dev: non-root 사용자 추가 — 프로덕션 Dockerfile과 보안 일관성
-
-### 13차 감사 (2026.03.10)
-
-- **H1** GitHub Actions 최신 안정 버전 통일: checkout@v6, setup-node@v6, cache@v5, upload-artifact@v7, download-artifact@v8, configure-pages@v5 (main-ci-cd.yml + pr-checks.yml)
-- **H2** `DEFAULT_FROM_EMAIL` None 방지 — `EMAIL_HOST_USER or "noreply@emelmujiro.com"` 폴백 추가, `ADMIN_EMAIL` 기본값 실제 이메일로 수정
-- **M1** Lighthouse CI URL: dev 포트 5173 → preview 포트 4173 (프로덕션 빌드 테스트)
-- **M2** Dependabot: frontend testing 그룹에 `vitest*` 추가
-- **M3** Dependabot: backend pip 의존성 그룹핑 (django, testing, dev-tools)
-- **M4** Codecov: project status를 frontend/backend 별도 플래그로 분리 (프론트만 변경 시 백엔드 커버리지 불요)
-- **M5** Codecov: ignore 패턴에 `*.spec.tsx`, `*.test.jsx` 추가
-- **L1** 백엔드 미사용 import 제거 (admin.py, tests.py), CategoryListView dict 캐싱
-- **L2** Docker Node 24→22 LTS (Dockerfile + Dockerfile.dev)
-
-### 12차 감사 (2026.03.10)
-
-- **H1** StructuredData.tsx 하드코딩 영어 6건 → i18n `t()` 호출 전환 (contactType, countryName, personAlternateName, personJobTitle, knowsAbout)
-- **H2** SEOHelmet.tsx 하드코딩 영어 2건 → i18n `t()` 호출 전환 (contactType, countryName)
-- **M1** ESLint 9 → 10 업그레이드 (root + frontend package.json 동기화, CLAUDE.md 문서 반영)
-- **M2** `global.d.ts` Window 인터페이스에 `__legacyFailed` 타입 추가 (KakaoTalk fallback용)
-- **L1** backend `uv.lock` redis 7.2.1 → 7.3.0 동기화, en.json/ko.json SEO i18n 키 추가
-
-### 11차 감사 (2026.03.10)
-
-- **H1** CI `uv sync --frozen` → `uv sync --frozen --extra dev` — black/flake8/pytest가 `[project.optional-dependencies]`에 있어 설치 누락
-- **H2** Django 5.2.11 → 5.2.12 보안 패치 (CVE-2026-25673: DoS via slow URL normalization)
-- **H3** PR backend tests에 `SECRET_KEY`/`DEBUG`/`DATABASE_URL` 환경변수 누락 → `ImproperlyConfigured` 에러
-- **M1** Trivy action 0.34.1 → 0.35.0 (설치 실패 해결)
-- **M2** 백엔드 코드 black 포맷팅 수정 (7파일) + flake8 에러 수정 (F541, F841, E402 noqa)
-- **M3** react-helmet-async 2.0.5 → 3.0.0 + `@types/react-helmet-async` 제거 (v3 자체 타입 제공)
-- **L1** Dependabot PR 7건 처리 (4건 머지, 2건 직접 적용 후 닫음, 1건 Python 3.14 미정식으로 닫음)
-
-### 10차 감사 (2026.03.10)
-
-- **H1** KakaoTalk 인앱 WebView 백지 문제 — `type="module"` 미실행 시 plain `<script>`에서 legacy 번들 강제 로딩 (2초 `__appLoaded` 체크)
-- **H2** Layout.tsx 카카오 배너 하드코딩 한국어 → `t('common.kakaoBanner')` / `t('common.openExternal')` i18n 키 전환
-- **H3** `window.open()` → Android `intent://` 스킴으로 외부 브라우저 강제 열기
-- **M1** `index.html` 로딩 스켈레톤 Tailwind 클래스 → 인라인 스타일 (CSS 로드 전 가시성)
-- **M2** `index.html` 인라인 스크립트 `localStorage`/네트워크 감지 try-catch 래핑
-- **M3** `window.onerror` 에러 핸들러 추가 (인라인 스크립트 에러 시각화)
-- **M4** Critical CSS 미사용 클래스 6개 제거 (`.min-h-screen`, `.flex`, `.items-center` 등)
-- **L1** `vite.config.ts`에 `build.target: ['chrome64', ...]` 안전장치 추가
-
-### 9차 감사 (2026.03.09)
-
-- **H1** `UnderConstruction` featureKey 타입에서 `'contact'` 제거 (dead type — /contact는 Google Form 사용)
-- **H2** `UnderConstruction.test.tsx` contact feature 테스트 제거 (dead test)
-- **H3** `generate-sitemap.js`에 `/#/contact` 추가 (실제 운영 중인 페이지 누락)
-- **M1** `vite.config.ts`에 `stripLocalhostCsp` 플러그인 추가 — 프로덕션 빌드에서 CSP `localhost` 항목 자동 제거
-- **M2** `lighthouserc.js`에 `/#/contact` URL 추가
-
-### 8차 감사 (2026.03.09)
-
-- **E1** `BlogFlow.test.tsx` 수동 타입캐스트 → `vi.mocked()` (TS 빌드 수정)
-- **E2** `eslint-plugin-react` 워크스페이스 호이스팅 → root에 eslint devDep 추가
-- **E3** `SharePage.tsx`, `FormContext.tsx` `no-useless-assignment` 오류
-- **W1** 미사용 `index` 파라미터 7건 제거
-- **W2** ChatContext 10개 함수 `useCallback` 래핑
-- **W3** AdminDashboard `fetchDashboardData` → `useCallback`
-- **W4** ContactPage 에러 div `role="alert"`, `onKeyDown`, `tabIndex`
-- **W5** Layout.test.tsx mock SkipLink `href` 추가
-
-### 7차 감사 (2026.03.09)
-
-- **H1~H5** Layout sr-only i18n 전환, BlogFlow 실질 assertion, dead test-utils 삭제, BlogInteractions 정밀 assertion
-- **M1~M7** slug IntegrityError retry, spam fail-closed, user_agent CharField, Node engines 22, env.ts MODE 통합, ChatContext setTimeout useRef
-- **L1~L6** MD5→SHA256, Dockerfile.dev non-root, Node 24-alpine, AudioContext close, BlogSearch waitFor, React.memo 적용
-
-### 6차 감사 (2026.03.08)
-
-i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown` 3곳, Backend 한국어 주석 100+건 영어 전환, 테스트 i18n 키 통일 34+ assertion, BlogComments aria-label i18n
-
-### 5차 감사 (2026.03.07)
-
-3~4차 전량 해소 확인. 잔여: AdminDashboard 분리(→배포 #6), Notification 스텁(→1.0 이후), 대형 서비스 파일 분리(현재 이슈 아님)
-
-### 4차 감사 (2026.03.07)
-
-- **H1~H5** 비밀번호 12자 통일, 미사용 import, get_client_ip 중복, process.env→env.IS_DEVELOPMENT, 백엔드 69 테스트
-- **M1~M6** key={index} 19곳 교체, WebSocket 큐 100 cap, crypto.randomUUID, useScrollToSection 훅
-- **L1~L4** 매직넘버 상수화, Bell aria-label, date 필드 문서화, serializer camelCase 문서화
-
-### 3차 감사 (2026.03.07)
-
-- **C1~C5** 미들웨어 등록, security_check 필드명, NotificationConsumer JSON 검증, ObjectURL revoke
-- **H1~H8** str(e) 노출 제거, 뉴스레터 재구독, BlogPost 인덱스, logger.ts env 전환
-- **M1~M12** dead test-utils, window.alert→toast, ChatContext 분할(709→310줄), setupTests lucide Proxy, Sentry 정리, api.ts dead code
-- **L1~L7** 인라인 스타일 제거, AboutPage/BlogComments 분리, Swagger CONTACT_EMAIL, E2E 8개 테스트
-
-### 1~2차 감사
-
-- **C1~C7** HashRouter 버그, 동적 Tailwind, TS 컴파일 8건, FileUpload i18n, docker-compose VITE_API_URL
-- **H1~H7** Zustand 제거, types 정리, performanceMonitor 삭제, Sentry init, 한국어→영어, MemoryRouter, Dockerfile 3.12
-- **M1~M9** api.ts i18n 에러맵, 인라인 스타일→Tailwind, hex→Tailwind, process.env 통일, Footer 테스트 정리
-- **L1~L3** window.confirm→모달, BlogSearch aria-label, 컴포넌트 분할(AdminPanel/MessageList/BlogEditor)
-- **BE1~BE7** bare except, ChatConsumer 인증, 하드코딩 자격증명, 카테고리 수정, django-ratelimit 제거, urlparse
-
-</details>
-
 ## 변경 이력
 
 ### 0.9.10 (2026.03.17)
@@ -871,91 +637,24 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
 
 ### 0.9.8 (2026.03.07 ~ 03.17)
 
-- **KakaoTalk 인앱 브라우저 최종 수정**
-  - ~~기존: `document.write()` 리다이렉트로 React 차단~~ → **React 정상 로딩으로 전환** (`@vitejs/plugin-legacy` nomodule 폴백이 구형 WebView 커버)
-  - **근본 원인**: `AppLoaded`가 provider 레벨에서 `__appLoaded = true`를 너무 일찍 설정 → 모든 에러 핸들러 무력화. `AppLayout` 내부로 이동하여 해결
-  - Layout.tsx 배너로 외부 브라우저 안내 (선택적, iOS만)
-  - 5초 폴백 + `__showError()` 에러 디버그 정보(에러 메시지 + UA) 표시
-- **OG 이미지 및 SEO 개선**
-  - 깨진 `og-image.png` (UTF-8 텍스트 파일) 삭제, `logo512.png`로 교체
-  - FAQPage 구조화 데이터 (4개 Q&A → Google 리치 스니펫)
-  - Course 스키마 (AI 교육 프로그램)
-  - Organization `alternateName` 검색 변형, 메타 태그 키워드 강화
-- **백엔드 버그 수정**
-  - ContactRateThrottle `"3/hour"` → `"5/hour"` (settings 불일치)
-  - docker-compose SECRET_KEY 플레이스홀더 → 필수 변수로 변경
-  - ContactAttempt email 정규화 (strip + lowercase)
-- **배포 방식 정리**: GitHub Pages 소스를 `deploy-pages@v4` (GitHub Actions) 확인, `gh-pages` 브랜치는 `main`과 동기화하여 백업용으로 유지
-- **Prettier 일괄 포맷팅**: 124개 소스 파일 코드 스타일 통일
-- **17차 코드 감사 완료** (상세 → 리팩토링 백로그 참조)
-- **로고 시스템 리뉴얼**
-  - 파트너사 로고 20개 최신화 및 파일명 통일 (`상호명+Logo.확장자`)
-  - LogosSection 리팩토링: LogoItem/ScrollRow 서브컴포넌트 추출, 3x 복제 무한 스크롤, 그라디언트 페이드 마스크
-  - 스크롤 속도 32s, Row 1(대기업 중심) / Row 2(교육/공공) 재배치
-- **컴포넌트 분할**: ProfilePage (497→120줄, 5개 서브컴포넌트), ServiceModal을 Footer에서 분리
-- **API 패턴 통일**: AuthContext가 axiosInstance 대신 `api` 객체 사용으로 전환
-- **데드 코드 제거**: `cacheOptimization.ts`(155줄), `blogCache.ts`(231줄), ChatProvider를 App.tsx에서 제거
-- **리팩토링 백로그 전량 해소** — 18차 감사 완료 (상세 → 리팩토링 백로그 참조)
-- **i18n 완성도 강화**: BlogEditor + FileUpload 하드코딩 한국어 → i18n 키 전환
-- **코드 품질 개선**
-  - 소스 코드 한국어 주석 → 영어 전환 (15+ 파일)
-  - setTimeout 메모리 누수 전수 수정 (UIContext, FormContext, Navbar, Footer, BlogInteractions, BlogSearch, ChatContext)
-- **CLAUDE.md 업데이트**: React 19 useRef 패턴, Docker 빌드 arg, ChatConsumer 보안, 글로벌 lucide-react mock testid 등 반영
-- **Vite 8 마이그레이션**
-  - Vite 7→8 (oxc/rolldown 번들러), `@vitejs/plugin-react` 5→6, `@vitejs/plugin-legacy` 7→8
-  - `manualChunks` 객체 → 함수로 변환, `vite-tsconfig-paths` 제거 → 네이티브 `resolve.tsconfigPaths`
-  - tailwindcss `^3.4.19`로 고정 (4.x는 PostCSS 플러그인 구조 변경으로 blocked)
-- **Lighthouse CI 자동화** (A5)
-  - `lighthouserc.js` 수정: `startServerCommand` + `/emelmujiro/` base path URL 반영
-  - `pr-checks.yml`에 Lighthouse CI job 추가, PR 코멘트에 결과 표시
-- **보안 패치**: black 26.1.0→26.3.1 (CVE-2026-32274), PyJWT 2.11.0→2.12.1 (CVE-2026-32597)
-- **Node.js 22→24 LTS**: CI, Docker, engines 전체 업그레이드
-- **의존성 업데이트**: `actions/upload-artifact` v6→v7, `actions/download-artifact` v6→v8, `actions/configure-pages` v4→v5, @sentry/react, axios, framer-motion, i18next, vitest, jsdom 28→29 등
-- **코드베이스 정리**
-  - Dependabot Node 24 ignore 규칙 제거 (npm + Docker) — Node 24가 프로젝트 표준
-  - `contact.services.*` dead i18n 키 제거 (ko.json, en.json 각 30줄)
-  - `BlogPost.link` 미사용 모델 필드 제거 + 마이그레이션
-  - `create_blog_posts.py` 미사용 시드 스크립트 삭제 (1,452줄)
-- **도메인 확보**: `emelmujiro.com` — 백엔드 배포 시 사용 예정
+- **KakaoTalk 인앱 브라우저**: React 정상 로딩 전환 (`@vitejs/plugin-legacy` nomodule 폴백), `AppLayout` 내부 `__appLoaded` 근본 수정
+- **SEO**: FAQPage/Course 구조화 데이터, OG 이미지 `logo512.png` 교체, 메타 태그 키워드 강화
+- **Vite 8 마이그레이션**: oxc/rolldown 번들러, `manualChunks` 함수 전환, 네이티브 `tsconfigPaths`
+- **Lighthouse CI 자동화**: `pr-checks.yml` LHCI job 추가
+- **로고 시스템 리뉴얼**: 파트너사 로고 20개, LogosSection 3x 복제 무한 스크롤
+- **보안 패치**: black CVE-2026-32274, PyJWT CVE-2026-32597, Django 5.2.12
+- **코드베이스 정리**: 리팩토링 백로그 전량 해소 (18차 감사), Prettier 124파일 포맷팅, Node.js 22→24 LTS
 - **테스트**: 66 파일, 1042 테스트, 0 실패
 
-### 0.9.7 (2026.03.04 ~ 03.05)
+### 0.9.7 이하
 
-- **Android(갤럭시) 호환성 개선**
-  - Viewport: `viewport-fit=cover`, `100dvh` 동적 뷰포트 단위 적용
-  - CSS: `-webkit-text-size-adjust`, `-webkit-backface-visibility` 접두사 추가
-  - `prefers-reduced-motion` 미디어 쿼리 추가 (저사양 기기 성능 개선)
-  - CSP `connect-src`에 `cdn.jsdelivr.net` 추가, 무효 `frame-ancestors` 제거
-  - 카카오톡 Android 인앱 브라우저: `document.write()` 즉시 리다이렉트 (React 초기화 차단, `intent://` 외부 브라우저). iOS KakaoTalk은 WKWebView로 정상 동작
-  - 로딩 스켈레톤 인라인 스타일 전환 (Tailwind CSS 로드 전 가시성 보장)
-  - 배너 하드코딩 한국어 → i18n 키 전환, `window.onerror` 에러 핸들러 추가
-- **PWA 제거**: 서비스 워커 캐시 이슈로 PWA 전체 제거 (vite-plugin-pwa, SW, 오프라인 지원)
-- **코드베이스 딥 오딧** (-3,580 lines)
-  - 고립된 컴포넌트 21개 삭제 (Loading, PageLoading, ScrollProgress, ScrollToTop, Section, ErrorMessage, LazyImage, SEOHead, layout/SEO, i18nFormatters, common/index)
-  - index.html: CRA `%PUBLIC_URL%` → Vite 경로 수정, Zustand 테마 감지 수정, dead script 제거
-  - Dead CSS 20개 클래스 + 미사용 CSS 변수 제거 (btn-primary/secondary, card, section-heading 등)
-  - stale `REACT_APP_` 환경변수 참조 수정 (logger.ts, handlers.ts, api.test.ts)
-  - 미사용 타입 3개 삭제 (ContactApiData, MockEvent, UnknownError)
-  - 미사용 i18n 키, 고립된 locale 하위 디렉토리(16파일), stale 코멘트 제거
-- **README 리팩토링**: 기술 스택 테이블 형식 전환, CONTRIBUTING.md 최신화
-- **버전 동기화**: root/frontend package.json 버전 통일 (0.9.7)
-
-### 0.9.6 (2026.03.04)
-
-- ProfilePage UX 리팩토링, Hero CTA mailto 전환, break-keep 적용
-
-### 0.9.5 (2026.03.03)
-
-- Django 보안 강화, 파일 업로드 검증, Mock API 자동 전환, Docker Redis 옵셔널화
-
-### 0.9.0 ~ 0.9.4 (2026.02.28 ~ 03.02)
-
-- i18n 전체 전환, P0 보안 수정, 접근성 개선, dead code 정리, 테스트 정리 (1718 → 1233)
-- Blog/Contact/Chat 공사 중 전환, Admin ProtectedRoute, Pre-commit 훅
-
-### 0.8.0 이전 (2025.09 ~ 2026.02)
-
-- Jest → Vitest, Tailwind 3.x 전환, CI/CD 구축, 번들 52% 감소, Node 22 + Python 3.12
+| 버전             | 주요 내용                                                                        |
+| ---------------- | -------------------------------------------------------------------------------- |
+| 0.9.7 (03.04~05) | Android(갤럭시) 호환성 개선, PWA 제거, 코드베이스 딥 오딧 (-3,580줄)             |
+| 0.9.6 (03.04)    | ProfilePage UX 리팩토링, Hero CTA mailto 전환                                    |
+| 0.9.5 (03.03)    | Django 보안 강화, 파일 업로드 검증, Mock API 자동 전환                           |
+| 0.9.0~0.9.4      | i18n 전체 전환, P0 보안 수정, 접근성 개선, dead code 정리, 테스트 정리           |
+| 0.8.0 이전       | Jest → Vitest, Tailwind 3.x 전환, CI/CD 구축, 번들 52% 감소, Node 22→Python 3.12 |
 
 ## 라이선스
 
