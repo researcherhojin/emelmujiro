@@ -253,7 +253,7 @@ These are mocked globally — do NOT re-mock in individual tests (with one excep
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 66 test files, 1041 tests, 0 failures, 0 skips. Backend: 69 tests, 0 failures
+- 67 test files, 1048 tests, 0 failures, 0 skips. Backend: 90 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
@@ -382,7 +382,7 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: Active only in tests or when `env.API_URL` is empty. Production uses `api.emelmujiro.com` (Mac Mini backend)
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 66 files / 1041 tests, Backend 69 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
+4. **Test count**: Frontend 67 files / 1048 tests, Backend 90 tests, 0 failures, E2E 5 spec files (as of 2026-03-17)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint 10 flat config**: Upgraded from v9 to v10. Root `package.json` eslint version must match frontend's (both `^10.x`). Don't downgrade — plugins are compatible with ESLint 10
@@ -409,6 +409,5 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 28. **KakaoTalk WebView — React loads normally, errors visible**: React app renders in all browsers including Android KakaoTalk. Do NOT block React from loading or hide `#root` for any browser. iOS KakaoTalk shows a dismissible banner with `kakaotalk://web/openExternal` scheme. If rendering fails, `__showError()` displays the error + user agent on-screen with a `kakaotalk://web/openExternal` button (for KakaoTalk) or reload button. `window.__appLoaded` must be set inside `AppLayout` (not provider level) — setting it too early suppresses all error handlers
 29. **OG image uses logo512.png**: No dedicated `og-image.png` exists. All OG/Twitter image references (`index.html`, `SEOHelmet.tsx`, `StructuredData.tsx`, `constants.ts`) point to `logo512.png` (1024x1024). Replace references when a proper 1200x630 OG image is designed
 30. **FAQPage/Course schemas are static only**: FAQPage and Course JSON-LD are in `index.html` as static markup (crawlers read these without JS). Do NOT add them to `StructuredData.tsx` — that creates duplicate structured data when React renders
-31. **Missing backend tests**: `admin_stats`, `admin_content` views, `CookieJWTAuthentication`, and `token_refresh` endpoint have NO test coverage. Frontend `analytics.ts` also has no tests. These are high-priority test gaps
-32. **AdminDashboard TODO handlers**: `handleCreateContent`, `handleEditContent`, `handleViewContent` in `AdminDashboard.tsx` are stubbed with TODO comments — navigation to blog routes not yet wired
-33. **ChatContext unused state**: `agentAvailable`, `agentName`, `agentAvatar`, `settings` use `useState` but setters are never called. These should be constants (chat is under construction, low priority)
+31. **AdminDashboard sub-components**: `AdminSidebar`, `AdminOverview`, `AdminContentTable`, `DeleteConfirmModal` are extracted as sub-components within the same file (following the component extraction pattern). Props interfaces: `SidebarProps`, `OverviewProps`, `ContentTableProps`, `DeleteModalProps`
+32. **ChatContext static values**: `agentAvailable`, `agentName`, `agentAvatar`, `settings` are plain constants (not useState) since chat is under construction and setters were never called

@@ -50,14 +50,14 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isInitialMount, setIsInitialMount] = useState(true);
 
-  // Agent Info
-  const [agentAvailable] = useState(true);
-  const [agentName] = useState(i18n.t('chatContext.agentName'));
-  const [agentAvatar] = useState<string>();
+  // Agent Info (static values — no state needed)
+  const agentAvailable = true;
+  const agentName = i18n.t('chatContext.agentName');
+  const agentAvatar: string | undefined = undefined;
   const [businessHours, setBusinessHours] = useState<BusinessHours>(getDefaultBusinessHours);
 
-  // Settings
-  const [settings] = useState<ChatSettings>(getDefaultSettings);
+  // Settings (static — no state needed)
+  const settings = getDefaultSettings();
   const offlineReplyTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   // WebSocket connection hook

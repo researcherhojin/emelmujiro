@@ -746,6 +746,211 @@ class HealthCheckAPITestCase(APITestCase):
         self.assertIn("timestamp", response.data)
 
 
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class AdminAPITestCase(APITestCase):
+    """Tests for Admin API endpoints (admin_stats, admin_content)"""
+
+    def setUp(self):
+        self.admin = User.objects.create_superuser(username="admin", email="admin@example.com", password="adminpass12345")
+        self.staff = User.objects.create_user(username="staff", email="staff@example.com", password="staffpass12345", is_staff=True)
+        self.user = User.objects.create_user(username="regular", email="regular@example.com", password="userpass12345")
+        self.post = BlogPost.objects.create(
+            title="Admin Test Post",
+            description="Desc",
+            content="Content",
+            category="ai",
+            date=datetime.now(timezone.utc),
+            author="Admin Author",
+            is_published=True,
+            view_count=42,
+        )
+        Contact.objects.create(name="Tester", email="t@test.com", message="Hello")
+        SiteVisit.objects.create(page_path="/", ip_address="127.0.0.1", user_agent="test")
+
+    def test_admin_stats_as_admin(self):
+        """Admin user can access stats"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-stats"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["totalUsers"], 3)
+        self.assertEqual(response.data["totalPosts"], 1)
+        self.assertEqual(response.data["totalMessages"], 1)
+        self.assertEqual(response.data["totalViews"], 1)
+
+    def test_admin_stats_forbidden_for_regular_user(self):
+        """Regular user cannot access admin stats"""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse("admin-stats"))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_stats_forbidden_for_staff(self):
+        """Staff user (non-superuser) cannot access admin stats (IsAdminUser requires is_staff)"""
+        self.client.force_authenticate(user=self.staff)
+        response = self.client.get(reverse("admin-stats"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_admin_stats_unauthenticated(self):
+        """Unauthenticated request is rejected"""
+        response = self.client.get(reverse("admin-stats"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_admin_content_as_admin(self):
+        """Admin user can list content"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-content"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        item = response.data[0]
+        self.assertEqual(item["title"], "Admin Test Post")
+        self.assertEqual(item["type"], "blog")
+        self.assertEqual(item["status"], "published")
+        self.assertEqual(item["author"], "Admin Author")
+        self.assertEqual(item["views"], 42)
+
+    def test_admin_content_draft_status(self):
+        """Unpublished post shows draft status"""
+        self.post.is_published = False
+        self.post.save()
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-content"))
+        self.assertEqual(response.data[0]["status"], "draft")
+
+    def test_admin_content_forbidden_for_regular_user(self):
+        """Regular user cannot access admin content"""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse("admin-content"))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_content_unauthenticated(self):
+        """Unauthenticated request is rejected"""
+        response = self.client.get(reverse("admin-content"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class CookieJWTAuthenticationTestCase(APITestCase):
+    """Tests for CookieJWTAuthentication (httpOnly cookie auth)"""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="cookieuser", email="cookie@example.com", password="testpass12345")
+        self.refresh = RefreshToken.for_user(self.user)
+        self.access_token = str(self.refresh.access_token)
+
+    def test_auth_via_cookie(self):
+        """Request with valid access_token cookie is authenticated"""
+        self.client.cookies["access_token"] = self.access_token
+        response = self.client.get(reverse("get_user"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["email"], "cookie@example.com")
+
+    def test_auth_via_authorization_header(self):
+        """Request with Authorization header (fallback) is authenticated"""
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
+        response = self.client.get(reverse("get_user"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["email"], "cookie@example.com")
+
+    def test_invalid_cookie_falls_back_to_header(self):
+        """Invalid cookie is ignored, valid header succeeds"""
+        self.client.cookies["access_token"] = "invalid-token"
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
+        response = self.client.get(reverse("get_user"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_invalid_cookie_no_header_fails(self):
+        """Invalid cookie with no header returns 401"""
+        self.client.cookies["access_token"] = "invalid-token"
+        response = self.client.get(reverse("get_user"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_no_credentials_fails(self):
+        """No cookie and no header returns 401"""
+        response = self.client.get(reverse("get_user"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class TokenRefreshTestCase(APITestCase):
+    """Tests for custom token_refresh endpoint (cookie + body support)"""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="refreshuser", email="refresh@example.com", password="testpass12345")
+        self.refresh = RefreshToken.for_user(self.user)
+
+    def test_refresh_via_body(self):
+        """Refresh token in request body returns new access token"""
+        url = reverse("token_refresh")
+        response = self.client.post(url, {"refresh": str(self.refresh)}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("access", response.data)
+        self.assertIn("refresh", response.data)
+
+    def test_refresh_via_cookie(self):
+        """Refresh token in cookie returns new access token"""
+        url = reverse("token_refresh")
+        self.client.cookies["refresh_token"] = str(self.refresh)
+        response = self.client.post(url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("access", response.data)
+
+    def test_refresh_sets_cookies(self):
+        """Successful refresh sets access_token and refresh_token cookies"""
+        url = reverse("token_refresh")
+        response = self.client.post(url, {"refresh": str(self.refresh)}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("access_token", response.cookies)
+        self.assertIn("refresh_token", response.cookies)
+
+    def test_refresh_without_token_fails(self):
+        """Missing refresh token returns 400"""
+        url = reverse("token_refresh")
+        response = self.client.post(url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_refresh_with_invalid_token_fails(self):
+        """Invalid refresh token returns 401"""
+        url = reverse("token_refresh")
+        response = self.client.post(url, {"refresh": "invalid-token"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_refresh_rotates_token(self):
+        """Token rotation: old refresh token is blacklisted after use"""
+        url = reverse("token_refresh")
+        old_refresh = str(self.refresh)
+        response = self.client.post(url, {"refresh": old_refresh}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Old refresh token should be blacklisted
+        response2 = self.client.post(url, {"refresh": old_refresh}, format="json")
+        self.assertEqual(response2.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_login_sets_cookies(self):
+        """Login endpoint sets httpOnly JWT cookies"""
+        url = reverse("login")
+        response = self.client.post(url, {"username": "refreshuser", "password": "testpass12345"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("access_token", response.cookies)
+        self.assertIn("refresh_token", response.cookies)
+        # Verify httpOnly flag
+        self.assertTrue(response.cookies["access_token"]["httponly"])
+        self.assertTrue(response.cookies["refresh_token"]["httponly"])
+
+    def test_logout_clears_cookies(self):
+        """Logout endpoint clears JWT cookies"""
+        # Login first to get cookies
+        login_url = reverse("login")
+        login_resp = self.client.post(login_url, {"username": "refreshuser", "password": "testpass12345"}, format="json")
+        refresh_token = login_resp.data["refresh"]
+        # Authenticate for logout
+        access_token = login_resp.data["access"]
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
+        logout_url = reverse("logout")
+        response = self.client.post(logout_url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Cookies should be deleted (max-age=0)
+        self.assertIn("access_token", response.cookies)
+        self.assertEqual(response.cookies["access_token"]["max-age"], 0)
+
+
 class UtilityFunctionTestCase(TestCase):
     """Tests for utility functions in views"""
 

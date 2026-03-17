@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
@@ -34,101 +35,36 @@ interface ContentItem {
   views?: number;
 }
 
-const AdminDashboard: React.FC = () => {
+// --- Sub-components ---
+
+interface SidebarProps {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+}
+
+const AdminSidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [stats, setStats] = useState<DashboardStats>({
-    totalUsers: 0,
-    totalPosts: 0,
-    totalMessages: 0,
-    totalViews: 0,
-  });
-  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | number | null>(null);
+  const tabs = [
+    { id: 'overview', label: t('admin.overview'), icon: LayoutDashboard },
+    { id: 'content', label: t('admin.contentManagement'), icon: FileText },
+    { id: 'users', label: t('admin.userManagement'), icon: Users },
+    { id: 'messages', label: t('admin.messages'), icon: MessageSquare },
+    { id: 'analytics', label: t('admin.analytics'), icon: BarChart3 },
+    { id: 'settings', label: t('admin.settings'), icon: Settings },
+  ];
 
-  const fetchDashboardData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [statsRes, contentRes] = await Promise.all([
-        api.getAdminStats(),
-        api.getAdminContent(),
-      ]);
-      setStats(statsRes.data);
-      setContentItems(contentRes.data);
-    } catch (err) {
-      logger.error('Failed to fetch dashboard data:', err);
-      setError(t('admin.fetchError'));
-    } finally {
-      setLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
-
-  const handleCreateContent = () => {
-    // TODO: navigate to content creation page when backend is deployed
-    logger.info('handleCreateContent: not yet implemented');
-  };
-
-  const handleEditContent = (id: string | number) => {
-    // TODO: navigate to content edit page when backend is deployed
-    logger.info(`handleEditContent: id=${id}, not yet implemented`);
-  };
-
-  const handleDeleteContent = (id: string | number) => {
-    setDeleteConfirmId(id);
-  };
-
-  const confirmDelete = async () => {
-    if (deleteConfirmId !== null) {
-      try {
-        await blogService.deletePost(deleteConfirmId);
-      } catch (err) {
-        logger.error('Failed to delete content:', err);
-      }
-      setContentItems(contentItems.filter((item) => item.id !== deleteConfirmId));
-      setDeleteConfirmId(null);
-    }
-  };
-
-  const cancelDelete = () => {
-    setDeleteConfirmId(null);
-  };
-
-  const handleViewContent = (id: string | number) => {
-    // TODO: navigate to content view page when backend is deployed
-    logger.info(`handleViewContent: id=${id}, not yet implemented`);
-  };
-
-  const renderSidebar = () => (
+  return (
     <div className="w-64 bg-gray-900 text-white h-screen fixed left-0 top-0">
       <div className="p-6">
         <h2 className="text-2xl font-bold">{t('admin.dashboard')}</h2>
       </div>
       <nav className="mt-6">
-        {[
-          { id: 'overview', label: t('admin.overview'), icon: LayoutDashboard },
-          {
-            id: 'content',
-            label: t('admin.contentManagement'),
-            icon: FileText,
-          },
-          { id: 'users', label: t('admin.userManagement'), icon: Users },
-          { id: 'messages', label: t('admin.messages'), icon: MessageSquare },
-          { id: 'analytics', label: t('admin.analytics'), icon: BarChart3 },
-          { id: 'settings', label: t('admin.settings'), icon: Settings },
-        ].map((item) => {
+        {tabs.map((item) => {
           const Icon = item.icon;
           return (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => onTabChange(item.id)}
               className={`w-full px-6 py-3 flex items-center space-x-3 hover:bg-gray-800 transition-colors ${
                 activeTab === item.id ? 'bg-gray-800 border-l-4 border-blue-500' : ''
               }`}
@@ -147,41 +83,68 @@ const AdminDashboard: React.FC = () => {
       </div>
     </div>
   );
+};
 
-  const renderOverview = () => (
+interface OverviewProps {
+  stats: DashboardStats;
+}
+
+const AdminOverview: React.FC<OverviewProps> = ({ stats }) => {
+  const { t } = useTranslation();
+  const statCards = [
+    {
+      label: t('admin.totalUsers'),
+      value: stats.totalUsers,
+      icon: Users,
+      bgClass: 'bg-blue-100',
+      textClass: 'text-blue-600',
+    },
+    {
+      label: t('admin.totalPosts'),
+      value: stats.totalPosts,
+      icon: FileText,
+      bgClass: 'bg-green-100',
+      textClass: 'text-green-600',
+    },
+    {
+      label: t('admin.totalMessages'),
+      value: stats.totalMessages,
+      icon: MessageSquare,
+      bgClass: 'bg-purple-100',
+      textClass: 'text-purple-600',
+    },
+    {
+      label: t('admin.totalViews'),
+      value: stats.totalViews,
+      icon: Eye,
+      bgClass: 'bg-orange-100',
+      textClass: 'text-orange-600',
+    },
+  ];
+
+  const recentActivity = [
+    {
+      time: t('admin.tenMinAgo'),
+      action: t('admin.newUserSignup'),
+      user: 'user123',
+    },
+    {
+      time: t('admin.thirtyMinAgo'),
+      action: t('admin.blogPostCreated'),
+      user: t('admin.administrator'),
+    },
+    {
+      time: t('admin.oneHourAgo'),
+      action: t('admin.inquiryReceived'),
+      user: 'guest456',
+    },
+  ];
+
+  return (
     <div>
       <h1 className="text-3xl font-bold mb-8">{t('admin.dashboardOverview')}</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {[
-          {
-            label: t('admin.totalUsers'),
-            value: stats.totalUsers,
-            icon: Users,
-            bgClass: 'bg-blue-100',
-            textClass: 'text-blue-600',
-          },
-          {
-            label: t('admin.totalPosts'),
-            value: stats.totalPosts,
-            icon: FileText,
-            bgClass: 'bg-green-100',
-            textClass: 'text-green-600',
-          },
-          {
-            label: t('admin.totalMessages'),
-            value: stats.totalMessages,
-            icon: MessageSquare,
-            bgClass: 'bg-purple-100',
-            textClass: 'text-purple-600',
-          },
-          {
-            label: t('admin.totalViews'),
-            value: stats.totalViews,
-            icon: Eye,
-            bgClass: 'bg-orange-100',
-            textClass: 'text-orange-600',
-          },
-        ].map((stat) => {
+        {statCards.map((stat) => {
           const Icon = stat.icon;
           return (
             <div key={stat.label} className="bg-white rounded-lg shadow-md p-6">
@@ -201,23 +164,7 @@ const AdminDashboard: React.FC = () => {
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-xl font-semibold mb-4">{t('admin.recentActivity')}</h2>
         <div className="space-y-4">
-          {[
-            {
-              time: t('admin.tenMinAgo'),
-              action: t('admin.newUserSignup'),
-              user: 'user123',
-            },
-            {
-              time: t('admin.thirtyMinAgo'),
-              action: t('admin.blogPostCreated'),
-              user: t('admin.administrator'),
-            },
-            {
-              time: t('admin.oneHourAgo'),
-              action: t('admin.inquiryReceived'),
-              user: 'guest456',
-            },
-          ].map((activity) => (
+          {recentActivity.map((activity) => (
             <div
               key={`${activity.action}-${activity.time}`}
               className="flex items-center justify-between py-2 border-b last:border-0"
@@ -233,13 +180,31 @@ const AdminDashboard: React.FC = () => {
       </div>
     </div>
   );
+};
 
-  const renderContentManagement = () => (
+interface ContentTableProps {
+  items: ContentItem[];
+  onCreate: () => void;
+  onView: (id: string | number) => void;
+  onEdit: (id: string | number) => void;
+  onDelete: (id: string | number) => void;
+}
+
+const AdminContentTable: React.FC<ContentTableProps> = ({
+  items,
+  onCreate,
+  onView,
+  onEdit,
+  onDelete,
+}) => {
+  const { t } = useTranslation();
+
+  return (
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">{t('admin.contentManagement')}</h1>
         <button
-          onClick={handleCreateContent}
+          onClick={onCreate}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2 transition-colors"
         >
           <Plus className="w-5 h-5" />
@@ -276,7 +241,7 @@ const AdminDashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {contentItems.map((item) => (
+              {items.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{item.title}</div>
@@ -311,7 +276,7 @@ const AdminDashboard: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
                       <button
-                        onClick={() => handleViewContent(item.id)}
+                        onClick={() => onView(item.id)}
                         className="text-blue-600 hover:text-blue-900"
                         title={t('admin.view')}
                         aria-label={`${t('admin.view')} ${item.title}`}
@@ -319,7 +284,7 @@ const AdminDashboard: React.FC = () => {
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleEditContent(item.id)}
+                        onClick={() => onEdit(item.id)}
                         className="text-green-600 hover:text-green-900"
                         title={t('admin.edit')}
                         aria-label={`${t('admin.edit')} ${item.title}`}
@@ -327,7 +292,7 @@ const AdminDashboard: React.FC = () => {
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleDeleteContent(item.id)}
+                        onClick={() => onDelete(item.id)}
                         className="text-red-600 hover:text-red-900"
                         title={t('admin.delete')}
                         aria-label={`${t('admin.delete')} ${item.title}`}
@@ -344,6 +309,89 @@ const AdminDashboard: React.FC = () => {
       </div>
     </div>
   );
+};
+
+interface DeleteModalProps {
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+const DeleteConfirmModal: React.FC<DeleteModalProps> = ({ onConfirm, onCancel }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+        <p className="text-gray-800 mb-4">{t('admin.confirmDelete')}</p>
+        <div className="flex justify-end space-x-3">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            {t('common.cancel')}
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors"
+          >
+            {t('common.delete')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Main component ---
+
+const AdminDashboard: React.FC = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('overview');
+  const [stats, setStats] = useState<DashboardStats>({
+    totalUsers: 0,
+    totalPosts: 0,
+    totalMessages: 0,
+    totalViews: 0,
+  });
+  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | number | null>(null);
+
+  const fetchDashboardData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [statsRes, contentRes] = await Promise.all([
+        api.getAdminStats(),
+        api.getAdminContent(),
+      ]);
+      setStats(statsRes.data);
+      setContentItems(contentRes.data);
+    } catch (err) {
+      logger.error('Failed to fetch dashboard data:', err);
+      setError(t('admin.fetchError'));
+    } finally {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  const confirmDelete = async () => {
+    if (deleteConfirmId !== null) {
+      try {
+        await blogService.deletePost(deleteConfirmId);
+      } catch (err) {
+        logger.error('Failed to delete content:', err);
+      }
+      setContentItems(contentItems.filter((item) => item.id !== deleteConfirmId));
+      setDeleteConfirmId(null);
+    }
+  };
 
   const renderContent = () => {
     if (loading) {
@@ -370,9 +418,17 @@ const AdminDashboard: React.FC = () => {
 
     switch (activeTab) {
       case 'overview':
-        return renderOverview();
+        return <AdminOverview stats={stats} />;
       case 'content':
-        return renderContentManagement();
+        return (
+          <AdminContentTable
+            items={contentItems}
+            onCreate={() => navigate('/blog/new')}
+            onView={(id) => navigate(`/blog/${id}`)}
+            onEdit={(id) => navigate(`/blog/${id}`)}
+            onDelete={(id) => setDeleteConfirmId(id)}
+          />
+        );
       case 'users':
         return <div>{t('admin.userManagementPage')}</div>;
       case 'messages':
@@ -382,13 +438,13 @@ const AdminDashboard: React.FC = () => {
       case 'settings':
         return <div>{t('admin.settingsPage')}</div>;
       default:
-        return renderOverview();
+        return <AdminOverview stats={stats} />;
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {renderSidebar()}
+      <AdminSidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="ml-64 p-8">
         <div className="mb-6 flex justify-between items-center">
           <div className="flex items-center space-x-4">
@@ -404,25 +460,7 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       {deleteConfirmId !== null && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
-            <p className="text-gray-800 mb-4">{t('admin.confirmDelete')}</p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={cancelDelete}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors"
-              >
-                {t('common.delete')}
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmModal onConfirm={confirmDelete} onCancel={() => setDeleteConfirmId(null)} />
       )}
     </div>
   );

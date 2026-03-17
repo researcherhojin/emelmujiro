@@ -27,7 +27,7 @@
 | ---------- | ------- | ---------------------------------------------------------- |
 | **빌드**   | ✅ 정상 | Vite 8 (oxc/rolldown) 빌드                                 |
 | **CI/CD**  | ✅ 정상 | GitHub Actions (Node 24, Python 3.12) ~2분                 |
-| **테스트** | ✅ 통과 | Frontend 1041 통과 (66 파일), Backend 69 통과              |
+| **테스트** | ✅ 통과 | Frontend 1048 통과 (67 파일), Backend 90 통과              |
 | **타입**   | ✅ 100% | TypeScript Strict Mode                                     |
 | **보안**   | ✅ 안전 | 취약점 0건                                                 |
 | **배포**   | ✅ 정상 | Mac Mini Docker + Cloudflare Tunnel (프론트 + 백엔드 통합) |
@@ -129,7 +129,7 @@ graph LR
 | 상태 관리      | React Context 5개 (UI, Auth, Blog, Form, Chat)                      | `useMemo`/`useCallback`으로 리렌더 방지, 외부 라이브러리 불필요 |
 | API 클라이언트 | Axios + Mock/Real 자동 전환                                         | `VITE_API_URL` 유무로 결정, httpOnly 쿠키 JWT, 401 자동 갱신    |
 | i18n           | `react-i18next` + 크롤러 한국어 강제                                | 브라우저 언어 감지, SEO 봇은 `htmlTag`(`ko`) 고정               |
-| 테스트         | Vitest (1041) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
+| 테스트         | Vitest (1048) + Playwright E2E (5 spec)                             | 전역 모킹(`setupTests.ts`) + `renderWithProviders` 자동화       |
 | 빌드           | sitemap → `tsc` → Vite 8 (oxc/rolldown)                             | 프로덕션 시 `console`/`debugger` 자동 제거                      |
 | 배포           | 프론트 + 백엔드: Mac Mini (Docker + Cloudflare Tunnel)              | 전체 자체 호스팅으로 비용 최소화, nginx SPA 라우팅 200 보장     |
 | Provider 계층  | `HelmetProvider > ErrorBoundary > UI > Auth > Blog > Form > Router` | ChatProvider는 under construction으로 제외                      |
@@ -291,30 +291,30 @@ graph LR
 
 ### 코드 품질 (20차 감사 결과)
 
-> 20차 전체 코드베이스 감사로 식별된 항목입니다.
+> 20차 전체 코드베이스 감사로 식별된 항목입니다. D1-D7 완료 (2026-03-17).
 
-#### 테스트 커버리지 보완
+#### 테스트 커버리지 보완 ✅
 
-| #   | 작업                                | 우선순위 | 설명                                                                                         |
-| --- | ----------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
-| D1  | **Admin API 엔드포인트 테스트**     | 높음     | `admin_stats`, `admin_content` 뷰에 대한 백엔드 테스트 추가 (권한 검증 + 응답 데이터 확인)   |
-| D2  | **CookieJWTAuthentication 테스트**  | 높음     | 쿠키 기반 인증, 헤더 폴백, 만료 토큰 처리 테스트 (`backend/api/authentication.py`)           |
-| D3  | **token_refresh 엔드포인트 테스트** | 높음     | 쿠키/본문 리프레시, 토큰 로테이션, 블랙리스트 동작 테스트 (`backend/api/auth.py`)            |
-| D4  | **analytics.ts 유틸리티 테스트**    | 중간     | `initAnalytics`, `trackPageView`, `trackCtaClick` 테스트 (`frontend/src/utils/analytics.ts`) |
+| #   | 작업                                | 상태 | 설명                                                                |
+| --- | ----------------------------------- | ---- | ------------------------------------------------------------------- |
+| D1  | **Admin API 엔드포인트 테스트**     | ✅   | 백엔드 8개 테스트 추가 (권한 검증 + 응답 데이터 확인)               |
+| D2  | **CookieJWTAuthentication 테스트**  | ✅   | 5개 테스트 추가 (쿠키 인증, 헤더 폴백, 만료 토큰)                   |
+| D3  | **token_refresh 엔드포인트 테스트** | ✅   | 8개 테스트 추가 (쿠키/본문 리프레시, 로테이션, 블랙리스트)          |
+| D4  | **analytics.ts 유틸리티 테스트**    | ✅   | 7개 테스트 추가 (`initAnalytics`, `trackPageView`, `trackCtaClick`) |
 
-#### Admin 대시보드 기능 완성
+#### Admin 대시보드 기능 완성 ✅
 
-| #   | 작업                             | 우선순위 | 설명                                                                                             |
-| --- | -------------------------------- | -------- | ------------------------------------------------------------------------------------------------ |
-| D5  | **Admin 네비게이션 연결**        | 중간     | `handleCreateContent` → `/blog/new`, `handleEditContent` → `/blog/:id`, `handleViewContent` 구현 |
-| D6  | **AdminDashboard 컴포넌트 분리** | 중간     | 431줄 → AdminSidebar, AdminOverview, AdminContentTable, DeleteModal 서브컴포넌트 추출            |
+| #   | 작업                             | 상태 | 설명                                                                                 |
+| --- | -------------------------------- | ---- | ------------------------------------------------------------------------------------ |
+| D5  | **Admin 네비게이션 연결**        | ✅   | `onCreate`/`onView`/`onEdit` → `useNavigate` 연결 완료                               |
+| D6  | **AdminDashboard 컴포넌트 분리** | ✅   | AdminSidebar, AdminOverview, AdminContentTable, DeleteConfirmModal 서브컴포넌트 추출 |
 
 #### 데드 코드 정리
 
-| #   | 작업                                 | 우선순위 | 설명                                                                                  |
-| --- | ------------------------------------ | -------- | ------------------------------------------------------------------------------------- |
-| D7  | **ChatContext 미사용 state → const** | 낮음     | `agentAvailable`, `agentName`, `agentAvatar`, `settings` — setter 미사용, 상수로 전환 |
-| D8  | **SiteVisit cron 실제 등록**         | 낮음     | `scripts/cleanup-sitevisits.sh` 스크립트 작성 완료, Mac Mini crontab 등록 필요        |
+| #   | 작업                                 | 상태 | 설명                                                                           |
+| --- | ------------------------------------ | ---- | ------------------------------------------------------------------------------ |
+| D7  | **ChatContext 미사용 state → const** | ✅   | `agentAvailable`, `agentName`, `agentAvatar`, `settings` → 상수로 전환 완료    |
+| D8  | **SiteVisit cron 실제 등록**         | 🔲   | `scripts/cleanup-sitevisits.sh` 스크립트 작성 완료, Mac Mini crontab 등록 필요 |
 
 ### 장기 개선 사항
 
@@ -846,7 +846,13 @@ i18n fallback 50+건, `title→aria-label` 6개 버튼, `onKeyPress→onKeyDown`
 - **SiteVisit 정리 스크립트** (B9 완료)
   - `scripts/cleanup-sitevisits.sh` — Docker exec 기반 cron 스크립트
 - **블로그 다크 모드** — BlogCard, BlogDetail, BlogComments, BlogInteractions, BlogSearch 다크 모드 지원
-- **테스트**: 66 파일, 1041 테스트, 0 실패 / Backend 69 테스트, 0 실패
+- **20차 감사 D1-D7 완료**
+  - D1-D3: 백엔드 테스트 21개 추가 (admin API 8, CookieJWT 5, token_refresh 8) → 90 tests
+  - D4: `analytics.ts` 테스트 7개 추가 → 67 파일 1048 tests
+  - D5: AdminDashboard 네비게이션 핸들러 `useNavigate` 연결
+  - D6: AdminDashboard 서브컴포넌트 추출 (AdminSidebar, AdminOverview, AdminContentTable, DeleteConfirmModal)
+  - D7: ChatContext 미사용 useState → 상수 전환
+- **테스트**: 67 파일, 1048 테스트, 0 실패 / Backend 90 테스트, 0 실패
 
 ### 0.9.9 (2026.03.17)
 
