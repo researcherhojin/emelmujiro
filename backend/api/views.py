@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, throttle_classes, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from django.db.models import Q, F, Count
@@ -38,6 +38,13 @@ class ContactRateThrottle(AnonRateThrottle):
 
     scope = "contact"
     rate = "5/hour"
+
+
+class AdminRateThrottle(UserRateThrottle):
+    """Admin endpoint rate throttle"""
+
+    scope = "admin"
+    rate = "120/hour"
 
 
 def get_client_ip(request: HttpRequest) -> str:
@@ -583,6 +590,7 @@ def send_user_notification(user, title, message, level="info", notification_type
 
 @api_view(["GET"])
 @permission_classes([IsAdminUser])
+@throttle_classes([AdminRateThrottle])
 def admin_stats(request):
     """Admin dashboard statistics"""
     from django.contrib.auth.models import User
@@ -604,6 +612,7 @@ def admin_stats(request):
 
 @api_view(["GET"])
 @permission_classes([IsAdminUser])
+@throttle_classes([AdminRateThrottle])
 def admin_content(request):
     """Admin content list (blog posts)"""
     posts = BlogPost.objects.all().order_by("-date")
@@ -624,10 +633,14 @@ def admin_content(request):
 
 @api_view(["GET"])
 @permission_classes([IsAdminUser])
+@throttle_classes([AdminRateThrottle])
 def admin_messages(request):
     """Admin contact messages list"""
-    page = int(request.query_params.get("page", 1))
-    page_size = int(request.query_params.get("page_size", 20))
+    try:
+        page = max(1, int(request.query_params.get("page", 1)))
+        page_size = min(100, max(1, int(request.query_params.get("page_size", 20))))
+    except (ValueError, TypeError):
+        return Response({"error": "Invalid pagination parameters"}, status=400)
     offset = (page - 1) * page_size
 
     contacts = Contact.objects.all().order_by("-created_at")
@@ -651,6 +664,7 @@ def admin_messages(request):
 
 @api_view(["GET", "PATCH"])
 @permission_classes([IsAdminUser])
+@throttle_classes([AdminRateThrottle])
 def admin_message_detail(request, pk):
     """Admin contact message detail / update"""
     try:
