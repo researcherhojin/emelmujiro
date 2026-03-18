@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { api } from '../services/api';
 import i18n from '../i18n';
+import { setUserContext, clearUserContext } from '../utils/sentry';
 
 interface User {
   id: number;
@@ -55,6 +56,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await api.getUser();
       setUser(response.data);
+      setUserContext({ id: response.data.id, email: response.data.email });
     } catch {
       setUser(null);
       localStorage.removeItem('auth_hint');
@@ -69,6 +71,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await api.login(email, password);
       const { user: userData } = response.data;
       setUser(userData);
+      setUserContext({ id: userData.id, email: userData.email });
       localStorage.setItem('auth_hint', '1');
     } catch (err) {
       const error = err as Error & { userMessage?: string };
@@ -86,6 +89,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Proceed with local logout even if server call fails
     }
     setUser(null);
+    clearUserContext();
     localStorage.removeItem('auth_hint');
   }, []);
 

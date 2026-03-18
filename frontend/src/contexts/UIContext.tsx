@@ -8,6 +8,7 @@ import React, {
   useRef,
   ReactNode,
 } from 'react';
+import { trackDarkModeToggle } from '../utils/analytics';
 
 type Theme = 'light' | 'dark';
 type NotificationType = 'success' | 'error' | 'warning' | 'info';
@@ -158,7 +159,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+    setTheme((prev) => {
+      const next = prev === 'light' ? 'dark' : 'light';
+      trackDarkModeToggle(next === 'dark');
+      return next;
+    });
   }, []);
 
   const removeNotification = useCallback((id: string) => {
