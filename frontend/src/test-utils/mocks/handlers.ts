@@ -157,6 +157,111 @@ export const handlers = [
     ]);
   }),
 
+  // Auth - token refresh
+  http.post(`${API_BASE}/auth/token/refresh/`, () => {
+    return HttpResponse.json({
+      access: 'mock-refreshed-access-token',
+    });
+  }),
+
+  // Auth - token verify
+  http.post(`${API_BASE}/auth/token/verify/`, () => {
+    return HttpResponse.json({}, { status: 200 });
+  }),
+
+  // Auth - update user
+  http.patch(`${API_BASE}/auth/user/update/`, async ({ request }) => {
+    const data = (await request.json()) as Record<string, unknown>;
+    return HttpResponse.json({
+      id: 1,
+      username: 'testuser',
+      email: 'test@example.com',
+      ...data,
+    });
+  }),
+
+  // Auth - change password
+  http.post(`${API_BASE}/auth/change-password/`, () => {
+    return HttpResponse.json({ message: 'Password changed successfully' });
+  }),
+
+  // Notification endpoints
+  http.get(`${API_BASE}/notifications/`, () => {
+    return HttpResponse.json({
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    });
+  }),
+
+  http.get(`${API_BASE}/notifications/unread_count/`, () => {
+    return HttpResponse.json({ count: 0 });
+  }),
+
+  http.patch(`${API_BASE}/notifications/:id/`, ({ params }) => {
+    return HttpResponse.json({
+      id: Number(params.id),
+      is_read: true,
+      read_at: new Date().toISOString(),
+    });
+  }),
+
+  http.post(`${API_BASE}/notifications/mark_all_read/`, () => {
+    return HttpResponse.json({ status: 'ok' });
+  }),
+
+  // Admin endpoints
+  http.get(`${API_BASE}/admin/stats/`, () => {
+    return HttpResponse.json({
+      totalUsers: 10,
+      totalPosts: 5,
+      totalMessages: 3,
+      totalViews: 1000,
+    });
+  }),
+
+  http.get(`${API_BASE}/admin/content/`, () => {
+    return HttpResponse.json([
+      {
+        id: 1,
+        title: 'Test Post',
+        category: 'ai_development',
+        is_published: true,
+        is_featured: false,
+        view_count: 50,
+        created_at: '2025-01-01T00:00:00Z',
+      },
+    ]);
+  }),
+
+  http.get(`${API_BASE}/admin/messages/`, () => {
+    return HttpResponse.json({
+      count: 0,
+      next: null,
+      results: [],
+    });
+  }),
+
+  http.get(`${API_BASE}/admin/messages/:id/`, ({ params }) => {
+    return HttpResponse.json({
+      id: params.id,
+      name: 'Test User',
+      email: 'test@example.com',
+      subject: 'Test Subject',
+      message: 'Test message',
+      is_processed: false,
+      created_at: '2025-01-01T00:00:00Z',
+    });
+  }),
+
+  http.patch(`${API_BASE}/admin/messages/:id/`, ({ params }) => {
+    return HttpResponse.json({
+      id: params.id,
+      is_processed: true,
+    });
+  }),
+
   // Health check
   http.get(`${API_BASE}/health/`, () => {
     return HttpResponse.json({

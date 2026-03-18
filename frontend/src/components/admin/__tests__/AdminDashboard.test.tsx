@@ -52,6 +52,7 @@ vi.mock('../../../contexts/NotificationContext', () => ({
     markAsRead: vi.fn(),
     markAllAsRead: vi.fn(),
   }),
+  NotificationProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 vi.mock('../../../services/api', () => ({

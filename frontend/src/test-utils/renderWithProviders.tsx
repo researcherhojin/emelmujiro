@@ -6,18 +6,21 @@ import { BlogProvider } from '../contexts/BlogContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { UIProvider } from '../contexts/UIContext';
 import { FormProvider } from '../contexts/FormContext';
+import { NotificationProvider } from '../contexts/NotificationContext';
 
-// Custom render function with all providers
+// Custom render function with all providers (matches App.tsx hierarchy)
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <HelmetProvider>
       <UIProvider>
         <AuthProvider>
-          <BlogProvider>
-            <FormProvider>
-              <Router>{children}</Router>
-            </FormProvider>
-          </BlogProvider>
+          <NotificationProvider>
+            <BlogProvider>
+              <FormProvider>
+                <Router>{children}</Router>
+              </FormProvider>
+            </BlogProvider>
+          </NotificationProvider>
         </AuthProvider>
       </UIProvider>
     </HelmetProvider>

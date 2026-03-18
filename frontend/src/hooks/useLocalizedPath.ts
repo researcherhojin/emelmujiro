@@ -26,7 +26,7 @@ export function getLangPrefix(lang: string): string {
  * '/en/about' → '/about', '/about' → '/about'
  */
 export function stripLangPrefix(pathname: string): string {
-  return pathname.replace(/^\/(en)(\/|$)/, '/$2').replace(/^\/$/, '/') || '/';
+  return pathname.replace(/^\/(en)(\/|$)/, '$2').replace(/^\/$/, '/') || '/';
 }
 
 /**

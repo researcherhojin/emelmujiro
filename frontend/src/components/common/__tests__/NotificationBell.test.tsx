@@ -47,6 +47,7 @@ vi.mock('../../../contexts/NotificationContext', () => ({
     markAsRead: mockMarkAsRead,
     markAllAsRead: mockMarkAllAsRead,
   }),
+  NotificationProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 import NotificationBell from '../NotificationBell';
