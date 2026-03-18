@@ -14,6 +14,8 @@ from .views import (
     send_test_email,
     admin_stats,
     admin_content,
+    admin_messages,
+    admin_message_detail,
 )
 from .auth import (
     register,
@@ -43,6 +45,8 @@ urlpatterns = [
     # Admin endpoints
     path("admin/stats/", admin_stats, name="admin-stats"),
     path("admin/content/", admin_content, name="admin-content"),
+    path("admin/messages/", admin_messages, name="admin-messages"),
+    path("admin/messages/<uuid:pk>/", admin_message_detail, name="admin-message-detail"),
     # Authentication endpoints
     path("auth/register/", register, name="register"),
     path("auth/login/", login, name="login"),

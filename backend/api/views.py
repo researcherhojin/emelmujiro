@@ -620,3 +620,75 @@ def admin_content(request):
         for post in posts
     ]
     return Response(items)
+
+
+@api_view(["GET"])
+@permission_classes([IsAdminUser])
+def admin_messages(request):
+    """Admin contact messages list"""
+    page = int(request.query_params.get("page", 1))
+    page_size = int(request.query_params.get("page_size", 20))
+    offset = (page - 1) * page_size
+
+    contacts = Contact.objects.all().order_by("-created_at")
+    total = contacts.count()
+    items = [
+        {
+            "id": str(c.id),
+            "name": c.name,
+            "email": c.email,
+            "subject": c.subject,
+            "inquiry_type": c.inquiry_type,
+            "is_processed": c.is_processed,
+            "created_at": c.created_at.strftime("%Y-%m-%d %H:%M"),
+        }
+        for c in contacts[offset : offset + page_size]
+    ]
+
+    next_page = page + 1 if offset + page_size < total else None
+    return Response({"count": total, "next": next_page, "results": items})
+
+
+@api_view(["GET", "PATCH"])
+@permission_classes([IsAdminUser])
+def admin_message_detail(request, pk):
+    """Admin contact message detail / update"""
+    try:
+        contact = Contact.objects.get(pk=pk)
+    except Contact.DoesNotExist:
+        return Response({"error": "Not found"}, status=404)
+
+    if request.method == "GET":
+        return Response(
+            {
+                "id": str(contact.id),
+                "name": contact.name,
+                "email": contact.email,
+                "company": contact.company,
+                "phone": contact.phone,
+                "subject": contact.subject,
+                "message": contact.message,
+                "inquiry_type": contact.inquiry_type,
+                "is_processed": contact.is_processed,
+                "processed_at": contact.processed_at.isoformat() if contact.processed_at else None,
+                "notes": contact.notes,
+                "created_at": contact.created_at.isoformat(),
+            }
+        )
+
+    # PATCH — mark as processed
+    if "is_processed" in request.data:
+        contact.is_processed = request.data["is_processed"]
+        if contact.is_processed:
+            contact.processed_at = timezone.now()
+            contact.processed_by = request.user
+        else:
+            contact.processed_at = None
+            contact.processed_by = None
+        contact.save(update_fields=["is_processed", "processed_at", "processed_by"])
+
+    if "notes" in request.data:
+        contact.notes = request.data["notes"]
+        contact.save(update_fields=["notes"])
+
+    return Response({"status": "updated"})
