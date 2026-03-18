@@ -1087,5 +1087,16 @@
       { "label": "Startup" },
       { "label": "R&D" }
     ]
+  },
+  "notifications": {
+    "title": "Notifications",
+    "bell": "{{count}} notifications",
+    "markAllRead": "Mark all read",
+    "empty": "No notifications",
+    "loadMore": "Load more",
+    "justNow": "Just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago"
   }
 }

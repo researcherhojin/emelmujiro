@@ -1067,5 +1067,16 @@
       { "label": "스타트업" },
       { "label": "연구/개발" }
     ]
+  },
+  "notifications": {
+    "title": "알림",
+    "bell": "알림 {{count}}건",
+    "markAllRead": "모두 읽음",
+    "empty": "알림이 없습니다",
+    "loadMore": "더 보기",
+    "justNow": "방금 전",
+    "minutesAgo": "{{count}}분 전",
+    "hoursAgo": "{{count}}시간 전",
+    "daysAgo": "{{count}}일 전"
   }
 }

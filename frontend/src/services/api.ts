@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { BlogPost, ContactFormData, ErrorResponse } from '../types';
+import { BlogPost, ContactFormData, ErrorResponse, Notification } from '../types';
 import logger from '../utils/logger';
 import env from '../config/env';
 import i18n from '../i18n';
@@ -339,6 +339,56 @@ export const api = {
       });
     }
     return axiosInstance.get('/admin/content/');
+  },
+
+  // Notifications
+  getNotifications: (page: number = 1) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { count: 0, next: null, previous: null, results: [] as Notification[] },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get<PaginatedResponse<Notification>>(`notifications/?page=${page}`);
+  },
+  getUnreadCount: () => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { count: 0 },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get<{ count: number }>('notifications/unread_count/');
+  },
+  markNotificationRead: (id: number) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { id, is_read: true },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.patch(`notifications/${id}/`, { is_read: true });
+  },
+  markAllNotificationsRead: () => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { status: 'ok' },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.post('notifications/mark_all_read/');
   },
 
   // Health check

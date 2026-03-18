@@ -30,6 +30,19 @@ export interface ContactFormData {
   inquiryType?: 'consulting' | 'education' | 'llm' | 'data';
 }
 
+// Notification Types
+export interface Notification {
+  id: number;
+  title: string;
+  message: string;
+  level: 'info' | 'success' | 'warning' | 'error';
+  notification_type: 'system' | 'blog' | 'contact' | 'admin';
+  url: string;
+  is_read: boolean;
+  read_at: string | null;
+  created_at: string;
+}
+
 // API Types
 export interface PaginatedResponse<T> {
   count: number;

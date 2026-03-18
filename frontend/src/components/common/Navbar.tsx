@@ -3,8 +3,10 @@ import { Menu, X, Globe } from 'lucide-react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DarkModeToggle from './DarkModeToggle';
+import NotificationBell from './NotificationBell';
 import { useScrollToSection } from '../../hooks/useScrollToSection';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface NavItem {
   label: string;
@@ -19,6 +21,7 @@ const Navbar: React.FC = memo(() => {
   const { t } = useTranslation();
   const scrollToSection = useScrollToSection();
   const { currentLang, localizedPath, switchLanguagePath } = useLocalizedPath();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -123,6 +126,9 @@ const Navbar: React.FC = memo(() => {
               <span>{currentLang === 'ko' ? 'EN' : 'KO'}</span>
             </button>
 
+            {/* Notification Bell (authenticated only) */}
+            {isAuthenticated && <NotificationBell />}
+
             {/* Dark Mode Toggle */}
             <DarkModeToggle />
 
@@ -145,6 +151,7 @@ const Navbar: React.FC = memo(() => {
               <Globe className="w-4 h-4" />
               <span>{currentLang === 'ko' ? 'EN' : 'KO'}</span>
             </button>
+            {isAuthenticated && <NotificationBell />}
             <DarkModeToggle />
             <button
               onClick={toggleMenu}
