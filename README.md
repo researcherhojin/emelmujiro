@@ -90,13 +90,13 @@ graph LR
 - **SSG Prerendering** — 12 static HTML pages (6 routes × 2 languages) for SEO
 - **Blog** — Django-backed blog with premium UI, Article structured data, image protection
 - **Auth** — httpOnly cookie JWT with automatic token refresh
-- **Real-time Notifications** — WebSocket-based notification system with bell UI in Navbar
-- **Admin Dashboard** — Overview, content management, contact messages, analytics, users, settings tabs
+- **Real-time Notifications** — WebSocket notifications with type-specific icons (system/blog/contact/admin), per-user preferences, email delivery
+- **Admin Dashboard** — Overview, content management, user management (full CRUD), analytics (recharts visit trends + popular pages), contact messages, notification settings
 - **Monitoring** — Sentry error tracking (user context on login/logout) + Google Analytics (blog views, dark mode, language switch events)
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
-- **Performance** — Optimized chunk splitting (react-vendor, ui-vendor, i18n, sentry, http-vendor), Lighthouse CI assertions
-- **Auto-deploy** — GitHub Actions → webhook → Mac Mini build
-- **Testing** — 70 unit test files (982 tests), 10 E2E spec files (Playwright), 104 backend tests
+- **Performance** — Optimized chunk splitting (react-vendor, ui-vendor, i18n, sentry, http-vendor, chart-vendor), Lighthouse CI assertions
+- **Auto-deploy** — GitHub Actions → webhook → Mac Mini build, parallelized PR checks with shared build artifacts
+- **Testing** — 70 unit test files (~1000 tests), 10 E2E spec files (Playwright), ~158 backend tests
 
 ## Roadmap
 
@@ -104,16 +104,9 @@ graph LR
 
 - [ ] Publish first blog posts (LLM, AI agents, RAG)
 
-**Admin**
-
-- [ ] User management — full CRUD (list, detail, update, delete)
-- [ ] Real-time analytics dashboard — SiteVisit time-series chart
-
 **Platform**
 
 - [ ] KakaoTalk channel integration
-- [ ] Notification enhancements — type-specific icons, settings page, email notifications
-- [ ] CI/CD pipeline optimization — parallel jobs, build caching
 
 ## License
 

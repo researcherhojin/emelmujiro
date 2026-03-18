@@ -54,7 +54,7 @@ git pull && docker compose up -d --build  # Backend
 ### Monorepo Structure
 
 - `frontend/` — React 19 + TypeScript + Vite 8 + Tailwind CSS 3.x
-- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** (`pyproject.toml` + `uv.lock`). Dev deps in `[project.optional-dependencies]` — use `uv sync --extra dev`
+- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** (`pyproject.toml` + `uv.lock`). Dev deps in `[project.optional-dependencies]` — use `uv sync --extra dev`. Admin endpoints in `admin_views.py`, core views in `views.py`
 - Root `package.json` uses npm workspaces pointing to `frontend/`
 - Docker: `docker-compose.yml` (prod, SQLite default; PostgreSQL via `--profile postgres`, Redis via `--profile redis`) and `docker-compose.dev.yml` (dev with hot-reload)
 
@@ -88,9 +88,22 @@ React loads normally in all browsers including KakaoTalk WebView. `@vitejs/plugi
 
 ### Notification System
 
-Backend: `Notification` model with REST API at `/api/notifications/` and `NotificationConsumer` for WebSocket at `ws/notifications/`. `send_user_notification()` creates DB record + WebSocket push.
+Backend: `Notification` model with REST API at `/api/notifications/` and `NotificationConsumer` for WebSocket at `ws/notifications/`. `send_user_notification()` creates DB record + WebSocket push + optional email.
 
-Frontend: `NotificationContext` manages state with auto-connect WebSocket on login (exponential backoff, max 5 attempts). `NotificationBell` component in Navbar for authenticated users.
+`NotificationPreference` model (OneToOne with User) controls per-type enable/disable (`system_enabled`, `blog_enabled`, `contact_enabled`, `admin_enabled`) and `email_enabled`. `send_user_notification()` checks preferences before creating — disabled types are skipped entirely. Email sent via Django SMTP when `email_enabled=True`. Preferences API: `GET/PATCH /api/notifications/preferences/` (auto-creates on first GET).
+
+Frontend: `NotificationContext` manages state with auto-connect WebSocket on login (exponential backoff, max 5 attempts). `NotificationBell` shows type-specific icons (system→Bell, blog→FileText, contact→Mail, admin→ShieldAlert) with level-based color dots. WebSocket passes `notification_type` field from backend.
+
+### Admin Dashboard
+
+`/admin` route (ProtectedRoute, admin only). Components split into `src/components/admin/` — `AdminDashboard.tsx` (main), `AdminSidebar.tsx`, `Admin*Tab.tsx` (one per tab), `DeleteConfirmModal.tsx`, `types.ts`. 6 tabs:
+
+- **Overview** — stat cards + recent activity
+- **Content Management** — blog CRUD table
+- **Users** — full CRUD: search, role/status filters, pagination, edit modal (active/staff toggles), delete with confirmation. API: `GET/PATCH/DELETE /api/admin/users/`, `/api/admin/users/<id>/`. Cannot delete self or remove own admin privileges
+- **Messages** — contact form submissions, mark as processed
+- **Analytics** — recharts AreaChart for visit trends (7/30/90 day periods), popular pages bar chart, posts by views. API: `GET /api/admin/analytics/visits/?days=30`, `GET /api/admin/analytics/pages/?days=30`. Uses `TruncDate` + `Count` aggregation on `SiteVisit`
+- **Settings** — site info + notification preferences (type toggles + email toggle)
 
 ### SSG / Prerendering
 
@@ -99,6 +112,14 @@ Frontend: `NotificationContext` manages state with auto-connect WebSocket on log
 ### SEO
 
 All canonical/OG URLs use `SITE_URL` from `src/utils/constants.ts` — **never hardcode** the URL. `SEOHelmet` generates `hreflang` alternates per page. FAQPage/Course JSON-LD are in `index.html` as static markup — do NOT add to `StructuredData.tsx` (creates duplicates). `og-image.png` (1200×630) for OG tags; `logo512.png` for favicons and schema.org logos.
+
+### Monitoring
+
+Sentry (`@sentry/react`) for error tracking — user context is set on login/logout. Google Analytics for page views, blog views, dark mode toggle, and language switch events.
+
+### Bundle Splitting
+
+Vite manual chunks: `react-vendor`, `ui-vendor`, `i18n`, `sentry`, `http-vendor`, `chart-vendor` (recharts + d3). Configured in `vite.config.ts`. Bundle size must stay under 10MB (enforced by PR checks CI).
 
 ## Testing
 
@@ -154,14 +175,14 @@ Components must call the getter each render. Do not store results in module-leve
 
 ### Coverage
 
-Target: **60%** minimum (currently ~81% statements). Config in `codecov.yml`.
+Target: **60%** minimum (currently ~81% statements). Config in `codecov.yml`. Scale: 70 unit test files (~1000 tests), 10 E2E spec files, ~158 backend tests.
 
 ## CI/CD
 
 **Conventional commits required**: `type(scope): description`. Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`.
 
-- **`main-ci-cd.yml`** — Push/PR to `main`. Tests → build → GitHub Pages (backup) → Mac Mini webhook auto-deploy. Node 24, Python 3.12.
-- **`pr-checks.yml`** — Lint + tests + Trivy security scan + bundle size (<10MB) + Lighthouse CI.
+- **`main-ci-cd.yml`** — Push/PR to `main`. Tests (frontend + backend parallel) → build → GitHub Pages (backup) → Mac Mini webhook auto-deploy. Node 24, Python 3.12. Backend uses uv cache (`~/.cache/uv`).
+- **`pr-checks.yml`** — Parallelized: `quick-checks` → `frontend-lint` + `backend-lint` + `affected-tests` + `security-scan` + `build-for-analysis` (all parallel). Build shared via artifact: `bundle-analysis` + `lighthouse` reuse single build. uv cache + Trivy cache enabled.
 
 ## Critical Configuration
 
