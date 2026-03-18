@@ -90,14 +90,20 @@ graph LR
 - **SSG Prerendering** — 12 static HTML pages (6 routes × 2 languages) for SEO
 - **Blog** — Django-backed blog with premium UI, Article structured data, image protection
 - **Auth** — httpOnly cookie JWT with automatic token refresh
-- **Monitoring** — Sentry error tracking + Google Analytics
+- **Real-time Notifications** — WebSocket-based notification system with bell UI in Navbar
+- **Admin Dashboard** — Overview, content management, contact messages, analytics, users, settings tabs
+- **Monitoring** — Sentry error tracking (user context on login/logout) + Google Analytics (blog views, dark mode, language switch events)
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
+- **Performance** — Optimized chunk splitting (react-vendor, ui-vendor, i18n, sentry, http-vendor), Lighthouse CI assertions
 - **Auto-deploy** — GitHub Actions → webhook → Mac Mini build
+- **Testing** — 60 unit test files (896 tests), 10 E2E spec files (Playwright), 104 backend tests
 
 ## Roadmap
 
 - [ ] Publish first blog posts (LLM, AI agents, RAG)
 - [ ] KakaoTalk channel integration
+- [ ] Admin user management (full CRUD)
+- [ ] Admin real-time analytics dashboard
 
 ## License
 

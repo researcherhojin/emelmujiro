@@ -266,7 +266,7 @@ These are mocked globally — do NOT re-mock in individual tests:
 
 - Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
 - 15s timeout in CI, 10s locally
-- 58 test files, 880 tests, 0 failures, 0 skips. Backend: 104 tests, 0 failures
+- 60 test files, 896 tests, 0 failures, 0 skips. Backend: 104 tests, 0 failures
 
 ### E2E Testing (Playwright)
 
@@ -399,7 +399,7 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: Active only in tests or when `env.API_URL` is empty. Production uses `api.emelmujiro.com` (Mac Mini backend)
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 58 files / 880 tests, Backend 104 tests, 0 failures, E2E 10 spec files (as of 2026-03-18)
+4. **Test count**: Frontend 60 files / 896 tests, Backend 104 tests, 0 failures, E2E 10 spec files (as of 2026-03-18)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint 10 flat config**: Upgraded from v9 to v10. Root `package.json` eslint version must match frontend's (both `^10.x`). Don't downgrade — plugins are compatible with ESLint 10
