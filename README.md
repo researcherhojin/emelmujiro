@@ -100,10 +100,25 @@ graph LR
 
 ## Roadmap
 
+**Short-term**
+
 - [ ] Publish first blog posts (LLM, AI agents, RAG)
+- [ ] Fix existing E2E test failures (strict mode violations in homepage/accessibility specs)
+- [ ] Verify and reach 60% test coverage target
+- [ ] Update dependencies (Django 5.2.10, axios, Pillow, etc.)
+
+**Mid-term**
+
+- [ ] Admin user management — full CRUD (list, detail, update, delete)
+- [ ] Admin real-time analytics dashboard — SiteVisit time-series chart
 - [ ] KakaoTalk channel integration
-- [ ] Admin user management (full CRUD)
-- [ ] Admin real-time analytics dashboard
+- [ ] Notification enhancements — type-specific icons, settings page, email notifications
+
+**Long-term**
+
+- [ ] PostgreSQL migration for production (docker-compose profile already exists)
+- [ ] Redis activation for WebSocket channel layer (multi-worker support)
+- [ ] CI/CD pipeline optimization — parallel jobs, build caching
 
 ## License
 
