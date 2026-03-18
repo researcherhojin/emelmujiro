@@ -166,4 +166,90 @@ describe('NotificationBell', () => {
     const bellButton = screen.getByRole('button');
     expect(bellButton).toHaveAttribute('aria-label', 'notifications.bell:5');
   });
+
+  it('renders type-specific icon for system notification', () => {
+    mockNotifications = [
+      {
+        id: 1,
+        title: 'System Alert',
+        message: 'System message',
+        level: 'info',
+        notification_type: 'system',
+        url: '',
+        is_read: false,
+        read_at: null,
+        created_at: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<NotificationBell />);
+    fireEvent.click(screen.getByRole('button'));
+
+    // System type uses Bell icon (rendered as 2 Bell icons: main bell + notification icon)
+    const bellIcons = screen.getAllByTestId('icon-Bell');
+    expect(bellIcons.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('renders type-specific icon for blog notification', () => {
+    mockNotifications = [
+      {
+        id: 2,
+        title: 'New Blog Post',
+        message: 'Blog message',
+        level: 'info',
+        notification_type: 'blog',
+        url: '',
+        is_read: false,
+        read_at: null,
+        created_at: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<NotificationBell />);
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByTestId('icon-FileText')).toBeInTheDocument();
+  });
+
+  it('renders type-specific icon for contact notification', () => {
+    mockNotifications = [
+      {
+        id: 3,
+        title: 'New Contact',
+        message: 'Contact message',
+        level: 'info',
+        notification_type: 'contact',
+        url: '',
+        is_read: false,
+        read_at: null,
+        created_at: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<NotificationBell />);
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByTestId('icon-Mail')).toBeInTheDocument();
+  });
+
+  it('renders type-specific icon for admin notification', () => {
+    mockNotifications = [
+      {
+        id: 4,
+        title: 'Admin Alert',
+        message: 'Admin message',
+        level: 'warning',
+        notification_type: 'admin',
+        url: '',
+        is_read: false,
+        read_at: null,
+        created_at: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<NotificationBell />);
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByTestId('icon-ShieldAlert')).toBeInTheDocument();
+  });
 });

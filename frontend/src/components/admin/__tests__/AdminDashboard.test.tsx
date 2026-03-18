@@ -55,12 +55,111 @@ vi.mock('../../../contexts/NotificationContext', () => ({
   NotificationProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
+const mockUsers = [
+  {
+    id: 1,
+    username: 'admin',
+    email: 'admin@example.com',
+    first_name: 'Admin',
+    last_name: 'User',
+    role: 'admin' as const,
+    is_active: true,
+    is_staff: true,
+    is_superuser: true,
+    date_joined: '2024-01-01T00:00:00Z',
+    last_login: '2024-06-15T10:30:00Z',
+  },
+  {
+    id: 2,
+    username: 'testuser',
+    email: 'test@example.com',
+    first_name: 'Test',
+    last_name: '',
+    role: 'user' as const,
+    is_active: true,
+    is_staff: false,
+    is_superuser: false,
+    date_joined: '2024-03-10T00:00:00Z',
+    last_login: null,
+  },
+  {
+    id: 3,
+    username: 'staffuser',
+    email: 'staff@example.com',
+    first_name: '',
+    last_name: '',
+    role: 'staff' as const,
+    is_active: false,
+    is_staff: true,
+    is_superuser: false,
+    date_joined: '2024-02-15T00:00:00Z',
+    last_login: '2024-05-20T08:00:00Z',
+  },
+];
+
+// Mock recharts to avoid SVG rendering issues in jsdom
+vi.mock('recharts', () => ({
+  AreaChart: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="area-chart">{children}</div>
+  ),
+  Area: () => null,
+  XAxis: () => null,
+  YAxis: () => null,
+  CartesianGrid: () => null,
+  Tooltip: () => null,
+  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="responsive-container">{children}</div>
+  ),
+  Legend: () => null,
+}));
+
+const mockVisitData = [
+  { date: '2026-03-16', visits: 42, unique_visitors: 15 },
+  { date: '2026-03-17', visits: 55, unique_visitors: 22 },
+  { date: '2026-03-18', visits: 38, unique_visitors: 12 },
+];
+
+const mockPageData = [
+  { page_path: '/', visits: 120 },
+  { page_path: '/about', visits: 85 },
+  { page_path: '/blog', visits: 60 },
+];
+
 vi.mock('../../../services/api', () => ({
   api: {
     getAdminStats: vi.fn(() => Promise.resolve({ data: mockStats })),
     getAdminContent: vi.fn(() => Promise.resolve({ data: mockContent })),
     getAdminMessages: vi.fn(() => Promise.resolve({ data: { count: 0, next: null, results: [] } })),
     updateAdminMessage: vi.fn(() => Promise.resolve({ data: { status: 'updated' } })),
+    getAdminUsers: vi.fn(() =>
+      Promise.resolve({ data: { count: 3, next: null, results: mockUsers } })
+    ),
+    updateAdminUser: vi.fn(() => Promise.resolve({ data: mockUsers[1] })),
+    deleteAdminUser: vi.fn(() => Promise.resolve({ status: 204 })),
+    getAdminVisitStats: vi.fn(() => Promise.resolve({ data: { period: 30, data: mockVisitData } })),
+    getAdminPageStats: vi.fn(() => Promise.resolve({ data: { period: 30, data: mockPageData } })),
+    getNotificationPreferences: vi.fn(() =>
+      Promise.resolve({
+        data: {
+          system_enabled: true,
+          blog_enabled: true,
+          contact_enabled: false,
+          admin_enabled: true,
+          email_enabled: false,
+        },
+      })
+    ),
+    updateNotificationPreferences: vi.fn(() =>
+      Promise.resolve({
+        data: {
+          system_enabled: true,
+          blog_enabled: true,
+          contact_enabled: true,
+          admin_enabled: true,
+          email_enabled: false,
+        },
+      })
+    ),
   },
   blogService: {
     deletePost: vi.fn(() => Promise.resolve({ status: 204 })),
@@ -204,7 +303,7 @@ describe('AdminDashboard', () => {
     expect(screen.queryByText('admin.confirmDelete')).not.toBeInTheDocument();
   });
 
-  it('switches to users tab', async () => {
+  it('switches to users tab and displays user list', async () => {
     renderWithProviders(<AdminDashboard />);
 
     await waitFor(() => {
@@ -216,7 +315,151 @@ describe('AdminDashboard', () => {
     });
     fireEvent.click(usersTab);
 
-    expect(screen.getByText('admin.userManagementComingSoon')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('admin')).toBeInTheDocument();
+    });
+    expect(screen.getByText('testuser')).toBeInTheDocument();
+    expect(screen.getByText('staffuser')).toBeInTheDocument();
+  });
+
+  it('displays user table columns in users tab', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.userManagement/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.username')).toBeInTheDocument();
+    });
+    expect(screen.getByText('admin.email')).toBeInTheDocument();
+    expect(screen.getByText('admin.userRole')).toBeInTheDocument();
+    expect(screen.getByText('admin.joinDate')).toBeInTheDocument();
+    expect(screen.getByText('admin.lastLogin')).toBeInTheDocument();
+  });
+
+  it('shows role badges for users', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.userManagement/i }));
+
+    await waitFor(() => {
+      // Role badges appear both in filter dropdown and in table rows
+      expect(screen.getAllByText('admin.roleAdmin').length).toBeGreaterThanOrEqual(2);
+    });
+    expect(screen.getAllByText('admin.roleUser').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('admin.roleStaff').length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('shows active/inactive status badges', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.userManagement/i }));
+
+    await waitFor(() => {
+      // "active" appears in filter dropdown and in table badges
+      expect(screen.getAllByText('admin.active').length).toBeGreaterThan(1);
+    });
+    // "inactive" appears in filter dropdown and in staffuser's badge
+    expect(screen.getAllByText('admin.inactive').length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('opens edit modal when edit button is clicked', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.userManagement/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('testuser')).toBeInTheDocument();
+    });
+
+    const editButtons = screen.getAllByTitle('admin.edit');
+    fireEvent.click(editButtons[0]);
+
+    expect(screen.getByText('admin.editUser')).toBeInTheDocument();
+    expect(screen.getByText('admin.save')).toBeInTheDocument();
+  });
+
+  it('opens delete confirmation for non-admin user', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.userManagement/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('testuser')).toBeInTheDocument();
+    });
+
+    const deleteButtons = screen.getAllByTitle('admin.delete');
+    fireEvent.click(deleteButtons[0]);
+
+    expect(screen.getByText('admin.confirmDelete')).toBeInTheDocument();
+  });
+
+  it('does not show delete button for admin users', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.userManagement/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('testuser')).toBeInTheDocument();
+    });
+
+    // Admin user (id=1) row should not have a delete button
+    // Non-admin users (id=2, id=3) should have delete buttons
+    const deleteButtons = screen.getAllByTitle('admin.delete');
+    expect(deleteButtons.length).toBe(2); // only testuser and staffuser
+  });
+
+  it('displays search input and filter dropdowns', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.userManagement/i }));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('admin.searchUsers')).toBeInTheDocument();
+    });
+    expect(screen.getByDisplayValue('admin.allRoles')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('admin.allStatuses')).toBeInTheDocument();
+  });
+
+  it('displays total user count', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.userManagement/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/admin\.totalUsers.*3/)).toBeInTheDocument();
+    });
   });
 
   it('switches to messages tab', async () => {
@@ -252,6 +495,76 @@ describe('AdminDashboard', () => {
     expect(screen.getByText('admin.analyticsOverview')).toBeInTheDocument();
   });
 
+  it('displays visit trend chart in analytics tab', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.analytics/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.visitTrend')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
+    expect(screen.getByTestId('area-chart')).toBeInTheDocument();
+  });
+
+  it('displays period selector buttons in analytics tab', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.analytics/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.last7Days')).toBeInTheDocument();
+    });
+    expect(screen.getByText('admin.last30Days')).toBeInTheDocument();
+    expect(screen.getByText('admin.last90Days')).toBeInTheDocument();
+  });
+
+  it('displays popular pages section in analytics tab', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.analytics/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.popularPages')).toBeInTheDocument();
+    });
+    expect(screen.getByText('/')).toBeInTheDocument();
+    expect(screen.getByText('/about')).toBeInTheDocument();
+    expect(screen.getByText('/blog')).toBeInTheDocument();
+  });
+
+  it('changes period when clicking period buttons', async () => {
+    const { api: mockApi } = await import('../../../services/api');
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.analytics/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.last7Days')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('admin.last7Days'));
+
+    await waitFor(() => {
+      expect(mockApi.getAdminVisitStats).toHaveBeenCalledWith(7);
+    });
+  });
+
   it('switches to settings tab', async () => {
     renderWithProviders(<AdminDashboard />);
 
@@ -265,6 +578,43 @@ describe('AdminDashboard', () => {
     fireEvent.click(settingsTab);
 
     expect(screen.getByText('admin.siteInfo')).toBeInTheDocument();
+  });
+
+  it('displays notification settings in settings tab', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.settings/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.notificationSettings')).toBeInTheDocument();
+    });
+    expect(screen.getByText('admin.notifTypeSystem')).toBeInTheDocument();
+    expect(screen.getByText('admin.notifTypeBlog')).toBeInTheDocument();
+    expect(screen.getByText('admin.notifTypeContact')).toBeInTheDocument();
+    expect(screen.getByText('admin.notifTypeAdmin')).toBeInTheDocument();
+    expect(screen.getByText('admin.emailNotifications')).toBeInTheDocument();
+  });
+
+  it('renders notification preference toggles', async () => {
+    renderWithProviders(<AdminDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.dashboardOverview')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /admin\.settings/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('admin.notificationSettings')).toBeInTheDocument();
+    });
+
+    // Should have toggle switches
+    const switches = screen.getAllByRole('switch');
+    expect(switches.length).toBe(5); // 4 types + email
   });
 
   it('displays logout button', () => {

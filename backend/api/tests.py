@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import BlogPost, Contact, ContactAttempt, Notification, SiteVisit, NewsletterSubscription
+from .models import BlogPost, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
 from .views import get_client_ip, _is_valid_ip, send_user_notification
 from datetime import datetime, timezone, timedelta
 from django.utils import timezone as django_timezone
@@ -829,6 +829,509 @@ class AdminAPITestCase(APITestCase):
         """Unauthenticated request is rejected"""
         response = self.client.get(reverse("admin-content"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_admin_messages_empty_list(self):
+        """Empty messages list returns correct structure"""
+        Contact.objects.all().delete()
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-messages"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 0)
+        self.assertEqual(response.data["results"], [])
+
+    def test_admin_messages_invalid_page(self):
+        """Invalid page parameter defaults gracefully"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-messages"), {"page": "abc"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_admin_messages_page_zero(self):
+        """Page 0 is treated as page 1"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-messages"), {"page": 0})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_admin_message_detail_invalid_uuid(self):
+        """Invalid UUID returns 404"""
+        self.client.force_authenticate(user=self.admin)
+        import uuid
+
+        response = self.client.get(reverse("admin-message-detail", kwargs={"pk": uuid.uuid4()}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class AdminUserManagementTestCase(APITestCase):
+    """Tests for Admin User Management CRUD endpoints"""
+
+    def setUp(self):
+        self.admin = User.objects.create_superuser(
+            username="admin", email="admin@example.com", password="adminpass12345"
+        )
+        self.staff = User.objects.create_user(
+            username="staff", email="staff@example.com", password="staffpass12345", is_staff=True
+        )
+        self.user = User.objects.create_user(username="regular", email="regular@example.com", password="userpass12345")
+        self.user2 = User.objects.create_user(username="another", email="another@example.com", password="userpass12345")
+
+    # --- List ---
+
+    def test_list_users_as_admin(self):
+        """Admin can list all users"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-users"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 4)
+        self.assertEqual(len(response.data["results"]), 4)
+
+    def test_list_users_pagination(self):
+        """Pagination works correctly"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-users"), {"page": 1, "page_size": 2})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 2)
+        self.assertEqual(response.data["count"], 4)
+        self.assertEqual(response.data["next"], 2)
+
+    def test_list_users_search_by_username(self):
+        """Search filters by username"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-users"), {"search": "regular"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["results"][0]["username"], "regular")
+
+    def test_list_users_search_by_email(self):
+        """Search filters by email"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-users"), {"search": "another@"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+
+    def test_list_users_filter_by_role_admin(self):
+        """Filter by admin role"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-users"), {"role": "admin"})
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["results"][0]["username"], "admin")
+
+    def test_list_users_filter_by_role_staff(self):
+        """Filter by staff role"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-users"), {"role": "staff"})
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["results"][0]["username"], "staff")
+
+    def test_list_users_filter_by_role_user(self):
+        """Filter by regular user role"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-users"), {"role": "user"})
+        self.assertEqual(response.data["count"], 2)
+
+    def test_list_users_filter_by_active_status(self):
+        """Filter by active status"""
+        self.user2.is_active = False
+        self.user2.save()
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-users"), {"is_active": "false"})
+        self.assertEqual(response.data["count"], 1)
+        self.assertEqual(response.data["results"][0]["username"], "another")
+
+    def test_list_users_forbidden_for_regular_user(self):
+        """Regular user cannot list users"""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse("admin-users"))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_list_users_unauthenticated(self):
+        """Unauthenticated request is rejected"""
+        response = self.client.get(reverse("admin-users"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # --- Detail ---
+
+    def test_get_user_detail(self):
+        """Admin can get user detail"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-user-detail", kwargs={"pk": self.user.pk}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["username"], "regular")
+        self.assertEqual(response.data["role"], "user")
+
+    def test_get_user_detail_not_found(self):
+        """Returns 404 for nonexistent user"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-user-detail", kwargs={"pk": 99999}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # --- Update ---
+
+    def test_update_user_role_to_staff(self):
+        """Admin can promote user to staff"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.patch(
+            reverse("admin-user-detail", kwargs={"pk": self.user.pk}),
+            {"is_staff": True},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.is_staff)
+
+    def test_update_user_deactivate(self):
+        """Admin can deactivate a user"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.patch(
+            reverse("admin-user-detail", kwargs={"pk": self.user.pk}),
+            {"is_active": False},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.is_active)
+
+    def test_cannot_remove_own_admin_privileges(self):
+        """Admin cannot demote themselves"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.patch(
+            reverse("admin-user-detail", kwargs={"pk": self.admin.pk}),
+            {"is_superuser": False},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.admin.refresh_from_db()
+        self.assertTrue(self.admin.is_superuser)
+
+    def test_update_user_forbidden_for_regular_user(self):
+        """Regular user cannot update users"""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(
+            reverse("admin-user-detail", kwargs={"pk": self.user2.pk}),
+            {"is_staff": True},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    # --- Delete ---
+
+    def test_delete_user(self):
+        """Admin can delete a user"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.delete(reverse("admin-user-detail", kwargs={"pk": self.user2.pk}))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(User.objects.filter(pk=self.user2.pk).exists())
+
+    def test_cannot_delete_self(self):
+        """Admin cannot delete their own account"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.delete(reverse("admin-user-detail", kwargs={"pk": self.admin.pk}))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(User.objects.filter(pk=self.admin.pk).exists())
+
+    def test_delete_user_not_found(self):
+        """Returns 404 for nonexistent user"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.delete(reverse("admin-user-detail", kwargs={"pk": 99999}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_user_forbidden_for_regular_user(self):
+        """Regular user cannot delete users"""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(reverse("admin-user-detail", kwargs={"pk": self.user2.pk}))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_user_unauthenticated(self):
+        """Unauthenticated request is rejected"""
+        response = self.client.delete(reverse("admin-user-detail", kwargs={"pk": self.user.pk}))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # --- Serializer fields ---
+
+    def test_user_detail_contains_expected_fields(self):
+        """Response contains all expected fields"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-user-detail", kwargs={"pk": self.user.pk}))
+        expected_fields = {
+            "id", "username", "email", "first_name", "last_name",
+            "role", "is_active", "is_staff", "is_superuser",
+            "date_joined", "last_login",
+        }
+        self.assertEqual(set(response.data.keys()), expected_fields)
+
+    def test_role_field_values(self):
+        """Role field returns correct values"""
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.client.get(reverse("admin-user-detail", kwargs={"pk": self.admin.pk}))
+        self.assertEqual(response.data["role"], "admin")
+
+        response = self.client.get(reverse("admin-user-detail", kwargs={"pk": self.staff.pk}))
+        self.assertEqual(response.data["role"], "staff")
+
+        response = self.client.get(reverse("admin-user-detail", kwargs={"pk": self.user.pk}))
+        self.assertEqual(response.data["role"], "user")
+
+
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class AdminAnalyticsTestCase(APITestCase):
+    """Tests for Admin Analytics endpoints (visits time-series, popular pages)"""
+
+    def setUp(self):
+        self.admin = User.objects.create_superuser(
+            username="admin", email="admin@example.com", password="adminpass12345"
+        )
+        self.user = User.objects.create_user(username="regular", email="regular@example.com", password="userpass12345")
+
+        # Create SiteVisit records across multiple days
+        now = django_timezone.now()
+        for i in range(3):
+            SiteVisit.objects.create(
+                ip_address="192.168.1.1",
+                user_agent="test-agent",
+                page_path="/",
+                visit_time=now - timedelta(days=i),
+            )
+            SiteVisit.objects.create(
+                ip_address="192.168.1.2",
+                user_agent="test-agent",
+                page_path="/about",
+                visit_time=now - timedelta(days=i),
+            )
+        # Extra visit today for unique visitor count
+        SiteVisit.objects.create(
+            ip_address="192.168.1.3",
+            user_agent="test-agent",
+            page_path="/",
+            visit_time=now,
+        )
+
+    # --- Visits endpoint ---
+
+    def test_visits_as_admin(self):
+        """Admin can access visit analytics"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-visits"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["period"], 30)
+        self.assertIsInstance(response.data["data"], list)
+        self.assertTrue(len(response.data["data"]) > 0)
+
+    def test_visits_data_structure(self):
+        """Visit data contains expected fields"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-visits"))
+        entry = response.data["data"][0]
+        self.assertIn("date", entry)
+        self.assertIn("visits", entry)
+        self.assertIn("unique_visitors", entry)
+
+    def test_visits_unique_visitor_count(self):
+        """Unique visitors are counted correctly"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-visits"), {"days": 1})
+        # Today: 3 visits from 3 unique IPs (192.168.1.1, .2, .3)
+        today_data = response.data["data"][-1]
+        self.assertEqual(today_data["unique_visitors"], 3)
+
+    def test_visits_custom_days(self):
+        """Custom days parameter works"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-visits"), {"days": 7})
+        self.assertEqual(response.data["period"], 7)
+
+    def test_visits_days_capped_at_365(self):
+        """Days parameter is capped at 365"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-visits"), {"days": 999})
+        self.assertEqual(response.data["period"], 365)
+
+    def test_visits_forbidden_for_regular_user(self):
+        """Regular user cannot access visit analytics"""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse("admin-analytics-visits"))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_visits_unauthenticated(self):
+        """Unauthenticated request is rejected"""
+        response = self.client.get(reverse("admin-analytics-visits"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # --- Pages endpoint ---
+
+    def test_pages_as_admin(self):
+        """Admin can access page analytics"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-pages"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response.data["data"], list)
+
+    def test_pages_ordered_by_visits(self):
+        """Pages are ordered by visit count descending"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-pages"))
+        data = response.data["data"]
+        self.assertTrue(len(data) >= 2)
+        # "/" has 4 visits (3 from .1 + 1 from .3), "/about" has 3 visits
+        self.assertEqual(data[0]["page_path"], "/")
+        self.assertEqual(data[0]["visits"], 4)
+        self.assertEqual(data[1]["page_path"], "/about")
+        self.assertEqual(data[1]["visits"], 3)
+
+    def test_pages_forbidden_for_regular_user(self):
+        """Regular user cannot access page analytics"""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(reverse("admin-analytics-pages"))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_pages_unauthenticated(self):
+        """Unauthenticated request is rejected"""
+        response = self.client.get(reverse("admin-analytics-pages"))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_pages_custom_days(self):
+        """Custom days parameter works for pages"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-pages"), {"days": 7})
+        self.assertEqual(response.data["period"], 7)
+
+    def test_visits_empty_range(self):
+        """Empty date range returns empty data array"""
+        SiteVisit.objects.all().delete()
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-visits"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["data"], [])
+
+    def test_visits_invalid_days_string(self):
+        """Non-numeric days parameter returns 400"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-visits"), {"days": "abc"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_pages_invalid_days_string(self):
+        """Non-numeric days parameter returns 400"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-pages"), {"days": "abc"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_visits_negative_days_clamped(self):
+        """Negative days parameter is clamped to 1"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-analytics-visits"), {"days": -5})
+        self.assertEqual(response.data["period"], 1)
+
+
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class NotificationPreferenceTestCase(APITestCase):
+    """Tests for Notification Preferences and enhanced send_user_notification"""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpass12345"
+        )
+        self.admin = User.objects.create_superuser(
+            username="admin", email="admin@example.com", password="adminpass12345"
+        )
+
+    # --- Preferences API ---
+
+    def test_get_preferences_creates_default(self):
+        """GET preferences auto-creates with defaults"""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/notifications/preferences/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["system_enabled"])
+        self.assertTrue(response.data["blog_enabled"])
+        self.assertTrue(response.data["contact_enabled"])
+        self.assertTrue(response.data["admin_enabled"])
+        self.assertFalse(response.data["email_enabled"])
+
+    def test_update_preferences(self):
+        """PATCH updates specific fields"""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.patch(
+            "/api/notifications/preferences/",
+            {"blog_enabled": False, "email_enabled": True},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data["blog_enabled"])
+        self.assertTrue(response.data["email_enabled"])
+        # Other fields unchanged
+        self.assertTrue(response.data["system_enabled"])
+
+    def test_preferences_unauthenticated(self):
+        """Unauthenticated request is rejected"""
+        response = self.client.get("/api/notifications/preferences/")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    # --- send_user_notification with preferences ---
+
+    def test_notification_respects_disabled_type(self):
+        """Disabled type prevents notification creation"""
+        NotificationPreference.objects.create(user=self.user, blog_enabled=False)
+        result = send_user_notification(self.user, "Blog Update", "New post", notification_type="blog")
+        self.assertIsNone(result)
+        self.assertEqual(Notification.objects.filter(user=self.user).count(), 0)
+
+    def test_notification_created_when_type_enabled(self):
+        """Enabled type creates notification normally"""
+        NotificationPreference.objects.create(user=self.user, blog_enabled=True)
+        result = send_user_notification(self.user, "Blog Update", "New post", notification_type="blog")
+        self.assertIsNotNone(result)
+        self.assertEqual(Notification.objects.filter(user=self.user).count(), 1)
+
+    def test_notification_created_without_preferences(self):
+        """No preferences model = all enabled (default)"""
+        result = send_user_notification(self.user, "System Alert", "Test", notification_type="system")
+        self.assertIsNotNone(result)
+        self.assertEqual(Notification.objects.filter(user=self.user).count(), 1)
+
+    @override_settings(DEFAULT_FROM_EMAIL="test@emelmujiro.com")
+    def test_email_sent_when_enabled(self):
+        """Email is sent when email_enabled is True"""
+        from unittest.mock import patch
+
+        NotificationPreference.objects.create(user=self.user, email_enabled=True)
+        with patch("api.views.send_mail") as mock_send:
+            send_user_notification(self.user, "Test", "Message", notification_type="system")
+            mock_send.assert_called_once()
+            call_kwargs = mock_send.call_args
+            self.assertIn("test@example.com", call_kwargs[1]["recipient_list"])
+
+    def test_email_not_sent_when_disabled(self):
+        """Email is not sent when email_enabled is False"""
+        from unittest.mock import patch
+
+        NotificationPreference.objects.create(user=self.user, email_enabled=False)
+        with patch("api.views.send_mail") as mock_send:
+            send_user_notification(self.user, "Test", "Message", notification_type="system")
+            mock_send.assert_not_called()
+
+    def test_notification_type_stored_correctly(self):
+        """notification_type is stored in DB correctly"""
+        result = send_user_notification(self.user, "Admin Alert", "Test", notification_type="admin")
+        self.assertEqual(result.notification_type, "admin")
+
+    def test_is_type_enabled_method(self):
+        """NotificationPreference.is_type_enabled works correctly"""
+        pref = NotificationPreference.objects.create(
+            user=self.user, system_enabled=True, blog_enabled=False
+        )
+        self.assertTrue(pref.is_type_enabled("system"))
+        self.assertFalse(pref.is_type_enabled("blog"))
+        self.assertTrue(pref.is_type_enabled("unknown_type"))
+
+    def test_email_not_sent_when_user_has_no_email(self):
+        """Email is not sent when user.email is empty even with email_enabled"""
+        from unittest.mock import patch
+
+        self.user.email = ""
+        self.user.save()
+        NotificationPreference.objects.create(user=self.user, email_enabled=True)
+        with patch("api.views.send_mail") as mock_send:
+            send_user_notification(self.user, "Test", "Message", notification_type="system")
+            mock_send.assert_not_called()
 
 
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})
