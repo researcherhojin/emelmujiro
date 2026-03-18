@@ -100,30 +100,19 @@ graph LR
 
 ## Roadmap
 
-**Security hardening**
-
-- [x] ~~Nginx CSP를 index.html CSP와 동일하게 강화~~
-- [x] ~~`admin_messages` 엔드포인트 페이지네이션 파라미터 검증 (음수/극단값 방어)~~
-- [x] ~~CORS 기본값을 DEBUG 조건부로 변경 (프로덕션에서 localhost 제거)~~
-- [x] ~~Admin API 엔드포인트에 레이트 리밋 추가~~
-- [x] ~~Docker dev compose 포트를 127.0.0.1로 바인딩 (Redis/PostgreSQL)~~
-
-**Short-term**
+**Content**
 
 - [ ] Publish first blog posts (LLM, AI agents, RAG)
-- [x] ~~Fix existing E2E test failures (strict mode violations in homepage/accessibility specs)~~
-- [x] ~~Verify and reach 60% test coverage target~~ (80.9% statements achieved)
-- [x] ~~Update dependencies~~ (patch updates applied 2026-03-18)
 
-**Mid-term**
+**Admin**
 
-- [ ] Admin user management — full CRUD (list, detail, update, delete)
-- [ ] Admin real-time analytics dashboard — SiteVisit time-series chart
+- [ ] User management — full CRUD (list, detail, update, delete)
+- [ ] Real-time analytics dashboard — SiteVisit time-series chart
+
+**Platform**
+
 - [ ] KakaoTalk channel integration
 - [ ] Notification enhancements — type-specific icons, settings page, email notifications
-
-**Long-term**
-
 - [ ] CI/CD pipeline optimization — parallel jobs, build caching
 
 ## License
