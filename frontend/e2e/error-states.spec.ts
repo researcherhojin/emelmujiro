@@ -12,13 +12,10 @@ test.describe('Error States', () => {
     expect(text).toBeTruthy();
   });
 
-  test('admin route without auth redirects to home', async ({ page }) => {
+  test('non-existent route shows 404', async ({ page }) => {
     await page.goto('/admin');
-
-    // ProtectedRoute should redirect unauthorized users to /
     await page.waitForTimeout(1000);
-    const url = page.url();
-    expect(url).not.toContain('/admin');
+    await expect(page.locator('text=404')).toBeVisible();
   });
 
   test('no console errors on homepage', async ({ page }) => {

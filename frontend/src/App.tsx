@@ -16,7 +16,6 @@ import { NotificationProvider } from './contexts/NotificationContext';
 import Layout from './components/layout/Layout';
 import { PageLoading } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
-import ProtectedRoute from './components/common/ProtectedRoute';
 import { SITE_URL } from './utils/constants';
 import { trackPageView } from './utils/analytics';
 import './i18n';
@@ -41,9 +40,6 @@ const ContactPage = lazy(() => import('./components/pages/ContactPage'));
 const BlogListPage = lazy(() => import('./components/blog/BlogListPage'));
 const BlogDetail = lazy(() => import('./components/blog/BlogDetail'));
 const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
-
-// Admin Components
-const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
 
 // ScrollToTop component to handle page navigation
 const ScrollToTop: React.FC = memo(() => {
@@ -156,14 +152,6 @@ const pageRoutes = [
   { path: 'blog', element: <BlogListPage /> },
   { path: 'blog/new', element: <BlogEditor /> },
   { path: 'blog/:id', element: <BlogDetail /> },
-  {
-    path: 'admin',
-    element: (
-      <ProtectedRoute requiredRole="admin">
-        <AdminDashboard />
-      </ProtectedRoute>
-    ),
-  },
   { path: '*', element: <NotFound /> },
 ];
 

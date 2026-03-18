@@ -65,9 +65,6 @@ export default defineConfig({
           if (id.includes('node_modules/axios/')) {
             return 'http-vendor';
           }
-          if (id.includes('node_modules/recharts/') || id.includes('node_modules/d3-')) {
-            return 'chart-vendor';
-          }
         },
       },
     },
