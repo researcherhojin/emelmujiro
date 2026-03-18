@@ -18,39 +18,46 @@ vi.mock('../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },
 }));
 
-// Mock API
-const mockGetUnreadCount = vi.fn(() => Promise.resolve({ data: { count: 3 } }));
-const mockGetNotifications = vi.fn(() =>
-  Promise.resolve({
-    data: {
-      count: 1,
-      next: null,
-      previous: null,
-      results: [
-        {
-          id: 1,
-          title: 'Test Notification',
-          message: 'Test message',
-          level: 'info',
-          notification_type: 'system',
-          url: '',
-          is_read: false,
-          read_at: null,
-          created_at: '2026-03-18T10:00:00Z',
-        },
-      ],
-    },
-  })
-);
-const mockMarkNotificationRead = vi.fn(() => Promise.resolve({ data: { id: 1, is_read: true } }));
-const mockMarkAllNotificationsRead = vi.fn(() => Promise.resolve({ data: { status: 'ok' } }));
+// Mock API — use vi.hoisted so mock fns are available inside vi.mock factory
+const {
+  mockGetUnreadCount,
+  mockGetNotifications,
+  mockMarkNotificationRead,
+  mockMarkAllNotificationsRead,
+} = vi.hoisted(() => ({
+  mockGetUnreadCount: vi.fn(() => Promise.resolve({ data: { count: 3 } })),
+  mockGetNotifications: vi.fn(() =>
+    Promise.resolve({
+      data: {
+        count: 1,
+        next: null,
+        previous: null,
+        results: [
+          {
+            id: 1,
+            title: 'Test Notification',
+            message: 'Test message',
+            level: 'info',
+            notification_type: 'system',
+            url: '',
+            is_read: false,
+            read_at: null,
+            created_at: '2026-03-18T10:00:00Z',
+          },
+        ],
+      },
+    })
+  ),
+  mockMarkNotificationRead: vi.fn(() => Promise.resolve({ data: { id: 1, is_read: true } })),
+  mockMarkAllNotificationsRead: vi.fn(() => Promise.resolve({ data: { status: 'ok' } })),
+}));
 
 vi.mock('../../services/api', () => ({
   api: {
-    getUnreadCount: (...args: unknown[]) => mockGetUnreadCount(...args),
-    getNotifications: (...args: unknown[]) => mockGetNotifications(...args),
-    markNotificationRead: (...args: unknown[]) => mockMarkNotificationRead(...args),
-    markAllNotificationsRead: (...args: unknown[]) => mockMarkAllNotificationsRead(...args),
+    getUnreadCount: mockGetUnreadCount,
+    getNotifications: mockGetNotifications,
+    markNotificationRead: mockMarkNotificationRead,
+    markAllNotificationsRead: mockMarkAllNotificationsRead,
     getUser: vi.fn(() =>
       Promise.resolve({ data: { id: 1, email: 'test@test.com', name: 'Test' } })
     ),
