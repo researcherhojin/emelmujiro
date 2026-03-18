@@ -14,6 +14,7 @@ import BlogComments from './BlogComments';
 import { useBlog } from '../../contexts/BlogContext';
 import { SITE_URL } from '../../utils/constants';
 import { formatDate } from '../../utils/dateFormat';
+import { trackBlogView } from '../../utils/analytics';
 
 const preventImageAction = (e: React.MouseEvent | React.DragEvent) => {
   e.preventDefault();
@@ -33,6 +34,12 @@ const BlogDetailPage: React.FC = memo(() => {
     return () => clearCurrentPost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  useEffect(() => {
+    if (post && id) {
+      trackBlogView(id, post.category);
+    }
+  }, [post, id]);
 
   if (loading) {
     return <PageLoading message={t('blogDetail.loading')} />;

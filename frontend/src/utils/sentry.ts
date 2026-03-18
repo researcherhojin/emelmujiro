@@ -137,11 +137,39 @@ export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
   }
 }
 
+// Set user context for error tracking (call on login)
+export function setUserContext(user: { id: number; email: string }): void {
+  if (env.ENABLE_SENTRY) {
+    Sentry.setUser({ id: String(user.id), email: user.email });
+  }
+}
+
+// Clear user context (call on logout)
+export function clearUserContext(): void {
+  if (env.ENABLE_SENTRY) {
+    Sentry.setUser(null);
+  }
+}
+
+// Add breadcrumb for key user actions
+export function addBreadcrumb(
+  category: string,
+  message: string,
+  data?: Record<string, unknown>
+): void {
+  if (env.ENABLE_SENTRY) {
+    Sentry.addBreadcrumb({ category, message, data, level: 'info' });
+  }
+}
+
 // Default export
 const sentryUtils = {
   initSentry,
   captureException,
   reportErrorBoundary,
+  setUserContext,
+  clearUserContext,
+  addBreadcrumb,
 };
 
 export default sentryUtils;

@@ -33,3 +33,27 @@ export function trackCtaClick(location: string): void {
   if (!isEnabled || !window.gtag) return;
   window.gtag('event', 'click_cta_email', { event_label: location });
 }
+
+// Track blog post views
+export function trackBlogView(postId: string | number, category?: string): void {
+  if (!isEnabled || !window.gtag) return;
+  window.gtag('event', 'view_blog_post', { post_id: postId, category });
+}
+
+// Track search queries
+export function trackSearch(query: string, resultCount: number): void {
+  if (!isEnabled || !window.gtag) return;
+  window.gtag('event', 'search', { search_term: query, result_count: resultCount });
+}
+
+// Track dark mode toggle
+export function trackDarkModeToggle(isDark: boolean): void {
+  if (!isEnabled || !window.gtag) return;
+  window.gtag('event', 'toggle_dark_mode', { is_dark: isDark });
+}
+
+// Track language switch
+export function trackLanguageSwitch(language: string): void {
+  if (!isEnabled || !window.gtag) return;
+  window.gtag('event', 'switch_language', { language });
+}
