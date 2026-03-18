@@ -12,6 +12,7 @@ import { BlogProvider } from './contexts/BlogContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { UIProvider } from './contexts/UIContext';
 import { FormProvider } from './contexts/FormContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import Layout from './components/layout/Layout';
 import { PageLoading } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
@@ -196,11 +197,13 @@ const App: React.FC = () => {
       <ErrorBoundary>
         <UIProvider>
           <AuthProvider>
-            <BlogProvider>
-              <FormProvider>
-                <RouterProvider router={router} />
-              </FormProvider>
-            </BlogProvider>
+            <NotificationProvider>
+              <BlogProvider>
+                <FormProvider>
+                  <RouterProvider router={router} />
+                </FormProvider>
+              </BlogProvider>
+            </NotificationProvider>
           </AuthProvider>
         </UIProvider>
       </ErrorBoundary>
