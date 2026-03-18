@@ -86,6 +86,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     "title": event.get("title"),
                     "message": event.get("message"),
                     "level": event.get("level", "info"),
+                    "notification_type": event.get("notification_type", "system"),
                     "url": event.get("url"),
                     "timestamp": event.get("timestamp", timezone.now().isoformat()),
                 }

@@ -86,7 +86,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
               title: data.title,
               message: data.message,
               level: data.level || 'info',
-              notification_type: 'system',
+              notification_type: data.notification_type || 'system',
               url: data.url || '',
               is_read: false,
               read_at: null,

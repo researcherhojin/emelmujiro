@@ -1,8 +1,8 @@
 from rest_framework import viewsets, status, mixins
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, throttle_classes, permission_classes, action
+from rest_framework.decorators import api_view, throttle_classes, action
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
@@ -18,10 +18,11 @@ import logging
 import hashlib
 import re
 
-from .models import BlogPost, Contact, ContactAttempt, Notification, SiteVisit, NewsletterSubscription
+from .models import BlogPost, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
 from .serializers import (
     BlogPostSerializer,
     ContactSerializer,
+    NotificationPreferenceSerializer,
     NotificationSerializer,
     NewsletterSubscriptionSerializer,
 )
@@ -534,9 +535,27 @@ class NotificationViewSet(
         count = Notification.objects.filter(user=request.user, is_read=False).count()
         return Response({"count": count})
 
+    @action(detail=False, methods=["get", "patch"])
+    def preferences(self, request):
+        """Get or update notification preferences"""
+        pref, _created = NotificationPreference.objects.get_or_create(user=request.user)
+
+        if request.method == "GET":
+            serializer = NotificationPreferenceSerializer(pref)
+            return Response(serializer.data)
+
+        serializer = NotificationPreferenceSerializer(pref, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
 
 def send_user_notification(user, title, message, level="info", notification_type="system", url=""):
     """Create a notification and send via WebSocket if possible.
+
+    Respects user notification preferences: if the notification type is disabled,
+    the notification is not created. If email is enabled, sends an email copy.
 
     Args:
         user: User instance or user ID
@@ -547,12 +566,20 @@ def send_user_notification(user, title, message, level="info", notification_type
         url: Optional link URL
 
     Returns:
-        The created Notification instance
+        The created Notification instance, or None if type is disabled
     """
     from django.contrib.auth.models import User as UserModel
 
     if isinstance(user, int):
         user = UserModel.objects.get(pk=user)
+
+    # Check user preferences
+    try:
+        pref = NotificationPreference.objects.get(user=user)
+        if not pref.is_type_enabled(notification_type):
+            return None
+    except NotificationPreference.DoesNotExist:
+        pref = None
 
     notification = Notification.objects.create(
         user=user,
@@ -562,6 +589,19 @@ def send_user_notification(user, title, message, level="info", notification_type
         notification_type=notification_type,
         url=url,
     )
+
+    # Send email if enabled
+    if pref and pref.email_enabled and user.email:
+        try:
+            send_mail(
+                subject=f"[에멜무지로] {title}",
+                message=message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=True,
+            )
+        except Exception as e:
+            logger.warning(f"Failed to send notification email: {e}")
 
     # Try to send via WebSocket channel layer
     try:
@@ -578,6 +618,7 @@ def send_user_notification(user, title, message, level="info", notification_type
                     "title": title,
                     "message": message,
                     "level": level,
+                    "notification_type": notification_type,
                     "url": url,
                     "timestamp": notification.created_at.isoformat(),
                 },
@@ -586,123 +627,3 @@ def send_user_notification(user, title, message, level="info", notification_type
         logger.warning(f"Failed to send WebSocket notification: {e}")
 
     return notification
-
-
-@api_view(["GET"])
-@permission_classes([IsAdminUser])
-@throttle_classes([AdminRateThrottle])
-def admin_stats(request):
-    """Admin dashboard statistics"""
-    from django.contrib.auth.models import User
-
-    total_users = User.objects.count()
-    total_posts = BlogPost.objects.count()
-    total_messages = Contact.objects.count()
-    total_views = SiteVisit.objects.count()
-
-    return Response(
-        {
-            "totalUsers": total_users,
-            "totalPosts": total_posts,
-            "totalMessages": total_messages,
-            "totalViews": total_views,
-        }
-    )
-
-
-@api_view(["GET"])
-@permission_classes([IsAdminUser])
-@throttle_classes([AdminRateThrottle])
-def admin_content(request):
-    """Admin content list (blog posts)"""
-    posts = BlogPost.objects.all().order_by("-date")
-    items = [
-        {
-            "id": post.id,
-            "title": post.title,
-            "type": "blog",
-            "status": "published" if post.is_published else "draft",
-            "author": post.author,
-            "createdAt": post.date.strftime("%Y-%m-%d"),
-            "views": post.view_count,
-        }
-        for post in posts
-    ]
-    return Response(items)
-
-
-@api_view(["GET"])
-@permission_classes([IsAdminUser])
-@throttle_classes([AdminRateThrottle])
-def admin_messages(request):
-    """Admin contact messages list"""
-    try:
-        page = max(1, int(request.query_params.get("page", 1)))
-        page_size = min(100, max(1, int(request.query_params.get("page_size", 20))))
-    except (ValueError, TypeError):
-        return Response({"error": "Invalid pagination parameters"}, status=400)
-    offset = (page - 1) * page_size
-
-    contacts = Contact.objects.all().order_by("-created_at")
-    total = contacts.count()
-    items = [
-        {
-            "id": str(c.id),
-            "name": c.name,
-            "email": c.email,
-            "subject": c.subject,
-            "inquiry_type": c.inquiry_type,
-            "is_processed": c.is_processed,
-            "created_at": c.created_at.strftime("%Y-%m-%d %H:%M"),
-        }
-        for c in contacts[offset : offset + page_size]
-    ]
-
-    next_page = page + 1 if offset + page_size < total else None
-    return Response({"count": total, "next": next_page, "results": items})
-
-
-@api_view(["GET", "PATCH"])
-@permission_classes([IsAdminUser])
-@throttle_classes([AdminRateThrottle])
-def admin_message_detail(request, pk):
-    """Admin contact message detail / update"""
-    try:
-        contact = Contact.objects.get(pk=pk)
-    except Contact.DoesNotExist:
-        return Response({"error": "Not found"}, status=404)
-
-    if request.method == "GET":
-        return Response(
-            {
-                "id": str(contact.id),
-                "name": contact.name,
-                "email": contact.email,
-                "company": contact.company,
-                "phone": contact.phone,
-                "subject": contact.subject,
-                "message": contact.message,
-                "inquiry_type": contact.inquiry_type,
-                "is_processed": contact.is_processed,
-                "processed_at": contact.processed_at.isoformat() if contact.processed_at else None,
-                "notes": contact.notes,
-                "created_at": contact.created_at.isoformat(),
-            }
-        )
-
-    # PATCH — mark as processed
-    if "is_processed" in request.data:
-        contact.is_processed = request.data["is_processed"]
-        if contact.is_processed:
-            contact.processed_at = timezone.now()
-            contact.processed_by = request.user
-        else:
-            contact.processed_at = None
-            contact.processed_by = None
-        contact.save(update_fields=["is_processed", "processed_at", "processed_by"])
-
-    if "notes" in request.data:
-        contact.notes = request.data["notes"]
-        contact.save(update_fields=["notes"])
-
-    return Response({"status": "updated"})

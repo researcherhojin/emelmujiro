@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, FileText, Mail, ShieldAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../../contexts/NotificationContext';
@@ -18,6 +18,21 @@ const levelBgClasses: Record<string, string> = {
   success: 'border-l-green-500',
   warning: 'border-l-yellow-500',
   error: 'border-l-red-500',
+};
+
+// Type-specific icon components
+const typeIcons: Record<string, React.FC<{ className?: string }>> = {
+  system: Bell,
+  blog: FileText,
+  contact: Mail,
+  admin: ShieldAlert,
+};
+
+const typeIconColors: Record<string, string> = {
+  system: 'text-gray-400',
+  blog: 'text-blue-400',
+  contact: 'text-green-400',
+  admin: 'text-red-400',
 };
 
 // Relative time formatting
@@ -68,23 +83,35 @@ const NotificationItem: React.FC<NotificationItemProps> = memo(
         } hover:bg-gray-50 dark:hover:bg-gray-800`}
       >
         <div className="flex items-start gap-2">
-          <span
-            className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${
-              notification.is_read
-                ? 'bg-transparent'
-                : levelColorClasses[notification.level] || levelColorClasses.info
-            }`}
-          />
+          {(() => {
+            const TypeIcon = typeIcons[notification.notification_type] || typeIcons.system;
+            return (
+              <TypeIcon
+                className={`mt-0.5 w-4 h-4 flex-shrink-0 ${
+                  typeIconColors[notification.notification_type] || typeIconColors.system
+                }`}
+              />
+            );
+          })()}
           <div className="min-w-0 flex-1">
-            <p
-              className={`text-sm truncate ${
-                notification.is_read
-                  ? 'text-gray-500 dark:text-gray-400'
-                  : 'text-gray-900 dark:text-white font-medium'
-              }`}
-            >
-              {notification.title}
-            </p>
+            <div className="flex items-center gap-1.5">
+              <p
+                className={`text-sm truncate ${
+                  notification.is_read
+                    ? 'text-gray-500 dark:text-gray-400'
+                    : 'text-gray-900 dark:text-white font-medium'
+                }`}
+              >
+                {notification.title}
+              </p>
+              {!notification.is_read && (
+                <span
+                  className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                    levelColorClasses[notification.level] || levelColorClasses.info
+                  }`}
+                />
+              )}
+            </div>
             <p className="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">
               {notification.message}
             </p>

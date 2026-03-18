@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils import timezone
 
-from .models import BlogPost, Contact, ContactAttempt, Notification, SiteVisit, NewsletterSubscription
+from .models import BlogPost, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
 
 
 @admin.register(BlogPost)
@@ -190,6 +190,14 @@ class NotificationAdmin(admin.ModelAdmin):
 
     mark_as_read.short_description = "선택된 알림을 읽음 처리"
     mark_as_unread.short_description = "선택된 알림을 안읽음 처리"
+
+
+@admin.register(NotificationPreference)
+class NotificationPreferenceAdmin(admin.ModelAdmin):
+    list_display = ("user", "system_enabled", "blog_enabled", "contact_enabled", "admin_enabled", "email_enabled")
+    list_filter = ("system_enabled", "blog_enabled", "email_enabled")
+    search_fields = ("user__username", "user__email")
+    readonly_fields = ("user",)
 
 
 # Admin site customization

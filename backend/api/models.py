@@ -200,6 +200,34 @@ class Notification(models.Model):
         return f"[{status}] {self.title} → {self.user.username}"
 
 
+class NotificationPreference(models.Model):
+    """Per-user notification preferences"""
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="notification_preference")
+    system_enabled = models.BooleanField(default=True, verbose_name="시스템 알림")
+    blog_enabled = models.BooleanField(default=True, verbose_name="블로그 알림")
+    contact_enabled = models.BooleanField(default=True, verbose_name="문의 알림")
+    admin_enabled = models.BooleanField(default=True, verbose_name="관리자 알림")
+    email_enabled = models.BooleanField(default=False, verbose_name="이메일 알림")
+
+    class Meta:
+        verbose_name = "알림 설정"
+        verbose_name_plural = "알림 설정"
+
+    def __str__(self):
+        return f"{self.user.username} notification preferences"
+
+    def is_type_enabled(self, notification_type: str) -> bool:
+        """Check if a notification type is enabled"""
+        type_map = {
+            "system": self.system_enabled,
+            "blog": self.blog_enabled,
+            "contact": self.contact_enabled,
+            "admin": self.admin_enabled,
+        }
+        return type_map.get(notification_type, True)
+
+
 class NewsletterSubscription(models.Model):
     """Newsletter subscription"""
 
