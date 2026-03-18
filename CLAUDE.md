@@ -6,12 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Consulting platform. Both frontend (React/TypeScript) and backend (Django) are deployed on Mac Mini via Docker + Cloudflare Tunnel. Licensed under Apache 2.0.
 
-- **GitHub**: https://github.com/researcherhojin/emelmujiro
-- **Live Site**: https://emelmujiro.com (Mac Mini nginx + Cloudflare Tunnel)
-- **Backend API**: https://api.emelmujiro.com (Mac Mini Django + Cloudflare Tunnel)
+- **Live Site**: https://emelmujiro.com — **Backend API**: https://api.emelmujiro.com
 - **Frontend Dev**: http://localhost:5173 (Vite) — **NOT port 3000**
 - **Backend Dev**: http://localhost:8000 (Django)
-- **Mock API** — Controlled by `USE_MOCK_API` in `frontend/src/services/api.ts`. Mock is active only in tests (`IS_TEST`) or when `env.API_URL` is empty. Production builds default to `https://api.emelmujiro.com/api` and use the real backend.
+- **Build output**: `build/` (not `dist/`)
+- **Mock API** — Active only in tests (`IS_TEST`) or when `env.API_URL` is empty. Production uses real backend. Controlled by `USE_MOCK_API` in `frontend/src/services/api.ts`.
 
 ## Essential Commands
 
@@ -21,195 +20,101 @@ All frontend commands run from `frontend/`. Root commands use npm workspaces.
 # Development (from root)
 npm run dev                # Frontend + Backend concurrently
 npm run dev:clean          # Kill ports first, then start
-npm run dev:safe           # Like dev but kills all if one fails
-npm run dev:frontend       # Frontend only
-npm run dev:backend        # Backend only
 
 # Frontend (from frontend/)
-npm run dev                # Vite dev server (port 5173)
 npm run build              # generate:sitemap → tsc → vite build → prerender → cp 404.html
 npm run lint:fix           # ESLint auto-fix
 npm run type-check         # TypeScript check
-npm run type-check:watch   # TypeScript watch mode
 npm run validate           # lint + type-check + test:coverage
-npm run test:coverage      # Single run with coverage report
-npm run analyze:bundle     # source-map-explorer on build output
-npm run clean              # Remove build/ and node_modules/.cache
-npm run clean:all          # Also removes coverage, playwright-report, test-results
-npm run preview            # Preview production build locally
 npm run format             # Prettier format all source files
-npm run format:check       # Prettier check without writing (for CI)
 
 # Testing (from frontend/)
 npm test                   # Vitest watch mode
 npm run test:run           # Single run
-npm run test:ci            # CI-optimized (--bail=1, no coverage)
-npm run test:ui            # Interactive Vitest UI
+npm run test:coverage      # Single run with coverage report
 npm run test:e2e           # Playwright E2E tests
-npm run test:e2e:ui        # Playwright UI mode
 # Run a specific test file:
 CI=true npm test -- --run src/components/common/__tests__/Button.test.tsx
-# Note: `npm test` from root runs BOTH frontend AND backend tests
 
 # Backend (from backend/ — uses uv)
-uv sync                    # Install dependencies
-uv sync --extra dev        # Install with dev dependencies
-uv run python manage.py migrate  # Run migrations (required for first setup)
+uv sync --extra dev        # Install with dev dependencies (NOT --dev)
+uv run python manage.py migrate  # Required for first setup
 uv run python manage.py runserver
-uv run python manage.py test
+uv run python manage.py test     # Needs DATABASE_URL="" if env var is set
 uv run black .             # Format (line length 120)
 uv run flake8 .            # Lint (line length 120)
-uv run isort .             # Sort imports
-uv run ruff check .        # Fast lint
 
-# Deploy (Mac Mini — frontend update)
-cd frontend && git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run build
-# nginx volume-mounts build/ → changes are live immediately (no container restart)
-
-# Deploy (Mac Mini — backend update)
-git pull && docker compose up -d --build
-
-# GitHub Pages (backup, CI still deploys here)
-npm run deploy             # Build + deploy to GitHub Pages via gh-pages package
-
-# Makefile shortcuts (from root)
-make install               # npm install + uv sync + husky install
-make dev-local             # npm run dev (non-Docker)
-make dev-docker            # docker-compose dev up
-make test                  # Frontend + backend tests
-make lint                  # Frontend + backend lint
-make kill-ports            # Kill processes on 5173/8000
-make logs                  # Tail Docker Compose logs
-make down                  # Stop Docker Compose
-make migrate               # Run Django migrations (Docker)
-make shell                 # Open Django shell (Docker)
-make createsuperuser       # Create Django superuser (Docker)
-
-# Kill stuck dev ports
-lsof -ti:5173 | xargs kill -9
-lsof -ti:8000 | xargs kill -9
+# Deploy (Mac Mini)
+cd frontend && git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run build  # Frontend (live immediately)
+git pull && docker compose up -d --build  # Backend
 ```
 
 ## Architecture
 
 ### Monorepo Structure
 
-- `frontend/` — React 19 + TypeScript + Vite + Tailwind CSS 3.x
-- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** for dependency management (`pyproject.toml` + `uv.lock`). Notification model + REST API + WebSocket consumer are implemented. Chat feature has been permanently removed
+- `frontend/` — React 19 + TypeScript + Vite 8 + Tailwind CSS 3.x
+- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** (`pyproject.toml` + `uv.lock`). Dev deps in `[project.optional-dependencies]` — use `uv sync --extra dev`
 - Root `package.json` uses npm workspaces pointing to `frontend/`
-- Docker support: `docker-compose.yml` (prod: backend with SQLite by default; PostgreSQL via `--profile postgres`, Redis via `--profile redis`) and `docker-compose.dev.yml` (dev with hot-reload, same profile system). SQLite data persists in `sqlite_data` Docker volume (`SQLITE_DIR=/app/data`). Frontend runs as standalone `nginx:alpine` container with volume-mounted build output (not via docker-compose). `frontend/Dockerfile` exists for self-contained image builds but is not used in current deployment
+- Docker: `docker-compose.yml` (prod, SQLite default; PostgreSQL via `--profile postgres`, Redis via `--profile redis`) and `docker-compose.dev.yml` (dev with hot-reload)
 
-### Routing
+### Routing & i18n
 
-Uses `createBrowserRouter` (BrowserRouter) in `frontend/src/App.tsx`. All pages are lazy-loaded. Routes: `/`, `/about`, `/contact`, `/profile`, `/share`, `/blog`, `/blog/:id`, `/blog/new`, `/admin` (protected, requires admin role), `*` (404 NotFound). Production nginx uses `try_files $uri $uri/ /index.html` for SPA routing (all routes return HTTP 200). The build script still creates `404.html` (`cp build/index.html build/404.html`) as a GitHub Pages fallback.
+Uses `createBrowserRouter` in `frontend/src/App.tsx`. All pages are lazy-loaded. Korean (default) has no prefix (`/about`), English uses `/en` prefix (`/en/about`). Both language variants share the same `pageRoutes` array.
 
-**Language-prefixed routes** — `LanguageLayout` component detects the `:lang` URL param and calls `i18n.changeLanguage()`. Korean (default) has no prefix (`/about`), English uses `/en` prefix (`/en/about`). Both language variants share the same `pageRoutes` array. The `useLocalizedPath` hook (`src/hooks/useLocalizedPath.ts`) provides `localizedPath()`, `localizedNavigate()`, and `switchLanguagePath()` for language-aware navigation. All internal links in components use these utilities instead of raw `navigate()`/`<Link>`.
+The `useLocalizedPath` hook (`src/hooks/useLocalizedPath.ts`) provides `localizedPath()`, `localizedNavigate()`, and `switchLanguagePath()`. All internal links must use these utilities instead of raw `navigate()`/`<Link>`.
 
-### Blog (Active)
+i18n uses `i18next` + `react-i18next`. Fallback language: Korean (`ko`). Translations: `frontend/src/i18n/locales/{ko,en}.json`. Non-React data files use getter functions with `i18n.t()` (see "Data file i18n pattern" below).
 
-Blog routes (`/blog`, `/blog/new`, `/blog/:id`) are now connected to the real backend API (`api.emelmujiro.com`). `BlogListPage`, `BlogDetail`, `BlogEditor` components are lazy-loaded in `App.tsx`. Blog data is fetched via `BlogContext` → `api.ts` → Django REST API. When no blog posts exist, `BlogListPage` displays a "coming soon" empty state (`blog.comingSoon` / `blog.comingSoonDescription` i18n keys).
+### State Management & Provider Hierarchy
 
-### CTA Navigation
+All state via React Context: UIContext, AuthContext, BlogContext, FormContext, NotificationContext (all in `src/contexts/`). All providers use `useMemo`/`useCallback` to prevent re-renders.
 
-All CTA buttons (HeroSection, CTASection, AboutPage, Footer) navigate to `/contact` (not `mailto:` links). Uses `localizedPath('/contact')` for language-aware routing.
+Provider order in `App.tsx`: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > NotificationProvider > BlogProvider > FormProvider > RouterProvider`.
 
-### Contact Page (Google Form)
+### API Client & Auth
 
-`/contact` uses a Google Form iframe embed instead of the backend API. `ContactPage.tsx` embeds `https://docs.google.com/forms/d/e/.../viewform?embedded=true`. The original `ContactForm` component and `FormContext` are preserved for test compatibility but not used in the live route. CSP in `index.html` includes `frame-src https://docs.google.com` to allow the iframe. The "open in new tab" link uses the `?usp=dialog` variant. i18n keys: `contact.googleForm.*` (description, loading, openInNewTab, formTitle).
+Axios-based client in `src/services/api.ts`. JWT auth uses **httpOnly cookies** (not localStorage) — cookies set by backend, sent via `withCredentials: true`. 401 responses trigger automatic cookie-based token refresh. HTTP upgraded to HTTPS in production.
 
-### KakaoTalk In-App Browser Support
+**auth_hint localStorage flag** — `AuthContext` checks `auth_hint` on mount. If unset, `getUser()` is skipped to avoid 401 spam. Set to `'1'` on login, cleared on logout.
 
-React app loads normally in **all** browsers including KakaoTalk's in-app WebView. `@vitejs/plugin-legacy` generates `nomodule` fallback bundles (Chrome 64+, Samsung 9.2+) that cover KakaoTalk's Android Chromium WebView automatically.
+### Contact Page
 
-**Detection flags**: `index.html` sets `window.__isKakaoInApp` and `window.__isKakaoAndroid` via user agent detection. React initialization is **not** blocked for any browser.
+`/contact` uses a Google Form iframe embed (not the backend API). The original `ContactForm` and `FormContext` are preserved for test compatibility. CSP includes `frame-src https://docs.google.com`. When switching back to backend form, update `App.tsx`, `ContactPage.tsx`, and `e2e/contact.spec.ts`.
 
-**iOS KakaoTalk banner**: `Layout.tsx` shows a dismissible banner **only on iOS** KakaoTalk (`__isKakaoInApp && !__isKakaoAndroid`). The "open externally" button uses `kakaotalk://web/openExternal?url=...` (official KakaoTalk scheme). Do NOT use `window.open()` — it opens within the in-app browser instead of externally. Android KakaoTalk does not show the banner; the legacy plugin handles rendering.
+### KakaoTalk In-App Browser
 
-**Error visibility** (all browsers):
-
-- `window.onerror` + `unhandledrejection` handlers capture errors into `window.__errors` and render them on-screen via `__showError()` — shows error text, user agent, reload button, and (on KakaoTalk) a `kakaotalk://web/openExternal` "외부 브라우저에서 열기" button
-- 5-second general fallback also calls `__showError()` if `window.__appLoaded` is still false
-- **Critical**: `window.__appLoaded` must be set inside `AppLayout` (router layout), NOT as a sibling to `RouterProvider`. Setting it at the provider level suppresses all error handlers before visible content renders, causing a blank page
-- `@vitejs/plugin-legacy` generates `nomodule` fallback bundles for older browsers
-- `main.tsx` serviceWorker cleanup is wrapped in try-catch — some in-app browsers throw when accessing `navigator.serviceWorker` despite `'serviceWorker' in navigator` being true
-
-Key files: `index.html` (detection + error handlers + fallbacks), `App.tsx` (`AppLayout`'s `useEffect` sets `window.__appLoaded = true` after visible content renders), `Layout.tsx` (iOS KakaoTalk banner), `global.d.ts` (`__isKakaoInApp`, `__isKakaoAndroid`, `__appLoaded`, `__errors`, `performanceStart` types).
-
-Loading skeleton uses **inline styles** (not Tailwind classes) so it's visible before CSS loads.
-
-### State Management
-
-- **React Context** — All state management via UIContext, AuthContext, BlogContext, FormContext, NotificationContext (all in `src/contexts/`). All providers use `useMemo` for value objects and `useCallback` for functions to prevent unnecessary re-renders.
-- **Types** — `src/types/index.ts` exports: `BlogPost`, `ContactFormData`, `Notification`, `PaginatedResponse`, `ErrorResponse`.
-
-### Mock API System
-
-`frontend/src/services/api.ts` uses centralized env config from `src/config/env.ts`. `USE_MOCK_API` is `env.IS_TEST || !env.API_URL` — mock is only used in tests or when no API URL is configured. Production builds default to `https://api.emelmujiro.com/api`. Mock data lives in `src/services/mockData.ts`. Every API method (blog, contact, newsletter, health) has a mock path.
-
-### API Client
-
-Axios-based client in `src/services/api.ts`. All API methods (blog, contact, newsletter, auth, health, admin) are centralized in the `api` object with mock support. Auth methods (`getUser`, `login`, `logout`, `register`) are part of the `api` object — `AuthContext` imports `{ api }` not the default axios instance. 30s timeout with automatic retry on timeout. JWT auth uses **httpOnly cookies** (not localStorage) — cookies are set by the backend and sent automatically via `withCredentials: true`. 401 responses trigger automatic cookie-based token refresh via `POST /auth/token/refresh/`. HTTP is upgraded to HTTPS in production. `api.logout()` takes no arguments (backend reads refresh token from cookie).
-
-**auth_hint localStorage flag** — `AuthContext` checks for `auth_hint` in localStorage on mount. If no `auth_hint` is set, `getUser()` is skipped entirely to avoid 401/400 console spam for unauthenticated visitors. `auth_hint` is set to `'1'` on successful login and cleared on logout or when `getUser()` fails.
-
-### Sentry
-
-`@sentry/react` v10 is integrated via `src/utils/sentry.ts`. Exports: `initSentry` (called in `main.tsx`), `captureException` (used by `logger.ts`), `reportErrorBoundary` (called by `ErrorBoundary.tsx`), `setUserContext`/`clearUserContext` (called by `AuthContext` on login/logout/session restore), `addBreadcrumb` (for key user actions). Only active when `ENABLE_SENTRY=true` and `SENTRY_DSN` is set (both default to off). `main.tsx` uses `env.IS_DEVELOPMENT` / `env.IS_PRODUCTION` from `src/config/env.ts` instead of `process.env.NODE_ENV`.
-
-### Google Analytics
-
-`src/utils/analytics.ts` exports `initAnalytics()` (called in `main.tsx`), `trackPageView(path)` (called in `ScrollToTop` on route change), `trackCtaClick(location)` (CTA buttons), `trackBlogView(postId, category)` (called in `BlogDetail`), `trackDarkModeToggle(isDark)` (called in `UIContext`), `trackLanguageSwitch(language)` (called via `i18n.on('languageChanged')`), and `trackSearch(query, resultCount)`. Only active when `VITE_ENABLE_ANALYTICS=true` and `VITE_GA_TRACKING_ID` is set. CSP in `index.html` includes `https://www.googletagmanager.com` in `script-src` and Google Analytics domains in `connect-src`.
-
-### SSG / Prerendering
-
-`scripts/prerender.js` runs after `vite build` using Playwright (headless Chromium) to generate static HTML for each route in each language. The script starts a local static server, navigates to each route, waits for `window.__appLoaded === true`, marks `<div id="root">` with `data-prerendered="true"`, and captures the rendered HTML. Output: `build/<route>/index.html` for Korean, `build/en/<route>/index.html` for English (12 files total = 6 routes × 2 languages). `main.tsx` always uses `ReactDOM.createRoot()` (never `hydrateRoot`) — prerendered HTML serves SEO only (crawlers read the static content). Hydration was disabled because Cloudflare Tunnel injects scripts that cause hydration mismatch errors. `build:no-prerender` script skips the prerender step for faster local iteration. The shared route list is exported from `generate-sitemap.js` and imported by `prerender.js`.
+React loads normally in all browsers including KakaoTalk WebView. `@vitejs/plugin-legacy` handles older Chromium. iOS KakaoTalk shows a dismissible banner using `kakaotalk://web/openExternal?url=...` scheme (do NOT use `window.open()`). **Critical**: `window.__appLoaded` must be set inside `AppLayout` (router layout), NOT at provider level — setting it too early suppresses all error handlers.
 
 ### Notification System
 
-Backend: `Notification` model (`api/models.py`) with fields: user, title, message, level (info/success/warning/error), notification_type (system/blog/contact/admin), url, is_read, read_at. `NotificationViewSet` provides REST API at `/api/notifications/` (list, retrieve, mark read, mark_all_read, unread_count). `send_user_notification(user, title, message, ...)` utility in `views.py` creates a DB record and pushes via WebSocket channel layer. `NotificationConsumer` (`consumers.py`) handles real-time mark_read/mark_all_read via `ws/notifications/` and sends unread count updates back.
+Backend: `Notification` model with REST API at `/api/notifications/` and `NotificationConsumer` for WebSocket at `ws/notifications/`. `send_user_notification()` creates DB record + WebSocket push.
 
-Frontend: `NotificationContext` (`src/contexts/NotificationContext.tsx`) manages notification state with WebSocket connection (auto-connect on login, exponential backoff reconnect up to 5 attempts). `NotificationBell` component (`src/components/common/NotificationBell.tsx`) renders in Navbar for authenticated users — shows unread count badge, dropdown panel with notification list, mark-as-read, and mark-all-read. Uses sub-component pattern (`NotificationPanel`, `NotificationItem` in same file). API methods in `api.ts`: `getNotifications`, `getUnreadCount`, `markNotificationRead`, `markAllNotificationsRead`.
+Frontend: `NotificationContext` manages state with auto-connect WebSocket on login (exponential backoff, max 5 attempts). `NotificationBell` component in Navbar for authenticated users.
 
-### Environment Variables
+### SSG / Prerendering
 
-`frontend/src/config/env.ts` exports `getEnvVar()` helper that checks `VITE_` prefixed vars first, falls back to `REACT_APP_` prefixed vars. New env vars should use the `VITE_` prefix. Key frontend env vars: `VITE_API_URL`, `VITE_WS_URL`, `VITE_SENTRY_DSN`, `VITE_ENABLE_SENTRY`, `VITE_ENABLE_ANALYTICS`, `VITE_GA_TRACKING_ID`, `VITE_CONTACT_EMAIL`. Backend env vars documented in `backend/.env.example`.
+`scripts/prerender.js` uses Playwright to generate static HTML for each route × language (12 files). `main.tsx` always uses `createRoot()` (never `hydrateRoot`) — prerendered HTML is for SEO only. Hydration disabled due to Cloudflare Tunnel script injection.
 
-### Site URL & Contact Email
+### SEO
 
-`SITE_URL` and `CONTACT_EMAIL` are defined in `src/utils/constants.ts`. `SITE_URL` (`https://emelmujiro.com`) is the canonical base URL used by all SEO components (SEOHelmet, StructuredData), page canonical links, and OG tags — **never hardcode** the URL in components; always import `SITE_URL`. Page components pass URLs as `url={`${SITE_URL}/about`}` (clean paths, BrowserRouter). `CONTACT_EMAIL` uses `import.meta.env.VITE_CONTACT_EMAIL` with fallback.
+All canonical/OG URLs use `SITE_URL` from `src/utils/constants.ts` — **never hardcode** the URL. `SEOHelmet` generates `hreflang` alternates per page. FAQPage/Course JSON-LD are in `index.html` as static markup — do NOT add to `StructuredData.tsx` (creates duplicates). `og-image.png` (1200×630) for OG tags; `logo512.png` for favicons and schema.org logos.
 
-### Provider Hierarchy
+## Testing
 
-`App.tsx` wraps the app in: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > NotificationProvider > BlogProvider > FormProvider > RouterProvider`.
+### Framework & Setup
 
-### Route Protection
+Vitest with jsdom. Config: `frontend/vitest.config.ts`. Setup: `frontend/src/setupTests.ts`. Mocks auto-reset between tests.
 
-`ProtectedRoute` component (`src/components/common/ProtectedRoute.tsx`) checks auth state and optional role requirement. Currently used to protect `/admin` route with `requiredRole="admin"`. Redirects to `/` when unauthorized.
+**Global mocks (do NOT re-mock)**: `lucide-react` (icons via `<svg data-testid="icon-{Name}" />`), `framer-motion`, `react-helmet-async`, browser APIs (matchMedia, IntersectionObserver, localStorage, fetch, etc.).
 
-### i18n
+### Test Utilities
 
-Uses `i18next` + `react-i18next` with browser language detection. Fallback language is Korean (`ko`). Translations live in `frontend/src/i18n/locales/{ko,en}.json`. Configured in `frontend/src/i18n.ts` with `useSuspense: false` and `showSupportNotice: false` (suppresses Locize console ad). All UI strings, data files, contexts, and SEO modules use i18n — no hardcoded Korean in components. Non-React files that need translations (e.g., data files) import `i18n` directly and call `i18n.t()`. The `blogPosts.ts` mock data file is an exception — it contains Korean content strings as placeholder blog post data, not UI strings.
+`renderWithProviders` in `src/test-utils/renderWithProviders.tsx` wraps in all providers (HelmetProvider, UIProvider, AuthProvider, NotificationProvider, BlogProvider, FormProvider, MemoryRouter). MSW mock handlers in `src/test-utils/mocks/handlers.ts`.
 
-**SEO bot detection** — `i18n.ts` detects search engine bots (Googlebot, Bingbot, etc.) via `navigator.userAgent`. A custom `urlPrefix` detector reads the language from the URL path (`/en/*` → `en`, otherwise `undefined` → falls back). Detection order: bots use `['urlPrefix', 'htmlTag']`, users use `['urlPrefix', 'localStorage', 'navigator', 'htmlTag']`. URL prefix always takes highest priority so `/en/about` renders English content regardless of other settings. Bot detection disables localStorage caching.
+### i18n Test Mocking
 
-**Data file i18n pattern** — Non-React data files (`footerData.ts`, `profileData.ts`, `constants.ts`) import the i18n instance directly and use getter functions so translations resolve at call time (not at module load):
-
-```typescript
-import i18n from '../i18n';
-export const getCareerData = () => [
-  { period: i18n.t('profileData.career.0.period'), ... },
-];
-```
-
-When adding new data files with translatable strings, follow this getter function pattern. Components must call the getter each render (e.g., `const careers = getCareerData()`), not store the result in a module-level constant. For test files that import these data modules, mock i18n:
-
-```typescript
-vi.mock('../../i18n', () => ({
-  default: { t: (key: string) => key, language: 'ko' },
-}));
-```
-
-**Test mocking pattern** — Every test for a component using `useTranslation()` must mock `react-i18next`. The standard mock:
+Every test using `useTranslation()` must mock `react-i18next`:
 
 ```typescript
 vi.mock('react-i18next', () => ({
@@ -222,7 +127,7 @@ vi.mock('react-i18next', () => ({
 }));
 ```
 
-The `initReactI18next` export is required because `src/i18n.ts` imports it. For non-React files that call `i18n.t()` directly (e.g., `footerData.ts`), mock the i18n module itself:
+For non-React files using `i18n.t()` directly:
 
 ```typescript
 vi.mock('../../i18n', () => ({
@@ -230,200 +135,83 @@ vi.mock('../../i18n', () => ({
 }));
 ```
 
-### Component Extraction Pattern
+### Data File i18n Pattern
 
-Large components are split into sub-components within the same file (no separate files). `AboutPage.tsx` has 6 section components (`HeroSection`, `MissionSection`, etc.). `BlogComments.tsx` has `CommentItem` and `ReplyItem`. Data arrays and interfaces are at module scope above the sub-components.
+Non-React data files use getter functions so translations resolve at call time:
 
-### Path Alias
+```typescript
+import i18n from '../i18n';
+export const getCareerData = () => [
+  { period: i18n.t('profileData.career.0.period'), ... },
+];
+```
 
-`@/` maps to `frontend/src/` (configured in `tsconfig.json`; Vite 8 resolves via native `resolve.tsconfigPaths: true` — `vite-tsconfig-paths` plugin removed).
-
-## Testing
-
-### Test Framework
-
-Vitest with jsdom environment. Config in `frontend/vitest.config.ts`. Setup file: `frontend/src/setupTests.ts`. Mocks auto-reset between tests (`clearMocks`, `restoreMocks`, `mockReset` all true).
-
-### Global Test Mocks (setupTests.ts)
-
-These are mocked globally — do NOT re-mock in individual tests:
-
-- `lucide-react` (cached Proxy — creates and caches icon components on demand, renders `<svg data-testid="icon-{Name}" />`), `framer-motion` (motion/AnimatePresence), `react-helmet-async`
-  - Tests should use the global mock and query icons via `data-testid="icon-{Name}"` (e.g., `icon-Mail`, `icon-Phone`, `icon-ExternalLink`)
-- Browser APIs: `matchMedia`, `IntersectionObserver`, `ResizeObserver`, `localStorage`, `sessionStorage`, `navigator.serviceWorker`, `fetch`, `requestAnimationFrame`, `performance`, `window.gtag`
-- Window: `alert`, `confirm`, `prompt`, `scrollTo`, `CSS.supports`, `location`, `history`, `innerWidth` (1024), `innerHeight` (768)
-- Navigator: `onLine` (true), `language` (`'ko-KR'`)
-- DOM: `Element.prototype.scrollIntoView`, `classList` patches, `document.querySelector/querySelectorAll/getElementById`
-- Console: `console.error`/`console.warn` suppress known React warnings only
-
-### Test Utilities
-
-- `renderWithProviders` in `src/test-utils/renderWithProviders.tsx` — Wraps component in all providers (HelmetProvider, UIProvider, AuthProvider, BlogProvider, FormProvider, MemoryRouter). Uses `MemoryRouter` (not HashRouter) — correct for tests since it's controllable and doesn't require hash prefix.
-- Individual wrappers: `renderWithBlogProvider`, `renderWithAuthProvider`, `renderWithUIProvider`, `renderWithFormProvider`, `renderWithRouter` (in `renderWithProviders.tsx`).
-- `src/test-utils/` also has: MSW mock server setup (`mocks/server.ts`, `mocks/handlers.ts`), polyfills.
-
-### CI Test Config
-
-- Uses forks pool with `maxForks: 2` in CI to manage memory while maintaining test isolation
-- 15s timeout in CI, 10s locally
-- 60 test files, 896 tests, 0 failures, 0 skips. Backend: 104 tests, 0 failures
+Components must call the getter each render. Do not store results in module-level constants.
 
 ### E2E Testing (Playwright)
 
-Config in `frontend/playwright.config.ts`. Tests in `frontend/e2e/` (10 spec files: homepage, profile, blog, contact, accessibility, about, navigation, seo, error-states, share). Runs on Chromium, Firefox, WebKit, Mobile Chrome (Pixel 5), Mobile Safari (iPhone 12). `baseURL`: `http://localhost:5173`. CI: `retries: 2`, `workers: 1`, `forbidOnly: true`. `accessibility.spec.ts` covers dark mode toggle + persistence and language switching via `i18nextLng` localStorage key. `seo.spec.ts` validates title/description/canonical/OG tags/structured data for all main routes. `error-states.spec.ts` tests invalid blog IDs, unauthenticated admin access, and console error absence.
+10 spec files in `frontend/e2e/`. Runs on Chromium, Firefox, WebKit, Mobile Chrome, Mobile Safari. `baseURL`: `http://localhost:5173`.
 
-### Codecov
+### Coverage
 
-Coverage target: **60%** minimum, 5% threshold for drop. Separate flags for `frontend` and `backend`. Config in `codecov.yml`.
+Target: **60%** minimum (currently ~81% statements). Config in `codecov.yml`.
 
 ## CI/CD
 
-### Commit Messages
+**Conventional commits required**: `type(scope): description`. Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`.
 
-PR checks enforce **conventional commits**: `type(scope): description`. Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`.
-
-### Pipelines
-
-- **`main-ci-cd.yml`** — Runs on push/PR to `main`. Frontend tests → build → deploy to GitHub Pages via `actions/deploy-pages@v4` (backup; production uses Mac Mini nginx) → **deploy-mac-mini** (webhook trigger to Mac Mini for auto-deploy). Backend tests run against PostgreSQL 15 (timeout: 10min). Node 24, Python 3.12. Build uses `CI=false npm run build` (avoids warnings-as-errors). Uses `actions/checkout@v6`, `setup-node@v6`, `cache@v5`, `upload-artifact@v7`, `download-artifact@v8`, `configure-pages@v5`.
-- **`pr-checks.yml`** — Runs on PRs. Quick checks (merge conflicts, commit messages, file size) → lint + affected tests + security scan (Trivy v0.35.0) + bundle size check (<10MB) + Lighthouse CI (performance/a11y/SEO audit via `@lhci/cli`, config in `frontend/lighthouserc.js`). Posts summary comment on PR.
+- **`main-ci-cd.yml`** — Push/PR to `main`. Tests → build → GitHub Pages (backup) → Mac Mini webhook auto-deploy. Node 24, Python 3.12.
+- **`pr-checks.yml`** — Lint + tests + Trivy security scan + bundle size (<10MB) + Lighthouse CI.
 
 ## Critical Configuration
 
 ### Vite (`frontend/vite.config.ts`)
 
-- `base: '/'` — Custom domain `emelmujiro.com` (no subpath needed). `frontend/public/CNAME` file kept for GitHub Pages backup
-- Build output: `build/` (not `dist/`)
-- Build pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` → `prerender.js` → `cp 404.html` (sitemap and prerender must succeed)
-- Vite 8 uses oxc bundler (rolldown). `esbuild` options are ignored — console/debugger stripping is handled by oxc automatically in production
-- Manual chunks use a function (not object) in `rollupOptions.output.manualChunks`: react-vendor, ui-vendor, i18n, sentry, http-vendor
-- `build.target` is omitted — `@vitejs/plugin-legacy` sets targets automatically via its `targets` option (Chrome 64+)
-- `@vitejs/plugin-legacy` generates `nomodule` fallback bundles for older Chromium-based browsers (KakaoTalk in-app WebView, Samsung Internet ≥9.2)
-- `stripLocalhostCsp` custom plugin strips `localhost:8000`/`127.0.0.1:8000` from CSP `connect-src` in production builds (kept in dev for direct API calls)
-- CSP `script-src` includes `'unsafe-eval'`, `data:`, and `https://static.cloudflareinsights.com` — `'unsafe-eval'` and `data:` are **required** by `@vitejs/plugin-legacy` (SystemJS polyfill uses `new Function()`, module detection uses `data:text/javascript,...` URIs). `'unsafe-inline'` is also required for `index.html` inline scripts (error handler, theme detection, KakaoTalk fallback). `connect-src` includes `https://cloudflareinsights.com` for Cloudflare Web Analytics
-- Dev server proxies `/api` to `http://127.0.0.1:8000` (`strictPort: false` — tries next port if busy)
+- Build output: `build/`. Pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` → `prerender.js` → `cp 404.html`
+- `@vitejs/plugin-legacy` for KakaoTalk/Samsung WebView — requires `'unsafe-eval'` and `data:` in CSP `script-src`
+- `stripLocalhostCsp` plugin removes dev-only localhost from CSP in production
+- Dev server proxies `/api` to `http://127.0.0.1:8000`
 
 ### Tailwind CSS 3.x
 
-Downgraded from 4.x. PostCSS config (`frontend/postcss.config.js`) must use `tailwindcss: {}`, NOT `@tailwindcss/postcss`. Uses `darkMode: 'class'` (class-based, not media query). Custom colors: `dark.800/850/900/950`, `primary.400/500/600`, `success`, `warning`, `error`. Custom animations: `scroll` (32s, logos, `translateX(-33.333%)`) and `scroll-reverse` — logos are tripled (3 copies) for seamless infinite scrolling.
+Downgraded from 4.x. PostCSS must use `tailwindcss: {}`, NOT `@tailwindcss/postcss`. Uses `darkMode: 'class'`.
 
-**Focus styles** — Global CSS (`index.css`) applies focus ring (`box-shadow`) only to `input:focus-visible` and `textarea:focus-visible`. Buttons and links have NO global focus ring — use `outline-none focus:outline-none` on individual elements. Do NOT add `button:focus` or `a:focus` box-shadow rules to global CSS; this causes persistent focus boxes on mouse click.
+**Never use dynamic class interpolation** (`bg-${color}-600`); Tailwind purges them. Use static color maps instead.
 
-**Dynamic Tailwind classes** — Never use `bg-${color}-600` or similar dynamic class interpolation; Tailwind purges them at build time. Use static color maps instead (see `UnifiedLoading.tsx` `bgColorClasses`/`colorClasses` pattern).
-
-### Prettier
-
-Root `.prettierrc` is the canonical config: `printWidth: 100` for JS/TS, per-file overrides for md (80), html (120), package.json (120). `frontend/.prettierrc` also uses `printWidth: 100` (aligned with root).
+**No global focus ring on buttons/links** — only `input`/`textarea` have focus ring in `index.css`. Adding `button:focus` box-shadow to global CSS causes persistent focus boxes on click.
 
 ### ESLint
 
-ESLint 10 **flat config** format in `frontend/eslint.config.mjs` (not `.eslintrc`). Plugins: `@typescript-eslint`, `react`, `react-hooks`, `jsx-a11y`, `testing-library`. Production code: `no-console: ['warn', { allow: ['warn', 'error'] }]` — only `console.warn` and `console.error` are allowed. Test files have relaxed rules (no-unused-vars off, no-explicit-any off, no-console off, testing-library rules off). Unused vars prefixed with `_` are allowed.
+ESLint 10 **flat config** in `frontend/eslint.config.mjs`. `no-console` only allows `warn`/`error`. Zero warnings policy — maintain 0 errors, 0 warnings. `eslint` must also be in root `package.json` devDependencies (same major version) alongside `eslint-plugin-react` for workspace hoisting.
 
 ### Pre-commit Hooks
 
-Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root** directory. `.lintstagedrc.js` at repo root handles path translation for both frontend and backend: converts absolute paths to directory-relative paths using `path.relative()`, then runs `cd frontend && eslint --fix` + `prettier --write` for frontend TS/JS/CSS, `prettier --write` for `*.{json,md,yml,yaml}`, and `cd backend && uv run black --check` (check only, not auto-fix) + `cd backend && uv run flake8` for Python. Note: `.lintstagedrc.js` takes precedence over any `lint-staged` config in `package.json`.
+Husky + lint-staged. `.lintstagedrc.js` at repo root handles path translation: `cd frontend && eslint --fix` + `prettier --write` for TS/JS, `cd backend && uv run black --check` + `flake8` for Python.
 
 ### Backend Django Config
 
-- `SECRET_KEY` **required** in production (`DEBUG=False`); raises `ImproperlyConfigured` if missing
-- Database: SQLite by default. Set `DATABASE_URL` for PostgreSQL — parsed via `urllib.parse.urlparse` (no `dj-database-url` dependency)
-- Channel Layers: Redis when `REDIS_URL` is set, InMemoryChannelLayer otherwise
-- WebSocket: `NotificationConsumer` requires authentication (rejects `AnonymousUser` in `connect()`)
-- JWT: access 30min, refresh 7 days, rotation + blacklist. `rest_framework_simplejwt.token_blacklist` is in INSTALLED_APPS — logout endpoint blacklists refresh tokens. Auth uses **httpOnly cookies** (`access_token`, `refresh_token`) via `CookieJWTAuthentication` (`api/authentication.py`) — reads from cookie first, falls back to `Authorization` header. Cookie settings: `JWT_COOKIE_HTTPONLY=True`, `JWT_COOKIE_SECURE=True` in production, `JWT_COOKIE_SAMESITE="Lax"`. All auth endpoints (`login`, `register`, `logout`, `change_password`, `token_refresh`) set/clear cookies automatically via `_set_jwt_cookies()`/`_clear_jwt_cookies()` helpers in `auth.py`
-- DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr. Pagination: `StandardPagination` (page_size=10, max_page_size=100, `?page_size=N` query param)
-- File upload validation: `api/validators.py` — case-insensitive extension, MIME type, size (5MB)
-- API docs: Swagger at `/api/docs/`, ReDoc at `/api/redoc/` (drf-yasg)
-- Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/notifications/` (authenticated — list, retrieve, mark_all_read, unread_count), `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`, `/api/admin/stats/` (admin only — returns totalUsers/totalPosts/totalMessages/totalViews), `/api/admin/content/` (admin only — returns blog post list), `/api/admin/messages/` (admin only — paginated contact list), `/api/admin/messages/<uuid>/` (admin only — GET detail, PATCH to mark processed). `/api/send-test-email/` only registered when `DEBUG=True`
-- UserSerializer includes a `role` field (read-only): returns `"admin"` (superuser), `"staff"`, or `"user"`
-- Custom middleware registered in MIDDLEWARE: `RequestSecurityMiddleware` (IP blocking, rate limiting, malicious pattern detection), `ContentSecurityMiddleware` (CSP + security headers), `APIResponseTimeMiddleware` (slow request logging)
-- Management commands: `cleanup_sitevisits` (delete old SiteVisit records, `--days 90` default, `--dry-run` option)
-- Timezone: `Asia/Seoul`, language: `ko-kr`
-- File upload: 5MB max; allowed extensions: `.jpg`, `.jpeg`, `.png`, `.gif`, `.pdf`, `.doc`, `.docx`
-- CI uses `uv sync --frozen --extra dev` (lockfile must be up to date; `--extra dev` installs black, flake8, pytest from `[project.optional-dependencies]`)
+- `SECRET_KEY` **required** in production; raises `ImproperlyConfigured` if missing
+- JWT: access 30min, refresh 7 days, rotation + blacklist. httpOnly cookies via `CookieJWTAuthentication`
+- CORS: production only allows `https://emelmujiro.com` (localhost allowed only in DEBUG)
+- Admin endpoints throttled at 120/hour via `AdminRateThrottle`
+- Security middleware: `RequestSecurityMiddleware` (IP blocking, rate limiting, malicious pattern detection), `ContentSecurityMiddleware` (CSP + headers)
+- Backend blog router uses `basename="blog"` (NOT `"blog-posts"`) — URL names are `blog-list`, `blog-detail`
 
 ### Deployment (Mac Mini)
 
-Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
-
-- **Frontend**: `nginx:alpine` container serving `frontend/build/` via volume mount. Runs on port 8080 with `try_files $uri $uri/ /index.html` for SPA routing. Connected to `emelmujiro_emelmujiro-network` Docker network.
-
-  ```bash
-  # Start frontend container (first time)
-  docker run -d --name emelmujiro-frontend --restart unless-stopped \
-    --network emelmujiro_emelmujiro-network --network-alias frontend \
-    -p 8080:80 \
-    -v /path/to/frontend/build:/usr/share/nginx/html:ro \
-    -v /path/to/frontend/nginx.conf:/etc/nginx/nginx.conf:ro \
-    nginx:alpine
-
-  # Update frontend (rebuild only, no container restart needed)
-  cd frontend && git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run build
-  ```
-
-- **Backend**: `docker-compose.yml` with SQLite (default). Start with required env vars via `backend/.env`:
-
-  ```bash
-  docker compose up -d backend
-  ```
-
-  Note: `docker-compose.yml` `environment` section overrides `env_file` — pass env vars as shell variables to override defaults.
-
-- **Cloudflare Tunnel**: Config at `/etc/cloudflared/config.yml` (edit `~/.cloudflared/config.yml` then `sudo cp`). Runs as launchd daemon (`/Library/LaunchDaemons/com.cloudflare.cloudflared.plist`). Restart with `sudo launchctl kickstart -k system/com.cloudflare.cloudflared`.
-
-  ```yaml
-  ingress:
-    - hostname: api.emelmujiro.com
-      service: http://localhost:8000
-    - hostname: emelmujiro.com
-      service: http://localhost:8080
-    - service: http_status:404
-  ```
-
-- **Dockerfile**: Backend `collectstatic` uses a placeholder `SECRET_KEY` at build time (`RUN SECRET_KEY=build-only-placeholder ...`) because Django requires it to load settings.
-
-- **Docker Desktop**: Must be running before `docker compose up`. Enable "Start Docker Desktop when you sign in" in Docker Desktop settings for auto-start on boot.
-
-- **Auto-deploy**: `scripts/deploy-webhook.js` (Node.js HTTP server on port 9000) receives deploy requests from GitHub Actions via `https://deploy.emelmujiro.com/deploy`. Authenticated with `X-Deploy-Secret` header (timing-safe comparison). Triggers `scripts/auto-deploy.sh` (git pull → frontend build → backend docker rebuild). Runs as launchd daemon (`com.emelmujiro.deploy-webhook`). Requires `DEPLOY_SECRET` env var and `deploy.emelmujiro.com` Cloudflare Tunnel route.
-
-- **Maintenance page**: `scripts/maintenance-worker.js` is a Cloudflare Worker that returns a branded 503 page when the origin is unreachable. Deploy via Cloudflare Dashboard → Workers. Routes: `emelmujiro.com/*` and `api.emelmujiro.com/*`. API requests get JSON error response; browser requests get HTML.
-
-### Pre-deploy Check
-
-`scripts/pre-deploy-check.sh` runs a comprehensive checklist before production deploy: env files (`VITE_API_URL`, `VITE_SENTRY_DSN`, `VITE_GA_TRACKING_ID`), TypeScript, ESLint, console.log scan, tests, build, SEO assets (robots.txt, sitemap, manifest, favicon, `.nojekyll`), API key scan, npm audit, git status, large image check (>500KB), bundle size.
-
-### Dependabot
-
-`.github/dependabot.yml` runs weekly updates (Mondays 04:00) for npm, pip, GitHub Actions, and Docker. **Blocked major version updates**: `tailwindcss`, `framer-motion`, `web-vitals`, `lint-staged`, `@types/node`. Secrets template in `.github/SECRETS-TEMPLATE.md`.
+Frontend: `nginx:alpine` container volume-mounting `frontend/build/`. Rebuild = live (no container restart). Backend: `docker compose up -d --build`. Auto-deploy via `scripts/deploy-webhook.js` (webhook from GitHub Actions, timing-safe auth). Cloudflare Tunnel routes `emelmujiro.com` → port 8080, `api.emelmujiro.com` → port 8000.
 
 ## Common Pitfalls
 
-1. **Wrong port**: Frontend is 5173, not 3000
-2. **Mock API**: Active only in tests or when `env.API_URL` is empty. Production uses `api.emelmujiro.com` (Mac Mini backend)
-3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 60 files / 896 tests, Backend 104 tests, 0 failures, E2E 10 spec files (as of 2026-03-18)
-5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
-6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
-7. **ESLint 10 flat config**: Upgraded from v9 to v10. Root `package.json` eslint version must match frontend's (both `^10.x`). Don't downgrade — plugins are compatible with ESLint 10
-8. **minimatch override**: Root and frontend `package.json` both have `overrides` to force `minimatch>=10.2.1` for security. Don't remove these
-9. **Conventional commits required**: PR checks validate commit message format (`type(scope): description`)
-10. **Build uses separate tsconfig**: `tsconfig.build.json` excludes test types and files; the build script runs `tsc -p tsconfig.build.json`. Don't add test-only types (like `@testing-library/jest-dom`) to `tsconfig.build.json`. `tsconfig.ci.json` extends `tsconfig.build.json` with `strict: true` (only relaxes `noUnusedLocals`/`noUnusedParameters`)
-11. **CI cache**: Both `node_modules/` and `frontend/node_modules/` are cached using `hashFiles('package-lock.json')` (root lock file, not `frontend/package-lock.json` which doesn't exist in npm workspaces)
-12. **Sitemap generation in build**: `npm run build` first runs `scripts/generate-sitemap.js`. If this script fails, the entire build fails
-13. **Active routes**: `/blog` is active (connected to real backend; shows "coming soon" state when no posts exist). `/contact` uses Google Form embed (see "Contact Page" section). When switching `/contact` back to the backend API form, update `App.tsx`, `ContactPage.tsx`, and `e2e/contact.spec.ts`
-14. **Backend blog router**: `backend/api/urls.py` registers BlogPostViewSet with `basename="blog"` (NOT `"blog-posts"`). DRF generates URL names as `blog-list` and `blog-detail`
-15. **No dynamic Tailwind classes**: `bg-${var}-600` is purged at build time. Always use static class maps
-16. **No global focus box-shadow on buttons/links**: Only `input`/`textarea` have global focus ring in `index.css`. Adding `button:focus` box-shadow to global CSS will cause persistent focus boxes on mouse click
-17. **setTimeout cleanup**: All `setTimeout` calls in components and contexts must store the timer ID in a `useRef(null)` and `clearTimeout` in the useEffect cleanup to prevent memory leaks. Already applied in: `UIContext`, `FormContext`, `Navbar`, `Footer`, `BlogInteractions`, `BlogSearch`. Follow the same pattern for any new `setTimeout` usage
-18. **Comments in English**: All code comments must be in English. Korean comments were converted to English across the entire codebase (sentry.ts, logger.ts, BlogContext.tsx, api.ts, global.d.ts, etc.). Do not add Korean comments
-19. **Logger has no named exports**: `logger.ts` only exports `default` (singleton instance). Import as `import logger from '../utils/logger'`, not destructured. Uses `env.IS_DEVELOPMENT` from `config/env.ts` — do NOT use `process.env.NODE_ENV` directly in frontend code
-20. **No `window.alert()` in components**: Use inline toast state pattern instead (`ToastState` interface + `useRef` timer + auto-dismiss + `role="alert"` element). Already applied in `BlogEditor.tsx` and `SharePage.tsx`. Tests assert via `screen.getByRole('alert')`, not `alertSpy`
-21. **Backend tests need `DATABASE_URL=""`**: If `DATABASE_URL` is set (e.g., pointing to Docker PostgreSQL), backend tests will fail to connect. Run `DATABASE_URL="" uv run python manage.py test` to use SQLite
-22. **SEO with BrowserRouter**: All canonical URLs and OG URLs use clean paths (e.g., `${SITE_URL}/about`). Production nginx `try_files` returns 200 for all SPA routes. `hreflang` alternate links are generated by `SEOHelmet` for each page (ko, en, x-default). Korean URLs have no prefix (`/about`), English URLs use `/en` prefix (`/en/about`). The sitemap includes bilingual entries with `xhtml:link` alternates. The `sameAs` field in structured data must only contain verified, existing URLs
-23. **No hardcoded site URLs in components**: Always use `SITE_URL` from `src/utils/constants.ts`. The `generate-sitemap.js` script has its own `SITE_URL` constant (Node.js, can't import from frontend)
-24. **ESLint workspace hoisting**: `eslint` must be in root `package.json` devDependencies (same major version as frontend) alongside `eslint-plugin-react` (which npm hoists to root `node_modules/`). The plugin does `require('eslint/package.json')` — if eslint is only in `frontend/node_modules/`, the plugin can't find it. Don't remove eslint from root devDependencies
-25. **ESLint zero warnings policy**: All ESLint warnings have been resolved (0 errors, 0 warnings as of 2026-03-10). Maintain this — don't introduce new warnings. Use `useCallback` for functions passed to context `useMemo`, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements
-26. **Backend dev deps use `--extra dev`**: Dev tools (black, flake8, pytest) are in `[project.optional-dependencies]` not `[tool.uv.dev-dependencies]`. Use `uv sync --extra dev` (not `uv sync --dev`). CI uses `uv sync --frozen --extra dev`
-27. **react-helmet-async v3 ships own types**: `@types/react-helmet-async` is deprecated and removed. The custom `src/@types/react-helmet-async.d.ts` is also removed. Do not re-add either
-28. **KakaoTalk WebView — React loads normally, errors visible**: React app renders in all browsers including Android KakaoTalk. Do NOT block React from loading or hide `#root` for any browser. iOS KakaoTalk shows a dismissible banner with `kakaotalk://web/openExternal` scheme. If rendering fails, `__showError()` displays the error + user agent on-screen with a `kakaotalk://web/openExternal` button (for KakaoTalk) or reload button. `window.__appLoaded` must be set inside `AppLayout` (not provider level) — setting it too early suppresses all error handlers
-29. **OG image**: `og-image.png` (1200x630) is used for all OG/Twitter meta tags (`index.html`, `SEOHelmet.tsx`, `StructuredData.tsx`, `constants.ts`). Generated via `npm run generate:og-image` (`scripts/generate-og-image.js`, uses Playwright). `logo512.png` is still used for favicon, app icons, and schema.org Organization `logo` fields
-30. **FAQPage/Course schemas are static only**: FAQPage and Course JSON-LD are in `index.html` as static markup (crawlers read these without JS). Do NOT add them to `StructuredData.tsx` — that creates duplicate structured data when React renders
-31. **AdminDashboard sub-components**: `AdminSidebar`, `AdminOverview`, `AdminContentTable`, `DeleteConfirmModal`, `AdminMessages`, `AdminAnalytics`, `AdminUsersTab`, `AdminSettingsTab` are extracted as sub-components within the same file (following the component extraction pattern). Messages tab fetches from `/api/admin/messages/` and supports mark-as-processed. Analytics tab shows stats cards and posts-by-views bar chart using existing data (no chart library). Users and Settings tabs are stubs
+1. **`VITE_` prefix for env vars**: New vars must use `VITE_` (legacy `REACT_APP_` still works via `env.ts` shim)
+2. **React 19 `useRef` requires initial value**: `useRef<T>()` → TS2554. Always use `useRef<T>(null)`
+3. **`minimatch` override**: Root and frontend `package.json` both force `minimatch>=10.2.1`. Don't remove
+4. **Build uses separate tsconfig**: `tsconfig.build.json` excludes test types. Don't add `@testing-library/jest-dom` to it
+5. **Sitemap generation in build**: `npm run build` runs `generate-sitemap.js` first. If it fails, the build fails
+6. **`setTimeout` cleanup pattern**: Store timer in `useRef(null)`, `clearTimeout` in useEffect cleanup. Already applied across all components — follow same pattern for new usage
+7. **Comments in English**: No Korean comments anywhere in codebase
+8. **Logger default export only**: `import logger from '../utils/logger'`, not destructured. Use `env.IS_DEVELOPMENT` not `process.env.NODE_ENV`
+9. **No `window.alert()` in components**: Use inline toast state pattern (`ToastState` + `useRef` timer + `role="alert"`)
+10. **Backend tests need `DATABASE_URL=""`**: If env var points to Docker PostgreSQL, tests fail. Use SQLite
+11. **ESLint zero warnings**: Use `useCallback` for context functions, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements
+12. **No hardcoded site URLs**: Always use `SITE_URL` from `constants.ts`. `generate-sitemap.js` has its own constant (Node.js, can't import from frontend)

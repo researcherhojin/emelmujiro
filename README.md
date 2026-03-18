@@ -96,7 +96,7 @@ graph LR
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting (react-vendor, ui-vendor, i18n, sentry, http-vendor), Lighthouse CI assertions
 - **Auto-deploy** — GitHub Actions → webhook → Mac Mini build
-- **Testing** — 60 unit test files (896 tests), 10 E2E spec files (Playwright), 104 backend tests
+- **Testing** — 70 unit test files (982 tests), 10 E2E spec files (Playwright), 104 backend tests
 
 ## Roadmap
 
