@@ -81,7 +81,6 @@ describe('i18n configuration', () => {
       'auth',
       'blogErrors',
       'share',
-      'admin',
       'blogEditor',
       'seo',
     ];
