@@ -49,9 +49,9 @@ jobs:
           # Check for large files (> 10MB)
           find . -type f -size +10M | grep -v node_modules | grep -v .git && echo "Large files detected!" && exit 1 || exit 0
 
-  # Lightweight linting and formatting checks
-  lint:
-    name: Lint & Format
+  # Frontend linting (parallel with backend-lint)
+  frontend-lint:
+    name: Frontend Lint
     runs-on: ubuntu-latest
     needs: quick-checks
 
@@ -77,27 +77,51 @@ jobs:
         if: steps.node-cache.outputs.cache-hit != 'true'
         run: npm ci --prefer-offline --no-audit
 
+      - name: ESLint
+        working-directory: ./frontend
+        run: npm run lint
+
+      - name: Prettier
+        working-directory: ./frontend
+        run: npx prettier --check "src/**/*.{js,jsx,ts,tsx,css}"
+
+  # Backend linting (parallel with frontend-lint)
+  backend-lint:
+    name: Backend Lint
+    runs-on: ubuntu-latest
+    needs: quick-checks
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Frontend lint
-        working-directory: ./frontend
-        run: |
-          npm run lint
-          npx prettier --check "src/**/*.{js,jsx,ts,tsx,css}"
+      - name: Cache uv packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('backend/uv.lock') }}
+          restore-keys: ${{ runner.os }}-uv-
 
-      - name: Backend lint
-        run: |
-          cd backend
-          uv sync --frozen --extra dev
-          uv run black --check .
-          uv run flake8 . --max-line-length=120 --exclude=migrations,venv,.venv
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: uv sync --frozen --extra dev
+
+      - name: Black check
+        working-directory: ./backend
+        run: uv run black --check .
+
+      - name: Flake8
+        working-directory: ./backend
+        run: uv run flake8 . --max-line-length=120 --exclude=migrations,venv,.venv
 
   # Run only affected tests based on changed files
   affected-tests:
     name: Test Affected Code
     runs-on: ubuntu-latest
-    timeout-minutes: 15 # Add timeout to prevent long hangs
+    timeout-minutes: 15
     needs: quick-checks
 
     steps:
@@ -142,6 +166,14 @@ jobs:
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
         uses: astral-sh/setup-uv@v7
 
+      - name: Cache uv packages
+        if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('backend/uv.lock') }}
+          restore-keys: ${{ runner.os }}-uv-
+
       - name: Test backend changes
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
         env:
@@ -165,6 +197,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Cache Trivy DB
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/trivy
+          key: ${{ runner.os }}-trivy
+          restore-keys: ${{ runner.os }}-trivy
+
       - name: Run Trivy security scan
         uses: aquasecurity/trivy-action@0.35.0
         with:
@@ -173,59 +212,12 @@ jobs:
           format: "table"
           exit-code: "1"
           severity: "CRITICAL,HIGH"
+        env:
+          TRIVY_CACHE_DIR: ~/.cache/trivy
 
-  # Size and performance budget checks
-  bundle-analysis:
-    name: Bundle Size Check
-    runs-on: ubuntu-latest
-    needs: quick-checks
-    # Skip for dependabot backend-only updates
-    if: github.actor != 'dependabot[bot]' || contains(github.event.pull_request.title, 'frontend')
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Cache node_modules
-        uses: actions/cache@v5
-        id: node-cache
-        with:
-          path: |
-            node_modules
-            frontend/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        if: steps.node-cache.outputs.cache-hit != 'true'
-        run: npm ci --prefer-offline --no-audit
-
-      - name: Build and analyze
-        working-directory: ./frontend
-        run: |
-          npm run build:no-prerender
-
-          # Check build size
-          echo "Build size:"
-          du -sh build/
-
-          # Ensure build doesn't exceed 10MB (increased limit for production builds)
-          BUILD_SIZE=$(du -sb build/ | cut -f1)
-          MAX_SIZE=10485760  # 10MB in bytes
-          if [ $BUILD_SIZE -gt $MAX_SIZE ]; then
-            echo "Build size exceeds 10MB limit!"
-            echo "Current size: $(du -sh build/)"
-            exit 1
-          fi
-          echo "Build size is acceptable: $(du -sh build/)"
-
-  # Lighthouse CI performance audit
-  lighthouse:
-    name: Lighthouse CI
+  # Shared build job for bundle-analysis and lighthouse
+  build-for-analysis:
+    name: Build for Analysis
     runs-on: ubuntu-latest
     needs: quick-checks
     if: github.actor != 'dependabot[bot]' || contains(github.event.pull_request.title, 'frontend')
@@ -256,6 +248,75 @@ jobs:
         working-directory: ./frontend
         run: CI=false npm run build:no-prerender
 
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: pr-build
+          path: frontend/build/
+          retention-days: 1
+
+  # Size and performance budget checks (uses shared build)
+  bundle-analysis:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    needs: build-for-analysis
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: pr-build
+          path: build/
+
+      - name: Check bundle size
+        run: |
+          echo "Build size:"
+          du -sh build/
+
+          # Ensure build doesn't exceed 10MB
+          BUILD_SIZE=$(du -sb build/ | cut -f1)
+          MAX_SIZE=10485760  # 10MB in bytes
+          if [ $BUILD_SIZE -gt $MAX_SIZE ]; then
+            echo "Build size exceeds 10MB limit!"
+            echo "Current size: $(du -sh build/)"
+            exit 1
+          fi
+          echo "Build size is acceptable: $(du -sh build/)"
+
+  # Lighthouse CI performance audit (uses shared build)
+  lighthouse:
+    name: Lighthouse CI
+    runs-on: ubuntu-latest
+    needs: build-for-analysis
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache node_modules
+        uses: actions/cache@v5
+        id: node-cache
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.node-cache.outputs.cache-hit != 'true'
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: pr-build
+          path: frontend/build/
+
       - name: Run Lighthouse CI
         working-directory: ./frontend
         run: npx @lhci/cli autorun
@@ -274,7 +335,7 @@ jobs:
     name: PR Summary
     runs-on: ubuntu-latest
     if: always() && github.actor != 'dependabot[bot]'
-    needs: [lint, affected-tests, security-scan, bundle-analysis, lighthouse]
+    needs: [frontend-lint, backend-lint, affected-tests, security-scan, bundle-analysis, lighthouse]
     permissions:
       pull-requests: write
       issues: write
@@ -298,10 +359,11 @@ jobs:
 
             | Check | Status |
             |-------|--------|
-            | Linting | ${{ needs.lint.result == 'success' && '✅' || '❌' }} |
+            | Frontend Lint | ${{ needs.frontend-lint.result == 'success' && '✅' || '❌' }} |
+            | Backend Lint | ${{ needs.backend-lint.result == 'success' && '✅' || '❌' }} |
             | Tests | ${{ needs.affected-tests.result == 'success' && '✅' || '❌' }} |
             | Security | ${{ needs.security-scan.result == 'success' && '✅' || '❌' }} |
-            | Bundle Size | ${{ needs.bundle-analysis.result == 'success' && '✅' || '❌' }} |
+            | Bundle Size | ${{ needs.bundle-analysis.result == 'success' && '✅' || needs.bundle-analysis.result == 'skipped' && '⏭️' || '❌' }} |
             | Lighthouse | ${{ needs.lighthouse.result == 'success' && '✅' || needs.lighthouse.result == 'skipped' && '⏭️' || '❌' }} |
 
             <details>
