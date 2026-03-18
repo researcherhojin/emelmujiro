@@ -41,6 +41,19 @@ const mockContent = [
   },
 ];
 
+// Mock NotificationContext (used by NotificationBell in AdminDashboard)
+vi.mock('../../../contexts/NotificationContext', () => ({
+  useNotification: () => ({
+    notifications: [],
+    unreadCount: 0,
+    loading: false,
+    wsConnected: false,
+    fetchNotifications: vi.fn(),
+    markAsRead: vi.fn(),
+    markAllAsRead: vi.fn(),
+  }),
+}));
+
 vi.mock('../../../services/api', () => ({
   api: {
     getAdminStats: vi.fn(() => Promise.resolve({ data: mockStats })),

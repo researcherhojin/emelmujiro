@@ -13,8 +13,8 @@ test.describe('Navigation', () => {
     await page.getByRole('button', { name: '블로그' }).click();
     await expect(page).toHaveURL(/\/blog/);
 
-    // Navigate to Profile
-    await page.getByRole('button', { name: '프로필' }).click();
+    // Navigate to Profile (use exact match to avoid Footer's "대표 프로필")
+    await page.getByRole('button', { name: '프로필', exact: true }).click();
     await expect(page).toHaveURL(/\/profile/);
 
     // Navigate to Contact
@@ -36,9 +36,10 @@ test.describe('Navigation', () => {
   });
 
   test('404 page for invalid routes', async ({ page }) => {
-    await page.goto('/nonexistent-page');
+    // Use nested path under /en/ so LanguageLayout doesn't treat it as :lang param
+    await page.goto('/en/this-page-does-not-exist');
 
-    // Should show 404 or NotFound content
+    // Should show NotFound component content
     const body = page.locator('body');
     await expect(body).toContainText(/404|찾을 수 없|not found/i);
   });
@@ -60,8 +61,8 @@ test.describe('Navigation', () => {
     const menuButton = page.getByRole('button', { name: '메뉴' });
     await menuButton.click();
 
-    // Navigate via mobile menu
-    await page.getByText('소개').click();
+    // Navigate via mobile menu — click visible '소개' text in mobile dropdown
+    await page.getByRole('button', { name: '소개', exact: true }).click();
     await expect(page).toHaveURL(/\/about/);
   });
 });

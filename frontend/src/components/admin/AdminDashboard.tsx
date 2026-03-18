@@ -18,6 +18,7 @@ import {
   Info,
 } from 'lucide-react';
 import logger from '../../utils/logger';
+import NotificationBell from '../common/NotificationBell';
 import { api, blogService } from '../../services/api';
 
 interface DashboardStats {
@@ -706,7 +707,9 @@ const AdminDashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-100">
       <AdminSidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="ml-64 p-8">
-        <div className="mb-6" />
+        <div className="mb-6 flex justify-end">
+          <NotificationBell />
+        </div>
         {renderContent()}
       </div>
 

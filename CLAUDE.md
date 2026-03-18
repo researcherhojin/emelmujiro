@@ -139,8 +139,8 @@ Loading skeleton uses **inline styles** (not Tailwind classes) so it's visible b
 
 ### State Management
 
-- **React Context** — All state management via UIContext, AuthContext, BlogContext, FormContext (all in `src/contexts/`). All providers use `useMemo` for value objects and `useCallback` for functions to prevent unnecessary re-renders.
-- **Types** — `src/types/index.ts` exports: `BlogPost`, `ContactFormData`, `PaginatedResponse`, `ErrorResponse`.
+- **React Context** — All state management via UIContext, AuthContext, BlogContext, FormContext, NotificationContext (all in `src/contexts/`). All providers use `useMemo` for value objects and `useCallback` for functions to prevent unnecessary re-renders.
+- **Types** — `src/types/index.ts` exports: `BlogPost`, `ContactFormData`, `Notification`, `PaginatedResponse`, `ErrorResponse`.
 
 ### Mock API System
 
@@ -154,11 +154,11 @@ Axios-based client in `src/services/api.ts`. All API methods (blog, contact, new
 
 ### Sentry
 
-`@sentry/react` v10 is integrated via `src/utils/sentry.ts`. Only three functions are exported: `initSentry` (called in `main.tsx`), `captureException` (used by `logger.ts`), `reportErrorBoundary` (called by `ErrorBoundary.tsx` in `componentDidCatch`). Only active when `ENABLE_SENTRY=true` and `SENTRY_DSN` is set (both default to off). No action needed unless enabling error tracking. `main.tsx` uses `env.IS_DEVELOPMENT` / `env.IS_PRODUCTION` from `src/config/env.ts` instead of `process.env.NODE_ENV`.
+`@sentry/react` v10 is integrated via `src/utils/sentry.ts`. Exports: `initSentry` (called in `main.tsx`), `captureException` (used by `logger.ts`), `reportErrorBoundary` (called by `ErrorBoundary.tsx`), `setUserContext`/`clearUserContext` (called by `AuthContext` on login/logout/session restore), `addBreadcrumb` (for key user actions). Only active when `ENABLE_SENTRY=true` and `SENTRY_DSN` is set (both default to off). `main.tsx` uses `env.IS_DEVELOPMENT` / `env.IS_PRODUCTION` from `src/config/env.ts` instead of `process.env.NODE_ENV`.
 
 ### Google Analytics
 
-`src/utils/analytics.ts` exports `initAnalytics()` (called in `main.tsx`), `trackPageView(path)` (called in `ScrollToTop` on route change), and `trackCtaClick(location)` (used on CTA buttons in `HeroSection` and `CTASection`). Only active when `VITE_ENABLE_ANALYTICS=true` and `VITE_GA_TRACKING_ID` is set. CSP in `index.html` includes `https://www.googletagmanager.com` in `script-src` and Google Analytics domains in `connect-src`.
+`src/utils/analytics.ts` exports `initAnalytics()` (called in `main.tsx`), `trackPageView(path)` (called in `ScrollToTop` on route change), `trackCtaClick(location)` (CTA buttons), `trackBlogView(postId, category)` (called in `BlogDetail`), `trackDarkModeToggle(isDark)` (called in `UIContext`), `trackLanguageSwitch(language)` (called via `i18n.on('languageChanged')`), and `trackSearch(query, resultCount)`. Only active when `VITE_ENABLE_ANALYTICS=true` and `VITE_GA_TRACKING_ID` is set. CSP in `index.html` includes `https://www.googletagmanager.com` in `script-src` and Google Analytics domains in `connect-src`.
 
 ### SSG / Prerendering
 
@@ -166,7 +166,9 @@ Axios-based client in `src/services/api.ts`. All API methods (blog, contact, new
 
 ### Notification System
 
-Backend: `Notification` model (`api/models.py`) with fields: user, title, message, level (info/success/warning/error), notification_type (system/blog/contact/admin), url, is_read, read_at. `NotificationViewSet` provides REST API at `/api/notifications/` (list, retrieve, mark read, mark_all_read, unread_count). `send_user_notification(user, title, message, ...)` utility in `views.py` creates a DB record and pushes via WebSocket channel layer. `NotificationConsumer` (`consumers.py`) handles real-time mark_read/mark_all_read via `ws/notifications/` and sends unread count updates back. No frontend notification UI yet — backend only.
+Backend: `Notification` model (`api/models.py`) with fields: user, title, message, level (info/success/warning/error), notification_type (system/blog/contact/admin), url, is_read, read_at. `NotificationViewSet` provides REST API at `/api/notifications/` (list, retrieve, mark read, mark_all_read, unread_count). `send_user_notification(user, title, message, ...)` utility in `views.py` creates a DB record and pushes via WebSocket channel layer. `NotificationConsumer` (`consumers.py`) handles real-time mark_read/mark_all_read via `ws/notifications/` and sends unread count updates back.
+
+Frontend: `NotificationContext` (`src/contexts/NotificationContext.tsx`) manages notification state with WebSocket connection (auto-connect on login, exponential backoff reconnect up to 5 attempts). `NotificationBell` component (`src/components/common/NotificationBell.tsx`) renders in Navbar for authenticated users — shows unread count badge, dropdown panel with notification list, mark-as-read, and mark-all-read. Uses sub-component pattern (`NotificationPanel`, `NotificationItem` in same file). API methods in `api.ts`: `getNotifications`, `getUnreadCount`, `markNotificationRead`, `markAllNotificationsRead`.
 
 ### Environment Variables
 
@@ -178,7 +180,7 @@ Backend: `Notification` model (`api/models.py`) with fields: user, title, messag
 
 ### Provider Hierarchy
 
-`App.tsx` wraps the app in: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > BlogProvider > FormProvider > RouterProvider`.
+`App.tsx` wraps the app in: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > NotificationProvider > BlogProvider > FormProvider > RouterProvider`.
 
 ### Route Protection
 
@@ -268,7 +270,7 @@ These are mocked globally — do NOT re-mock in individual tests:
 
 ### E2E Testing (Playwright)
 
-Config in `frontend/playwright.config.ts`. Tests in `frontend/e2e/` (5 spec files: homepage, profile, blog, contact, accessibility). Runs on Chromium, Firefox, WebKit, Mobile Chrome (Pixel 5), Mobile Safari (iPhone 12). `baseURL`: `http://localhost:5173`. CI: `retries: 2`, `workers: 1`, `forbidOnly: true`. `accessibility.spec.ts` covers dark mode toggle + persistence and language switching via `i18nextLng` localStorage key.
+Config in `frontend/playwright.config.ts`. Tests in `frontend/e2e/` (10 spec files: homepage, profile, blog, contact, accessibility, about, navigation, seo, error-states, share). Runs on Chromium, Firefox, WebKit, Mobile Chrome (Pixel 5), Mobile Safari (iPhone 12). `baseURL`: `http://localhost:5173`. CI: `retries: 2`, `workers: 1`, `forbidOnly: true`. `accessibility.spec.ts` covers dark mode toggle + persistence and language switching via `i18nextLng` localStorage key. `seo.spec.ts` validates title/description/canonical/OG tags/structured data for all main routes. `error-states.spec.ts` tests invalid blog IDs, unauthenticated admin access, and console error absence.
 
 ### Codecov
 
@@ -293,7 +295,7 @@ PR checks enforce **conventional commits**: `type(scope): description`. Valid ty
 - Build output: `build/` (not `dist/`)
 - Build pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` → `prerender.js` → `cp 404.html` (sitemap and prerender must succeed)
 - Vite 8 uses oxc bundler (rolldown). `esbuild` options are ignored — console/debugger stripping is handled by oxc automatically in production
-- Manual chunks use a function (not object) in `rollupOptions.output.manualChunks`: react-vendor, ui-vendor, i18n
+- Manual chunks use a function (not object) in `rollupOptions.output.manualChunks`: react-vendor, ui-vendor, i18n, sentry, http-vendor
 - `build.target` is omitted — `@vitejs/plugin-legacy` sets targets automatically via its `targets` option (Chrome 64+)
 - `@vitejs/plugin-legacy` generates `nomodule` fallback bundles for older Chromium-based browsers (KakaoTalk in-app WebView, Samsung Internet ≥9.2)
 - `stripLocalhostCsp` custom plugin strips `localhost:8000`/`127.0.0.1:8000` from CSP `connect-src` in production builds (kept in dev for direct API calls)
@@ -330,7 +332,7 @@ Husky + lint-staged. `.husky/pre-commit` runs `npx lint-staged` from the **root*
 - DRF throttling: anon 100/hr, user 1000/hr, contact 5/hr, newsletter 3/hr. Pagination: `StandardPagination` (page_size=10, max_page_size=100, `?page_size=N` query param)
 - File upload validation: `api/validators.py` — case-insensitive extension, MIME type, size (5MB)
 - API docs: Swagger at `/api/docs/`, ReDoc at `/api/redoc/` (drf-yasg)
-- Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/notifications/` (authenticated — list, retrieve, mark_all_read, unread_count), `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`, `/api/admin/stats/` (admin only — returns totalUsers/totalPosts/totalMessages/totalViews), `/api/admin/content/` (admin only — returns blog post list). `/api/send-test-email/` only registered when `DEBUG=True`
+- Backend endpoints: `/api/blog-posts/`, `/api/contact/`, `/api/newsletter/`, `/api/categories/`, `/api/health/`, `/api/notifications/` (authenticated — list, retrieve, mark_all_read, unread_count), `/api/auth/{register,login,logout,user,user/update,change-password,token/refresh,token/verify}/`, `/api/admin/stats/` (admin only — returns totalUsers/totalPosts/totalMessages/totalViews), `/api/admin/content/` (admin only — returns blog post list), `/api/admin/messages/` (admin only — paginated contact list), `/api/admin/messages/<uuid>/` (admin only — GET detail, PATCH to mark processed). `/api/send-test-email/` only registered when `DEBUG=True`
 - UserSerializer includes a `role` field (read-only): returns `"admin"` (superuser), `"staff"`, or `"user"`
 - Custom middleware registered in MIDDLEWARE: `RequestSecurityMiddleware` (IP blocking, rate limiting, malicious pattern detection), `ContentSecurityMiddleware` (CSP + security headers), `APIResponseTimeMiddleware` (slow request logging)
 - Management commands: `cleanup_sitevisits` (delete old SiteVisit records, `--days 90` default, `--dry-run` option)
@@ -397,7 +399,7 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 1. **Wrong port**: Frontend is 5173, not 3000
 2. **Mock API**: Active only in tests or when `env.API_URL` is empty. Production uses `api.emelmujiro.com` (Mac Mini backend)
 3. **Build output**: `build/`, not `dist/`
-4. **Test count**: Frontend 58 files / 880 tests, Backend 104 tests, 0 failures, E2E 5 spec files (as of 2026-03-18)
+4. **Test count**: Frontend 58 files / 880 tests, Backend 104 tests, 0 failures, E2E 10 spec files (as of 2026-03-18)
 5. **Environment variables**: Use `VITE_` prefix for new vars (legacy `REACT_APP_` still supported via env.ts shim)
 6. **React 19 `useRef` requires initial value**: `useRef<T>()` causes TS2554; always pass `null`: `useRef<T>(null)`. This applies to all timer refs, DOM refs, etc.
 7. **ESLint 10 flat config**: Upgraded from v9 to v10. Root `package.json` eslint version must match frontend's (both `^10.x`). Don't downgrade — plugins are compatible with ESLint 10
@@ -424,4 +426,4 @@ Both frontend and backend run on Mac Mini via Docker + Cloudflare Tunnel:
 28. **KakaoTalk WebView — React loads normally, errors visible**: React app renders in all browsers including Android KakaoTalk. Do NOT block React from loading or hide `#root` for any browser. iOS KakaoTalk shows a dismissible banner with `kakaotalk://web/openExternal` scheme. If rendering fails, `__showError()` displays the error + user agent on-screen with a `kakaotalk://web/openExternal` button (for KakaoTalk) or reload button. `window.__appLoaded` must be set inside `AppLayout` (not provider level) — setting it too early suppresses all error handlers
 29. **OG image**: `og-image.png` (1200x630) is used for all OG/Twitter meta tags (`index.html`, `SEOHelmet.tsx`, `StructuredData.tsx`, `constants.ts`). Generated via `npm run generate:og-image` (`scripts/generate-og-image.js`, uses Playwright). `logo512.png` is still used for favicon, app icons, and schema.org Organization `logo` fields
 30. **FAQPage/Course schemas are static only**: FAQPage and Course JSON-LD are in `index.html` as static markup (crawlers read these without JS). Do NOT add them to `StructuredData.tsx` — that creates duplicate structured data when React renders
-31. **AdminDashboard sub-components**: `AdminSidebar`, `AdminOverview`, `AdminContentTable`, `DeleteConfirmModal` are extracted as sub-components within the same file (following the component extraction pattern). Props interfaces: `SidebarProps`, `OverviewProps`, `ContentTableProps`, `DeleteModalProps`
+31. **AdminDashboard sub-components**: `AdminSidebar`, `AdminOverview`, `AdminContentTable`, `DeleteConfirmModal`, `AdminMessages`, `AdminAnalytics`, `AdminUsersTab`, `AdminSettingsTab` are extracted as sub-components within the same file (following the component extraction pattern). Messages tab fetches from `/api/admin/messages/` and supports mark-as-processed. Analytics tab shows stats cards and posts-by-views bar chart using existing data (no chart library). Users and Settings tabs are stubs
