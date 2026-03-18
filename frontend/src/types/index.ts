@@ -43,6 +43,33 @@ export interface Notification {
   created_at: string;
 }
 
+// Admin Types
+export interface AdminUser {
+  id: number;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: 'admin' | 'staff' | 'user';
+  is_active: boolean;
+  is_staff: boolean;
+  is_superuser: boolean;
+  date_joined: string;
+  last_login: string | null;
+}
+
+// Analytics Types
+export interface VisitDataPoint {
+  date: string;
+  visits: number;
+  unique_visitors: number;
+}
+
+export interface PageVisitData {
+  page_path: string;
+  visits: number;
+}
+
 // API Types
 export interface PaginatedResponse<T> {
   count: number;

@@ -12,10 +12,16 @@ from .views import (
     health_check,
     CategoryListView,
     send_test_email,
+)
+from .admin_views import (
     admin_stats,
     admin_content,
     admin_messages,
     admin_message_detail,
+    admin_users,
+    admin_user_detail,
+    admin_analytics_visits,
+    admin_analytics_pages,
 )
 from .auth import (
     register,
@@ -47,6 +53,10 @@ urlpatterns = [
     path("admin/content/", admin_content, name="admin-content"),
     path("admin/messages/", admin_messages, name="admin-messages"),
     path("admin/messages/<uuid:pk>/", admin_message_detail, name="admin-message-detail"),
+    path("admin/users/", admin_users, name="admin-users"),
+    path("admin/users/<int:pk>/", admin_user_detail, name="admin-user-detail"),
+    path("admin/analytics/visits/", admin_analytics_visits, name="admin-analytics-visits"),
+    path("admin/analytics/pages/", admin_analytics_pages, name="admin-analytics-pages"),
     # Authentication endpoints
     path("auth/register/", register, name="register"),
     path("auth/login/", login, name="login"),

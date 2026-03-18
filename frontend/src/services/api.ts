@@ -1,5 +1,13 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { BlogPost, ContactFormData, ErrorResponse, Notification } from '../types';
+import {
+  AdminUser,
+  BlogPost,
+  ContactFormData,
+  ErrorResponse,
+  Notification,
+  VisitDataPoint,
+  PageVisitData,
+} from '../types';
 import logger from '../utils/logger';
 import env from '../config/env';
 import i18n from '../i18n';
@@ -376,6 +384,86 @@ export const api = {
     }
     return axiosInstance.patch(`/admin/messages/${id}/`, data);
   },
+  getAdminUsers: (page: number = 1, search?: string, role?: string, isActive?: string) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { count: 0, next: null, results: [] as AdminUser[] },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    const params = new URLSearchParams({ page: String(page) });
+    if (search) params.set('search', search);
+    if (role) params.set('role', role);
+    if (isActive) params.set('is_active', isActive);
+    return axiosInstance.get<PaginatedResponse<AdminUser>>(`/admin/users/?${params}`);
+  },
+  getAdminUser: (id: number) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: {} as AdminUser,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get<AdminUser>(`/admin/users/${id}/`);
+  },
+  updateAdminUser: (id: number, data: Partial<AdminUser>) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: {} as AdminUser,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.patch<AdminUser>(`/admin/users/${id}/`, data);
+  },
+  deleteAdminUser: (id: number) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: undefined as never,
+        status: 204,
+        statusText: 'No Content',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.delete(`/admin/users/${id}/`);
+  },
+  getAdminVisitStats: (days: number = 30) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { period: days, data: [] as VisitDataPoint[] },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get<{ period: number; data: VisitDataPoint[] }>(
+      `/admin/analytics/visits/?days=${days}`
+    );
+  },
+  getAdminPageStats: (days: number = 30) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { period: days, data: [] as PageVisitData[] },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get<{ period: number; data: PageVisitData[] }>(
+      `/admin/analytics/pages/?days=${days}`
+    );
+  },
 
   // Notifications
   getNotifications: (page: number = 1) => {
@@ -425,6 +513,43 @@ export const api = {
       });
     }
     return axiosInstance.post('notifications/mark_all_read/');
+  },
+  getNotificationPreferences: () => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: {
+          system_enabled: true,
+          blog_enabled: true,
+          contact_enabled: true,
+          admin_enabled: true,
+          email_enabled: false,
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get('notifications/preferences/');
+  },
+  updateNotificationPreferences: (data: Record<string, boolean>) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: {
+          system_enabled: true,
+          blog_enabled: true,
+          contact_enabled: true,
+          admin_enabled: true,
+          email_enabled: false,
+          ...data,
+        },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.patch('notifications/preferences/', data);
   },
 
   // Health check

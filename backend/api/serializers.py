@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from .models import BlogPost, Contact, Notification, NewsletterSubscription
+from .models import BlogPost, Contact, Notification, NotificationPreference, NewsletterSubscription
 import re
 
 
@@ -15,6 +15,36 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username", "email", "first_name", "last_name", "role"]
         read_only_fields = ["id"]
+
+    def get_role(self, obj):
+        if obj.is_superuser:
+            return "admin"
+        if obj.is_staff:
+            return "staff"
+        return "user"
+
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    """User serializer for admin user management"""
+
+    role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "date_joined",
+            "last_login",
+        ]
+        read_only_fields = ["id", "username", "email", "date_joined", "last_login"]
 
     def get_role(self, obj):
         if obj.is_superuser:
@@ -97,6 +127,20 @@ class BlogPostSerializer(serializers.ModelSerializer):
             return f"{minutes}분 전"
         else:
             return "방금 전"
+
+
+class NotificationPreferenceSerializer(serializers.ModelSerializer):
+    """Notification preference serializer"""
+
+    class Meta:
+        model = NotificationPreference
+        fields = [
+            "system_enabled",
+            "blog_enabled",
+            "contact_enabled",
+            "admin_enabled",
+            "email_enabled",
+        ]
 
 
 class NotificationSerializer(serializers.ModelSerializer):
