@@ -8,6 +8,7 @@ module.exports = {
         'http://localhost:4173/about',
         'http://localhost:4173/contact',
         'http://localhost:4173/profile',
+        'http://localhost:4173/blog',
       ],
       numberOfRuns: 3,
       settings: {
@@ -29,6 +30,8 @@ module.exports = {
         'largest-contentful-paint': ['warn', { maxNumericValue: 5000 }],
         'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
         'total-blocking-time': ['warn', { maxNumericValue: 500 }],
+        interactive: ['warn', { maxNumericValue: 5000 }],
+        'speed-index': ['warn', { maxNumericValue: 4000 }],
         // Accessibility
         'color-contrast': 'error',
         'image-alt': 'error',
