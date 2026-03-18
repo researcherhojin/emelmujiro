@@ -2,7 +2,7 @@ import { screen, waitFor, render } from '@testing-library/react';
 import { vi } from 'vitest';
 import { InternalAxiosRequestConfig } from 'axios';
 import App from '../../App';
-import { blogService } from '../../services/api';
+import { api } from '../../services/api';
 
 // Mock SEOHelmet to prevent issues
 vi.mock('../../components/common/SEOHelmet', () => ({
@@ -21,25 +21,18 @@ vi.mock('../../utils/logger', () => ({
   },
 }));
 
-// Mock the blogService
+// Mock the api service
 vi.mock('../../services/api', () => ({
-  blogService: {
-    getPosts: vi.fn(),
-    getPost: vi.fn(),
-    createPost: vi.fn(),
-    updatePost: vi.fn(),
-    deletePost: vi.fn(),
-    searchPosts: vi.fn(),
-  },
   api: {
     getBlogPosts: vi.fn(),
     getBlogPost: vi.fn(),
     searchBlogPosts: vi.fn(),
+    getBlogCategories: vi.fn(),
     createContact: vi.fn(),
   },
 }));
 
-const mockedBlogService = vi.mocked(blogService);
+const mockedApi = vi.mocked(api);
 
 // Mock Navbar and other complex components to simplify tests
 vi.mock('../../components/common/Navbar', () => ({
@@ -79,7 +72,7 @@ describe('Blog Flow Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Mock successful blog posts fetch
-    mockedBlogService.getPosts.mockResolvedValue({
+    mockedApi.getBlogPosts.mockResolvedValue({
       data: {
         count: mockPosts.length,
         next: null,
@@ -121,7 +114,7 @@ describe('Blog Flow Integration Tests', () => {
   });
 
   test('handles errors gracefully without crashing', async () => {
-    mockedBlogService.getPosts.mockRejectedValue(new Error('Network error'));
+    mockedApi.getBlogPosts.mockRejectedValue(new Error('Network error'));
 
     render(<App />);
 
@@ -154,9 +147,9 @@ describe('Blog Flow Integration Tests', () => {
     });
   });
 
-  test('mocked blog service is configured correctly', () => {
-    expect(mockedBlogService.getPosts).toBeDefined();
-    expect(mockedBlogService.getPost).toBeDefined();
-    expect(mockedBlogService.searchPosts).toBeDefined();
+  test('mocked api service is configured correctly', () => {
+    expect(mockedApi.getBlogPosts).toBeDefined();
+    expect(mockedApi.getBlogPost).toBeDefined();
+    expect(mockedApi.searchBlogPosts).toBeDefined();
   });
 });

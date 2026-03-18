@@ -120,7 +120,7 @@ Vitest with jsdom. Config: `frontend/vitest.config.ts`. Setup: `frontend/src/set
 
 ### Test Utilities
 
-`renderWithProviders` in `src/test-utils/renderWithProviders.tsx` wraps in all providers (HelmetProvider, UIProvider, AuthProvider, NotificationProvider, BlogProvider, FormProvider, MemoryRouter). MSW mock handlers in `src/test-utils/mocks/handlers.ts`.
+`renderWithProviders` in `src/test-utils/renderWithProviders.tsx` wraps in all providers (HelmetProvider, UIProvider, AuthProvider, NotificationProvider, BlogProvider, MemoryRouter). MSW mock handlers in `src/test-utils/mocks/handlers.ts`.
 
 ### i18n Test Mocking
 
