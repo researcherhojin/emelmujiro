@@ -45,6 +45,8 @@ vi.mock('../../../services/api', () => ({
   api: {
     getAdminStats: vi.fn(() => Promise.resolve({ data: mockStats })),
     getAdminContent: vi.fn(() => Promise.resolve({ data: mockContent })),
+    getAdminMessages: vi.fn(() => Promise.resolve({ data: { count: 0, next: null, results: [] } })),
+    updateAdminMessage: vi.fn(() => Promise.resolve({ data: { status: 'updated' } })),
   },
   blogService: {
     deletePost: vi.fn(() => Promise.resolve({ status: 204 })),
@@ -200,7 +202,7 @@ describe('AdminDashboard', () => {
     });
     fireEvent.click(usersTab);
 
-    expect(screen.getByText('admin.userManagementPage')).toBeInTheDocument();
+    expect(screen.getByText('admin.userManagementComingSoon')).toBeInTheDocument();
   });
 
   it('switches to messages tab', async () => {
@@ -215,7 +217,10 @@ describe('AdminDashboard', () => {
     });
     fireEvent.click(messagesTab);
 
-    expect(screen.getByText('admin.messagesPage')).toBeInTheDocument();
+    // AdminMessages fetches data and shows empty state or table
+    await waitFor(() => {
+      expect(screen.getByText('admin.messagesEmpty')).toBeInTheDocument();
+    });
   });
 
   it('switches to analytics tab', async () => {
@@ -230,7 +235,7 @@ describe('AdminDashboard', () => {
     });
     fireEvent.click(analyticsTab);
 
-    expect(screen.getByText('admin.analyticsPage')).toBeInTheDocument();
+    expect(screen.getByText('admin.analyticsOverview')).toBeInTheDocument();
   });
 
   it('switches to settings tab', async () => {
@@ -245,7 +250,7 @@ describe('AdminDashboard', () => {
     });
     fireEvent.click(settingsTab);
 
-    expect(screen.getByText('admin.settingsPage')).toBeInTheDocument();
+    expect(screen.getByText('admin.siteInfo')).toBeInTheDocument();
   });
 
   it('displays logout button', () => {

@@ -8,12 +8,14 @@ import {
   MessageSquare,
   Settings,
   BarChart3,
-  Bell,
   LogOut,
   Plus,
   Edit,
   Trash2,
   Eye,
+  CheckCircle,
+  Clock,
+  Info,
 } from 'lucide-react';
 import logger from '../../utils/logger';
 import { api, blogService } from '../../services/api';
@@ -341,6 +343,264 @@ const DeleteConfirmModal: React.FC<DeleteModalProps> = ({ onConfirm, onCancel })
   );
 };
 
+// --- Messages Tab ---
+
+interface AdminMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  inquiry_type: string;
+  is_processed: boolean;
+  created_at: string;
+}
+
+interface MessagesProps {
+  onRefresh: () => void;
+}
+
+const AdminMessages: React.FC<MessagesProps> = ({ onRefresh }) => {
+  const { t } = useTranslation();
+  const [messages, setMessages] = useState<AdminMessage[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await api.getAdminMessages();
+        setMessages(res.data.results || []);
+      } catch (err) {
+        logger.error('Failed to fetch messages:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMessages();
+  }, []);
+
+  const handleMarkProcessed = async (id: string) => {
+    try {
+      await api.updateAdminMessage(id, { is_processed: true });
+      setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, is_processed: true } : m)));
+      onRefresh();
+    } catch (err) {
+      logger.error('Failed to update message:', err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-8">{t('admin.messages')}</h1>
+      {messages.length === 0 ? (
+        <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
+          {t('admin.messagesEmpty')}
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('admin.tableDate')}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('admin.messageName')}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('admin.messageSubject')}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('admin.messageType')}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('admin.tableStatus')}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('admin.tableActions')}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {messages.map((msg) => (
+                  <tr key={msg.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {msg.created_at}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{msg.name}</div>
+                      <div className="text-xs text-gray-500">{msg.email}</div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                      {msg.subject}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {msg.inquiry_type}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {msg.is_processed ? (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                          <CheckCircle className="w-3 h-3 mr-1" />
+                          {t('admin.processed')}
+                        </span>
+                      ) : (
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {t('admin.unprocessed')}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {!msg.is_processed && (
+                        <button
+                          onClick={() => handleMarkProcessed(msg.id)}
+                          className="text-green-600 hover:text-green-900 text-xs font-medium"
+                        >
+                          {t('admin.markProcessed')}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// --- Analytics Tab ---
+
+interface AnalyticsProps {
+  stats: DashboardStats;
+  contentItems: ContentItem[];
+}
+
+const AdminAnalytics: React.FC<AnalyticsProps> = ({ stats, contentItems }) => {
+  const { t } = useTranslation();
+  const sortedPosts = [...contentItems]
+    .filter((item) => item.views !== undefined)
+    .sort((a, b) => (b.views || 0) - (a.views || 0))
+    .slice(0, 10);
+
+  const maxViews = sortedPosts.length > 0 ? sortedPosts[0].views || 1 : 1;
+
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-8">{t('admin.analyticsOverview')}</h1>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white rounded-lg shadow-md p-4 text-center">
+          <p className="text-2xl font-bold text-blue-600">{stats.totalUsers}</p>
+          <p className="text-sm text-gray-500">{t('admin.totalUsers')}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow-md p-4 text-center">
+          <p className="text-2xl font-bold text-green-600">{stats.totalPosts}</p>
+          <p className="text-sm text-gray-500">{t('admin.totalPosts')}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow-md p-4 text-center">
+          <p className="text-2xl font-bold text-purple-600">{stats.totalMessages}</p>
+          <p className="text-sm text-gray-500">{t('admin.totalMessages')}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow-md p-4 text-center">
+          <p className="text-2xl font-bold text-orange-600">{stats.totalViews}</p>
+          <p className="text-sm text-gray-500">{t('admin.totalViews')}</p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-semibold mb-4">{t('admin.postsByViews')}</h2>
+        {sortedPosts.length === 0 ? (
+          <p className="text-gray-500 text-sm">{t('admin.noPostData')}</p>
+        ) : (
+          <div className="space-y-3">
+            {sortedPosts.map((post) => (
+              <div key={post.id} className="flex items-center gap-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">{post.title}</p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="w-32 bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full"
+                      style={{ width: `${((post.views || 0) / maxViews) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-gray-500 w-12 text-right">
+                    {(post.views || 0).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// --- Users Tab (stub) ---
+
+const AdminUsersTab: React.FC<{ totalUsers: number }> = ({ totalUsers }) => {
+  const { t } = useTranslation();
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-8">{t('admin.userManagement')}</h1>
+      <div className="bg-white rounded-lg shadow-md p-8 text-center">
+        <Users className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+        <p className="text-lg font-semibold text-gray-900 mb-2">
+          {totalUsers.toLocaleString()} {t('admin.totalUsers')}
+        </p>
+        <p className="text-gray-500">{t('admin.userManagementComingSoon')}</p>
+      </div>
+    </div>
+  );
+};
+
+// --- Settings Tab (stub) ---
+
+const AdminSettingsTab: React.FC = () => {
+  const { t } = useTranslation();
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-8">{t('admin.settings')}</h1>
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-semibold mb-4">{t('admin.siteInfo')}</h2>
+        <div className="space-y-3">
+          <div className="flex justify-between py-2 border-b">
+            <span className="text-gray-600">{t('admin.siteUrl')}</span>
+            <span className="text-gray-900 font-medium">emelmujiro.com</span>
+          </div>
+          <div className="flex justify-between py-2 border-b">
+            <span className="text-gray-600">{t('admin.apiUrl')}</span>
+            <span className="text-gray-900 font-medium">api.emelmujiro.com</span>
+          </div>
+          <div className="flex justify-between py-2">
+            <span className="text-gray-600">{t('admin.appVersion')}</span>
+            <span className="text-gray-900 font-medium">1.0.0</span>
+          </div>
+        </div>
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg flex items-start gap-3">
+          <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-blue-700">{t('admin.settingsReadOnly')}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // --- Main component ---
 
 const AdminDashboard: React.FC = () => {
@@ -430,13 +690,13 @@ const AdminDashboard: React.FC = () => {
           />
         );
       case 'users':
-        return <div>{t('admin.userManagementPage')}</div>;
+        return <AdminUsersTab totalUsers={stats.totalUsers} />;
       case 'messages':
-        return <div>{t('admin.messagesPage')}</div>;
+        return <AdminMessages onRefresh={fetchDashboardData} />;
       case 'analytics':
-        return <div>{t('admin.analyticsPage')}</div>;
+        return <AdminAnalytics stats={stats} contentItems={contentItems} />;
       case 'settings':
-        return <div>{t('admin.settingsPage')}</div>;
+        return <AdminSettingsTab />;
       default:
         return <AdminOverview stats={stats} />;
     }
@@ -446,16 +706,7 @@ const AdminDashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-100">
       <AdminSidebar activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="ml-64 p-8">
-        <div className="mb-6 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <button
-              className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-              aria-label="Notifications"
-            >
-              <Bell className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
+        <div className="mb-6" />
         {renderContent()}
       </div>
 

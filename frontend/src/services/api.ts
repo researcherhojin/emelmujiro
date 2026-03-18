@@ -340,6 +340,42 @@ export const api = {
     }
     return axiosInstance.get('/admin/content/');
   },
+  getAdminMessages: (page: number = 1) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { count: 0, next: null, results: [] },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get(`/admin/messages/?page=${page}`);
+  },
+  getAdminMessage: (id: string) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: {},
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.get(`/admin/messages/${id}/`);
+  },
+  updateAdminMessage: (id: string, data: Record<string, unknown>) => {
+    if (USE_MOCK_API) {
+      return Promise.resolve({
+        data: { status: 'updated' },
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+      });
+    }
+    return axiosInstance.patch(`/admin/messages/${id}/`, data);
+  },
 
   // Notifications
   getNotifications: (page: number = 1) => {
