@@ -233,24 +233,6 @@ export const api = {
     }
   },
 
-  // Newsletter
-  subscribeNewsletter: (email: string) => {
-    if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: {
-          success: true,
-          message: i18n.t('apiErrors.newsletterSuccess'),
-          email,
-        },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
-    }
-    return axiosInstance.post('newsletter/', { email });
-  },
-
   // Auth
   getUser: () => {
     if (USE_MOCK_API) {
@@ -363,108 +345,6 @@ export const api = {
       });
     }
     return axiosInstance.post('notifications/mark_all_read/');
-  },
-  getNotificationPreferences: () => {
-    if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: {
-          system_enabled: true,
-          blog_enabled: true,
-          contact_enabled: true,
-          admin_enabled: true,
-          email_enabled: false,
-        },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
-    }
-    return axiosInstance.get('notifications/preferences/');
-  },
-  updateNotificationPreferences: (data: Record<string, boolean>) => {
-    if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: {
-          system_enabled: true,
-          blog_enabled: true,
-          contact_enabled: true,
-          admin_enabled: true,
-          email_enabled: false,
-          ...data,
-        },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
-    }
-    return axiosInstance.patch('notifications/preferences/', data);
-  },
-
-  // Health check
-  checkHealth: () => {
-    if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: { status: 'healthy' },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
-    }
-    return axiosInstance.get<{ status: string }>('health/');
-  },
-};
-
-// Export specific services for backward compatibility
-export const blogService = {
-  getPosts: api.getBlogPosts,
-  getPost: api.getBlogPost,
-  searchPosts: api.searchBlogPosts,
-  getCategories: api.getBlogCategories,
-  createPost: (data: Partial<BlogPost>) => {
-    if (USE_MOCK_API) {
-      const newPost = {
-        id: Date.now(),
-        slug: `post-${Date.now()}`,
-        ...data,
-      } as BlogPost;
-      return Promise.resolve({
-        data: newPost,
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
-    }
-    return axiosInstance.post<BlogPost>('blog-posts/', data);
-  },
-  updatePost: (id: number | string, data: Partial<BlogPost>) => {
-    if (USE_MOCK_API) {
-      const existingPost = mockBlogPosts.find((p) => p.id === Number(id));
-      const updatedPost = { ...existingPost, ...data, id } as BlogPost;
-      return Promise.resolve({
-        data: updatedPost,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
-    }
-    return axiosInstance.put<BlogPost>(`blog-posts/${id}/`, data);
-  },
-  deletePost: (id: number | string) => {
-    if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: undefined as never,
-        status: 204,
-        statusText: 'No Content',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
-    }
-    return axiosInstance.delete(`blog-posts/${id}/`);
   },
 };
 

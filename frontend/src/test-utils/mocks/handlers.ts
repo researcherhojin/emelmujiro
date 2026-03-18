@@ -9,10 +9,6 @@ interface ContactData {
   message: string;
 }
 
-interface NewsletterData {
-  email: string;
-}
-
 interface RegisterData {
   username: string;
   email: string;
@@ -78,19 +74,6 @@ export const handlers = [
         message: data.message,
         created_at: new Date().toISOString(),
         status: 'pending',
-      },
-      { status: 201 }
-    );
-  }),
-
-  // Newsletter endpoint
-  http.post(`${API_BASE}/newsletter/`, async ({ request }) => {
-    const data = (await request.json()) as NewsletterData;
-    return HttpResponse.json(
-      {
-        id: 1,
-        email: data.email,
-        subscribed_at: new Date().toISOString(),
       },
       { status: 201 }
     );

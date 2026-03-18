@@ -1,7 +1,7 @@
 // Comprehensive API tests — mock mode for GitHub Pages
 import { vi } from 'vitest';
 
-import { api, blogService } from '../api';
+import { api } from '../api';
 import { BlogPost } from '../../types';
 
 // Mock console methods
@@ -131,27 +131,6 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
     });
   });
 
-  describe('Newsletter Operations', () => {
-    it('should subscribe to newsletter with mock response', async () => {
-      const email = 'subscriber@example.com';
-
-      const result = await api.subscribeNewsletter(email);
-
-      expect(result).toHaveProperty('data');
-      expect(result.data.success).toBe(true);
-      expect(result.data.message).toBeTruthy();
-    });
-
-    it('should handle various email formats', async () => {
-      const emails = ['test@example.com', 'user.name@company.co.kr', 'first+last@domain.org'];
-
-      for (const email of emails) {
-        const result = await api.subscribeNewsletter(email);
-        expect(result.data.success).toBe(true);
-      }
-    });
-  });
-
   describe('Authentication Simulation', () => {
     it('should work with auth token in localStorage', async () => {
       localStorage.setItem('authToken', 'test-token-123');
@@ -266,34 +245,6 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       results.forEach((result) => {
         expect(result).toHaveProperty('data');
       });
-    });
-  });
-
-  describe('blogService CRUD Operations', () => {
-    it('should create post via mock API', async () => {
-      const newPost = { title: 'New Post', content: 'Content' };
-
-      const result = await blogService.createPost(newPost);
-
-      expect(result.status).toBe(201);
-      expect(result.data).toHaveProperty('title', 'New Post');
-      expect(result.data).toHaveProperty('content', 'Content');
-      expect(result.data).toHaveProperty('id');
-    });
-
-    it('should update post via mock API', async () => {
-      const update = { title: 'Updated Title' };
-
-      const result = await blogService.updatePost(1, update);
-
-      expect(result.status).toBe(200);
-      expect(result.data).toHaveProperty('title', 'Updated Title');
-    });
-
-    it('should delete post via mock API', async () => {
-      const result = await blogService.deletePost(1);
-
-      expect(result.status).toBe(204);
     });
   });
 });

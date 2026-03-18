@@ -40,12 +40,6 @@ export function trackBlogView(postId: string | number, category?: string): void 
   window.gtag('event', 'view_blog_post', { post_id: postId, category });
 }
 
-// Track search queries
-export function trackSearch(query: string, resultCount: number): void {
-  if (!isEnabled || !window.gtag) return;
-  window.gtag('event', 'search', { search_term: query, result_count: resultCount });
-}
-
 // Track dark mode toggle
 export function trackDarkModeToggle(isDark: boolean): void {
   if (!isEnabled || !window.gtag) return;
