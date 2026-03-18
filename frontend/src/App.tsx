@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { BlogProvider } from './contexts/BlogContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { UIProvider } from './contexts/UIContext';
-import { FormProvider } from './contexts/FormContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import Layout from './components/layout/Layout';
 import { PageLoading } from './components/common/UnifiedLoading';
@@ -187,9 +186,7 @@ const App: React.FC = () => {
           <AuthProvider>
             <NotificationProvider>
               <BlogProvider>
-                <FormProvider>
-                  <RouterProvider router={router} />
-                </FormProvider>
+                <RouterProvider router={router} />
               </BlogProvider>
             </NotificationProvider>
           </AuthProvider>

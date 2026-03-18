@@ -68,9 +68,9 @@ i18n uses `i18next` + `react-i18next`. Fallback language: Korean (`ko`). Transla
 
 ### State Management & Provider Hierarchy
 
-All state via React Context: UIContext, AuthContext, BlogContext, FormContext, NotificationContext (all in `src/contexts/`). All providers use `useMemo`/`useCallback` to prevent re-renders.
+All state via React Context: UIContext, AuthContext, BlogContext, NotificationContext (all in `src/contexts/`). All providers use `useMemo`/`useCallback` to prevent re-renders.
 
-Provider order in `App.tsx`: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > NotificationProvider > BlogProvider > FormProvider > RouterProvider`.
+Provider order in `App.tsx`: `HelmetProvider > ErrorBoundary > UIProvider > AuthProvider > NotificationProvider > BlogProvider > RouterProvider`.
 
 ### API Client & Auth
 
@@ -80,7 +80,7 @@ Axios-based client in `src/services/api.ts`. JWT auth uses **httpOnly cookies** 
 
 ### Contact Page
 
-`/contact` uses a Google Form iframe embed (not the backend API). The original `ContactForm` and `FormContext` are preserved for test compatibility. CSP includes `frame-src https://docs.google.com`. When switching back to backend form, update `App.tsx`, `ContactPage.tsx`, and `e2e/contact.spec.ts`.
+`/contact` uses a Google Form iframe embed (not the backend API). CSP includes `frame-src https://docs.google.com`. The backend `/api/contact/` endpoint and `api.createContact()` are preserved for potential future switch back. When switching back to backend form, re-add `FormProvider` to `App.tsx` and update `ContactPage.tsx` and `e2e/contact.spec.ts`.
 
 ### KakaoTalk In-App Browser
 

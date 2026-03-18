@@ -5,7 +5,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import { BlogProvider } from '../contexts/BlogContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { UIProvider } from '../contexts/UIContext';
-import { FormProvider } from '../contexts/FormContext';
 import { NotificationProvider } from '../contexts/NotificationContext';
 
 // Custom render function with all providers (matches App.tsx hierarchy)
@@ -16,9 +15,7 @@ const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
         <AuthProvider>
           <NotificationProvider>
             <BlogProvider>
-              <FormProvider>
-                <Router>{children}</Router>
-              </FormProvider>
+              <Router>{children}</Router>
             </BlogProvider>
           </NotificationProvider>
         </AuthProvider>
