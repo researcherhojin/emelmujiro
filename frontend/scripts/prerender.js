@@ -100,6 +100,27 @@ async function prerenderRoute(page, baseUrl, route) {
     if (root) root.setAttribute('data-prerendered', 'true');
   });
 
+  // Clean up duplicate tags injected by react-helmet-async alongside static HTML
+  await page.evaluate(() => {
+    // Keep only the first <title> (Helmet-injected, page-specific one)
+    const titles = document.querySelectorAll('title');
+    if (titles.length > 1) {
+      for (let i = 1; i < titles.length; i++) titles[i].remove();
+    }
+    // Deduplicate meta tags by name/property (keep last = Helmet version)
+    const seen = new Map();
+    document.querySelectorAll('meta[name], meta[property]').forEach((el) => {
+      const key = el.getAttribute('name') || el.getAttribute('property');
+      if (seen.has(key)) seen.get(key).remove();
+      seen.set(key, el);
+    });
+    // Deduplicate canonical links (keep last)
+    const canonicals = document.querySelectorAll('link[rel="canonical"]');
+    if (canonicals.length > 1) {
+      for (let i = 0; i < canonicals.length - 1; i++) canonicals[i].remove();
+    }
+  });
+
   // Capture the full rendered HTML
   const html = await page.content();
 

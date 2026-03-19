@@ -17,7 +17,7 @@ const ContactPage: React.FC = memo(() => {
   return (
     <>
       <SEOHelmet
-        title={t('contact.title') + ' | ' + t('common.companyName')}
+        title={t('contact.title')}
         description={t('contact.subtitle')}
         url={`${SITE_URL}/contact`}
       />
