@@ -89,10 +89,10 @@ graph LR
 
 - **Bilingual (i18n)** — URL-based language routing (`/about` for Korean, `/en/about` for English)
 - **SSG Prerendering** — 12 static HTML pages (6 routes × 2 languages) for SEO
-- **Blog** — Full CRUD API with TipTap rich text editor (Notion-like), image upload, likes (IP-based), nested comments
+- **Blog** — Full CRUD API with TipTap rich text editor (Notion-like), image upload, likes (IP-based), nested comments, admin toolbar (publish toggle, delete, edit)
 - **Auth** — httpOnly cookie JWT with automatic token refresh
 - **Real-time Notifications** — WebSocket notifications with type-specific icons, per-user preferences, email delivery
-- **Admin** — Django Admin for data management (blog, users, notifications, contacts)
+- **Admin** — Django Admin + frontend admin toolbar (blog publish/delete/edit, comment delete)
 - **Monitoring** — Sentry error tracking (user context on login/logout) + Google Analytics (blog views, dark mode, language switch events)
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting (react-vendor, ui-vendor, i18n, sentry, http-vendor, tiptap), Lighthouse CI assertions
