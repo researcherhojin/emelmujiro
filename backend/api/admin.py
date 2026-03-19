@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils import timezone
 
-from .models import BlogPost, BlogComment, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
+from .models import BlogPost, BlogComment, BlogLike, CommentLike, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
 
 
 @admin.register(BlogPost)
@@ -42,6 +42,24 @@ class BlogCommentAdmin(admin.ModelAdmin):
         return obj.content[:80] + "..." if len(obj.content) > 80 else obj.content
 
     content_short.short_description = "내용"
+
+
+@admin.register(BlogLike)
+class BlogLikeAdmin(admin.ModelAdmin):
+    list_display = ("post", "ip_address", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("post__title", "ip_address")
+    readonly_fields = ("created_at",)
+    raw_id_fields = ("post",)
+
+
+@admin.register(CommentLike)
+class CommentLikeAdmin(admin.ModelAdmin):
+    list_display = ("comment", "ip_address", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("ip_address",)
+    readonly_fields = ("created_at",)
+    raw_id_fields = ("comment",)
 
 
 @admin.register(Contact)

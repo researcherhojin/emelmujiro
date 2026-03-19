@@ -94,6 +94,18 @@ Backend: `Notification` model with REST API at `/api/notifications/` and `Notifi
 
 Frontend: `NotificationContext` manages state with auto-connect WebSocket on login (exponential backoff, max 5 attempts). `NotificationBell` shows type-specific icons with level-based color dots. WebSocket passes `notification_type` field from backend. **WebSocket requires Daphne** — `runserver` (WSGI) does not support WebSocket; use `daphne` or Docker for WS testing.
 
+### Blog System
+
+**Write API**: `BlogPostViewSet` is a full `ModelViewSet`. `list`/`retrieve`/`like` → `AllowAny`, `create`/`update`/`delete` → `IsAdminUser`. Admin sees drafts; public sees only `is_published=True`. `BlogPostWriteSerializer` handles create/update; `BlogPostSerializer` handles read. `toggle-publish` action at `POST /api/blog-posts/{id}/toggle-publish/`.
+
+**Content storage**: Dual fields — `content` (plain text for search/SEO) + `content_html` (TipTap HTML output for rendering). `BlogDetail` renders `content_html` via DOMPurify if present, falls back to `ReactMarkdown` for legacy Markdown posts.
+
+**TipTap Editor** (`/blog/new`, `/blog/edit/:id`): Block editor with toolbar, `/` slash commands, image drag-drop/paste upload, syntax-highlighted code blocks. Admin-only access via `AuthContext.user.role === 'admin'`. Image upload endpoint: `POST /api/blog-posts/upload-image/` saves to `media/blog/images/{year}/{month}/`.
+
+**Like API**: `POST /api/blog-posts/{id}/like/` — IP-based toggle (one like per IP per post). `BlogLike` model with `unique_together = [post, ip_address]`. Automatically increments/decrements `BlogPost.likes`.
+
+**Comment API**: Nested under posts: `/api/blog-posts/{id}/comments/`. `BlogComment` model supports replies via `parent` FK. `CommentLike` for IP-based comment likes. No pagination (comments are few per post). Anyone can create/read; deletion is unrestricted.
+
 ### SSG / Prerendering
 
 `scripts/prerender.js` uses Playwright to generate static HTML for each route × language (12 files). `main.tsx` always uses `createRoot()` (never `hydrateRoot`) — prerendered HTML is for SEO only. Hydration disabled due to Cloudflare Tunnel script injection.
@@ -108,7 +120,7 @@ Sentry (`@sentry/react`) for error tracking — user context is set on login/log
 
 ### Bundle Splitting
 
-Vite manual chunks: `react-vendor`, `ui-vendor`, `i18n`, `sentry`, `http-vendor`. Configured in `vite.config.ts`. Bundle size must stay under 10MB (enforced by PR checks CI).
+Vite manual chunks: `react-vendor`, `ui-vendor`, `i18n`, `sentry`, `http-vendor`, `tiptap`. Configured in `vite.config.ts`. Bundle size must stay under 10MB (enforced by PR checks CI). TipTap chunk (~170KB gzipped) is lazy-loaded only on `/blog/new` and `/blog/edit/:id`.
 
 ## Testing
 
@@ -164,7 +176,7 @@ Components must call the getter each render. Do not store results in module-leve
 
 ### Coverage
 
-Target: **60%** minimum (currently ~81% statements). Config in `codecov.yml`. Scale: 66 unit test files (~925 tests), 10 E2E spec files, ~158 backend tests.
+Target: **60%** minimum (currently ~81% statements). Config in `codecov.yml`. Scale: 66 unit test files (~918 tests), 10 E2E spec files, ~181 backend tests.
 
 ## CI/CD
 

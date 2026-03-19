@@ -22,6 +22,7 @@ A full-stack monorepo for an AI education & consulting platform, built with Reac
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-E91E63)
 ![i18next](https://img.shields.io/badge/i18next-25-26A69A?logo=i18next&logoColor=white)
 ![React Router](https://img.shields.io/badge/React_Router-7-CA4245?logo=reactrouter&logoColor=white)
+![TipTap](https://img.shields.io/badge/TipTap-2-1a1a2e)
 
 **Backend**<br/>
 ![Django](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)
@@ -88,41 +89,29 @@ graph LR
 
 - **Bilingual (i18n)** — URL-based language routing (`/about` for Korean, `/en/about` for English)
 - **SSG Prerendering** — 12 static HTML pages (6 routes × 2 languages) for SEO
-- **Blog** — Django-backed blog with premium UI, Article structured data, image protection
+- **Blog** — Full CRUD API with TipTap rich text editor (Notion-like), image upload, likes (IP-based), nested comments
 - **Auth** — httpOnly cookie JWT with automatic token refresh
 - **Real-time Notifications** — WebSocket notifications with type-specific icons, per-user preferences, email delivery
 - **Admin** — Django Admin for data management (blog, users, notifications, contacts)
 - **Monitoring** — Sentry error tracking (user context on login/logout) + Google Analytics (blog views, dark mode, language switch events)
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
-- **Performance** — Optimized chunk splitting (react-vendor, ui-vendor, i18n, sentry, http-vendor), Lighthouse CI assertions
+- **Performance** — Optimized chunk splitting (react-vendor, ui-vendor, i18n, sentry, http-vendor, tiptap), Lighthouse CI assertions
 - **Auto-deploy** — GitHub Actions → webhook → Mac Mini build, parallelized PR checks with shared build artifacts
-- **Testing** — 66 unit test files (~925 tests), 10 E2E spec files (Playwright), ~158 backend tests
+- **Testing** — 66 unit test files (~918 tests), 10 E2E spec files (Playwright), ~181 backend tests
 
 ## Roadmap
 
-### Phase 1 — Blog CRUD Pipeline
+### Done
 
-The blog frontend editor (`BlogEditor.tsx`) saves to `localStorage` only. The backend `BlogPostViewSet` is `ReadOnlyModelViewSet` with no write endpoints. This phase connects them end-to-end.
+- [x] **Blog CRUD API** — `ModelViewSet` with admin-only write, draft/publish toggle, image upload
+- [x] **TipTap editor** — Notion-like block editor with slash commands, image drag-drop, code highlighting
+- [x] **Like API** — IP-based toggle at `POST /api/blog-posts/{id}/like/`
+- [x] **Comments API** — Nested replies, comment likes at `/api/blog-posts/{id}/comments/`
 
-- [ ] **Backend blog write API** — Upgrade `BlogPostViewSet` to `ModelViewSet`, add `IsAdminUser` permission on create/update/delete, wire `POST/PATCH/DELETE /api/blog-posts/`
-- [ ] **Frontend API client** — Add `createBlogPost()`, `updateBlogPost()`, `deleteBlogPost()` to `api.ts`
-- [ ] **Editor → API integration** — Replace `localStorage.setItem('customBlogPosts', ...)` in `BlogEditor.tsx` with backend API calls, add draft/publish toggle using existing `is_published` field
-- [ ] **Admin auth gating** — Replace `localStorage.getItem('adminMode')` check with backend user role verification (`AuthContext.user.role === 'admin'`), expose `is_staff`/`is_superuser` via `UserSerializer`
-- [ ] **Blog image upload** — Add multipart file upload endpoint (backend `validators.py` already has file validation logic), replace `image_url` URLField-only input with file picker + URL fallback
-- [ ] **Like API** — Add `POST /api/blog-posts/{id}/like/` endpoint to persist likes (currently frontend `localStorage` only in `BlogInteractions.tsx`)
-- [ ] **Comments API** — Add `Comment` model + CRUD endpoints (`BlogComments.tsx` exists with localStorage-only implementation)
-
-### Phase 2 — Content & Outreach
+### Next
 
 - [ ] **Publish first blog posts** — LLM, AI agents, RAG topics
-- [ ] **Newsletter sending** — `NewsletterSubscription` model stores subscribers but has no sending mechanism; add management command or scheduled task for bulk email via existing Gmail SMTP config
-- [ ] **reCAPTCHA activation** — `verify_recaptcha()` exists in `views.py` but is only called from `ContactView`; wire to `NewsletterView` and blog comment endpoints
-
-### Phase 3 — Platform
-
 - [ ] **KakaoTalk channel integration** — Kakao API SDK, channel add button, notification messaging
-- [ ] **Search upgrade** — Replace `LIKE`-based substring search with PostgreSQL full-text search or Elasticsearch
-- [ ] **PostgreSQL migration** — Production uses SQLite; Docker Compose already has `--profile postgres` support
 
 ## License
 
