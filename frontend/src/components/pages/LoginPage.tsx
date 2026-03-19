@@ -22,6 +22,11 @@ const LoginPage: React.FC = () => {
     }
   }, [isAuthenticated, localizedNavigate]);
 
+  // Signal app loaded (standalone page outside AppLayout)
+  useEffect(() => {
+    window.__appLoaded = true;
+  }, []);
+
   // Focus email input on mount
   useEffect(() => {
     emailRef.current?.focus();
