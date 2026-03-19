@@ -65,6 +65,9 @@ export default defineConfig({
           if (id.includes('node_modules/axios/')) {
             return 'http-vendor';
           }
+          if (id.includes('node_modules/@tiptap/') || id.includes('node_modules/prosemirror-') || id.includes('node_modules/lowlight/')) {
+            return 'tiptap';
+          }
         },
       },
     },

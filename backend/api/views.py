@@ -2,7 +2,7 @@ from rest_framework import viewsets, status, mixins
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, throttle_classes, action
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
@@ -13,6 +13,7 @@ from django.http import HttpRequest
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from datetime import timedelta
+import os
 import requests
 import logging
 import hashlib
@@ -21,6 +22,7 @@ import re
 from .models import BlogPost, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
 from .serializers import (
     BlogPostSerializer,
+    BlogPostWriteSerializer,
     ContactSerializer,
     NotificationPreferenceSerializer,
     NotificationSerializer,
@@ -159,13 +161,27 @@ def log_site_visit(request: HttpRequest):
         logger.error(f"Failed to log site visit: {e}")
 
 
-class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = BlogPost.objects.filter(is_published=True)
+class BlogPostViewSet(viewsets.ModelViewSet):
+    queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
-    permission_classes = [AllowAny]
+
+    def get_permissions(self):
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAdminUser()]
+
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update"):
+            return BlogPostWriteSerializer
+        return BlogPostSerializer
 
     def get_queryset(self):
         queryset = super().get_queryset()
+
+        # Admins see all posts (including drafts); public sees only published
+        if not (self.request.user and self.request.user.is_staff):
+            queryset = queryset.filter(is_published=True)
+
         category = self.request.query_params.get("category", None)
         search = self.request.query_params.get("search", None)
         featured = self.request.query_params.get("featured", None)
@@ -185,6 +201,10 @@ class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(is_featured=True)
 
         return queryset
+
+    def perform_create(self, serializer):
+        author = self.request.user.get_full_name() or self.request.user.username
+        serializer.save(author=author)
 
     def retrieve(self, request, *args, **kwargs):
         """Retrieve individual post with view count increment and visit log"""
@@ -207,6 +227,49 @@ class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
         """List posts with visit log"""
         log_site_visit(request)
         return super().list(request, *args, **kwargs)
+
+    @action(detail=True, methods=["post"], url_path="toggle-publish")
+    def toggle_publish(self, request, pk=None):
+        """Toggle the is_published status of a blog post."""
+        post = self.get_object()
+        post.is_published = not post.is_published
+        post.save(update_fields=["is_published", "updated_at"])
+        return Response({"id": post.id, "is_published": post.is_published})
+
+
+class BlogImageUploadView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        file = request.FILES.get("image")
+        if not file:
+            return Response({"error": "이미지 파일이 필요합니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        from .validators import validate_uploaded_file
+
+        try:
+            validate_uploaded_file(file)
+        except ValidationError as e:
+            return Response({"error": str(e.message)}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save to media/blog/images/{year}/{month}/{filename}
+        now = timezone.now()
+        upload_dir = os.path.join(settings.MEDIA_ROOT, "blog", "images", str(now.year), f"{now.month:02d}")
+        os.makedirs(upload_dir, exist_ok=True)
+
+        # Sanitize filename and ensure uniqueness
+        import uuid as uuid_mod
+
+        ext = os.path.splitext(file.name)[1].lower()
+        safe_name = f"{uuid_mod.uuid4().hex[:12]}{ext}"
+        file_path = os.path.join(upload_dir, safe_name)
+
+        with open(file_path, "wb+") as dest:
+            for chunk in file.chunks():
+                dest.write(chunk)
+
+        relative_url = f"/media/blog/images/{now.year}/{now.month:02d}/{safe_name}"
+        return Response({"url": relative_url}, status=status.HTTP_201_CREATED)
 
 
 class CategoryListView(APIView):

@@ -150,6 +150,7 @@ const pageRoutes = [
   { path: 'share', element: <SharePage /> },
   { path: 'blog', element: <BlogListPage /> },
   { path: 'blog/new', element: <BlogEditor /> },
+  { path: 'blog/edit/:id', element: <BlogEditor /> },
   { path: 'blog/:id', element: <BlogDetail /> },
   { path: '*', element: <NotFound /> },
 ];

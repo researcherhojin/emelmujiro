@@ -1,66 +1,28 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { vi } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
 
 // Mock react-i18next BEFORE component imports
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, params?: Record<string, unknown>) => {
-      if (params && 'count' in params) return `${params.count}${key}`;
-      return key;
-    },
+    t: (key: string, fallback?: string) => fallback || key,
     i18n: { language: 'ko', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: { children: React.ReactNode }) => children,
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-// Mock getPropertyValue for all CSSStyleDeclaration instances
-const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
-CSSStyleDeclaration.prototype.getPropertyValue = function (prop: string) {
-  if (this === undefined || this === null) {
-    return '';
-  }
-  try {
-    return originalGetPropertyValue.call(this, prop);
-  } catch {
-    return '';
-  }
-};
-
-// Mock useNavigate
+// Mock useNavigate and useParams
 const mockNavigate = vi.fn();
+let mockParams: Record<string, string> = {};
 vi.mock('react-router-dom', async () => {
   const actual = await import('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
+    useParams: () => mockParams,
   };
 });
-
-// Mock ReactMarkdown to avoid issues with markdown rendering
-vi.mock('react-markdown', () => ({
-  default: function ReactMarkdown({ children }: { children: string }) {
-    return <div data-testid="markdown-preview">{children}</div>;
-  },
-}));
-
-// Mock remarkGfm
-vi.mock('remark-gfm', () => ({
-  default: () => {},
-}));
-
-// Define types for blog posts
-interface BlogPost {
-  id: number;
-  title: string;
-  content: string;
-  category?: string;
-  date?: string;
-  created_at?: string;
-  slug?: string;
-}
 
 // Mock logger
 vi.mock('../../../utils/logger', () => ({
@@ -73,307 +35,305 @@ vi.mock('../../../utils/logger', () => ({
   },
 }));
 
+// Mock AuthContext
+const mockUser = { id: 1, email: 'admin@test.com', name: 'Admin', role: 'admin' };
+let mockAuthUser: typeof mockUser | null = mockUser;
+vi.mock('../../../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: mockAuthUser,
+    isAuthenticated: !!mockAuthUser,
+    loading: false,
+    error: null,
+    login: vi.fn(),
+    logout: vi.fn(),
+    register: vi.fn(),
+    updateUser: vi.fn(),
+    clearError: vi.fn(),
+  }),
+}));
+
+// Mock api
+const mockCreateBlogPost = vi.fn().mockResolvedValue({ data: { id: 1 } });
+const mockUpdateBlogPost = vi.fn().mockResolvedValue({ data: { id: 1 } });
+const mockGetBlogPost = vi.fn();
+vi.mock('../../../services/api', () => ({
+  api: {
+    createBlogPost: (...args: unknown[]) => mockCreateBlogPost(...args),
+    updateBlogPost: (...args: unknown[]) => mockUpdateBlogPost(...args),
+    getBlogPost: (...args: unknown[]) => mockGetBlogPost(...args),
+    uploadBlogImage: vi.fn().mockResolvedValue({ data: { url: '/media/test.jpg' } }),
+  },
+}));
+
+// Mock TipTapEditor to avoid ProseMirror DOM issues
+let mockEditorOnChange: ((html: string, text: string) => void) | null = null;
+vi.mock('../TipTapEditor', () => ({
+  default: function MockTipTapEditor({
+    onChange,
+  }: {
+    content?: string;
+    onChange: (html: string, text: string) => void;
+  }) {
+    mockEditorOnChange = onChange;
+    return <div data-testid="tiptap-editor">TipTap Editor</div>;
+  },
+}));
+
+// Mock DOMPurify
+vi.mock('dompurify', () => ({
+  default: { sanitize: (html: string) => html },
+}));
+
 import BlogEditor from '../BlogEditor';
+import { MemoryRouter } from 'react-router-dom';
 
 describe('BlogEditor Component', () => {
-  const renderWithRouter = (component: React.ReactElement) => {
-    return render(<BrowserRouter>{component}</BrowserRouter>);
+  const renderEditor = () => {
+    return render(
+      <MemoryRouter>
+        <BlogEditor />
+      </MemoryRouter>
+    );
   };
 
   beforeEach(() => {
-    localStorage.clear();
+    mockParams = {};
+    mockAuthUser = mockUser;
     mockNavigate.mockClear();
+    mockCreateBlogPost.mockClear();
+    mockUpdateBlogPost.mockClear();
+    mockGetBlogPost.mockClear();
+    mockEditorOnChange = null;
     vi.clearAllMocks();
   });
 
-  describe('Admin Mode', () => {
-    it('shows admin required message when not in admin mode', () => {
-      localStorage.removeItem('adminMode');
-      renderWithRouter(<BlogEditor />);
+  describe('Auth Gate', () => {
+    it('shows admin required message when not authenticated', () => {
+      mockAuthUser = null;
+      renderEditor();
       expect(screen.getByText('blogEditor.adminRequired')).toBeInTheDocument();
-      expect(screen.queryByText('blogEditor.writePost')).not.toBeInTheDocument();
     });
 
-    it('renders editor when in admin mode', () => {
-      localStorage.setItem('adminMode', 'true');
-      renderWithRouter(<BlogEditor />);
-      expect(screen.getByText('blogEditor.writePost')).toBeInTheDocument();
+    it('shows admin required message for non-admin user', () => {
+      mockAuthUser = { ...mockUser, role: 'user' };
+      renderEditor();
+      expect(screen.getByText('blogEditor.adminRequired')).toBeInTheDocument();
+    });
+
+    it('renders editor for admin user', () => {
+      renderEditor();
+      expect(screen.getByTestId('tiptap-editor')).toBeInTheDocument();
       expect(screen.queryByText('blogEditor.adminRequired')).not.toBeInTheDocument();
     });
-
-    it('activates admin mode via URL parameter', () => {
-      const originalLocation = window.location;
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: { ...originalLocation, search: '?admin=true' },
-      });
-
-      renderWithRouter(<BlogEditor />);
-      expect(localStorage.getItem('adminMode')).toBe('true');
-
-      Object.defineProperty(window, 'location', {
-        writable: true,
-        value: originalLocation,
-      });
-    });
   });
 
-  describe('Form Inputs', () => {
-    beforeEach(() => {
-      localStorage.setItem('adminMode', 'true');
+  describe('Editor UI', () => {
+    it('renders title input', () => {
+      renderEditor();
+      expect(screen.getByPlaceholderText('Enter title...')).toBeInTheDocument();
     });
 
-    it('renders all form fields', () => {
-      renderWithRouter(<BlogEditor />);
-
-      expect(screen.getByText('blogEditor.titleLabel')).toBeInTheDocument();
-      expect(screen.getByText('blogEditor.excerptLabel')).toBeInTheDocument();
-      expect(screen.getByText('blogEditor.categoryLabel')).toBeInTheDocument();
-      expect(screen.getByText('blogEditor.tagsLabel')).toBeInTheDocument();
-      expect(screen.getByText('blogEditor.authorLabel')).toBeInTheDocument();
-      expect(screen.getByText('blogEditor.imageUrlLabel')).toBeInTheDocument();
-      expect(screen.getByText('blogEditor.contentLabel')).toBeInTheDocument();
+    it('renders category selector', () => {
+      renderEditor();
+      expect(screen.getByRole('combobox')).toBeInTheDocument();
     });
 
-    it('updates form data on input change', () => {
-      renderWithRouter(<BlogEditor />);
-
-      // Find title input by placeholder (i18n key returned by mock t())
-      const titleInput = screen.getByPlaceholderText('blogEditor.enterTitle') as HTMLInputElement;
-      fireEvent.change(titleInput, { target: { value: 'Test Title' } });
-      expect(titleInput.value).toBe('Test Title');
-
-      // Find content textarea by placeholder (i18n key returned by mock t())
-      const contentTextarea = screen.getByPlaceholderText(
-        'blogEditor.contentPlaceholder'
-      ) as HTMLTextAreaElement;
-      fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
-      expect(contentTextarea.value).toBe('Test Content');
+    it('renders tags input', () => {
+      renderEditor();
+      expect(screen.getByPlaceholderText('Tags (comma-separated)')).toBeInTheDocument();
     });
 
-    it('has empty default author value', () => {
-      renderWithRouter(<BlogEditor />);
-
-      // Author field should be empty by default (no hardcoded name)
-      const authorInputs = screen.getAllByRole('textbox');
-      const authorInput = authorInputs.find(
-        (input) => (input as HTMLInputElement).name === 'author'
-      ) as HTMLInputElement;
-      expect(authorInput).toBeInTheDocument();
-      expect(authorInput.value).toBe('');
-    });
-  });
-
-  describe('Preview Mode', () => {
-    beforeEach(() => {
-      localStorage.setItem('adminMode', 'true');
+    it('renders TipTap editor', () => {
+      renderEditor();
+      expect(screen.getByTestId('tiptap-editor')).toBeInTheDocument();
     });
 
-    it('toggles preview mode', () => {
-      renderWithRouter(<BlogEditor />);
-
-      // Initially preview is shown
-      expect(screen.getByTestId('markdown-preview')).toBeInTheDocument();
-      expect(screen.getByTestId('markdown-preview')).toHaveTextContent(
-        '*blogEditor.contentFallback*'
-      );
+    it('renders publish/draft toggle', () => {
+      renderEditor();
+      expect(screen.getByText('Published')).toBeInTheDocument();
     });
 
-    it('displays content in preview mode', () => {
-      renderWithRouter(<BlogEditor />);
-
-      const contentTextarea = screen.getByPlaceholderText(
-        'blogEditor.contentPlaceholder'
-      ) as HTMLTextAreaElement;
-      fireEvent.change(contentTextarea, {
-        target: { value: '# Test Markdown' },
-      });
-
-      // Preview is already shown by default
-      expect(screen.getByTestId('markdown-preview')).toHaveTextContent('# Test Markdown');
+    it('toggles publish/draft status', () => {
+      renderEditor();
+      const toggleBtn = screen.getByText('Published');
+      fireEvent.click(toggleBtn);
+      expect(screen.getByText('Draft')).toBeInTheDocument();
     });
   });
 
   describe('Save Functionality', () => {
-    beforeEach(() => {
-      localStorage.setItem('adminMode', 'true');
-    });
-
-    it('validates required fields before saving', () => {
-      renderWithRouter(<BlogEditor />);
-
-      const saveButton = screen.getByRole('button', { name: /common\.save/ });
-
+    it('shows error when title is empty', () => {
+      renderEditor();
+      const saveButton = screen.getByRole('button', { name: /save/i });
       fireEvent.click(saveButton);
-
-      expect(screen.getByRole('alert')).toHaveTextContent('blogEditor.titleContentRequired');
+      expect(screen.getByRole('alert')).toHaveTextContent('Title is required');
     });
 
-    it('saves post to localStorage with valid data', () => {
-      // Clear localStorage and set initial empty posts
-      localStorage.clear();
-      localStorage.setItem('adminMode', 'true');
-      localStorage.setItem('customBlogPosts', '[]');
+    it('shows error when content is empty', () => {
+      renderEditor();
+      const titleInput = screen.getByPlaceholderText('Enter title...');
+      fireEvent.change(titleInput, { target: { value: 'Test Title' } });
+      const saveButton = screen.getByRole('button', { name: /save/i });
+      fireEvent.click(saveButton);
+      expect(screen.getByRole('alert')).toHaveTextContent('Content is required');
+    });
 
-      renderWithRouter(<BlogEditor />);
+    it('calls createBlogPost API on save with valid data', async () => {
+      renderEditor();
 
-      const titleInput = screen.getByPlaceholderText('blogEditor.enterTitle') as HTMLInputElement;
-      const contentTextarea = screen.getByPlaceholderText(
-        'blogEditor.contentPlaceholder'
-      ) as HTMLTextAreaElement;
-      const categorySelect = screen.getByRole('combobox') as HTMLSelectElement;
-
+      // Fill title
+      const titleInput = screen.getByPlaceholderText('Enter title...');
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
-      fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
-      fireEvent.change(categorySelect, { target: { value: 'Technology' } });
 
-      const saveButton = screen.getByRole('button', { name: /common\.save/ });
+      // Simulate TipTap content change
+      act(() => {
+        if (mockEditorOnChange) {
+          mockEditorOnChange('<p>Test content</p>', 'Test content');
+        }
+      });
 
+      const saveButton = screen.getByRole('button', { name: /save/i });
       fireEvent.click(saveButton);
 
-      // Check localStorage - should have the new post
-      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
-      expect(savedPosts.length).toBe(1);
-      const lastPost = savedPosts[0];
-      expect(lastPost?.title).toBe('Test Post');
-      expect(lastPost?.content).toBe('Test Content');
-      expect(lastPost?.category).toBe('blogEditor.defaultCategory');
-
-      expect(screen.getByRole('alert')).toHaveTextContent('blogEditor.postSaved');
-      expect(mockNavigate).toHaveBeenCalledWith('/blog');
+      await waitFor(() => {
+        expect(mockCreateBlogPost).toHaveBeenCalledWith(
+          expect.objectContaining({
+            title: 'Test Post',
+            content: 'Test content',
+            content_html: '<p>Test content</p>',
+            category: 'ai',
+          })
+        );
+      });
     });
 
-    it('generates unique ID and timestamp for new posts', () => {
-      // Clear localStorage and set initial empty posts
-      localStorage.clear();
-      localStorage.setItem('adminMode', 'true');
-      localStorage.setItem('customBlogPosts', '[]');
+    it('shows success toast after saving', async () => {
+      renderEditor();
 
-      renderWithRouter(<BlogEditor />);
-
-      const titleInput = screen.getByPlaceholderText('blogEditor.enterTitle') as HTMLInputElement;
-      const contentTextarea = screen.getByPlaceholderText(
-        'blogEditor.contentPlaceholder'
-      ) as HTMLTextAreaElement;
-
+      const titleInput = screen.getByPlaceholderText('Enter title...');
       fireEvent.change(titleInput, { target: { value: 'Test Post' } });
-      fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
+      act(() => {
+        if (mockEditorOnChange) {
+          mockEditorOnChange('<p>Content</p>', 'Content');
+        }
+      });
 
-      const saveButton = screen.getByRole('button', { name: /common\.save/ });
-
-      vi.spyOn(window, 'alert').mockImplementation(() => {});
-
+      const saveButton = screen.getByRole('button', { name: /save/i });
       fireEvent.click(saveButton);
 
-      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
-      expect(savedPosts.length).toBe(1);
-      const lastPost = savedPosts[0];
-      expect(lastPost?.id).toBeDefined();
-      expect(lastPost?.date).toBeDefined();
-      expect(lastPost?.created_at).toBeDefined();
-      expect(lastPost?.slug).toBe('test-post');
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent('Post saved');
+      });
+    });
+
+    it('shows error toast on API failure', async () => {
+      mockCreateBlogPost.mockRejectedValueOnce(new Error('Network error'));
+      renderEditor();
+
+      const titleInput = screen.getByPlaceholderText('Enter title...');
+      fireEvent.change(titleInput, { target: { value: 'Test Post' } });
+      act(() => {
+        if (mockEditorOnChange) {
+          mockEditorOnChange('<p>Content</p>', 'Content');
+        }
+      });
+
+      const saveButton = screen.getByRole('button', { name: /save/i });
+      fireEvent.click(saveButton);
+
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent('Failed to save');
+      });
     });
   });
 
-  describe('Export/Import Functionality', () => {
-    beforeEach(() => {
-      localStorage.setItem('adminMode', 'true');
-    });
+  describe('Preview Mode', () => {
+    it('toggles preview mode', () => {
+      renderEditor();
 
-    it('exports posts as JSON', () => {
-      const mockPosts = [
-        { id: 1, title: 'Post 1', content: 'Content 1' },
-        { id: 2, title: 'Post 2', content: 'Content 2' },
-      ];
-      localStorage.setItem('customBlogPosts', JSON.stringify(mockPosts));
+      // Editor is visible initially
+      expect(screen.getByTestId('tiptap-editor')).toBeInTheDocument();
 
-      renderWithRouter(<BlogEditor />);
+      // Click preview button
+      const previewBtn = screen.getByText('blogEditor.preview');
+      fireEvent.click(previewBtn);
 
-      // Mock createElement and click
-      const linkElement = document.createElement('a');
-      const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue(linkElement);
-      const clickSpy = vi.spyOn(linkElement, 'click').mockImplementation(() => {});
-
-      const exportButton = screen.getByRole('button', {
-        name: /blogEditor\.exportJSON/,
-      });
-      fireEvent.click(exportButton);
-
-      expect(createElementSpy).toHaveBeenCalledWith('a');
-      expect(linkElement.download).toContain('blog-posts-');
-      expect(clickSpy).toHaveBeenCalled();
-
-      createElementSpy.mockRestore();
-      clickSpy.mockRestore();
-    });
-
-    it('imports posts from JSON file', async () => {
-      localStorage.setItem('adminMode', 'true');
-      renderWithRouter(<BlogEditor />);
-
-      const file = new File(
-        [JSON.stringify([{ id: 1, title: 'Imported Post', content: 'Imported Content' }])],
-        'posts.json',
-        { type: 'application/json' }
-      );
-
-      // We need to interact with the file input directly
-      // For file inputs, we still need direct access as Testing Library doesn't provide a good alternative
-      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-
-      fireEvent.change(fileInput, { target: { files: [file] } });
-
-      await waitFor(() => {
-        const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]');
-        // Check that the imported post was added
-        const importedPost = savedPosts.find((p: BlogPost) => p.title === 'Imported Post');
-        expect(importedPost).toBeDefined();
-      });
-
-      const savedPosts = JSON.parse(localStorage.getItem('customBlogPosts') || '[]') as BlogPost[];
-      const importedPost = savedPosts.find((p: BlogPost) => p.title === 'Imported Post');
-      expect(importedPost?.content).toBe('Imported Content');
-
-      // Toast shows import success message
-      const toastEl = screen.getByRole('alert');
-      expect(toastEl).toHaveTextContent('1blogEditor.importSuccess');
-    });
-
-    it('validates imported JSON structure', async () => {
-      localStorage.setItem('adminMode', 'true');
-      renderWithRouter(<BlogEditor />);
-
-      const invalidFile = new File(['invalid json'], 'posts.json', {
-        type: 'application/json',
-      });
-
-      // We need to interact with the file input directly
-      // For file inputs, we still need direct access as Testing Library doesn't provide a good alternative
-      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-
-      fireEvent.change(fileInput, { target: { files: [invalidFile] } });
-
-      await waitFor(() => {
-        // Toast shows import error message
-        expect(screen.getByRole('alert')).toBeInTheDocument();
-      });
-
-      expect(screen.getByRole('alert')).toHaveTextContent('blogEditor.importError');
+      // Editor should be hidden, preview shown
+      expect(screen.queryByTestId('tiptap-editor')).not.toBeInTheDocument();
     });
   });
 
   describe('Navigation', () => {
-    beforeEach(() => {
-      localStorage.setItem('adminMode', 'true');
+    it('navigates back to blog list', () => {
+      renderEditor();
+      const backBtn = screen.getByText('Back');
+      fireEvent.click(backBtn);
+      expect(mockNavigate).toHaveBeenCalledWith('/blog');
+    });
+  });
+
+  describe('Edit Mode', () => {
+    it('loads existing post in edit mode', async () => {
+      mockParams = { id: '42' };
+      mockGetBlogPost.mockResolvedValueOnce({
+        data: {
+          id: 42,
+          title: 'Existing Post',
+          excerpt: 'Existing desc',
+          content: 'Existing text',
+          content_html: '<p>Existing HTML</p>',
+          category: 'ml',
+          tags: ['python', 'ml'],
+          image_url: 'https://example.com/img.jpg',
+          published: true,
+        },
+      });
+
+      renderEditor();
+
+      await waitFor(() => {
+        const titleInput = screen.getByPlaceholderText('Enter title...') as HTMLInputElement;
+        expect(titleInput.value).toBe('Existing Post');
+      });
+
+      expect(mockGetBlogPost).toHaveBeenCalledWith('42');
     });
 
-    it('navigates back on cancel', () => {
-      renderWithRouter(<BlogEditor />);
+    it('calls updateBlogPost on save in edit mode', async () => {
+      mockParams = { id: '42' };
+      mockGetBlogPost.mockResolvedValueOnce({
+        data: {
+          id: 42,
+          title: 'Existing',
+          excerpt: 'Desc',
+          content: 'Text',
+          content_html: '<p>HTML</p>',
+          category: 'ai',
+          tags: [],
+          published: true,
+        },
+      });
 
-      const cancelButton = screen.getByText(/common\.cancel/);
-      fireEvent.click(cancelButton);
+      renderEditor();
 
-      expect(mockNavigate).toHaveBeenCalledWith('/blog');
+      await waitFor(() => {
+        expect(screen.getByDisplayValue('Existing')).toBeInTheDocument();
+      });
+
+      // Simulate content
+      if (mockEditorOnChange) {
+        mockEditorOnChange('<p>Updated</p>', 'Updated');
+      }
+
+      const saveButton = screen.getByRole('button', { name: /update/i });
+      fireEvent.click(saveButton);
+
+      await waitFor(() => {
+        expect(mockUpdateBlogPost).toHaveBeenCalledWith(
+          '42',
+          expect.objectContaining({ title: 'Existing' })
+        );
+      });
     });
   });
 });

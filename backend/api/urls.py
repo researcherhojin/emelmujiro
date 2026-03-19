@@ -6,6 +6,7 @@ from rest_framework_simplejwt.views import (
 )
 from .views import (
     BlogPostViewSet,
+    BlogImageUploadView,
     ContactView,
     NewsletterView,
     NotificationViewSet,
@@ -39,6 +40,8 @@ router.register(r"blog-posts", BlogPostViewSet, basename="blog")
 router.register(r"notifications", NotificationViewSet, basename="notification")
 
 urlpatterns = [
+    # Blog image upload (must be before router.urls to avoid conflict with blog-posts/{id}/)
+    path("blog-posts/upload-image/", BlogImageUploadView.as_view(), name="blog-image-upload"),
     # API endpoints
     path("", include(router.urls)),
     # Contact and Newsletter

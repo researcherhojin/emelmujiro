@@ -1,24 +1,62 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
-import { X, Download, Upload, CheckCircle, AlertTriangle } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { X, CheckCircle, AlertTriangle, Save, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
-import { BlogPost } from '../../types';
+import { useAuth } from '../../contexts/AuthContext';
+import { api } from '../../services/api';
 import logger from '../../utils/logger';
-import EditorForm from './EditorForm';
-import EditorPreview from './EditorPreview';
+import TipTapEditor from './TipTapEditor';
+import DOMPurify from 'dompurify';
 
 interface ToastState {
   message: string;
   type: 'success' | 'error';
 }
 
+interface PostMeta {
+  title: string;
+  description: string;
+  category: string;
+  tags: string;
+  image_url: string;
+  is_published: boolean;
+}
+
+const CATEGORIES = [
+  { value: 'ai', label: 'AI' },
+  { value: 'ml', label: 'Machine Learning' },
+  { value: 'ds', label: 'Data Science' },
+  { value: 'nlp', label: 'Natural Language Processing' },
+  { value: 'cv', label: 'Computer Vision' },
+  { value: 'rl', label: 'Reinforcement Learning' },
+  { value: 'education', label: '교육' },
+  { value: 'career', label: '경력' },
+  { value: 'project', label: '프로젝트' },
+  { value: 'other', label: '기타' },
+];
+
 const BlogEditor: React.FC = () => {
   const { t } = useTranslation();
+  const { id } = useParams<{ id: string }>();
   const { localizedNavigate } = useLocalizedPath();
-  const [searchParams] = useSearchParams();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { user } = useAuth();
+  const isEditMode = Boolean(id);
+
+  const [meta, setMeta] = useState<PostMeta>({
+    title: '',
+    description: '',
+    category: 'ai',
+    tags: '',
+    image_url: '',
+    is_published: true,
+  });
+  const [contentHtml, setContentHtml] = useState('');
+  const [contentText, setContentText] = useState('');
+  const [initialContent, setInitialContent] = useState('');
   const [showPreview, setShowPreview] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(isEditMode);
   const [toast, setToast] = useState<ToastState | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -33,174 +71,126 @@ const BlogEditor: React.FC = () => {
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     };
   }, []);
-  const [formData, setFormData] = useState({
-    title: '',
-    excerpt: '',
-    content: '',
-    category: '',
-    tags: '',
-    author: '',
-    image_url: '',
-  });
 
+  // Load existing post in edit mode
   useEffect(() => {
-    const adminMode = localStorage.getItem('adminMode') === 'true';
-    setIsAdmin(adminMode);
+    if (!isEditMode || !id) return;
+    const loadPost = async () => {
+      try {
+        const response = await api.getBlogPost(id);
+        const post = response.data;
+        setMeta({
+          title: post.title,
+          description: post.excerpt || '',
+          category: post.category || 'ai',
+          tags: post.tags?.join(', ') || '',
+          image_url: post.image_url || '',
+          is_published: post.published ?? true,
+        });
+        setInitialContent(post.content_html || post.content || '');
+        setContentHtml(post.content_html || '');
+        setContentText(post.content || '');
+      } catch (error) {
+        logger.error('Failed to load post:', error);
+        showToast(t('blogEditor.loadError', 'Failed to load post'), 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPost();
+  }, [id, isEditMode, showToast, t]);
 
-    if (searchParams.get('admin') === 'true') {
-      localStorage.setItem('adminMode', 'true');
-      setIsAdmin(true);
-    }
-  }, [searchParams]);
-
-  const handleChange = (
+  const handleMetaChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setMeta((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    if (!formData.title || !formData.content) {
-      showToast(t('blogEditor.titleContentRequired'), 'error');
+  const handleEditorChange = useCallback((html: string, text: string) => {
+    setContentHtml(html);
+    setContentText(text);
+  }, []);
+
+  const handleSave = async () => {
+    if (!meta.title.trim()) {
+      showToast(t('blogEditor.titleRequired', 'Title is required'), 'error');
+      return;
+    }
+    if (!contentText.trim()) {
+      showToast(t('blogEditor.contentRequired', 'Content is required'), 'error');
       return;
     }
 
+    setSaving(true);
     try {
-      const newPost: BlogPost = {
-        id: Date.now(),
-        title: formData.title,
-        slug: formData.title
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^a-z0-9-]/g, ''),
-        excerpt: formData.excerpt || formData.content.substring(0, 150) + '...',
-        content: formData.content,
-        author: formData.author,
-        publishedAt: new Date().toISOString().split('T')[0],
-        category: formData.category || t('blogEditor.defaultCategory'),
-        tags: formData.tags ? formData.tags.split(',').map((tag) => tag.trim()) : [],
-        image_url:
-          formData.image_url ||
-          `https://source.unsplash.com/800x400/?${formData.category || 'technology'}`,
-        date: new Date().toISOString().split('T')[0],
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        published: true,
+      const data = {
+        title: meta.title,
+        description: meta.description || contentText.substring(0, 150),
+        content: contentText,
+        content_html: contentHtml,
+        category: meta.category,
+        tags: meta.tags
+          ? meta.tags
+              .split(',')
+              .map((tag) => tag.trim())
+              .filter(Boolean)
+          : [],
+        image_url: meta.image_url || null,
+        is_published: meta.is_published,
       };
 
-      const postsData = localStorage.getItem('customBlogPosts');
-      const existingPosts = postsData ? JSON.parse(postsData) : [];
-      const updatedPosts = [newPost, ...existingPosts];
+      if (isEditMode && id) {
+        await api.updateBlogPost(id, data);
+        showToast(t('blogEditor.postUpdated', 'Post updated'), 'success');
+      } else {
+        await api.createBlogPost(data);
+        showToast(t('blogEditor.postSaved', 'Post saved'), 'success');
+      }
 
-      localStorage.setItem('customBlogPosts', JSON.stringify(updatedPosts));
-      showToast(t('blogEditor.postSaved'), 'success');
-
-      setFormData({
-        title: '',
-        excerpt: '',
-        content: '',
-        category: '',
-        tags: '',
-        author: '',
-        image_url: '',
-      });
-
-      localizedNavigate('/blog');
+      setTimeout(() => localizedNavigate('/blog'), 500);
     } catch (error) {
       logger.error('Failed to save post:', error);
-      showToast(t('blogEditor.saveError'), 'error');
+      showToast(t('blogEditor.saveError', 'Failed to save'), 'error');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleExport = () => {
-    try {
-      const customPosts = localStorage.getItem('customBlogPosts');
-      const posts = customPosts ? JSON.parse(customPosts) : [];
-      const dataStr = JSON.stringify(posts, null, 2);
-      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-
-      const exportFileDefaultName = `blog-posts-${new Date().toISOString().split('T')[0]}.json`;
-
-      const linkElement = document.createElement('a');
-      linkElement.setAttribute('href', dataUri);
-      linkElement.setAttribute('download', exportFileDefaultName);
-      linkElement.click();
-    } catch (error) {
-      logger.error('Failed to export posts:', error);
-      showToast(t('blogEditor.exportError'), 'error');
-    }
-  };
-
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const result = event.target?.result;
-        if (typeof result !== 'string') {
-          throw new Error('Invalid file content');
-        }
-
-        const posts = JSON.parse(result);
-        if (!Array.isArray(posts)) {
-          throw new Error('Invalid JSON format: expected array');
-        }
-
-        const existingData = localStorage.getItem('customBlogPosts');
-        const existingPosts = existingData ? JSON.parse(existingData) : [];
-        const mergedPosts = [...posts, ...existingPosts];
-
-        const uniquePosts = mergedPosts.filter(
-          (post, index, self) => index === self.findIndex((p) => p.id === post.id)
-        );
-
-        localStorage.setItem('customBlogPosts', JSON.stringify(uniquePosts));
-        showToast(t('blogEditor.importSuccess', { count: posts.length }), 'success');
-      } catch {
-        showToast(t('blogEditor.importError'), 'error');
-      }
-    };
-    reader.readAsText(file);
-  };
-
-  const categories = [
-    'AI',
-    t('blogEditor.categories.webDev'),
-    t('blogEditor.categories.frontend'),
-    'DevOps',
-    t('blogEditor.categories.education'),
-    t('blogEditor.categories.programming'),
-    t('blogEditor.defaultCategory'),
-  ];
-
-  if (!isAdmin) {
+  // Auth check: admin only
+  const isAdmin = user?.role === 'admin';
+  if (!user || !isAdmin) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-          <h2 className="text-2xl font-bold mb-4">{t('blogEditor.adminRequired')}</h2>
-          <p className="text-gray-600 mb-8">{t('blogEditor.adminDescription')}</p>
-          <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
-            <p className="text-sm text-gray-500 mb-4">
-              {t('blogEditor.adminInstruction')}{' '}
-              <code className="bg-gray-100 px-2 py-1 rounded">?admin=true</code>
-            </p>
-            <button
-              onClick={() => localizedNavigate('/blog/new?admin=true')}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              {t('blogEditor.activateAdmin')}
-            </button>
-          </div>
+          <h2 className="text-2xl font-bold mb-4 dark:text-white">
+            {t('blogEditor.adminRequired')}
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">
+            {t('blogEditor.adminDescription')}
+          </p>
+          <button
+            onClick={() => localizedNavigate('/blog')}
+            className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+          >
+            {t('blogEditor.backToBlog', 'Back to Blog')}
+          </button>
         </div>
       </div>
     );
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
+        <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      {/* Toast */}
       {toast && (
         <div
           className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white transition-opacity ${
@@ -223,65 +213,143 @@ const BlogEditor: React.FC = () => {
           </button>
         </div>
       )}
-      <div className="max-w-6xl mx-auto px-4 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">{t('blogEditor.writePost')}</h1>
-          <div className="flex gap-2">
-            <label className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer flex items-center">
-              <Upload className="w-4 h-4 mr-2" />
-              {t('blogEditor.importJSON')}
-              <input type="file" accept=".json" onChange={handleImport} className="hidden" />
-            </label>
+
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={() => localizedNavigate('/blog')}
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>{t('common.back', 'Back')}</span>
+          </button>
+          <div className="flex items-center gap-3">
             <button
-              onClick={handleExport}
-              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center"
+              type="button"
+              onClick={() => setMeta((prev) => ({ ...prev, is_published: !prev.is_published }))}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                meta.is_published
+                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                  : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+              }`}
             >
-              <Download className="w-4 h-4 mr-2" />
-              {t('blogEditor.exportJSON')}
+              {meta.is_published ? (
+                <>
+                  <Eye className="w-4 h-4" />
+                  {t('blogEditor.published', 'Published')}
+                </>
+              ) : (
+                <>
+                  <EyeOff className="w-4 h-4" />
+                  {t('blogEditor.draft', 'Draft')}
+                </>
+              )}
             </button>
             <button
-              onClick={() => localizedNavigate('/blog')}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center"
+              onClick={() => setShowPreview(!showPreview)}
+              className="px-3 py-1.5 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
-              <X className="w-4 h-4 mr-2" />
-              {t('common.cancel')}
+              {showPreview ? t('blogEditor.editor') : t('blogEditor.preview')}
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            >
+              <Save className="w-4 h-4" />
+              {saving
+                ? t('blogEditor.saving', 'Saving...')
+                : isEditMode
+                  ? t('blogEditor.update', 'Update')
+                  : t('common.save')}
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <EditorForm
-            formData={formData}
-            categories={categories}
-            showPreview={showPreview}
-            onChange={handleChange}
-            onSave={handleSave}
-            onTogglePreview={() => setShowPreview(!showPreview)}
-          />
+        {showPreview ? (
+          /* Preview Mode */
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+            {meta.image_url && (
+              <img
+                src={meta.image_url}
+                alt={meta.title}
+                className="w-full h-64 object-cover rounded-xl mb-6"
+              />
+            )}
+            <h1 className="text-3xl font-bold mb-4 dark:text-white">{meta.title || 'Untitled'}</h1>
+            {meta.description && (
+              <p className="text-gray-500 dark:text-gray-400 mb-6">{meta.description}</p>
+            )}
+            <div
+              className="prose prose-lg prose-gray dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(contentHtml) }}
+            />
+          </div>
+        ) : (
+          /* Editor Mode */
+          <div className="space-y-6">
+            {/* Title */}
+            <input
+              type="text"
+              name="title"
+              value={meta.title}
+              onChange={handleMetaChange}
+              placeholder={t('blogEditor.enterTitle', 'Enter title...')}
+              className="w-full text-3xl font-bold bg-transparent border-none outline-none placeholder-gray-300 dark:placeholder-gray-600 dark:text-white"
+            />
 
-          <EditorPreview
-            title={formData.title}
-            excerpt={formData.excerpt}
-            content={formData.content}
-            category={formData.category}
-            tags={formData.tags}
-            imageUrl={formData.image_url}
-          />
-        </div>
+            {/* Metadata row */}
+            <div className="flex flex-wrap gap-3">
+              <select
+                name="category"
+                value={meta.category}
+                onChange={handleMetaChange}
+                className="px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {CATEGORIES.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="text"
+                name="tags"
+                value={meta.tags}
+                onChange={handleMetaChange}
+                placeholder={t('blogEditor.tagsPlaceholder', 'Tags (comma-separated)')}
+                className="flex-1 min-w-[200px] px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h3 className="font-bold text-yellow-800 mb-2">{t('blogEditor.howToUse')}</h3>
-          <ul className="text-sm text-yellow-700 space-y-1">
-            <li>• {t('blogEditor.instruction1')}</li>
-            <li>• {t('blogEditor.instruction2')}</li>
-            <li>• {t('blogEditor.instruction3')}</li>
-            <li>
-              • {t('blogEditor.instruction4')}{' '}
-              <code className="bg-yellow-100 px-1">blogPosts.js</code>
-            </li>
-            <li>• {t('blogEditor.instruction5')}</li>
-          </ul>
-        </div>
+            {/* Description / Excerpt */}
+            <textarea
+              name="description"
+              value={meta.description}
+              onChange={handleMetaChange}
+              placeholder={t(
+                'blogEditor.excerptPlaceholder',
+                'Brief description (auto-generated if empty)'
+              )}
+              rows={2}
+              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            />
+
+            {/* Image URL */}
+            <input
+              type="text"
+              name="image_url"
+              value={meta.image_url}
+              onChange={handleMetaChange}
+              placeholder={t('blogEditor.imageUrlPlaceholder', 'Cover image URL (optional)')}
+              className="w-full px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            {/* TipTap Editor */}
+            <TipTapEditor content={initialContent} onChange={handleEditorChange} />
+          </div>
+        )}
       </div>
     </div>
   );

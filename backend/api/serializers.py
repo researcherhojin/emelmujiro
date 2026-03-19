@@ -96,6 +96,7 @@ class BlogPostSerializer(serializers.ModelSerializer):
             "view_count",
             "likes",
             "is_featured",
+            "content_html",
         ]
 
     def get_category_display(self, obj):
@@ -127,6 +128,43 @@ class BlogPostSerializer(serializers.ModelSerializer):
             return f"{minutes}분 전"
         else:
             return "방금 전"
+
+
+class BlogPostWriteSerializer(serializers.ModelSerializer):
+    """Serializer for creating and updating blog posts (admin only)."""
+
+    class Meta:
+        model = BlogPost
+        fields = [
+            "id",
+            "title",
+            "description",
+            "content",
+            "content_html",
+            "category",
+            "tags",
+            "image_url",
+            "is_published",
+            "is_featured",
+            "date",
+        ]
+        read_only_fields = ["id"]
+        extra_kwargs = {
+            "date": {"required": False},
+            "description": {"required": True},
+            "content": {"required": False, "default": ""},
+            "content_html": {"required": False, "default": ""},
+            "is_published": {"required": False, "default": True},
+            "is_featured": {"required": False, "default": False},
+        }
+
+    def validate_category(self, value):
+        valid_categories = [c[0] for c in BlogPost.CATEGORY_CHOICES]
+        if value and value not in valid_categories:
+            raise serializers.ValidationError(
+                f"유효하지 않은 카테고리입니다. 허용: {', '.join(valid_categories)}"
+            )
+        return value
 
 
 class NotificationPreferenceSerializer(serializers.ModelSerializer):

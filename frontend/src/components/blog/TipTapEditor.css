@@ -1,0 +1,145 @@
+/* TipTap Editor Styles */
+.tiptap-editor .ProseMirror {
+  min-height: 400px;
+  outline: none;
+}
+
+/* Placeholder */
+.tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #9ca3af;
+  pointer-events: none;
+  height: 0;
+}
+
+/* Code block styling */
+.tiptap-editor .ProseMirror pre {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.tiptap-editor .ProseMirror pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* Inline code */
+.tiptap-editor .ProseMirror code {
+  background: #f3f4f6;
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.875em;
+}
+
+.dark .tiptap-editor .ProseMirror code {
+  background: #374151;
+}
+
+/* Task list */
+.tiptap-editor .ProseMirror ul[data-type='taskList'] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.tiptap-editor .ProseMirror ul[data-type='taskList'] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.tiptap-editor .ProseMirror ul[data-type='taskList'] li label {
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.tiptap-editor .ProseMirror ul[data-type='taskList'] li label input[type='checkbox'] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+.tiptap-editor .ProseMirror ul[data-type='taskList'] li div {
+  flex: 1;
+}
+
+/* Image styling */
+.tiptap-editor .ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+}
+
+/* Blockquote */
+.tiptap-editor .ProseMirror blockquote {
+  border-left: 3px solid #d1d5db;
+  padding-left: 1rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.dark .tiptap-editor .ProseMirror blockquote {
+  border-left-color: #4b5563;
+  color: #9ca3af;
+}
+
+/* Horizontal rule */
+.tiptap-editor .ProseMirror hr {
+  border: none;
+  border-top: 2px solid #e5e7eb;
+  margin: 1.5rem 0;
+}
+
+.dark .tiptap-editor .ProseMirror hr {
+  border-top-color: #374151;
+}
+
+/* Lowlight syntax highlighting */
+.tiptap-editor .hljs-comment,
+.tiptap-editor .hljs-quote {
+  color: #6c7086;
+}
+
+.tiptap-editor .hljs-keyword,
+.tiptap-editor .hljs-selector-tag {
+  color: #cba6f7;
+}
+
+.tiptap-editor .hljs-string,
+.tiptap-editor .hljs-addition {
+  color: #a6e3a1;
+}
+
+.tiptap-editor .hljs-number,
+.tiptap-editor .hljs-literal {
+  color: #fab387;
+}
+
+.tiptap-editor .hljs-built_in,
+.tiptap-editor .hljs-type {
+  color: #f9e2af;
+}
+
+.tiptap-editor .hljs-title,
+.tiptap-editor .hljs-section {
+  color: #89b4fa;
+}
+
+.tiptap-editor .hljs-attr,
+.tiptap-editor .hljs-attribute {
+  color: #89dceb;
+}
+
+.tiptap-editor .hljs-deletion {
+  color: #f38ba8;
+}

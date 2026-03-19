@@ -121,6 +121,136 @@ class BlogPostAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class BlogPostWriteAPITestCase(APITestCase):
+    """Tests for BlogPost write API endpoints (create, update, delete)"""
+
+    def setUp(self):
+        self.admin_user = User.objects.create_superuser(
+            username="admin", password="adminpass123", email="admin@test.com", first_name="Admin", last_name="User"
+        )
+        self.regular_user = User.objects.create_user(
+            username="regular", password="regularpass123", email="regular@test.com"
+        )
+        self.blog_post = BlogPost.objects.create(
+            title="Existing Post",
+            description="Existing description",
+            content="Existing content",
+            category="ai",
+        )
+        self.create_url = reverse("blog-list")
+        self.detail_url = reverse("blog-detail", kwargs={"pk": self.blog_post.pk})
+
+    def _auth_as(self, user):
+        token = RefreshToken.for_user(user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token.access_token}")
+
+    def test_create_blog_post_as_admin(self):
+        """Admin can create a blog post"""
+        self._auth_as(self.admin_user)
+        data = {
+            "title": "New Post",
+            "description": "New desc",
+            "content": "New content body",
+            "content_html": "<p>New content body</p>",
+            "category": "ai",
+            "tags": ["python", "ai"],
+        }
+        response = self.client.post(self.create_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(BlogPost.objects.count(), 2)
+        created = BlogPost.objects.get(title="New Post")
+        self.assertEqual(created.author, "Admin User")
+        self.assertEqual(created.content_html, "<p>New content body</p>")
+        self.assertTrue(len(created.slug) > 0)
+
+    def test_create_blog_post_as_regular_user_forbidden(self):
+        """Non-admin user cannot create a blog post"""
+        self._auth_as(self.regular_user)
+        data = {"title": "Forbidden Post", "description": "Desc", "content": "Content", "category": "ai"}
+        response = self.client.post(self.create_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_create_blog_post_unauthenticated(self):
+        """Unauthenticated user cannot create a blog post"""
+        data = {"title": "Anon Post", "description": "Desc", "content": "Content", "category": "ai"}
+        response = self.client.post(self.create_url, data, format="json")
+        self.assertIn(response.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
+
+    def test_update_blog_post_as_admin(self):
+        """Admin can update a blog post"""
+        self._auth_as(self.admin_user)
+        data = {"title": "Updated Title", "content_html": "<p>Updated</p>"}
+        response = self.client.patch(self.detail_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.blog_post.refresh_from_db()
+        self.assertEqual(self.blog_post.title, "Updated Title")
+        self.assertEqual(self.blog_post.content_html, "<p>Updated</p>")
+
+    def test_update_blog_post_as_regular_user_forbidden(self):
+        """Non-admin user cannot update a blog post"""
+        self._auth_as(self.regular_user)
+        data = {"title": "Hacked Title"}
+        response = self.client.patch(self.detail_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_blog_post_as_admin(self):
+        """Admin can delete a blog post"""
+        self._auth_as(self.admin_user)
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(BlogPost.objects.count(), 0)
+
+    def test_delete_blog_post_as_regular_user_forbidden(self):
+        """Non-admin user cannot delete a blog post"""
+        self._auth_as(self.regular_user)
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_toggle_publish(self):
+        """Admin can toggle publish status"""
+        self._auth_as(self.admin_user)
+        self.assertTrue(self.blog_post.is_published)
+        url = reverse("blog-toggle-publish", kwargs={"pk": self.blog_post.pk})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.blog_post.refresh_from_db()
+        self.assertFalse(self.blog_post.is_published)
+        # Toggle back
+        response = self.client.post(url)
+        self.blog_post.refresh_from_db()
+        self.assertTrue(self.blog_post.is_published)
+
+    def test_admin_sees_draft_posts(self):
+        """Admin can see unpublished (draft) posts in list"""
+        BlogPost.objects.create(
+            title="Draft Post", description="Draft", content="Draft", category="ai", is_published=False
+        )
+        self._auth_as(self.admin_user)
+        url = reverse("blog-list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        titles = [p["title"] for p in response.data["results"]]
+        self.assertIn("Draft Post", titles)
+
+    def test_anon_cannot_see_draft_posts(self):
+        """Anonymous users cannot see draft posts"""
+        BlogPost.objects.create(
+            title="Draft Post", description="Draft", content="Draft", category="ai", is_published=False
+        )
+        url = reverse("blog-list")
+        response = self.client.get(url)
+        titles = [p["title"] for p in response.data["results"]]
+        self.assertNotIn("Draft Post", titles)
+
+    def test_create_with_invalid_category(self):
+        """Creating with invalid category returns validation error"""
+        self._auth_as(self.admin_user)
+        data = {"title": "Bad Cat", "description": "Desc", "content": "C", "category": "invalid_cat"}
+        response = self.client.post(self.create_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
 class BlogPostModelTestCase(TestCase):
     """Tests for BlogPost model"""
 

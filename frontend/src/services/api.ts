@@ -202,6 +202,29 @@ export const api = {
     return axiosInstance.get<string[]>('categories/');
   },
 
+  // Blog Write (admin only)
+  createBlogPost: (data: Record<string, unknown>) => {
+    return axiosInstance.post<BlogPost>('blog-posts/', data);
+  },
+  updateBlogPost: (id: number | string, data: Record<string, unknown>) => {
+    return axiosInstance.patch<BlogPost>(`blog-posts/${id}/`, data);
+  },
+  deleteBlogPost: (id: number | string) => {
+    return axiosInstance.delete(`blog-posts/${id}/`);
+  },
+  uploadBlogImage: (file: File) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return axiosInstance.post<{ url: string }>('blog-posts/upload-image/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  toggleBlogPublish: (id: number | string) => {
+    return axiosInstance.post<{ id: number; is_published: boolean }>(
+      `blog-posts/${id}/toggle-publish/`
+    );
+  },
+
   // Contact
   createContact: async (data: ContactFormData) => {
     if (USE_MOCK_API) {

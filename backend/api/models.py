@@ -24,6 +24,7 @@ class BlogPost(models.Model):
     slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="슬러그")
     description = models.TextField(verbose_name="설명")
     content = models.TextField(verbose_name="내용")
+    content_html = models.TextField(blank=True, default="", verbose_name="HTML 내용")
     author = models.CharField(max_length=100, default="이호진", verbose_name="작성자")
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, verbose_name="카테고리")
     tags = models.JSONField(default=list, blank=True, verbose_name="태그")
