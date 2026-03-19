@@ -740,8 +740,8 @@
   },
   "auth": {
     "login": "Login",
-    "email": "Email",
-    "emailPlaceholder": "Enter your email",
+    "email": "Username",
+    "emailPlaceholder": "Enter your username",
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
     "loggingIn": "Logging in...",
