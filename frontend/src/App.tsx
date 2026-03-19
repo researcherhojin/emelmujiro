@@ -39,6 +39,7 @@ const ContactPage = lazy(() => import('./components/pages/ContactPage'));
 const BlogListPage = lazy(() => import('./components/blog/BlogListPage'));
 const BlogDetail = lazy(() => import('./components/blog/BlogDetail'));
 const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
+const LoginPage = lazy(() => import('./components/pages/LoginPage'));
 
 // ScrollToTop component to handle page navigation
 const ScrollToTop: React.FC = memo(() => {
@@ -154,6 +155,7 @@ const pageRoutes = [
   { path: 'profile', element: <ProfilePage /> },
   { path: 'share', element: <SharePage /> },
   { path: 'blog', element: <BlogListPage /> },
+  { path: 'login', element: <LoginPage /> },
   { path: 'blog/new', element: <BlogEditor /> },
   { path: 'blog/edit/:id', element: <BlogEditor /> },
   { path: 'blog/:id', element: <BlogDetail /> },

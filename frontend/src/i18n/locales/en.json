@@ -739,6 +739,12 @@
     "offlineMessage": "You are offline. Your message will be sent automatically when connected."
   },
   "auth": {
+    "login": "Login",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "loggingIn": "Logging in...",
     "loginFailed": "Login failed.",
     "registerFailed": "Registration failed."
   },

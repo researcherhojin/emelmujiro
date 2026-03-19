@@ -723,6 +723,12 @@
     "offlineMessage": "오프라인 상태입니다. 연결이 복구되면 자동으로 전송됩니다."
   },
   "auth": {
+    "login": "로그인",
+    "email": "이메일",
+    "emailPlaceholder": "이메일 주소를 입력하세요",
+    "password": "비밀번호",
+    "passwordPlaceholder": "비밀번호를 입력하세요",
+    "loggingIn": "로그인 중...",
     "loginFailed": "로그인에 실패했습니다.",
     "registerFailed": "회원가입에 실패했습니다."
   },
