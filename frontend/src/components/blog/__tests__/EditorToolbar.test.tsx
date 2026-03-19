@@ -61,8 +61,7 @@ const getToolbarButton = (title: string): HTMLButtonElement => {
 
 describe('EditorToolbar', () => {
   const mockOnImageUpload = vi.fn().mockResolvedValue('/media/test.jpg');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let mockEditor: any;
+  let mockEditor: ReturnType<typeof createMockEditor>;
 
   beforeEach(() => {
     calledMethods.length = 0;
@@ -166,7 +165,7 @@ describe('EditorToolbar', () => {
     const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue('https://example.com');
     render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
     fireEvent.click(getToolbarButton('Link'));
-    expect(promptSpy).toHaveBeenCalledWith('URL을 입력하세요:');
+    expect(promptSpy).toHaveBeenCalledWith('blogEditor.enterUrl');
     expect(calledMethods).toContain('setLink');
     promptSpy.mockRestore();
   });

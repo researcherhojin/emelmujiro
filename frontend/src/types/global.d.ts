@@ -15,13 +15,10 @@ interface ImportMeta {
 interface Window {
   gtag?: (...args: unknown[]) => void;
   dataLayer?: unknown[];
-  __REDUX_DEVTOOLS_EXTENSION__?: () => unknown;
-  __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: unknown;
   __isKakaoInApp?: boolean;
   __isKakaoAndroid?: boolean;
   __appLoaded?: boolean;
   __errors?: string[];
-  performanceStart?: number;
 }
 
 // Module declarations

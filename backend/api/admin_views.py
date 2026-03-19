@@ -11,6 +11,22 @@ from .serializers import AdminUserSerializer
 from .models import BlogPost, Contact, SiteVisit
 
 
+def parse_pagination_params(request, default_page_size=20):
+    """Parse and validate page/page_size from query params. Returns (page, page_size) or raises ValueError."""
+    page = max(1, int(request.query_params.get("page", 1)))
+    page_size = min(100, max(1, int(request.query_params.get("page_size", default_page_size))))
+    return page, page_size
+
+
+def paginate_queryset(queryset, page, page_size):
+    """Slice queryset and return (items, total, next_page)."""
+    total = queryset.count()
+    offset = (page - 1) * page_size
+    items = queryset[offset: offset + page_size]
+    next_page = page + 1 if offset + page_size < total else None
+    return items, total, next_page
+
+
 @api_view(["GET"])
 @permission_classes([IsAdminUser])
 @throttle_classes([AdminRateThrottle])
@@ -60,14 +76,12 @@ def admin_content(request):
 def admin_messages(request):
     """Admin contact messages list"""
     try:
-        page = max(1, int(request.query_params.get("page", 1)))
-        page_size = min(100, max(1, int(request.query_params.get("page_size", 20))))
+        page, page_size = parse_pagination_params(request)
     except (ValueError, TypeError):
         return Response({"error": "Invalid pagination parameters"}, status=400)
-    offset = (page - 1) * page_size
 
     contacts = Contact.objects.all().order_by("-created_at")
-    total = contacts.count()
+    page_items, total, next_page = paginate_queryset(contacts, page, page_size)
     items = [
         {
             "id": str(c.id),
@@ -78,10 +92,9 @@ def admin_messages(request):
             "is_processed": c.is_processed,
             "created_at": c.created_at.strftime("%Y-%m-%d %H:%M"),
         }
-        for c in contacts[offset: offset + page_size]
+        for c in page_items
     ]
 
-    next_page = page + 1 if offset + page_size < total else None
     return Response({"count": total, "next": next_page, "results": items})
 
 
@@ -139,8 +152,7 @@ def admin_users(request):
     from django.contrib.auth.models import User
 
     try:
-        page = max(1, int(request.query_params.get("page", 1)))
-        page_size = min(100, max(1, int(request.query_params.get("page_size", 20))))
+        page, page_size = parse_pagination_params(request)
     except (ValueError, TypeError):
         return Response({"error": "Invalid pagination parameters"}, status=400)
 
@@ -168,12 +180,8 @@ def admin_users(request):
     elif is_active == "false":
         queryset = queryset.filter(is_active=False)
 
-    total = queryset.count()
-    offset = (page - 1) * page_size
-    users = queryset[offset: offset + page_size]
-
-    serializer = AdminUserSerializer(users, many=True)
-    next_page = page + 1 if offset + page_size < total else None
+    page_items, total, next_page = paginate_queryset(queryset, page, page_size)
+    serializer = AdminUserSerializer(page_items, many=True)
     return Response({"count": total, "next": next_page, "results": serializer.data})
 
 

@@ -55,10 +55,15 @@ const ScrollToTop: React.FC = memo(() => {
 ScrollToTop.displayName = 'ScrollToTop';
 
 const HomePage: React.FC = memo(() => {
+  const { t } = useTranslation();
   return (
     <>
       <Suspense fallback={null}>
-        <SEOHelmet url={SITE_URL} />
+        <SEOHelmet
+          title={t('seo.site.title')}
+          description={t('seo.site.description')}
+          url={SITE_URL}
+        />
         <StructuredData type="Organization" />
         <StructuredData type="Website" />
         <StructuredData type="LocalBusiness" />

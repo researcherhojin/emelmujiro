@@ -6,11 +6,6 @@ describe('Logger', () => {
   let consoleInfoSpy: ReturnType<typeof vi.spyOn>;
   let consoleWarnSpy: ReturnType<typeof vi.spyOn>;
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
-  let consoleGroupSpy: ReturnType<typeof vi.spyOn>;
-  let consoleGroupEndSpy: ReturnType<typeof vi.spyOn>;
-  let consoleTableSpy: ReturnType<typeof vi.spyOn>;
-  let consoleTimeSpy: ReturnType<typeof vi.spyOn>;
-  let consoleTimeEndSpy: ReturnType<typeof vi.spyOn>;
   let originalEnv: string | undefined;
 
   beforeEach(() => {
@@ -32,11 +27,6 @@ describe('Logger', () => {
     consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
     consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    consoleGroupSpy = vi.spyOn(console, 'group').mockImplementation(() => {});
-    consoleGroupEndSpy = vi.spyOn(console, 'groupEnd').mockImplementation(() => {});
-    consoleTableSpy = vi.spyOn(console, 'table').mockImplementation(() => {});
-    consoleTimeSpy = vi.spyOn(console, 'time').mockImplementation(() => {});
-    consoleTimeEndSpy = vi.spyOn(console, 'timeEnd').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -74,63 +64,10 @@ describe('Logger', () => {
     });
   });
 
-  describe('special logging methods', () => {
-    it('should create log groups', () => {
-      // Force isDevelopment to true for this test
-      // @ts-ignore
-      Logger.isDevelopment = true;
-
-      Logger.group('Group Title');
-      Logger.info('Inside group');
-      Logger.groupEnd();
-
-      expect(consoleGroupSpy).toHaveBeenCalledWith('Group Title');
-      expect(consoleGroupEndSpy).toHaveBeenCalled();
-    });
-
-    it('should log tables', () => {
-      // Force isDevelopment to true for this test
-      // @ts-ignore
-      Logger.isDevelopment = true;
-
-      const data = [
-        { id: 1, name: 'Item 1' },
-        { id: 2, name: 'Item 2' },
-      ];
-      Logger.table(data);
-      expect(consoleTableSpy).toHaveBeenCalledWith(data);
-    });
-  });
-
-  describe('performance measurement', () => {
-    it('should measure time between operations', () => {
-      // Force isDevelopment to true for this test
-      // @ts-ignore
-      Logger.isDevelopment = true;
-
-      Logger.time('operation');
-      // Simulate some operation
-      Logger.timeEnd('operation');
-
-      // time and timeEnd should have been called
-      expect(consoleTimeSpy).toHaveBeenCalledWith('operation');
-      expect(consoleTimeEndSpy).toHaveBeenCalledWith('operation');
-    });
-
-    it('should handle missing time labels', () => {
-      // Force isDevelopment to true for this test
-      // @ts-ignore
-      Logger.isDevelopment = true;
-
-      // Should not throw when ending a non-existent timer
-      expect(() => Logger.timeEnd('non-existent')).not.toThrow();
-      expect(consoleTimeEndSpy).toHaveBeenCalledWith('non-existent');
-    });
-
+  describe('production mode', () => {
     it('should not call console methods in production', async () => {
       // Clear previous calls
-      consoleTimeSpy.mockClear();
-      consoleTimeEndSpy.mockClear();
+      consoleLogSpy.mockClear();
 
       // Mock env module to simulate production
       vi.resetModules();
@@ -141,12 +78,10 @@ describe('Logger', () => {
 
       const { default: ProdLogger } = await import('../logger');
 
-      ProdLogger.time('prod-operation');
-      ProdLogger.timeEnd('prod-operation');
+      ProdLogger.debug('prod-debug');
 
       // Should not have been called in production
-      expect(consoleTimeSpy).not.toHaveBeenCalled();
-      expect(consoleTimeEndSpy).not.toHaveBeenCalled();
+      expect(consoleLogSpy).not.toHaveBeenCalled();
 
       // Reset modules to restore normal Logger
       vi.doUnmock('../../config/env');

@@ -6,6 +6,8 @@ from django.utils.deprecation import MiddlewareMixin
 from django.conf import settings
 import re
 
+from api.views import get_client_ip
+
 logger = logging.getLogger("security")
 
 # Time constants (seconds)
@@ -42,7 +44,7 @@ class RequestSecurityMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         """Pre-process incoming request"""
-        ip_address = self.get_client_ip(request)
+        ip_address = get_client_ip(request)
 
         # IP block check
         if self.is_blocked_ip(ip_address):
@@ -64,12 +66,6 @@ class RequestSecurityMiddleware(MiddlewareMixin):
         self.log_request(request, ip_address)
 
         return None
-
-    def get_client_ip(self, request):
-        """Extract client IP address — delegates to views.get_client_ip"""
-        from api.views import get_client_ip
-
-        return get_client_ip(request)
 
     def is_blocked_ip(self, ip_address):
         """Check if IP is blocked"""
@@ -114,7 +110,7 @@ class RequestSecurityMiddleware(MiddlewareMixin):
                     if pattern.search(body_str):
                         return True
             except UnicodeDecodeError:
-                logger.warning(f"Non-UTF-8 request body from {self.get_client_ip(request)}")
+                logger.warning(f"Non-UTF-8 request body from {get_client_ip(request)}")
 
         return False
 

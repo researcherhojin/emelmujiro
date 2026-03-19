@@ -6,6 +6,15 @@ from .models import BlogPost, BlogComment, Contact, Notification, NotificationPr
 import re
 
 
+def get_user_role(user):
+    """Determine user role from Django auth flags."""
+    if user.is_superuser:
+        return "admin"
+    if user.is_staff:
+        return "staff"
+    return "user"
+
+
 class UserSerializer(serializers.ModelSerializer):
     """User serializer for authentication"""
 
@@ -17,11 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
 
     def get_role(self, obj):
-        if obj.is_superuser:
-            return "admin"
-        if obj.is_staff:
-            return "staff"
-        return "user"
+        return get_user_role(obj)
 
 
 class AdminUserSerializer(serializers.ModelSerializer):
@@ -47,11 +52,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "username", "email", "date_joined", "last_login"]
 
     def get_role(self, obj):
-        if obj.is_superuser:
-            return "admin"
-        if obj.is_staff:
-            return "staff"
-        return "user"
+        return get_user_role(obj)
 
 
 class BlogPostSerializer(serializers.ModelSerializer):

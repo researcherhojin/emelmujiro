@@ -97,18 +97,9 @@ graph LR
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting (react-vendor, ui-vendor, i18n, sentry, http-vendor, tiptap), Lighthouse CI assertions
 - **Auto-deploy** — GitHub Actions → webhook → Mac Mini build, parallelized PR checks with shared build artifacts
-- **Testing** — 66 unit test files (~918 tests), 10 E2E spec files (Playwright), ~181 backend tests
+- **Testing** — 63 unit test files (~863 tests), 10 E2E spec files (Playwright), ~181 backend tests
 
 ## Roadmap
-
-### Done
-
-- [x] **Blog CRUD API** — `ModelViewSet` with admin-only write, draft/publish toggle, image upload
-- [x] **TipTap editor** — Notion-like block editor with slash commands, image drag-drop, code highlighting
-- [x] **Like API** — IP-based toggle at `POST /api/blog-posts/{id}/like/`
-- [x] **Comments API** — Nested replies, comment likes at `/api/blog-posts/{id}/comments/`
-
-### Next
 
 - [ ] **Publish first blog posts** — LLM, AI agents, RAG topics
 - [ ] **KakaoTalk channel integration** — Kakao API SDK, channel add button, notification messaging

@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Editor } from '@tiptap/react';
 import {
   Bold,
@@ -27,6 +28,7 @@ interface EditorToolbarProps {
 }
 
 const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor, onImageUpload }) => {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageSelect = useCallback(
@@ -47,11 +49,11 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({ editor, onImageUpload }) 
       editor.chain().focus().unsetLink().run();
       return;
     }
-    const url = window.prompt('URL을 입력하세요:');
+    const url = window.prompt(t('blogEditor.enterUrl'));
     if (url) {
       editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
     }
-  }, [editor]);
+  }, [editor, t]);
 
   const btnClass = (active: boolean) =>
     `p-1.5 rounded transition-colors ${

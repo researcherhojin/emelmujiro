@@ -73,72 +73,11 @@ class Logger {
     }
   }
 
-  // Group logging
-  group(label: string): void {
-    if (this.isDevelopment) {
-      // eslint-disable-next-line no-console
-      console.group(label);
-    }
-  }
-
-  groupEnd(): void {
-    if (this.isDevelopment) {
-      // eslint-disable-next-line no-console
-      console.groupEnd();
-    }
-  }
-
-  // Table logging
-  table(data: unknown): void {
-    if (this.isDevelopment) {
-      // eslint-disable-next-line no-console
-      console.table(data);
-    }
-  }
-
-  // Performance measurement
-  time(label: string): void {
-    if (this.isDevelopment) {
-      // eslint-disable-next-line no-console
-      console.time(label);
-    }
-  }
-
-  timeEnd(label: string): void {
-    if (this.isDevelopment) {
-      // eslint-disable-next-line no-console
-      console.timeEnd(label);
-    }
-  }
-
   // Send to error reporting service (Sentry)
   private reportToErrorService(message: string, error: unknown): void {
     captureException(error instanceof Error ? error : new Error(message), {
       message,
     });
-  }
-
-  // Network request logging
-  logRequest(method: string, url: string, data?: unknown): void {
-    if (this.isDevelopment) {
-      this.group(`🌐 ${method} ${url}`);
-      if (data) {
-        this.debug('Request Data:', data);
-      }
-      this.groupEnd();
-    }
-  }
-
-  // Network response logging
-  logResponse(method: string, url: string, status: number, data?: unknown): void {
-    if (this.isDevelopment) {
-      const emoji = status >= 200 && status < 300 ? '✅' : '❌';
-      this.group(`${emoji} ${method} ${url} - ${status}`);
-      if (data) {
-        this.debug('Response Data:', data);
-      }
-      this.groupEnd();
-    }
   }
 }
 

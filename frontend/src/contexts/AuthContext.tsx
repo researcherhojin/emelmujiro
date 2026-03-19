@@ -100,6 +100,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await api.register(email, password, name);
       const { user: userData } = response.data;
       setUser(userData);
+      setUserContext({ id: userData.id, email: userData.email });
+      localStorage.setItem('auth_hint', '1');
     } catch (err) {
       const error = err as Error & { userMessage?: string };
       setError(error.userMessage || error.message || i18n.t('auth.registerFailed'));

@@ -1,5 +1,12 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { BlogPost, BlogComment, ContactFormData, ErrorResponse, Notification } from '../types';
+import {
+  BlogPost,
+  BlogComment,
+  ContactFormData,
+  ErrorResponse,
+  Notification,
+  PaginatedResponse,
+} from '../types';
 import logger from '../utils/logger';
 import env from '../config/env';
 import i18n from '../i18n';
@@ -106,14 +113,6 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// API response interfaces
-interface PaginatedResponse<T> {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: T[];
-}
 
 // API methods with improved error handling
 export const api = {
