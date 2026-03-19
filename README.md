@@ -103,7 +103,7 @@ graph LR
 
 - [ ] **Publish first blog posts** — LLM, AI agents, RAG topics
 - [ ] **KakaoTalk channel integration** — Kakao API SDK, channel add button, notification messaging
-- [ ] **Login page** — Frontend login UI (backend API ready, no login page yet)
+- [x] **Login page** — `/login` route, admin-only access via direct URL
 
 ## License
 
