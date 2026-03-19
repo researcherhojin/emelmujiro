@@ -76,6 +76,24 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Mock useAuth hook
+vi.mock('../../../contexts/AuthContext', () => ({
+  useAuth: () => ({ user: null }),
+}));
+
+// Mock api
+vi.mock('../../../services/api', () => ({
+  api: {
+    toggleBlogPublish: vi.fn(),
+    deleteBlogPost: vi.fn(),
+  },
+}));
+
+// Mock logger
+vi.mock('../../../utils/logger', () => ({
+  default: { error: vi.fn() },
+}));
+
 // Mock useBlog hook
 import { useBlog } from '../../../contexts/BlogContext';
 vi.mock('../../../contexts/BlogContext', () => ({

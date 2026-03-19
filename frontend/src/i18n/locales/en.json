@@ -770,6 +770,15 @@
     "aboutCompany": "About Us",
     "directInquiry": "Direct Inquiry"
   },
+  "blogAdmin": {
+    "published": "Published",
+    "unpublished": "Unpublished",
+    "draft": "Draft",
+    "toggleError": "Failed to toggle publish status.",
+    "deleted": "Post deleted.",
+    "deleteError": "Failed to delete.",
+    "confirmDelete": "Are you sure you want to delete?"
+  },
   "blogEditor": {
     "adminRequired": "Admin access required",
     "adminDescription": "Please log in as an admin to write blog posts.",

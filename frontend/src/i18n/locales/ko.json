@@ -754,6 +754,15 @@
     "aboutCompany": "회사 소개",
     "directInquiry": "직접 문의하기"
   },
+  "blogAdmin": {
+    "published": "공개",
+    "unpublished": "비공개로 전환됨",
+    "draft": "임시저장",
+    "toggleError": "발행 상태 변경에 실패했습니다.",
+    "deleted": "포스트가 삭제되었습니다.",
+    "deleteError": "삭제에 실패했습니다.",
+    "confirmDelete": "정말 삭제하시겠습니까?"
+  },
   "blogEditor": {
     "adminRequired": "관리자 권한이 필요합니다",
     "adminDescription": "블로그 글을 작성하려면 관리자로 로그인해주세요.",

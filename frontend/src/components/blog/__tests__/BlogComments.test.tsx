@@ -21,15 +21,22 @@ vi.mock('../../../utils/logger', () => ({
   default: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
 }));
 
+// Mock useAuth
+vi.mock('../../../contexts/AuthContext', () => ({
+  useAuth: () => ({ user: null }),
+}));
+
 // Mock API
 const mockGetComments = vi.fn().mockResolvedValue({ data: [] });
 const mockCreateComment = vi.fn().mockResolvedValue({ data: { id: 1 } });
 const mockLikeComment = vi.fn().mockResolvedValue({ data: { liked: true, likes: 1 } });
+const mockDeleteComment = vi.fn().mockResolvedValue({});
 vi.mock('../../../services/api', () => ({
   api: {
     getComments: (...args: unknown[]) => mockGetComments(...args),
     createComment: (...args: unknown[]) => mockCreateComment(...args),
     likeComment: (...args: unknown[]) => mockLikeComment(...args),
+    deleteComment: (...args: unknown[]) => mockDeleteComment(...args),
   },
 }));
 

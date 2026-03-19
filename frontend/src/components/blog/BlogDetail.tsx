@@ -1,7 +1,7 @@
-import React, { useEffect, memo } from 'react';
+import React, { useEffect, useState, useRef, useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Trash2, Pencil, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -12,7 +12,10 @@ import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
 import BlogInteractions from './BlogInteractions';
 import BlogComments from './BlogComments';
+import { useAuth } from '../../contexts/AuthContext';
 import { useBlog } from '../../contexts/BlogContext';
+import { api } from '../../services/api';
+import logger from '../../utils/logger';
 import { SITE_URL } from '../../utils/constants';
 import { formatDate } from '../../utils/dateFormat';
 import { trackBlogView } from '../../utils/analytics';
@@ -21,12 +24,59 @@ const preventImageAction = (e: React.MouseEvent | React.DragEvent) => {
   e.preventDefault();
 };
 
+interface ToastState {
+  message: string;
+  type: 'success' | 'error';
+}
+
 const BlogDetailPage: React.FC = memo(() => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { localizedNavigate } = useLocalizedPath();
+  const { user } = useAuth();
   const { currentPost: post, loading, error, fetchPostById, clearCurrentPost } = useBlog();
+  const isAdmin = user?.role === 'admin';
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = useCallback((message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToast(null), 3000);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
+
+  const handleTogglePublish = useCallback(async () => {
+    if (!id) return;
+    try {
+      const response = await api.toggleBlogPublish(id);
+      const published = response.data.is_published;
+      showToast(published ? t('blogAdmin.published') : t('blogAdmin.unpublished'), 'success');
+      fetchPostById(id);
+    } catch (err) {
+      logger.error('Failed to toggle publish:', err);
+      showToast(t('blogAdmin.toggleError'), 'error');
+    }
+  }, [id, fetchPostById, showToast, t]);
+
+  const handleDelete = useCallback(async () => {
+    if (!id) return;
+    try {
+      await api.deleteBlogPost(id);
+      showToast(t('blogAdmin.deleted'), 'success');
+      setTimeout(() => localizedNavigate('/blog'), 500);
+    } catch (err) {
+      logger.error('Failed to delete post:', err);
+      showToast(t('blogAdmin.deleteError'), 'error');
+    }
+  }, [id, localizedNavigate, showToast, t]);
 
   useEffect(() => {
     if (id) {
@@ -70,6 +120,87 @@ const BlogDetailPage: React.FC = memo(() => {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-white dark:bg-gray-950">
+        {/* Toast */}
+        {toast && (
+          <div
+            className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white ${
+              toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'
+            }`}
+            role="alert"
+          >
+            {toast.type === 'success' ? (
+              <CheckCircle className="w-5 h-5" />
+            ) : (
+              <AlertTriangle className="w-5 h-5" />
+            )}
+            <span>{toast.message}</span>
+          </div>
+        )}
+
+        {/* Admin Toolbar */}
+        {isAdmin && post && (
+          <div className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800">
+            <div className="max-w-5xl mx-auto px-6 py-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Admin
+                </span>
+                <button
+                  onClick={handleTogglePublish}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                    post.published
+                      ? 'bg-green-900/50 text-green-400 hover:bg-green-900/70'
+                      : 'bg-yellow-900/50 text-yellow-400 hover:bg-yellow-900/70'
+                  }`}
+                >
+                  {post.published ? (
+                    <Eye className="w-3.5 h-3.5" />
+                  ) : (
+                    <EyeOff className="w-3.5 h-3.5" />
+                  )}
+                  {post.published ? t('blogAdmin.published') : t('blogAdmin.draft')}
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => localizedNavigate(`/blog/edit/${id}`)}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  {t('common.edit')}
+                </button>
+                {showDeleteConfirm ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-red-400">{t('blogAdmin.confirmDelete')}</span>
+                    <button
+                      onClick={handleDelete}
+                      className="px-3 py-1 rounded-lg text-xs font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
+                    >
+                      {t('common.confirm')}
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteConfirm(false)}
+                      className="px-3 py-1 rounded-lg text-xs font-medium text-gray-400 hover:text-white transition-colors"
+                    >
+                      {t('common.cancel')}
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-900/30 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    {t('common.delete')}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete confirmation overlay */}
+
         {post && (
           <>
             <SEOHelmet

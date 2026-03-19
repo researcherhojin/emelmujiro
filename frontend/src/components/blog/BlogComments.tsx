@@ -1,8 +1,9 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
-import { MessageCircle, Send, User, Calendar, ThumbsUp } from 'lucide-react';
+import { MessageCircle, Send, User, Calendar, ThumbsUp, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { BlogComment } from '../../types';
 import { api } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 import logger from '../../utils/logger';
 
 interface BlogCommentsProps {
@@ -48,6 +49,8 @@ interface CommentItemProps {
   replyContent: string;
   formatDate: (dateString: string) => string;
   onLike: (commentId: number) => void;
+  onDelete: (commentId: number) => void;
+  isAdmin: boolean;
   setReplyTo: (id: number | null) => void;
   setReplyContent: (content: string) => void;
   onSubmitReply: (commentId: number) => void;
@@ -61,6 +64,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
   replyContent,
   formatDate,
   onLike,
+  onDelete,
+  isAdmin,
   setReplyTo,
   setReplyContent,
   onSubmitReply,
@@ -97,6 +102,16 @@ const CommentItem: React.FC<CommentItemProps> = ({
           >
             {t('blog.reply')}
           </button>
+          {isAdmin && (
+            <button
+              onClick={() => onDelete(comment.id)}
+              aria-label={t('common.delete')}
+              className="flex items-center space-x-1 text-sm text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>{t('common.delete')}</span>
+            </button>
+          )}
         </div>
 
         {/* Reply form */}
@@ -151,6 +166,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
 const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
   const [comments, setComments] = useState<BlogComment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [authorName, setAuthorName] = useState('');
@@ -220,6 +237,19 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
         fetchComments();
       } catch (error) {
         logger.error('Failed to like comment:', error);
+      }
+    },
+    [postId, fetchComments]
+  );
+
+  // Delete comment (admin only)
+  const handleDeleteComment = useCallback(
+    async (commentId: number) => {
+      try {
+        await api.deleteComment(postId, commentId);
+        fetchComments();
+      } catch (error) {
+        logger.error('Failed to delete comment:', error);
       }
     },
     [postId, fetchComments]
@@ -298,6 +328,8 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
             replyContent={replyContent}
             formatDate={formatDate}
             onLike={handleLikeComment}
+            onDelete={handleDeleteComment}
+            isAdmin={isAdmin}
             setReplyTo={setReplyTo}
             setReplyContent={setReplyContent}
             onSubmitReply={handleSubmitReply}

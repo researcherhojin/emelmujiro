@@ -23,7 +23,7 @@ interface PostMeta {
   is_published: boolean;
 }
 
-const CATEGORIES = [
+const FALLBACK_CATEGORIES = [
   { value: 'ai', label: 'AI' },
   { value: 'ml', label: 'Machine Learning' },
   { value: 'ds', label: 'Data Science' },
@@ -51,6 +51,7 @@ const BlogEditor: React.FC = () => {
     image_url: '',
     is_published: true,
   });
+  const [categories, setCategories] = useState(FALLBACK_CATEGORIES);
   const [contentHtml, setContentHtml] = useState('');
   const [contentText, setContentText] = useState('');
   const [initialContent, setInitialContent] = useState('');
@@ -70,6 +71,28 @@ const BlogEditor: React.FC = () => {
     return () => {
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     };
+  }, []);
+
+  // Fetch categories from API (fallback to hardcoded list)
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await api.getBlogCategories();
+        const data = response.data;
+        if (data.length > 0) {
+          setCategories(
+            data.map((cat: string | { name: string; slug: string }) =>
+              typeof cat === 'string'
+                ? { value: cat, label: cat }
+                : { value: cat.slug, label: cat.name }
+            )
+          );
+        }
+      } catch {
+        // Keep fallback categories
+      }
+    };
+    loadCategories();
   }, []);
 
   // Load existing post in edit mode
@@ -307,7 +330,7 @@ const BlogEditor: React.FC = () => {
                 onChange={handleMetaChange}
                 className="px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                {CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <option key={cat.value} value={cat.value}>
                     {cat.label}
                   </option>
