@@ -1,6 +1,6 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import BlogComments from '../BlogComments';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -15,167 +15,203 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-// Mock localStorage comments
-const mockComments = {
-  '1': [
-    {
-      id: 'comment_1',
-      postId: '1',
-      author: 'John Doe',
-      content: 'Great article!',
-      date: '2025-01-15T10:00:00Z',
-      likes: 2,
-      likedBy: ['user_1', 'user_2'],
-    },
-    {
-      id: 'comment_2',
-      postId: '1',
-      author: 'Jane Smith',
-      content: 'Very informative',
-      date: '2025-01-14T15:30:00Z',
-      likes: 1,
-      likedBy: ['user_3'],
-    },
-  ],
-};
+// Mock logger
+vi.mock('../../../utils/logger', () => ({
+  __esModule: true,
+  default: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
+}));
+
+// Mock API
+const mockGetComments = vi.fn().mockResolvedValue({ data: [] });
+const mockCreateComment = vi.fn().mockResolvedValue({ data: { id: 1 } });
+const mockLikeComment = vi.fn().mockResolvedValue({ data: { liked: true, likes: 1 } });
+vi.mock('../../../services/api', () => ({
+  api: {
+    getComments: (...args: unknown[]) => mockGetComments(...args),
+    createComment: (...args: unknown[]) => mockCreateComment(...args),
+    likeComment: (...args: unknown[]) => mockLikeComment(...args),
+  },
+}));
+
+import BlogComments from '../BlogComments';
+
+const mockCommentsData = [
+  {
+    id: 1,
+    post: 1,
+    parent: null,
+    author_name: 'John Doe',
+    content: 'Great article!',
+    likes: 2,
+    created_at: '2025-01-15T10:00:00Z',
+    updated_at: '2025-01-15T10:00:00Z',
+    replies: [
+      {
+        id: 3,
+        post: 1,
+        parent: 1,
+        author_name: 'Reply User',
+        content: 'Thanks!',
+        likes: 0,
+        created_at: '2025-01-15T11:00:00Z',
+        updated_at: '2025-01-15T11:00:00Z',
+        replies: [],
+      },
+    ],
+  },
+  {
+    id: 2,
+    post: 1,
+    parent: null,
+    author_name: 'Jane Smith',
+    content: 'Very informative',
+    likes: 1,
+    created_at: '2025-01-14T15:30:00Z',
+    updated_at: '2025-01-14T15:30:00Z',
+    replies: [],
+  },
+];
 
 describe('BlogComments', () => {
-  const defaultProps = {
-    postId: '1',
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
-    // Clear localStorage
     localStorage.clear();
+    mockGetComments.mockResolvedValue({ data: [] });
   });
 
-  it('renders comments section', () => {
-    render(<BlogComments {...defaultProps} />);
-
-    const heading = screen.getByRole('heading', { level: 3 });
-    expect(heading).toHaveTextContent('blog.commentsCount');
+  it('renders comments section', async () => {
+    render(<BlogComments postId="1" />);
+    await waitFor(() => {
+      const heading = screen.getByRole('heading', { level: 3 });
+      expect(heading).toHaveTextContent('blog.commentsCount');
+    });
   });
 
-  it('displays comments from localStorage', () => {
-    // Set up localStorage with mock comments
-    localStorage.setItem('blogComments', JSON.stringify(mockComments));
+  it('displays comments from API', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    render(<BlogComments postId="1" />);
 
-    render(<BlogComments {...defaultProps} />);
-
-    // Check if comments are displayed
-    expect(screen.getByText('Great article!')).toBeInTheDocument();
-    expect(screen.getByText('Very informative')).toBeInTheDocument();
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+      expect(screen.getByText('Very informative')).toBeInTheDocument();
+      expect(screen.getByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+    });
   });
 
-  it('shows empty state when no comments', () => {
-    render(<BlogComments {...defaultProps} />);
+  it('displays nested replies', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    render(<BlogComments postId="1" />);
 
-    const emptyMessage = screen.getByText('blog.noCommentsYet');
-    expect(emptyMessage).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Thanks!')).toBeInTheDocument();
+      expect(screen.getByText('Reply User')).toBeInTheDocument();
+    });
   });
 
-  it('handles comment submission', () => {
-    render(<BlogComments {...defaultProps} />);
+  it('shows empty state when no comments', async () => {
+    render(<BlogComments postId="1" />);
+    await waitFor(() => {
+      expect(screen.getByText('blog.noCommentsYet')).toBeInTheDocument();
+    });
+  });
+
+  it('handles comment submission', async () => {
+    mockCreateComment.mockResolvedValueOnce({ data: { id: 10 } });
+    // After create, refetch returns new comment
+    mockGetComments.mockResolvedValueOnce({ data: [] }).mockResolvedValueOnce({
+      data: [
+        {
+          id: 10,
+          post: 1,
+          parent: null,
+          author_name: 'Test User',
+          content: 'Test comment',
+          likes: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          replies: [],
+        },
+      ],
+    });
+
+    render(<BlogComments postId="1" />);
 
     const nameInput = screen.getByPlaceholderText('blog.namePlaceholder');
     const contentInput = screen.getByPlaceholderText('blog.commentPlaceholder');
     const submitButton = screen.getByText('blog.writeComment');
 
-    // Fill and submit form
     fireEvent.change(nameInput, { target: { value: 'Test User' } });
-    fireEvent.change(contentInput, {
-      target: { value: 'Test comment content' },
-    });
+    fireEvent.change(contentInput, { target: { value: 'Test comment' } });
     fireEvent.click(submitButton);
 
-    // Check if new comment appears
-    expect(screen.getByText('Test comment content')).toBeInTheDocument();
-    expect(screen.getByText('Test User')).toBeInTheDocument();
-  });
-
-  it('validates required fields', () => {
-    render(<BlogComments {...defaultProps} />);
-
-    const submitButton = screen.getByRole('button', {
-      name: /blog\.writeComment/,
+    await waitFor(() => {
+      expect(mockCreateComment).toHaveBeenCalledWith('1', {
+        author_name: 'Test User',
+        content: 'Test comment',
+      });
     });
-    const initialCommentCount = screen.queryAllByTestId('comment-item').length;
-
-    // Try to submit empty form
-    fireEvent.click(submitButton);
-
-    // Check that no new comment was added
-    const afterSubmitCount = screen.queryAllByTestId('comment-item').length;
-    expect(afterSubmitCount).toBe(initialCommentCount);
   });
 
-  it('clears form after successful submission', () => {
-    render(<BlogComments {...defaultProps} />);
+  it('clears content after submission', async () => {
+    mockCreateComment.mockResolvedValueOnce({ data: { id: 10 } });
+    mockGetComments.mockResolvedValue({ data: [] });
+
+    render(<BlogComments postId="1" />);
 
     const nameInput = screen.getByPlaceholderText('blog.namePlaceholder') as HTMLInputElement;
     const contentInput = screen.getByPlaceholderText(
       'blog.commentPlaceholder'
     ) as HTMLTextAreaElement;
-    const submitButton = screen.getByText('blog.writeComment');
 
-    // Fill form
     fireEvent.change(nameInput, { target: { value: 'Test User' } });
     fireEvent.change(contentInput, { target: { value: 'Test comment' } });
+    fireEvent.click(screen.getByText('blog.writeComment'));
 
-    // Submit
-    fireEvent.click(submitButton);
-
-    // Check if form is cleared (comment field is cleared, name might be retained)
-    expect(contentInput.value).toBe('');
+    await waitFor(() => {
+      expect(contentInput.value).toBe('');
+    });
   });
 
-  it('handles localStorage parsing error gracefully', () => {
-    // Set invalid JSON in localStorage
-    localStorage.setItem('blogComments', 'invalid json');
+  it('handles like button click', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    render(<BlogComments postId="1" />);
 
-    // Should render without crashing
-    render(<BlogComments {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
 
-    // Should show empty state
-    const emptyMessage = screen.getByText('blog.noCommentsYet');
-    expect(emptyMessage).toBeInTheDocument();
-  });
-
-  it('handles like button click', () => {
-    localStorage.setItem('blogComments', JSON.stringify(mockComments));
-    render(<BlogComments {...defaultProps} />);
-
-    // Like button is composed of ThumbsUp icon and count
-    // First comment has 2 likes
+    // Find first like button (the one with count 2)
     const likeButtons = screen.getAllByRole('button');
-    // Find the button that contains the likes count
-    const firstLikeButton = likeButtons.find((button) => button.textContent?.includes('2'));
+    const firstLikeBtn = likeButtons.find((b) => b.textContent?.includes('2'));
+    expect(firstLikeBtn).toBeDefined();
+    fireEvent.click(firstLikeBtn!);
 
-    // Click like button
-    expect(firstLikeButton).toBeDefined();
-    fireEvent.click(firstLikeButton!);
-
-    // Likes count should change (increase or decrease based on user's previous action)
-    // Since it's a new user, it should increase to 3
-    expect(screen.getByText('3')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockLikeComment).toHaveBeenCalledWith('1', 1);
+    });
   });
 
-  it('handles reply button click', () => {
-    localStorage.setItem('blogComments', JSON.stringify(mockComments));
-    render(<BlogComments {...defaultProps} />);
+  it('handles reply button click', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    render(<BlogComments postId="1" />);
 
-    // Find and click reply button
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
     const replyButtons = screen.getAllByText('blog.reply');
     fireEvent.click(replyButtons[0]);
 
-    // Reply form should be visible with correct placeholder
-    const replyInput = screen.getByPlaceholderText('blog.replyPlaceholder');
-    expect(replyInput).toBeInTheDocument();
-
-    // Reply submit button should be visible
+    expect(screen.getByPlaceholderText('blog.replyPlaceholder')).toBeInTheDocument();
     expect(screen.getByText('blog.writeReply')).toBeInTheDocument();
+  });
+
+  it('validates required fields', () => {
+    render(<BlogComments postId="1" />);
+    const submitButton = screen.getByText('blog.writeComment');
+    fireEvent.click(submitButton);
+    // createComment should not be called with empty fields
+    expect(mockCreateComment).not.toHaveBeenCalled();
   });
 });

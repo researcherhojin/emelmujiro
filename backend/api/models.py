@@ -80,6 +80,61 @@ class BlogPost(models.Model):
         return self.title
 
 
+class BlogLike(models.Model):
+    """Tracks individual likes on blog posts (one per IP per post)."""
+
+    post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name="blog_likes", verbose_name="게시글")
+    ip_address = models.GenericIPAddressField(verbose_name="IP 주소")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성일")
+
+    class Meta:
+        unique_together = ["post", "ip_address"]
+        verbose_name = "블로그 좋아요"
+        verbose_name_plural = "블로그 좋아요"
+
+    def __str__(self):
+        return f"Like on {self.post.title} from {self.ip_address}"
+
+
+class BlogComment(models.Model):
+    """Blog post comments with optional nested replies."""
+
+    post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name="blog_comments", verbose_name="게시글")
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="replies", verbose_name="상위 댓글")
+    author_name = models.CharField(max_length=100, verbose_name="작성자")
+    content = models.TextField(verbose_name="내용")
+    likes = models.PositiveIntegerField(default=0, verbose_name="좋아요")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성일")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="수정일")
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "블로그 댓글"
+        verbose_name_plural = "블로그 댓글"
+        indexes = [
+            models.Index(fields=["post", "-created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.author_name}: {self.content[:50]}"
+
+
+class CommentLike(models.Model):
+    """Tracks individual likes on comments (one per IP per comment)."""
+
+    comment = models.ForeignKey(BlogComment, on_delete=models.CASCADE, related_name="comment_likes", verbose_name="댓글")
+    ip_address = models.GenericIPAddressField(verbose_name="IP 주소")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성일")
+
+    class Meta:
+        unique_together = ["comment", "ip_address"]
+        verbose_name = "댓글 좋아요"
+        verbose_name_plural = "댓글 좋아요"
+
+    def __str__(self):
+        return f"Like on comment {self.comment_id} from {self.ip_address}"
+
+
 class Contact(models.Model):
     INQUIRY_TYPE_CHOICES = [
         ("lecture", "강의 문의"),

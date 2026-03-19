@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
-from .models import BlogPost, Contact, Notification, NotificationPreference, NewsletterSubscription
+from .models import BlogPost, BlogComment, Contact, Notification, NotificationPreference, NewsletterSubscription
 import re
 
 
@@ -165,6 +165,40 @@ class BlogPostWriteSerializer(serializers.ModelSerializer):
                 f"유효하지 않은 카테고리입니다. 허용: {', '.join(valid_categories)}"
             )
         return value
+
+
+class BlogCommentSerializer(serializers.ModelSerializer):
+    """Serializer for blog comments with nested replies."""
+
+    replies = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BlogComment
+        fields = ["id", "post", "parent", "author_name", "content", "likes", "created_at", "updated_at", "replies"]
+        read_only_fields = ["id", "likes", "created_at", "updated_at"]
+        extra_kwargs = {
+            "post": {"required": True},
+            "parent": {"required": False},
+        }
+
+    def get_replies(self, obj):
+        # Only include replies for top-level comments (avoid infinite recursion)
+        if obj.parent is not None:
+            return []
+        replies = obj.replies.all()
+        return BlogCommentSerializer(replies, many=True).data
+
+    def validate_author_name(self, value):
+        if len(value.strip()) < 2:
+            raise serializers.ValidationError("이름은 최소 2자 이상이어야 합니다.")
+        return value.strip()
+
+    def validate_content(self, value):
+        if len(value.strip()) < 1:
+            raise serializers.ValidationError("댓글 내용을 입력해주세요.")
+        if len(value) > 1000:
+            raise serializers.ValidationError("댓글은 1000자를 초과할 수 없습니다.")
+        return value.strip()
 
 
 class NotificationPreferenceSerializer(serializers.ModelSerializer):

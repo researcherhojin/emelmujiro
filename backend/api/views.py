@@ -19,10 +19,11 @@ import logging
 import hashlib
 import re
 
-from .models import BlogPost, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
+from .models import BlogPost, BlogLike, BlogComment, CommentLike, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
 from .serializers import (
     BlogPostSerializer,
     BlogPostWriteSerializer,
+    BlogCommentSerializer,
     ContactSerializer,
     NotificationPreferenceSerializer,
     NotificationSerializer,
@@ -166,7 +167,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     serializer_class = BlogPostSerializer
 
     def get_permissions(self):
-        if self.action in ("list", "retrieve"):
+        if self.action in ("list", "retrieve", "like"):
             return [AllowAny()]
         return [IsAdminUser()]
 
@@ -235,6 +236,56 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         post.is_published = not post.is_published
         post.save(update_fields=["is_published", "updated_at"])
         return Response({"id": post.id, "is_published": post.is_published})
+
+    @action(detail=True, methods=["post"], url_path="like", permission_classes=[AllowAny])
+    def like(self, request, pk=None):
+        """Toggle like on a blog post (one per IP)."""
+        post = self.get_object()
+        ip_address = get_client_ip(request)
+
+        like, created = BlogLike.objects.get_or_create(post=post, ip_address=ip_address)
+        if created:
+            BlogPost.objects.filter(id=post.id).update(likes=F("likes") + 1)
+            post.refresh_from_db()
+            return Response({"liked": True, "likes": post.likes})
+        else:
+            like.delete()
+            BlogPost.objects.filter(id=post.id).update(likes=F("likes") - 1)
+            post.refresh_from_db()
+            return Response({"liked": False, "likes": post.likes})
+
+
+class BlogCommentViewSet(viewsets.ModelViewSet):
+    """CRUD for blog comments. Anyone can create/read; only the author (by IP) can delete."""
+
+    serializer_class = BlogCommentSerializer
+    permission_classes = [AllowAny]
+    pagination_class = None
+
+    def get_queryset(self):
+        post_id = self.kwargs.get("post_pk")
+        return BlogComment.objects.filter(post_id=post_id, parent__isnull=True)
+
+    def perform_create(self, serializer):
+        post_id = self.kwargs.get("post_pk")
+        serializer.save(post_id=post_id)
+
+    @action(detail=True, methods=["post"], url_path="like")
+    def like(self, request, post_pk=None, pk=None):
+        """Toggle like on a comment (one per IP)."""
+        comment = self.get_object()
+        ip_address = get_client_ip(request)
+
+        like, created = CommentLike.objects.get_or_create(comment=comment, ip_address=ip_address)
+        if created:
+            BlogComment.objects.filter(id=comment.id).update(likes=F("likes") + 1)
+            comment.refresh_from_db()
+            return Response({"liked": True, "likes": comment.likes})
+        else:
+            like.delete()
+            BlogComment.objects.filter(id=comment.id).update(likes=F("likes") - 1)
+            comment.refresh_from_db()
+            return Response({"liked": False, "likes": comment.likes})
 
 
 class BlogImageUploadView(APIView):

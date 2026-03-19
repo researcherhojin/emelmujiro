@@ -6,6 +6,7 @@ from rest_framework_simplejwt.views import (
 )
 from .views import (
     BlogPostViewSet,
+    BlogCommentViewSet,
     BlogImageUploadView,
     ContactView,
     NewsletterView,
@@ -39,9 +40,18 @@ router = DefaultRouter()
 router.register(r"blog-posts", BlogPostViewSet, basename="blog")
 router.register(r"notifications", NotificationViewSet, basename="notification")
 
+# Nested router for blog comments: /api/blog-posts/{post_pk}/comments/
+comment_list = BlogCommentViewSet.as_view({"get": "list", "post": "create"})
+comment_detail = BlogCommentViewSet.as_view({"get": "retrieve", "delete": "destroy"})
+comment_like = BlogCommentViewSet.as_view({"post": "like"})
+
 urlpatterns = [
     # Blog image upload (must be before router.urls to avoid conflict with blog-posts/{id}/)
     path("blog-posts/upload-image/", BlogImageUploadView.as_view(), name="blog-image-upload"),
+    # Blog comments (nested under blog-posts)
+    path("blog-posts/<int:post_pk>/comments/", comment_list, name="blog-comment-list"),
+    path("blog-posts/<int:post_pk>/comments/<int:pk>/", comment_detail, name="blog-comment-detail"),
+    path("blog-posts/<int:post_pk>/comments/<int:pk>/like/", comment_like, name="blog-comment-like"),
     # API endpoints
     path("", include(router.urls)),
     # Contact and Newsletter

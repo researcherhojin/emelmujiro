@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { BlogPost, ContactFormData, ErrorResponse, Notification } from '../types';
+import { BlogPost, BlogComment, ContactFormData, ErrorResponse, Notification } from '../types';
 import logger from '../utils/logger';
 import env from '../config/env';
 import i18n from '../i18n';
@@ -222,6 +222,31 @@ export const api = {
   toggleBlogPublish: (id: number | string) => {
     return axiosInstance.post<{ id: number; is_published: boolean }>(
       `blog-posts/${id}/toggle-publish/`
+    );
+  },
+  likeBlogPost: (id: number | string) => {
+    return axiosInstance.post<{ liked: boolean; likes: number }>(`blog-posts/${id}/like/`);
+  },
+
+  // Blog Comments
+  getComments: (postId: number | string) => {
+    return axiosInstance.get<BlogComment[]>(`blog-posts/${postId}/comments/`);
+  },
+  createComment: (
+    postId: number | string,
+    data: { author_name: string; content: string; parent?: number }
+  ) => {
+    return axiosInstance.post<BlogComment>(`blog-posts/${postId}/comments/`, {
+      ...data,
+      post: postId,
+    });
+  },
+  deleteComment: (postId: number | string, commentId: number) => {
+    return axiosInstance.delete(`blog-posts/${postId}/comments/${commentId}/`);
+  },
+  likeComment: (postId: number | string, commentId: number) => {
+    return axiosInstance.post<{ liked: boolean; likes: number }>(
+      `blog-posts/${postId}/comments/${commentId}/like/`
     );
   },
 

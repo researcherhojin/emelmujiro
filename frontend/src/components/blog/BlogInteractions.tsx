@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Heart, Share2, Bookmark, Link2, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { BlogPost } from '../../types';
+import { api } from '../../services/api';
 import logger from '../../utils/logger';
 
 interface BlogInteractionsProps {
@@ -10,7 +11,7 @@ interface BlogInteractionsProps {
 
 const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   const { t } = useTranslation();
-  const [likes, setLikes] = useState(0);
+  const [likes, setLikes] = useState(post.likes || 0);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
@@ -24,67 +25,28 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
     };
   }, []);
 
-  // Generate unique user ID
-  const getUserId = () => {
-    let userId = localStorage.getItem('userId');
-    if (!userId) {
-      userId = crypto.randomUUID();
-      localStorage.setItem('userId', userId);
-    }
-    return userId;
-  };
-
-  // Load interactions from localStorage
+  // Load bookmark state from localStorage
   useEffect(() => {
     try {
-      const userId = getUserId();
-
-      // Load likes
-      const likesData = localStorage.getItem('postLikes');
-      const postLikes = likesData ? JSON.parse(likesData) : {};
-      const postLikeData = postLikes[post.id] || { count: 0, users: [] };
-      setLikes(postLikeData.count);
-      setIsLiked(postLikeData.users.includes(userId));
-
-      // Load bookmarks
       const bookmarksData = localStorage.getItem('bookmarks');
       const bookmarks: Array<{ id: number }> = bookmarksData ? JSON.parse(bookmarksData) : [];
       setIsBookmarked(bookmarks.some((b) => b.id === post.id));
     } catch (error) {
-      logger.error('Failed to load interactions:', error);
-      setLikes(0);
-      setIsLiked(false);
+      logger.error('Failed to load bookmarks:', error);
       setIsBookmarked(false);
     }
   }, [post.id]);
 
-  // Toggle like
-  const toggleLike = () => {
+  // Toggle like via API
+  const toggleLike = useCallback(async () => {
     try {
-      const userId = getUserId();
-      const likesData = localStorage.getItem('postLikes');
-      const postLikes = likesData ? JSON.parse(likesData) : {};
-      const postLikeData = postLikes[post.id] || { count: 0, users: [] };
-
-      if (isLiked) {
-        // Unlike
-        postLikeData.count = Math.max(0, postLikeData.count - 1);
-        postLikeData.users = postLikeData.users.filter((id: string) => id !== userId);
-      } else {
-        // Like
-        postLikeData.count += 1;
-        postLikeData.users.push(userId);
-      }
-
-      postLikes[post.id] = postLikeData;
-      localStorage.setItem('postLikes', JSON.stringify(postLikes));
-
-      setLikes(postLikeData.count);
-      setIsLiked(!isLiked);
+      const response = await api.likeBlogPost(post.id);
+      setLikes(response.data.likes);
+      setIsLiked(response.data.liked);
     } catch (error) {
       logger.error('Failed to toggle like:', error);
     }
-  };
+  }, [post.id]);
 
   // Toggle bookmark
   const toggleBookmark = () => {

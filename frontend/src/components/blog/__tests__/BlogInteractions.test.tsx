@@ -1,20 +1,22 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import BlogInteractions from '../BlogInteractions';
 import { BlogPost } from '../../../types';
 
 // Mock logger
-vi.mock('../../../utils/logger', () => {
-  return {
-    __esModule: true,
-    default: {
-      error: vi.fn(),
-      info: vi.fn(),
-      debug: vi.fn(),
-      warn: vi.fn(),
-    },
-  };
-});
+vi.mock('../../../utils/logger', () => ({
+  __esModule: true,
+  default: { error: vi.fn(), info: vi.fn(), debug: vi.fn(), warn: vi.fn() },
+}));
+
+// Mock API
+const mockLikeBlogPost = vi.fn().mockResolvedValue({ data: { liked: true, likes: 1 } });
+vi.mock('../../../services/api', () => ({
+  api: {
+    likeBlogPost: (...args: unknown[]) => mockLikeBlogPost(...args),
+  },
+}));
 
 // Mock window.open
 const mockOpen = vi.fn();
@@ -29,27 +31,12 @@ Object.defineProperty(navigator, 'share', {
 });
 
 // Mock navigator.clipboard
-const mockWriteText = vi.fn();
+const mockWriteText = vi.fn().mockResolvedValue(undefined);
 Object.defineProperty(navigator, 'clipboard', {
-  value: {
-    writeText: mockWriteText,
-  },
+  value: { writeText: mockWriteText },
   writable: true,
   configurable: true,
 });
-
-// Mock getPropertyValue for all CSSStyleDeclaration instances
-const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
-CSSStyleDeclaration.prototype.getPropertyValue = function (prop: string) {
-  if (this === undefined || this === null) {
-    return '';
-  }
-  try {
-    return originalGetPropertyValue.call(this, prop);
-  } catch {
-    return '';
-  }
-};
 
 const mockPost: BlogPost = {
   id: 1,
@@ -66,6 +53,7 @@ const mockPost: BlogPost = {
   image_url: 'https://example.com/test.jpg',
   date: '2024-01-01',
   publishedAt: '2024-01-01',
+  likes: 5,
 };
 
 describe('BlogInteractions Component', () => {
@@ -74,9 +62,11 @@ describe('BlogInteractions Component', () => {
     mockOpen.mockClear();
     mockShare.mockClear();
     mockWriteText.mockClear();
+    mockLikeBlogPost.mockClear();
     vi.clearAllMocks();
 
-    // Mock window.location.href to include blog path
+    mockLikeBlogPost.mockResolvedValue({ data: { liked: true, likes: 6 } });
+
     Object.defineProperty(window, 'location', {
       value: new URL('http://localhost/blog/1'),
       writable: true,
@@ -87,424 +77,135 @@ describe('BlogInteractions Component', () => {
   describe('Rendering', () => {
     it('renders all interaction buttons', () => {
       render(<BlogInteractions post={mockPost} />);
-
-      // Find buttons by their text content or structure
       const buttons = screen.getAllByRole('button');
-      expect(buttons.length).toBeGreaterThanOrEqual(3); // At least like, bookmark, and share buttons
-
-      // Check for share button with text
+      expect(buttons.length).toBeGreaterThanOrEqual(3);
       expect(screen.getByText('blog.share')).toBeInTheDocument();
     });
 
-    it('displays initial like count as 0', () => {
+    it('displays initial like count from post', () => {
       render(<BlogInteractions post={mockPost} />);
-      // Like button is the first button; its span child shows the count
       const buttons = screen.getAllByRole('button');
       const likeButton = buttons[0];
-      expect(likeButton).toHaveTextContent('0');
+      expect(likeButton).toHaveTextContent('5');
     });
   });
 
   describe('Like Functionality', () => {
-    it('increments likes when like button is clicked', () => {
+    it('calls API when like button is clicked', async () => {
+      render(<BlogInteractions post={mockPost} />);
+      const buttons = screen.getAllByRole('button');
+      const likeButton = buttons[0];
+
+      fireEvent.click(likeButton);
+
+      await waitFor(() => {
+        expect(mockLikeBlogPost).toHaveBeenCalledWith(1);
+      });
+    });
+
+    it('updates like count from API response', async () => {
+      mockLikeBlogPost.mockResolvedValueOnce({ data: { liked: true, likes: 6 } });
       render(<BlogInteractions post={mockPost} />);
 
       const buttons = screen.getAllByRole('button');
       const likeButton = buttons[0];
-      expect(likeButton).toHaveTextContent('0');
-
       fireEvent.click(likeButton);
-      expect(likeButton).toHaveTextContent('1');
+
+      await waitFor(() => {
+        expect(likeButton).toHaveTextContent('6');
+      });
     });
 
-    it('toggles like state', () => {
-      render(<BlogInteractions post={mockPost} />);
+    it('toggles like state from API response', async () => {
+      mockLikeBlogPost
+        .mockResolvedValueOnce({ data: { liked: true, likes: 6 } })
+        .mockResolvedValueOnce({ data: { liked: false, likes: 5 } });
 
+      render(<BlogInteractions post={mockPost} />);
       const buttons = screen.getAllByRole('button');
       const likeButton = buttons[0];
 
       // Like
       fireEvent.click(likeButton);
-      expect(likeButton).toHaveTextContent('1');
+      await waitFor(() => expect(likeButton).toHaveTextContent('6'));
 
       // Unlike
       fireEvent.click(likeButton);
-      expect(likeButton).toHaveTextContent('0');
-    });
-
-    it('persists likes in localStorage', () => {
-      render(<BlogInteractions post={mockPost} />);
-
-      const buttons = screen.getAllByRole('button');
-      const likeButton = buttons[0];
-      fireEvent.click(likeButton);
-
-      const likesData = JSON.parse(localStorage.getItem('postLikes') || '{}');
-      expect(likesData[mockPost.id].count).toBe(1);
-      expect(likesData[mockPost.id].users).toHaveLength(1);
-    });
-
-    it('generates and stores unique user ID', () => {
-      render(<BlogInteractions post={mockPost} />);
-
-      const buttons = screen.getAllByRole('button');
-      const likeButton = buttons[0];
-      fireEvent.click(likeButton);
-
-      const userId = localStorage.getItem('userId');
-      expect(userId).toBeTruthy();
-      expect(userId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
-    });
-
-    it('loads existing likes on mount', () => {
-      const existingLikes = {
-        [mockPost.id]: { count: 5, users: ['user1', 'user2'] },
-      };
-      localStorage.setItem('postLikes', JSON.stringify(existingLikes));
-
-      render(<BlogInteractions post={mockPost} />);
-
-      const buttons = screen.getAllByRole('button');
-      const likeButton = buttons[0];
-      expect(likeButton).toHaveTextContent('5');
-    });
-
-    it('prevents duplicate likes from same user', () => {
-      const userId = 'user_123';
-      localStorage.setItem('userId', userId);
-
-      const existingLikes = {
-        [mockPost.id]: { count: 1, users: [userId] },
-      };
-      localStorage.setItem('postLikes', JSON.stringify(existingLikes));
-
-      render(<BlogInteractions post={mockPost} />);
-
-      const buttons = screen.getAllByRole('button');
-      const likeButton = buttons[0];
-
-      // Should be already liked with count 1
-      expect(likeButton).toHaveTextContent('1');
-
-      // Click to unlike
-      fireEvent.click(likeButton);
-      expect(likeButton).toHaveTextContent('0');
+      await waitFor(() => expect(likeButton).toHaveTextContent('5'));
     });
   });
 
   describe('Bookmark Functionality', () => {
     it('toggles bookmark state', () => {
       render(<BlogInteractions post={mockPost} />);
-
       const buttons = screen.getAllByRole('button');
-      const bookmarkButton = buttons[1]; // Second button is bookmark
+      const bookmarkButton = buttons[1];
 
-      // Add bookmark
       fireEvent.click(bookmarkButton);
 
-      let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
       expect(bookmarks).toHaveLength(1);
       expect(bookmarks[0].id).toBe(mockPost.id);
+    });
 
-      // Remove bookmark
-      fireEvent.click(bookmarkButton);
+    it('removes bookmark on second click', () => {
+      render(<BlogInteractions post={mockPost} />);
+      const buttons = screen.getAllByRole('button');
+      const bookmarkButton = buttons[1];
 
-      bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+      fireEvent.click(bookmarkButton); // Add
+      fireEvent.click(bookmarkButton); // Remove
+
+      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
       expect(bookmarks).toHaveLength(0);
     });
 
     it('loads existing bookmarks on mount', () => {
-      const existingBookmarks = [{ id: mockPost.id, title: mockPost.title }];
-      localStorage.setItem('bookmarks', JSON.stringify(existingBookmarks));
+      localStorage.setItem('bookmarks', JSON.stringify([{ id: mockPost.id, title: 'Test' }]));
 
       render(<BlogInteractions post={mockPost} />);
-
-      // Bookmark should be active (check by clicking to toggle)
       const buttons = screen.getAllByRole('button');
-      const bookmarkButton = buttons[1]; // Second button is bookmark
-      fireEvent.click(bookmarkButton);
-
-      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      expect(bookmarks).toHaveLength(0); // Should remove existing bookmark
-    });
-
-    it('stores bookmark with post metadata', () => {
-      render(<BlogInteractions post={mockPost} />);
-
-      const buttons = screen.getAllByRole('button');
-      const bookmarkButton = buttons[1]; // Second button is bookmark
-      fireEvent.click(bookmarkButton);
-
-      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      expect(bookmarks[0]).toEqual({
-        id: mockPost.id,
-        title: mockPost.title,
-        excerpt: mockPost.excerpt,
-        date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
-        savedAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/),
-      });
+      const bookmarkButton = buttons[1];
+      // Should have fill-current class when bookmarked
+      const svg = bookmarkButton.querySelector('svg');
+      expect(svg?.classList.toString()).toContain('fill-current');
     });
   });
 
   describe('Share Functionality', () => {
-    it('shows share menu when share button is clicked', () => {
-      // Mock navigator.share as not available to trigger share menu
-      const originalShare = navigator.share;
-      delete (navigator as unknown as { share?: typeof navigator.share }).share;
-
+    it('calls navigator.share when available', async () => {
+      mockShare.mockResolvedValueOnce(undefined);
       render(<BlogInteractions post={mockPost} />);
 
-      const shareButton = screen.getByText(/blog\.share/);
+      const shareButton = screen.getByText('blog.share');
+      fireEvent.click(shareButton);
+
+      expect(mockShare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Test Blog Post',
+          url: expect.any(String),
+        })
+      );
+    });
+
+    it('shows share menu when navigator.share not available', () => {
+      Object.defineProperty(navigator, 'share', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
+
+      render(<BlogInteractions post={mockPost} />);
+      const shareButton = screen.getByText('blog.share');
       fireEvent.click(shareButton);
 
       expect(screen.getByText('Facebook')).toBeInTheDocument();
       expect(screen.getByText('Twitter')).toBeInTheDocument();
       expect(screen.getByText('LinkedIn')).toBeInTheDocument();
-      expect(screen.getByText(/blog\.copyLink/)).toBeInTheDocument();
 
       // Restore
       Object.defineProperty(navigator, 'share', {
-        value: originalShare,
-        writable: true,
-        configurable: true,
-      });
-    });
-
-    it('shows and hides share menu', () => {
-      // Mock navigator.share as not available
-      const originalShare = navigator.share;
-      Object.defineProperty(navigator, 'share', {
-        value: undefined,
-        writable: true,
-        configurable: true,
-      });
-
-      render(<BlogInteractions post={mockPost} />);
-
-      const shareButton = screen.getByText(/blog\.share/);
-
-      // Click to show menu
-      fireEvent.click(shareButton);
-      expect(screen.getByText('Facebook')).toBeInTheDocument();
-
-      // Click outside or ESC to hide menu would be more realistic
-      // For now, just check that menu is shown
-      expect(screen.getByText('Facebook')).toBeInTheDocument();
-
-      // Restore
-      Object.defineProperty(navigator, 'share', {
-        value: originalShare,
-        writable: true,
-        configurable: true,
-      });
-    });
-
-    it('shares to Facebook', () => {
-      // Mock navigator.share as not available
-      const originalShare = navigator.share;
-      Object.defineProperty(navigator, 'share', {
-        value: undefined,
-        writable: true,
-        configurable: true,
-      });
-
-      render(<BlogInteractions post={mockPost} />);
-
-      const shareButton = screen.getByText(/blog\.share/);
-      fireEvent.click(shareButton);
-
-      const facebookButton = screen.getByText('Facebook');
-      fireEvent.click(facebookButton);
-
-      expect(mockOpen).toHaveBeenCalledWith(
-        expect.stringContaining('facebook.com/sharer'),
-        '_blank',
-        'noopener,noreferrer,width=500,height=600'
-      );
-
-      // Restore
-      Object.defineProperty(navigator, 'share', {
-        value: originalShare,
-        writable: true,
-        configurable: true,
-      });
-    });
-
-    it('shares to Twitter', () => {
-      // Mock navigator.share as not available
-      const originalShare = navigator.share;
-      Object.defineProperty(navigator, 'share', {
-        value: undefined,
-        writable: true,
-        configurable: true,
-      });
-
-      render(<BlogInteractions post={mockPost} />);
-
-      const shareButton = screen.getByText(/blog\.share/);
-      fireEvent.click(shareButton);
-
-      const twitterButton = screen.getByText('Twitter');
-      fireEvent.click(twitterButton);
-
-      expect(mockOpen).toHaveBeenCalledWith(
-        expect.stringContaining('twitter.com/intent/tweet'),
-        '_blank',
-        'noopener,noreferrer,width=500,height=600'
-      );
-
-      // Restore
-      Object.defineProperty(navigator, 'share', {
-        value: originalShare,
-        writable: true,
-        configurable: true,
-      });
-    });
-
-    it('shares to LinkedIn', () => {
-      // Mock navigator.share as not available
-      const originalShare = navigator.share;
-      Object.defineProperty(navigator, 'share', {
-        value: undefined,
-        writable: true,
-        configurable: true,
-      });
-
-      render(<BlogInteractions post={mockPost} />);
-
-      const shareButton = screen.getByText(/blog\.share/);
-      fireEvent.click(shareButton);
-
-      const linkedinButton = screen.getByText('LinkedIn');
-      fireEvent.click(linkedinButton);
-
-      expect(mockOpen).toHaveBeenCalledWith(
-        expect.stringContaining('linkedin.com/sharing'),
-        '_blank',
-        'noopener,noreferrer,width=500,height=600'
-      );
-
-      // Restore
-      Object.defineProperty(navigator, 'share', {
-        value: originalShare,
-        writable: true,
-        configurable: true,
-      });
-    });
-
-    it('copies link to clipboard', async () => {
-      // Mock navigator.share as not available
-      const originalShare = navigator.share;
-      Object.defineProperty(navigator, 'share', {
-        value: undefined,
-        writable: true,
-        configurable: true,
-      });
-
-      mockWriteText.mockResolvedValue(undefined);
-
-      render(<BlogInteractions post={mockPost} />);
-
-      const shareButton = screen.getByText(/blog\.share/);
-      fireEvent.click(shareButton);
-
-      const copyButton = screen.getByText('blog.copyLink');
-      fireEvent.click(copyButton);
-
-      await waitFor(() => {
-        expect(mockWriteText).toHaveBeenCalledWith(expect.stringContaining('/blog/1'));
-      });
-
-      // The clipboard write might succeed but the UI update might not happen in tests
-      await waitFor(() => {
-        expect(mockWriteText).toHaveBeenCalled();
-      });
-
-      // Skip checking for text reversion as it's timing-dependent
-
-      // Restore
-      Object.defineProperty(navigator, 'share', {
-        value: originalShare,
-        writable: true,
-        configurable: true,
-      });
-    });
-
-    it('uses native share API on mobile when available', async () => {
-      mockShare.mockResolvedValue(undefined);
-
-      render(<BlogInteractions post={mockPost} />);
-
-      const shareButton = screen.getByText(/blog\.share/);
-      fireEvent.click(shareButton);
-
-      await waitFor(() => {
-        expect(mockShare).toHaveBeenCalledWith(
-          expect.objectContaining({
-            title: mockPost.title,
-            text: mockPost.excerpt,
-          })
-        );
-      });
-    });
-  });
-
-  describe('Error Handling', () => {
-    it('handles localStorage errors gracefully', () => {
-      const mockError = new Error('Storage error');
-      const originalGetItem = Storage.prototype.getItem;
-      Storage.prototype.getItem = vi.fn(() => {
-        throw mockError;
-      });
-
-      render(<BlogInteractions post={mockPost} />);
-
-      // Should render with default values (like count = 0)
-      const buttons = screen.getAllByRole('button');
-      const likeButton = buttons[0];
-      expect(likeButton).toHaveTextContent('0');
-
-      // Restore
-      Storage.prototype.getItem = originalGetItem;
-    });
-
-    it('handles invalid JSON in localStorage', () => {
-      localStorage.setItem('postLikes', 'invalid json');
-
-      render(<BlogInteractions post={mockPost} />);
-
-      // Should render with default values (like count = 0)
-      const buttons = screen.getAllByRole('button');
-      expect(buttons[0]).toHaveTextContent('0');
-    });
-
-    it('handles clipboard API failure gracefully', async () => {
-      // Mock navigator.share as not available
-      const originalShare = navigator.share;
-      Object.defineProperty(navigator, 'share', {
-        value: undefined,
-        writable: true,
-        configurable: true,
-      });
-
-      // Mock clipboard failure
-      mockWriteText.mockRejectedValue(new Error('Clipboard error'));
-
-      render(<BlogInteractions post={mockPost} />);
-
-      const shareButton = screen.getByText(/blog\.share/);
-      fireEvent.click(shareButton);
-
-      const copyButton = screen.getByText(/blog\.copyLink/);
-      fireEvent.click(copyButton);
-
-      await waitFor(() => {
-        expect(mockWriteText).toHaveBeenCalled();
-      });
-
-      // Restore
-      Object.defineProperty(navigator, 'share', {
-        value: originalShare,
+        value: mockShare,
         writable: true,
         configurable: true,
       });

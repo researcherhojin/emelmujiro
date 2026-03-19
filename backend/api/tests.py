@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import BlogPost, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
+from .models import BlogPost, BlogLike, BlogComment, CommentLike, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
 from .views import get_client_ip, _is_valid_ip, send_user_notification
 from datetime import datetime, timezone, timedelta
 from django.utils import timezone as django_timezone
@@ -249,6 +249,124 @@ class BlogPostWriteAPITestCase(APITestCase):
         data = {"title": "Bad Cat", "description": "Desc", "content": "C", "category": "invalid_cat"}
         response = self.client.post(self.create_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class BlogLikeAPITestCase(APITestCase):
+    """Tests for blog post like API"""
+
+    def setUp(self):
+        self.post = BlogPost.objects.create(
+            title="Likeable Post", description="Desc", content="Content", category="ai"
+        )
+        self.like_url = reverse("blog-like", kwargs={"pk": self.post.pk})
+
+    def test_like_post(self):
+        """First like creates a BlogLike and increments count"""
+        response = self.client.post(self.like_url, REMOTE_ADDR="10.0.0.1")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["liked"])
+        self.assertEqual(response.data["likes"], 1)
+        self.assertEqual(BlogLike.objects.count(), 1)
+
+    def test_unlike_post(self):
+        """Second like from same IP removes like"""
+        self.client.post(self.like_url, REMOTE_ADDR="10.0.0.1")
+        response = self.client.post(self.like_url, REMOTE_ADDR="10.0.0.1")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data["liked"])
+        self.assertEqual(response.data["likes"], 0)
+        self.assertEqual(BlogLike.objects.count(), 0)
+
+    def test_different_ips_can_like(self):
+        """Different IPs can each like the same post"""
+        self.client.post(self.like_url, REMOTE_ADDR="10.0.0.1")
+        self.client.post(self.like_url, REMOTE_ADDR="10.0.0.2")
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.likes, 2)
+        self.assertEqual(BlogLike.objects.count(), 2)
+
+
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class BlogCommentAPITestCase(APITestCase):
+    """Tests for blog comment API"""
+
+    def setUp(self):
+        self.post = BlogPost.objects.create(
+            title="Commentable Post", description="Desc", content="Content", category="ai"
+        )
+        self.comments_url = reverse("blog-comment-list", kwargs={"post_pk": self.post.pk})
+
+    def test_create_comment(self):
+        """Anyone can create a comment"""
+        data = {"author_name": "Test User", "content": "Great post!", "post": self.post.pk}
+        response = self.client.post(self.comments_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(BlogComment.objects.count(), 1)
+        self.assertEqual(response.data["author_name"], "Test User")
+
+    def test_list_comments(self):
+        """List only top-level comments for a post"""
+        parent = BlogComment.objects.create(post=self.post, author_name="User1", content="Parent")
+        BlogComment.objects.create(post=self.post, author_name="User2", content="Reply", parent=parent)
+        response = self.client.get(self.comments_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)  # Only parent
+        self.assertEqual(len(response.data[0]["replies"]), 1)  # Reply nested
+
+    def test_create_reply(self):
+        """Can create a reply to an existing comment"""
+        parent = BlogComment.objects.create(post=self.post, author_name="User1", content="Parent")
+        data = {"author_name": "User2", "content": "Reply!", "post": self.post.pk, "parent": parent.pk}
+        response = self.client.post(self.comments_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(BlogComment.objects.count(), 2)
+
+    def test_delete_comment(self):
+        """Can delete a comment"""
+        comment = BlogComment.objects.create(post=self.post, author_name="User1", content="Delete me")
+        detail_url = reverse("blog-comment-detail", kwargs={"post_pk": self.post.pk, "pk": comment.pk})
+        response = self.client.delete(detail_url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(BlogComment.objects.count(), 0)
+
+    def test_comment_validation_short_name(self):
+        """Name must be at least 2 characters"""
+        data = {"author_name": "A", "content": "Test", "post": self.post.pk}
+        response = self.client.post(self.comments_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_comment_validation_long_content(self):
+        """Content must not exceed 1000 characters"""
+        data = {"author_name": "User", "content": "x" * 1001, "post": self.post.pk}
+        response = self.client.post(self.comments_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_like_comment(self):
+        """Can toggle like on a comment"""
+        comment = BlogComment.objects.create(post=self.post, author_name="User1", content="Like me")
+        like_url = reverse("blog-comment-like", kwargs={"post_pk": self.post.pk, "pk": comment.pk})
+        response = self.client.post(like_url, REMOTE_ADDR="10.0.0.1")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["liked"])
+        self.assertEqual(response.data["likes"], 1)
+
+    def test_unlike_comment(self):
+        """Second like from same IP unlikes"""
+        comment = BlogComment.objects.create(post=self.post, author_name="User1", content="Like me")
+        like_url = reverse("blog-comment-like", kwargs={"post_pk": self.post.pk, "pk": comment.pk})
+        self.client.post(like_url, REMOTE_ADDR="10.0.0.1")
+        response = self.client.post(like_url, REMOTE_ADDR="10.0.0.1")
+        self.assertFalse(response.data["liked"])
+        self.assertEqual(response.data["likes"], 0)
+
+    def test_comments_for_different_posts_isolated(self):
+        """Comments from different posts don't mix"""
+        other_post = BlogPost.objects.create(title="Other", description="D", content="C", category="ai")
+        BlogComment.objects.create(post=self.post, author_name="U1", content="C1")
+        BlogComment.objects.create(post=other_post, author_name="U2", content="C2")
+        response = self.client.get(self.comments_url)
+        self.assertEqual(len(response.data), 1)
 
 
 class BlogPostModelTestCase(TestCase):

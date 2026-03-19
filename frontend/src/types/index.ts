@@ -20,6 +20,18 @@ export interface BlogPost {
   readTime?: number;
 }
 
+export interface BlogComment {
+  id: number;
+  post: number;
+  parent: number | null;
+  author_name: string;
+  content: string;
+  likes: number;
+  created_at: string;
+  updated_at: string;
+  replies: BlogComment[];
+}
+
 // Service Types
 export interface ContactFormData {
   name: string;
