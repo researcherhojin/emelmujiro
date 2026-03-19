@@ -74,7 +74,7 @@ Provider order in `App.tsx`: `HelmetProvider > ErrorBoundary > UIProvider > Auth
 
 ### API Client & Auth
 
-Axios-based client in `src/services/api.ts`. JWT auth uses **httpOnly cookies** (not localStorage) — cookies set by backend, sent via `withCredentials: true`. 401 responses trigger automatic cookie-based token refresh. HTTP upgraded to HTTPS in production.
+Axios-based client in `src/services/api.ts`. JWT auth uses **httpOnly cookies** (not localStorage) — cookies set by backend, sent via `withCredentials: true`. 401 responses trigger automatic cookie-based token refresh (skipped for `/auth/` endpoints to prevent retry loops). HTTP upgraded to HTTPS in production. Login page at `/login` (standalone, no Navbar/Footer).
 
 **auth_hint localStorage flag** — `AuthContext` checks `auth_hint` on mount. If unset, `getUser()` is skipped to avoid 401 spam. Set to `'1'` on login, cleared on logout.
 
@@ -92,7 +92,7 @@ Backend: `Notification` model with REST API at `/api/notifications/` and `Notifi
 
 `NotificationPreference` model (OneToOne with User) controls per-type enable/disable (`system_enabled`, `blog_enabled`, `contact_enabled`, `admin_enabled`) and `email_enabled`. `send_user_notification()` checks preferences before creating — disabled types are skipped entirely. Email sent via Django SMTP when `email_enabled=True`. Preferences API: `GET/PATCH /api/notifications/preferences/` (auto-creates on first GET).
 
-Frontend: `NotificationContext` manages state with auto-connect WebSocket on login (exponential backoff, max 5 attempts). `NotificationBell` shows type-specific icons with level-based color dots. WebSocket passes `notification_type` field from backend. **WebSocket requires Daphne** — `runserver` (WSGI) does not support WebSocket; use `daphne` or Docker for WS testing.
+Frontend: `NotificationContext` manages state with auto-connect WebSocket on login (exponential backoff, max 5 attempts). If WebSocket closes immediately without connecting (gunicorn/WSGI), reconnection is skipped silently. `NotificationBell` shows type-specific icons with level-based color dots. WebSocket passes `notification_type` field from backend. **WebSocket requires Daphne** — `runserver`/`gunicorn` (WSGI) do not support WebSocket; use `daphne` or Docker with ASGI for WS.
 
 ### Blog System
 
@@ -104,7 +104,9 @@ Frontend: `NotificationContext` manages state with auto-connect WebSocket on log
 
 **Like API**: `POST /api/blog-posts/{id}/like/` — IP-based toggle (one like per IP per post). `BlogLike` model with `unique_together = [post, ip_address]`. Automatically increments/decrements `BlogPost.likes`.
 
-**Comment API**: Nested under posts: `/api/blog-posts/{id}/comments/`. `BlogComment` model supports replies via `parent` FK. `CommentLike` for IP-based comment likes. No pagination (comments are few per post). Anyone can create/read; deletion is unrestricted.
+**Comment API**: Nested under posts: `/api/blog-posts/{id}/comments/`. `BlogComment` model supports replies via `parent` FK. `CommentLike` for IP-based comment likes. No pagination (comments are few per post). Anyone can create/read; admin can delete via frontend UI.
+
+**Blog Admin UI**: Visible only when logged in as admin (`user.role === 'admin'`). `BlogDetail` shows sticky admin toolbar (publish/draft toggle, edit link, delete with confirmation). `BlogComments` shows delete button per comment. `BlogEditor` fetches categories from API with hardcoded fallback.
 
 ### SSG / Prerendering
 
