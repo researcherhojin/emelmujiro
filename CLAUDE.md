@@ -112,7 +112,9 @@ Frontend: `NotificationContext` manages state with auto-connect WebSocket on log
 
 ### SEO
 
-All canonical/OG URLs use `SITE_URL` from `src/utils/constants.ts` — **never hardcode** the URL. `SEOHelmet` generates `hreflang` alternates per page. FAQPage/Course JSON-LD are in `index.html` as static markup — do NOT add to `StructuredData.tsx` (creates duplicates). `og-image.png` (1200×630) for OG tags; `logo512.png` for favicons and schema.org logos.
+All canonical/OG URLs use `SITE_URL` from `src/utils/constants.ts` — **never hardcode** the URL. `SEOHelmet` generates title, description, OG, Twitter, canonical, hreflang, and robots tags per page. **Do NOT add static title, description, OG, Twitter, canonical, or robots tags to `frontend/index.html`** — `SEOHelmet` + prerendering handles all of these; static tags cause duplicates. FAQPage/Course JSON-LD are in `index.html` as static markup — do NOT add to `StructuredData.tsx` (creates duplicates). `og-image.png` (1200×630) for OG tags; `logo512.png` for favicons and schema.org logos.
+
+**Vite entry point**: `frontend/index.html` (NOT `public/index.html`). `prerender.js` deduplicates title, meta, and canonical tags after Helmet injection. Page-level SEO titles should NOT include `| 에멜무지로` suffix — `SEOHelmet` appends it automatically.
 
 ### Monitoring
 
