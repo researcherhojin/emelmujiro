@@ -116,7 +116,7 @@ axiosInstance.interceptors.response.use(
 
 // API methods with improved error handling
 export const api = {
-  // Blog
+  // Blog Read (public)
   getBlogPosts: (page: number = 1, pageSize?: number) => {
     const size = pageSize || 6;
 
@@ -201,7 +201,7 @@ export const api = {
     return axiosInstance.get<string[]>('categories/');
   },
 
-  // Blog Write (admin only)
+  // Blog Write (admin only — used by BlogEditor; delete/toggle/categories pending admin UI)
   createBlogPost: (data: Record<string, unknown>) => {
     return axiosInstance.post<BlogPost>('blog-posts/', data);
   },
@@ -227,7 +227,7 @@ export const api = {
     return axiosInstance.post<{ liked: boolean; likes: number }>(`blog-posts/${id}/like/`);
   },
 
-  // Blog Comments
+  // Blog Comments (public — deleteComment pending admin UI)
   getComments: (postId: number | string) => {
     return axiosInstance.get<BlogComment[]>(`blog-posts/${postId}/comments/`);
   },
