@@ -367,7 +367,7 @@ export const api = {
         config: {} as InternalAxiosRequestConfig,
       });
     }
-    return axiosInstance.get<{ count: number }>('notifications/unread_count/');
+    return axiosInstance.get<{ count: number }>('notifications/unread-count/');
   },
   markNotificationRead: (id: number) => {
     if (USE_MOCK_API) {
