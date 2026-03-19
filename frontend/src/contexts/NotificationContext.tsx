@@ -32,6 +32,8 @@ interface NotificationProviderProps {
 
 const MAX_RECONNECT_ATTEMPTS = 5;
 const RECONNECT_BASE_DELAY = 1000;
+// If WebSocket closes within this time, server likely doesn't support WS (e.g. gunicorn)
+const WS_IMMEDIATE_CLOSE_THRESHOLD = 2000;
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -69,9 +71,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
     try {
       const ws = new WebSocket(wsUrl);
+      const openedAt = Date.now();
+      let wasOpen = false;
       wsRef.current = ws;
 
       ws.onopen = () => {
+        wasOpen = true;
         setWsConnected(true);
         reconnectAttemptsRef.current = 0;
       };
@@ -105,6 +110,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       ws.onclose = () => {
         setWsConnected(false);
         wsRef.current = null;
+
+        // If connection was never opened or closed immediately, server doesn't support WS
+        const closedQuickly = !wasOpen && Date.now() - openedAt < WS_IMMEDIATE_CLOSE_THRESHOLD;
+        if (closedQuickly) {
+          logger.info('WebSocket not available on server, skipping reconnect');
+          return;
+        }
 
         if (isAuthenticated && reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
           const delay = RECONNECT_BASE_DELAY * Math.pow(2, reconnectAttemptsRef.current);
