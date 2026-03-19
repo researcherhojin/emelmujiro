@@ -34,7 +34,7 @@ npm run test:run           # Single run
 npm run test:coverage      # Single run with coverage report
 npm run test:e2e           # Playwright E2E tests
 # Run a specific test file:
-CI=true npm test -- --run src/components/common/__tests__/Button.test.tsx
+CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx
 
 # Backend (from backend/ — uses uv)
 uv sync --extra dev        # Install with dev dependencies (NOT --dev)

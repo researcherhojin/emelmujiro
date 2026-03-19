@@ -15,25 +15,25 @@ A full-stack monorepo for an AI education & consulting platform, built with Reac
 ## Tech Stack
 
 **Frontend**<br/>
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-E91E63)
-![i18next](https://img.shields.io/badge/i18next-25-26A69A?logo=i18next&logoColor=white)
-![React Router](https://img.shields.io/badge/React_Router-7-CA4245?logo=reactrouter&logoColor=white)
-![TipTap](https://img.shields.io/badge/TipTap-2-1a1a2e)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.37-E91E63)
+![i18next](https://img.shields.io/badge/i18next-25.5-26A69A?logo=i18next&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-7.8-CA4245?logo=reactrouter&logoColor=white)
+![TipTap](https://img.shields.io/badge/TipTap-3.20-1a1a2e)
 
 **Backend**<br/>
-![Django](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)
-![DRF](https://img.shields.io/badge/DRF-3.16-A30000)
+![Django](https://img.shields.io/badge/Django-5.2.12-092E20?logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-3.16.1-A30000)
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
 
 **Testing**<br/>
-![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?logo=vitest&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-4.1-6E9F18?logo=vitest&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-1.55-2EAD33?logo=playwright&logoColor=white)
-![MSW](https://img.shields.io/badge/MSW-2-FF6A33?logo=mockserviceworker&logoColor=white)
-![Testing Library](https://img.shields.io/badge/Testing_Library-16-E33332?logo=testinglibrary&logoColor=white)
+![MSW](https://img.shields.io/badge/MSW-2.11-FF6A33?logo=mockserviceworker&logoColor=white)
+![Testing Library](https://img.shields.io/badge/Testing_Library-16.3-E33332?logo=testinglibrary&logoColor=white)
 
 **Infra**<br/>
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
