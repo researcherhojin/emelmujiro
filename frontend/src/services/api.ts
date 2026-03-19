@@ -99,8 +99,9 @@ axiosInstance.interceptors.response.use(
       logger.error('API Error:', `${status} ${error.userMessage}`);
     }
 
-    // Handle 401 - Try cookie-based token refresh
-    if (status === 401 && originalRequest && !error._retry) {
+    // Handle 401 - Try cookie-based token refresh (skip for auth endpoints)
+    const isAuthEndpoint = originalRequest?.url?.includes('/auth/');
+    if (status === 401 && originalRequest && !error._retry && !isAuthEndpoint) {
       error._retry = true;
       try {
         await axiosInstance.post('/auth/token/refresh/');
