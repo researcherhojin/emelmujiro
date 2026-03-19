@@ -103,7 +103,7 @@ graph LR
 
 - [ ] **Publish first blog posts** — LLM, AI agents, RAG topics
 - [ ] **KakaoTalk channel integration** — Kakao API SDK, channel add button, notification messaging
-- [ ] **Blog admin UI** — Wire up `deleteBlogPost`, `toggleBlogPublish`, `getBlogCategories`, `deleteComment` from `api.ts` (backend endpoints ready, frontend methods defined)
+- [x] **Blog admin UI** — Publish toggle, delete post, delete comment, API-driven categories
 
 ## License
 
