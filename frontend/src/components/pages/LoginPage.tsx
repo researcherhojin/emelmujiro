@@ -56,7 +56,7 @@ const LoginPage: React.FC = () => {
     <>
       <SEOHelmet title={t('auth.login')} url={`${SITE_URL}/login`} />
 
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+      <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
         <div className="w-full max-w-sm">
           <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-8">
             {t('auth.login')}

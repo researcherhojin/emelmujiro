@@ -155,12 +155,14 @@ const pageRoutes = [
   { path: 'profile', element: <ProfilePage /> },
   { path: 'share', element: <SharePage /> },
   { path: 'blog', element: <BlogListPage /> },
-  { path: 'login', element: <LoginPage /> },
   { path: 'blog/new', element: <BlogEditor /> },
   { path: 'blog/edit/:id', element: <BlogEditor /> },
   { path: 'blog/:id', element: <BlogDetail /> },
   { path: '*', element: <NotFound /> },
 ];
+
+// Standalone pages rendered outside Layout (no Navbar/Footer)
+const standaloneRoutes = [{ path: 'login', element: <LoginPage /> }];
 
 // Create router with language-prefixed routes
 const router = createBrowserRouter([
@@ -172,6 +174,7 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: pageRoutes,
       },
+      ...standaloneRoutes.map((r) => ({ path: r.path, element: r.element })),
     ],
   },
   {
@@ -182,6 +185,7 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: pageRoutes,
       },
+      ...standaloneRoutes.map((r) => ({ path: r.path, element: r.element })),
     ],
   },
 ]);
