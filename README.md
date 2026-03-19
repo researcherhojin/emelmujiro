@@ -100,13 +100,29 @@ graph LR
 
 ## Roadmap
 
-**Content**
+### Phase 1 — Blog CRUD Pipeline
 
-- [ ] Publish first blog posts (LLM, AI agents, RAG)
+The blog frontend editor (`BlogEditor.tsx`) saves to `localStorage` only. The backend `BlogPostViewSet` is `ReadOnlyModelViewSet` with no write endpoints. This phase connects them end-to-end.
 
-**Platform**
+- [ ] **Backend blog write API** — Upgrade `BlogPostViewSet` to `ModelViewSet`, add `IsAdminUser` permission on create/update/delete, wire `POST/PATCH/DELETE /api/blog-posts/`
+- [ ] **Frontend API client** — Add `createBlogPost()`, `updateBlogPost()`, `deleteBlogPost()` to `api.ts`
+- [ ] **Editor → API integration** — Replace `localStorage.setItem('customBlogPosts', ...)` in `BlogEditor.tsx` with backend API calls, add draft/publish toggle using existing `is_published` field
+- [ ] **Admin auth gating** — Replace `localStorage.getItem('adminMode')` check with backend user role verification (`AuthContext.user.role === 'admin'`), expose `is_staff`/`is_superuser` via `UserSerializer`
+- [ ] **Blog image upload** — Add multipart file upload endpoint (backend `validators.py` already has file validation logic), replace `image_url` URLField-only input with file picker + URL fallback
+- [ ] **Like API** — Add `POST /api/blog-posts/{id}/like/` endpoint to persist likes (currently frontend `localStorage` only in `BlogInteractions.tsx`)
+- [ ] **Comments API** — Add `Comment` model + CRUD endpoints (`BlogComments.tsx` exists with localStorage-only implementation)
 
-- [ ] KakaoTalk channel integration
+### Phase 2 — Content & Outreach
+
+- [ ] **Publish first blog posts** — LLM, AI agents, RAG topics
+- [ ] **Newsletter sending** — `NewsletterSubscription` model stores subscribers but has no sending mechanism; add management command or scheduled task for bulk email via existing Gmail SMTP config
+- [ ] **reCAPTCHA activation** — `verify_recaptcha()` exists in `views.py` but is only called from `ContactView`; wire to `NewsletterView` and blog comment endpoints
+
+### Phase 3 — Platform
+
+- [ ] **KakaoTalk channel integration** — Kakao API SDK, channel add button, notification messaging
+- [ ] **Search upgrade** — Replace `LIKE`-based substring search with PostgreSQL full-text search or Elasticsearch
+- [ ] **PostgreSQL migration** — Production uses SQLite; Docker Compose already has `--profile postgres` support
 
 ## License
 

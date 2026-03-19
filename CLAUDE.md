@@ -192,7 +192,7 @@ Downgraded from 4.x. PostCSS must use `tailwindcss: {}`, NOT `@tailwindcss/postc
 
 ### ESLint
 
-ESLint 10 **flat config** in `frontend/eslint.config.mjs`. `no-console` only allows `warn`/`error`. Zero warnings policy — maintain 0 errors, 0 warnings. `eslint` must also be in root `package.json` devDependencies (same major version) alongside `eslint-plugin-react` for workspace hoisting.
+ESLint 10 **flat config** in `frontend/eslint.config.mjs`. `no-console` only allows `warn`/`error`. Zero warnings policy — maintain 0 errors, 0 warnings. `eslint` must also be in root `package.json` devDependencies (same major version) for workspace hoisting.
 
 ### Pre-commit Hooks
 
