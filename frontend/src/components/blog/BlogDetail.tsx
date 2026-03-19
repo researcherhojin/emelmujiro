@@ -199,8 +199,6 @@ const BlogDetailPage: React.FC = memo(() => {
           </div>
         )}
 
-        {/* Delete confirmation overlay */}
-
         {post && (
           <>
             <SEOHelmet

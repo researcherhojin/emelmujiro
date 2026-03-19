@@ -225,6 +225,8 @@ Husky + lint-staged. `.lintstagedrc.js` at repo root handles path translation: `
 
 Frontend: `nginx:alpine` container volume-mounting `frontend/build/`. Rebuild = live (no container restart). Backend: `docker compose up -d --build`. Auto-deploy via `scripts/deploy-webhook.js` (webhook from GitHub Actions, timing-safe auth). Cloudflare Tunnel routes `emelmujiro.com` → port 8080, `api.emelmujiro.com` → port 8000.
 
+**Critical**: Never `rm -rf frontend/build` — use `rm -rf frontend/build/*` instead. Deleting the directory breaks the nginx volume mount (403 Forbidden); deleting only contents preserves the mount point.
+
 ## Common Pitfalls
 
 1. **`VITE_` prefix for env vars**: New vars must use `VITE_` (legacy `REACT_APP_` still works via `env.ts` shim)

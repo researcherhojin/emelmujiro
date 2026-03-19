@@ -201,7 +201,7 @@ export const api = {
     return axiosInstance.get<string[]>('categories/');
   },
 
-  // Blog Write (admin only — used by BlogEditor; delete/toggle/categories pending admin UI)
+  // Blog Write (admin only — used by BlogEditor + BlogDetail admin toolbar)
   createBlogPost: (data: Record<string, unknown>) => {
     return axiosInstance.post<BlogPost>('blog-posts/', data);
   },
@@ -227,7 +227,7 @@ export const api = {
     return axiosInstance.post<{ liked: boolean; likes: number }>(`blog-posts/${id}/like/`);
   },
 
-  // Blog Comments (public — deleteComment pending admin UI)
+  // Blog Comments (public — admin can delete via BlogComments UI)
   getComments: (postId: number | string) => {
     return axiosInstance.get<BlogComment[]>(`blog-posts/${postId}/comments/`);
   },
