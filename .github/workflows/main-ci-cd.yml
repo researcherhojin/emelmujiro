@@ -66,21 +66,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -101,15 +86,12 @@ jobs:
 
       - name: Run backend tests
         working-directory: ./backend
-        timeout-minutes: 10
+        timeout-minutes: 5
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          DATABASE_URL: ""
           SECRET_KEY: test-secret-key
           DEBUG: "True"
-        run: |
-          uv run python manage.py makemigrations --noinput
-          uv run python manage.py migrate --noinput
-          uv run python manage.py test
+        run: uv run python manage.py test
 
   # ========================================
   # Build Frontend
