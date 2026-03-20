@@ -10,6 +10,7 @@ Emelmujiro (에멜무지로) is a full-stack monorepo for an AI Education & Cons
 - **Frontend Dev**: http://localhost:5173 (Vite) — **NOT port 3000**
 - **Backend Dev**: http://localhost:8000 (Django)
 - **Build output**: `build/` (not `dist/`)
+- **Node ≥ 24**, **Python 3.12** required (enforced in `engines` and CI)
 - **Mock API** — Active only in tests (`IS_TEST`) or when `env.API_URL` is empty. Production uses real backend. Controlled by `USE_MOCK_API` in `frontend/src/services/api.ts`.
 
 ## Essential Commands
@@ -40,7 +41,7 @@ CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx
 uv sync --extra dev        # Install with dev dependencies (NOT --dev)
 uv run python manage.py migrate  # Required for first setup
 uv run python manage.py runserver
-uv run python manage.py test     # Needs DATABASE_URL="" if env var is set
+uv run python manage.py test     # Django unittest (NOT pytest). Needs DATABASE_URL="" if env var is set
 uv run black .             # Format (line length 120)
 uv run flake8 .            # Lint (line length 120)
 
@@ -231,14 +232,14 @@ Frontend: `nginx:alpine` container volume-mounting `frontend/build/`. Rebuild = 
 
 ## Common Pitfalls
 
-1. **`VITE_` prefix for env vars**: New vars must use `VITE_` (legacy `REACT_APP_` still works via `env.ts` shim)
+1. **`VITE_` prefix for env vars**: New vars must use `VITE_` (legacy `REACT_APP_` still works via `src/config/env.ts` shim)
 2. **React 19 `useRef` requires initial value**: `useRef<T>()` → TS2554. Always use `useRef<T>(null)`
 3. **`minimatch` override**: Root and frontend `package.json` both force `minimatch>=10.2.1`. Don't remove
 4. **Build uses separate tsconfig**: `tsconfig.build.json` excludes test types. Don't add `@testing-library/jest-dom` to it
 5. **Sitemap generation in build**: `npm run build` runs `generate-sitemap.js` first. If it fails, the build fails
 6. **`setTimeout` cleanup pattern**: Store timer in `useRef(null)`, `clearTimeout` in useEffect cleanup. Already applied across all components — follow same pattern for new usage
 7. **Comments in English**: No Korean comments anywhere in codebase
-8. **Logger default export only**: `import logger from '../utils/logger'`, not destructured. Use `env.IS_DEVELOPMENT` not `process.env.NODE_ENV`
+8. **Logger default export only**: `import logger from '../utils/logger'`, not destructured. Use `env.IS_DEVELOPMENT` (from `config/env`) not `process.env.NODE_ENV`
 9. **No `window.alert()` in components**: Use inline toast state pattern (`ToastState` + `useRef` timer + `role="alert"`)
 10. **Backend tests need `DATABASE_URL=""`**: If env var points to Docker PostgreSQL, tests fail. Use SQLite
 11. **ESLint zero warnings**: Use `useCallback` for context functions, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements

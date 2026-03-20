@@ -30,7 +30,7 @@ A full-stack monorepo for an AI education & consulting platform, built with Reac
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
 
 **Testing**<br/>
-![Vitest](https://img.shields.io/badge/Vitest-4.1-6E9F18?logo=vitest&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-4.0-6E9F18?logo=vitest&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-1.55-2EAD33?logo=playwright&logoColor=white)
 ![MSW](https://img.shields.io/badge/MSW-2.11-FF6A33?logo=mockserviceworker&logoColor=white)
 ![Testing Library](https://img.shields.io/badge/Testing_Library-16.3-E33332?logo=testinglibrary&logoColor=white)
@@ -101,8 +101,12 @@ graph LR
 
 ## Roadmap
 
-- [ ] **Publish first blog posts** — LLM, AI agents, RAG topics
-- [ ] **KakaoTalk channel integration** — Kakao API SDK, channel add button, notification messaging
+- [ ] **Blog: RAG vs Fine-tuning** — when to choose which approach
+- [ ] **Blog: AI Agent adoption checklist** — security, cost, system integration
+- [ ] **Blog: Measuring LLM ROI** — quantitative evaluation methods
+- [ ] **Blog: Building an internal document RAG system** — architecture, lessons learned
+- [ ] **Blog: Automating workflows with AI Agents** — real before/after cases
+- [ ] **Blog: ROI report after 3 months** — measured results from actual deployment
 
 ## License
 
