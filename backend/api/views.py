@@ -19,7 +19,18 @@ import logging
 import hashlib
 import re
 
-from .models import BlogPost, BlogLike, BlogComment, CommentLike, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
+from .models import (
+    BlogPost,
+    BlogLike,
+    BlogComment,
+    CommentLike,
+    Contact,
+    ContactAttempt,
+    Notification,
+    NotificationPreference,
+    SiteVisit,
+    NewsletterSubscription,
+)
 from .serializers import (
     BlogPostSerializer,
     BlogPostWriteSerializer,

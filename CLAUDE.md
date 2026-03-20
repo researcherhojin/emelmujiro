@@ -48,7 +48,28 @@ uv run flake8 .            # Lint (line length 120)
 # Deploy (Mac Mini)
 cd frontend && git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run build  # Frontend (live immediately)
 git pull && docker compose up -d --build  # Backend
+
+# Makefile shortcuts (from root)
+make install               # npm install + uv sync + husky install
+make dev                   # Start dev via Docker (scripts/start-dev.sh)
+make dev-local             # npm run dev (no Docker)
+make test                  # Frontend + backend tests
+make lint                  # Frontend + backend linting
+make lint-fix              # Auto-fix lint issues
+make logs                  # Docker compose logs -f
+make shell                 # Django shell in Docker
+make migrate               # Run migrations in Docker
 ```
+
+## Scripts (`scripts/`)
+
+- `kill-ports.sh` / `check-ports.sh` — Kill or check dev port usage
+- `start-dev.sh` — Start dev environment with Docker
+- `deploy-webhook.js` — Webhook handler for GitHub Actions auto-deploy (timing-safe auth)
+- `prerender.js` — Playwright-based SSG for SEO (12 static HTML pages)
+- `generate-sitemap.js` — Sitemap generator (runs as part of `npm run build`)
+- `maintenance-worker.js` — Periodic maintenance tasks
+- `cleanup-sitevisits.sh` — Clean up old analytics data
 
 ## Architecture
 
@@ -215,6 +236,22 @@ ESLint 10 **flat config** in `frontend/eslint.config.mjs`. `no-console` only all
 
 Husky + lint-staged. `.lintstagedrc.js` at repo root handles path translation: `cd frontend && eslint --fix` + `prettier --write` for TS/JS, `cd backend && uv run black --check` + `flake8` for Python.
 
+### Backend API Routes
+
+```
+/api/auth/          — register, login, logout, user, token/refresh, change-password
+/api/blog-posts/    — CRUD + like, toggle-publish, upload-image, {id}/comments/
+/api/notifications/ — list, mark-read, preferences (GET/PATCH)
+/api/contact/       — contact form (currently unused; Google Form iframe in frontend)
+/api/newsletter/    — newsletter subscription
+/api/categories/    — blog category list
+/api/health/        — health check
+/api/admin/         — stats, content, messages, users, analytics (admin-only)
+/api/docs/          — Swagger UI
+/api/redoc/         — ReDoc
+/api/schema/        — OpenAPI schema JSON
+```
+
 ### Backend Django Config
 
 - `SECRET_KEY` **required** in production; raises `ImproperlyConfigured` if missing
@@ -244,3 +281,5 @@ Frontend: `nginx:alpine` container volume-mounting `frontend/build/`. Rebuild = 
 10. **Backend tests need `DATABASE_URL=""`**: If env var points to Docker PostgreSQL, tests fail. Use SQLite
 11. **ESLint zero warnings**: Use `useCallback` for context functions, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements
 12. **No hardcoded site URLs**: Always use `SITE_URL` from `constants.ts`. `generate-sitemap.js` has its own constant (Node.js, can't import from frontend)
+13. **CONTRIBUTING.md is stale**: References Zustand store and Chat context that no longer exist. Trust CLAUDE.md over CONTRIBUTING.md for architecture details
+14. **Branch naming**: Use `feature/name` for features, `fix/description` for bug fixes (per CONTRIBUTING.md convention)

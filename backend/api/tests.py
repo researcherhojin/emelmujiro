@@ -1,10 +1,22 @@
 from django.test import TestCase, RequestFactory, override_settings
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import BlogPost, BlogLike, BlogComment, CommentLike, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
+from .models import (
+    BlogPost,
+    BlogLike,
+    BlogComment,
+    CommentLike,
+    Contact,
+    ContactAttempt,
+    Notification,
+    NotificationPreference,
+    SiteVisit,
+    NewsletterSubscription,
+)
 from .views import get_client_ip, _is_valid_ip, send_user_notification
 from datetime import datetime, timezone, timedelta
 from django.utils import timezone as django_timezone
@@ -255,9 +267,7 @@ class BlogLikeAPITestCase(APITestCase):
     """Tests for blog post like API"""
 
     def setUp(self):
-        self.post = BlogPost.objects.create(
-            title="Likeable Post", description="Desc", content="Content", category="ai"
-        )
+        self.post = BlogPost.objects.create(title="Likeable Post", description="Desc", content="Content", category="ai")
         self.like_url = reverse("blog-like", kwargs={"pk": self.post.pk})
 
     def test_like_post(self):
@@ -1299,9 +1309,17 @@ class AdminUserManagementTestCase(APITestCase):
         self.client.force_authenticate(user=self.admin)
         response = self.client.get(reverse("admin-user-detail", kwargs={"pk": self.user.pk}))
         expected_fields = {
-            "id", "username", "email", "first_name", "last_name",
-            "role", "is_active", "is_staff", "is_superuser",
-            "date_joined", "last_login",
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "date_joined",
+            "last_login",
         }
         self.assertEqual(set(response.data.keys()), expected_fields)
 
@@ -1473,9 +1491,7 @@ class NotificationPreferenceTestCase(APITestCase):
     """Tests for Notification Preferences and enhanced send_user_notification"""
 
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass12345"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass12345")
         self.admin = User.objects.create_superuser(
             username="admin", email="admin@example.com", password="adminpass12345"
         )
@@ -1562,9 +1578,7 @@ class NotificationPreferenceTestCase(APITestCase):
 
     def test_is_type_enabled_method(self):
         """NotificationPreference.is_type_enabled works correctly"""
-        pref = NotificationPreference.objects.create(
-            user=self.user, system_enabled=True, blog_enabled=False
-        )
+        pref = NotificationPreference.objects.create(user=self.user, system_enabled=True, blog_enabled=False)
         self.assertTrue(pref.is_type_enabled("system"))
         self.assertFalse(pref.is_type_enabled("blog"))
         self.assertTrue(pref.is_type_enabled("unknown_type"))
@@ -1699,7 +1713,7 @@ class TokenRefreshTestCase(APITestCase):
         login_resp = self.client.post(
             login_url, {"username": "refreshuser", "password": "testpass12345"}, format="json"
         )
-        refresh_token = login_resp.data["refresh"]
+        _refresh_token = login_resp.data["refresh"]  # noqa: F841
         # Authenticate for logout
         access_token = login_resp.data["access"]
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")

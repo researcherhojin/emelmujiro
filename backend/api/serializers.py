@@ -162,9 +162,7 @@ class BlogPostWriteSerializer(serializers.ModelSerializer):
     def validate_category(self, value):
         valid_categories = [c[0] for c in BlogPost.CATEGORY_CHOICES]
         if value and value not in valid_categories:
-            raise serializers.ValidationError(
-                f"유효하지 않은 카테고리입니다. 허용: {', '.join(valid_categories)}"
-            )
+            raise serializers.ValidationError(f"유효하지 않은 카테고리입니다. 허용: {', '.join(valid_categories)}")
         return value
 
 

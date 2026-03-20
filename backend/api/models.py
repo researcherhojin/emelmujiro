@@ -100,7 +100,9 @@ class BlogComment(models.Model):
     """Blog post comments with optional nested replies."""
 
     post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name="blog_comments", verbose_name="게시글")
-    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True, related_name="replies", verbose_name="상위 댓글")
+    parent = models.ForeignKey(
+        "self", on_delete=models.CASCADE, null=True, blank=True, related_name="replies", verbose_name="상위 댓글"
+    )
     author_name = models.CharField(max_length=100, verbose_name="작성자")
     content = models.TextField(verbose_name="내용")
     likes = models.PositiveIntegerField(default=0, verbose_name="좋아요")
@@ -122,7 +124,9 @@ class BlogComment(models.Model):
 class CommentLike(models.Model):
     """Tracks individual likes on comments (one per IP per comment)."""
 
-    comment = models.ForeignKey(BlogComment, on_delete=models.CASCADE, related_name="comment_likes", verbose_name="댓글")
+    comment = models.ForeignKey(
+        BlogComment, on_delete=models.CASCADE, related_name="comment_likes", verbose_name="댓글"
+    )
     ip_address = models.GenericIPAddressField(verbose_name="IP 주소")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성일")
 

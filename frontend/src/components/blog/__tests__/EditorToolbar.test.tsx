@@ -11,6 +11,7 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
+import type { Editor } from '@tiptap/react';
 import EditorToolbar from '../EditorToolbar';
 
 // Track which methods were called on the chain
@@ -63,6 +64,11 @@ describe('EditorToolbar', () => {
   const mockOnImageUpload = vi.fn().mockResolvedValue('/media/test.jpg');
   let mockEditor: ReturnType<typeof createMockEditor>;
 
+  const renderToolbar = () =>
+    render(
+      <EditorToolbar editor={mockEditor as unknown as Editor} onImageUpload={mockOnImageUpload} />
+    );
+
   beforeEach(() => {
     calledMethods.length = 0;
     mockEditor = createMockEditor();
@@ -70,7 +76,7 @@ describe('EditorToolbar', () => {
   });
 
   it('renders all toolbar buttons', () => {
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
 
     const titles = [
       'Bold',
@@ -98,64 +104,64 @@ describe('EditorToolbar', () => {
   });
 
   it('calls toggleBold on Bold button click', () => {
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     fireEvent.click(getToolbarButton('Bold'));
     expect(mockEditor.chain).toHaveBeenCalled();
     expect(calledMethods).toContain('toggleBold');
   });
 
   it('calls toggleItalic on Italic button click', () => {
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     fireEvent.click(getToolbarButton('Italic'));
     expect(calledMethods).toContain('toggleItalic');
   });
 
   it('calls toggleHeading on H1 button click', () => {
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     fireEvent.click(getToolbarButton('Heading 1'));
     expect(calledMethods).toContain('toggleHeading');
   });
 
   it('calls toggleBulletList on Bullet list click', () => {
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     fireEvent.click(getToolbarButton('Bullet list'));
     expect(calledMethods).toContain('toggleBulletList');
   });
 
   it('calls toggleCodeBlock on Code block click', () => {
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     fireEvent.click(getToolbarButton('Code block'));
     expect(calledMethods).toContain('toggleCodeBlock');
   });
 
   it('calls setHorizontalRule on Horizontal rule click', () => {
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     fireEvent.click(getToolbarButton('Horizontal rule'));
     expect(calledMethods).toContain('setHorizontalRule');
   });
 
   it('calls undo on Undo button click', () => {
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     fireEvent.click(getToolbarButton('Undo'));
     expect(calledMethods).toContain('undo');
   });
 
   it('calls redo on Redo button click', () => {
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     fireEvent.click(getToolbarButton('Redo'));
     expect(calledMethods).toContain('redo');
   });
 
   it('highlights active formatting buttons', () => {
     mockEditor.isActive.mockImplementation((type: string) => type === 'bold');
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     const boldBtn = getToolbarButton('Bold');
     expect(boldBtn.className).toContain('bg-gray-200');
   });
 
   it('calls unsetLink when link is active', () => {
     mockEditor.isActive.mockImplementation((type: string) => type === 'link');
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     fireEvent.click(getToolbarButton('Link'));
     expect(calledMethods).toContain('unsetLink');
   });
@@ -163,7 +169,7 @@ describe('EditorToolbar', () => {
   it('prompts for URL when adding a link', () => {
     mockEditor.isActive.mockReturnValue(false);
     const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue('https://example.com');
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     fireEvent.click(getToolbarButton('Link'));
     expect(promptSpy).toHaveBeenCalledWith('blogEditor.enterUrl');
     expect(calledMethods).toContain('setLink');
@@ -173,7 +179,7 @@ describe('EditorToolbar', () => {
   it('does not add link when prompt is cancelled', () => {
     mockEditor.isActive.mockReturnValue(false);
     const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue(null);
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     fireEvent.click(getToolbarButton('Link'));
     expect(calledMethods).not.toContain('setLink');
     promptSpy.mockRestore();
@@ -192,7 +198,7 @@ describe('EditorToolbar', () => {
           }
         )
     );
-    render(<EditorToolbar editor={mockEditor} onImageUpload={mockOnImageUpload} />);
+    renderToolbar();
     expect(getToolbarButton('Undo')).toBeDisabled();
   });
 });

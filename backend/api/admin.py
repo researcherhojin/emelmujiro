@@ -1,7 +1,18 @@
 from django.contrib import admin
 from django.utils import timezone
 
-from .models import BlogPost, BlogComment, BlogLike, CommentLike, Contact, ContactAttempt, Notification, NotificationPreference, SiteVisit, NewsletterSubscription
+from .models import (
+    BlogPost,
+    BlogComment,
+    BlogLike,
+    CommentLike,
+    Contact,
+    ContactAttempt,
+    Notification,
+    NotificationPreference,
+    SiteVisit,
+    NewsletterSubscription,
+)
 
 
 @admin.register(BlogPost)

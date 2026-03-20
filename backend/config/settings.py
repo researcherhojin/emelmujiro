@@ -178,9 +178,7 @@ APPEND_SLASH = True  # Auto-append trailing slash
 
 # CORS settings
 _default_cors = (
-    "http://localhost:5173,http://127.0.0.1:5173,https://emelmujiro.com"
-    if DEBUG
-    else "https://emelmujiro.com"
+    "http://localhost:5173,http://127.0.0.1:5173,https://emelmujiro.com" if DEBUG else "https://emelmujiro.com"
 )
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", _default_cors).split(",")
 

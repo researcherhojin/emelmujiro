@@ -231,9 +231,7 @@ def token_refresh(request):
         if settings.SIMPLE_JWT.get("ROTATE_REFRESH_TOKENS"):
             if settings.SIMPLE_JWT.get("BLACKLIST_AFTER_ROTATION"):
                 old_refresh.blacklist()
-            new_refresh = RefreshToken.for_user(
-                User.objects.get(id=old_refresh["user_id"])
-            )
+            new_refresh = RefreshToken.for_user(User.objects.get(id=old_refresh["user_id"]))
             response = Response({"access": str(access_token), "refresh": str(new_refresh)})
             _set_jwt_cookies(response, new_refresh.access_token, new_refresh)
         else:

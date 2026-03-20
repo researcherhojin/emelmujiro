@@ -22,7 +22,7 @@ def paginate_queryset(queryset, page, page_size):
     """Slice queryset and return (items, total, next_page)."""
     total = queryset.count()
     offset = (page - 1) * page_size
-    items = queryset[offset: offset + page_size]
+    items = queryset[offset : offset + page_size]
     next_page = page + 1 if offset + page_size < total else None
     return items, total, next_page
 
