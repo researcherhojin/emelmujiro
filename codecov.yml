@@ -59,4 +59,4 @@ ignore:
   - "**/test-utils/**"
   - "**/mock/**"
   - "frontend/src/setupTests.ts"
-  - "frontend/src/reportWebVitals.ts"
+  - "frontend/src/utils/webVitals.ts"
