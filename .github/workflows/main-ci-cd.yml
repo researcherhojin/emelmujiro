@@ -134,15 +134,11 @@ jobs:
           SECRET_KEY: test-secret-key
           DEBUG: "True"
         run: |
-          uv run coverage run --parallel-mode --source=api manage.py test --parallel
-          uv run coverage combine
+          uv run coverage run --source=api manage.py test
           uv run coverage xml -o coverage.xml
           # Fix paths in coverage.xml for Codecov: api/file.py → backend/api/file.py
           sed -i 's|filename="api/|filename="backend/api/|g' coverage.xml
           sed -i 's|<source>.*</source>|<source>.</source>|g' coverage.xml
-          # Debug: verify sed worked
-          echo "=== coverage.xml source and first 3 filenames ==="
-          grep -E "<source>|filename=" coverage.xml | head -4
 
       - name: Upload backend coverage to Codecov
         if: always()
