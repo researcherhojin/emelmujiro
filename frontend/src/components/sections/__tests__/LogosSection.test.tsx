@@ -107,10 +107,10 @@ describe('LogosSection', () => {
   it('renders heading elements at correct levels', () => {
     render(<LogosSection />);
 
-    const h2 = screen.getByText('logos.sectionLabel');
-    expect(h2.tagName).toBe('H2');
+    const label = screen.getByText('logos.sectionLabel');
+    expect(label.tagName).toBe('SPAN');
 
-    const h3 = screen.getByText('logos.title');
-    expect(h3.tagName).toBe('H3');
+    const h2 = screen.getByText('logos.title');
+    expect(h2.tagName).toBe('H2');
   });
 });

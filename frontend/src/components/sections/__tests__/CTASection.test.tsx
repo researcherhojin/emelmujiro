@@ -60,11 +60,11 @@ describe('CTASection', () => {
 
   it('renders headings at correct levels', () => {
     renderWithRouter(<CTASection />);
-    const h2 = screen.getByText('cta.sectionLabel');
-    expect(h2.tagName).toBe('H2');
+    const label = screen.getByText('cta.sectionLabel');
+    expect(label.tagName).toBe('SPAN');
 
-    const h3 = screen.getByText('cta.title');
-    expect(h3.tagName).toBe('H3');
+    const h2 = screen.getByText('cta.title');
+    expect(h2.tagName).toBe('H2');
   });
 
   it('calls trackCtaClick with "cta" when CTA link is clicked', () => {

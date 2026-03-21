@@ -86,13 +86,13 @@ describe('Layout', () => {
 
   describe('KakaoTalk banner', () => {
     beforeEach(() => {
-      (window as Record<string, unknown>).__isKakaoInApp = true;
-      (window as Record<string, unknown>).__isKakaoAndroid = false;
+      (window as unknown as Record<string, unknown>).__isKakaoInApp = true;
+      (window as unknown as Record<string, unknown>).__isKakaoAndroid = false;
     });
 
     afterEach(() => {
-      delete (window as Record<string, unknown>).__isKakaoInApp;
-      delete (window as Record<string, unknown>).__isKakaoAndroid;
+      delete (window as unknown as Record<string, unknown>).__isKakaoInApp;
+      delete (window as unknown as Record<string, unknown>).__isKakaoAndroid;
     });
 
     it('shows banner on iOS KakaoTalk', () => {
@@ -119,7 +119,7 @@ describe('Layout', () => {
     });
 
     it('does not show banner on Android KakaoTalk', () => {
-      (window as Record<string, unknown>).__isKakaoAndroid = true;
+      (window as unknown as Record<string, unknown>).__isKakaoAndroid = true;
       renderLayout();
       expect(screen.queryByText('common.kakaoBanner')).not.toBeInTheDocument();
     });

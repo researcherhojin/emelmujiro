@@ -275,7 +275,9 @@ class BlogCommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         post_id = self.kwargs.get("post_pk")
-        return BlogComment.objects.filter(post_id=post_id, parent__isnull=True)
+        return BlogComment.objects.filter(post_id=post_id, parent__isnull=True).prefetch_related(
+            "replies", "comment_likes", "replies__comment_likes"
+        )
 
     def perform_create(self, serializer):
         post_id = self.kwargs.get("post_pk")
