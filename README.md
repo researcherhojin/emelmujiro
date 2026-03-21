@@ -102,7 +102,7 @@ graph LR
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **CI/CD** — GitHub Actions: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
-- **Testing** — ~1141 unit tests (Vitest), 10 E2E specs (Playwright), ~341 backend tests (Django)
+- **Testing** — ~1110 unit tests (Vitest), 10 E2E specs (Playwright), ~346 backend tests (Django)
 
 ## License
 
