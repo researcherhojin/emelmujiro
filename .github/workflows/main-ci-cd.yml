@@ -14,6 +14,7 @@ env:
   NODE_VERSION: "24"
   PYTHON_VERSION: "3.12"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
 jobs:
   # ========================================
@@ -23,8 +24,6 @@ jobs:
     name: Frontend Tests & Build
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     steps:
       - name: Checkout code
@@ -109,8 +108,6 @@ jobs:
     name: Backend Tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
     steps:
       - name: Checkout code
