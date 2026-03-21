@@ -94,4 +94,88 @@ describe('analytics', () => {
       expect(() => trackCtaClick('cta')).not.toThrow();
     });
   });
+
+  // --- New tests for uncovered lines ---
+
+  describe('trackBlogView', () => {
+    it('sends view_blog_post event with post id and category', async () => {
+      const { initAnalytics, trackBlogView } = await import('../analytics');
+      initAnalytics();
+
+      const gtagSpy = vi.fn();
+      window.gtag = gtagSpy;
+
+      trackBlogView(42, 'tech');
+      expect(gtagSpy).toHaveBeenCalledWith('event', 'view_blog_post', {
+        post_id: 42,
+        category: 'tech',
+      });
+    });
+
+    it('sends view_blog_post event with string post id', async () => {
+      const { initAnalytics, trackBlogView } = await import('../analytics');
+      initAnalytics();
+
+      const gtagSpy = vi.fn();
+      window.gtag = gtagSpy;
+
+      trackBlogView('slug-123');
+      expect(gtagSpy).toHaveBeenCalledWith('event', 'view_blog_post', {
+        post_id: 'slug-123',
+        category: undefined,
+      });
+    });
+
+    it('does nothing when gtag is not initialized', async () => {
+      const { trackBlogView } = await import('../analytics');
+      expect(() => trackBlogView(1)).not.toThrow();
+    });
+  });
+
+  describe('trackDarkModeToggle', () => {
+    it('sends toggle_dark_mode event with is_dark true', async () => {
+      const { initAnalytics, trackDarkModeToggle } = await import('../analytics');
+      initAnalytics();
+
+      const gtagSpy = vi.fn();
+      window.gtag = gtagSpy;
+
+      trackDarkModeToggle(true);
+      expect(gtagSpy).toHaveBeenCalledWith('event', 'toggle_dark_mode', { is_dark: true });
+    });
+
+    it('sends toggle_dark_mode event with is_dark false', async () => {
+      const { initAnalytics, trackDarkModeToggle } = await import('../analytics');
+      initAnalytics();
+
+      const gtagSpy = vi.fn();
+      window.gtag = gtagSpy;
+
+      trackDarkModeToggle(false);
+      expect(gtagSpy).toHaveBeenCalledWith('event', 'toggle_dark_mode', { is_dark: false });
+    });
+
+    it('does nothing when gtag is not initialized', async () => {
+      const { trackDarkModeToggle } = await import('../analytics');
+      expect(() => trackDarkModeToggle(true)).not.toThrow();
+    });
+  });
+
+  describe('trackLanguageSwitch', () => {
+    it('sends switch_language event', async () => {
+      const { initAnalytics, trackLanguageSwitch } = await import('../analytics');
+      initAnalytics();
+
+      const gtagSpy = vi.fn();
+      window.gtag = gtagSpy;
+
+      trackLanguageSwitch('en');
+      expect(gtagSpy).toHaveBeenCalledWith('event', 'switch_language', { language: 'en' });
+    });
+
+    it('does nothing when gtag is not initialized', async () => {
+      const { trackLanguageSwitch } = await import('../analytics');
+      expect(() => trackLanguageSwitch('ko')).not.toThrow();
+    });
+  });
 });

@@ -1,16 +1,17 @@
-import { screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach, test } from 'vitest';
+import { screen, fireEvent, act } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import Navbar from '../Navbar';
 
 // Mock useNavigate
 const mockNavigate = vi.fn();
+const mockLocation = { pathname: '/', hash: '', search: '', state: null, key: 'default' };
 vi.mock('react-router-dom', async () => {
   const actual = await import('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
-    useLocation: () => ({ pathname: '/' }),
+    useLocation: () => mockLocation,
   };
 });
 
@@ -29,6 +30,10 @@ vi.mock('react-i18next', () => ({
 describe('Navbar Component', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
+    mockLocation.pathname = '/';
+    mockLocation.hash = '';
+    // Reset scrollY
+    Object.defineProperty(window, 'scrollY', { value: 0, writable: true });
   });
 
   test('renders logo', () => {
@@ -93,5 +98,112 @@ describe('Navbar Component', () => {
     fireEvent.scroll(window, { target: { scrollY: 100 } });
 
     // Note: This test might need adjustment based on actual scroll behavior implementation
+  });
+
+  // --- New tests for uncovered lines ---
+
+  it('adds shadow-md class when scrolled past 50px', () => {
+    renderWithProviders(<Navbar />);
+    const navbar = screen.getByRole('navigation');
+
+    // Initially no shadow-md
+    expect(navbar.className).not.toContain('shadow-md');
+
+    // Scroll past threshold
+    Object.defineProperty(window, 'scrollY', { value: 100, writable: true });
+    act(() => {
+      fireEvent.scroll(window);
+    });
+
+    expect(navbar.className).toContain('shadow-md');
+  });
+
+  it('removes shadow-md class when scrolled back up', () => {
+    renderWithProviders(<Navbar />);
+    const navbar = screen.getByRole('navigation');
+
+    // Scroll down first
+    Object.defineProperty(window, 'scrollY', { value: 100, writable: true });
+    act(() => {
+      fireEvent.scroll(window);
+    });
+    expect(navbar.className).toContain('shadow-md');
+
+    // Scroll back up
+    Object.defineProperty(window, 'scrollY', { value: 10, writable: true });
+    act(() => {
+      fireEvent.scroll(window);
+    });
+    expect(navbar.className).not.toContain('shadow-md');
+  });
+
+  it('toggles mobile menu open and closed', () => {
+    renderWithProviders(<Navbar />);
+
+    const menuButton = screen.getByRole('button', { name: 'accessibility.menu' });
+
+    // Open mobile menu
+    fireEvent.click(menuButton);
+    expect(screen.getAllByText('common.about').length).toBeGreaterThan(1);
+
+    // Close mobile menu
+    fireEvent.click(menuButton);
+    // Only desktop items should remain
+    expect(screen.getAllByText('common.about')).toHaveLength(1);
+  });
+
+  it('navigates to contact page and closes mobile menu on contact click', () => {
+    renderWithProviders(<Navbar />);
+
+    // Open mobile menu first
+    const menuButton = screen.getByRole('button', { name: 'accessibility.menu' });
+    fireEvent.click(menuButton);
+
+    // Find the mobile contact button (there are two: desktop + mobile)
+    const contactButtons = screen.getAllByRole('button', { name: 'common.contact' });
+    // Click the mobile one (last one)
+    fireEvent.click(contactButtons[contactButtons.length - 1]);
+
+    expect(mockNavigate).toHaveBeenCalledWith('/contact');
+    // Mobile menu should be closed (only desktop items remain)
+    expect(screen.getAllByText('common.about')).toHaveLength(1);
+  });
+
+  it('calls language switch and navigates on language button click', () => {
+    renderWithProviders(<Navbar />);
+
+    // Find language switch button by aria-label
+    const langButtons = screen.getAllByRole('button', { name: 'common.switchLanguage' });
+    // Click the desktop one
+    fireEvent.click(langButtons[0]);
+
+    // Should navigate to the English version of the current path
+    expect(mockNavigate).toHaveBeenCalledWith('/en');
+  });
+
+  it('closes mobile menu when a mobile nav item is clicked', () => {
+    renderWithProviders(<Navbar />);
+
+    // Open mobile menu
+    const menuButton = screen.getByRole('button', { name: 'accessibility.menu' });
+    fireEvent.click(menuButton);
+
+    // Click a mobile nav item (get the second occurrence which is in the mobile menu)
+    const aboutButtons = screen.getAllByText('common.about');
+    fireEvent.click(aboutButtons[aboutButtons.length - 1]);
+
+    // Menu should close
+    expect(screen.getAllByText('common.about')).toHaveLength(1);
+    expect(mockNavigate).toHaveBeenCalledWith('/about');
+  });
+
+  it('cleans up scroll listener on unmount', () => {
+    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+    const { unmount } = renderWithProviders(<Navbar />);
+
+    unmount();
+
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
+    removeEventListenerSpy.mockRestore();
   });
 });

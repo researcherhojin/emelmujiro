@@ -298,4 +298,129 @@ describe('SharePage', () => {
     const textElement = screen.getByText(longText);
     expect(textElement).toHaveClass('whitespace-pre-wrap');
   });
+
+  // --- New tests for uncovered lines ---
+
+  it('handles corrupt localStorage data in handleSaveForLater', async () => {
+    // Set invalid JSON in localStorage
+    localStorage.setItem('saved-content', 'not valid json');
+
+    renderSharePage('?title=Test Recovery');
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('share.saveLater')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+
+    const buttons = screen.getAllByRole('button');
+    const saveButton = buttons.find((btn) => btn.textContent?.includes('share.saveLater'));
+    expect(saveButton).toBeDefined();
+    if (saveButton) fireEvent.click(saveButton);
+
+    // Should recover gracefully and save the item
+    const savedContent = JSON.parse(localStorage.getItem('saved-content') || '[]');
+    expect(savedContent).toHaveLength(1);
+    expect(savedContent[0].title).toBe('Test Recovery');
+  });
+
+  it('navigates to blog page when browseBlog link is clicked', async () => {
+    renderSharePage('?title=Test');
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('share.browseBlog')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+
+    fireEvent.click(screen.getByText('share.browseBlog'));
+    expect(mockNavigate).toHaveBeenCalledWith('/blog');
+  });
+
+  it('navigates to about page when aboutCompany link is clicked', async () => {
+    renderSharePage('?title=Test');
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('share.aboutCompany')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+
+    fireEvent.click(screen.getByText('share.aboutCompany'));
+    expect(mockNavigate).toHaveBeenCalledWith('/about');
+  });
+
+  it('navigates to contact page when directInquiry link is clicked', async () => {
+    renderSharePage('?title=Test');
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('share.directInquiry')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+
+    fireEvent.click(screen.getByText('share.directInquiry'));
+    expect(mockNavigate).toHaveBeenCalledWith('/contact');
+  });
+
+  it('navigates to home when goToHome button is clicked', async () => {
+    renderSharePage('?title=Test');
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('share.goToHome')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+
+    fireEvent.click(screen.getByText('share.goToHome'));
+    expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
+
+  it('shows toast after saving for later', async () => {
+    renderSharePage('?title=Save Me');
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('share.saveLater')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+
+    const buttons = screen.getAllByRole('button');
+    const saveButton = buttons.find((btn) => btn.textContent?.includes('share.saveLater'));
+    if (saveButton) fireEvent.click(saveButton);
+
+    // Toast should be visible immediately
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('share.saved');
+  });
+
+  it('uses default subject when title is empty in inquiry', async () => {
+    renderSharePage('?text=Some%20content%20only');
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('Some content only')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+
+    const buttons = screen.getAllByRole('button');
+    const inquiryButton = buttons.find((btn) => btn.textContent?.includes('share.sendInquiry'));
+    if (inquiryButton) fireEvent.click(inquiryButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      '/contact',
+      expect.objectContaining({
+        state: expect.objectContaining({
+          subject: 'share.defaultSubject',
+        }),
+      })
+    );
+  });
 });

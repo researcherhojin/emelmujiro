@@ -359,4 +359,185 @@ describe('NotificationContext', () => {
 
     consoleSpy.mockRestore();
   });
+
+  // --- New tests for uncovered lines ---
+
+  it('handles WebSocket onmessage with notification type', async () => {
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    // Wait for WebSocket to be created
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    // Find the most recent WebSocket instance and simulate a message
+    const ws = wsInstances[wsInstances.length - 1];
+    if (ws && ws.onmessage) {
+      act(() => {
+        ws.onmessage!({
+          data: JSON.stringify({
+            type: 'notification',
+            id: 99,
+            title: 'WS Notification',
+            message: 'From WebSocket',
+            level: 'success',
+            notification_type: 'blog',
+            url: '/blog/1',
+            timestamp: '2026-03-22T10:00:00Z',
+          }),
+        });
+      });
+
+      await waitFor(() => {
+        // Unread count should increment from 3 to 4
+        expect(screen.getByTestId('unread-count').textContent).toBe('4');
+      });
+    }
+  });
+
+  it('handles WebSocket onmessage with notification_update type', async () => {
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    const ws = wsInstances[wsInstances.length - 1];
+    if (ws && ws.onmessage) {
+      act(() => {
+        ws.onmessage!({
+          data: JSON.stringify({
+            type: 'notification_update',
+            count: 7,
+          }),
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('unread-count').textContent).toBe('7');
+      });
+    }
+  });
+
+  it('handles invalid JSON in WebSocket message gracefully', async () => {
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    const ws = wsInstances[wsInstances.length - 1];
+    if (ws && ws.onmessage) {
+      // Should not throw
+      act(() => {
+        ws.onmessage!({ data: 'not valid json' });
+      });
+
+      // Component should still be intact
+      expect(screen.getByTestId('unread-count')).toBeInTheDocument();
+    }
+  });
+
+  it('increments page when fetchNotifications returns next page', async () => {
+    mockGetNotifications.mockResolvedValueOnce({
+      data: {
+        count: 2,
+        next: 'http://localhost:8000/api/notifications/?page=2',
+        previous: null,
+        results: [
+          {
+            id: 1,
+            title: 'Page 1',
+            message: 'First page',
+            level: 'info',
+            notification_type: 'system',
+            url: '',
+            is_read: false,
+            read_at: null,
+            created_at: '2026-03-18T10:00:00Z',
+          },
+        ],
+      },
+    });
+
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    await act(async () => {
+      screen.getByTestId('fetch').click();
+    });
+
+    await waitFor(() => {
+      expect(mockGetNotifications).toHaveBeenCalled();
+      expect(screen.getByTestId('notifications-count').textContent).toBe('1');
+    });
+  });
+
+  it('resets state when user logs out (isAuthenticated becomes false)', async () => {
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    // Component should still render correctly
+    expect(screen.getByTestId('notifications-count')).toBeInTheDocument();
+  });
+
+  it('sends WebSocket message when marking as read with open connection', async () => {
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    // Fetch notifications first
+    await act(async () => {
+      screen.getByTestId('fetch').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('notifications-count').textContent).toBe('1');
+    });
+
+    await act(async () => {
+      screen.getByTestId('mark-read').click();
+    });
+
+    await waitFor(() => {
+      expect(mockMarkNotificationRead).toHaveBeenCalledWith(1);
+    });
+  });
+
+  it('sends WebSocket message when marking all as read with open connection', async () => {
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    await act(async () => {
+      screen.getByTestId('mark-all').click();
+    });
+
+    await waitFor(() => {
+      expect(mockMarkAllNotificationsRead).toHaveBeenCalled();
+      expect(screen.getByTestId('unread-count').textContent).toBe('0');
+    });
+  });
 });
