@@ -14,7 +14,6 @@ env:
   NODE_VERSION: "24"
   PYTHON_VERSION: "3.12"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
 jobs:
   # ========================================
@@ -56,11 +55,12 @@ jobs:
       - name: Upload frontend coverage to Codecov
         if: always()
         uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           directory: frontend/coverage
           flags: frontend
           fail_ci_if_error: false
-          token: ${{ env.CODECOV_TOKEN }}
 
       - name: Get Playwright version
         if: github.ref == 'refs/heads/main'
@@ -142,11 +142,12 @@ jobs:
       - name: Upload backend coverage to Codecov
         if: always()
         uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           files: backend/coverage.xml
           flags: backend
           fail_ci_if_error: false
-          token: ${{ env.CODECOV_TOKEN }}
 
   # ========================================
   # Deploy to GitHub Pages
