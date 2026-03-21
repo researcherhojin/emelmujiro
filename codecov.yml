@@ -65,3 +65,5 @@ ignore:
   - "frontend/src/data/blogPosts.ts"
   - "frontend/src/data/index.ts"
   - "frontend/src/constants/index.ts"
+  - "frontend/src/config/env.ts"
+  - "frontend/src/i18n.ts"
