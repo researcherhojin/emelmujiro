@@ -137,6 +137,9 @@ jobs:
           uv run coverage run --parallel-mode --source=api manage.py test --parallel
           uv run coverage combine
           uv run coverage xml -o coverage.xml
+          # Fix paths in coverage.xml for Codecov: api/file.py → backend/api/file.py
+          sed -i 's|filename="api/|filename="backend/api/|g' coverage.xml
+          sed -i 's|<source>.*</source>|<source>.</source>|g' coverage.xml
 
       - name: Upload backend coverage to Codecov
         if: always()
@@ -146,7 +149,6 @@ jobs:
           flags: backend
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
-          root_dir: backend
 
   # ========================================
   # Deploy to GitHub Pages
