@@ -76,16 +76,70 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-// Mock useAuth hook
+// Mock useLocalizedPath hook
+const mockLocalizedNavigate = vi.fn();
+vi.mock('../../../hooks/useLocalizedPath', () => ({
+  useLocalizedPath: () => ({
+    localizedPath: (path: string) => path,
+    localizedNavigate: mockLocalizedNavigate,
+    switchLanguagePath: (lang: string) => `/${lang}`,
+  }),
+}));
+
+// Mock SEOHelmet and StructuredData
+vi.mock('../../common/SEOHelmet', () => ({
+  default: function SEOHelmet() {
+    return null;
+  },
+}));
+vi.mock('../../common/StructuredData', () => ({
+  default: function StructuredData() {
+    return null;
+  },
+}));
+
+// Mock UnifiedLoading
+vi.mock('../../common/UnifiedLoading', () => ({
+  PageLoading: function PageLoading({ message }: { message?: string }) {
+    return <div data-testid="page-loading">{message || 'Loading...'}</div>;
+  },
+}));
+
+// Mock analytics
+vi.mock('../../../utils/analytics', () => ({
+  trackBlogView: vi.fn(),
+}));
+
+// Mock date format
+vi.mock('../../../utils/dateFormat', () => ({
+  formatDate: (date: string) => date,
+}));
+
+// Mock constants
+vi.mock('../../../utils/constants', () => ({
+  SITE_URL: 'https://example.com',
+}));
+
+// Mock DOMPurify
+vi.mock('dompurify', () => ({
+  default: {
+    sanitize: (html: string) => html,
+  },
+}));
+
+// Mock useAuth hook — use a variable so we can change it per test
+let mockUser: { role?: string } | null = null;
 vi.mock('../../../contexts/AuthContext', () => ({
-  useAuth: () => ({ user: null }),
+  useAuth: () => ({ user: mockUser }),
 }));
 
 // Mock api
+const mockToggleBlogPublish = vi.fn();
+const mockDeleteBlogPost = vi.fn();
 vi.mock('../../../services/api', () => ({
   api: {
-    toggleBlogPublish: vi.fn(),
-    deleteBlogPost: vi.fn(),
+    toggleBlogPublish: (...args: unknown[]) => mockToggleBlogPublish(...args),
+    deleteBlogPost: (...args: unknown[]) => mockDeleteBlogPost(...args),
   },
 }));
 
@@ -113,9 +167,13 @@ describe('BlogDetail Component', () => {
     mockPost = null;
     mockLoading = false;
     mockError = null;
+    mockUser = null;
     mockNavigate.mockClear();
     mockFetchPostById.mockClear();
     mockClearCurrentPost.mockClear();
+    mockLocalizedNavigate.mockClear();
+    mockToggleBlogPublish.mockClear();
+    mockDeleteBlogPost.mockClear();
 
     // Setup the mock implementation
     (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
@@ -174,8 +232,8 @@ describe('BlogDetail Component', () => {
     });
 
     renderComponent();
-    // 404 errors navigate to /404 page, so component returns null
-    expect(mockNavigate).toHaveBeenCalledWith('/404', { replace: true });
+    // 404 errors navigate to /404 page via localizedNavigate, so component returns null
+    expect(mockLocalizedNavigate).toHaveBeenCalledWith('/404', { replace: true });
   });
 
   test('renders error state for other errors', () => {
@@ -287,5 +345,549 @@ describe('BlogDetail Component', () => {
     const { unmount } = renderComponent();
     unmount();
     expect(mockClearCurrentPost).toHaveBeenCalled();
+  });
+
+  test('renders content_html with DOMPurify when available', () => {
+    mockPost = {
+      id: 1,
+      title: 'HTML Content Post',
+      content: 'Plain text fallback',
+      content_html: '<p>Rich <strong>HTML</strong> content</p>',
+      excerpt: 'Test excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Test Author',
+      category: 'Technology',
+      tags: [],
+      published: true,
+      slug: 'html-content-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    // Should render HTML content, not markdown
+    expect(screen.queryByTestId('markdown-content')).not.toBeInTheDocument();
+    // The sanitized HTML content should be rendered via dangerouslySetInnerHTML
+    const htmlContainer =
+      document.querySelector('[dangerouslysetinnerhtml]') || document.querySelector('.prose');
+    expect(htmlContainer).toBeTruthy();
+    expect(htmlContainer!.innerHTML).toContain('<strong>HTML</strong>');
+  });
+
+  test('renders markdown fallback when no content_html', () => {
+    mockPost = {
+      id: 1,
+      title: 'Markdown Post',
+      content: '# Markdown heading',
+      excerpt: 'Test excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Test Author',
+      category: 'Technology',
+      tags: [],
+      published: true,
+      slug: 'markdown-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    expect(screen.getByTestId('markdown-content')).toHaveTextContent('# Markdown heading');
+  });
+
+  test('renders admin toolbar when user is admin', () => {
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'Admin Post',
+      content: 'Admin content',
+      excerpt: 'Test excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'admin-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    // Admin toolbar should be visible
+    expect(screen.getByText('Admin')).toBeInTheDocument();
+    expect(screen.getByText('blogAdmin.published')).toBeInTheDocument();
+    expect(screen.getByText('common.edit')).toBeInTheDocument();
+    expect(screen.getByText('common.delete')).toBeInTheDocument();
+  });
+
+  test('does not render admin toolbar for non-admin users', () => {
+    mockUser = { role: 'user' };
+    mockPost = {
+      id: 1,
+      title: 'Regular Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Author',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'regular-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    expect(screen.queryByText('common.edit')).not.toBeInTheDocument();
+    expect(screen.queryByText('common.delete')).not.toBeInTheDocument();
+  });
+
+  test('admin toolbar shows draft status for unpublished post', () => {
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'Draft Post',
+      content: 'Draft content',
+      excerpt: 'Draft excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: false,
+      slug: 'draft-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    expect(screen.getByText('blogAdmin.draft')).toBeInTheDocument();
+  });
+
+  test('admin toggle publish calls API and refetches post', async () => {
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'Toggle Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'toggle-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    mockToggleBlogPublish.mockResolvedValue({
+      data: { id: 1, is_published: false },
+    });
+
+    renderComponent();
+
+    // Click the publish toggle button
+    const publishBtn = screen.getByText('blogAdmin.published');
+    fireEvent.click(publishBtn);
+
+    await screen.findByRole('alert');
+
+    expect(mockToggleBlogPublish).toHaveBeenCalledWith('1');
+    expect(mockFetchPostById).toHaveBeenCalledWith('1');
+  });
+
+  test('admin toggle publish shows error toast on failure', async () => {
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'Error Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'error-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    mockToggleBlogPublish.mockRejectedValue(new Error('API error'));
+
+    renderComponent();
+
+    fireEvent.click(screen.getByText('blogAdmin.published'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('blogAdmin.toggleError');
+  });
+
+  test('admin delete flow shows confirmation and deletes post', async () => {
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'Delete Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'delete-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    mockDeleteBlogPost.mockResolvedValue({});
+
+    renderComponent();
+
+    // Click delete button — shows confirmation
+    fireEvent.click(screen.getByText('common.delete'));
+    expect(screen.getByText('blogAdmin.confirmDelete')).toBeInTheDocument();
+    expect(screen.getByText('common.confirm')).toBeInTheDocument();
+    expect(screen.getByText('common.cancel')).toBeInTheDocument();
+
+    // Confirm delete
+    fireEvent.click(screen.getByText('common.confirm'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('blogAdmin.deleted');
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('1');
+  });
+
+  test('admin delete confirmation can be cancelled', () => {
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'Cancel Delete Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'cancel-delete-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    // Click delete, then cancel
+    fireEvent.click(screen.getByText('common.delete'));
+    expect(screen.getByText('blogAdmin.confirmDelete')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('common.cancel'));
+    // Confirmation should be gone, delete button should be back
+    expect(screen.queryByText('blogAdmin.confirmDelete')).not.toBeInTheDocument();
+    expect(screen.getByText('common.delete')).toBeInTheDocument();
+  });
+
+  test('admin delete shows error toast on failure', async () => {
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'Error Delete Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'error-delete-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    mockDeleteBlogPost.mockRejectedValue(new Error('Delete failed'));
+
+    renderComponent();
+
+    fireEvent.click(screen.getByText('common.delete'));
+    fireEvent.click(screen.getByText('common.confirm'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('blogAdmin.deleteError');
+  });
+
+  test('admin edit button navigates to edit page', () => {
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'Edit Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'edit-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    fireEvent.click(screen.getByText('common.edit'));
+    expect(mockLocalizedNavigate).toHaveBeenCalledWith('/blog/edit/1');
+  });
+
+  test('renders post without image_url', () => {
+    mockPost = {
+      id: 1,
+      title: 'No Image Post',
+      content: 'Content without image',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Author',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'no-image-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    expect(screen.getByText('No Image Post')).toBeInTheDocument();
+    // No img element should be present
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+
+  test('renders post with tags', () => {
+    mockPost = {
+      id: 1,
+      title: 'Tagged Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Author',
+      category: 'Tech',
+      tags: ['react', 'typescript', 'vite'],
+      published: true,
+      slug: 'tagged-post',
+      date: '2024-01-01',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    expect(screen.getByText('react')).toBeInTheDocument();
+    expect(screen.getByText('typescript')).toBeInTheDocument();
+    expect(screen.getByText('vite')).toBeInTheDocument();
+  });
+
+  test('renders post with date and category metadata', () => {
+    mockPost = {
+      id: 1,
+      title: 'Meta Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-06-15',
+      updated_at: '2024-06-15',
+      author: 'Author',
+      category: 'AI Education',
+      tags: [],
+      published: true,
+      slug: 'meta-post',
+      date: '2024-06-15',
+      publishedAt: '2024-06-15',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    expect(screen.getByText('AI Education')).toBeInTheDocument();
+    // Date should be rendered via formatDate (mocked to return the date string as-is)
+    expect(screen.getByText('2024-06-15')).toBeInTheDocument();
+  });
+
+  test('handles error state go back button click', () => {
+    mockError = 'Something went wrong';
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: null,
+      loading: false,
+      error: mockError,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+
+    const backButton = screen.getByText('common.goBack');
+    fireEvent.click(backButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith(-1);
   });
 });

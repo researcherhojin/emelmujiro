@@ -56,7 +56,7 @@ export default defineConfig({
           if (id.includes('node_modules/framer-motion/') || id.includes('node_modules/lucide-react/')) {
             return 'ui-vendor';
           }
-          if (id.includes('node_modules/i18next/') || id.includes('node_modules/react-i18next/')) {
+          if (id.includes('node_modules/i18next/') || id.includes('node_modules/react-i18next/') || id.includes('node_modules/i18next-browser-languagedetector/') || id.includes('/src/i18n')) {
             return 'i18n';
           }
           if (id.includes('node_modules/@sentry/')) {
@@ -64,6 +64,9 @@ export default defineConfig({
           }
           if (id.includes('node_modules/axios/')) {
             return 'http-vendor';
+          }
+          if (id.includes('node_modules/dompurify/')) {
+            return 'dompurify';
           }
           if (id.includes('node_modules/@tiptap/') || id.includes('node_modules/prosemirror-') || id.includes('node_modules/lowlight/')) {
             return 'tiptap';

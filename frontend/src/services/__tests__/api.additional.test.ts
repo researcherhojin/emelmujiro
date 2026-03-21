@@ -222,6 +222,62 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
     });
   });
 
+  describe('Auth Operations', () => {
+    it('should return mock user data via getUser', async () => {
+      const result = await api.getUser();
+      expect(result.status).toBe(200);
+      expect(result.data).toHaveProperty('id', 1);
+      expect(result.data).toHaveProperty('email');
+    });
+
+    it('should return mock login response', async () => {
+      const result = await api.login('test@test.com', 'password');
+      expect(result.status).toBe(200);
+      expect(result.data).toHaveProperty('access');
+      expect(result.data).toHaveProperty('user');
+    });
+
+    it('should return mock logout response', async () => {
+      const result = await api.logout();
+      expect(result.status).toBe(200);
+    });
+
+    it('should return mock register response', async () => {
+      const result = await api.register('new@test.com', 'pass', 'User');
+      expect(result.status).toBe(200);
+      expect(result.data).toHaveProperty('access');
+      expect(result.data.user).toHaveProperty('name', 'User');
+    });
+  });
+
+  describe('Notification Operations', () => {
+    it('should return mock notifications list', async () => {
+      const result = await api.getNotifications(1);
+      expect(result.status).toBe(200);
+      expect(result.data.count).toBe(0);
+      expect(result.data.results).toEqual([]);
+    });
+
+    it('should return mock unread count', async () => {
+      const result = await api.getUnreadCount();
+      expect(result.status).toBe(200);
+      expect(result.data.count).toBe(0);
+    });
+
+    it('should return mock mark notification read', async () => {
+      const result = await api.markNotificationRead(42);
+      expect(result.status).toBe(200);
+      expect(result.data.id).toBe(42);
+      expect(result.data.is_read).toBe(true);
+    });
+
+    it('should return mock mark all notifications read', async () => {
+      const result = await api.markAllNotificationsRead();
+      expect(result.status).toBe(200);
+      expect(result.data.status).toBe('ok');
+    });
+  });
+
   describe('Performance', () => {
     it('should return mock data quickly', async () => {
       const startTime = Date.now();

@@ -1608,9 +1608,7 @@ class CookieJWTAuthenticationTestCase(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user(
-            username="cookieuser", email="cookie@example.com", password="testpass12345"
-        )
+        cls.user = User.objects.create_user(username="cookieuser", email="cookie@example.com", password="testpass12345")
         cls.refresh = RefreshToken.for_user(cls.user)
         cls.access_token = str(cls.refresh.access_token)
 
