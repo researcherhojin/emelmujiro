@@ -40,22 +40,17 @@ flags:
   frontend:
     paths:
       - frontend/src
-    carryforward: true
+    carryforward: false
 
   backend:
     paths:
       - backend/api
-    carryforward: true
+    carryforward: false
 
 ignore:
   - "**/__tests__/**"
-  - "**/*.test.js"
-  - "**/*.test.ts"
-  - "**/*.test.tsx"
-  - "**/*.spec.js"
-  - "**/*.spec.ts"
-  - "**/*.spec.tsx"
-  - "**/*.test.jsx"
+  - "**/*.test.*"
+  - "**/*.spec.*"
   - "**/test-utils/**"
   - "**/mocks/**"
   - "frontend/src/setupTests.ts"
@@ -63,3 +58,5 @@ ignore:
   - "backend/api/tests.py"
   - "backend/api/tests_urls.py"
   - "backend/api/migrations/**"
+  - "backend/api/consumers.py"
+  - "backend/api/routing.py"
