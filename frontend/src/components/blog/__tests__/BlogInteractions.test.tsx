@@ -1,8 +1,16 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import BlogInteractions from '../BlogInteractions';
-import { BlogPost } from '../../../types';
+
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
 
 // Mock logger
 vi.mock('../../../utils/logger', () => ({
@@ -17,6 +25,9 @@ vi.mock('../../../services/api', () => ({
     likeBlogPost: (...args: unknown[]) => mockLikeBlogPost(...args),
   },
 }));
+
+import BlogInteractions from '../BlogInteractions';
+import { BlogPost } from '../../../types';
 
 // Mock window.open
 const mockOpen = vi.fn();
@@ -56,6 +67,26 @@ const mockPost: BlogPost = {
   likes: 5,
 };
 
+// Helper to open share menu (sets navigator.share to undefined so fallback menu appears)
+const openShareMenu = () => {
+  Object.defineProperty(navigator, 'share', {
+    value: undefined,
+    writable: true,
+    configurable: true,
+  });
+  render(<BlogInteractions post={mockPost} />);
+  fireEvent.click(screen.getByText('blog.share'));
+};
+
+// Helper to restore navigator.share
+const restoreShare = () => {
+  Object.defineProperty(navigator, 'share', {
+    value: mockShare,
+    writable: true,
+    configurable: true,
+  });
+};
+
 describe('BlogInteractions Component', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -72,6 +103,9 @@ describe('BlogInteractions Component', () => {
       writable: true,
       configurable: true,
     });
+
+    // Ensure navigator.share is available by default
+    restoreShare();
   });
 
   describe('Rendering', () => {
@@ -87,6 +121,20 @@ describe('BlogInteractions Component', () => {
       const buttons = screen.getAllByRole('button');
       const likeButton = buttons[0];
       expect(likeButton).toHaveTextContent('5');
+    });
+
+    it('displays zero likes when post has no likes', () => {
+      const postWithNoLikes = { ...mockPost, likes: 0 };
+      render(<BlogInteractions post={postWithNoLikes} />);
+      const buttons = screen.getAllByRole('button');
+      expect(buttons[0]).toHaveTextContent('0');
+    });
+
+    it('displays zero likes when likes is undefined', () => {
+      const postWithUndefined = { ...mockPost, likes: undefined } as unknown as BlogPost;
+      render(<BlogInteractions post={postWithUndefined} />);
+      const buttons = screen.getAllByRole('button');
+      expect(buttons[0]).toHaveTextContent('0');
     });
   });
 
@@ -133,6 +181,22 @@ describe('BlogInteractions Component', () => {
       fireEvent.click(likeButton);
       await waitFor(() => expect(likeButton).toHaveTextContent('5'));
     });
+
+    it('handles API error on like gracefully', async () => {
+      const logger = await import('../../../utils/logger');
+      mockLikeBlogPost.mockRejectedValueOnce(new Error('Network error'));
+
+      render(<BlogInteractions post={mockPost} />);
+      const buttons = screen.getAllByRole('button');
+      fireEvent.click(buttons[0]);
+
+      await waitFor(() => {
+        expect(logger.default.error).toHaveBeenCalledWith(
+          'Failed to toggle like:',
+          expect.any(Error)
+        );
+      });
+    });
   });
 
   describe('Bookmark Functionality', () => {
@@ -170,6 +234,51 @@ describe('BlogInteractions Component', () => {
       const svg = bookmarkButton.querySelector('svg');
       expect(svg?.classList.toString()).toContain('fill-current');
     });
+
+    it('stores bookmark with title and excerpt', () => {
+      render(<BlogInteractions post={mockPost} />);
+      const buttons = screen.getAllByRole('button');
+      fireEvent.click(buttons[1]);
+
+      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+      expect(bookmarks[0].title).toBe('Test Blog Post');
+      expect(bookmarks[0].excerpt).toBe('Test excerpt');
+      expect(bookmarks[0].savedAt).toBeDefined();
+    });
+
+    it('uses title as excerpt fallback when excerpt is missing', () => {
+      const postNoExcerpt = { ...mockPost, excerpt: '' };
+      render(<BlogInteractions post={postNoExcerpt} />);
+      const buttons = screen.getAllByRole('button');
+      fireEvent.click(buttons[1]);
+
+      const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+      expect(bookmarks[0].excerpt).toBe('Test Blog Post');
+    });
+
+    it('handles corrupted localStorage bookmarks on mount', () => {
+      localStorage.setItem('bookmarks', 'not-valid-json');
+
+      // Should render without crashing
+      render(<BlogInteractions post={mockPost} />);
+      const buttons = screen.getAllByRole('button');
+      expect(buttons[1]).toBeInTheDocument();
+    });
+
+    it('handles corrupted localStorage bookmarks on toggle', () => {
+      // Render first, then corrupt localStorage
+      render(<BlogInteractions post={mockPost} />);
+
+      // Corrupt localStorage after render
+      localStorage.setItem('bookmarks', '{invalid');
+
+      const buttons = screen.getAllByRole('button');
+      // Clicking bookmark should not crash even with corrupted data
+      fireEvent.click(buttons[1]);
+
+      // Component should still be present
+      expect(buttons[1]).toBeInTheDocument();
+    });
   });
 
   describe('Share Functionality', () => {
@@ -188,27 +297,161 @@ describe('BlogInteractions Component', () => {
       );
     });
 
+    it('passes excerpt as text to navigator.share', async () => {
+      mockShare.mockResolvedValueOnce(undefined);
+      render(<BlogInteractions post={mockPost} />);
+
+      fireEvent.click(screen.getByText('blog.share'));
+
+      expect(mockShare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          text: 'Test excerpt',
+        })
+      );
+    });
+
     it('shows share menu when navigator.share not available', () => {
+      openShareMenu();
+
+      expect(screen.getByText('blog.facebook')).toBeInTheDocument();
+      expect(screen.getByText('blog.twitter')).toBeInTheDocument();
+      expect(screen.getByText('blog.linkedin')).toBeInTheDocument();
+      expect(screen.getByText('blog.kakaoTalk')).toBeInTheDocument();
+
+      restoreShare();
+    });
+
+    it('handles navigator.share rejection gracefully', async () => {
+      mockShare.mockRejectedValueOnce(new Error('User cancelled'));
+
+      render(<BlogInteractions post={mockPost} />);
+      fireEvent.click(screen.getByText('blog.share'));
+
+      // Should not throw or show share menu
+      await waitFor(() => {
+        expect(screen.queryByText('blog.facebook')).not.toBeInTheDocument();
+      });
+    });
+
+    it('opens KakaoTalk share URL', () => {
+      openShareMenu();
+      fireEvent.click(screen.getByText('blog.kakaoTalk'));
+
+      expect(mockOpen).toHaveBeenCalledWith(
+        expect.stringContaining('story.kakao.com/share'),
+        '_blank',
+        expect.any(String)
+      );
+      restoreShare();
+    });
+
+    it('opens Facebook share URL', () => {
+      openShareMenu();
+      fireEvent.click(screen.getByText('blog.facebook'));
+
+      expect(mockOpen).toHaveBeenCalledWith(
+        expect.stringContaining('facebook.com/sharer'),
+        '_blank',
+        expect.any(String)
+      );
+      restoreShare();
+    });
+
+    it('opens Twitter share URL', () => {
+      openShareMenu();
+      fireEvent.click(screen.getByText('blog.twitter'));
+
+      expect(mockOpen).toHaveBeenCalledWith(
+        expect.stringContaining('twitter.com/intent/tweet'),
+        '_blank',
+        expect.any(String)
+      );
+      restoreShare();
+    });
+
+    it('opens LinkedIn share URL', () => {
+      openShareMenu();
+      fireEvent.click(screen.getByText('blog.linkedin'));
+
+      expect(mockOpen).toHaveBeenCalledWith(
+        expect.stringContaining('linkedin.com/sharing'),
+        '_blank',
+        expect.any(String)
+      );
+      restoreShare();
+    });
+
+    it('copies link to clipboard', async () => {
+      openShareMenu();
+      fireEvent.click(screen.getByText('blog.copyLink'));
+
+      await waitFor(() => {
+        expect(mockWriteText).toHaveBeenCalledWith(expect.any(String));
+      });
+      restoreShare();
+    });
+
+    it('closes share menu when clicking overlay', () => {
+      openShareMenu();
+
+      expect(screen.getByText('blog.facebook')).toBeInTheDocument();
+
+      const overlay = screen.getByLabelText('accessibility.closeShareMenu');
+      fireEvent.click(overlay);
+
+      expect(screen.queryByText('blog.facebook')).not.toBeInTheDocument();
+      restoreShare();
+    });
+
+    it('closes share menu on Escape keydown', () => {
+      openShareMenu();
+
+      expect(screen.getByText('blog.facebook')).toBeInTheDocument();
+
+      const overlay = screen.getByLabelText('accessibility.closeShareMenu');
+      fireEvent.keyDown(overlay, { key: 'Escape' });
+
+      expect(screen.queryByText('blog.facebook')).not.toBeInTheDocument();
+      restoreShare();
+    });
+
+    it('closes share menu after clicking a share option', () => {
+      openShareMenu();
+      fireEvent.click(screen.getByText('blog.facebook'));
+
+      // Share menu should close after clicking an option
+      expect(screen.queryByText('blog.twitter')).not.toBeInTheDocument();
+      restoreShare();
+    });
+
+    it('handles clipboard API not available', async () => {
+      const logger = await import('../../../utils/logger');
       Object.defineProperty(navigator, 'share', {
         value: undefined,
         writable: true,
         configurable: true,
       });
+      mockWriteText.mockRejectedValueOnce(new Error('Not available'));
 
       render(<BlogInteractions post={mockPost} />);
-      const shareButton = screen.getByText('blog.share');
-      fireEvent.click(shareButton);
+      fireEvent.click(screen.getByText('blog.share'));
+      fireEvent.click(screen.getByText('blog.copyLink'));
 
-      expect(screen.getByText('Facebook')).toBeInTheDocument();
-      expect(screen.getByText('Twitter')).toBeInTheDocument();
-      expect(screen.getByText('LinkedIn')).toBeInTheDocument();
-
-      // Restore
-      Object.defineProperty(navigator, 'share', {
-        value: mockShare,
-        writable: true,
-        configurable: true,
+      await waitFor(() => {
+        expect(logger.default.warn).toHaveBeenCalledWith('Clipboard API not available');
       });
+      restoreShare();
+    });
+
+    it('does not close share menu on non-Escape keydown', () => {
+      openShareMenu();
+
+      const overlay = screen.getByLabelText('accessibility.closeShareMenu');
+      fireEvent.keyDown(overlay, { key: 'Enter' });
+
+      // Share menu should still be visible
+      expect(screen.getByText('blog.facebook')).toBeInTheDocument();
+      restoreShare();
     });
   });
 });

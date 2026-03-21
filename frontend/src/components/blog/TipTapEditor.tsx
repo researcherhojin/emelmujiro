@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -24,11 +25,9 @@ interface TipTapEditorProps {
   placeholder?: string;
 }
 
-const TipTapEditor: React.FC<TipTapEditorProps> = ({
-  content = '',
-  onChange,
-  placeholder = "내용을 입력하세요... '/' 를 입력하면 블록을 추가할 수 있습니다",
-}) => {
+const TipTapEditor: React.FC<TipTapEditorProps> = ({ content = '', onChange, placeholder }) => {
+  const { t } = useTranslation();
+  const resolvedPlaceholder = placeholder || t('blog.editorPlaceholder');
   const handleImageUpload = useCallback(async (file: File): Promise<string | null> => {
     try {
       const response = await api.uploadBlogImage(file);
@@ -44,7 +43,7 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({
       StarterKit.configure({
         codeBlock: false,
       }),
-      Placeholder.configure({ placeholder }),
+      Placeholder.configure({ placeholder: resolvedPlaceholder }),
       Image.configure({
         HTMLAttributes: { class: 'rounded-xl max-w-full' },
       }),

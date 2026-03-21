@@ -202,7 +202,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
                 }}
                 className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
               >
-                Facebook
+                {t('blog.facebook')}
               </button>
               <button
                 onClick={() => {
@@ -211,7 +211,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
                 }}
                 className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
               >
-                Twitter
+                {t('blog.twitter')}
               </button>
               <button
                 onClick={() => {
@@ -220,7 +220,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
                 }}
                 className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
               >
-                LinkedIn
+                {t('blog.linkedin')}
               </button>
               <button
                 onClick={() => {

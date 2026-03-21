@@ -7,6 +7,7 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, opts?: Record<string, unknown>) => {
       if (opts && 'count' in opts) return `${key}(${opts.count})`;
+      if (opts && 'author' in opts) return `${key}(${opts.author})`;
       return key;
     },
     i18n: { language: 'ko', changeLanguage: vi.fn() },
@@ -21,9 +22,10 @@ vi.mock('../../../utils/logger', () => ({
   default: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
 }));
 
-// Mock useAuth
+// Mock useAuth — default to non-admin
+const mockUseAuth = vi.fn().mockReturnValue({ user: null });
 vi.mock('../../../contexts/AuthContext', () => ({
-  useAuth: () => ({ user: null }),
+  useAuth: () => mockUseAuth(),
 }));
 
 // Mock API
@@ -84,6 +86,7 @@ describe('BlogComments', () => {
     vi.clearAllMocks();
     localStorage.clear();
     mockGetComments.mockResolvedValue({ data: [] });
+    mockUseAuth.mockReturnValue({ user: null });
   });
 
   it('renders comments section', async () => {
@@ -220,5 +223,430 @@ describe('BlogComments', () => {
     fireEvent.click(submitButton);
     // createComment should not be called with empty fields
     expect(mockCreateComment).not.toHaveBeenCalled();
+  });
+
+  // --- NEW TEST CASES ---
+
+  it('does not submit comment when name is empty but content is filled', async () => {
+    render(<BlogComments postId="1" />);
+
+    const contentInput = screen.getByPlaceholderText('blog.commentPlaceholder');
+    fireEvent.change(contentInput, { target: { value: 'Some content' } });
+    fireEvent.click(screen.getByText('blog.writeComment'));
+
+    expect(mockCreateComment).not.toHaveBeenCalled();
+  });
+
+  it('does not submit comment when content is empty but name is filled', async () => {
+    render(<BlogComments postId="1" />);
+
+    const nameInput = screen.getByPlaceholderText('blog.namePlaceholder');
+    fireEvent.change(nameInput, { target: { value: 'Author' } });
+    fireEvent.click(screen.getByText('blog.writeComment'));
+
+    expect(mockCreateComment).not.toHaveBeenCalled();
+  });
+
+  it('does not submit comment when content is whitespace only', async () => {
+    render(<BlogComments postId="1" />);
+
+    const nameInput = screen.getByPlaceholderText('blog.namePlaceholder');
+    const contentInput = screen.getByPlaceholderText('blog.commentPlaceholder');
+    fireEvent.change(nameInput, { target: { value: 'Author' } });
+    fireEvent.change(contentInput, { target: { value: '   ' } });
+    fireEvent.click(screen.getByText('blog.writeComment'));
+
+    expect(mockCreateComment).not.toHaveBeenCalled();
+  });
+
+  it('saves author name to localStorage on submission', async () => {
+    mockCreateComment.mockResolvedValueOnce({ data: { id: 10 } });
+    mockGetComments.mockResolvedValue({ data: [] });
+
+    render(<BlogComments postId="1" />);
+
+    fireEvent.change(screen.getByPlaceholderText('blog.namePlaceholder'), {
+      target: { value: 'Saved Author' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('blog.commentPlaceholder'), {
+      target: { value: 'Some comment' },
+    });
+    fireEvent.click(screen.getByText('blog.writeComment'));
+
+    await waitFor(() => {
+      expect(localStorage.setItem).toHaveBeenCalledWith('commentAuthorName', 'Saved Author');
+    });
+  });
+
+  it('loads saved author name from localStorage on mount', async () => {
+    localStorage.setItem('commentAuthorName', 'Previously Saved');
+    mockGetComments.mockResolvedValue({ data: [] });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      const nameInput = screen.getByPlaceholderText('blog.namePlaceholder') as HTMLInputElement;
+      expect(nameInput.value).toBe('Previously Saved');
+    });
+  });
+
+  it('submits a reply to a comment', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    mockCreateComment.mockResolvedValueOnce({ data: { id: 20 } });
+    // After reply, refetch
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    // Set author name first (required for reply)
+    fireEvent.change(screen.getByPlaceholderText('blog.namePlaceholder'), {
+      target: { value: 'Replier' },
+    });
+
+    // Click reply button on the first comment
+    const replyButtons = screen.getAllByText('blog.reply');
+    fireEvent.click(replyButtons[0]);
+
+    // Fill in the reply content
+    const replyTextarea = screen.getByPlaceholderText('blog.replyPlaceholder');
+    fireEvent.change(replyTextarea, { target: { value: 'This is a reply' } });
+
+    // Submit reply
+    fireEvent.click(screen.getByText('blog.writeReply'));
+
+    await waitFor(() => {
+      expect(mockCreateComment).toHaveBeenCalledWith('1', {
+        author_name: 'Replier',
+        content: 'This is a reply',
+        parent: 1,
+      });
+    });
+  });
+
+  it('does not submit reply when content is empty', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    // Set author name
+    fireEvent.change(screen.getByPlaceholderText('blog.namePlaceholder'), {
+      target: { value: 'Replier' },
+    });
+
+    // Open reply form
+    const replyButtons = screen.getAllByText('blog.reply');
+    fireEvent.click(replyButtons[0]);
+
+    // Submit without typing reply content
+    fireEvent.click(screen.getByText('blog.writeReply'));
+
+    expect(mockCreateComment).not.toHaveBeenCalled();
+  });
+
+  it('does not submit reply when author name is empty', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    // Open reply form without setting author name
+    const replyButtons = screen.getAllByText('blog.reply');
+    fireEvent.click(replyButtons[0]);
+
+    const replyTextarea = screen.getByPlaceholderText('blog.replyPlaceholder');
+    fireEvent.change(replyTextarea, { target: { value: 'Reply content' } });
+
+    fireEvent.click(screen.getByText('blog.writeReply'));
+
+    expect(mockCreateComment).not.toHaveBeenCalled();
+  });
+
+  it('cancels a reply and clears reply content', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    // Open reply form
+    const replyButtons = screen.getAllByText('blog.reply');
+    fireEvent.click(replyButtons[0]);
+
+    const replyTextarea = screen.getByPlaceholderText('blog.replyPlaceholder');
+    fireEvent.change(replyTextarea, { target: { value: 'Draft reply' } });
+
+    // Cancel reply
+    fireEvent.click(screen.getByText('common.cancel'));
+
+    // Reply form should be hidden
+    expect(screen.queryByPlaceholderText('blog.replyPlaceholder')).not.toBeInTheDocument();
+  });
+
+  it('shows delete button for admin users', async () => {
+    mockUseAuth.mockReturnValue({ user: { role: 'admin' } });
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    // Admin should see delete buttons
+    const deleteButtons = screen.getAllByText('common.delete');
+    expect(deleteButtons.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('does not show delete button for non-admin users', async () => {
+    mockUseAuth.mockReturnValue({ user: null });
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('common.delete')).not.toBeInTheDocument();
+  });
+
+  it('handles comment deletion by admin', async () => {
+    mockUseAuth.mockReturnValue({ user: { role: 'admin' } });
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    mockDeleteComment.mockResolvedValueOnce({});
+    // After delete, refetch
+    mockGetComments.mockResolvedValueOnce({ data: [mockCommentsData[1]] });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    // Click the first delete button (for comment id=1)
+    const deleteButtons = screen.getAllByLabelText('common.delete');
+    fireEvent.click(deleteButtons[0]);
+
+    await waitFor(() => {
+      expect(mockDeleteComment).toHaveBeenCalledWith('1', 1);
+    });
+  });
+
+  it('handles like on a reply', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    mockLikeComment.mockResolvedValueOnce({ data: { liked: true, likes: 1 } });
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Thanks!')).toBeInTheDocument();
+    });
+
+    // Find the like button on the reply (Reply User's comment, with aria-label containing Reply User)
+    const replyLikeButton = screen.getByLabelText('blog.likeReply(Reply User)');
+    fireEvent.click(replyLikeButton);
+
+    await waitFor(() => {
+      expect(mockLikeComment).toHaveBeenCalledWith('1', 3);
+    });
+  });
+
+  it('handles API error when fetching comments', async () => {
+    mockGetComments.mockRejectedValueOnce(new Error('Network error'));
+
+    render(<BlogComments postId="1" />);
+
+    // Should show empty state when fetch fails
+    await waitFor(() => {
+      expect(screen.getByText('blog.noCommentsYet')).toBeInTheDocument();
+    });
+  });
+
+  it('handles API error when creating comment', async () => {
+    const logger = await import('../../../utils/logger');
+    mockGetComments.mockResolvedValue({ data: [] });
+    mockCreateComment.mockRejectedValueOnce(new Error('Create failed'));
+
+    render(<BlogComments postId="1" />);
+
+    fireEvent.change(screen.getByPlaceholderText('blog.namePlaceholder'), {
+      target: { value: 'Author' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('blog.commentPlaceholder'), {
+      target: { value: 'Comment' },
+    });
+    fireEvent.click(screen.getByText('blog.writeComment'));
+
+    await waitFor(() => {
+      expect(logger.default.error).toHaveBeenCalledWith(
+        'Failed to create comment:',
+        expect.any(Error)
+      );
+    });
+  });
+
+  it('handles API error when liking comment', async () => {
+    const logger = await import('../../../utils/logger');
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    mockLikeComment.mockRejectedValueOnce(new Error('Like failed'));
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    const likeBtn = screen.getByLabelText('blog.likeComment(John Doe)');
+    fireEvent.click(likeBtn);
+
+    await waitFor(() => {
+      expect(logger.default.error).toHaveBeenCalledWith(
+        'Failed to like comment:',
+        expect.any(Error)
+      );
+    });
+  });
+
+  it('handles API error when deleting comment', async () => {
+    const logger = await import('../../../utils/logger');
+    mockUseAuth.mockReturnValue({ user: { role: 'admin' } });
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    mockDeleteComment.mockRejectedValueOnce(new Error('Delete failed'));
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    const deleteButtons = screen.getAllByLabelText('common.delete');
+    fireEvent.click(deleteButtons[0]);
+
+    await waitFor(() => {
+      expect(logger.default.error).toHaveBeenCalledWith(
+        'Failed to delete comment:',
+        expect.any(Error)
+      );
+    });
+  });
+
+  it('handles API error when creating reply', async () => {
+    const logger = await import('../../../utils/logger');
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    mockCreateComment.mockRejectedValueOnce(new Error('Reply failed'));
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    // Set author
+    fireEvent.change(screen.getByPlaceholderText('blog.namePlaceholder'), {
+      target: { value: 'Replier' },
+    });
+
+    // Open reply form
+    fireEvent.click(screen.getAllByText('blog.reply')[0]);
+    fireEvent.change(screen.getByPlaceholderText('blog.replyPlaceholder'), {
+      target: { value: 'Reply text' },
+    });
+    fireEvent.click(screen.getByText('blog.writeReply'));
+
+    await waitFor(() => {
+      expect(logger.default.error).toHaveBeenCalledWith(
+        'Failed to create reply:',
+        expect.any(Error)
+      );
+    });
+  });
+
+  it('closes reply form after successful reply submission', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    mockCreateComment.mockResolvedValueOnce({ data: { id: 20 } });
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('blog.namePlaceholder'), {
+      target: { value: 'Replier' },
+    });
+
+    fireEvent.click(screen.getAllByText('blog.reply')[0]);
+    fireEvent.change(screen.getByPlaceholderText('blog.replyPlaceholder'), {
+      target: { value: 'My reply' },
+    });
+    fireEvent.click(screen.getByText('blog.writeReply'));
+
+    await waitFor(() => {
+      expect(screen.queryByPlaceholderText('blog.replyPlaceholder')).not.toBeInTheDocument();
+    });
+  });
+
+  it('displays comment count in heading', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      const heading = screen.getByRole('heading', { level: 3 });
+      expect(heading).toHaveTextContent('blog.commentsCount(2)');
+    });
+  });
+
+  it('refetches comments after successful like', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+    mockLikeComment.mockResolvedValueOnce({ data: { liked: true, likes: 3 } });
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    const likeBtn = screen.getByLabelText('blog.likeComment(John Doe)');
+    fireEvent.click(likeBtn);
+
+    await waitFor(() => {
+      // getComments called twice: initial load + after like
+      expect(mockGetComments).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('renders comment with reply content change', async () => {
+    mockGetComments.mockResolvedValueOnce({ data: mockCommentsData });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Great article!')).toBeInTheDocument();
+    });
+
+    // Open reply
+    fireEvent.click(screen.getAllByText('blog.reply')[0]);
+
+    const replyTextarea = screen.getByPlaceholderText(
+      'blog.replyPlaceholder'
+    ) as HTMLTextAreaElement;
+    fireEvent.change(replyTextarea, { target: { value: 'Typing reply...' } });
+    expect(replyTextarea.value).toBe('Typing reply...');
   });
 });

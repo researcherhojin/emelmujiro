@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 
 // Mock react-i18next
@@ -16,6 +16,7 @@ import EditorToolbar from '../EditorToolbar';
 
 // Track which methods were called on the chain
 const calledMethods: string[] = [];
+const calledArgs: Record<string, unknown[]> = {};
 
 function createMockEditor() {
   // Create a chainable proxy that records method calls
@@ -25,8 +26,9 @@ function createMockEditor() {
       {
         get(target, prop: string) {
           if (prop === 'run') return target.run;
-          return vi.fn((..._args: unknown[]) => {
+          return vi.fn((...args: unknown[]) => {
             calledMethods.push(prop);
+            calledArgs[prop] = args;
             return createChain();
           });
         },
@@ -71,8 +73,10 @@ describe('EditorToolbar', () => {
 
   beforeEach(() => {
     calledMethods.length = 0;
+    Object.keys(calledArgs).forEach((key) => delete calledArgs[key]);
     mockEditor = createMockEditor();
     vi.clearAllMocks();
+    mockOnImageUpload.mockResolvedValue('/media/test.jpg');
   });
 
   it('renders all toolbar buttons', () => {
@@ -200,5 +204,209 @@ describe('EditorToolbar', () => {
     );
     renderToolbar();
     expect(getToolbarButton('Undo')).toBeDisabled();
+  });
+
+  // --- NEW TEST CASES ---
+
+  it('calls toggleUnderline on Underline button click', () => {
+    renderToolbar();
+    fireEvent.click(getToolbarButton('Underline'));
+    expect(calledMethods).toContain('toggleUnderline');
+  });
+
+  it('calls toggleStrike on Strikethrough button click', () => {
+    renderToolbar();
+    fireEvent.click(getToolbarButton('Strikethrough'));
+    expect(calledMethods).toContain('toggleStrike');
+  });
+
+  it('calls toggleCode on Inline code button click', () => {
+    renderToolbar();
+    fireEvent.click(getToolbarButton('Inline code'));
+    expect(calledMethods).toContain('toggleCode');
+  });
+
+  it('calls toggleHeading with level 2 on H2 click', () => {
+    renderToolbar();
+    fireEvent.click(getToolbarButton('Heading 2'));
+    expect(calledMethods).toContain('toggleHeading');
+  });
+
+  it('calls toggleHeading with level 3 on H3 click', () => {
+    renderToolbar();
+    fireEvent.click(getToolbarButton('Heading 3'));
+    expect(calledMethods).toContain('toggleHeading');
+  });
+
+  it('calls toggleOrderedList on Ordered list click', () => {
+    renderToolbar();
+    fireEvent.click(getToolbarButton('Ordered list'));
+    expect(calledMethods).toContain('toggleOrderedList');
+  });
+
+  it('calls toggleTaskList on Task list click', () => {
+    renderToolbar();
+    fireEvent.click(getToolbarButton('Task list'));
+    expect(calledMethods).toContain('toggleTaskList');
+  });
+
+  it('calls toggleBlockquote on Blockquote click', () => {
+    renderToolbar();
+    fireEvent.click(getToolbarButton('Blockquote'));
+    expect(calledMethods).toContain('toggleBlockquote');
+  });
+
+  it('disables redo when cannot redo', () => {
+    mockEditor.can = vi.fn(
+      () =>
+        new Proxy(
+          {},
+          {
+            get(_target, prop: string) {
+              if (prop === 'redo') return vi.fn().mockReturnValue(false);
+              return vi.fn().mockReturnValue(true);
+            },
+          }
+        )
+    );
+    renderToolbar();
+    expect(getToolbarButton('Redo')).toBeDisabled();
+  });
+
+  it('highlights active italic button', () => {
+    mockEditor.isActive.mockImplementation((type: string) => type === 'italic');
+    renderToolbar();
+    const italicBtn = getToolbarButton('Italic');
+    expect(italicBtn.className).toContain('bg-gray-200');
+  });
+
+  it('highlights active heading button', () => {
+    mockEditor.isActive.mockImplementation((type: string, opts?: { level?: number }) => {
+      return type === 'heading' && opts?.level === 2;
+    });
+    renderToolbar();
+    const h2Btn = getToolbarButton('Heading 2');
+    expect(h2Btn.className).toContain('bg-gray-200');
+    // H1 should not be highlighted
+    const h1Btn = getToolbarButton('Heading 1');
+    expect(h1Btn.className).not.toContain('bg-gray-200');
+  });
+
+  it('highlights active code block button', () => {
+    mockEditor.isActive.mockImplementation((type: string) => type === 'codeBlock');
+    renderToolbar();
+    const codeBlockBtn = getToolbarButton('Code block');
+    expect(codeBlockBtn.className).toContain('bg-gray-200');
+  });
+
+  it('highlights active link button', () => {
+    mockEditor.isActive.mockImplementation((type: string) => type === 'link');
+    renderToolbar();
+    const linkBtn = getToolbarButton('Link');
+    expect(linkBtn.className).toContain('bg-gray-200');
+  });
+
+  it('triggers file input click on Image button click', () => {
+    renderToolbar();
+    // The hidden file input should exist
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(fileInput).toBeTruthy();
+    expect(fileInput.accept).toBe('image/*');
+
+    const clickSpy = vi.spyOn(fileInput, 'click');
+    fireEvent.click(getToolbarButton('Image'));
+    expect(clickSpy).toHaveBeenCalled();
+    clickSpy.mockRestore();
+  });
+
+  it('handles image upload when file is selected', async () => {
+    renderToolbar();
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+
+    const file = new File(['test'], 'test.png', { type: 'image/png' });
+    Object.defineProperty(fileInput, 'files', { value: [file], writable: true });
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      expect(mockOnImageUpload).toHaveBeenCalledWith(file);
+    });
+
+    // Should call editor.chain().focus().setImage()
+    await waitFor(() => {
+      expect(calledMethods).toContain('setImage');
+    });
+  });
+
+  it('does not set image when upload returns null', async () => {
+    mockOnImageUpload.mockResolvedValueOnce(null);
+    renderToolbar();
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+
+    const file = new File(['test'], 'test.png', { type: 'image/png' });
+    Object.defineProperty(fileInput, 'files', { value: [file], writable: true });
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      expect(mockOnImageUpload).toHaveBeenCalledWith(file);
+    });
+
+    // setImage should NOT be called
+    expect(calledMethods).not.toContain('setImage');
+  });
+
+  it('does nothing when no file is selected', async () => {
+    renderToolbar();
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+
+    Object.defineProperty(fileInput, 'files', { value: [], writable: true });
+    fireEvent.change(fileInput);
+
+    expect(mockOnImageUpload).not.toHaveBeenCalled();
+  });
+
+  it('resets file input value after image selection', async () => {
+    renderToolbar();
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+
+    const file = new File(['test'], 'test.png', { type: 'image/png' });
+    Object.defineProperty(fileInput, 'files', { value: [file], writable: true });
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      expect(fileInput.value).toBe('');
+    });
+  });
+
+  it('extends mark range when setting link', () => {
+    mockEditor.isActive.mockReturnValue(false);
+    vi.spyOn(window, 'prompt').mockReturnValue('https://test.com');
+    renderToolbar();
+    fireEvent.click(getToolbarButton('Link'));
+    expect(calledMethods).toContain('extendMarkRange');
+    expect(calledMethods).toContain('setLink');
+    vi.spyOn(window, 'prompt').mockRestore();
+  });
+
+  it('renders hidden file input with image accept type', () => {
+    renderToolbar();
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(fileInput).toBeTruthy();
+    expect(fileInput.accept).toBe('image/*');
+    expect(fileInput.className).toContain('hidden');
+  });
+
+  it('applies non-active style to Horizontal rule button', () => {
+    renderToolbar();
+    const hrBtn = getToolbarButton('Horizontal rule');
+    // Horizontal rule always passes false for active
+    expect(hrBtn.className).toContain('text-gray-500');
+    expect(hrBtn.className).not.toContain('bg-gray-200');
+  });
+
+  it('applies non-active style to Image button', () => {
+    renderToolbar();
+    const imgBtn = getToolbarButton('Image');
+    expect(imgBtn.className).toContain('text-gray-500');
+    expect(imgBtn.className).not.toContain('bg-gray-200');
   });
 });

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Editor } from '@tiptap/react';
 import {
   Heading1,
@@ -26,6 +27,7 @@ interface SlashCommandMenuProps {
 }
 
 const SlashCommandMenu: React.FC<SlashCommandMenuProps> = ({ editor, onImageUpload }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -36,61 +38,61 @@ const SlashCommandMenu: React.FC<SlashCommandMenuProps> = ({ editor, onImageUplo
   const items: SlashMenuItem[] = [
     {
       title: 'Heading 1',
-      description: '큰 제목',
+      description: t('blog.slashCommand.heading1'),
       icon: <Heading1 className="w-5 h-5" />,
       command: (e) => e.chain().focus().toggleHeading({ level: 1 }).run(),
     },
     {
       title: 'Heading 2',
-      description: '중간 제목',
+      description: t('blog.slashCommand.heading2'),
       icon: <Heading2 className="w-5 h-5" />,
       command: (e) => e.chain().focus().toggleHeading({ level: 2 }).run(),
     },
     {
       title: 'Heading 3',
-      description: '작은 제목',
+      description: t('blog.slashCommand.heading3'),
       icon: <Heading3 className="w-5 h-5" />,
       command: (e) => e.chain().focus().toggleHeading({ level: 3 }).run(),
     },
     {
       title: 'Bullet List',
-      description: '순서 없는 목록',
+      description: t('blog.slashCommand.bulletList'),
       icon: <List className="w-5 h-5" />,
       command: (e) => e.chain().focus().toggleBulletList().run(),
     },
     {
       title: 'Ordered List',
-      description: '순서 있는 목록',
+      description: t('blog.slashCommand.orderedList'),
       icon: <ListOrdered className="w-5 h-5" />,
       command: (e) => e.chain().focus().toggleOrderedList().run(),
     },
     {
       title: 'Task List',
-      description: '체크리스트',
+      description: t('blog.slashCommand.taskList'),
       icon: <ListChecks className="w-5 h-5" />,
       command: (e) => e.chain().focus().toggleTaskList().run(),
     },
     {
       title: 'Blockquote',
-      description: '인용문',
+      description: t('blog.slashCommand.blockquote'),
       icon: <Quote className="w-5 h-5" />,
       command: (e) => e.chain().focus().toggleBlockquote().run(),
     },
     {
       title: 'Code Block',
-      description: '코드 블록',
+      description: t('blog.slashCommand.codeBlock'),
       icon: <CodeSquare className="w-5 h-5" />,
       command: (e) => e.chain().focus().toggleCodeBlock().run(),
     },
     {
       title: 'Image',
-      description: '이미지 업로드',
+      description: t('blog.slashCommand.image'),
       icon: <ImagePlus className="w-5 h-5" />,
       command: () => fileInputRef.current?.click(),
     },
     {
       title: 'Divider',
-      description: '구분선',
+      description: t('blog.slashCommand.divider'),
       icon: <Minus className="w-5 h-5" />,
       command: (e) => e.chain().focus().setHorizontalRule().run(),
     },
