@@ -1,4 +1,4 @@
-.PHONY: help install dev build test lint clean deploy
+.PHONY: help install dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy-staging deploy-production logs ps down restart migrate shell createsuperuser
 
 help:
 	@echo "Available commands:"
@@ -8,16 +8,16 @@ help:
 	@echo "  make dev-clean   - Kill ports and start dev servers"
 	@echo "  make build       - Build production images"
 	@echo "  make test        - Run all tests"
+	@echo "  make test-ci     - Run all tests (CI mode, no watch)"
 	@echo "  make lint        - Run linters"
+	@echo "  make lint-fix    - Auto-fix lint issues"
 	@echo "  make clean       - Clean build artifacts"
-	@echo "  make deploy      - Deploy to production"
 	@echo "  make ports       - Check port status"
 	@echo "  make kill-ports  - Kill all dev ports"
 
 install:
 	npm install
-	cd backend && uv sync
-	npx husky install
+	cd backend && uv sync --extra dev
 
 dev:
 	./scripts/start-dev.sh
@@ -30,7 +30,7 @@ dev-clean:
 	npm run dev
 
 dev-docker:
-	docker-compose -f docker-compose.dev.yml up
+	docker compose -f docker-compose.dev.yml up
 
 ports:
 	./scripts/check-ports.sh
@@ -39,55 +39,55 @@ kill-ports:
 	./scripts/kill-ports.sh
 
 build:
-	docker-compose build
+	docker compose build
 
 test:
-	npm test
-	cd backend && uv run python manage.py test
+	cd frontend && npx vitest run
+	cd backend && DATABASE_URL="" uv run python manage.py test
 
 test-ci:
-	npm test -- --watchAll=false --passWithNoTests
-	cd backend && uv run coverage run --source='.' manage.py test && uv run coverage report
+	cd frontend && npx vitest run --no-coverage
+	cd backend && DATABASE_URL="" uv run coverage run --source='.' manage.py test && uv run coverage report
 
 lint:
-	npm run lint:frontend
+	cd frontend && npx eslint src
 	cd backend && uv run black --check . && uv run flake8
 
 lint-fix:
-	cd frontend && eslint src --fix
+	cd frontend && npx eslint src --fix
 	cd backend && uv run black .
 
 clean:
-	npm run clean
-	docker-compose down -v
-	docker system prune -f
+	rm -rf frontend/build frontend/node_modules/.cache
+	find backend -type d -name '__pycache__' -exec rm -rf {} +
+	rm -rf backend/staticfiles
 
 deploy-staging:
-	docker-compose -f docker-compose.yml build
-	docker-compose -f docker-compose.yml up -d
+	docker compose build
+	docker compose up -d
 
 deploy-production:
 	@echo "Deploying to production..."
-	docker-compose -f docker-compose.yml build
-	docker-compose -f docker-compose.yml up -d
+	docker compose build
+	docker compose up -d
 
 logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 ps:
-	docker-compose ps
+	docker compose ps
 
 down:
-	docker-compose down
+	docker compose down
 
 restart:
-	docker-compose restart
+	docker compose restart
 
 migrate:
-	docker-compose exec backend python manage.py migrate
+	docker compose exec backend python manage.py migrate
 
 shell:
-	docker-compose exec backend python manage.py shell
+	docker compose exec backend python manage.py shell
 
 createsuperuser:
-	docker-compose exec backend python manage.py createsuperuser
+	docker compose exec backend python manage.py createsuperuser

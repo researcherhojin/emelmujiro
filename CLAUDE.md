@@ -50,7 +50,7 @@ cd frontend && git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run b
 git pull && docker compose up -d --build  # Backend
 
 # Makefile shortcuts (from root)
-make install               # npm install + uv sync + husky install
+make install               # npm install + uv sync --extra dev
 make dev                   # Start dev via Docker (scripts/start-dev.sh)
 make dev-local             # npm run dev (no Docker)
 make test                  # Frontend + backend tests

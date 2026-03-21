@@ -32,7 +32,6 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.8.2",
     "remark-gfm": "^4.0.1",
-    "terser": "^5.46.0",
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
@@ -58,15 +57,14 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-testing-library": "^7.16.0",
     "globals": "^17.3.0",
-    "husky": "^9.1.7",
     "jsdom": "^29.0.0",
-    "lint-staged": "^16.1.6",
     "msw": "^2.11.2",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "sitemap": "^9.0.1",
     "source-map-explorer": "^2.5.3",
     "tailwindcss": "^3.4.19",
+    "terser": "^5.46.0",
     "typescript": "^5.9.2",
     "vite": "^8.0.0",
     "vitest": "^4.0.18"
@@ -88,17 +86,15 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "format": "prettier --write src/**/*.{js,jsx,ts,tsx,css,md}",
     "format:check": "prettier --check src/**/*.{js,jsx,ts,tsx,css,md}",
-    "prepare": "husky",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
     "clean": "rm -rf build node_modules/.cache",
     "clean:all": "rm -rf build node_modules coverage playwright-report test-results",
-    "validate": "npm run lint && npm run type-check && npm run test:coverage",
-    "pre-commit": "lint-staged"
+    "validate": "npm run lint && npm run type-check && npm run test:coverage"
   },
   "browserslist": {
     "production": [
@@ -112,11 +108,7 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://127.0.0.1:8000",
   "overrides": {
-    "nth-check": "^2.1.1",
-    "svgo": "^3.0.0",
-    "css-select": "^5.1.0",
     "minimatch": ">=10.2.1"
   }
 }

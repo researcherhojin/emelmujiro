@@ -3,11 +3,12 @@
 <div align="center">
 
 [![CI/CD Pipeline](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml)
+[![PR Checks](https://github.com/researcherhojin/emelmujiro/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/researcherhojin/emelmujiro/actions/workflows/pr-checks.yml)
 [![codecov](https://codecov.io/gh/researcherhojin/emelmujiro/graph/badge.svg)](https://codecov.io/gh/researcherhojin/emelmujiro)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-**[Live Site](https://emelmujiro.com)** | **[Issues](https://github.com/researcherhojin/emelmujiro/issues)**
+**[Live Site](https://emelmujiro.com)** | **[Contributing](CONTRIBUTING.md)** | **[Issues](https://github.com/researcherhojin/emelmujiro/issues)**
 
 </div>
 
@@ -26,8 +27,8 @@ A full-stack monorepo for an AI education & consulting platform, built with Reac
 ![TipTap](https://img.shields.io/badge/TipTap-3.20-1a1a2e)
 
 **Backend**<br/>
-![Django](https://img.shields.io/badge/Django-5.2.12-092E20?logo=django&logoColor=white)
-![DRF](https://img.shields.io/badge/DRF-3.16.1-A30000)
+![Django](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-3.16-A30000)
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
 
 **Testing**<br/>
@@ -47,15 +48,20 @@ A full-stack monorepo for an AI education & consulting platform, built with Reac
 
 ## Getting Started
 
+**Prerequisites**: Node >= 24, Python 3.12, [uv](https://docs.astral.sh/uv/)
+
 ```bash
 git clone https://github.com/researcherhojin/emelmujiro.git
-cd emelmujiro && npm install
+cd emelmujiro
 
-# Backend setup (requires uv)
-cd backend && uv sync --extra dev && uv run python manage.py migrate && cd ..
+# Install all dependencies
+make install
+
+# Backend first-time setup
+cd backend && uv run python manage.py migrate && cd ..
 
 # Start both servers
-npm run dev              # Frontend (localhost:5173) + Backend (localhost:8000)
+npm run dev                # Frontend (localhost:5173) + Backend (localhost:8000)
 ```
 
 ## Architecture
@@ -71,14 +77,14 @@ graph LR
     end
 
     subgraph MacMini["Mac Mini (Docker)"]
-        Nginx["nginx:alpine<br/>emelmujiro.com"]
-        DRF["Django 5 + DRF<br/>api.emelmujiro.com"]
+        Nginx["nginx:alpine\nStatic files"]
+        DRF["Django 5 + DRF\nAPI + WebSocket"]
         DB[(SQLite)]
     end
 
-    React --> Tunnel
-    Tunnel --> Nginx
-    Tunnel --> DRF
+    React -->|emelmujiro.com| Tunnel
+    Tunnel -->|:8080| Nginx
+    Tunnel -->|:8000| DRF
     DRF --> DB
 
     style Tunnel fill:#F3E8FF,stroke:#7C3AED
@@ -89,25 +95,15 @@ graph LR
 ## Key Features
 
 - **Bilingual (i18n)** — URL-based language routing (`/about` for Korean, `/en/about` for English)
-- **SSG Prerendering** — 12 static HTML pages (6 routes × 2 languages) for SEO
-- **Blog** — Full CRUD API with TipTap rich text editor (Notion-like), image upload, likes (IP-based), nested comments, admin toolbar (publish toggle, delete, edit)
+- **SSG Prerendering** — 12 static HTML pages (6 routes x 2 languages) for SEO
+- **Blog** — TipTap rich text editor (Notion-like), image upload, IP-based likes, nested comments, admin toolbar
 - **Auth** — httpOnly cookie JWT with automatic token refresh
-- **Real-time Notifications** — WebSocket notifications with type-specific icons, per-user preferences, email delivery
-- **Admin** — Django Admin + frontend admin toolbar (blog publish/delete/edit, comment delete)
-- **Monitoring** — Sentry error tracking (user context on login/logout) + Google Analytics (blog views, dark mode, language switch events)
+- **Real-time Notifications** — WebSocket (Daphne/ASGI) with per-user preferences and email delivery
+- **Monitoring** — Sentry error tracking + Google Analytics
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
-- **Performance** — Optimized chunk splitting (react-vendor, ui-vendor, i18n, sentry, http-vendor, tiptap), Lighthouse CI assertions
-- **Auto-deploy** — GitHub Actions → webhook → Mac Mini build; PR checks: lint, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright)
-- **Testing** — 63 unit test files (~863 tests), 10 E2E spec files (Playwright), ~181 backend tests (Django)
-
-## Roadmap
-
-- [ ] **Blog: RAG vs Fine-tuning** — when to choose which approach
-- [ ] **Blog: AI Agent adoption checklist** — security, cost, system integration
-- [ ] **Blog: Measuring LLM ROI** — quantitative evaluation methods
-- [ ] **Blog: Building an internal document RAG system** — architecture, lessons learned
-- [ ] **Blog: Automating workflows with AI Agents** — real before/after cases
-- [ ] **Blog: ROI report after 3 months** — measured results from actual deployment
+- **Performance** — Optimized chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
+- **CI/CD** — GitHub Actions: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
+- **Testing** — ~863 unit tests (Vitest), 10 E2E specs (Playwright), ~181 backend tests (Django)
 
 ## License
 

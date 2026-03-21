@@ -57,6 +57,6 @@ ignore:
   - "**/*.spec.tsx"
   - "**/*.test.jsx"
   - "**/test-utils/**"
-  - "**/mock/**"
+  - "**/mocks/**"
   - "frontend/src/setupTests.ts"
   - "frontend/src/utils/webVitals.ts"

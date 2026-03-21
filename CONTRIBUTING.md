@@ -27,13 +27,11 @@ git checkout -b fix/bug-description         # 버그 수정
 ### 4. 개발 환경 설정
 
 ```bash
-# Frontend (npm workspaces — 루트에서 실행)
-npm install
+# 전체 설치 (루트에서 실행)
+make install               # npm install + uv sync --extra dev
 
-# Backend (uv 필요)
-cd backend
-uv sync --extra dev
-uv run python manage.py migrate
+# Backend 초기 설정
+cd backend && uv run python manage.py migrate && cd ..
 ```
 
 ### 5. 개발 서버 실행
