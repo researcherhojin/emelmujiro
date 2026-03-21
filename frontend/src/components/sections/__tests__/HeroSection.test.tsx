@@ -1,12 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import HeroSection from '../HeroSection';
 
-// Mock useNavigate
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await import('react-router-dom');
+// Mock useNavigate — vi.hoisted ensures mockNavigate is available when vi.mock is hoisted
+const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }));
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
   return {
     ...actual,
     useNavigate: () => mockNavigate,
@@ -28,7 +28,7 @@ vi.mock('react-i18next', () => ({
 
 describe('HeroSection Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
-    return render(<BrowserRouter>{component}</BrowserRouter>);
+    return render(<MemoryRouter>{component}</MemoryRouter>);
   };
 
   test('renders main heading', () => {
