@@ -140,6 +140,9 @@ jobs:
           # Fix paths in coverage.xml for Codecov: api/file.py → backend/api/file.py
           sed -i 's|filename="api/|filename="backend/api/|g' coverage.xml
           sed -i 's|<source>.*</source>|<source>.</source>|g' coverage.xml
+          # Debug: verify sed worked
+          echo "=== coverage.xml source and first 3 filenames ==="
+          grep -E "<source>|filename=" coverage.xml | head -4
 
       - name: Upload backend coverage to Codecov
         if: always()
