@@ -72,6 +72,7 @@ jobs:
             node_modules
             frontend/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-modules-
 
       - name: Install dependencies
         if: steps.node-cache.outputs.cache-hit != 'true'
@@ -151,6 +152,7 @@ jobs:
             node_modules
             frontend/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-modules-
 
       - name: Install dependencies
         if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/') && steps.node-cache.outputs.cache-hit != 'true'
@@ -238,6 +240,7 @@ jobs:
             node_modules
             frontend/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-modules-
 
       - name: Install dependencies
         if: steps.node-cache.outputs.cache-hit != 'true'
@@ -305,6 +308,7 @@ jobs:
             node_modules
             frontend/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-modules-
 
       - name: Install dependencies
         if: steps.node-cache.outputs.cache-hit != 'true'
@@ -329,12 +333,69 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+  # E2E tests (Playwright — Chromium only for speed)
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: quick-checks
+    continue-on-error: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache node_modules
+        uses: actions/cache@v5
+        id: node-cache
+        with:
+          path: |
+            node_modules
+            frontend/node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-modules-
+
+      - name: Install dependencies
+        if: steps.node-cache.outputs.cache-hit != 'true'
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Install Playwright Chromium
+        working-directory: ./frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests (Chromium only)
+        working-directory: ./frontend
+        run: npx playwright test --project=chromium
+        timeout-minutes: 10
+
+      - name: Upload E2E results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-results
+          path: frontend/playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
   # PR comment with results summary
   pr-comment:
     name: PR Summary
     runs-on: ubuntu-latest
     if: always()
-    needs: [frontend-lint, backend-lint, affected-tests, security-scan, bundle-analysis, lighthouse]
+    needs:
+      [
+        frontend-lint,
+        backend-lint,
+        affected-tests,
+        security-scan,
+        bundle-analysis,
+        lighthouse,
+        e2e-tests,
+      ]
     permissions:
       pull-requests: write
       issues: write
@@ -364,6 +425,7 @@ jobs:
             | Security | ${{ needs.security-scan.result == 'success' && '✅' || '❌' }} |
             | Bundle Size | ${{ needs.bundle-analysis.result == 'success' && '✅' || '❌' }} |
             | Lighthouse | ${{ needs.lighthouse.result == 'success' && '✅' || '❌' }} |
+            | E2E Tests | ${{ needs.e2e-tests.result == 'success' && '✅' || needs.e2e-tests.result == 'failure' && '⚠️' || '⏭️' }} |
 
             <details>
             <summary>Details</summary>

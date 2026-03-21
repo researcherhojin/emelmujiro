@@ -281,6 +281,5 @@ Frontend: `nginx:alpine` container volume-mounting `frontend/build/`. Rebuild = 
 10. **Backend tests need `DATABASE_URL=""`**: If env var points to Docker PostgreSQL, tests fail. Use SQLite
 11. **ESLint zero warnings**: Use `useCallback` for context functions, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements
 12. **No hardcoded site URLs**: Always use `SITE_URL` from `constants.ts`. `generate-sitemap.js` has its own constant (Node.js, can't import from frontend)
-13. **CONTRIBUTING.md is stale**: References `store/` (Zustand), `Chat` context, and `Form` context that no longer exist. Also says `uv sync --dev` which should be `uv sync --extra dev`. Trust CLAUDE.md over CONTRIBUTING.md for architecture details
-14. **Branch naming**: Use `feature/name` for features, `fix/description` for bug fixes (per CONTRIBUTING.md convention)
-15. **All UI strings must use i18n**: Never hardcode user-facing text — use `useTranslation()` in React components, `i18n.t()` in data files
+13. **Branch naming**: Use `feature/name` for features, `fix/description` for bug fixes (per CONTRIBUTING.md convention)
+14. **All UI strings must use i18n**: Never hardcode user-facing text — use `useTranslation()` in React components, `i18n.t()` in data files

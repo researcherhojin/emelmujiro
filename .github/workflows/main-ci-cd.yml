@@ -36,6 +36,7 @@ jobs:
             node_modules
             frontend/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-modules-
 
       - name: Install dependencies
         if: steps.node-cache.outputs.cache-hit != 'true'
@@ -117,6 +118,7 @@ jobs:
             node_modules
             frontend/node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-modules-
 
       - name: Install dependencies
         if: steps.node-cache.outputs.cache-hit != 'true'

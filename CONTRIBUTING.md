@@ -32,15 +32,15 @@ npm install
 
 # Backend (uv 필요)
 cd backend
-uv sync --dev
+uv sync --extra dev
+uv run python manage.py migrate
 ```
 
 ### 5. 개발 서버 실행
 
 ```bash
 npm run dev              # Frontend(5173) + Backend(8000) 동시 실행
-npm run dev:frontend     # Frontend만
-npm run dev:backend      # Backend만
+npm run dev:clean        # 포트 정리 후 실행
 ```
 
 ### 6. 코드 작성 규칙
@@ -50,6 +50,7 @@ npm run dev:backend      # Backend만
 - **Tailwind CSS** 유틸리티 클래스 우선 사용
 - **i18n**: 모든 UI 문자열은 `useTranslation()` 사용 (하드코딩 금지)
 - **ESLint + Prettier** 규칙 준수 (pre-commit 훅이 자동 실행)
+- **상태 관리**: React Context 사용 (`src/contexts/` — UIContext, AuthContext, BlogContext, NotificationContext)
 
 ### 7. 커밋 메시지
 
@@ -60,15 +61,14 @@ feat(frontend): add dark mode toggle
 fix(api): handle 401 token refresh
 docs(readme): update tech stack section
 test(blog): add BlogCard snapshot tests
-refactor(store): simplify auth slice
-chore(deps): bump vite to 7.1
+refactor(auth): simplify token refresh logic
+chore(deps): bump vite to 8.0
 ```
 
 ### 8. 테스트
 
 ```bash
-# Frontend 테스트
-cd frontend
+# Frontend 테스트 (from frontend/)
 npm run test:run         # 단일 실행
 npm test                 # Watch 모드
 npm run test:coverage    # 커버리지 리포트
@@ -79,12 +79,11 @@ npm run validate
 # E2E 테스트
 npm run test:e2e
 
-# Backend 테스트
-cd backend
-uv run python manage.py test
+# Backend 테스트 (from backend/)
+DATABASE_URL="" uv run python manage.py test
 ```
 
-모든 새로운 컴포넌트에 테스트 파일이 필요합니다. `renderWithProviders` 유틸리티를 사용해주세요:
+테스트에서 `renderWithProviders` 유틸리티를 사용해주세요:
 
 ```tsx
 import { renderWithProviders } from '@/test-utils/renderWithProviders';
@@ -98,19 +97,19 @@ test('renders correctly', () => {
 ### 9. Pull Request
 
 - `main` 브랜치로 PR을 생성해주세요
-- 모든 CI 체크(lint, type-check, test, build)가 통과하는지 확인해주세요
+- 모든 CI 체크(lint, type-check, test, security scan, bundle size, lighthouse)가 통과하는지 확인해주세요
 - PR 설명에 변경 사항과 테스트 계획을 포함해주세요
 
 ## 프로젝트 구조
 
 ```
 emelmujiro/
-├── frontend/               # React 19 + TypeScript + Vite
+├── frontend/               # React 19 + TypeScript + Vite 8
 │   ├── src/
 │   │   ├── components/     # React 컴포넌트 (pages, common, sections, layout)
-│   │   ├── store/          # Zustand 상태 관리
-│   │   ├── services/       # API 서비스 (Mock + Real)
-│   │   ├── contexts/       # React Context (UI, Auth, Blog, Form, Chat)
+│   │   ├── contexts/       # React Context (UI, Auth, Blog, Notification)
+│   │   ├── services/       # API 서비스 (Axios + Mock)
+│   │   ├── hooks/          # 커스텀 훅
 │   │   ├── i18n/           # 다국어 지원 (ko/en)
 │   │   └── test-utils/     # 테스트 유틸리티 + MSW 목 서버
 │   └── e2e/                # Playwright E2E 테스트
