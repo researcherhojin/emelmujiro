@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom'; // Add this import
 import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
@@ -283,5 +283,224 @@ describe('BlogSearch', () => {
     // Check for search icon (mocked as a div with data-testid)
     const searchIcon = screen.getByTestId('search-icon');
     expect(searchIcon).toBeInTheDocument();
+  });
+
+  it('shows clear button (X icon) when search term is entered', async () => {
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder');
+    fireEvent.change(input, { target: { value: 'React' } });
+
+    // X icon should appear when there is text
+    await waitFor(() => {
+      expect(screen.getByTestId('x-icon')).toBeInTheDocument();
+    });
+  });
+
+  it('does not show clear button when search term is empty', () => {
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+
+    expect(screen.queryByTestId('x-icon')).not.toBeInTheDocument();
+  });
+
+  it('clears search term and calls onSearch with posts when clear button is clicked', async () => {
+    const onSearch = vi.fn();
+    renderWithProviders(<BlogSearch onSearch={onSearch} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'React' } });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('x-icon')).toBeInTheDocument();
+    });
+
+    // Click the clear button (parent of the X icon)
+    const clearButton = screen.getByTestId('x-icon').closest('button');
+    expect(clearButton).not.toBeNull();
+    fireEvent.click(clearButton!);
+
+    expect(input.value).toBe('');
+    // onSearch should be called with posts (restoring original list)
+    expect(onSearch).toHaveBeenCalled();
+  });
+
+  it('shows no results message when search finds nothing', async () => {
+    vi.mocked(api.searchBlogPosts).mockResolvedValueOnce({
+      data: { results: [], count: 0, next: null, previous: null },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as any,
+    });
+
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder');
+    fireEvent.change(input, { target: { value: 'nonexistent' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('blog.noSearchResults')).toBeInTheDocument();
+    });
+  });
+
+  it('shows results count when search finds posts', async () => {
+    const mockResults = [
+      {
+        id: '1',
+        title: 'React Post',
+        slug: 'react',
+        content: 'content',
+        excerpt: '',
+        author: 'a',
+        publishedAt: '',
+      },
+      {
+        id: '2',
+        title: 'React Tips',
+        slug: 'tips',
+        content: 'content',
+        excerpt: '',
+        author: 'a',
+        publishedAt: '',
+      },
+    ];
+
+    vi.mocked(api.searchBlogPosts).mockResolvedValueOnce({
+      data: { results: mockResults, count: 2, next: null, previous: null },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as any,
+    });
+
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder');
+    fireEvent.change(input, { target: { value: 'React' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('2 blog.searchResults')).toBeInTheDocument();
+    });
+  });
+
+  it('falls back to local search when API fails', async () => {
+    vi.mocked(api.searchBlogPosts).mockRejectedValueOnce(new Error('API error'));
+
+    const onSearch = vi.fn();
+    renderWithProviders(<BlogSearch onSearch={onSearch} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder');
+    fireEvent.change(input, { target: { value: 'test' } });
+
+    // Should still call onSearch with local search results
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenCalled();
+    });
+  });
+
+  it('shows recent searches dropdown when input is focused and recent searches exist', () => {
+    localStorage.setItem('recentSearches', JSON.stringify(['React', 'TypeScript']));
+
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder');
+    fireEvent.focus(input);
+
+    expect(screen.getByText('React')).toBeInTheDocument();
+    expect(screen.getByText('TypeScript')).toBeInTheDocument();
+    expect(screen.getByText('blog.recentSearches')).toBeInTheDocument();
+  });
+
+  it('applies recent search when clicked', async () => {
+    localStorage.setItem('recentSearches', JSON.stringify(['React']));
+    const onSearch = vi.fn();
+
+    renderWithProviders(<BlogSearch onSearch={onSearch} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+    fireEvent.focus(input);
+
+    const recentItem = screen.getByText('React');
+    fireEvent.click(recentItem);
+
+    await waitFor(() => {
+      expect(input.value).toBe('React');
+    });
+  });
+
+  it('clears recent searches when clear all button is clicked', () => {
+    localStorage.setItem('recentSearches', JSON.stringify(['React', 'TypeScript']));
+
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder');
+    fireEvent.focus(input);
+
+    const clearAllButton = screen.getByText('blog.clearAll');
+    fireEvent.click(clearAllButton);
+
+    expect(localStorage.removeItem).toHaveBeenCalledWith('recentSearches');
+  });
+
+  it('saves search term to recent searches on form submit', async () => {
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'NewSearch' } });
+
+    if (input.form) {
+      fireEvent.submit(input.form);
+    }
+
+    await waitFor(() => {
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'recentSearches',
+        expect.stringContaining('NewSearch')
+      );
+    });
+  });
+
+  it('handles invalid JSON in localStorage gracefully', () => {
+    localStorage.setItem('recentSearches', 'invalid-json');
+
+    // Should not throw
+    expect(() => {
+      renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+    }).not.toThrow();
+  });
+
+  it('does not show suggestions dropdown when no recent searches', () => {
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder');
+    fireEvent.focus(input);
+
+    expect(screen.queryByText('blog.recentSearches')).not.toBeInTheDocument();
+  });
+
+  it('hides suggestions on blur after timeout', async () => {
+    vi.useFakeTimers();
+    localStorage.setItem('recentSearches', JSON.stringify(['React']));
+
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder');
+    fireEvent.focus(input);
+
+    expect(screen.getByText('blog.recentSearches')).toBeInTheDocument();
+
+    fireEvent.blur(input);
+
+    // Suggestions should still be visible before timeout
+    expect(screen.getByText('blog.recentSearches')).toBeInTheDocument();
+
+    // After 200ms blur timeout
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
+
+    expect(screen.queryByText('blog.recentSearches')).not.toBeInTheDocument();
+
+    vi.useRealTimers();
   });
 });

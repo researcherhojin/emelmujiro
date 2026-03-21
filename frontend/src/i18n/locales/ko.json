@@ -376,6 +376,7 @@
     "noPosts": "블로그 준비 중",
     "noPostsDescription": "양질의 AI 인사이트와 기술 트렌드를 준비하고 있습니다. 조금만 기다려주세요.",
     "sectionLabel": "TECH BLOG",
+    "comingSoonLabel": "COMING SOON",
     "comingSoon": "콘텐츠 준비 중",
     "comingSoonDescription": "LLM, AI 에이전트, RAG 등 최신 기술 분석을 곧 공유합니다.",
     "pageOf": "{{current}} / {{total}} 페이지",

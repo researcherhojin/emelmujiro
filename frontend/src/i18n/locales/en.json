@@ -392,6 +392,7 @@
     "noPosts": "Blog Coming Soon",
     "noPostsDescription": "We're preparing quality AI insights and tech trends. Please check back soon.",
     "sectionLabel": "TECH BLOG",
+    "comingSoonLabel": "COMING SOON",
     "comingSoon": "Preparing Content",
     "comingSoonDescription": "Technical insights on LLMs, AI agents, and RAG.",
     "pageOf": "Page {{current}} / {{total}}",

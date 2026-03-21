@@ -103,7 +103,7 @@ const BlogListPage: React.FC = memo(() => {
               !loading && (
                 <div className="text-center py-24">
                   <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
-                    COMING SOON
+                    {t('blog.comingSoonLabel')}
                   </span>
                   <h2 className="mt-4 text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-4">
                     {t('blog.comingSoon')}
