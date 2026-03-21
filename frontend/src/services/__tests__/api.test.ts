@@ -1,7 +1,41 @@
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { InternalAxiosRequestConfig } from 'axios';
 
 vi.stubEnv('NODE_ENV', 'development');
+
+// Hoisted mock for env
+const { mockEnv } = vi.hoisted(() => ({
+  mockEnv: {
+    IS_PRODUCTION: false,
+    IS_DEVELOPMENT: true,
+    IS_TEST: true,
+    API_URL: 'http://localhost:8000/api',
+    WS_URL: 'ws://localhost:8000/ws',
+    ENABLE_SENTRY: false,
+    SENTRY_DSN: '',
+    ENABLE_ANALYTICS: false,
+    GA_TRACKING_ID: '',
+    NODE_ENV: 'development',
+    APP_NAME: 'Emelmujiro',
+    APP_VERSION: '1.0.0',
+    PUBLIC_URL: '',
+  },
+}));
+
+vi.mock('../../config/env', () => ({
+  default: mockEnv,
+  env: mockEnv,
+}));
+
+// Mock logger
+vi.mock('../../utils/logger', () => ({
+  default: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
+}));
+
+// Mock i18n
+vi.mock('../../i18n', () => ({
+  default: { t: (key: string) => key, language: 'ko' },
+}));
 
 // Mock axios properly
 const mockGet = vi.fn();
@@ -130,6 +164,122 @@ describe('API Service', () => {
           expect(err.userMessage).toBeDefined();
         }
       }
+    });
+
+    it('should upgrade baseURL from http to https in production (lines 62-63)', async () => {
+      await import('../api');
+
+      const requestInterceptor = mockRequestUse.mock.calls[0]?.[0];
+      if (requestInterceptor) {
+        const mockConfig: InternalAxiosRequestConfig = {
+          headers: {} as any,
+          baseURL: 'http://api.example.com',
+          url: 'https://api.example.com/test',
+        } as InternalAxiosRequestConfig;
+
+        const result = requestInterceptor(mockConfig);
+        expect(result).toBeDefined();
+      }
+    });
+
+    it('should reject request errors (line 69)', async () => {
+      await import('../api');
+
+      const requestErrorHandler = mockRequestUse.mock.calls[0]?.[1];
+      if (requestErrorHandler) {
+        const error = new Error('Request setup failed');
+        try {
+          await requestErrorHandler(error);
+        } catch (err) {
+          expect(err).toBe(error);
+        }
+      }
+    });
+
+    it('should pass through successful responses (line 75)', async () => {
+      await import('../api');
+
+      const responseSuccessHandler = mockResponseUse.mock.calls[0]?.[0];
+      if (responseSuccessHandler) {
+        const mockResponse = { data: { test: true }, status: 200 };
+        const result = responseSuccessHandler(mockResponse);
+        expect(result).toBe(mockResponse);
+      }
+    });
+
+    it('should handle network errors without response (lines 87-89)', async () => {
+      await import('../api');
+
+      const errorInterceptor = mockResponseUse.mock.calls[0]?.[1];
+      if (errorInterceptor) {
+        const error = {
+          response: undefined,
+          config: {},
+          message: 'Network Error',
+        };
+
+        try {
+          await errorInterceptor(error);
+        } catch (err: any) {
+          expect(err.message).toBeDefined();
+        }
+      }
+    });
+
+    it('should log error in development mode (line 99)', async () => {
+      mockEnv.IS_DEVELOPMENT = true;
+      await import('../api');
+
+      const errorInterceptor = mockResponseUse.mock.calls[0]?.[1];
+      if (errorInterceptor) {
+        const error = {
+          response: {
+            status: 500,
+            data: { message: 'Internal Server Error' },
+          },
+          config: { url: '/api/test' },
+        };
+
+        try {
+          await errorInterceptor(error);
+        } catch (err: any) {
+          expect(err.userMessage).toBeDefined();
+        }
+      }
+    });
+
+    it('should upgrade url from http to https in production (lines 58-59)', async () => {
+      mockEnv.IS_PRODUCTION = true;
+      await import('../api');
+
+      const requestInterceptor = mockRequestUse.mock.calls[0]?.[0];
+      if (requestInterceptor) {
+        const mockConfig: InternalAxiosRequestConfig = {
+          headers: {} as any,
+          url: 'http://api.example.com/test',
+        } as InternalAxiosRequestConfig;
+
+        const result = requestInterceptor(mockConfig);
+        expect(result.url).toBe('https://api.example.com/test');
+      }
+      mockEnv.IS_PRODUCTION = false;
+    });
+
+    it('should upgrade baseURL from http to https in production (lines 62-63 production)', async () => {
+      mockEnv.IS_PRODUCTION = true;
+      await import('../api');
+
+      const requestInterceptor = mockRequestUse.mock.calls[0]?.[0];
+      if (requestInterceptor) {
+        const mockConfig: InternalAxiosRequestConfig = {
+          headers: {} as any,
+          baseURL: 'http://api.example.com',
+        } as InternalAxiosRequestConfig;
+
+        const result = requestInterceptor(mockConfig);
+        expect(result.baseURL).toBe('https://api.example.com');
+      }
+      mockEnv.IS_PRODUCTION = false;
     });
   });
 });

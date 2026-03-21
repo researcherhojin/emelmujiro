@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, describe, test, expect, beforeEach, it } from 'vitest';
 import { UIProvider, useUI } from '../UIContext';
 
 // Test component to consume the context
@@ -558,6 +558,80 @@ describe('UIContext', () => {
       vi.advanceTimersByTime(100);
     });
     expect(document.documentElement.style.getPropertyValue('--theme-transition')).toBe('');
+
+    vi.useRealTimers();
+  });
+
+  test('uses addListener fallback when addEventListener is not available (line 149)', () => {
+    mockLocalStorage.getItem.mockReturnValue(null);
+
+    const addListenerMock = vi.fn();
+    const removeListenerMock = vi.fn();
+
+    mockMatchMedia.mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: addListenerMock,
+      removeListener: removeListenerMock,
+      // No addEventListener/removeEventListener
+      addEventListener: undefined,
+      removeEventListener: undefined,
+      dispatchEvent: vi.fn(),
+    }));
+
+    const { unmount } = render(
+      <UIProvider>
+        <TestComponent />
+      </UIProvider>
+    );
+
+    // Should have used addListener fallback (line 149)
+    expect(addListenerMock).toHaveBeenCalled();
+
+    // Unmount to trigger cleanup with removeListener fallback (line 156)
+    unmount();
+    expect(removeListenerMock).toHaveBeenCalled();
+  });
+
+  test('clears notification timer when removing a notification that has a timer (lines 172-173)', () => {
+    vi.useFakeTimers();
+
+    const NotificationTimerTestComponent: React.FC = () => {
+      const { notifications, showNotification, removeNotification } = useUI();
+      return (
+        <div>
+          <div data-testid="notification-count">{notifications.length}</div>
+          {notifications.map((n) => (
+            <button key={n.id} onClick={() => removeNotification(n.id)}>
+              Remove {n.id}
+            </button>
+          ))}
+          <button onClick={() => showNotification('info', 'Timed msg', 5000)}>Add Timed</button>
+        </div>
+      );
+    };
+
+    render(
+      <UIProvider>
+        <NotificationTimerTestComponent />
+      </UIProvider>
+    );
+
+    // Add a notification with a timer
+    fireEvent.click(screen.getByText('Add Timed'));
+    expect(screen.getByTestId('notification-count')).toHaveTextContent('1');
+
+    // Remove it manually before the timer fires (triggers clearTimeout on lines 172-173)
+    const removeButton = screen.getByText(/Remove /);
+    fireEvent.click(removeButton);
+    expect(screen.getByTestId('notification-count')).toHaveTextContent('0');
+
+    // Advance time to make sure no error from double removal
+    act(() => {
+      vi.advanceTimersByTime(6000);
+    });
+    expect(screen.getByTestId('notification-count')).toHaveTextContent('0');
 
     vi.useRealTimers();
   });

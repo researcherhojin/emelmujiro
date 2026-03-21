@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import '@testing-library/jest-dom'; // Add this import
-import { vi } from 'vitest';
+import '@testing-library/jest-dom';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import BlogSearch from '../BlogSearch';
@@ -502,5 +502,70 @@ describe('BlogSearch', () => {
     expect(screen.queryByText('blog.recentSearches')).not.toBeInTheDocument();
 
     vi.useRealTimers();
+  });
+
+  it('resets search results and calls onSearch with posts when search is empty (lines 60-62)', async () => {
+    const onSearch = vi.fn();
+    renderWithProviders(<BlogSearch onSearch={onSearch} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+
+    // First type something to trigger a search
+    fireEvent.change(input, { target: { value: 'React' } });
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenCalled();
+    });
+
+    onSearch.mockClear();
+
+    // Now clear the input to trigger empty search branch (lines 60-62)
+    fireEvent.change(input, { target: { value: '' } });
+
+    // onSearch should be called with posts (empty array from context)
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenCalled();
+    });
+  });
+
+  it('performs local search when API returns no results property (line 82)', async () => {
+    // Make API return response without results property
+    vi.mocked(api.searchBlogPosts).mockResolvedValueOnce({
+      data: {} as any,
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as any,
+    });
+
+    const onSearch = vi.fn();
+    renderWithProviders(<BlogSearch onSearch={onSearch} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder');
+    fireEvent.change(input, { target: { value: 'test' } });
+
+    // Should fall back to local search since response.data.results is undefined
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenCalled();
+    });
+  });
+
+  it('works without onSearch callback (lines 61, 71, 90)', async () => {
+    // Render without onSearch prop
+    renderWithProviders(<BlogSearch />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+
+    // Empty search without onSearch
+    fireEvent.change(input, { target: { value: '' } });
+
+    // Type something without onSearch
+    fireEvent.change(input, { target: { value: 'test' } });
+
+    await waitFor(() => {
+      expect(input.value).toBe('test');
+    });
+
+    // Should not crash
+    expect(input).toBeInTheDocument();
   });
 });

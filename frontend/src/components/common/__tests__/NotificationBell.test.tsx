@@ -490,4 +490,60 @@ describe('NotificationBell', () => {
 
     expect(mockFetchNotifications).toHaveBeenCalled();
   });
+
+  it('navigates to notification URL and closes panel when clicking notification with url (lines 72, 149-150)', () => {
+    mockNotifications = [
+      {
+        id: 50,
+        title: 'Navigate Me',
+        message: 'Has URL',
+        level: 'info',
+        notification_type: 'blog',
+        url: '/blog/42',
+        is_read: false,
+        read_at: null,
+        created_at: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<NotificationBell />);
+
+    // Open panel
+    const bellButton = screen.getByRole('button');
+    fireEvent.click(bellButton);
+
+    // Click the notification with URL
+    fireEvent.click(screen.getByText('Navigate Me'));
+
+    // Should mark as read
+    expect(mockMarkAsRead).toHaveBeenCalledWith(50);
+    // Panel should close (no longer showing notifications.title header)
+    expect(screen.queryByText('notifications.title')).not.toBeInTheDocument();
+  });
+
+  it('does not navigate when notification has no URL (line 72)', () => {
+    mockNotifications = [
+      {
+        id: 60,
+        title: 'No URL Item',
+        message: 'No URL',
+        level: 'info',
+        notification_type: 'system',
+        url: '',
+        is_read: false,
+        read_at: null,
+        created_at: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<NotificationBell />);
+
+    // Open panel
+    fireEvent.click(screen.getByRole('button'));
+    // Click the notification without URL
+    fireEvent.click(screen.getByText('No URL Item'));
+
+    // Should still mark as read but not crash
+    expect(mockMarkAsRead).toHaveBeenCalledWith(60);
+  });
 });

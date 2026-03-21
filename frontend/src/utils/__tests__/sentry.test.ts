@@ -269,6 +269,31 @@ describe('sentry', () => {
       };
       expect(beforeSend(normalEvent, {})).toEqual(normalEvent);
     });
+
+    it('should filter events when React DevTools hook is present (line 29)', () => {
+      mockEnv.ENABLE_SENTRY = true;
+      mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
+
+      // Set React DevTools global hook
+      (window as unknown as Record<string, unknown>).__REACT_DEVTOOLS_GLOBAL_HOOK__ = {};
+
+      initSentry();
+
+      const callArgs = mockInit.mock.calls[0][0];
+      const beforeSend = callArgs.beforeSend;
+
+      const normalEvent = {
+        exception: {
+          values: [{ type: 'TypeError', value: 'Cannot read property' }],
+        },
+      };
+
+      // Should return null (event filtered) because DevTools is present
+      expect(beforeSend(normalEvent, {})).toBeNull();
+
+      // Clean up
+      delete (window as unknown as Record<string, unknown>).__REACT_DEVTOOLS_GLOBAL_HOOK__;
+    });
   });
 
   describe('captureException', () => {

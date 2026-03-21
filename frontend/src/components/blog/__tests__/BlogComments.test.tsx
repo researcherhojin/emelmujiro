@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -648,5 +648,88 @@ describe('BlogComments', () => {
     ) as HTMLTextAreaElement;
     fireEvent.change(replyTextarea, { target: { value: 'Typing reply...' } });
     expect(replyTextarea.value).toBe('Typing reply...');
+  });
+
+  it('formats date as days ago for 1-6 days old comments (line 273)', async () => {
+    const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+    const daysComments = [
+      {
+        id: 100,
+        post: 1,
+        parent: null,
+        author_name: 'Days Test',
+        content: 'Days ago comment',
+        likes: 0,
+        created_at: threeDaysAgo,
+        updated_at: threeDaysAgo,
+        replies: [],
+      },
+    ];
+    mockGetComments.mockResolvedValueOnce({ data: daysComments });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Days ago comment')).toBeInTheDocument();
+    });
+
+    // Should show days ago text: blog.timeDaysAgo(3)
+    expect(screen.getByText('blog.timeDaysAgo(3)')).toBeInTheDocument();
+  });
+
+  it('formats date as full date for comments older than 7 days (line 275)', async () => {
+    const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+    const oldComments = [
+      {
+        id: 101,
+        post: 1,
+        parent: null,
+        author_name: 'Old Test',
+        content: 'Old comment',
+        likes: 0,
+        created_at: twoWeeksAgo,
+        updated_at: twoWeeksAgo,
+        replies: [],
+      },
+    ];
+    mockGetComments.mockResolvedValueOnce({ data: oldComments });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Old comment')).toBeInTheDocument();
+    });
+
+    // Should show formatted date (toLocaleDateString), not the relative time
+    // The date will be in ko-KR format since i18n.language is 'ko'
+    const dateElement = screen.getByText('Old Test').closest('div')?.parentElement;
+    expect(dateElement).toBeTruthy();
+  });
+
+  it('formats date as hours ago for recent comments (line 271)', async () => {
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+    const hoursComments = [
+      {
+        id: 102,
+        post: 1,
+        parent: null,
+        author_name: 'Hours Test',
+        content: 'Hours ago comment',
+        likes: 0,
+        created_at: twoHoursAgo,
+        updated_at: twoHoursAgo,
+        replies: [],
+      },
+    ];
+    mockGetComments.mockResolvedValueOnce({ data: hoursComments });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Hours ago comment')).toBeInTheDocument();
+    });
+
+    // Should show hours ago text: blog.timeHoursAgo(2)
+    expect(screen.getByText('blog.timeHoursAgo(2)')).toBeInTheDocument();
   });
 });

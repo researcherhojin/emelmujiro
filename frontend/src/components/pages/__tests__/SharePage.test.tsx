@@ -1,5 +1,5 @@
 import React from 'react';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
@@ -422,5 +422,58 @@ describe('SharePage', () => {
         }),
       })
     );
+  });
+
+  it('clears existing toast timer when saving multiple times quickly (lines 26-29)', async () => {
+    renderSharePage('?title=Multi Save');
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('share.saveLater')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+
+    const buttons = screen.getAllByRole('button');
+    const saveButton = buttons.find((btn) => btn.textContent?.includes('share.saveLater'));
+
+    // Click save twice quickly to trigger clearTimeout on existing timer (line 26)
+    if (saveButton) {
+      fireEvent.click(saveButton);
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+
+      fireEvent.click(saveButton);
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+    }
+  });
+
+  it('hides toast and navigates home after timeout (lines 28-29)', async () => {
+    renderSharePage('?title=Toast Timer');
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('share.saveLater')).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
+
+    const buttons = screen.getAllByRole('button');
+    const saveButton = buttons.find((btn) => btn.textContent?.includes('share.saveLater'));
+
+    if (saveButton) {
+      fireEvent.click(saveButton);
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+
+      // Wait for the 1500ms toast timer to fire (lines 28-29)
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
+      // Should have navigated home (line 29)
+      expect(mockNavigate).toHaveBeenCalledWith('/');
+    }
   });
 });

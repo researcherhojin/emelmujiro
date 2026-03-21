@@ -504,5 +504,44 @@ describe('WebSocketService', () => {
 
       expect(sent).toBe(true);
     });
+
+    it('should return false for sendBinary when not connected (line 104)', () => {
+      // Not connected, so sendBinary should return false
+      const buffer = new ArrayBuffer(8);
+      const sent = wsService.sendBinary(buffer);
+
+      expect(sent).toBe(false);
+    });
+  });
+
+  describe('Queue Eviction', () => {
+    it('should evict oldest message when queue exceeds maxQueueSize (line 92)', () => {
+      // Send 101 messages (exceeds default maxQueueSize of 100)
+      for (let i = 0; i < 101; i++) {
+        wsService.send({ type: 'chat', data: `msg-${i}` });
+      }
+
+      // Queue should be capped at 100
+      expect(wsService.getQueueSize()).toBe(100);
+    });
+  });
+
+  describe('Heartbeat Edge Cases', () => {
+    it('should clear existing heartbeat before enabling new one (line 168)', async () => {
+      wsService.connect('ws://localhost:8000/ws/test/');
+      await vi.advanceTimersByTimeAsync(10);
+
+      // Enable heartbeat twice to trigger the clear on line 168
+      wsService.enableHeartbeat(500);
+      wsService.enableHeartbeat(200);
+
+      const sendSpy = vi.spyOn((wsService as any).ws, 'send');
+
+      // Advance enough for the second heartbeat interval only
+      await vi.advanceTimersByTimeAsync(250);
+
+      // Should have sent at least one heartbeat from the new interval
+      expect(sendSpy).toHaveBeenCalledWith(expect.stringContaining('ping'));
+    });
   });
 });

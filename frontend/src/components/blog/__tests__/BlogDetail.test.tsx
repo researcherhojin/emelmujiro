@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { BlogPost } from '../../../types';
 
@@ -889,5 +889,51 @@ describe('BlogDetail Component', () => {
     fireEvent.click(backButton);
 
     expect(mockNavigate).toHaveBeenCalledWith(-1);
+  });
+
+  test('preventImageAction prevents default on context menu and drag (line 24)', () => {
+    mockPost = {
+      id: 1,
+      title: 'Image Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Author',
+      category: 'Test',
+      tags: [],
+      image_url: 'https://example.com/test.jpg',
+      published: true,
+      slug: 'image-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    const img = screen.getByRole('img');
+    expect(img).toBeInTheDocument();
+
+    // Test contextmenu event preventDefault (line 24)
+    const contextMenuEvent = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+    const preventDefaultSpy = vi.spyOn(contextMenuEvent, 'preventDefault');
+    img.dispatchEvent(contextMenuEvent);
+    expect(preventDefaultSpy).toHaveBeenCalled();
+
+    // Test dragstart event preventDefault (line 24)
+    const dragStartEvent = new Event('dragstart', { bubbles: true, cancelable: true });
+    const dragPreventSpy = vi.spyOn(dragStartEvent, 'preventDefault');
+    img.dispatchEvent(dragStartEvent);
+    expect(dragPreventSpy).toHaveBeenCalled();
   });
 });
