@@ -55,12 +55,11 @@ jobs:
       - name: Upload frontend coverage to Codecov
         if: always()
         uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           directory: frontend/coverage
           flags: frontend
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Get Playwright version
         if: github.ref == 'refs/heads/main'
@@ -142,12 +141,11 @@ jobs:
       - name: Upload backend coverage to Codecov
         if: always()
         uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           files: backend/coverage.xml
           flags: backend
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   # ========================================
   # Deploy to GitHub Pages
