@@ -209,7 +209,7 @@ Target: **60%** minimum (currently ~81% statements). Config in `codecov.yml`. Sc
 **Conventional commits required**: `type(scope): description`. Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`.
 
 - **`main-ci-cd.yml`** — Push to `main` only (NOT pull requests). Tests (frontend + backend parallel) → build → GitHub Pages (backup) → Mac Mini webhook auto-deploy. Node 24, Python 3.12. Backend uses uv cache (`~/.cache/uv`).
-- **`pr-checks.yml`** — Parallelized: `quick-checks` → `frontend-lint` + `backend-lint` + `affected-tests` + `security-scan` + `build-for-analysis` (all parallel). Build shared via artifact: `bundle-analysis` + `lighthouse` reuse single build. uv cache + Trivy cache enabled.
+- **`pr-checks.yml`** — Parallelized: `quick-checks` → `frontend-lint` + `backend-lint` + `affected-tests` + `security-scan` + `build-for-analysis` + `e2e-tests` (all parallel). Build shared via artifact: `bundle-analysis` + `lighthouse` reuse single build. E2E runs Chromium only with `continue-on-error`. uv cache + Trivy cache enabled.
 
 ## Critical Configuration
 

@@ -96,7 +96,7 @@ graph LR
 - **Monitoring** — Sentry error tracking (user context on login/logout) + Google Analytics (blog views, dark mode, language switch events)
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting (react-vendor, ui-vendor, i18n, sentry, http-vendor, tiptap), Lighthouse CI assertions
-- **Auto-deploy** — GitHub Actions → webhook → Mac Mini build; PR checks: lint, security scan (Trivy), bundle size, Lighthouse CI
+- **Auto-deploy** — GitHub Actions → webhook → Mac Mini build; PR checks: lint, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright)
 - **Testing** — 63 unit test files (~863 tests), 10 E2E spec files (Playwright), ~181 backend tests (Django)
 
 ## Roadmap
