@@ -42,20 +42,19 @@ jobs:
         if: steps.node-cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Run frontend tests
+      - name: Run frontend tests with coverage
         working-directory: ./frontend
-        run: |
-          CI=true npm run test:ci
+        run: CI=true npx vitest run --bail=1 --coverage
         timeout-minutes: 10
 
-      - name: Upload test coverage
+      - name: Upload frontend coverage to Codecov
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: codecov/codecov-action@v5
         with:
-          name: frontend-coverage
-          path: frontend/coverage/
-          retention-days: 7
-          if-no-files-found: ignore
+          directory: frontend/coverage
+          flags: frontend
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   # ========================================
   # Backend Tests
@@ -83,14 +82,26 @@ jobs:
         working-directory: ./backend
         run: uv sync --frozen --extra dev
 
-      - name: Run backend tests
+      - name: Run backend tests with coverage
         working-directory: ./backend
         timeout-minutes: 5
         env:
           DATABASE_URL: ""
           SECRET_KEY: test-secret-key
           DEBUG: "True"
-        run: uv run python manage.py test
+        run: |
+          uv run coverage run --parallel-mode --source=api manage.py test --parallel
+          uv run coverage combine
+          uv run coverage xml -o coverage.xml
+
+      - name: Upload backend coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          files: backend/coverage.xml
+          flags: backend
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   # ========================================
   # Build Frontend
