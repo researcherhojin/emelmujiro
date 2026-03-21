@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { announceToScreenReader } from '../accessibility';
 
 describe('accessibility', () => {
@@ -61,6 +61,45 @@ describe('accessibility', () => {
       expect(announcements.length).toBe(2);
       expect(announcements[0].textContent).toBe('Message 1');
       expect(announcements[1].textContent).toBe('Message 2');
+    });
+
+    it('should return a cleanup function that removes the element and clears timeout', () => {
+      vi.useFakeTimers();
+
+      const cleanup = announceToScreenReader('Cleanup message');
+
+      // Announcement should be in the DOM
+      const announcement = document.querySelector('[role="status"]');
+      expect(announcement).toBeTruthy();
+      expect(announcement?.textContent).toBe('Cleanup message');
+
+      // Call the cleanup function early (before the 1s timeout)
+      expect(cleanup).toBeTypeOf('function');
+      cleanup!();
+
+      // Element should be removed immediately
+      const removed = document.querySelector('[role="status"]');
+      expect(removed).toBeFalsy();
+
+      // Advancing timers should not cause errors (timeout was cleared)
+      vi.advanceTimersByTime(1100);
+
+      vi.useRealTimers();
+    });
+
+    it('cleanup function handles already-removed element gracefully', () => {
+      vi.useFakeTimers();
+
+      const cleanup = announceToScreenReader('Double remove');
+
+      // Manually remove the element first
+      const announcement = document.querySelector('[role="status"]');
+      if (announcement) document.body.removeChild(announcement);
+
+      // Calling cleanup should not throw
+      expect(() => cleanup!()).not.toThrow();
+
+      vi.useRealTimers();
     });
   });
 });

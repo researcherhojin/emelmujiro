@@ -1,10 +1,13 @@
-import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { vi, describe, it, expect } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import HeroSection from '../HeroSection';
 
 // Mock useNavigate — vi.hoisted ensures mockNavigate is available when vi.mock is hoisted
-const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }));
+const { mockNavigate, mockTrackCtaClick } = vi.hoisted(() => ({
+  mockNavigate: vi.fn(),
+  mockTrackCtaClick: vi.fn(),
+}));
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react-router-dom')>();
   return {
@@ -12,6 +15,11 @@ vi.mock('react-router-dom', async (importOriginal) => {
     useNavigate: () => mockNavigate,
   };
 });
+
+// Mock analytics
+vi.mock('../../../utils/analytics', () => ({
+  trackCtaClick: (...args: unknown[]) => mockTrackCtaClick(...args),
+}));
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -54,5 +62,12 @@ describe('HeroSection Component', () => {
     const ctaLink = screen.getByText(/common.inquireProject/);
     expect(ctaLink).toBeInTheDocument();
     expect(ctaLink.closest('a')).toHaveAttribute('href', '/contact');
+  });
+
+  test('calls trackCtaClick with "hero" when CTA link is clicked', () => {
+    renderWithRouter(<HeroSection />);
+    const ctaLink = screen.getByText(/common.inquireProject/);
+    fireEvent.click(ctaLink);
+    expect(mockTrackCtaClick).toHaveBeenCalledWith('hero');
   });
 });

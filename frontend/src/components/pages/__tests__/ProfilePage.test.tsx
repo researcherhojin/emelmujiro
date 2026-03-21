@@ -253,4 +253,54 @@ describe('ProfilePage Component', () => {
       expect(screen.getByText('profilePage.role')).toBeInTheDocument();
     });
   });
+
+  describe('Callbacks', () => {
+    it('navigates to home when back button is clicked', () => {
+      renderWithRouter(<ProfilePage />);
+
+      // Click the back button rendered inside ProfileHero
+      const backButton = screen.getByText(/profilePage.backToMain/);
+      fireEvent.click(backButton);
+
+      expect(mockNavigate).toHaveBeenCalledWith('/');
+    });
+
+    it('calls handleProjectFilterChange when a project filter button is clicked', () => {
+      renderWithRouter(<ProfilePage />);
+
+      // Switch to projects tab first
+      const buttons = screen.getAllByRole('button');
+      const projectsTab = buttons.find((btn) =>
+        btn.textContent?.includes('profilePage.tabProjects')
+      );
+      expect(projectsTab).toBeDefined();
+      fireEvent.click(projectsTab!);
+
+      // Click the "enterprise" category filter button (label comes from i18n mock as key)
+      const filterButtons = screen.getAllByRole('button');
+      const enterpriseFilter = filterButtons.find((btn) =>
+        btn.textContent?.includes('profileData.categories.1.label')
+      );
+      expect(enterpriseFilter).toBeDefined();
+      fireEvent.click(enterpriseFilter!);
+
+      // After clicking, the enterprise filter button should have active styling
+      expect(enterpriseFilter).toHaveClass('bg-gray-900');
+    });
+
+    it('clicking career tab invokes handleTabChange with career', () => {
+      renderWithRouter(<ProfilePage />);
+
+      // Switch to education tab first
+      const educationTab = screen.getByText('profilePage.tabEducation');
+      fireEvent.click(educationTab);
+
+      // Now click career tab to trigger the handleTabChange('career') callback
+      const careerTab = screen.getByText('profilePage.tabCareer');
+      fireEvent.click(careerTab);
+
+      // Career tab should now be active again
+      expect(careerTab).toHaveClass('text-gray-900');
+    });
+  });
 });

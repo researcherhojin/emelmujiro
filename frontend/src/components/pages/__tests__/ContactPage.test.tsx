@@ -1,6 +1,6 @@
 import React from 'react';
-import { vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { vi, describe, it, expect } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import ContactPage from '../ContactPage';
@@ -60,5 +60,21 @@ describe('ContactPage', () => {
   it('renders form title', () => {
     renderPage();
     expect(screen.getByText('contact.googleForm.formTitle')).toBeInTheDocument();
+  });
+
+  it('hides loading indicator after iframe loads', () => {
+    renderPage();
+
+    // Loading overlay div should be visible initially
+    const loadingOverlay = document.querySelector('.absolute.inset-0');
+    expect(loadingOverlay).toBeTruthy();
+
+    // Simulate iframe load event
+    const iframe = document.querySelector('iframe')!;
+    fireEvent.load(iframe);
+
+    // Loading overlay should be removed after iframe load
+    const removedOverlay = document.querySelector('.absolute.inset-0');
+    expect(removedOverlay).toBeNull();
   });
 });

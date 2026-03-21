@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock react-i18next BEFORE component imports
 vi.mock('react-i18next', () => ({
@@ -56,11 +56,13 @@ vi.mock('../../../contexts/AuthContext', () => ({
 const mockCreateBlogPost = vi.fn().mockResolvedValue({ data: { id: 1 } });
 const mockUpdateBlogPost = vi.fn().mockResolvedValue({ data: { id: 1 } });
 const mockGetBlogPost = vi.fn();
+const mockGetBlogCategories = vi.fn().mockResolvedValue({ data: [] });
 vi.mock('../../../services/api', () => ({
   api: {
     createBlogPost: (...args: unknown[]) => mockCreateBlogPost(...args),
     updateBlogPost: (...args: unknown[]) => mockUpdateBlogPost(...args),
     getBlogPost: (...args: unknown[]) => mockGetBlogPost(...args),
+    getBlogCategories: (...args: unknown[]) => mockGetBlogCategories(...args),
     uploadBlogImage: vi.fn().mockResolvedValue({ data: { url: '/media/test.jpg' } }),
   },
 }));
@@ -103,6 +105,8 @@ describe('BlogEditor Component', () => {
     mockCreateBlogPost.mockClear();
     mockUpdateBlogPost.mockClear();
     mockGetBlogPost.mockClear();
+    mockGetBlogCategories.mockClear();
+    mockGetBlogCategories.mockResolvedValue({ data: [] });
     mockEditorOnChange = null;
     vi.clearAllMocks();
   });
@@ -261,6 +265,50 @@ describe('BlogEditor Component', () => {
       // Editor should be hidden, preview shown
       expect(screen.queryByTestId('tiptap-editor')).not.toBeInTheDocument();
     });
+
+    it('shows image and description in preview when set', () => {
+      renderEditor();
+
+      // Set image URL
+      const imageInput = screen.getByPlaceholderText('Cover image URL (optional)');
+      fireEvent.change(imageInput, {
+        target: { value: 'https://example.com/image.jpg' },
+      });
+
+      // Set description
+      const descInput = screen.getByPlaceholderText('Brief description (auto-generated if empty)');
+      fireEvent.change(descInput, { target: { value: 'A description' } });
+
+      // Set title
+      const titleInput = screen.getByPlaceholderText('Enter title...');
+      fireEvent.change(titleInput, { target: { value: 'Preview Title' } });
+
+      // Switch to preview
+      const previewBtn = screen.getByText('blogEditor.preview');
+      fireEvent.click(previewBtn);
+
+      // Image should be rendered
+      const img = screen.getByAltText('Preview Title');
+      expect(img).toBeInTheDocument();
+      expect(img).toHaveAttribute('src', 'https://example.com/image.jpg');
+
+      // Description should be rendered
+      expect(screen.getByText('A description')).toBeInTheDocument();
+    });
+
+    it('does not show image or description in preview when empty', () => {
+      renderEditor();
+
+      // Switch to preview without setting image or description
+      const previewBtn = screen.getByText('blogEditor.preview');
+      fireEvent.click(previewBtn);
+
+      // No image should be rendered
+      expect(screen.queryByRole('img')).not.toBeInTheDocument();
+
+      // Title should show "Untitled" as fallback
+      expect(screen.getByText('Untitled')).toBeInTheDocument();
+    });
   });
 
   describe('Navigation', () => {
@@ -332,6 +380,134 @@ describe('BlogEditor Component', () => {
         expect(mockUpdateBlogPost).toHaveBeenCalledWith(
           '42',
           expect.objectContaining({ title: 'Existing' })
+        );
+      });
+    });
+
+    it('handles post data with missing optional fields in edit mode', async () => {
+      mockParams = { id: '50' };
+      mockGetBlogPost.mockResolvedValueOnce({
+        data: {
+          id: 50,
+          title: 'Minimal Post',
+          // No excerpt, no category, no tags, no image_url, no content_html, no published field
+          content: 'Plain text only',
+        },
+      });
+
+      renderEditor();
+
+      await waitFor(() => {
+        const titleInput = screen.getByPlaceholderText('Enter title...') as HTMLInputElement;
+        expect(titleInput.value).toBe('Minimal Post');
+      });
+    });
+
+    it('shows error toast when loading post fails in edit mode', async () => {
+      mockParams = { id: '99' };
+      mockGetBlogPost.mockRejectedValueOnce(new Error('Not found'));
+
+      renderEditor();
+
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent('Failed to load post');
+      });
+    });
+  });
+
+  describe('Categories', () => {
+    it('loads categories from API with slug/name objects', async () => {
+      mockGetBlogCategories.mockResolvedValueOnce({
+        data: [
+          { slug: 'deep-learning', name: 'Deep Learning' },
+          { slug: 'web-dev', name: 'Web Development' },
+        ],
+      });
+
+      renderEditor();
+
+      await waitFor(() => {
+        const select = screen.getByRole('combobox');
+        const options = select.querySelectorAll('option');
+        const optionTexts = Array.from(options).map((o) => o.textContent);
+        expect(optionTexts).toContain('Deep Learning');
+        expect(optionTexts).toContain('Web Development');
+      });
+    });
+
+    it('loads categories from API with string values', async () => {
+      mockGetBlogCategories.mockResolvedValueOnce({
+        data: ['python', 'javascript'],
+      });
+
+      renderEditor();
+
+      await waitFor(() => {
+        const select = screen.getByRole('combobox');
+        const options = select.querySelectorAll('option');
+        const optionTexts = Array.from(options).map((o) => o.textContent);
+        expect(optionTexts).toContain('python');
+        expect(optionTexts).toContain('javascript');
+      });
+    });
+  });
+
+  describe('Admin Gate Actions', () => {
+    it('navigates to blog when back button is clicked on admin gate', () => {
+      mockAuthUser = null;
+      renderEditor();
+      const backBtn = screen.getByText('Back to Blog');
+      fireEvent.click(backBtn);
+      expect(mockNavigate).toHaveBeenCalledWith('/blog');
+    });
+  });
+
+  describe('Toast Dismiss', () => {
+    it('dismisses toast when close button is clicked', async () => {
+      renderEditor();
+
+      // Trigger a toast by trying to save with empty title
+      const saveButton = screen.getByRole('button', { name: /save/i });
+      fireEvent.click(saveButton);
+
+      // Toast should appear
+      const alert = screen.getByRole('alert');
+      expect(alert).toBeInTheDocument();
+
+      // Click the close button inside the toast
+      const closeBtn = alert.querySelector('button');
+      expect(closeBtn).toBeTruthy();
+      fireEvent.click(closeBtn!);
+
+      // Toast should be dismissed
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Tag Processing', () => {
+    it('sends tags as comma-separated array when saving', async () => {
+      renderEditor();
+
+      const titleInput = screen.getByPlaceholderText('Enter title...');
+      fireEvent.change(titleInput, { target: { value: 'Tagged Post' } });
+
+      const tagsInput = screen.getByPlaceholderText('Tags (comma-separated)');
+      fireEvent.change(tagsInput, { target: { value: 'python, ml, , ai' } });
+
+      act(() => {
+        if (mockEditorOnChange) {
+          mockEditorOnChange('<p>Content</p>', 'Content');
+        }
+      });
+
+      const saveButton = screen.getByRole('button', { name: /save/i });
+      fireEvent.click(saveButton);
+
+      await waitFor(() => {
+        expect(mockCreateBlogPost).toHaveBeenCalledWith(
+          expect.objectContaining({
+            tags: ['python', 'ml', 'ai'],
+          })
         );
       });
     });

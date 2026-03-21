@@ -1,6 +1,6 @@
 import React from 'react';
 import { vi, describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import CTASection from '../CTASection';
 
@@ -12,6 +12,12 @@ vi.mock('react-i18next', () => ({
   }),
   Trans: ({ children }: { children: React.ReactNode }) => children,
   initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
+// Mock analytics
+const mockTrackCtaClick = vi.fn();
+vi.mock('../../../utils/analytics', () => ({
+  trackCtaClick: (...args: unknown[]) => mockTrackCtaClick(...args),
 }));
 
 const renderWithRouter = (component: React.ReactElement) => {
@@ -59,5 +65,12 @@ describe('CTASection', () => {
 
     const h3 = screen.getByText('cta.title');
     expect(h3.tagName).toBe('H3');
+  });
+
+  it('calls trackCtaClick with "cta" when CTA link is clicked', () => {
+    renderWithRouter(<CTASection />);
+    const ctaLink = screen.getByText('common.inquireProject');
+    fireEvent.click(ctaLink);
+    expect(mockTrackCtaClick).toHaveBeenCalledWith('cta');
   });
 });
