@@ -28,6 +28,8 @@ if "test" in sys.argv:
     ALLOWED_HOSTS.append("testserver")
     # Disable SSL redirect during tests
     SECURE_SSL_REDIRECT = False
+    # Use fast password hasher for tests (PBKDF2 is intentionally slow)
+    PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 # Application definition
 CUSTOM_APPS = [

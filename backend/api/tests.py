@@ -137,21 +137,22 @@ class BlogPostAPITestCase(APITestCase):
 class BlogPostWriteAPITestCase(APITestCase):
     """Tests for BlogPost write API endpoints (create, update, delete)"""
 
-    def setUp(self):
-        self.admin_user = User.objects.create_superuser(
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin_user = User.objects.create_superuser(
             username="admin", password="adminpass123", email="admin@test.com", first_name="Admin", last_name="User"
         )
-        self.regular_user = User.objects.create_user(
+        cls.regular_user = User.objects.create_user(
             username="regular", password="regularpass123", email="regular@test.com"
         )
-        self.blog_post = BlogPost.objects.create(
+        cls.blog_post = BlogPost.objects.create(
             title="Existing Post",
             description="Existing description",
             content="Existing content",
             category="ai",
         )
-        self.create_url = reverse("blog-list")
-        self.detail_url = reverse("blog-detail", kwargs={"pk": self.blog_post.pk})
+        cls.create_url = reverse("blog-list")
+        cls.detail_url = reverse("blog-detail", kwargs={"pk": cls.blog_post.pk})
 
     def _auth_as(self, user):
         token = RefreshToken.for_user(user)
@@ -1125,15 +1126,16 @@ class AdminAPITestCase(APITestCase):
 class AdminUserManagementTestCase(APITestCase):
     """Tests for Admin User Management CRUD endpoints"""
 
-    def setUp(self):
-        self.admin = User.objects.create_superuser(
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = User.objects.create_superuser(
             username="admin", email="admin@example.com", password="adminpass12345"
         )
-        self.staff = User.objects.create_user(
+        cls.staff = User.objects.create_user(
             username="staff", email="staff@example.com", password="staffpass12345", is_staff=True
         )
-        self.user = User.objects.create_user(username="regular", email="regular@example.com", password="userpass12345")
-        self.user2 = User.objects.create_user(username="another", email="another@example.com", password="userpass12345")
+        cls.user = User.objects.create_user(username="regular", email="regular@example.com", password="userpass12345")
+        cls.user2 = User.objects.create_user(username="another", email="another@example.com", password="userpass12345")
 
     # --- List ---
 
