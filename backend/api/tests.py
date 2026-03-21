@@ -2326,9 +2326,7 @@ class BlogImageUploadTestCase(APITestCase):
     """Tests for BlogImageUploadView (lines 306-334)"""
 
     def setUp(self):
-        self.admin = User.objects.create_superuser(
-            username="admin", email="admin@test.com", password="adminpass12345"
-        )
+        self.admin = User.objects.create_superuser(username="admin", email="admin@test.com", password="adminpass12345")
         self.url = reverse("blog-image-upload")
 
     def test_upload_without_file_returns_400(self):
@@ -2589,8 +2587,6 @@ class NotificationPerformUpdateTestCase(APITestCase):
         self.notification.is_read = True
         self.notification.read_at = django_timezone.now()
         self.notification.save()
-        original_read_at = self.notification.read_at
-
         self.client.force_authenticate(user=self.user)
         url = reverse("notification-detail", kwargs={"pk": self.notification.pk})
         response = self.client.patch(url, {"is_read": True}, format="json")
