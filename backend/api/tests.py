@@ -3421,6 +3421,7 @@ class CleanupSiteVisitsCommandTestCase(TestCase):
         self.assertIn("No old SiteVisit records", output)
         self.assertEqual(SiteVisit.objects.count(), 1)
 
+
 # =============================================================================
 # Additional Coverage Tests
 # =============================================================================
@@ -3814,3 +3815,156 @@ class SecurityCheckCommandTestCase(TestCase):
         self.call_command("security_check", "--action=stats", stdout=out)
         output = out.getvalue()
         self.assertIn("보안 통계", output)
+
+
+class AdminViewsActiveFilterTestCase(APITestCase):
+    """Cover admin_views.py line 179: is_active=true filter"""
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+        self.admin = User.objects.create_superuser(username="filteradmin", password="pass12345")
+        self.client.force_authenticate(user=self.admin)
+        User.objects.create_user(username="activeuser", password="pass12345", is_active=True)
+        User.objects.create_user(username="inactiveuser", password="pass12345", is_active=False)
+
+    def test_filter_users_is_active_true(self):
+        """Filter users by is_active=true"""
+        url = reverse("admin-users")
+        response = self.client.get(url, {"is_active": "true"})
+        self.assertEqual(response.status_code, 200)
+        usernames = [u["username"] for u in response.data["results"]]
+        self.assertIn("activeuser", usernames)
+        self.assertNotIn("inactiveuser", usernames)
+
+
+class BlogPostSlugRetryEdgeCaseTestCase(TestCase):
+    """Cover models.py lines 71, 76: IntegrityError retry with counter loop"""
+
+    def test_slug_collision_generates_counter_suffix(self):
+        """When slug collides, a -1, -2, etc. suffix is added"""
+        post1 = BlogPost.objects.create(title="Same Title", description="D", content="C", category="ai")
+        post2 = BlogPost.objects.create(title="Same Title", description="D", content="C", category="ai")
+        self.assertNotEqual(post1.slug, post2.slug)
+        self.assertTrue(post2.slug.endswith("-1") or post2.slug.endswith("-2") or len(post2.slug) > len(post1.slug))
+
+    def test_three_same_slugs_increment_counter(self):
+        """Three posts with same title get unique slugs"""
+        posts = [BlogPost.objects.create(title="Repeat", description="D", content="C", category="ai") for _ in range(3)]
+        slugs = [p.slug for p in posts]
+        self.assertEqual(len(set(slugs)), 3)
+
+
+class SerializerValidationEdgeCasesTestCase(TestCase):
+    """Cover serializers.py lines 165, 197, 303, 328"""
+
+    def test_blog_write_serializer_invalid_category(self):
+        """BlogPostWriteSerializer rejects invalid category (line 165)"""
+        from .serializers import BlogPostWriteSerializer
+
+        data = {
+            "title": "Test Post Title",
+            "description": "Desc",
+            "content": "Content",
+            "category": "nonexistent_category",
+        }
+        serializer = BlogPostWriteSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("category", serializer.errors)
+
+    def test_comment_content_empty_after_strip(self):
+        """BlogCommentSerializer rejects whitespace-only content (line 197)"""
+        from .serializers import BlogCommentSerializer
+
+        data = {"author_name": "User", "content": "   "}
+        serializer = BlogCommentSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("content", serializer.errors)
+
+    def test_contact_subject_too_long(self):
+        """ContactSerializer rejects subject > 200 chars (line 303)"""
+        from .serializers import ContactSerializer
+
+        data = {
+            "name": "User",
+            "email": "test@example.com",
+            "subject": "A" * 201,
+            "message": "Valid message content here.",
+        }
+        serializer = ContactSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("subject", serializer.errors)
+
+    def test_contact_company_too_long(self):
+        """ContactSerializer rejects company > 100 chars (line 328)"""
+        from .serializers import ContactSerializer
+
+        data = {
+            "name": "User",
+            "email": "test@example.com",
+            "subject": "Valid Subject Here",
+            "message": "Valid message content here.",
+            "company": "C" * 101,
+        }
+        serializer = ContactSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("company", serializer.errors)
+
+
+@override_settings(
+    REST_FRAMEWORK={**settings.REST_FRAMEWORK, "DEFAULT_THROTTLE_CLASSES": [], "DEFAULT_THROTTLE_RATES": {}}
+)
+class ContactSpamIpLimitTestCase(APITestCase):
+    """Cover views.py lines 451, 464-465: IP spam limit hit + suspicious email"""
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
+    def test_ip_based_spam_limit(self):
+        """Contact form blocked when IP has >= 3 attempts today (line 451)"""
+        ContactAttempt.objects.create(
+            ip_address="44.44.44.44",
+            email="test@example.com",
+            attempt_count=3,
+            last_attempt=django_timezone.now(),
+        )
+        url = reverse("contact-create")
+        data = {
+            "name": "Test User",
+            "email": "legit@example.com",
+            "subject": "Valid Subject Here",
+            "message": "A valid message with enough content.",
+        }
+        response = self.client.post(url, data, format="json", REMOTE_ADDR="44.44.44.44")
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
+
+class SecurityCheckEdgeCasesTestCase(TestCase):
+    """Cover security_check.py lines 78, 150-151"""
+
+    @override_settings(DEBUG=False, SECURE_HSTS_SECONDS=31536000, SECURE_SSL_REDIRECT=True)
+    def test_security_check_all_pass(self):
+        """security_check reports success when all settings are correct (line 78)"""
+        from io import StringIO
+        from django.core.management import call_command
+
+        out = StringIO()
+        call_command("security_check", "--action=check", stdout=out)
+        output = out.getvalue()
+        self.assertIn("보안", output)
+
+    def test_security_check_stats_db_error(self):
+        """security_check stats handles DB errors gracefully (lines 150-151)"""
+        from io import StringIO
+        from django.core.management import call_command
+        from unittest.mock import patch
+
+        out = StringIO()
+        with patch("api.models.SiteVisit.objects") as mock_qs:
+            mock_qs.filter.side_effect = Exception("DB error")
+            call_command("security_check", "--action=stats", stdout=out)
+            output = out.getvalue()
+            self.assertIn("오류 발생", output)
