@@ -1,4 +1,24 @@
-import { blogPosts } from '../blogPosts';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { blogPosts, getBlogPosts, getBlogPost } from '../blogPosts';
+
+// Mock logger
+vi.mock('../../utils/logger', () => ({
+  default: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() },
+}));
+
+const mockLocalStorage = {
+  store: {} as Record<string, string>,
+  getItem: vi.fn((key: string) => mockLocalStorage.store[key] || null),
+  setItem: vi.fn((key: string, value: string) => {
+    mockLocalStorage.store[key] = value;
+  }),
+  removeItem: vi.fn((key: string) => {
+    delete mockLocalStorage.store[key];
+  }),
+  clear: vi.fn(() => {
+    mockLocalStorage.store = {};
+  }),
+};
 
 describe('blogPosts data', () => {
   describe('Blog Posts Array', () => {
@@ -164,6 +184,125 @@ describe('blogPosts data', () => {
         }
         expect(post.image_url).toMatch(/^https?:\/\/.+/);
       });
+    });
+  });
+
+  describe('getBlogPosts', () => {
+    beforeEach(() => {
+      mockLocalStorage.store = {};
+      Object.defineProperty(window, 'localStorage', { value: mockLocalStorage, writable: true });
+    });
+
+    it('returns default posts when no custom posts in localStorage', async () => {
+      const posts = await getBlogPosts();
+      expect(posts.length).toBeGreaterThanOrEqual(blogPosts.length);
+    });
+
+    it('merges custom posts from localStorage', async () => {
+      const customPost = {
+        id: 999,
+        title: 'Custom Post',
+        slug: 'custom-post',
+        excerpt: 'Custom',
+        content: 'Custom content',
+        author: 'Test',
+        date: '2025-01-01',
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T00:00:00Z',
+        published: true,
+        category: 'test',
+        tags: [],
+      };
+      mockLocalStorage.store['customBlogPosts'] = JSON.stringify([customPost]);
+      const posts = await getBlogPosts();
+      expect(posts.find((p) => p.id === 999)).toBeDefined();
+    });
+
+    it('removes duplicate IDs (custom post wins)', async () => {
+      const customPost = {
+        id: 1,
+        title: 'Override Post',
+        slug: 'override',
+        excerpt: 'Override',
+        content: 'Override',
+        author: 'Test',
+        date: '2025-06-01',
+        created_at: '2025-06-01T00:00:00Z',
+        updated_at: '2025-06-01T00:00:00Z',
+        published: true,
+        category: 'test',
+        tags: [],
+      };
+      mockLocalStorage.store['customBlogPosts'] = JSON.stringify([customPost]);
+      const posts = await getBlogPosts();
+      const post1 = posts.find((p) => p.id === 1);
+      expect(post1?.title).toBe('Override Post');
+    });
+
+    it('sorts posts by date (newest first)', async () => {
+      const posts = await getBlogPosts();
+      for (let i = 0; i < posts.length - 1; i++) {
+        const dateA = new Date(posts[i].created_at || posts[i].date || '').getTime();
+        const dateB = new Date(posts[i + 1].created_at || posts[i + 1].date || '').getTime();
+        expect(dateA).toBeGreaterThanOrEqual(dateB);
+      }
+    });
+
+    it('falls back to default posts on localStorage parse error', async () => {
+      mockLocalStorage.store['customBlogPosts'] = 'invalid json{{{';
+      const posts = await getBlogPosts();
+      expect(posts.length).toBe(blogPosts.length);
+    });
+  });
+
+  describe('getBlogPost', () => {
+    beforeEach(() => {
+      mockLocalStorage.store = {};
+      Object.defineProperty(window, 'localStorage', { value: mockLocalStorage, writable: true });
+    });
+
+    it('finds a default post by numeric ID', async () => {
+      const post = await getBlogPost(1);
+      expect(post).toBeDefined();
+      expect(post?.id).toBe(1);
+    });
+
+    it('finds a default post by string ID', async () => {
+      const post = await getBlogPost('2');
+      expect(post).toBeDefined();
+      expect(post?.id).toBe(2);
+    });
+
+    it('returns undefined for non-existent ID', async () => {
+      const post = await getBlogPost(99999);
+      expect(post).toBeUndefined();
+    });
+
+    it('finds a custom post from localStorage', async () => {
+      const customPost = {
+        id: 888,
+        title: 'Custom Single',
+        slug: 'custom-single',
+        excerpt: 'E',
+        content: 'C',
+        author: 'T',
+        date: '2025-01-01',
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T00:00:00Z',
+        published: true,
+        category: 'test',
+        tags: [],
+      };
+      mockLocalStorage.store['customBlogPosts'] = JSON.stringify([customPost]);
+      const post = await getBlogPost(888);
+      expect(post?.title).toBe('Custom Single');
+    });
+
+    it('falls back to default posts on localStorage error', async () => {
+      mockLocalStorage.store['customBlogPosts'] = 'broken{json';
+      const post = await getBlogPost(1);
+      expect(post).toBeDefined();
+      expect(post?.id).toBe(1);
     });
   });
 });
