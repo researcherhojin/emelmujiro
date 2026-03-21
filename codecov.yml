@@ -23,7 +23,7 @@ coverage:
         flags:
           - backend
         paths:
-          - backend
+          - backend/api
 
     patch:
       default:
@@ -44,7 +44,7 @@ flags:
 
   backend:
     paths:
-      - backend
+      - backend/api
     carryforward: true
 
 ignore:
@@ -60,3 +60,6 @@ ignore:
   - "**/mocks/**"
   - "frontend/src/setupTests.ts"
   - "frontend/src/utils/webVitals.ts"
+  - "backend/api/tests.py"
+  - "backend/api/tests_urls.py"
+  - "backend/api/migrations/**"
