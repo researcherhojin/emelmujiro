@@ -202,7 +202,7 @@ Components must call the getter each render. Do not store results in module-leve
 
 ### Coverage
 
-Target: **60%** minimum (currently ~87% frontend, ~95% backend). Config in `codecov.yml`. Scale: 65 unit test files (~1024 tests), 10 E2E spec files, ~307 backend tests.
+Target: **60%** minimum (currently ~87% frontend, ~98% backend). Config in `codecov.yml`. Scale: 65 unit test files (~1024 tests), 10 E2E spec files, ~331 backend tests.
 
 ## CI/CD
 

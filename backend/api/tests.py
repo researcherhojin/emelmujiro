@@ -3420,3 +3420,397 @@ class CleanupSiteVisitsCommandTestCase(TestCase):
         output = out.getvalue()
         self.assertIn("No old SiteVisit records", output)
         self.assertEqual(SiteVisit.objects.count(), 1)
+
+# =============================================================================
+# Additional Coverage Tests
+# =============================================================================
+
+
+class SerializerRelativeDateDaysTestCase(TestCase):
+    """Cover serializers.py line 123 — relative_date 'days' branch (1-30 days)"""
+
+    def test_relative_date_days(self):
+        """get_relative_date returns days for posts 1-30 days old"""
+        from .serializers import BlogPostSerializer
+
+        post = BlogPost.objects.create(
+            title="Days Old",
+            description="D",
+            content="C",
+            category="ai",
+            date=django_timezone.now() - timedelta(days=5),
+        )
+        serializer = BlogPostSerializer(post)
+        self.assertIn("일 전", serializer.data["relative_date"])
+
+
+class ContactEmailValidationEdgeCaseTestCase(TestCase):
+    """Cover serializers.py lines 271-272 — ContactSerializer.validate_email invalid email"""
+
+    def test_contact_validate_email_direct_invalid(self):
+        """Calling validate_email directly with invalid email raises ValidationError"""
+        from .serializers import ContactSerializer
+        from rest_framework.exceptions import ValidationError as DRFValidationError
+
+        serializer = ContactSerializer()
+        with self.assertRaises(DRFValidationError):
+            serializer.validate_email("not-an-email")
+
+    def test_contact_invalid_email_via_serializer(self):
+        """ContactSerializer rejects malformed email addresses"""
+        from .serializers import ContactSerializer
+
+        data = {
+            "name": "Valid Name",
+            "email": "not-an-email",
+            "subject": "Valid Subject Here",
+            "message": "This is a valid message for testing purposes.",
+        }
+        serializer = ContactSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("email", serializer.errors)
+
+
+class NewsletterEmailValidationEdgeCaseTestCase(TestCase):
+    """Cover serializers.py lines 346-347 — NewsletterSubscriptionSerializer.validate_email invalid email"""
+
+    def test_newsletter_validate_email_direct_invalid(self):
+        """Calling validate_email directly with invalid email raises ValidationError"""
+        from .serializers import NewsletterSubscriptionSerializer
+        from rest_framework.exceptions import ValidationError as DRFValidationError
+
+        serializer = NewsletterSubscriptionSerializer()
+        with self.assertRaises(DRFValidationError):
+            serializer.validate_email("not-an-email")
+
+    def test_newsletter_invalid_email_via_serializer(self):
+        """NewsletterSubscriptionSerializer rejects malformed email addresses"""
+        from .serializers import NewsletterSubscriptionSerializer
+
+        data = {"email": "not-an-email-at-all", "name": ""}
+        serializer = NewsletterSubscriptionSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("email", serializer.errors)
+
+
+class BlogPostSlugIntegrityErrorRetryTestCase(TestCase):
+    """Cover models.py lines 69-77 — IntegrityError retry in BlogPost.save()"""
+
+    def test_slug_retry_on_integrity_error(self):
+        """BlogPost.save() retries slug generation on IntegrityError"""
+        # Create a post so slug 'test-retry' is taken
+        BlogPost.objects.create(title="test-retry", description="D", content="C", category="ai")
+
+        # Create another post with same title — should auto-increment slug
+        post2 = BlogPost.objects.create(title="test-retry", description="D2", content="C2", category="ai")
+        self.assertNotEqual(post2.slug, "test-retry")
+        self.assertTrue(post2.slug.startswith("test-retry"))
+
+    def test_slug_retry_on_concurrent_integrity_error(self):
+        """BlogPost.save() regenerates slug when IntegrityError is raised by DB"""
+        from unittest.mock import patch
+        from django.db import IntegrityError, models as django_models
+
+        call_count = {"n": 0}
+        original_model_save = django_models.Model.save
+
+        def mock_model_save(self_inner, *args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                raise IntegrityError("UNIQUE constraint failed")
+            return original_model_save(self_inner, *args, **kwargs)
+
+        post = BlogPost(title="concurrent-test", description="D", content="C", category="ai")
+        with patch.object(django_models.Model, "save", mock_model_save):
+            post.save()
+
+        self.assertIsNotNone(post.pk)
+        self.assertIn("concurrent-test", post.slug)
+
+
+class ValidatorMimeEdgeCaseTestCase(TestCase):
+    """Cover validators.py lines 39, 51 — MIME type edge cases"""
+
+    def _make_file(self, name="test.jpg", size=1024, content_type="image/jpeg"):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        return SimpleUploadedFile(name=name, content=b"x" * size, content_type=content_type)
+
+    def test_mime_skip_for_extension_not_in_map(self):
+        """Extension not in EXTENSION_MIME_MAP skips MIME validation entirely"""
+        from api.validators import _validate_mime_type
+
+        # .txt is not in EXTENSION_MIME_MAP — should return without raising
+        f = self._make_file(name="readme.txt", size=10, content_type="text/plain")
+        _validate_mime_type(f)  # Should not raise
+
+    def test_guessed_mime_mismatch_raises(self):
+        """File with matching content_type but wrong guessed MIME raises"""
+        from api.validators import _validate_mime_type
+        from unittest.mock import patch
+
+        # .png extension, correct content_type, but mock guess_type to return wrong MIME
+        f = self._make_file(name="image.png", size=10, content_type="image/png")
+        with patch("api.validators.mimetypes.guess_type", return_value=("text/plain", None)):
+            with self.assertRaises(ValidationError):
+                _validate_mime_type(f)
+
+
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class AdminUsersFilterTestCase(APITestCase):
+    """Cover admin_views.py line 179 — is_active='false' filter"""
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+        self.admin = User.objects.create_superuser(
+            username="admin_filter", email="af@example.com", password="adminpass12345"
+        )
+        self.client.force_authenticate(user=self.admin)
+
+    def test_admin_users_filter_inactive(self):
+        """Admin users endpoint filters by is_active=false"""
+        inactive_user = User.objects.create_user(username="inactiveuser", email="iu@test.com", password="pass12345")
+        inactive_user.is_active = False
+        inactive_user.save()
+        User.objects.create_user(username="activeuser", email="au@test.com", password="pass12345")
+
+        response = self.client.get(reverse("admin-users"), {"is_active": "false"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        usernames = [u["username"] for u in response.data["results"]]
+        self.assertIn("inactiveuser", usernames)
+        self.assertNotIn("activeuser", usernames)
+
+
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class AdminUserDetailPatchInvalidTestCase(APITestCase):
+    """Cover admin_views.py line 213 — serializer.errors returned on invalid PATCH"""
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+        self.admin = User.objects.create_superuser(
+            username="admin_patch", email="ap@example.com", password="adminpass12345"
+        )
+        self.client.force_authenticate(user=self.admin)
+
+    def test_admin_user_detail_patch_invalid_returns_400(self):
+        """PATCH with truly invalid data returns 400 with serializer errors"""
+        user = User.objects.create_user(username="badpatch", email="bp@test.com", password="pass12345")
+        url = reverse("admin-user-detail", kwargs={"pk": user.pk})
+        # first_name max_length is 150 in Django User model — exceeding triggers 400
+        response = self.client.patch(url, {"first_name": "A" * 200}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+@override_settings(
+    REST_FRAMEWORK={**NO_THROTTLE},
+    SIMPLE_JWT={
+        "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+        "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+        "ROTATE_REFRESH_TOKENS": False,
+        "BLACKLIST_AFTER_ROTATION": False,
+        "AUTH_HEADER_TYPES": ("Bearer",),
+    },
+)
+class TokenRefreshNoRotationTestCase(APITestCase):
+    """Cover auth.py lines 238-239 — token refresh without rotation"""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="norotuser", email="norot@example.com", password="testpass12345")
+        self.refresh = RefreshToken.for_user(self.user)
+
+    def test_refresh_without_rotation(self):
+        """Token refresh without rotation returns same refresh token"""
+        url = reverse("token_refresh")
+        refresh_str = str(self.refresh)
+        response = self.client.post(url, {"refresh": refresh_str}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("access", response.data)
+        # Refresh token should be the same as sent (no rotation)
+        self.assertEqual(response.data["refresh"], refresh_str)
+        # Cookies should be set
+        self.assertIn("access_token", response.cookies)
+        self.assertIn("refresh_token", response.cookies)
+
+
+class ContentSecurityMiddlewareServerHeaderTestCase(TestCase):
+    """Cover middleware.py line 179 — Server header removal"""
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
+    def test_server_header_removed(self):
+        """ContentSecurityMiddleware removes Server header if present"""
+        from api.middleware import ContentSecurityMiddleware
+        from django.test import RequestFactory
+        from django.http import HttpResponse
+
+        factory = RequestFactory()
+        request = factory.get("/api/health/")
+        response = HttpResponse("OK")
+        response["Server"] = "Apache/2.4"
+
+        middleware = ContentSecurityMiddleware(lambda r: response)
+        result = middleware.process_response(request, response)
+        self.assertNotIn("Server", result)
+
+
+class APIResponseTimeSlowRequestTestCase(TestCase):
+    """Cover middleware.py line 196 — slow request logging"""
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
+    def test_slow_request_logged(self):
+        """Slow request (>3s) triggers warning log"""
+        from api.middleware import APIResponseTimeMiddleware
+        from django.test import RequestFactory
+        from django.http import HttpResponse
+        from unittest.mock import patch
+        import time
+
+        factory = RequestFactory()
+        request = factory.get("/api/health/")
+        # Simulate request started 4 seconds ago
+        request.start_time = time.time() - 4.0
+
+        response = HttpResponse("OK")
+        middleware = APIResponseTimeMiddleware(lambda r: response)
+
+        with patch("api.middleware.logger") as mock_logger:
+            middleware.process_response(request, response)
+            mock_logger.warning.assert_called_once()
+            self.assertIn("Slow request", mock_logger.warning.call_args[0][0])
+
+
+class SecurityCheckCommandTestCase(TestCase):
+    """Tests for security_check management command (0% -> ~80%)"""
+
+    def setUp(self):
+        from django.core.cache import cache
+        from django.core.management import call_command
+
+        cache.clear()
+        self.call_command = call_command
+
+    def test_check_action_default(self):
+        """Default 'check' action runs security check and outputs results"""
+        from io import StringIO
+
+        out = StringIO()
+        self.call_command("security_check", stdout=out)
+        output = out.getvalue()
+        self.assertIn("보안 상태 확인", output)
+
+    def test_check_action_explicit(self):
+        """Explicit --action=check runs security check"""
+        from io import StringIO
+
+        out = StringIO()
+        self.call_command("security_check", "--action=check", stdout=out)
+        output = out.getvalue()
+        self.assertIn("보안 상태 확인", output)
+
+    @override_settings(DEBUG=True)
+    def test_check_reports_debug_mode(self):
+        """Check action reports DEBUG mode issue"""
+        from io import StringIO
+
+        out = StringIO()
+        self.call_command("security_check", "--action=check", stdout=out)
+        output = out.getvalue()
+        self.assertIn("DEBUG", output)
+
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_check_reports_cors_all_origins(self):
+        """Check action reports CORS_ALLOW_ALL_ORIGINS issue"""
+        from io import StringIO
+
+        out = StringIO()
+        self.call_command("security_check", "--action=check", stdout=out)
+        output = out.getvalue()
+        self.assertIn("CORS_ALLOW_ALL_ORIGINS", output)
+
+    def test_clean_action(self):
+        """Clean action runs and reports cleaned cache entries"""
+        from io import StringIO
+        from django.core.cache import cache
+
+        # Seed some cache entries
+        cache.set("rate_limit_192.168.1.1", 5, 3600)
+        cache.set("rate_limit_192.168.1.2", 10, 3600)
+
+        out = StringIO()
+        self.call_command("security_check", "--action=clean", stdout=out)
+        output = out.getvalue()
+        self.assertIn("보안 로그 정리", output)
+        self.assertIn("캐시 항목이 정리되었습니다", output)
+
+    def test_unblock_action_with_blocked_ip(self):
+        """Unblock action removes temporary block for given IP"""
+        from io import StringIO
+        from django.core.cache import cache
+
+        cache.set("temp_blocked_1.2.3.4", True, 3600)
+        cache.set("rate_limit_1.2.3.4", 50, 3600)
+        cache.set("block_count_1.2.3.4", 2, 86400)
+
+        out = StringIO()
+        self.call_command("security_check", "--action=unblock", "--ip=1.2.3.4", stdout=out)
+        output = out.getvalue()
+        self.assertIn("임시 차단이 해제되었습니다", output)
+        self.assertIn("모든 제한이 해제되었습니다", output)
+        self.assertIsNone(cache.get("temp_blocked_1.2.3.4"))
+        self.assertIsNone(cache.get("rate_limit_1.2.3.4"))
+        self.assertIsNone(cache.get("block_count_1.2.3.4"))
+
+    def test_unblock_action_without_block(self):
+        """Unblock action reports when IP is not blocked"""
+        from io import StringIO
+
+        out = StringIO()
+        self.call_command("security_check", "--action=unblock", "--ip=5.5.5.5", stdout=out)
+        output = out.getvalue()
+        self.assertIn("임시 차단 상태가 아닙니다", output)
+
+    def test_unblock_action_without_ip(self):
+        """Unblock action without --ip shows error message"""
+        from io import StringIO
+
+        out = StringIO()
+        err = StringIO()
+        self.call_command("security_check", "--action=unblock", stdout=out, stderr=err)
+        output = out.getvalue()
+        self.assertIn("IP 주소를 제공해주세요", output)
+
+    def test_stats_action(self):
+        """Stats action displays security statistics"""
+        from io import StringIO
+
+        # Create some test data
+        ContactAttempt.objects.create(ip_address="10.0.0.1", email="test@test.com", attempt_count=1)
+        SiteVisit.objects.create(ip_address="10.0.0.1", user_agent="ua", page_path="/")
+
+        out = StringIO()
+        self.call_command("security_check", "--action=stats", stdout=out)
+        output = out.getvalue()
+        self.assertIn("보안 통계", output)
+        self.assertIn("오늘 문의 시도", output)
+        self.assertIn("오늘 사이트 방문", output)
+        self.assertIn("주간 문의 시도", output)
+
+    def test_stats_action_empty_db(self):
+        """Stats action works with empty database"""
+        from io import StringIO
+
+        out = StringIO()
+        self.call_command("security_check", "--action=stats", stdout=out)
+        output = out.getvalue()
+        self.assertIn("보안 통계", output)
