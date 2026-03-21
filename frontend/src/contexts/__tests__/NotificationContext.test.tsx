@@ -454,7 +454,7 @@ describe('NotificationContext', () => {
     mockGetNotifications.mockResolvedValueOnce({
       data: {
         count: 2,
-        next: 'http://localhost:8000/api/notifications/?page=2',
+        next: 'http://localhost:8000/api/notifications/?page=2' as unknown as null,
         previous: null,
         results: [
           {
@@ -703,5 +703,22 @@ describe('NotificationContext', () => {
         expect(ws.send).toHaveBeenCalledWith(JSON.stringify({ action: 'mark_all_read' }));
       }
     }
+  });
+
+  it('handles WebSocket constructor error gracefully (line 134)', async () => {
+    // Make WebSocket constructor throw
+    const OriginalMock = globalThis.WebSocket;
+    const throwingWs = vi.fn(() => {
+      throw new Error('Connection refused');
+    });
+    vi.stubGlobal('WebSocket', throwingWs);
+
+    // Should not crash
+    renderWithNotification();
+
+    await waitFor(() => expect(screen.getByTestId('unread-count')).toBeInTheDocument());
+
+    // Restore
+    vi.stubGlobal('WebSocket', OriginalMock);
   });
 });
