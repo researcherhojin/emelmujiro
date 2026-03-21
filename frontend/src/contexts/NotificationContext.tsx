@@ -181,23 +181,33 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     }
   }, [isAuthenticated, currentPage]);
 
-  const markAsRead = useCallback(async (id: number) => {
+  const wsSend = useCallback((data: Record<string, unknown>) => {
     try {
-      await api.markNotificationRead(id);
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n.id === id ? { ...n, is_read: true, read_at: new Date().toISOString() } : n
-        )
-      );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
-
       if (wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.send(JSON.stringify({ action: 'mark_read', notification_id: id }));
+        wsRef.current.send(JSON.stringify(data));
       }
     } catch {
-      logger.error('Failed to mark notification as read');
+      // WebSocket send failure is non-critical
     }
   }, []);
+
+  const markAsRead = useCallback(
+    async (id: number) => {
+      try {
+        await api.markNotificationRead(id);
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === id ? { ...n, is_read: true, read_at: new Date().toISOString() } : n
+          )
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+        wsSend({ action: 'mark_read', notification_id: id });
+      } catch {
+        logger.error('Failed to mark notification as read');
+      }
+    },
+    [wsSend]
+  );
 
   const markAllAsRead = useCallback(async () => {
     try {
@@ -206,14 +216,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         prev.map((n) => ({ ...n, is_read: true, read_at: new Date().toISOString() }))
       );
       setUnreadCount(0);
-
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.send(JSON.stringify({ action: 'mark_all_read' }));
-      }
+      wsSend({ action: 'mark_all_read' });
     } catch {
       logger.error('Failed to mark all notifications as read');
     }
-  }, []);
+  }, [wsSend]);
 
   const value = useMemo<NotificationContextType>(
     () => ({

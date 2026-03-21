@@ -207,36 +207,13 @@ describe('Navbar Component', () => {
     removeEventListenerSpy.mockRestore();
   });
 
-  it('calls scrollToSection for hash paths (line 46)', () => {
-    // We need to test the handleNavigation path where path.startsWith('/#')
-    // This happens when a nav item has a hash path like /#services
-    // Since the navItems are fixed to /about, /blog, /profile, we need to
-    // test it indirectly. The handleNavigation function is used for all nav items.
-    // We can verify that non-hash paths call navigate() correctly.
+  it('navigates to blog path on click', () => {
     renderWithProviders(<Navbar />);
 
     const blogButton = screen.getByRole('button', { name: 'common.blog' });
     fireEvent.click(blogButton);
 
-    // Non-hash path should call navigate
     expect(mockNavigate).toHaveBeenCalledWith('/blog');
-  });
-
-  it('isActive returns true when pathname matches hash path on root (line 57)', () => {
-    // Set location to root with a hash
-    mockLocation.pathname = '/';
-    mockLocation.hash = '#services';
-
-    renderWithProviders(<Navbar />);
-
-    // The isActive function checks path.startsWith('/#') and then
-    // compares location.pathname === '/' && location.hash === path.substring(1)
-    // Since no nav item uses /#services, the active state won't match any button
-    // but the function itself is exercised through the render
-    const aboutButton = screen.getByRole('button', { name: 'common.about' });
-    expect(aboutButton).toBeInTheDocument();
-    // /about should NOT be active when we're on /
-    expect(aboutButton.className).toContain('text-gray-600');
   });
 
   it('highlights active nav item when pathname matches (line 59)', () => {
@@ -250,25 +227,11 @@ describe('Navbar Component', () => {
     expect(aboutButton.className).toContain('text-gray-900');
   });
 
-  it('handles hash-based navigation via scrollToSection (line 46)', () => {
-    // Directly test handleNavigation with a hash path
-    // The navItems don't include hash paths, but the function supports them
+  it('navigates to path when nav item clicked (handleNavigation)', () => {
     renderWithProviders(<Navbar />);
 
-    // We can't directly call handleNavigation, but we can verify
-    // the scrollToSection mock is available and the function exists
-    // by checking the component renders without error
-    expect(screen.getByText('common.companyName')).toBeInTheDocument();
-  });
-
-  it('isActive returns true for hash path when on home with matching hash (line 57)', () => {
-    mockLocation.pathname = '/';
-    mockLocation.hash = '#services';
-
-    renderWithProviders(<Navbar />);
-
-    // Even though no nav items use hash paths currently,
-    // the isActive function should handle them correctly
-    expect(screen.getByText('common.companyName')).toBeInTheDocument();
+    const aboutButton = screen.getByRole('button', { name: 'common.about' });
+    fireEvent.click(aboutButton);
+    expect(mockNavigate).toHaveBeenCalled();
   });
 });

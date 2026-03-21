@@ -4,7 +4,6 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DarkModeToggle from './DarkModeToggle';
 import NotificationBell from './NotificationBell';
-import { useScrollToSection } from '../../hooks/useScrollToSection';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -19,7 +18,6 @@ const Navbar: React.FC = memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
-  const scrollToSection = useScrollToSection();
   const { currentLang, localizedPath, switchLanguagePath } = useLocalizedPath();
   const { isAuthenticated } = useAuth();
 
@@ -41,24 +39,16 @@ const Navbar: React.FC = memo(() => {
   const handleNavigation = useCallback(
     (path: string) => {
       setIsOpen(false);
-
-      if (path.startsWith('/#')) {
-        scrollToSection(path.substring(2));
-      } else {
-        navigate(path);
-      }
+      navigate(path);
     },
-    [scrollToSection, navigate]
+    [navigate]
   );
 
   const isActive = useCallback(
     (path: string): boolean => {
-      if (path.startsWith('/#')) {
-        return location.pathname === '/' && location.hash === path.substring(1);
-      }
       return location.pathname === path;
     },
-    [location.pathname, location.hash]
+    [location.pathname]
   );
 
   const handleContactClick = useCallback(() => {
