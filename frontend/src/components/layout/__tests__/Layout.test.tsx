@@ -1,6 +1,6 @@
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -82,5 +82,46 @@ describe('Layout', () => {
     expect(wrapper).toHaveClass('min-h-screen');
     expect(wrapper).toHaveClass('flex');
     expect(wrapper).toHaveClass('flex-col');
+  });
+
+  describe('KakaoTalk banner', () => {
+    beforeEach(() => {
+      (window as Record<string, unknown>).__isKakaoInApp = true;
+      (window as Record<string, unknown>).__isKakaoAndroid = false;
+    });
+
+    afterEach(() => {
+      delete (window as Record<string, unknown>).__isKakaoInApp;
+      delete (window as Record<string, unknown>).__isKakaoAndroid;
+    });
+
+    it('shows banner on iOS KakaoTalk', () => {
+      renderLayout();
+      expect(screen.getByText('common.kakaoBanner')).toBeInTheDocument();
+      expect(screen.getByText('common.openExternal')).toBeInTheDocument();
+    });
+
+    it('opens external browser when button clicked', () => {
+      renderLayout();
+      const openBtn = screen.getByText('common.openExternal');
+      // Should not throw when clicked
+      fireEvent.click(openBtn);
+    });
+
+    it('dismisses banner when close button clicked', () => {
+      renderLayout();
+      expect(screen.getByText('common.kakaoBanner')).toBeInTheDocument();
+
+      const closeBtn = screen.getByLabelText('common.close');
+      fireEvent.click(closeBtn);
+
+      expect(screen.queryByText('common.kakaoBanner')).not.toBeInTheDocument();
+    });
+
+    it('does not show banner on Android KakaoTalk', () => {
+      (window as Record<string, unknown>).__isKakaoAndroid = true;
+      renderLayout();
+      expect(screen.queryByText('common.kakaoBanner')).not.toBeInTheDocument();
+    });
   });
 });

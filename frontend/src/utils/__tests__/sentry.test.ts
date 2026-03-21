@@ -1,46 +1,53 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Use vi.hoisted() so these are available when vi.mock factories run (they are hoisted)
-const { mockInit, mockCaptureException, mockWithScope, mockEnv } = vi.hoisted(() => {
-  const mockInit = vi.fn();
-  const mockCaptureException = vi.fn();
-  const mockWithScope = vi.fn((callback: (scope: unknown) => void) => {
-    const scope = {
-      setExtra: vi.fn(),
-      setContext: vi.fn(),
+const { mockInit, mockCaptureException, mockWithScope, mockSetUser, mockAddBreadcrumb, mockEnv } =
+  vi.hoisted(() => {
+    const mockInit = vi.fn();
+    const mockCaptureException = vi.fn();
+    const mockWithScope = vi.fn((callback: (scope: unknown) => void) => {
+      const scope = {
+        setExtra: vi.fn(),
+        setContext: vi.fn(),
+      };
+      callback(scope);
+      return scope;
+    });
+    const mockSetUser = vi.fn();
+    const mockAddBreadcrumb = vi.fn();
+    const mockEnv = {
+      ENABLE_SENTRY: false,
+      SENTRY_DSN: '',
+      NODE_ENV: 'test',
+      IS_PRODUCTION: false,
+      IS_DEVELOPMENT: false,
+      IS_TEST: true,
+      API_URL: 'http://localhost:8000/api',
+      WS_URL: 'ws://localhost:8000/ws',
+      ENABLE_ANALYTICS: false,
+      GA_TRACKING_ID: '',
+      APP_NAME: 'Emelmujiro',
+      APP_VERSION: '1.0.0',
+      PUBLIC_URL: '',
     };
-    callback(scope);
-    return scope;
-  });
-  const mockEnv = {
-    ENABLE_SENTRY: false,
-    SENTRY_DSN: '',
-    NODE_ENV: 'test',
-    IS_PRODUCTION: false,
-    IS_DEVELOPMENT: false,
-    IS_TEST: true,
-    API_URL: 'http://localhost:8000/api',
-    WS_URL: 'ws://localhost:8000/ws',
-    ENABLE_ANALYTICS: false,
-    GA_TRACKING_ID: '',
-    APP_NAME: 'Emelmujiro',
-    APP_VERSION: '1.0.0',
-    PUBLIC_URL: '',
-  };
 
-  return {
-    mockInit,
-    mockCaptureException,
-    mockWithScope,
-    mockEnv,
-  };
-});
+    return {
+      mockInit,
+      mockCaptureException,
+      mockWithScope,
+      mockSetUser,
+      mockAddBreadcrumb,
+      mockEnv,
+    };
+  });
 
 // Mock @sentry/react
 vi.mock('@sentry/react', () => ({
   init: mockInit,
   captureException: mockCaptureException,
   withScope: mockWithScope,
+  setUser: mockSetUser,
+  addBreadcrumb: mockAddBreadcrumb,
 }));
 
 // Mock logger to prevent console output
@@ -60,7 +67,14 @@ vi.mock('../../config/env', () => ({
 }));
 
 // Import after mocks
-import { initSentry, captureException, reportErrorBoundary } from '../sentry';
+import {
+  initSentry,
+  captureException,
+  reportErrorBoundary,
+  setUserContext,
+  clearUserContext,
+  addBreadcrumb,
+} from '../sentry';
 import logger from '../logger';
 
 describe('sentry', () => {
@@ -339,6 +353,56 @@ describe('sentry', () => {
         digest: 'abc123',
       });
       expect(mockCaptureException).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe('setUserContext', () => {
+    it('sets Sentry user when enabled', () => {
+      mockEnv.ENABLE_SENTRY = true;
+      setUserContext({ id: 1, email: 'test@example.com' });
+      expect(mockSetUser).toHaveBeenCalledWith({ id: '1', email: 'test@example.com' });
+    });
+
+    it('does nothing when Sentry is disabled', () => {
+      mockEnv.ENABLE_SENTRY = false;
+      mockSetUser.mockClear();
+      setUserContext({ id: 1, email: 'test@example.com' });
+      expect(mockSetUser).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('clearUserContext', () => {
+    it('clears Sentry user when enabled', () => {
+      mockEnv.ENABLE_SENTRY = true;
+      clearUserContext();
+      expect(mockSetUser).toHaveBeenCalledWith(null);
+    });
+
+    it('does nothing when Sentry is disabled', () => {
+      mockEnv.ENABLE_SENTRY = false;
+      mockSetUser.mockClear();
+      clearUserContext();
+      expect(mockSetUser).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('addBreadcrumb', () => {
+    it('adds breadcrumb when enabled', () => {
+      mockEnv.ENABLE_SENTRY = true;
+      addBreadcrumb('navigation', 'User clicked home', { page: '/' });
+      expect(mockAddBreadcrumb).toHaveBeenCalledWith({
+        category: 'navigation',
+        message: 'User clicked home',
+        data: { page: '/' },
+        level: 'info',
+      });
+    });
+
+    it('does nothing when Sentry is disabled', () => {
+      mockEnv.ENABLE_SENTRY = false;
+      mockAddBreadcrumb.mockClear();
+      addBreadcrumb('test', 'msg');
+      expect(mockAddBreadcrumb).not.toHaveBeenCalled();
     });
   });
 
