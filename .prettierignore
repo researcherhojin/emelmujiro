@@ -1,12 +1,12 @@
 # Build output
 build/
-dist/
 coverage/
 node_modules/
 
-# Python files
+# Python
 *.pyc
 __pycache__/
+backend/.venv/
 
 # Other
 *.log
