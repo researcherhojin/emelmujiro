@@ -1,4 +1,5 @@
 from django.test import TestCase, RequestFactory, override_settings
+from django.db import IntegrityError
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.response import Response
@@ -3968,3 +3969,73 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
             call_command("security_check", "--action=stats", stdout=out)
             output = out.getvalue()
             self.assertIn("오류 발생", output)
+
+
+@override_settings(
+    REST_FRAMEWORK={**settings.REST_FRAMEWORK, "DEFAULT_THROTTLE_CLASSES": [], "DEFAULT_THROTTLE_RATES": {}}
+)
+class ContactSuspiciousEmailTestCase(APITestCase):
+    """Cover views.py lines 464-465: suspicious email pattern detection"""
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
+    def test_suspicious_email_with_spam_keyword(self):
+        """Email containing spam keyword is flagged as suspicious"""
+        url = reverse("contact-create")
+        data = {
+            "name": "Test User",
+            "email": "spammer@example.com",
+            "subject": "Valid Subject Here",
+            "message": "A valid message with enough content here.",
+        }
+        response = self.client.post(url, data, format="json", REMOTE_ADDR="66.66.66.66")
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
+    def test_suspicious_email_with_repeated_chars(self):
+        """Email with repeated characters is flagged"""
+        url = reverse("contact-create")
+        data = {
+            "name": "Test User",
+            "email": "aaaaaa@example.com",
+            "subject": "Valid Subject Here",
+            "message": "A valid message with enough content here.",
+        }
+        response = self.client.post(url, data, format="json", REMOTE_ADDR="67.67.67.67")
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
+    def test_suspicious_email_with_long_numbers(self):
+        """Email with excessively long numbers is flagged"""
+        url = reverse("contact-create")
+        data = {
+            "name": "Test User",
+            "email": "12345678901@example.com",
+            "subject": "Valid Subject Here",
+            "message": "A valid message with enough content here.",
+        }
+        response = self.client.post(url, data, format="json", REMOTE_ADDR="68.68.68.68")
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
+
+class BlogPostSlugMaxRetriesTestCase(TestCase):
+    """Cover models.py lines 71, 76: IntegrityError max retries and counter loop"""
+
+    def test_slug_counter_increments_past_existing(self):
+        """Counter skips existing slugs until finding a free one (line 76)"""
+        # Create posts that will take slug, slug-1
+        BlogPost.objects.create(title="Counter Test", description="D", content="C", category="ai")
+        BlogPost.objects.create(title="Counter Test", description="D", content="C", category="ai")
+        # Third one should get slug-2
+        post3 = BlogPost.objects.create(title="Counter Test", description="D", content="C", category="ai")
+        self.assertTrue(post3.slug.endswith("-2") or post3.slug.endswith("-3"))
+
+    def test_max_retries_raises_integrity_error(self):
+        """After max retries, IntegrityError is re-raised (line 71)"""
+        from unittest.mock import patch
+
+        post = BlogPost(title="Retry Test", description="D", content="C", category="ai")
+        with patch.object(BlogPost.__mro__[1], "save", side_effect=IntegrityError("slug conflict")):
+            with self.assertRaises(IntegrityError):
+                post.save()
