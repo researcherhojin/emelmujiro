@@ -146,6 +146,7 @@ jobs:
           flags: backend
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+          root_dir: backend
 
   # ========================================
   # Deploy to GitHub Pages
