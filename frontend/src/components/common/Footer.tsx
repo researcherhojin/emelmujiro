@@ -8,6 +8,16 @@ import ServiceModal from './ServiceModal';
 import { useScrollToSection } from '../../hooks/useScrollToSection';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 
+const footerLinkStyle =
+  'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-none focus:outline-none border-none bg-transparent';
+
+const serviceLinks = [
+  { key: 'ai-education', titleKey: 'services.education.title' },
+  { key: 'ai-consulting', titleKey: 'services.consulting.title' },
+  { key: 'llm-genai', titleKey: 'services.llmGenai.title' },
+  { key: 'computer-vision', titleKey: 'services.computerVision.title' },
+] as const;
+
 const Footer: React.FC = memo(() => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -24,13 +34,6 @@ const Footer: React.FC = memo(() => {
     setIsServiceModalOpen(true);
   }, []);
 
-  const handleNavigate = useCallback(
-    (path: string) => {
-      navigate(path);
-    },
-    [navigate]
-  );
-
   const handleModalClose = useCallback(() => {
     setIsServiceModalOpen(false);
   }, []);
@@ -39,6 +42,12 @@ const Footer: React.FC = memo(() => {
     setIsServiceModalOpen(false);
     navigate(localizedPath('/contact'));
   }, [navigate, localizedPath]);
+
+  const menuLinks = [
+    { label: t('common.home'), onClick: () => scrollToSection('hero') },
+    { label: t('common.services'), onClick: () => scrollToSection('services') },
+    { label: t('common.representativeProfile'), onClick: () => navigate('/profile') },
+  ];
 
   return (
     <>
@@ -51,38 +60,13 @@ const Footer: React.FC = memo(() => {
                 {t('footer.services')}
               </h3>
               <ul className="space-y-3">
-                <li>
-                  <button
-                    onClick={() => handleServiceClick('ai-education')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-none focus:outline-none border-none bg-transparent"
-                  >
-                    {t('services.education.title')}
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleServiceClick('ai-consulting')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-none focus:outline-none border-none bg-transparent"
-                  >
-                    {t('services.consulting.title')}
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleServiceClick('llm-genai')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-none focus:outline-none border-none bg-transparent"
-                  >
-                    {t('services.llmGenai.title')}
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleServiceClick('computer-vision')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-none focus:outline-none border-none bg-transparent"
-                  >
-                    {t('services.computerVision.title')}
-                  </button>
-                </li>
+                {serviceLinks.map(({ key, titleKey }) => (
+                  <li key={key}>
+                    <button onClick={() => handleServiceClick(key)} className={footerLinkStyle}>
+                      {t(titleKey)}
+                    </button>
+                  </li>
+                ))}
               </ul>
             </nav>
 
@@ -92,35 +76,15 @@ const Footer: React.FC = memo(() => {
                 {t('common.menu')}
               </h3>
               <ul className="space-y-3">
+                {menuLinks.map(({ label, onClick }) => (
+                  <li key={label}>
+                    <button onClick={onClick} className={footerLinkStyle}>
+                      {label}
+                    </button>
+                  </li>
+                ))}
                 <li>
-                  <button
-                    onClick={() => scrollToSection('hero')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-none focus:outline-none border-none bg-transparent"
-                  >
-                    {t('common.home')}
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => scrollToSection('services')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-none focus:outline-none border-none bg-transparent"
-                  >
-                    {t('common.services')}
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleNavigate('/profile')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-none focus:outline-none border-none bg-transparent"
-                  >
-                    {t('common.representativeProfile')}
-                  </button>
-                </li>
-                <li>
-                  <Link
-                    to={localizedPath('/contact')}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all"
-                  >
+                  <Link to={localizedPath('/contact')} className={footerLinkStyle}>
                     {t('common.contact')}
                   </Link>
                 </li>
