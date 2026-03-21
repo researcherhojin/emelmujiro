@@ -31,8 +31,9 @@ NO_THROTTLE = {
 class BlogPostAPITestCase(APITestCase):
     """Tests for BlogPost API endpoints"""
 
-    def setUp(self):
-        self.blog_post = BlogPost.objects.create(
+    @classmethod
+    def setUpTestData(cls):
+        cls.blog_post = BlogPost.objects.create(
             title="Test Blog Post",
             description="Test description",
             content="Test content",
@@ -266,9 +267,10 @@ class BlogPostWriteAPITestCase(APITestCase):
 class BlogLikeAPITestCase(APITestCase):
     """Tests for blog post like API"""
 
-    def setUp(self):
-        self.post = BlogPost.objects.create(title="Likeable Post", description="Desc", content="Content", category="ai")
-        self.like_url = reverse("blog-like", kwargs={"pk": self.post.pk})
+    @classmethod
+    def setUpTestData(cls):
+        cls.post = BlogPost.objects.create(title="Likeable Post", description="Desc", content="Content", category="ai")
+        cls.like_url = reverse("blog-like", kwargs={"pk": cls.post.pk})
 
     def test_like_post(self):
         """First like creates a BlogLike and increments count"""
@@ -300,11 +302,12 @@ class BlogLikeAPITestCase(APITestCase):
 class BlogCommentAPITestCase(APITestCase):
     """Tests for blog comment API"""
 
-    def setUp(self):
-        self.post = BlogPost.objects.create(
+    @classmethod
+    def setUpTestData(cls):
+        cls.post = BlogPost.objects.create(
             title="Commentable Post", description="Desc", content="Content", category="ai"
         )
-        self.comments_url = reverse("blog-comment-list", kwargs={"post_pk": self.post.pk})
+        cls.comments_url = reverse("blog-comment-list", kwargs={"post_pk": cls.post.pk})
 
     def test_create_comment(self):
         """Anyone can create a comment"""
@@ -513,7 +516,7 @@ class ContactAPITestCase(APITestCase):
     def setUp(self):
         from django.core.cache import cache
 
-        cache.clear()  # Reset throttle counters between tests
+        cache.clear()  # Reset view-level ContactRateThrottle counters
 
     def test_create_contact(self):
         """Test creating a new contact"""
@@ -691,8 +694,9 @@ class NewsletterAPITestCase(APITestCase):
 class AuthenticationAPITestCase(APITestCase):
     """Tests for Authentication API endpoints"""
 
-    def setUp(self):
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass12345")
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass12345")
 
     def test_user_registration(self):
         """Test user registration"""
@@ -1341,11 +1345,12 @@ class AdminUserManagementTestCase(APITestCase):
 class AdminAnalyticsTestCase(APITestCase):
     """Tests for Admin Analytics endpoints (visits time-series, popular pages)"""
 
-    def setUp(self):
-        self.admin = User.objects.create_superuser(
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = User.objects.create_superuser(
             username="admin", email="admin@example.com", password="adminpass12345"
         )
-        self.user = User.objects.create_user(username="regular", email="regular@example.com", password="userpass12345")
+        cls.user = User.objects.create_user(username="regular", email="regular@example.com", password="userpass12345")
 
         # Create SiteVisit records across multiple days
         now = django_timezone.now()
@@ -1599,12 +1604,13 @@ class NotificationPreferenceTestCase(APITestCase):
 class CookieJWTAuthenticationTestCase(APITestCase):
     """Tests for CookieJWTAuthentication (httpOnly cookie auth)"""
 
-    def setUp(self):
-        self.user = User.objects.create_user(
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(
             username="cookieuser", email="cookie@example.com", password="testpass12345"
         )
-        self.refresh = RefreshToken.for_user(self.user)
-        self.access_token = str(self.refresh.access_token)
+        cls.refresh = RefreshToken.for_user(cls.user)
+        cls.access_token = str(cls.refresh.access_token)
 
     def test_auth_via_cookie(self):
         """Request with valid access_token cookie is authenticated"""
@@ -1644,6 +1650,7 @@ class TokenRefreshTestCase(APITestCase):
     """Tests for custom token_refresh endpoint (cookie + body support)"""
 
     def setUp(self):
+        # Cannot use setUpTestData: token rotation blacklists tokens, requiring fresh tokens per test
         self.user = User.objects.create_user(
             username="refreshuser", email="refresh@example.com", password="testpass12345"
         )
@@ -1728,8 +1735,9 @@ class TokenRefreshTestCase(APITestCase):
 class UtilityFunctionTestCase(TestCase):
     """Tests for utility functions in views"""
 
-    def setUp(self):
-        self.factory = RequestFactory()
+    @classmethod
+    def setUpTestData(cls):
+        cls.factory = RequestFactory()
 
     def test_get_client_ip_direct(self):
         """Test get_client_ip with REMOTE_ADDR"""
@@ -1782,8 +1790,9 @@ class UtilityFunctionTestCase(TestCase):
 class NotificationModelTestCase(TestCase):
     """Tests for Notification model"""
 
-    def setUp(self):
-        self.user = User.objects.create_user(username="notiuser", password="testpass123")
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username="notiuser", password="testpass123")
 
     def test_create_notification(self):
         """Test creating a notification"""
@@ -1914,8 +1923,9 @@ class NotificationAPITestCase(APITestCase):
 class SendUserNotificationTestCase(TestCase):
     """Tests for send_user_notification utility"""
 
-    def setUp(self):
-        self.user = User.objects.create_user(username="notiuser", password="testpass123")
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username="notiuser", password="testpass123")
 
     def test_send_notification_creates_record(self):
         """Test that send_user_notification creates a Notification"""

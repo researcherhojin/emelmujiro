@@ -34,6 +34,7 @@ A full-stack monorepo for an AI education & consulting platform, built with Reac
 ![Playwright](https://img.shields.io/badge/Playwright-1.55-2EAD33?logo=playwright&logoColor=white)
 ![MSW](https://img.shields.io/badge/MSW-2.11-FF6A33?logo=mockserviceworker&logoColor=white)
 ![Testing Library](https://img.shields.io/badge/Testing_Library-16.3-E33332?logo=testinglibrary&logoColor=white)
+![Lighthouse](https://img.shields.io/badge/Lighthouse_CI-Desktop-F44B21?logo=lighthouse&logoColor=white)
 
 **Infra**<br/>
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
@@ -95,8 +96,8 @@ graph LR
 - **Monitoring** — Sentry error tracking (user context on login/logout) + Google Analytics (blog views, dark mode, language switch events)
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting (react-vendor, ui-vendor, i18n, sentry, http-vendor, tiptap), Lighthouse CI assertions
-- **Auto-deploy** — GitHub Actions → webhook → Mac Mini build, parallelized PR checks with shared build artifacts
-- **Testing** — 63 unit test files (~863 tests), 10 E2E spec files (Playwright), ~181 backend tests
+- **Auto-deploy** — GitHub Actions → webhook → Mac Mini build; PR checks: lint, security scan (Trivy), bundle size, Lighthouse CI
+- **Testing** — 63 unit test files (~863 tests), 10 E2E spec files (Playwright), ~181 backend tests (Django)
 
 ## Roadmap
 

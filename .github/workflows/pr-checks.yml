@@ -159,7 +159,7 @@ jobs:
       - name: Test frontend changes
         if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/')
         working-directory: ./frontend
-        run: CI=true npm test -- --run --passWithNoTests --maxWorkers=2
+        run: CI=true npm test -- --run --passWithNoTests
         timeout-minutes: 10
 
       - name: Install uv
@@ -362,8 +362,8 @@ jobs:
             | Backend Lint | ${{ needs.backend-lint.result == 'success' && '✅' || '❌' }} |
             | Tests | ${{ needs.affected-tests.result == 'success' && '✅' || '❌' }} |
             | Security | ${{ needs.security-scan.result == 'success' && '✅' || '❌' }} |
-            | Bundle Size | ${{ needs.bundle-analysis.result == 'success' && '✅' || needs.bundle-analysis.result == 'skipped' && '⏭️' || '❌' }} |
-            | Lighthouse | ${{ needs.lighthouse.result == 'success' && '✅' || needs.lighthouse.result == 'skipped' && '⏭️' || '❌' }} |
+            | Bundle Size | ${{ needs.bundle-analysis.result == 'success' && '✅' || '❌' }} |
+            | Lighthouse | ${{ needs.lighthouse.result == 'success' && '✅' || '❌' }} |
 
             <details>
             <summary>Details</summary>

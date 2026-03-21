@@ -6,28 +6,9 @@ import { beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import React from 'react';
 
-// Enhanced cleanup after each test
+// React Testing Library cleanup (vitest config handles mock clearing/restoring via clearMocks + restoreMocks + mockReset)
 afterEach(() => {
-  // Clean up React Testing Library first
   cleanup();
-
-  // Clear all mocks
-  vi.clearAllMocks();
-  vi.restoreAllMocks();
-
-  // Clear localStorage and sessionStorage
-  localStorage.clear();
-  sessionStorage.clear();
-
-  // Clear all timers
-  vi.clearAllTimers();
-});
-
-// Setup before each test
-beforeEach(() => {
-  // Ensure clean slate
-  localStorage.clear();
-  sessionStorage.clear();
 });
 
 // Mock lucide-react icons — Proxy creates and caches any icon component on demand

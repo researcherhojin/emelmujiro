@@ -12,8 +12,9 @@ export default defineConfig({
     css: true,
     testTimeout: process.env.CI ? 15000 : 10000, // 15s in CI, 10s locally
     hookTimeout: process.env.CI ? 15000 : 10000, // 15s in CI, 10s locally
-    pool: 'forks', // Use forks pool for better isolation
-    maxForks: process.env.CI ? 2 : undefined, // Limit forks in CI to manage memory
+    pool: 'threads', // Threads are faster than forks (shared memory, lower spawn overhead)
+    maxThreads: process.env.CI ? 4 : undefined, // CI runners benefit from I/O parallelism beyond core count
+    minThreads: process.env.CI ? 2 : undefined,
     isolate: true, // Enable isolation for better test stability
     clearMocks: true, // Clear all mocks between tests
     restoreMocks: true, // Restore all mocks between tests
