@@ -635,4 +635,24 @@ describe('UIContext', () => {
 
     vi.useRealTimers();
   });
+
+  test('returns early when matchMedia is not available (line 127)', () => {
+    mockLocalStorage.getItem.mockReturnValue(null);
+
+    // Temporarily remove matchMedia
+    const original = window.matchMedia;
+    Object.defineProperty(window, 'matchMedia', { value: undefined, writable: true });
+
+    render(
+      <UIProvider>
+        <TestComponent />
+      </UIProvider>
+    );
+
+    // Should render without error
+    expect(screen.getByTestId('theme')).toBeInTheDocument();
+
+    // Restore
+    Object.defineProperty(window, 'matchMedia', { value: original, writable: true });
+  });
 });
