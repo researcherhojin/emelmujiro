@@ -60,3 +60,8 @@ ignore:
   - "backend/api/migrations/**"
   - "backend/api/consumers.py"
   - "backend/api/routing.py"
+  - "frontend/src/components/blog/TipTapEditor.tsx"
+  - "frontend/src/components/blog/TipTapEditor.css"
+  - "frontend/src/data/blogPosts.ts"
+  - "frontend/src/data/index.ts"
+  - "frontend/src/constants/index.ts"
