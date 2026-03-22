@@ -48,6 +48,7 @@ flags:
     carryforward: false
 
 ignore:
+  # Test infrastructure
   - "**/__tests__/**"
   - "**/*.test.*"
   - "**/*.spec.*"
@@ -57,7 +58,8 @@ ignore:
   - "backend/api/tests.py"
   - "backend/api/tests_urls.py"
   - "backend/api/migrations/**"
+  # External library wrapper — TipTap editor cannot be rendered in jsdom
   - "frontend/src/components/blog/TipTapEditor.tsx"
   - "frontend/src/components/blog/TipTapEditor.css"
-  - "frontend/src/data/index.ts"
+  # Pure data constants — no executable logic, V8 does not track coverage
   - "frontend/src/constants/**"
