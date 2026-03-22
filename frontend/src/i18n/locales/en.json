@@ -139,23 +139,23 @@
     "timeline": {
       "2022": {
         "title": "AI Education Launch",
-        "description": "Launched Python & ML fundamentals training programs"
+        "description": "Started AI training at SNU, SKT, Hancom and more"
       },
       "2023": {
         "title": "Enterprise Expansion",
-        "description": "Built AI training partnerships with Samsung, LG, SKT"
+        "description": "AI training for Samsung, LG, Hyundai and major corporations"
       },
       "2024": {
-        "title": "LLM & Generative AI Pivot",
-        "description": "Started RAG, prompt engineering, LLM fine-tuning training"
+        "title": "AI Bootcamp & Awards",
+        "description": "Led CV bootcamps, produced AI Champion & Dacon winners"
       },
       "2025": {
-        "title": "AI Consulting Expansion",
-        "description": "AI Agent, Agentic Workflow consulting & PoC development"
+        "title": "Emelmujiro Founded",
+        "description": "Established AI education & consulting firm, LLM/RAG solutions"
       },
       "2026": {
         "title": "Leading the AI Agent Era",
-        "description": "MCP, AI Agent design, multimodal AI solutions"
+        "description": "Agentic RAG & MCP consulting, Multimodal AI training expansion"
       }
     }
   },

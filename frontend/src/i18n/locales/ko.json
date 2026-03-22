@@ -123,23 +123,23 @@
     "timeline": {
       "2022": {
         "title": "AI 교육 시작",
-        "description": "Python, 머신러닝 기초 교육 프로그램 론칭"
+        "description": "서울대·SKT·한컴 등 AI 교육 강사로 활동 시작"
       },
       "2023": {
         "title": "기업 교육 확대",
-        "description": "삼성, LG, SKT 등 대기업 AI 교육 파트너십 구축"
+        "description": "삼성전자·LG전자·현대건설 등 대기업 AI 교육 수행"
       },
       "2024": {
-        "title": "LLM & 생성형 AI 전환",
-        "description": "RAG, 프롬프트 엔지니어링, LLM 파인튜닝 교육 시작"
+        "title": "AI 부트캠프 & 수상",
+        "description": "멋사 CV 심화 부트캠프 운영, AI 챔피언상·데이콘 우승팀 배출"
       },
       "2025": {
-        "title": "AI 컨설팅 사업 확장",
-        "description": "AI Agent, Agentic Workflow 컨설팅 및 PoC 개발"
+        "title": "에멜무지로 창업",
+        "description": "AI 교육·컨설팅 전문 기업 설립, LLM/RAG 솔루션 개발"
       },
       "2026": {
-        "title": "AI 에이전트 시대 선도",
-        "description": "MCP, AI Agent 설계, 멀티모달 AI 솔루션 제공"
+        "title": "AI Agent 시대 선도",
+        "description": "Agentic RAG·MCP 기반 컨설팅, Multimodal AI 교육 확장"
       }
     }
   },
