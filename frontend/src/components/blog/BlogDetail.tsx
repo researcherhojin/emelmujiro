@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef, useCallback, memo } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Eye, EyeOff, Trash2, Pencil, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
+import { useToast } from '../../hooks/useToast';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import DOMPurify from 'dompurify';
@@ -24,11 +25,6 @@ const preventImageAction = (e: React.MouseEvent | React.DragEvent) => {
   e.preventDefault();
 };
 
-interface ToastState {
-  message: string;
-  type: 'success' | 'error';
-}
-
 const BlogDetailPage: React.FC = memo(() => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
@@ -38,20 +34,7 @@ const BlogDetailPage: React.FC = memo(() => {
   const { currentPost: post, loading, error, fetchPostById, clearCurrentPost } = useBlog();
   const isAdmin = user?.role === 'admin';
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [toast, setToast] = useState<ToastState | null>(null);
-  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const showToast = useCallback((message: string, type: 'success' | 'error') => {
-    setToast({ message, type });
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    toastTimerRef.current = setTimeout(() => setToast(null), 3000);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    };
-  }, []);
+  const { toast, showToast } = useToast();
 
   const handleTogglePublish = useCallback(async () => {
     if (!id) return;

@@ -1,18 +1,14 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { X, CheckCircle, AlertTriangle, Save, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
+import { useToast } from '../../hooks/useToast';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
 import logger from '../../utils/logger';
 import TipTapEditor from './TipTapEditor';
 import DOMPurify from 'dompurify';
-
-interface ToastState {
-  message: string;
-  type: 'success' | 'error';
-}
 
 interface PostMeta {
   title: string;
@@ -58,20 +54,7 @@ const BlogEditor: React.FC = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(isEditMode);
-  const [toast, setToast] = useState<ToastState | null>(null);
-  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const showToast = useCallback((message: string, type: 'success' | 'error') => {
-    setToast({ message, type });
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    toastTimerRef.current = setTimeout(() => setToast(null), 3000);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    };
-  }, []);
+  const { toast, showToast, dismissToast } = useToast();
 
   // Fetch categories from API (fallback to hardcoded list)
   useEffect(() => {
@@ -228,7 +211,7 @@ const BlogEditor: React.FC = () => {
           )}
           <span>{toast.message}</span>
           <button
-            onClick={() => setToast(null)}
+            onClick={dismissToast}
             className="ml-2 text-white/80 hover:text-white"
             aria-label={t('common.close')}
           >
