@@ -54,7 +54,6 @@ ignore:
   - "**/test-utils/**"
   - "**/mocks/**"
   - "frontend/src/setupTests.ts"
-  - "frontend/src/utils/webVitals.ts"
   - "backend/api/tests.py"
   - "backend/api/tests_urls.py"
   - "backend/api/migrations/**"
