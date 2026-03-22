@@ -6,24 +6,56 @@ import { SITE_URL } from '../../utils/constants';
 import BlogCard from './BlogCard';
 import BlogSearch from './BlogSearch';
 import { useBlog } from '../../contexts/BlogContext';
+import { api } from '../../services/api';
 import { BlogPost } from '../../types';
 import { PageLoading } from '../common/UnifiedLoading';
+import logger from '../../utils/logger';
+
+interface Category {
+  slug: string;
+  name: string;
+  count?: number;
+}
 
 const BlogListPage: React.FC = memo(() => {
   const { t } = useTranslation();
   const { posts, loading, error, totalPages, currentPage, fetchPosts } = useBlog();
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [activeCategory, setActiveCategory] = useState<string>('all');
 
   useEffect(() => {
     fetchPosts(1);
   }, [fetchPosts]);
 
+  // Fetch categories from API
   useEffect(() => {
-    setFilteredPosts(posts);
-  }, [posts]);
+    const fetchCategories = async () => {
+      try {
+        const response = await api.getBlogCategories();
+        setCategories(response.data as Category[]);
+      } catch {
+        logger.warn('Failed to fetch blog categories');
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (activeCategory === 'all') {
+      setFilteredPosts(posts);
+    } else {
+      setFilteredPosts(posts.filter((p) => p.category === activeCategory));
+    }
+  }, [posts, activeCategory]);
 
   const handleSearch = useCallback((results: BlogPost[]) => {
+    setActiveCategory('all');
     setFilteredPosts(results);
+  }, []);
+
+  const handleCategoryChange = useCallback((slug: string) => {
+    setActiveCategory(slug);
   }, []);
 
   const handlePageChange = useCallback(
@@ -79,9 +111,39 @@ const BlogListPage: React.FC = memo(() => {
             {filteredPosts.length > 0 ? (
               <>
                 {/* Search */}
-                <div className="max-w-md mx-auto mb-16">
+                <div className="max-w-md mx-auto mb-8">
                   <BlogSearch onSearch={handleSearch} />
                 </div>
+
+                {/* Category Filter Tabs */}
+                {categories.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-2 mb-16">
+                    <button
+                      onClick={() => handleCategoryChange('all')}
+                      className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+                        activeCategory === 'all'
+                          ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                          : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      {t('blog.allCategories')}
+                    </button>
+                    {categories.map((cat) => (
+                      <button
+                        key={cat.slug}
+                        onClick={() => handleCategoryChange(cat.slug)}
+                        className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+                          activeCategory === cat.slug
+                            ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                        }`}
+                      >
+                        {cat.name}
+                        <span className="ml-1.5 text-xs opacity-60">{cat.count}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 {/* Featured Post */}
                 {featuredPost && (

@@ -96,7 +96,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('theme', theme);
 
     // Update meta theme-color
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
@@ -135,11 +134,10 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     }
 
     const handleSystemThemeChange = (e: MediaQueryListEvent) => {
-      const savedTheme = localStorage.getItem('theme');
-      // Only apply system theme if user hasn't set a preference
-      if (!savedTheme) {
-        setTheme(e.matches ? 'dark' : 'light');
-      }
+      // Always follow system theme — user's manual toggle is temporary
+      // until the next system theme change
+      localStorage.removeItem('theme');
+      setTheme(e.matches ? 'dark' : 'light');
     };
 
     if (mediaQuery.addEventListener) {
@@ -161,6 +159,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   const toggleTheme = useCallback(() => {
     setTheme((prev) => {
       const next = prev === 'light' ? 'dark' : 'light';
+      // Save to localStorage only on manual toggle
+      localStorage.setItem('theme', next);
       trackDarkModeToggle(next === 'dark');
       return next;
     });

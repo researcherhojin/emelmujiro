@@ -223,7 +223,9 @@
       "codeBlock": "코드 블록",
       "image": "이미지 업로드",
       "divider": "구분선"
-    }
+    },
+    "allCategories": "전체",
+    "filterByCategory": "카테고리"
   },
   "blogDetail": {
     "loading": "블로그 포스트를 불러오는 중입니다...",

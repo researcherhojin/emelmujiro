@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { vi, describe, test, expect, beforeEach, it } from 'vitest';
+import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { UIProvider, useUI } from '../UIContext';
 
 // Test component to consume the context
@@ -502,7 +502,7 @@ describe('UIContext', () => {
     expect(screen.getByTestId('theme')).toHaveTextContent('dark');
   });
 
-  test('system theme change listener does NOT update when user has saved preference', () => {
+  test('system theme change overrides saved preference and clears localStorage', () => {
     mockLocalStorage.getItem.mockReturnValue('light');
 
     const addEventListenerMock = vi.fn();
@@ -533,12 +533,13 @@ describe('UIContext', () => {
 
     const changeHandler = changeCall![1];
 
-    // Simulate system theme change — should NOT update because user saved preference
+    // Simulate system theme change — should follow system and clear saved preference
     act(() => {
       changeHandler({ matches: true } as MediaQueryListEvent);
     });
 
-    expect(screen.getByTestId('theme')).toHaveTextContent('light');
+    expect(screen.getByTestId('theme')).toHaveTextContent('dark');
+    expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('theme');
   });
 
   test('re-enables theme transitions after timeout', () => {
