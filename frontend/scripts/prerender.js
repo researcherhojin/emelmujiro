@@ -202,8 +202,12 @@ async function main() {
 
   console.log(`\n📊 Prerendered ${successCount}/${allRoutes.length} routes`);
 
+  if (successCount === 0) {
+    throw new Error('All routes failed to prerender');
+  }
+
   if (successCount < allRoutes.length) {
-    console.warn('⚠️  Some routes failed to prerender');
+    console.warn(`⚠️  ${allRoutes.length - successCount} route(s) failed to prerender`);
   }
 }
 

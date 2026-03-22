@@ -493,7 +493,17 @@
     "update": "수정",
     "published": "공개",
     "draft": "임시저장",
-    "enterUrl": "URL을 입력하세요:"
+    "enterUrl": "URL을 입력하세요:",
+    "categoryAi": "AI",
+    "categoryMl": "머신러닝",
+    "categoryDs": "데이터 사이언스",
+    "categoryNlp": "자연어 처리",
+    "categoryCv": "컴퓨터 비전",
+    "categoryRl": "강화학습",
+    "categoryEducation": "교육",
+    "categoryCareer": "경력",
+    "categoryProject": "프로젝트",
+    "categoryOther": "기타"
   },
   "seo": {
     "personName": "이호진",

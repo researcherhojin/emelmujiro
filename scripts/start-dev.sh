@@ -32,13 +32,21 @@ echo "✅ Docker is running."
 
 # Check environment variable files
 if [ ! -f "backend/.env.dev" ]; then
-    echo "📝 Creating backend environment file..."
-    cp backend/.env.example backend/.env.dev
+    if [ -f "backend/.env.example" ]; then
+        echo "📝 Creating backend environment file..."
+        cp backend/.env.example backend/.env.dev
+    else
+        echo "⚠️  backend/.env.example not found — create backend/.env.dev manually"
+    fi
 fi
 
 if [ ! -f "frontend/.env" ]; then
-    echo "📝 Creating frontend environment file..."
-    cp frontend/.env.example frontend/.env
+    if [ -f "frontend/.env.example" ]; then
+        echo "📝 Creating frontend environment file..."
+        cp frontend/.env.example frontend/.env
+    else
+        echo "⚠️  frontend/.env.example not found — create frontend/.env manually"
+    fi
 fi
 
 # Start development environment with Docker Compose

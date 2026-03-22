@@ -724,7 +724,7 @@ def send_user_notification(user, title, message, level="info", notification_type
                 message=message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
-                fail_silently=True,
+                fail_silently=False,
             )
         except Exception as e:
             logger.warning(f"Failed to send notification email: {e}")

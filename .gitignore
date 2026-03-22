@@ -48,7 +48,6 @@ node_modules/
 
 # Frontend
 frontend/node_modules/
-frontend/dist/
 frontend/build/
 frontend/coverage/
 playwright-report/

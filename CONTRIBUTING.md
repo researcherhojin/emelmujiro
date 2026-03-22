@@ -26,6 +26,8 @@ git checkout -b fix/bug-description         # 버그 수정
 
 ### 4. 개발 환경 설정
 
+**필수 조건**: Node >= 24, Python 3.12, [uv](https://docs.astral.sh/uv/)
+
 ```bash
 # 전체 설치 (루트에서 실행)
 make install               # npm install + uv sync --extra dev
@@ -61,7 +63,11 @@ docs(readme): update tech stack section
 test(blog): add BlogCard snapshot tests
 refactor(auth): simplify token refresh logic
 chore(deps): bump vite to 8.0
+deps(frontend): upgrade react-router to 7.x
+ci(pr-checks): add SEO file validation
 ```
+
+허용 타입: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`
 
 ### 8. 테스트
 
@@ -71,6 +77,9 @@ npm run test:run         # 단일 실행
 npm test                 # Watch 모드
 npm run test:coverage    # 커버리지 리포트
 
+# 특정 테스트 파일 실행
+CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx
+
 # 전체 검증 (lint + type-check + test)
 npm run validate
 
@@ -79,6 +88,9 @@ npm run test:e2e
 
 # Backend 테스트 (from backend/)
 DATABASE_URL="" uv run python manage.py test
+
+# Backend lint (from backend/)
+uv run black --check . && uv run flake8 .
 ```
 
 테스트에서 `renderWithProviders` 유틸리티를 사용해주세요:
@@ -104,16 +116,20 @@ test('renders correctly', () => {
 emelmujiro/
 ├── frontend/               # React 19 + TypeScript + Vite 8
 │   ├── src/
-│   │   ├── components/     # React 컴포넌트 (pages, common, sections, layout)
+│   │   ├── components/     # React 컴포넌트 (pages, common, sections, blog, layout)
 │   │   ├── contexts/       # React Context (UI, Auth, Blog, Notification)
 │   │   ├── services/       # API 서비스 (Axios + Mock)
 │   │   ├── hooks/          # 커스텀 훅
+│   │   ├── data/           # 정적 데이터 (i18n getter 패턴)
+│   │   ├── config/         # 환경 변수 설정
+│   │   ├── utils/          # 유틸리티 (logger, analytics, sentry)
 │   │   ├── i18n/           # 다국어 지원 (ko/en)
 │   │   └── test-utils/     # 테스트 유틸리티 + MSW 목 서버
 │   └── e2e/                # Playwright E2E 테스트
 ├── backend/                # Django 5 + DRF
 │   ├── api/                # REST API (단일 앱)
 │   └── config/             # Django 설정
+├── scripts/                # 배포, 포트 관리, 테스트 카운트 등
 └── .github/workflows/      # CI/CD 파이프라인
 ```
 

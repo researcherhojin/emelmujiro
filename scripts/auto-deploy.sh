@@ -4,7 +4,7 @@ set -euo pipefail
 # Auto-deploy script for Mac Mini
 # Called by deploy-webhook.js after GitHub Actions CI passes.
 
-REPO_DIR="$HOME/workspace/emelmujiro"
+REPO_DIR="${DEPLOY_REPO_DIR:-$HOME/workspace/emelmujiro}"
 LOG_PREFIX="[auto-deploy]"
 
 echo "$LOG_PREFIX Starting deploy at $(date)"

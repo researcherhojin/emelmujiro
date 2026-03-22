@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SITE_URL = 'https://emelmujiro.com';
+const SITE_URL = process.env.SITE_URL || 'https://emelmujiro.com';
 const LANGUAGES = ['ko', 'en'];
 
 // Define all static routes (BrowserRouter — clean URLs)

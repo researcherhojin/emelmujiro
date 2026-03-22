@@ -128,7 +128,7 @@ Frontend: `NotificationContext` manages state with auto-connect WebSocket on log
 
 **Comment API**: Nested under posts: `/api/blog-posts/{id}/comments/`. `BlogComment` model supports replies via `parent` FK. `CommentLike` for IP-based comment likes. No pagination (comments are few per post). Anyone can create/read; admin can delete via frontend UI.
 
-**Blog Admin UI**: Visible only when logged in as admin (`user.role === 'admin'`). `BlogDetail` shows sticky admin toolbar (publish/draft toggle, edit link, delete with confirmation). `BlogComments` shows delete button per comment. `BlogEditor` fetches categories from API with hardcoded fallback.
+**Blog Admin UI**: Visible only when logged in as admin (`user.role === 'admin'`). `BlogDetail` shows sticky admin toolbar (publish/draft toggle, edit link, delete with confirmation). `BlogComments` shows delete button per comment. `BlogEditor` fetches categories from API with i18n fallback (`CATEGORY_KEYS` using `blogEditor.category*` translation keys).
 
 ### SSG / Prerendering
 
@@ -280,6 +280,6 @@ Frontend: `nginx:alpine` container volume-mounting `frontend/build/`. Rebuild = 
 9. **No `window.alert()` in components**: Use inline toast state pattern (`ToastState` + `useRef` timer + `role="alert"`)
 10. **Backend tests need `DATABASE_URL=""`**: If env var points to Docker PostgreSQL, tests fail. Use SQLite
 11. **ESLint zero warnings**: Use `useCallback` for context functions, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements
-12. **No hardcoded site URLs**: Always use `SITE_URL` from `constants.ts`. `generate-sitemap.js` has its own constant (Node.js, can't import from frontend)
+12. **No hardcoded site URLs**: Always use `SITE_URL` from `constants.ts`. `generate-sitemap.js` reads `process.env.SITE_URL` with fallback (Node.js, can't import from frontend)
 13. **Branch naming**: Use `feature/name` for features, `fix/description` for bug fixes (per CONTRIBUTING.md convention)
 14. **All UI strings must use i18n**: Never hardcode user-facing text — use `useTranslation()` in React components, `i18n.t()` in data files

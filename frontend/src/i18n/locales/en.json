@@ -505,7 +505,17 @@
     "update": "Update",
     "published": "Published",
     "draft": "Draft",
-    "enterUrl": "Enter URL:"
+    "enterUrl": "Enter URL:",
+    "categoryAi": "AI",
+    "categoryMl": "Machine Learning",
+    "categoryDs": "Data Science",
+    "categoryNlp": "Natural Language Processing",
+    "categoryCv": "Computer Vision",
+    "categoryRl": "Reinforcement Learning",
+    "categoryEducation": "Education",
+    "categoryCareer": "Career",
+    "categoryProject": "Project",
+    "categoryOther": "Other"
   },
   "seo": {
     "personName": "Hojin Lee",

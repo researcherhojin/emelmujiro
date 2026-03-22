@@ -17,7 +17,7 @@ export default [
       'build/**',
       'node_modules/**',
       'coverage/**',
-      'sitemap-generator.js',
+      'scripts/**',
       '*.config.js',
       '*.config.mjs',
       '.lighthouserc.js',

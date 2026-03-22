@@ -210,7 +210,7 @@ if ls frontend/build/assets/*.js &>/dev/null; then
 fi
 
 inline_check "Image optimization"
-LARGE_IMAGES=$(find frontend/public -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" 2>/dev/null | xargs -I {} find {} -size +500k 2>/dev/null | wc -l | tr -d ' ')
+LARGE_IMAGES=$(find frontend/public \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) -size +500k 2>/dev/null | wc -l | tr -d ' ')
 if [ "$LARGE_IMAGES" -eq 0 ]; then
     pass "All images optimized (<500KB)"
 else

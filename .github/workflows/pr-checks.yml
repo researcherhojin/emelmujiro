@@ -81,6 +81,21 @@ jobs:
           # Check for large files (> 10MB)
           find . -type f -size +10M | grep -v node_modules | grep -v .git && echo "Large files detected!" && exit 1 || exit 0
 
+      - name: SEO files check
+        run: |
+          MISSING=0
+          for f in frontend/public/robots.txt frontend/public/sitemap.xml frontend/public/manifest.json frontend/public/favicon.ico frontend/public/.nojekyll; do
+            if [ ! -f "$f" ]; then
+              echo "Missing: $f"
+              MISSING=$((MISSING + 1))
+            fi
+          done
+          if [ $MISSING -gt 0 ]; then
+            echo "$MISSING required SEO/static files missing"
+            exit 1
+          fi
+          echo "All SEO files present"
+
   # Frontend linting (parallel with backend-lint)
   frontend-lint:
     name: Frontend Lint

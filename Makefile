@@ -1,4 +1,4 @@
-.PHONY: help install dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy-staging deploy-production logs logs-security logs-debug ps down restart migrate shell createsuperuser update-test-counts cleanup-visits
+.PHONY: help install dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy-staging deploy-production logs logs-security logs-debug ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron remove-cron
 
 help:
 	@echo "Available commands:"
@@ -103,3 +103,13 @@ update-test-counts:
 
 cleanup-visits:
 	docker exec emelmujiro-backend python manage.py cleanup_sitevisits --days $(or $(DAYS),90)
+
+setup-cron:
+	@echo "Adding daily SiteVisit cleanup cron job (3 AM)..."
+	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits; echo "0 3 * * * docker exec emelmujiro-backend python manage.py cleanup_sitevisits --days 90 >> /tmp/cleanup_sitevisits.log 2>&1") | crontab -
+	@echo "Cron job added. Verify with: crontab -l"
+
+remove-cron:
+	@echo "Removing SiteVisit cleanup cron job..."
+	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits) | crontab -
+	@echo "Cron job removed."

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 
 // Mock logger
@@ -15,25 +15,21 @@ vi.mock('../../../services/api', () => ({
   },
 }));
 
-// Mock @tiptap/react — useEditor returns null initially (standard TipTap behavior)
-// Create a chainable mock that returns itself for any method call
-const createChainMock = (): Record<string, unknown> => {
-  const mock: Record<string, unknown> = { run: vi.fn() };
-  return new Proxy(mock, {
-    get: (target, prop) => {
-      if (prop === 'run') return target.run;
-      // Return a function that returns the proxy itself (chainable)
-      return vi.fn().mockReturnValue(mock);
-    },
-  });
+// Create a chainable object that returns itself for any method call (not using vi.fn so clearAllMocks won't break it)
+const chainProxy: Record<string, unknown> = {};
+const chainHandler: ProxyHandler<Record<string, unknown>> = {
+  get: (_target, prop) => {
+    if (prop === 'run') return () => undefined;
+    if (prop === 'then') return undefined; // not thenable
+    return () => new Proxy({}, chainHandler);
+  },
 };
-
-const chainMock = createChainMock();
+const chainMock = new Proxy(chainProxy, chainHandler);
 
 const mockEditor = {
-  getHTML: vi.fn().mockReturnValue('<p>test</p>'),
-  getText: vi.fn().mockReturnValue('test'),
-  chain: vi.fn().mockReturnValue(chainMock),
+  getHTML: () => '<p>test</p>',
+  getText: () => 'test',
+  chain: () => chainMock,
   isActive: vi.fn().mockReturnValue(false),
   can: vi.fn().mockReturnValue(new Proxy({}, { get: () => vi.fn().mockReturnValue(true) })),
   on: vi.fn(),
@@ -43,9 +39,15 @@ const mockEditor = {
 };
 
 let useEditorReturn: typeof mockEditor | null = null;
+// Capture the config passed to useEditor so we can invoke callbacks
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let capturedConfig: any = null;
 
 vi.mock('@tiptap/react', () => ({
-  useEditor: () => useEditorReturn,
+  useEditor: (config: unknown) => {
+    capturedConfig = config;
+    return useEditorReturn;
+  },
   EditorContent: ({ editor }: { editor: unknown }) =>
     editor ? <div data-testid="editor-content">Editor Content</div> : null,
 }));
@@ -80,6 +82,7 @@ describe('TipTapEditor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     useEditorReturn = null;
+    capturedConfig = null;
   });
 
   it('returns null when editor is not initialized', () => {
@@ -131,6 +134,141 @@ describe('TipTapEditor', () => {
     expect(screen.getByTestId('editor-content')).toBeInTheDocument();
   });
 
+  describe('onUpdate callback', () => {
+    it('calls onChange with HTML and text from editor', () => {
+      useEditorReturn = mockEditor;
+      render(<TipTapEditor onChange={mockOnChange} />);
+      expect(capturedConfig).not.toBeNull();
+
+      const fakeEditor = {
+        getHTML: vi.fn().mockReturnValue('<p>updated</p>'),
+        getText: vi.fn().mockReturnValue('updated'),
+      };
+      capturedConfig.onUpdate({ editor: fakeEditor });
+      expect(mockOnChange).toHaveBeenCalledWith('<p>updated</p>', 'updated');
+    });
+  });
+
+  describe('handleDrop', () => {
+    const getHandleDrop = () => {
+      useEditorReturn = mockEditor;
+      render(<TipTapEditor onChange={mockOnChange} />);
+      return capturedConfig.editorProps.handleDrop;
+    };
+
+    it('returns false when element was moved (not dropped)', () => {
+      const handleDrop = getHandleDrop();
+      const result = handleDrop(null, {} as DragEvent, null, true);
+      expect(result).toBe(false);
+    });
+
+    it('returns false when no files in dataTransfer', () => {
+      const handleDrop = getHandleDrop();
+      const event = { dataTransfer: { files: [] } } as unknown as DragEvent;
+      const result = handleDrop(null, event, null, false);
+      expect(result).toBe(false);
+    });
+
+    it('returns false when no dataTransfer', () => {
+      const handleDrop = getHandleDrop();
+      const event = {} as DragEvent;
+      const result = handleDrop(null, event, null, false);
+      expect(result).toBe(false);
+    });
+
+    it('returns false when file is not an image', () => {
+      const handleDrop = getHandleDrop();
+      const event = {
+        dataTransfer: { files: [{ type: 'text/plain' }] },
+        preventDefault: vi.fn(),
+      } as unknown as DragEvent;
+      const result = handleDrop(null, event, null, false);
+      expect(result).toBe(false);
+    });
+
+    it('handles image drop and uploads', async () => {
+      const { api } = await import('../../../services/api');
+      (api.uploadBlogImage as ReturnType<typeof vi.fn>).mockResolvedValue({
+        data: { url: '/media/dropped.jpg' },
+      });
+
+      const handleDrop = getHandleDrop();
+      const event = {
+        dataTransfer: { files: [{ type: 'image/png' }] },
+        preventDefault: vi.fn(),
+      } as unknown as DragEvent;
+
+      const result = handleDrop(null, event, null, false);
+      expect(result).toBe(true);
+      expect(event.preventDefault).toHaveBeenCalled();
+
+      await waitFor(() => {
+        expect(api.uploadBlogImage).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('handlePaste', () => {
+    const getHandlePaste = () => {
+      useEditorReturn = mockEditor;
+      render(<TipTapEditor onChange={mockOnChange} />);
+      return capturedConfig.editorProps.handlePaste;
+    };
+
+    it('returns false when no clipboardData items', () => {
+      const handlePaste = getHandlePaste();
+      const event = { clipboardData: null } as unknown as ClipboardEvent;
+      const result = handlePaste(null, event);
+      expect(result).toBe(false);
+    });
+
+    it('returns false when no image items in clipboard', () => {
+      const handlePaste = getHandlePaste();
+      const event = {
+        clipboardData: { items: [{ type: 'text/plain' }] },
+      } as unknown as ClipboardEvent;
+      const result = handlePaste(null, event);
+      expect(result).toBe(false);
+    });
+
+    it('handles image paste and uploads', async () => {
+      const { api } = await import('../../../services/api');
+      (api.uploadBlogImage as ReturnType<typeof vi.fn>).mockResolvedValue({
+        data: { url: '/media/pasted.jpg' },
+      });
+
+      const handlePaste = getHandlePaste();
+      const mockFile = new File([''], 'test.png', { type: 'image/png' });
+      const event = {
+        clipboardData: {
+          items: [{ type: 'image/png', getAsFile: () => mockFile }],
+        },
+        preventDefault: vi.fn(),
+      } as unknown as ClipboardEvent;
+
+      const result = handlePaste(null, event);
+      expect(result).toBe(true);
+      expect(event.preventDefault).toHaveBeenCalled();
+
+      await waitFor(() => {
+        expect(api.uploadBlogImage).toHaveBeenCalledWith(mockFile);
+      });
+    });
+
+    it('handles image paste when getAsFile returns null', () => {
+      const handlePaste = getHandlePaste();
+      const event = {
+        clipboardData: {
+          items: [{ type: 'image/png', getAsFile: () => null }],
+        },
+        preventDefault: vi.fn(),
+      } as unknown as ClipboardEvent;
+
+      const result = handlePaste(null, event);
+      expect(result).toBe(true);
+    });
+  });
+
   describe('image upload', () => {
     it('handleImageUpload returns URL on success', async () => {
       const { api } = await import('../../../services/api');
@@ -140,19 +278,30 @@ describe('TipTapEditor', () => {
 
       useEditorReturn = mockEditor;
       render(<TipTapEditor onChange={mockOnChange} />);
-      // The handleImageUpload is internal but we verify the mock is set up
       expect(api.uploadBlogImage).toBeDefined();
     });
 
-    it('handleImageUpload returns null on failure', async () => {
+    it('handleImageUpload logs error and returns null on failure', async () => {
       const { api } = await import('../../../services/api');
+      const logger = (await import('../../../utils/logger')).default;
       (api.uploadBlogImage as ReturnType<typeof vi.fn>).mockRejectedValue(
         new Error('Upload failed')
       );
 
       useEditorReturn = mockEditor;
       render(<TipTapEditor onChange={mockOnChange} />);
-      expect(api.uploadBlogImage).toBeDefined();
+
+      // Trigger upload via handleDrop to exercise the error path
+      const handleDrop = capturedConfig.editorProps.handleDrop;
+      const event = {
+        dataTransfer: { files: [{ type: 'image/jpeg' }] },
+        preventDefault: vi.fn(),
+      } as unknown as DragEvent;
+      handleDrop(null, event, null, false);
+
+      await waitFor(() => {
+        expect(logger.error).toHaveBeenCalledWith('Image upload failed:', expect.any(Error));
+      });
     });
   });
 });

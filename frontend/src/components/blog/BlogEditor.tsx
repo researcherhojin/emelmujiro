@@ -19,18 +19,18 @@ interface PostMeta {
   is_published: boolean;
 }
 
-const FALLBACK_CATEGORIES = [
-  { value: 'ai', label: 'AI' },
-  { value: 'ml', label: 'Machine Learning' },
-  { value: 'ds', label: 'Data Science' },
-  { value: 'nlp', label: 'Natural Language Processing' },
-  { value: 'cv', label: 'Computer Vision' },
-  { value: 'rl', label: 'Reinforcement Learning' },
-  { value: 'education', label: '교육' },
-  { value: 'career', label: '경력' },
-  { value: 'project', label: '프로젝트' },
-  { value: 'other', label: '기타' },
-];
+const CATEGORY_KEYS = [
+  { value: 'ai', labelKey: 'blogEditor.categoryAi' },
+  { value: 'ml', labelKey: 'blogEditor.categoryMl' },
+  { value: 'ds', labelKey: 'blogEditor.categoryDs' },
+  { value: 'nlp', labelKey: 'blogEditor.categoryNlp' },
+  { value: 'cv', labelKey: 'blogEditor.categoryCv' },
+  { value: 'rl', labelKey: 'blogEditor.categoryRl' },
+  { value: 'education', labelKey: 'blogEditor.categoryEducation' },
+  { value: 'career', labelKey: 'blogEditor.categoryCareer' },
+  { value: 'project', labelKey: 'blogEditor.categoryProject' },
+  { value: 'other', labelKey: 'blogEditor.categoryOther' },
+] as const;
 
 const BlogEditor: React.FC = () => {
   const { t } = useTranslation();
@@ -47,7 +47,9 @@ const BlogEditor: React.FC = () => {
     image_url: '',
     is_published: true,
   });
-  const [categories, setCategories] = useState(FALLBACK_CATEGORIES);
+  const [apiCategories, setApiCategories] = useState<{ value: string; label: string }[] | null>(
+    null
+  );
   const [contentHtml, setContentHtml] = useState('');
   const [contentText, setContentText] = useState('');
   const [initialContent, setInitialContent] = useState('');
@@ -63,7 +65,7 @@ const BlogEditor: React.FC = () => {
         const response = await api.getBlogCategories();
         const data = response.data;
         if (data.length > 0) {
-          setCategories(
+          setApiCategories(
             data.map((cat: string | { name: string; slug: string }) =>
               typeof cat === 'string'
                 ? { value: cat, label: cat }
@@ -313,11 +315,17 @@ const BlogEditor: React.FC = () => {
                 onChange={handleMetaChange}
                 className="px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                {categories.map((cat) => (
-                  <option key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </option>
-                ))}
+                {apiCategories
+                  ? apiCategories.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))
+                  : CATEGORY_KEYS.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {t(cat.labelKey)}
+                      </option>
+                    ))}
               </select>
               <input
                 type="text"

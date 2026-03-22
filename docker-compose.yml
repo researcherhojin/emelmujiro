@@ -54,8 +54,6 @@ services:
         condition: service_healthy
     volumes:
       - ./frontend/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./certbot/conf:/etc/letsencrypt:ro
-      - ./certbot/www:/var/www/certbot:ro
     networks:
       - emelmujiro-network
     healthcheck:
@@ -108,42 +106,6 @@ services:
       retries: 5
     profiles:
       - redis
-
-  # Nginx (production profile only)
-  nginx:
-    image: nginx:alpine
-    container_name: emelmujiro-nginx
-    restart: unless-stopped
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - static_volume:/static:ro
-      - media_volume:/media:ro
-      - ./certbot/conf:/etc/letsencrypt:ro
-      - ./certbot/www:/var/www/certbot:ro
-    ports:
-      - "8080:80"
-      - "8443:443"
-    depends_on:
-      - backend
-      - frontend
-    networks:
-      - emelmujiro-network
-    profiles:
-      - production
-
-  # Certbot for SSL (production profile only)
-  certbot:
-    image: certbot/certbot
-    container_name: emelmujiro-certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    networks:
-      - emelmujiro-network
-    profiles:
-      - production
 
 volumes:
   postgres_data:

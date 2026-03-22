@@ -11,6 +11,15 @@ set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
+# Cross-platform sed -i (macOS requires '' suffix, Linux does not)
+sedi() {
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "$@"
+  else
+    sed -i "$@"
+  fi
+}
+
 echo "🧪 Counting tests..."
 
 # Count frontend tests (macOS compatible — no grep -P)
@@ -32,12 +41,12 @@ echo "   Frontend: $FRONTEND_COUNT tests"
 echo "   Backend: $BACKEND_COUNT tests"
 
 # Update README.md
-sed -i '' -E "s/~[0-9]+ unit tests \(Vitest\)/~${FRONTEND_COUNT} unit tests (Vitest)/g" README.md
-sed -i '' -E "s/~[0-9]+ backend tests \(Django\)/~${BACKEND_COUNT} backend tests (Django)/g" README.md
+sedi -E "s/~[0-9]+ unit tests \(Vitest\)/~${FRONTEND_COUNT} unit tests (Vitest)/g" README.md
+sedi -E "s/~[0-9]+ backend tests \(Django\)/~${BACKEND_COUNT} backend tests (Django)/g" README.md
 
 # Update CLAUDE.md
-sed -i '' -E "s/~[0-9]+ tests\), 10 E2E/~${FRONTEND_COUNT} tests), 10 E2E/g" CLAUDE.md
-sed -i '' -E "s/~[0-9]+ backend tests/~${BACKEND_COUNT} backend tests/g" CLAUDE.md
+sedi -E "s/~[0-9]+ tests\), 10 E2E/~${FRONTEND_COUNT} tests), 10 E2E/g" CLAUDE.md
+sedi -E "s/~[0-9]+ backend tests/~${BACKEND_COUNT} backend tests/g" CLAUDE.md
 
 echo "✅ Updated test counts in README.md and CLAUDE.md"
 
