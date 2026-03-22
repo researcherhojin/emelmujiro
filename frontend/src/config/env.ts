@@ -1,31 +1,25 @@
 // Vite environment variables configuration
 // This file centralizes all environment variables for easy migration
 
-// Resolve current mode from Vite's import.meta.env (preferred).
-// Falls back to process.env.NODE_ENV for test runners (Vitest sets both).
-const MODE: string =
-  typeof import.meta !== 'undefined' && import.meta.env?.MODE
-    ? import.meta.env.MODE
-    : typeof process !== 'undefined' && process.env?.NODE_ENV
-      ? process.env.NODE_ENV
-      : 'development';
+// Resolve current mode: Vite sets import.meta.env.MODE, Vitest sets process.env.NODE_ENV
+const MODE: string = import.meta.env?.MODE ?? process.env?.NODE_ENV ?? 'development';
 
 const IS_PRODUCTION = MODE === 'production';
 const IS_DEVELOPMENT = MODE === 'development';
 const IS_TEST = MODE === 'test';
 
 export const getEnvVar = (key: string, defaultValue: string = ''): string => {
-  // Support both Vite and legacy process.env for gradual migration
+  // Vite env uses VITE_ prefix; legacy code uses REACT_APP_ prefix
   const viteKey = key.replace('REACT_APP_', 'VITE_');
 
-  // Check Vite env first
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[viteKey]) {
+  // Check Vite env first (import.meta.env is always defined in Vite/Vitest)
+  if (import.meta.env?.[viteKey]) {
     return import.meta.env[viteKey];
   }
 
-  // Fallback to process.env for compatibility
-  if (typeof process !== 'undefined' && process.env && process.env[key]) {
-    return process.env[key];
+  // Fallback to process.env for legacy REACT_APP_ compatibility
+  if (process.env?.[key]) {
+    return process.env[key]!;
   }
 
   return defaultValue;
