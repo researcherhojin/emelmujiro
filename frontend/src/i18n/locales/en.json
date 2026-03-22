@@ -34,7 +34,7 @@
       "secondary": "Explore Services"
     },
     "stats": {
-      "students": "Total Students",
+      "students": "Trained Talents",
       "projects": "Completed Projects",
       "partners": "Partner Companies",
       "satisfaction": "Course Satisfaction"
@@ -69,8 +69,8 @@
       "description": "Agentic AI service design & build",
       "details": [
         "Agentic RAG design & build",
-        "AI Agent & MCP automation",
-        "Team project-based PoC dev"
+        "MCP-based AI Agent development",
+        "AI service prototype build"
       ]
     },
     "computerVision": {
@@ -86,13 +86,13 @@
   "cta": {
     "sectionLabel": "GET STARTED",
     "title": "Need AI Education & Consulting?",
-    "subtitle": "Solve your business challenges with our AI experts",
+    "subtitle": "Custom training, consulting & AI Agent development — all in one place",
     "emailAriaLabel": "Contact via email"
   },
   "about": {
     "sectionLabel": "ABOUT US",
     "title": "Emelmujiro",
-    "subtitle": "AI Education & Solution Development Startup",
+    "subtitle": "AI Education, Consulting & Solution Development Startup",
     "mission": {
       "sectionLabel": "OUR MISSION",
       "title": "Our Mission",
@@ -134,7 +134,7 @@
     "ctaSubtitle": "Partner with Emelmujiro for AI innovation",
     "seo": {
       "title": "About Us",
-      "description": "Learn about Emelmujiro, an AI education and consulting company. We provide practice-focused AI solutions."
+      "description": "Meet Emelmujiro — AI education, consulting & AI Agent development. Trusted AI training partner for Samsung, LG and major enterprises."
     },
     "timeline": {
       "2022": {
@@ -236,7 +236,7 @@
     "nextPage": "Next",
     "seo": {
       "title": "Blog",
-      "description": "Sharing latest AI and IT news and insights"
+      "description": "Latest insights on AI Agent, RAG, Computer Vision and cutting-edge AI technologies."
     },
     "share": "Share",
     "kakaoTalk": "KakaoTalk",
@@ -294,15 +294,15 @@
   "profilePage": {
     "sectionLabel": "CEO PROFILE",
     "seoTitle": "CEO Profile - Hojin Lee",
-    "seoDescription": "AI/ML Expert, Full-stack Developer, IT Education Specialist. Introducing the career and expertise of Hojin Lee, CEO of Emelmujiro.",
-    "seoKeywords": "Hojin Lee, AI expert, machine learning expert, IT instructor, Emelmujiro CEO, programming education, AI consulting",
+    "seoDescription": "AI education & consulting expert, Computer Vision researcher. CEO of Emelmujiro — career and expertise overview.",
+    "seoKeywords": "Hojin Lee, AI expert, AI Agent, Computer Vision, RAG, MCP, Vibe Coding, Emelmujiro CEO, AI education, AI consulting",
     "name": "Hojin Lee",
     "role": "AI Researcher & Educator",
     "backToMain": "Back to Home",
     "completedProjects": "Completed Projects",
-    "totalStudents": "Total Students",
+    "totalStudents": "Trained Talents",
     "partnerCompanies": "Partner Companies",
-    "educationCareer": "Education Career",
+    "educationCareer": "Teaching Career",
     "tabCareer": "Career",
     "tabEducation": "Education",
     "tabProjects": "Projects",
@@ -391,7 +391,7 @@
   "footerServices": {
     "education": {
       "title": "AI Education & Training",
-      "description": "We design and operate custom corporate AI education programs.",
+      "description": "We design and deliver custom AI training programs for enterprise teams.",
       "details": [
         "Custom curriculum design",
         "Project-based hands-on training",
@@ -403,7 +403,7 @@
     },
     "consulting": {
       "title": "AI Consulting",
-      "description": "From AI adoption strategy to technical advisory services.",
+      "description": "We provide AI adoption strategy and technical advisory.",
       "details": [
         "AI adoption strategy & review",
         "PoC development & validation",
@@ -418,11 +418,11 @@
       "description": "We design and build Agentic AI services.",
       "details": [
         "Agentic RAG design & build",
-        "AI Agent & MCP automation",
-        "Team project-based PoC dev",
+        "MCP-based AI Agent development",
+        "AI service prototype build",
         "LLM fine-tuning & optimization",
         "AI agent workflow design",
-        "Internal data Agent development"
+        "Generative AI training"
       ]
     },
     "computerVision": {
@@ -510,25 +510,28 @@
   "seo": {
     "personName": "Hojin Lee",
     "personAlternateName": "Hojin Lee",
-    "personJobTitle": "AI Researcher & Educator",
+    "personJobTitle": "AI Education & Consulting Expert / CEO at Emelmujiro",
     "contactType": "Customer Service",
     "countryName": "South Korea",
     "knowsAbout": {
       "ai": "Artificial Intelligence",
       "ml": "Machine Learning",
       "dl": "Deep Learning",
+      "cv": "Computer Vision",
+      "rag": "RAG",
+      "agent": "AI Agent",
+      "mcp": "MCP",
       "python": "Python",
-      "django": "Django",
-      "react": "React"
+      "vibeCoding": "Vibe Coding"
     },
     "site": {
       "name": "Emelmujiro",
-      "title": "AI Education · Consulting · Solution Development",
-      "description": "We provide solution development, hands-on training, and strategic consulting for corporate AI transformation. We build your digital innovation together with proven methodologies and practical experience."
+      "title": "AI Education · Consulting · AI Agent Development",
+      "description": "We provide custom AI training, adoption consulting, and AI Agent & RAG service development. Trusted AI partner for Samsung, LG and leading enterprises."
     },
     "seoHead": {
-      "defaultKeywords": "AI education, machine learning, deep learning, data analysis, AI consulting, corporate training, Python, TensorFlow, PyTorch, artificial intelligence",
-      "orgDescription": "AI Education & Consulting Company"
+      "defaultKeywords": "AI education, AI consulting, AI Agent, RAG, MCP, Computer Vision, enterprise training, LLM, generative AI, deep learning, machine learning, Vibe Coding",
+      "orgDescription": "AI Education · Consulting · AI Agent Development"
     }
   },
   "profileData": {

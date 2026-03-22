@@ -11,7 +11,7 @@
 
 </div>
 
-A full-stack monorepo for an AI education & consulting platform, built with React 19, Django 5, and self-hosted on a Mac Mini via Docker + Cloudflare Tunnel.
+A full-stack monorepo for an AI education, consulting & AI Agent development platform, built with React 19, Django 5, and self-hosted on a Mac Mini via Docker + Cloudflare Tunnel.
 
 ## Tech Stack
 
