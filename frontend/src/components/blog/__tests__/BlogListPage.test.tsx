@@ -253,7 +253,7 @@ describe('BlogListPage', () => {
     expect(screen.queryAllByTestId('blog-card')).toHaveLength(0);
   });
 
-  it('shows coming soon when search returns empty results', () => {
+  it('shows no results message when search returns empty results', () => {
     mockBlogContext.posts = makePosts(3) as never[];
     renderPage();
 
@@ -264,7 +264,7 @@ describe('BlogListPage', () => {
       }
     });
 
-    expect(screen.getByText('blog.comingSoon')).toBeInTheDocument();
+    expect(screen.getByText('blog.noSearchResults')).toBeInTheDocument();
   });
 
   it('renders section label text', () => {

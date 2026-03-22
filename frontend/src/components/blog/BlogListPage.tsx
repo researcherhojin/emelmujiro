@@ -23,6 +23,7 @@ const BlogListPage: React.FC = memo(() => {
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   useEffect(() => {
     fetchPosts(1);
@@ -41,20 +42,32 @@ const BlogListPage: React.FC = memo(() => {
     fetchCategories();
   }, []);
 
+  // Apply category filter only when search is not active
   useEffect(() => {
+    if (isSearchActive) return;
     if (activeCategory === 'all') {
       setFilteredPosts(posts);
     } else {
       setFilteredPosts(posts.filter((p) => p.category === activeCategory));
     }
-  }, [posts, activeCategory]);
+  }, [posts, activeCategory, isSearchActive]);
 
-  const handleSearch = useCallback((results: BlogPost[]) => {
-    setActiveCategory('all');
-    setFilteredPosts(results);
-  }, []);
+  const handleSearch = useCallback(
+    (results: BlogPost[]) => {
+      if (results === posts) {
+        // Search cleared — revert to category filter
+        setIsSearchActive(false);
+      } else {
+        setIsSearchActive(true);
+        setActiveCategory('all');
+        setFilteredPosts(results);
+      }
+    },
+    [posts]
+  );
 
   const handleCategoryChange = useCallback((slug: string) => {
+    setIsSearchActive(false);
     setActiveCategory(slug);
   }, []);
 
@@ -107,10 +120,9 @@ const BlogListPage: React.FC = memo(() => {
               </div>
             )}
 
-            {/* Posts */}
-            {filteredPosts.length > 0 ? (
+            {/* Search + Category Filter — always visible when posts exist */}
+            {posts.length > 0 && (
               <>
-                {/* Search */}
                 <div className="max-w-md mx-auto mb-8">
                   <BlogSearch onSearch={handleSearch} />
                 </div>
@@ -139,12 +151,19 @@ const BlogListPage: React.FC = memo(() => {
                         }`}
                       >
                         {cat.name}
-                        <span className="ml-1.5 text-xs opacity-60">{cat.count}</span>
+                        {cat.count != null && (
+                          <span className="ml-1.5 text-xs opacity-60">{cat.count}</span>
+                        )}
                       </button>
                     ))}
                   </div>
                 )}
+              </>
+            )}
 
+            {/* Posts */}
+            {filteredPosts.length > 0 ? (
+              <>
                 {/* Featured Post */}
                 {featuredPost && (
                   <div className="mb-16">
@@ -161,6 +180,12 @@ const BlogListPage: React.FC = memo(() => {
                   </div>
                 )}
               </>
+            ) : posts.length > 0 ? (
+              <div className="text-center py-16">
+                <p className="text-lg text-gray-500 dark:text-gray-400">
+                  {t('blog.noSearchResults')}
+                </p>
+              </div>
             ) : (
               !loading && (
                 <div className="text-center py-24">
