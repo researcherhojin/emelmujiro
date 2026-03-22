@@ -58,19 +58,19 @@
     },
     "llmGenai": {
       "title": "LLM/생성형 AI",
-      "description": "AI Agent & LLM 기반 서비스 개발",
+      "description": "AI Agent & LLM 서비스 개발",
       "details": [
-        "RAG 시스템 설계 및 구축",
-        "AI Agent & Agentic Workflow 개발",
-        "생성형 AI 활용 교육 (MCP, Tool Use)"
+        "Agentic RAG 설계 및 구축",
+        "AI Agent & MCP 기반 자동화",
+        "Context Engineering & 프롬프트 최적화"
       ]
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "비전 AI & 멀티모달 솔루션",
+      "description": "비전 AI & Multimodal 솔루션",
       "details": [
         "객체 탐지 / 세그멘테이션 / 3D 비전",
-        "Vision-Language 모델 활용 (GPT-4o, Gemini 등)",
+        "Multimodal AI 활용 (영상·텍스트·문서 통합)",
         "CV 프로젝트 설계 및 멘토링"
       ]
     }
@@ -409,12 +409,12 @@
       "title": "LLM/생성형 AI",
       "description": "LLM 기반 서비스를 설계하고 개발합니다.",
       "details": [
-        "RAG 시스템 설계 및 구축",
-        "AI Agent & Agentic Workflow 개발",
-        "생성형 AI 활용 교육 (MCP, Tool Use)",
-        "프롬프트 엔지니어링 최적화",
+        "Agentic RAG 설계 및 구축",
+        "AI Agent & MCP 기반 자동화",
+        "Context Engineering & 프롬프트 최적화",
         "LLM 파인튜닝 및 성능 최적화",
-        "AI 에이전트 설계 및 개발"
+        "AI 에이전트 설계 및 개발",
+        "생성형 AI 활용 교육"
       ]
     },
     "computerVision": {
@@ -422,11 +422,11 @@
       "description": "영상 처리 및 비전 AI 솔루션을 제공합니다.",
       "details": [
         "객체 탐지 / 세그멘테이션 / 3D 비전",
-        "Vision-Language 모델 활용 (GPT-4o, Gemini 등)",
+        "Multimodal AI 활용 (영상·텍스트·문서 통합)",
         "CV 프로젝트 설계 및 멘토링",
         "이미지 분류 및 검색 시스템",
         "영상 분석 파이프라인 구축",
-        "멀티모달 AI 솔루션 설계"
+        "Multimodal AI 솔루션 설계"
       ]
     }
   },

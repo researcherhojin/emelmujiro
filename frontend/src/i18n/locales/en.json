@@ -66,19 +66,19 @@
     },
     "llmGenai": {
       "title": "LLM/Generative AI",
-      "description": "AI Agent & LLM-based service development",
+      "description": "AI Agent & LLM service development",
       "details": [
-        "RAG system design & implementation",
-        "AI Agent & Agentic Workflow development",
-        "Generative AI training (MCP, Tool Use)"
+        "Agentic RAG design & implementation",
+        "AI Agent & MCP-based automation",
+        "Context Engineering & prompt optimization"
       ]
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "Vision AI & multimodal solutions",
+      "description": "Vision AI & Multimodal solutions",
       "details": [
         "Object detection / segmentation / 3D vision",
-        "Vision-Language models (GPT-4o, Gemini, etc.)",
+        "Multimodal AI (video, text & document integration)",
         "CV project design & mentoring"
       ]
     }
@@ -417,12 +417,12 @@
       "title": "LLM/Generative AI",
       "description": "We design and develop LLM-based services.",
       "details": [
-        "RAG system design & implementation",
-        "AI Agent & Agentic Workflow development",
-        "Generative AI training (MCP, Tool Use)",
-        "Prompt engineering optimization",
+        "Agentic RAG design & implementation",
+        "AI Agent & MCP-based automation",
+        "Context Engineering & prompt optimization",
         "LLM fine-tuning & performance optimization",
-        "AI agent design & development"
+        "AI agent design & development",
+        "Generative AI training"
       ]
     },
     "computerVision": {
@@ -430,7 +430,7 @@
       "description": "Video processing and vision AI solutions.",
       "details": [
         "Object detection / segmentation / 3D vision",
-        "Vision-Language models (GPT-4o, Gemini, etc.)",
+        "Multimodal AI (video, text & document integration)",
         "CV project design & mentoring",
         "Image classification & search systems",
         "Video analysis pipeline development",
