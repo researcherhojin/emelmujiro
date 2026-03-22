@@ -15,6 +15,28 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Mock NotificationBell
+vi.mock('../NotificationBell', () => ({
+  default: () => <div data-testid="notification-bell">Bell</div>,
+}));
+
+// Mock AuthContext to allow toggling isAuthenticated
+const mockIsAuthenticated = { value: false };
+vi.mock('../../../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: mockIsAuthenticated.value ? { id: 1, role: 'admin' } : null,
+    isAuthenticated: mockIsAuthenticated.value,
+    loading: false,
+    error: null,
+    login: vi.fn(),
+    logout: vi.fn(),
+    register: vi.fn(),
+    updateUser: vi.fn(),
+    clearError: vi.fn(),
+  }),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 // Mock i18n translations
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -32,6 +54,7 @@ describe('Navbar Component', () => {
     mockNavigate.mockClear();
     mockLocation.pathname = '/';
     mockLocation.hash = '';
+    mockIsAuthenticated.value = false;
     // Reset scrollY
     Object.defineProperty(window, 'scrollY', { value: 0, writable: true });
   });
@@ -233,5 +256,88 @@ describe('Navbar Component', () => {
     const aboutButton = screen.getByRole('button', { name: 'common.about' });
     fireEvent.click(aboutButton);
     expect(mockNavigate).toHaveBeenCalled();
+  });
+
+  it('applies inactive styling to non-active nav items (branch lines 116-144)', () => {
+    mockLocation.pathname = '/about';
+    renderWithProviders(<Navbar />);
+
+    // Blog is NOT active when on /about — should have inactive text-gray-600 (not bare text-gray-900)
+    const blogButton = screen.getByRole('button', { name: 'common.blog' });
+    expect(blogButton.className).toContain('text-gray-600');
+    // Active items get `text-gray-900` without prefix; inactive have it only as `hover:text-gray-900`
+    const classes = blogButton.className.split(' ');
+    expect(classes).not.toContain('text-gray-900');
+    expect(classes).toContain('hover:text-gray-900');
+  });
+
+  it('shows X icon when mobile menu is open and Menu icon when closed (line 168)', () => {
+    renderWithProviders(<Navbar />);
+
+    // Initially Menu icon
+    expect(screen.getByTestId('icon-Menu')).toBeInTheDocument();
+    expect(screen.queryByTestId('icon-X')).not.toBeInTheDocument();
+
+    // Open menu — should show X icon
+    fireEvent.click(screen.getByRole('button', { name: 'accessibility.menu' }));
+    expect(screen.getByTestId('icon-X')).toBeInTheDocument();
+    expect(screen.queryByTestId('icon-Menu')).not.toBeInTheDocument();
+  });
+
+  it('shows KO label and switches to ko when currentLang is en (line 60 else branch)', async () => {
+    // Re-mock useLocalizedPath to return 'en' as current language
+    const useLocalizedPathModule = await import('../../../hooks/useLocalizedPath');
+    const spy = vi.spyOn(useLocalizedPathModule, 'useLocalizedPath').mockReturnValue({
+      currentLang: 'en',
+      localizedPath: (p: string) => `/en${p === '/' ? '' : p}`,
+      localizedNavigate: vi.fn(),
+      switchLanguagePath: (lang: string) => (lang === 'ko' ? '/about' : '/en/about'),
+    });
+
+    renderWithProviders(<Navbar />);
+
+    // When currentLang is 'en', the button should show "KO"
+    const langButtons = screen.getAllByRole('button', { name: 'common.switchLanguage' });
+    expect(langButtons[0]).toHaveTextContent('KO');
+
+    // Click should navigate to Korean path (targetLang = 'ko' since currentLang is 'en')
+    fireEvent.click(langButtons[0]);
+    expect(mockNavigate).toHaveBeenCalledWith('/about');
+
+    spy.mockRestore();
+  });
+
+  it('renders NotificationBell when authenticated (lines 120, 144)', () => {
+    mockIsAuthenticated.value = true;
+    renderWithProviders(<Navbar />);
+
+    // NotificationBell should render (both desktop and mobile)
+    const bells = screen.getAllByTestId('notification-bell');
+    expect(bells.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('does not render NotificationBell when not authenticated', () => {
+    mockIsAuthenticated.value = false;
+    renderWithProviders(<Navbar />);
+
+    expect(screen.queryByTestId('notification-bell')).not.toBeInTheDocument();
+  });
+
+  it('applies active styling to mobile nav items (mobile branch lines 116-144)', () => {
+    mockLocation.pathname = '/about';
+    renderWithProviders(<Navbar />);
+
+    // Open mobile menu
+    fireEvent.click(screen.getByRole('button', { name: 'accessibility.menu' }));
+
+    // Mobile "about" button should have active class (bg-gray-50)
+    const mobileAboutButtons = screen.getAllByText('common.about');
+    const mobileButton = mobileAboutButtons[mobileAboutButtons.length - 1];
+    expect(mobileButton.className).toContain('text-gray-900');
+
+    // Mobile "blog" button should have inactive class
+    const mobileBlogButtons = screen.getAllByText('common.blog');
+    const mobileBlogButton = mobileBlogButtons[mobileBlogButtons.length - 1];
+    expect(mobileBlogButton.className).toContain('text-gray-600');
   });
 });

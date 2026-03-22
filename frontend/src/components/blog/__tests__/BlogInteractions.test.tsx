@@ -443,6 +443,26 @@ describe('BlogInteractions Component', () => {
       restoreShare();
     });
 
+    it('shows copied state when share menu reopened after copy (line 233 copiedLink branch)', async () => {
+      vi.useFakeTimers();
+      openShareMenu();
+
+      // Click copy link — triggers async copyLink() then sync setShowShareMenu(false)
+      fireEvent.click(screen.getByText('blog.copyLink'));
+
+      // Wait for clipboard promise to resolve and setCopiedLink(true)
+      await vi.advanceTimersByTimeAsync(0);
+
+      // Menu is closed now, reopen it — copiedLink is still true (timeout is 2000ms)
+      fireEvent.click(screen.getByText('blog.share'));
+
+      // Should show "blog.linkCopied" instead of "blog.copyLink"
+      expect(screen.getByText('blog.linkCopied')).toBeInTheDocument();
+
+      vi.useRealTimers();
+      restoreShare();
+    });
+
     it('does not close share menu on non-Escape keydown', () => {
       openShareMenu();
 
