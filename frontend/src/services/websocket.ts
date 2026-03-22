@@ -1,6 +1,6 @@
 // WebSocket service for real-time communication (notifications)
 
-export interface WebSocketMessage {
+interface WebSocketMessage {
   type: string;
   data?: unknown;
   messageId?: string;
