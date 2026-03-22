@@ -65,8 +65,8 @@
       ]
     },
     "llmGenai": {
-      "title": "LLM/Generative AI",
-      "description": "AI Agent & LLM service development",
+      "title": "AI Agent Development",
+      "description": "Agentic AI service design & build",
       "details": [
         "Agentic RAG design & build",
         "AI Agent & MCP automation",
@@ -75,10 +75,10 @@
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "Vision AI & Multimodal solutions",
+      "description": "CV training & vision AI solutions",
       "details": [
         "Object detection / segmentation",
-        "Multimodal AI solutions",
+        "Multimodal AI integration",
         "CV project design & mentoring"
       ]
     }
@@ -414,27 +414,27 @@
       ]
     },
     "llmGenai": {
-      "title": "LLM/Generative AI",
-      "description": "We design and develop LLM-based services.",
+      "title": "AI Agent Development",
+      "description": "We design and build Agentic AI services.",
       "details": [
-        "Agentic RAG design & implementation",
-        "AI Agent & MCP-based automation",
-        "Context Engineering & prompt optimization",
+        "Agentic RAG design & build",
+        "AI Agent & MCP automation",
+        "Context Engineering optimization",
         "LLM fine-tuning & performance optimization",
-        "AI agent design & development",
+        "AI agent workflow design",
         "Generative AI training"
       ]
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "Video processing and vision AI solutions.",
+      "description": "We provide CV training and vision AI solutions.",
       "details": [
-        "Object detection / segmentation / 3D vision",
-        "Multimodal AI (video, text & document integration)",
+        "Object detection / segmentation",
+        "Multimodal AI integration",
         "CV project design & mentoring",
         "Image classification & search systems",
         "Video analysis pipeline development",
-        "Multimodal AI solution design"
+        "Hands-on project-based CV training"
       ]
     }
   },
