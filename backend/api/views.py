@@ -13,11 +13,13 @@ from django.http import HttpRequest
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from datetime import timedelta
-import os
-import requests
-import logging
 import hashlib
+import logging
+import os
 import re
+import uuid as uuid_mod
+
+import requests
 
 from .models import (
     BlogPost,
@@ -320,9 +322,6 @@ class BlogImageUploadView(APIView):
         now = timezone.now()
         upload_dir = os.path.join(settings.MEDIA_ROOT, "blog", "images", str(now.year), f"{now.month:02d}")
         os.makedirs(upload_dir, exist_ok=True)
-
-        # Sanitize filename and ensure uniqueness
-        import uuid as uuid_mod
 
         ext = os.path.splitext(file.name)[1].lower()
         safe_name = f"{uuid_mod.uuid4().hex[:12]}{ext}"
