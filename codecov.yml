@@ -58,8 +58,6 @@ ignore:
   - "backend/api/tests.py"
   - "backend/api/tests_urls.py"
   - "backend/api/migrations/**"
-  - "backend/api/consumers.py"
-  - "backend/api/routing.py"
   - "frontend/src/components/blog/TipTapEditor.tsx"
   - "frontend/src/components/blog/TipTapEditor.css"
   - "frontend/src/data/blogPosts.ts"
