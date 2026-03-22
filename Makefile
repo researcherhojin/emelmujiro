@@ -1,4 +1,4 @@
-.PHONY: help install dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy-staging deploy-production logs ps down restart migrate shell createsuperuser
+.PHONY: help install dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy-staging deploy-production logs ps down restart migrate shell createsuperuser update-test-counts cleanup-visits
 
 help:
 	@echo "Available commands:"
@@ -26,17 +26,17 @@ dev-local:
 	npm run dev
 
 dev-clean:
-	./scripts/kill-ports.sh
+	./scripts/ports.sh --kill
 	npm run dev
 
 dev-docker:
 	docker compose -f docker-compose.dev.yml up
 
 ports:
-	./scripts/check-ports.sh
+	./scripts/ports.sh
 
 kill-ports:
-	./scripts/kill-ports.sh
+	./scripts/ports.sh --kill
 
 build:
 	docker compose build
@@ -91,3 +91,9 @@ shell:
 
 createsuperuser:
 	docker compose exec backend python manage.py createsuperuser
+
+update-test-counts:
+	./scripts/update-test-counts.sh
+
+cleanup-visits:
+	docker exec emelmujiro-backend python manage.py cleanup_sitevisits --days $(or $(DAYS),90)

@@ -130,13 +130,8 @@ const renderWithNotification = () => {
   // Set auth_hint so AuthContext fetches user
   localStorage.setItem('auth_hint', '1');
 
-  return renderWithProviders(
-    <AuthProvider>
-      <NotificationProvider>
-        <TestConsumer />
-      </NotificationProvider>
-    </AuthProvider>
-  );
+  // renderWithProviders already wraps in AuthProvider > NotificationProvider
+  return renderWithProviders(<TestConsumer />);
 };
 
 describe('NotificationContext', () => {
@@ -144,6 +139,8 @@ describe('NotificationContext', () => {
     vi.clearAllMocks();
     wsInstances.length = 0;
     localStorage.setItem('auth_hint', '1');
+    // Re-apply WebSocket stub — vi.stubGlobal from module scope may get reset
+    vi.stubGlobal('WebSocket', MockWebSocket);
   });
 
   it('fetches unread count on mount when authenticated', async () => {
@@ -596,129 +593,173 @@ describe('NotificationContext', () => {
     }
   });
 
-  it('schedules reconnect on WebSocket close after successful connection', async () => {
-    vi.useFakeTimers();
+  it('skips reconnect when WebSocket closes immediately without opening (lines 117-118)', async () => {
+    // Use a special MockWebSocket that does NOT auto-call onopen
+    // This simulates a server that rejects the WS connection (e.g. gunicorn/WSGI)
+    const OriginalMock = globalThis.WebSocket;
+    const noOpenInstances: MockWebSocket[] = [];
 
-    renderWithNotification();
-
-    // Wait for auth to settle
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(100);
-    });
-
-    const ws = wsInstances[wsInstances.length - 1];
-    if (ws) {
-      // Mark that the connection was opened (wasOpen = true via onopen)
-      // Then close it to trigger reconnect scheduling
-      if (ws.onclose) {
-        act(() => {
-          ws.onclose!();
-        });
-      }
-
-      // Advance timer to trigger reconnect callback (line 125)
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(2000);
-      });
-
-      // A new WebSocket should have been created for reconnect
-      expect(wsInstances.length).toBeGreaterThan(1);
-    }
-
-    vi.useRealTimers();
-  });
-
-  it('handles WebSocket constructor failure gracefully (line 134)', async () => {
-    // Save original
-    const OriginalWebSocket = global.WebSocket;
-
-    // Make WebSocket constructor throw
     vi.stubGlobal(
       'WebSocket',
-      class {
-        constructor() {
-          throw new Error('WebSocket not supported');
-        }
-      }
+      Object.assign(
+        class NoOpenWebSocket {
+          static OPEN = 1;
+          readyState = 0; // CONNECTING, never OPEN
+          onopen: (() => void) | null = null;
+          onclose: (() => void) | null = null;
+          onmessage: ((event: { data: string }) => void) | null = null;
+          onerror: (() => void) | null = null;
+          send = vi.fn();
+          close = vi.fn();
+          constructor() {
+            noOpenInstances.push(this as unknown as MockWebSocket);
+            // Close immediately without opening — simulates WS rejection
+            setTimeout(() => this.onclose?.(), 0);
+          }
+        },
+        { OPEN: 1 }
+      )
     );
 
-    // Should not crash
     renderWithNotification();
 
     await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    // Wait for WS to be created and closed immediately
+    await waitFor(() => {
+      expect(noOpenInstances.length).toBeGreaterThanOrEqual(1);
+    });
+
+    const instancesAfterFirst = noOpenInstances.length;
+
+    // Wait to ensure no reconnect timer fires
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 2000));
+    });
+
+    // No additional WebSocket should have been created — reconnect was skipped
+    expect(noOpenInstances.length).toBe(instancesAfterFirst);
+
+    // Restore
+    vi.stubGlobal('WebSocket', OriginalMock);
+  });
+
+  it('schedules reconnect on WebSocket close after successful connection (lines 121-125)', async () => {
+    // Use renderWithProviders which already includes Auth+Notification providers
+    localStorage.setItem('auth_hint', '1');
+    renderWithProviders(<TestConsumer />);
+
+    // Wait for auth to settle
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    // Wait for WS to appear
+    await waitFor(
+      () => {
+        expect(wsInstances.length).toBeGreaterThanOrEqual(1);
+      },
+      { timeout: 3000 }
+    );
+    const ws = wsInstances[wsInstances.length - 1];
+
+    // Ensure onopen was called (wasOpen = true in the closure)
+    act(() => {
+      ws.onopen?.();
+    });
+
+    const instancesBefore = wsInstances.length;
+
+    // Close the connection — should schedule reconnect since wasOpen was true
+    act(() => {
+      ws.onclose?.();
+    });
+
+    // Wait for reconnect timer to fire (1000ms base delay)
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 1500));
+    });
+
+    // A new WebSocket should have been created for reconnect
+    expect(wsInstances.length).toBeGreaterThan(instancesBefore);
+  });
+
+  it('handles WebSocket constructor failure gracefully (line 134)', async () => {
+    const OriginalWebSocket = global.WebSocket;
+
+    // First render normally to let auth settle
+    localStorage.setItem('auth_hint', '1');
+    const { unmount } = renderWithProviders(<TestConsumer />);
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+    unmount();
+    wsInstances.length = 0;
+
+    // Now replace WebSocket with one that throws
+    vi.stubGlobal(
+      'WebSocket',
+      Object.assign(
+        class {
+          constructor() {
+            throw new Error('WebSocket not supported');
+          }
+        },
+        { OPEN: 1 }
+      )
+    );
+
+    // Render again — connectWebSocket will try to create WS and catch the error (line 134)
+    localStorage.setItem('auth_hint', '1');
+    renderWithProviders(<TestConsumer />);
+
+    await waitFor(() => {
       expect(screen.getByTestId('unread-count')).toBeInTheDocument();
+    });
+
+    // Give time for connectWebSocket to attempt
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 200));
     });
 
     // Restore
     vi.stubGlobal('WebSocket', OriginalWebSocket);
   });
 
-  it('verifies WebSocket is created when authenticated', async () => {
-    renderWithNotification();
+  it('sends WS data via wsSend when WebSocket is OPEN (line 187)', async () => {
+    localStorage.setItem('auth_hint', '1');
+    renderWithProviders(<TestConsumer />);
 
-    // Wait for auth to complete (unread count fetched = authenticated)
+    // Wait for auth
     await waitFor(() => {
       expect(screen.getByTestId('unread-count').textContent).toBe('3');
     });
 
-    // Wait for WS creation — the MockWebSocket constructor triggers onopen via setTimeout(0)
+    // Wait for WS to be created
+    await waitFor(
+      () => {
+        expect(wsInstances.length).toBeGreaterThanOrEqual(1);
+      },
+      { timeout: 3000 }
+    );
+    const ws = wsInstances[wsInstances.length - 1];
+    // Ensure readyState is OPEN so wsSend actually calls ws.send
+    ws.readyState = 1;
+
+    // markAsRead calls wsSend internally — triggers wsSend which calls ws.send (line 187)
     await act(async () => {
-      await new Promise((r) => setTimeout(r, 300));
+      screen.getByTestId('mark-read').click();
     });
 
-    // If WS was created, verify the interaction paths
-    if (wsInstances.length > 0) {
-      const ws = wsInstances[wsInstances.length - 1];
-
-      // Force the readyState to OPEN for coverage of lines 195 and 211
-      ws.readyState = 1;
-
-      // Test markAsRead WS send (line 195)
-      await act(async () => {
-        screen.getByTestId('mark-read').click();
-      });
-      await waitFor(() => {
-        expect(mockMarkNotificationRead).toHaveBeenCalledWith(1);
-      });
-
-      if (ws.send.mock.calls.length > 0) {
-        expect(ws.send).toHaveBeenCalledWith(
-          JSON.stringify({ action: 'mark_read', notification_id: 1 })
-        );
-      }
-
-      // Reset for markAllAsRead test
-      mockMarkAllNotificationsRead.mockClear();
-      ws.send.mockClear();
-
-      // Test markAllAsRead WS send (line 211)
-      await act(async () => {
-        screen.getByTestId('mark-all').click();
-      });
-      await waitFor(() => {
-        expect(mockMarkAllNotificationsRead).toHaveBeenCalled();
-      });
-
-      if (ws.send.mock.calls.length > 0) {
-        expect(ws.send).toHaveBeenCalledWith(JSON.stringify({ action: 'mark_all_read' }));
-      }
-    }
-  });
-
-  it('handles WebSocket constructor error gracefully (line 134)', async () => {
-    // Make WebSocket constructor throw
-    const OriginalMock = globalThis.WebSocket;
-    const throwingWs = vi.fn(() => {
-      throw new Error('Connection refused');
+    await waitFor(() => {
+      expect(mockMarkNotificationRead).toHaveBeenCalledWith(1);
     });
-    vi.stubGlobal('WebSocket', throwingWs);
 
-    // Should not crash
-    renderWithNotification();
-
-    await waitFor(() => expect(screen.getByTestId('unread-count')).toBeInTheDocument());
-
-    // Restore
-    vi.stubGlobal('WebSocket', OriginalMock);
+    // ws.send should have been called with mark_read payload
+    expect(ws.send).toHaveBeenCalledWith(
+      JSON.stringify({ action: 'mark_read', notification_id: 1 })
+    );
   });
 });

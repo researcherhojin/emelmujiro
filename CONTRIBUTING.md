@@ -84,7 +84,7 @@ DATABASE_URL="" uv run python manage.py test
 테스트에서 `renderWithProviders` 유틸리티를 사용해주세요:
 
 ```tsx
-import { renderWithProviders } from '@/test-utils/renderWithProviders';
+import { renderWithProviders } from '../../test-utils';
 
 test('renders correctly', () => {
   const { getByText } = renderWithProviders(<Component />);

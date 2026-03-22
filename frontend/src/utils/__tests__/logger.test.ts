@@ -1,4 +1,10 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+
+// Mock sentry before importing logger
+vi.mock('../sentry', () => ({
+  captureException: vi.fn(),
+}));
+
 import Logger from '../logger';
 
 describe('Logger', () => {
@@ -89,17 +95,25 @@ describe('Logger', () => {
     });
 
     it('should not crash when error method is called in non-dev mode', () => {
-      // Temporarily set isDevelopment to false
-      const instance = Logger as unknown as { isDevelopment: boolean };
+      // Temporarily set isDevelopment to false and enableInProduction to true
+      // so shouldLog('error') returns true and reportToErrorService (lines 71-78) runs
+      const instance = Logger as unknown as {
+        isDevelopment: boolean;
+        config: { enableInProduction: boolean; logLevel: string };
+      };
       const originalIsDev = instance.isDevelopment;
+      const originalEnable = instance.config.enableInProduction;
       instance.isDevelopment = false;
+      instance.config.enableInProduction = true;
 
-      // Should not throw even when reportToErrorService runs
+      // Should not throw — triggers reportToErrorService with Error instance (line 78 branch 1)
       expect(() => Logger.error('Production error', new Error('test'))).not.toThrow();
+      // Triggers reportToErrorService with non-Error (line 78 branch 2: new Error(message))
       expect(() => Logger.error('String error', 'not an Error' as unknown)).not.toThrow();
 
       // Restore
       instance.isDevelopment = originalIsDev;
+      instance.config.enableInProduction = originalEnable;
     });
   });
 });

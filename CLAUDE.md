@@ -59,17 +59,17 @@ make lint-fix              # Auto-fix lint issues
 make logs                  # Docker compose logs -f
 make shell                 # Django shell in Docker
 make migrate               # Run migrations in Docker
+make update-test-counts    # Auto-update test counts in README.md & CLAUDE.md
 ```
 
 ## Scripts (`scripts/`)
 
-- `kill-ports.sh` / `check-ports.sh` — Kill or check dev port usage
+- `ports.sh` — Port management (`--kill` to kill dev ports, default: check status)
 - `start-dev.sh` — Start dev environment with Docker
 - `deploy-webhook.js` — Webhook handler for GitHub Actions auto-deploy (timing-safe auth)
-- `prerender.js` — Playwright-based SSG for SEO (12 static HTML pages)
-- `generate-sitemap.js` — Sitemap generator (runs as part of `npm run build`)
-- `maintenance-worker.js` — Periodic maintenance tasks
-- `cleanup-sitevisits.sh` — Clean up old analytics data
+- `auto-deploy.sh` — Frontend build + backend rebuild (called by deploy-webhook.js)
+- `pre-deploy-check.sh` — Pre-production deployment validation (9-point checklist)
+- `update-test-counts.sh` — Auto-update test counts in README.md & CLAUDE.md (run via `make update-test-counts`)
 
 ## Architecture
 
@@ -202,7 +202,7 @@ Components must call the getter each render. Do not store results in module-leve
 
 ### Coverage
 
-Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `codecov.yml`. Scale: 65 unit test files (~1205 tests), 10 E2E spec files, ~346 backend tests.
+Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `codecov.yml`. Scale: 65 unit test files (~1205 tests), 10 E2E spec files, ~359 backend tests.
 
 ## CI/CD
 

@@ -81,7 +81,6 @@
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
     "generate:sitemap": "node scripts/generate-sitemap.js",
-    "generate:og-image": "node scripts/generate-og-image.js",
     "analyze:bundle": "source-map-explorer 'build/assets/*.js'",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",

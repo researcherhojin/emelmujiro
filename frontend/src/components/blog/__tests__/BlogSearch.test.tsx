@@ -30,6 +30,41 @@ vi.mock('../../../services/api', () => ({
   },
 }));
 
+// Mock posts data for local search fallback
+const mockPosts = [
+  {
+    id: 1,
+    title: 'React Tutorial',
+    slug: 'react-tutorial',
+    content: 'Learn React basics',
+    excerpt: 'A React guide',
+    author: 'Author',
+    publishedAt: '2024-01-01',
+    category: 'ai',
+    tags: ['react', 'frontend'],
+    date: '2024-01-01',
+    likes: 0,
+    view_count: 0,
+    is_featured: false,
+  },
+];
+
+// Mock BlogContext to inject posts directly
+vi.mock('../../../contexts/BlogContext', () => ({
+  useBlog: () => ({
+    posts: mockPosts,
+    currentPost: null,
+    loading: false,
+    error: null,
+    totalPages: 1,
+    currentPage: 1,
+    fetchPosts: vi.fn(),
+    fetchPostById: vi.fn(),
+    clearCurrentPost: vi.fn(),
+  }),
+  BlogProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   Search: () => <div data-testid="search-icon">Search</div>,
@@ -390,11 +425,14 @@ describe('BlogSearch', () => {
     renderWithProviders(<BlogSearch onSearch={onSearch} />);
 
     const input = screen.getByPlaceholderText('blog.searchPlaceholder');
-    fireEvent.change(input, { target: { value: 'test' } });
+    // Search for "React" which matches mockPosts[0].title — triggers local filter (line 82)
+    fireEvent.change(input, { target: { value: 'React' } });
 
-    // Should still call onSearch with local search results
+    // Should call onSearch with local search results containing the matched post
     await waitFor(() => {
-      expect(onSearch).toHaveBeenCalled();
+      expect(onSearch).toHaveBeenCalledWith(
+        expect.arrayContaining([expect.objectContaining({ title: 'React Tutorial' })])
+      );
     });
   });
 

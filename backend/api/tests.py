@@ -1,7 +1,7 @@
-from django.test import TestCase, RequestFactory, override_settings
-from django.db import IntegrityError
+from django.test import TestCase, TransactionTestCase, RequestFactory, override_settings
+from django.db import IntegrityError, models
 from django.urls import reverse
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
@@ -3858,59 +3858,59 @@ class BlogPostSlugRetryEdgeCaseTestCase(TestCase):
 
 
 class SerializerValidationEdgeCasesTestCase(TestCase):
-    """Cover serializers.py lines 165, 197, 303, 328"""
+    """Cover serializers.py lines 165, 197, 303, 328 via direct validator calls.
+
+    DRF's built-in field validators (ChoiceField, max_length) run before custom
+    validate_* methods, so we call the validators directly to cover those branches.
+    """
 
     def test_blog_write_serializer_invalid_category(self):
-        """BlogPostWriteSerializer rejects invalid category (line 165)"""
+        """BlogPostWriteSerializer.validate_category rejects invalid category (line 165)"""
         from .serializers import BlogPostWriteSerializer
 
-        data = {
-            "title": "Test Post Title",
-            "description": "Desc",
-            "content": "Content",
-            "category": "nonexistent_category",
-        }
-        serializer = BlogPostWriteSerializer(data=data)
-        self.assertFalse(serializer.is_valid())
-        self.assertIn("category", serializer.errors)
+        serializer = BlogPostWriteSerializer()
+        with self.assertRaises(serializers.ValidationError):
+            serializer.validate_category("nonexistent_category")
+
+    def test_blog_write_serializer_valid_category(self):
+        """BlogPostWriteSerializer.validate_category accepts valid category"""
+        from .serializers import BlogPostWriteSerializer
+
+        serializer = BlogPostWriteSerializer()
+        result = serializer.validate_category("ai")
+        self.assertEqual(result, "ai")
 
     def test_comment_content_empty_after_strip(self):
-        """BlogCommentSerializer rejects whitespace-only content (line 197)"""
+        """BlogCommentSerializer.validate_content rejects whitespace-only content (line 197)"""
         from .serializers import BlogCommentSerializer
 
-        data = {"author_name": "User", "content": "   "}
-        serializer = BlogCommentSerializer(data=data)
-        self.assertFalse(serializer.is_valid())
-        self.assertIn("content", serializer.errors)
+        serializer = BlogCommentSerializer()
+        with self.assertRaises(serializers.ValidationError):
+            serializer.validate_content("   ")
+
+    def test_comment_content_over_1000_chars(self):
+        """BlogCommentSerializer.validate_content rejects > 1000 chars"""
+        from .serializers import BlogCommentSerializer
+
+        serializer = BlogCommentSerializer()
+        with self.assertRaises(serializers.ValidationError):
+            serializer.validate_content("x" * 1001)
 
     def test_contact_subject_too_long(self):
-        """ContactSerializer rejects subject > 200 chars (line 303)"""
+        """ContactSerializer.validate_subject rejects > 200 chars (line 303)"""
         from .serializers import ContactSerializer
 
-        data = {
-            "name": "User",
-            "email": "test@example.com",
-            "subject": "A" * 201,
-            "message": "Valid message content here.",
-        }
-        serializer = ContactSerializer(data=data)
-        self.assertFalse(serializer.is_valid())
-        self.assertIn("subject", serializer.errors)
+        serializer = ContactSerializer()
+        with self.assertRaises(serializers.ValidationError):
+            serializer.validate_subject("A" * 201)
 
     def test_contact_company_too_long(self):
-        """ContactSerializer rejects company > 100 chars (line 328)"""
+        """ContactSerializer.validate_company rejects > 100 chars (line 328)"""
         from .serializers import ContactSerializer
 
-        data = {
-            "name": "User",
-            "email": "test@example.com",
-            "subject": "Valid Subject Here",
-            "message": "Valid message content here.",
-            "company": "C" * 101,
-        }
-        serializer = ContactSerializer(data=data)
-        self.assertFalse(serializer.is_valid())
-        self.assertIn("company", serializer.errors)
+        serializer = ContactSerializer()
+        with self.assertRaises(serializers.ValidationError):
+            serializer.validate_company("C" * 101)
 
 
 @override_settings(
@@ -3946,7 +3946,17 @@ class ContactSpamIpLimitTestCase(APITestCase):
 class SecurityCheckEdgeCasesTestCase(TestCase):
     """Cover security_check.py lines 78, 150-151"""
 
-    @override_settings(DEBUG=False, SECURE_HSTS_SECONDS=31536000, SECURE_SSL_REDIRECT=True)
+    @override_settings(
+        DEBUG=False,
+        SECRET_KEY="a" * 50,
+        ALLOWED_HOSTS=["emelmujiro.com"],
+        CORS_ALLOW_ALL_ORIGINS=False,
+        SECURE_BROWSER_XSS_FILTER=True,
+        SECURE_CONTENT_TYPE_NOSNIFF=True,
+        X_FRAME_OPTIONS="DENY",
+        EMAIL_HOST_USER="user@example.com",
+        RECAPTCHA_PUBLIC_KEY="test-key",
+    )
     def test_security_check_all_pass(self):
         """security_check reports success when all settings are correct (line 78)"""
         from io import StringIO
@@ -3955,7 +3965,7 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
         out = StringIO()
         call_command("security_check", "--action=check", stdout=out)
         output = out.getvalue()
-        self.assertIn("보안", output)
+        self.assertIn("올바르게 구성되었습니다", output)
 
     def test_security_check_stats_db_error(self):
         """security_check stats handles DB errors gracefully (lines 150-151)"""
@@ -4022,14 +4032,33 @@ class ContactSuspiciousEmailTestCase(APITestCase):
 class BlogPostSlugMaxRetriesTestCase(TestCase):
     """Cover models.py lines 71, 76: IntegrityError max retries and counter loop"""
 
-    def test_slug_counter_increments_past_existing(self):
-        """Counter skips existing slugs until finding a free one (line 76)"""
-        # Create posts that will take slug, slug-1
-        BlogPost.objects.create(title="Counter Test", description="D", content="C", category="ai")
-        BlogPost.objects.create(title="Counter Test", description="D", content="C", category="ai")
-        # Third one should get slug-2
-        post3 = BlogPost.objects.create(title="Counter Test", description="D", content="C", category="ai")
-        self.assertTrue(post3.slug.endswith("-2") or post3.slug.endswith("-3"))
+    def test_integrity_error_retry_skips_existing_slugs(self):
+        """IntegrityError retry loop increments counter past existing slugs (line 76).
+
+        Simulates: super().save() raises IntegrityError on first attempt,
+        and slug-1 already exists, so counter increments to 2 before succeeding.
+        """
+        from unittest.mock import patch
+
+        # Pre-create post with slug "retry-slug-1" so the retry loop must skip it
+        BlogPost.objects.create(title="Placeholder", slug="retry-slug-1", description="D", content="C", category="ai")
+
+        post = BlogPost(title="Retry Slug", description="D", content="C", category="ai")
+
+        original_save = models.Model.save
+        call_count = {"n": 0}
+
+        def save_with_first_failure(*args, **kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                raise IntegrityError("slug conflict")
+            return original_save(post, *args, **kwargs)
+
+        with patch.object(BlogPost.__mro__[1], "save", side_effect=save_with_first_failure):
+            post.save()
+
+        # The retry loop should skip "retry-slug-1" (exists) and use "retry-slug-2"
+        self.assertEqual(post.slug, "retry-slug-2")
 
     def test_max_retries_raises_integrity_error(self):
         """After max retries, IntegrityError is re-raised (line 71)"""
@@ -4039,3 +4068,223 @@ class BlogPostSlugMaxRetriesTestCase(TestCase):
         with patch.object(BlogPost.__mro__[1], "save", side_effect=IntegrityError("slug conflict")):
             with self.assertRaises(IntegrityError):
                 post.save()
+
+
+class UrlsDebugBranchTestCase(TestCase):
+    """Cover urls.py line 94: DEBUG=True conditional URL registration"""
+
+    def test_debug_urls_include_send_test_email(self):
+        """When DEBUG=True, send-test-email URL is registered (line 94)"""
+        import importlib
+        from api import urls as urls_module
+
+        with override_settings(DEBUG=True):
+            importlib.reload(urls_module)
+            url_names = [getattr(p, "name", None) for p in urls_module.urlpatterns]
+            self.assertIn("send-test-email", url_names)
+
+        # Reload with original settings to avoid side effects
+        importlib.reload(urls_module)
+
+
+@override_settings(CHANNEL_LAYERS={"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}})
+class NotificationConsumerTestCase(TransactionTestCase):
+    """Cover consumers.py: WebSocket notification consumer"""
+
+    def setUp(self):
+        from channels.testing import WebsocketCommunicator
+        from api.consumers import NotificationConsumer
+
+        self.WebsocketCommunicator = WebsocketCommunicator
+        self.NotificationConsumer = NotificationConsumer
+        self.user = User.objects.create_user(username="wsuser", password="pass1234")
+
+    def _make_communicator(self, user=None):
+        """Create a WebsocketCommunicator with the given user in scope"""
+        communicator = self.WebsocketCommunicator(
+            self.NotificationConsumer.as_asgi(),
+            "/ws/notifications/",
+        )
+        communicator.scope["user"] = user
+        return communicator
+
+    async def _async_test_connect_authenticated(self):
+        communicator = self._make_communicator(self.user)
+        connected, _ = await communicator.connect()
+        self.assertTrue(connected)
+
+        # Should receive connection confirmation
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["type"], "connection_established")
+
+        await communicator.disconnect()
+
+    async def _async_test_connect_anonymous_rejected(self):
+        from django.contrib.auth.models import AnonymousUser
+
+        communicator = self._make_communicator(AnonymousUser())
+        connected, _ = await communicator.connect()
+        self.assertFalse(connected)
+
+    async def _async_test_receive_mark_read(self):
+        from channels.db import database_sync_to_async
+
+        notification = await database_sync_to_async(Notification.objects.create)(
+            user=self.user, title="Test", message="Msg", level="info"
+        )
+        communicator = self._make_communicator(self.user)
+        await communicator.connect()
+        await communicator.receive_json_from()  # consume connection_established
+
+        await communicator.send_json_to({"action": "mark_read", "notification_id": notification.id})
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["type"], "notification_update")
+        self.assertEqual(response["count"], 0)
+
+        await database_sync_to_async(notification.refresh_from_db)()
+        self.assertTrue(notification.is_read)
+
+        await communicator.disconnect()
+
+    async def _async_test_receive_mark_all_read(self):
+        from channels.db import database_sync_to_async
+
+        await database_sync_to_async(Notification.objects.create)(user=self.user, title="N1", message="M1")
+        await database_sync_to_async(Notification.objects.create)(user=self.user, title="N2", message="M2")
+
+        communicator = self._make_communicator(self.user)
+        await communicator.connect()
+        await communicator.receive_json_from()
+
+        await communicator.send_json_to({"action": "mark_all_read"})
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["type"], "notification_update")
+        self.assertEqual(response["count"], 0)
+
+        unread = await database_sync_to_async(Notification.objects.filter(user=self.user, is_read=False).count)()
+        self.assertEqual(unread, 0)
+        await communicator.disconnect()
+
+    async def _async_test_receive_invalid_json(self):
+        communicator = self._make_communicator(self.user)
+        await communicator.connect()
+        await communicator.receive_json_from()
+
+        await communicator.send_to(text_data="not valid json")
+        response = await communicator.receive_json_from()
+        self.assertIn("error", response)
+
+        await communicator.disconnect()
+
+    async def _async_test_send_notification_event(self):
+        from channels.layers import get_channel_layer
+
+        communicator = self._make_communicator(self.user)
+        await communicator.connect()
+        await communicator.receive_json_from()
+
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(
+            f"notifications_{self.user.id}",
+            {
+                "type": "send_notification",
+                "id": 999,
+                "title": "Push Test",
+                "message": "Hello",
+                "level": "success",
+                "notification_type": "blog",
+                "url": "",
+            },
+        )
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["type"], "notification")
+        self.assertEqual(response["title"], "Push Test")
+
+        await communicator.disconnect()
+
+    async def _async_test_notification_update_event(self):
+        from channels.layers import get_channel_layer
+
+        communicator = self._make_communicator(self.user)
+        await communicator.connect()
+        await communicator.receive_json_from()
+
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(
+            f"notifications_{self.user.id}",
+            {"type": "notification_update", "count": 5},
+        )
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["type"], "notification_update")
+        self.assertEqual(response["count"], 5)
+
+        await communicator.disconnect()
+
+    async def _async_test_mark_read_nonexistent(self):
+        communicator = self._make_communicator(self.user)
+        await communicator.connect()
+        await communicator.receive_json_from()
+
+        # Sending mark_read for a non-existent notification should not crash
+        await communicator.send_json_to({"action": "mark_read", "notification_id": 99999})
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["type"], "notification_update")
+
+        await communicator.disconnect()
+
+    async def _async_test_disconnect_without_group(self):
+        """Disconnect when user_group_name was never set (anonymous close)"""
+        from django.contrib.auth.models import AnonymousUser
+
+        communicator = self._make_communicator(AnonymousUser())
+        await communicator.connect()
+        # Should not raise even though user_group_name doesn't exist
+        await communicator.disconnect()
+
+    def test_connect_authenticated(self):
+        import asyncio
+        asyncio.get_event_loop().run_until_complete(self._async_test_connect_authenticated())
+
+    def test_connect_anonymous_rejected(self):
+        import asyncio
+        asyncio.get_event_loop().run_until_complete(self._async_test_connect_anonymous_rejected())
+
+    def test_receive_mark_read(self):
+        import asyncio
+        asyncio.get_event_loop().run_until_complete(self._async_test_receive_mark_read())
+
+    def test_receive_mark_all_read(self):
+        import asyncio
+        asyncio.get_event_loop().run_until_complete(self._async_test_receive_mark_all_read())
+
+    def test_receive_invalid_json(self):
+        import asyncio
+        asyncio.get_event_loop().run_until_complete(self._async_test_receive_invalid_json())
+
+    def test_send_notification_event(self):
+        import asyncio
+        asyncio.get_event_loop().run_until_complete(self._async_test_send_notification_event())
+
+    def test_notification_update_event(self):
+        import asyncio
+        asyncio.get_event_loop().run_until_complete(self._async_test_notification_update_event())
+
+    def test_mark_read_nonexistent(self):
+        import asyncio
+        asyncio.get_event_loop().run_until_complete(self._async_test_mark_read_nonexistent())
+
+    def test_disconnect_without_group(self):
+        import asyncio
+        asyncio.get_event_loop().run_until_complete(self._async_test_disconnect_without_group())
+
+
+class RoutingTestCase(TestCase):
+    """Cover routing.py: websocket URL patterns"""
+
+    def test_websocket_urlpatterns_exists(self):
+        """routing.py defines websocket_urlpatterns for notifications"""
+        from api.routing import websocket_urlpatterns
+
+        self.assertTrue(len(websocket_urlpatterns) > 0)
+        pattern = websocket_urlpatterns[0]
+        self.assertIn("notifications", pattern.pattern.regex.pattern)

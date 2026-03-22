@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:clean": "./scripts/kill-ports.sh && npm run dev",
+    "dev:clean": "./scripts/ports.sh --kill && npm run dev",
     "dev:docker": "./scripts/start-dev.sh",
     "dev:frontend": "npm run start --workspace=frontend",
     "dev:backend": "cd backend && uv run python manage.py runserver",
