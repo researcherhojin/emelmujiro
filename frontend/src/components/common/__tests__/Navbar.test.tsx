@@ -277,9 +277,12 @@ describe('Navbar Component', () => {
     const useLocalizedPathModule = await import('../../../hooks/useLocalizedPath');
     const spy = vi.spyOn(useLocalizedPathModule, 'useLocalizedPath').mockReturnValue({
       currentLang: 'en',
+      langPrefix: '/en',
       localizedPath: (p: string) => `/en${p === '/' ? '' : p}`,
       localizedNavigate: vi.fn(),
       switchLanguagePath: (lang: string) => (lang === 'ko' ? '/about' : '/en/about'),
+      supportedLangs: ['ko', 'en'] as const,
+      defaultLang: 'ko',
     });
 
     renderWithProviders(<Navbar />);

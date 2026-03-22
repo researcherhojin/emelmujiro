@@ -50,13 +50,29 @@ vi.mock('../BlogSearch', () => ({
   },
 }));
 
+// Mock api for category fetching
+const mockGetBlogCategories = vi.fn().mockResolvedValue({
+  data: [
+    { slug: 'ai', name: 'AI', count: 3 },
+    { slug: 'ml', name: 'ML', count: 2 },
+  ],
+});
+vi.mock('../../../services/api', () => ({
+  api: { getBlogCategories: (...args: unknown[]) => mockGetBlogCategories(...args) },
+}));
+
+// Mock logger
+vi.mock('../../../utils/logger', () => ({
+  default: { warn: vi.fn(), error: vi.fn(), info: vi.fn(), debug: vi.fn() },
+}));
+
 vi.mock('../BlogCard', () => ({
   default: ({ post, featured }: { post: { title: string }; featured?: boolean }) => (
     <div data-testid={featured ? 'blog-card-featured' : 'blog-card'}>{post.title}</div>
   ),
 }));
 
-const makePosts = (count: number) =>
+const makePosts = (count: number, category = 'ai') =>
   Array.from({ length: count }, (_, i) => ({
     id: i + 1,
     title: `Post ${i + 1}`,
@@ -65,6 +81,7 @@ const makePosts = (count: number) =>
     author: '',
     publishedAt: '',
     slug: `post-${i + 1}`,
+    category: i % 2 === 0 ? category : 'ml',
   }));
 
 describe('BlogListPage', () => {
@@ -270,5 +287,88 @@ describe('BlogListPage', () => {
   it('renders section label text', () => {
     renderPage();
     expect(screen.getByText('blog.sectionLabel')).toBeInTheDocument();
+  });
+
+  describe('Category Filter', () => {
+    beforeEach(() => {
+      mockGetBlogCategories.mockResolvedValue({
+        data: [
+          { slug: 'ai', name: 'AI', count: 3 },
+          { slug: 'ml', name: 'ML', count: 2 },
+        ],
+      });
+    });
+
+    it('fetches and displays category tabs', async () => {
+      mockBlogContext.posts = makePosts(4) as never[];
+      renderPage();
+
+      await screen.findByText('AI');
+      expect(screen.getByText('ML')).toBeInTheDocument();
+      expect(screen.getByText('blog.allCategories')).toBeInTheDocument();
+    });
+
+    it('filters posts by selected category', async () => {
+      mockBlogContext.posts = makePosts(4) as never[];
+      renderPage();
+
+      const aiButton = await screen.findByText('AI');
+      act(() => {
+        fireEvent.click(aiButton);
+      });
+
+      // Only posts with category 'ai' should be shown
+      const cards = screen.getAllByTestId(/blog-card/);
+      expect(cards.length).toBeLessThan(4);
+    });
+
+    it('shows all posts when "all" tab clicked', async () => {
+      mockBlogContext.posts = makePosts(4) as never[];
+      renderPage();
+
+      // First filter by AI
+      const aiButton = await screen.findByText('AI');
+      act(() => {
+        fireEvent.click(aiButton);
+      });
+
+      // Then click All
+      act(() => {
+        fireEvent.click(screen.getByText('blog.allCategories'));
+      });
+
+      const cards = screen.getAllByTestId(/blog-card/);
+      // featured (1) + remaining grid cards
+      expect(cards.length).toBe(4);
+    });
+
+    it('handles category fetch failure gracefully', async () => {
+      mockGetBlogCategories.mockRejectedValueOnce(new Error('API error'));
+      mockBlogContext.posts = makePosts(3) as never[];
+      renderPage();
+
+      // Should still render posts without category tabs
+      expect(screen.getAllByTestId(/blog-card/).length).toBe(3);
+    });
+
+    it('resets category filter when search is performed', async () => {
+      mockBlogContext.posts = makePosts(4) as never[];
+      renderPage();
+
+      // Select AI category
+      const aiButton = await screen.findByText('AI');
+      act(() => {
+        fireEvent.click(aiButton);
+      });
+
+      // Perform search — should reset to 'all'
+      act(() => {
+        if (capturedOnSearch) {
+          capturedOnSearch(makePosts(2));
+        }
+      });
+
+      expect(screen.getAllByTestId(/blog-card/).length).toBe(2);
+    });
   });
 });
