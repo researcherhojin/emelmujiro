@@ -45,9 +45,9 @@ from .serializers import (
 
 logger = logging.getLogger(__name__)
 
-# Time constants (seconds)
-ONE_HOUR = 3600
-ONE_DAY = 86400
+# Time constants
+ONE_HOUR = 3600  # seconds
+ONE_DAY = 86400  # seconds
 
 
 class ContactRateThrottle(AnonRateThrottle):
