@@ -6,31 +6,16 @@
     "contact": "Contact",
     "blog": "Blog",
     "profile": "Profile",
-    "login": "Login",
-    "logout": "Logout",
-    "register": "Register",
-    "search": "Search",
-    "loading": "Loading...",
-    "error": "An error occurred",
-    "success": "Success",
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
     "delete": "Delete",
     "edit": "Edit",
     "close": "Close",
-    "clear": "Clear",
-    "remove": "Remove",
     "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "submit": "Submit",
-    "language": "Language",
     "switchLanguage": "Switch Language",
-    "pageLoading": "Loading page...",
     "companyName": "Emelmujiro",
     "inquireProject": "Inquire About Project →",
-    "inquireByEmail": "Contact via Email →",
     "inquireEducation": "Inquire About Training",
     "menu": "Menu",
     "representativeProfile": "CEO Profile",
@@ -113,36 +98,10 @@
       "title": "Our Mission",
       "description": "With AI education and consulting built for real work,\nwe drive our clients' business growth together."
     },
-    "vision": {
-      "title": "Our Vision",
-      "description": "Growing as a leading company in AI education and consulting to drive digital transformation"
-    },
     "journey": {
       "sectionLabel": "OUR JOURNEY",
       "title": "Our Journey",
       "subtitle": "Footsteps of growth as AI education experts"
-    },
-    "timeline": {
-      "2022": {
-        "title": "AI Education Begins",
-        "description": "University & corporate AI training at SNU, UOS, LG, etc."
-      },
-      "2023": {
-        "title": "Enterprise Training & Projects",
-        "description": "AI/ML training & projects at Samsung, Hyundai E&C, Kakao, etc."
-      },
-      "2024": {
-        "title": "Specialization & Founding",
-        "description": "AI expert instructor, Emelmujiro founded"
-      },
-      "2025": {
-        "title": "Education Diversification",
-        "description": "Corporate training, KDT, industrial AI upskilling & more"
-      },
-      "2026": {
-        "title": "Education & Solutions",
-        "description": "Advancing corporate AI training & launching custom solutions"
-      }
     },
     "values": {
       "sectionLabel": "CORE VALUES",
@@ -179,14 +138,8 @@
     }
   },
   "footer": {
-    "company": "Emelmujiro",
     "services": "Services",
-    "resources": "Resources",
-    "legal": "Legal",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
     "copyright": "© {{year}} Emelmujiro. All rights reserved.",
-    "socialMedia": "Social Media",
     "mainServices": "Main Services",
     "ctaQuestion": "Planning an AI project?",
     "businessInfo": {
@@ -206,30 +159,6 @@
       "openInNewTab": "Open in new tab",
       "formTitle": "Online Meeting Request"
     },
-    "form": {
-      "name": "Name",
-      "email": "Email",
-      "phone": "Phone",
-      "company": "Company",
-      "message": "Message",
-      "submit": "Send Inquiry",
-      "ariaLabel": "Contact form",
-      "nameAriaLabel": "Enter name",
-      "emailAriaLabel": "Enter email",
-      "phoneAriaLabel": "Enter phone number",
-      "companyAriaLabel": "Enter company name",
-      "inquiryType": "Inquiry Type",
-      "inquiryTypeAriaLabel": "Select inquiry type",
-      "consulting": "AI Consulting",
-      "education": "Corporate AI Education",
-      "llm": "LLM Solutions",
-      "data": "Data Analysis",
-      "messageAriaLabel": "Enter message",
-      "offlineMode": "Offline Mode",
-      "offlineMessage": "You are currently offline. Your inquiry will be saved and sent automatically when connected.",
-      "submitAriaLabel": "Send inquiry",
-      "submitting": "Sending..."
-    },
     "info": {
       "email": "researcherhojin@gmail.com",
       "phone": "010-7279-0380",
@@ -248,18 +177,10 @@
   "blog": {
     "title": "Blog",
     "subtitle": "AI technology trends and practical insights",
-    "readMore": "Read More",
     "readMoreDetail": "Read More",
-    "author": "Author",
-    "date": "Date",
-    "tags": "Tags",
-    "relatedPosts": "Related Posts",
-    "comments": "Comments",
     "commentsCount": "Comments ({{count}})",
     "writeComment": "Write Comment",
-    "noComments": "No comments",
     "noCommentsYet": "No comments yet. Be the first to comment!",
-    "search": "Search Blog",
     "searchPlaceholder": "Search blog...",
     "recentSearches": "Recent Searches",
     "clearAll": "Clear All",
@@ -274,17 +195,10 @@
     "likeReply": "Like reply by {{author}}",
     "replyTo": "Reply to {{author}}",
     "thumbnailAlt": "{{title}} blog post thumbnail",
-    "noImage": "No image available",
     "timeJustNow": "Just now",
     "timeMinutesAgo": "{{count}} min ago",
     "timeHoursAgo": "{{count}} hours ago",
     "timeDaysAgo": "{{count}} days ago",
-    "loading": "Loading latest AI trends...",
-    "trends": "AI Trends",
-    "emptyTitle": "New AI trends coming soon",
-    "emptyDescription": "We're preparing generative AI and latest technology trends",
-    "viewAll": "View all blog posts",
-    "viewAllTrends": "View All Trends",
     "preparing": "Blog Coming Soon",
     "preparingSubtitle": "We'll be back with better content soon",
     "preparingDescription": "We're preparing quality AI insights and technology trends. Please stay tuned.",
@@ -321,13 +235,6 @@
       "codeBlock": "Code block",
       "image": "Upload image",
       "divider": "Divider"
-    },
-    "categories": {
-      "all": "All",
-      "ai": "AI/ML",
-      "tutorial": "Tutorial",
-      "casestudy": "Case Study",
-      "news": "News"
     }
   },
   "blogDetail": {
@@ -339,25 +246,7 @@
   },
   "achievements": {
     "sectionLabel": "KEY ACHIEVEMENTS",
-    "title": "Key Achievements",
-    "subtitle": "We've built trust through proven education outcomes",
-    "items": {
-      "championAward": {
-        "title": "Mentored Awardees",
-        "description": "Student achievement | KEIT national AI competition",
-        "highlight": "AI Champion Award"
-      },
-      "daconWin": {
-        "title": "Mentored Winners",
-        "description": "Student achievement | Dacon AI competition",
-        "highlight": "Dacon Winner"
-      },
-      "corporateTraining": {
-        "title": "Enterprise AI Training",
-        "description": "Instructor | Samsung · LG · SKT and more",
-        "highlight": "Corporate Training"
-      }
-    }
+    "title": "Key Achievements"
   },
   "logos": {
     "sectionLabel": "TRUSTED BY",
@@ -429,23 +318,17 @@
     "unknown": "An unknown error occurred.",
     "network": "Please check your network connection.",
     "contactSuccess": "Your inquiry has been submitted successfully.",
-    "contactRateLimit": "Too many inquiries. Please try again in 1 hour.",
-    "newsletterSuccess": "Newsletter subscription completed successfully."
+    "contactRateLimit": "Too many inquiries. Please try again in 1 hour."
   },
   "accessibility": {
     "skipToContent": "Skip to Content",
     "menu": "Menu",
-    "navigation": "Navigation",
-    "search": "Search",
     "darkMode": "Dark Mode",
     "lightMode": "Light Mode",
     "heroSection": "Hero introduction",
     "statsSection": "Key statistics",
     "servicesSection": "Services overview",
     "ctaSection": "Call to action",
-    "educationSection": "Education programs",
-    "educationTracks": "Education tracks",
-    "recentCoursesSection": "Recent courses",
     "aboutHeroSection": "About us",
     "timelineSection": "Company timeline",
     "coreValuesSection": "Core values",
@@ -453,19 +336,9 @@
     "aboutCtaSection": "Contact us",
     "footerNavServices": "Services list",
     "footerNavMenu": "Menu list",
-    "footerCompanyInfo": "Company information",
-    "footerContactCta": "Contact us",
     "closeModal": "Close modal",
     "closeModalOverlay": "Click overlay to close modal",
-    "careerSection": "Career details",
-    "careerTimeline": "Career timeline by year",
-    "careerStats": "Career statistics",
-    "scrollToTop": "Scroll to top",
     "mainContent": "Main content",
-    "keyboardShortcuts": "Keyboard shortcuts",
-    "shortcutFocusSearch": "Press / to focus search",
-    "shortcutGoHome": "Press Alt+H to go home",
-    "shortcutGoBlog": "Press Alt+B to go to blog",
     "shortcutGoContact": "Press Alt+C to go to contact",
     "shortcutGoProfile": "Press Alt+P to go to profile",
     "shortcutCloseModal": "Press Escape to close modals",
@@ -762,7 +635,6 @@
     "bell": "{{count}} notifications",
     "markAllRead": "Mark all read",
     "empty": "No notifications",
-    "loadMore": "Load more",
     "justNow": "Just now",
     "minutesAgo": "{{count}}m ago",
     "hoursAgo": "{{count}}h ago",
