@@ -22,7 +22,7 @@ module.exports = {
       .join(' ');
     return [
       `cd backend && uv run black --check ${relFiles}`,
-      `cd backend && uv run flake8 --max-line-length=120 ${relFiles}`,
+      `cd backend && uv run flake8 ${relFiles}`,
     ];
   },
 
