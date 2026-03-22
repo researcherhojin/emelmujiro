@@ -66,19 +66,19 @@
     },
     "llmGenai": {
       "title": "LLM/Generative AI",
-      "description": "LLM-based service development",
+      "description": "AI Agent & LLM-based service development",
       "details": [
         "RAG system design & implementation",
-        "LLM-based service prototyping",
-        "Generative AI training"
+        "AI Agent & Agentic Workflow development",
+        "Generative AI training (MCP, Tool Use)"
       ]
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "Video processing & vision AI solutions",
+      "description": "Vision AI & multimodal solutions",
       "details": [
-        "Object detection / segmentation",
-        "Latest models (YOLO, SAM, etc.)",
+        "Object detection / segmentation / 3D vision",
+        "Vision-Language models (GPT-4o, Gemini, etc.)",
         "CV project design & mentoring"
       ]
     }
@@ -135,6 +135,28 @@
     "seo": {
       "title": "About Us",
       "description": "Learn about Emelmujiro, an AI education and consulting company. We provide practice-focused AI solutions."
+    },
+    "timeline": {
+      "2022": {
+        "title": "AI Education Launch",
+        "description": "Launched Python & ML fundamentals training programs"
+      },
+      "2023": {
+        "title": "Enterprise Expansion",
+        "description": "Built AI training partnerships with Samsung, LG, SKT"
+      },
+      "2024": {
+        "title": "LLM & Generative AI Pivot",
+        "description": "Started RAG, prompt engineering, LLM fine-tuning training"
+      },
+      "2025": {
+        "title": "AI Consulting Expansion",
+        "description": "AI Agent, Agentic Workflow consulting & PoC development"
+      },
+      "2026": {
+        "title": "Leading the AI Agent Era",
+        "description": "MCP, AI Agent design, multimodal AI solutions"
+      }
     }
   },
   "footer": {
@@ -248,7 +270,21 @@
   },
   "achievements": {
     "sectionLabel": "KEY ACHIEVEMENTS",
-    "title": "Key Achievements"
+    "title": "Key Achievements",
+    "items": {
+      "championAward": {
+        "highlight": "AI Hackathon Champion",
+        "description": "Won 2024 national AI hackathon competition"
+      },
+      "daconWin": {
+        "highlight": "Dacon Award Winner",
+        "description": "Multiple data analysis competition awards"
+      },
+      "corporateTraining": {
+        "highlight": "Enterprise Training Partner",
+        "description": "AI training for Samsung, LG, SKT and other major corporations"
+      }
+    }
   },
   "logos": {
     "sectionLabel": "TRUSTED BY",
@@ -382,8 +418,8 @@
       "description": "We design and develop LLM-based services.",
       "details": [
         "RAG system design & implementation",
-        "LLM-based service prototyping",
-        "Generative AI training",
+        "AI Agent & Agentic Workflow development",
+        "Generative AI training (MCP, Tool Use)",
         "Prompt engineering optimization",
         "LLM fine-tuning & performance optimization",
         "AI agent design & development"
@@ -393,12 +429,12 @@
       "title": "Computer Vision",
       "description": "Video processing and vision AI solutions.",
       "details": [
-        "Object detection / segmentation",
-        "Latest models (YOLO, SAM, etc.)",
+        "Object detection / segmentation / 3D vision",
+        "Vision-Language models (GPT-4o, Gemini, etc.)",
         "CV project design & mentoring",
         "Image classification & search systems",
         "Video analysis pipeline development",
-        "Industrial vision AI solution design"
+        "Multimodal AI solution design"
       ]
     }
   },
