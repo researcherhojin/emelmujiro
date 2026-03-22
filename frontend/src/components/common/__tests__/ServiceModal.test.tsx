@@ -3,14 +3,6 @@ import React from 'react';
 import ServiceModal from '../ServiceModal';
 import type { ServiceDetail } from '../../../data/footerData';
 
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 vi.mock('../../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },
 }));

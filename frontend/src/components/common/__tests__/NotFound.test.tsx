@@ -3,15 +3,6 @@ import { vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import NotFound from '../NotFound';
 
-// Mock i18n
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await import('react-router-dom');

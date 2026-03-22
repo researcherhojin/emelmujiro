@@ -3,16 +3,6 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render as rtlRender, screen, waitFor, act } from '@testing-library/react';
 import { renderWithProviders } from '../../test-utils';
 
-// Mock react-i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  Trans: ({ children }: { children: React.ReactNode }) => children,
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 // Mock i18n
 vi.mock('../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },

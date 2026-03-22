@@ -7,7 +7,7 @@ vi.mock('../../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },
 }));
 
-// Mock react-i18next in case any child uses it
+// Override global i18n mock — this test needs custom t() behavior
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,

@@ -5,16 +5,6 @@ import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { BlogPost } from '../../../types';
 
-// Mock react-i18next BEFORE component imports
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  Trans: ({ children }: { children: React.ReactNode }) => children,
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 // Mock react-markdown to avoid dependency issues
 vi.mock('react-markdown', () => ({
   default: function ReactMarkdown({ children }: { children: string }) {

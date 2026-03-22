@@ -5,14 +5,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import ContactPage from '../ContactPage';
 
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 vi.mock('../../contact/ContactInfo', () => ({
   default: () => <div data-testid="contact-info">ContactInfo</div>,
 }));

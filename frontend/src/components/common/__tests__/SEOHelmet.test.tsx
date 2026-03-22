@@ -2,15 +2,6 @@ import React from 'react';
 import { vi, describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  Trans: ({ children }: { children: React.ReactNode }) => children,
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 // Mock react-helmet-async with a Helmet that captures data
 const mockHelmetData: Record<string, any> = {};
 

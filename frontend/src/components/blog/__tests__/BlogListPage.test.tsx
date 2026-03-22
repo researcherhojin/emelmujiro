@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import BlogListPage from '../BlogListPage';
 
+// Override global i18n mock — this test needs custom t() behavior
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, unknown>) => {

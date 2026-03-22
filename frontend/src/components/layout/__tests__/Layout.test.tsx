@@ -4,16 +4,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
-// Mock react-i18next (Layout uses useTranslation)
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  Trans: ({ children }: { children: React.ReactNode }) => children,
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 // Mock child components to isolate Layout behavior
 vi.mock('../../common/Navbar', () => ({
   default: () => <nav data-testid="navbar">Navbar</nav>,

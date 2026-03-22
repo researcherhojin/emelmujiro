@@ -11,6 +11,17 @@ afterEach(() => {
   cleanup();
 });
 
+// Global mock for react-i18next — default for all test files
+// Tests needing custom t() behavior (e.g. opts.count formatting) can override with vi.mock()
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children?: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 // Mock lucide-react icons — Proxy creates and caches any icon component on demand
 vi.mock('lucide-react', () => {
   const createIcon = (name: string) => {

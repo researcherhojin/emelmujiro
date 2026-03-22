@@ -21,19 +21,6 @@ vi.mock('../../../utils/analytics', () => ({
   trackCtaClick: (...args: unknown[]) => mockTrackCtaClick(...args),
 }));
 
-// Mock react-i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: any) => {
-      if (options?.returnObjects) return key;
-      return key;
-    },
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  Trans: ({ children }: any) => children,
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 describe('HeroSection Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
     return render(<MemoryRouter>{component}</MemoryRouter>);

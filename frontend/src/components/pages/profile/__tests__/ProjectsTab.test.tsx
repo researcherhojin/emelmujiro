@@ -2,14 +2,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import ProjectsTab from '../ProjectsTab';
 
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 vi.mock('../../../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },
 }));

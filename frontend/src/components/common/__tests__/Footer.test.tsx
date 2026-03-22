@@ -9,6 +9,24 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Footer from '../Footer';
 
+// Mock i18n module used by footerData.ts
+vi.mock('../../../i18n', () => ({
+  default: { t: (key: string) => key, language: 'ko' },
+}));
+
+// Override global i18n mock — this test needs custom t() behavior
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, options?: any) => {
+      if (options?.returnObjects) return key;
+      return key;
+    },
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: any) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 // Set higher timeout for modal tests - increased for CI environment
 const MODAL_TEST_TIMEOUT = 15000;
 
@@ -29,27 +47,6 @@ vi.mock('react-router-dom', async () => {
     }),
   };
 });
-
-// Mock i18n module used by footerData.ts
-vi.mock('../../../i18n', () => ({
-  default: {
-    t: (key: string) => key,
-    language: 'ko',
-  },
-}));
-
-// Mock react-i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: any) => {
-      if (options?.returnObjects) return key;
-      return key;
-    },
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  Trans: ({ children }: any) => children,
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
 
 // lucide-react uses global mock from setupTests.ts (data-testid="icon-{Name}")
 

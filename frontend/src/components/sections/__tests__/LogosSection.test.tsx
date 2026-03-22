@@ -3,7 +3,7 @@ import { vi, describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import LogosSection from '../LogosSection';
 
-// Mock react-i18next
+// Override global i18n mock — this test needs custom t() behavior
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, string>) => {
@@ -13,6 +13,7 @@ vi.mock('react-i18next', () => ({
     i18n: { language: 'ko', changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
 // Mock constants - provide a smaller set for testing

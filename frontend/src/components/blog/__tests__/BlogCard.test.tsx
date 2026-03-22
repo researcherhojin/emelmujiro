@@ -1,10 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import BlogCard from '../BlogCard';
-import { BlogPost } from '../../../types';
 
-// Mock react-i18next
+// Override global i18n mock — this test needs custom t() behavior
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, opts?: Record<string, unknown>) => {
@@ -16,6 +14,9 @@ vi.mock('react-i18next', () => ({
   Trans: ({ children }: { children: React.ReactNode }) => children,
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
+
+import BlogCard from '../BlogCard';
+import { BlogPost } from '../../../types';
 
 const mockPost: BlogPost = {
   id: 1,
@@ -67,8 +68,7 @@ describe('BlogCard Component', () => {
   });
 
   it('handles missing image gracefully', async () => {
-    const postWithoutImage = { ...mockPost, image_url: undefined };
-    renderWithRouter(<BlogCard post={mockPost} />);
+    renderWithRouter(<BlogCard post={{ ...mockPost, image_url: undefined }} />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Blog Post')).toBeInTheDocument();

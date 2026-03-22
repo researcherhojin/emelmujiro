@@ -4,18 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import ServicesSection from '../ServicesSection';
 import React from 'react';
 
-// Mock react-i18next
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: any) => {
-      if (options?.returnObjects) return key;
-      return key;
-    },
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  Trans: ({ children }: any) => children,
-}));
-
 describe('ServicesSection Component', () => {
   const renderWithRouter = (component: React.ReactElement) => {
     return render(<BrowserRouter>{component}</BrowserRouter>);

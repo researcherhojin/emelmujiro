@@ -3,15 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import DarkModeToggle from '../DarkModeToggle';
 
-// Mock i18n
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 // Mock UI Context
 const mockToggleTheme = vi.fn();
 const mockUIContextValue = {

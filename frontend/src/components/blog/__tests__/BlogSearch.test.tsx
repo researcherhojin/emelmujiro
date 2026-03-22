@@ -3,11 +3,8 @@ import '@testing-library/jest-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import BlogSearch from '../BlogSearch';
-import { BlogProvider } from '../../../contexts/BlogContext';
-import { api } from '../../../services/api';
 
-// Mock react-i18next
+// Override global i18n mock — this test needs custom t() behavior
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, opts?: Record<string, unknown>) => {
@@ -19,6 +16,10 @@ vi.mock('react-i18next', () => ({
   Trans: ({ children }: { children: React.ReactNode }) => children,
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
+
+import BlogSearch from '../BlogSearch';
+import { BlogProvider } from '../../../contexts/BlogContext';
+import { api } from '../../../services/api';
 
 // Mock the api module properly
 vi.mock('../../../services/api', () => ({

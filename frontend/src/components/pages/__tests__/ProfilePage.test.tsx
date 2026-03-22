@@ -8,13 +8,16 @@ vi.mock('../../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },
 }));
 
-// Mock react-i18next
+// Override global i18n mock — this test needs custom t() behavior
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string, options?: any) => {
+      if (options?.returnObjects) return key;
+      return key;
+    },
     i18n: { language: 'ko', changeLanguage: vi.fn() },
   }),
-  Trans: ({ children }: { children: React.ReactNode }) => children,
+  Trans: ({ children }: any) => children,
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 

@@ -37,18 +37,6 @@ vi.mock('../../../contexts/AuthContext', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-// Mock i18n translations
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: {
-      changeLanguage: vi.fn(),
-      language: 'ko',
-    },
-  }),
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 describe('Navbar Component', () => {
   beforeEach(() => {
     mockNavigate.mockClear();

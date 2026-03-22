@@ -3,15 +3,6 @@ import { vi, describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ContactInfo from '../ContactInfo';
 
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
-  }),
-  Trans: ({ children }: { children: React.ReactNode }) => children,
-  initReactI18next: { type: '3rdParty', init: vi.fn() },
-}));
-
 vi.mock('lucide-react', () => ({
   Mail: (props: Record<string, unknown>) => <div data-testid="mail-icon" {...props} />,
   Phone: (props: Record<string, unknown>) => <div data-testid="phone-icon" {...props} />,
