@@ -48,7 +48,7 @@
     "subtitle": "We provide step-by-step solutions for corporate AI adoption",
     "education": {
       "title": "AI Education & Training",
-      "description": "Custom corporate AI education programs",
+      "description": "Custom AI training for enterprise teams",
       "details": [
         "Custom curriculum design",
         "Project-based hands-on training",
@@ -75,7 +75,7 @@
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "CV training & vision AI solutions",
+      "description": "Vision AI training & project design",
       "details": [
         "Object detection / segmentation",
         "Multimodal AI integration",

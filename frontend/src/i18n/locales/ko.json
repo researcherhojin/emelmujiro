@@ -48,12 +48,12 @@
     "subtitle": "기업의 AI 도입을 위한 단계별 솔루션을 제공합니다",
     "education": {
       "title": "AI 교육 & 강의",
-      "description": "기업 맞춤 AI 교육 프로그램",
+      "description": "임직원 대상 맞춤형 AI 교육",
       "details": ["맞춤형 커리큘럼 설계", "프로젝트 기반 실습 교육", "1:1 기술 멘토링"]
     },
     "consulting": {
       "title": "AI 컨설팅",
-      "description": "AI 도입 전략 및 기술 자문",
+      "description": "AI 도입 전략 수립 및 기술 자문",
       "details": ["AI 도입 전략 및 기술 검토", "모델 선정 및 PoC 개발", "서비스 프로토타입 설계"]
     },
     "llmGenai": {
@@ -63,7 +63,7 @@
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "CV 교육 및 비전 AI 솔루션",
+      "description": "비전 AI 교육 및 프로젝트 설계",
       "details": [
         "객체 탐지 / 세그멘테이션",
         "Multimodal AI 연계 개발",
