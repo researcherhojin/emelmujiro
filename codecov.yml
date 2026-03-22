@@ -60,8 +60,5 @@ ignore:
   - "backend/api/migrations/**"
   - "frontend/src/components/blog/TipTapEditor.tsx"
   - "frontend/src/components/blog/TipTapEditor.css"
-  - "frontend/src/data/blogPosts.ts"
   - "frontend/src/data/index.ts"
   - "frontend/src/constants/**"
-  - "frontend/src/config/env.ts"
-  - "frontend/src/i18n.ts"
