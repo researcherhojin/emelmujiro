@@ -1,4 +1,4 @@
-.PHONY: help install dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy-staging deploy-production logs ps down restart migrate shell createsuperuser update-test-counts cleanup-visits
+.PHONY: help install dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy-staging deploy-production logs logs-security logs-debug ps down restart migrate shell createsuperuser update-test-counts cleanup-visits
 
 help:
 	@echo "Available commands:"
@@ -73,6 +73,12 @@ deploy-production:
 
 logs:
 	docker compose logs -f
+
+logs-security:
+	docker exec emelmujiro-backend cat /app/logs/security.log 2>/dev/null || echo "No security log yet"
+
+logs-debug:
+	docker exec emelmujiro-backend tail -100 /app/logs/debug.log 2>/dev/null || echo "No debug log yet"
 
 ps:
 	docker compose ps

@@ -27,7 +27,7 @@ COPY . .
 
 # Create non-root user and data directory for SQLite
 RUN adduser --disabled-password --gecos '' appuser && \
-    mkdir -p /app/data && \
+    mkdir -p /app/data /app/logs && \
     chown -R appuser:appuser /app
 
 # Switch to non-root user

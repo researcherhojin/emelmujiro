@@ -25,6 +25,7 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
       - sqlite_data:/app/data
+      - logs_volume:/app/logs
     networks:
       - emelmujiro-network
     healthcheck:
@@ -154,6 +155,8 @@ volumes:
   media_volume:
     driver: local
   sqlite_data:
+    driver: local
+  logs_volume:
     driver: local
 
 networks:
