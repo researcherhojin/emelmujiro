@@ -49,17 +49,17 @@
     "education": {
       "title": "AI 교육 & 강의",
       "description": "임직원 대상 맞춤형 AI 교육",
-      "details": ["맞춤형 커리큘럼 설계", "프로젝트 기반 실습 교육", "1:1 기술 멘토링"]
+      "details": ["맞춤형 커리큘럼 설계", "프로젝트 기반 실습 교육", "바이브 코딩 & AI 활용 교육"]
     },
     "consulting": {
       "title": "AI 컨설팅",
       "description": "AI 도입 전략 수립 및 기술 자문",
-      "details": ["AI 도입 전략 및 기술 검토", "모델 선정 및 PoC 개발", "서비스 프로토타입 설계"]
+      "details": ["AI 도입 전략 및 기술 검토", "PoC 개발 및 기술 검증", "서비스 프로토타입 설계"]
     },
     "llmGenai": {
       "title": "AI Agent 개발",
       "description": "Agentic AI 서비스 설계 및 구축",
-      "details": ["Agentic RAG 설계 및 구축", "AI Agent & MCP 자동화", "Context Engineering 최적화"]
+      "details": ["Agentic RAG 설계 및 구축", "AI Agent & MCP 자동화", "팀 프로젝트 기반 PoC 개발"]
     },
     "computerVision": {
       "title": "Computer Vision",
@@ -383,10 +383,10 @@
       "details": [
         "맞춤형 커리큘럼 설계",
         "프로젝트 기반 실습 교육",
-        "1:1 기술 멘토링",
-        "Python 머신러닝/딥러닝 실무 교육",
-        "LLM & 생성형 AI 활용 워크샵",
-        "비전공자 대상 AI 기초 교육"
+        "바이브 코딩 & AI 활용 교육",
+        "Python ML/DL 실무 교육",
+        "LLM & 생성형 AI 워크샵",
+        "비개발자 대상 AI 리터러시"
       ]
     },
     "consulting": {
@@ -394,11 +394,11 @@
       "description": "AI 도입 전략 수립부터 기술 자문까지 제공합니다.",
       "details": [
         "AI 도입 전략 및 기술 검토",
-        "모델 선정 및 PoC 개발",
+        "PoC 개발 및 기술 검증",
         "서비스 프로토타입 설계",
         "AI 비즈니스 모델 개발",
         "AI 프로젝트 관리 및 기술 자문",
-        "AI 성과 측정 및 ROI 분석"
+        "오픈소스 LLM 도입 컨설팅"
       ]
     },
     "llmGenai": {
@@ -407,15 +407,15 @@
       "details": [
         "Agentic RAG 설계 및 구축",
         "AI Agent & MCP 자동화",
-        "Context Engineering 최적화",
+        "팀 프로젝트 기반 PoC 개발",
         "LLM 파인튜닝 및 성능 최적화",
         "AI 에이전트 워크플로우 설계",
-        "생성형 AI 활용 교육"
+        "내부 데이터 연동 Agent 개발"
       ]
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "CV 교육과 비전 AI 솔루션을 제공합니다.",
+      "description": "비전 AI 교육 및 프로젝트 설계",
       "details": [
         "객체 탐지 / 세그멘테이션",
         "Multimodal AI 연계 개발",

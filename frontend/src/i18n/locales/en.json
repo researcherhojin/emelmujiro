@@ -52,15 +52,15 @@
       "details": [
         "Custom curriculum design",
         "Project-based hands-on training",
-        "1:1 technical mentoring"
+        "Vibe Coding & AI training"
       ]
     },
     "consulting": {
       "title": "AI Consulting",
       "description": "AI adoption strategy & technical advisory",
       "details": [
-        "AI adoption strategy & technical review",
-        "Model selection & PoC development",
+        "AI adoption strategy & review",
+        "PoC development & validation",
         "Service prototype design"
       ]
     },
@@ -70,7 +70,7 @@
       "details": [
         "Agentic RAG design & build",
         "AI Agent & MCP automation",
-        "Context Engineering optimization"
+        "Team project-based PoC dev"
       ]
     },
     "computerVision": {
@@ -395,22 +395,22 @@
       "details": [
         "Custom curriculum design",
         "Project-based hands-on training",
-        "1:1 technical mentoring",
-        "Python ML/DL practical training",
+        "Vibe Coding & AI training",
+        "Python ML/DL hands-on training",
         "LLM & Generative AI workshop",
-        "AI fundamentals for non-technical backgrounds"
+        "AI literacy for non-developers"
       ]
     },
     "consulting": {
       "title": "AI Consulting",
       "description": "From AI adoption strategy to technical advisory services.",
       "details": [
-        "AI adoption strategy & technical review",
-        "Model selection & PoC development",
+        "AI adoption strategy & review",
+        "PoC development & validation",
         "Service prototype design",
         "AI business model development",
-        "AI project management & technical advisory",
-        "AI performance measurement & ROI analysis"
+        "AI project management & advisory",
+        "Open-source LLM adoption consulting"
       ]
     },
     "llmGenai": {
@@ -419,15 +419,15 @@
       "details": [
         "Agentic RAG design & build",
         "AI Agent & MCP automation",
-        "Context Engineering optimization",
-        "LLM fine-tuning & performance optimization",
+        "Team project-based PoC dev",
+        "LLM fine-tuning & optimization",
         "AI agent workflow design",
-        "Generative AI training"
+        "Internal data Agent development"
       ]
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "We provide CV training and vision AI solutions.",
+      "description": "Vision AI training & project design",
       "details": [
         "Object detection / segmentation",
         "Multimodal AI integration",
