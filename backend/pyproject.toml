@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "emelmujiro-backend"
 version = "0.1.0"
 description = "Emelmujiro Backend API"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "Django==5.2.12",
     "djangorestframework==3.16.1",
