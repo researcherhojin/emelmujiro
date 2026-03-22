@@ -104,60 +104,6 @@
     "subtitle": "Solve your business challenges with our AI experts",
     "emailAriaLabel": "Contact via email"
   },
-  "education": {
-    "title": "Hands-On AI Training",
-    "subtitle": "We provide practice-focused training you can apply immediately",
-    "tracks": {
-      "corporate": {
-        "title": "Corporate Practitioner Course",
-        "description": "AI/ML hands-on training for real corporate environments",
-        "highlights": [
-          "Spotfire data analysis & visualization",
-          "Python-based machine learning fundamentals",
-          "Real-world data project practice"
-        ]
-      },
-      "advanced": {
-        "title": "Advanced AI Technology Course",
-        "description": "Expert training focused on Computer Vision and deep learning",
-        "highlights": [
-          "YOLO-based object detection practice",
-          "Vision AI algorithm implementation",
-          "Practical AI project building"
-        ]
-      },
-      "genai": {
-        "title": "Generative AI Course",
-        "description": "Business application training for latest generative AI",
-        "highlights": [
-          "LLM-based service design",
-          "Business automation processes",
-          "AI adoption strategy planning"
-        ]
-      }
-    },
-    "recentCourses": "Recent Courses",
-    "courses": {
-      "samsung": {
-        "company": "Samsung Electronics",
-        "course": "Spotfire Data Analysis",
-        "period": "2023.05 ~ Present",
-        "type": "Hands-on training for employees"
-      },
-      "hyundai": {
-        "company": "Hyundai E&C",
-        "course": "ML/DL Training",
-        "period": "2023.05 ~ 2023.09",
-        "type": "12 sessions completed"
-      },
-      "likelion": {
-        "company": "Likelion",
-        "course": "Tekit Startup Station",
-        "period": "2023.11 ~ 2024.02",
-        "type": "Project-based hands-on training"
-      }
-    }
-  },
   "about": {
     "sectionLabel": "ABOUT US",
     "title": "Emelmujiro",
@@ -251,43 +197,6 @@
       "businessNumberValue": "174-29-01733"
     }
   },
-  "career": {
-    "title": "Career Details",
-    "subtitle": "Introducing <strong>5 years of experience</strong> in AI education and business development by year.",
-    "monthlyActivities": "Monthly Activities",
-    "activities": " activities",
-    "projects": " projects",
-    "yearLabel": "{{year}}",
-    "monthLabel": " months active",
-    "expandLabel": "Expand",
-    "collapseLabel": "Collapse",
-    "stats": {
-      "lectures": "Lecture Experience",
-      "partners": "Partners",
-      "educationPeriod": "Training Period",
-      "educationYears": "5 Years"
-    },
-    "status": {
-      "completed": "Completed",
-      "inProgress": "In Progress"
-    },
-    "types": {
-      "lecture": "Lecture",
-      "consulting": "Consulting",
-      "business": "Business",
-      "study": "Study",
-      "mentoring": "Mentoring",
-      "competition": "Competition",
-      "research": "Research",
-      "development": "Development",
-      "planning": "Planning",
-      "education": "Education",
-      "preparation": "Preparation",
-      "review": "Review",
-      "employment": "Employment",
-      "activity": "Activity"
-    }
-  },
   "contact": {
     "title": "Contact Us",
     "subtitle": "Want to discuss your project?",
@@ -334,15 +243,6 @@
       "weekends": "Saturday - Sunday: Closed",
       "quickResponse": "Quick Response Time",
       "responseMessage": "We typically respond within 24 hours."
-    }
-  },
-  "contactPage": {
-    "successMessage": "Your inquiry has been submitted successfully.",
-    "successDetail": "We will respond as soon as possible.",
-    "placeholder": {
-      "name": "John Doe",
-      "company": "Enter your company name",
-      "message": "Please describe your inquiry in detail"
     }
   },
   "blog": {
@@ -464,66 +364,6 @@
     "title": "Companies We've Worked With",
     "logoAlt": "{{name}} logo"
   },
-  "profile": {
-    "aboutMe": "About Me",
-    "intro": "Conducting Deep Learning and LLM education and research at major enterprises and public institutions including Samsung, SK, LG",
-    "ceoName": "Hojin Lee, CEO of Emelmujiro",
-    "introSuffix": ".",
-    "goalsTitle": "Goals & Values",
-    "workStyleTitle": "Work Style",
-    "skillsTitle": "Technical Skills",
-    "certificationsTitle": "Certifications & Achievements",
-    "stats": {
-      "educationCareer": "Education Career",
-      "students": "Total Students",
-      "partners": "Partner Companies",
-      "lectureProjects": "Lecture Projects"
-    },
-    "goals": {
-      "competitive": {
-        "title": "Building Irreplaceable Competitiveness",
-        "description": "As an AI Researcher, building unique expertise through continuous research and innovation."
-      },
-      "sharing": {
-        "title": "Creating Value Through Knowledge Sharing",
-        "description": "Helping more people leverage AI technology through education and mentoring."
-      }
-    },
-    "workStyle": {
-      "communication": {
-        "title": "Communication & Collaboration",
-        "description": "Enjoys creating synergy through smooth communication with diverse people."
-      },
-      "creative": {
-        "title": "Creative Problem Solving",
-        "description": "Finds fulfillment in growing through creative problem solving."
-      },
-      "trending": {
-        "title": "Trend Leadership",
-        "description": "Quickly catches AI trends and actively shares new knowledge."
-      }
-    },
-    "certifications": {
-      "adsp": {
-        "name": "ADsP (Associate Data Scientist Professional)",
-        "issuer": "Korea Data Agency"
-      },
-      "ncsStrategy": {
-        "name": "NCS IT Strategy & Planning",
-        "score": "60.5 pts"
-      },
-      "ncsDev": {
-        "name": "NCS IT Development",
-        "score": "60.5 pts"
-      },
-      "ncsAI": {
-        "name": "NCS Artificial Intelligence",
-        "score": "60.5 pts"
-      }
-    },
-    "quote": "\"Pursuing practice-focused AI education accessible even to non-technical backgrounds\"",
-    "quoteDescription": "My goal is to break down complex AI technology so anyone can understand it, and provide practical education that can be immediately applied to real work. Let's explore the infinite possibilities of AI together."
-  },
   "profilePage": {
     "sectionLabel": "CEO PROFILE",
     "seoTitle": "CEO Profile - Hojin Lee",
@@ -558,14 +398,6 @@
     "inProgress": "In Progress",
     "noProjectsInCategory": "No projects in this category."
   },
-  "home": {
-    "seo": {
-      "title": "Emelmujiro - AI Education & Consulting",
-      "description": "A specialized company providing AI technology education and consulting. We offer machine learning, deep learning, data analysis training and corporate AI transformation consulting services.",
-      "structuredDescription": "A company providing professional AI education and consulting services",
-      "orgDescription": "AI Education & Consulting Company"
-    }
-  },
   "notFound": {
     "title": "Page Not Found",
     "description": "The page you requested may not exist or may have been moved.\nPlease check the URL or use the options below.",
@@ -573,42 +405,6 @@
     "goHome": "Go Home",
     "help": "Help",
     "popularPages": "Popular Pages"
-  },
-  "underConstruction": {
-    "title": "Under Construction",
-    "description": "This feature is currently being prepared. We'll be back with a better service soon.",
-    "comingSoon": "Coming soon.",
-    "goHome": "Go Home",
-    "goBack": "Go Back",
-    "features": {
-      "blog": "We're preparing the blog. We'll be back soon with the latest AI trends and insights.",
-      "contact": "The contact page is being prepared. Please email us directly at researcherhojin@gmail.com."
-    }
-  },
-  "serverError": {
-    "status": {
-      "500": "Internal server error occurred",
-      "502": "Gateway error occurred",
-      "503": "Service temporarily unavailable",
-      "504": "Gateway timeout"
-    },
-    "offlineMessage": "It seems your internet connection is lost. Please check your network.",
-    "retrying": "Reconnecting to server... ({{count}}/3)",
-    "temporaryIssue": "Service is temporarily unavailable due to a temporary issue.",
-    "retryFailed": "Retry {{count}} failed. Please try again later.",
-    "retryingButton": "Retrying...",
-    "retry": "Try Again",
-    "contactSupport": "Contact Support",
-    "statusCode": "Status Code:",
-    "time": "Time:",
-    "network": "Network:",
-    "connected": "Connected",
-    "disconnected": "Disconnected",
-    "retryLabel": "Retries:",
-    "helpText": "If this problem persists, try the following:",
-    "helpTip1": "Clear browser cache",
-    "helpTip2": "Try a different browser",
-    "helpTip3": "Try again later"
   },
   "errorBoundary": {
     "title": "Something went wrong",
@@ -620,18 +416,6 @@
     "contactSupport": "Contact Support",
     "errorId": "Error ID:",
     "time": "Time:"
-  },
-  "errors": {
-    "404": "Page not found",
-    "500": "Server error occurred",
-    "network": "Please check your network connection",
-    "validation": {
-      "required": "This field is required",
-      "email": "Invalid email format",
-      "minLength": "Minimum {{min}} characters required",
-      "maxLength": "Maximum {{max}} characters allowed",
-      "pattern": "Invalid format"
-    }
   },
   "apiErrors": {
     "400": "Please check your input.",
@@ -742,18 +526,6 @@
         "Industrial vision AI solution design"
       ]
     }
-  },
-  "formValidation": {
-    "nameRequired": "Please enter your name.",
-    "nameMinLength": "Name must be at least 2 characters.",
-    "emailRequired": "Please enter your email.",
-    "emailInvalid": "Invalid email format.",
-    "phoneInvalid": "Invalid phone number format.",
-    "messageRequired": "Please enter your message.",
-    "messageMinLength": "Message must be at least 10 characters.",
-    "messageMaxLength": "Message cannot exceed 1000 characters.",
-    "submitFailed": "Failed to send inquiry.",
-    "offlineMessage": "You are offline. Your message will be sent automatically when connected."
   },
   "auth": {
     "login": "Login",
@@ -915,12 +687,16 @@
       {
         "title": "Enterprise & Public Institution AI Education",
         "description": "Samsung Electronics, LG Electronics, Hyundai E&C, SKT, SNU, Seoul Education Office, etc. · Designed and operated project-based education in CV, ML/DL, Data Analysis, and Generative AI",
-        "tags": { "3": "Generative AI" }
+        "tags": {
+          "3": "Generative AI"
+        }
       },
       {
         "title": "ICT Complex Piuda Project",
         "description": "Planned and developed \"E-eum\" AI learning support service for borderline intellectual functioning youth · LLM-based plain language conversion system · Top 15 out of 270 teams, 3rd place in category",
-        "tags": { "3": "Social Impact" }
+        "tags": {
+          "3": "Social Impact"
+        }
       },
       {
         "title": "Generative AI Educator Training",
@@ -954,16 +730,31 @@
       {
         "title": "Visual Python Open Source Development",
         "description": "2022 Open Source Contribution Academy · Visual Python ML/Statistics module development",
-        "tags": { "2": "Visualization", "3": "Open Source" }
+        "tags": {
+          "2": "Visualization",
+          "3": "Open Source"
+        }
       }
     ],
     "categories": [
-      { "label": "All" },
-      { "label": "Enterprise" },
-      { "label": "Bootcamp" },
-      { "label": "Education Innovation" },
-      { "label": "Startup" },
-      { "label": "R&D" }
+      {
+        "label": "All"
+      },
+      {
+        "label": "Enterprise"
+      },
+      {
+        "label": "Bootcamp"
+      },
+      {
+        "label": "Education Innovation"
+      },
+      {
+        "label": "Startup"
+      },
+      {
+        "label": "R&D"
+      }
     ]
   },
   "notifications": {

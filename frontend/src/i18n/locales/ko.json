@@ -92,56 +92,6 @@
     "subtitle": "AI 전문가와 함께 귀사의 비즈니스 문제를 해결하세요",
     "emailAriaLabel": "이메일로 문의하기"
   },
-  "education": {
-    "title": "실전 AI 교육",
-    "subtitle": "현장에서 바로 활용할 수 있는 실무 중심 교육을 제공합니다",
-    "tracks": {
-      "corporate": {
-        "title": "기업 실무자 과정",
-        "description": "실제 기업 환경에서 활용 가능한 AI/ML 실무 교육",
-        "highlights": [
-          "Spotfire 데이터 분석 및 시각화",
-          "Python 기반 머신러닝 기초",
-          "실무 데이터 활용 프로젝트"
-        ]
-      },
-      "advanced": {
-        "title": "AI 기술 심화 과정",
-        "description": "Computer Vision과 딥러닝 중심의 전문가 양성 과정",
-        "highlights": [
-          "YOLO 기반 객체 인식 실습",
-          "Vision AI 알고리즘 구현",
-          "AI 프로젝트 실전 구축"
-        ]
-      },
-      "genai": {
-        "title": "생성형 AI 활용 과정",
-        "description": "최신 생성형 AI 기술의 비즈니스 적용 교육",
-        "highlights": ["LLM 기반 서비스 설계", "업무 자동화 프로세스", "AI 도입 전략 수립"]
-      }
-    },
-    "recentCourses": "최근 진행 과정",
-    "courses": {
-      "samsung": {
-        "company": "삼성전자",
-        "course": "Spotfire 데이터 분석",
-        "period": "2023.05 ~ 현재",
-        "type": "임직원 대상 실습 중심 교육"
-      },
-      "hyundai": {
-        "company": "현대건설",
-        "course": "ML/DL 교육",
-        "period": "2023.05 ~ 2023.09",
-        "type": "12차수 진행 완료"
-      },
-      "likelion": {
-        "company": "멋쟁이사자처럼",
-        "course": "테킷 스타트업 스테이션",
-        "period": "2023.11 ~ 2024.02",
-        "type": "실전 프로젝트 중심 교육"
-      }
-    }
-  },
   "about": {
     "sectionLabel": "ABOUT US",
     "title": "에멜무지로",
@@ -235,43 +185,6 @@
       "businessNumberValue": "174-29-01733"
     }
   },
-  "career": {
-    "title": "경력 상세",
-    "subtitle": "AI 교육과 비즈니스 개발 분야에서 쌓아온 <strong>5년간의 경험</strong>을 연도별로 소개합니다.",
-    "monthlyActivities": "월별 활동 내역",
-    "activities": "개 활동",
-    "projects": "개 프로젝트",
-    "yearLabel": "{{year}}년",
-    "monthLabel": "개월 활동",
-    "expandLabel": "펼치기",
-    "collapseLabel": "접기",
-    "stats": {
-      "lectures": "강의 경험",
-      "partners": "파트너사",
-      "educationPeriod": "교육 기간",
-      "educationYears": "5년"
-    },
-    "status": {
-      "completed": "완료",
-      "inProgress": "진행중"
-    },
-    "types": {
-      "lecture": "강의",
-      "consulting": "컨설팅",
-      "business": "사업",
-      "study": "학업",
-      "mentoring": "멘토링",
-      "competition": "공모전",
-      "research": "연구",
-      "development": "개발",
-      "planning": "기획",
-      "education": "교육",
-      "preparation": "준비",
-      "review": "정리",
-      "employment": "취업",
-      "activity": "활동"
-    }
-  },
   "contact": {
     "title": "문의하기",
     "subtitle": "프로젝트에 대해 상담을 원하시나요?",
@@ -318,15 +231,6 @@
       "weekends": "토요일 - 일요일: 휴무",
       "quickResponse": "빠른 응답 시간",
       "responseMessage": "보통 24시간 이내에 답변드립니다."
-    }
-  },
-  "contactPage": {
-    "successMessage": "문의가 정상적으로 접수되었습니다.",
-    "successDetail": "빠른 시일 내에 답변드리겠습니다.",
-    "placeholder": {
-      "name": "홍길동",
-      "company": "회사명을 입력해주세요",
-      "message": "문의하실 내용을 자세히 적어주세요"
     }
   },
   "blog": {
@@ -448,66 +352,6 @@
     "title": "함께한 기업 및 기관",
     "logoAlt": "{{name}} 로고"
   },
-  "profile": {
-    "aboutMe": "About Me",
-    "intro": "삼성전자, SK, LG 등 다수의 대기업 및 공공기관에서 Deep Learning과 LLM 교육과 연구를 수행하는",
-    "ceoName": "에멜무지로 대표 이호진",
-    "introSuffix": "입니다.",
-    "goalsTitle": "Goals & Values",
-    "workStyleTitle": "Work Style",
-    "skillsTitle": "Technical Skills",
-    "certificationsTitle": "Certifications & Achievements",
-    "stats": {
-      "educationCareer": "교육 경력",
-      "students": "교육 수료생",
-      "partners": "협력 기업",
-      "lectureProjects": "강의 프로젝트"
-    },
-    "goals": {
-      "competitive": {
-        "title": "대체 불가능한 경쟁력 구축",
-        "description": "AI Researcher로써 지속적인 연구와 혁신을 통해 독보적인 전문성을 쌓고 있습니다."
-      },
-      "sharing": {
-        "title": "지식 공유를 통한 가치 창출",
-        "description": "교육과 멘토링을 통해 더 많은 사람들이 AI 기술을 활용할 수 있도록 돕고 있습니다."
-      }
-    },
-    "workStyle": {
-      "communication": {
-        "title": "소통과 협업",
-        "description": "다양한 사람들과의 원활한 소통을 통해 시너지를 만들어내는 것을 즐깁니다."
-      },
-      "creative": {
-        "title": "창의적 문제 해결",
-        "description": "창의적인 아이디어로 문제를 해결하며 성장하는 과정에서 보람을 느낍니다."
-      },
-      "trending": {
-        "title": "트렌드 선도",
-        "description": "인공지능 트렌드를 빠르게 캐치하고 새로운 지식을 적극적으로 공유합니다."
-      }
-    },
-    "certifications": {
-      "adsp": {
-        "name": "ADsP (데이터분석 준전문가)",
-        "issuer": "한국데이터산업진흥원"
-      },
-      "ncsStrategy": {
-        "name": "NCS 정보기술전략&계획",
-        "score": "60.5점"
-      },
-      "ncsDev": {
-        "name": "NCS 정보기술개발",
-        "score": "60.5점"
-      },
-      "ncsAI": {
-        "name": "NCS 인공지능",
-        "score": "60.5점"
-      }
-    },
-    "quote": "\"비전공자도 쉽게 입문할 수 있는 실무 중심의 AI 교육을 추구합니다\"",
-    "quoteDescription": "복잡한 AI 기술을 누구나 이해할 수 있도록 쉽게 풀어내고, 실제 업무에 바로 적용할 수 있는 실용적인 교육을 제공하는 것이 저의 목표입니다. 함께 AI의 무한한 가능성을 탐험해보세요."
-  },
   "profilePage": {
     "sectionLabel": "CEO PROFILE",
     "seoTitle": "대표 프로필 - 이호진",
@@ -542,14 +386,6 @@
     "inProgress": "진행중",
     "noProjectsInCategory": "해당 카테고리에 프로젝트가 없습니다."
   },
-  "home": {
-    "seo": {
-      "title": "Emelmujiro - AI 교육 & 컨설팅",
-      "description": "AI 기술 교육과 컨설팅을 제공하는 전문 기업입니다. 머신러닝, 딥러닝, 데이터 분석 교육 및 기업 AI 전환 컨설팅 서비스를 제공합니다.",
-      "structuredDescription": "AI 교육과 컨설팅을 제공하는 전문 기업",
-      "orgDescription": "AI 교육 & 컨설팅 전문 기업"
-    }
-  },
   "notFound": {
     "title": "페이지를 찾을 수 없습니다",
     "description": "요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.\nURL을 다시 확인하시거나 아래 옵션을 이용해 주세요.",
@@ -557,42 +393,6 @@
     "goHome": "홈으로 가기",
     "help": "도움말",
     "popularPages": "인기 페이지"
-  },
-  "underConstruction": {
-    "title": "공사 중",
-    "description": "이 기능은 현재 준비 중입니다. 더 나은 서비스로 곧 찾아뵙겠습니다.",
-    "comingSoon": "빠른 시일 내에 오픈할 예정입니다.",
-    "goHome": "홈으로 이동",
-    "goBack": "이전 페이지로",
-    "features": {
-      "blog": "블로그를 준비 중입니다. 최신 AI 트렌드와 인사이트를 담아 곧 돌아오겠습니다.",
-      "contact": "문의 페이지를 준비 중입니다. 이메일(researcherhojin@gmail.com)로 직접 문의해 주세요."
-    }
-  },
-  "serverError": {
-    "status": {
-      "500": "서버 내부 오류가 발생했습니다",
-      "502": "게이트웨이 오류가 발생했습니다",
-      "503": "서비스를 일시적으로 사용할 수 없습니다",
-      "504": "게이트웨이 시간 초과"
-    },
-    "offlineMessage": "인터넷 연결이 끊어진 것 같습니다. 네트워크를 확인해 주세요.",
-    "retrying": "서버에 다시 연결 중... ({{count}}/3)",
-    "temporaryIssue": "일시적인 문제로 서비스에 접속할 수 없습니다.",
-    "retryFailed": "재시도 {{count}}회 실패. 잠시 후 다시 시도해 주세요.",
-    "retryingButton": "재시도 중...",
-    "retry": "다시 시도",
-    "contactSupport": "지원팀 문의",
-    "statusCode": "상태 코드:",
-    "time": "시간:",
-    "network": "네트워크:",
-    "connected": "연결됨",
-    "disconnected": "끊김",
-    "retryLabel": "재시도:",
-    "helpText": "이 문제가 계속되면 다음을 시도해 보세요:",
-    "helpTip1": "브라우저 캐시 삭제",
-    "helpTip2": "다른 브라우저로 접속",
-    "helpTip3": "잠시 후 다시 시도"
   },
   "errorBoundary": {
     "title": "문제가 발생했습니다",
@@ -604,18 +404,6 @@
     "contactSupport": "지원팀 문의",
     "errorId": "오류 ID:",
     "time": "시간:"
-  },
-  "errors": {
-    "404": "페이지를 찾을 수 없습니다",
-    "500": "서버 오류가 발생했습니다",
-    "network": "네트워크 연결을 확인해주세요",
-    "validation": {
-      "required": "필수 입력 항목입니다",
-      "email": "올바른 이메일 형식이 아닙니다",
-      "minLength": "최소 {{min}}자 이상 입력해주세요",
-      "maxLength": "최대 {{max}}자까지 입력 가능합니다",
-      "pattern": "올바른 형식이 아닙니다"
-    }
   },
   "apiErrors": {
     "400": "입력값을 확인해주세요.",
@@ -726,18 +514,6 @@
         "산업용 비전 AI 솔루션 설계"
       ]
     }
-  },
-  "formValidation": {
-    "nameRequired": "이름을 입력해주세요.",
-    "nameMinLength": "이름은 2자 이상이어야 합니다.",
-    "emailRequired": "이메일을 입력해주세요.",
-    "emailInvalid": "올바른 이메일 형식이 아닙니다.",
-    "phoneInvalid": "올바른 전화번호 형식이 아닙니다.",
-    "messageRequired": "문의 내용을 입력해주세요.",
-    "messageMinLength": "문의 내용은 10자 이상이어야 합니다.",
-    "messageMaxLength": "문의 내용은 1000자를 초과할 수 없습니다.",
-    "submitFailed": "문의 전송에 실패했습니다.",
-    "offlineMessage": "오프라인 상태입니다. 연결이 복구되면 자동으로 전송됩니다."
   },
   "auth": {
     "login": "로그인",
@@ -899,17 +675,25 @@
       {
         "title": "대기업·공공기관 AI 교육",
         "description": "삼성전자, LG전자, 현대건설, SKT, 서울대, 서울시 교육청 등 · CV, ML/DL, 데이터 분석, 생성형 AI 프로젝트 기반 교육 설계 및 운영",
-        "tags": { "3": "생성형 AI" }
+        "tags": {
+          "3": "생성형 AI"
+        }
       },
       {
         "title": "ICT콤플렉스 피우다 프로젝트",
         "description": "경계선지능 청소년 AI 학습 지원 서비스 \"이음(E-eum)\" 기획 및 개발 · LLM 기반 쉬운 말 변환 시스템 · 270팀 중 최종 15팀, 분야 3위 수상",
-        "tags": { "3": "사회적 가치" }
+        "tags": {
+          "3": "사회적 가치"
+        }
       },
       {
         "title": "생성형 AI 교육자 연수",
         "description": "한국과학창의재단 찾아가는 학교 컨설팅 · 초중고 6개교 교사 및 학부모 대상 ChatGPT 활용 교육",
-        "tags": { "0": "AI 리터러시", "2": "교육 혁신", "3": "생성형 AI" }
+        "tags": {
+          "0": "AI 리터러시",
+          "2": "교육 혁신",
+          "3": "생성형 AI"
+        }
       },
       {
         "title": "테킷 스타트업 스테이션",
@@ -934,16 +718,31 @@
       {
         "title": "Visual Python 오픈소스 개발",
         "description": "2022 오픈소스 컨트리뷰션 아카데미 · Visual Python ML/Statistics 모듈 개발",
-        "tags": { "2": "시각화", "3": "오픈소스" }
+        "tags": {
+          "2": "시각화",
+          "3": "오픈소스"
+        }
       }
     ],
     "categories": [
-      { "label": "전체" },
-      { "label": "기업 교육" },
-      { "label": "부트캠프" },
-      { "label": "교육 혁신" },
-      { "label": "스타트업" },
-      { "label": "연구/개발" }
+      {
+        "label": "전체"
+      },
+      {
+        "label": "기업 교육"
+      },
+      {
+        "label": "부트캠프"
+      },
+      {
+        "label": "교육 혁신"
+      },
+      {
+        "label": "스타트업"
+      },
+      {
+        "label": "연구/개발"
+      }
     ]
   },
   "notifications": {
