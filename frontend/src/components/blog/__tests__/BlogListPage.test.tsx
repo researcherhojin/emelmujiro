@@ -370,5 +370,25 @@ describe('BlogListPage', () => {
 
       expect(screen.getAllByTestId(/blog-card/).length).toBe(2);
     });
+
+    it('reverts to category filter when search cleared with same posts reference (line 59)', () => {
+      const posts = makePosts(4);
+      mockBlogContext.posts = posts as never[];
+      renderPage();
+
+      // Perform search first
+      act(() => {
+        if (capturedOnSearch) capturedOnSearch(makePosts(1));
+      });
+      expect(screen.getAllByTestId(/blog-card/).length).toBe(1);
+
+      // Clear search — pass same posts reference back
+      act(() => {
+        if (capturedOnSearch) capturedOnSearch(posts as never[]);
+      });
+
+      // Should revert to all posts
+      expect(screen.getAllByTestId(/blog-card/).length).toBe(4);
+    });
   });
 });

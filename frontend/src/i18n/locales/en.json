@@ -138,24 +138,24 @@
     },
     "timeline": {
       "2022": {
-        "title": "AI Education Launch",
-        "description": "Started AI training at SNU, SKT, Hancom and more"
+        "title": "AI Training Specialist",
+        "description": "AI training across 10+ institutions including SNU, SKT, Hancom"
       },
       "2023": {
-        "title": "Enterprise Expansion",
-        "description": "AI training for Samsung, LG, Hyundai and major corporations"
+        "title": "Enterprise AI & Startup Mentoring",
+        "description": "Samsung, LG, Hyundai training · Techit Startup Station IT dev mentoring"
       },
       "2024": {
-        "title": "AI Bootcamp & Awards",
-        "description": "Led CV bootcamps, produced AI Champion & Dacon winners"
+        "title": "Emelmujiro Founded & AI Bootcamp",
+        "description": "AI education & consulting startup · AI bootcamp, AI Champion & Dacon winners"
       },
       "2025": {
-        "title": "Emelmujiro Founded",
-        "description": "Established AI education & consulting firm, LLM/RAG solutions"
+        "title": "AI Agent & RAG Expansion",
+        "description": "Enterprise Agentic RAG & MCP training and PoC development"
       },
       "2026": {
-        "title": "Leading the AI Agent Era",
-        "description": "Agentic RAG & MCP consulting, Multimodal AI training expansion"
+        "title": "AI Agent & Multimodal AI Training",
+        "description": "Vibe Coding, AI Agent & Multimodal AI enterprise training and consulting"
       }
     }
   },
@@ -294,8 +294,8 @@
   "profilePage": {
     "sectionLabel": "CEO PROFILE",
     "seoTitle": "CEO Profile - Hojin Lee",
-    "seoDescription": "AI education & consulting expert, Computer Vision researcher. CEO of Emelmujiro — career and expertise overview.",
-    "seoKeywords": "Hojin Lee, AI expert, AI Agent, Computer Vision, RAG, MCP, Vibe Coding, Emelmujiro CEO, AI education, AI consulting",
+    "seoDescription": "AI education & consulting expert, Computer Vision researcher, IT startup mentor. CEO of Emelmujiro — career and expertise overview.",
+    "seoKeywords": "Hojin Lee, AI expert, AI Agent, Computer Vision, RAG, MCP, Vibe Coding, startup mentoring, Emelmujiro CEO, AI education, AI consulting",
     "name": "Hojin Lee",
     "role": "AI Researcher & Educator",
     "backToMain": "Back to Home",
@@ -510,7 +510,7 @@
   "seo": {
     "personName": "Hojin Lee",
     "personAlternateName": "Hojin Lee",
-    "personJobTitle": "AI Education & Consulting Expert / CEO at Emelmujiro",
+    "personJobTitle": "AI Education & Consulting Expert / IT Startup Mentor / CEO at Emelmujiro",
     "contactType": "Customer Service",
     "countryName": "South Korea",
     "knowsAbout": {
@@ -527,10 +527,10 @@
     "site": {
       "name": "Emelmujiro",
       "title": "AI Education · Consulting · AI Agent Development",
-      "description": "We provide custom AI training, adoption consulting, and AI Agent & RAG service development. Trusted AI partner for Samsung, LG and leading enterprises."
+      "description": "We provide custom AI training, adoption consulting, AI Agent & RAG service development, and IT startup mentoring. Trusted AI partner for Samsung, LG and leading enterprises."
     },
     "seoHead": {
-      "defaultKeywords": "AI education, AI consulting, AI Agent, RAG, MCP, Computer Vision, enterprise training, LLM, generative AI, deep learning, machine learning, Vibe Coding",
+      "defaultKeywords": "AI education, AI consulting, AI Agent, RAG, MCP, Computer Vision, enterprise training, LLM, generative AI, Vibe Coding, startup mentoring, deep learning, machine learning",
       "orgDescription": "AI Education · Consulting · AI Agent Development"
     }
   },

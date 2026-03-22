@@ -126,24 +126,24 @@
     },
     "timeline": {
       "2022": {
-        "title": "AI 교육 시작",
-        "description": "서울대·SKT·한컴 등 AI 교육 강사로 활동 시작"
+        "title": "AI 교육 전문 강사 활동",
+        "description": "서울대·SKT·한컴·서울시 교육청 등 10개 이상 기관 AI 교육 수행"
       },
       "2023": {
-        "title": "기업 교육 확대",
-        "description": "삼성전자·LG전자·현대건설 등 대기업 AI 교육 수행"
+        "title": "대기업 AI 교육 & 창업 멘토링",
+        "description": "삼성전자·LG전자·현대건설 실무 교육 · 테킷 스타트업 스테이션 IT 개발 멘토링"
       },
       "2024": {
-        "title": "AI 부트캠프 & 수상",
-        "description": "멋사 CV 심화 부트캠프 운영, AI 챔피언상·데이콘 우승팀 배출"
+        "title": "에멜무지로 창업 & AI 부트캠프",
+        "description": "AI 교육·컨설팅 전문 기업 설립 · AI 부트캠프 운영, AI 챔피언상·데이콘 우승팀 배출"
       },
       "2025": {
-        "title": "에멜무지로 창업",
-        "description": "AI 교육·컨설팅 전문 기업 설립, LLM/RAG 솔루션 개발"
+        "title": "AI Agent & RAG 사업 확장",
+        "description": "Agentic RAG·MCP 기반 기업 교육 및 PoC 개발 본격화"
       },
       "2026": {
-        "title": "AI Agent 시대 선도",
-        "description": "Agentic RAG·MCP 기반 컨설팅, Multimodal AI 교육 확장"
+        "title": "AI Agent & Multimodal AI 교육 확대",
+        "description": "바이브 코딩·AI Agent·Multimodal AI 기업 교육 및 컨설팅 수행"
       }
     }
   },
@@ -282,8 +282,8 @@
   "profilePage": {
     "sectionLabel": "CEO PROFILE",
     "seoTitle": "대표 프로필 - 이호진",
-    "seoDescription": "AI 교육·컨설팅 전문가, Computer Vision 연구자. 에멜무지로 대표 이호진의 경력과 전문 분야를 소개합니다.",
-    "seoKeywords": "이호진, AI 전문가, AI Agent, Computer Vision, RAG, MCP, 바이브 코딩, 에멜무지로 대표, AI 교육, AI 컨설팅",
+    "seoDescription": "AI 교육·컨설팅 전문가, Computer Vision 연구자, IT 창업 멘토. 에멜무지로 대표 이호진의 경력과 전문 분야를 소개합니다.",
+    "seoKeywords": "이호진, AI 전문가, AI Agent, Computer Vision, RAG, MCP, 바이브 코딩, 창업멘토링, 에멜무지로 대표, AI 교육, AI 컨설팅",
     "name": "이호진",
     "role": "AI Researcher & Educator",
     "backToMain": "메인으로 돌아가기",
@@ -498,7 +498,7 @@
   "seo": {
     "personName": "이호진",
     "personAlternateName": "이호진",
-    "personJobTitle": "AI 교육·컨설팅 전문가 / 에멜무지로 대표",
+    "personJobTitle": "AI 교육·컨설팅 전문가 / IT 창업 멘토 / 에멜무지로 대표",
     "contactType": "고객 서비스",
     "countryName": "대한민국",
     "knowsAbout": {
@@ -515,10 +515,10 @@
     "site": {
       "name": "에멜무지로",
       "title": "AI 교육 · 컨설팅 · AI Agent 개발 전문 기업",
-      "description": "기업 맞춤 AI 교육, AI 도입 컨설팅, AI Agent·RAG 서비스 개발을 제공합니다. 삼성, LG 등 주요 기업이 신뢰하는 AI 전문 파트너."
+      "description": "기업 맞춤 AI 교육, AI 도입 컨설팅, AI Agent·RAG 서비스 개발, IT 창업 멘토링을 제공합니다. 삼성, LG 등 주요 기업이 신뢰하는 AI 전문 파트너."
     },
     "seoHead": {
-      "defaultKeywords": "AI교육, AI컨설팅, AI Agent, RAG, MCP, Computer Vision, 기업교육, LLM, 생성형AI, 바이브코딩, 딥러닝, 머신러닝",
+      "defaultKeywords": "AI교육, AI컨설팅, AI Agent, RAG, MCP, Computer Vision, 기업교육, LLM, 생성형AI, 바이브코딩, 창업멘토링, 딥러닝, 머신러닝",
       "orgDescription": "AI 교육 · 컨설팅 · AI Agent 개발 전문 기업"
     }
   },
