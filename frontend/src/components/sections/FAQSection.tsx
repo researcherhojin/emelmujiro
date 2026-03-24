@@ -1,9 +1,5 @@
 import React, { memo, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import SEOHelmet from '../common/SEOHelmet';
-import { SITE_URL } from '../../utils/constants';
-import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { ChevronDown, HelpCircle, BookOpen, MessageSquare, Code, Building2 } from 'lucide-react';
 
 type Category = 'all' | 'general' | 'education' | 'consulting' | 'technical';
@@ -85,28 +81,6 @@ const FAQItem: React.FC<FAQItemProps> = memo(({ itemKey, isOpen, onToggle }) => 
 
 FAQItem.displayName = 'FAQItem';
 
-const HeroSection: React.FC = () => {
-  const { t } = useTranslation();
-  return (
-    <section aria-label={t('faq.title')} className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full mb-6">
-          <MessageSquare className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" />
-          <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
-            FAQ
-          </span>
-        </div>
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white">
-          {t('faq.title')}
-        </h1>
-        <p className="mt-6 text-base sm:text-lg md:text-xl font-medium text-gray-600 dark:text-gray-400 max-w-2xl mx-auto break-keep">
-          {t('faq.subtitle')}
-        </p>
-      </div>
-    </section>
-  );
-};
-
 const CategoryTabs: React.FC<{
   activeCategory: Category;
   onCategoryChange: (category: Category) => void;
@@ -138,38 +112,7 @@ const CategoryTabs: React.FC<{
 
 CategoryTabs.displayName = 'CategoryTabs';
 
-const CTASection: React.FC = () => {
-  const { t } = useTranslation();
-  const { localizedPath } = useLocalizedPath();
-
-  return (
-    <section
-      aria-label={t('faq.cta.title')}
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950"
-    >
-      <div className="max-w-4xl mx-auto text-center">
-        <MessageSquare
-          className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-6"
-          aria-hidden="true"
-        />
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 break-keep">
-          {t('faq.cta.title')}
-        </h2>
-        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-8 break-keep">
-          {t('faq.cta.description')}
-        </p>
-        <Link
-          to={localizedPath('/contact')}
-          className="inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-base sm:text-lg font-bold text-white bg-gray-900 dark:bg-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-all rounded-2xl"
-        >
-          {t('faq.cta.button')}
-        </Link>
-      </div>
-    </section>
-  );
-};
-
-const FAQPage: React.FC = memo(() => {
+const FAQSection: React.FC = memo(() => {
   const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState<Category>('all');
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
@@ -197,49 +140,53 @@ const FAQPage: React.FC = memo(() => {
   });
 
   return (
-    <>
-      <SEOHelmet
-        title={t('seo.faq.title')}
-        description={t('seo.faq.description')}
-        url={`${SITE_URL}/faq`}
-      />
-
-      <div className="min-h-screen bg-white dark:bg-gray-900">
-        <HeroSection />
-
-        <section aria-label={t('faq.title')} className="pb-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto">
-            <CategoryTabs activeCategory={activeCategory} onCategoryChange={handleCategoryChange} />
-
-            <div className="space-y-3">
-              {filteredItems.map((key) => (
-                <FAQItem
-                  key={key}
-                  itemKey={key}
-                  isOpen={openItems.has(key)}
-                  onToggle={() => handleToggle(key)}
-                />
-              ))}
-            </div>
-
-            {filteredItems.length === 0 && (
-              <div className="text-center py-12">
-                <HelpCircle
-                  className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4"
-                  aria-hidden="true"
-                />
-                <p className="text-gray-500 dark:text-gray-400">{t('faq.categories.all')}</p>
-              </div>
-            )}
+    <section aria-label={t('faq.title')} className="py-20 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full mb-6">
+            <MessageSquare
+              className="w-4 h-4 text-gray-500 dark:text-gray-400"
+              aria-hidden="true"
+            />
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
+              FAQ
+            </span>
           </div>
-        </section>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white">
+            {t('faq.title')}
+          </h2>
+          <p className="mt-4 text-base sm:text-lg font-medium text-gray-600 dark:text-gray-400 max-w-2xl mx-auto break-keep">
+            {t('faq.subtitle')}
+          </p>
+        </div>
 
-        <CTASection />
+        <CategoryTabs activeCategory={activeCategory} onCategoryChange={handleCategoryChange} />
+
+        <div className="space-y-3">
+          {filteredItems.map((key) => (
+            <FAQItem
+              key={key}
+              itemKey={key}
+              isOpen={openItems.has(key)}
+              onToggle={() => handleToggle(key)}
+            />
+          ))}
+        </div>
+
+        {filteredItems.length === 0 && (
+          <div className="text-center py-12">
+            <HelpCircle
+              className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4"
+              aria-hidden="true"
+            />
+            <p className="text-gray-500 dark:text-gray-400">{t('faq.categories.all')}</p>
+          </div>
+        )}
       </div>
-    </>
+    </section>
   );
 });
 
-FAQPage.displayName = 'FAQPage';
+FAQSection.displayName = 'FAQSection';
 
-export default FAQPage;
+export default FAQSection;

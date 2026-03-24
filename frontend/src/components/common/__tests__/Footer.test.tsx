@@ -190,6 +190,18 @@ describe('Footer Component', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
+    test('scrolls to FAQ section when FAQ link is clicked on homepage', () => {
+      mockPathname = '/';
+      const { container } = renderWithRouter(<Footer />);
+
+      const buttons = container.querySelectorAll('button');
+      const faqButton = Array.from(buttons).find((btn) => btn.textContent === 'faq.title');
+      expect(faqButton).toBeTruthy();
+      fireEvent.click(faqButton!);
+
+      expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
+    });
+
     test('renders contact link to contact page in navigation', () => {
       const { container } = renderWithRouter(<Footer />);
 

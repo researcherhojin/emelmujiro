@@ -24,6 +24,7 @@ dist/
 .coverage
 .coverage.*
 htmlcov/
+backend/coverage/
 .tox/
 .hypothesis/
 .pytest_cache/

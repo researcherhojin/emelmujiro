@@ -209,7 +209,7 @@ Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `code
 **Conventional commits required**: `type(scope): description`. Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`.
 
 - **`main-ci-cd.yml`** — Push to `main` only (NOT pull requests). Tests (frontend + backend parallel) → build → GitHub Pages (backup) → Mac Mini webhook auto-deploy. Node 24, Python 3.12. Uploads coverage to **Codecov** (frontend via vitest, backend via coverage.py). Backend tests run with `--parallel`. uv cache enabled.
-- **`pr-checks.yml`** — Parallelized: `quick-checks` → `frontend-lint` + `backend-lint` + `affected-tests` + `security-scan` + `build-for-analysis` + `e2e-tests` (all parallel). Build shared via artifact: `bundle-analysis` + `lighthouse` reuse single build. E2E runs Chromium only with `continue-on-error`. Includes **dependabot auto-merge** (patch: auto-merge, minor: auto-approve). uv cache + Trivy cache enabled.
+- **`pr-checks.yml`** — Parallelized: `quick-checks` → `frontend-lint` + `backend-lint` + `affected-tests` + `security-scan` + `build-for-analysis` + `e2e-tests` (all parallel). Build shared via artifact: `bundle-analysis` + `lighthouse` reuse single build. E2E runs Chromium only (failures block merge). Includes **dependabot auto-merge** (patch: auto-merge, minor: auto-approve). uv cache + Trivy cache enabled.
 
 ## Critical Configuration
 
@@ -234,7 +234,7 @@ ESLint 10 **flat config** in `frontend/eslint.config.mjs`. `no-console` only all
 
 ### Pre-commit Hooks
 
-Husky + lint-staged. `.lintstagedrc.js` at repo root handles path translation: `cd frontend && eslint --fix` + `prettier --write` for TS/JS, `cd backend && uv run black --check` + `flake8` for Python.
+Husky + lint-staged. `.lintstagedrc.js` at repo root handles path translation: `cd frontend && eslint --fix` + `prettier --write` for TS/JS, `cd backend && uv run black` (auto-format) + `flake8` for Python.
 
 ### Backend API Routes
 
