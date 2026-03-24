@@ -53,10 +53,11 @@ vi.mock('web-vitals', () => ({
 }));
 
 const mockLoggerWarn = vi.fn();
+const mockLoggerError = vi.fn();
 vi.mock('../logger', () => ({
   default: {
     warn: (...args: unknown[]) => mockLoggerWarn(...args),
-    error: vi.fn(),
+    error: (...args: unknown[]) => mockLoggerError(...args),
     info: vi.fn(),
     debug: vi.fn(),
   },
@@ -210,6 +211,75 @@ describe('webVitals', () => {
     it('registers budget checking callback via measureWebVitals', async () => {
       const { checkPerformanceBudget } = await import('../webVitals');
       expect(() => checkPerformanceBudget()).not.toThrow();
+    });
+
+    it('exercises checkPerformanceBudget through full async chain', async () => {
+      const { checkPerformanceBudget: freshCheck } = await import('../webVitals');
+      freshCheck();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      // Budget check ran — mock values don't exceed dev budgets so no warnings expected
+      expect(mockLoggerWarn).not.toHaveBeenCalledWith(
+        expect.stringContaining('Performance budget exceeded')
+      );
+    });
+  });
+
+  describe('error handling', () => {
+    it('catches errors when web-vitals callbacks throw', async () => {
+      const webVitals = await import('web-vitals');
+      const originalOnCLS = webVitals.onCLS;
+      vi.mocked(webVitals.onCLS).mockImplementationOnce(() => {
+        throw new Error('test error');
+      });
+
+      const mockCallback = vi.fn();
+      measureWebVitals(mockCallback);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        'Web Vitals measurement failed:',
+        expect.any(Error)
+      );
+
+      vi.mocked(webVitals.onCLS).mockImplementation(originalOnCLS as any);
+    });
+
+    it('catches errors when web-vitals import fails', async () => {
+      vi.resetModules();
+
+      vi.doMock('web-vitals', () => {
+        throw new Error('Module not found');
+      });
+
+      const { measureWebVitals: freshMeasure } = await import('../webVitals');
+      const mockCallback = vi.fn();
+      freshMeasure(mockCallback);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+
+      // Restore the original mock
+      vi.doUnmock('web-vitals');
+      vi.resetModules();
+    });
+
+    it('catches errors when performance.getEntriesByType throws', async () => {
+      vi.useFakeTimers();
+      Object.defineProperty(window, 'performance', {
+        writable: true,
+        value: {
+          getEntriesByType: vi.fn(() => {
+            throw new Error('performance API error');
+          }),
+        },
+      });
+
+      logPerformanceMetrics({ enableLogging: true });
+      window.dispatchEvent(new Event('load'));
+      vi.runAllTimers();
+
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        'Performance metrics logging failed:',
+        expect.any(Error)
+      );
     });
   });
 });

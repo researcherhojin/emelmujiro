@@ -4243,38 +4243,47 @@ class NotificationConsumerTestCase(TransactionTestCase):
 
     def test_connect_authenticated(self):
         import asyncio
+
         asyncio.get_event_loop().run_until_complete(self._async_test_connect_authenticated())
 
     def test_connect_anonymous_rejected(self):
         import asyncio
+
         asyncio.get_event_loop().run_until_complete(self._async_test_connect_anonymous_rejected())
 
     def test_receive_mark_read(self):
         import asyncio
+
         asyncio.get_event_loop().run_until_complete(self._async_test_receive_mark_read())
 
     def test_receive_mark_all_read(self):
         import asyncio
+
         asyncio.get_event_loop().run_until_complete(self._async_test_receive_mark_all_read())
 
     def test_receive_invalid_json(self):
         import asyncio
+
         asyncio.get_event_loop().run_until_complete(self._async_test_receive_invalid_json())
 
     def test_send_notification_event(self):
         import asyncio
+
         asyncio.get_event_loop().run_until_complete(self._async_test_send_notification_event())
 
     def test_notification_update_event(self):
         import asyncio
+
         asyncio.get_event_loop().run_until_complete(self._async_test_notification_update_event())
 
     def test_mark_read_nonexistent(self):
         import asyncio
+
         asyncio.get_event_loop().run_until_complete(self._async_test_mark_read_nonexistent())
 
     def test_disconnect_without_group(self):
         import asyncio
+
         asyncio.get_event_loop().run_until_complete(self._async_test_disconnect_without_group())
 
 

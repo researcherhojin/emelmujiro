@@ -40,7 +40,6 @@ const mockEditor = {
 
 let useEditorReturn: typeof mockEditor | null = null;
 // Capture the config passed to useEditor so we can invoke callbacks
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let capturedConfig: any = null;
 
 vi.mock('@tiptap/react', () => ({

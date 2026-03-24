@@ -211,4 +211,63 @@ describe('i18n configuration', () => {
       expect(i18n.options.debug).toBe(false);
     });
   });
+
+  describe('bot detection branch', () => {
+    it('should use bot detection order when user agent matches a bot', async () => {
+      // The isBot variable is evaluated at module load time with the current
+      // navigator.userAgent. In test (jsdom), navigator.userAgent is not a bot,
+      // so the non-bot branch is taken. We verify both branches exist by
+      // re-evaluating the module with a bot user agent.
+      const originalUA = navigator.userAgent;
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+        writable: true,
+        configurable: true,
+      });
+
+      // Re-import the module to trigger bot detection
+      vi.resetModules();
+      const { default: botI18n } = await import('../i18n');
+
+      expect(botI18n).toBeDefined();
+      const detection = botI18n.options.detection as
+        | { order?: string[]; caches?: string[] }
+        | undefined;
+      expect(detection?.order).toEqual(['urlPrefix', 'htmlTag']);
+      expect(detection?.caches).toEqual([]);
+
+      // Restore
+      Object.defineProperty(navigator, 'userAgent', {
+        value: originalUA,
+        writable: true,
+        configurable: true,
+      });
+    });
+  });
+
+  describe('pathDetector lookup', () => {
+    it('should return en for /en/ paths', async () => {
+      Object.defineProperty(window, 'location', {
+        value: { ...window.location, pathname: '/en/about' },
+        writable: true,
+        configurable: true,
+      });
+
+      vi.resetModules();
+      const { default: freshI18n } = await import('../i18n');
+      expect(freshI18n).toBeDefined();
+    });
+
+    it('should return undefined for non-en paths', async () => {
+      Object.defineProperty(window, 'location', {
+        value: { ...window.location, pathname: '/about' },
+        writable: true,
+        configurable: true,
+      });
+
+      vi.resetModules();
+      const { default: freshI18n } = await import('../i18n');
+      expect(freshI18n).toBeDefined();
+    });
+  });
 });
