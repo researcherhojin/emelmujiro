@@ -11,80 +11,51 @@ vi.mock('react-i18next', () => ({
 }));
 
 describe('FAQSection', () => {
-  it('renders the FAQ section with title and subtitle', () => {
+  it('renders title and subtitle', () => {
     render(<FAQSection />);
     expect(screen.getByText('faq.title')).toBeInTheDocument();
     expect(screen.getByText('faq.subtitle')).toBeInTheDocument();
   });
 
-  it('renders category tabs', () => {
-    render(<FAQSection />);
-    expect(screen.getByText('faq.categories.all')).toBeInTheDocument();
-    expect(screen.getByText('faq.categories.general')).toBeInTheDocument();
-    expect(screen.getByText('faq.categories.education')).toBeInTheDocument();
-    expect(screen.getByText('faq.categories.consulting')).toBeInTheDocument();
-    expect(screen.getByText('faq.categories.technical')).toBeInTheDocument();
-  });
-
-  it('renders FAQ items', () => {
+  it('renders 5 FAQ items', () => {
     render(<FAQSection />);
     expect(screen.getByText('faq.items.general1.question')).toBeInTheDocument();
     expect(screen.getByText('faq.items.education1.question')).toBeInTheDocument();
-    expect(screen.getByText('faq.items.consulting1.question')).toBeInTheDocument();
-    expect(screen.getByText('faq.items.technical1.question')).toBeInTheDocument();
+    expect(screen.getByText('faq.items.education3.question')).toBeInTheDocument();
+    expect(screen.getByText('faq.items.consulting2.question')).toBeInTheDocument();
+    expect(screen.getByText('faq.items.technical2.question')).toBeInTheDocument();
   });
 
-  it('expands and collapses FAQ item on click', () => {
+  it('expands and collapses on click', () => {
     render(<FAQSection />);
-    const firstQuestion = screen.getByText('faq.items.general1.question');
-    const button = firstQuestion.closest('button')!;
+    const button = screen.getByText('faq.items.general1.question').closest('button')!;
 
     expect(button).toHaveAttribute('aria-expanded', 'false');
-
     fireEvent.click(button);
     expect(button).toHaveAttribute('aria-expanded', 'true');
-
     fireEvent.click(button);
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it('expands FAQ item on Enter key', () => {
+  it('expands on Enter and Space keys', () => {
     render(<FAQSection />);
-    const firstQuestion = screen.getByText('faq.items.general1.question');
-    const button = firstQuestion.closest('button')!;
+    const button = screen.getByText('faq.items.general1.question').closest('button')!;
 
     fireEvent.keyDown(button, { key: 'Enter' });
     expect(button).toHaveAttribute('aria-expanded', 'true');
-  });
-
-  it('expands FAQ item on Space key', () => {
-    render(<FAQSection />);
-    const firstQuestion = screen.getByText('faq.items.general1.question');
-    const button = firstQuestion.closest('button')!;
 
     fireEvent.keyDown(button, { key: ' ' });
-    expect(button).toHaveAttribute('aria-expanded', 'true');
+    expect(button).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it('filters items when category tab is clicked', () => {
+  it('can have multiple items open simultaneously', () => {
     render(<FAQSection />);
-    const educationTab = screen.getByText('faq.categories.education');
-    fireEvent.click(educationTab);
-    expect(educationTab).toBeInTheDocument();
-  });
+    const btn1 = screen.getByText('faq.items.general1.question').closest('button')!;
+    const btn2 = screen.getByText('faq.items.education1.question').closest('button')!;
 
-  it('resets open items when category changes', () => {
-    render(<FAQSection />);
-
-    const firstQuestion = screen.getByText('faq.items.general1.question');
-    fireEvent.click(firstQuestion.closest('button')!);
-    expect(firstQuestion.closest('button')).toHaveAttribute('aria-expanded', 'true');
-
-    fireEvent.click(screen.getByText('faq.categories.education'));
-    const allTabs = screen.getAllByText('faq.categories.all');
-    fireEvent.click(allTabs[0]);
-
-    const reopenedButton = screen.getByText('faq.items.general1.question').closest('button');
-    expect(reopenedButton).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(btn1);
+    fireEvent.click(btn2);
+    expect(btn1).toHaveAttribute('aria-expanded', 'true');
+    expect(btn2).toHaveAttribute('aria-expanded', 'true');
   });
 });

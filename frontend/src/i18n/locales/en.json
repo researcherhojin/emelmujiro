@@ -708,17 +708,17 @@
     "items": {
       "general1": {
         "question": "What services does Emelmujiro provide?",
-        "answer": "Emelmujiro offers a comprehensive range of AI services including AI education, AI consulting, AI agent development, and computer vision solutions. We provide end-to-end support from customized corporate training to technical consulting.",
+        "answer": "Emelmujiro offers a comprehensive range of AI services.\n\n• AI Education & Lectures\n• AI Consulting\n• AI Agent Development (LLM, RAG, MCP)\n• Computer Vision Solutions\n\nWe provide end-to-end support from corporate training to technical consulting.",
         "category": "general"
       },
       "general2": {
         "question": "How can I request a consultation?",
-        "answer": "Simply fill out the form on our Contact page, and a representative will reach out within 1-2 business days. You can also schedule a consultation via phone or email.",
+        "answer": "Simply fill out the form on our Contact page, and a representative will reach out as soon as possible. You can also schedule a consultation via phone or email.",
         "category": "general"
       },
       "education1": {
         "question": "How are the AI education courses structured?",
-        "answer": "We offer courses for all levels, from beginners to experts. Our practice-oriented curriculum covers Python fundamentals, machine learning, deep learning, LLM/RAG applications, and AI agent development.",
+        "answer": "We offer courses for all levels, from beginners to experts.\n\n• Python Fundamentals & Data Analysis\n• Machine Learning / Deep Learning\n• LLM & RAG Applications\n• AI Agent Development\n\nAll courses are built around a practice-oriented curriculum.",
         "category": "education"
       },
       "education2": {
@@ -728,7 +728,7 @@
       },
       "education3": {
         "question": "Are courses available online?",
-        "answer": "We offer online, offline, and hybrid training formats. Both live online sessions and recorded lectures are supported, with cloud-based practice environments provided.",
+        "answer": "We offer multiple training formats.\n\n• Online (live / recorded)\n• Offline\n• Hybrid\n\nTraining format and practice environment details are provided during consultation.",
         "category": "education"
       },
       "consulting1": {
@@ -738,7 +738,7 @@
       },
       "consulting2": {
         "question": "How long does a typical consulting project take?",
-        "answer": "Timelines vary by project scope, but typically a PoC takes 4-8 weeks and a full implementation project runs 3-6 months. We'll provide a detailed timeline during the initial consultation.",
+        "answer": "Timelines vary by project scope and complexity.\n\n• PoC (Proof of Concept): typically 4–8 weeks\n• Full implementation: typically 3–6 months\n\nExact timelines are provided during the initial consultation.",
         "category": "consulting"
       },
       "technical1": {
@@ -748,7 +748,7 @@
       },
       "technical2": {
         "question": "What is AI agent development?",
-        "answer": "We develop AI systems that autonomously perform tasks based on LLMs (Large Language Models). Using technologies like RAG (Retrieval-Augmented Generation), MCP (Model Context Protocol), and Tool Use, we automate business processes.",
+        "answer": "AI systems that autonomously perform tasks based on LLMs (Large Language Models).\n\n• RAG — Retrieval-Augmented Generation\n• MCP — Model Context Protocol\n• Tool Use — External tool integration\n\nThese technologies enable automation of business processes.",
         "category": "technical"
       }
     },

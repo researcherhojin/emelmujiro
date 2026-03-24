@@ -16,7 +16,7 @@ A full-stack monorepo for an AI education, consulting & AI Agent development pla
 ## Tech Stack
 
 **Frontend**<br/>
-![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=white)
+![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
@@ -96,14 +96,14 @@ graph LR
 - **Bilingual (i18n)** — URL-based language routing (`/about` for Korean, `/en/about` for English)
 - **SSG Prerendering** — 12 static HTML pages (6 routes x 2 languages) for SEO
 - **Blog** — TipTap rich text editor (Notion-like), image upload, IP-based likes, nested comments, admin toolbar
-- **FAQ** — Category-filtered accordion on homepage with bilingual content
+- **FAQ** — Accordion section on homepage with bilingual content
 - **Auth** — httpOnly cookie JWT with automatic token refresh
 - **Real-time Notifications** — WebSocket (Daphne/ASGI) with per-user preferences and email delivery
 - **Monitoring** — Sentry error tracking + Google Analytics
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **CI/CD** — GitHub Actions: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
-- **Testing** — ~1236 unit tests (Vitest), 10 E2E specs (Playwright), ~359 backend tests (Django)
+- **Testing** — ~1233 unit tests (Vitest), 10 E2E specs (Playwright), ~359 backend tests (Django)
 
 ## License
 
