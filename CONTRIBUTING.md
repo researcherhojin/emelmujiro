@@ -126,7 +126,7 @@ emelmujiro/
 │   │   ├── i18n/           # 다국어 지원 (ko/en)
 │   │   └── test-utils/     # 테스트 유틸리티 + MSW 목 서버
 │   └── e2e/                # Playwright E2E 테스트
-├── backend/                # Django 5 + DRF
+├── backend/                # Django 6 + DRF
 │   ├── api/                # REST API (단일 앱)
 │   └── config/             # Django 설정
 ├── scripts/                # 배포, 포트 관리, 테스트 카운트 등

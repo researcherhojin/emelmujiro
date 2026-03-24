@@ -11,7 +11,7 @@
 
 </div>
 
-A full-stack monorepo for an AI education, consulting & AI Agent development platform, built with React 19, Django 5, and self-hosted on a Mac Mini via Docker + Cloudflare Tunnel.
+A full-stack monorepo for an AI education, consulting & AI Agent development platform, built with React 19, Django 6, and self-hosted on a Mac Mini via Docker + Cloudflare Tunnel.
 
 ## Tech Stack
 
@@ -77,7 +77,7 @@ graph LR
 
     subgraph MacMini["Mac Mini (Docker)"]
         Nginx["nginx:alpine\nStatic files"]
-        DRF["Django 5 + DRF\nAPI + WebSocket"]
+        DRF["Django 6 + DRF\nAPI + WebSocket"]
         DB[(SQLite)]
     end
 
@@ -102,7 +102,7 @@ graph LR
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **CI/CD** — GitHub Actions: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
-- **Testing** — ~1220 unit tests (Vitest), 10 E2E specs (Playwright), ~359 backend tests (Django)
+- **Testing** — ~1236 unit tests (Vitest), 10 E2E specs (Playwright), ~359 backend tests (Django)
 
 ## License
 

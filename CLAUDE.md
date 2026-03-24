@@ -76,7 +76,7 @@ make update-test-counts    # Auto-update test counts in README.md & CLAUDE.md
 ### Monorepo Structure
 
 - `frontend/` — React 19 + TypeScript + Vite 8 + Tailwind CSS 3.x
-- `backend/` — Django 5 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** (`pyproject.toml` + `uv.lock`). Dev deps in `[project.optional-dependencies]` — use `uv sync --extra dev`. Admin endpoints in `admin_views.py`, core views in `views.py`. **Admin UI**: use Django Admin at `/admin/` (no custom React admin dashboard)
+- `backend/` — Django 6 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** (`pyproject.toml` + `uv.lock`). Dev deps in `[project.optional-dependencies]` — use `uv sync --extra dev`. Admin endpoints in `admin_views.py`, core views in `views.py`. **Admin UI**: use Django Admin at `/admin/` (no custom React admin dashboard)
 - Root `package.json` uses npm workspaces pointing to `frontend/`
 - Docker: `docker-compose.yml` (prod, SQLite default; PostgreSQL via `--profile postgres`, Redis via `--profile redis`) and `docker-compose.dev.yml` (dev with hot-reload)
 
@@ -202,7 +202,7 @@ Components must call the getter each render. Do not store results in module-leve
 
 ### Coverage
 
-Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `codecov.yml`. Scale: 65 unit test files (~1220 tests), 10 E2E spec files, ~359 backend tests.
+Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `codecov.yml`. Scale: 66 unit test files (~1236 tests), 10 E2E spec files, ~359 backend tests.
 
 ## CI/CD
 
