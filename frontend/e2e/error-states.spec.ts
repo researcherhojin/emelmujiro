@@ -13,8 +13,9 @@ test.describe('Error States', () => {
   });
 
   test('non-existent route shows 404', async ({ page }) => {
-    await page.goto('/admin');
-    await page.waitForTimeout(1000);
+    await page.goto('/this-page-does-not-exist');
+    // Wait for lazy-loaded NotFound component to render
+    await page.waitForFunction(() => document.body.textContent?.includes('404'), null, { timeout: 10000 });
     await expect(page.locator('text=404')).toBeVisible();
   });
 

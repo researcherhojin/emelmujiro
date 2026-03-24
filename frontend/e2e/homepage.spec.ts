@@ -16,12 +16,12 @@ test.describe('Homepage', () => {
   });
 
   test('has navigation menu', async ({ page }) => {
-    await expect(page.getByRole('button', { name: '소개' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '블로그' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '프로필' })).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: '문의하기' })
-    ).toBeVisible();
+    // Use .first() to avoid strict mode violations from desktop/mobile nav duplicates
+    const nav = page.locator('nav');
+    await expect(nav.getByRole('button', { name: '소개' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '블로그' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '프로필' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '문의하기' }).first()).toBeVisible();
   });
 
   test('hero section has CTA link', async ({ page }) => {
@@ -52,13 +52,14 @@ test.describe('Homepage', () => {
   });
 
   test('navigation links work correctly', async ({ page }) => {
-    await page.getByRole('button', { name: '소개' }).click();
+    const nav = page.locator('nav');
+    await nav.getByRole('button', { name: '소개' }).first().click();
     await expect(page).toHaveURL(/\/about/);
 
-    await page.getByRole('button', { name: '블로그' }).click();
+    await nav.getByRole('button', { name: '블로그' }).first().click();
     await expect(page).toHaveURL(/\/blog/);
 
-    await page.getByRole('button', { name: '문의하기' }).click();
+    await nav.getByRole('button', { name: '문의하기' }).first().click();
     await expect(page).toHaveURL(/\/contact/);
 
     await page.getByText('에멜무지로').first().click();
@@ -73,8 +74,8 @@ test.describe('Homepage', () => {
 
     await menuButton.click();
 
-    // Mobile menu items should become visible
-    await expect(page.getByText('소개')).toBeVisible();
-    await expect(page.getByText('블로그')).toBeVisible();
+    // Mobile menu items should become visible — use .first() for duplicates
+    await expect(page.getByText('소개').first()).toBeVisible();
+    await expect(page.getByText('블로그').first()).toBeVisible();
   });
 });

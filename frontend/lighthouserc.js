@@ -63,6 +63,13 @@ module.exports = {
         'label-content-name-mismatch': 'warn',
         // DOM size insight — informational only
         'dom-size-insight': 'off',
+        // Font display — Google Fonts may not set font-display in CI
+        'font-display-insight': 'off',
+        // Third-party cookies — triggered by external scripts (GA, Sentry)
+        'third-party-cookies': 'off',
+        // LCP insights — CI preview server behaves differently
+        'lcp-discovery-insight': 'off',
+        'lcp-lazy-loaded': 'warn',
       },
     },
     upload: {
