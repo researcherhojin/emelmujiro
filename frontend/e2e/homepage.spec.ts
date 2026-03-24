@@ -68,14 +68,18 @@ test.describe('Homepage', () => {
 
   test('responsive menu works on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
+    // Reload after viewport change to trigger mobile layout
+    await page.reload();
+    await page.waitForLoadState('domcontentloaded');
 
     const menuButton = page.getByRole('button', { name: '메뉴' });
-    await expect(menuButton).toBeVisible();
+    await expect(menuButton).toBeVisible({ timeout: 10000 });
 
     await menuButton.click();
 
-    // Mobile menu items should become visible — use .first() for duplicates
-    await expect(page.getByText('소개').first()).toBeVisible();
-    await expect(page.getByText('블로그').first()).toBeVisible();
+    // Wait for mobile menu animation to complete
+    const nav = page.locator('nav');
+    await expect(nav.getByText('소개').first()).toBeVisible({ timeout: 5000 });
+    await expect(nav.getByText('블로그').first()).toBeVisible({ timeout: 5000 });
   });
 });

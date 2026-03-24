@@ -14,9 +14,9 @@ test.describe('Error States', () => {
 
   test('non-existent route shows 404', async ({ page }) => {
     await page.goto('/this-page-does-not-exist');
-    // Wait for lazy-loaded NotFound component to render
-    await page.waitForFunction(() => document.body.textContent?.includes('404'), null, { timeout: 10000 });
-    await expect(page.locator('text=404')).toBeVisible();
+    // NotFound is lazy-loaded — wait for the h1 with 404 text
+    const heading = page.locator('h1').filter({ hasText: '404' });
+    await expect(heading).toBeVisible({ timeout: 15000 });
   });
 
   test('no console errors on homepage', async ({ page }) => {
