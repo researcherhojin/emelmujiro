@@ -8,8 +8,8 @@ version = "0.1.0"
 description = "Emelmujiro Backend API"
 requires-python = ">=3.12"
 dependencies = [
-    "Django==5.2.12",
-    "djangorestframework==3.16.1",
+    "Django==6.0.3",
+    "djangorestframework==3.17.0",
     "django-cors-headers==4.9.0",
     "python-dotenv==1.2.2",
     "requests==2.32.5",
