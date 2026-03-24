@@ -542,6 +542,10 @@
     "seoHead": {
       "defaultKeywords": "AI education, AI consulting, AI Agent, RAG, MCP, Computer Vision, enterprise training, LLM, generative AI, Vibe Coding, startup mentoring, deep learning, machine learning",
       "orgDescription": "AI Education · Consulting · AI Agent Development"
+    },
+    "faq": {
+      "title": "FAQ",
+      "description": "Find answers to frequently asked questions about Emelmujiro's AI education, consulting, and agent development services."
     }
   },
   "profileData": {
@@ -690,5 +694,68 @@
     "minutesAgo": "{{count}}m ago",
     "hoursAgo": "{{count}}h ago",
     "daysAgo": "{{count}}d ago"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about our AI education and consulting services",
+    "categories": {
+      "all": "All",
+      "general": "General",
+      "education": "Education",
+      "consulting": "Consulting",
+      "technical": "Technical"
+    },
+    "items": {
+      "general1": {
+        "question": "What services does Emelmujiro provide?",
+        "answer": "Emelmujiro offers a comprehensive range of AI services including AI education, AI consulting, AI agent development, and computer vision solutions. We provide end-to-end support from customized corporate training to technical consulting.",
+        "category": "general"
+      },
+      "general2": {
+        "question": "How can I request a consultation?",
+        "answer": "Simply fill out the form on our Contact page, and a representative will reach out within 1-2 business days. You can also schedule a consultation via phone or email.",
+        "category": "general"
+      },
+      "education1": {
+        "question": "How are the AI education courses structured?",
+        "answer": "We offer courses for all levels, from beginners to experts. Our practice-oriented curriculum covers Python fundamentals, machine learning, deep learning, LLM/RAG applications, and AI agent development.",
+        "category": "education"
+      },
+      "education2": {
+        "question": "Do you offer customized corporate training?",
+        "answer": "Yes, we provide training customized to your industry and job roles. After an initial meeting to discuss training goals, participant levels, and duration, we design an optimal curriculum.",
+        "category": "education"
+      },
+      "education3": {
+        "question": "Are courses available online?",
+        "answer": "We offer online, offline, and hybrid training formats. Both live online sessions and recorded lectures are supported, with cloud-based practice environments provided.",
+        "category": "education"
+      },
+      "consulting1": {
+        "question": "In which industries do you offer AI consulting?",
+        "answer": "We provide consulting across various industries including manufacturing, finance, healthcare, and retail. Services include AI adoption strategy, PoC development, model optimization, and MLOps implementation.",
+        "category": "consulting"
+      },
+      "consulting2": {
+        "question": "How long does a typical consulting project take?",
+        "answer": "Timelines vary by project scope, but typically a PoC takes 4-8 weeks and a full implementation project runs 3-6 months. We'll provide a detailed timeline during the initial consultation.",
+        "category": "consulting"
+      },
+      "technical1": {
+        "question": "What AI technology stack do you use?",
+        "answer": "We leverage cutting-edge AI frameworks and tools including PyTorch, TensorFlow, Hugging Face, LangChain, OpenAI API, and Claude API. We select the optimal technology stack based on project requirements.",
+        "category": "technical"
+      },
+      "technical2": {
+        "question": "What is AI agent development?",
+        "answer": "We develop AI systems that autonomously perform tasks based on LLMs (Large Language Models). Using technologies like RAG (Retrieval-Augmented Generation), MCP (Model Context Protocol), and Tool Use, we automate business processes.",
+        "category": "technical"
+      }
+    },
+    "cta": {
+      "title": "Still have questions?",
+      "description": "Feel free to reach out through our contact page. We'll get back to you promptly.",
+      "button": "Contact Us"
+    }
   }
 }

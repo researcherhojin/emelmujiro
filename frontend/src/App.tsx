@@ -39,6 +39,7 @@ const ContactPage = lazy(() => import('./components/pages/ContactPage'));
 const BlogListPage = lazy(() => import('./components/blog/BlogListPage'));
 const BlogDetail = lazy(() => import('./components/blog/BlogDetail'));
 const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
+const FAQPage = lazy(() => import('./components/pages/FAQPage'));
 const LoginPage = lazy(() => import('./components/pages/LoginPage'));
 
 // ScrollToTop component to handle page navigation
@@ -153,6 +154,7 @@ const pageRoutes = [
   { path: 'about', element: <AboutPage /> },
   { path: 'contact', element: <ContactPage /> },
   { path: 'profile', element: <ProfilePage /> },
+  { path: 'faq', element: <FAQPage /> },
   { path: 'share', element: <SharePage /> },
   { path: 'blog', element: <BlogListPage /> },
   { path: 'blog/new', element: <BlogEditor /> },

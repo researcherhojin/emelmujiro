@@ -20,7 +20,7 @@
   border-radius: 0.5rem;
   padding: 1rem;
   overflow-x: auto;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
   font-size: 0.875rem;
   line-height: 1.7;
 }
@@ -45,30 +45,30 @@
 }
 
 /* Task list */
-.tiptap-editor .ProseMirror ul[data-type='taskList'] {
+.tiptap-editor .ProseMirror ul[data-type="taskList"] {
   list-style: none;
   padding-left: 0;
 }
 
-.tiptap-editor .ProseMirror ul[data-type='taskList'] li {
+.tiptap-editor .ProseMirror ul[data-type="taskList"] li {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
 }
 
-.tiptap-editor .ProseMirror ul[data-type='taskList'] li label {
+.tiptap-editor .ProseMirror ul[data-type="taskList"] li label {
   flex-shrink: 0;
   margin-top: 0.25rem;
 }
 
-.tiptap-editor .ProseMirror ul[data-type='taskList'] li label input[type='checkbox'] {
+.tiptap-editor .ProseMirror ul[data-type="taskList"] li label input[type="checkbox"] {
   width: 1rem;
   height: 1rem;
   accent-color: #3b82f6;
   cursor: pointer;
 }
 
-.tiptap-editor .ProseMirror ul[data-type='taskList'] li div {
+.tiptap-editor .ProseMirror ul[data-type="taskList"] li div {
   flex: 1;
 }
 

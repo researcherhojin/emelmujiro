@@ -6,6 +6,8 @@ test.describe('SEO', () => {
   for (const route of routes) {
     test(`${route} has title`, async ({ page }) => {
       await page.goto(route);
+      // Wait for SEOHelmet (lazy-loaded) to set the title
+      await page.waitForFunction(() => document.title.length > 0, null, { timeout: 10000 });
       const title = await page.title();
       expect(title.length).toBeGreaterThan(0);
     });

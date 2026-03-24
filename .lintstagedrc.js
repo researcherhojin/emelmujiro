@@ -21,7 +21,7 @@ module.exports = {
       .map((f) => path.relative(path.join(__dirname, 'backend'), f))
       .join(' ');
     return [
-      `cd backend && uv run black --check ${relFiles}`,
+      `cd backend && uv run black ${relFiles}`,
       `cd backend && uv run flake8 ${relFiles}`,
     ];
   },

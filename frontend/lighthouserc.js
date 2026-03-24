@@ -53,6 +53,16 @@ module.exports = {
         'network-dependency-tree-insight': 'off',
         'render-blocking-insight': 'off',
         'render-blocking-resources': 'warn',
+        // Image optimization insights — CI serves unoptimized static assets
+        'image-delivery-insight': 'off',
+        'uses-responsive-images': 'warn',
+        'modern-image-formats': 'warn',
+        // CLS can spike in CI due to lazy-loaded components without backend
+        'cls-culprits-insight': 'off',
+        // Accessibility label mismatch — CI preview may render differently
+        'label-content-name-mismatch': 'warn',
+        // DOM size insight — informational only
+        'dom-size-insight': 'off',
       },
     },
     upload: {

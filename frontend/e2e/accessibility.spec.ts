@@ -56,9 +56,10 @@ test.describe('Dark Mode', () => {
   });
 
   test('dark mode changes background color', async ({ page }) => {
-    // Get the background color in light mode
+    // Background is on the wrapper div (.min-h-screen), not <body>
     const lightBgColor = await page.evaluate(() => {
-      return window.getComputedStyle(document.body).backgroundColor;
+      const wrapper = document.querySelector('.min-h-screen');
+      return wrapper ? window.getComputedStyle(wrapper).backgroundColor : '';
     });
 
     // Enable dark mode
@@ -70,7 +71,8 @@ test.describe('Dark Mode', () => {
 
     // Get the background color in dark mode
     const darkBgColor = await page.evaluate(() => {
-      return window.getComputedStyle(document.body).backgroundColor;
+      const wrapper = document.querySelector('.min-h-screen');
+      return wrapper ? window.getComputedStyle(wrapper).backgroundColor : '';
     });
 
     // Background colors should be different between light and dark modes
@@ -79,15 +81,13 @@ test.describe('Dark Mode', () => {
 });
 
 test.describe('Language Switching', () => {
-  test.beforeEach(async ({ page }) => {
-    // Force Korean as the default language via localStorage before navigating
-    await page.goto('/');
-    await page.evaluate(() => localStorage.setItem('i18nextLng', 'ko'));
-    await page.reload();
-    await page.waitForLoadState('domcontentloaded');
-  });
+  // Language is determined by URL prefix: / = Korean, /en/ = English.
+  // LanguageLayout always overrides i18n based on the URL param.
 
   test('default language is Korean', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
+
     // Navbar should display Korean labels
     await expect(page.getByRole('button', { name: '소개' })).toBeVisible();
     await expect(page.getByRole('button', { name: '블로그' })).toBeVisible();
@@ -95,10 +95,9 @@ test.describe('Language Switching', () => {
     await expect(page.getByRole('button', { name: '문의하기' })).toBeVisible();
   });
 
-  test('switch to English via i18n', async ({ page }) => {
-    // Change language to English using the i18n instance
-    await page.evaluate(() => localStorage.setItem('i18nextLng', 'en'));
-    await page.reload();
+  test('switch to English via URL prefix', async ({ page }) => {
+    // Navigate to English URL prefix
+    await page.goto('/en/');
     await page.waitForLoadState('domcontentloaded');
 
     // Navbar should now display English labels
@@ -109,15 +108,14 @@ test.describe('Language Switching', () => {
   });
 
   test('English language persists after reload', async ({ page }) => {
-    // Switch to English
-    await page.evaluate(() => localStorage.setItem('i18nextLng', 'en'));
-    await page.reload();
+    // Navigate to English URL
+    await page.goto('/en/');
     await page.waitForLoadState('domcontentloaded');
 
     // Verify English is shown
     await expect(page.getByRole('button', { name: 'About' })).toBeVisible();
 
-    // Reload again without setting localStorage
+    // Reload the page (still at /en/)
     await page.reload();
     await page.waitForLoadState('domcontentloaded');
 
@@ -127,15 +125,13 @@ test.describe('Language Switching', () => {
   });
 
   test('switch back to Korean', async ({ page }) => {
-    // Switch to English first
-    await page.evaluate(() => localStorage.setItem('i18nextLng', 'en'));
-    await page.reload();
+    // Start with English
+    await page.goto('/en/');
     await page.waitForLoadState('domcontentloaded');
     await expect(page.getByRole('button', { name: 'About' })).toBeVisible();
 
-    // Switch back to Korean
-    await page.evaluate(() => localStorage.setItem('i18nextLng', 'ko'));
-    await page.reload();
+    // Navigate back to Korean (root URL)
+    await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
     // Korean labels should be back
