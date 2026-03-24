@@ -88,56 +88,53 @@ test.describe('Language Switching', () => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
-    // Navbar should display Korean labels
-    await expect(page.getByRole('button', { name: '소개' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '블로그' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '프로필' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '문의하기' })).toBeVisible();
+    // Use nav locator to avoid desktop/mobile duplicate elements
+    const nav = page.locator('nav');
+    await expect(nav.getByRole('button', { name: '소개' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '블로그' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '프로필' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '문의하기' }).first()).toBeVisible();
   });
 
   test('switch to English via URL prefix', async ({ page }) => {
-    // Navigate to English URL prefix
     await page.goto('/en/');
     await page.waitForLoadState('domcontentloaded');
 
-    // Navbar should now display English labels
-    await expect(page.getByRole('button', { name: 'About' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Blog' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Profile' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Contact' })).toBeVisible();
+    const nav = page.locator('nav');
+    await expect(nav.getByRole('button', { name: 'About' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Blog' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Profile' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Contact' }).first()).toBeVisible();
   });
 
   test('English language persists after reload', async ({ page }) => {
-    // Navigate to English URL
     await page.goto('/en/');
     await page.waitForLoadState('domcontentloaded');
 
-    // Verify English is shown
-    await expect(page.getByRole('button', { name: 'About' })).toBeVisible();
+    const nav = page.locator('nav');
+    await expect(nav.getByRole('button', { name: 'About' }).first()).toBeVisible();
 
-    // Reload the page (still at /en/)
     await page.reload();
     await page.waitForLoadState('domcontentloaded');
 
-    // English should still be displayed
-    await expect(page.getByRole('button', { name: 'About' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Blog' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'About' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Blog' }).first()).toBeVisible();
   });
 
   test('switch back to Korean', async ({ page }) => {
-    // Start with English
     await page.goto('/en/');
     await page.waitForLoadState('domcontentloaded');
-    await expect(page.getByRole('button', { name: 'About' })).toBeVisible();
 
-    // Navigate back to Korean (root URL)
+    let nav = page.locator('nav');
+    await expect(nav.getByRole('button', { name: 'About' }).first()).toBeVisible();
+
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
-    // Korean labels should be back
-    await expect(page.getByRole('button', { name: '소개' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '블로그' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '프로필' })).toBeVisible();
-    await expect(page.getByRole('button', { name: '문의하기' })).toBeVisible();
+    nav = page.locator('nav');
+    await expect(nav.getByRole('button', { name: '소개' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '블로그' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '프로필' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '문의하기' }).first()).toBeVisible();
   });
 });

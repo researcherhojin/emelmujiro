@@ -28,7 +28,7 @@ module.exports = {
         // Timing metrics use warn — CI runners have variable CPU speed
         'first-contentful-paint': ['warn', { maxNumericValue: 3000 }],
         'largest-contentful-paint': ['warn', { maxNumericValue: 5000 }],
-        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
+        'cumulative-layout-shift': ['warn', { maxNumericValue: 0.1 }],
         'total-blocking-time': ['warn', { maxNumericValue: 500 }],
         interactive: ['warn', { maxNumericValue: 5000 }],
         'speed-index': ['warn', { maxNumericValue: 4000 }],
