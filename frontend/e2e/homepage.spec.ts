@@ -68,7 +68,6 @@ test.describe('Homepage', () => {
 
   test('responsive menu works on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    // Reload after viewport change to trigger mobile layout
     await page.reload();
     await page.waitForLoadState('domcontentloaded');
 
@@ -77,9 +76,11 @@ test.describe('Homepage', () => {
 
     await menuButton.click();
 
-    // Wait for mobile menu animation to complete
-    const nav = page.locator('nav');
-    await expect(nav.getByText('소개').first()).toBeVisible({ timeout: 5000 });
-    await expect(nav.getByText('블로그').first()).toBeVisible({ timeout: 5000 });
+    // Mobile menu items are conditionally rendered when isOpen=true.
+    // Desktop nav items (inside "hidden md:flex") are display:none on mobile,
+    // so we select buttons with matching text that are actually visible.
+    // The mobile menu buttons are the last matching elements in DOM order.
+    await expect(page.locator('button').filter({ hasText: '소개' }).last()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('button').filter({ hasText: '블로그' }).last()).toBeVisible({ timeout: 5000 });
   });
 });

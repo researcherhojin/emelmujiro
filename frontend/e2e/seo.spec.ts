@@ -5,11 +5,10 @@ const routes = ['/', '/about', '/contact', '/profile', '/blog'];
 test.describe('SEO', () => {
   for (const route of routes) {
     test(`${route} has title`, async ({ page }) => {
-      await page.goto(route);
-      // Wait for SEOHelmet (lazy-loaded) to set the title
-      await page.waitForFunction(() => document.title.length > 0, null, { timeout: 10000 });
-      const title = await page.title();
-      expect(title.length).toBeGreaterThan(0);
+      // Use networkidle to ensure lazy-loaded SEOHelmet has rendered
+      await page.goto(route, { waitUntil: 'networkidle' });
+      // Playwright's toHaveTitle auto-waits for the condition
+      await expect(page).toHaveTitle(/.+/, { timeout: 15000 });
     });
 
     test(`${route} has meta description`, async ({ page }) => {

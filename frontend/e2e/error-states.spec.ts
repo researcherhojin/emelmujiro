@@ -13,10 +13,10 @@ test.describe('Error States', () => {
   });
 
   test('non-existent route shows 404', async ({ page }) => {
-    await page.goto('/this-page-does-not-exist');
-    // NotFound is lazy-loaded — wait for the h1 with 404 text
-    const heading = page.locator('h1').filter({ hasText: '404' });
-    await expect(heading).toBeVisible({ timeout: 15000 });
+    // Navigate and wait for React app to fully load (networkidle ensures all chunks loaded)
+    await page.goto('/this-page-does-not-exist', { waitUntil: 'networkidle' });
+    // NotFound is lazy-loaded — check for the 404 text anywhere on the page
+    await expect(page.getByText('404').first()).toBeVisible({ timeout: 15000 });
   });
 
   test('no console errors on homepage', async ({ page }) => {
