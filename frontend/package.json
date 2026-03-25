@@ -24,7 +24,7 @@
     "i18next": "^25.10.5",
     "i18next-browser-languagedetector": "^8.2.0",
     "lowlight": "^3.3.0",
-    "lucide-react": "^0.577.0",
+    "lucide-react": "^1.6.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-helmet-async": "^3.0.0",
