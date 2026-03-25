@@ -286,7 +286,6 @@ class BlogCommentViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     pagination_class = None
 
-
     def get_throttles(self):
         if self.action == "create":
             return [CommentRateThrottle()]

@@ -2090,7 +2090,9 @@ class ValidatorTestCase(TestCase):
 # ============================================================
 
 
-@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache", "LOCATION": "middleware-test"}})
+@override_settings(
+    CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache", "LOCATION": "middleware-test"}}
+)
 class RequestSecurityMiddlewareTestCase(TestCase):
     """Tests for RequestSecurityMiddleware — IP blocking, rate limiting, malicious patterns"""
 
