@@ -1029,6 +1029,9 @@ class HealthCheckAPITestCase(APITestCase):
         response: Response = self.client.get(url)  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        # Clean up to avoid poisoning subsequent tests
+        cache.delete("rate_limit_127.0.0.1")
+
 
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})
 class AdminAPITestCase(APITestCase):
