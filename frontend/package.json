@@ -21,7 +21,7 @@
     "axios": "^1.11.0",
     "dompurify": "^3.3.3",
     "framer-motion": "^12.37.0",
-    "i18next": "^25.10.5",
+    "i18next": "^25.10.9",
     "i18next-browser-languagedetector": "^8.2.0",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.577.0",
