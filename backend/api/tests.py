@@ -3992,6 +3992,37 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
         output = out.getvalue()
         self.assertIn("올바르게 구성되었습니다", output)
 
+    @override_settings(SECRET_KEY="short")
+    def test_security_check_short_secret_key(self):
+        """security_check reports short SECRET_KEY (line 47)"""
+        from io import StringIO
+        from django.core.management import call_command
+
+        out = StringIO()
+        call_command("security_check", "--action=check", stdout=out)
+        output = out.getvalue()
+        self.assertIn("SECRET_KEY", output)
+
+    @override_settings(
+        DEBUG=False,
+        SECRET_KEY="a" * 50,
+        ALLOWED_HOSTS=["emelmujiro.com"],
+        SECURE_BROWSER_XSS_FILTER=False,
+        SECURE_CONTENT_TYPE_NOSNIFF=False,
+        X_FRAME_OPTIONS="",
+    )
+    def test_security_check_missing_headers(self):
+        """security_check reports missing security headers (line 64)"""
+        from io import StringIO
+        from django.core.management import call_command
+
+        out = StringIO()
+        call_command("security_check", "--action=check", stdout=out)
+        output = out.getvalue()
+        self.assertIn("SECURE_BROWSER_XSS_FILTER", output)
+        self.assertIn("SECURE_CONTENT_TYPE_NOSNIFF", output)
+        self.assertIn("X_FRAME_OPTIONS", output)
+
     def test_security_check_stats_db_error(self):
         """security_check stats handles DB errors gracefully (lines 150-151)"""
         from io import StringIO
