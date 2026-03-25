@@ -216,7 +216,7 @@ Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `code
 ### Vite (`frontend/vite.config.ts`)
 
 - Build output: `build/`. Pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` → `prerender.js` → `cp 404.html`
-- `@vitejs/plugin-legacy` for KakaoTalk/Samsung WebView — requires `'unsafe-eval'` and `data:` in CSP `script-src`. `script-src` uses SHA256 hashes instead of `'unsafe-inline'` — if inline scripts in `index.html` change, hashes must be recomputed and updated in both `index.html` meta CSP and `nginx.conf`
+- `@vitejs/plugin-legacy` for KakaoTalk/Samsung WebView — requires `'unsafe-eval'` and `data:` in CSP `script-src`. `'unsafe-inline'` is required because Cloudflare Tunnel injects scripts with unpredictable hashes, and `onload` inline event handlers are incompatible with hash-based CSP
 - `stripLocalhostCsp` plugin removes dev-only localhost from CSP in production
 - Dev server proxies `/api` to `http://127.0.0.1:8000`
 
