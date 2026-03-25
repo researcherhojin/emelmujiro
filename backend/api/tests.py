@@ -2636,6 +2636,22 @@ class NotificationPreferenceInvalidUpdateTestCase(APITestCase):
         self.assertIn(response.status_code, [status.HTTP_200_OK, status.HTTP_400_BAD_REQUEST])
 
 
+class SendUserNotificationWebSocketErrorTestCase(TestCase):
+    """Tests for send_user_notification WebSocket error handling"""
+
+    def test_websocket_send_failure_does_not_raise(self):
+        """WebSocket send failure is logged but does not prevent notification creation"""
+        from unittest.mock import patch
+
+        user = User.objects.create_user(username="wserr", password="pass12345")
+
+        with patch("channels.layers.get_channel_layer", side_effect=Exception("Redis unavailable")):
+            result = send_user_notification(user, "Test", "Message", notification_type="system")
+
+        self.assertIsNotNone(result)
+        self.assertEqual(Notification.objects.filter(user=user).count(), 1)
+
+
 class SendUserNotificationEmailErrorTestCase(TestCase):
     """Tests for send_user_notification email error handling (lines 728-729)"""
 
