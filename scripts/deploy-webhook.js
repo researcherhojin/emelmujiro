@@ -30,25 +30,59 @@ if (!SECRET) {
 const LOCK_FILE = '/tmp/emelmujiro-deploy.lock';
 const LOCK_MAX_AGE_MS = 15 * 60 * 1000;
 
-function isDeploying() {
-  if (!fs.existsSync(LOCK_FILE)) return false;
-  const stat = fs.statSync(LOCK_FILE);
-  const age = Date.now() - stat.mtimeMs;
-  if (age > LOCK_MAX_AGE_MS) {
-    console.log(`[${timestamp()}] Removing stale lock file (age: ${Math.round(age / 1000)}s)`);
-    fs.unlinkSync(LOCK_FILE);
+let deployChild = null;
+
+function isProcessAlive(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (_) {
     return false;
   }
-  return true;
 }
 
-function acquireLock() {
-  fs.writeFileSync(LOCK_FILE, String(process.pid));
+function isDeploying() {
+  if (!fs.existsSync(LOCK_FILE)) return false;
+  try {
+    const stat = fs.statSync(LOCK_FILE);
+    const age = Date.now() - stat.mtimeMs;
+    if (age > LOCK_MAX_AGE_MS) {
+      console.log(`[${timestamp()}] Removing stale lock file (age: ${Math.round(age / 1000)}s)`);
+      fs.unlinkSync(LOCK_FILE);
+      return false;
+    }
+    const pid = parseInt(fs.readFileSync(LOCK_FILE, 'utf8').trim(), 10);
+    if (pid && !isProcessAlive(pid)) {
+      console.log(`[${timestamp()}] Removing orphaned lock file (PID ${pid} no longer running)`);
+      fs.unlinkSync(LOCK_FILE);
+      return false;
+    }
+    return true;
+  } catch (_) {
+    releaseLock();
+    return false;
+  }
+}
+
+function acquireLock(pid) {
+  fs.writeFileSync(LOCK_FILE, String(pid));
 }
 
 function releaseLock() {
+  deployChild = null;
   try { fs.unlinkSync(LOCK_FILE); } catch (_) { /* ignore */ }
 }
+
+function gracefulShutdown(signal) {
+  console.log(`[${timestamp()}] Received ${signal}, shutting down...`);
+  if (deployChild) {
+    deployChild.kill();
+  }
+  releaseLock();
+  process.exit(0);
+}
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 const server = http.createServer((req, res) => {
   // Health check
@@ -78,13 +112,13 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    acquireLock();
+    acquireLock(process.pid);
     console.log(`[${timestamp()}] Deploy triggered`);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'deploy started' }));
 
-    execFile('bash', [DEPLOY_SCRIPT], { timeout: 600000 }, (error, stdout, stderr) => {
+    deployChild = execFile('bash', [DEPLOY_SCRIPT], { timeout: 600000 }, (error, stdout, stderr) => {
       releaseLock();
       if (error) {
         console.error(`[${timestamp()}] Deploy failed:`, error.message);
@@ -94,6 +128,9 @@ const server = http.createServer((req, res) => {
       }
       if (stdout) console.log(stdout);
     });
+
+    // Update lock with child PID so orphan detection works if webhook dies
+    acquireLock(deployChild.pid);
 
     return;
   }

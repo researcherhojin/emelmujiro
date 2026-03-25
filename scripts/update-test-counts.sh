@@ -1,10 +1,10 @@
 #!/bin/bash
-# Update hardcoded test counts in README.md and CLAUDE.md
+# Update hardcoded test counts in README.md
 # Usage: ./scripts/update-test-counts.sh
 #   - Run from repo root
 #   - Automatically counts frontend (Vitest) and backend (Django) tests
-#   - Updates README.md and CLAUDE.md with new counts
-#   - Stages the changed files for commit
+#   - Updates README.md with new counts
+#   - Stages the changed file for commit
 
 set -e
 
@@ -40,13 +40,6 @@ fi
 echo "   Frontend: $FRONTEND_COUNT tests"
 echo "   Backend: $BACKEND_COUNT tests"
 
-# Format with comma separator for display (e.g., 1237 -> 1,237)
-if command -v printf >/dev/null 2>&1; then
-  FRONTEND_DISPLAY=$(printf "%'d" "$FRONTEND_COUNT" 2>/dev/null || echo "$FRONTEND_COUNT")
-else
-  FRONTEND_DISPLAY="$FRONTEND_COUNT"
-fi
-
 # Count frontend test files for README (test suites = files)
 FRONTEND_FILES=$(find frontend/src -name '*.test.ts' -o -name '*.test.tsx' -o -name '*.spec.ts' -o -name '*.spec.tsx' | wc -l | tr -d ' ')
 E2E_FILES=$(find frontend/e2e -name '*.spec.ts' 2>/dev/null | wc -l | tr -d ' ')
@@ -59,12 +52,12 @@ sedi -E "s/[0-9]+ test suites \(Vitest\)/${FRONTEND_FILES} test suites (Vitest)/
 sedi -E "s/[0-9]+ E2E specs \(Playwright\)/${E2E_FILES} E2E specs (Playwright)/g" README.md
 sedi -E "s/[0-9,]+ backend tests \(Django\)/${BACKEND_COUNT} backend tests (Django)/g" README.md
 
-echo "✅ Updated test counts in README.md and CLAUDE.md"
+echo "✅ Updated test counts in README.md"
 
 # Stage if there are changes
-if ! git diff --quiet README.md CLAUDE.md 2>/dev/null; then
-  git add README.md CLAUDE.md
-  echo "📋 Staged README.md and CLAUDE.md"
+if ! git diff --quiet README.md 2>/dev/null; then
+  git add README.md
+  echo "📋 Staged README.md"
 else
   echo "ℹ️  No changes needed"
 fi

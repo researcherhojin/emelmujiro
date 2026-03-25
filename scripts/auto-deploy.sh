@@ -18,18 +18,25 @@ if ! git pull origin main; then
   exit 1
 fi
 
+# Install dependencies (handles package-lock.json changes after git pull)
+echo "$LOG_PREFIX Installing dependencies..."
+npm ci --prefer-offline --no-audit
+
 # Frontend build (nginx volume mount → live immediately, no container restart)
 echo "$LOG_PREFIX Building frontend..."
 cd frontend
 # Load frontend env vars from file (not committed to git)
 # Use read loop instead of source to prevent shell expansion injection
 if [ -f "$REPO_DIR/frontend/.env.production" ]; then
-  while IFS= read -r line; do
-    # Skip comments and empty lines
+  while IFS= read -r line || [ -n "$line" ]; do
+    # Skip comments, empty lines, and lines without '='
     [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ "$line" != *"="* ]] && continue
     # Split on first '=' only (preserves '=' in values like DATABASE_URL)
     key="${line%%=*}"
     value="${line#*=}"
+    # Validate key is a valid env var name
+    [[ "$key" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]] || continue
     # Strip surrounding quotes from value
     value="${value%\"}"
     value="${value#\"}"
@@ -48,18 +55,30 @@ docker compose up -d frontend
 
 # Wait for services to be healthy (up to 60s)
 echo "$LOG_PREFIX Waiting for services to be healthy..."
+backend_ok=false
+frontend_ok=false
 elapsed=0
 while [ $elapsed -lt 60 ]; do
-  if curl -sf http://127.0.0.1:8000/api/health/ > /dev/null 2>&1; then
-    echo "$LOG_PREFIX Health check passed after ${elapsed}s"
+  if [ "$backend_ok" = false ] && curl -sf http://127.0.0.1:8000/api/health/ > /dev/null 2>&1; then
+    echo "$LOG_PREFIX Backend health check passed after ${elapsed}s"
+    backend_ok=true
+  fi
+  if [ "$frontend_ok" = false ] && curl -sf http://127.0.0.1:8080/ > /dev/null 2>&1; then
+    echo "$LOG_PREFIX Frontend health check passed after ${elapsed}s"
+    frontend_ok=true
+  fi
+  if [ "$backend_ok" = true ] && [ "$frontend_ok" = true ]; then
     break
   fi
   sleep 5
   elapsed=$((elapsed + 5))
 done
 
-if [ $elapsed -ge 60 ]; then
-  echo "$LOG_PREFIX WARNING: Health check did not pass within 60s"
+if [ "$backend_ok" = false ]; then
+  echo "$LOG_PREFIX WARNING: Backend health check did not pass within 60s"
+fi
+if [ "$frontend_ok" = false ]; then
+  echo "$LOG_PREFIX WARNING: Frontend health check did not pass within 60s"
 fi
 
 echo "$LOG_PREFIX Deploy completed at $(date)"

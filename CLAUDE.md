@@ -16,14 +16,20 @@ Full-stack monorepo (React 19 + Django 6) deployed on Mac Mini via Docker + Clou
 ```bash
 npm run dev                # Frontend + Backend (from root)
 npm run build              # sitemap → tsc → vite build → prerender → cp 404.html (from frontend/)
+npm run build:no-prerender # Faster build — skips SSG prerender step (from frontend/)
 npm run validate           # lint + type-check + test:coverage (from frontend/)
 CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx  # Single test
+npm run test:e2e           # Playwright E2E (from frontend/). Also: test:e2e:ui, test:e2e:debug
+npm run type-check         # tsc --noEmit (from frontend/)
+npm run analyze:bundle     # source-map-explorer (from frontend/, requires build first)
 
 uv sync --extra dev                    # Install backend deps (NOT --dev)
 uv run python manage.py test           # Django unittest (NOT pytest). Needs DATABASE_URL=""
 uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 # Shortcuts: make install | make test | make lint | make lint-fix | make dev
+# Docker dev with optional services:
+# docker compose -f docker-compose.dev.yml --profile postgres --profile redis up
 ```
 
 ## Architecture
@@ -50,7 +56,7 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **CSP**: `'unsafe-eval'` + `'unsafe-inline'` required — Cloudflare Tunnel injects unpredictable scripts, `plugin-legacy` needs eval.
 
-**Tailwind 3.x**: PostCSS uses `tailwindcss: {}` (NOT `@tailwindcss/postcss`). Never use dynamic class interpolation (`bg-${color}-600`).
+**Tailwind 3.x**: PostCSS uses `tailwindcss: {}` (NOT `@tailwindcss/postcss`). Dark mode is `class`-based (not media query). Never use dynamic class interpolation (`bg-${color}-600`).
 
 **Production keys**: `SECRET_KEY` and `RECAPTCHA_PRIVATE_KEY` raise `ImproperlyConfigured` if missing in production (DEBUG bypasses reCAPTCHA).
 
@@ -75,7 +81,7 @@ Non-React: `vi.mock('../../i18n', () => ({ default: { t: (key: string) => key, l
 
 Use `renderWithProviders` from `test-utils/` for component tests needing context (wraps MemoryRouter + providers). E2E tests: Playwright in `frontend/e2e/`.
 
-Coverage target: 85%. Conventional commits required (`type(scope): description`). ESLint zero warnings policy.
+Coverage target: 85%. Conventional commits required (`type(scope): description`). Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`. ESLint uses flat config (`eslint.config.mjs`, NOT `.eslintrc`). Zero warnings policy.
 
 ## Security
 

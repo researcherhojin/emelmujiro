@@ -5,9 +5,13 @@ __pycache__
 .env
 .env.*
 *.sqlite3
+*.log
 .coverage
 .pytest_cache/
 htmlcov/
+logs/
 media/
 staticfiles/
+scripts/
+*.egg-info/
 .DS_Store
