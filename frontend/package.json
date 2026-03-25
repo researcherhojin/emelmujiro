@@ -67,7 +67,7 @@
     "terser": "^5.46.0",
     "typescript": "^5.9.2",
     "vite": "^8.0.0",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.1"
   },
   "scripts": {
     "dev": "vite",
