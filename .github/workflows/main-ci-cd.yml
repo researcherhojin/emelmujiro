@@ -12,7 +12,6 @@ permissions:
 
 env:
   NODE_VERSION: "24"
-  PYTHON_VERSION: "3.12"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:

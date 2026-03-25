@@ -465,6 +465,7 @@
     "directInquiry": "직접 문의하기"
   },
   "blogAdmin": {
+    "label": "관리자",
     "published": "공개",
     "unpublished": "비공개로 전환됨",
     "draft": "임시저장",

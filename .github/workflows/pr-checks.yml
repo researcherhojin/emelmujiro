@@ -131,7 +131,7 @@ jobs:
 
       - name: Prettier
         working-directory: ./frontend
-        run: npx prettier --check "src/**/*.{js,jsx,ts,tsx,css}"
+        run: npx prettier --check "src/**/*.{js,jsx,ts,tsx,css,md}"
 
   # Backend linting (parallel with frontend-lint)
   backend-lint:
@@ -225,12 +225,12 @@ jobs:
 
       - name: Test backend changes
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
+        working-directory: ./backend
         env:
           SECRET_KEY: test-secret-key
           DEBUG: "True"
           DATABASE_URL: ""
         run: |
-          cd backend
           uv sync --frozen --extra dev
           uv run python manage.py makemigrations --noinput
           uv run python manage.py migrate --noinput

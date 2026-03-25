@@ -439,7 +439,7 @@ describe('BlogDetail Component', () => {
     renderComponent();
 
     // Admin toolbar should be visible
-    expect(screen.getByText('Admin')).toBeInTheDocument();
+    expect(screen.getByText('blogAdmin.label')).toBeInTheDocument();
     expect(screen.getByText('blogAdmin.published')).toBeInTheDocument();
     expect(screen.getByText('common.edit')).toBeInTheDocument();
     expect(screen.getByText('common.delete')).toBeInTheDocument();

@@ -29,7 +29,9 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   useEffect(() => {
     try {
       const bookmarksData = localStorage.getItem('bookmarks');
-      const bookmarks: Array<{ id: number }> = bookmarksData ? JSON.parse(bookmarksData) : [];
+      const bookmarks: Array<{ id: string | number }> = bookmarksData
+        ? JSON.parse(bookmarksData)
+        : [];
       setIsBookmarked(bookmarks.some((b) => b.id === post.id));
     } catch (error) {
       logger.error('Failed to load bookmarks:', error);

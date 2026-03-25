@@ -477,6 +477,7 @@
     "directInquiry": "Direct Inquiry"
   },
   "blogAdmin": {
+    "label": "Admin",
     "published": "Published",
     "unpublished": "Unpublished",
     "draft": "Draft",
