@@ -37,7 +37,7 @@ USER appuser
 RUN SECRET_KEY=build-only-placeholder SECURE_SSL_REDIRECT=False uv run python manage.py collectstatic --noinput
 
 # Run gunicorn
-CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--threads", "2", "--timeout", "120", "config.wsgi:application"]
+CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--threads", "2", "--timeout", "60", "--max-requests", "1000", "--max-requests-jitter", "50", "config.wsgi:application"]
 
 # Expose port
 EXPOSE 8000

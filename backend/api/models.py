@@ -91,6 +91,9 @@ class BlogLike(models.Model):
         unique_together = ["post", "ip_address"]
         verbose_name = "블로그 좋아요"
         verbose_name_plural = "블로그 좋아요"
+        indexes = [
+            models.Index(fields=["ip_address"]),
+        ]
 
     def __str__(self):
         return f"Like on {self.post.title} from {self.ip_address}"
@@ -135,6 +138,9 @@ class CommentLike(models.Model):
         unique_together = ["comment", "ip_address"]
         verbose_name = "댓글 좋아요"
         verbose_name_plural = "댓글 좋아요"
+        indexes = [
+            models.Index(fields=["ip_address"]),
+        ]
 
     def __str__(self):
         return f"Like on comment {self.comment_id} from {self.ip_address}"
@@ -175,6 +181,10 @@ class Contact(models.Model):
         ordering = ["-created_at"]
         verbose_name = "문의"
         verbose_name_plural = "문의"
+        indexes = [
+            models.Index(fields=["-created_at"]),
+            models.Index(fields=["is_processed"]),
+        ]
 
     def __str__(self):
         return f"[{self.created_at.strftime('%Y-%m-%d')}] {self.name} - {self.subject}"
@@ -194,6 +204,9 @@ class ContactAttempt(models.Model):
         unique_together = ["ip_address", "email"]
         verbose_name = "문의 시도 로그"
         verbose_name_plural = "문의 시도 로그"
+        indexes = [
+            models.Index(fields=["ip_address", "-last_attempt"]),
+        ]
 
     def __str__(self):
         return f"{self.ip_address} - {self.attempt_count}회 시도"

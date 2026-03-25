@@ -7,11 +7,8 @@ RUN apk update && apk upgrade && \
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json ./
-
-# Install dependencies
-COPY package-lock.json ./
+# Copy package files and install dependencies (cached layer)
+COPY package.json package-lock.json ./
 RUN npm ci
 
 # Copy source code
