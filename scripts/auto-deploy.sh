@@ -26,9 +26,10 @@ if [ -f "$REPO_DIR/frontend/.env.production" ]; then
 fi
 VITE_API_URL=https://api.emelmujiro.com/api npm run build
 
-# Backend rebuild (only restarts if code changed)
-echo "$LOG_PREFIX Rebuilding backend..."
+# Ensure all services are running
+echo "$LOG_PREFIX Starting services..."
 cd "$REPO_DIR"
 docker compose up -d --build backend
+docker compose up -d frontend
 
 echo "$LOG_PREFIX Deploy completed at $(date)"

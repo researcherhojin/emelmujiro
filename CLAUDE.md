@@ -47,7 +47,7 @@ uv run flake8 .            # Lint (line length 120)
 
 # Deploy (Mac Mini)
 cd frontend && git pull && VITE_API_URL=https://api.emelmujiro.com/api npm run build  # Frontend (live immediately)
-git pull && docker compose up -d --build  # Backend
+docker compose up -d --build backend && docker compose up -d frontend  # Ensure all services running
 
 # Makefile shortcuts (from root)
 make install               # npm install + uv sync --extra dev
@@ -67,7 +67,7 @@ make update-test-counts    # Auto-update test counts in README.md & CLAUDE.md
 - `ports.sh` — Port management (`--kill` to kill dev ports, default: check status)
 - `start-dev.sh` — Start dev environment with Docker
 - `deploy-webhook.js` — Webhook handler for GitHub Actions auto-deploy (timing-safe auth)
-- `auto-deploy.sh` — Frontend build + backend rebuild (called by deploy-webhook.js)
+- `auto-deploy.sh` — Frontend build + backend rebuild + frontend container ensure (called by deploy-webhook.js)
 - `pre-deploy-check.sh` — Pre-production deployment validation (9-point checklist)
 - `update-test-counts.sh` — Auto-update test counts in README.md & CLAUDE.md (run via `make update-test-counts`)
 
@@ -126,7 +126,7 @@ Frontend: `NotificationContext` manages state with auto-connect WebSocket on log
 
 **Like API**: `POST /api/blog-posts/{id}/like/` — IP-based toggle (one like per IP per post). `BlogLike` model with `unique_together = [post, ip_address]`. Automatically increments/decrements `BlogPost.likes`.
 
-**Comment API**: Nested under posts: `/api/blog-posts/{id}/comments/`. `BlogComment` model supports replies via `parent` FK. `CommentLike` for IP-based comment likes. No pagination (comments are few per post). Anyone can create/read; admin can delete via frontend UI.
+**Comment API**: Nested under posts: `/api/blog-posts/{id}/comments/`. `BlogComment` model supports replies via `parent` FK, tracks `ip_address` for audit. `CommentLike` for IP-based comment likes. No pagination (comments are few per post). Anyone can create/read; **only admin can delete** (`IsAdminUser`). `CommentRateThrottle` limits creation to 10/hour per IP. Spam keyword detection in `perform_create` (shared keyword list with Contact form).
 
 **Blog Admin UI**: Visible only when logged in as admin (`user.role === 'admin'`). `BlogDetail` shows sticky admin toolbar (publish/draft toggle, edit link, delete with confirmation). `BlogComments` shows delete button per comment. `BlogEditor` fetches categories from API with i18n fallback (`CATEGORY_KEYS` using `blogEditor.category*` translation keys).
 
@@ -202,7 +202,7 @@ Components must call the getter each render. Do not store results in module-leve
 
 ### Coverage
 
-Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `codecov.yml`. Scale: 66 unit test files (~1234 tests), 10 E2E spec files, ~360 backend tests.
+Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `codecov.yml`. Scale: 66 unit test files (1,234 tests), 10 E2E spec files, 364 backend tests.
 
 ## CI/CD
 
@@ -216,7 +216,7 @@ Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `code
 ### Vite (`frontend/vite.config.ts`)
 
 - Build output: `build/`. Pipeline: `generate:sitemap` → `tsc -p tsconfig.build.json` → `vite build` → `prerender.js` → `cp 404.html`
-- `@vitejs/plugin-legacy` for KakaoTalk/Samsung WebView — requires `'unsafe-eval'` and `data:` in CSP `script-src`
+- `@vitejs/plugin-legacy` for KakaoTalk/Samsung WebView — requires `'unsafe-eval'` and `data:` in CSP `script-src`. `script-src` uses SHA256 hashes instead of `'unsafe-inline'` — if inline scripts in `index.html` change, hashes must be recomputed and updated in both `index.html` meta CSP and `nginx.conf`
 - `stripLocalhostCsp` plugin removes dev-only localhost from CSP in production
 - Dev server proxies `/api` to `http://127.0.0.1:8000`
 
@@ -263,7 +263,7 @@ Husky + lint-staged. `.lintstagedrc.js` at repo root handles path translation: `
 
 ### Deployment (Mac Mini)
 
-Frontend: `nginx:alpine` container volume-mounting `frontend/build/`. Rebuild = live (no container restart). Backend: `docker compose up -d --build`. Auto-deploy via `scripts/deploy-webhook.js` (webhook from GitHub Actions, timing-safe auth). Cloudflare Tunnel routes `emelmujiro.com` → port 8080, `api.emelmujiro.com` → port 8000.
+Both services managed by `docker-compose.yml`. Frontend: `nginx:alpine` volume-mounting `frontend/build/` (rebuild = live, no container restart). Backend: builds from Dockerfile. `auto-deploy.sh` runs `npm run build` on host + `docker compose up -d` for both. Cloudflare Tunnel routes `emelmujiro.com` → port 8080, `api.emelmujiro.com` → port 8000. All Docker ports bound to `127.0.0.1` only (Cloudflare Tunnel is the sole entry point). `SECRET_KEY` loaded via `env_file: ./backend/.env` — do NOT set it in the `environment` section (it would override `env_file` with an empty value).
 
 **Critical**: Never `rm -rf frontend/build` — use `rm -rf frontend/build/*` instead. Deleting the directory breaks the nginx volume mount (403 Forbidden); deleting only contents preserves the mount point.
 

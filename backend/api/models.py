@@ -105,6 +105,7 @@ class BlogComment(models.Model):
     )
     author_name = models.CharField(max_length=100, verbose_name="작성자")
     content = models.TextField(verbose_name="내용")
+    ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name="IP 주소")
     likes = models.PositiveIntegerField(default=0, verbose_name="좋아요")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성일")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="수정일")

@@ -84,7 +84,7 @@ echo ""
 echo -e "${BLUE}📋 2. Code quality${NC}"
 
 inline_check "TypeScript compilation"
-if (cd frontend && npx tsc --noEmit 2>/dev/null); then
+if (cd frontend && npx tsc -p tsconfig.build.json --noEmit 2>/dev/null); then
     pass "No errors"
 else
     warn "TypeScript errors found"

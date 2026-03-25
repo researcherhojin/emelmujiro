@@ -222,19 +222,17 @@ if not DEBUG:
     X_FRAME_OPTIONS = "DENY"
     SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
-# Enhanced CSRF protection
-CSRF_COOKIE_SECURE = False if DEBUG else True
+# CSRF protection (CSRF_COOKIE_SECURE set in HTTPS block below)
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_AGE = 3600  # 1 hour
 
-# Enhanced session security
-SESSION_COOKIE_SECURE = False if DEBUG else True
+# Session security (SESSION_COOKIE_SECURE set in HTTPS block below)
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 
 # JWT cookie settings
-JWT_COOKIE_SECURE = False if DEBUG else True
+JWT_COOKIE_SECURE = not DEBUG
 JWT_COOKIE_HTTPONLY = True
 JWT_COOKIE_SAMESITE = "Lax"
 JWT_ACCESS_COOKIE = "access_token"

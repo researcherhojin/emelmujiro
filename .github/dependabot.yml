@@ -79,14 +79,11 @@ updates:
           - "drf-*"
       testing:
         patterns:
-          - "pytest*"
           - "coverage*"
       dev-tools:
         patterns:
           - "black"
           - "flake8*"
-          - "isort"
-          - "ruff"
     labels:
       - "dependencies"
       - "backend"

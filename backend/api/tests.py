@@ -347,8 +347,18 @@ class BlogCommentAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(BlogComment.objects.count(), 2)
 
-    def test_delete_comment(self):
-        """Can delete a comment"""
+    def test_delete_comment_requires_admin(self):
+        """Anonymous users cannot delete comments"""
+        comment = BlogComment.objects.create(post=self.post, author_name="User1", content="Delete me")
+        detail_url = reverse("blog-comment-detail", kwargs={"post_pk": self.post.pk, "pk": comment.pk})
+        response = self.client.delete(detail_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(BlogComment.objects.count(), 1)
+
+    def test_admin_can_delete_comment(self):
+        """Admin can delete a comment"""
+        admin = User.objects.create_superuser(username="commentadmin", email="ca@test.com", password="testpass12345")
+        self.client.force_authenticate(user=admin)
         comment = BlogComment.objects.create(post=self.post, author_name="User1", content="Delete me")
         detail_url = reverse("blog-comment-detail", kwargs={"post_pk": self.post.pk, "pk": comment.pk})
         response = self.client.delete(detail_url)

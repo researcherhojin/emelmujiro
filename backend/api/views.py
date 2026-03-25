@@ -19,6 +19,8 @@ import os
 import re
 import uuid as uuid_mod
 
+from .constants import SPAM_KEYWORDS
+
 import requests
 
 from .models import (
@@ -55,6 +57,13 @@ class ContactRateThrottle(AnonRateThrottle):
 
     scope = "contact"
     rate = "5/hour"
+
+
+class CommentRateThrottle(AnonRateThrottle):
+    """Comment creation rate throttle"""
+
+    scope = "comment"
+    rate = "10/hour"
 
 
 class AdminRateThrottle(UserRateThrottle):
@@ -110,7 +119,9 @@ def _is_valid_ip(ip: str) -> bool:
 def verify_recaptcha(recaptcha_response: str, request_ip: str = None) -> bool:
     """Verify reCAPTCHA response (security-hardened)"""
     if not settings.RECAPTCHA_PRIVATE_KEY:
-        return True  # Pass if reCAPTCHA is not configured
+        if not settings.DEBUG:
+            logger.warning("RECAPTCHA_PRIVATE_KEY not configured in production — skipping verification")
+        return True
 
     # Input validation
     if not recaptcha_response or len(recaptcha_response) > 1000:
@@ -269,11 +280,22 @@ class BlogPostViewSet(viewsets.ModelViewSet):
 
 
 class BlogCommentViewSet(viewsets.ModelViewSet):
-    """CRUD for blog comments. Anyone can create/read; only the author (by IP) can delete."""
+    """CRUD for blog comments. Anyone can create/read; only admin can delete."""
 
     serializer_class = BlogCommentSerializer
     permission_classes = [AllowAny]
     pagination_class = None
+
+
+    def get_throttles(self):
+        if self.action == "create":
+            return [CommentRateThrottle()]
+        return []
+
+    def get_permissions(self):
+        if self.action == "destroy":
+            return [IsAdminUser()]
+        return [AllowAny()]
 
     def get_queryset(self):
         post_id = self.kwargs.get("post_pk")
@@ -283,7 +305,15 @@ class BlogCommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         post_id = self.kwargs.get("post_pk")
-        serializer.save(post_id=post_id)
+        ip_address = get_client_ip(self.request)
+
+        # Spam keyword check
+        content = serializer.validated_data.get("content", "").lower()
+        spam_count = sum(1 for kw in SPAM_KEYWORDS if kw in content)
+        if spam_count >= 2:
+            raise ValidationError({"content": "스팸으로 의심되는 내용이 포함되어 있습니다."})
+
+        serializer.save(post_id=post_id, ip_address=ip_address)
 
     @action(detail=True, methods=["post"], url_path="like")
     def like(self, request, post_pk=None, pk=None):

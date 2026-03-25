@@ -3,6 +3,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from .models import BlogPost, BlogComment, Contact, Notification, NotificationPreference, NewsletterSubscription
+from .constants import SPAM_KEYWORDS
 import re
 
 
@@ -312,11 +313,9 @@ class ContactSerializer(serializers.ModelSerializer):
         if len(value) > 2000:
             raise serializers.ValidationError("문의 내용은 2000자를 초과할 수 없습니다.")
 
-        # Spam keyword check
-        spam_keywords = ["대출", "투자", "수익", "홍보", "광고", "마케팅"]
+        # Spam keyword check (shared with BlogCommentViewSet)
         message_lower = value.lower()
-
-        spam_count = sum(1 for keyword in spam_keywords if keyword in message_lower)
+        spam_count = sum(1 for keyword in SPAM_KEYWORDS if keyword in message_lower)
         if spam_count >= 2:
             raise serializers.ValidationError("스팸으로 의심되는 내용이 포함되어 있습니다.")
 
