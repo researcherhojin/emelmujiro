@@ -146,7 +146,7 @@ Sentry (`@sentry/react`) for error tracking — user context is set on login/log
 
 ### Bundle Splitting
 
-Vite manual chunks: `react-vendor`, `ui-vendor`, `i18n`, `sentry`, `http-vendor`, `tiptap`. Configured in `vite.config.ts`. Bundle size must stay under 10MB (enforced by PR checks CI). TipTap chunk (~170KB gzipped) is lazy-loaded only on `/blog/new` and `/blog/edit/:id`.
+Vite manual chunks: `react-vendor`, `ui-vendor`, `i18n`, `sentry`, `http-vendor`, `dompurify`, `tiptap`. Configured in `vite.config.ts`. Bundle size must stay under 10MB (enforced by PR checks CI). TipTap chunk (~170KB gzipped) is lazy-loaded only on `/blog/new` and `/blog/edit/:id`.
 
 ## Testing
 
@@ -202,7 +202,7 @@ Components must call the getter each render. Do not store results in module-leve
 
 ### Coverage
 
-Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `codecov.yml`. Scale: 66 unit test files (~1233 tests), 10 E2E spec files, ~359 backend tests.
+Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `codecov.yml`. Scale: 66 unit test files (~1234 tests), 10 E2E spec files, ~360 backend tests.
 
 ## CI/CD
 
@@ -258,7 +258,7 @@ Husky + lint-staged. `.lintstagedrc.js` at repo root handles path translation: `
 - JWT: access 30min, refresh 7 days, rotation + blacklist. httpOnly cookies via `CookieJWTAuthentication`
 - CORS: production only allows `https://emelmujiro.com` (localhost allowed only in DEBUG)
 - Admin endpoints throttled at 120/hour via `AdminRateThrottle`
-- Security middleware: `RequestSecurityMiddleware` (IP blocking, rate limiting, malicious pattern detection), `ContentSecurityMiddleware` (CSP + headers)
+- Security middleware: `RequestSecurityMiddleware` (IP blocking, rate limiting, malicious pattern detection; `/api/health/` exempt from rate limiting via `RATE_LIMIT_EXEMPT_PATHS`), `ContentSecurityMiddleware` (CSP + headers)
 - Backend blog router uses `basename="blog"` (NOT `"blog-posts"`) — URL names are `blog-list`, `blog-detail`
 
 ### Deployment (Mac Mini)

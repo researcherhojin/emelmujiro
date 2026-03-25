@@ -1019,6 +1019,16 @@ class HealthCheckAPITestCase(APITestCase):
         self.assertEqual(response.data["status"], "healthy")
         self.assertIn("timestamp", response.data)
 
+    def test_health_check_not_rate_limited(self):
+        """Health check is exempt from middleware rate limiting (Docker calls it every 30s)"""
+        from django.core.cache import cache
+
+        # Simulate exhausted rate limit for this IP
+        cache.set("rate_limit_127.0.0.1", 200, 3600)
+        url = reverse("health-check")
+        response: Response = self.client.get(url)  # type: ignore
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})
 class AdminAPITestCase(APITestCase):
@@ -2113,9 +2123,9 @@ class RequestSecurityMiddlewareTestCase(TestCase):
         """Exceeding rate limit returns 429"""
         from django.core.cache import cache
 
-        # Set counter above threshold
+        # Set counter above threshold (use /api/categories/ — /api/health/ is exempt)
         cache.set("rate_limit_9.9.9.9", 100, 3600)
-        response = self.client.get("/api/health/", REMOTE_ADDR="9.9.9.9")
+        response = self.client.get("/api/categories/", REMOTE_ADDR="9.9.9.9")
         self.assertEqual(response.status_code, 429)
 
     def test_malicious_xss_in_path_blocked(self):

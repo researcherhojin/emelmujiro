@@ -15,8 +15,8 @@ services:
       - DATABASE_URL=
       - SQLITE_DIR=/app/data
       - SECRET_KEY=${SECRET_KEY:?SECRET_KEY must be set}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
-      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://frontend}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-emelmujiro.com,api.emelmujiro.com,localhost,127.0.0.1,backend}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-https://emelmujiro.com}
       # REDIS_URL is only needed when running with the "redis" profile
       # - REDIS_URL=redis://redis:6379/0
     env_file:

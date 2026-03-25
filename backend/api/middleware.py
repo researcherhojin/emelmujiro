@@ -42,6 +42,9 @@ class RequestSecurityMiddleware(MiddlewareMixin):
         # Compiled patterns
         self.compiled_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.malicious_patterns]
 
+    # Paths exempt from rate limiting (Docker healthcheck, etc.)
+    RATE_LIMIT_EXEMPT_PATHS = {"/api/health/"}
+
     def process_request(self, request):
         """Pre-process incoming request"""
         ip_address = get_client_ip(request)
@@ -51,8 +54,8 @@ class RequestSecurityMiddleware(MiddlewareMixin):
             logger.warning(f"Blocked IP attempted access: {ip_address}")
             return HttpResponseForbidden("Access denied")
 
-        # Rate limiting check
-        if self.is_rate_limited(ip_address):
+        # Rate limiting check (skip exempt paths like health check)
+        if request.path not in self.RATE_LIMIT_EXEMPT_PATHS and self.is_rate_limited(ip_address):
             logger.warning(f"Rate limited IP: {ip_address}")
             return JsonResponse({"error": "Too many requests. Please try again later."}, status=429)
 

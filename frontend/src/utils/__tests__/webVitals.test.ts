@@ -222,6 +222,28 @@ describe('webVitals', () => {
         expect.stringContaining('Performance budget exceeded')
       );
     });
+
+    it('logs warning when budget exceeded in development', async () => {
+      // Override onLCP to return a value exceeding the dev budget (4000)
+      const webVitals = await import('web-vitals');
+      vi.mocked(webVitals.onLCP).mockImplementationOnce((callback) => {
+        setTimeout(() => callback(createMockMetric('LCP', 5000) as never), 0);
+      });
+
+      const envModule = await import('../../config/env');
+      const originalIsDev = envModule.default.IS_DEVELOPMENT;
+      envModule.default.IS_DEVELOPMENT = true;
+
+      const { checkPerformanceBudget } = await import('../webVitals');
+      checkPerformanceBudget();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        expect.stringContaining('Performance budget exceeded for LCP')
+      );
+
+      envModule.default.IS_DEVELOPMENT = originalIsDev;
+    });
   });
 
   describe('error handling', () => {
