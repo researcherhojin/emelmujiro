@@ -79,19 +79,38 @@ check "VITE_GA_TRACKING_ID configured" "grep -q 'VITE_GA_TRACKING_ID=' frontend/
 echo ""
 
 # =====================================================
-# 2. Code quality
+# 2. Code quality + 3. Tests (run in parallel)
 # =====================================================
-echo -e "${BLUE}📋 2. Code quality${NC}"
+echo -e "${BLUE}📋 2. Code quality & Tests (parallel)${NC}"
 
+# Run TypeScript, ESLint, and Tests concurrently
+TSC_RESULT_FILE=$(mktemp)
+ESLINT_RESULT_FILE=$(mktemp)
+TEST_RESULT_FILE=$(mktemp)
+
+(cd frontend && npx tsc -p tsconfig.build.json --noEmit 2>/dev/null; echo $? > "$TSC_RESULT_FILE") &
+PID_TSC=$!
+
+(cd frontend && npx eslint src --quiet 2>"$ESLINT_RESULT_FILE.out" 1>"$ESLINT_RESULT_FILE.out"; echo $? > "$ESLINT_RESULT_FILE") &
+PID_ESLINT=$!
+
+(cd frontend && npx vitest run 2>&1 > "$TEST_RESULT_FILE.out"; echo $? > "$TEST_RESULT_FILE") &
+PID_TEST=$!
+
+# Wait for all parallel tasks
+wait $PID_TSC $PID_ESLINT $PID_TEST
+
+# Report TypeScript results
 inline_check "TypeScript compilation"
-if (cd frontend && npx tsc -p tsconfig.build.json --noEmit 2>/dev/null); then
+if [ "$(cat "$TSC_RESULT_FILE")" -eq 0 ]; then
     pass "No errors"
 else
     warn "TypeScript errors found"
 fi
 
+# Report ESLint results
 inline_check "ESLint check"
-ESLINT_OUTPUT=$(cd frontend && npx eslint src --quiet 2>&1 || true)
+ESLINT_OUTPUT=$(cat "$ESLINT_RESULT_FILE.out" 2>/dev/null || true)
 if [ -z "$ESLINT_OUTPUT" ]; then
     pass "No errors"
 else
@@ -100,6 +119,7 @@ else
     warn "${ESLINT_ERRORS} errors, ${ESLINT_WARNS} warnings"
 fi
 
+# Report console.log check (instant, no need to parallelize)
 inline_check "console.log removal"
 CONSOLE_LOGS=$(grep -r "console\.log" frontend/src --include="*.tsx" --include="*.ts" --exclude-dir=__tests__ --exclude-dir=test-utils --exclude-dir=__mocks__ 2>/dev/null | grep -v "utils/logger\.ts" | wc -l | tr -d ' ')
 if [ "$CONSOLE_LOGS" -eq 0 ]; then
@@ -107,15 +127,10 @@ if [ "$CONSOLE_LOGS" -eq 0 ]; then
 else
     warn "Found $CONSOLE_LOGS console.log statements"
 fi
-echo ""
 
-# =====================================================
-# 3. Tests
-# =====================================================
-echo -e "${BLUE}📋 3. Tests${NC}"
-
+# Report test results
 inline_check "Running unit tests"
-TEST_OUTPUT=$(cd frontend && npx vitest run 2>&1 || true)
+TEST_OUTPUT=$(cat "$TEST_RESULT_FILE.out" 2>/dev/null || true)
 TEST_PASSED=$(echo "$TEST_OUTPUT" | grep -oE "[0-9]+ passed" | grep -oE "[0-9]+" || echo "0")
 TEST_FAILED=$(echo "$TEST_OUTPUT" | grep -oE "[0-9]+ failed" | grep -oE "[0-9]+" || echo "0")
 if [ "$TEST_FAILED" -eq 0 ]; then
@@ -123,6 +138,9 @@ if [ "$TEST_FAILED" -eq 0 ]; then
 else
     warn "$TEST_FAILED tests failed, $TEST_PASSED passed"
 fi
+
+# Cleanup temp files
+rm -f "$TSC_RESULT_FILE" "$ESLINT_RESULT_FILE" "$ESLINT_RESULT_FILE.out" "$TEST_RESULT_FILE" "$TEST_RESULT_FILE.out"
 echo ""
 
 # =====================================================

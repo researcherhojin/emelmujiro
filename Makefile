@@ -42,11 +42,10 @@ build:
 	docker compose build
 
 test:
-	cd frontend && npx vitest run
-	cd backend && DATABASE_URL="" uv run python manage.py test
+	npx concurrently -n fe,be -c cyan,green "cd frontend && npx vitest run" "cd backend && DATABASE_URL='' uv run python manage.py test"
 
 test-ci:
-	cd frontend && npx vitest run --no-coverage
+	npx concurrently -n fe,be -c cyan,green "cd frontend && npx vitest run --no-coverage" "cd backend && DATABASE_URL='' uv run coverage run --source=api manage.py test && uv run coverage report"
 	cd backend && DATABASE_URL="" uv run coverage run --source='api' manage.py test && uv run coverage report
 
 lint:
