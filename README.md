@@ -70,6 +70,17 @@ make test                  # Run all tests (frontend + backend)
 make lint                  # Run all linters
 make lint-fix              # Auto-fix lint issues
 npm run validate           # lint + type-check + test:coverage (frontend)
+
+# Single test (from frontend/)
+CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx
+
+# E2E tests (from frontend/)
+npm run test:e2e           # Headless
+npm run test:e2e:ui        # Interactive UI
+npm run test:e2e:debug     # Debug mode
+
+# Docker dev with optional services
+docker compose -f docker-compose.dev.yml --profile postgres --profile redis up
 ```
 
 ## Architecture
@@ -77,7 +88,7 @@ npm run validate           # lint + type-check + test:coverage (frontend)
 ```mermaid
 graph LR
     subgraph Client["Browser"]
-        React["React 19 SPA"]
+        React["React 19 SPA\nVite + Tailwind"]
     end
 
     subgraph CF["Cloudflare"]
@@ -85,19 +96,24 @@ graph LR
     end
 
     subgraph MacMini["Mac Mini (Docker)"]
-        Nginx["nginx:alpine\nStatic files"]
-        DRF["Django 6 + DRF\nAPI + WebSocket"]
+        Nginx["nginx:alpine\nStatic files + SPA"]
+        DRF["Django 6 + DRF\nREST API"]
+        Daphne["Daphne (ASGI)\nWebSocket"]
         DB[(SQLite)]
+        Redis["Redis 7\nChannel Layer"]
     end
 
     React -->|emelmujiro.com| Tunnel
     Tunnel -->|:8080| Nginx
     Tunnel -->|:8000| DRF
+    Tunnel -->|:8000/ws| Daphne
     DRF --> DB
+    Daphne --> Redis
 
     style Tunnel fill:#F3E8FF,stroke:#7C3AED
     style MacMini fill:#ECFDF5,stroke:#059669
     style CF fill:#FEF3C7,stroke:#D97706
+    style Redis fill:#FEE2E2,stroke:#DC2626
 ```
 
 ## Key Features
@@ -110,10 +126,10 @@ graph LR
 - **Real-time Notifications** — WebSocket (Daphne/ASGI) with per-user preferences and email delivery
 - **Monitoring** — Sentry error tracking + Google Analytics
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
-- **Performance** — Optimized chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
+- **Performance** — Optimized chunk splitting (7 vendor chunks), Lighthouse CI assertions, < 10MB bundle budget
 - **CI/CD** — GitHub Actions with parallel jobs: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
-- **Security** — DOMPurify HTML sanitization, CI script injection prevention, uuid4 file uploads, rate limiting, input validation
-- **Testing** — 66 test suites (Vitest), 10 E2E specs (Playwright), 373 backend tests (Django)
+- **Security** — DOMPurify HTML sanitization, CI script injection prevention, uuid4 file uploads, rate limiting, IP blocking
+- **Testing** — 66 test suites (Vitest), 10 E2E specs (Playwright), 373 backend tests (Django), 98%+ line coverage
 
 ## License
 
