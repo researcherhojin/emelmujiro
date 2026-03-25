@@ -22,7 +22,7 @@ A full-stack monorepo for an AI education, consulting & AI Agent development pla
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.37-E91E63)
 ![i18next](https://img.shields.io/badge/i18next-25.10-26A69A?logo=i18next&logoColor=white)
-![React Router](https://img.shields.io/badge/React_Router-7.8-CA4245?logo=reactrouter&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-7.13-CA4245?logo=reactrouter&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.20-1a1a2e)
 
 **Backend**<br/>

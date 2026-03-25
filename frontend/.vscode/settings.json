@@ -1,0 +1,172 @@
+{
+  // ========== Tailwind CSS 설정 (기존 유지) ==========
+  "css.validate": false,
+  "css.lint.unknownAtRules": "ignore",
+  "scss.validate": false,
+  "scss.lint.unknownAtRules": "ignore",
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+
+  // ========== 기본 포맷터 설정 ==========
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+
+  // ========== JavaScript/TypeScript (Prettier) ==========
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // ========== 웹 파일 포맷팅 ==========
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // ========== Python (Black) ==========
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+
+  // ========== Python 설정 (uv 지원) ==========
+  "python.defaultInterpreterPath": ".venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python.terminal.activateEnvInCurrentTerminal": true,
+  "python.envFile": "${workspaceFolder}/.env",
+
+  // Black 포맷터 설정
+  "black-formatter.args": ["--line-length=88", "--target-version=py311"],
+  "black-formatter.path": [".venv/bin/black"],
+
+  // Python 린터 설정
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.flake8Path": ".venv/bin/flake8",
+  "python.linting.flake8Args": ["--max-line-length=88", "--extend-ignore=E203,W503"],
+
+  // Python 타입 체크
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.autoSearchPaths": true,
+  "python.analysis.extraPaths": [],
+
+  // ========== Prettier 설정 ==========
+  "prettier.requireConfig": false,
+  "prettier.useEditorConfig": true,
+  "prettier.printWidth": 80,
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": false,
+  "prettier.semi": true,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "es5",
+  "prettier.bracketSpacing": true,
+  "prettier.bracketSameLine": false,
+  "prettier.arrowParens": "always",
+  "prettier.endOfLine": "lf",
+
+  // ========== ESLint 설정 ==========
+  "eslint.enable": true,
+  "eslint.packageManager": "npm",
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.workingDirectories": [{ "directory": "./frontend", "changeProcessCWD": true }],
+
+  // ========== Code Actions ==========
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never"
+  },
+
+  // ========== 편집기 설정 ==========
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.rulers": [80, 88, 100],
+  "editor.wordWrap": "on",
+  "editor.minimap.enabled": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+
+  // ========== 파일 설정 ==========
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.venv": false,
+    "**/dist": true,
+    "**/build": true
+  },
+
+  // ========== 터미널 설정 ==========
+  "terminal.integrated.env.osx": {
+    "PATH": "${workspaceFolder}/.venv/bin:${env:PATH}"
+  },
+
+  // ========== Git 설정 ==========
+  "git.autofetch": true,
+  "git.confirmSync": false,
+
+  // ========== 검색 설정 ==========
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.venv": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.next": true
+  }
+}

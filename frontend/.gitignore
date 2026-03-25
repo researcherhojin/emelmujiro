@@ -12,7 +12,6 @@
 /build
 
 # IDE/Editor settings
-.vscode/
 .idea/
 
 # System files
@@ -24,7 +23,6 @@ Thumbs.db
 .env.local
 .env.development.local
 .env.test.local
-.env.production
 .env.production.local
 .env.staging
 
