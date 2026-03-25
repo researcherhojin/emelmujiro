@@ -80,17 +80,13 @@ urlpatterns = [
     # JWT token endpoints
     path("auth/token/refresh/", token_refresh, name="token_refresh"),
     path("auth/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    # API Documentation
-    path(
-        "docs/",
-        schema_view.with_ui("swagger", cache_timeout=0),
-        name="schema-swagger-ui",
-    ),
-    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
-    path("schema/", schema_view.without_ui(cache_timeout=0), name="schema-json"),
 ]
 
 if settings.DEBUG:
     urlpatterns += [
+        # API Documentation (development only)
+        path("docs/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
+        path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+        path("schema/", schema_view.without_ui(cache_timeout=0), name="schema-json"),
         path("send-test-email/", send_test_email, name="send-test-email"),
     ]

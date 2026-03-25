@@ -106,11 +106,12 @@ else:
         },
     }
     if not DEBUG:
-        import logging as _logging
+        import warnings
 
-        _logging.getLogger("django").warning(
+        warnings.warn(
             "REDIS_URL not set in production — using InMemoryChannelLayer. "
-            "WebSocket notifications will not work across multiple workers."
+            "WebSocket notifications will not work across multiple workers.",
+            stacklevel=1,
         )
 
 # Database configuration
