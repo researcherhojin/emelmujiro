@@ -355,7 +355,9 @@ class BlogImageUploadView(APIView):
         try:
             validate_uploaded_file(file)
         except ValidationError as e:
-            return Response({"error": e.messages if hasattr(e, "messages") else str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": e.messages if hasattr(e, "messages") else str(e)}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         # Save to media/blog/images/{year}/{month}/{filename}
         now = timezone.now()

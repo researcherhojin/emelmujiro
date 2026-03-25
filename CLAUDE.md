@@ -13,8 +13,11 @@ Full-stack monorepo (React 19 + Django 6) deployed on Mac Mini via Docker + Clou
 
 ## Commands
 
+All `npm run` frontend commands run from `frontend/`. Root-level `npm run dev` runs both servers.
+
 ```bash
 npm run dev                # Frontend + Backend (from root)
+npm run dev:clean          # Kill ports first, then start both (from root)
 npm run build              # sitemap → tsc → vite build → prerender → cp 404.html (from frontend/)
 npm run build:no-prerender # Faster build — skips SSG prerender step (from frontend/)
 npm run validate           # lint + type-check + test:coverage (from frontend/)
@@ -43,6 +46,10 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 **Contact**: Google Form iframe, not backend API. Backend `/api/contact/` is preserved for future switch.
 
 **Blog**: Dual fields `content` (plain text/search) + `content_html` (TipTap HTML). Category API cached 1 hour (key: `"blog_categories"`), invalidated on CRUD/toggle-publish. Router `basename="blog"` (NOT `"blog-posts"`).
+
+**State management**: React Context only — `UIContext` (theme/sidebar), `AuthContext` (JWT user), `BlogContext` (posts/categories), `NotificationContext` (WebSocket alerts). No Redux or external state libraries.
+
+**API layer**: `services/api.ts` (Axios) with interceptors for JWT refresh. Test mocks use MSW (`test-utils/`) for realistic HTTP stubbing.
 
 **WebSocket**: Requires Daphne (ASGI). Without Redis, uses InMemoryChannelLayer (won't work across workers).
 
