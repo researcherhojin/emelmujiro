@@ -102,7 +102,11 @@ update-test-counts:
 	./scripts/update-test-counts.sh
 
 cleanup-visits:
-	docker compose exec backend uv run python manage.py cleanup_sitevisits --days $(or $(DAYS),90)
+	@SAFE_DAYS="$(or $(DAYS),90)"; \
+	if ! echo "$$SAFE_DAYS" | grep -qE '^[0-9]+$$'; then \
+		echo "Error: DAYS must be a number"; exit 1; \
+	fi; \
+	docker compose exec backend uv run python manage.py cleanup_sitevisits --days "$$SAFE_DAYS"
 
 setup-cron:
 	@echo "Adding daily SiteVisit cleanup cron job (3 AM)..."

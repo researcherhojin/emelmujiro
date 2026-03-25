@@ -6,9 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Full-stack monorepo (React 19 + Django 6) deployed on Mac Mini via Docker + Cloudflare Tunnel.
 
-- **Frontend**: http://localhost:5173 (Vite, NOT port 3000). Build output: `build/` (NOT `dist/`)
+- **Frontend**: http://localhost:5173 (Vite, NOT port 3000). Build output: `build/` (NOT `dist/`). Import alias `@` → `src/`
 - **Backend**: http://localhost:8000. Single app: `api/`. Uses **uv** (NOT pip)
-- **Node ≥ 24**, **Python 3.12** required
+- **Dev proxy**: Vite proxies `/api` → `http://127.0.0.1:8000` (no CORS issues in dev)
+- **Node ≥ 24**, **Python 3.12** required. Husky pre-commit runs lint-staged automatically
 
 ## Commands
 
@@ -22,7 +23,7 @@ uv sync --extra dev                    # Install backend deps (NOT --dev)
 uv run python manage.py test           # Django unittest (NOT pytest). Needs DATABASE_URL=""
 uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
-# Shortcuts: make install | make test | make lint | make dev
+# Shortcuts: make install | make test | make lint | make lint-fix | make dev
 ```
 
 ## Architecture
@@ -72,7 +73,19 @@ vi.mock('react-i18next', () => ({
 
 Non-React: `vi.mock('../../i18n', () => ({ default: { t: (key: string) => key, language: 'ko' } }));`
 
+Use `renderWithProviders` from `test-utils/` for component tests needing context (wraps MemoryRouter + providers). E2E tests: Playwright in `frontend/e2e/`.
+
 Coverage target: 85%. Conventional commits required (`type(scope): description`). ESLint zero warnings policy.
+
+## Security
+
+**Blog HTML**: `content_html` (TipTap) is always sanitized with `DOMPurify.sanitize()` before rendering via `dangerouslySetInnerHTML`. Comments render as plain text only.
+
+**CI workflows**: Never use `${{ }}` expressions directly inside `run:` blocks — always bind to `env:` first, then reference as `"$VAR"`. This prevents script injection via user-controllable values like branch names.
+
+**Shell scripts**: No `eval` with variables, no `source` of untrusted files (use `read` loop parsing), validate Make variables that reach shell commands.
+
+**File uploads**: Backend uses `uuid4` for filenames (no user-supplied paths). Validated against extension whitelist + MIME type check + 5MB limit.
 
 ## Pitfalls
 

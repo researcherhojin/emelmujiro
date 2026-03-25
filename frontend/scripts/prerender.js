@@ -147,6 +147,63 @@ function writePrerenderedHtml(route, html) {
   return outputPath;
 }
 
+/**
+ * Prerender a batch of routes concurrently using a shared browser context.
+ * Groups routes by language to share context (same locale/userAgent).
+ */
+async function prerenderBatch(browser, baseUrl, routes, concurrency = 4) {
+  let successCount = 0;
+  const errors = [];
+
+  // Group routes by language so each group shares a browser context
+  const byLang = {};
+  for (const route of routes) {
+    (byLang[route.lang] ||= []).push(route);
+  }
+
+  for (const [lang, langRoutes] of Object.entries(byLang)) {
+    const context = await browser.newContext({
+      userAgent: 'Googlebot/2.1 (+http://www.google.com/bot.html)',
+      locale: lang === 'en' ? 'en-US' : 'ko-KR',
+    });
+
+    // Process routes in chunks of `concurrency`
+    for (let i = 0; i < langRoutes.length; i += concurrency) {
+      const chunk = langRoutes.slice(i, i + concurrency);
+      const results = await Promise.allSettled(
+        chunk.map(async (route) => {
+          const page = await context.newPage();
+          try {
+            const html = await prerenderRoute(page, baseUrl, route.path);
+            const outputPath = writePrerenderedHtml(route.path, html);
+            const sizeKb = (Buffer.byteLength(html) / 1024).toFixed(1);
+            console.log(
+              `   ✅ [${route.lang}] ${route.path.padEnd(16)} → ${path.relative(BUILD_DIR, outputPath)} (${sizeKb} KB)`
+            );
+            return true;
+          } finally {
+            await page.close();
+          }
+        })
+      );
+
+      for (let j = 0; j < results.length; j++) {
+        if (results[j].status === 'fulfilled') {
+          successCount++;
+        } else {
+          const route = chunk[j];
+          console.error(`   ❌ [${route.lang}] ${route.path.padEnd(16)} → Failed: ${results[j].reason.message}`);
+          errors.push(route.path);
+        }
+      }
+    }
+
+    await context.close();
+  }
+
+  return { successCount, errors };
+}
+
 async function main() {
   // Check that build directory exists
   if (!fs.existsSync(BUILD_DIR)) {
@@ -173,29 +230,7 @@ async function main() {
 
   const browser = await chromium.launch({ headless: true });
 
-  let successCount = 0;
-
-  for (const route of allRoutes) {
-    const context = await browser.newContext({
-      userAgent: 'Googlebot/2.1 (+http://www.google.com/bot.html)',
-      locale: route.lang === 'en' ? 'en-US' : 'ko-KR',
-    });
-    const page = await context.newPage();
-    try {
-      const html = await prerenderRoute(page, baseUrl, route.path);
-      const outputPath = writePrerenderedHtml(route.path, html);
-      const sizeKb = (Buffer.byteLength(html) / 1024).toFixed(1);
-      console.log(
-        `   ✅ [${route.lang}] ${route.path.padEnd(16)} → ${path.relative(BUILD_DIR, outputPath)} (${sizeKb} KB)`
-      );
-      successCount++;
-    } catch (err) {
-      console.error(`   ❌ [${route.lang}] ${route.path.padEnd(16)} → Failed: ${err.message}`);
-    } finally {
-      await page.close();
-      await context.close();
-    }
-  }
+  const { successCount } = await prerenderBatch(browser, baseUrl, allRoutes);
 
   await browser.close();
   server.close();

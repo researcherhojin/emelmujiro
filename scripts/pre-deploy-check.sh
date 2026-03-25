@@ -36,7 +36,7 @@ check() {
     TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
     echo -n "  Checking: $description... "
 
-    if eval "$command" > /dev/null 2>&1; then
+    if bash -c "$command" > /dev/null 2>&1; then
         echo -e "${GREEN}✅ Passed${NC}"
         CHECKS_PASSED=$((CHECKS_PASSED + 1))
     elif [ "$is_warning" = true ]; then
@@ -101,7 +101,7 @@ else
 fi
 
 inline_check "console.log removal"
-CONSOLE_LOGS=$(grep -r "console\.log" frontend/src --include="*.tsx" --include="*.ts" --exclude-dir=__tests__ --exclude-dir=test-utils 2>/dev/null | wc -l | tr -d ' ')
+CONSOLE_LOGS=$(grep -r "console\.log" frontend/src --include="*.tsx" --include="*.ts" --exclude-dir=__tests__ --exclude-dir=test-utils --exclude-dir=__mocks__ 2>/dev/null | grep -v "utils/logger\.ts" | wc -l | tr -d ' ')
 if [ "$CONSOLE_LOGS" -eq 0 ]; then
     pass "No console.log found"
 else

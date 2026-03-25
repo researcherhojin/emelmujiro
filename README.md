@@ -63,6 +63,15 @@ cd backend && uv run python manage.py migrate && cd ..
 npm run dev                # Frontend (localhost:5173) + Backend (localhost:8000)
 ```
 
+### Useful Commands
+
+```bash
+make test                  # Run all tests (frontend + backend)
+make lint                  # Run all linters
+make lint-fix              # Auto-fix lint issues
+npm run validate           # lint + type-check + test:coverage (frontend)
+```
+
 ## Architecture
 
 ```mermaid
@@ -94,7 +103,7 @@ graph LR
 ## Key Features
 
 - **Bilingual (i18n)** — URL-based language routing (`/about` for Korean, `/en/about` for English)
-- **SSG Prerendering** — 12 static HTML pages (6 routes x 2 languages) for SEO
+- **SSG Prerendering** — 12 static HTML pages (6 routes x 2 languages) for SEO, parallel rendering
 - **Blog** — TipTap rich text editor (Notion-like), image upload, IP-based likes, nested comments, admin toolbar
 - **FAQ** — Accordion section on homepage with bilingual content
 - **Auth** — httpOnly cookie JWT with automatic token refresh
@@ -102,8 +111,9 @@ graph LR
 - **Monitoring** — Sentry error tracking + Google Analytics
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
-- **CI/CD** — GitHub Actions: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
-- **Testing** — 1,237 unit tests (Vitest), 10 E2E specs (Playwright), 373 backend tests (Django)
+- **CI/CD** — GitHub Actions with parallel jobs: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
+- **Security** — DOMPurify HTML sanitization, CI script injection prevention, uuid4 file uploads, rate limiting, input validation
+- **Testing** — 62 test suites (Vitest), 10 E2E specs (Playwright), 373 backend tests (Django)
 
 ## License
 

@@ -47,13 +47,17 @@ else
   FRONTEND_DISPLAY="$FRONTEND_COUNT"
 fi
 
-# Update README.md — matches "N,NNN unit tests" or "NNN unit tests" and "NNN backend tests"
-sedi -E "s/[0-9,]+ unit tests \(Vitest\)/${FRONTEND_DISPLAY} unit tests (Vitest)/g" README.md
-sedi -E "s/[0-9,]+ backend tests \(Django\)/${BACKEND_COUNT} backend tests (Django)/g" README.md
+# Count frontend test files for README (test suites = files)
+FRONTEND_FILES=$(find frontend/src -name '*.test.ts' -o -name '*.test.tsx' -o -name '*.spec.ts' -o -name '*.spec.tsx' | wc -l | tr -d ' ')
+E2E_FILES=$(find frontend/e2e -name '*.spec.ts' 2>/dev/null | wc -l | tr -d ' ')
 
-# Update CLAUDE.md — matches "N,NNN tests), 10 E2E" and "NNN backend tests"
-sedi -E "s/[0-9,]+ tests\), 10 E2E/${FRONTEND_DISPLAY} tests), 10 E2E/g" CLAUDE.md
-sedi -E "s/[0-9,]+ backend tests/${BACKEND_COUNT} backend tests/g" CLAUDE.md
+echo "   Frontend test suites: $FRONTEND_FILES files"
+echo "   E2E specs: $E2E_FILES files"
+
+# Update README.md
+sedi -E "s/[0-9]+ test suites \(Vitest\)/${FRONTEND_FILES} test suites (Vitest)/g" README.md
+sedi -E "s/[0-9]+ E2E specs \(Playwright\)/${E2E_FILES} E2E specs (Playwright)/g" README.md
+sedi -E "s/[0-9,]+ backend tests \(Django\)/${BACKEND_COUNT} backend tests (Django)/g" README.md
 
 echo "✅ Updated test counts in README.md and CLAUDE.md"
 

@@ -22,10 +22,21 @@ fi
 echo "$LOG_PREFIX Building frontend..."
 cd frontend
 # Load frontend env vars from file (not committed to git)
+# Use read loop instead of source to prevent shell expansion injection
 if [ -f "$REPO_DIR/frontend/.env.production" ]; then
-  set -a
-  source "$REPO_DIR/frontend/.env.production"
-  set +a
+  while IFS= read -r line; do
+    # Skip comments and empty lines
+    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+    # Split on first '=' only (preserves '=' in values like DATABASE_URL)
+    key="${line%%=*}"
+    value="${line#*=}"
+    # Strip surrounding quotes from value
+    value="${value%\"}"
+    value="${value#\"}"
+    value="${value%\'}"
+    value="${value#\'}"
+    export "$key=$value"
+  done < "$REPO_DIR/frontend/.env.production"
 fi
 VITE_API_URL=https://api.emelmujiro.com/api npm run build
 

@@ -14,12 +14,19 @@ if ! docker info > /dev/null 2>&1; then
     if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Attempting to start Docker Desktop..."
         open -a Docker
-        echo "Waiting for Docker to fully start (~30 seconds)..."
-        sleep 30
+        echo "Waiting for Docker to start..."
+        elapsed=0
+        while [ $elapsed -lt 60 ]; do
+            if docker info > /dev/null 2>&1; then
+                break
+            fi
+            sleep 3
+            elapsed=$((elapsed + 3))
+            echo "  Waiting... (${elapsed}s)"
+        done
 
-        # Re-check Docker status
         if ! docker info > /dev/null 2>&1; then
-            echo "❌ Docker Desktop is still not running."
+            echo "❌ Docker Desktop did not start within 60s."
             echo "Please start Docker Desktop manually."
             exit 1
         fi

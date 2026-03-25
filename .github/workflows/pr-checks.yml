@@ -53,13 +53,18 @@ jobs:
           fetch-depth: 0
 
       - name: Check for merge conflicts
+        env:
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          git merge-tree $(git merge-base HEAD ${{ github.base_ref }}) HEAD ${{ github.base_ref }} | grep -q "<<<<<<< " && exit 1 || exit 0
+          git merge-tree "$(git merge-base HEAD "$BASE_REF")" HEAD "$BASE_REF" | grep -q "<<<<<<< " && exit 1 || exit 0
 
       - name: Check commit messages
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.sha }}
         run: |
           # Validate commit message format (skip merge commits)
-          git log --format="%s" ${{ github.event.pull_request.base.sha }}..${{ github.sha }} | while read msg; do
+          git log --format="%s" "${BASE_SHA}..${HEAD_SHA}" | while read msg; do
             # Skip merge commits
             if [[ "$msg" =~ ^Merge ]]; then
               continue
