@@ -1,4 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
+import type { AxiosHeaders } from 'axios';
 import { InternalAxiosRequestConfig } from 'axios';
 
 vi.stubEnv('NODE_ENV', 'development');
@@ -135,7 +136,7 @@ describe('API Service', () => {
       const requestInterceptor = mockRequestUse.mock.calls[0]?.[0];
       if (requestInterceptor) {
         const mockConfig: InternalAxiosRequestConfig = {
-          headers: {} as any,
+          headers: {} as AxiosHeaders,
         } as InternalAxiosRequestConfig;
 
         const result = requestInterceptor(mockConfig);
@@ -160,8 +161,8 @@ describe('API Service', () => {
 
         try {
           await errorInterceptor(error);
-        } catch (err: any) {
-          expect(err.userMessage).toBeDefined();
+        } catch (err: unknown) {
+          expect((err as Record<string, unknown>).userMessage).toBeDefined();
         }
       }
     });
@@ -172,7 +173,7 @@ describe('API Service', () => {
       const requestInterceptor = mockRequestUse.mock.calls[0]?.[0];
       if (requestInterceptor) {
         const mockConfig: InternalAxiosRequestConfig = {
-          headers: {} as any,
+          headers: {} as AxiosHeaders,
           baseURL: 'http://api.example.com',
           url: 'https://api.example.com/test',
         } as InternalAxiosRequestConfig;
@@ -220,8 +221,8 @@ describe('API Service', () => {
 
         try {
           await errorInterceptor(error);
-        } catch (err: any) {
-          expect(err.message).toBeDefined();
+        } catch (err: unknown) {
+          expect((err as Record<string, unknown>).message).toBeDefined();
         }
       }
     });
@@ -242,8 +243,8 @@ describe('API Service', () => {
 
         try {
           await errorInterceptor(error);
-        } catch (err: any) {
-          expect(err.userMessage).toBeDefined();
+        } catch (err: unknown) {
+          expect((err as Record<string, unknown>).userMessage).toBeDefined();
         }
       }
     });
@@ -255,7 +256,7 @@ describe('API Service', () => {
       const requestInterceptor = mockRequestUse.mock.calls[0]?.[0];
       if (requestInterceptor) {
         const mockConfig: InternalAxiosRequestConfig = {
-          headers: {} as any,
+          headers: {} as AxiosHeaders,
           url: 'http://api.example.com/test',
         } as InternalAxiosRequestConfig;
 
@@ -272,7 +273,7 @@ describe('API Service', () => {
       const requestInterceptor = mockRequestUse.mock.calls[0]?.[0];
       if (requestInterceptor) {
         const mockConfig: InternalAxiosRequestConfig = {
-          headers: {} as any,
+          headers: {} as AxiosHeaders,
           baseURL: 'http://api.example.com',
         } as InternalAxiosRequestConfig;
 

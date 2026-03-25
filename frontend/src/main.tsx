@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import env from './config/env';
+import logger from './utils/logger';
 import { initSentry } from './utils/sentry';
 import { initAnalytics } from './utils/analytics';
 import { initPerformanceMonitoring, checkPerformanceBudget } from './utils/webVitals';
@@ -40,12 +41,12 @@ try {
       .then((registrations) => {
         registrations.forEach((registration) => registration.unregister());
       })
-      .catch(() => {});
+      .catch((err) => logger.warn('Service worker cleanup failed:', err));
     if ('caches' in window) {
       caches
         .keys()
         .then((names) => names.forEach((name) => caches.delete(name)))
-        .catch(() => {});
+        .catch((err) => logger.warn('Cache cleanup failed:', err));
     }
   }
 } catch {

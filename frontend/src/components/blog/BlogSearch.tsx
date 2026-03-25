@@ -39,7 +39,8 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
         }
       }
     } catch (error) {
-      logger.error('Failed to load recent searches:', error);
+      logger.warn('Failed to parse recent searches, clearing corrupted data:', error);
+      localStorage.removeItem('recentSearches');
       setRecentSearches([]);
     }
   }, []);

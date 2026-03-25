@@ -105,6 +105,13 @@ else:
             "BACKEND": "channels.layers.InMemoryChannelLayer",
         },
     }
+    if not DEBUG:
+        import logging as _logging
+
+        _logging.getLogger("django").warning(
+            "REDIS_URL not set in production — using InMemoryChannelLayer. "
+            "WebSocket notifications will not work across multiple workers."
+        )
 
 # Database configuration
 DATABASE_URL = os.environ.get("DATABASE_URL")

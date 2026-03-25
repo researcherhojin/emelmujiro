@@ -40,13 +40,20 @@ fi
 echo "   Frontend: $FRONTEND_COUNT tests"
 echo "   Backend: $BACKEND_COUNT tests"
 
-# Update README.md
-sedi -E "s/~[0-9]+ unit tests \(Vitest\)/~${FRONTEND_COUNT} unit tests (Vitest)/g" README.md
-sedi -E "s/~[0-9]+ backend tests \(Django\)/~${BACKEND_COUNT} backend tests (Django)/g" README.md
+# Format with comma separator for display (e.g., 1237 -> 1,237)
+if command -v printf >/dev/null 2>&1; then
+  FRONTEND_DISPLAY=$(printf "%'d" "$FRONTEND_COUNT" 2>/dev/null || echo "$FRONTEND_COUNT")
+else
+  FRONTEND_DISPLAY="$FRONTEND_COUNT"
+fi
 
-# Update CLAUDE.md
-sedi -E "s/~[0-9]+ tests\), 10 E2E/~${FRONTEND_COUNT} tests), 10 E2E/g" CLAUDE.md
-sedi -E "s/~[0-9]+ backend tests/~${BACKEND_COUNT} backend tests/g" CLAUDE.md
+# Update README.md — matches "N,NNN unit tests" or "NNN unit tests" and "NNN backend tests"
+sedi -E "s/[0-9,]+ unit tests \(Vitest\)/${FRONTEND_DISPLAY} unit tests (Vitest)/g" README.md
+sedi -E "s/[0-9,]+ backend tests \(Django\)/${BACKEND_COUNT} backend tests (Django)/g" README.md
+
+# Update CLAUDE.md — matches "N,NNN tests), 10 E2E" and "NNN backend tests"
+sedi -E "s/[0-9,]+ tests\), 10 E2E/${FRONTEND_DISPLAY} tests), 10 E2E/g" CLAUDE.md
+sedi -E "s/[0-9,]+ backend tests/${BACKEND_COUNT} backend tests/g" CLAUDE.md
 
 echo "✅ Updated test counts in README.md and CLAUDE.md"
 

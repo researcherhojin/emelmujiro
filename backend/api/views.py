@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.core.cache import cache
 from django.http import HttpRequest
 from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from datetime import timedelta
 import hashlib
 import logging
@@ -120,7 +120,7 @@ def verify_recaptcha(recaptcha_response: str, request_ip: str = None) -> bool:
     """Verify reCAPTCHA response (security-hardened)"""
     if not settings.RECAPTCHA_PRIVATE_KEY:
         if not settings.DEBUG:
-            logger.warning("RECAPTCHA_PRIVATE_KEY not configured in production — skipping verification")
+            raise ImproperlyConfigured("RECAPTCHA_PRIVATE_KEY not configured in production")
         return True
 
     # Input validation
@@ -230,6 +230,15 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         author = self.request.user.get_full_name() or self.request.user.username
         serializer.save(author=author)
+        cache.delete("blog_categories")
+
+    def perform_update(self, serializer):
+        serializer.save()
+        cache.delete("blog_categories")
+
+    def perform_destroy(self, instance):
+        instance.delete()
+        cache.delete("blog_categories")
 
     def retrieve(self, request, *args, **kwargs):
         """Retrieve individual post with view count increment and visit log"""
@@ -259,6 +268,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         post = self.get_object()
         post.is_published = not post.is_published
         post.save(update_fields=["is_published", "updated_at"])
+        cache.delete("blog_categories")
         return Response({"id": post.id, "is_published": post.is_published})
 
     @action(detail=True, methods=["post"], url_path="like", permission_classes=[AllowAny])
@@ -370,6 +380,11 @@ class CategoryListView(APIView):
     def get(self, request):
         log_site_visit(request)
 
+        # Return cached category data if available
+        cached = cache.get("blog_categories")
+        if cached is not None:
+            return Response(cached)
+
         categories = (
             BlogPost.objects.filter(is_published=True)
             .values("category")
@@ -390,6 +405,7 @@ class CategoryListView(APIView):
                 }
             )
 
+        cache.set("blog_categories", category_data, timeout=ONE_HOUR)
         return Response(category_data)
 
 
@@ -471,6 +487,13 @@ class ContactView(APIView):
     def _is_spam_attempt(self, ip_address: str, email: str) -> bool:
         """Check for spam attempts (security-hardened)"""
         try:
+            # Check if IP or email is explicitly blocked
+            blocked_filter = Q(ip_address=ip_address, is_blocked=True)
+            if email and self._is_valid_email(email):
+                blocked_filter |= Q(email=email, is_blocked=True)
+            if ContactAttempt.objects.filter(blocked_filter).exists():
+                return True
+
             # IP-based check (limit 3 per hour)
             ip_attempts = ContactAttempt.objects.filter(
                 ip_address=ip_address,

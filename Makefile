@@ -75,10 +75,10 @@ logs:
 	docker compose logs -f
 
 logs-security:
-	docker exec emelmujiro-backend cat /app/logs/security.log 2>/dev/null || echo "No security log yet"
+	docker compose exec backend cat /app/logs/security.log 2>/dev/null || echo "No security log yet"
 
 logs-debug:
-	docker exec emelmujiro-backend tail -100 /app/logs/debug.log 2>/dev/null || echo "No debug log yet"
+	docker compose exec backend tail -100 /app/logs/debug.log 2>/dev/null || echo "No debug log yet"
 
 ps:
 	docker compose ps
@@ -90,23 +90,23 @@ restart:
 	docker compose restart
 
 migrate:
-	docker compose exec backend python manage.py migrate
+	docker compose exec backend uv run python manage.py migrate
 
 shell:
-	docker compose exec backend python manage.py shell
+	docker compose exec backend uv run python manage.py shell
 
 createsuperuser:
-	docker compose exec backend python manage.py createsuperuser
+	docker compose exec backend uv run python manage.py createsuperuser
 
 update-test-counts:
 	./scripts/update-test-counts.sh
 
 cleanup-visits:
-	docker exec emelmujiro-backend python manage.py cleanup_sitevisits --days $(or $(DAYS),90)
+	docker compose exec backend uv run python manage.py cleanup_sitevisits --days $(or $(DAYS),90)
 
 setup-cron:
 	@echo "Adding daily SiteVisit cleanup cron job (3 AM)..."
-	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits; echo "0 3 * * * docker exec emelmujiro-backend python manage.py cleanup_sitevisits --days 90 >> /tmp/cleanup_sitevisits.log 2>&1") | crontab -
+	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits; echo "0 3 * * * cd $(CURDIR) && docker compose exec -T backend uv run python manage.py cleanup_sitevisits --days 90 >> /tmp/cleanup_sitevisits.log 2>&1") | crontab -
 	@echo "Cron job added. Verify with: crontab -l"
 
 remove-cron:

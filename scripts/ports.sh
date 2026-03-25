@@ -12,7 +12,18 @@ LABELS=([5173]="Frontend" [8000]="Backend" [5432]="PostgreSQL" [6379]="Redis")
 
 kill_port() {
     local port=$1
-    lsof -ti:"$port" | xargs kill -9 2>/dev/null || true
+    local pids
+    pids=$(lsof -ti:"$port" 2>/dev/null) || true
+    if [ -n "$pids" ]; then
+        echo "$pids" | xargs kill -15 2>/dev/null || true
+        sleep 2
+        # Force kill any remaining processes
+        for pid in $pids; do
+            if kill -0 "$pid" 2>/dev/null; then
+                kill -9 "$pid" 2>/dev/null || true
+            fi
+        done
+    fi
     echo "  ✅ Port $port (${LABELS[$port]}) cleared"
 }
 

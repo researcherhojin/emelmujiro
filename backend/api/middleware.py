@@ -2,7 +2,6 @@ import logging
 import time
 from django.http import HttpResponseForbidden, JsonResponse
 from django.core.cache import cache
-from django.utils.deprecation import MiddlewareMixin
 from django.conf import settings
 import re
 
@@ -16,14 +15,14 @@ ONE_DAY = 86400
 
 # Rate limiting thresholds
 RATE_LIMIT_PER_HOUR = 100
-TEMP_BLOCK_ESCALATION_THRESHOLD = 3
+BLOCK_ESCALATION_THRESHOLD = 3
 
 
-class RequestSecurityMiddleware(MiddlewareMixin):
+class RequestSecurityMiddleware:
     """Request security middleware — malicious pattern detection and IP blocking"""
 
     def __init__(self, get_response):
-        super().__init__(get_response)
+        self.get_response = get_response
 
         # Malicious pattern definitions
         self.malicious_patterns = [
@@ -45,8 +44,8 @@ class RequestSecurityMiddleware(MiddlewareMixin):
     # Paths exempt from rate limiting (Docker healthcheck, etc.)
     RATE_LIMIT_EXEMPT_PATHS = {"/api/health/"}
 
-    def process_request(self, request):
-        """Pre-process incoming request"""
+    def __call__(self, request):
+        """Process incoming request and return response"""
         ip_address = get_client_ip(request)
 
         # IP block check
@@ -68,7 +67,7 @@ class RequestSecurityMiddleware(MiddlewareMixin):
         # Request logging
         self.log_request(request, ip_address)
 
-        return None
+        return self.get_response(request)
 
     def is_blocked_ip(self, ip_address):
         """Check if IP is blocked"""
@@ -128,7 +127,7 @@ class RequestSecurityMiddleware(MiddlewareMixin):
         cache.set(block_count_key, block_count, ONE_DAY)
 
         # Escalation threshold check
-        if block_count >= TEMP_BLOCK_ESCALATION_THRESHOLD:
+        if block_count >= BLOCK_ESCALATION_THRESHOLD:
             logger.critical(f"IP {ip_address} blocked {block_count} times. Consider permanent block.")
 
     def log_request(self, request, ip_address):
@@ -139,11 +138,15 @@ class RequestSecurityMiddleware(MiddlewareMixin):
             logger.info(f"Sensitive endpoint accessed: {request.path} from {ip_address}")
 
 
-class ContentSecurityMiddleware(MiddlewareMixin):
+class ContentSecurityMiddleware:
     """Content Security Policy middleware"""
 
-    def process_response(self, request, response):
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
         """Add security headers to response"""
+        response = self.get_response(request)
 
         # Content Security Policy
         csp_policy = (
@@ -184,13 +187,17 @@ class ContentSecurityMiddleware(MiddlewareMixin):
         return response
 
 
-class APIResponseTimeMiddleware(MiddlewareMixin):
+class APIResponseTimeMiddleware:
     """API response time monitoring middleware"""
 
-    def process_request(self, request):
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
         request.start_time = time.time()
 
-    def process_response(self, request, response):
+        response = self.get_response(request)
+
         if hasattr(request, "start_time"):
             duration = time.time() - request.start_time
 

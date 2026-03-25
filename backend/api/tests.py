@@ -531,7 +531,9 @@ class NewsletterSubscriptionModelTestCase(TestCase):
     REST_FRAMEWORK={
         "DEFAULT_THROTTLE_CLASSES": [],
         "DEFAULT_THROTTLE_RATES": {"anon": None, "user": None, "contact": None, "newsletter": None},
-    }
+    },
+    RECAPTCHA_PRIVATE_KEY=None,
+    DEBUG=True,
 )
 class ContactAPITestCase(APITestCase):
     """Tests for Contact API endpoints"""
@@ -967,6 +969,11 @@ class AuthenticationAPITestCase(APITestCase):
 class CategoryListAPITestCase(APITestCase):
     """Tests for Category List API endpoint"""
 
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
     def test_category_list(self):
         """Test listing categories with post counts"""
         BlogPost.objects.create(
@@ -1015,6 +1022,79 @@ class CategoryListAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert response.data is not None
         self.assertEqual(len(response.data), 0)
+
+
+class CategoryCacheTestCase(APITestCase):
+    """Tests for CategoryListView caching behaviour"""
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
+    def test_category_list_is_cached(self):
+        """Second request returns cached data without extra DB query"""
+        BlogPost.objects.create(title="P1", description="D", content="C", category="ai")
+        url = reverse("category-list")
+        response1 = self.client.get(url)
+        self.assertEqual(response1.status_code, status.HTTP_200_OK)
+
+        # Delete the post so DB would return different result
+        BlogPost.objects.all().delete()
+        response2 = self.client.get(url)
+        # Should still return cached data with 1 category
+        self.assertEqual(len(response2.data), 1)
+
+    def test_cache_invalidated_on_blog_post_create(self):
+        """Creating a blog post invalidates the category cache"""
+        from django.core.cache import cache
+
+        cache.set("blog_categories", [{"slug": "stale"}], timeout=3600)
+        admin = User.objects.create_superuser(username="admin", password="adminpass12345")
+        self.client.force_authenticate(user=admin)
+        self.client.post(
+            reverse("blog-list"),
+            {"title": "New", "description": "D", "content": "C", "category": "ml"},
+            format="json",
+        )
+        self.assertIsNone(cache.get("blog_categories"))
+
+    def test_cache_invalidated_on_blog_post_update(self):
+        """Updating a blog post invalidates the category cache"""
+        from django.core.cache import cache
+
+        post = BlogPost.objects.create(title="P", description="D", content="C", category="ai")
+        cache.set("blog_categories", [{"slug": "stale"}], timeout=3600)
+        admin = User.objects.create_superuser(username="admin", password="adminpass12345")
+        self.client.force_authenticate(user=admin)
+        self.client.patch(
+            reverse("blog-detail", kwargs={"pk": post.pk}),
+            {"category": "ml"},
+            format="json",
+        )
+        self.assertIsNone(cache.get("blog_categories"))
+
+    def test_cache_invalidated_on_blog_post_delete(self):
+        """Deleting a blog post invalidates the category cache"""
+        from django.core.cache import cache
+
+        post = BlogPost.objects.create(title="P", description="D", content="C", category="ai")
+        cache.set("blog_categories", [{"slug": "stale"}], timeout=3600)
+        admin = User.objects.create_superuser(username="admin", password="adminpass12345")
+        self.client.force_authenticate(user=admin)
+        self.client.delete(reverse("blog-detail", kwargs={"pk": post.pk}))
+        self.assertIsNone(cache.get("blog_categories"))
+
+    def test_cache_invalidated_on_toggle_publish(self):
+        """Toggling publish status invalidates the category cache"""
+        from django.core.cache import cache
+
+        post = BlogPost.objects.create(title="P", description="D", content="C", category="ai")
+        cache.set("blog_categories", [{"slug": "stale"}], timeout=3600)
+        admin = User.objects.create_superuser(username="admin", password="adminpass12345")
+        self.client.force_authenticate(user=admin)
+        self.client.post(reverse("blog-toggle-publish", kwargs={"pk": post.pk}))
+        self.assertIsNone(cache.get("blog_categories"))
 
 
 class HealthCheckAPITestCase(APITestCase):
@@ -2329,12 +2409,22 @@ class VerifyRecaptchaTestCase(TestCase):
         with patch("api.views.requests.post", side_effect=RuntimeError("unexpected")):
             self.assertFalse(verify_recaptcha("some-token"))
 
-    @override_settings(RECAPTCHA_PRIVATE_KEY=None)
-    def test_recaptcha_not_configured_passes(self):
-        """When RECAPTCHA_PRIVATE_KEY is not set, verification passes"""
+    @override_settings(RECAPTCHA_PRIVATE_KEY=None, DEBUG=True)
+    def test_recaptcha_not_configured_passes_in_debug(self):
+        """When RECAPTCHA_PRIVATE_KEY is not set in DEBUG mode, verification passes"""
         from api.views import verify_recaptcha
 
         self.assertTrue(verify_recaptcha("any-token"))
+
+    @override_settings(RECAPTCHA_PRIVATE_KEY=None, DEBUG=False)
+    def test_recaptcha_not_configured_raises_in_production(self):
+        """When RECAPTCHA_PRIVATE_KEY is not set in production, raises ImproperlyConfigured"""
+        from django.core.exceptions import ImproperlyConfigured
+
+        from api.views import verify_recaptcha
+
+        with self.assertRaises(ImproperlyConfigured):
+            verify_recaptcha("any-token")
 
 
 class LogSiteVisitTestCase(TestCase):
@@ -2403,6 +2493,7 @@ class BlogImageUploadTestCase(APITestCase):
 @override_settings(
     REST_FRAMEWORK={**NO_THROTTLE},
     RECAPTCHA_PRIVATE_KEY=None,
+    DEBUG=True,
 )
 class ContactSpamCheckTestCase(APITestCase):
     """Tests for ContactView spam checking (lines 379, 387, 451, 460, 464-471, 492)"""
@@ -2509,15 +2600,56 @@ class ContactSpamCheckTestCase(APITestCase):
         with patch("api.views.ContactAttempt.objects.filter", side_effect=Exception("DB error")):
             self.assertTrue(view._is_spam_attempt("10.0.0.1", "test@example.com"))
 
+    def test_is_blocked_ip_returns_spam(self):
+        """IP with is_blocked=True is immediately rejected as spam"""
+        ContactAttempt.objects.create(
+            ip_address="192.168.1.1",
+            email="",
+            attempt_count=1,
+            is_blocked=True,
+            block_reason="Manual block",
+        )
+        view = ContactView()
+        self.assertTrue(view._is_spam_attempt("192.168.1.1", "legit@example.com"))
+
+    def test_is_blocked_email_returns_spam(self):
+        """Email with is_blocked=True is immediately rejected as spam"""
+        ContactAttempt.objects.create(
+            ip_address="10.0.0.99",
+            email="blocked@example.com",
+            attempt_count=1,
+            is_blocked=True,
+            block_reason="Spam email",
+        )
+        view = ContactView()
+        self.assertTrue(view._is_spam_attempt("10.0.0.1", "blocked@example.com"))
+
+    def test_is_blocked_false_does_not_trigger(self):
+        """Record with is_blocked=False does not trigger blocked check"""
+        ContactAttempt.objects.create(
+            ip_address="192.168.1.2",
+            email="",
+            attempt_count=1,
+            is_blocked=False,
+        )
+        view = ContactView()
+        self.assertFalse(view._is_spam_attempt("192.168.1.2", "clean@example.com"))
+
 
 @override_settings(
     REST_FRAMEWORK={**NO_THROTTLE},
     RECAPTCHA_PRIVATE_KEY=None,
+    DEBUG=True,
 )
 class ContactRecaptchaFailureTestCase(APITestCase):
     """Tests for ContactView reCAPTCHA failure path (line 379)"""
 
-    @override_settings(RECAPTCHA_PRIVATE_KEY="test-key")
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
+    @override_settings(RECAPTCHA_PRIVATE_KEY="test-key", REST_FRAMEWORK={**NO_THROTTLE})
     def test_recaptcha_failure_rejects_contact(self):
         """Failed reCAPTCHA verification rejects contact form"""
         from unittest.mock import patch, MagicMock
@@ -3695,7 +3827,7 @@ class ContentSecurityMiddlewareServerHeaderTestCase(TestCase):
         response["Server"] = "Apache/2.4"
 
         middleware = ContentSecurityMiddleware(lambda r: response)
-        result = middleware.process_response(request, response)
+        result = middleware(request)
         self.assertNotIn("Server", result)
 
 
@@ -3713,20 +3845,20 @@ class APIResponseTimeSlowRequestTestCase(TestCase):
         from django.test import RequestFactory
         from django.http import HttpResponse
         from unittest.mock import patch
-        import time
 
         factory = RequestFactory()
         request = factory.get("/api/health/")
-        # Simulate request started 4 seconds ago
-        request.start_time = time.time() - 4.0
 
         response = HttpResponse("OK")
         middleware = APIResponseTimeMiddleware(lambda r: response)
 
-        with patch("api.middleware.logger") as mock_logger:
-            middleware.process_response(request, response)
-            mock_logger.warning.assert_called_once()
-            self.assertIn("Slow request", mock_logger.warning.call_args[0][0])
+        # Simulate 4-second gap between start and end of request
+        with patch("api.middleware.time") as mock_time:
+            mock_time.time.side_effect = [100.0, 104.0]
+            with patch("api.middleware.logger") as mock_logger:
+                middleware(request)
+                mock_logger.warning.assert_called_once()
+                self.assertIn("Slow request", mock_logger.warning.call_args[0][0])
 
 
 class SecurityCheckCommandTestCase(TestCase):
@@ -3951,7 +4083,9 @@ class SerializerValidationEdgeCasesTestCase(TestCase):
 
 
 @override_settings(
-    REST_FRAMEWORK={**settings.REST_FRAMEWORK, "DEFAULT_THROTTLE_CLASSES": [], "DEFAULT_THROTTLE_RATES": {}}
+    REST_FRAMEWORK={**settings.REST_FRAMEWORK, "DEFAULT_THROTTLE_CLASSES": [], "DEFAULT_THROTTLE_RATES": {}},
+    RECAPTCHA_PRIVATE_KEY=None,
+    DEBUG=True,
 )
 class ContactSpamIpLimitTestCase(APITestCase):
     """Cover views.py lines 451, 464-465: IP spam limit hit + suspicious email"""
@@ -4050,7 +4184,9 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
 
 
 @override_settings(
-    REST_FRAMEWORK={**settings.REST_FRAMEWORK, "DEFAULT_THROTTLE_CLASSES": [], "DEFAULT_THROTTLE_RATES": {}}
+    REST_FRAMEWORK={**settings.REST_FRAMEWORK, "DEFAULT_THROTTLE_CLASSES": [], "DEFAULT_THROTTLE_RATES": {}},
+    RECAPTCHA_PRIVATE_KEY=None,
+    DEBUG=True,
 )
 class ContactSuspiciousEmailTestCase(APITestCase):
     """Cover views.py lines 464-465: suspicious email pattern detection"""

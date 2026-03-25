@@ -1,1 +1,28 @@
-SPAM_KEYWORDS = ["대출", "투자", "수익", "홍보", "광고", "마케팅", "casino", "viagra", "crypto", "lottery"]
+SPAM_KEYWORDS = [
+    # English spam terms
+    "betting",
+    "bitcoin",
+    "casino",
+    "click here",
+    "crypto",
+    "earn money",
+    "forex",
+    "free money",
+    "gambling",
+    "lottery",
+    "make money online",
+    "payday loan",
+    "viagra",
+    "work from home",
+    # Korean spam terms
+    "광고",
+    "대출",
+    "도박",
+    "마케팅",
+    "불법",
+    "성인",
+    "수익",
+    "카지노",
+    "투자",
+    "홍보",
+]

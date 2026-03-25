@@ -66,8 +66,8 @@ make update-test-counts    # Auto-update test counts in README.md & CLAUDE.md
 
 - `ports.sh` — Port management (`--kill` to kill dev ports, default: check status)
 - `start-dev.sh` — Start dev environment with Docker
-- `deploy-webhook.js` — Webhook handler for GitHub Actions auto-deploy (timing-safe auth)
-- `auto-deploy.sh` — Frontend build + backend rebuild + frontend container ensure (called by deploy-webhook.js)
+- `deploy-webhook.js` — Webhook handler for GitHub Actions auto-deploy (timing-safe auth, file-based deploy lock at `/tmp/emelmujiro-deploy.lock`)
+- `auto-deploy.sh` — Frontend build + backend rebuild + health check polling (called by deploy-webhook.js)
 - `pre-deploy-check.sh` — Pre-production deployment validation (9-point checklist)
 - `update-test-counts.sh` — Auto-update test counts in README.md & CLAUDE.md (run via `make update-test-counts`)
 
@@ -78,7 +78,7 @@ make update-test-counts    # Auto-update test counts in README.md & CLAUDE.md
 - `frontend/` — React 19 + TypeScript + Vite 8 + Tailwind CSS 3.x
 - `backend/` — Django 6 + DRF + JWT auth + WebSocket (Channels/Daphne). Single app: `api/`. Uses **uv** (`pyproject.toml` + `uv.lock`). Dev deps in `[project.optional-dependencies]` — use `uv sync --extra dev`. Admin endpoints in `admin_views.py`, core views in `views.py`. **Admin UI**: use Django Admin at `/admin/` (no custom React admin dashboard)
 - Root `package.json` uses npm workspaces pointing to `frontend/`
-- Docker: `docker-compose.yml` (prod, SQLite default; PostgreSQL via `--profile postgres`, Redis via `--profile redis`) and `docker-compose.dev.yml` (dev with hot-reload)
+- Docker: `docker-compose.yml` (prod, SQLite default; PostgreSQL via `--profile postgres`, Redis via `--profile redis`) and `docker-compose.dev.yml` (dev with hot-reload). **Production without Redis**: `InMemoryChannelLayer` is used — WebSocket notifications won't work across multiple workers (WARNING logged at startup)
 
 ### Routing & i18n
 
@@ -122,13 +122,17 @@ Frontend: `NotificationContext` manages state with auto-connect WebSocket on log
 
 **Content storage**: Dual fields — `content` (plain text for search/SEO) + `content_html` (TipTap HTML output for rendering). `BlogDetail` renders `content_html` via DOMPurify if present, falls back to `ReactMarkdown` for legacy Markdown posts.
 
-**TipTap Editor** (`/blog/new`, `/blog/edit/:id`): Block editor with toolbar, `/` slash commands, image drag-drop/paste upload, syntax-highlighted code blocks. Admin-only access via `AuthContext.user.role === 'admin'`. Image upload endpoint: `POST /api/blog-posts/upload-image/` saves to `media/blog/images/{year}/{month}/`.
+**TipTap Editor** (`/blog/new`, `/blog/edit/:id`): Block editor with i18n toolbar (`blogEditor.toolbar.*` keys), `/` slash commands, image drag-drop/paste upload, syntax-highlighted code blocks. Admin-only access via `AuthContext.user.role === 'admin'`. Image upload endpoint: `POST /api/blog-posts/upload-image/` saves to `media/blog/images/{year}/{month}/`. URL input uses inline input field (not `window.prompt`).
 
 **Like API**: `POST /api/blog-posts/{id}/like/` — IP-based toggle (one like per IP per post). `BlogLike` model with `unique_together = [post, ip_address]`. Automatically increments/decrements `BlogPost.likes`.
 
 **Comment API**: Nested under posts: `/api/blog-posts/{id}/comments/`. `BlogComment` model supports replies via `parent` FK, tracks `ip_address` for audit. `CommentLike` for IP-based comment likes. No pagination (comments are few per post). Anyone can create/read; **only admin can delete** (`IsAdminUser`). `CommentRateThrottle` limits creation to 10/hour per IP. Spam keyword detection in `perform_create` (shared keyword list with Contact form).
 
 **Blog Admin UI**: Visible only when logged in as admin (`user.role === 'admin'`). `BlogDetail` shows sticky admin toolbar (publish/draft toggle, edit link, delete with confirmation). `BlogComments` shows delete button per comment. `BlogEditor` fetches categories from API with i18n fallback (`CATEGORY_KEYS` using `blogEditor.category*` translation keys).
+
+**Category caching**: `CategoryListView` caches category data for 1 hour (key: `"blog_categories"`). Cache is invalidated on blog post create/update/delete/toggle-publish in `BlogPostViewSet`.
+
+**Contact spam detection**: `ContactAttempt.is_blocked` field is checked in `_is_spam_attempt()` — if IP or email is explicitly blocked via admin, requests are rejected before count-based rate limiting.
 
 ### SSG / Prerendering
 
@@ -202,7 +206,7 @@ Components must call the getter each render. Do not store results in module-leve
 
 ### Coverage
 
-Target: **60%** minimum (currently ~96% frontend, ~98% backend). Config in `codecov.yml`. Scale: 66 unit test files (1,234 tests), 10 E2E spec files, 364 backend tests.
+Target: **85%** minimum (currently ~96% frontend, ~98% backend). Config in `codecov.yml`. Scale: 66 unit test files (1,237 tests), 10 E2E spec files, 373 backend tests.
 
 ## CI/CD
 
@@ -254,7 +258,7 @@ Husky + lint-staged. `.lintstagedrc.js` at repo root handles path translation: `
 
 ### Backend Django Config
 
-- `SECRET_KEY` **required** in production; raises `ImproperlyConfigured` if missing
+- `SECRET_KEY` **required** in production; raises `ImproperlyConfigured` if missing. `RECAPTCHA_PRIVATE_KEY` also raises `ImproperlyConfigured` in production if missing (DEBUG mode allows bypass for development)
 - JWT: access 30min, refresh 7 days, rotation + blacklist. httpOnly cookies via `CookieJWTAuthentication`
 - CORS: production only allows `https://emelmujiro.com` (localhost allowed only in DEBUG)
 - Admin endpoints throttled at 120/hour via `AdminRateThrottle`
@@ -277,7 +281,7 @@ Both services managed by `docker-compose.yml`. Frontend: `nginx:alpine` volume-m
 6. **`setTimeout` cleanup pattern**: Store timer in `useRef(null)`, `clearTimeout` in useEffect cleanup. Already applied across all components — follow same pattern for new usage
 7. **Comments in English**: No Korean comments anywhere in codebase
 8. **Logger default export only**: `import logger from '../utils/logger'`, not destructured. Use `env.IS_DEVELOPMENT` (from `config/env`) not `process.env.NODE_ENV`
-9. **No `window.alert()` in components**: Use inline toast state pattern (`ToastState` + `useRef` timer + `role="alert"`)
+9. **No `window.alert()`/`window.prompt()` in components**: Use inline toast state pattern (`ToastState` + `useRef` timer + `role="alert"`) for alerts, inline input fields for prompts
 10. **Backend tests need `DATABASE_URL=""`**: If env var points to Docker PostgreSQL, tests fail. Use SQLite
 11. **ESLint zero warnings**: Use `useCallback` for context functions, prefix unused params with `_`, add `role`/`onKeyDown`/`tabIndex` for clickable non-interactive elements
 12. **No hardcoded site URLs**: Always use `SITE_URL` from `constants.ts`. `generate-sitemap.js` reads `process.env.SITE_URL` with fallback (Node.js, can't import from frontend)

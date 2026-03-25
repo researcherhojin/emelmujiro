@@ -4,21 +4,21 @@ codecov:
 coverage:
   precision: 2
   round: down
-  range: "60...90"
+  range: "85...95"
 
   status:
     project:
       frontend:
-        target: 60%
-        threshold: 5%
+        target: 85%
+        threshold: 3%
         base: auto
         flags:
           - frontend
         paths:
           - frontend/src
       backend:
-        target: 60%
-        threshold: 5%
+        target: 85%
+        threshold: 3%
         base: auto
         flags:
           - backend
@@ -28,7 +28,7 @@ coverage:
     patch:
       default:
         target: 60%
-        threshold: 5%
+        threshold: 3%
         base: auto
 
 comment:

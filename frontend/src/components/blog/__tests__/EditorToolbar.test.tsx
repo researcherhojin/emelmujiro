@@ -44,7 +44,7 @@ function createMockEditor() {
   };
 }
 
-// Helper: buttons have title attributes, but lucide icons also create <title> elements.
+// Helper: buttons have title attributes (i18n keys in test), but lucide icons also create <title> elements.
 // Use getAllByTitle and filter to the actual <button> elements.
 const getToolbarButton = (title: string): HTMLButtonElement => {
   const elements = screen.getAllByTitle(title);
@@ -74,110 +74,159 @@ describe('EditorToolbar', () => {
     renderToolbar();
 
     const titles = [
-      'Bold',
-      'Italic',
-      'Underline',
-      'Strikethrough',
-      'Inline code',
-      'Heading 1',
-      'Heading 2',
-      'Heading 3',
-      'Bullet list',
-      'Ordered list',
-      'Task list',
-      'Blockquote',
-      'Code block',
-      'Horizontal rule',
-      'Link',
-      'Image',
-      'Undo',
-      'Redo',
+      'blogEditor.toolbar.bold',
+      'blogEditor.toolbar.italic',
+      'blogEditor.toolbar.underline',
+      'blogEditor.toolbar.strikethrough',
+      'blogEditor.toolbar.inlineCode',
+      'blogEditor.toolbar.heading1',
+      'blogEditor.toolbar.heading2',
+      'blogEditor.toolbar.heading3',
+      'blogEditor.toolbar.bulletList',
+      'blogEditor.toolbar.orderedList',
+      'blogEditor.toolbar.taskList',
+      'blogEditor.toolbar.blockquote',
+      'blogEditor.toolbar.codeBlock',
+      'blogEditor.toolbar.horizontalRule',
+      'blogEditor.toolbar.link',
+      'blogEditor.toolbar.image',
+      'blogEditor.toolbar.undo',
+      'blogEditor.toolbar.redo',
     ];
     for (const title of titles) {
       expect(getToolbarButton(title)).toBeInTheDocument();
     }
   });
 
+  it('renders all toolbar buttons with aria-label attributes', () => {
+    renderToolbar();
+
+    const labels = [
+      'blogEditor.toolbar.bold',
+      'blogEditor.toolbar.italic',
+      'blogEditor.toolbar.underline',
+      'blogEditor.toolbar.strikethrough',
+      'blogEditor.toolbar.inlineCode',
+      'blogEditor.toolbar.heading1',
+      'blogEditor.toolbar.heading2',
+      'blogEditor.toolbar.heading3',
+      'blogEditor.toolbar.bulletList',
+      'blogEditor.toolbar.orderedList',
+      'blogEditor.toolbar.taskList',
+      'blogEditor.toolbar.blockquote',
+      'blogEditor.toolbar.codeBlock',
+      'blogEditor.toolbar.horizontalRule',
+      'blogEditor.toolbar.link',
+      'blogEditor.toolbar.image',
+      'blogEditor.toolbar.undo',
+      'blogEditor.toolbar.redo',
+    ];
+    for (const label of labels) {
+      const button = getToolbarButton(label);
+      expect(button).toHaveAttribute('aria-label', label);
+    }
+  });
+
   it('calls toggleBold on Bold button click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Bold'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.bold'));
     expect(mockEditor.chain).toHaveBeenCalled();
     expect(calledMethods).toContain('toggleBold');
   });
 
   it('calls toggleItalic on Italic button click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Italic'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.italic'));
     expect(calledMethods).toContain('toggleItalic');
   });
 
   it('calls toggleHeading on H1 button click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Heading 1'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.heading1'));
     expect(calledMethods).toContain('toggleHeading');
   });
 
   it('calls toggleBulletList on Bullet list click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Bullet list'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.bulletList'));
     expect(calledMethods).toContain('toggleBulletList');
   });
 
   it('calls toggleCodeBlock on Code block click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Code block'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.codeBlock'));
     expect(calledMethods).toContain('toggleCodeBlock');
   });
 
   it('calls setHorizontalRule on Horizontal rule click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Horizontal rule'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.horizontalRule'));
     expect(calledMethods).toContain('setHorizontalRule');
   });
 
   it('calls undo on Undo button click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Undo'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.undo'));
     expect(calledMethods).toContain('undo');
   });
 
   it('calls redo on Redo button click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Redo'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.redo'));
     expect(calledMethods).toContain('redo');
   });
 
   it('highlights active formatting buttons', () => {
     mockEditor.isActive.mockImplementation((type: string) => type === 'bold');
     renderToolbar();
-    const boldBtn = getToolbarButton('Bold');
+    const boldBtn = getToolbarButton('blogEditor.toolbar.bold');
     expect(boldBtn.className).toContain('bg-gray-200');
   });
 
   it('calls unsetLink when link is active', () => {
     mockEditor.isActive.mockImplementation((type: string) => type === 'link');
     renderToolbar();
-    fireEvent.click(getToolbarButton('Link'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.link'));
     expect(calledMethods).toContain('unsetLink');
   });
 
-  it('prompts for URL when adding a link', () => {
+  it('shows URL input when adding a link', () => {
     mockEditor.isActive.mockReturnValue(false);
-    const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue('https://example.com');
     renderToolbar();
-    fireEvent.click(getToolbarButton('Link'));
-    expect(promptSpy).toHaveBeenCalledWith('blogEditor.enterUrl');
-    expect(calledMethods).toContain('setLink');
-    promptSpy.mockRestore();
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.link'));
+    // URL input should appear
+    const urlInput = screen.getByPlaceholderText('blogEditor.toolbar.enterUrl');
+    expect(urlInput).toBeInTheDocument();
   });
 
-  it('does not add link when prompt is cancelled', () => {
+  it('applies link on Enter in URL input', async () => {
     mockEditor.isActive.mockReturnValue(false);
-    const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue(null);
     renderToolbar();
-    fireEvent.click(getToolbarButton('Link'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.link'));
+    const urlInput = screen.getByPlaceholderText('blogEditor.toolbar.enterUrl');
+    fireEvent.change(urlInput, { target: { value: 'https://example.com' } });
+    fireEvent.keyDown(urlInput, { key: 'Enter' });
+    expect(calledMethods).toContain('setLink');
+  });
+
+  it('closes URL input on Escape without applying link', () => {
+    mockEditor.isActive.mockReturnValue(false);
+    renderToolbar();
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.link'));
+    const urlInput = screen.getByPlaceholderText('blogEditor.toolbar.enterUrl');
+    fireEvent.change(urlInput, { target: { value: 'https://example.com' } });
+    fireEvent.keyDown(urlInput, { key: 'Escape' });
     expect(calledMethods).not.toContain('setLink');
-    promptSpy.mockRestore();
+    expect(screen.queryByPlaceholderText('blogEditor.toolbar.enterUrl')).not.toBeInTheDocument();
+  });
+
+  it('does not apply link when URL input is empty', () => {
+    mockEditor.isActive.mockReturnValue(false);
+    renderToolbar();
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.link'));
+    const urlInput = screen.getByPlaceholderText('blogEditor.toolbar.enterUrl');
+    fireEvent.keyDown(urlInput, { key: 'Enter' });
+    expect(calledMethods).not.toContain('setLink');
   });
 
   it('disables undo when cannot undo', () => {
@@ -194,56 +243,56 @@ describe('EditorToolbar', () => {
         )
     );
     renderToolbar();
-    expect(getToolbarButton('Undo')).toBeDisabled();
+    expect(getToolbarButton('blogEditor.toolbar.undo')).toBeDisabled();
   });
 
   // --- NEW TEST CASES ---
 
   it('calls toggleUnderline on Underline button click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Underline'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.underline'));
     expect(calledMethods).toContain('toggleUnderline');
   });
 
   it('calls toggleStrike on Strikethrough button click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Strikethrough'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.strikethrough'));
     expect(calledMethods).toContain('toggleStrike');
   });
 
   it('calls toggleCode on Inline code button click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Inline code'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.inlineCode'));
     expect(calledMethods).toContain('toggleCode');
   });
 
   it('calls toggleHeading with level 2 on H2 click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Heading 2'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.heading2'));
     expect(calledMethods).toContain('toggleHeading');
   });
 
   it('calls toggleHeading with level 3 on H3 click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Heading 3'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.heading3'));
     expect(calledMethods).toContain('toggleHeading');
   });
 
   it('calls toggleOrderedList on Ordered list click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Ordered list'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.orderedList'));
     expect(calledMethods).toContain('toggleOrderedList');
   });
 
   it('calls toggleTaskList on Task list click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Task list'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.taskList'));
     expect(calledMethods).toContain('toggleTaskList');
   });
 
   it('calls toggleBlockquote on Blockquote click', () => {
     renderToolbar();
-    fireEvent.click(getToolbarButton('Blockquote'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.blockquote'));
     expect(calledMethods).toContain('toggleBlockquote');
   });
 
@@ -261,13 +310,13 @@ describe('EditorToolbar', () => {
         )
     );
     renderToolbar();
-    expect(getToolbarButton('Redo')).toBeDisabled();
+    expect(getToolbarButton('blogEditor.toolbar.redo')).toBeDisabled();
   });
 
   it('highlights active italic button', () => {
     mockEditor.isActive.mockImplementation((type: string) => type === 'italic');
     renderToolbar();
-    const italicBtn = getToolbarButton('Italic');
+    const italicBtn = getToolbarButton('blogEditor.toolbar.italic');
     expect(italicBtn.className).toContain('bg-gray-200');
   });
 
@@ -276,24 +325,24 @@ describe('EditorToolbar', () => {
       return type === 'heading' && opts?.level === 2;
     });
     renderToolbar();
-    const h2Btn = getToolbarButton('Heading 2');
+    const h2Btn = getToolbarButton('blogEditor.toolbar.heading2');
     expect(h2Btn.className).toContain('bg-gray-200');
     // H1 should not be highlighted
-    const h1Btn = getToolbarButton('Heading 1');
+    const h1Btn = getToolbarButton('blogEditor.toolbar.heading1');
     expect(h1Btn.className).not.toContain('bg-gray-200');
   });
 
   it('highlights active code block button', () => {
     mockEditor.isActive.mockImplementation((type: string) => type === 'codeBlock');
     renderToolbar();
-    const codeBlockBtn = getToolbarButton('Code block');
+    const codeBlockBtn = getToolbarButton('blogEditor.toolbar.codeBlock');
     expect(codeBlockBtn.className).toContain('bg-gray-200');
   });
 
   it('highlights active link button', () => {
     mockEditor.isActive.mockImplementation((type: string) => type === 'link');
     renderToolbar();
-    const linkBtn = getToolbarButton('Link');
+    const linkBtn = getToolbarButton('blogEditor.toolbar.link');
     expect(linkBtn.className).toContain('bg-gray-200');
   });
 
@@ -305,7 +354,7 @@ describe('EditorToolbar', () => {
     expect(fileInput.accept).toBe('image/*');
 
     const clickSpy = vi.spyOn(fileInput, 'click');
-    fireEvent.click(getToolbarButton('Image'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.image'));
     expect(clickSpy).toHaveBeenCalled();
     clickSpy.mockRestore();
   });
@@ -368,14 +417,15 @@ describe('EditorToolbar', () => {
     });
   });
 
-  it('extends mark range when setting link', () => {
+  it('extends mark range when setting link via URL input', () => {
     mockEditor.isActive.mockReturnValue(false);
-    vi.spyOn(window, 'prompt').mockReturnValue('https://test.com');
     renderToolbar();
-    fireEvent.click(getToolbarButton('Link'));
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.link'));
+    const urlInput = screen.getByPlaceholderText('blogEditor.toolbar.enterUrl');
+    fireEvent.change(urlInput, { target: { value: 'https://test.com' } });
+    fireEvent.keyDown(urlInput, { key: 'Enter' });
     expect(calledMethods).toContain('extendMarkRange');
     expect(calledMethods).toContain('setLink');
-    vi.spyOn(window, 'prompt').mockRestore();
   });
 
   it('renders hidden file input with image accept type', () => {
@@ -388,7 +438,7 @@ describe('EditorToolbar', () => {
 
   it('applies non-active style to Horizontal rule button', () => {
     renderToolbar();
-    const hrBtn = getToolbarButton('Horizontal rule');
+    const hrBtn = getToolbarButton('blogEditor.toolbar.horizontalRule');
     // Horizontal rule always passes false for active
     expect(hrBtn.className).toContain('text-gray-500');
     expect(hrBtn.className).not.toContain('bg-gray-200');
@@ -396,7 +446,7 @@ describe('EditorToolbar', () => {
 
   it('applies non-active style to Image button', () => {
     renderToolbar();
-    const imgBtn = getToolbarButton('Image');
+    const imgBtn = getToolbarButton('blogEditor.toolbar.image');
     expect(imgBtn.className).toContain('text-gray-500');
     expect(imgBtn.className).not.toContain('bg-gray-200');
   });

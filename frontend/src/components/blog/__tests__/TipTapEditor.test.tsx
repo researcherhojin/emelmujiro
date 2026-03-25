@@ -40,10 +40,17 @@ const mockEditor = {
 
 let useEditorReturn: typeof mockEditor | null = null;
 // Capture the config passed to useEditor so we can invoke callbacks
-let capturedConfig: any = null;
+interface EditorConfig {
+  onUpdate: (params: { editor: { getHTML: () => string; getText: () => string } }) => void;
+  editorProps: {
+    handleDrop: (view: unknown, event: DragEvent, slice: unknown, moved: boolean) => boolean;
+    handlePaste: (view: unknown, event: ClipboardEvent) => boolean;
+  };
+}
+let capturedConfig: EditorConfig | null = null;
 
 vi.mock('@tiptap/react', () => ({
-  useEditor: (config: unknown) => {
+  useEditor: (config: EditorConfig) => {
     capturedConfig = config;
     return useEditorReturn;
   },
@@ -143,7 +150,7 @@ describe('TipTapEditor', () => {
         getHTML: vi.fn().mockReturnValue('<p>updated</p>'),
         getText: vi.fn().mockReturnValue('updated'),
       };
-      capturedConfig.onUpdate({ editor: fakeEditor });
+      capturedConfig!.onUpdate({ editor: fakeEditor });
       expect(mockOnChange).toHaveBeenCalledWith('<p>updated</p>', 'updated');
     });
   });
@@ -152,7 +159,7 @@ describe('TipTapEditor', () => {
     const getHandleDrop = () => {
       useEditorReturn = mockEditor;
       render(<TipTapEditor onChange={mockOnChange} />);
-      return capturedConfig.editorProps.handleDrop;
+      return capturedConfig!.editorProps.handleDrop;
     };
 
     it('returns false when element was moved (not dropped)', () => {
@@ -211,7 +218,7 @@ describe('TipTapEditor', () => {
     const getHandlePaste = () => {
       useEditorReturn = mockEditor;
       render(<TipTapEditor onChange={mockOnChange} />);
-      return capturedConfig.editorProps.handlePaste;
+      return capturedConfig!.editorProps.handlePaste;
     };
 
     it('returns false when no clipboardData items', () => {
@@ -291,7 +298,7 @@ describe('TipTapEditor', () => {
       render(<TipTapEditor onChange={mockOnChange} />);
 
       // Trigger upload via handleDrop to exercise the error path
-      const handleDrop = capturedConfig.editorProps.handleDrop;
+      const handleDrop = capturedConfig!.editorProps.handleDrop;
       const event = {
         dataTransfer: { files: [{ type: 'image/jpeg' }] },
         preventDefault: vi.fn(),

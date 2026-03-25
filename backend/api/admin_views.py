@@ -80,7 +80,7 @@ def admin_messages(request):
     except (ValueError, TypeError):
         return Response({"error": "Invalid pagination parameters"}, status=400)
 
-    contacts = Contact.objects.all().order_by("-created_at")
+    contacts = Contact.objects.select_related("processed_by").order_by("-created_at")
     page_items, total, next_page = paginate_queryset(contacts, page, page_size)
     items = [
         {
@@ -104,7 +104,7 @@ def admin_messages(request):
 def admin_message_detail(request, pk):
     """Admin contact message detail / update"""
     try:
-        contact = Contact.objects.get(pk=pk)
+        contact = Contact.objects.select_related("processed_by").get(pk=pk)
     except Contact.DoesNotExist:
         return Response({"error": "Not found"}, status=404)
 

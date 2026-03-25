@@ -14,6 +14,7 @@
 
 const http = require('http');
 const crypto = require('crypto');
+const fs = require('fs');
 const { execFile } = require('child_process');
 const path = require('path');
 
@@ -26,13 +27,34 @@ if (!SECRET) {
   process.exit(1);
 }
 
-let deploying = false;
+const LOCK_FILE = '/tmp/emelmujiro-deploy.lock';
+const LOCK_MAX_AGE_MS = 15 * 60 * 1000;
+
+function isDeploying() {
+  if (!fs.existsSync(LOCK_FILE)) return false;
+  const stat = fs.statSync(LOCK_FILE);
+  const age = Date.now() - stat.mtimeMs;
+  if (age > LOCK_MAX_AGE_MS) {
+    console.log(`[${timestamp()}] Removing stale lock file (age: ${Math.round(age / 1000)}s)`);
+    fs.unlinkSync(LOCK_FILE);
+    return false;
+  }
+  return true;
+}
+
+function acquireLock() {
+  fs.writeFileSync(LOCK_FILE, String(process.pid));
+}
+
+function releaseLock() {
+  try { fs.unlinkSync(LOCK_FILE); } catch (_) { /* ignore */ }
+}
 
 const server = http.createServer((req, res) => {
   // Health check
   if (req.method === 'GET' && req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', deploying }));
+    res.end(JSON.stringify({ status: 'ok', deploying: isDeploying() }));
     return;
   }
 
@@ -49,21 +71,21 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    if (deploying) {
+    if (isDeploying()) {
       console.log(`[${timestamp()}] Deploy already in progress, skipping`);
       res.writeHead(409, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Deploy already in progress' }));
       return;
     }
 
-    deploying = true;
+    acquireLock();
     console.log(`[${timestamp()}] Deploy triggered`);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'deploy started' }));
 
     execFile('bash', [DEPLOY_SCRIPT], { timeout: 600000 }, (error, stdout, stderr) => {
-      deploying = false;
+      releaseLock();
       if (error) {
         console.error(`[${timestamp()}] Deploy failed:`, error.message);
         if (stderr) console.error(stderr);

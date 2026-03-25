@@ -41,7 +41,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
     try {
       // Try API call first
       const response = await api.getBlogPosts(page);
-      const postsPerPage = Number(getEnvVar('POSTS_PER_PAGE')) || 6;
+      const postsPerPage = Number(getEnvVar('POSTS_PER_PAGE')) || 10;
 
       if (response.data && response.data.results) {
         setPosts(response.data.results);

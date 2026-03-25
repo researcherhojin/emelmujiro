@@ -35,8 +35,8 @@ const BlogListPage: React.FC = memo(() => {
       try {
         const response = await api.getBlogCategories();
         setCategories(response.data as Category[]);
-      } catch {
-        logger.warn('Failed to fetch blog categories');
+      } catch (err) {
+        logger.warn('Failed to fetch blog categories:', err);
       }
     };
     fetchCategories();
