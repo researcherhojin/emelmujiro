@@ -30,6 +30,8 @@ if "test" in sys.argv:
     SECURE_SSL_REDIRECT = False
     # Use fast password hasher for tests (PBKDF2 is intentionally slow)
     PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+    # DummyCache prevents middleware rate limiting from leaking between test classes
+    CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
 
 # Application definition
 CUSTOM_APPS = [

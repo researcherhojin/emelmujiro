@@ -1019,19 +1019,6 @@ class HealthCheckAPITestCase(APITestCase):
         self.assertEqual(response.data["status"], "healthy")
         self.assertIn("timestamp", response.data)
 
-    def test_health_check_not_rate_limited(self):
-        """Health check is exempt from middleware rate limiting (Docker calls it every 30s)"""
-        from django.core.cache import cache
-
-        # Simulate exhausted rate limit for this IP
-        cache.set("rate_limit_127.0.0.1", 200, 3600)
-        url = reverse("health-check")
-        response: Response = self.client.get(url)  # type: ignore
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Clean up to avoid poisoning subsequent tests
-        cache.delete("rate_limit_127.0.0.1")
-
 
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})
 class AdminAPITestCase(APITestCase):
@@ -2093,6 +2080,7 @@ class ValidatorTestCase(TestCase):
 # ============================================================
 
 
+@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache", "LOCATION": "middleware-test"}})
 class RequestSecurityMiddlewareTestCase(TestCase):
     """Tests for RequestSecurityMiddleware — IP blocking, rate limiting, malicious patterns"""
 
@@ -2130,6 +2118,14 @@ class RequestSecurityMiddlewareTestCase(TestCase):
         cache.set("rate_limit_9.9.9.9", 100, 3600)
         response = self.client.get("/api/categories/", REMOTE_ADDR="9.9.9.9")
         self.assertEqual(response.status_code, 429)
+
+    def test_health_check_exempt_from_rate_limiting(self):
+        """Health check bypasses rate limiting even when IP is exhausted"""
+        from django.core.cache import cache
+
+        cache.set("rate_limit_127.0.0.1", 200, 3600)
+        response = self.client.get("/api/health/")
+        self.assertEqual(response.status_code, 200)
 
     def test_malicious_xss_in_path_blocked(self):
         """XSS pattern in URL path is blocked"""
