@@ -26,11 +26,13 @@ npm run test:e2e           # Playwright E2E (from frontend/). Also: test:e2e:ui,
 npm run type-check         # tsc --noEmit (from frontend/)
 npm run analyze:bundle     # source-map-explorer (from frontend/, requires build first)
 
-uv sync --extra dev                    # Install backend deps (NOT --dev)
+uv sync --extra dev                    # Install backend deps (NOT --dev). Run from backend/
 uv run python manage.py test           # Django unittest (NOT pytest). Needs DATABASE_URL=""
+uv run python manage.py test api.tests.CategoryAPITestCase.test_list  # Single backend test
 uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 # Shortcuts: make install | make test | make lint | make lint-fix | make dev
+# Also: make migrate | make test-ci | make shell | make createsuperuser
 # Docker dev with optional services:
 # docker compose -f docker-compose.dev.yml --profile postgres --profile redis up
 ```
@@ -86,7 +88,7 @@ vi.mock('react-i18next', () => ({
 
 Non-React: `vi.mock('../../i18n', () => ({ default: { t: (key: string) => key, language: 'ko' } }));`
 
-Use `renderWithProviders` from `test-utils/` for component tests needing context (wraps MemoryRouter + providers). E2E tests: Playwright in `frontend/e2e/`.
+Use `renderWithProviders` from `test-utils/` for component tests needing context (wraps MemoryRouter + providers). E2E tests: Playwright in `frontend/e2e/` — runs on 5 profiles (chromium, firefox, webkit, mobile chrome, mobile safari); PR checks run chromium only.
 
 Coverage target: 85%. Conventional commits required (`type(scope): description`). Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`. ESLint uses flat config (`eslint.config.mjs`, NOT `.eslintrc`). Zero warnings policy.
 
