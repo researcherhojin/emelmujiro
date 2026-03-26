@@ -29,7 +29,7 @@ const Footer: React.FC = memo(() => {
   const currentYear = new Date().getFullYear();
 
   const allServices = getServices();
-  const serviceKeys = serviceLinks.map((s) => s.key);
+  const serviceKeys = serviceLinks.map((s) => s.key) as string[];
   const serviceList = serviceKeys.map((key) => allServices[key]);
 
   const handleServiceClick = useCallback(

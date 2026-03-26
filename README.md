@@ -124,7 +124,6 @@ graph LR
 - **Bilingual (i18n)** — URL-based language routing (`/about` for Korean, `/en/about` for English)
 - **SSG Prerendering** — 12 static HTML pages (6 routes x 2 languages) for SEO, parallel rendering
 - **Blog** — TipTap rich text editor (Notion-like), image upload, IP-based likes, nested comments, admin toolbar
-- **FAQ** — Accordion section on homepage with bilingual content
 - **Auth** — httpOnly cookie JWT with automatic token refresh
 - **Notifications** — REST API with per-user preferences and email delivery
 - **Monitoring** — Sentry error tracking + Google Analytics
