@@ -10,7 +10,7 @@
 
 </div>
 
-A full-stack monorepo for an AI education, consulting & AI Agent development platform, built with React 19, Django 6, and self-hosted on a Mac Mini via Docker + Cloudflare Tunnel.
+Official website for Emelmujiro, an AI education & consulting company. React 19 + Django 6 monorepo, self-hosted on Mac Mini.
 
 <p align="center">
   <img src="docs/screenshots/home-light.png" width="49%" alt="Light mode" />
