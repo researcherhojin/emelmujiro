@@ -1,9 +1,10 @@
 import logging
 
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from django.contrib.auth import authenticate
@@ -44,6 +45,7 @@ def _clear_jwt_cookies(response):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([AnonRateThrottle])
 def register(request):
     """
     User registration endpoint
@@ -65,11 +67,8 @@ def register(request):
     if len(password) < 12:
         return Response({"error": "Password must be at least 12 characters"}, status=status.HTTP_400_BAD_REQUEST)
 
-    if User.objects.filter(username=username).exists():
-        return Response({"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST)
-
-    if User.objects.filter(email=email).exists():
-        return Response({"error": "Email already registered"}, status=status.HTTP_400_BAD_REQUEST)
+    if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
+        return Response({"error": "Registration failed. Please try different credentials."}, status=status.HTTP_400_BAD_REQUEST)
 
     # Create user
     user = User.objects.create_user(
@@ -79,10 +78,7 @@ def register(request):
     # Generate tokens
     refresh = RefreshToken.for_user(user)
 
-    response = Response(
-        {"refresh": str(refresh), "access": str(refresh.access_token), "user": UserSerializer(user).data},
-        status=status.HTTP_201_CREATED,
-    )
+    response = Response({"user": UserSerializer(user).data}, status=status.HTTP_201_CREATED)
     _set_jwt_cookies(response, refresh.access_token, refresh)
     return response
 
@@ -116,9 +112,7 @@ def login(request):
     # Generate tokens
     refresh = RefreshToken.for_user(user)
 
-    response = Response(
-        {"refresh": str(refresh), "access": str(refresh.access_token), "user": UserSerializer(user).data}
-    )
+    response = Response({"user": UserSerializer(user).data})
     _set_jwt_cookies(response, refresh.access_token, refresh)
     return response
 
@@ -205,9 +199,7 @@ def change_password(request):
     # Generate new tokens
     refresh = RefreshToken.for_user(user)
 
-    response = Response(
-        {"success": "Password changed successfully", "refresh": str(refresh), "access": str(refresh.access_token)}
-    )
+    response = Response({"success": "Password changed successfully"})
     _set_jwt_cookies(response, refresh.access_token, refresh)
     return response
 
@@ -232,10 +224,10 @@ def token_refresh(request):
             if settings.SIMPLE_JWT.get("BLACKLIST_AFTER_ROTATION"):
                 old_refresh.blacklist()
             new_refresh = RefreshToken.for_user(User.objects.get(id=old_refresh["user_id"]))
-            response = Response({"access": str(access_token), "refresh": str(new_refresh)})
+            response = Response({"success": "Token refreshed"})
             _set_jwt_cookies(response, new_refresh.access_token, new_refresh)
         else:
-            response = Response({"access": str(access_token), "refresh": str(refresh_token)})
+            response = Response({"success": "Token refreshed"})
             _set_jwt_cookies(response, access_token, old_refresh)
 
         return response

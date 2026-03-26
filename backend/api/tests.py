@@ -757,9 +757,12 @@ class AuthenticationAPITestCase(APITestCase):
         response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         assert response.data is not None
-        self.assertIn("access", response.data)
-        self.assertIn("refresh", response.data)
         self.assertIn("user", response.data)
+        self.assertNotIn("access", response.data)
+        self.assertNotIn("refresh", response.data)
+        # Tokens are now in httpOnly cookies only
+        self.assertIn("access_token", response.cookies)
+        self.assertIn("refresh_token", response.cookies)
 
     def test_user_login(self):
         """Test user login"""
@@ -768,8 +771,12 @@ class AuthenticationAPITestCase(APITestCase):
         response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert response.data is not None
-        self.assertIn("access", response.data)
-        self.assertIn("refresh", response.data)
+        self.assertIn("user", response.data)
+        self.assertNotIn("access", response.data)
+        self.assertNotIn("refresh", response.data)
+        # Tokens are now in httpOnly cookies only
+        self.assertIn("access_token", response.cookies)
+        self.assertIn("refresh_token", response.cookies)
 
     def test_login_with_email(self):
         """Test login using email instead of username"""
@@ -778,7 +785,9 @@ class AuthenticationAPITestCase(APITestCase):
         response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert response.data is not None
-        self.assertIn("access", response.data)
+        self.assertIn("user", response.data)
+        # Tokens are now in httpOnly cookies only
+        self.assertIn("access_token", response.cookies)
 
     def test_invalid_login(self):
         """Test login with invalid credentials"""
@@ -921,8 +930,12 @@ class AuthenticationAPITestCase(APITestCase):
         response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert response.data is not None
-        self.assertIn("access", response.data)
-        self.assertIn("refresh", response.data)
+        self.assertIn("success", response.data)
+        self.assertNotIn("access", response.data)
+        self.assertNotIn("refresh", response.data)
+        # Tokens are now in httpOnly cookies only
+        self.assertIn("access_token", response.cookies)
+        self.assertIn("refresh_token", response.cookies)
         # Verify new password works
         self.user.refresh_from_db()
         self.assertTrue(self.user.check_password("brandnewpass12"))
@@ -1387,6 +1400,28 @@ class AdminUserManagementTestCase(APITestCase):
         self.admin.refresh_from_db()
         self.assertTrue(self.admin.is_superuser)
 
+    def test_staff_cannot_change_privilege_levels(self):
+        """Non-superuser staff cannot change is_superuser or is_staff on other users"""
+        self.client.force_authenticate(user=self.staff)
+        # Try to grant superuser
+        response = self.client.patch(
+            reverse("admin-user-detail", kwargs={"pk": self.user.pk}),
+            {"is_superuser": True},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.is_superuser)
+        # Try to grant staff
+        response = self.client.patch(
+            reverse("admin-user-detail", kwargs={"pk": self.user.pk}),
+            {"is_staff": True},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.user.refresh_from_db()
+        self.assertFalse(self.user.is_staff)
+
     def test_update_user_forbidden_for_regular_user(self):
         """Regular user cannot update users"""
         self.client.force_authenticate(user=self.user)
@@ -1779,20 +1814,27 @@ class TokenRefreshTestCase(APITestCase):
         self.refresh = RefreshToken.for_user(self.user)
 
     def test_refresh_via_body(self):
-        """Refresh token in request body returns new access token"""
+        """Refresh token in request body returns new access token in cookies"""
         url = reverse("token_refresh")
         response = self.client.post(url, {"refresh": str(self.refresh)}, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("access", response.data)
-        self.assertIn("refresh", response.data)
+        self.assertIn("success", response.data)
+        self.assertNotIn("access", response.data)
+        self.assertNotIn("refresh", response.data)
+        # Tokens are now in httpOnly cookies only
+        self.assertIn("access_token", response.cookies)
+        self.assertIn("refresh_token", response.cookies)
 
     def test_refresh_via_cookie(self):
-        """Refresh token in cookie returns new access token"""
+        """Refresh token in cookie returns new access token in cookies"""
         url = reverse("token_refresh")
         self.client.cookies["refresh_token"] = str(self.refresh)
         response = self.client.post(url, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("access", response.data)
+        self.assertIn("success", response.data)
+        self.assertNotIn("access", response.data)
+        # Tokens are now in httpOnly cookies only
+        self.assertIn("access_token", response.cookies)
 
     def test_refresh_sets_cookies(self):
         """Successful refresh sets access_token and refresh_token cookies"""
@@ -1842,9 +1884,8 @@ class TokenRefreshTestCase(APITestCase):
         login_resp = self.client.post(
             login_url, {"username": "refreshuser", "password": "testpass12345"}, format="json"
         )
-        _refresh_token = login_resp.data["refresh"]  # noqa: F841
-        # Authenticate for logout
-        access_token = login_resp.data["access"]
+        # Tokens are now in cookies, not response body
+        access_token = login_resp.cookies["access_token"].value
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
         logout_url = reverse("logout")
         response = self.client.post(logout_url, format="json")
@@ -3798,17 +3839,19 @@ class TokenRefreshNoRotationTestCase(APITestCase):
         self.refresh = RefreshToken.for_user(self.user)
 
     def test_refresh_without_rotation(self):
-        """Token refresh without rotation returns same refresh token"""
+        """Token refresh without rotation keeps same refresh token in cookies"""
         url = reverse("token_refresh")
         refresh_str = str(self.refresh)
         response = self.client.post(url, {"refresh": refresh_str}, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn("access", response.data)
-        # Refresh token should be the same as sent (no rotation)
-        self.assertEqual(response.data["refresh"], refresh_str)
+        self.assertIn("success", response.data)
+        self.assertNotIn("access", response.data)
+        self.assertNotIn("refresh", response.data)
         # Cookies should be set
         self.assertIn("access_token", response.cookies)
         self.assertIn("refresh_token", response.cookies)
+        # Refresh token cookie should be the same as sent (no rotation)
+        self.assertEqual(response.cookies["refresh_token"].value, refresh_str)
 
 
 class ContentSecurityMiddlewareServerHeaderTestCase(TestCase):

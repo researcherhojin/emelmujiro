@@ -206,6 +206,10 @@ def admin_user_detail(request, pk):
         if user == request.user and "is_superuser" in request.data and not request.data["is_superuser"]:
             return Response({"error": "Cannot remove your own admin privileges"}, status=400)
 
+        # Only superusers can change is_superuser or is_staff
+        if not request.user.is_superuser and ("is_superuser" in request.data or "is_staff" in request.data):
+            return Response({"error": "Only superusers can change privilege levels"}, status=403)
+
         serializer = AdminUserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()

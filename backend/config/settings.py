@@ -331,11 +331,11 @@ EMAIL_MAX_RETRIES = 3
 RECAPTCHA_PUBLIC_KEY = os.environ.get("RECAPTCHA_PUBLIC_KEY")
 RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY")
 
-# Cache settings
+# Cache settings — file-based cache is shared across Gunicorn workers
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": os.path.join(BASE_DIR, ".cache"),
         "TIMEOUT": 300,
         "OPTIONS": {
             "MAX_ENTRIES": 1000,
