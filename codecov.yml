@@ -4,21 +4,21 @@ codecov:
 coverage:
   precision: 2
   round: down
-  range: "85...95"
+  range: "95...100"
 
   status:
     project:
       frontend:
-        target: 85%
-        threshold: 3%
+        target: 100%
+        threshold: 1%
         base: auto
         flags:
           - frontend
         paths:
           - frontend/src
       backend:
-        target: 85%
-        threshold: 3%
+        target: 100%
+        threshold: 1%
         base: auto
         flags:
           - backend
@@ -27,7 +27,7 @@ coverage:
 
     patch:
       default:
-        target: 60%
+        target: 90%
         threshold: 3%
         base: auto
 
@@ -58,8 +58,7 @@ ignore:
   - "backend/api/tests.py"
   - "backend/api/tests_urls.py"
   - "backend/api/migrations/**"
-  # External library wrapper — TipTap editor cannot be rendered in jsdom
-  - "frontend/src/components/blog/TipTapEditor.tsx"
-  - "frontend/src/components/blog/TipTapEditor.css"
-  # Pure data constants — no executable logic, V8 does not track coverage
-  - "frontend/src/constants/**"
+  # Barrel exports — no executable logic, V8 cannot track re-exports
+  - "frontend/src/constants/index.ts"
+  - "frontend/src/test-utils/index.ts"
+  - "frontend/src/test-utils/polyfills.ts"
