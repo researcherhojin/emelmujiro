@@ -4,6 +4,8 @@
 
 [![CI/CD Pipeline](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml)
 [![codecov](https://codecov.io/gh/researcherhojin/emelmujiro/graph/badge.svg)](https://codecov.io/gh/researcherhojin/emelmujiro)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://codecov.io/gh/researcherhojin/emelmujiro)
+[![Tests](https://img.shields.io/badge/tests-1%2C707_passed-brightgreen)](https://github.com/researcherhojin/emelmujiro/actions)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
@@ -16,11 +18,11 @@ A full-stack monorepo for an AI education, consulting & AI Agent development pla
 ## Tech Stack
 
 **Frontend**<br/>
-![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react&logoColor=white)
+![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.37-E91E63)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.38-E91E63)
 ![i18next](https://img.shields.io/badge/i18next-25.10-26A69A?logo=i18next&logoColor=white)
 ![React Router](https://img.shields.io/badge/React_Router-7.13-CA4245?logo=reactrouter&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.20-1a1a2e)
@@ -32,8 +34,8 @@ A full-stack monorepo for an AI education, consulting & AI Agent development pla
 
 **Testing**<br/>
 ![Vitest](https://img.shields.io/badge/Vitest-4.1-6E9F18?logo=vitest&logoColor=white)
-![Playwright](https://img.shields.io/badge/Playwright-1.55-2EAD33?logo=playwright&logoColor=white)
-![MSW](https://img.shields.io/badge/MSW-2.11-FF6A33?logo=mockserviceworker&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-1.58-2EAD33?logo=playwright&logoColor=white)
+![MSW](https://img.shields.io/badge/MSW-2.12-FF6A33?logo=mockserviceworker&logoColor=white)
 ![Testing Library](https://img.shields.io/badge/Testing_Library-16.3-E33332?logo=testinglibrary&logoColor=white)
 ![Lighthouse](https://img.shields.io/badge/Lighthouse_CI-Desktop-F44B21?logo=lighthouse&logoColor=white)
 
@@ -129,7 +131,7 @@ graph LR
 - **Performance** — Optimized chunk splitting (7 vendor chunks), Lighthouse CI assertions, < 10MB bundle budget
 - **CI/CD** — GitHub Actions with parallel jobs: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
 - **Security** — DOMPurify HTML sanitization, CI script injection prevention, uuid4 file uploads, rate limiting, IP blocking
-- **Testing** — 70 test suites / 1,332 tests (Vitest), 10 E2E specs (Playwright), 373 backend tests (Django), 100% coverage (statements, branches, functions, lines)
+- **Testing** — 70 test suites / 1,332 tests (Vitest), 10 E2E specs (Playwright), 375 backend tests (Django), 100% coverage (statements, branches, functions, lines)
 
 ## License
 
