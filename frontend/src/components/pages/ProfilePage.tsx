@@ -1,4 +1,4 @@
-import React, { useState, memo, useCallback } from 'react';
+import React, { lazy, Suspense, useState, memo, useCallback } from 'react';
 import { Briefcase, GraduationCap, Code } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
@@ -10,6 +10,8 @@ import StatsSection from './profile/StatsSection';
 import CareerTab from './profile/CareerTab';
 import EducationTab from './profile/EducationTab';
 import ProjectsTab from './profile/ProjectsTab';
+
+const TestimonialsSection = lazy(() => import('../sections/TestimonialsSection'));
 
 type TabType = 'career' | 'education' | 'projects';
 type ProjectCategory = 'all' | 'enterprise' | 'bootcamp' | 'education' | 'startup' | 'research';
@@ -103,6 +105,11 @@ const ProfilePage: React.FC = memo(() => {
             )}
           </div>
         </section>
+
+        {/* Testimonials */}
+        <Suspense fallback={null}>
+          <TestimonialsSection />
+        </Suspense>
       </div>
     </>
   );

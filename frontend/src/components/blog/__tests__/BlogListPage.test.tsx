@@ -150,8 +150,11 @@ describe('BlogListPage', () => {
   it('shows loading state', () => {
     mockBlogContext.loading = true;
     renderPage();
-    // When loading, page title should not be rendered (PageLoading replaces content)
-    expect(screen.queryByText('blog.title')).not.toBeInTheDocument();
+    // Loading shows skeleton cards inline; page title remains visible
+    expect(screen.getByText('blog.title')).toBeInTheDocument();
+    // Skeleton placeholder should be present (animate-pulse container)
+    const skeletons = document.querySelectorAll('.animate-pulse');
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it('renders featured post as first post and remaining in grid', () => {

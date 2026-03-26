@@ -83,10 +83,6 @@ vi.mock('../components/sections/CTASection', () => ({
   default: () => <div data-testid="cta-section">CTASection</div>,
 }));
 
-vi.mock('../components/sections/FAQSection', () => ({
-  default: () => <div data-testid="faq-section">FAQSection</div>,
-}));
-
 vi.mock('../components/pages/ProfilePage', () => ({
   default: () => <div data-testid="profile-page">ProfilePage</div>,
 }));
@@ -164,7 +160,6 @@ describe('App', () => {
 
     expect(screen.getByTestId('services-section')).toBeInTheDocument();
     expect(screen.getByTestId('logos-section')).toBeInTheDocument();
-    expect(screen.getByTestId('faq-section')).toBeInTheDocument();
     expect(screen.getByTestId('cta-section')).toBeInTheDocument();
     expect(screen.getByTestId('web-vitals')).toBeInTheDocument();
     expect(window.__appLoaded).toBe(true);

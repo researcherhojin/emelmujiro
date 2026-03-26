@@ -48,26 +48,30 @@
     "subtitle": "기업의 AI 도입을 위한 단계별 솔루션을 제공합니다",
     "education": {
       "title": "AI 교육 & 강의",
-      "description": "임직원 대상 맞춤형 AI 교육",
+      "description": "임직원 맞춤형 AI 교육",
       "details": ["맞춤형 커리큘럼 설계", "프로젝트 기반 실습 교육", "바이브 코딩 & AI 활용 교육"]
     },
     "consulting": {
       "title": "AI 컨설팅",
-      "description": "AI 도입 전략 수립 및 기술 자문",
+      "description": "AI 도입 전략부터 PoC까지",
       "details": ["AI 도입 전략 및 기술 검토", "PoC 개발 및 기술 검증", "서비스 프로토타입 설계"]
     },
     "llmGenai": {
       "title": "AI Agent 개발",
       "description": "Agentic AI 서비스 설계 및 구축",
-      "details": ["Agentic RAG 설계 및 구축", "MCP 기반 AI Agent 개발", "AI 서비스 프로토타입 구축"]
+      "details": [
+        "RAG · AI Agent 설계 및 구축",
+        "업무 자동화 워크플로우 개발",
+        "LLM 도입 및 성능 최적화"
+      ]
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "비전 AI 교육 및 프로젝트 설계",
+      "description": "비전 AI 프로젝트 설계 및 교육",
       "details": [
-        "객체 탐지 / 세그멘테이션",
-        "Multimodal AI 연계 개발",
-        "CV 프로젝트 설계 및 멘토링"
+        "탐지·분류·세그멘테이션 프로젝트",
+        "도메인 맞춤 CV 프로젝트 멘토링",
+        "엣지 배포까지 End-to-End 설계"
       ]
     }
   },
@@ -379,50 +383,50 @@
   "footerServices": {
     "education": {
       "title": "AI 교육 & 강의",
-      "description": "임직원 대상 맞춤형 AI 교육 프로그램을 설계하고 운영합니다.",
+      "description": "대기업·공공기관·스타트업 맞춤형 AI 교육 프로그램을 설계하고 운영합니다.",
       "details": [
         "맞춤형 커리큘럼 설계",
         "프로젝트 기반 실습 교육",
         "바이브 코딩 & AI 활용 교육",
-        "Python ML/DL 실무 교육",
-        "LLM & 생성형 AI 워크샵",
-        "비개발자 대상 AI 리터러시"
+        "생성형 AI · LLM 업무 활용",
+        "비전공자 대상 AI 입문",
+        "교사·학부모 AI 리터러시 연수"
       ]
     },
     "consulting": {
       "title": "AI 컨설팅",
-      "description": "AI 도입 전략 수립부터 기술 자문까지 제공합니다.",
+      "description": "AI 도입 전략 수립부터 PoC 개발까지 제공합니다.",
       "details": [
         "AI 도입 전략 및 기술 검토",
         "PoC 개발 및 기술 검증",
         "서비스 프로토타입 설계",
-        "AI 비즈니스 모델 개발",
-        "AI 프로젝트 관리 및 기술 자문",
-        "오픈소스 LLM 도입 컨설팅"
+        "오픈소스 LLM 도입 컨설팅",
+        "AI 프로젝트 일정·리스크 관리",
+        "부서별 AI 도입 로드맵 설계"
       ]
     },
     "llmGenai": {
       "title": "AI Agent 개발",
       "description": "Agentic AI 서비스를 설계하고 구축합니다.",
       "details": [
-        "Agentic RAG 설계 및 구축",
-        "MCP 기반 AI Agent 개발",
-        "AI 서비스 프로토타입 구축",
-        "LLM 파인튜닝 및 성능 최적화",
-        "AI 에이전트 워크플로우 설계",
-        "생성형 AI 활용 교육"
+        "RAG · AI Agent 설계 및 구축",
+        "업무 자동화 워크플로우 개발",
+        "LLM 도입 및 성능 최적화",
+        "기존 시스템 연동 설계",
+        "프롬프트 설계 및 품질 고도화",
+        "MVP 수준 AI 서비스 프로토타입"
       ]
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "비전 AI 교육 및 프로젝트 설계",
+      "description": "비전 AI 프로젝트 설계 및 교육을 수행합니다.",
       "details": [
-        "객체 탐지 / 세그멘테이션",
-        "Multimodal AI 연계 개발",
-        "CV 프로젝트 설계 및 멘토링",
-        "이미지 분류 및 검색 시스템",
-        "영상 분석 파이프라인 구축",
-        "실전 프로젝트 기반 CV 교육"
+        "탐지·분류·세그멘테이션 프로젝트",
+        "도메인 맞춤 CV 프로젝트 멘토링",
+        "엣지 배포까지 End-to-End 설계",
+        "프로젝트 기반 CV 심화 교육",
+        "멀티모달 AI 연계 서비스 설계",
+        "엣지 디바이스 경량화 및 배포"
       ]
     }
   },
@@ -570,7 +574,7 @@
         "period": "2023.05 ~ 현재",
         "company": "멋쟁이사자처럼",
         "position": "AI 전문 강사",
-        "description": "AI 엔지니어 심화 부트캠프 · 테킷 스타트업 스테이션 · 한국과학창의재단 AI 교육 · 산업전문인력 AI역량강화 교육"
+        "description": "AI 컴퓨터비전(CV) 심화과정 1~3기 · AI/IT 창업부트캠프 '스타트업스테이션' 7~10기 · 한국과학창의재단 찾아가는 학교 컨설팅 AI 교육 · 나노융합산업연구조합 산업전문인력 AI 역량강화 교육"
       },
       {
         "period": "2023.05 ~ 2024.09",
@@ -594,13 +598,7 @@
         "period": "2022.06",
         "company": "코코넛사일로",
         "position": "연구원",
-        "description": "Data Lab · 데이터 바우처 지원사업 프로토타입 개발"
-      },
-      {
-        "period": "2021.05 ~ 2021.08",
-        "company": "서울시 청년청",
-        "position": "Front-End Developer",
-        "description": "사회적 기업 과제 수행 · 웹 프론트엔드 개발"
+        "description": "사내 AI 모델 성능 개선 · 데이터 바우처 지원사업 프로토타입 개발"
       }
     ],
     "education": [
@@ -615,6 +613,18 @@
         "school": "경북대학교",
         "degree": "축산생명공학 학사",
         "description": "부전공: 식품공학부 식품응용공학"
+      },
+      {
+        "period": "2021.09 ~ 2022.03",
+        "school": "인공지능 혁신학교 AIFFEL",
+        "degree": "인공지능 개발자 양성과정",
+        "description": "모두의연구소 · Computer Vision 심화 · 프로젝트 명예의 전당 다수 등재"
+      },
+      {
+        "period": "2025.06 ~ 2025.07",
+        "school": "한국기술교육대학교",
+        "degree": "K-디지털교직훈련과정 수료",
+        "description": "PBL 기반 프로젝트 수업 설계 · NCS 기반 교육훈련 프로그램 개발 · 총 164시간"
       }
     ],
     "projects": [
@@ -628,6 +638,10 @@
         "tags": {
           "3": "생성형 AI"
         }
+      },
+      {
+        "title": "AlphaDent 치과 병변 탐지",
+        "description": "DINOv3 + Hierarchical MoE + Contrastive Learning 기반 치과 병변 분류 모델 설계 · 9클래스 극심한 클래스 불균형 환경에서의 성능 개선 연구"
       },
       {
         "title": "ICT콤플렉스 피우다 프로젝트",
@@ -693,7 +707,16 @@
       {
         "label": "연구/개발"
       }
-    ]
+    ],
+    "expertise": [
+      "생성형 AI 실무 활용",
+      "Python 기반 업무자동화",
+      "LLM · Prompt Engineering",
+      "RAG · AI Agent 설계",
+      "바이브 코딩 기반 PoC 구현",
+      "프로젝트형 기술 멘토링"
+    ],
+    "expertiseLabel": "전문 분야"
   },
   "notifications": {
     "title": "알림",

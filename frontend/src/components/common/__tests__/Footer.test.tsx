@@ -207,7 +207,7 @@ describe('Footer Component', () => {
 
       const links = container.querySelectorAll('a');
       const contactLink = Array.from(links).find(
-        (a) => a.textContent === 'common.contact' && a.className.includes('text-sm')
+        (a) => a.textContent === 'common.contact' && a.className.includes('text-base')
       );
       expect(contactLink).toBeTruthy();
       expect(contactLink).toHaveAttribute('href', '/contact');
@@ -315,8 +315,8 @@ describe('Footer Component', () => {
         );
         expect(hasMainService).toBe(true);
 
-        const messageSquareIcon = container.querySelector('[data-testid="icon-MessageSquare"]');
-        expect(messageSquareIcon).toBeInTheDocument();
+        const botIcon = container.querySelector('[data-testid="icon-Bot"]');
+        expect(botIcon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
     );
@@ -373,8 +373,8 @@ describe('Footer Component', () => {
           { timeout: 3000 }
         );
 
-        const code2Icon = container.querySelector('[data-testid="icon-Code2"]');
-        expect(code2Icon).toBeInTheDocument();
+        const lightbulbIcon = container.querySelector('[data-testid="icon-Lightbulb"]');
+        expect(lightbulbIcon).toBeInTheDocument();
       },
       MODAL_TEST_TIMEOUT
     );
@@ -638,7 +638,7 @@ describe('Footer Component', () => {
 
       const serviceButtons = screen.getAllByText('services.llmGenai.title');
       expect(serviceButtons[0]).toHaveClass('text-gray-600');
-      expect(serviceButtons[0]).toHaveClass('text-sm');
+      expect(serviceButtons[0]).toHaveClass('text-base');
     });
 
     test('applies correct CSS classes to contact CTA button', () => {

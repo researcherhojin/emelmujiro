@@ -9,7 +9,7 @@ import { useScrollToSection } from '../../hooks/useScrollToSection';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 
 const footerLinkStyle =
-  'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-sm text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-none focus:outline-none border-none bg-transparent';
+  'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-base text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-none focus:outline-none border-none bg-transparent';
 
 const serviceLinks = [
   { key: 'ai-education', titleKey: 'services.education.title' },
@@ -24,15 +24,22 @@ const Footer: React.FC = memo(() => {
   const scrollToSection = useScrollToSection();
   const { localizedPath } = useLocalizedPath();
   const [isServiceModalOpen, setIsServiceModalOpen] = useState<boolean>(false);
-  const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
+  const [selectedServiceIndex, setSelectedServiceIndex] = useState<number>(0);
 
   const currentYear = new Date().getFullYear();
 
-  const handleServiceClick = useCallback((serviceKey: string) => {
-    const currentServices = getServices();
-    setSelectedService(currentServices[serviceKey]);
-    setIsServiceModalOpen(true);
-  }, []);
+  const allServices = getServices();
+  const serviceKeys = serviceLinks.map((s) => s.key);
+  const serviceList = serviceKeys.map((key) => allServices[key]);
+
+  const handleServiceClick = useCallback(
+    (serviceKey: string) => {
+      const index = serviceKeys.indexOf(serviceKey);
+      setSelectedServiceIndex(index >= 0 ? index : 0);
+      setIsServiceModalOpen(true);
+    },
+    [serviceKeys]
+  );
 
   const handleModalClose = useCallback(() => {
     setIsServiceModalOpen(false);
@@ -148,7 +155,9 @@ const Footer: React.FC = memo(() => {
       {/* Service Detail Modal */}
       <ServiceModal
         isOpen={isServiceModalOpen}
-        service={selectedService}
+        services={serviceList}
+        currentIndex={selectedServiceIndex}
+        onNavigate={setSelectedServiceIndex}
         onClose={handleModalClose}
         onContactClick={handleModalContactClick}
       />

@@ -29,7 +29,7 @@ export const env = {
   // API Configuration
   API_URL: getEnvVar(
     'REACT_APP_API_URL',
-    IS_PRODUCTION ? 'https://api.emelmujiro.com/api' : 'http://localhost:8000/api'
+    IS_PRODUCTION ? 'https://api.emelmujiro.com/api' : '/api'
   ),
   // Feature Flags
   ENABLE_ANALYTICS: getEnvVar('REACT_APP_ENABLE_ANALYTICS', 'false') === 'true',

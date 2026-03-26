@@ -1,4 +1,4 @@
-import { LucideIcon, GraduationCap, Code2, MessageSquare, Eye } from 'lucide-react';
+import { LucideIcon, GraduationCap, Lightbulb, Bot, Eye } from 'lucide-react';
 import i18n from '../i18n';
 
 export interface ServiceDetail {
@@ -28,7 +28,7 @@ export const getServices = (): Services => ({
   },
   'ai-consulting': {
     title: i18n.t('footerServices.consulting.title'),
-    icon: Code2,
+    icon: Lightbulb,
     description: i18n.t('footerServices.consulting.description'),
     details: [
       i18n.t('footerServices.consulting.details.0'),
@@ -41,7 +41,7 @@ export const getServices = (): Services => ({
   },
   'llm-genai': {
     title: i18n.t('footerServices.llmGenai.title'),
-    icon: MessageSquare,
+    icon: Bot,
     description: i18n.t('footerServices.llmGenai.description'),
     details: [
       i18n.t('footerServices.llmGenai.details.0'),

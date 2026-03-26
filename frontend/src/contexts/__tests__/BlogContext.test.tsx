@@ -232,25 +232,7 @@ describe('BlogContext', () => {
     consoleSpy.mockRestore();
   });
 
-  test('falls back to local data when API response has no results', async () => {
-    const localPosts = [
-      {
-        id: 10,
-        title: 'Local Post',
-        slug: 'local-post',
-        content: 'Local content',
-        excerpt: 'Local excerpt',
-        author: 'Local Author',
-        date: '2024-01-01',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-        published: true,
-        category: 'Local',
-        tags: ['local'],
-        publishedAt: '2024-01-01',
-      },
-    ];
-
+  test('sets empty posts when API response has no results', async () => {
     (mockedApi.getBlogPosts as any).mockResolvedValue({
       data: null,
       status: 200,
@@ -259,8 +241,6 @@ describe('BlogContext', () => {
       config: {} as InternalAxiosRequestConfig,
     });
 
-    mockGetLocalBlogPosts.mockResolvedValue(localPosts);
-
     render(
       <BlogProvider>
         <TestComponent />
@@ -270,34 +250,16 @@ describe('BlogContext', () => {
     fireEvent.click(screen.getByText('Fetch Posts'));
 
     await waitFor(() => {
-      expect(screen.getByTestId('posts-count')).toHaveTextContent('1');
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
 
+    expect(screen.getByTestId('posts-count')).toHaveTextContent('0');
     expect(screen.getByTestId('total-pages')).toHaveTextContent('1');
     expect(screen.getByTestId('current-page')).toHaveTextContent('1');
   });
 
-  test('falls back to local data when API call fails', async () => {
-    const localPosts = [
-      {
-        id: 20,
-        title: 'Fallback Post',
-        slug: 'fallback-post',
-        content: 'Fallback content',
-        excerpt: 'Fallback excerpt',
-        author: 'Fallback Author',
-        date: '2024-02-01',
-        created_at: '2024-02-01T00:00:00Z',
-        updated_at: '2024-02-01T00:00:00Z',
-        published: true,
-        category: 'Fallback',
-        tags: ['fallback'],
-        publishedAt: '2024-02-01',
-      },
-    ];
-
+  test('sets error and empty posts when API call fails', async () => {
     (mockedApi.getBlogPosts as any).mockRejectedValue(new Error('Network error'));
-    mockGetLocalBlogPosts.mockResolvedValue(localPosts);
 
     render(
       <BlogProvider>
@@ -308,15 +270,14 @@ describe('BlogContext', () => {
     fireEvent.click(screen.getByText('Fetch Posts'));
 
     await waitFor(() => {
-      expect(screen.getByTestId('posts-count')).toHaveTextContent('1');
+      expect(screen.getByTestId('error')).toHaveTextContent('blogErrors.fetchPostsFailed');
     });
 
-    expect(screen.getByTestId('total-pages')).toHaveTextContent('1');
+    expect(screen.getByTestId('posts-count')).toHaveTextContent('0');
   });
 
-  test('sets error when both API and local data fail for fetchPosts', async () => {
+  test('sets error when API fails for fetchPosts', async () => {
     (mockedApi.getBlogPosts as any).mockRejectedValue(new Error('API error'));
-    mockGetLocalBlogPosts.mockRejectedValue(new Error('Local data error'));
 
     render(
       <BlogProvider>
@@ -421,23 +382,7 @@ describe('BlogContext', () => {
     });
   });
 
-  test('fetchPostById falls back to local data when API returns empty', async () => {
-    const localPost = {
-      id: 5,
-      title: 'Local Single Post',
-      slug: 'local-single-post',
-      content: 'Local single content',
-      excerpt: 'Local excerpt',
-      author: 'Local Author',
-      date: '2024-03-01',
-      created_at: '2024-03-01T00:00:00Z',
-      updated_at: '2024-03-01T00:00:00Z',
-      published: true,
-      category: 'Test',
-      tags: [],
-      publishedAt: '2024-03-01',
-    };
-
+  test('fetchPostById sets error when API returns empty', async () => {
     (mockedApi.getBlogPost as any).mockResolvedValue({
       data: null,
       status: 200,
@@ -445,12 +390,12 @@ describe('BlogContext', () => {
       headers: {},
       config: {} as InternalAxiosRequestConfig,
     });
-    mockGetLocalBlogPost.mockResolvedValue(localPost);
 
     const PostTestComponent: React.FC = () => {
-      const { currentPost, fetchPostById } = useBlog();
+      const { currentPost, error, fetchPostById } = useBlog();
       return (
         <div>
+          <div data-testid="error">{error || 'no-error'}</div>
           <div data-testid="post-title">{currentPost?.title || 'none'}</div>
           <button onClick={() => fetchPostById(5)}>Fetch Post</button>
         </div>
@@ -466,34 +411,20 @@ describe('BlogContext', () => {
     fireEvent.click(screen.getByText('Fetch Post'));
 
     await waitFor(() => {
-      expect(screen.getByTestId('post-title')).toHaveTextContent('Local Single Post');
+      expect(screen.getByTestId('error')).toHaveTextContent('blogErrors.fetchPostFailed');
     });
+
+    expect(screen.getByTestId('post-title')).toHaveTextContent('none');
   });
 
-  test('fetchPostById falls back to local data on API error', async () => {
-    const localPost = {
-      id: 5,
-      title: 'Fallback Single Post',
-      slug: 'fallback-single',
-      content: 'Content',
-      excerpt: 'Excerpt',
-      author: 'Author',
-      date: '2024-03-01',
-      created_at: '2024-03-01T00:00:00Z',
-      updated_at: '2024-03-01T00:00:00Z',
-      published: true,
-      category: 'Test',
-      tags: [],
-      publishedAt: '2024-03-01',
-    };
-
+  test('fetchPostById sets error on API error', async () => {
     (mockedApi.getBlogPost as any).mockRejectedValue(new Error('API error'));
-    mockGetLocalBlogPost.mockResolvedValue(localPost);
 
     const PostTestComponent: React.FC = () => {
-      const { currentPost, fetchPostById } = useBlog();
+      const { currentPost, error, fetchPostById } = useBlog();
       return (
         <div>
+          <div data-testid="error">{error || 'no-error'}</div>
           <div data-testid="post-title">{currentPost?.title || 'none'}</div>
           <button onClick={() => fetchPostById(5)}>Fetch Post</button>
         </div>
@@ -509,13 +440,14 @@ describe('BlogContext', () => {
     fireEvent.click(screen.getByText('Fetch Post'));
 
     await waitFor(() => {
-      expect(screen.getByTestId('post-title')).toHaveTextContent('Fallback Single Post');
+      expect(screen.getByTestId('error')).toHaveTextContent('blogErrors.fetchPostFailed');
     });
+
+    expect(screen.getByTestId('post-title')).toHaveTextContent('none');
   });
 
-  test('fetchPostById sets error when both API and local fail', async () => {
+  test('fetchPostById sets error when API fails', async () => {
     (mockedApi.getBlogPost as any).mockRejectedValue(new Error('API error'));
-    mockGetLocalBlogPost.mockRejectedValue(new Error('Local error'));
 
     const PostTestComponent: React.FC = () => {
       const { currentPost, error, fetchPostById } = useBlog();
@@ -699,7 +631,6 @@ describe('BlogContext', () => {
   test('handles non-Error rejection in fetchPosts (line 60)', async () => {
     // Reject with a string (not an Error instance) to hit the 'Unknown error' branch
     (mockedApi.getBlogPosts as any).mockRejectedValue('string error');
-    mockGetLocalBlogPosts.mockResolvedValue([]);
 
     render(
       <BlogProvider>
@@ -713,35 +644,21 @@ describe('BlogContext', () => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
 
-    // Fallback to local data should still work
+    // Error state is set and posts are empty
+    expect(screen.getByTestId('error')).toHaveTextContent('blogErrors.fetchPostsFailed');
     expect(screen.getByTestId('posts-count')).toHaveTextContent('0');
   });
 
   test('handles non-Error rejection in fetchPostById (line 93)', async () => {
     // Reject with a number (not an Error instance) to hit the 'Unknown error' branch
     (mockedApi.getBlogPost as any).mockRejectedValue(42);
-    const localPost = {
-      id: 5,
-      title: 'Fallback Post',
-      slug: 'fallback-post',
-      content: 'Content',
-      excerpt: 'Excerpt',
-      author: 'Author',
-      date: '2024-03-01',
-      created_at: '2024-03-01T00:00:00Z',
-      updated_at: '2024-03-01T00:00:00Z',
-      published: true,
-      category: 'Test',
-      tags: [],
-      publishedAt: '2024-03-01',
-    };
-    mockGetLocalBlogPost.mockResolvedValue(localPost);
 
     const PostTestComponent: React.FC = () => {
-      const { currentPost, loading, fetchPostById } = useBlog();
+      const { currentPost, loading, error, fetchPostById } = useBlog();
       return (
         <div>
           <div data-testid="loading">{loading.toString()}</div>
+          <div data-testid="error">{error || 'no-error'}</div>
           <div data-testid="post-title">{currentPost?.title || 'none'}</div>
           <button onClick={() => fetchPostById(5)}>Fetch Post</button>
         </div>
@@ -760,7 +677,8 @@ describe('BlogContext', () => {
       expect(screen.getByTestId('loading')).toHaveTextContent('false');
     });
 
-    // Fallback to local data should still work
-    expect(screen.getByTestId('post-title')).toHaveTextContent('Fallback Post');
+    // Error state is set and post is null
+    expect(screen.getByTestId('error')).toHaveTextContent('blogErrors.fetchPostFailed');
+    expect(screen.getByTestId('post-title')).toHaveTextContent('none');
   });
 });

@@ -1,11 +1,13 @@
 import React, { memo, useEffect, useRef, useCallback } from 'react';
-import { X } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ServiceDetail } from '../../data/footerData';
 
 interface ServiceModalProps {
   isOpen: boolean;
-  service: ServiceDetail | null;
+  services: ServiceDetail[];
+  currentIndex: number;
+  onNavigate: (index: number) => void;
   onClose: () => void;
   onContactClick: () => void;
 }
@@ -14,29 +16,41 @@ const FOCUSABLE_SELECTOR =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 const ServiceModal: React.FC<ServiceModalProps> = memo(
-  ({ isOpen, service, onClose, onContactClick }) => {
+  ({ isOpen, services, currentIndex, onNavigate, onClose, onContactClick }) => {
     const { t } = useTranslation();
     const closeButtonRef = useRef<HTMLButtonElement>(null);
     const modalRef = useRef<HTMLDivElement>(null);
 
-    // Close on Escape key
+    const service = services[currentIndex] || null;
+    const hasPrev = currentIndex > 0;
+    const hasNext = currentIndex < services.length - 1;
+
+    const goPrev = useCallback(() => {
+      if (hasPrev) onNavigate(currentIndex - 1);
+    }, [hasPrev, currentIndex, onNavigate]);
+
+    const goNext = useCallback(() => {
+      if (hasNext) onNavigate(currentIndex + 1);
+    }, [hasNext, currentIndex, onNavigate]);
+
+    // Keyboard: Escape to close, Arrow keys to navigate
     useEffect(() => {
       if (!isOpen) return;
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          onClose();
-        }
+        if (e.key === 'Escape') onClose();
+        if (e.key === 'ArrowLeft') goPrev();
+        if (e.key === 'ArrowRight') goNext();
       };
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, goPrev, goNext]);
 
-    // Auto-focus close button when modal opens
+    // Auto-focus close button when modal opens or service changes
     useEffect(() => {
       if (isOpen && closeButtonRef.current) {
         closeButtonRef.current.focus();
       }
-    }, [isOpen]);
+    }, [isOpen, currentIndex]);
 
     // Focus trapping
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -72,21 +86,41 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
         ref={modalRef}
         onKeyDown={handleKeyDown}
       >
-        <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="flex items-center justify-center min-h-screen px-4 py-8">
           <div
             className="fixed inset-0 bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-80 transition-opacity"
             onClick={onClose}
             onKeyDown={(e) => {
-              if (e.key === 'Escape') {
-                onClose();
-              }
+              if (e.key === 'Escape') onClose();
             }}
             role="button"
             tabIndex={0}
             aria-label={t('accessibility.closeModalOverlay')}
           ></div>
 
-          <div className="inline-block align-bottom bg-white dark:bg-dark-900 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+          {/* Prev arrow */}
+          {hasPrev && (
+            <button
+              onClick={goPrev}
+              className="fixed left-4 top-1/2 -translate-y-1/2 z-50 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-colors"
+              aria-label="Previous service"
+            >
+              <ChevronLeft className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+            </button>
+          )}
+
+          {/* Next arrow */}
+          {hasNext && (
+            <button
+              onClick={goNext}
+              className="fixed right-4 top-1/2 -translate-y-1/2 z-50 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-colors"
+              aria-label="Next service"
+            >
+              <ChevronRight className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+            </button>
+          )}
+
+          <div className="relative bg-white dark:bg-dark-900 rounded-2xl px-6 pt-6 pb-5 text-left overflow-hidden shadow-xl max-w-2xl w-full sm:p-8">
             <div className="absolute top-0 right-0 pt-4 pr-4">
               <button
                 ref={closeButtonRef}
@@ -104,22 +138,26 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
                 <IconComponent className="h-6 w-6 text-gray-700 dark:text-gray-300" />
               </div>
               <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-2">
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
                   {service.title}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-base text-gray-500 dark:text-gray-400 mb-6">
                   {service.description}
                 </p>
 
                 <div className="mb-6">
-                  <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+                  <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.15em] mb-4">
                     {t('footer.mainServices')}
                   </h4>
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {service.details.map((detail, index) => (
-                      <li key={`detail-${index}`} className="flex items-start">
-                        <div className="w-1.5 h-1.5 bg-gray-500 dark:bg-gray-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{detail}</span>
+                      <li key={`detail-${index}`} className="flex items-center">
+                        <span className="text-sm font-bold text-gray-400 dark:text-gray-500 w-6 flex-shrink-0">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <span className="text-base font-medium text-gray-700 dark:text-gray-300">
+                          {detail}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -127,17 +165,33 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
               </div>
             </div>
 
-            <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+            {/* Dot indicators */}
+            <div className="flex justify-center gap-2 mb-4">
+              {services.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => onNavigate(i)}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    i === currentIndex
+                      ? 'bg-gray-900 dark:bg-white'
+                      : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400'
+                  }`}
+                  aria-label={`Service ${i + 1}`}
+                />
+              ))}
+            </div>
+
+            <div className="sm:flex sm:flex-row-reverse">
               <button
                 type="button"
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-900 dark:bg-gray-100 text-base font-medium text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-5 py-2.5 bg-gray-900 dark:bg-gray-100 text-base font-medium text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 focus:outline-none sm:ml-3 sm:w-auto"
                 onClick={onContactClick}
               >
                 {t('common.contact')}
               </button>
               <button
                 type="button"
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-dark-600 shadow-sm px-4 py-2 bg-white dark:bg-dark-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-dark-600 shadow-sm px-5 py-2.5 bg-white dark:bg-dark-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 focus:outline-none sm:mt-0 sm:w-auto"
                 onClick={onClose}
               >
                 {t('common.close')}

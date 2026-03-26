@@ -17,20 +17,26 @@ const mockService: ServiceDetail = {
   details: ['Detail 1', 'Detail 2', 'Detail 3'],
 };
 
+const mockServices: ServiceDetail[] = [mockService];
+
 describe('ServiceModal', () => {
   const onClose = vi.fn();
   const onContactClick = vi.fn();
+  const onNavigate = vi.fn();
 
   beforeEach(() => {
     onClose.mockClear();
     onContactClick.mockClear();
+    onNavigate.mockClear();
   });
 
   it('renders nothing when isOpen is false', () => {
     const { container } = render(
       <ServiceModal
         isOpen={false}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -38,11 +44,13 @@ describe('ServiceModal', () => {
     expect(container.innerHTML).toBe('');
   });
 
-  it('renders nothing when service is null', () => {
+  it('renders nothing when services array is empty', () => {
     const { container } = render(
       <ServiceModal
         isOpen={true}
-        service={null}
+        services={[]}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -54,7 +62,9 @@ describe('ServiceModal', () => {
     render(
       <ServiceModal
         isOpen={true}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -69,7 +79,9 @@ describe('ServiceModal', () => {
     render(
       <ServiceModal
         isOpen={true}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -84,7 +96,9 @@ describe('ServiceModal', () => {
     render(
       <ServiceModal
         isOpen={true}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -97,7 +111,9 @@ describe('ServiceModal', () => {
     render(
       <ServiceModal
         isOpen={true}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -112,7 +128,9 @@ describe('ServiceModal', () => {
     render(
       <ServiceModal
         isOpen={true}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -127,7 +145,9 @@ describe('ServiceModal', () => {
     render(
       <ServiceModal
         isOpen={true}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -142,7 +162,9 @@ describe('ServiceModal', () => {
     render(
       <ServiceModal
         isOpen={true}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -158,7 +180,9 @@ describe('ServiceModal', () => {
     render(
       <ServiceModal
         isOpen={true}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -173,7 +197,9 @@ describe('ServiceModal', () => {
     render(
       <ServiceModal
         isOpen={true}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -187,7 +213,9 @@ describe('ServiceModal', () => {
     render(
       <ServiceModal
         isOpen={true}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />
@@ -201,7 +229,9 @@ describe('ServiceModal', () => {
     render(
       <ServiceModal
         isOpen={true}
-        service={mockService}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
         onClose={onClose}
         onContactClick={onContactClick}
       />

@@ -23,7 +23,7 @@ import './i18n';
 const SEOHelmet = lazy(() => import('./components/common/SEOHelmet'));
 const StructuredData = lazy(() => import('./components/common/StructuredData'));
 const WebVitalsDashboard = lazy(() => import('./components/common/WebVitalsDashboard'));
-const TestimonialsSection = lazy(() => import('./components/sections/TestimonialsSection'));
+// TestimonialsSection is used on the profile page, not the homepage
 
 // Main page components - lazy load for better performance
 const HeroSection = lazy(() => import('./components/sections/HeroSection'));
@@ -88,14 +88,6 @@ const HomePage: React.FC = memo(() => {
 
           {/* Partner Logos + Achievement Pills */}
           <LogosSection />
-
-          {/* Testimonials */}
-          <TestimonialsSection />
-
-          {/* FAQ */}
-          <div id="faq">
-            <FAQSection />
-          </div>
 
           {/* Call to Action */}
           <CTASection />

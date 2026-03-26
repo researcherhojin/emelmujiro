@@ -2,10 +2,6 @@ import React, { createContext, useContext, useState, ReactNode, useCallback, use
 import { api } from '../services/api';
 import { getEnvVar } from '../config/env';
 import i18n from '../i18n';
-import {
-  getBlogPosts as getLocalBlogPosts,
-  getBlogPost as getLocalBlogPost,
-} from '../data/blogPosts';
 import { BlogPost } from '../types';
 import logger from '../utils/logger';
 
@@ -48,27 +44,14 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
         setTotalPages(Math.ceil(response.data.count / postsPerPage));
         setCurrentPage(page);
       } else {
-        // Use local data if API response is empty
-        const localPosts = await getLocalBlogPosts();
-        setPosts(localPosts as BlogPost[]);
+        setPosts([]);
         setTotalPages(1);
         setCurrentPage(1);
       }
     } catch (err) {
-      logger.warn(
-        'API call failed, falling back to local data:',
-        err instanceof Error ? err.message : 'Unknown error'
-      );
-      // Fallback to local data on API failure
-      try {
-        const localPosts = await getLocalBlogPosts();
-        setPosts(localPosts as BlogPost[]);
-        setTotalPages(1);
-        setCurrentPage(1);
-      } catch {
-        setError(i18n.t('blogErrors.fetchPostsFailed'));
-        setPosts([]);
-      }
+      logger.warn('API call failed:', err instanceof Error ? err.message : 'Unknown error');
+      setError(i18n.t('blogErrors.fetchPostsFailed'));
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -83,23 +66,13 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
       if (response.data) {
         setCurrentPost(response.data);
       } else {
-        // Use local data if API response is empty
-        const localPost = await getLocalBlogPost(id);
-        setCurrentPost(localPost as BlogPost);
-      }
-    } catch (err) {
-      logger.warn(
-        'API call failed, falling back to local data:',
-        err instanceof Error ? err.message : 'Unknown error'
-      );
-      // Fallback to local data on API failure
-      try {
-        const localPost = await getLocalBlogPost(id);
-        setCurrentPost(localPost as BlogPost);
-      } catch {
         setError(i18n.t('blogErrors.fetchPostFailed'));
         setCurrentPost(null);
       }
+    } catch (err) {
+      logger.warn('API call failed:', err instanceof Error ? err.message : 'Unknown error');
+      setError(i18n.t('blogErrors.fetchPostFailed'));
+      setCurrentPost(null);
     } finally {
       setLoading(false);
     }

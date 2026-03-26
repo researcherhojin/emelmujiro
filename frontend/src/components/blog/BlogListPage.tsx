@@ -79,10 +79,6 @@ const BlogListPage: React.FC = memo(() => {
     [fetchPosts]
   );
 
-  if (loading) {
-    return <PageLoading />;
-  }
-
   const featuredPost = filteredPosts.length > 0 ? filteredPosts[0] : null;
   const remainingPosts = filteredPosts.length > 1 ? filteredPosts.slice(1) : [];
 
@@ -162,7 +158,33 @@ const BlogListPage: React.FC = memo(() => {
             )}
 
             {/* Posts */}
-            {filteredPosts.length > 0 ? (
+            {loading ? (
+              <div className="space-y-6">
+                {/* Featured skeleton */}
+                <div className="animate-pulse">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="bg-gray-200 dark:bg-gray-800 rounded-2xl h-64" />
+                    <div className="space-y-4 py-4">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-20" />
+                      <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded w-3/4" />
+                      <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full" />
+                      <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-2/3" />
+                    </div>
+                  </div>
+                </div>
+                {/* Grid skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 animate-pulse">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="space-y-3">
+                      <div className="bg-gray-200 dark:bg-gray-800 rounded-2xl h-48" />
+                      <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-16" />
+                      <div className="h-6 bg-gray-200 dark:bg-gray-800 rounded w-3/4" />
+                      <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : filteredPosts.length > 0 ? (
               <>
                 {/* Featured Post */}
                 {featuredPost && (

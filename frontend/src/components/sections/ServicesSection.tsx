@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GraduationCap, Code2, Bot, Eye } from 'lucide-react';
+import { GraduationCap, Lightbulb, Bot, Eye } from 'lucide-react';
 
 interface Service {
   number: string;
@@ -77,7 +77,7 @@ const ServicesSection: React.FC = memo(() => {
       titleKey: 'services.consulting.title',
       descriptionKey: 'services.consulting.description',
       detailsKey: 'services.consulting.details',
-      icon: Code2,
+      icon: Lightbulb,
     },
     {
       number: '03',

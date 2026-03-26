@@ -71,12 +71,6 @@ export const getCareerData = (): CareerItem[] => [
     position: i18n.t('profileData.career.5.position'),
     description: i18n.t('profileData.career.5.description'),
   },
-  {
-    period: i18n.t('profileData.career.6.period'),
-    company: i18n.t('profileData.career.6.company'),
-    position: i18n.t('profileData.career.6.position'),
-    description: i18n.t('profileData.career.6.description'),
-  },
 ];
 
 export const getEducationData = (): EducationItem[] => [
@@ -91,6 +85,18 @@ export const getEducationData = (): EducationItem[] => [
     school: i18n.t('profileData.education.1.school'),
     degree: i18n.t('profileData.education.1.degree'),
     description: i18n.t('profileData.education.1.description'),
+  },
+  {
+    period: i18n.t('profileData.education.2.period'),
+    school: i18n.t('profileData.education.2.school'),
+    degree: i18n.t('profileData.education.2.degree'),
+    description: i18n.t('profileData.education.2.description'),
+  },
+  {
+    period: i18n.t('profileData.education.3.period'),
+    school: i18n.t('profileData.education.3.school'),
+    degree: i18n.t('profileData.education.3.degree'),
+    description: i18n.t('profileData.education.3.description'),
   },
 ];
 
@@ -124,45 +130,40 @@ export const getProjects = (): Project[] => [
     ].sort(),
   },
   {
-    id: 'ict-piuda',
+    id: 'alphadent',
     title: i18n.t('profileData.projects.2.title'),
-    period: '2025',
+    period: '2025 ~ 2026',
     description: i18n.t('profileData.projects.2.description'),
     category: 'research',
-    tags: ['FastAPI', 'LLM', 'React', i18n.t('profileData.projects.2.tags.3')].sort(),
+    tags: ['Computer Vision', 'DINOv3', 'MoE', 'Contrastive Learning'].sort(),
+  },
+  {
+    id: 'ict-piuda',
+    title: i18n.t('profileData.projects.3.title'),
+    period: '2025',
+    description: i18n.t('profileData.projects.3.description'),
+    category: 'research',
+    tags: ['FastAPI', 'LLM', 'React', i18n.t('profileData.projects.3.tags.3')].sort(),
   },
   {
     id: 'teacher-training',
-    title: i18n.t('profileData.projects.3.title'),
+    title: i18n.t('profileData.projects.4.title'),
     period: '2024 ~ 2025',
-    description: i18n.t('profileData.projects.3.description'),
+    description: i18n.t('profileData.projects.4.description'),
     category: 'education',
     tags: [
-      i18n.t('profileData.projects.3.tags.0'),
-      'ChatGPT',
-      i18n.t('profileData.projects.3.tags.2'),
-      i18n.t('profileData.projects.3.tags.3'),
-    ].sort(),
-  },
-  {
-    id: 'startup-station',
-    title: i18n.t('profileData.projects.4.title'),
-    period: '2023 ~ 2025',
-    description: i18n.t('profileData.projects.4.description'),
-    category: 'startup',
-    tags: [
       i18n.t('profileData.projects.4.tags.0'),
-      i18n.t('profileData.projects.4.tags.1'),
+      'ChatGPT',
       i18n.t('profileData.projects.4.tags.2'),
       i18n.t('profileData.projects.4.tags.3'),
     ].sort(),
   },
   {
-    id: 'nano-ai',
+    id: 'startup-station',
     title: i18n.t('profileData.projects.5.title'),
-    period: '2022 ~ 2025',
+    period: '2023 ~ 2025',
     description: i18n.t('profileData.projects.5.description'),
-    category: 'enterprise',
+    category: 'startup',
     tags: [
       i18n.t('profileData.projects.5.tags.0'),
       i18n.t('profileData.projects.5.tags.1'),
@@ -171,16 +172,29 @@ export const getProjects = (): Project[] => [
     ].sort(),
   },
   {
-    id: 'open-source',
+    id: 'nano-ai',
     title: i18n.t('profileData.projects.6.title'),
-    period: '2022',
+    period: '2022 ~ 2025',
     description: i18n.t('profileData.projects.6.description'),
+    category: 'enterprise',
+    tags: [
+      i18n.t('profileData.projects.6.tags.0'),
+      i18n.t('profileData.projects.6.tags.1'),
+      i18n.t('profileData.projects.6.tags.2'),
+      i18n.t('profileData.projects.6.tags.3'),
+    ].sort(),
+  },
+  {
+    id: 'open-source',
+    title: i18n.t('profileData.projects.7.title'),
+    period: '2022',
+    description: i18n.t('profileData.projects.7.description'),
     category: 'research',
     tags: [
       'ML',
       'Python',
-      i18n.t('profileData.projects.6.tags.2'),
-      i18n.t('profileData.projects.6.tags.3'),
+      i18n.t('profileData.projects.7.tags.2'),
+      i18n.t('profileData.projects.7.tags.3'),
     ].sort(),
   },
 ];

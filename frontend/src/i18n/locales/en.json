@@ -44,20 +44,20 @@
   },
   "services": {
     "sectionLabel": "WHAT WE DO",
-    "title": "Core Services",
-    "subtitle": "We provide step-by-step solutions for corporate AI adoption",
+    "title": "Our Services",
+    "subtitle": "Step-by-step solutions for enterprise AI adoption",
     "education": {
       "title": "AI Education & Training",
-      "description": "Custom AI training for enterprise teams",
+      "description": "Custom AI training for your team",
       "details": [
         "Custom curriculum design",
-        "Project-based hands-on training",
-        "Vibe Coding & AI training"
+        "Project-based practical training",
+        "Vibe coding & AI utilization"
       ]
     },
     "consulting": {
       "title": "AI Consulting",
-      "description": "AI adoption strategy & technical advisory",
+      "description": "From AI strategy to PoC",
       "details": [
         "AI adoption strategy & review",
         "PoC development & validation",
@@ -68,18 +68,18 @@
       "title": "AI Agent Development",
       "description": "Agentic AI service design & build",
       "details": [
-        "Agentic RAG design & build",
-        "MCP-based AI Agent development",
-        "AI service prototype build"
+        "RAG · AI Agent design & development",
+        "Task automation workflow development",
+        "LLM deployment & optimization"
       ]
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "Vision AI training & project design",
+      "description": "Vision AI project design & training",
       "details": [
-        "Object detection / segmentation",
-        "Multimodal AI integration",
-        "CV project design & mentoring"
+        "Detection · classification · segmentation",
+        "Domain-specific CV project mentoring",
+        "End-to-end design including edge deployment"
       ]
     }
   },
@@ -391,50 +391,50 @@
   "footerServices": {
     "education": {
       "title": "AI Education & Training",
-      "description": "We design and deliver custom AI training programs for enterprise teams.",
+      "description": "Custom AI training programs for enterprises, government, and startups.",
       "details": [
         "Custom curriculum design",
-        "Project-based hands-on training",
-        "Vibe Coding & AI training",
-        "Python ML/DL hands-on training",
-        "LLM & Generative AI workshop",
-        "AI literacy for non-developers"
+        "Project-based practical training",
+        "Vibe coding & AI utilization",
+        "Generative AI · LLM workplace training",
+        "AI onboarding for non-technical staff",
+        "AI literacy workshops for educators"
       ]
     },
     "consulting": {
       "title": "AI Consulting",
-      "description": "We provide AI adoption strategy and technical advisory.",
+      "description": "From AI adoption strategy to PoC development.",
       "details": [
-        "AI adoption strategy & review",
+        "AI adoption strategy & technical review",
         "PoC development & validation",
         "Service prototype design",
-        "AI business model development",
-        "AI project management & advisory",
-        "Open-source LLM adoption consulting"
+        "Open-source LLM adoption consulting",
+        "AI project timeline & risk management",
+        "Department-level AI adoption roadmap"
       ]
     },
     "llmGenai": {
       "title": "AI Agent Development",
-      "description": "We design and build Agentic AI services.",
+      "description": "Agentic AI service design and implementation.",
       "details": [
-        "Agentic RAG design & build",
-        "MCP-based AI Agent development",
-        "AI service prototype build",
-        "LLM fine-tuning & optimization",
-        "AI agent workflow design",
-        "Generative AI training"
+        "RAG · AI Agent design & development",
+        "Task automation workflow development",
+        "LLM deployment & optimization",
+        "Existing system integration design",
+        "Prompt design & quality improvement",
+        "MVP-level AI service prototyping"
       ]
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "Vision AI training & project design",
+      "description": "Vision AI project design and training.",
       "details": [
-        "Object detection / segmentation",
-        "Multimodal AI integration",
-        "CV project design & mentoring",
-        "Image classification & search systems",
-        "Video analysis pipeline development",
-        "Hands-on project-based CV training"
+        "Detection · classification · segmentation",
+        "Domain-specific CV project mentoring",
+        "End-to-end design including edge deployment",
+        "Project-based advanced CV training",
+        "Multimodal AI service integration",
+        "Edge device optimization & deployment"
       ]
     }
   },
@@ -582,7 +582,7 @@
         "period": "2023.05 ~ Present",
         "company": "Likelion",
         "position": "AI Expert Instructor",
-        "description": "AI Engineer Advanced Bootcamp · Tekit Startup Station · KOFAC AI Education · Industrial AI Upskilling Program"
+        "description": "AI Computer Vision (CV) Advanced Course Cohorts 1-3 · AI/IT Startup Bootcamp 'Startup Station' Cohorts 7-10 · KOFAC School Consulting AI Education · Nano Convergence Industry Association Industrial AI Upskilling Program"
       },
       {
         "period": "2023.05 ~ 2024.09",
@@ -606,13 +606,7 @@
         "period": "2022.06",
         "company": "Coconut Silo",
         "position": "Researcher",
-        "description": "Data Lab · Data Voucher Program Prototype Development"
-      },
-      {
-        "period": "2021.05 ~ 2021.08",
-        "company": "Seoul Youth Center",
-        "position": "Front-End Developer",
-        "description": "Social enterprise project execution · Web front-end development"
+        "description": "Internal AI model performance improvement · Data Voucher Program Prototype Development"
       }
     ],
     "education": [
@@ -627,6 +621,18 @@
         "school": "Kyungpook National University",
         "degree": "B.S. in Animal Science & Biotechnology",
         "description": "Minor: Food Science & Applied Engineering"
+      },
+      {
+        "period": "2021.09 ~ 2022.03",
+        "school": "AIFFEL AI Innovation School",
+        "degree": "AI Developer Training Program",
+        "description": "Modulabs · Computer Vision Advanced · Multiple Project Hall of Fame listings"
+      },
+      {
+        "period": "2025.06 ~ 2025.07",
+        "school": "Korea University of Technology and Education",
+        "degree": "K-Digital Teaching Training Course",
+        "description": "PBL-based project class design · NCS-based training program development · 164 hours total"
       }
     ],
     "projects": [
@@ -640,6 +646,10 @@
         "tags": {
           "3": "Generative AI"
         }
+      },
+      {
+        "title": "AlphaDent Dental Lesion Detection",
+        "description": "DINOv3 + Hierarchical MoE + Contrastive Learning-based dental lesion classification model design · Performance improvement research under severe class imbalance across 9 classes"
       },
       {
         "title": "ICT Complex Piuda Project",
@@ -705,7 +715,16 @@
       {
         "label": "R&D"
       }
-    ]
+    ],
+    "expertise": [
+      "Generative AI for Business",
+      "Python-based Workflow Automation",
+      "LLM · Prompt Engineering",
+      "RAG · AI Agent Design",
+      "Vibe Coding-based PoC Development",
+      "Project-based Tech Mentoring"
+    ],
+    "expertiseLabel": "Areas of Expertise"
   },
   "notifications": {
     "title": "Notifications",
