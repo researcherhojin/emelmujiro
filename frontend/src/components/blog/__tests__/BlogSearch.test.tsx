@@ -594,9 +594,6 @@ describe('BlogSearch', () => {
 
     const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
 
-    // Empty search without onSearch
-    fireEvent.change(input, { target: { value: '' } });
-
     // Type something without onSearch
     fireEvent.change(input, { target: { value: 'test' } });
 
@@ -606,5 +603,164 @@ describe('BlogSearch', () => {
 
     // Should not crash
     expect(input).toBeInTheDocument();
+  });
+
+  it('performSearch with empty term and no onSearch does not crash (line 62 false branch)', async () => {
+    // Render without onSearch to hit the false branch of `if (onSearch)` on line 62
+    renderWithProviders(<BlogSearch />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+
+    // First type something so the subsequent clear actually triggers performSearch
+    fireEvent.change(input, { target: { value: 'x' } });
+    await waitFor(() => {
+      expect(input.value).toBe('x');
+    });
+
+    // Clear the input to trigger performSearch('') without onSearch
+    fireEvent.change(input, { target: { value: '' } });
+    await waitFor(() => {
+      expect(input.value).toBe('');
+    });
+
+    // Should not crash — the false branch of `if (onSearch)` was taken
+    expect(input).toBeInTheDocument();
+  });
+
+  it('does not save empty search to recent searches (handleSearchSubmit guard)', () => {
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+
+    // Submit with whitespace-only term — handleSearchSubmit guards with searchTerm.trim()
+    fireEvent.change(input, { target: { value: '   ' } });
+    if (input.form) {
+      fireEvent.submit(input.form);
+    }
+
+    // localStorage.setItem should not have been called with recentSearches
+    expect(localStorage.setItem).not.toHaveBeenCalledWith('recentSearches', expect.any(String));
+  });
+
+  it('clearSearch without onSearch does not crash (line 116)', async () => {
+    renderWithProviders(<BlogSearch />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+
+    // Type text so clear button appears
+    fireEvent.change(input, { target: { value: 'React' } });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('x-icon')).toBeInTheDocument();
+    });
+
+    // Click clear button without onSearch prop
+    const clearButton = screen.getByTestId('x-icon').closest('button');
+    fireEvent.click(clearButton!);
+
+    // Should clear the input without crashing
+    expect(input.value).toBe('');
+  });
+
+  it('local search fallback without onSearch does not crash (line 91)', async () => {
+    // Make API fail so it falls back to local search
+    vi.mocked(api.searchBlogPosts).mockRejectedValueOnce(new Error('API error'));
+
+    // Render without onSearch
+    renderWithProviders(<BlogSearch />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'React' } });
+
+    await waitFor(() => {
+      expect(input.value).toBe('React');
+    });
+
+    // Should not crash
+    expect(input).toBeInTheDocument();
+  });
+
+  it('calls onSearch with posts when performSearch receives empty term (line 62)', async () => {
+    const onSearch = vi.fn();
+    renderWithProviders(<BlogSearch onSearch={onSearch} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+
+    // Type something first so clearing to empty triggers onChange
+    fireEvent.change(input, { target: { value: 'x' } });
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenCalled();
+    });
+    onSearch.mockClear();
+
+    // Clear input to trigger performSearch(''), which hits line 62
+    fireEvent.change(input, { target: { value: '' } });
+
+    // performSearch('') calls onSearch(posts) on line 62 when onSearch is defined
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenCalledWith(mockPosts);
+    });
+  });
+
+  it('deduplicates recent searches and caps at 5 entries', async () => {
+    // Pre-populate with 5 recent searches
+    localStorage.setItem('recentSearches', JSON.stringify(['a', 'b', 'c', 'd', 'e']));
+
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+
+    // Submit a new search that already exists — should move it to front
+    fireEvent.change(input, { target: { value: 'c' } });
+    if (input.form) {
+      fireEvent.submit(input.form);
+    }
+
+    await waitFor(() => {
+      const stored = JSON.parse(
+        (localStorage.setItem as ReturnType<typeof vi.fn>).mock.calls
+          .filter((c: string[]) => c[0] === 'recentSearches')
+          .pop()?.[1] || '[]'
+      );
+      expect(stored[0]).toBe('c');
+      expect(stored.length).toBeLessThanOrEqual(5);
+      // 'c' should only appear once (deduped)
+      expect(stored.filter((s: string) => s === 'c').length).toBe(1);
+    });
+  });
+
+  it('API search without onSearch does not crash (line 62)', async () => {
+    vi.mocked(api.searchBlogPosts).mockResolvedValueOnce({
+      data: {
+        results: [
+          {
+            id: '1',
+            title: 'Result',
+            slug: 'r',
+            content: 'c',
+            excerpt: '',
+            author: 'a',
+            publishedAt: '',
+          },
+        ],
+        count: 1,
+        next: null,
+        previous: null,
+      },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as any,
+    });
+
+    renderWithProviders(<BlogSearch />);
+
+    const input = screen.getByPlaceholderText('blog.searchPlaceholder') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'Result' } });
+
+    await waitFor(() => {
+      // Results count should show
+      expect(screen.getByText('1 blog.searchResults')).toBeInTheDocument();
+    });
   });
 });

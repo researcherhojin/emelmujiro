@@ -522,4 +522,27 @@ describe('AuthContext', () => {
       expect(screen.getByTestId('error')).toHaveTextContent('auth.loginFailed');
     });
   });
+
+  test('falls back to i18n translation for register error when no message', async () => {
+    // Reject with an error object that has neither userMessage nor message
+    const error = { code: 500 };
+    mockApi.register.mockRejectedValueOnce(error);
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    });
+
+    fireEvent.click(screen.getByText('Register'));
+
+    await waitFor(() => {
+      // Falls back to i18n.t('auth.registerFailed') which returns the key
+      expect(screen.getByTestId('error')).toHaveTextContent('auth.registerFailed');
+    });
+  });
 });

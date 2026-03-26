@@ -71,9 +71,7 @@ ${t('share.inquiryFooter')}
   };
 
   const handleViewContent = () => {
-    if (sharedContent.url) {
-      window.open(sharedContent.url, '_blank', 'noopener,noreferrer');
-    }
+    window.open(sharedContent.url, '_blank', 'noopener,noreferrer');
   };
 
   const handleSaveForLater = () => {

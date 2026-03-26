@@ -1,6 +1,23 @@
 import React from 'react';
-import { vi, describe, it, expect } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
+
+// Module-level variable to control i18n language for tests
+let mockI18nLanguage = 'ko';
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: {
+      get language() {
+        return mockI18nLanguage;
+      },
+      changeLanguage: vi.fn(),
+    },
+  }),
+  Trans: ({ children }: { children?: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
 
 // Mock react-helmet-async with a Helmet that captures data
 const mockHelmetData: Record<string, any> = {};
@@ -15,7 +32,7 @@ vi.mock('react-helmet-async', () => ({
         if (child.type === 'title') {
           mockHelmetData.title = props.children;
         } else if (child.type === 'meta') {
-          const name = props.name || props.property;
+          const name = props.name || props.property || props.httpEquiv;
           if (name) {
             mockHelmetData[name] = props.content;
           }
@@ -62,6 +79,10 @@ const getHelmetData = () => {
 };
 
 describe('SEOHelmet', () => {
+  beforeEach(() => {
+    mockI18nLanguage = 'ko';
+  });
+
   it('renders with default props', () => {
     renderWithHelmet(<SEOHelmet />);
 
@@ -156,5 +177,64 @@ describe('SEOHelmet', () => {
     // Tags are rendered as multiple meta elements via .map() on line 134
     // The Helmet mock may capture only certain props; verify no crash
     expect(data['article:published_time']).toBe('2024-01-01');
+  });
+
+  it('sets English locale when lang="en" is provided', () => {
+    renderWithHelmet(<SEOHelmet lang="en" />);
+
+    const data = getHelmetData();
+    expect(data['og:locale']).toBe('en_US');
+    expect(data['og:locale:alternate']).toBe('ko_KR');
+    expect(data.lang).toBe('en');
+    expect(data['content-language']).toBe('en');
+  });
+
+  it('sets Korean locale by default (no lang prop)', () => {
+    renderWithHelmet(<SEOHelmet />);
+
+    const data = getHelmetData();
+    expect(data['og:locale']).toBe('ko_KR');
+    expect(data['og:locale:alternate']).toBe('en_US');
+  });
+
+  it('falls back to resolvedAuthor when article.author is not provided', () => {
+    renderWithHelmet(
+      <SEOHelmet
+        type="article"
+        article={{
+          section: 'Technology',
+          tags: ['ai'],
+          publishedTime: '2024-01-01',
+          modifiedTime: '2024-01-02',
+        }}
+      />
+    );
+
+    const data = getHelmetData();
+    // Without article.author, should fall back to resolvedAuthor (siteName by default)
+    expect(data['article:author']).toBe('common.companyName');
+    expect(data['article:section']).toBe('Technology');
+  });
+
+  it('renders publishedTime and modifiedTime props as top-level meta tags', () => {
+    renderWithHelmet(<SEOHelmet publishedTime="2024-06-01" modifiedTime="2024-06-15" />);
+
+    const helmet = document.querySelector('[data-testid="helmet"]');
+    const raw = helmet?.getAttribute('data-helmet') || '{}';
+    const data = JSON.parse(raw);
+    // The top-level publishedTime/modifiedTime use name="article:published_time"
+    // which may overwrite the same key in our mock; verify they are present
+    expect(data['article:published_time']).toBe('2024-06-01');
+    expect(data['article:modified_time']).toBe('2024-06-15');
+  });
+
+  it('falls back to ko when both lang prop and i18n.language are falsy', () => {
+    mockI18nLanguage = '';
+    renderWithHelmet(<SEOHelmet />);
+
+    const data = getHelmetData();
+    // resolvedLang should fall back to 'ko'
+    expect(data.lang).toBe('ko');
+    expect(data['og:locale']).toBe('ko_KR');
   });
 });

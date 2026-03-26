@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { vi } from 'vitest';
 
 // Mock logger
@@ -448,6 +448,37 @@ describe('BlogInteractions Component', () => {
 
       // Should show "blog.linkCopied" instead of "blog.copyLink"
       expect(screen.getByText('blog.linkCopied')).toBeInTheDocument();
+
+      vi.useRealTimers();
+      restoreShare();
+    });
+
+    it('resets copied state after 2000ms timeout (line 118)', async () => {
+      vi.useFakeTimers();
+      openShareMenu();
+
+      // Click copy link
+      fireEvent.click(screen.getByText('blog.copyLink'));
+
+      // Wait for clipboard promise to resolve and setCopiedLink(true)
+      await vi.advanceTimersByTimeAsync(0);
+
+      // Reopen the share menu to see the copied state
+      fireEvent.click(screen.getByText('blog.share'));
+      expect(screen.getByText('blog.linkCopied')).toBeInTheDocument();
+
+      // Close menu, advance past the 2000ms timeout, reopen menu
+      const overlay = screen.getByLabelText('accessibility.closeShareMenu');
+      fireEvent.click(overlay);
+
+      act(() => {
+        vi.advanceTimersByTime(2000);
+      });
+
+      // Reopen and verify the copied state was reset
+      fireEvent.click(screen.getByText('blog.share'));
+      expect(screen.getByText('blog.copyLink')).toBeInTheDocument();
+      expect(screen.queryByText('blog.linkCopied')).not.toBeInTheDocument();
 
       vi.useRealTimers();
       restoreShare();

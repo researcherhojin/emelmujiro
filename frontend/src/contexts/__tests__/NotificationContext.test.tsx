@@ -414,6 +414,33 @@ describe('NotificationContext', () => {
     }
   });
 
+  it('ignores WebSocket messages with unknown type (line 102 else-if false branch)', async () => {
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 50));
+    });
+
+    const ws = wsInstances[wsInstances.length - 1];
+    if (ws && ws.onmessage) {
+      act(() => {
+        ws.onmessage!({
+          data: JSON.stringify({
+            type: 'heartbeat', // Neither 'notification' nor 'notification_update'
+            timestamp: '2026-03-22T10:00:00Z',
+          }),
+        });
+      });
+
+      // Unread count should remain unchanged at 3
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    }
+  });
+
   it('handles invalid JSON in WebSocket message gracefully', async () => {
     renderWithNotification();
 
@@ -718,6 +745,187 @@ describe('NotificationContext', () => {
     vi.stubGlobal('WebSocket', OriginalWebSocket);
   });
 
+  it('appends notifications on page > 1 when response has next (lines 171-175)', async () => {
+    // First page returns one notification with a next link
+    mockGetNotifications.mockResolvedValueOnce({
+      data: {
+        count: 2,
+        next: 'http://localhost:8000/api/notifications/?page=2',
+        previous: null,
+        results: [
+          {
+            id: 1,
+            title: 'First',
+            message: 'Page 1 notification',
+            level: 'info',
+            notification_type: 'system',
+            url: '',
+            is_read: false,
+            read_at: null,
+            created_at: '2026-03-18T10:00:00Z',
+          },
+        ],
+      },
+    });
+
+    // Second page returns another notification with no next
+    mockGetNotifications.mockResolvedValueOnce({
+      data: {
+        count: 2,
+        next: null,
+        previous: 'http://localhost:8000/api/notifications/?page=1',
+        results: [
+          {
+            id: 2,
+            title: 'Second',
+            message: 'Page 2 notification',
+            level: 'info',
+            notification_type: 'system',
+            url: '',
+            is_read: false,
+            read_at: null,
+            created_at: '2026-03-17T10:00:00Z',
+          },
+        ],
+      },
+    });
+
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    // First fetch — page 1, replaces notifications
+    await act(async () => {
+      screen.getByTestId('fetch').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('notifications-count').textContent).toBe('1');
+    });
+
+    // Second fetch — page 2 (incremented because next was present),
+    // should append to existing notifications
+    await act(async () => {
+      screen.getByTestId('fetch').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('notifications-count').textContent).toBe('2');
+    });
+
+    expect(mockGetNotifications).toHaveBeenCalledTimes(2);
+  });
+
+  it('updates notification is_read state when markAsRead succeeds (lines 194-205)', async () => {
+    mockGetNotifications.mockResolvedValueOnce({
+      data: {
+        count: 1,
+        next: null,
+        previous: null,
+        results: [
+          {
+            id: 1,
+            title: 'Unread',
+            message: 'Should become read',
+            level: 'info',
+            notification_type: 'system',
+            url: '',
+            is_read: false,
+            read_at: null,
+            created_at: '2026-03-18T10:00:00Z',
+          },
+        ],
+      },
+    });
+
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    // Fetch to populate notifications list
+    await act(async () => {
+      screen.getByTestId('fetch').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('notifications-count').textContent).toBe('1');
+    });
+
+    // Mark notification id=1 as read
+    await act(async () => {
+      screen.getByTestId('mark-read').click();
+    });
+
+    await waitFor(() => {
+      expect(mockMarkNotificationRead).toHaveBeenCalledWith(1);
+      // Unread count should decrement from 3 to 2
+      expect(screen.getByTestId('unread-count').textContent).toBe('2');
+    });
+  });
+
+  it('marks all notifications as read and zeroes unread count (lines 212-223)', async () => {
+    mockGetNotifications.mockResolvedValueOnce({
+      data: {
+        count: 2,
+        next: null,
+        previous: null,
+        results: [
+          {
+            id: 1,
+            title: 'Notif 1',
+            message: 'First',
+            level: 'info',
+            notification_type: 'system',
+            url: '',
+            is_read: false,
+            read_at: null,
+            created_at: '2026-03-18T10:00:00Z',
+          },
+          {
+            id: 2,
+            title: 'Notif 2',
+            message: 'Second',
+            level: 'info',
+            notification_type: 'system',
+            url: '',
+            is_read: false,
+            read_at: null,
+            created_at: '2026-03-17T10:00:00Z',
+          },
+        ],
+      },
+    });
+
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    // Fetch to populate notifications
+    await act(async () => {
+      screen.getByTestId('fetch').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('notifications-count').textContent).toBe('2');
+    });
+
+    // Mark all as read
+    await act(async () => {
+      screen.getByTestId('mark-all').click();
+    });
+
+    await waitFor(() => {
+      expect(mockMarkAllNotificationsRead).toHaveBeenCalled();
+      expect(screen.getByTestId('unread-count').textContent).toBe('0');
+    });
+  });
+
   it('sends WS data via wsSend when WebSocket is OPEN (line 187)', async () => {
     localStorage.setItem('auth_hint', '1');
     renderWithProviders(<TestConsumer />);
@@ -751,5 +959,259 @@ describe('NotificationContext', () => {
     expect(ws.send).toHaveBeenCalledWith(
       JSON.stringify({ action: 'mark_read', notification_id: 1 })
     );
+  });
+
+  it('does not call getNotifications when fetchNotifications is invoked while unauthenticated (line 166)', async () => {
+    // Render WITHOUT auth_hint so isAuthenticated remains false
+    localStorage.removeItem('auth_hint');
+    mockGetNotifications.mockClear();
+
+    renderWithProviders(<TestConsumer />);
+
+    // Wait for the component to settle without auth
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('0');
+    });
+
+    // Click the fetch button — fetchNotifications should early-return
+    await act(async () => {
+      screen.getByTestId('fetch').click();
+    });
+
+    // Allow any pending promises to resolve
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 100));
+    });
+
+    // getNotifications should NOT have been called since user is not authenticated
+    expect(mockGetNotifications).not.toHaveBeenCalled();
+  });
+
+  it('stops reconnecting after MAX_RECONNECT_ATTEMPTS (line 121 false branch)', async () => {
+    vi.useFakeTimers();
+
+    // Track instances of a WebSocket that never opens but closes after 3s
+    // (not quickly, so closedQuickly = false and reconnect is attempted,
+    // but onopen never fires so reconnectAttemptsRef never resets to 0)
+    const slowFailInstances: any[] = [];
+    vi.stubGlobal(
+      'WebSocket',
+      Object.assign(
+        class SlowFailWebSocket {
+          static OPEN = 1;
+          readyState = 0;
+          onopen: (() => void) | null = null;
+          onclose: (() => void) | null = null;
+          onmessage: any = null;
+          onerror: any = null;
+          send = vi.fn();
+          close = vi.fn();
+          constructor() {
+            slowFailInstances.push(this);
+            // Close after 3000ms (> WS_IMMEDIATE_CLOSE_THRESHOLD of 2000ms)
+            // so closedQuickly = false and reconnect is attempted
+            setTimeout(() => this.onclose?.(), 3000);
+          }
+        },
+        { OPEN: 1 }
+      )
+    );
+
+    localStorage.setItem('auth_hint', '1');
+    renderWithProviders(<TestConsumer />);
+
+    // Wait for auth to settle and initial WS to be created
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(100);
+    });
+
+    // First WS created, wait for it to close (3s)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(3000);
+    });
+
+    // Reconnect attempt 1 (delay = 1000ms * 2^0 = 1000ms)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
+    });
+    // New WS created, wait for close (3s)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(3000);
+    });
+
+    // Reconnect attempt 2 (delay = 1000ms * 2^1 = 2000ms)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2000);
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(3000);
+    });
+
+    // Reconnect attempt 3 (delay = 4000ms)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(4000);
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(3000);
+    });
+
+    // Reconnect attempt 4 (delay = 8000ms)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(8000);
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(3000);
+    });
+
+    // Reconnect attempt 5 (delay = 16000ms)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(16000);
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(3000);
+    });
+
+    const instancesAfterMax = slowFailInstances.length;
+
+    // Wait for any potential reconnect (should not happen — max attempts reached)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60000);
+    });
+
+    // No new WS should be created after max attempts
+    expect(slowFailInstances.length).toBe(instancesAfterMax);
+
+    vi.useRealTimers();
+    vi.stubGlobal('WebSocket', MockWebSocket);
+  });
+
+  it('uses default values when notification fields are missing', async () => {
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 50));
+    });
+
+    const ws = wsInstances[wsInstances.length - 1];
+    if (ws && ws.onmessage) {
+      act(() => {
+        ws.onmessage!({
+          data: JSON.stringify({
+            type: 'notification',
+            id: 50,
+            title: 'Minimal',
+            message: 'No optional fields',
+            // NO level, notification_type, or url — exercises fallback branches
+            timestamp: '2026-03-22T10:00:00Z',
+          }),
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('unread-count').textContent).toBe('4');
+      });
+    }
+  });
+
+  it('markAsRead leaves other notifications unchanged (line 200 false branch)', async () => {
+    // Return 2 notifications so markAsRead(1) exercises both branches of the ternary
+    mockGetNotifications.mockResolvedValueOnce({
+      data: {
+        count: 2,
+        next: null,
+        previous: null,
+        results: [
+          {
+            id: 1,
+            title: 'Notif A',
+            message: 'First',
+            level: 'info',
+            notification_type: 'system',
+            url: '',
+            is_read: false,
+            read_at: null,
+            created_at: '2026-03-18T10:00:00Z',
+          },
+          {
+            id: 2,
+            title: 'Notif B',
+            message: 'Second',
+            level: 'info',
+            notification_type: 'system',
+            url: '',
+            is_read: false,
+            read_at: null,
+            created_at: '2026-03-17T10:00:00Z',
+          },
+        ],
+      },
+    });
+
+    renderWithNotification();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    // Fetch to populate notifications list with 2 items
+    await act(async () => {
+      screen.getByTestId('fetch').click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('notifications-count').textContent).toBe('2');
+    });
+
+    // Mark only notification id=1 as read — notification id=2 should remain unchanged
+    await act(async () => {
+      screen.getByTestId('mark-read').click();
+    });
+
+    await waitFor(() => {
+      expect(mockMarkNotificationRead).toHaveBeenCalledWith(1);
+      // Unread count should decrement from 3 to 2
+      expect(screen.getByTestId('unread-count').textContent).toBe('2');
+      // Both notifications should still be in the list
+      expect(screen.getByTestId('notifications-count').textContent).toBe('2');
+    });
+  });
+
+  it('skips ws.send when WebSocket is not OPEN (lines 186-188 false branch)', async () => {
+    localStorage.setItem('auth_hint', '1');
+    renderWithProviders(<TestConsumer />);
+
+    // Wait for auth to settle
+    await waitFor(() => {
+      expect(screen.getByTestId('unread-count').textContent).toBe('3');
+    });
+
+    // Wait for WS to be created
+    await waitFor(
+      () => {
+        expect(wsInstances.length).toBeGreaterThanOrEqual(1);
+      },
+      { timeout: 3000 }
+    );
+    const ws = wsInstances[wsInstances.length - 1];
+
+    // Set readyState to CLOSED so the wsSend guard skips ws.send
+    ws.readyState = 3; // WebSocket.CLOSED
+
+    // markAsRead calls wsSend internally
+    await act(async () => {
+      screen.getByTestId('mark-read').click();
+    });
+
+    await waitFor(() => {
+      // The API call should still succeed
+      expect(mockMarkNotificationRead).toHaveBeenCalledWith(1);
+    });
+
+    // ws.send should NOT have been called because readyState !== OPEN
+    expect(ws.send).not.toHaveBeenCalled();
   });
 });

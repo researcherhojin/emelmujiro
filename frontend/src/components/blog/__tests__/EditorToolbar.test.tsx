@@ -450,4 +450,115 @@ describe('EditorToolbar', () => {
     expect(imgBtn.className).toContain('text-gray-500');
     expect(imgBtn.className).not.toContain('bg-gray-200');
   });
+
+  it('refocuses editor when Escape is pressed in URL input', () => {
+    mockEditor.isActive.mockReturnValue(false);
+    renderToolbar();
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.link'));
+    const urlInput = screen.getByPlaceholderText('blogEditor.toolbar.enterUrl');
+    fireEvent.change(urlInput, { target: { value: 'https://test.com' } });
+    fireEvent.keyDown(urlInput, { key: 'Escape' });
+
+    // Escape should trigger editor.chain().focus().run() without setting a link
+    expect(mockEditor.chain).toHaveBeenCalled();
+    expect(calledMethods).toContain('focus');
+    expect(calledMethods).not.toContain('setLink');
+    // URL input should be hidden
+    expect(screen.queryByPlaceholderText('blogEditor.toolbar.enterUrl')).not.toBeInTheDocument();
+  });
+
+  it('handles image upload when fileInputRef.current is present', async () => {
+    renderToolbar();
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(['pixels'], 'photo.jpg', { type: 'image/jpeg' });
+
+    // Verify the ref is attached (non-null branch of line 45)
+    Object.defineProperty(fileInput, 'files', { value: [file], writable: true });
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      expect(mockOnImageUpload).toHaveBeenCalledWith(file);
+    });
+    await waitFor(() => {
+      expect(calledMethods).toContain('setImage');
+    });
+    // After upload, the file input value should be cleared
+    expect(fileInput.value).toBe('');
+  });
+
+  it('clears URL value when Escape is pressed', () => {
+    mockEditor.isActive.mockReturnValue(false);
+    renderToolbar();
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.link'));
+    const urlInput = screen.getByPlaceholderText('blogEditor.toolbar.enterUrl');
+    fireEvent.change(urlInput, { target: { value: 'https://will-be-cleared.com' } });
+    fireEvent.keyDown(urlInput, { key: 'Escape' });
+
+    // Re-open the URL input and verify it starts empty
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.link'));
+    const newUrlInput = screen.getByPlaceholderText('blogEditor.toolbar.enterUrl');
+    expect((newUrlInput as HTMLInputElement).value).toBe('');
+  });
+
+  it('ignores keys other than Enter and Escape in URL input', () => {
+    // Cover the false branch of `else if (e.key === 'Escape')` at line 74
+    mockEditor.isActive.mockReturnValue(false);
+    renderToolbar();
+    fireEvent.click(getToolbarButton('blogEditor.toolbar.link'));
+    const urlInput = screen.getByPlaceholderText('blogEditor.toolbar.enterUrl');
+    fireEvent.change(urlInput, { target: { value: 'https://example.com' } });
+
+    // Press a key that is neither Enter nor Escape
+    fireEvent.keyDown(urlInput, { key: 'a' });
+
+    // URL input should still be visible (not dismissed)
+    expect(screen.getByPlaceholderText('blogEditor.toolbar.enterUrl')).toBeInTheDocument();
+    // No link should have been set
+    expect(calledMethods).not.toContain('setLink');
+    // Value should remain unchanged
+    expect((urlInput as HTMLInputElement).value).toBe('https://example.com');
+  });
+
+  it('handles image upload when fileInputRef.current becomes null', async () => {
+    // Cover the false branch of `if (fileInputRef.current)` at line 45.
+    // We access the React ref through the DOM element's internal fiber,
+    // then null it out during the async onImageUpload callback.
+    renderToolbar();
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(fileInput).toBeTruthy();
+
+    // Find the React ref object attached to the file input via its fiber
+    const fiberKey = Object.keys(fileInput).find((key) => key.startsWith('__reactFiber$'));
+    let refObj: { current: HTMLInputElement | null } | null = null;
+    if (fiberKey) {
+      const fiber = (fileInput as unknown as Record<string, unknown>)[fiberKey] as {
+        ref?: { current: HTMLInputElement | null };
+      };
+      if (fiber?.ref && 'current' in fiber.ref) {
+        refObj = fiber.ref;
+      }
+    }
+
+    // Make onImageUpload null out the ref before resolving
+    mockOnImageUpload.mockImplementation(async () => {
+      if (refObj) {
+        refObj.current = null;
+      }
+      return '/media/test.jpg';
+    });
+
+    const file = new File(['pixels'], 'photo.jpg', { type: 'image/jpeg' });
+    Object.defineProperty(fileInput, 'files', { value: [file], writable: true });
+    fireEvent.change(fileInput);
+
+    await waitFor(() => {
+      expect(mockOnImageUpload).toHaveBeenCalledWith(file);
+    });
+
+    // setImage was called (upload succeeded), but fileInputRef.current was null
+    // so the `if (fileInputRef.current)` guard at line 45 took the false branch
+    await waitFor(() => {
+      expect(calledMethods).toContain('setImage');
+    });
+  });
 });

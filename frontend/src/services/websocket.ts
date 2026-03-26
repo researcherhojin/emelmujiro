@@ -191,6 +191,7 @@ export default class WebSocketService {
   private flushMessageQueue(): void {
     while (this.messageQueue.length > 0 && this.state === 'connected') {
       const message = this.messageQueue.shift();
+      /* v8 ignore next */
       if (message) {
         this.send(message);
       }

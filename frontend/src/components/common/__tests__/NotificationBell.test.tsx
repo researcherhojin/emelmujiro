@@ -25,6 +25,7 @@ const mockMarkAsRead = vi.fn();
 const mockMarkAllAsRead = vi.fn();
 
 let mockUnreadCount = 5;
+let mockLoading = false;
 let mockNotifications: Array<{
   id: number;
   title: string;
@@ -41,7 +42,7 @@ vi.mock('../../../contexts/NotificationContext', () => ({
   useNotification: () => ({
     notifications: mockNotifications,
     unreadCount: mockUnreadCount,
-    loading: false,
+    loading: mockLoading,
     wsConnected: true,
     fetchNotifications: mockFetchNotifications,
     markAsRead: mockMarkAsRead,
@@ -56,6 +57,7 @@ describe('NotificationBell', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUnreadCount = 5;
+    mockLoading = false;
     mockNotifications = [];
   });
 
@@ -489,6 +491,16 @@ describe('NotificationBell', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(mockFetchNotifications).toHaveBeenCalled();
+  });
+
+  it('shows loading indicator when notifications are loading (line 195)', () => {
+    mockLoading = true;
+
+    renderWithProviders(<NotificationBell />);
+    fireEvent.click(screen.getByRole('button'));
+
+    // Should show loading dots
+    expect(screen.getByText('...')).toBeInTheDocument();
   });
 
   it('navigates to notification URL and closes panel when clicking notification with url (lines 72, 149-150)', () => {

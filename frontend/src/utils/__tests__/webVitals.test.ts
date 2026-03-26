@@ -198,6 +198,46 @@ describe('webVitals', () => {
       vi.runAllTimers();
       expect(performanceMock.getEntriesByType).toHaveBeenCalledWith('navigation');
     });
+
+    it('skips FCP when paint entries have no first-contentful-paint', async () => {
+      vi.useFakeTimers();
+      const mockNavigationTiming = {
+        domainLookupEnd: 100,
+        domainLookupStart: 0,
+        connectEnd: 200,
+        connectStart: 100,
+        domContentLoadedEventEnd: 1000,
+        domContentLoadedEventStart: 0,
+        fetchStart: 0,
+        loadEventEnd: 2000,
+      };
+      // Paint entries exist but none are 'first-contentful-paint'
+      const mockPaintTiming = [{ name: 'first-paint', startTime: 500 }];
+
+      Object.defineProperty(window, 'performance', {
+        writable: true,
+        value: {
+          getEntriesByType: vi.fn((type: string) => {
+            if (type === 'navigation') return [mockNavigationTiming];
+            if (type === 'paint') return mockPaintTiming;
+            return [];
+          }),
+        },
+      });
+
+      logPerformanceMetrics({ enableLogging: true });
+      window.dispatchEvent(new Event('load'));
+      vi.runAllTimers();
+
+      const loggedMetrics = mockLoggerWarn.mock.calls.find(
+        (call: unknown[]) => call[0] === 'Performance Metrics:'
+      )?.[1] as Record<string, number | undefined> | undefined;
+
+      expect(loggedMetrics).toBeDefined();
+      // FCP should remain undefined since no 'first-contentful-paint' entry existed
+      expect(loggedMetrics!.firstContentfulPaint).toBeUndefined();
+      expect(loggedMetrics!.dnsLookup).toBe(100);
+    });
   });
 
   describe('initPerformanceMonitoring', () => {

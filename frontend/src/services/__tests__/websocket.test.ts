@@ -526,7 +526,29 @@ describe('WebSocketService', () => {
     });
   });
 
+  describe('off() Edge Cases', () => {
+    it('should not throw when removing handler for event with no registered handlers (line 116)', () => {
+      const handler = vi.fn();
+      // Call off() for an event that was never registered — should not throw
+      expect(() => {
+        wsService.off('nonexistent_event', handler);
+      }).not.toThrow();
+    });
+  });
+
   describe('Heartbeat Edge Cases', () => {
+    it('should not send heartbeat when not connected (line 172)', async () => {
+      // Enable heartbeat while disconnected — the interval fires but the guard
+      // `this.state === 'connected'` prevents sending
+      wsService.enableHeartbeat(100);
+
+      // Advance past the interval
+      await vi.advanceTimersByTimeAsync(150);
+
+      // No WebSocket exists, so nothing should have been sent (and no error thrown)
+      expect(wsService.isConnected()).toBe(false);
+    });
+
     it('should clear existing heartbeat before enabling new one (line 168)', async () => {
       wsService.connect('ws://localhost:8000/ws/test/');
       await vi.advanceTimersByTimeAsync(10);
@@ -542,6 +564,97 @@ describe('WebSocketService', () => {
 
       // Should have sent at least one heartbeat from the new interval
       expect(sendSpy).toHaveBeenCalledWith(expect.stringContaining('ping'));
+    });
+  });
+
+  describe('connect() when WebSocket is undefined', () => {
+    it('does nothing when WebSocket global is not defined (line 33 false branch)', () => {
+      const origWS = (global as any).WebSocket;
+      delete (global as any).WebSocket;
+
+      const service = new WebSocketService();
+      service.connect('ws://localhost:8000/ws/test/');
+
+      // State transitions to connecting but ws remains null — no WebSocket created
+      expect(service.getState()).toBe('connecting');
+      expect(service.isConnected()).toBe(false);
+
+      service.disconnect();
+      (global as any).WebSocket = origWS;
+    });
+  });
+
+  describe('Message without type field', () => {
+    it('emits message event but no type-specific event (line 63 false branch)', async () => {
+      const onMessage = vi.fn();
+      const onUndefined = vi.fn();
+
+      wsService.on('message', onMessage);
+      // Register a listener for 'undefined' to verify it is NOT called
+      wsService.on('undefined', onUndefined);
+
+      wsService.connect('ws://localhost:8000/ws/test/');
+      await vi.advanceTimersByTimeAsync(10);
+
+      const ws = (wsService as any).ws;
+      if (ws && ws.onmessage) {
+        // Send a message with no `type` field
+        ws.onmessage(
+          new MessageEvent('message', {
+            data: JSON.stringify({ payload: 'no-type-here' }),
+          })
+        );
+      }
+
+      // The generic message listener should fire
+      expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ payload: 'no-type-here' }));
+      // No type-specific event should be emitted
+      expect(onUndefined).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('attemptReconnect()', () => {
+    it('should reconnect after close when autoReconnect is enabled (lines 194-205)', async () => {
+      const onReconnect = vi.fn();
+      wsService.on('reconnect', onReconnect);
+      wsService.setAutoReconnect(true, 3, 200);
+
+      wsService.connect('ws://localhost:8000/ws/test/');
+      await vi.advanceTimersByTimeAsync(10);
+      expect(wsService.isConnected()).toBe(true);
+
+      // Simulate unexpected close via the raw WebSocket's onclose handler
+      const ws = (wsService as any).ws;
+      ws.onclose(new CloseEvent('close'));
+
+      // reconnect event emitted synchronously
+      expect(onReconnect).toHaveBeenCalledTimes(1);
+      expect(wsService.getReconnectAttempts()).toBe(1);
+
+      // Wait for reconnect delay + connection open
+      await vi.advanceTimersByTimeAsync(250);
+
+      // The service should have reconnected successfully
+      expect(wsService.isConnected()).toBe(true);
+    });
+
+    it('should not call connect when url is null during reconnect timeout (line 205)', async () => {
+      wsService.setAutoReconnect(true, 3, 200);
+      wsService.connect('ws://localhost:8000/ws/test/');
+      await vi.advanceTimersByTimeAsync(10);
+
+      // Trigger close to schedule reconnect
+      const ws = (wsService as any).ws;
+      ws.onclose(new CloseEvent('close'));
+
+      // Clear the url before the timeout fires to exercise the `if (this.url)` false branch
+      (wsService as any).url = null;
+
+      // Advance past the reconnect delay
+      await vi.advanceTimersByTimeAsync(250);
+
+      // Should remain disconnected since url was null when timeout fired
+      expect(wsService.isConnected()).toBe(false);
     });
   });
 });

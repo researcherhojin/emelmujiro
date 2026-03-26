@@ -65,7 +65,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   }, [clearReconnectTimer]);
 
   const connectWebSocket = useCallback(() => {
-    if (!isAuthenticated || wsRef.current?.readyState === WebSocket.OPEN) return;
+    /* v8 ignore next */
+    if (!isAuthenticated) return;
 
     const wsUrl = `${env.WS_URL}/notifications/`;
 

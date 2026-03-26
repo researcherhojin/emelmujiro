@@ -260,10 +260,16 @@ describe('SkipLink Component', () => {
     });
 
     it('handles main content element without scrollIntoView method', () => {
-      // Create element without scrollIntoView method
+      // Create element and explicitly override scrollIntoView to undefined
+      // so typeof check returns false (Element.prototype has scrollIntoView from global mock)
       const elementWithoutScroll = document.createElement('div');
       elementWithoutScroll.id = 'main-content';
       elementWithoutScroll.focus = vi.fn();
+      Object.defineProperty(elementWithoutScroll, 'scrollIntoView', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
 
       vi.spyOn(document, 'getElementById').mockReturnValue(elementWithoutScroll);
 

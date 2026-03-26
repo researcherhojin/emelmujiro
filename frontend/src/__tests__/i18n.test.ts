@@ -212,6 +212,9 @@ describe('i18n configuration', () => {
     });
   });
 
+  // pathDetector SSR guard (typeof window === 'undefined') is tested in
+  // src/utils/__tests__/urlPrefixLookup.test.ts via the extracted utility.
+
   describe('bot detection branch', () => {
     it('should use bot detection order when user agent matches a bot', async () => {
       // The isBot variable is evaluated at module load time with the current

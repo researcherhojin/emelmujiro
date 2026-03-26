@@ -228,4 +228,16 @@ describe('BlogCard Component', () => {
       expect(screen.getByText('blog.readMoreDetail')).toBeInTheDocument();
     });
   });
+
+  it('renders empty excerpt fallback on featured card (line 76)', async () => {
+    const postWithoutExcerpt = { ...mockPost, excerpt: undefined };
+    renderWithRouter(<BlogCard post={postWithoutExcerpt} featured />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Blog Post')).toBeInTheDocument();
+    });
+
+    // The excerpt paragraph should render with empty string fallback
+    expect(screen.getByText('blog.readMoreDetail')).toBeInTheDocument();
+  });
 });

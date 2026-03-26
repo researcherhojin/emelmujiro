@@ -253,6 +253,41 @@ describe('blogPosts data', () => {
       const posts = await getBlogPosts();
       expect(posts.length).toBe(blogPosts.length);
     });
+
+    it('sorts posts correctly when some lack created_at', async () => {
+      const postsWithDateOnly = [
+        {
+          id: 901,
+          title: 'Date Only Post',
+          slug: 'date-only',
+          excerpt: 'E',
+          content: 'C',
+          author: 'T',
+          date: '2025-06-01',
+          published: true,
+          category: 'test',
+          tags: [],
+        },
+        {
+          id: 902,
+          title: 'No Date Post',
+          slug: 'no-date',
+          excerpt: 'E',
+          content: 'C',
+          author: 'T',
+          published: true,
+          category: 'test',
+          tags: [],
+        },
+      ];
+      mockLocalStorage.store['customBlogPosts'] = JSON.stringify(postsWithDateOnly);
+      const posts = await getBlogPosts();
+      // Should not throw and should return all posts
+      expect(posts.length).toBeGreaterThan(0);
+      // Posts with date-only and no-date should still be present
+      expect(posts.find((p) => p.id === 901)).toBeDefined();
+      expect(posts.find((p) => p.id === 902)).toBeDefined();
+    });
   });
 
   describe('getBlogPost', () => {

@@ -542,6 +542,47 @@ describe('UIContext', () => {
     expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('theme');
   });
 
+  test('system theme change to light mode sets light theme', () => {
+    mockLocalStorage.getItem.mockReturnValue(null);
+
+    const addEventListenerMock = vi.fn();
+
+    mockMatchMedia.mockImplementation((query: string) => ({
+      matches: query === '(prefers-color-scheme: dark)',
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: addEventListenerMock,
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+
+    render(
+      <UIProvider>
+        <TestComponent />
+      </UIProvider>
+    );
+
+    // Starts as dark because matchMedia matches dark
+    expect(screen.getByTestId('theme')).toHaveTextContent('dark');
+
+    const changeCall = addEventListenerMock.mock.calls.find(
+      (call: unknown[]) => call[0] === 'change'
+    );
+    expect(changeCall).toBeDefined();
+
+    const changeHandler = changeCall![1];
+
+    // Simulate system theme change to light (matches: false)
+    act(() => {
+      changeHandler({ matches: false } as MediaQueryListEvent);
+    });
+
+    expect(screen.getByTestId('theme')).toHaveTextContent('light');
+    expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('theme');
+  });
+
   test('re-enables theme transitions after timeout', () => {
     vi.useFakeTimers();
 
@@ -634,6 +675,41 @@ describe('UIContext', () => {
     });
     expect(screen.getByTestId('notification-count')).toHaveTextContent('0');
 
+    vi.useRealTimers();
+  });
+
+  test('cleanup clears all notification timers on unmount (line 118)', () => {
+    vi.useFakeTimers();
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
+
+    const NotificationUnmountComponent: React.FC = () => {
+      const { showNotification } = useUI();
+      return (
+        <div>
+          <button onClick={() => showNotification('info', 'Timer msg', 5000)}>Add Timed</button>
+        </div>
+      );
+    };
+
+    const { unmount } = render(
+      <UIProvider>
+        <NotificationUnmountComponent />
+      </UIProvider>
+    );
+
+    // Add a notification that creates a timer
+    fireEvent.click(screen.getByText('Add Timed'));
+
+    // clearTimeout calls before unmount
+    const callsBefore = clearTimeoutSpy.mock.calls.length;
+
+    // Unmount before the timer fires — cleanup should call clearTimeout
+    unmount();
+
+    // clearTimeout should have been called at least once more (for the notification timer)
+    expect(clearTimeoutSpy.mock.calls.length).toBeGreaterThan(callsBefore);
+
+    clearTimeoutSpy.mockRestore();
     vi.useRealTimers();
   });
 

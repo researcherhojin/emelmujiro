@@ -3,6 +3,7 @@
  * Testing metric collection, rating calculations, dashboard interactions, and analytics integration
  */
 
+import React from 'react';
 import { vi } from 'vitest';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import WebVitalsDashboard from '../WebVitalsDashboard';
@@ -729,6 +730,29 @@ describe('WebVitalsDashboard', () => {
 
       expect(mockConsoleLog).not.toHaveBeenCalled();
     });
+
+    test('skips logger.debug when IS_DEVELOPMENT is false', () => {
+      // Cover the false branch of `if (env.IS_DEVELOPMENT)` at line 123
+      mockEnv.IS_DEVELOPMENT = false;
+      mockEnv.IS_PRODUCTION = true;
+
+      render(<WebVitalsDashboard />);
+
+      // The useEffect still registers handlers even though the UI returns null
+      const clsHandler = mockOnCLS.mock.calls[0]?.[0];
+      expect(clsHandler).toBeDefined();
+
+      act(() => {
+        clsHandler({ name: 'CLS', value: 0.05 });
+      });
+
+      // logger.debug internally calls console.log; it should NOT be called
+      expect(mockConsoleLog).not.toHaveBeenCalled();
+
+      // Restore for other tests
+      mockEnv.IS_DEVELOPMENT = true;
+      mockEnv.IS_PRODUCTION = false;
+    });
   });
 
   describe('CSS Classes and Styling', () => {
@@ -828,16 +852,40 @@ describe('WebVitalsDashboard', () => {
   });
 
   describe('Edge Cases and Error Handling', () => {
-    test('handles unknown metric names gracefully', () => {
-      render(<WebVitalsDashboard />);
+    test('handles unknown metric names gracefully and renders empty description', async () => {
+      const { container } = render(<WebVitalsDashboard />);
+
+      // Open the dashboard first so MetricCard renders
+      const toggleButton = findButton(container, /toggle web vitals dashboard/i);
+      if (toggleButton) {
+        fireEvent.click(toggleButton);
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Web Vitals Dashboard')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
       const clsHandler = mockOnCLS.mock.calls[0][0];
 
+      // Trigger a metric with an unknown name to hit getMetricDescription fallback (line 55)
       expect(() => {
         act(() => {
           clsHandler({ name: 'UNKNOWN_METRIC', value: 100 });
         });
       }).not.toThrow();
+
+      // Verify the unknown metric renders with needs-improvement rating (getMetricRating fallback)
+      await waitFor(
+        () => {
+          expect(screen.getByText('UNKNOWN_METRIC')).toBeInTheDocument();
+          // getMetricDescription returns '' for unknown names
+          expect(screen.getByText('100ms')).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
     test('handles missing console.log gracefully', () => {
@@ -859,6 +907,23 @@ describe('WebVitalsDashboard', () => {
 
       // Restore console
       global.console = originalConsole;
+    });
+
+    test('prevents duplicate initialization in StrictMode', () => {
+      // Cover the true branch of `if (metricsInitialized.current) return;` at line 105.
+      // React.StrictMode double-invokes effects, so the second invocation hits the guard.
+      render(
+        <React.StrictMode>
+          <WebVitalsDashboard />
+        </React.StrictMode>
+      );
+
+      // onCLS should only be called once despite StrictMode double-invoking the effect
+      expect(mockOnCLS).toHaveBeenCalledTimes(1);
+      expect(mockOnFCP).toHaveBeenCalledTimes(1);
+      expect(mockOnLCP).toHaveBeenCalledTimes(1);
+      expect(mockOnTTFB).toHaveBeenCalledTimes(1);
+      expect(mockOnINP).toHaveBeenCalledTimes(1);
     });
 
     test('removes event listener on unmount in development', () => {

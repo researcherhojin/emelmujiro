@@ -101,5 +101,33 @@ describe('accessibility', () => {
 
       vi.useRealTimers();
     });
+
+    it('should return undefined when document is undefined (SSR)', () => {
+      const originalDocument = globalThis.document;
+      // @ts-expect-error — simulating SSR environment
+      delete globalThis.document;
+
+      const result = announceToScreenReader('SSR message');
+      expect(result).toBeUndefined();
+
+      globalThis.document = originalDocument;
+    });
+
+    it('timeout callback handles already-removed element gracefully', () => {
+      vi.useFakeTimers();
+      announceToScreenReader('Auto-remove');
+
+      // Manually remove the element before timeout fires
+      const el = document.querySelector('[role="status"]');
+      if (el) document.body.removeChild(el);
+
+      // Advance past timeout — should not throw
+      vi.advanceTimersByTime(1100);
+
+      // Element should still not be in DOM
+      expect(document.querySelector('[role="status"]')).toBeFalsy();
+
+      vi.useRealTimers();
+    });
   });
 });

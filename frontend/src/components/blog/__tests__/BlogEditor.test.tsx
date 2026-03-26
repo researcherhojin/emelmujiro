@@ -230,6 +230,39 @@ describe('BlogEditor Component', () => {
       });
     });
 
+    it('navigates to /blog after 500ms timeout on successful save (line 159)', async () => {
+      vi.useFakeTimers();
+
+      renderEditor();
+
+      const titleInput = screen.getByPlaceholderText('Enter title...');
+      fireEvent.change(titleInput, { target: { value: 'Timeout Post' } });
+      act(() => {
+        if (mockEditorOnChange) {
+          mockEditorOnChange('<p>Content</p>', 'Content');
+        }
+      });
+
+      const saveButton = screen.getByRole('button', { name: /save/i });
+      fireEvent.click(saveButton);
+
+      // Flush the async createBlogPost promise
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(mockCreateBlogPost).toHaveBeenCalled();
+
+      // Navigate should not have been called yet (setTimeout 500ms pending)
+      expect(mockNavigate).not.toHaveBeenCalledWith('/blog');
+
+      // Advance timers past the 500ms setTimeout
+      await vi.advanceTimersByTimeAsync(500);
+
+      // localizedNavigate('/blog') -> navigate('/blog') for Korean default
+      expect(mockNavigate).toHaveBeenCalledWith('/blog');
+
+      vi.useRealTimers();
+    });
+
     it('shows error toast on API failure', async () => {
       mockCreateBlogPost.mockRejectedValueOnce(new Error('Network error'));
       renderEditor();
@@ -412,6 +445,54 @@ describe('BlogEditor Component', () => {
       await waitFor(() => {
         expect(screen.getByRole('alert')).toHaveTextContent('Failed to load post');
       });
+    });
+
+    it('falls back to content when content_html is empty', async () => {
+      mockParams = { id: '60' };
+      mockGetBlogPost.mockResolvedValueOnce({
+        data: {
+          id: 60,
+          title: 'Plain Content Post',
+          content: 'Only plain text here',
+          content_html: '',
+          category: 'ai',
+          tags: [],
+          published: true,
+        },
+      });
+
+      renderEditor();
+
+      await waitFor(() => {
+        const titleInput = screen.getByPlaceholderText('Enter title...') as HTMLInputElement;
+        expect(titleInput.value).toBe('Plain Content Post');
+      });
+
+      expect(mockGetBlogPost).toHaveBeenCalledWith('60');
+    });
+
+    it('falls back to empty string when both content_html and content are empty', async () => {
+      mockParams = { id: '61' };
+      mockGetBlogPost.mockResolvedValueOnce({
+        data: {
+          id: 61,
+          title: 'Empty Content Post',
+          content: '',
+          content_html: '',
+          category: 'ai',
+          tags: [],
+          published: true,
+        },
+      });
+
+      renderEditor();
+
+      await waitFor(() => {
+        const titleInput = screen.getByPlaceholderText('Enter title...') as HTMLInputElement;
+        expect(titleInput.value).toBe('Empty Content Post');
+      });
+
+      expect(mockGetBlogPost).toHaveBeenCalledWith('61');
     });
   });
 

@@ -165,4 +165,42 @@ describe('env config', () => {
       expect(module.default).toBe(module.env);
     });
   });
+
+  describe('production mode defaults', () => {
+    it('should use production API URL when MODE is production', async () => {
+      vi.stubEnv('MODE', 'production');
+
+      const { env } = await import('../env');
+
+      expect(env.IS_PRODUCTION).toBe(true);
+      expect(env.API_URL).toBe('https://api.emelmujiro.com/api');
+      expect(env.WS_URL).toBe('wss://api.emelmujiro.com/ws');
+    });
+  });
+
+  describe('MODE fallback to development', () => {
+    it('should default to development when both MODE and NODE_ENV are undefined', async () => {
+      vi.resetModules();
+
+      // Remove MODE from import.meta.env
+      const origMode = import.meta.env.MODE;
+      delete (import.meta.env as Record<string, unknown>).MODE;
+
+      // Remove NODE_ENV from process.env
+      const origNodeEnv = process.env.NODE_ENV;
+      delete process.env.NODE_ENV;
+
+      const { env } = await import('../env');
+
+      // Restore
+      (import.meta.env as Record<string, unknown>).MODE = origMode;
+      process.env.NODE_ENV = origNodeEnv;
+
+      // When both are nullish, MODE should default to 'development'
+      expect(env.NODE_ENV).toBe('development');
+      expect(env.IS_DEVELOPMENT).toBe(true);
+      expect(env.IS_PRODUCTION).toBe(false);
+      expect(env.IS_TEST).toBe(false);
+    });
+  });
 });

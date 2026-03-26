@@ -732,4 +732,105 @@ describe('BlogComments', () => {
     // Should show hours ago text: blog.timeHoursAgo(2)
     expect(screen.getByText('blog.timeHoursAgo(2)')).toBeInTheDocument();
   });
+
+  it('formats date as "just now" for very recent comments (line 269)', async () => {
+    // Use a timestamp within the last minute (less than 60 seconds ago)
+    const justNow = new Date(Date.now() - 5 * 1000).toISOString();
+    const justNowComments = [
+      {
+        id: 200,
+        post: 1,
+        parent: null,
+        author_name: 'Just Now User',
+        content: 'Just posted',
+        likes: 0,
+        created_at: justNow,
+        updated_at: justNow,
+        replies: [],
+      },
+    ];
+    mockGetComments.mockResolvedValueOnce({ data: justNowComments });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Just posted')).toBeInTheDocument();
+    });
+
+    // minutes === 0, so should show blog.timeJustNow
+    expect(screen.getByText('blog.timeJustNow')).toBeInTheDocument();
+  });
+
+  it('formats date as minutes ago for comments a few minutes old (line 269 else branch)', async () => {
+    // 5 minutes ago -- covers the minutes !== 0 branch of the ternary on line 269
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const minutesComments = [
+      {
+        id: 201,
+        post: 1,
+        parent: null,
+        author_name: 'Minutes User',
+        content: 'Minutes ago comment',
+        likes: 0,
+        created_at: fiveMinAgo,
+        updated_at: fiveMinAgo,
+        replies: [],
+      },
+    ];
+    mockGetComments.mockResolvedValueOnce({ data: minutesComments });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Minutes ago comment')).toBeInTheDocument();
+    });
+
+    // hours === 0 and minutes === 5, so should show blog.timeMinutesAgo(5)
+    expect(screen.getByText('blog.timeMinutesAgo(5)')).toBeInTheDocument();
+  });
+
+  it('formats date with en-US locale when language is English (line 275 else branch)', async () => {
+    // Dynamically re-mock react-i18next with English language
+    const i18nMod = await import('react-i18next');
+    const origUseTranslation = i18nMod.useTranslation;
+
+    // Temporarily override useTranslation to return English
+    (i18nMod as any).useTranslation = () => ({
+      t: (key: string, opts?: Record<string, unknown>) => {
+        if (opts && 'count' in opts) return `${key}(${opts.count})`;
+        if (opts && 'author' in opts) return `${key}(${opts.author})`;
+        return key;
+      },
+      i18n: { language: 'en', changeLanguage: vi.fn() },
+    });
+
+    const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+    const englishComments = [
+      {
+        id: 202,
+        post: 1,
+        parent: null,
+        author_name: 'English User',
+        content: 'English locale comment',
+        likes: 0,
+        created_at: twoWeeksAgo,
+        updated_at: twoWeeksAgo,
+        replies: [],
+      },
+    ];
+    mockGetComments.mockResolvedValueOnce({ data: englishComments });
+
+    render(<BlogComments postId="1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText('English locale comment')).toBeInTheDocument();
+    });
+
+    // The date should be formatted with en-US locale and render without error
+    const authorElement = screen.getByText('English User');
+    expect(authorElement).toBeInTheDocument();
+
+    // Restore original
+    (i18nMod as any).useTranslation = origUseTranslation;
+  });
 });

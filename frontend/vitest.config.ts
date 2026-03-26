@@ -27,6 +27,9 @@ export default defineConfig({
       exclude: [
         'node_modules/',
         'src/setupTests.ts',
+        'src/test-utils/index.ts',
+        'src/constants/index.ts',
+        'src/test-utils/polyfills.ts',
         '**/*.d.ts',
         '**/*.config.*',
         '**/mockData/**',

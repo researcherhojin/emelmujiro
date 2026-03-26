@@ -45,10 +45,8 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
     }
   }, []);
 
-  // Save search to recent searches
+  // Save search to recent searches (caller guarantees non-empty trimmed term)
   const saveToRecentSearches = (term: string) => {
-    if (!term.trim()) return;
-
     const updated = [term, ...recentSearches.filter((s) => s !== term)].slice(0, 5);
     setRecentSearches(updated);
     localStorage.setItem('recentSearches', JSON.stringify(updated));

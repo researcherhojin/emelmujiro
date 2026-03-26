@@ -57,12 +57,14 @@ const mockNavigate = vi.fn();
 const mockFetchPostById = vi.fn();
 const mockClearCurrentPost = vi.fn();
 
+let mockParams: Record<string, string> = { id: '1' };
+
 vi.mock('react-router-dom', async () => {
   const actual = await import('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
-    useParams: () => ({ id: '1' }),
+    useParams: () => mockParams,
   };
 });
 
@@ -158,6 +160,7 @@ describe('BlogDetail Component', () => {
     mockLoading = false;
     mockError = null;
     mockUser = null;
+    mockParams = { id: '1' };
     mockNavigate.mockClear();
     mockFetchPostById.mockClear();
     mockClearCurrentPost.mockClear();
@@ -925,5 +928,285 @@ describe('BlogDetail Component', () => {
     const dragPreventSpy = vi.spyOn(dragStartEvent, 'preventDefault');
     img.dispatchEvent(dragStartEvent);
     expect(dragPreventSpy).toHaveBeenCalled();
+  });
+
+  test('renders post without updated_at, falling back to date for SEO meta (lines 196, 208)', () => {
+    mockPost = {
+      id: 1,
+      title: 'No Updated At Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-03-01',
+      author: 'Author',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'no-updated-at',
+      date: '2024-03-01',
+      publishedAt: '2024-03-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    // The post should render successfully even without updated_at
+    expect(screen.getByText('No Updated At Post')).toBeInTheDocument();
+  });
+
+  test('renders post without excerpt, falling back to title for SEO meta (lines 189, 205)', () => {
+    mockPost = {
+      id: 1,
+      title: 'No Excerpt Post',
+      content: 'Content',
+      created_at: '2024-03-01',
+      updated_at: '2024-03-01',
+      author: 'Author',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'no-excerpt',
+      date: '2024-03-01',
+      publishedAt: '2024-03-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    expect(screen.getByText('No Excerpt Post')).toBeInTheDocument();
+  });
+
+  test('admin toggle publish shows unpublished toast when toggling to draft', async () => {
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'Unpublish Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: false,
+      slug: 'unpublish-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    // Toggle returns published: true (toggling from draft to published)
+    mockToggleBlogPublish.mockResolvedValue({
+      data: { id: 1, is_published: true },
+    });
+
+    renderComponent();
+
+    // Click the draft toggle button
+    fireEvent.click(screen.getByText('blogAdmin.draft'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('blogAdmin.published');
+  });
+
+  test('renders post without category or date', () => {
+    mockPost = {
+      id: 1,
+      title: 'Bare Post',
+      content: 'Content',
+      excerpt: '',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Author',
+      tags: [],
+      published: true,
+      slug: 'bare-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    // Should still render the title
+    expect(screen.getByText('Bare Post')).toBeInTheDocument();
+  });
+
+  test('handleTogglePublish returns early when id is undefined (line 40)', async () => {
+    // Remove id from params to trigger the early return guard
+    mockParams = {};
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'No ID Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'no-id-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    // Click the publish toggle button
+    fireEvent.click(screen.getByText('blogAdmin.published'));
+
+    // Wait a tick to let the async handler run
+    await new Promise((r) => setTimeout(r, 0));
+
+    // API should NOT have been called because id is undefined
+    expect(mockToggleBlogPublish).not.toHaveBeenCalled();
+  });
+
+  test('handleDelete setTimeout callback navigates to /blog after 500ms (line 57)', async () => {
+    vi.useFakeTimers();
+
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'Delete Navigate Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'delete-navigate-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    mockDeleteBlogPost.mockResolvedValue({});
+
+    renderComponent();
+
+    // Click delete to show confirmation
+    fireEvent.click(screen.getByText('common.delete'));
+    // Confirm delete
+    fireEvent.click(screen.getByText('common.confirm'));
+
+    // Flush the async deleteBlogPost promise
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('1');
+
+    // Navigate should not have been called yet (setTimeout 500ms pending)
+    expect(mockLocalizedNavigate).not.toHaveBeenCalled();
+
+    // Advance timers past the 500ms setTimeout
+    await vi.advanceTimersByTimeAsync(500);
+
+    expect(mockLocalizedNavigate).toHaveBeenCalledWith('/blog');
+
+    vi.useRealTimers();
+  });
+
+  test('handleDelete returns early when id is undefined (line 53)', async () => {
+    // Remove id from params to trigger the early return guard
+    mockParams = {};
+    mockUser = { role: 'admin' };
+    mockPost = {
+      id: 1,
+      title: 'No ID Delete Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Admin',
+      category: 'Test',
+      tags: [],
+      published: true,
+      slug: 'no-id-delete-post',
+      publishedAt: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    // Click delete to show confirmation
+    fireEvent.click(screen.getByText('common.delete'));
+    // Confirm delete
+    fireEvent.click(screen.getByText('common.confirm'));
+
+    // Wait a tick to let the async handler run
+    await new Promise((r) => setTimeout(r, 0));
+
+    // API should NOT have been called because id is undefined
+    expect(mockDeleteBlogPost).not.toHaveBeenCalled();
   });
 });

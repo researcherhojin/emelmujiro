@@ -27,12 +27,13 @@ vi.mock('../../utils/logger', () => ({
   default: { warn: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
 
-// Mock env
+// Mock env with vi.fn() so we can override per-test
+const mockGetEnvVar = vi.fn((key: string) => {
+  if (key === 'POSTS_PER_PAGE') return '6';
+  return '';
+});
 vi.mock('../../config/env', () => ({
-  getEnvVar: (key: string) => {
-    if (key === 'POSTS_PER_PAGE') return '6';
-    return '';
-  },
+  getEnvVar: (...args: unknown[]) => mockGetEnvVar(...(args as [string])),
   default: { IS_TEST: true, IS_PRODUCTION: false, IS_DEVELOPMENT: false },
 }));
 
@@ -644,5 +645,122 @@ describe('BlogContext', () => {
     });
 
     expect(screen.getByTestId('total-pages')).toHaveTextContent('2');
+  });
+
+  test('uses default postsPerPage (10) when POSTS_PER_PAGE env var is empty', async () => {
+    // Override getEnvVar to return empty string for POSTS_PER_PAGE
+    // so Number('') === 0 (falsy), hitting the || 10 fallback
+    mockGetEnvVar.mockImplementation(() => '');
+
+    const mockPosts = Array.from({ length: 3 }, (_, i) => ({
+      id: i + 1,
+      title: `Post ${i + 1}`,
+      slug: `post-${i + 1}`,
+      content: `Content ${i + 1}`,
+      excerpt: `Excerpt ${i + 1}`,
+      author: 'Author',
+      date: '2024-01-01',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
+      published: true,
+      category: 'Test',
+      tags: [],
+      publishedAt: '2024-01-01',
+    }));
+
+    (mockedApi.getBlogPosts as any).mockResolvedValue({
+      data: { count: 25, next: null, previous: null, results: mockPosts },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as InternalAxiosRequestConfig,
+    });
+
+    render(
+      <BlogProvider>
+        <TestComponent />
+      </BlogProvider>
+    );
+
+    fireEvent.click(screen.getByText('Fetch Posts'));
+
+    await waitFor(() => {
+      // count=25, postsPerPage=10 (fallback), so totalPages = ceil(25/10) = 3
+      expect(screen.getByTestId('total-pages')).toHaveTextContent('3');
+    });
+
+    // Restore original mock behavior
+    mockGetEnvVar.mockImplementation((key: string) => {
+      if (key === 'POSTS_PER_PAGE') return '6';
+      return '';
+    });
+  });
+
+  test('handles non-Error rejection in fetchPosts (line 60)', async () => {
+    // Reject with a string (not an Error instance) to hit the 'Unknown error' branch
+    (mockedApi.getBlogPosts as any).mockRejectedValue('string error');
+    mockGetLocalBlogPosts.mockResolvedValue([]);
+
+    render(
+      <BlogProvider>
+        <TestComponent />
+      </BlogProvider>
+    );
+
+    fireEvent.click(screen.getByText('Fetch Posts'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    });
+
+    // Fallback to local data should still work
+    expect(screen.getByTestId('posts-count')).toHaveTextContent('0');
+  });
+
+  test('handles non-Error rejection in fetchPostById (line 93)', async () => {
+    // Reject with a number (not an Error instance) to hit the 'Unknown error' branch
+    (mockedApi.getBlogPost as any).mockRejectedValue(42);
+    const localPost = {
+      id: 5,
+      title: 'Fallback Post',
+      slug: 'fallback-post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      author: 'Author',
+      date: '2024-03-01',
+      created_at: '2024-03-01T00:00:00Z',
+      updated_at: '2024-03-01T00:00:00Z',
+      published: true,
+      category: 'Test',
+      tags: [],
+      publishedAt: '2024-03-01',
+    };
+    mockGetLocalBlogPost.mockResolvedValue(localPost);
+
+    const PostTestComponent: React.FC = () => {
+      const { currentPost, loading, fetchPostById } = useBlog();
+      return (
+        <div>
+          <div data-testid="loading">{loading.toString()}</div>
+          <div data-testid="post-title">{currentPost?.title || 'none'}</div>
+          <button onClick={() => fetchPostById(5)}>Fetch Post</button>
+        </div>
+      );
+    };
+
+    render(
+      <BlogProvider>
+        <PostTestComponent />
+      </BlogProvider>
+    );
+
+    fireEvent.click(screen.getByText('Fetch Post'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
+    });
+
+    // Fallback to local data should still work
+    expect(screen.getByTestId('post-title')).toHaveTextContent('Fallback Post');
   });
 });

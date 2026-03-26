@@ -3,6 +3,23 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { HelmetProvider } from 'react-helmet-async';
 
+// Module-level variable to control the i18n language for tests
+let mockLanguage = 'ko';
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: {
+      get language() {
+        return mockLanguage;
+      },
+      changeLanguage: vi.fn(),
+    },
+  }),
+  Trans: ({ children }: { children?: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 // Override the global react-helmet-async mock to capture script content
 let capturedJsonLd = '';
 
@@ -46,6 +63,7 @@ describe('StructuredData', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     capturedJsonLd = '';
+    mockLanguage = 'ko';
   });
 
   it('renders Organization schema by default', () => {
@@ -147,5 +165,32 @@ describe('StructuredData', () => {
 
   it('has displayName set to StructuredData', () => {
     expect(StructuredData.displayName).toBe('StructuredData');
+  });
+
+  it('falls back to i18n person name when article has no author', () => {
+    renderStructuredData({
+      type: 'Article',
+      article: {
+        title: 'No Author Post',
+        description: 'A post without explicit author',
+        publishedTime: '2024-01-01',
+      },
+    });
+    const data = getJsonLd();
+
+    expect(data['@type']).toBe('Article');
+    expect(data.headline).toBe('No Author Post');
+    // Without author, falls back to t('seo.personName') which returns the key
+    expect(data.author.name).toBe('seo.personName');
+  });
+
+  it('renders Website schema with en-US inLanguage when i18n language is English', () => {
+    mockLanguage = 'en';
+
+    renderStructuredData({ type: 'Website' });
+    const data = getJsonLd();
+
+    expect(data['@type']).toBe('WebSite');
+    expect(data.inLanguage).toBe('en-US');
   });
 });

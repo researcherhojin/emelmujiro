@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { trackLanguageSwitch } from './utils/analytics';
+import { urlPrefixLookup } from './utils/urlPrefixLookup';
 
 import koTranslation from './i18n/locales/ko.json';
 import enTranslation from './i18n/locales/en.json';
@@ -27,11 +28,7 @@ const isBot =
 // Custom path detector: reads language from URL prefix (/en/*)
 const pathDetector = {
   name: 'urlPrefix',
-  lookup(): string | undefined {
-    if (typeof window === 'undefined') return undefined;
-    const match = window.location.pathname.match(/^\/(en)(\/|$)/);
-    return match ? match[1] : undefined;
-  },
+  lookup: urlPrefixLookup,
 };
 
 // Register the custom detector

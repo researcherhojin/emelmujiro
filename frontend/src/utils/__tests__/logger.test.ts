@@ -53,6 +53,11 @@ describe('Logger', () => {
       });
     });
 
+    it('should log debug messages without data (covers || "" fallback)', () => {
+      Logger.debug('Debug no data');
+      expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('[DEBUG]'), '');
+    });
+
     it('should log info messages', () => {
       Logger.info('Info message');
       expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('[INFO]'), '');
@@ -67,6 +72,11 @@ describe('Logger', () => {
       const error = new Error('Test error');
       Logger.error('Error occurred', error);
       expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('[ERROR]'), error);
+    });
+
+    it('should log error messages without error arg (covers || "" fallback)', () => {
+      Logger.error('Error no arg');
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('[ERROR]'), '');
     });
   });
 

@@ -580,6 +580,27 @@ describe('UnifiedLoading Component', () => {
     });
   });
 
+  describe('Invalid Color Fallback', () => {
+    it('falls back to indigo for dots variant with unknown color (line 107)', () => {
+      const { container } = render(
+        <UnifiedLoading variant="dots" color={'unknown-color' as unknown as string} />
+      );
+
+      const dotsContainer = container.querySelector('[data-testid="loading-dots"]');
+      expect(dotsContainer).toBeInTheDocument();
+    });
+
+    it('falls back to indigo for pulse variant with unknown color (line 135)', () => {
+      const { container } = render(
+        <UnifiedLoading variant="pulse" color={'unknown-color' as unknown as string} />
+      );
+
+      const pulseElement = container.querySelector('[data-testid="pulse-element"]');
+      expect(pulseElement).toBeInTheDocument();
+      expect(pulseElement).toHaveClass('bg-indigo-600');
+    });
+  });
+
   describe('Edge Cases', () => {
     it('handles undefined variant gracefully', () => {
       const { container } = render(

@@ -48,6 +48,29 @@ describe('FAQSection', () => {
     expect(button).toHaveAttribute('aria-expanded', 'false');
   });
 
+  it('expands on Space key alone from closed state', () => {
+    render(<FAQSection />);
+    const button = screen.getByText('faq.items.education1.question').closest('button')!;
+
+    // Start closed
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    // Press Space to open (covers the e.key === ' ' branch independently)
+    fireEvent.keyDown(button, { key: ' ' });
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('ignores non-Enter/Space keyDown events', () => {
+    render(<FAQSection />);
+    const button = screen.getByText('faq.items.general1.question').closest('button')!;
+
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.keyDown(button, { key: 'Tab' });
+    fireEvent.keyDown(button, { key: 'Escape' });
+    fireEvent.keyDown(button, { key: 'ArrowDown' });
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+  });
+
   it('can have multiple items open simultaneously', () => {
     render(<FAQSection />);
     const btn1 = screen.getByText('faq.items.general1.question').closest('button')!;
