@@ -26,10 +26,14 @@ A full-stack monorepo for an AI education, consulting & AI Agent development pla
 ![i18next](https://img.shields.io/badge/i18next-25.10-26A69A?logo=i18next&logoColor=white)
 ![React Router](https://img.shields.io/badge/React_Router-7.13-CA4245?logo=reactrouter&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.20-1a1a2e)
+![Axios](https://img.shields.io/badge/Axios-1.13-5A29E4?logo=axios&logoColor=white)
+![DOMPurify](https://img.shields.io/badge/DOMPurify-3.3-4B32C3)
 
 **Backend**<br/>
 ![Django](https://img.shields.io/badge/Django-6.0-092E20?logo=django&logoColor=white)
 ![DRF](https://img.shields.io/badge/DRF-3.17-A30000)
+![SimpleJWT](https://img.shields.io/badge/SimpleJWT-5.5-000000?logo=jsonwebtokens&logoColor=white)
+![Gunicorn](https://img.shields.io/badge/Gunicorn-25.2-499848?logo=gunicorn&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
 
 **Testing**<br/>
