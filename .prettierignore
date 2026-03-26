@@ -10,6 +10,7 @@ backend/.venv/
 
 # Lock files
 package-lock.json
+backend/uv.lock
 
 # Other
 *.log
