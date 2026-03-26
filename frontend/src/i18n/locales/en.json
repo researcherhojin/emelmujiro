@@ -779,5 +779,22 @@
       "description": "Feel free to reach out through our contact page. We'll get back to you promptly.",
       "button": "Contact Us"
     }
+  },
+  "testimonials": {
+    "sectionLabel": "Testimonials",
+    "subtitle": "REAL REVIEWS",
+    "title": "What Our Students Say",
+    "cvProgram": "Ministry of Employment — AI Computer Vision (CV) Advanced",
+    "startupProgram": "Ministry of Employment — AI/IT Startup Bootcamp",
+    "recommendRate": "Recommendation Rate (CV Advanced)",
+    "source": "Source: HRD-Net K-Digital Training Reviews",
+    "cv1": "The high proportion of hands-on projects helped me strengthen my skills in a short time. The instructors and managers actively supported us throughout.",
+    "cv2": "I was worried about having no AI background, but the project-based learning environment was designed so you couldn't help but grow with each iteration.",
+    "cv3": "My capabilities clearly improved through diverse projects. The excellent instructors and well-structured curriculum were tremendously helpful.",
+    "cv4": "This AI CV training course was highly rewarding. Building models with real datasets and optimizing performance gave me practical skills. I gained real confidence in the AI computer vision field.",
+    "startup1": "We met great teammates, built our project, and now we're heading to a VC meeting with our deployed service. What an experience!",
+    "startup2": "You get to experience the full cycle — from ideating an MVP to building the product with your own hands. The passionate peers made learning enjoyable.",
+    "startup3": "We had 5+ mentoring sessions with Mirae Asset Venture Investment VCs, learning business model validation and hypothesis testing hands-on.",
+    "startup4": "Unbelievable growth — from team building to MVP. If you dream of being a founder, I strongly recommend this. The follow-up support continues after the program."
   }
 }
