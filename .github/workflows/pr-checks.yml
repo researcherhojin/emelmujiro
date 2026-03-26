@@ -88,7 +88,8 @@ jobs:
       - name: SEO files check
         run: |
           MISSING=0
-          for f in frontend/public/robots.txt frontend/public/sitemap.xml frontend/public/manifest.json frontend/public/favicon.ico frontend/public/.nojekyll; do
+          # robots.txt, sitemap.xml, sitemap-index.xml are generated at build time (not in git)
+          for f in frontend/public/manifest.json frontend/public/favicon.ico frontend/public/.nojekyll; do
             if [ ! -f "$f" ]; then
               echo "Missing: $f"
               MISSING=$((MISSING + 1))
