@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { X, CheckCircle, AlertTriangle, Save, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Save, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { useToast } from '../../hooks/useToast';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
 import logger from '../../utils/logger';
 import TipTapEditor from './TipTapEditor';
+import Toast from '../common/Toast';
 import DOMPurify from 'dompurify';
 
 interface PostMeta {
@@ -56,7 +57,7 @@ const BlogEditor: React.FC = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(isEditMode);
-  const { toast, showToast, dismissToast } = useToast();
+  const { toast, showToast } = useToast();
 
   // Fetch categories from API (fallback to hardcoded list)
   useEffect(() => {
@@ -199,28 +200,7 @@ const BlogEditor: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Toast */}
-      {toast && (
-        <div
-          className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white transition-opacity ${
-            toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'
-          }`}
-          role="alert"
-        >
-          {toast.type === 'success' ? (
-            <CheckCircle className="w-5 h-5" />
-          ) : (
-            <AlertTriangle className="w-5 h-5" />
-          )}
-          <span>{toast.message}</span>
-          <button
-            onClick={dismissToast}
-            className="ml-2 text-white/80 hover:text-white"
-            aria-label={t('common.close')}
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} />}
 
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Header */}

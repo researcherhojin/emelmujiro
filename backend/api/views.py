@@ -232,23 +232,27 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         author = self.request.user.get_full_name() or self.request.user.username
         serializer.save(author=author)
         cache.delete("blog_categories")
+        cache.delete("blog_post_list")
 
     def perform_update(self, serializer):
         serializer.save()
         cache.delete("blog_categories")
+        cache.delete("blog_post_list")
 
     def perform_destroy(self, instance):
         instance.delete()
         cache.delete("blog_categories")
+        cache.delete("blog_post_list")
 
     def retrieve(self, request, *args, **kwargs):
         """Retrieve individual post with view count increment and visit log"""
         log_site_visit(request)
 
-        response = super().retrieve(request, *args, **kwargs)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        response = Response(serializer.data)
 
         # Increment view count (once per day per IP)
-        instance = self.get_object()
         ip_address = get_client_ip(request)
         cache_key = f"blog_view_{instance.id}_{hashlib.sha256(ip_address.encode()).hexdigest()[:16]}"
 
@@ -261,6 +265,19 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         """List posts with visit log"""
         log_site_visit(request)
+
+        # Cache unfiltered public list for 30 seconds
+        is_public = not (request.user and request.user.is_staff)
+        has_filters = any(request.query_params.get(p) for p in ("category", "search", "featured", "page"))
+        if is_public and not has_filters:
+            cache_key = "blog_post_list"
+            cached = cache.get(cache_key)
+            if cached is not None:
+                return Response(cached)
+            response = super().list(request, *args, **kwargs)
+            cache.set(cache_key, response.data, timeout=30)
+            return response
+
         return super().list(request, *args, **kwargs)
 
     @action(detail=True, methods=["post"], url_path="toggle-publish")
@@ -270,6 +287,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         post.is_published = not post.is_published
         post.save(update_fields=["is_published", "updated_at"])
         cache.delete("blog_categories")
+        cache.delete("blog_post_list")
         return Response({"id": post.id, "is_published": post.is_published})
 
     @action(detail=True, methods=["post"], url_path="like", permission_classes=[AllowAny])

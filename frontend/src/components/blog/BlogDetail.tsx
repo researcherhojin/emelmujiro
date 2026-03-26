@@ -1,18 +1,19 @@
-import React, { useEffect, useState, useCallback, memo } from 'react';
+import React, { lazy, Suspense, useEffect, useState, useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye, EyeOff, Trash2, Pencil, CheckCircle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Trash2, Pencil } from 'lucide-react';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { useToast } from '../../hooks/useToast';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import DOMPurify from 'dompurify';
+
+const MarkdownRenderer = lazy(() => import('./MarkdownRenderer'));
 import { PageLoading } from '../common/UnifiedLoading';
 import ErrorBoundary from '../common/ErrorBoundary';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
 import BlogInteractions from './BlogInteractions';
 import BlogComments from './BlogComments';
+import Toast from '../common/Toast';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBlog } from '../../contexts/BlogContext';
 import { api } from '../../services/api';
@@ -104,21 +105,7 @@ const BlogDetailPage: React.FC = memo(() => {
     <ErrorBoundary>
       <div className="min-h-screen bg-white dark:bg-gray-950">
         {/* Toast */}
-        {toast && (
-          <div
-            className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-white ${
-              toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'
-            }`}
-            role="alert"
-          >
-            {toast.type === 'success' ? (
-              <CheckCircle className="w-5 h-5" />
-            ) : (
-              <AlertTriangle className="w-5 h-5" />
-            )}
-            <span>{toast.message}</span>
-          </div>
-        )}
+        {toast && <Toast message={toast.message} type={toast.type} />}
 
         {/* Admin Toolbar */}
         {isAdmin && post && (
@@ -291,7 +278,9 @@ const BlogDetailPage: React.FC = memo(() => {
               {post?.content_html ? (
                 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content_html) }} />
               ) : (
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{post?.content || ''}</ReactMarkdown>
+                <Suspense fallback={null}>
+                  <MarkdownRenderer content={post?.content || ''} />
+                </Suspense>
               )}
             </div>
 

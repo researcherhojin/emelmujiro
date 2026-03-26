@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAdminUser
 from django.db.models import Q, Count
 from django.db.models.functions import TruncDate
 from django.utils import timezone
+from django.core.cache import cache
 from datetime import timedelta
 
 from .views import AdminRateThrottle
@@ -32,6 +33,11 @@ def paginate_queryset(queryset, page, page_size):
 @throttle_classes([AdminRateThrottle])
 def admin_stats(request):
     """Admin dashboard statistics"""
+    cache_key = "admin_stats"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return Response(cached)
+
     from django.contrib.auth.models import User
 
     total_users = User.objects.count()
@@ -39,14 +45,15 @@ def admin_stats(request):
     total_messages = Contact.objects.count()
     total_views = SiteVisit.objects.count()
 
-    return Response(
-        {
-            "totalUsers": total_users,
-            "totalPosts": total_posts,
-            "totalMessages": total_messages,
-            "totalViews": total_views,
-        }
-    )
+    data = {
+        "totalUsers": total_users,
+        "totalPosts": total_posts,
+        "totalMessages": total_messages,
+        "totalViews": total_views,
+    }
+    cache.set(cache_key, data, timeout=60)
+
+    return Response(data)
 
 
 @api_view(["GET"])
@@ -54,7 +61,13 @@ def admin_stats(request):
 @throttle_classes([AdminRateThrottle])
 def admin_content(request):
     """Admin content list (blog posts)"""
+    try:
+        page, page_size = parse_pagination_params(request)
+    except (ValueError, TypeError):
+        return Response({"error": "Invalid pagination parameters"}, status=400)
+
     posts = BlogPost.objects.all().order_by("-date")
+    page_items, total, next_page = paginate_queryset(posts, page, page_size)
     items = [
         {
             "id": post.id,
@@ -65,9 +78,9 @@ def admin_content(request):
             "createdAt": post.date.strftime("%Y-%m-%d"),
             "views": post.view_count,
         }
-        for post in posts
+        for post in page_items
     ]
-    return Response(items)
+    return Response({"count": total, "next": next_page, "results": items})
 
 
 @api_view(["GET"])

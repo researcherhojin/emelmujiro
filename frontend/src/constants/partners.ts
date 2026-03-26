@@ -3,7 +3,7 @@ import samsungLogo from '../assets/logos/samsungLogo.svg';
 import lgLogo from '../assets/logos/lgLogo.svg';
 import hyundaiLogo from '../assets/logos/hyundaiLogo.webp';
 import sktLogo from '../assets/logos/sktLogo.svg';
-import ktLogo from '../assets/logos/ktLogo.svg';
+import ktLogo from '../assets/logos/ktLogo.webp';
 import naverLogo from '../assets/logos/naverLogo.webp';
 import kakaoLogo from '../assets/logos/kakaoLogo.svg';
 import hancomLogo from '../assets/logos/hancomLogo.svg';

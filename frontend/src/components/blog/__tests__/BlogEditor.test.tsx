@@ -544,7 +544,8 @@ describe('BlogEditor Component', () => {
   });
 
   describe('Toast Dismiss', () => {
-    it('dismisses toast when close button is clicked', async () => {
+    it('toast auto-dismisses after timeout', async () => {
+      vi.useFakeTimers();
       renderEditor();
 
       // Trigger a toast by trying to save with empty title
@@ -552,16 +553,16 @@ describe('BlogEditor Component', () => {
       fireEvent.click(saveButton);
 
       // Toast should appear
-      const alert = screen.getByRole('alert');
-      expect(alert).toBeInTheDocument();
+      expect(screen.getByRole('alert')).toBeInTheDocument();
 
-      // Click the close button inside the toast
-      const closeBtn = alert.querySelector('button');
-      expect(closeBtn).toBeTruthy();
-      fireEvent.click(closeBtn!);
+      // Advance past the auto-dismiss timer (3000ms default)
+      act(() => {
+        vi.advanceTimersByTime(3000);
+      });
 
       // Toast should be dismissed
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      vi.useRealTimers();
     });
   });
 

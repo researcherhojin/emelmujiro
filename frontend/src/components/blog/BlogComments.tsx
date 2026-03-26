@@ -5,6 +5,7 @@ import { BlogComment } from '../../types';
 import { api } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import logger from '../../utils/logger';
+import { formatRelativeTime } from '../../utils/dateFormat';
 
 interface BlogCommentsProps {
   postId: string | number;
@@ -13,12 +14,12 @@ interface BlogCommentsProps {
 interface ReplyItemProps {
   reply: BlogComment;
   postId: string | number;
-  formatDate: (dateString: string) => string;
+  formatCommentDate: (dateString: string) => string;
   onLike: (commentId: number) => void;
   t: (key: string, options?: Record<string, string>) => string;
 }
 
-const ReplyItem: React.FC<ReplyItemProps> = ({ reply, formatDate, onLike, t }) => (
+const ReplyItem: React.FC<ReplyItemProps> = ({ reply, formatCommentDate, onLike, t }) => (
   <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded">
     <div className="flex items-center mb-1">
       <User className="w-3 h-3 mr-1 text-gray-500 dark:text-gray-400" />
@@ -27,7 +28,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ reply, formatDate, onLike, t }) =
       </span>
       <span className="mx-2 text-gray-300 dark:text-gray-600">•</span>
       <span className="text-xs text-gray-500 dark:text-gray-400">
-        {formatDate(reply.created_at)}
+        {formatCommentDate(reply.created_at)}
       </span>
     </div>
     <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">{reply.content}</p>
@@ -47,7 +48,7 @@ interface CommentItemProps {
   postId: string | number;
   replyTo: number | null;
   replyContent: string;
-  formatDate: (dateString: string) => string;
+  formatCommentDate: (dateString: string) => string;
   onLike: (commentId: number) => void;
   onDelete: (commentId: number) => void;
   isAdmin: boolean;
@@ -62,7 +63,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
   postId,
   replyTo,
   replyContent,
-  formatDate,
+  formatCommentDate,
   onLike,
   onDelete,
   isAdmin,
@@ -82,7 +83,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
           <span className="mx-2 text-gray-300 dark:text-gray-600">•</span>
           <Calendar className="w-4 h-4 mr-1 text-gray-500 dark:text-gray-400" />
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            {formatDate(comment.created_at)}
+            {formatCommentDate(comment.created_at)}
           </span>
         </div>
         <p className="text-gray-700 dark:text-gray-300 mb-3">{comment.content}</p>
@@ -152,7 +153,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
                 key={reply.id}
                 reply={reply}
                 postId={postId}
-                formatDate={formatDate}
+                formatCommentDate={formatCommentDate}
                 onLike={onLike}
                 t={t}
               />
@@ -255,26 +256,9 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
     [postId, fetchComments]
   );
 
-  // Format date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-    if (days === 0) {
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      if (hours === 0) {
-        const minutes = Math.floor(diff / (1000 * 60));
-        return minutes === 0 ? t('blog.timeJustNow') : t('blog.timeMinutesAgo', { count: minutes });
-      }
-      return t('blog.timeHoursAgo', { count: hours });
-    } else if (days < 7) {
-      return t('blog.timeDaysAgo', { count: days });
-    } else {
-      return date.toLocaleDateString(i18n.language === 'ko' ? 'ko-KR' : 'en-US');
-    }
-  };
+  // Format date — delegates to shared utility
+  const formatCommentDate = (dateString: string) =>
+    formatRelativeTime(dateString, i18n.language, t);
 
   return (
     <div className="mt-12">
@@ -326,7 +310,7 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
             postId={postId}
             replyTo={replyTo}
             replyContent={replyContent}
-            formatDate={formatDate}
+            formatCommentDate={formatCommentDate}
             onLike={handleLikeComment}
             onDelete={handleDeleteComment}
             isAdmin={isAdmin}

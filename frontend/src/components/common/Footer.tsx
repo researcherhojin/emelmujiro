@@ -46,7 +46,10 @@ const Footer: React.FC = memo(() => {
   const menuLinks = [
     { label: t('common.home'), onClick: () => scrollToSection('hero') },
     { label: t('common.services'), onClick: () => scrollToSection('services') },
-    { label: t('common.representativeProfile'), onClick: () => navigate('/profile') },
+    {
+      label: t('common.representativeProfile'),
+      onClick: () => navigate(localizedPath('/profile')),
+    },
     { label: t('faq.title'), onClick: () => scrollToSection('faq') },
   ];
 

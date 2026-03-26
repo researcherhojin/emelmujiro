@@ -67,6 +67,7 @@ const Navbar: React.FC = memo(() => {
 
   return (
     <nav
+      aria-label="Main navigation"
       className={`fixed w-full z-50 transition-all duration-300 ${
         isScrolled
           ? 'bg-white dark:bg-gray-900 shadow-md border-b border-gray-200 dark:border-gray-800'
@@ -148,6 +149,8 @@ const Navbar: React.FC = memo(() => {
               className="inline-flex items-center justify-center p-2 text-gray-700 dark:text-gray-300
                               hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
               aria-label={t('accessibility.menu')}
+              aria-expanded={isOpen}
+              aria-controls="mobile-menu"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -157,7 +160,10 @@ const Navbar: React.FC = memo(() => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white dark:bg-dark-900 border-t border-gray-200 dark:border-dark-700 shadow-lg">
+        <div
+          id="mobile-menu"
+          className="md:hidden bg-white dark:bg-dark-900 border-t border-gray-200 dark:border-dark-700 shadow-lg"
+        >
           <div className="px-4 py-6 space-y-2">
             {navItems.map((item) => (
               <button

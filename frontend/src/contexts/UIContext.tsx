@@ -5,26 +5,11 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
-  useRef,
   ReactNode,
 } from 'react';
 import { trackDarkModeToggle } from '../utils/analytics';
 
 type Theme = 'light' | 'dark';
-type NotificationType = 'success' | 'error' | 'warning' | 'info';
-
-interface Notification {
-  id: string;
-  type: NotificationType;
-  message: string;
-  duration?: number;
-}
-
-interface Modal {
-  id: string;
-  component: React.ComponentType<Record<string, unknown>>;
-  props?: Record<string, unknown>;
-}
 
 interface UIContextType {
   // Theme
@@ -35,20 +20,6 @@ interface UIContextType {
   // Loading
   isGlobalLoading: boolean;
   setGlobalLoading: (loading: boolean) => void;
-
-  // Notifications
-  notifications: Notification[];
-  showNotification: (type: NotificationType, message: string, duration?: number) => void;
-  removeNotification: (id: string) => void;
-
-  // Modals
-  modals: Modal[];
-  openModal: (
-    component: React.ComponentType<Record<string, unknown>>,
-    props?: Record<string, unknown>
-  ) => string;
-  closeModal: (id: string) => void;
-  closeAllModals: () => void;
 
   // Sidebar (for mobile)
   isSidebarOpen: boolean;
@@ -79,10 +50,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     return 'light';
   });
   const [isGlobalLoading, setGlobalLoading] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [modals, setModals] = useState<Modal[]>([]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const notificationTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   // Apply theme to document root
   useEffect(() => {
@@ -110,15 +78,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
     return () => clearTimeout(timerId);
   }, [theme]);
-
-  // Cleanup all notification timers on unmount
-  useEffect(() => {
-    const timers = notificationTimers.current;
-    return () => {
-      timers.forEach((timer) => clearTimeout(timer));
-      timers.clear();
-    };
-  }, []);
 
   // Listen for system theme changes
   useEffect(() => {
@@ -166,54 +125,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     });
   }, []);
 
-  const removeNotification = useCallback((id: string) => {
-    const timer = notificationTimers.current.get(id);
-    if (timer) {
-      clearTimeout(timer);
-      notificationTimers.current.delete(id);
-    }
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  }, []);
-
-  const showNotification = useCallback(
-    (type: NotificationType, message: string, duration: number = 5000) => {
-      const id = crypto.randomUUID();
-      const notification: Notification = { id, type, message, duration };
-
-      setNotifications((prev) => [...prev, notification]);
-
-      if (duration > 0) {
-        const timerId = setTimeout(() => {
-          notificationTimers.current.delete(id);
-          removeNotification(id);
-        }, duration);
-        notificationTimers.current.set(id, timerId);
-      }
-    },
-    [removeNotification]
-  );
-
-  const openModal = useCallback(
-    (
-      component: React.ComponentType<Record<string, unknown>>,
-      props?: Record<string, unknown>
-    ): string => {
-      const id = crypto.randomUUID();
-      const modal: Modal = { id, component, props };
-      setModals((prev) => [...prev, modal]);
-      return id;
-    },
-    []
-  );
-
-  const closeModal = useCallback((id: string) => {
-    setModals((prev) => prev.filter((m) => m.id !== id));
-  }, []);
-
-  const closeAllModals = useCallback(() => {
-    setModals([]);
-  }, []);
-
   const toggleSidebar = useCallback(() => {
     setSidebarOpen((prev) => !prev);
   }, []);
@@ -225,31 +136,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
       setTheme,
       isGlobalLoading,
       setGlobalLoading,
-      notifications,
-      showNotification,
-      removeNotification,
-      modals,
-      openModal,
-      closeModal,
-      closeAllModals,
       isSidebarOpen,
       toggleSidebar,
       setSidebarOpen,
     }),
-    [
-      theme,
-      toggleTheme,
-      isGlobalLoading,
-      notifications,
-      showNotification,
-      removeNotification,
-      modals,
-      openModal,
-      closeModal,
-      closeAllModals,
-      isSidebarOpen,
-      toggleSidebar,
-    ]
+    [theme, toggleTheme, isGlobalLoading, isSidebarOpen, toggleSidebar]
   );
 
   return <UIContext.Provider value={value}>{children}</UIContext.Provider>;

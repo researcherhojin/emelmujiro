@@ -1200,8 +1200,9 @@ class AdminAPITestCase(APITestCase):
         self.client.force_authenticate(user=self.admin)
         response = self.client.get(reverse("admin-content"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        item = response.data[0]
+        self.assertEqual(response.data["count"], 1)
+        self.assertIsNone(response.data["next"])
+        item = response.data["results"][0]
         self.assertEqual(item["title"], "Admin Test Post")
         self.assertEqual(item["type"], "blog")
         self.assertEqual(item["status"], "published")
@@ -1214,7 +1215,7 @@ class AdminAPITestCase(APITestCase):
         self.post.save()
         self.client.force_authenticate(user=self.admin)
         response = self.client.get(reverse("admin-content"))
-        self.assertEqual(response.data[0]["status"], "draft")
+        self.assertEqual(response.data["results"][0]["status"], "draft")
 
     def test_admin_content_forbidden_for_regular_user(self):
         """Regular user cannot access admin content"""

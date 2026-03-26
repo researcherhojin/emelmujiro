@@ -238,176 +238,6 @@ describe('UIContext', () => {
     document.head.removeChild(meta);
   });
 
-  test('shows notifications and auto-removes after duration', async () => {
-    vi.useFakeTimers();
-
-    const NotificationTestComponent: React.FC = () => {
-      const { notifications, showNotification } = useUI();
-      return (
-        <div>
-          <div data-testid="notification-count">{notifications.length}</div>
-          {notifications.map((n) => (
-            <div key={n.id} data-testid={`notification-${n.type}`}>
-              {n.message}
-            </div>
-          ))}
-          <button onClick={() => showNotification('success', 'Test success', 1000)}>
-            Show Notification
-          </button>
-        </div>
-      );
-    };
-
-    render(
-      <UIProvider>
-        <NotificationTestComponent />
-      </UIProvider>
-    );
-
-    expect(screen.getByTestId('notification-count')).toHaveTextContent('0');
-
-    fireEvent.click(screen.getByText('Show Notification'));
-    expect(screen.getByTestId('notification-count')).toHaveTextContent('1');
-    expect(screen.getByTestId('notification-success')).toHaveTextContent('Test success');
-
-    // Wait for auto-removal — wrap in act for state update
-    act(() => {
-      vi.advanceTimersByTime(1000);
-    });
-    expect(screen.getByTestId('notification-count')).toHaveTextContent('0');
-
-    vi.useRealTimers();
-  });
-
-  test('shows persistent notification (duration=0) that does not auto-remove', () => {
-    vi.useFakeTimers();
-
-    const NotificationTestComponent: React.FC = () => {
-      const { notifications, showNotification } = useUI();
-      return (
-        <div>
-          <div data-testid="notification-count">{notifications.length}</div>
-          <button onClick={() => showNotification('error', 'Persistent error', 0)}>
-            Show Persistent
-          </button>
-        </div>
-      );
-    };
-
-    render(
-      <UIProvider>
-        <NotificationTestComponent />
-      </UIProvider>
-    );
-
-    fireEvent.click(screen.getByText('Show Persistent'));
-    expect(screen.getByTestId('notification-count')).toHaveTextContent('1');
-
-    act(() => {
-      vi.advanceTimersByTime(60000);
-    });
-    expect(screen.getByTestId('notification-count')).toHaveTextContent('1');
-
-    vi.useRealTimers();
-  });
-
-  test('manually removes notification', () => {
-    const NotificationTestComponent: React.FC = () => {
-      const { notifications, showNotification, removeNotification } = useUI();
-      return (
-        <div>
-          <div data-testid="notification-count">{notifications.length}</div>
-          {notifications.map((n) => (
-            <button key={n.id} onClick={() => removeNotification(n.id)}>
-              Dismiss {n.message}
-            </button>
-          ))}
-          <button onClick={() => showNotification('info', 'Info message', 0)}>Add</button>
-        </div>
-      );
-    };
-
-    render(
-      <UIProvider>
-        <NotificationTestComponent />
-      </UIProvider>
-    );
-
-    fireEvent.click(screen.getByText('Add'));
-    expect(screen.getByTestId('notification-count')).toHaveTextContent('1');
-
-    fireEvent.click(screen.getByText('Dismiss Info message'));
-    expect(screen.getByTestId('notification-count')).toHaveTextContent('0');
-  });
-
-  test('opens and closes modals', () => {
-    const MockModal: React.FC<Record<string, unknown>> = () => (
-      <div data-testid="mock-modal">Modal Content</div>
-    );
-
-    const ModalTestComponent: React.FC = () => {
-      const { modals, openModal, closeAllModals } = useUI();
-      return (
-        <div>
-          <div data-testid="modal-count">{modals.length}</div>
-          <button onClick={() => openModal(MockModal, { title: 'Test' })}>Open Modal</button>
-          <button onClick={closeAllModals}>Close All</button>
-        </div>
-      );
-    };
-
-    render(
-      <UIProvider>
-        <ModalTestComponent />
-      </UIProvider>
-    );
-
-    expect(screen.getByTestId('modal-count')).toHaveTextContent('0');
-
-    fireEvent.click(screen.getByText('Open Modal'));
-    expect(screen.getByTestId('modal-count')).toHaveTextContent('1');
-
-    fireEvent.click(screen.getByText('Open Modal'));
-    expect(screen.getByTestId('modal-count')).toHaveTextContent('2');
-
-    fireEvent.click(screen.getByText('Close All'));
-    expect(screen.getByTestId('modal-count')).toHaveTextContent('0');
-  });
-
-  test('closes a specific modal by id', () => {
-    const MockModal: React.FC<Record<string, unknown>> = () => <div>Modal</div>;
-    let modalId = '';
-
-    const ModalTestComponent: React.FC = () => {
-      const { modals, openModal, closeModal } = useUI();
-      return (
-        <div>
-          <div data-testid="modal-count">{modals.length}</div>
-          <button
-            onClick={() => {
-              modalId = openModal(MockModal);
-            }}
-          >
-            Open
-          </button>
-          <button onClick={() => closeModal(modalId)}>Close Specific</button>
-        </div>
-      );
-    };
-
-    render(
-      <UIProvider>
-        <ModalTestComponent />
-      </UIProvider>
-    );
-
-    fireEvent.click(screen.getByText('Open'));
-    expect(screen.getByTestId('modal-count')).toHaveTextContent('1');
-
-    fireEvent.click(screen.getByText('Close Specific'));
-    expect(screen.getByTestId('modal-count')).toHaveTextContent('0');
-  });
-
   test('setSidebarOpen directly sets sidebar state', () => {
     const SidebarTestComponent: React.FC = () => {
       const { isSidebarOpen, setSidebarOpen } = useUI();
@@ -604,7 +434,7 @@ describe('UIContext', () => {
     vi.useRealTimers();
   });
 
-  test('uses addListener fallback when addEventListener is not available (line 149)', () => {
+  test('uses addListener fallback when addEventListener is not available', () => {
     mockLocalStorage.getItem.mockReturnValue(null);
 
     const addListenerMock = vi.fn();
@@ -628,92 +458,15 @@ describe('UIContext', () => {
       </UIProvider>
     );
 
-    // Should have used addListener fallback (line 149)
+    // Should have used addListener fallback
     expect(addListenerMock).toHaveBeenCalled();
 
-    // Unmount to trigger cleanup with removeListener fallback (line 156)
+    // Unmount to trigger cleanup with removeListener fallback
     unmount();
     expect(removeListenerMock).toHaveBeenCalled();
   });
 
-  test('clears notification timer when removing a notification that has a timer (lines 172-173)', () => {
-    vi.useFakeTimers();
-
-    const NotificationTimerTestComponent: React.FC = () => {
-      const { notifications, showNotification, removeNotification } = useUI();
-      return (
-        <div>
-          <div data-testid="notification-count">{notifications.length}</div>
-          {notifications.map((n) => (
-            <button key={n.id} onClick={() => removeNotification(n.id)}>
-              Remove {n.id}
-            </button>
-          ))}
-          <button onClick={() => showNotification('info', 'Timed msg', 5000)}>Add Timed</button>
-        </div>
-      );
-    };
-
-    render(
-      <UIProvider>
-        <NotificationTimerTestComponent />
-      </UIProvider>
-    );
-
-    // Add a notification with a timer
-    fireEvent.click(screen.getByText('Add Timed'));
-    expect(screen.getByTestId('notification-count')).toHaveTextContent('1');
-
-    // Remove it manually before the timer fires (triggers clearTimeout on lines 172-173)
-    const removeButton = screen.getByText(/Remove /);
-    fireEvent.click(removeButton);
-    expect(screen.getByTestId('notification-count')).toHaveTextContent('0');
-
-    // Advance time to make sure no error from double removal
-    act(() => {
-      vi.advanceTimersByTime(6000);
-    });
-    expect(screen.getByTestId('notification-count')).toHaveTextContent('0');
-
-    vi.useRealTimers();
-  });
-
-  test('cleanup clears all notification timers on unmount (line 118)', () => {
-    vi.useFakeTimers();
-    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
-
-    const NotificationUnmountComponent: React.FC = () => {
-      const { showNotification } = useUI();
-      return (
-        <div>
-          <button onClick={() => showNotification('info', 'Timer msg', 5000)}>Add Timed</button>
-        </div>
-      );
-    };
-
-    const { unmount } = render(
-      <UIProvider>
-        <NotificationUnmountComponent />
-      </UIProvider>
-    );
-
-    // Add a notification that creates a timer
-    fireEvent.click(screen.getByText('Add Timed'));
-
-    // clearTimeout calls before unmount
-    const callsBefore = clearTimeoutSpy.mock.calls.length;
-
-    // Unmount before the timer fires — cleanup should call clearTimeout
-    unmount();
-
-    // clearTimeout should have been called at least once more (for the notification timer)
-    expect(clearTimeoutSpy.mock.calls.length).toBeGreaterThan(callsBefore);
-
-    clearTimeoutSpy.mockRestore();
-    vi.useRealTimers();
-  });
-
-  test('returns early when matchMedia is not available (line 127)', () => {
+  test('returns early when matchMedia is not available', () => {
     mockLocalStorage.getItem.mockReturnValue(null);
 
     // Temporarily remove matchMedia

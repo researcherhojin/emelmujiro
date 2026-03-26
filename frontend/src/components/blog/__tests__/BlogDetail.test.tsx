@@ -1,21 +1,14 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { BlogPost } from '../../../types';
 
-// Mock react-markdown to avoid dependency issues
-vi.mock('react-markdown', () => ({
-  default: function ReactMarkdown({ children }: { children: string }) {
-    return <div data-testid="markdown-content">{children}</div>;
-  },
-}));
-
-// Mock remark-gfm to avoid dependency issues
-vi.mock('remark-gfm', () => ({
-  default: function remarkGfm() {
-    return {};
+// Mock MarkdownRenderer (lazy-loaded in BlogDetail)
+vi.mock('../MarkdownRenderer', () => ({
+  default: function MarkdownRenderer({ content }: { content: string }) {
+    return <div data-testid="markdown-content">{content}</div>;
   },
 }));
 
@@ -249,7 +242,7 @@ describe('BlogDetail Component', () => {
     expect(screen.getByText('common.goBack')).toBeInTheDocument();
   });
 
-  test('renders blog post details', () => {
+  test('renders blog post details', async () => {
     mockPost = {
       id: 1,
       title: 'Test Blog Post',
@@ -283,7 +276,10 @@ describe('BlogDetail Component', () => {
     renderComponent();
 
     expect(screen.getByText('Test Blog Post')).toBeInTheDocument();
-    expect(screen.getByTestId('markdown-content')).toHaveTextContent('This is test content');
+    // MarkdownRenderer is lazy-loaded — wait for Suspense to resolve
+    await waitFor(() => {
+      expect(screen.getByTestId('markdown-content')).toHaveTextContent('This is test content');
+    });
     // Author is shown with t('blogDetail.author') prefix (which returns key)
     expect(screen.getByText(/blogDetail\.author/)).toBeInTheDocument();
     expect(screen.getByText('Technology')).toBeInTheDocument();

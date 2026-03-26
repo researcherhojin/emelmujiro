@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ServiceDetail } from '../../data/footerData';
@@ -10,9 +10,54 @@ interface ServiceModalProps {
   onContactClick: () => void;
 }
 
+const FOCUSABLE_SELECTOR =
+  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 const ServiceModal: React.FC<ServiceModalProps> = memo(
   ({ isOpen, service, onClose, onContactClick }) => {
     const { t } = useTranslation();
+    const closeButtonRef = useRef<HTMLButtonElement>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    // Close on Escape key
+    useEffect(() => {
+      if (!isOpen) return;
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
+
+    // Auto-focus close button when modal opens
+    useEffect(() => {
+      if (isOpen && closeButtonRef.current) {
+        closeButtonRef.current.focus();
+      }
+    }, [isOpen]);
+
+    // Focus trapping
+    const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+      if (e.key !== 'Tab' || !modalRef.current) return;
+      const focusableElements = modalRef.current.querySelectorAll(FOCUSABLE_SELECTOR);
+      if (focusableElements.length === 0) return;
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }, []);
 
     if (!isOpen || !service) return null;
 
@@ -24,6 +69,8 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
         role="dialog"
         aria-modal="true"
         aria-label={service?.title}
+        ref={modalRef}
+        onKeyDown={handleKeyDown}
       >
         <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <div
@@ -42,6 +89,7 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
           <div className="inline-block align-bottom bg-white dark:bg-dark-900 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
             <div className="absolute top-0 right-0 pt-4 pr-4">
               <button
+                ref={closeButtonRef}
                 type="button"
                 className="bg-white dark:bg-dark-900 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none"
                 onClick={onClose}

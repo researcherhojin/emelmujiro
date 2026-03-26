@@ -3,6 +3,7 @@ import { Bell, FileText, Mail, ShieldAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../../contexts/NotificationContext';
+import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import type { Notification } from '../../types';
 
 // Static Tailwind class maps (no dynamic interpolation — pitfall 15)
@@ -134,6 +135,7 @@ interface NotificationPanelProps {
 const NotificationPanel: React.FC<NotificationPanelProps> = memo(({ onClose }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { localizedPath } = useLocalizedPath();
   const { notifications, unreadCount, loading, fetchNotifications, markAsRead, markAllAsRead } =
     useNotification();
 
@@ -147,9 +149,9 @@ const NotificationPanel: React.FC<NotificationPanelProps> = memo(({ onClose }) =
   const handleNavigate = useCallback(
     (url: string) => {
       onClose();
-      navigate(url);
+      navigate(localizedPath(url));
     },
-    [onClose, navigate]
+    [onClose, navigate, localizedPath]
   );
 
   // Fetch notifications on panel open
