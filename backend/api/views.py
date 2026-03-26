@@ -11,7 +11,8 @@ from django.utils import timezone
 from django.core.cache import cache
 from django.http import HttpRequest
 from django.core.validators import validate_email
-from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.core.exceptions import ImproperlyConfigured, ValidationError as DjangoValidationError
+from rest_framework.exceptions import ValidationError
 from datetime import timedelta
 import hashlib
 import logging
@@ -354,7 +355,7 @@ class BlogImageUploadView(APIView):
 
         try:
             validate_uploaded_file(file)
-        except ValidationError as e:
+        except (ValidationError, DjangoValidationError) as e:
             return Response(
                 {"error": e.messages if hasattr(e, "messages") else str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
@@ -530,7 +531,7 @@ class ContactView(APIView):
         try:
             validate_email(email)
             return True
-        except ValidationError:
+        except (ValidationError, DjangoValidationError):
             return False
 
     def _is_suspicious_content(self, email: str) -> bool:

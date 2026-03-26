@@ -365,6 +365,26 @@ class BlogCommentAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(BlogComment.objects.count(), 0)
 
+    def test_comment_spam_keywords_rejected(self):
+        """Comment with 2+ spam keywords is rejected"""
+        data = {
+            "author_name": "Spammer",
+            "content": "Check this casino and bitcoin opportunity!",
+            "post": self.post.pk,
+        }
+        response = self.client.post(self.comments_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_comment_single_spam_keyword_allowed(self):
+        """Comment with only 1 spam keyword is allowed"""
+        data = {
+            "author_name": "Normal User",
+            "content": "I invested in bitcoin last year",
+            "post": self.post.pk,
+        }
+        response = self.client.post(self.comments_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
     def test_comment_validation_short_name(self):
         """Name must be at least 2 characters"""
         data = {"author_name": "A", "content": "Test", "post": self.post.pk}
