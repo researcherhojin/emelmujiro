@@ -38,7 +38,6 @@ CUSTOM_APPS = [
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
-    "channels",
     "api",
 ]
 
@@ -87,33 +86,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
-ASGI_APPLICATION = "config.asgi.application"
-
-# Channels configuration — Redis when available, in-memory fallback
-if os.environ.get("REDIS_URL"):
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [os.environ["REDIS_URL"]],
-            },
-        },
-    }
-else:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels.layers.InMemoryChannelLayer",
-        },
-    }
-    if not DEBUG:
-        import warnings
-
-        warnings.warn(
-            "REDIS_URL not set in production — using InMemoryChannelLayer. "
-            "WebSocket notifications will not work across multiple workers.",
-            stacklevel=1,
-        )
-
 # Database configuration
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
@@ -360,26 +332,16 @@ RECAPTCHA_PUBLIC_KEY = os.environ.get("RECAPTCHA_PUBLIC_KEY")
 RECAPTCHA_PRIVATE_KEY = os.environ.get("RECAPTCHA_PRIVATE_KEY")
 
 # Cache settings
-REDIS_URL = os.environ.get("REDIS_URL")
-if REDIS_URL and not DEBUG:
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.redis.RedisCache",
-            "LOCATION": REDIS_URL,
-            "TIMEOUT": 300,
-        }
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+        "TIMEOUT": 300,
+        "OPTIONS": {
+            "MAX_ENTRIES": 1000,
+        },
     }
-else:
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-            "LOCATION": "unique-snowflake",
-            "TIMEOUT": 300,
-            "OPTIONS": {
-                "MAX_ENTRIES": 1000,
-            },
-        }
-    }
+}
 
 # Logging settings
 LOG_DIR = os.path.join(BASE_DIR, "logs")

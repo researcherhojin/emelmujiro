@@ -14,7 +14,6 @@ describe('env config', () => {
 
       expect(env).toBeDefined();
       expect(env).toHaveProperty('API_URL');
-      expect(env).toHaveProperty('WS_URL');
       expect(env).toHaveProperty('ENABLE_ANALYTICS');
       expect(env).toHaveProperty('ENABLE_SENTRY');
       expect(env).toHaveProperty('SENTRY_DSN');
@@ -63,13 +62,6 @@ describe('env config', () => {
 
       expect(typeof env.API_URL).toBe('string');
       expect(env.API_URL).toContain('/api');
-    });
-
-    it('should have WS_URL as a string containing /ws', async () => {
-      const { env } = await import('../env');
-
-      expect(typeof env.WS_URL).toBe('string');
-      expect(env.WS_URL).toContain('/ws');
     });
   });
 
@@ -174,7 +166,6 @@ describe('env config', () => {
 
       expect(env.IS_PRODUCTION).toBe(true);
       expect(env.API_URL).toBe('https://api.emelmujiro.com/api');
-      expect(env.WS_URL).toBe('wss://api.emelmujiro.com/ws');
     });
   });
 

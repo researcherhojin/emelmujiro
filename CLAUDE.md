@@ -34,7 +34,7 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 # Shortcuts: make install | make test | make lint | make lint-fix | make dev
 # Also: make migrate | make test-ci | make shell | make createsuperuser
 # Docker dev with optional services:
-# docker compose -f docker-compose.dev.yml --profile postgres --profile redis up
+# docker compose -f docker-compose.dev.yml --profile postgres up
 ```
 
 ## Architecture
@@ -49,11 +49,9 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Blog**: Dual fields `content` (plain text/search) + `content_html` (TipTap HTML). Category API cached 1 hour (key: `"blog_categories"`), invalidated on CRUD/toggle-publish. Router `basename="blog"` (NOT `"blog-posts"`).
 
-**State management**: React Context only — `UIContext` (theme/sidebar), `AuthContext` (JWT user), `BlogContext` (posts/categories), `NotificationContext` (WebSocket alerts). No Redux or external state libraries.
+**State management**: React Context only — `UIContext` (theme/sidebar), `AuthContext` (JWT user), `BlogContext` (posts/categories), `NotificationContext` (alerts). No Redux or external state libraries.
 
 **API layer**: `services/api.ts` (Axios) with interceptors for JWT refresh. Test mocks use MSW (`test-utils/`) for realistic HTTP stubbing.
-
-**WebSocket**: Requires Daphne (ASGI). Without Redis, uses InMemoryChannelLayer (won't work across workers).
 
 ## Constraints
 
@@ -90,7 +88,7 @@ Non-React: `vi.mock('../../i18n', () => ({ default: { t: (key: string) => key, l
 
 Use `renderWithProviders` from `test-utils/` for component tests needing context (wraps MemoryRouter + providers). E2E tests: Playwright in `frontend/e2e/` — runs on 5 profiles (chromium, firefox, webkit, mobile chrome, mobile safari); PR checks run chromium only.
 
-Coverage target: 100% (currently 100% across all metrics — 70 suites, 1332 tests). Conventional commits required (`type(scope): description`). Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`. ESLint uses flat config (`eslint.config.mjs`, NOT `.eslintrc`). Zero warnings policy.
+Coverage target: 100% (currently 100% across all metrics — 69 suites, 1278 tests). Conventional commits required (`type(scope): description`). Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`. ESLint uses flat config (`eslint.config.mjs`, NOT `.eslintrc`). Zero warnings policy.
 
 ## Security
 

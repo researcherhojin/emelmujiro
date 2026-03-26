@@ -5,12 +5,10 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
-  useRef,
   ReactNode,
 } from 'react';
 import { api } from '../services/api';
 import { useAuth } from './AuthContext';
-import env from '../config/env';
 import logger from '../utils/logger';
 import type { Notification } from '../types';
 
@@ -18,7 +16,6 @@ interface NotificationContextType {
   notifications: Notification[];
   unreadCount: number;
   loading: boolean;
-  wsConnected: boolean;
   fetchNotifications: () => Promise<void>;
   markAsRead: (id: number) => Promise<void>;
   markAllAsRead: () => Promise<void>;
@@ -30,111 +27,12 @@ interface NotificationProviderProps {
   children: ReactNode;
 }
 
-const MAX_RECONNECT_ATTEMPTS = 5;
-const RECONNECT_BASE_DELAY = 1000;
-// If WebSocket closes within this time, server likely doesn't support WS (e.g. gunicorn)
-const WS_IMMEDIATE_CLOSE_THRESHOLD = 2000;
-
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [wsConnected, setWsConnected] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-
-  const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const reconnectAttemptsRef = useRef(0);
-
-  const clearReconnectTimer = useCallback(() => {
-    if (reconnectTimerRef.current) {
-      clearTimeout(reconnectTimerRef.current);
-      reconnectTimerRef.current = null;
-    }
-  }, []);
-
-  const closeWebSocket = useCallback(() => {
-    clearReconnectTimer();
-    reconnectAttemptsRef.current = 0;
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
-    }
-    setWsConnected(false);
-  }, [clearReconnectTimer]);
-
-  const connectWebSocket = useCallback(() => {
-    /* v8 ignore next */
-    if (!isAuthenticated) return;
-
-    const wsUrl = `${env.WS_URL}/notifications/`;
-
-    try {
-      const ws = new WebSocket(wsUrl);
-      const openedAt = Date.now();
-      let wasOpen = false;
-      wsRef.current = ws;
-
-      ws.onopen = () => {
-        wasOpen = true;
-        setWsConnected(true);
-        reconnectAttemptsRef.current = 0;
-      };
-
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-
-          if (data.type === 'notification') {
-            const newNotification: Notification = {
-              id: data.id,
-              title: data.title,
-              message: data.message,
-              level: data.level || 'info',
-              notification_type: data.notification_type || 'system',
-              url: data.url || '',
-              is_read: false,
-              read_at: null,
-              created_at: data.timestamp,
-            };
-            setNotifications((prev) => [newNotification, ...prev]);
-            setUnreadCount((prev) => prev + 1);
-          } else if (data.type === 'notification_update') {
-            setUnreadCount(data.count);
-          }
-        } catch {
-          logger.error('Failed to parse WebSocket message');
-        }
-      };
-
-      ws.onclose = () => {
-        setWsConnected(false);
-        wsRef.current = null;
-
-        // If connection was never opened or closed immediately, server doesn't support WS
-        const closedQuickly = !wasOpen && Date.now() - openedAt < WS_IMMEDIATE_CLOSE_THRESHOLD;
-        if (closedQuickly) {
-          logger.info('WebSocket not available on server, skipping reconnect');
-          return;
-        }
-
-        if (isAuthenticated && reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
-          const delay = RECONNECT_BASE_DELAY * Math.pow(2, reconnectAttemptsRef.current);
-          reconnectAttemptsRef.current += 1;
-          reconnectTimerRef.current = setTimeout(() => {
-            connectWebSocket();
-          }, delay);
-        }
-      };
-
-      ws.onerror = () => {
-        // onclose will fire after onerror, handling reconnect there
-      };
-    } catch {
-      logger.error('Failed to create WebSocket connection');
-    }
-  }, [isAuthenticated]);
 
   // Fetch unread count on mount when authenticated
   useEffect(() => {
@@ -142,7 +40,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       setNotifications([]);
       setUnreadCount(0);
       setCurrentPage(1);
-      closeWebSocket();
       return;
     }
 
@@ -156,12 +53,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     };
 
     fetchInitialData();
-    connectWebSocket();
-
-    return () => {
-      closeWebSocket();
-    };
-  }, [isAuthenticated, connectWebSocket, closeWebSocket]);
+  }, [isAuthenticated]);
 
   const fetchNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
@@ -182,33 +74,19 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     }
   }, [isAuthenticated, currentPage]);
 
-  const wsSend = useCallback((data: Record<string, unknown>) => {
+  const markAsRead = useCallback(async (id: number) => {
     try {
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.send(JSON.stringify(data));
-      }
+      await api.markNotificationRead(id);
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === id ? { ...n, is_read: true, read_at: new Date().toISOString() } : n
+        )
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch {
-      // WebSocket send failure is non-critical
+      logger.error('Failed to mark notification as read');
     }
   }, []);
-
-  const markAsRead = useCallback(
-    async (id: number) => {
-      try {
-        await api.markNotificationRead(id);
-        setNotifications((prev) =>
-          prev.map((n) =>
-            n.id === id ? { ...n, is_read: true, read_at: new Date().toISOString() } : n
-          )
-        );
-        setUnreadCount((prev) => Math.max(0, prev - 1));
-        wsSend({ action: 'mark_read', notification_id: id });
-      } catch {
-        logger.error('Failed to mark notification as read');
-      }
-    },
-    [wsSend]
-  );
 
   const markAllAsRead = useCallback(async () => {
     try {
@@ -217,31 +95,21 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         prev.map((n) => ({ ...n, is_read: true, read_at: new Date().toISOString() }))
       );
       setUnreadCount(0);
-      wsSend({ action: 'mark_all_read' });
     } catch {
       logger.error('Failed to mark all notifications as read');
     }
-  }, [wsSend]);
+  }, []);
 
   const value = useMemo<NotificationContextType>(
     () => ({
       notifications,
       unreadCount,
       loading,
-      wsConnected,
       fetchNotifications,
       markAsRead,
       markAllAsRead,
     }),
-    [
-      notifications,
-      unreadCount,
-      loading,
-      wsConnected,
-      fetchNotifications,
-      markAsRead,
-      markAllAsRead,
-    ]
+    [notifications, unreadCount, loading, fetchNotifications, markAsRead, markAllAsRead]
   );
 
   return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;

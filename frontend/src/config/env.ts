@@ -31,11 +31,6 @@ export const env = {
     'REACT_APP_API_URL',
     IS_PRODUCTION ? 'https://api.emelmujiro.com/api' : 'http://localhost:8000/api'
   ),
-  WS_URL: getEnvVar(
-    'REACT_APP_WS_URL',
-    IS_PRODUCTION ? 'wss://api.emelmujiro.com/ws' : 'ws://localhost:8000/ws'
-  ),
-
   // Feature Flags
   ENABLE_ANALYTICS: getEnvVar('REACT_APP_ENABLE_ANALYTICS', 'false') === 'true',
   ENABLE_SENTRY: getEnvVar('REACT_APP_ENABLE_SENTRY', 'false') === 'true',

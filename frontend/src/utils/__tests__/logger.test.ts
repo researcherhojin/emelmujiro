@@ -63,6 +63,13 @@ describe('Logger', () => {
       expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('[INFO]'), '');
     });
 
+    it('should log info messages with data (covers data || "" fallback)', () => {
+      Logger.info('Info with data', { key: 'value' });
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('[INFO]'), {
+        key: 'value',
+      });
+    });
+
     it('should log warning messages', () => {
       Logger.warn('Warning message');
       expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('[WARN]'), '');
@@ -95,9 +102,11 @@ describe('Logger', () => {
       const { default: ProdLogger } = await import('../logger');
 
       ProdLogger.debug('prod-debug');
+      ProdLogger.info('prod-info');
 
       // Should not have been called in production
       expect(consoleLogSpy).not.toHaveBeenCalled();
+      expect(consoleInfoSpy).not.toHaveBeenCalled();
 
       // Reset modules to restore normal Logger
       vi.doUnmock('../../config/env');

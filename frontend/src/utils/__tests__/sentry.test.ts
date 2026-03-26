@@ -23,7 +23,6 @@ const { mockInit, mockCaptureException, mockWithScope, mockSetUser, mockAddBread
       IS_DEVELOPMENT: false,
       IS_TEST: true,
       API_URL: 'http://localhost:8000/api',
-      WS_URL: 'ws://localhost:8000/ws',
       ENABLE_ANALYTICS: false,
       GA_TRACKING_ID: '',
       APP_NAME: 'Emelmujiro',

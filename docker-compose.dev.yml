@@ -10,8 +10,6 @@ services:
     environment:
       - DEBUG=True
       - DATABASE_URL=
-      # REDIS_URL is only needed when running with the "redis" profile
-      # - REDIS_URL=redis://redis:6379/0
     env_file:
       - ./backend/.env.dev
     volumes:
@@ -58,24 +56,8 @@ services:
     profiles:
       - postgres
 
-  # Redis — only started with: docker compose --profile redis up
-  redis:
-    image: redis:7-alpine
-    container_name: emelmujiro-redis-dev
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:6379:6379"
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data_dev:/data
-    networks:
-      - emelmujiro-network
-    profiles:
-      - redis
-
 volumes:
   postgres_data_dev:
-  redis_data_dev:
   static_volume:
   media_volume:
 

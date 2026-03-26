@@ -5,7 +5,7 @@
 [![CI/CD Pipeline](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml/badge.svg)](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml)
 [![codecov](https://codecov.io/gh/researcherhojin/emelmujiro/graph/badge.svg)](https://codecov.io/gh/researcherhojin/emelmujiro)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://codecov.io/gh/researcherhojin/emelmujiro)
-[![Tests](https://img.shields.io/badge/tests-1%2C707_passed-brightgreen)](https://github.com/researcherhojin/emelmujiro/actions)
+[![Tests](https://img.shields.io/badge/tests-1%2C642_passed-brightgreen)](https://github.com/researcherhojin/emelmujiro/actions)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
@@ -82,7 +82,7 @@ npm run test:e2e:ui        # Interactive UI
 npm run test:e2e:debug     # Debug mode
 
 # Docker dev with optional services
-docker compose -f docker-compose.dev.yml --profile postgres --profile redis up
+docker compose -f docker-compose.dev.yml --profile postgres up
 ```
 
 ## Architecture
@@ -100,22 +100,17 @@ graph LR
     subgraph MacMini["Mac Mini (Docker)"]
         Nginx["nginx:alpine\nStatic files + SPA"]
         DRF["Django 6 + DRF\nREST API"]
-        Daphne["Daphne (ASGI)\nWebSocket"]
         DB[(SQLite)]
-        Redis["Redis 7\nChannel Layer"]
     end
 
     React -->|emelmujiro.com| Tunnel
     Tunnel -->|:8080| Nginx
     Tunnel -->|:8000| DRF
-    Tunnel -->|:8000/ws| Daphne
     DRF --> DB
-    Daphne --> Redis
 
     style Tunnel fill:#F3E8FF,stroke:#7C3AED
     style MacMini fill:#ECFDF5,stroke:#059669
     style CF fill:#FEF3C7,stroke:#D97706
-    style Redis fill:#FEE2E2,stroke:#DC2626
 ```
 
 ## Key Features
@@ -125,13 +120,13 @@ graph LR
 - **Blog** — TipTap rich text editor (Notion-like), image upload, IP-based likes, nested comments, admin toolbar
 - **FAQ** — Accordion section on homepage with bilingual content
 - **Auth** — httpOnly cookie JWT with automatic token refresh
-- **Real-time Notifications** — WebSocket (Daphne/ASGI) with per-user preferences and email delivery
+- **Notifications** — REST API with per-user preferences and email delivery
 - **Monitoring** — Sentry error tracking + Google Analytics
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting (7 vendor chunks), Lighthouse CI assertions, < 10MB bundle budget
 - **CI/CD** — GitHub Actions with parallel jobs: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
 - **Security** — DOMPurify HTML sanitization, CI script injection prevention, uuid4 file uploads, rate limiting, IP blocking
-- **Testing** — 70 test suites / 1,332 tests (Vitest), 10 E2E specs (Playwright), 375 backend tests (Django), 100% coverage (statements, branches, functions, lines)
+- **Testing** — 69 test suites / 1,278 tests (Vitest), 10 E2E specs (Playwright), 364 backend tests (Django), 100% coverage (statements, branches, functions, lines)
 
 ## License
 

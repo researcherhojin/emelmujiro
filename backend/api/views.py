@@ -733,7 +733,7 @@ class NotificationViewSet(
 
 
 def send_user_notification(user, title, message, level="info", notification_type="system", url=""):
-    """Create a notification and send via WebSocket if possible.
+    """Create a notification and optionally send email.
 
     Respects user notification preferences: if the notification type is disabled,
     the notification is not created. If email is enabled, sends an email copy.
@@ -783,28 +783,5 @@ def send_user_notification(user, title, message, level="info", notification_type
             )
         except Exception as e:
             logger.warning(f"Failed to send notification email: {e}")
-
-    # Try to send via WebSocket channel layer
-    try:
-        from channels.layers import get_channel_layer
-        from asgiref.sync import async_to_sync
-
-        channel_layer = get_channel_layer()
-        if channel_layer:
-            async_to_sync(channel_layer.group_send)(
-                f"notifications_{user.id}",
-                {
-                    "type": "send_notification",
-                    "id": notification.id,
-                    "title": title,
-                    "message": message,
-                    "level": level,
-                    "notification_type": notification_type,
-                    "url": url,
-                    "timestamp": notification.created_at.isoformat(),
-                },
-            )
-    except Exception as e:
-        logger.warning(f"Failed to send WebSocket notification: {e}")
 
     return notification

@@ -43,7 +43,6 @@ vi.mock('../../../contexts/NotificationContext', () => ({
     notifications: mockNotifications,
     unreadCount: mockUnreadCount,
     loading: mockLoading,
-    wsConnected: true,
     fetchNotifications: mockFetchNotifications,
     markAsRead: mockMarkAsRead,
     markAllAsRead: mockMarkAllAsRead,
