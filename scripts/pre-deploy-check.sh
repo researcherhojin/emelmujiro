@@ -105,7 +105,7 @@ inline_check "TypeScript compilation"
 if [ "$(cat "$TSC_RESULT_FILE")" -eq 0 ]; then
     pass "No errors"
 else
-    warn "TypeScript errors found"
+    fail "TypeScript errors found"
 fi
 
 # Report ESLint results

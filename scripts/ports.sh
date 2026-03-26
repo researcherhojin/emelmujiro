@@ -7,8 +7,8 @@ set -e
 #   ./scripts/ports.sh --kill   # Kill dev ports non-interactively
 
 PORTS_DEV=(5173 8000)
-PORTS_INFRA=(5432 6379)
-LABELS=([5173]="Frontend" [8000]="Backend" [5432]="PostgreSQL" [6379]="Redis")
+PORTS_INFRA=(5432)
+LABELS=([5173]="Frontend" [8000]="Backend" [5432]="PostgreSQL")
 
 kill_port() {
     local port=$1
