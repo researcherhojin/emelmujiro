@@ -276,7 +276,14 @@ const BlogDetailPage: React.FC = memo(() => {
             {/* Content */}
             <div className="prose prose-lg prose-gray dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-p:leading-relaxed prose-p:text-gray-600 dark:prose-p:text-gray-400 prose-a:text-gray-900 dark:prose-a:text-white prose-a:underline-offset-4 prose-img:rounded-xl">
               {post?.content_html ? (
-                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content_html) }} />
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(post.content_html, {
+                      ADD_TAGS: ['table', 'thead', 'tbody', 'tr', 'th', 'td', 'colgroup', 'col'],
+                      ADD_ATTR: ['colspan', 'rowspan'],
+                    }),
+                  }}
+                />
               ) : (
                 <Suspense fallback={null}>
                   <MarkdownRenderer content={post?.content || ''} />

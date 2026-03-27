@@ -24,6 +24,7 @@ Official website for Emelmujiro, an AI education & consulting company. React 19 
 ![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
+![Tailwind Typography](https://img.shields.io/badge/Typography-0.5-06B6D4?logo=tailwindcss&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.38-E91E63)
 ![i18next](https://img.shields.io/badge/i18next-25.10-26A69A?logo=i18next&logoColor=white)
 ![React Router](https://img.shields.io/badge/React_Router-7.13-CA4245?logo=reactrouter&logoColor=white)
