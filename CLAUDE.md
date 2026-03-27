@@ -53,11 +53,17 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **API layer**: `services/api.ts` (Axios) with interceptors for JWT refresh. Test mocks use MSW (`test-utils/`) for realistic HTTP stubbing.
 
-**Homepage section order**: Hero (white) → Logos (gray) → Services (white) → CTA (gray). Alternating backgrounds for visual rhythm. Logos before Services intentionally — social proof establishes trust before value proposition.
+**Homepage section order**: Hero (white) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
 
 **Scroll carousels** (LogosSection & TestimonialsSection): 3x copies of items for seamless CSS `translateX(-33.333%)` looping. Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via custom CSS utility `.group:hover .group-hover\:pause` in `index.css`. `motion-reduce:!animate-none` for accessibility. Tailwind animation durations: `scroll` 32s (logos), `scroll-testimonial` 45s (testimonials).
 
-**TestimonialsSection**: Used on ProfilePage only (NOT homepage). Two rows: CV reviews (left scroll) + startup reviews (right scroll). Source: 고용24 K-디지털 훈련 수강후기.
+**TestimonialsSection**: Used on homepage (between Services and CTA). Two rows: CV reviews (left scroll) + startup reviews (right scroll). Source: 고용24 K-디지털 훈련 수강후기.
+
+**About page**: Route removed from App.tsx and Navbar. `AboutPage.tsx` file retained for potential restoration. Sitemap, prerender, StructuredData breadcrumb all updated.
+
+**Blog slug URLs**: `BlogPostViewSet` uses `lookup_field = "slug"`. Frontend routes use `blog/:slug` (NOT `blog/:id`). BlogCard links to `/blog/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
+
+**Contact email**: `contact@emelmujiro.com` — used in constants.ts, i18n, backend settings, swagger, CONTRIBUTING.md.
 
 ## Constraints
 
