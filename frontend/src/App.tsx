@@ -159,7 +159,7 @@ const pageRoutes = [
   { path: 'blog', element: <BlogListPage /> },
   { path: 'blog/new', element: <BlogEditor /> },
   { path: 'blog/edit/:id', element: <BlogEditor /> },
-  { path: 'blog/:id', element: <BlogDetail /> },
+  { path: 'blog/:slug', element: <BlogDetail /> },
   { path: '*', element: <NotFound /> },
 ];
 

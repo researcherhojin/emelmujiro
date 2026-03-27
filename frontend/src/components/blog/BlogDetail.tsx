@@ -28,7 +28,7 @@ const preventImageAction = (e: React.MouseEvent | React.DragEvent) => {
 
 const BlogDetailPage: React.FC = memo(() => {
   const { t } = useTranslation();
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { localizedNavigate } = useLocalizedPath();
   const { user } = useAuth();
@@ -38,43 +38,43 @@ const BlogDetailPage: React.FC = memo(() => {
   const { toast, showToast } = useToast();
 
   const handleTogglePublish = useCallback(async () => {
-    if (!id) return;
+    if (!slug) return;
     try {
-      const response = await api.toggleBlogPublish(id);
+      const response = await api.toggleBlogPublish(slug);
       const published = response.data.is_published;
       showToast(published ? t('blogAdmin.published') : t('blogAdmin.unpublished'), 'success');
-      fetchPostById(id);
+      fetchPostById(slug);
     } catch (err) {
       logger.error('Failed to toggle publish:', err);
       showToast(t('blogAdmin.toggleError'), 'error');
     }
-  }, [id, fetchPostById, showToast, t]);
+  }, [slug, fetchPostById, showToast, t]);
 
   const handleDelete = useCallback(async () => {
-    if (!id) return;
+    if (!slug) return;
     try {
-      await api.deleteBlogPost(id);
+      await api.deleteBlogPost(slug);
       showToast(t('blogAdmin.deleted'), 'success');
       setTimeout(() => localizedNavigate('/blog'), 500);
     } catch (err) {
       logger.error('Failed to delete post:', err);
       showToast(t('blogAdmin.deleteError'), 'error');
     }
-  }, [id, localizedNavigate, showToast, t]);
+  }, [slug, localizedNavigate, showToast, t]);
 
   useEffect(() => {
-    if (id) {
-      fetchPostById(id);
+    if (slug) {
+      fetchPostById(slug);
     }
     return () => clearCurrentPost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
-    if (post && id) {
-      trackBlogView(id, post.category);
+    if (post && slug) {
+      trackBlogView(slug, post.category);
     }
-  }, [post, id]);
+  }, [post, slug]);
 
   if (loading) {
     return <PageLoading message={t('blogDetail.loading')} />;
@@ -133,7 +133,7 @@ const BlogDetailPage: React.FC = memo(() => {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => localizedNavigate(`/blog/edit/${id}`)}
+                  onClick={() => localizedNavigate(`/blog/edit/${post?.id}`)}
                   className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
                 >
                   <Pencil className="w-3.5 h-3.5" />
@@ -175,7 +175,7 @@ const BlogDetailPage: React.FC = memo(() => {
               title={`${post.title} | ${t('blogDetail.blogTitle')}`}
               description={post.excerpt || post.title}
               keywords={`${post.category}, ${t('blogDetail.blogKeywords')}`}
-              url={`${SITE_URL}/blog/${id}`}
+              url={`${SITE_URL}/blog/${slug}`}
               type="article"
               article={{
                 author: post.author,

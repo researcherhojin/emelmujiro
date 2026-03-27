@@ -65,7 +65,7 @@ class BlogPostAPITestCase(APITestCase):
 
     def test_retrieve_blog_post(self):
         """Test retrieving a single blog post by pk"""
-        url = reverse("blog-detail", kwargs={"pk": self.blog_post.pk})
+        url = reverse("blog-detail", kwargs={"slug": self.blog_post.slug})
         response: Response = self.client.get(url)  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         assert response.data is not None
@@ -133,14 +133,14 @@ class BlogPostAPITestCase(APITestCase):
         from django.core.cache import cache
 
         cache.clear()  # Ensure no cached view keys
-        url = reverse("blog-detail", kwargs={"pk": self.blog_post.pk})
+        url = reverse("blog-detail", kwargs={"slug": self.blog_post.slug})
         self.client.get(url, REMOTE_ADDR="203.0.113.1")  # type: ignore
         self.blog_post.refresh_from_db()
         self.assertEqual(self.blog_post.view_count, 1)
 
     def test_retrieve_nonexistent_post(self):
         """Test retrieving a post that doesn't exist"""
-        url = reverse("blog-detail", kwargs={"pk": 99999})
+        url = reverse("blog-detail", kwargs={"slug": "non-existent-slug"})
         response: Response = self.client.get(url)  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -164,7 +164,7 @@ class BlogPostWriteAPITestCase(APITestCase):
             category="ai",
         )
         cls.create_url = reverse("blog-list")
-        cls.detail_url = reverse("blog-detail", kwargs={"pk": cls.blog_post.pk})
+        cls.detail_url = reverse("blog-detail", kwargs={"slug": cls.blog_post.slug})
 
     def _auth_as(self, user):
         token = RefreshToken.for_user(user)
@@ -236,7 +236,7 @@ class BlogPostWriteAPITestCase(APITestCase):
         """Admin can toggle publish status"""
         self._auth_as(self.admin_user)
         self.assertTrue(self.blog_post.is_published)
-        url = reverse("blog-toggle-publish", kwargs={"pk": self.blog_post.pk})
+        url = reverse("blog-toggle-publish", kwargs={"slug": self.blog_post.slug})
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.blog_post.refresh_from_db()
@@ -283,7 +283,7 @@ class BlogLikeAPITestCase(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.post = BlogPost.objects.create(title="Likeable Post", description="Desc", content="Content", category="ai")
-        cls.like_url = reverse("blog-like", kwargs={"pk": cls.post.pk})
+        cls.like_url = reverse("blog-like", kwargs={"slug": cls.post.slug})
 
     def test_like_post(self):
         """First like creates a BlogLike and increments count"""
@@ -1101,7 +1101,7 @@ class CategoryCacheTestCase(APITestCase):
         admin = User.objects.create_superuser(username="admin", password="adminpass12345")
         self.client.force_authenticate(user=admin)
         self.client.patch(
-            reverse("blog-detail", kwargs={"pk": post.pk}),
+            reverse("blog-detail", kwargs={"slug": post.slug}),
             {"category": "ml"},
             format="json",
         )
@@ -1115,7 +1115,7 @@ class CategoryCacheTestCase(APITestCase):
         cache.set("blog_categories", [{"slug": "stale"}], timeout=3600)
         admin = User.objects.create_superuser(username="admin", password="adminpass12345")
         self.client.force_authenticate(user=admin)
-        self.client.delete(reverse("blog-detail", kwargs={"pk": post.pk}))
+        self.client.delete(reverse("blog-detail", kwargs={"slug": post.slug}))
         self.assertIsNone(cache.get("blog_categories"))
 
     def test_cache_invalidated_on_toggle_publish(self):
@@ -1126,7 +1126,7 @@ class CategoryCacheTestCase(APITestCase):
         cache.set("blog_categories", [{"slug": "stale"}], timeout=3600)
         admin = User.objects.create_superuser(username="admin", password="adminpass12345")
         self.client.force_authenticate(user=admin)
-        self.client.post(reverse("blog-toggle-publish", kwargs={"pk": post.pk}))
+        self.client.post(reverse("blog-toggle-publish", kwargs={"slug": post.slug}))
         self.assertIsNone(cache.get("blog_categories"))
 
 

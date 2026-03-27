@@ -190,6 +190,7 @@ def log_site_visit(request: HttpRequest):
 class BlogPostViewSet(viewsets.ModelViewSet):
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
+    lookup_field = "slug"
 
     def get_permissions(self):
         if self.action in ("list", "retrieve", "like"):
@@ -281,7 +282,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     @action(detail=True, methods=["post"], url_path="toggle-publish")
-    def toggle_publish(self, request, pk=None):
+    def toggle_publish(self, request, slug=None):
         """Toggle the is_published status of a blog post."""
         post = self.get_object()
         post.is_published = not post.is_published
@@ -291,7 +292,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         return Response({"id": post.id, "is_published": post.is_published})
 
     @action(detail=True, methods=["post"], url_path="like", permission_classes=[AllowAny])
-    def like(self, request, pk=None):
+    def like(self, request, slug=None):
         """Toggle like on a blog post (one per IP)."""
         post = self.get_object()
         ip_address = get_client_ip(request)
