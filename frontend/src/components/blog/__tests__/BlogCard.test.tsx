@@ -194,7 +194,7 @@ describe('BlogCard Component', () => {
 
     await waitFor(() => {
       const link = screen.getByRole('link');
-      expect(link).toHaveAttribute('href', '/blog/1');
+      expect(link).toHaveAttribute('href', '/blog/test-blog-post');
     });
   });
 
