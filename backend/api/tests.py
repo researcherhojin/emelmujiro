@@ -1228,6 +1228,13 @@ class AdminAPITestCase(APITestCase):
         response = self.client.get(reverse("admin-content"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_admin_content_invalid_pagination(self):
+        """Invalid pagination params return 400"""
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(reverse("admin-content"), {"page": "abc"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("error", response.data)
+
     def test_admin_messages_empty_list(self):
         """Empty messages list returns correct structure"""
         Contact.objects.all().delete()

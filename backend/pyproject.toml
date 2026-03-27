@@ -33,6 +33,10 @@ dev = [
     "flake8>=7.0.0",
 ]
 
+[tool.coverage.run]
+source = ["api"]
+omit = ["api/management/commands/create_blog_posts.py"]
+
 [tool.black]
 line-length = 120
 target-version = ['py312']
