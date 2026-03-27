@@ -81,13 +81,13 @@ const HomePage: React.FC = memo(() => {
             <HeroSection />
           </div>
 
+          {/* Partner Logos — social proof before services */}
+          <LogosSection />
+
           {/* Services Section */}
           <div id="services">
             <ServicesSection />
           </div>
-
-          {/* Partner Logos + Achievement Pills */}
-          <LogosSection />
 
           {/* Call to Action */}
           <CTASection />

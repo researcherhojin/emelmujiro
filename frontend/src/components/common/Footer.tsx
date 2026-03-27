@@ -57,7 +57,6 @@ const Footer: React.FC = memo(() => {
       label: t('common.representativeProfile'),
       onClick: () => navigate(localizedPath('/profile')),
     },
-    { label: t('faq.title'), onClick: () => scrollToSection('faq') },
   ];
 
   return (

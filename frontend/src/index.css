@@ -151,7 +151,7 @@
 /* Utility styles */
 @layer utilities {
   /* Animation control — used by LogosSection hover */
-  .pause {
+  .group:hover .group-hover\:pause {
     animation-play-state: paused;
   }
 

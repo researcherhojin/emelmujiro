@@ -24,10 +24,12 @@ module.exports = {
         warning: '#f59e0b',
         error: '#ef4444',
       },
-      // Minimal animations - only for logos section
+      // Scroll animations for logos and testimonials
       animation: {
         scroll: 'scroll 32s linear infinite',
         'scroll-reverse': 'scroll-reverse 32s linear infinite',
+        'scroll-testimonial': 'scroll 45s linear infinite',
+        'scroll-testimonial-reverse': 'scroll-reverse 45s linear infinite',
       },
       keyframes: {
         scroll: {

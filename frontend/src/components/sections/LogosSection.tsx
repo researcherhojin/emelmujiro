@@ -13,7 +13,7 @@ const LogoItem: React.FC<{ company: PartnerCompany }> = memo(({ company }) => {
           className="h-12 w-auto object-contain opacity-60 group-hover:opacity-40 hover:!opacity-100 transition-opacity duration-300"
           width={160}
           height={48}
-          loading="lazy"
+          loading="eager"
         />
       </div>
     </div>
@@ -34,10 +34,10 @@ const ScrollRow: React.FC<ScrollRowProps> = memo(({ companies, direction = 'left
   return (
     <div className="relative overflow-hidden group">
       {/* Left/right fade masks */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-gray-50 dark:from-gray-950 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-gray-50 dark:from-gray-950 to-transparent z-10" />
 
-      <div className={`flex ${animationClass} hover:pause`}>
+      <div className={`flex ${animationClass} group-hover:pause motion-reduce:!animate-none`}>
         {/* Render 3 copies for seamless looping */}
         {[0, 1, 2].map((copy) =>
           companies.map((company, index) => (
@@ -65,7 +65,7 @@ const LogosSection: React.FC = memo(() => {
   return (
     <section
       id="partners"
-      className="py-32 bg-white dark:bg-gray-900 overflow-hidden transition-colors duration-300"
+      className="py-32 bg-gray-50 dark:bg-gray-950 overflow-hidden transition-colors duration-300"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-20 text-center">
