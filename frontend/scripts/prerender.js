@@ -73,7 +73,7 @@ function startServer() {
 
 /**
  * Build the URL path for a route in a given language.
- * Korean (default): /about. English: /en/about.
+ * Korean (default): /contact. English: /en/contact.
  */
 function buildRoutePath(routeUrl, lang) {
   const prefix = lang === 'ko' ? '' : `/${lang}`;
@@ -130,9 +130,9 @@ async function prerenderRoute(page, baseUrl, route) {
 /**
  * Write prerendered HTML to the build directory.
  * For '/', overwrites build/index.html.
- * For '/about', writes to build/about/index.html.
+ * For '/contact', writes to build/contact/index.html.
  * For '/en', writes to build/en/index.html.
- * For '/en/about', writes to build/en/about/index.html.
+ * For '/en/contact', writes to build/en/contact/index.html.
  */
 function writePrerenderedHtml(route, html) {
   let outputPath;

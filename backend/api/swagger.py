@@ -4,7 +4,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL", "researcherhojin@gmail.com")
+CONTACT_EMAIL = os.environ.get("CONTACT_EMAIL", "contact@emelmujiro.com")
 
 schema_view = get_schema_view(
     openapi.Info(

@@ -23,6 +23,6 @@ test.describe('Contact Page (Google Form)', () => {
 
   test('displays contact info sidebar', async ({ page }) => {
     // ContactInfo renders email and other contact details
-    await expect(page.getByText(/researcherhojin@gmail\.com/)).toBeVisible();
+    await expect(page.getByText(/contact@emelmujiro\.com/)).toBeVisible();
   });
 });

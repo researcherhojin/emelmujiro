@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useState, memo, useCallback } from 'react';
-import { Briefcase, GraduationCap, Code } from 'lucide-react';
+import { Briefcase, GraduationCap, Code, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import SEOHelmet from '../common/SEOHelmet';
@@ -11,9 +11,9 @@ import CareerTab from './profile/CareerTab';
 import EducationTab from './profile/EducationTab';
 import ProjectsTab from './profile/ProjectsTab';
 
-const TestimonialsSection = lazy(() => import('../sections/TestimonialsSection'));
+const TimelineSection = lazy(() => import('../sections/TimelineSection'));
 
-type TabType = 'career' | 'education' | 'projects';
+type TabType = 'career' | 'education' | 'projects' | 'timeline';
 type ProjectCategory = 'all' | 'enterprise' | 'bootcamp' | 'education' | 'startup' | 'research';
 
 const ProfilePage: React.FC = memo(() => {
@@ -87,6 +87,17 @@ const ProfilePage: React.FC = memo(() => {
                   <Code className="w-4 h-4 inline-block mr-2" />
                   {t('profilePage.tabProjects')}
                 </button>
+                <button
+                  onClick={() => handleTabChange('timeline')}
+                  className={`py-4 px-1 font-bold text-sm uppercase tracking-wider transition-all relative focus:outline-none border-none bg-transparent ${
+                    activeTab === 'timeline'
+                      ? 'text-gray-900 dark:text-white border-b-2 border-gray-900 dark:border-white'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600'
+                  }`}
+                >
+                  <Clock className="w-4 h-4 inline-block mr-2" />
+                  {t('profilePage.tabTimeline')}
+                </button>
               </nav>
             </div>
           </div>
@@ -103,13 +114,13 @@ const ProfilePage: React.FC = memo(() => {
                 onFilterChange={handleProjectFilterChange}
               />
             )}
+            {activeTab === 'timeline' && (
+              <Suspense fallback={null}>
+                <TimelineSection />
+              </Suspense>
+            )}
           </div>
         </section>
-
-        {/* Testimonials */}
-        <Suspense fallback={null}>
-          <TestimonialsSection />
-        </Suspense>
       </div>
     </>
   );

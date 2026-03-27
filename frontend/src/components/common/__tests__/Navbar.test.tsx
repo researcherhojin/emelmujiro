@@ -54,7 +54,6 @@ describe('Navbar Component', () => {
 
   test('renders navigation items', () => {
     renderWithProviders(<Navbar />);
-    expect(screen.getByRole('button', { name: 'common.about' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'common.blog' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'common.profile' })).toBeInTheDocument();
   });
@@ -62,9 +61,9 @@ describe('Navbar Component', () => {
   test('navigates on menu item click', () => {
     renderWithProviders(<Navbar />);
 
-    const aboutButton = screen.getByRole('button', { name: 'common.about' });
-    fireEvent.click(aboutButton);
-    expect(mockNavigate).toHaveBeenCalledWith('/about');
+    const blogButton = screen.getByRole('button', { name: 'common.blog' });
+    fireEvent.click(blogButton);
+    expect(mockNavigate).toHaveBeenCalledWith('/blog');
   });
 
   test('mobile menu button toggles menu', () => {
@@ -72,7 +71,7 @@ describe('Navbar Component', () => {
 
     // Mobile menu should not be visible initially
     expect(
-      screen.queryByText('common.about', { selector: '.md\\:hidden button' })
+      screen.queryByText('common.blog', { selector: '.md\\:hidden button' })
     ).not.toBeInTheDocument();
 
     // Click mobile menu button - find by aria-label
@@ -82,7 +81,7 @@ describe('Navbar Component', () => {
     fireEvent.click(menuButton);
 
     // Mobile menu should now be visible
-    const mobileMenuItems = screen.getAllByText('common.about');
+    const mobileMenuItems = screen.getAllByText('common.blog');
     expect(mobileMenuItems.length).toBeGreaterThan(1); // One in desktop, one in mobile
   });
 
@@ -155,12 +154,12 @@ describe('Navbar Component', () => {
 
     // Open mobile menu
     fireEvent.click(menuButton);
-    expect(screen.getAllByText('common.about').length).toBeGreaterThan(1);
+    expect(screen.getAllByText('common.blog').length).toBeGreaterThan(1);
 
     // Close mobile menu
     fireEvent.click(menuButton);
     // Only desktop items should remain
-    expect(screen.getAllByText('common.about')).toHaveLength(1);
+    expect(screen.getAllByText('common.blog')).toHaveLength(1);
   });
 
   it('navigates to contact page and closes mobile menu on contact click', () => {
@@ -177,7 +176,7 @@ describe('Navbar Component', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith('/contact');
     // Mobile menu should be closed (only desktop items remain)
-    expect(screen.getAllByText('common.about')).toHaveLength(1);
+    expect(screen.getAllByText('common.blog')).toHaveLength(1);
   });
 
   it('calls language switch and navigates on language button click', () => {
@@ -200,12 +199,12 @@ describe('Navbar Component', () => {
     fireEvent.click(menuButton);
 
     // Click a mobile nav item (get the second occurrence which is in the mobile menu)
-    const aboutButtons = screen.getAllByText('common.about');
-    fireEvent.click(aboutButtons[aboutButtons.length - 1]);
+    const blogButtons = screen.getAllByText('common.blog');
+    fireEvent.click(blogButtons[blogButtons.length - 1]);
 
     // Menu should close
-    expect(screen.getAllByText('common.about')).toHaveLength(1);
-    expect(mockNavigate).toHaveBeenCalledWith('/about');
+    expect(screen.getAllByText('common.blog')).toHaveLength(1);
+    expect(mockNavigate).toHaveBeenCalledWith('/blog');
   });
 
   it('cleans up scroll listener on unmount', () => {
@@ -228,33 +227,32 @@ describe('Navbar Component', () => {
   });
 
   it('highlights active nav item when pathname matches (line 59)', () => {
-    mockLocation.pathname = '/about';
+    mockLocation.pathname = '/blog';
     mockLocation.hash = '';
 
     renderWithProviders(<Navbar />);
 
-    const aboutButton = screen.getByRole('button', { name: 'common.about' });
+    const blogButton = screen.getByRole('button', { name: 'common.blog' });
     // Should have active styling
-    expect(aboutButton.className).toContain('text-gray-900');
+    expect(blogButton.className).toContain('text-gray-900');
   });
 
   it('navigates to path when nav item clicked (handleNavigation)', () => {
     renderWithProviders(<Navbar />);
 
-    const aboutButton = screen.getByRole('button', { name: 'common.about' });
-    fireEvent.click(aboutButton);
+    const blogButton = screen.getByRole('button', { name: 'common.blog' });
+    fireEvent.click(blogButton);
     expect(mockNavigate).toHaveBeenCalled();
   });
 
   it('applies inactive styling to non-active nav items (branch lines 116-144)', () => {
-    mockLocation.pathname = '/about';
+    mockLocation.pathname = '/blog';
     renderWithProviders(<Navbar />);
 
-    // Blog is NOT active when on /about — should have inactive text-gray-600 (not bare text-gray-900)
-    const blogButton = screen.getByRole('button', { name: 'common.blog' });
-    expect(blogButton.className).toContain('text-gray-600');
-    // Active items get `text-gray-900` without prefix; inactive have it only as `hover:text-gray-900`
-    const classes = blogButton.className.split(' ');
+    // Profile is NOT active when on /blog — should have inactive text-gray-600
+    const profileButton = screen.getByRole('button', { name: 'common.profile' });
+    expect(profileButton.className).toContain('text-gray-600');
+    const classes = profileButton.className.split(' ');
     expect(classes).not.toContain('text-gray-900');
     expect(classes).toContain('hover:text-gray-900');
   });
@@ -280,7 +278,7 @@ describe('Navbar Component', () => {
       langPrefix: '/en',
       localizedPath: (p: string) => `/en${p === '/' ? '' : p}`,
       localizedNavigate: vi.fn(),
-      switchLanguagePath: (lang: string) => (lang === 'ko' ? '/about' : '/en/about'),
+      switchLanguagePath: (lang: string) => (lang === 'ko' ? '/blog' : '/en/blog'),
       supportedLangs: ['ko', 'en'] as const,
       defaultLang: 'ko',
     });
@@ -293,7 +291,7 @@ describe('Navbar Component', () => {
 
     // Click should navigate to Korean path (targetLang = 'ko' since currentLang is 'en')
     fireEvent.click(langButtons[0]);
-    expect(mockNavigate).toHaveBeenCalledWith('/about');
+    expect(mockNavigate).toHaveBeenCalledWith('/blog');
 
     spy.mockRestore();
   });
@@ -315,20 +313,20 @@ describe('Navbar Component', () => {
   });
 
   it('applies active styling to mobile nav items (mobile branch lines 116-144)', () => {
-    mockLocation.pathname = '/about';
+    mockLocation.pathname = '/blog';
     renderWithProviders(<Navbar />);
 
     // Open mobile menu
     fireEvent.click(screen.getByRole('button', { name: 'accessibility.menu' }));
 
-    // Mobile "about" button should have active class (bg-gray-50)
-    const mobileAboutButtons = screen.getAllByText('common.about');
-    const mobileButton = mobileAboutButtons[mobileAboutButtons.length - 1];
+    // Mobile "blog" button should have active class
+    const mobileBlogButtons = screen.getAllByText('common.blog');
+    const mobileButton = mobileBlogButtons[mobileBlogButtons.length - 1];
     expect(mobileButton.className).toContain('text-gray-900');
 
-    // Mobile "blog" button should have inactive class
-    const mobileBlogButtons = screen.getAllByText('common.blog');
-    const mobileBlogButton = mobileBlogButtons[mobileBlogButtons.length - 1];
-    expect(mobileBlogButton.className).toContain('text-gray-600');
+    // Mobile "profile" button should have inactive class
+    const mobileProfileButtons = screen.getAllByText('common.profile');
+    const mobileProfileButton = mobileProfileButtons[mobileProfileButtons.length - 1];
+    expect(mobileProfileButton.className).toContain('text-gray-600');
   });
 });

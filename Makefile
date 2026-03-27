@@ -100,7 +100,7 @@ update-test-counts:
 	./scripts/update-test-counts.sh
 
 cleanup-visits:
-	@SAFE_DAYS="$(or $(DAYS),90)"; \
+	@SAFE_DAYS="$(if $(DAYS),$(DAYS),90)"; \
 	if ! echo "$$SAFE_DAYS" | grep -qE '^[0-9]+$$'; then \
 		echo "Error: DAYS must be a number"; exit 1; \
 	fi; \

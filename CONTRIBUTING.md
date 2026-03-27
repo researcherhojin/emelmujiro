@@ -136,4 +136,4 @@ emelmujiro/
 ## 질문이 있으신가요?
 
 - [GitHub Issues](https://github.com/researcherhojin/emelmujiro/issues)에 질문을 남겨주세요
-- 이메일: researcherhojin@gmail.com
+- 이메일: contact@emelmujiro.com

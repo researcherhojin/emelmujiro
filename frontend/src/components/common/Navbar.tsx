@@ -31,7 +31,6 @@ const Navbar: React.FC = memo(() => {
   }, []);
 
   const navItems: NavItem[] = [
-    { label: t('common.about'), path: localizedPath('/about') },
     { label: t('common.blog'), path: localizedPath('/blog') },
     { label: t('common.profile'), path: localizedPath('/profile') },
   ];

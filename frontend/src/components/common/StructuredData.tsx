@@ -109,12 +109,6 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
         {
           '@type': 'ListItem',
           position: 2,
-          name: t('common.about'),
-          item: `${SITE_URL}/about`,
-        },
-        {
-          '@type': 'ListItem',
-          position: 3,
           name: t('common.representativeProfile'),
           item: `${SITE_URL}/profile`,
         },

@@ -135,7 +135,7 @@ describe('Footer Component', () => {
       // Check email info (in span tag)
       const emailSpans = container.querySelectorAll('span');
       const email = Array.from(emailSpans).find(
-        (span) => span.textContent === 'researcherhojin@gmail.com'
+        (span) => span.textContent === 'contact@emelmujiro.com'
       );
       expect(email).toBeInTheDocument();
 

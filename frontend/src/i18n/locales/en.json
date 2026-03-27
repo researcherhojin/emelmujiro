@@ -4,7 +4,7 @@
     "about": "About",
     "services": "Services",
     "contact": "Contact",
-    "blog": "Blog",
+    "blog": "Insights",
     "profile": "Profile",
     "cancel": "Cancel",
     "confirm": "Confirm",
@@ -92,16 +92,16 @@
   "about": {
     "sectionLabel": "ABOUT US",
     "title": "Emelmujiro",
-    "subtitle": "AI Education, Consulting & Solution Development Startup",
+    "subtitle": "Enterprise AI training to startup consulting — a practice-driven AI firm",
     "mission": {
       "sectionLabel": "OUR MISSION",
       "title": "Our Mission",
-      "description": "With AI education and consulting built for real work,\nwe drive our clients' business growth together."
+      "description": "From AI literacy training to Agent development and PoC delivery —\nwe design the entire AI adoption journey for our clients."
     },
     "journey": {
-      "sectionLabel": "OUR JOURNEY",
-      "title": "Our Journey",
-      "subtitle": "Footsteps of growth as AI education experts"
+      "sectionLabel": "TRACK RECORD",
+      "title": "Key Milestones",
+      "subtitle": "A record of execution built through training and consulting"
     },
     "values": {
       "sectionLabel": "CORE VALUES",
@@ -138,24 +138,24 @@
     },
     "timeline": {
       "2022": {
-        "title": "AI Training Specialist",
-        "description": "AI training across 10+ institutions including SNU, SKT, Hancom"
+        "title": "AI Training Instructor",
+        "description": "AI training across 10+ institutions including SNU, SKT, Hancom, Seoul Metropolitan Office of Education"
       },
       "2023": {
-        "title": "Enterprise AI & Startup Mentoring",
-        "description": "Samsung, LG, Hyundai training · Techit Startup Station IT dev mentoring"
+        "title": "Enterprise AI & Startup Dev Mentoring",
+        "description": "Samsung, LG, Hyundai hands-on training · Ministry of Employment Startup Bootcamp dev training & tech mentoring"
       },
       "2024": {
-        "title": "Emelmujiro Founded & AI Bootcamp",
-        "description": "AI education & consulting startup · AI bootcamp, AI Champion & Dacon winners"
+        "title": "Emelmujiro Founded",
+        "description": "AI education & consulting startup · AI CV advanced course · AI Champion & Dacon winners"
       },
       "2025": {
-        "title": "AI Agent & RAG Expansion",
-        "description": "Enterprise Agentic RAG & MCP training and PoC development"
+        "title": "AI Consulting & Industry Training",
+        "description": "Enterprise AI Agent & RAG PoC · Industry AI upskilling · ICT Complex 3rd place"
       },
       "2026": {
-        "title": "AI Agent & Multimodal AI Training",
-        "description": "Vibe Coding, AI Agent & Multimodal AI enterprise training and consulting"
+        "title": "AI Training & Consulting Expansion",
+        "description": "Graduate AI academic writing · Public institution AI project mentoring · Vibe Coding & AI Agent enterprise training"
       }
     }
   },
@@ -182,7 +182,7 @@
       "formTitle": "Online Meeting Request"
     },
     "info": {
-      "email": "researcherhojin@gmail.com",
+      "email": "contact@emelmujiro.com",
       "phone": "010-7279-0380",
       "address": "Gangnam-gu, Seoul",
       "hours": "Weekdays 09:00 - 18:00",
@@ -280,6 +280,10 @@
         "highlight": "Dacon Award Winner",
         "description": "Multiple data analysis competition awards"
       },
+      "ictComplex": {
+        "highlight": "ICT Complex Award",
+        "description": "Top 15 out of 270 teams, 3rd place in borderline intelligence"
+      },
       "corporateTraining": {
         "highlight": "Enterprise Training Partner",
         "description": "AI training for Samsung, LG, SKT and other major corporations"
@@ -306,6 +310,7 @@
     "tabCareer": "Career",
     "tabEducation": "Education",
     "tabProjects": "Projects",
+    "tabTimeline": "Timeline",
     "careerLabel": "CAREER",
     "careerHistory": "Career History",
     "educationLabel": "EDUCATION",

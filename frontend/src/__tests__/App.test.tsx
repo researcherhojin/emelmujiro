@@ -87,9 +87,7 @@ vi.mock('../components/pages/ProfilePage', () => ({
   default: () => <div data-testid="profile-page">ProfilePage</div>,
 }));
 
-vi.mock('../components/pages/AboutPage', () => ({
-  default: () => <div data-testid="about-page">AboutPage</div>,
-}));
+// AboutPage route removed — component file retained for potential restoration
 
 vi.mock('../components/pages/SharePage', () => ({
   default: () => <div data-testid="share-page">SharePage</div>,
@@ -163,19 +161,6 @@ describe('App', () => {
     expect(screen.getByTestId('cta-section')).toBeInTheDocument();
     expect(screen.getByTestId('web-vitals')).toBeInTheDocument();
     expect(window.__appLoaded).toBe(true);
-  });
-
-  it('renders the about page at /about', async () => {
-    setUrl('/about');
-    const { default: App } = await import('../App');
-
-    await act(async () => {
-      render(<App />);
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('about-page')).toBeInTheDocument();
-    });
   });
 
   it('renders the contact page at /contact', async () => {
@@ -279,19 +264,6 @@ describe('App', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('not-found')).toBeInTheDocument();
-    });
-  });
-
-  it('renders the English about page at /en/about', async () => {
-    setUrl('/en/about');
-    const { default: App } = await import('../App');
-
-    await act(async () => {
-      render(<App />);
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('about-page')).toBeInTheDocument();
     });
   });
 });

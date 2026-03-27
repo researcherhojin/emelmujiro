@@ -18,10 +18,10 @@ describe('ContactInfo', () => {
     render(<ContactInfo />);
 
     const emailLink = screen.getByRole('link', {
-      name: /researcherhojin@gmail\.com/i,
+      name: /contact@emelmujiro\.com/i,
     });
     expect(emailLink).toBeInTheDocument();
-    expect(emailLink).toHaveAttribute('href', 'mailto:researcherhojin@gmail.com');
+    expect(emailLink).toHaveAttribute('href', 'mailto:contact@emelmujiro.com');
   });
 
   it('displays the email icon', () => {
@@ -62,7 +62,7 @@ describe('ContactInfo', () => {
     const emailLink = screen.getByRole('link');
     expect(emailLink).toHaveAttribute(
       'aria-label',
-      'contact.info.emailLabel: researcherhojin@gmail.com'
+      'contact.info.emailLabel: contact@emelmujiro.com'
     );
   });
 });

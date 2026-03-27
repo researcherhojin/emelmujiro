@@ -6,4 +6,4 @@
 export const SITE_URL = 'https://emelmujiro.com';
 
 // Contact information
-export const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'researcherhojin@gmail.com';
+export const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'contact@emelmujiro.com';

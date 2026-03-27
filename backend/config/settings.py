@@ -325,7 +325,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 # Email sending settings
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER or "noreply@emelmujiro.com"
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "researcherhojin@gmail.com")
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "contact@emelmujiro.com")
 EMAIL_TIMEOUT = 5
 EMAIL_MAX_RETRIES = 3
 

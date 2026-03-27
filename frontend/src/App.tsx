@@ -29,6 +29,7 @@ const WebVitalsDashboard = lazy(() => import('./components/common/WebVitalsDashb
 const HeroSection = lazy(() => import('./components/sections/HeroSection'));
 const ServicesSection = lazy(() => import('./components/sections/ServicesSection'));
 const LogosSection = lazy(() => import('./components/sections/LogosSection'));
+const TestimonialsSection = lazy(() => import('./components/sections/TestimonialsSection'));
 const CTASection = lazy(() => import('./components/sections/CTASection'));
 
 // Lazy load pages for code splitting
@@ -88,6 +89,9 @@ const HomePage: React.FC = memo(() => {
           <div id="services">
             <ServicesSection />
           </div>
+
+          {/* Testimonials — social proof from students */}
+          <TestimonialsSection />
 
           {/* Call to Action */}
           <CTASection />
@@ -152,7 +156,6 @@ AppLayout.displayName = 'AppLayout';
 // Page routes shared between default (ko) and /en layouts
 const pageRoutes = [
   { index: true, element: <HomePage /> },
-  { path: 'about', element: <AboutPage /> },
   { path: 'contact', element: <ContactPage /> },
   { path: 'profile', element: <ProfilePage /> },
   { path: 'share', element: <SharePage /> },
