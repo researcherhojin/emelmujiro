@@ -50,7 +50,7 @@ const mockNavigate = vi.fn();
 const mockFetchPostById = vi.fn();
 const mockClearCurrentPost = vi.fn();
 
-let mockParams: Record<string, string> = { id: '1' };
+let mockParams: Record<string, string> = { slug: 'test-post' };
 
 vi.mock('react-router-dom', async () => {
   const actual = await import('react-router-dom');
@@ -153,7 +153,7 @@ describe('BlogDetail Component', () => {
     mockLoading = false;
     mockError = null;
     mockUser = null;
-    mockParams = { id: '1' };
+    mockParams = { slug: 'test-post' };
     mockNavigate.mockClear();
     mockFetchPostById.mockClear();
     mockClearCurrentPost.mockClear();
@@ -327,7 +327,7 @@ describe('BlogDetail Component', () => {
 
   test('calls fetchPostById on mount', () => {
     renderComponent();
-    expect(mockFetchPostById).toHaveBeenCalledWith('1');
+    expect(mockFetchPostById).toHaveBeenCalledWith('test-post');
   });
 
   test('calls clearCurrentPost on unmount', () => {
@@ -551,8 +551,8 @@ describe('BlogDetail Component', () => {
 
     await screen.findByRole('alert');
 
-    expect(mockToggleBlogPublish).toHaveBeenCalledWith('1');
-    expect(mockFetchPostById).toHaveBeenCalledWith('1');
+    expect(mockToggleBlogPublish).toHaveBeenCalledWith('test-post');
+    expect(mockFetchPostById).toHaveBeenCalledWith('test-post');
   });
 
   test('admin toggle publish shows error toast on failure', async () => {
@@ -636,7 +636,7 @@ describe('BlogDetail Component', () => {
 
     const alert = await screen.findByRole('alert');
     expect(alert).toHaveTextContent('blogAdmin.deleted');
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('1');
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post');
   });
 
   test('admin delete confirmation can be cancelled', () => {
@@ -1149,7 +1149,7 @@ describe('BlogDetail Component', () => {
     // Flush the async deleteBlogPost promise
     await vi.advanceTimersByTimeAsync(0);
 
-    expect(mockDeleteBlogPost).toHaveBeenCalledWith('1');
+    expect(mockDeleteBlogPost).toHaveBeenCalledWith('test-post');
 
     // Navigate should not have been called yet (setTimeout 500ms pending)
     expect(mockLocalizedNavigate).not.toHaveBeenCalled();
