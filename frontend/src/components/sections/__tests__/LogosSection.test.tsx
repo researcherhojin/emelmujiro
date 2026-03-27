@@ -85,12 +85,12 @@ describe('LogosSection', () => {
     expect(images).toHaveLength(12);
   });
 
-  it('renders images with lazy loading', () => {
+  it('renders images with eager loading for above-the-fold display', () => {
     render(<LogosSection />);
 
     const images = screen.getAllByRole('img');
     images.forEach((img) => {
-      expect(img).toHaveAttribute('loading', 'lazy');
+      expect(img).toHaveAttribute('loading', 'eager');
     });
   });
 

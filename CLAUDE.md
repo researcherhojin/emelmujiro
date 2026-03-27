@@ -53,6 +53,12 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **API layer**: `services/api.ts` (Axios) with interceptors for JWT refresh. Test mocks use MSW (`test-utils/`) for realistic HTTP stubbing.
 
+**Homepage section order**: Hero (white) → Logos (gray) → Services (white) → CTA (gray). Alternating backgrounds for visual rhythm. Logos before Services intentionally — social proof establishes trust before value proposition.
+
+**Scroll carousels** (LogosSection & TestimonialsSection): 3x copies of items for seamless CSS `translateX(-33.333%)` looping. Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via custom CSS utility `.group:hover .group-hover\:pause` in `index.css`. `motion-reduce:!animate-none` for accessibility. Tailwind animation durations: `scroll` 32s (logos), `scroll-testimonial` 45s (testimonials).
+
+**TestimonialsSection**: Used on ProfilePage only (NOT homepage). Two rows: CV reviews (left scroll) + startup reviews (right scroll). Source: 고용24 K-디지털 훈련 수강후기.
+
 ## Constraints
 
 **SEO**: `main.tsx` uses `createRoot()` (never `hydrateRoot`). Do NOT add static meta/title/OG tags to `index.html` — `SEOHelmet` handles everything. Use `SITE_URL` from `constants.ts` — never hardcode URLs. Page titles must NOT include `| 에멜무지로` suffix (appended automatically).
