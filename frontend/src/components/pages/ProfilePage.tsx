@@ -1,38 +1,34 @@
-import React, { lazy, Suspense, useState, memo, useCallback } from 'react';
-import { Briefcase, GraduationCap, Code, Clock } from 'lucide-react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
 import { SITE_URL } from '../../utils/constants';
-import ProfileHero from './profile/ProfileHero';
-import StatsSection from './profile/StatsSection';
-import CareerTab from './profile/CareerTab';
-import EducationTab from './profile/EducationTab';
-import ProjectsTab from './profile/ProjectsTab';
+import { getTeachingHistory } from '../../data/profileData';
 
-const TimelineSection = lazy(() => import('../sections/TimelineSection'));
-
-type TabType = 'career' | 'education' | 'projects' | 'timeline';
-type ProjectCategory = 'all' | 'enterprise' | 'bootcamp' | 'education' | 'startup' | 'research';
+const YEARS = [2026, 2025, 2024, 2023, 2022] as const;
 
 const ProfilePage: React.FC = memo(() => {
-  const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<TabType>('career');
-  const [projectFilter, setProjectFilter] = useState<ProjectCategory>('all');
+  const { t, i18n } = useTranslation();
   const { localizedNavigate } = useLocalizedPath();
 
   const handleBackClick = useCallback(() => {
     localizedNavigate('/');
   }, [localizedNavigate]);
 
-  const handleTabChange = useCallback((tab: TabType) => {
-    setActiveTab(tab);
-  }, []);
-
-  const handleProjectFilterChange = useCallback((filter: ProjectCategory) => {
-    setProjectFilter(filter);
-  }, []);
+  // i18n.language triggers re-computation when language switches (getTeachingHistory uses i18n.t internally)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const teachingHistory = useMemo(() => getTeachingHistory(), [i18n.language]);
+  const itemsByYear = useMemo(() => {
+    const map = new Map<number, typeof teachingHistory>();
+    for (const year of YEARS) {
+      map.set(
+        year,
+        teachingHistory.filter((item) => item.year === year)
+      );
+    }
+    return map;
+  }, [teachingHistory]);
 
   return (
     <>
@@ -46,79 +42,103 @@ const ProfilePage: React.FC = memo(() => {
       <StructuredData type="Breadcrumb" />
 
       <div className="min-h-screen bg-white dark:bg-gray-900">
-        <ProfileHero onBackClick={handleBackClick} />
-        <StatsSection />
+        {/* Hero */}
+        <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
+              TEACHING HISTORY
+            </span>
+            <h1 className="mt-4 text-5xl sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white">
+              {t('teachingHistory.pageTitle')}
+            </h1>
+            <p className="mt-6 text-lg text-gray-500 dark:text-gray-400">
+              {t('teachingHistory.pageSubtitle')}
+            </p>
+            <div className="mt-8 flex justify-center gap-6">
+              <span className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
+                {t('teachingHistory.statsYears')}
+              </span>
+              <span className="text-3xl sm:text-4xl font-black text-gray-300 dark:text-gray-600">
+                ·
+              </span>
+              <span className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
+                {t('teachingHistory.statsCount')}
+              </span>
+            </div>
 
-        {/* Tab Navigation */}
-        <section className="px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="border-b border-gray-200 dark:border-gray-700">
-              <nav className="-mb-px flex justify-center space-x-8">
-                <button
-                  onClick={() => handleTabChange('career')}
-                  className={`py-4 px-1 font-bold text-sm uppercase tracking-wider transition-all relative focus:outline-none border-none bg-transparent ${
-                    activeTab === 'career'
-                      ? 'text-gray-900 dark:text-white border-b-2 border-gray-900 dark:border-white'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600'
-                  }`}
-                >
-                  <Briefcase className="w-4 h-4 inline-block mr-2" />
-                  {t('profilePage.tabCareer')}
-                </button>
-                <button
-                  onClick={() => handleTabChange('education')}
-                  className={`py-4 px-1 font-bold text-sm uppercase tracking-wider transition-all relative focus:outline-none border-none bg-transparent ${
-                    activeTab === 'education'
-                      ? 'text-gray-900 dark:text-white border-b-2 border-gray-900 dark:border-white'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600'
-                  }`}
-                >
-                  <GraduationCap className="w-4 h-4 inline-block mr-2" />
-                  {t('profilePage.tabEducation')}
-                </button>
-                <button
-                  onClick={() => handleTabChange('projects')}
-                  className={`py-4 px-1 font-bold text-sm uppercase tracking-wider transition-all relative focus:outline-none border-none bg-transparent ${
-                    activeTab === 'projects'
-                      ? 'text-gray-900 dark:text-white border-b-2 border-gray-900 dark:border-white'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600'
-                  }`}
-                >
-                  <Code className="w-4 h-4 inline-block mr-2" />
-                  {t('profilePage.tabProjects')}
-                </button>
-                <button
-                  onClick={() => handleTabChange('timeline')}
-                  className={`py-4 px-1 font-bold text-sm uppercase tracking-wider transition-all relative focus:outline-none border-none bg-transparent ${
-                    activeTab === 'timeline'
-                      ? 'text-gray-900 dark:text-white border-b-2 border-gray-900 dark:border-white'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600'
-                  }`}
-                >
-                  <Clock className="w-4 h-4 inline-block mr-2" />
-                  {t('profilePage.tabTimeline')}
-                </button>
-              </nav>
+            <div className="mt-8">
+              <button
+                onClick={handleBackClick}
+                className="inline-flex items-center px-6 py-3 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all focus:outline-none"
+              >
+                ← {t('profilePage.backToMain')}
+              </button>
             </div>
           </div>
         </section>
 
-        {/* Tab Content */}
+        {/* Teaching History — alternating backgrounds per year */}
+        {YEARS.map((year, yearIdx) => {
+          const items = itemsByYear.get(year);
+          if (!items || items.length === 0) return null;
+          const isGray = yearIdx % 2 === 0;
+          return (
+            <section
+              key={year}
+              className={`py-16 px-4 sm:px-6 lg:px-8 ${isGray ? 'bg-gray-50 dark:bg-gray-950' : 'bg-white dark:bg-gray-900'}`}
+            >
+              <div className="max-w-5xl mx-auto">
+                <div className="flex items-center gap-4 mb-6">
+                  <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white">
+                    {year}
+                  </h2>
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                  <span className="text-sm font-bold text-gray-400 dark:text-gray-500">
+                    {items.length}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {items.map((item, idx) => (
+                    <div
+                      key={`${year}-${idx}`}
+                      className={`group flex items-start justify-between gap-3 p-5 rounded-2xl border-2 transition-all hover:border-gray-900 dark:hover:border-white ${isGray ? 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700' : 'bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700'}`}
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-gray-900 dark:text-white">
+                          {item.organization}
+                        </p>
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                          {item.title}
+                        </p>
+                      </div>
+                      {item.upcoming && (
+                        <span className="flex-shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                          {t('teachingHistory.upcoming')}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          );
+        })}
+
+        {/* CTA */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950">
-          <div className="max-w-5xl mx-auto">
-            {activeTab === 'career' && <CareerTab />}
-            {activeTab === 'education' && <EducationTab />}
-            {activeTab === 'projects' && (
-              <ProjectsTab
-                projectFilter={projectFilter}
-                onFilterChange={handleProjectFilterChange}
-              />
-            )}
-            {activeTab === 'timeline' && (
-              <Suspense fallback={null}>
-                <TimelineSection />
-              </Suspense>
-            )}
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
+              {t('cta.title')}
+            </h2>
+            <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">{t('cta.subtitle')}</p>
+            <div className="mt-8">
+              <button
+                onClick={() => localizedNavigate('/contact')}
+                className="inline-flex items-center px-8 py-4 text-base font-bold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-full hover:bg-gray-800 dark:hover:bg-gray-100 transition-all"
+              >
+                {t('common.contact')}
+              </button>
+            </div>
           </div>
         </section>
       </div>

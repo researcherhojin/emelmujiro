@@ -1,27 +1,24 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import ProfilePage from '../ProfilePage';
 
-// Mock i18n module (used by data files like profileData.ts)
 vi.mock('../../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },
 }));
 
-// Override global i18n mock — this test needs custom t() behavior
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, options?: any) => {
-      if (options?.returnObjects) return key;
+    t: (key: string, options?: Record<string, unknown>) => {
+      if (options?.returnObjects) return [key];
       return key;
     },
     i18n: { language: 'ko', changeLanguage: vi.fn() },
   }),
-  Trans: ({ children }: any) => children,
+  Trans: ({ children }: { children: React.ReactNode }) => children,
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-// Mock useNavigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await import('react-router-dom');
@@ -31,279 +28,82 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-// Mock SEOHelmet
 vi.mock('../../common/SEOHelmet', () => ({
   default: function MockSEOHelmet() {
     return null;
   },
 }));
 
-// Mock StructuredData
 vi.mock('../../common/StructuredData', () => ({
   default: function MockStructuredData() {
     return null;
   },
 }));
 
-describe('ProfilePage Component', () => {
-  const renderWithRouter = (component: React.ReactElement) => {
-    return render(<BrowserRouter>{component}</BrowserRouter>);
-  };
+describe('ProfilePage — Teaching History', () => {
+  const renderPage = () =>
+    render(
+      <BrowserRouter>
+        <ProfilePage />
+      </BrowserRouter>
+    );
 
   beforeEach(() => {
     mockNavigate.mockClear();
   });
 
-  describe('Rendering', () => {
-    it('renders profile page with title', () => {
-      renderWithRouter(<ProfilePage />);
+  it('renders page title and stats', () => {
+    renderPage();
 
-      expect(screen.getByText('profilePage.name')).toBeInTheDocument();
-      expect(screen.getByText('profilePage.role')).toBeInTheDocument();
-    });
-
-    it('renders section label via i18n', () => {
-      renderWithRouter(<ProfilePage />);
-
-      expect(screen.getByText('profilePage.sectionLabel')).toBeInTheDocument();
-    });
-
-    it('renders achievement highlights', () => {
-      renderWithRouter(<ProfilePage />);
-
-      expect(screen.getByText('achievements.items.championAward.highlight')).toBeInTheDocument();
-      expect(screen.getByText('achievements.items.daconWin.highlight')).toBeInTheDocument();
-      expect(
-        screen.getByText('achievements.items.corporateTraining.highlight')
-      ).toBeInTheDocument();
-    });
-
-    it('renders profile description', () => {
-      renderWithRouter(<ProfilePage />);
-
-      expect(
-        screen.getByRole('heading', { level: 1, name: 'profilePage.name' })
-      ).toBeInTheDocument();
-    });
-
-    it('renders all navigation tabs', () => {
-      renderWithRouter(<ProfilePage />);
-
-      expect(screen.getByText('profilePage.tabCareer')).toBeInTheDocument();
-      expect(screen.getByText('profilePage.tabEducation')).toBeInTheDocument();
-      expect(screen.getByText('profilePage.tabProjects')).toBeInTheDocument();
-    });
-
-    it('renders statistics section', () => {
-      renderWithRouter(<ProfilePage />);
-
-      expect(screen.getByText('50+')).toBeInTheDocument(); // Total projects
-      expect(screen.getByText('1,000+')).toBeInTheDocument(); // Total students
-      expect(screen.getByText('30+')).toBeInTheDocument(); // Partner companies
-      expect(screen.getByText('5+')).toBeInTheDocument(); // Years of experience
-    });
+    expect(screen.getByText('teachingHistory.pageTitle')).toBeInTheDocument();
+    expect(screen.getByText('teachingHistory.statsYears')).toBeInTheDocument();
+    expect(screen.getByText('teachingHistory.statsCount')).toBeInTheDocument();
   });
 
-  describe('Tab Navigation', () => {
-    it('switches to education tab', () => {
-      renderWithRouter(<ProfilePage />);
+  it('renders year headings', () => {
+    renderPage();
 
-      const educationTab = screen.getByText('profilePage.tabEducation');
-      fireEvent.click(educationTab);
-
-      expect(screen.getByText('profileData.education.0.school')).toBeInTheDocument();
-      expect(screen.getByText('profileData.education.1.school')).toBeInTheDocument();
-    });
-
-    it('switches to projects tab', () => {
-      renderWithRouter(<ProfilePage />);
-
-      const buttons = screen.getAllByRole('button');
-      const projectsTab = buttons.find((btn) =>
-        btn.textContent?.includes('profilePage.tabProjects')
-      );
-      expect(projectsTab).toBeDefined();
-      fireEvent.click(projectsTab!);
-
-      // Check for project section is rendered
-      expect(projectsTab).toHaveClass('text-gray-900');
-    });
-
-    it('maintains active tab styling', () => {
-      renderWithRouter(<ProfilePage />);
-
-      // Look for tab buttons by text content
-      const buttons = screen.getAllByRole('button');
-      const careerTab = buttons.find((btn) => btn.textContent?.includes('profilePage.tabCareer'));
-      const educationTab = buttons.find((btn) =>
-        btn.textContent?.includes('profilePage.tabEducation')
-      );
-
-      // Check that buttons exist
-      expect(careerTab).toBeInTheDocument();
-      expect(educationTab).toBeInTheDocument();
-
-      // Career tab should be active initially
-      expect(careerTab).toHaveClass('text-gray-900');
-
-      // Switch to education tab
-      if (educationTab) {
-        fireEvent.click(educationTab);
-        expect(educationTab).toHaveClass('text-gray-900');
-        expect(careerTab).not.toHaveClass('text-gray-900');
-      }
-    });
+    expect(screen.getByText('2026')).toBeInTheDocument();
+    expect(screen.getByText('2025')).toBeInTheDocument();
+    expect(screen.getByText('2024')).toBeInTheDocument();
+    expect(screen.getByText('2023')).toBeInTheDocument();
+    expect(screen.getByText('2022')).toBeInTheDocument();
   });
 
-  describe('Career Tab Content', () => {
-    it('displays all career items', () => {
-      renderWithRouter(<ProfilePage />);
+  it('renders teaching history items', () => {
+    renderPage();
 
-      const buttons = screen.getAllByRole('button');
-      const careerTab = buttons.find((btn) => btn.textContent?.includes('profilePage.tabCareer'));
-      expect(careerTab).toBeInTheDocument();
-      expect(careerTab).toHaveClass('text-gray-900');
-    });
-
-    it('shows current position badge', () => {
-      renderWithRouter(<ProfilePage />);
-
-      // Check for career items structure (periods are i18n keys like profileData.career.0.period)
-      const periodElements = screen.getAllByText(/profileData\.career\.\d+\.period/);
-      expect(periodElements.length).toBeGreaterThan(0);
-    });
+    expect(screen.getByText('teachingHistory.0.org')).toBeInTheDocument();
+    expect(screen.getByText('teachingHistory.0.title')).toBeInTheDocument();
   });
 
-  describe('Education Tab Content', () => {
-    it('displays education items when tab is selected', () => {
-      renderWithRouter(<ProfilePage />);
+  it('renders upcoming badges for 2026 items', () => {
+    renderPage();
 
-      const educationTab = screen.getByText('profilePage.tabEducation');
-      fireEvent.click(educationTab);
-
-      expect(screen.getByText('profileData.education.0.school')).toBeInTheDocument();
-      expect(screen.getByText('profileData.education.1.school')).toBeInTheDocument();
-    });
-
-    it('displays education descriptions', () => {
-      renderWithRouter(<ProfilePage />);
-
-      const educationTab = screen.getByText('profilePage.tabEducation');
-      fireEvent.click(educationTab);
-
-      expect(screen.getByText('profileData.education.0.degree')).toBeInTheDocument();
-      expect(screen.getByText('profileData.education.1.degree')).toBeInTheDocument();
-    });
+    const badges = screen.getAllByText('teachingHistory.upcoming');
+    expect(badges.length).toBe(2);
   });
 
-  describe('Projects Tab Content', () => {
-    it('displays project items when tab is selected', () => {
-      renderWithRouter(<ProfilePage />);
+  it('navigates home on back button click', () => {
+    renderPage();
 
-      const buttons = screen.getAllByRole('button');
-      const projectsTab = buttons.find((btn) =>
-        btn.textContent?.includes('profilePage.tabProjects')
-      );
-      expect(projectsTab).toBeDefined();
-      fireEvent.click(projectsTab!);
+    const backButton = screen.getByText(/profilePage.backToMain/);
+    fireEvent.click(backButton);
 
-      // Check that projects tab is active
-      expect(projectsTab).toHaveClass('text-gray-900');
-    });
-
-    it('displays project descriptions', () => {
-      renderWithRouter(<ProfilePage />);
-
-      const buttons = screen.getAllByRole('button');
-      const projectsTab = buttons.find((btn) =>
-        btn.textContent?.includes('profilePage.tabProjects')
-      );
-      expect(projectsTab).toBeDefined();
-      fireEvent.click(projectsTab!);
-
-      // Projects content should be visible
-      expect(screen.getByText('profileData.projects.0.title')).toBeInTheDocument();
-    });
+    expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
-  describe('Responsive Design', () => {
-    it('applies responsive grid for statistics', () => {
-      renderWithRouter(<ProfilePage />);
+  it('renders CTA section', () => {
+    renderPage();
 
-      // Check that statistics are displayed
-      expect(screen.getByText('50+')).toBeInTheDocument();
-      expect(screen.getByText('30+')).toBeInTheDocument();
-      expect(screen.getByText('1,000+')).toBeInTheDocument();
-    });
+    expect(screen.getByText('cta.title')).toBeInTheDocument();
+    expect(screen.getByText('common.contact')).toBeInTheDocument();
   });
 
-  describe('Accessibility', () => {
-    it('uses semantic HTML elements', () => {
-      renderWithRouter(<ProfilePage />);
+  it('has correct heading hierarchy', () => {
+    renderPage();
 
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-      expect(screen.getAllByRole('button').length).toBeGreaterThan(0);
-    });
-  });
-
-  describe('Icons', () => {
-    it('displays appropriate icons for each section', () => {
-      renderWithRouter(<ProfilePage />);
-
-      // Check that the component renders without errors
-      // Since icons are mocked, check for actual content
-      expect(screen.getByText('profilePage.name')).toBeInTheDocument();
-      expect(screen.getByText('profilePage.role')).toBeInTheDocument();
-    });
-  });
-
-  describe('Callbacks', () => {
-    it('navigates to home when back button is clicked', () => {
-      renderWithRouter(<ProfilePage />);
-
-      // Click the back button rendered inside ProfileHero
-      const backButton = screen.getByText(/profilePage.backToMain/);
-      fireEvent.click(backButton);
-
-      expect(mockNavigate).toHaveBeenCalledWith('/');
-    });
-
-    it('calls handleProjectFilterChange when a project filter button is clicked', () => {
-      renderWithRouter(<ProfilePage />);
-
-      // Switch to projects tab first
-      const buttons = screen.getAllByRole('button');
-      const projectsTab = buttons.find((btn) =>
-        btn.textContent?.includes('profilePage.tabProjects')
-      );
-      expect(projectsTab).toBeDefined();
-      fireEvent.click(projectsTab!);
-
-      // Click the "enterprise" category filter button (label comes from i18n mock as key)
-      const filterButtons = screen.getAllByRole('button');
-      const enterpriseFilter = filterButtons.find((btn) =>
-        btn.textContent?.includes('profileData.categories.1.label')
-      );
-      expect(enterpriseFilter).toBeDefined();
-      fireEvent.click(enterpriseFilter!);
-
-      // After clicking, the enterprise filter button should have active styling
-      expect(enterpriseFilter).toHaveClass('bg-gray-900');
-    });
-
-    it('clicking career tab invokes handleTabChange with career', () => {
-      renderWithRouter(<ProfilePage />);
-
-      // Switch to education tab first
-      const educationTab = screen.getByText('profilePage.tabEducation');
-      fireEvent.click(educationTab);
-
-      // Now click career tab to trigger the handleTabChange('career') callback
-      const careerTab = screen.getByText('profilePage.tabCareer');
-      fireEvent.click(careerTab);
-
-      // Career tab should now be active again
-      expect(careerTab).toHaveClass('text-gray-900');
-    });
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { level: 2 }).length).toBeGreaterThan(0);
   });
 });

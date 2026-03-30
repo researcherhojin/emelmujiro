@@ -34,7 +34,6 @@ const CTASection = lazy(() => import('./components/sections/CTASection'));
 
 // Lazy load pages for code splitting
 const ProfilePage = lazy(() => import('./components/pages/ProfilePage'));
-const AboutPage = lazy(() => import('./components/pages/AboutPage'));
 const SharePage = lazy(() => import('./components/pages/SharePage'));
 const NotFound = lazy(() => import('./components/common/NotFound'));
 const ContactPage = lazy(() => import('./components/pages/ContactPage'));

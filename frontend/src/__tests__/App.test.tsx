@@ -87,8 +87,6 @@ vi.mock('../components/pages/ProfilePage', () => ({
   default: () => <div data-testid="profile-page">ProfilePage</div>,
 }));
 
-// AboutPage route removed — component file retained for potential restoration
-
 vi.mock('../components/pages/SharePage', () => ({
   default: () => <div data-testid="share-page">SharePage</div>,
 }));

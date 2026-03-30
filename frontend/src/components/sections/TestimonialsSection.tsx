@@ -9,42 +9,24 @@ interface Testimonial {
 
 const getTestimonials = (
   t: (key: string) => string
-): { cv: Testimonial[]; startup: Testimonial[] } => ({
+): { cv: Testimonial[]; startup: Testimonial[]; enterprise: Testimonial[] } => ({
   cv: [
-    {
-      text: t('testimonials.cv1'),
-      program: t('testimonials.cvProgram'),
-    },
-    {
-      text: t('testimonials.cv2'),
-      program: t('testimonials.cvProgram'),
-    },
-    {
-      text: t('testimonials.cv3'),
-      program: t('testimonials.cvProgram'),
-    },
-    {
-      text: t('testimonials.cv4'),
-      program: t('testimonials.cvProgram'),
-    },
+    { text: t('testimonials.cv1'), program: t('testimonials.cvProgram') },
+    { text: t('testimonials.cv2'), program: t('testimonials.cvProgram') },
+    { text: t('testimonials.cv3'), program: t('testimonials.cvProgram') },
+    { text: t('testimonials.cv4'), program: t('testimonials.cvProgram') },
   ],
   startup: [
-    {
-      text: t('testimonials.startup1'),
-      program: t('testimonials.startupProgram'),
-    },
-    {
-      text: t('testimonials.startup2'),
-      program: t('testimonials.startupProgram'),
-    },
-    {
-      text: t('testimonials.startup3'),
-      program: t('testimonials.startupProgram'),
-    },
-    {
-      text: t('testimonials.startup4'),
-      program: t('testimonials.startupProgram'),
-    },
+    { text: t('testimonials.startup1'), program: t('testimonials.startupProgram') },
+    { text: t('testimonials.startup2'), program: t('testimonials.startupProgram') },
+    { text: t('testimonials.startup3'), program: t('testimonials.startupProgram') },
+    { text: t('testimonials.startup4'), program: t('testimonials.startupProgram') },
+  ],
+  enterprise: [
+    { text: t('testimonials.enterprise1'), program: t('testimonials.enterprise1Source') },
+    { text: t('testimonials.enterprise2'), program: t('testimonials.enterprise2Source') },
+    { text: t('testimonials.enterprise3'), program: t('testimonials.enterprise3Source') },
+    { text: t('testimonials.enterprise4'), program: t('testimonials.enterprise4Source') },
   ],
 });
 
@@ -95,7 +77,7 @@ ScrollRow.displayName = 'ScrollRow';
 
 const TestimonialsSection: React.FC = memo(() => {
   const { t } = useTranslation();
-  const { cv, startup } = useMemo(() => getTestimonials(t), [t]);
+  const { cv, startup, enterprise } = useMemo(() => getTestimonials(t), [t]);
 
   return (
     <section
@@ -114,8 +96,9 @@ const TestimonialsSection: React.FC = memo(() => {
       </div>
 
       <div className="space-y-4">
-        <ScrollRow testimonials={cv} direction="left" rowKey="cv" />
-        <ScrollRow testimonials={startup} direction="right" rowKey="startup" />
+        <ScrollRow testimonials={enterprise} direction="left" rowKey="enterprise" />
+        <ScrollRow testimonials={cv} direction="right" rowKey="cv" />
+        <ScrollRow testimonials={startup} direction="left" rowKey="startup" />
       </div>
 
       <div className="text-center mt-8">

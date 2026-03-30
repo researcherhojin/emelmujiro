@@ -5,7 +5,7 @@
     "services": "Services",
     "contact": "Contact",
     "blog": "Insights",
-    "profile": "Profile",
+    "profile": "Teaching History",
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
@@ -50,9 +50,9 @@
       "title": "AI Education & Training",
       "description": "Custom AI training for your team",
       "details": [
-        "Custom curriculum design",
-        "Project-based practical training",
-        "Vibe coding & AI utilization"
+        "Generative AI hands-on training",
+        "Python-based task automation",
+        "Project-based tech mentoring"
       ]
     },
     "consulting": {
@@ -60,7 +60,7 @@
       "description": "From AI strategy to PoC",
       "details": [
         "AI adoption strategy & review",
-        "PoC development & validation",
+        "Vibe coding-based PoC development",
         "Service prototype design"
       ]
     },
@@ -68,9 +68,9 @@
       "title": "AI Agent Development",
       "description": "Agentic AI service design & build",
       "details": [
+        "LLM · Prompt Engineering",
         "RAG · AI Agent design & development",
-        "Task automation workflow development",
-        "LLM deployment & optimization"
+        "Task automation workflow development"
       ]
     },
     "computerVision": {
@@ -183,7 +183,7 @@
     },
     "info": {
       "email": "contact@emelmujiro.com",
-      "phone": "010-7279-0380",
+      "phone": "+82 10-7279-0380",
       "address": "Gangnam-gu, Seoul",
       "hours": "Weekdays 09:00 - 18:00",
       "emailLabel": "Email",
@@ -296,9 +296,9 @@
     "logoAlt": "{{name}} logo"
   },
   "profilePage": {
-    "sectionLabel": "CEO PROFILE",
-    "seoTitle": "CEO Profile - Hojin Lee",
-    "seoDescription": "AI education & consulting expert, Computer Vision researcher, IT startup mentor. CEO of Emelmujiro — career and expertise overview.",
+    "sectionLabel": "TEACHING HISTORY",
+    "seoTitle": "Teaching History - Emelmujiro",
+    "seoDescription": "Emelmujiro's AI education & consulting track record. 50+ programs delivered over 5 years for Samsung, LG, Hyundai, SK Telecom, government agencies and universities.",
     "seoKeywords": "Hojin Lee, AI expert, AI Agent, Computer Vision, RAG, MCP, Vibe Coding, startup mentoring, Emelmujiro CEO, AI education, AI consulting",
     "name": "Hojin Lee",
     "role": "AI Researcher & Educator",
@@ -731,6 +731,101 @@
     ],
     "expertiseLabel": "Areas of Expertise"
   },
+  "teachingHistory": {
+    "pageTitle": "Teaching History",
+    "pageSubtitle": "Full record of education and project mentoring.",
+    "statsYears": "5 Years",
+    "statsCount": "50+",
+    "upcoming": "Upcoming",
+    "0": {
+      "org": "KEITI",
+      "title": "AI Eco-Innovation Lab — LLM·RAG Training & ML Project Mentoring"
+    },
+    "1": {
+      "org": "LikeLion",
+      "title": "Python Bootcamp — Service Operations & Portfolio Workshop"
+    },
+    "2": { "org": "National Assembly Library", "title": "AI Education (Scheduling)" },
+    "3": {
+      "org": "Korea Authority of Land & Infrastructure Safety",
+      "title": "AI Education (Scheduling)"
+    },
+    "4": {
+      "org": "Ministry of Employment and Labor",
+      "title": "AI Computer Vision (CV) Advanced Course Cohort 3"
+    },
+    "5": {
+      "org": "Ministry of Employment and Labor",
+      "title": "AI Computer Vision (CV) Advanced Course Cohort 2"
+    },
+    "6": {
+      "org": "Nano Convergence Industry Association",
+      "title": "Industrial AI Upskilling Program"
+    },
+    "7": { "org": "KOFAC", "title": "School Consulting AI Education" },
+    "8": {
+      "org": "Ministry of Employment and Labor",
+      "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 10"
+    },
+    "9": { "org": "KOFAC", "title": "School Consulting AI Education" },
+    "10": {
+      "org": "Ministry of Employment and Labor",
+      "title": "AI Computer Vision (CV) Advanced Course Cohort 1"
+    },
+    "11": { "org": "KT", "title": "DSC University × KT AI+X Service Case Study Lecture" },
+    "12": {
+      "org": "Ministry of Employment and Labor",
+      "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 9"
+    },
+    "13": {
+      "org": "Ministry of Employment and Labor",
+      "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 8"
+    },
+    "14": { "org": "Samsung Electronics", "title": "DS Spotfire Data Analysis & Visualization" },
+    "15": {
+      "org": "Ministry of Employment and Labor",
+      "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 7"
+    },
+    "16": { "org": "Chungnam ICT Innovation", "title": "Python for Non-Developers" },
+    "17": { "org": "Samsung Electronics", "title": "Python Programming Fundamentals" },
+    "18": { "org": "Samsung Electronics", "title": "New Employee DX Training — Machine Learning" },
+    "19": {
+      "org": "Hyundai E&C",
+      "title": "Industrial AI Upskilling — ML/DL & CV (Detection, Segmentation)"
+    },
+    "20": {
+      "org": "Samsung Electronics",
+      "title": "DS Spotfire Data Analysis Fundamentals & Advanced"
+    },
+    "21": {
+      "org": "Southeast ICT Innovation Square",
+      "title": "Full-Stack Developer Bootcamp (Busan · Ulsan · Gyeongnam)"
+    },
+    "22": { "org": "LG Electronics", "title": "Data Science Project" },
+    "23": { "org": "Jeju Greater Tomorrow Center", "title": "Python Backend Course" },
+    "24": { "org": "SK Telecom", "title": "Computer Vision (with OpenCV)" },
+    "25": { "org": "Hancom", "title": "Paper-Based Image Processing Deep Learning Model Design" },
+    "26": { "org": "SKK Univ. · Inha Univ. · Kyonggi Univ.", "title": "Healthcare AI Project" },
+    "27": {
+      "org": "Jeonbuk Industry-Academia Institute",
+      "title": "Smart Factory Data Machine Learning"
+    },
+    "28": { "org": "Hancom", "title": "AI Fundamentals to NLP (Python)" },
+    "29": { "org": "Hancom", "title": "AI Fundamentals to Image Processing (DX)" },
+    "30": { "org": "KETI", "title": "Jetson TX2 Edge AI Python Course" },
+    "31": { "org": "KETI", "title": "Nanomaterial Big Data AI Convergence Expert Course" },
+    "32": { "org": "Hancom", "title": "DL-Based Text Classification NLP Hands-on Project" },
+    "33": { "org": "University of Seoul", "title": "Campus Town Career Academy AI Course" },
+    "34": {
+      "org": "Seoul National University",
+      "title": "College of Education Python Programming Workshop"
+    },
+    "35": {
+      "org": "Seoul Metropolitan Office of Education",
+      "title": "Teacher Training — DX AI Expert Course"
+    },
+    "36": { "org": "LG Electronics", "title": "Employee AI Intensive" }
+  },
   "notifications": {
     "title": "Notifications",
     "bell": "{{count}} notifications",
@@ -818,6 +913,15 @@
     "startup1": "We met great teammates, built our project, and now we're heading to a VC meeting with our deployed service. What an experience!",
     "startup2": "You get to experience the full cycle — from ideating an MVP to building the product with your own hands. The passionate peers made learning enjoyable.",
     "startup3": "Development, design, marketing, and business — all experienced within 3 months. Looking back now, I gained far more than I expected.",
-    "startup4": "Unbelievable growth — from team building to MVP. If you dream of being a founder, I strongly recommend this. The follow-up support continues after the program."
+    "startup4": "Unbelievable growth — from team building to MVP. If you dream of being a founder, I strongly recommend this. The follow-up support continues after the program.",
+    "enterpriseProgram": "Enterprise AI Training",
+    "enterprise1": "It wasn't just theory — we built models with our team's actual data, so I could apply what I learned right away after training. The hands-on approach was excellent.",
+    "enterprise1Source": "S Corp. Semiconductor Engineer · ML/DL Advanced",
+    "enterprise2": "Even as a non-developer, I was able to work with data in Python. The instructor explained everything through real workplace examples, which made it much easier to understand.",
+    "enterprise2Source": "H Corp. Manufacturing Engineer · DX Data Analysis",
+    "enterprise3": "After the Spotfire training, I built and now operate a dashboard for my team. Since the exercises used real work data, I could connect it directly to my tasks.",
+    "enterprise3Source": "S Corp. QC Manager · DS Spotfire Data Analysis",
+    "enterprise4": "Computer vision was a totally new field for me, but the step-by-step approach from OpenCV to object detection gave me the foundation to work with image data in my role.",
+    "enterprise4Source": "T Corp. Employee · Computer Vision Hands-on"
   }
 }

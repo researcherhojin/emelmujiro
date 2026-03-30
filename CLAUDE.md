@@ -31,10 +31,26 @@ uv run python manage.py test           # Django unittest (NOT pytest). Needs DAT
 uv run python manage.py test api.tests.CategoryAPITestCase.test_list  # Single backend test
 uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
-# Shortcuts: make install | make test | make lint | make lint-fix | make dev
-# Also: make migrate | make test-ci | make shell | make createsuperuser
-# Docker dev with optional services:
-# docker compose -f docker-compose.dev.yml --profile postgres up
+# Make shortcuts (run from root):
+# make install          # npm install + uv sync --extra dev
+# make dev              # Docker dev servers (start-dev.sh)
+# make dev-local        # Local dev (npm run dev — no Docker)
+# make dev-clean        # Kill ports first, then local dev
+# make test             # Frontend + backend concurrently (concurrently)
+# make test-ci          # CI mode (no watch, with coverage report)
+# make lint / lint-fix  # Check / auto-fix both frontend + backend
+# make build            # docker compose build
+# make down / restart   # Stop / restart Docker services
+# make logs             # docker compose logs -f
+# make logs-security    # Backend security.log (auth, IP blocks, rate limits)
+# make logs-debug       # Backend debug.log (requests, errors)
+# make ps               # Docker service status
+# make migrate          # Run Django migrations in Docker
+# make shell            # Django shell in Docker
+# make createsuperuser  # Create admin user in Docker
+# make clean            # Remove build artifacts + __pycache__
+# make cleanup-visits DAYS=90  # Delete old SiteVisit records
+# make setup-cron       # Install daily 3 AM SiteVisit cleanup cron
 ```
 
 ## Architecture
@@ -53,13 +69,15 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **API layer**: `services/api.ts` (Axios) with interceptors for JWT refresh. Test mocks use MSW (`test-utils/`) for realistic HTTP stubbing.
 
+**Bundle splitting**: 7 vendor chunks in `vite.config.ts` — `react-vendor`, `ui-vendor` (framer-motion, lucide), `i18n`, `sentry`, `http-vendor` (axios), `dompurify`, `tiptap` (prosemirror, lowlight). When adding large dependencies, consider whether they belong in an existing chunk or need a new one.
+
 **Homepage section order**: Hero (white) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
 
 **Scroll carousels** (LogosSection & TestimonialsSection): 3x copies of items for seamless CSS `translateX(-33.333%)` looping. Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via custom CSS utility `.group:hover .group-hover\:pause` in `index.css`. `motion-reduce:!animate-none` for accessibility. Tailwind animation durations: `scroll` 32s (logos), `scroll-testimonial` 45s (testimonials).
 
 **TestimonialsSection**: Used on homepage (between Services and CTA). Two rows: CV reviews (left scroll) + startup reviews (right scroll). Source: 고용24 K-디지털 훈련 수강후기.
 
-**About page**: Route removed from App.tsx and Navbar. `AboutPage.tsx` file retained for potential restoration. Sitemap, prerender, StructuredData breadcrumb all updated.
+**About page**: Removed entirely — route, component file, and lazy import all deleted. Sitemap, prerender, StructuredData breadcrumb all updated.
 
 **Blog slug URLs**: `BlogPostViewSet` uses `lookup_field = "slug"`. Frontend routes use `blog/:slug` (NOT `blog/:id`). BlogCard links to `/blog/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
 

@@ -112,7 +112,7 @@ graph LR
 
     React -->|emelmujiro.com| Tunnel
     Tunnel -->|:8080| Nginx
-    Tunnel -->|:8000| DRF
+    Nginx -->|/api proxy| DRF
     DRF --> DB
 
     style Tunnel fill:#F3E8FF,stroke:#7C3AED
