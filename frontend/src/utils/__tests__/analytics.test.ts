@@ -66,8 +66,8 @@ describe('analytics', () => {
       const gtagSpy = vi.fn();
       window.gtag = gtagSpy;
 
-      trackPageView('/about');
-      expect(gtagSpy).toHaveBeenCalledWith('event', 'page_view', { page_path: '/about' });
+      trackPageView('/profile');
+      expect(gtagSpy).toHaveBeenCalledWith('event', 'page_view', { page_path: '/profile' });
     });
 
     it('does nothing when gtag is not initialized', async () => {

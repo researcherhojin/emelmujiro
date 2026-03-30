@@ -67,7 +67,7 @@ describe('useScrollToSection', () => {
     vi.spyOn(document, 'getElementById').mockReturnValue(mockElement as unknown as HTMLElement);
 
     const { result } = renderHook(() => useScrollToSection(), {
-      wrapper: createWrapper(['/about']),
+      wrapper: createWrapper(['/profile']),
     });
 
     act(() => {
@@ -89,7 +89,7 @@ describe('useScrollToSection', () => {
     vi.spyOn(document, 'getElementById').mockReturnValue(null);
 
     const { result } = renderHook(() => useScrollToSection(), {
-      wrapper: createWrapper(['/about']),
+      wrapper: createWrapper(['/profile']),
     });
 
     act(() => {
@@ -109,7 +109,7 @@ describe('useScrollToSection', () => {
     const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
 
     const { result, unmount } = renderHook(() => useScrollToSection(), {
-      wrapper: createWrapper(['/about']),
+      wrapper: createWrapper(['/profile']),
     });
 
     act(() => {

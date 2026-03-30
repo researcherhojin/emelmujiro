@@ -250,7 +250,7 @@ describe('i18n configuration', () => {
   describe('pathDetector lookup', () => {
     it('should return en for /en/ paths', async () => {
       Object.defineProperty(window, 'location', {
-        value: { ...window.location, pathname: '/en/about' },
+        value: { ...window.location, pathname: '/en/profile' },
         writable: true,
         configurable: true,
       });
@@ -262,7 +262,7 @@ describe('i18n configuration', () => {
 
     it('should return undefined for non-en paths', async () => {
       Object.defineProperty(window, 'location', {
-        value: { ...window.location, pathname: '/about' },
+        value: { ...window.location, pathname: '/profile' },
         writable: true,
         configurable: true,
       });

@@ -23,7 +23,7 @@ export function getLangPrefix(lang: string): string {
 
 /**
  * Strip language prefix from a pathname.
- * '/en/about' → '/about', '/about' → '/about'
+ * '/en/profile' → '/profile', '/profile' → '/profile'
  */
 export function stripLangPrefix(pathname: string): string {
   return pathname.replace(/^\/(en)(\/|$)/, '$2').replace(/^\/$/, '/') || '/';
@@ -31,8 +31,8 @@ export function stripLangPrefix(pathname: string): string {
 
 /**
  * Build a localized path.
- * localizedPath('/about', 'en') → '/en/about'
- * localizedPath('/about', 'ko') → '/about'
+ * localizedPath('/profile', 'en') → '/en/profile'
+ * localizedPath('/profile', 'ko') → '/profile'
  */
 export function buildLocalizedPath(path: string, lang: string): string {
   const cleanPath = stripLangPrefix(path);

@@ -510,7 +510,7 @@ describe('NotificationBell', () => {
         message: 'Has URL',
         level: 'info',
         notification_type: 'blog',
-        url: '/blog/42',
+        url: '/insights/42',
         is_read: false,
         read_at: null,
         created_at: new Date().toISOString(),

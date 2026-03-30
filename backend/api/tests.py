@@ -2127,9 +2127,9 @@ class SendUserNotificationTestCase(TestCase):
             user=self.user,
             title="Click here",
             message="Check this out",
-            url="https://emelmujiro.com/blog/1",
+            url="https://emelmujiro.com/insights/1",
         )
-        self.assertEqual(notification.url, "https://emelmujiro.com/blog/1")
+        self.assertEqual(notification.url, "https://emelmujiro.com/insights/1")
 
 
 # ============================================================

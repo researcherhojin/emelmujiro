@@ -27,7 +27,7 @@ describe('urlPrefixLookup', () => {
 
   it('returns "en" for /en/ paths', () => {
     Object.defineProperty(window, 'location', {
-      value: { pathname: '/en/about' },
+      value: { pathname: '/en/profile' },
       writable: true,
       configurable: true,
     });
@@ -49,7 +49,7 @@ describe('urlPrefixLookup', () => {
 
   it('returns undefined for non-English paths', () => {
     Object.defineProperty(window, 'location', {
-      value: { pathname: '/about' },
+      value: { pathname: '/profile' },
       writable: true,
       configurable: true,
     });

@@ -14,14 +14,14 @@ import {
 describe('getLangFromPath', () => {
   it('returns "ko" for Korean paths (no prefix)', () => {
     expect(getLangFromPath('/')).toBe('ko');
-    expect(getLangFromPath('/about')).toBe('ko');
+    expect(getLangFromPath('/profile')).toBe('ko');
     expect(getLangFromPath('/insights/123')).toBe('ko');
   });
 
   it('returns "en" for English paths', () => {
     expect(getLangFromPath('/en')).toBe('en');
     expect(getLangFromPath('/en/')).toBe('en');
-    expect(getLangFromPath('/en/about')).toBe('en');
+    expect(getLangFromPath('/en/profile')).toBe('en');
     expect(getLangFromPath('/en/insights/123')).toBe('en');
   });
 
@@ -49,7 +49,7 @@ describe('getLangPrefix', () => {
 
 describe('stripLangPrefix', () => {
   it('strips /en prefix from paths', () => {
-    expect(stripLangPrefix('/en/about')).toBe('/about');
+    expect(stripLangPrefix('/en/profile')).toBe('/profile');
     expect(stripLangPrefix('/en/insights/123')).toBe('/insights/123');
   });
 
@@ -60,7 +60,7 @@ describe('stripLangPrefix', () => {
 
   it('does not strip from Korean paths (no prefix)', () => {
     expect(stripLangPrefix('/')).toBe('/');
-    expect(stripLangPrefix('/about')).toBe('/about');
+    expect(stripLangPrefix('/profile')).toBe('/profile');
     expect(stripLangPrefix('/insights/123')).toBe('/insights/123');
   });
 
@@ -72,20 +72,20 @@ describe('stripLangPrefix', () => {
 
 describe('buildLocalizedPath', () => {
   it('builds Korean paths without prefix', () => {
-    expect(buildLocalizedPath('/about', 'ko')).toBe('/about');
+    expect(buildLocalizedPath('/profile', 'ko')).toBe('/profile');
     expect(buildLocalizedPath('/insights/123', 'ko')).toBe('/insights/123');
     expect(buildLocalizedPath('/', 'ko')).toBe('/');
   });
 
   it('builds English paths with /en prefix', () => {
-    expect(buildLocalizedPath('/about', 'en')).toBe('/en/about');
+    expect(buildLocalizedPath('/profile', 'en')).toBe('/en/profile');
     expect(buildLocalizedPath('/insights/123', 'en')).toBe('/en/insights/123');
     expect(buildLocalizedPath('/', 'en')).toBe('/en');
   });
 
   it('strips existing language prefix before rebuilding', () => {
-    expect(buildLocalizedPath('/en/about', 'ko')).toBe('/about');
-    expect(buildLocalizedPath('/en/about', 'en')).toBe('/en/about');
+    expect(buildLocalizedPath('/en/profile', 'ko')).toBe('/profile');
+    expect(buildLocalizedPath('/en/profile', 'en')).toBe('/en/profile');
   });
 });
 
@@ -160,7 +160,7 @@ describe('useLocalizedPath hook', () => {
 
   it('returns Korean for unprefixed paths', () => {
     const { result } = renderHook(() => useLocalizedPath(), {
-      wrapper: createWrapper(['/about']),
+      wrapper: createWrapper(['/profile']),
     });
     expect(result.current.currentLang).toBe('ko');
     expect(result.current.langPrefix).toBe('');
@@ -168,7 +168,7 @@ describe('useLocalizedPath hook', () => {
 
   it('detects English from URL params', () => {
     const { result } = renderHook(() => useLocalizedPath(), {
-      wrapper: createWrapper(['/en/about']),
+      wrapper: createWrapper(['/en/profile']),
     });
     expect(result.current.currentLang).toBe('en');
     expect(result.current.langPrefix).toBe('/en');
@@ -184,21 +184,21 @@ describe('useLocalizedPath hook', () => {
   describe('localizedPath', () => {
     it('returns path as-is for Korean', () => {
       const { result } = renderHook(() => useLocalizedPath(), {
-        wrapper: createWrapper(['/about']),
+        wrapper: createWrapper(['/profile']),
       });
       expect(result.current.localizedPath('/contact')).toBe('/contact');
     });
 
     it('prefixes path with /en for English', () => {
       const { result } = renderHook(() => useLocalizedPath(), {
-        wrapper: createWrapper(['/en/about']),
+        wrapper: createWrapper(['/en/profile']),
       });
       expect(result.current.localizedPath('/contact')).toBe('/en/contact');
     });
 
     it('does not prefix external URLs', () => {
       const { result } = renderHook(() => useLocalizedPath(), {
-        wrapper: createWrapper(['/en/about']),
+        wrapper: createWrapper(['/en/profile']),
       });
       expect(result.current.localizedPath('https://example.com')).toBe('https://example.com');
       expect(result.current.localizedPath('http://example.com')).toBe('http://example.com');
@@ -206,14 +206,14 @@ describe('useLocalizedPath hook', () => {
 
     it('does not prefix hash-only paths', () => {
       const { result } = renderHook(() => useLocalizedPath(), {
-        wrapper: createWrapper(['/en/about']),
+        wrapper: createWrapper(['/en/profile']),
       });
       expect(result.current.localizedPath('#section')).toBe('#section');
     });
 
     it('does not double-prefix paths already containing /en', () => {
       const { result } = renderHook(() => useLocalizedPath(), {
-        wrapper: createWrapper(['/en/about']),
+        wrapper: createWrapper(['/en/profile']),
       });
       expect(result.current.localizedPath('/en/contact')).toBe('/en/contact');
       expect(result.current.localizedPath('/en')).toBe('/en');
@@ -223,7 +223,7 @@ describe('useLocalizedPath hook', () => {
   describe('localizedNavigate', () => {
     it('navigates to localized path for English', () => {
       const { result } = renderHook(() => useLocalizedPath(), {
-        wrapper: createWrapper(['/en/about']),
+        wrapper: createWrapper(['/en/profile']),
       });
       act(() => {
         result.current.localizedNavigate('/contact');
@@ -233,7 +233,7 @@ describe('useLocalizedPath hook', () => {
 
     it('navigates without prefix for Korean', () => {
       const { result } = renderHook(() => useLocalizedPath(), {
-        wrapper: createWrapper(['/about']),
+        wrapper: createWrapper(['/profile']),
       });
       act(() => {
         result.current.localizedNavigate('/contact');
@@ -243,7 +243,7 @@ describe('useLocalizedPath hook', () => {
 
     it('passes NavigateOptions when provided', () => {
       const { result } = renderHook(() => useLocalizedPath(), {
-        wrapper: createWrapper(['/about']),
+        wrapper: createWrapper(['/profile']),
       });
       act(() => {
         result.current.localizedNavigate('/contact', { replace: true });
@@ -255,16 +255,16 @@ describe('useLocalizedPath hook', () => {
   describe('switchLanguagePath', () => {
     it('switches from Korean to English', () => {
       const { result } = renderHook(() => useLocalizedPath(), {
-        wrapper: createWrapper(['/about']),
+        wrapper: createWrapper(['/profile']),
       });
-      expect(result.current.switchLanguagePath('en')).toBe('/en/about');
+      expect(result.current.switchLanguagePath('en')).toBe('/en/profile');
     });
 
     it('switches from English to Korean', () => {
       const { result } = renderHook(() => useLocalizedPath(), {
-        wrapper: createWrapper(['/en/about']),
+        wrapper: createWrapper(['/en/profile']),
       });
-      expect(result.current.switchLanguagePath('ko')).toBe('/about');
+      expect(result.current.switchLanguagePath('ko')).toBe('/profile');
     });
 
     it('switches language on root path', () => {

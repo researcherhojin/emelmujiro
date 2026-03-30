@@ -46,7 +46,7 @@ export const handlers = [
     });
   }),
 
-  http.get(`${API_BASE}/blog/:id`, ({ params }) => {
+  http.get(`${API_BASE}/insights/:id`, ({ params }) => {
     return HttpResponse.json({
       id: Number(params.id),
       title: 'Test Blog Post',
