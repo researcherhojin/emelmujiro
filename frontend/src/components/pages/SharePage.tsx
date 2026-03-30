@@ -253,7 +253,7 @@ ${t('share.inquiryFooter')}
               {t('share.browseBlog')}
             </button>
             <button
-              onClick={() => localizedNavigate('/about')}
+              onClick={() => localizedNavigate('/')}
               className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
             >
               {t('share.aboutCompany')}
