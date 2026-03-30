@@ -90,9 +90,8 @@ test.describe('Language Switching', () => {
 
     // Use nav locator to avoid desktop/mobile duplicate elements
     const nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: '소개' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '블로그' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '프로필' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '강의이력' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '인사이트' }).first()).toBeVisible();
     await expect(nav.getByRole('button', { name: '문의하기' }).first()).toBeVisible();
   });
 
@@ -132,9 +131,8 @@ test.describe('Language Switching', () => {
     await page.waitForLoadState('domcontentloaded');
 
     nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: '소개' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '블로그' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '프로필' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '강의이력' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '인사이트' }).first()).toBeVisible();
     await expect(nav.getByRole('button', { name: '문의하기' }).first()).toBeVisible();
   });
 });

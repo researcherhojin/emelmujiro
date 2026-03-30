@@ -125,9 +125,10 @@ graph LR
 - **Bilingual (i18n)** — URL-based language routing (`/contact` for Korean, `/en/contact` for English)
 - **SSG Prerendering** — Static HTML pages for SEO, parallel rendering
 - **Teaching History** — 37 entries across 5 years, year-grouped with alternating backgrounds, bilingual
-- **Blog (Insights)** — TipTap rich text editor, SEO-friendly slug URLs, image upload, IP-based likes, nested comments
+- **Blog (Insights)** — TipTap rich text editor, SEO-friendly slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments. Old `/blog` URLs redirect to `/insights` via nginx 301
 - **Service Modals** — Clickable service cards open detail modals with full service descriptions
 - **Auth** — httpOnly cookie JWT with automatic token refresh
+- **Testimonials** — Enterprise + government training reviews, 5x copy infinite scroll carousel
 - **Monitoring** — Sentry error tracking + Google Analytics
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting (7 vendor chunks), Lighthouse CI assertions, < 10MB bundle budget
