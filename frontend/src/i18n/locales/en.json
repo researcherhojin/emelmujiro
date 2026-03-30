@@ -15,28 +15,27 @@
     "back": "Back",
     "switchLanguage": "Switch Language",
     "companyName": "Emelmujiro",
-    "inquireProject": "Inquire About Project →",
+    "inquireProject": "Free Consultation →",
     "inquireEducation": "Inquire About Training",
     "menu": "Menu",
-    "representativeProfile": "CEO Profile",
+    "representativeProfile": "Teaching History",
     "goBack": "Go Back",
     "kakaoBanner": "For a better experience, please use an external browser.",
     "openExternal": "Open"
   },
   "hero": {
-    "badge": "AI EDUCATION & CONSULTING",
-    "titleLine1": "Practice-Driven",
-    "titleLine2": "AI Expert Group",
-    "descriptionLine1": "From corporate AI education to startup tech consulting,",
-    "descriptionLine2": "we accelerate your business growth with tailored solutions.",
+    "badge": "Trusted by Samsung · LG · SK and more",
+    "titleLine1": "AI Training · Consulting · Dev",
+    "titleLine2": "Your One-Stop AI Partner",
+    "descriptionLine1": "Generative AI, LLM·RAG, Vibe Coding, Computer Vision —",
+    "descriptionLine2": "from custom curriculum design to PoC development.",
     "cta": {
       "primary": "Request Free Consultation",
       "secondary": "Explore Services"
     },
     "stats": {
-      "students": "Trained Talents",
+      "hours": "Training Hours",
       "projects": "Completed Projects",
-      "partners": "Partner Companies",
       "satisfaction": "Course Satisfaction"
     },
     "expertise": "5 Years of Proven Expertise",
@@ -745,10 +744,13 @@
       "org": "LikeLion",
       "title": "Python Bootcamp — Service Operations & Portfolio Workshop"
     },
-    "2": { "org": "National Assembly Library", "title": "AI Education (Scheduling)" },
+    "2": {
+      "org": "National Assembly Library",
+      "title": "Vibe Coding-Based AI Agent Service Development"
+    },
     "3": {
       "org": "Korea Authority of Land & Infrastructure Safety",
-      "title": "AI Education (Scheduling)"
+      "title": "AI Agent Development & Prototyping Hands-on Training"
     },
     "4": {
       "org": "Ministry of Employment and Labor",

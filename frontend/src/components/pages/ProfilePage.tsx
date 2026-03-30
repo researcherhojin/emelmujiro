@@ -16,9 +16,11 @@ const ProfilePage: React.FC = memo(() => {
     localizedNavigate('/');
   }, [localizedNavigate]);
 
-  // i18n.language triggers re-computation when language switches (getTeachingHistory uses i18n.t internally)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const teachingHistory = useMemo(() => getTeachingHistory(), [i18n.language]);
+  const teachingHistory = useMemo(() => {
+    const now = new Date().toISOString().slice(0, 10);
+    return getTeachingHistory().filter((item) => !item.visibleAfter || item.visibleAfter <= now);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language]);
   const itemsByYear = useMemo(() => {
     const map = new Map<number, typeof teachingHistory>();
     for (const year of YEARS) {

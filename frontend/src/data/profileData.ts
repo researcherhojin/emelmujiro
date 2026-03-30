@@ -27,6 +27,7 @@ export interface TeachingItem {
   title: string;
   year: number;
   upcoming?: boolean;
+  visibleAfter?: string; // ISO date string — hide until this date
 }
 
 export interface Project {
@@ -260,6 +261,7 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.1.org'),
     title: i18n.t('teachingHistory.1.title'),
     year: 2026,
+    visibleAfter: '2026-04-03',
   },
   {
     organization: i18n.t('teachingHistory.2.org'),

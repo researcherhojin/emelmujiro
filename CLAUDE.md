@@ -71,7 +71,9 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Bundle splitting**: 7 vendor chunks in `vite.config.ts` — `react-vendor`, `ui-vendor` (framer-motion, lucide), `i18n`, `sentry`, `http-vendor` (axios), `dompurify`, `tiptap` (prosemirror, lowlight). When adding large dependencies, consider whether they belong in an existing chunk or need a new one.
 
-**Homepage section order**: Hero (white) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
+**Hero**: Centered layout, always dark-on-light / light-on-dark. No badge. Stats: 5,000+ hours, 50+ projects, 4.8+ satisfaction. CTA: "무료 상담 신청". No left-right grid — fully centered.
+
+**Homepage section order**: Hero (white/dark) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
 
 **Scroll carousels**: LogosSection uses 3x copies with `translateX(-33.333%)` looping (32s). TestimonialsSection uses 5x copies with `translateX(-20%)` looping (60s). Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via custom CSS utility `.group:hover .group-hover\:pause` in `index.css`. `motion-reduce:!animate-none` for accessibility.
 
@@ -79,7 +81,9 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **ServicesSection**: Service cards are clickable — clicking opens `ServiceModal` (same modal used by Footer). Modal state is local to ServicesSection (not UIContext).
 
-**Teaching History page** (`/profile`): Replaced 4-tab profile (career/education/projects/timeline). Shows 37 teaching entries grouped by year (2026→2022) with alternating section backgrounds. Data uses end-client names as organization (삼성전자, not 엘리스). i18n keys: `teachingHistory.{0-36}.{org,title}`. `useMemo` depends on `i18n.language` for language switching.
+**Teaching History page** (`/profile`): Replaced 4-tab profile (career/education/projects/timeline). Shows 37 teaching entries grouped by year (2026→2022) with alternating section backgrounds. Data uses end-client names as organization (삼성전자, not 엘리스). i18n keys: `teachingHistory.{0-36}.{org,title}`. `useMemo` depends on `i18n.language` for language switching. Items support `visibleAfter` date field for time-gated visibility.
+
+**Nav order**: 강의이력 → 인사이트 (teaching history first, blog second). Footer menu label: "강의이력" (not "대표 프로필").
 
 **About page**: Removed entirely — route, component file, and lazy import all deleted. Sitemap, prerender, StructuredData breadcrumb all updated.
 

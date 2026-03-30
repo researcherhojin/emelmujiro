@@ -15,28 +15,27 @@
     "back": "뒤로",
     "switchLanguage": "언어 전환",
     "companyName": "에멜무지로",
-    "inquireProject": "프로젝트 문의하기 →",
+    "inquireProject": "무료 상담 신청 →",
     "inquireEducation": "교육 문의하기",
     "menu": "메뉴",
-    "representativeProfile": "대표 프로필",
+    "representativeProfile": "강의이력",
     "goBack": "뒤로 가기",
     "kakaoBanner": "더 나은 경험을 위해 외부 브라우저를 이용해주세요.",
     "openExternal": "열기"
   },
   "hero": {
-    "badge": "AI EDUCATION & CONSULTING",
-    "titleLine1": "실무에 강한",
-    "titleLine2": "AI 전문가 그룹",
-    "descriptionLine1": "대기업 AI 교육부터 스타트업 기술 컨설팅까지,",
-    "descriptionLine2": "맞춤형 솔루션으로 비즈니스 성장을 가속화합니다.",
+    "badge": "삼성 · LG · SK 등 주요 기업이 선택한",
+    "titleLine1": "AI 교육 · 컨설팅 · 개발",
+    "titleLine2": "원스톱 AI 파트너",
+    "descriptionLine1": "생성형 AI, LLM·RAG, 바이브 코딩, Computer Vision —",
+    "descriptionLine2": "기업 맞춤 커리큘럼 설계부터 PoC 개발까지.",
     "cta": {
       "primary": "무료 상담 신청",
       "secondary": "서비스 알아보기"
     },
     "stats": {
-      "students": "누적 교육생",
+      "hours": "누적 교육 시간",
       "projects": "완료 프로젝트",
-      "partners": "협력사 기업",
       "satisfaction": "강의 만족도"
     },
     "expertise": "5년의 검증된 전문성",
@@ -738,8 +737,8 @@
       "title": "AI에코혁신랩 — LLM·RAG 실무 교육 & ML 프로젝트 멘토링"
     },
     "1": { "org": "멋쟁이사자처럼", "title": "Python 부트캠프 — 서비스 운영 & 포트폴리오 특강" },
-    "2": { "org": "국회도서관", "title": "AI 교육 (조율 중)" },
-    "3": { "org": "국토안전관리원", "title": "AI 교육 (조율 중)" },
+    "2": { "org": "국회도서관", "title": "바이브코딩 기반 AI Agent 서비스 구축" },
+    "3": { "org": "국토안전관리원", "title": "AI Agent 개발 및 프로토타이핑 실전 교육" },
     "4": { "org": "고용노동부", "title": "AI 컴퓨터비전(CV) 심화 과정 3기" },
     "5": { "org": "고용노동부", "title": "AI 컴퓨터비전(CV) 심화 과정 2기" },
     "6": { "org": "나노융합산업연구조합", "title": "산업전문인력 AI 역량강화 교육" },

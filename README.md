@@ -10,7 +10,7 @@
 
 </div>
 
-Official website for Emelmujiro, an AI education & consulting company. React 19 + Django 6 monorepo, self-hosted on Mac Mini.
+Official website for Emelmujiro — AI education, consulting & development. React 19 + Django 6 monorepo, self-hosted on Mac Mini.
 
 <p align="center">
   <img src="docs/screenshots/home-light.png" width="49%" alt="Light mode" />
@@ -124,9 +124,10 @@ graph LR
 
 - **Bilingual (i18n)** — URL-based language routing (`/contact` for Korean, `/en/contact` for English)
 - **SSG Prerendering** — Static HTML pages for SEO, parallel rendering
-- **Blog** — TipTap rich text editor (Notion-like), SEO-friendly slug URLs, image upload, IP-based likes, nested comments, admin toolbar
+- **Teaching History** — 37 entries across 5 years, year-grouped with alternating backgrounds, bilingual
+- **Blog (Insights)** — TipTap rich text editor, SEO-friendly slug URLs, image upload, IP-based likes, nested comments
+- **Service Modals** — Clickable service cards open detail modals with full service descriptions
 - **Auth** — httpOnly cookie JWT with automatic token refresh
-- **Notifications** — REST API with per-user preferences and email delivery
 - **Monitoring** — Sentry error tracking + Google Analytics
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
 - **Performance** — Optimized chunk splitting (7 vendor chunks), Lighthouse CI assertions, < 10MB bundle budget
