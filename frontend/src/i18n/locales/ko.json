@@ -26,7 +26,7 @@
     "badge": "삼성 · LG · SK 등 주요 기업이 선택한",
     "titleLine1": "AI 교육 · 컨설팅 · 개발",
     "titleLine2": "원스톱 AI 파트너",
-    "descriptionLine1": "생성형 AI, LLM·RAG, 바이브 코딩, Computer Vision",
+    "descriptionLine1": "생성형 AI, LLM·RAG, 바이브 코딩, CV",
     "descriptionLine2": "기업 맞춤 커리큘럼 설계부터 PoC 개발까지.",
     "cta": {
       "primary": "무료 상담 신청",
@@ -43,7 +43,7 @@
   "services": {
     "sectionLabel": "WHAT WE DO",
     "title": "주요 서비스",
-    "subtitle": "기업의 AI 도입을 위한 단계별 솔루션을 제공합니다",
+    "subtitle": "기업 AI 도입을 위한 단계별 솔루션",
     "education": {
       "title": "AI 교육 & 강의",
       "description": "임직원 맞춤형 AI 교육",
@@ -80,7 +80,8 @@
   "cta": {
     "sectionLabel": "GET STARTED",
     "title": "AI 교육 · 컨설팅이 필요하신가요?",
-    "subtitle": "맞춤형 교육 · 컨설팅 · AI Agent 개발까지, 한 번에 해결하세요",
+    "subtitleLine1": "교육 · 컨설팅 · AI Agent 개발,",
+    "subtitleLine2": "한 번에 해결하세요",
     "emailAriaLabel": "이메일로 문의하기"
   },
   "footer": {
@@ -97,10 +98,11 @@
     }
   },
   "contact": {
+    "sectionLabel": "CONTACT",
     "title": "문의하기",
     "subtitle": "프로젝트에 대해 상담을 원하시나요?",
     "googleForm": {
-      "description": "아래 양식을 작성하시면 담당자가 기재하신 연락처로 회신드립니다.",
+      "description": "양식 작성 후 담당자가 빠르게 회신드립니다.",
       "loading": "양식을 불러오는 중...",
       "openInNewTab": "새 탭에서 열기",
       "formTitle": "온라인 미팅 신청"
@@ -121,13 +123,13 @@
     }
   },
   "blog": {
-    "title": "블로그",
+    "title": "인사이트",
     "subtitle": "AI 기술 트렌드와 실전 인사이트",
     "readMoreDetail": "자세히 보기",
     "commentsCount": "댓글 ({{count}})",
     "writeComment": "댓글 작성",
     "noCommentsYet": "아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!",
-    "searchPlaceholder": "블로그 검색...",
+    "searchPlaceholder": "인사이트 검색...",
     "recentSearches": "최근 검색",
     "clearAll": "모두 지우기",
     "searchResults": "{{count}}개의 검색 결과",
@@ -140,18 +142,18 @@
     "likeComment": "{{author}}님의 댓글 좋아요",
     "likeReply": "{{author}}님의 답글 좋아요",
     "replyTo": "{{author}}님에게 답글",
-    "thumbnailAlt": "{{title}} 블로그 포스트 썸네일",
+    "thumbnailAlt": "{{title}} 포스트 썸네일",
     "timeJustNow": "방금 전",
     "timeMinutesAgo": "{{count}}분 전",
     "timeHoursAgo": "{{count}}시간 전",
     "timeDaysAgo": "{{count}}일 전",
-    "preparing": "블로그 준비 중",
+    "preparing": "콘텐츠 준비 중",
     "preparingSubtitle": "더 나은 콘텐츠로 곧 찾아뵙겠습니다",
     "preparingDescription": "양질의 AI 인사이트와 기술 트렌드를 준비하고 있으니 조금만 기다려주세요.",
     "backToMain": "메인으로 돌아가기",
-    "noPosts": "블로그 준비 중",
+    "noPosts": "콘텐츠 준비 중",
     "noPostsDescription": "양질의 AI 인사이트와 기술 트렌드를 준비하고 있습니다. 조금만 기다려주세요.",
-    "sectionLabel": "TECH BLOG",
+    "sectionLabel": "INSIGHTS",
     "comingSoonLabel": "COMING SOON",
     "comingSoon": "콘텐츠 준비 중",
     "comingSoonDescription": "LLM, AI 에이전트, RAG 등 최신 기술 분석을 곧 공유합니다.",
@@ -159,7 +161,7 @@
     "previousPage": "이전",
     "nextPage": "다음",
     "seo": {
-      "title": "블로그",
+      "title": "인사이트",
       "description": "AI Agent, RAG, Computer Vision 등 최신 AI 기술 인사이트를 공유합니다."
     },
     "share": "공유",
@@ -186,9 +188,9 @@
     "filterByCategory": "카테고리"
   },
   "blogDetail": {
-    "loading": "블로그 포스트를 불러오는 중입니다...",
-    "blogTitle": "에멜무지로 블로그",
-    "blogKeywords": "에멜무지로, 블로그",
+    "loading": "포스트를 불러오는 중입니다...",
+    "blogTitle": "에멜무지로 인사이트",
+    "blogKeywords": "에멜무지로, 인사이트",
     "relatedImage": "관련 이미지",
     "author": "작성자:"
   },
@@ -260,7 +262,7 @@
     "shortcutCloseModal": "Escape를 눌러 모달 닫기",
     "searchFocused": "검색 입력란에 포커스됨",
     "navigatedToHome": "홈 페이지로 이동됨",
-    "navigatedToBlog": "블로그 페이지로 이동됨",
+    "navigatedToBlog": "인사이트 페이지로 이동됨",
     "navigatedToContact": "문의하기 페이지로 이동됨",
     "navigatedToProfile": "프로필 페이지로 이동됨",
     "pageLoaded": "페이지 로드 완료: {{title}}",
@@ -327,7 +329,7 @@
     "registerFailed": "회원가입에 실패했습니다."
   },
   "blogErrors": {
-    "fetchPostsFailed": "블로그 포스트를 불러오는데 실패했습니다.",
+    "fetchPostsFailed": "포스트를 불러오는데 실패했습니다.",
     "fetchPostFailed": "포스트를 불러오는데 실패했습니다."
   },
   "share": {
@@ -350,7 +352,7 @@
     "saveLater": "나중에 보기",
     "goToHome": "홈으로 이동",
     "otherOptions": "다른 옵션이 필요하시나요?",
-    "browseBlog": "블로그 둘러보기",
+    "browseBlog": "인사이트 둘러보기",
     "aboutCompany": "회사 소개",
     "directInquiry": "직접 문의하기"
   },
@@ -366,8 +368,8 @@
   },
   "blogEditor": {
     "adminRequired": "관리자 권한이 필요합니다",
-    "adminDescription": "블로그 글을 작성하려면 관리자로 로그인해주세요.",
-    "backToBlog": "블로그로 돌아가기",
+    "adminDescription": "글을 작성하려면 관리자로 로그인해주세요.",
+    "backToBlog": "인사이트로 돌아가기",
     "editor": "편집기",
     "preview": "미리보기",
     "enterTitle": "제목을 입력하세요",
@@ -450,13 +452,13 @@
   },
   "teachingHistory": {
     "pageTitle": "강의이력",
-    "pageSubtitle": "교육 및 프로젝트 멘토링 전체 이력입니다.",
+    "pageSubtitle": "기업 · 공공기관 · 대학교 대상 AI 교육 이력",
     "statsYears": "5년",
     "statsCount": "50건+",
     "upcoming": "예정",
     "0": {
       "org": "한국환경산업기술원",
-      "title": "AI에코혁신랩 — LLM·RAG 실무 교육 & ML 프로젝트 멘토링"
+      "title": "AI에코혁신랩 — LLM·RAG 교육 & 프로젝트 멘토링"
     },
     "1": {
       "org": "멋쟁이사자처럼",
@@ -524,15 +526,15 @@
     },
     "17": {
       "org": "삼성전자",
-      "title": "Python 프로그래밍 기초"
+      "title": "Citizen Developer 교육 — Python 프로그래밍 기초"
     },
     "18": {
       "org": "삼성전자",
-      "title": "신입사원 DX 교육 — 머신러닝"
+      "title": "신입사원 DX 교육 — 데이터 리터러시 & 머신러닝"
     },
     "19": {
       "org": "현대건설",
-      "title": "산업전문인력 AI역량강화 — ML/DL & CV (Detection, Segmentation)"
+      "title": "산업전문인력 AI역량강화 — ML/DL & CV"
     },
     "20": {
       "org": "삼성전자",
@@ -544,7 +546,7 @@
     },
     "22": {
       "org": "LG전자",
-      "title": "Data Science 프로젝트"
+      "title": "데이터 사이언스 프로젝트"
     },
     "23": {
       "org": "제주더큰내일센터",
@@ -552,7 +554,7 @@
     },
     "24": {
       "org": "SKT",
-      "title": "컴퓨터비전 (with. OpenCV)"
+      "title": "OpenCV 기반 컴퓨터비전 실무"
     },
     "25": {
       "org": "한글과컴퓨터",
@@ -563,44 +565,48 @@
       "title": "헬스케어 AI 프로젝트"
     },
     "27": {
+      "org": "국립기상과학원",
+      "title": "기상-AI 청년 부스트캠프 해커톤 멘토"
+    },
+    "28": {
       "org": "전북산학융합원",
       "title": "스마트 팩토리 데이터 머신러닝"
     },
-    "28": {
-      "org": "한글과컴퓨터",
-      "title": "인공지능 기본부터 자연어처리까지 (Python)"
-    },
     "29": {
       "org": "한글과컴퓨터",
-      "title": "인공지능 기본부터 이미지처리까지 (DX)"
+      "title": "인공지능 기본부터 자연어처리까지"
     },
     "30": {
-      "org": "KETI(한국전자기술연구원)",
-      "title": "Jetson TX2 엣지 AI Python 강의"
+      "org": "한글과컴퓨터",
+      "title": "인공지능 기본부터 이미지처리까지"
     },
     "31": {
       "org": "KETI(한국전자기술연구원)",
-      "title": "나노 소재 빅데이터 활용 AI융합 전문가 과정"
+      "title": "Jetson TX2 엣지 AI Python 강의"
     },
     "32": {
-      "org": "한글과컴퓨터",
-      "title": "DL 기반 텍스트 분류 NLP 실습 프로젝트"
+      "org": "KETI(한국전자기술연구원)",
+      "title": "나노 소재 빅데이터 활용 AI융합 전문가 과정"
     },
     "33": {
+      "org": "한글과컴퓨터",
+      "title": "딥러닝 기반 자연어처리 프로젝트 실습"
+    },
+    "34": {
       "org": "서울시립대학교",
       "title": "캠퍼스타운형 취업사관학교 AI 과정"
     },
-    "34": {
+    "35": {
       "org": "서울대학교",
       "title": "사범대 Python 프로그래밍 특강"
     },
-    "35": {
+    "36": {
       "org": "서울특별시 교육청",
       "title": "교원 직무연수 — 디지털 전환 AI 전문가 과정"
     },
-    "36": {
+    "37": {
       "org": "LG전자",
-      "title": "임직원 AI 집중 교육"
+      "title": "임직원 AI 교육 — Python부터 딥러닝까지"
     }
   },
   "notifications": {

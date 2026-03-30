@@ -11,19 +11,20 @@ const CTASection: React.FC = memo(() => {
   return (
     <section
       aria-label={t('accessibility.ctaSection')}
-      className="py-32 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
+      className="py-16 sm:py-32 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 sm:p-12 md:p-20 text-center shadow-sm border border-gray-200 dark:border-gray-800">
-          <span className="text-sm font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase mb-6 block">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-12 md:p-20 text-center shadow-sm border border-gray-200 dark:border-gray-800">
+          <span className="text-xs sm:text-sm font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase mb-4 sm:mb-6 block">
             {t('cta.sectionLabel')}
           </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-6 break-keep">
+          <h2 className="text-xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 break-keep">
             {t('cta.title')}
           </h2>
 
-          <p className="text-base sm:text-lg md:text-xl font-medium text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto break-keep">
-            {t('cta.subtitle')}
+          <p className="text-xs sm:text-lg md:text-xl font-medium text-gray-600 dark:text-gray-400 mb-8 sm:mb-10 max-w-2xl mx-auto break-keep">
+            {t('cta.subtitleLine1')}
+            <br className="sm:hidden" /> {t('cta.subtitleLine2')}
           </p>
 
           <Link

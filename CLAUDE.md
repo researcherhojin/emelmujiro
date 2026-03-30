@@ -75,13 +75,13 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Homepage section order**: Hero (white/dark) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
 
-**Scroll carousels**: LogosSection uses 3x copies with `translateX(-33.333%)` looping (32s). TestimonialsSection uses 5x copies with `translateX(-20%)` looping (40s). Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via custom CSS utility `.group:hover .group-hover\:pause` in `index.css`. `motion-reduce:!animate-none` for accessibility.
+**Scroll carousels**: LogosSection uses 3x copies with `translateX(-33.333%)` looping (32s desktop, 18s mobile). TestimonialsSection uses 5x copies with `translateX(-20%)` looping (40s desktop, 25s mobile). Mobile speed override via CSS media query in `index.css` (`max-width: 639px`). Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via custom CSS utility `.group:hover .group-hover\:pause` in `index.css`. `motion-reduce:!animate-none` for accessibility.
 
 **TestimonialsSection**: Two rows: enterprise training reviews (left scroll) + 고용노동부 K-디지털 reviews (right scroll, CV + startup mixed). Enterprise reviews use per-item source labels (e.g. "S사 반도체 엔지니어").
 
 **ServicesSection**: Service cards are clickable — clicking opens `ServiceModal` (same modal used by Footer). Modal state is local to ServicesSection (not UIContext).
 
-**Teaching History page** (`/profile`): Replaced 4-tab profile (career/education/projects/timeline). Shows 37 teaching entries grouped by year (2026→2022) with alternating section backgrounds. Data uses end-client names as organization (삼성전자, not 엘리스). i18n keys: `teachingHistory.{0-36}.{org,title}`. `useMemo` depends on `i18n.language` for language switching. Items support `visibleAfter` date field for time-gated visibility.
+**Teaching History page** (`/profile`): Replaced 4-tab profile (career/education/projects/timeline). Shows 38 teaching entries grouped by year (2026→2022) with alternating section backgrounds. Data uses end-client names as organization (삼성전자, not 엘리스). i18n keys: `teachingHistory.{0-37}.{org,title}`. `useMemo` depends on `i18n.language` for language switching. Items support `visibleAfter` date field for time-gated visibility.
 
 **Nav order**: 강의이력 → 인사이트 (teaching history first, blog second). Footer menu label: "강의이력" (not "대표 프로필").
 
@@ -89,7 +89,13 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Blog (Insights) URLs**: Frontend routes use `/insights/:slug` (NOT `/blog`). `BlogPostViewSet` uses `lookup_field = "slug"`. Backend API stays at `/api/blog-posts/` (internal). Nginx redirects `/blog/*` → `/insights/*` (301). BlogCard links to `/insights/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
 
+**Contact page**: Uses same hero pattern as other pages (section label + font-black title + subtitle). Google Form iframe for submissions, ContactInfo sidebar.
+
 **Contact email**: `contact@emelmujiro.com` — used in constants.ts, i18n, backend settings, swagger, CONTRIBUTING.md.
+
+**Mobile responsive pattern**: All section heroes use split sizing — mobile `text-3xl`/`text-2xl`, desktop `sm:text-6xl`/`sm:text-5xl`. Section padding: `py-16 sm:py-32`. Use `break-keep` for Korean text to prevent mid-word breaks. For text that must break at specific points on mobile only, use `<br className="sm:hidden" />`. English i18n text must be shorter than Korean equivalents — abbreviate org names (MOEL, KALIS, KETI) and use `#` instead of "Cohort" for numbering. CTA subtitle uses `subtitleLine1`/`subtitleLine2` keys (not single `subtitle`) for controlled line breaks.
+
+**Blog → Insights branding**: All user-facing text uses "인사이트"/"Insights" (not "블로그"/"Blog"). Section label: "INSIGHTS" (not "TECH BLOG"). Internal code still uses `blog` in component names, routes, and API paths — only i18n display text changed.
 
 ## Constraints
 

@@ -25,9 +25,10 @@ describe('CTASection', () => {
     expect(screen.getByText('cta.title')).toBeInTheDocument();
   });
 
-  it('renders the subtitle', () => {
+  it('renders the subtitle lines', () => {
     renderWithRouter(<CTASection />);
-    expect(screen.getByText('cta.subtitle')).toBeInTheDocument();
+    expect(screen.getByText(/cta\.subtitleLine1/)).toBeInTheDocument();
+    expect(screen.getByText(/cta\.subtitleLine2/)).toBeInTheDocument();
   });
 
   it('renders the CTA link to contact page', () => {

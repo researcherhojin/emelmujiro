@@ -83,11 +83,11 @@ const TestimonialsSection: React.FC = memo(() => {
       aria-label={t('testimonials.sectionLabel')}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <p className="text-sm font-semibold tracking-widest text-gray-500 dark:text-gray-400 uppercase mb-3">
+        <div className="text-center mb-8 sm:mb-12">
+          <p className="text-xs sm:text-sm font-semibold tracking-widest text-gray-500 dark:text-gray-400 uppercase mb-2 sm:mb-3">
             {t('testimonials.subtitle')}
           </p>
-          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
+          <h2 className="text-2xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white">
             {t('testimonials.title')}
           </h2>
         </div>

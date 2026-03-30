@@ -151,12 +151,12 @@ export const getTeachingHistory = (): TeachingItem[] => [
     title: i18n.t('teachingHistory.26.title'),
     year: 2023,
   },
-  // 2022
   {
     organization: i18n.t('teachingHistory.27.org'),
     title: i18n.t('teachingHistory.27.title'),
-    year: 2022,
+    year: 2023,
   },
+  // 2022
   {
     organization: i18n.t('teachingHistory.28.org'),
     title: i18n.t('teachingHistory.28.title'),
@@ -200,6 +200,11 @@ export const getTeachingHistory = (): TeachingItem[] => [
   {
     organization: i18n.t('teachingHistory.36.org'),
     title: i18n.t('teachingHistory.36.title'),
+    year: 2022,
+  },
+  {
+    organization: i18n.t('teachingHistory.37.org'),
+    title: i18n.t('teachingHistory.37.title'),
     year: 2022,
   },
 ];

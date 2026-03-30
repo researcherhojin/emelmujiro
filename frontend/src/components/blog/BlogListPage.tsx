@@ -92,15 +92,15 @@ const BlogListPage: React.FC = memo(() => {
 
       <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* Hero Section */}
-        <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+        <section className="pt-24 pb-12 sm:pt-32 sm:pb-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
             <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
               {t('blog.sectionLabel')}
             </span>
-            <h1 className="mt-4 text-5xl sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white">
+            <h1 className="mt-3 text-4xl sm:mt-4 sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white">
               {t('blog.title')}
             </h1>
-            <p className="mt-6 text-base sm:text-lg md:text-xl font-medium text-gray-600 dark:text-gray-400 max-w-3xl mx-auto break-keep">
+            <p className="mt-4 text-sm sm:mt-6 sm:text-lg md:text-xl font-medium text-gray-600 dark:text-gray-400 max-w-3xl mx-auto break-keep">
               {t('blog.subtitle')}
             </p>
           </div>

@@ -161,6 +161,25 @@
   }
 }
 
+/* Faster carousel scroll on mobile (< 640px) */
+@media (max-width: 639px) {
+  .animate-scroll {
+    animation-duration: 18s !important;
+  }
+
+  .animate-scroll-reverse {
+    animation-duration: 18s !important;
+  }
+
+  .animate-scroll-testimonial {
+    animation-duration: 25s !important;
+  }
+
+  .animate-scroll-testimonial-reverse {
+    animation-duration: 25s !important;
+  }
+}
+
 /* Reduced motion for accessibility and low-end Android performance */
 @media (prefers-reduced-motion: reduce) {
   html {

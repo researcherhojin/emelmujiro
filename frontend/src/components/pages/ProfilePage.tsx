@@ -45,30 +45,30 @@ const ProfilePage: React.FC = memo(() => {
 
       <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* Hero */}
-        <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+        <section className="pt-24 pb-12 sm:pt-32 sm:pb-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
             <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
               TEACHING HISTORY
             </span>
-            <h1 className="mt-4 text-5xl sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white">
+            <h1 className="mt-3 text-3xl sm:mt-4 sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white">
               {t('teachingHistory.pageTitle')}
             </h1>
-            <p className="mt-6 text-lg text-gray-500 dark:text-gray-400">
+            <p className="mt-4 text-sm sm:mt-6 sm:text-lg text-gray-500 dark:text-gray-400 mx-auto break-keep">
               {t('teachingHistory.pageSubtitle')}
             </p>
-            <div className="mt-8 flex justify-center gap-6">
-              <span className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
+            <div className="mt-6 sm:mt-8 flex justify-center gap-4 sm:gap-6">
+              <span className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white">
                 {t('teachingHistory.statsYears')}
               </span>
-              <span className="text-3xl sm:text-4xl font-black text-gray-300 dark:text-gray-600">
+              <span className="text-2xl sm:text-4xl font-black text-gray-300 dark:text-gray-600">
                 ·
               </span>
-              <span className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
+              <span className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white">
                 {t('teachingHistory.statsCount')}
               </span>
             </div>
 
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <button
                 onClick={handleBackClick}
                 className="inline-flex items-center px-6 py-3 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all focus:outline-none"
@@ -87,10 +87,10 @@ const ProfilePage: React.FC = memo(() => {
           return (
             <section
               key={year}
-              className={`py-16 px-4 sm:px-6 lg:px-8 ${isGray ? 'bg-gray-50 dark:bg-gray-950' : 'bg-white dark:bg-gray-900'}`}
+              className={`py-10 sm:py-16 px-4 sm:px-6 lg:px-8 ${isGray ? 'bg-gray-50 dark:bg-gray-950' : 'bg-white dark:bg-gray-900'}`}
             >
               <div className="max-w-5xl mx-auto">
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center gap-4 mb-5 sm:mb-6">
                   <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white">
                     {year}
                   </h2>
@@ -99,17 +99,17 @@ const ProfilePage: React.FC = memo(() => {
                     {items.length}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                   {items.map((item, idx) => (
                     <div
                       key={`${year}-${idx}`}
-                      className={`group flex items-start justify-between gap-3 p-5 rounded-2xl border-2 transition-all hover:border-gray-900 dark:hover:border-white ${isGray ? 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700' : 'bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700'}`}
+                      className={`group flex items-start justify-between gap-3 p-4 sm:p-5 rounded-2xl border-2 transition-all hover:border-gray-900 dark:hover:border-white ${isGray ? 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700' : 'bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700'}`}
                     >
                       <div className="min-w-0">
                         <p className="text-sm font-bold text-gray-900 dark:text-white">
                           {item.organization}
                         </p>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                        <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400 break-keep">
                           {item.title}
                         </p>
                       </div>
@@ -127,12 +127,15 @@ const ProfilePage: React.FC = memo(() => {
         })}
 
         {/* CTA */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950">
+        <section className="py-14 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-950">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
+            <h2 className="text-lg sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white break-keep">
               {t('cta.title')}
             </h2>
-            <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">{t('cta.subtitle')}</p>
+            <p className="mt-3 text-xs sm:mt-4 sm:text-lg text-gray-500 dark:text-gray-400 break-keep">
+              {t('cta.subtitleLine1')}
+              <br className="sm:hidden" /> {t('cta.subtitleLine2')}
+            </p>
             <div className="mt-8">
               <button
                 onClick={() => localizedNavigate('/contact')}

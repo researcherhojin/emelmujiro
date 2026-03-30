@@ -24,18 +24,18 @@
   },
   "hero": {
     "badge": "Trusted by Samsung · LG · SK and more",
-    "titleLine1": "AI Training · Consulting · Dev",
-    "titleLine2": "Your One-Stop AI Partner",
-    "descriptionLine1": "Generative AI, LLM·RAG, Vibe Coding, Computer Vision",
-    "descriptionLine2": "from custom curriculum design to PoC development.",
+    "titleLine1": "AI Training & Consulting",
+    "titleLine2": "Your AI Partner",
+    "descriptionLine1": "Generative AI, LLM·RAG, Vibe Coding, CV",
+    "descriptionLine2": "From curriculum design to PoC delivery.",
     "cta": {
       "primary": "Request Free Consultation",
       "secondary": "Explore Services"
     },
     "stats": {
-      "hours": "Training Hours",
-      "projects": "Completed Projects",
-      "satisfaction": "Course Satisfaction"
+      "hours": "Training Hrs",
+      "projects": "Projects",
+      "satisfaction": "Rating"
     },
     "expertise": "5 Years of Proven Expertise",
     "since": "Since 2022 •"
@@ -43,23 +43,19 @@
   "services": {
     "sectionLabel": "WHAT WE DO",
     "title": "Our Services",
-    "subtitle": "Step-by-step solutions for enterprise AI adoption",
+    "subtitle": "End-to-end solutions for enterprise AI",
     "education": {
       "title": "AI Education & Training",
-      "description": "Tailored AI training for enterprises",
-      "details": [
-        "Generative AI hands-on workshops",
-        "Python-based task automation",
-        "Project-based tech mentoring"
-      ]
+      "description": "Custom AI training for teams",
+      "details": ["Generative AI workshops", "Python task automation", "Project-based mentoring"]
     },
     "consulting": {
       "title": "AI Consulting",
-      "description": "From AI strategy to working prototype",
+      "description": "Strategy to working prototype",
       "details": [
-        "AI adoption strategy & technical review",
-        "Vibe coding-based PoC development",
-        "Service prototype design & validation"
+        "AI adoption & technical review",
+        "Vibe coding PoC development",
+        "Prototype design & validation"
       ]
     },
     "llmGenai": {
@@ -67,8 +63,8 @@
       "description": "Build LLM-powered AI services",
       "details": [
         "LLM · Prompt Engineering",
-        "RAG · AI Agent design & development",
-        "Task automation workflow development"
+        "RAG · AI Agent design & dev",
+        "Task automation workflows"
       ]
     },
     "computerVision": {
@@ -76,15 +72,16 @@
       "description": "End-to-end vision AI solutions",
       "details": [
         "Detection · classification · segmentation",
-        "Domain-specific CV project mentoring",
-        "End-to-end design including edge deployment"
+        "Domain-specific CV mentoring",
+        "Edge deployment & design"
       ]
     }
   },
   "cta": {
     "sectionLabel": "GET STARTED",
-    "title": "Need AI Education & Consulting?",
-    "subtitle": "Custom training, consulting & AI Agent development — all in one place",
+    "title": "Need AI Training?",
+    "subtitleLine1": "Training, consulting & AI Agent dev",
+    "subtitleLine2": "— all in one place",
     "emailAriaLabel": "Contact via email"
   },
   "footer": {
@@ -101,6 +98,7 @@
     }
   },
   "contact": {
+    "sectionLabel": "CONTACT",
     "title": "Contact Us",
     "subtitle": "Want to discuss your project?",
     "googleForm": {
@@ -125,13 +123,13 @@
     }
   },
   "blog": {
-    "title": "Blog",
-    "subtitle": "AI technology trends and practical insights",
+    "title": "Insights",
+    "subtitle": "AI trends and practical insights",
     "readMoreDetail": "Read More",
     "commentsCount": "Comments ({{count}})",
     "writeComment": "Write Comment",
     "noCommentsYet": "No comments yet. Be the first to comment!",
-    "searchPlaceholder": "Search blog...",
+    "searchPlaceholder": "Search insights...",
     "recentSearches": "Recent Searches",
     "clearAll": "Clear All",
     "searchResults": "{{count}} results found",
@@ -144,18 +142,18 @@
     "likeComment": "Like comment by {{author}}",
     "likeReply": "Like reply by {{author}}",
     "replyTo": "Reply to {{author}}",
-    "thumbnailAlt": "{{title}} blog post thumbnail",
+    "thumbnailAlt": "{{title}} post thumbnail",
     "timeJustNow": "Just now",
     "timeMinutesAgo": "{{count}} min ago",
     "timeHoursAgo": "{{count}} hours ago",
     "timeDaysAgo": "{{count}} days ago",
-    "preparing": "Blog Coming Soon",
+    "preparing": "Content Coming Soon",
     "preparingSubtitle": "We'll be back with better content soon",
     "preparingDescription": "We're preparing quality AI insights and technology trends. Please stay tuned.",
     "backToMain": "Back to Home",
-    "noPosts": "Blog Coming Soon",
+    "noPosts": "Content Coming Soon",
     "noPostsDescription": "We're preparing quality AI insights and tech trends. Please check back soon.",
-    "sectionLabel": "TECH BLOG",
+    "sectionLabel": "INSIGHTS",
     "comingSoonLabel": "COMING SOON",
     "comingSoon": "Preparing Content",
     "comingSoonDescription": "Technical insights on LLMs, AI agents, and RAG.",
@@ -163,7 +161,7 @@
     "previousPage": "Previous",
     "nextPage": "Next",
     "seo": {
-      "title": "Blog",
+      "title": "Insights",
       "description": "Latest insights on AI Agent, RAG, Computer Vision and cutting-edge AI technologies."
     },
     "share": "Share",
@@ -190,15 +188,15 @@
     "filterByCategory": "Category"
   },
   "blogDetail": {
-    "loading": "Loading blog post...",
-    "blogTitle": "Emelmujiro Blog",
-    "blogKeywords": "Emelmujiro, Blog",
+    "loading": "Loading post...",
+    "blogTitle": "Emelmujiro Insights",
+    "blogKeywords": "Emelmujiro, Insights",
     "relatedImage": "related image",
     "author": "Author:"
   },
   "logos": {
     "sectionLabel": "TRUSTED BY",
-    "title": "Companies We've Worked With",
+    "title": "Our Partners",
     "logoAlt": "{{name}} logo"
   },
   "profilePage": {
@@ -264,7 +262,7 @@
     "shortcutCloseModal": "Press Escape to close modals",
     "searchFocused": "Search input focused",
     "navigatedToHome": "Navigated to home page",
-    "navigatedToBlog": "Navigated to blog page",
+    "navigatedToBlog": "Navigated to insights page",
     "navigatedToContact": "Navigated to contact page",
     "navigatedToProfile": "Navigated to profile page",
     "pageLoaded": "Page loaded: {{title}}",
@@ -331,7 +329,7 @@
     "registerFailed": "Registration failed."
   },
   "blogErrors": {
-    "fetchPostsFailed": "Failed to load blog posts.",
+    "fetchPostsFailed": "Failed to load posts.",
     "fetchPostFailed": "Failed to load post."
   },
   "share": {
@@ -354,7 +352,7 @@
     "saveLater": "Save for Later",
     "goToHome": "Go to Home",
     "otherOptions": "Need other options?",
-    "browseBlog": "Browse Blog",
+    "browseBlog": "Browse Insights",
     "aboutCompany": "About Us",
     "directInquiry": "Direct Inquiry"
   },
@@ -370,8 +368,8 @@
   },
   "blogEditor": {
     "adminRequired": "Admin access required",
-    "adminDescription": "Please log in as an admin to write blog posts.",
-    "backToBlog": "Back to Blog",
+    "adminDescription": "Please log in as an admin to write posts.",
+    "backToBlog": "Back to Insights",
     "editor": "Editor",
     "preview": "Preview",
     "enterTitle": "Enter title...",
@@ -454,36 +452,36 @@
   },
   "teachingHistory": {
     "pageTitle": "Teaching History",
-    "pageSubtitle": "Full record of education and project mentoring.",
+    "pageSubtitle": "Enterprise & public sector AI training",
     "statsYears": "5 Years",
     "statsCount": "50+",
     "upcoming": "Upcoming",
     "0": {
       "org": "KEITI",
-      "title": "AI Eco-Innovation Lab — LLM·RAG Training & ML Project Mentoring"
+      "title": "AI Eco-Innovation Lab — LLM·RAG & Project"
     },
     "1": {
       "org": "LikeLion",
-      "title": "Python Bootcamp — Service Operations & Portfolio Workshop"
+      "title": "Python Bootcamp — Service Ops & Portfolio"
     },
     "2": {
-      "org": "National Assembly Library",
-      "title": "Vibe Coding-Based AI Agent Service Development"
+      "org": "Nat'l Assembly Library",
+      "title": "Vibe Coding AI Agent Service"
     },
     "3": {
-      "org": "Korea Authority of Land & Infrastructure Safety",
-      "title": "AI Agent Development & Prototyping Hands-on Training"
+      "org": "KALIS",
+      "title": "AI Agent Dev & Prototyping"
     },
     "4": {
-      "org": "Ministry of Employment and Labor",
-      "title": "AI Computer Vision (CV) Advanced Course Cohort 3"
+      "org": "MOEL (K-Digital)",
+      "title": "AI CV Advanced #3"
     },
     "5": {
-      "org": "Ministry of Employment and Labor",
-      "title": "AI Computer Vision (CV) Advanced Course Cohort 2"
+      "org": "MOEL (K-Digital)",
+      "title": "AI CV Advanced #2"
     },
     "6": {
-      "org": "Nano Convergence Industry Association",
+      "org": "Nano Convergence Assoc.",
       "title": "Industrial AI Upskilling Program"
     },
     "7": {
@@ -491,36 +489,36 @@
       "title": "School Consulting AI Education"
     },
     "8": {
-      "org": "Ministry of Employment and Labor",
-      "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 10"
+      "org": "MOEL (K-Digital)",
+      "title": "Startup Station #10"
     },
     "9": {
       "org": "KOFAC",
       "title": "School Consulting AI Education"
     },
     "10": {
-      "org": "Ministry of Employment and Labor",
-      "title": "AI Computer Vision (CV) Advanced Course Cohort 1"
+      "org": "MOEL (K-Digital)",
+      "title": "AI CV Advanced #1"
     },
     "11": {
       "org": "KT",
-      "title": "DSC University × KT AI+X Service Case Study Lecture"
+      "title": "DSC Univ. × KT AI+X Case Study"
     },
     "12": {
-      "org": "Ministry of Employment and Labor",
-      "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 9"
+      "org": "MOEL (K-Digital)",
+      "title": "Startup Station #9"
     },
     "13": {
-      "org": "Ministry of Employment and Labor",
-      "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 8"
+      "org": "MOEL (K-Digital)",
+      "title": "Startup Station #8"
     },
     "14": {
       "org": "Samsung Electronics",
-      "title": "DS Spotfire Data Analysis & Visualization"
+      "title": "Spotfire Data Analysis & Visualization"
     },
     "15": {
-      "org": "Ministry of Employment and Labor",
-      "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 7"
+      "org": "MOEL (K-Digital)",
+      "title": "Startup Station #7"
     },
     "16": {
       "org": "Chungnam ICT Innovation",
@@ -528,23 +526,23 @@
     },
     "17": {
       "org": "Samsung Electronics",
-      "title": "Python Programming Fundamentals"
+      "title": "Citizen Developer — Python Fundamentals"
     },
     "18": {
       "org": "Samsung Electronics",
-      "title": "New Employee DX Training — Machine Learning"
+      "title": "DX Training — Data Literacy & ML"
     },
     "19": {
       "org": "Hyundai E&C",
-      "title": "Industrial AI Upskilling — ML/DL & CV (Detection, Segmentation)"
+      "title": "Industrial AI Upskilling — ML/DL & CV"
     },
     "20": {
       "org": "Samsung Electronics",
-      "title": "DS Spotfire Data Analysis Fundamentals & Advanced"
+      "title": "Spotfire Data Analysis — Basic & Advanced"
     },
     "21": {
-      "org": "Southeast ICT Innovation Square",
-      "title": "Full-Stack Developer Bootcamp (Busan · Ulsan · Gyeongnam)"
+      "org": "SE ICT Innovation Square",
+      "title": "Full-Stack Bootcamp (BSN·USN·GN)"
     },
     "22": {
       "org": "LG Electronics",
@@ -556,55 +554,59 @@
     },
     "24": {
       "org": "SK Telecom",
-      "title": "Computer Vision (with OpenCV)"
+      "title": "OpenCV Computer Vision Hands-on"
     },
     "25": {
       "org": "Hancom",
-      "title": "Paper-Based Image Processing Deep Learning Model Design"
+      "title": "Image Processing DL Model Design"
     },
     "26": {
-      "org": "SKK Univ. · Inha Univ. · Kyonggi Univ.",
+      "org": "SKK · Inha · Kyonggi Univ.",
       "title": "Healthcare AI Project"
     },
     "27": {
-      "org": "Jeonbuk Industry-Academia Institute",
-      "title": "Smart Factory Data Machine Learning"
+      "org": "Nat'l Meteorological Institute",
+      "title": "Weather-AI Hackathon Mentor"
     },
     "28": {
-      "org": "Hancom",
-      "title": "AI Fundamentals to NLP (Python)"
+      "org": "Jeonbuk Industry-Academia",
+      "title": "Smart Factory Data ML"
     },
     "29": {
       "org": "Hancom",
-      "title": "AI Fundamentals to Image Processing (DX)"
+      "title": "AI Basics — NLP"
     },
     "30": {
-      "org": "KETI",
-      "title": "Jetson TX2 Edge AI Python Course"
+      "org": "Hancom",
+      "title": "AI Basics — Computer Vision"
     },
     "31": {
       "org": "KETI",
-      "title": "Nanomaterial Big Data AI Convergence Expert Course"
+      "title": "Jetson TX2 Edge AI Python Course"
     },
     "32": {
-      "org": "Hancom",
-      "title": "DL-Based Text Classification NLP Hands-on Project"
+      "org": "KETI",
+      "title": "Big Data AI Convergence Course"
     },
     "33": {
-      "org": "University of Seoul",
-      "title": "Campus Town Career Academy AI Course"
+      "org": "Hancom",
+      "title": "DL NLP Project"
     },
     "34": {
-      "org": "Seoul National University",
-      "title": "College of Education Python Programming Workshop"
+      "org": "University of Seoul",
+      "title": "Career Academy AI Course"
     },
     "35": {
-      "org": "Seoul Metropolitan Office of Education",
-      "title": "Teacher Training — DX AI Expert Course"
+      "org": "Seoul National University",
+      "title": "Python Programming Workshop"
     },
     "36": {
+      "org": "Seoul Education Office",
+      "title": "Teacher DX AI Expert Course"
+    },
+    "37": {
       "org": "LG Electronics",
-      "title": "Employee AI Intensive"
+      "title": "AI Training — Python to Deep Learning"
     }
   },
   "notifications": {
@@ -683,7 +685,7 @@
   "testimonials": {
     "sectionLabel": "Testimonials",
     "subtitle": "REAL REVIEWS",
-    "title": "What Our Students Say",
+    "title": "Real Reviews",
     "cvProgram": "Ministry of Employment — AI Computer Vision (CV) Advanced",
     "startupProgram": "Ministry of Employment — AI/IT Startup Bootcamp",
     "source": "Source: HRD-Net K-Digital Training Reviews",

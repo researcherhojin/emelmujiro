@@ -20,30 +20,30 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ## Tech Stack
 
 **Frontend**<br/>
-![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite&logoColor=white)
+![React](https://img.shields.io/badge/React-19.2.4-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.0.2-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8.0.3-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tailwind Typography](https://img.shields.io/badge/Typography-0.5-06B6D4?logo=tailwindcss&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.38-E91E63?logo=framer&logoColor=white)
-![i18next](https://img.shields.io/badge/i18next-26.0-26A69A?logo=i18next&logoColor=white)
-![React Router](https://img.shields.io/badge/React_Router-7.13-CA4245?logo=reactrouter&logoColor=white)
+![i18next](https://img.shields.io/badge/i18next-26.0.1-26A69A?logo=i18next&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-7.13.2-CA4245?logo=reactrouter&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.21-1a1a2e)
-![Axios](https://img.shields.io/badge/Axios-1.13-5A29E4?logo=axios&logoColor=white)
-![DOMPurify](https://img.shields.io/badge/DOMPurify-3.3-4B32C3)
+![Axios](https://img.shields.io/badge/Axios-1.13.6-5A29E4?logo=axios&logoColor=white)
+![DOMPurify](https://img.shields.io/badge/DOMPurify-3.3.3-4B32C3)
 
 **Backend**<br/>
-![Django](https://img.shields.io/badge/Django-6.0-092E20?logo=django&logoColor=white)
-![DRF](https://img.shields.io/badge/DRF-3.17-A30000)
-![SimpleJWT](https://img.shields.io/badge/SimpleJWT-5.5-000000?logo=jsonwebtokens&logoColor=white)
-![Gunicorn](https://img.shields.io/badge/Gunicorn-25.3-499848?logo=gunicorn&logoColor=white)
+![Django](https://img.shields.io/badge/Django-6.0.3-092E20?logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-3.17.1-A30000)
+![SimpleJWT](https://img.shields.io/badge/SimpleJWT-5.5.1-000000?logo=jsonwebtokens&logoColor=white)
+![Gunicorn](https://img.shields.io/badge/Gunicorn-25.3.0-499848?logo=gunicorn&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
 
 **Testing**<br/>
 ![Vitest](https://img.shields.io/badge/Vitest-4.1.2-6E9F18?logo=vitest&logoColor=white)
-![Playwright](https://img.shields.io/badge/Playwright-1.58-2EAD33?logo=playwright&logoColor=white)
-![MSW](https://img.shields.io/badge/MSW-2.12-FF6A33?logo=mockserviceworker&logoColor=white)
-![Testing Library](https://img.shields.io/badge/Testing_Library-16.3-E33332?logo=testinglibrary&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-1.58.2-2EAD33?logo=playwright&logoColor=white)
+![MSW](https://img.shields.io/badge/MSW-2.12.14-FF6A33?logo=mockserviceworker&logoColor=white)
+![Testing Library](https://img.shields.io/badge/Testing_Library-16.3.2-E33332?logo=testinglibrary&logoColor=white)
 ![Lighthouse](https://img.shields.io/badge/Lighthouse_CI-Desktop-F44B21?logo=lighthouse&logoColor=white)
 
 **Infra**<br/>
@@ -124,7 +124,7 @@ graph LR
 
 - **Bilingual (i18n)** — URL-based language routing (`/contact` for Korean, `/en/contact` for English)
 - **SSG Prerendering** — Static HTML pages for SEO, parallel rendering
-- **Teaching History** — 37 entries across 5 years, year-grouped with alternating backgrounds, bilingual
+- **Teaching History** — 38 entries across 5 years, year-grouped with alternating backgrounds, bilingual
 - **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments. `/blog` → `/insights` nginx 301 redirect
 - **Service Modals** — Clickable service cards open detail modals with full service descriptions
 - **Auth** — httpOnly cookie JWT with automatic token refresh
@@ -134,7 +134,7 @@ graph LR
 - **Performance** — Optimized chunk splitting (7 vendor chunks), Lighthouse CI assertions, < 10MB bundle budget
 - **CI/CD** — GitHub Actions with parallel jobs: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
 - **Security** — DOMPurify HTML sanitization, CI script injection prevention, uuid4 file uploads, rate limiting, IP blocking
-- **Testing** — Vitest (1200+ unit tests) + Playwright E2E + Django unittest, ~99% coverage
+- **Testing** — Vitest (1201 unit tests) + Playwright E2E + Django unittest, 100% coverage target
 
 ## License
 

@@ -23,22 +23,27 @@ const ContactPage: React.FC = memo(() => {
       />
 
       <div className="min-h-screen bg-white dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+        {/* Hero */}
+        <section className="pt-24 pb-12 sm:pt-32 sm:pb-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
+              {t('contact.sectionLabel')}
+            </span>
+            <h1 className="mt-3 text-3xl sm:mt-4 sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white">
               {t('contact.title')}
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="mt-4 text-sm sm:mt-6 sm:text-lg md:text-xl font-medium text-gray-600 dark:text-gray-400 max-w-3xl mx-auto break-keep">
               {t('contact.subtitle')}
             </p>
-            <p className="text-base text-gray-500 dark:text-gray-400 mt-2">
+            <p className="mt-2 text-xs sm:text-base text-gray-500 dark:text-gray-400 break-keep">
               {t('contact.googleForm.description')}
             </p>
           </div>
+        </section>
 
-          {/* Main Content */}
-          <div className="grid lg:grid-cols-3 gap-12">
+        {/* Main Content */}
+        <section className="pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-12">
             {/* Google Form Embed */}
             <div className="lg:col-span-2">
               <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 sm:p-8">
@@ -84,7 +89,7 @@ const ContactPage: React.FC = memo(() => {
               <ContactInfo />
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </>
   );
