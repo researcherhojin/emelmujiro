@@ -73,9 +73,13 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Homepage section order**: Hero (white) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
 
-**Scroll carousels** (LogosSection & TestimonialsSection): 3x copies of items for seamless CSS `translateX(-33.333%)` looping. Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via custom CSS utility `.group:hover .group-hover\:pause` in `index.css`. `motion-reduce:!animate-none` for accessibility. Tailwind animation durations: `scroll` 32s (logos), `scroll-testimonial` 45s (testimonials).
+**Scroll carousels**: LogosSection uses 3x copies with `translateX(-33.333%)` looping (32s). TestimonialsSection uses 5x copies with `translateX(-20%)` looping (60s). Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via custom CSS utility `.group:hover .group-hover\:pause` in `index.css`. `motion-reduce:!animate-none` for accessibility.
 
-**TestimonialsSection**: Used on homepage (between Services and CTA). Two rows: CV reviews (left scroll) + startup reviews (right scroll). Source: 고용24 K-디지털 훈련 수강후기.
+**TestimonialsSection**: Two rows: enterprise training reviews (left scroll) + 고용노동부 K-디지털 reviews (right scroll, CV + startup mixed). Enterprise reviews use per-item source labels (e.g. "S사 반도체 엔지니어").
+
+**ServicesSection**: Service cards are clickable — clicking opens `ServiceModal` (same modal used by Footer). Modal state is local to ServicesSection (not UIContext).
+
+**Teaching History page** (`/profile`): Replaced 4-tab profile (career/education/projects/timeline). Shows 37 teaching entries grouped by year (2026→2022) with alternating section backgrounds. Data uses end-client names as organization (삼성전자, not 엘리스). i18n keys: `teachingHistory.{0-36}.{org,title}`. `useMemo` depends on `i18n.language` for language switching.
 
 **About page**: Removed entirely — route, component file, and lazy import all deleted. Sitemap, prerender, StructuredData breadcrumb all updated.
 
