@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Blog', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/blog');
+    await page.goto('/insights');
   });
 
   test('displays blog page heading', async ({ page }) => {
@@ -16,7 +16,7 @@ test.describe('Blog', () => {
   });
 
   test('blog/:id navigates to detail page', async ({ page }) => {
-    await page.goto('/blog/1');
+    await page.goto('/insights/1');
     await page.waitForLoadState('domcontentloaded');
     // Should render blog detail or show not found — either way page should load
     await expect(page.locator('main, [role="main"], #main-content')).toBeVisible();

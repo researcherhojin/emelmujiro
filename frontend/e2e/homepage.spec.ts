@@ -11,23 +11,20 @@ test.describe('Homepage', () => {
 
   test('has main heading', async ({ page }) => {
     const heading = page.locator('h1').first();
-    await expect(heading).toContainText('실무에 강한');
-    await expect(heading).toContainText('AI 전문가 그룹');
+    await expect(heading).toContainText('AI 교육');
   });
 
   test('has navigation menu', async ({ page }) => {
-    // Use .first() to avoid strict mode violations from desktop/mobile nav duplicates
     const nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: '소개' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '블로그' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '프로필' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '강의이력' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: '인사이트' }).first()).toBeVisible();
     await expect(nav.getByRole('button', { name: '문의하기' }).first()).toBeVisible();
   });
 
   test('hero section has CTA link', async ({ page }) => {
     const ctaLink = page.locator('a[href="/contact"]').first();
     await expect(ctaLink).toBeVisible();
-    await expect(ctaLink).toContainText('프로젝트 문의하기');
+    await expect(ctaLink).toContainText('무료 상담 신청');
   });
 
   test('displays feature sections', async ({ page }) => {
@@ -53,11 +50,11 @@ test.describe('Homepage', () => {
 
   test('navigation links work correctly', async ({ page }) => {
     const nav = page.locator('nav');
-    await nav.getByRole('button', { name: '소개' }).first().click();
-    await expect(page).toHaveURL(/\/about/);
+    await nav.getByRole('button', { name: '강의이력' }).first().click();
+    await expect(page).toHaveURL(/\/profile/);
 
-    await nav.getByRole('button', { name: '블로그' }).first().click();
-    await expect(page).toHaveURL(/\/blog/);
+    await nav.getByRole('button', { name: '인사이트' }).first().click();
+    await expect(page).toHaveURL(/\/insights/);
 
     await nav.getByRole('button', { name: '문의하기' }).first().click();
     await expect(page).toHaveURL(/\/contact/);
@@ -76,11 +73,7 @@ test.describe('Homepage', () => {
 
     await menuButton.click();
 
-    // Mobile menu items are conditionally rendered when isOpen=true.
-    // Desktop nav items (inside "hidden md:flex") are display:none on mobile,
-    // so we select buttons with matching text that are actually visible.
-    // The mobile menu buttons are the last matching elements in DOM order.
-    await expect(page.locator('button').filter({ hasText: '소개' }).last()).toBeVisible({ timeout: 5000 });
-    await expect(page.locator('button').filter({ hasText: '블로그' }).last()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('button').filter({ hasText: '강의이력' }).last()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('button').filter({ hasText: '인사이트' }).last()).toBeVisible({ timeout: 5000 });
   });
 });

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Error States', () => {
   test('invalid blog post shows error or 404', async ({ page }) => {
-    await page.goto('/blog/nonexistent-post-id-99999');
+    await page.goto('/insights/nonexistent-post-id-99999');
 
     // Should show error message or redirect to 404
     await page.waitForTimeout(2000);
@@ -39,13 +39,13 @@ test.describe('Error States', () => {
     expect(criticalErrors).toHaveLength(0);
   });
 
-  test('no console errors on about page', async ({ page }) => {
+  test('no console errors on teaching history page', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (error) => {
       errors.push(error.message);
     });
 
-    await page.goto('/about');
+    await page.goto('/profile');
     await page.waitForTimeout(2000);
 
     const criticalErrors = errors.filter(
