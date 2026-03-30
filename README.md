@@ -10,7 +10,7 @@
 
 </div>
 
-AI education · consulting · development company. React 19 + Django 6 monorepo, self-hosted on Mac Mini via Docker + Cloudflare Tunnel.
+AI education, consulting & development — React 19 + Django 6 monorepo, self-hosted on Mac Mini via Docker + Cloudflare Tunnel.
 
 <p align="center">
   <img src=".github/assets/home-light.png" width="49%" alt="Homepage — Light mode" />
