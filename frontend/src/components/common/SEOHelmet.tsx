@@ -49,7 +49,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     const resolvedAuthor = author || siteName;
     const siteTitle = resolvedTitle === siteName ? resolvedTitle : `${resolvedTitle} | ${siteName}`;
 
-    // Build hreflang URLs: /about (ko), /en/about (en)
+    // Build hreflang URLs: /profile (ko), /en/profile (en)
     const basePath = stripLangPrefix(location.pathname);
     const koUrl = `${SITE_URL}${basePath === '/' ? '' : basePath}`;
     const enUrl = `${SITE_URL}/en${basePath === '/' ? '' : basePath}`;

@@ -13,8 +13,8 @@
 AI education, consulting & development — React 19 + Django 6 full-stack monorepo, self-hosted via Docker + Cloudflare Tunnel.
 
 <p align="center">
-  <img src="docs/screenshots/home-light.png" width="49%" alt="Light mode" />
-  <img src="docs/screenshots/home-dark.png" width="49%" alt="Dark mode" />
+  <img src=".github/assets/home-light.png" width="49%" alt="Light mode" />
+  <img src=".github/assets/home-dark.png" width="49%" alt="Dark mode" />
 </p>
 
 ## Tech Stack

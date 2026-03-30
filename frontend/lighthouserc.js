@@ -5,10 +5,9 @@ module.exports = {
       startServerReadyPattern: 'Local:',
       url: [
         'http://localhost:4173/',
-        'http://localhost:4173/about',
         'http://localhost:4173/contact',
         'http://localhost:4173/profile',
-        'http://localhost:4173/blog',
+        'http://localhost:4173/insights',
       ],
       numberOfRuns: 3,
       settings: {

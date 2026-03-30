@@ -1531,7 +1531,7 @@ class AdminAnalyticsTestCase(APITestCase):
             SiteVisit.objects.create(
                 ip_address="192.168.1.2",
                 user_agent="test-agent",
-                page_path="/about",
+                page_path="/profile",
                 visit_time=now - timedelta(days=i),
             )
         # Extra visit today for unique visitor count
@@ -1608,10 +1608,10 @@ class AdminAnalyticsTestCase(APITestCase):
         response = self.client.get(reverse("admin-analytics-pages"))
         data = response.data["data"]
         self.assertTrue(len(data) >= 2)
-        # "/" has 4 visits (3 from .1 + 1 from .3), "/about" has 3 visits
+        # "/" has 4 visits (3 from .1 + 1 from .3), "/profile" has 3 visits
         self.assertEqual(data[0]["page_path"], "/")
         self.assertEqual(data[0]["visits"], 4)
-        self.assertEqual(data[1]["page_path"], "/about")
+        self.assertEqual(data[1]["page_path"], "/profile")
         self.assertEqual(data[1]["visits"], 3)
 
     def test_pages_forbidden_for_regular_user(self):
