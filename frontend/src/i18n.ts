@@ -42,7 +42,6 @@ i18n
     resources,
     fallbackLng: 'ko',
     debug: false,
-    showSupportNotice: false,
 
     interpolation: {
       escapeValue: false,
