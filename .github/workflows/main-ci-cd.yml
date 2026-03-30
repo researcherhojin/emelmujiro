@@ -221,7 +221,7 @@ jobs:
           path: frontend/build
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v4
