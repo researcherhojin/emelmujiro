@@ -72,13 +72,6 @@ const NotFound: React.FC = memo(() => {
             aria-label={t('notFound.popularPages')}
           >
             <button
-              onClick={() => localizedNavigate('/about')}
-              className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
-            >
-              {t('common.about')}
-            </button>
-            <span className="text-gray-300">|</span>
-            <button
               onClick={() => localizedNavigate('/profile')}
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >

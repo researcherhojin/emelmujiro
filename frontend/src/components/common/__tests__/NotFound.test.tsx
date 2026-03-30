@@ -96,9 +96,6 @@ describe('NotFound', () => {
       </MemoryRouter>
     );
 
-    const aboutButton = screen.getByRole('button', {
-      name: 'common.about',
-    });
     const profileButton = screen.getByRole('button', {
       name: 'common.representativeProfile',
     });
@@ -109,14 +106,9 @@ describe('NotFound', () => {
       name: 'common.blog',
     });
 
-    expect(aboutButton).toBeInTheDocument();
     expect(profileButton).toBeInTheDocument();
     expect(contactButton).toBeInTheDocument();
     expect(blogButton).toBeInTheDocument();
-
-    // Test navigation calls
-    fireEvent.click(aboutButton);
-    expect(mockNavigate).toHaveBeenCalledWith('/about');
 
     fireEvent.click(profileButton);
     expect(mockNavigate).toHaveBeenCalledWith('/profile');

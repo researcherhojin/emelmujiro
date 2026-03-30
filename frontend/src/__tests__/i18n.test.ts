@@ -54,7 +54,6 @@ describe('i18n configuration', () => {
 
   describe('Korean translation top-level keys', () => {
     const expectedKeys = [
-      'about',
       'accessibility',
       'achievements',
       'apiErrors',

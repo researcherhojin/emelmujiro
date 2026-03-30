@@ -329,7 +329,7 @@ describe('SharePage', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/insights');
   });
 
-  it('navigates to about page when aboutCompany link is clicked', async () => {
+  it('navigates to home when aboutCompany link is clicked', async () => {
     renderSharePage('?title=Test');
 
     await waitFor(
@@ -340,7 +340,7 @@ describe('SharePage', () => {
     );
 
     fireEvent.click(screen.getByText('share.aboutCompany'));
-    expect(mockNavigate).toHaveBeenCalledWith('/about');
+    expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
   it('navigates to contact page when directInquiry link is clicked', async () => {

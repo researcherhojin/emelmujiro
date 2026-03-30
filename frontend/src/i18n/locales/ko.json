@@ -84,76 +84,6 @@
     "subtitle": "맞춤형 교육 · 컨설팅 · AI Agent 개발까지, 한 번에 해결하세요",
     "emailAriaLabel": "이메일로 문의하기"
   },
-  "about": {
-    "sectionLabel": "ABOUT US",
-    "title": "에멜무지로",
-    "subtitle": "대기업 AI 교육부터 스타트업 기술 컨설팅까지, 실무 중심 AI 전문 기업",
-    "mission": {
-      "sectionLabel": "OUR MISSION",
-      "title": "우리의 미션",
-      "description": "AI 리터러시 교육부터 Agent 개발, PoC 구축까지\n고객사의 AI 도입 전 과정을 설계합니다."
-    },
-    "journey": {
-      "sectionLabel": "TRACK RECORD",
-      "title": "주요 연혁",
-      "subtitle": "교육과 컨설팅으로 쌓아온 실행의 기록"
-    },
-    "values": {
-      "sectionLabel": "CORE VALUES",
-      "title": "핵심 가치",
-      "subtitle": "에멜무지로가 추구하는 4가지 핵심 가치입니다",
-      "practical": {
-        "title": "실무 중심 교육",
-        "description": "현업 즉시 적용 가능한 실습 교육"
-      },
-      "custom": {
-        "title": "맞춤형 커리큘럼",
-        "description": "고객사 목표에 맞춘 단계별 설계"
-      },
-      "latest": {
-        "title": "생성형 AI 역량",
-        "description": "LLM 활용 업무 혁신과 AX 실습"
-      },
-      "growth": {
-        "title": "지속적인 성장",
-        "description": "교육 후 지속적 학습과 피드백"
-      }
-    },
-    "achievements": {
-      "title": "주요 성과"
-    },
-    "cta": {
-      "sectionLabel": "GET IN TOUCH"
-    },
-    "ctaTitle": "함께 성장할 준비가 되셨나요?",
-    "ctaSubtitle": "AI 혁신의 파트너, 에멜무지로와 함께하세요",
-    "seo": {
-      "title": "회사 소개",
-      "description": "AI 교육·컨설팅·AI Agent 개발 전문 기업 에멜무지로를 소개합니다. 삼성, LG 등 대기업 AI 교육 파트너."
-    },
-    "timeline": {
-      "2022": {
-        "title": "AI 교육 강사 활동",
-        "description": "서울대·SKT·한컴·서울시교육청 등 10개 이상 기관 AI 교육"
-      },
-      "2023": {
-        "title": "대기업 AI 교육 & 창업 개발 멘토링",
-        "description": "삼성전자·LG전자·현대건설 실무 교육 · 고용노동부 창업부트캠프 개발 교육 및 기술 멘토링"
-      },
-      "2024": {
-        "title": "에멜무지로 창업",
-        "description": "AI 교육·컨설팅 전문 기업 설립 · AI CV 심화과정 운영 · AI 챔피언상·데이콘 우승팀 배출"
-      },
-      "2025": {
-        "title": "AI 컨설팅 & 산업 교육 확대",
-        "description": "기업 AI Agent·RAG PoC 개발 · 산업전문인력 AI 교육 · ICT콤플렉스 3위 수상"
-      },
-      "2026": {
-        "title": "AI 교육·컨설팅 영역 확장",
-        "description": "대학원 AI 학술 글쓰기 · 공공기관 AI 프로젝트 멘토링 · 바이브 코딩·AI Agent 기업 교육"
-      }
-    }
-  },
   "footer": {
     "services": "서비스",
     "copyright": "© {{year}} 에멜무지로. All rights reserved.",
@@ -301,29 +231,7 @@
     "completedProjects": "완료 프로젝트",
     "totalStudents": "누적 교육생",
     "partnerCompanies": "협력 기업",
-    "educationCareer": "교육 경력",
-    "tabCareer": "경력",
-    "tabEducation": "학력",
-    "tabProjects": "프로젝트",
-    "tabTimeline": "연혁",
-    "careerLabel": "CAREER",
-    "careerHistory": "경력 사항",
-    "educationLabel": "EDUCATION",
-    "educationHistory": "학력 사항",
-    "currentlyEmployed": "재직중",
-    "certificationsTitle": "자격 및 인증",
-    "adspTitle": "ADsP",
-    "adspDescription": "데이터 분석 준전문가",
-    "adspIssuer": "한국데이터산업진흥원 (2025.03)",
-    "ncsTitle": "NCS 직무능력",
-    "ncsStrategy": "정보기술전략·계획",
-    "ncsDevelopment": "정보기술개발",
-    "ncsAI": "인공지능",
-    "ncsScore": "60.5점",
-    "projectsLabel": "PROJECTS",
-    "majorProjects": "주요 프로젝트",
-    "inProgress": "진행중",
-    "noProjectsInCategory": "해당 카테고리에 프로젝트가 없습니다."
+    "educationCareer": "교육 경력"
   },
   "notFound": {
     "title": "페이지를 찾을 수 없습니다",

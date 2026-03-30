@@ -10,7 +10,7 @@
 
 </div>
 
-Official website for Emelmujiro — AI education, consulting & development. React 19 + Django 6 monorepo, self-hosted on Mac Mini.
+AI education, consulting & development — React 19 + Django 6 full-stack monorepo, self-hosted via Docker + Cloudflare Tunnel.
 
 <p align="center">
   <img src="docs/screenshots/home-light.png" width="49%" alt="Light mode" />
@@ -134,7 +134,7 @@ graph LR
 - **Performance** — Optimized chunk splitting (7 vendor chunks), Lighthouse CI assertions, < 10MB bundle budget
 - **CI/CD** — GitHub Actions with parallel jobs: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
 - **Security** — DOMPurify HTML sanitization, CI script injection prevention, uuid4 file uploads, rate limiting, IP blocking
-- **Testing** — Vitest + Playwright + Django unittest, 100% coverage across all metrics
+- **Testing** — Vitest (1200+ unit tests) + Playwright E2E + Django unittest, ~99% coverage
 
 ## License
 

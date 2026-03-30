@@ -88,76 +88,6 @@
     "subtitle": "Custom training, consulting & AI Agent development — all in one place",
     "emailAriaLabel": "Contact via email"
   },
-  "about": {
-    "sectionLabel": "ABOUT US",
-    "title": "Emelmujiro",
-    "subtitle": "Enterprise AI training to startup consulting — a practice-driven AI firm",
-    "mission": {
-      "sectionLabel": "OUR MISSION",
-      "title": "Our Mission",
-      "description": "From AI literacy training to Agent development and PoC delivery —\nwe design the entire AI adoption journey for our clients."
-    },
-    "journey": {
-      "sectionLabel": "TRACK RECORD",
-      "title": "Key Milestones",
-      "subtitle": "A record of execution built through training and consulting"
-    },
-    "values": {
-      "sectionLabel": "CORE VALUES",
-      "title": "Core Values",
-      "subtitle": "Four core values that Emelmujiro pursues",
-      "practical": {
-        "title": "Practice-Focused Education",
-        "description": "Theory and practice balanced for immediate real-world use"
-      },
-      "custom": {
-        "title": "Custom Curriculum",
-        "description": "Step-by-step programs tailored to client goals"
-      },
-      "latest": {
-        "title": "Generative AI Skills",
-        "description": "LLM-driven workflow innovation & AX training"
-      },
-      "growth": {
-        "title": "Continuous Growth",
-        "description": "Ongoing learning and feedback after training"
-      }
-    },
-    "achievements": {
-      "title": "Key Achievements"
-    },
-    "cta": {
-      "sectionLabel": "GET IN TOUCH"
-    },
-    "ctaTitle": "Ready to Grow Together?",
-    "ctaSubtitle": "Partner with Emelmujiro for AI innovation",
-    "seo": {
-      "title": "About Us",
-      "description": "Meet Emelmujiro — AI education, consulting & AI Agent development. Trusted AI training partner for Samsung, LG and major enterprises."
-    },
-    "timeline": {
-      "2022": {
-        "title": "AI Training Instructor",
-        "description": "AI training across 10+ institutions including SNU, SKT, Hancom, Seoul Metropolitan Office of Education"
-      },
-      "2023": {
-        "title": "Enterprise AI & Startup Dev Mentoring",
-        "description": "Samsung, LG, Hyundai hands-on training · Ministry of Employment Startup Bootcamp dev training & tech mentoring"
-      },
-      "2024": {
-        "title": "Emelmujiro Founded",
-        "description": "AI education & consulting startup · AI CV advanced course · AI Champion & Dacon winners"
-      },
-      "2025": {
-        "title": "AI Consulting & Industry Training",
-        "description": "Enterprise AI Agent & RAG PoC · Industry AI upskilling · ICT Complex 3rd place"
-      },
-      "2026": {
-        "title": "AI Training & Consulting Expansion",
-        "description": "Graduate AI academic writing · Public institution AI project mentoring · Vibe Coding & AI Agent enterprise training"
-      }
-    }
-  },
   "footer": {
     "services": "Services",
     "copyright": "© {{year}} Emelmujiro. All rights reserved.",
@@ -305,29 +235,7 @@
     "completedProjects": "Completed Projects",
     "totalStudents": "Trained Talents",
     "partnerCompanies": "Partner Companies",
-    "educationCareer": "Teaching Career",
-    "tabCareer": "Career",
-    "tabEducation": "Education",
-    "tabProjects": "Projects",
-    "tabTimeline": "Timeline",
-    "careerLabel": "CAREER",
-    "careerHistory": "Career History",
-    "educationLabel": "EDUCATION",
-    "educationHistory": "Education History",
-    "currentlyEmployed": "Current",
-    "certificationsTitle": "Certifications",
-    "adspTitle": "ADsP",
-    "adspDescription": "Associate Data Scientist Professional",
-    "adspIssuer": "Korea Data Agency (2025.03)",
-    "ncsTitle": "NCS Job Competency",
-    "ncsStrategy": "IT Strategy & Planning",
-    "ncsDevelopment": "IT Development",
-    "ncsAI": "Artificial Intelligence",
-    "ncsScore": "60.5 pts",
-    "projectsLabel": "PROJECTS",
-    "majorProjects": "Major Projects",
-    "inProgress": "In Progress",
-    "noProjectsInCategory": "No projects in this category."
+    "educationCareer": "Teaching Career"
   },
   "notFound": {
     "title": "Page Not Found",
