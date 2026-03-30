@@ -47,25 +47,25 @@
     "subtitle": "Step-by-step solutions for enterprise AI adoption",
     "education": {
       "title": "AI Education & Training",
-      "description": "Custom AI training for your team",
+      "description": "Tailored AI training for enterprises",
       "details": [
-        "Generative AI hands-on training",
+        "Generative AI hands-on workshops",
         "Python-based task automation",
         "Project-based tech mentoring"
       ]
     },
     "consulting": {
       "title": "AI Consulting",
-      "description": "From AI strategy to PoC",
+      "description": "From AI strategy to working prototype",
       "details": [
-        "AI adoption strategy & review",
+        "AI adoption strategy & technical review",
         "Vibe coding-based PoC development",
-        "Service prototype design"
+        "Service prototype design & validation"
       ]
     },
     "llmGenai": {
       "title": "AI Agent Development",
-      "description": "Agentic AI service design & build",
+      "description": "Build LLM-powered AI services",
       "details": [
         "LLM · Prompt Engineering",
         "RAG · AI Agent design & development",
@@ -74,7 +74,7 @@
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "Vision AI project design & training",
+      "description": "End-to-end vision AI solutions",
       "details": [
         "Detection · classification · segmentation",
         "Domain-specific CV project mentoring",
