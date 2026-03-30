@@ -75,7 +75,7 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Homepage section order**: Hero (white/dark) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
 
-**Scroll carousels**: LogosSection uses 3x copies with `translateX(-33.333%)` looping (32s). TestimonialsSection uses 5x copies with `translateX(-20%)` looping (60s). Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via custom CSS utility `.group:hover .group-hover\:pause` in `index.css`. `motion-reduce:!animate-none` for accessibility.
+**Scroll carousels**: LogosSection uses 3x copies with `translateX(-33.333%)` looping (32s). TestimonialsSection uses 5x copies with `translateX(-20%)` looping (40s). Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via custom CSS utility `.group:hover .group-hover\:pause` in `index.css`. `motion-reduce:!animate-none` for accessibility.
 
 **TestimonialsSection**: Two rows: enterprise training reviews (left scroll) + 고용노동부 K-디지털 reviews (right scroll, CV + startup mixed). Enterprise reviews use per-item source labels (e.g. "S사 반도체 엔지니어").
 
