@@ -230,7 +230,7 @@ describe('BlogCard Component', () => {
   });
 
   it('renders empty excerpt fallback on featured card (line 76)', async () => {
-    const postWithoutExcerpt = { ...mockPost, excerpt: undefined };
+    const postWithoutExcerpt = { ...mockPost, excerpt: '' };
     renderWithRouter(<BlogCard post={postWithoutExcerpt} featured />);
 
     await waitFor(() => {

@@ -973,6 +973,7 @@ describe('BlogDetail Component', () => {
       slug: 'no-excerpt',
       date: '2024-03-01',
       publishedAt: '2024-03-01',
+      excerpt: '',
     };
     (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
       currentPost: mockPost,

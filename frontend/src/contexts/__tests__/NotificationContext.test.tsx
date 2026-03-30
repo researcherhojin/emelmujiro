@@ -20,8 +20,8 @@ const {
     Promise.resolve({
       data: {
         count: 1,
-        next: null,
-        previous: null,
+        next: null as string | null,
+        previous: null as string | null,
         results: [
           {
             id: 1,

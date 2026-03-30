@@ -220,6 +220,7 @@ Object.defineProperty(window, 'matchMedia', {
 class MockIntersectionObserver implements IntersectionObserver {
   readonly root: Element | null;
   readonly rootMargin: string;
+  readonly scrollMargin: string;
   readonly thresholds: ReadonlyArray<number>;
 
   constructor(
@@ -228,6 +229,7 @@ class MockIntersectionObserver implements IntersectionObserver {
   ) {
     this.root = (options?.root instanceof Element ? options.root : null) || null;
     this.rootMargin = options?.rootMargin || '0px';
+    this.scrollMargin = '0px';
     this.thresholds = Array.isArray(options?.threshold)
       ? options.threshold
       : [options?.threshold || 0];
