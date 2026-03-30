@@ -63,7 +63,7 @@ const ScrollRow: React.FC<ScrollRowProps> = memo(({ testimonials, direction = 'l
       <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-gray-50 dark:from-gray-950 to-transparent z-10" />
 
       <div className={`flex ${animationClass} group-hover:pause motion-reduce:!animate-none`}>
-        {[0, 1, 2].map((copy) =>
+        {[0, 1, 2, 3, 4].map((copy) =>
           testimonials.map((testimonial, index) => (
             <TestimonialCard key={`${rowKey}-${copy}-${index}`} testimonial={testimonial} />
           ))
@@ -101,7 +101,7 @@ const TestimonialsSection: React.FC = memo(() => {
         <ScrollRow testimonials={startup} direction="left" rowKey="startup" />
       </div>
 
-      <div className="text-center mt-8">
+      <div className="text-center mt-8 space-x-4">
         <a
           href="https://www.hrd.go.kr"
           target="_blank"

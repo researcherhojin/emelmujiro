@@ -28,8 +28,8 @@ module.exports = {
       animation: {
         scroll: 'scroll 32s linear infinite',
         'scroll-reverse': 'scroll-reverse 32s linear infinite',
-        'scroll-testimonial': 'scroll 45s linear infinite',
-        'scroll-testimonial-reverse': 'scroll-reverse 45s linear infinite',
+        'scroll-testimonial': 'scroll-testimonial 60s linear infinite',
+        'scroll-testimonial-reverse': 'scroll-testimonial-reverse 60s linear infinite',
       },
       keyframes: {
         scroll: {
@@ -38,6 +38,14 @@ module.exports = {
         },
         'scroll-reverse': {
           '0%': { transform: 'translateX(-33.333%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+        'scroll-testimonial': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-20%)' },
+        },
+        'scroll-testimonial-reverse': {
+          '0%': { transform: 'translateX(-20%)' },
           '100%': { transform: 'translateX(0)' },
         },
       },
