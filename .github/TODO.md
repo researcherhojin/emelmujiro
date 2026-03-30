@@ -10,9 +10,3 @@
 
 - [ ] 강의이력 필터 UI (연도별, 기관유형별) — 현재 연도 그룹핑으로 충분하지만 건수 증가 시 필요
 - [ ] 멘토링/활동 이력 추가 여부 검토 (ICT 피우다, 해커톤 멘토, 오픈소스 컨트리뷰션 등)
-
-## 3. i18n 정리 (dead keys)
-
-- [ ] `achievements` 섹션 전체 삭제 (ko/en) — 컴포넌트에서 0회 참조
-- [ ] `profileData` 섹션 전체 삭제 (ko/en) — 컴포넌트에서 0회 참조 (old profile tabs 데이터)
-- [ ] `profilePage` 미사용 키 삭제: sectionLabel, name, role, completedProjects, totalStudents, partnerCompanies, educationCareer — 각각 0회 참조

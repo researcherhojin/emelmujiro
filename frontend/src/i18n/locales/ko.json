@@ -192,45 +192,16 @@
     "relatedImage": "관련 이미지",
     "author": "작성자:"
   },
-  "achievements": {
-    "sectionLabel": "KEY ACHIEVEMENTS",
-    "title": "주요 성과",
-    "items": {
-      "championAward": {
-        "highlight": "AI 해커톤 챔피언",
-        "description": "2024 국내 AI 해커톤 대회 우승"
-      },
-      "daconWin": {
-        "highlight": "데이콘 입상",
-        "description": "데이터 분석 경진대회 다수 수상"
-      },
-      "ictComplex": {
-        "highlight": "ICT콤플렉스 수상",
-        "description": "270팀 중 15팀 선정, 경계선지능인 분야 3위"
-      },
-      "corporateTraining": {
-        "highlight": "대기업 교육 파트너",
-        "description": "삼성, LG, SKT 등 주요 기업 AI 교육 수행"
-      }
-    }
-  },
   "logos": {
     "sectionLabel": "TRUSTED BY",
     "title": "함께한 기업 및 기관",
     "logoAlt": "{{name}} 로고"
   },
   "profilePage": {
-    "sectionLabel": "TEACHING HISTORY",
     "seoTitle": "강의이력 - 에멜무지로",
     "seoDescription": "에멜무지로의 AI 교육·컨설팅 강의 이력입니다. 삼성전자, LG전자, 현대건설, SKT 등 대기업부터 공공기관·대학교까지 5년간 50건 이상의 교육을 수행했습니다.",
     "seoKeywords": "이호진, AI 전문가, AI Agent, Computer Vision, RAG, MCP, 바이브 코딩, 창업멘토링, 에멜무지로 대표, AI 교육, AI 컨설팅",
-    "name": "이호진",
-    "role": "AI Researcher & Educator",
-    "backToMain": "메인으로 돌아가기",
-    "completedProjects": "완료 프로젝트",
-    "totalStudents": "누적 교육생",
-    "partnerCompanies": "협력 기업",
-    "educationCareer": "교육 경력"
+    "backToMain": "메인으로 돌아가기"
   },
   "notFound": {
     "title": "페이지를 찾을 수 없습니다",
@@ -477,162 +448,6 @@
       "description": "에멜무지로의 AI 교육, 컨설팅, 에이전트 개발 서비스에 대해 자주 묻는 질문과 답변을 확인하세요."
     }
   },
-  "profileData": {
-    "career": [
-      {
-        "period": "2024.12 ~ 현재",
-        "company": "에멜무지로",
-        "position": "대표",
-        "description": "AI 교육·컨설팅 전문 기업 창업 · LLM/RAG 기반 솔루션 개발"
-      },
-      {
-        "period": "2023.05 ~ 현재",
-        "company": "멋쟁이사자처럼",
-        "position": "AI 전문 강사",
-        "description": "AI 컴퓨터비전(CV) 심화과정 1~3기 · AI/IT 창업부트캠프 '스타트업스테이션' 7~10기 · 한국과학창의재단 찾아가는 학교 컨설팅 AI 교육 · 나노융합산업연구조합 산업전문인력 AI 역량강화 교육"
-      },
-      {
-        "period": "2023.05 ~ 2024.09",
-        "company": "엘리스",
-        "position": "AI/데이터분석 전문 강사",
-        "description": "삼성전자 Spotfire 데이터 분석 · LG전자 Data Science 프로젝트 · Python/ML 기초 교육 · 현대건설 ML/DL 과정"
-      },
-      {
-        "period": "2022.10 ~ 2024.09",
-        "company": "Cobslab",
-        "position": "책임 연구원 / 전문 강사",
-        "description": "삼성전자, LG전자 등 대기업·정부기관 AI 교육 콘텐츠 개발 및 강의"
-      },
-      {
-        "period": "2022.04 ~ 2023.02",
-        "company": "모두의연구소 / 한글과컴퓨터",
-        "position": "AI 교육 강사",
-        "description": "서울대·서울시립대 AI 교육 · SKT Computer Vision · KETI 나노소재 AI 과정 · 서울시 교육청 교원 AI 직무연수"
-      },
-      {
-        "period": "2022.06",
-        "company": "코코넛사일로",
-        "position": "연구원",
-        "description": "사내 AI 모델 성능 개선 · 데이터 바우처 지원사업 프로토타입 개발"
-      }
-    ],
-    "education": [
-      {
-        "period": "2024.09 ~ 2026.06\n(예정)",
-        "school": "한양대학교",
-        "degree": "인공지능융합대학원 인공지능시스템학과 석사과정",
-        "description": "Computer Vision · 지도교수: 조동현 교수"
-      },
-      {
-        "period": "2013.03 ~ 2021.02",
-        "school": "경북대학교",
-        "degree": "축산생명공학 학사",
-        "description": "부전공: 식품공학부 식품응용공학"
-      },
-      {
-        "period": "2021.09 ~ 2022.03",
-        "school": "인공지능 혁신학교 AIFFEL",
-        "degree": "인공지능 개발자 양성과정",
-        "description": "모두의연구소 · Computer Vision 심화 · 프로젝트 명예의 전당 다수 등재"
-      },
-      {
-        "period": "2025.06 ~ 2025.07",
-        "school": "한국기술교육대학교",
-        "degree": "K-디지털교직훈련과정 수료",
-        "description": "PBL 기반 프로젝트 수업 설계 · NCS 기반 교육훈련 프로그램 개발 · 총 164시간"
-      }
-    ],
-    "projects": [
-      {
-        "title": "AI 컴퓨터비전(CV) 심화 과정",
-        "description": "멋쟁이사자처럼 AI 엔지니어 심화 부트캠프 1~3기 운영 · YOLO, RT-DETR, SAM 기반 실전 프로젝트 리딩 · AI 챔피언상 수상팀 및 데이콘 우승팀 배출"
-      },
-      {
-        "title": "대기업·공공기관 AI 교육",
-        "description": "삼성전자, LG전자, 현대건설, SKT, 서울대, 서울시 교육청 등 · CV, ML/DL, 데이터 분석, 생성형 AI 프로젝트 기반 교육 설계 및 운영",
-        "tags": {
-          "3": "생성형 AI"
-        }
-      },
-      {
-        "title": "AlphaDent 치과 병변 탐지",
-        "description": "DINOv3 + Hierarchical MoE + Contrastive Learning 기반 치과 병변 분류 모델 설계 · 9클래스 극심한 클래스 불균형 환경에서의 성능 개선 연구"
-      },
-      {
-        "title": "ICT콤플렉스 피우다 프로젝트",
-        "description": "경계선지능 청소년 AI 학습 지원 서비스 \"이음(E-eum)\" 기획 및 개발 · LLM 기반 쉬운 말 변환 시스템 · 270팀 중 최종 15팀, 분야 3위 수상",
-        "tags": {
-          "3": "사회적 가치"
-        }
-      },
-      {
-        "title": "생성형 AI 교육자 연수",
-        "description": "한국과학창의재단 찾아가는 학교 컨설팅 · 초중고 6개교 교사 및 학부모 대상 ChatGPT 활용 교육",
-        "tags": {
-          "0": "AI 리터러시",
-          "2": "교육 혁신",
-          "3": "생성형 AI"
-        }
-      },
-      {
-        "title": "테킷 스타트업 스테이션",
-        "description": "멋쟁이사자처럼 테킷 스타트업 스테이션 7~10기 운영 · 예비 IT창업자 대상 AI 서비스 설계 및 개발 멘토링 · 정부 창업 지원사업 선정팀 다수 배출",
-        "tags": {
-          "0": "AI 서비스",
-          "1": "MVP 개발",
-          "2": "멘토링",
-          "3": "창업 교육"
-        }
-      },
-      {
-        "title": "산업전문인력 AI 역량강화 교육",
-        "description": "나노융합산업연구조합 협력 · 나노소재 빅데이터 AI 융합 교육 · SECOM 반도체 공정 고장예측 · CNT/수지 복합소재 구조분석 시뮬레이션",
-        "tags": {
-          "0": "빅데이터",
-          "1": "산업 AI",
-          "2": "시뮬레이션",
-          "3": "제조 AI"
-        }
-      },
-      {
-        "title": "Visual Python 오픈소스 개발",
-        "description": "2022 오픈소스 컨트리뷰션 아카데미 · Visual Python ML/Statistics 모듈 개발",
-        "tags": {
-          "2": "시각화",
-          "3": "오픈소스"
-        }
-      }
-    ],
-    "categories": [
-      {
-        "label": "전체"
-      },
-      {
-        "label": "기업 교육"
-      },
-      {
-        "label": "부트캠프"
-      },
-      {
-        "label": "교육 혁신"
-      },
-      {
-        "label": "스타트업"
-      },
-      {
-        "label": "연구/개발"
-      }
-    ],
-    "expertise": [
-      "생성형 AI 실무 활용",
-      "Python 기반 업무자동화",
-      "LLM · Prompt Engineering",
-      "RAG · AI Agent 설계",
-      "바이브 코딩 기반 PoC 구현",
-      "프로젝트형 기술 멘토링"
-    ],
-    "expertiseLabel": "전문 분야"
-  },
   "teachingHistory": {
     "pageTitle": "강의이력",
     "pageSubtitle": "교육 및 프로젝트 멘토링 전체 이력입니다.",
@@ -643,51 +458,150 @@
       "org": "한국환경산업기술원",
       "title": "AI에코혁신랩 — LLM·RAG 실무 교육 & ML 프로젝트 멘토링"
     },
-    "1": { "org": "멋쟁이사자처럼", "title": "Python 부트캠프 — 서비스 운영 & 포트폴리오 특강" },
-    "2": { "org": "국회도서관", "title": "바이브코딩 기반 AI Agent 서비스 구축" },
-    "3": { "org": "국토안전관리원", "title": "AI Agent 개발 및 프로토타이핑 실전 교육" },
-    "4": { "org": "고용노동부", "title": "AI 컴퓨터비전(CV) 심화 과정 3기" },
-    "5": { "org": "고용노동부", "title": "AI 컴퓨터비전(CV) 심화 과정 2기" },
-    "6": { "org": "나노융합산업연구조합", "title": "산업전문인력 AI 역량강화 교육" },
-    "7": { "org": "한국과학창의재단", "title": "찾아가는 학교 컨설팅 AI 교육" },
-    "8": { "org": "고용노동부", "title": "AI/IT 창업부트캠프 '스타트업 스테이션' 10기" },
-    "9": { "org": "한국과학창의재단", "title": "찾아가는 학교 컨설팅 AI 교육" },
-    "10": { "org": "고용노동부", "title": "AI 컴퓨터비전(CV) 심화 과정 1기" },
-    "11": { "org": "KT", "title": "DSC공유대학 × KT AI+X 서비스 사례분석 특강" },
-    "12": { "org": "고용노동부", "title": "AI/IT 창업부트캠프 '스타트업 스테이션' 9기" },
-    "13": { "org": "고용노동부", "title": "AI/IT 창업부트캠프 '스타트업 스테이션' 8기" },
-    "14": { "org": "삼성전자", "title": "DS Spotfire 데이터 분석 및 시각화" },
-    "15": { "org": "고용노동부", "title": "AI/IT 창업부트캠프 '스타트업 스테이션' 7기" },
-    "16": { "org": "충남ICT이노베이션", "title": "비전공자를 위한 Python 교육" },
-    "17": { "org": "삼성전자", "title": "Python 프로그래밍 기초" },
-    "18": { "org": "삼성전자", "title": "신입사원 DX 교육 — 머신러닝" },
+    "1": {
+      "org": "멋쟁이사자처럼",
+      "title": "Python 부트캠프 — 서비스 운영 & 포트폴리오 특강"
+    },
+    "2": {
+      "org": "국회도서관",
+      "title": "바이브코딩 기반 AI Agent 서비스 구축"
+    },
+    "3": {
+      "org": "국토안전관리원",
+      "title": "AI Agent 개발 및 프로토타이핑 실전 교육"
+    },
+    "4": {
+      "org": "고용노동부",
+      "title": "AI 컴퓨터비전(CV) 심화 과정 3기"
+    },
+    "5": {
+      "org": "고용노동부",
+      "title": "AI 컴퓨터비전(CV) 심화 과정 2기"
+    },
+    "6": {
+      "org": "나노융합산업연구조합",
+      "title": "산업전문인력 AI 역량강화 교육"
+    },
+    "7": {
+      "org": "한국과학창의재단",
+      "title": "찾아가는 학교 컨설팅 AI 교육"
+    },
+    "8": {
+      "org": "고용노동부",
+      "title": "AI/IT 창업부트캠프 '스타트업 스테이션' 10기"
+    },
+    "9": {
+      "org": "한국과학창의재단",
+      "title": "찾아가는 학교 컨설팅 AI 교육"
+    },
+    "10": {
+      "org": "고용노동부",
+      "title": "AI 컴퓨터비전(CV) 심화 과정 1기"
+    },
+    "11": {
+      "org": "KT",
+      "title": "DSC공유대학 × KT AI+X 서비스 사례분석 특강"
+    },
+    "12": {
+      "org": "고용노동부",
+      "title": "AI/IT 창업부트캠프 '스타트업 스테이션' 9기"
+    },
+    "13": {
+      "org": "고용노동부",
+      "title": "AI/IT 창업부트캠프 '스타트업 스테이션' 8기"
+    },
+    "14": {
+      "org": "삼성전자",
+      "title": "DS Spotfire 데이터 분석 및 시각화"
+    },
+    "15": {
+      "org": "고용노동부",
+      "title": "AI/IT 창업부트캠프 '스타트업 스테이션' 7기"
+    },
+    "16": {
+      "org": "충남ICT이노베이션",
+      "title": "비전공자를 위한 Python 교육"
+    },
+    "17": {
+      "org": "삼성전자",
+      "title": "Python 프로그래밍 기초"
+    },
+    "18": {
+      "org": "삼성전자",
+      "title": "신입사원 DX 교육 — 머신러닝"
+    },
     "19": {
       "org": "현대건설",
       "title": "산업전문인력 AI역량강화 — ML/DL & CV (Detection, Segmentation)"
     },
-    "20": { "org": "삼성전자", "title": "DS Spotfire 데이터 분석 기본 & 심화" },
+    "20": {
+      "org": "삼성전자",
+      "title": "DS Spotfire 데이터 분석 기본 & 심화"
+    },
     "21": {
       "org": "동남권 ICT이노베이션스퀘어",
       "title": "풀스택 개발자 양성 부트캠프 (부산·울산·경남)"
     },
-    "22": { "org": "LG전자", "title": "Data Science 프로젝트" },
-    "23": { "org": "제주더큰내일센터", "title": "Python 백엔드 과정" },
-    "24": { "org": "SKT", "title": "컴퓨터비전 (with. OpenCV)" },
-    "25": { "org": "한글과컴퓨터", "title": "논문 기반 영상 처리 딥러닝 모델 설계" },
-    "26": { "org": "성균관대·인하대·경기대", "title": "헬스케어 AI 프로젝트" },
-    "27": { "org": "전북산학융합원", "title": "스마트 팩토리 데이터 머신러닝" },
-    "28": { "org": "한글과컴퓨터", "title": "인공지능 기본부터 자연어처리까지 (Python)" },
-    "29": { "org": "한글과컴퓨터", "title": "인공지능 기본부터 이미지처리까지 (DX)" },
-    "30": { "org": "KETI(한국전자기술연구원)", "title": "Jetson TX2 엣지 AI Python 강의" },
+    "22": {
+      "org": "LG전자",
+      "title": "Data Science 프로젝트"
+    },
+    "23": {
+      "org": "제주더큰내일센터",
+      "title": "Python 백엔드 과정"
+    },
+    "24": {
+      "org": "SKT",
+      "title": "컴퓨터비전 (with. OpenCV)"
+    },
+    "25": {
+      "org": "한글과컴퓨터",
+      "title": "논문 기반 영상 처리 딥러닝 모델 설계"
+    },
+    "26": {
+      "org": "성균관대·인하대·경기대",
+      "title": "헬스케어 AI 프로젝트"
+    },
+    "27": {
+      "org": "전북산학융합원",
+      "title": "스마트 팩토리 데이터 머신러닝"
+    },
+    "28": {
+      "org": "한글과컴퓨터",
+      "title": "인공지능 기본부터 자연어처리까지 (Python)"
+    },
+    "29": {
+      "org": "한글과컴퓨터",
+      "title": "인공지능 기본부터 이미지처리까지 (DX)"
+    },
+    "30": {
+      "org": "KETI(한국전자기술연구원)",
+      "title": "Jetson TX2 엣지 AI Python 강의"
+    },
     "31": {
       "org": "KETI(한국전자기술연구원)",
       "title": "나노 소재 빅데이터 활용 AI융합 전문가 과정"
     },
-    "32": { "org": "한글과컴퓨터", "title": "DL 기반 텍스트 분류 NLP 실습 프로젝트" },
-    "33": { "org": "서울시립대학교", "title": "캠퍼스타운형 취업사관학교 AI 과정" },
-    "34": { "org": "서울대학교", "title": "사범대 Python 프로그래밍 특강" },
-    "35": { "org": "서울특별시 교육청", "title": "교원 직무연수 — 디지털 전환 AI 전문가 과정" },
-    "36": { "org": "LG전자", "title": "임직원 AI 집중 교육" }
+    "32": {
+      "org": "한글과컴퓨터",
+      "title": "DL 기반 텍스트 분류 NLP 실습 프로젝트"
+    },
+    "33": {
+      "org": "서울시립대학교",
+      "title": "캠퍼스타운형 취업사관학교 AI 과정"
+    },
+    "34": {
+      "org": "서울대학교",
+      "title": "사범대 Python 프로그래밍 특강"
+    },
+    "35": {
+      "org": "서울특별시 교육청",
+      "title": "교원 직무연수 — 디지털 전환 AI 전문가 과정"
+    },
+    "36": {
+      "org": "LG전자",
+      "title": "임직원 AI 집중 교육"
+    }
   },
   "notifications": {
     "title": "알림",

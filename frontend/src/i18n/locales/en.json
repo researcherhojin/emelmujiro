@@ -196,45 +196,16 @@
     "relatedImage": "related image",
     "author": "Author:"
   },
-  "achievements": {
-    "sectionLabel": "KEY ACHIEVEMENTS",
-    "title": "Key Achievements",
-    "items": {
-      "championAward": {
-        "highlight": "AI Hackathon Champion",
-        "description": "Won 2024 national AI hackathon competition"
-      },
-      "daconWin": {
-        "highlight": "Dacon Award Winner",
-        "description": "Multiple data analysis competition awards"
-      },
-      "ictComplex": {
-        "highlight": "ICT Complex Award",
-        "description": "Top 15 out of 270 teams, 3rd place in borderline intelligence"
-      },
-      "corporateTraining": {
-        "highlight": "Enterprise Training Partner",
-        "description": "AI training for Samsung, LG, SKT and other major corporations"
-      }
-    }
-  },
   "logos": {
     "sectionLabel": "TRUSTED BY",
     "title": "Companies We've Worked With",
     "logoAlt": "{{name}} logo"
   },
   "profilePage": {
-    "sectionLabel": "TEACHING HISTORY",
     "seoTitle": "Teaching History - Emelmujiro",
     "seoDescription": "Emelmujiro's AI education & consulting track record. 50+ programs delivered over 5 years for Samsung, LG, Hyundai, SK Telecom, government agencies and universities.",
     "seoKeywords": "Hojin Lee, AI expert, AI Agent, Computer Vision, RAG, MCP, Vibe Coding, startup mentoring, Emelmujiro CEO, AI education, AI consulting",
-    "name": "Hojin Lee",
-    "role": "AI Researcher & Educator",
-    "backToMain": "Back to Home",
-    "completedProjects": "Completed Projects",
-    "totalStudents": "Trained Talents",
-    "partnerCompanies": "Partner Companies",
-    "educationCareer": "Teaching Career"
+    "backToMain": "Back to Home"
   },
   "notFound": {
     "title": "Page Not Found",
@@ -481,162 +452,6 @@
       "description": "Find answers to frequently asked questions about Emelmujiro's AI education, consulting, and agent development services."
     }
   },
-  "profileData": {
-    "career": [
-      {
-        "period": "2024.12 ~ Present",
-        "company": "Emelmujiro",
-        "position": "CEO",
-        "description": "Founded AI education & consulting company · LLM/RAG-based solution development"
-      },
-      {
-        "period": "2023.05 ~ Present",
-        "company": "Likelion",
-        "position": "AI Expert Instructor",
-        "description": "AI Computer Vision (CV) Advanced Course Cohorts 1-3 · AI/IT Startup Bootcamp 'Startup Station' Cohorts 7-10 · KOFAC School Consulting AI Education · Nano Convergence Industry Association Industrial AI Upskilling Program"
-      },
-      {
-        "period": "2023.05 ~ 2024.09",
-        "company": "Elice",
-        "position": "AI/Data Analysis Expert Instructor",
-        "description": "Samsung Electronics Spotfire Data Analysis · LG Electronics Data Science Project · Python/ML Fundamentals · Hyundai E&C ML/DL Course"
-      },
-      {
-        "period": "2022.10 ~ 2024.09",
-        "company": "Cobslab",
-        "position": "Lead Researcher / Expert Instructor",
-        "description": "AI education content development and instruction for major enterprises and government agencies including Samsung and LG"
-      },
-      {
-        "period": "2022.04 ~ 2023.02",
-        "company": "Modulabs / Hancom",
-        "position": "AI Education Instructor",
-        "description": "SNU & UOS AI Education · SKT Computer Vision · KETI Nanomaterials AI Course · Seoul Education Office Teacher AI Training"
-      },
-      {
-        "period": "2022.06",
-        "company": "Coconut Silo",
-        "position": "Researcher",
-        "description": "Internal AI model performance improvement · Data Voucher Program Prototype Development"
-      }
-    ],
-    "education": [
-      {
-        "period": "2024.09 ~ 2026.06\n(Expected)",
-        "school": "Hanyang University",
-        "degree": "M.S. in AI Systems, Graduate School of AI Convergence",
-        "description": "Computer Vision · Advisor: Prof. Donghyun Cho"
-      },
-      {
-        "period": "2013.03 ~ 2021.02",
-        "school": "Kyungpook National University",
-        "degree": "B.S. in Animal Science & Biotechnology",
-        "description": "Minor: Food Science & Applied Engineering"
-      },
-      {
-        "period": "2021.09 ~ 2022.03",
-        "school": "AIFFEL AI Innovation School",
-        "degree": "AI Developer Training Program",
-        "description": "Modulabs · Computer Vision Advanced · Multiple Project Hall of Fame listings"
-      },
-      {
-        "period": "2025.06 ~ 2025.07",
-        "school": "Korea University of Technology and Education",
-        "degree": "K-Digital Teaching Training Course",
-        "description": "PBL-based project class design · NCS-based training program development · 164 hours total"
-      }
-    ],
-    "projects": [
-      {
-        "title": "AI Computer Vision (CV) Advanced Course",
-        "description": "Operated Likelion AI Engineer Advanced Bootcamp Cohorts 1-3 · Led hands-on projects with YOLO, RT-DETR, SAM · Produced AI Champion Award and Dacon competition winning teams"
-      },
-      {
-        "title": "Enterprise & Public Institution AI Education",
-        "description": "Samsung Electronics, LG Electronics, Hyundai E&C, SKT, SNU, Seoul Education Office, etc. · Designed and operated project-based education in CV, ML/DL, Data Analysis, and Generative AI",
-        "tags": {
-          "3": "Generative AI"
-        }
-      },
-      {
-        "title": "AlphaDent Dental Lesion Detection",
-        "description": "DINOv3 + Hierarchical MoE + Contrastive Learning-based dental lesion classification model design · Performance improvement research under severe class imbalance across 9 classes"
-      },
-      {
-        "title": "ICT Complex Piuda Project",
-        "description": "Planned and developed \"E-eum\" AI learning support service for borderline intellectual functioning youth · LLM-based plain language conversion system · Top 15 out of 270 teams, 3rd place in category",
-        "tags": {
-          "3": "Social Impact"
-        }
-      },
-      {
-        "title": "Generative AI Educator Training",
-        "description": "KOFAC School Consulting Program · ChatGPT utilization training for teachers and parents at 6 K-12 schools",
-        "tags": {
-          "0": "AI Literacy",
-          "2": "Education Innovation",
-          "3": "Generative AI"
-        }
-      },
-      {
-        "title": "Tekit Startup Station",
-        "description": "Operated Likelion Tekit Startup Station Cohorts 7-10 · AI service design and development mentoring for aspiring IT entrepreneurs · Produced multiple teams selected for government startup support programs",
-        "tags": {
-          "0": "AI Services",
-          "1": "MVP Development",
-          "2": "Mentoring",
-          "3": "Startup Education"
-        }
-      },
-      {
-        "title": "Industrial AI Upskilling Program",
-        "description": "Collaboration with Nano Convergence Industry Research Association · Nanomaterial big data AI convergence education · SECOM semiconductor process failure prediction · CNT/resin composite structural analysis simulation",
-        "tags": {
-          "0": "Big Data",
-          "1": "Industrial AI",
-          "2": "Simulation",
-          "3": "Manufacturing AI"
-        }
-      },
-      {
-        "title": "Visual Python Open Source Development",
-        "description": "2022 Open Source Contribution Academy · Visual Python ML/Statistics module development",
-        "tags": {
-          "2": "Visualization",
-          "3": "Open Source"
-        }
-      }
-    ],
-    "categories": [
-      {
-        "label": "All"
-      },
-      {
-        "label": "Enterprise"
-      },
-      {
-        "label": "Bootcamp"
-      },
-      {
-        "label": "Education Innovation"
-      },
-      {
-        "label": "Startup"
-      },
-      {
-        "label": "R&D"
-      }
-    ],
-    "expertise": [
-      "Generative AI for Business",
-      "Python-based Workflow Automation",
-      "LLM · Prompt Engineering",
-      "RAG · AI Agent Design",
-      "Vibe Coding-based PoC Development",
-      "Project-based Tech Mentoring"
-    ],
-    "expertiseLabel": "Areas of Expertise"
-  },
   "teachingHistory": {
     "pageTitle": "Teaching History",
     "pageSubtitle": "Full record of education and project mentoring.",
@@ -671,17 +486,26 @@
       "org": "Nano Convergence Industry Association",
       "title": "Industrial AI Upskilling Program"
     },
-    "7": { "org": "KOFAC", "title": "School Consulting AI Education" },
+    "7": {
+      "org": "KOFAC",
+      "title": "School Consulting AI Education"
+    },
     "8": {
       "org": "Ministry of Employment and Labor",
       "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 10"
     },
-    "9": { "org": "KOFAC", "title": "School Consulting AI Education" },
+    "9": {
+      "org": "KOFAC",
+      "title": "School Consulting AI Education"
+    },
     "10": {
       "org": "Ministry of Employment and Labor",
       "title": "AI Computer Vision (CV) Advanced Course Cohort 1"
     },
-    "11": { "org": "KT", "title": "DSC University × KT AI+X Service Case Study Lecture" },
+    "11": {
+      "org": "KT",
+      "title": "DSC University × KT AI+X Service Case Study Lecture"
+    },
     "12": {
       "org": "Ministry of Employment and Labor",
       "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 9"
@@ -690,14 +514,26 @@
       "org": "Ministry of Employment and Labor",
       "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 8"
     },
-    "14": { "org": "Samsung Electronics", "title": "DS Spotfire Data Analysis & Visualization" },
+    "14": {
+      "org": "Samsung Electronics",
+      "title": "DS Spotfire Data Analysis & Visualization"
+    },
     "15": {
       "org": "Ministry of Employment and Labor",
       "title": "AI/IT Startup Bootcamp 'Startup Station' Cohort 7"
     },
-    "16": { "org": "Chungnam ICT Innovation", "title": "Python for Non-Developers" },
-    "17": { "org": "Samsung Electronics", "title": "Python Programming Fundamentals" },
-    "18": { "org": "Samsung Electronics", "title": "New Employee DX Training — Machine Learning" },
+    "16": {
+      "org": "Chungnam ICT Innovation",
+      "title": "Python for Non-Developers"
+    },
+    "17": {
+      "org": "Samsung Electronics",
+      "title": "Python Programming Fundamentals"
+    },
+    "18": {
+      "org": "Samsung Electronics",
+      "title": "New Employee DX Training — Machine Learning"
+    },
     "19": {
       "org": "Hyundai E&C",
       "title": "Industrial AI Upskilling — ML/DL & CV (Detection, Segmentation)"
@@ -710,21 +546,54 @@
       "org": "Southeast ICT Innovation Square",
       "title": "Full-Stack Developer Bootcamp (Busan · Ulsan · Gyeongnam)"
     },
-    "22": { "org": "LG Electronics", "title": "Data Science Project" },
-    "23": { "org": "Jeju Greater Tomorrow Center", "title": "Python Backend Course" },
-    "24": { "org": "SK Telecom", "title": "Computer Vision (with OpenCV)" },
-    "25": { "org": "Hancom", "title": "Paper-Based Image Processing Deep Learning Model Design" },
-    "26": { "org": "SKK Univ. · Inha Univ. · Kyonggi Univ.", "title": "Healthcare AI Project" },
+    "22": {
+      "org": "LG Electronics",
+      "title": "Data Science Project"
+    },
+    "23": {
+      "org": "Jeju Greater Tomorrow Center",
+      "title": "Python Backend Course"
+    },
+    "24": {
+      "org": "SK Telecom",
+      "title": "Computer Vision (with OpenCV)"
+    },
+    "25": {
+      "org": "Hancom",
+      "title": "Paper-Based Image Processing Deep Learning Model Design"
+    },
+    "26": {
+      "org": "SKK Univ. · Inha Univ. · Kyonggi Univ.",
+      "title": "Healthcare AI Project"
+    },
     "27": {
       "org": "Jeonbuk Industry-Academia Institute",
       "title": "Smart Factory Data Machine Learning"
     },
-    "28": { "org": "Hancom", "title": "AI Fundamentals to NLP (Python)" },
-    "29": { "org": "Hancom", "title": "AI Fundamentals to Image Processing (DX)" },
-    "30": { "org": "KETI", "title": "Jetson TX2 Edge AI Python Course" },
-    "31": { "org": "KETI", "title": "Nanomaterial Big Data AI Convergence Expert Course" },
-    "32": { "org": "Hancom", "title": "DL-Based Text Classification NLP Hands-on Project" },
-    "33": { "org": "University of Seoul", "title": "Campus Town Career Academy AI Course" },
+    "28": {
+      "org": "Hancom",
+      "title": "AI Fundamentals to NLP (Python)"
+    },
+    "29": {
+      "org": "Hancom",
+      "title": "AI Fundamentals to Image Processing (DX)"
+    },
+    "30": {
+      "org": "KETI",
+      "title": "Jetson TX2 Edge AI Python Course"
+    },
+    "31": {
+      "org": "KETI",
+      "title": "Nanomaterial Big Data AI Convergence Expert Course"
+    },
+    "32": {
+      "org": "Hancom",
+      "title": "DL-Based Text Classification NLP Hands-on Project"
+    },
+    "33": {
+      "org": "University of Seoul",
+      "title": "Campus Town Career Academy AI Course"
+    },
     "34": {
       "org": "Seoul National University",
       "title": "College of Education Python Programming Workshop"
@@ -733,7 +602,10 @@
       "org": "Seoul Metropolitan Office of Education",
       "title": "Teacher Training — DX AI Expert Course"
     },
-    "36": { "org": "LG Electronics", "title": "Employee AI Intensive" }
+    "36": {
+      "org": "LG Electronics",
+      "title": "Employee AI Intensive"
+    }
   },
   "notifications": {
     "title": "Notifications",
