@@ -749,7 +749,7 @@ describe('BlogDetail Component', () => {
     renderComponent();
 
     fireEvent.click(screen.getByText('common.edit'));
-    expect(mockLocalizedNavigate).toHaveBeenCalledWith('/blog/edit/1');
+    expect(mockLocalizedNavigate).toHaveBeenCalledWith('/insights/edit/1');
   });
 
   test('renders post without image_url', () => {
@@ -1107,7 +1107,7 @@ describe('BlogDetail Component', () => {
     expect(mockToggleBlogPublish).not.toHaveBeenCalled();
   });
 
-  test('handleDelete setTimeout callback navigates to /blog after 500ms (line 57)', async () => {
+  test('handleDelete setTimeout callback navigates to /insights after 500ms (line 57)', async () => {
     vi.useFakeTimers();
 
     mockUser = { role: 'admin' };
@@ -1157,7 +1157,7 @@ describe('BlogDetail Component', () => {
     // Advance timers past the 500ms setTimeout
     await vi.advanceTimersByTimeAsync(500);
 
-    expect(mockLocalizedNavigate).toHaveBeenCalledWith('/blog');
+    expect(mockLocalizedNavigate).toHaveBeenCalledWith('/insights');
 
     vi.useRealTimers();
   });

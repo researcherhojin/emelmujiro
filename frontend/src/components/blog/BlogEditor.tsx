@@ -157,7 +157,7 @@ const BlogEditor: React.FC = () => {
         showToast(t('blogEditor.postSaved', 'Post saved'), 'success');
       }
 
-      setTimeout(() => localizedNavigate('/blog'), 500);
+      setTimeout(() => localizedNavigate('/insights'), 500);
     } catch (error) {
       logger.error('Failed to save post:', error);
       showToast(t('blogEditor.saveError', 'Failed to save'), 'error');
@@ -179,7 +179,7 @@ const BlogEditor: React.FC = () => {
             {t('blogEditor.adminDescription')}
           </p>
           <button
-            onClick={() => localizedNavigate('/blog')}
+            onClick={() => localizedNavigate('/insights')}
             className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
           >
             {t('blogEditor.backToBlog', 'Back to Blog')}
@@ -206,7 +206,7 @@ const BlogEditor: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <button
-            onClick={() => localizedNavigate('/blog')}
+            onClick={() => localizedNavigate('/insights')}
             className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />

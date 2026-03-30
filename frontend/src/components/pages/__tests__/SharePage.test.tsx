@@ -326,7 +326,7 @@ describe('SharePage', () => {
     );
 
     fireEvent.click(screen.getByText('share.browseBlog'));
-    expect(mockNavigate).toHaveBeenCalledWith('/blog');
+    expect(mockNavigate).toHaveBeenCalledWith('/insights');
   });
 
   it('navigates to about page when aboutCompany link is clicked', async () => {

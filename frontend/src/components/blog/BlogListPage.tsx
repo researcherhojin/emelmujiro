@@ -87,7 +87,7 @@ const BlogListPage: React.FC = memo(() => {
       <SEOHelmet
         title={t('blog.seo.title')}
         description={t('blog.seo.description')}
-        url={`${SITE_URL}/blog`}
+        url={`${SITE_URL}/insights`}
       />
 
       <div className="min-h-screen bg-white dark:bg-gray-900">

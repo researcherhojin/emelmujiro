@@ -63,7 +63,7 @@ describe('Navbar Component', () => {
 
     const blogButton = screen.getByRole('button', { name: 'common.blog' });
     fireEvent.click(blogButton);
-    expect(mockNavigate).toHaveBeenCalledWith('/blog');
+    expect(mockNavigate).toHaveBeenCalledWith('/insights');
   });
 
   test('mobile menu button toggles menu', () => {
@@ -204,7 +204,7 @@ describe('Navbar Component', () => {
 
     // Menu should close
     expect(screen.getAllByText('common.blog')).toHaveLength(1);
-    expect(mockNavigate).toHaveBeenCalledWith('/blog');
+    expect(mockNavigate).toHaveBeenCalledWith('/insights');
   });
 
   it('cleans up scroll listener on unmount', () => {
@@ -223,11 +223,11 @@ describe('Navbar Component', () => {
     const blogButton = screen.getByRole('button', { name: 'common.blog' });
     fireEvent.click(blogButton);
 
-    expect(mockNavigate).toHaveBeenCalledWith('/blog');
+    expect(mockNavigate).toHaveBeenCalledWith('/insights');
   });
 
   it('highlights active nav item when pathname matches (line 59)', () => {
-    mockLocation.pathname = '/blog';
+    mockLocation.pathname = '/insights';
     mockLocation.hash = '';
 
     renderWithProviders(<Navbar />);
@@ -246,7 +246,7 @@ describe('Navbar Component', () => {
   });
 
   it('applies inactive styling to non-active nav items (branch lines 116-144)', () => {
-    mockLocation.pathname = '/blog';
+    mockLocation.pathname = '/insights';
     renderWithProviders(<Navbar />);
 
     // Profile is NOT active when on /blog — should have inactive text-gray-600
@@ -278,7 +278,7 @@ describe('Navbar Component', () => {
       langPrefix: '/en',
       localizedPath: (p: string) => `/en${p === '/' ? '' : p}`,
       localizedNavigate: vi.fn(),
-      switchLanguagePath: (lang: string) => (lang === 'ko' ? '/blog' : '/en/blog'),
+      switchLanguagePath: (lang: string) => (lang === 'ko' ? '/insights' : '/en/insights'),
       supportedLangs: ['ko', 'en'] as const,
       defaultLang: 'ko',
     });
@@ -291,7 +291,7 @@ describe('Navbar Component', () => {
 
     // Click should navigate to Korean path (targetLang = 'ko' since currentLang is 'en')
     fireEvent.click(langButtons[0]);
-    expect(mockNavigate).toHaveBeenCalledWith('/blog');
+    expect(mockNavigate).toHaveBeenCalledWith('/insights');
 
     spy.mockRestore();
   });
@@ -313,7 +313,7 @@ describe('Navbar Component', () => {
   });
 
   it('applies active styling to mobile nav items (mobile branch lines 116-144)', () => {
-    mockLocation.pathname = '/blog';
+    mockLocation.pathname = '/insights';
     renderWithProviders(<Navbar />);
 
     // Open mobile menu

@@ -247,7 +247,7 @@ ${t('share.inquiryFooter')}
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{t('share.otherOptions')}</p>
           <div className="flex flex-wrap justify-center gap-4">
             <button
-              onClick={() => localizedNavigate('/blog')}
+              onClick={() => localizedNavigate('/insights')}
               className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
             >
               {t('share.browseBlog')}

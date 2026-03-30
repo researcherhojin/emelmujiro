@@ -15,20 +15,20 @@ describe('getLangFromPath', () => {
   it('returns "ko" for Korean paths (no prefix)', () => {
     expect(getLangFromPath('/')).toBe('ko');
     expect(getLangFromPath('/about')).toBe('ko');
-    expect(getLangFromPath('/blog/123')).toBe('ko');
+    expect(getLangFromPath('/insights/123')).toBe('ko');
   });
 
   it('returns "en" for English paths', () => {
     expect(getLangFromPath('/en')).toBe('en');
     expect(getLangFromPath('/en/')).toBe('en');
     expect(getLangFromPath('/en/about')).toBe('en');
-    expect(getLangFromPath('/en/blog/123')).toBe('en');
+    expect(getLangFromPath('/en/insights/123')).toBe('en');
   });
 
   it('returns "ko" for paths that contain "en" but not as prefix', () => {
     expect(getLangFromPath('/enable')).toBe('ko');
     expect(getLangFromPath('/content')).toBe('ko');
-    expect(getLangFromPath('/blog/en-post')).toBe('ko');
+    expect(getLangFromPath('/insights/en-post')).toBe('ko');
   });
 });
 
@@ -50,7 +50,7 @@ describe('getLangPrefix', () => {
 describe('stripLangPrefix', () => {
   it('strips /en prefix from paths', () => {
     expect(stripLangPrefix('/en/about')).toBe('/about');
-    expect(stripLangPrefix('/en/blog/123')).toBe('/blog/123');
+    expect(stripLangPrefix('/en/insights/123')).toBe('/insights/123');
   });
 
   it('returns "/" for /en root', () => {
@@ -61,7 +61,7 @@ describe('stripLangPrefix', () => {
   it('does not strip from Korean paths (no prefix)', () => {
     expect(stripLangPrefix('/')).toBe('/');
     expect(stripLangPrefix('/about')).toBe('/about');
-    expect(stripLangPrefix('/blog/123')).toBe('/blog/123');
+    expect(stripLangPrefix('/insights/123')).toBe('/insights/123');
   });
 
   it('does not strip "en" when not a prefix segment', () => {
@@ -73,13 +73,13 @@ describe('stripLangPrefix', () => {
 describe('buildLocalizedPath', () => {
   it('builds Korean paths without prefix', () => {
     expect(buildLocalizedPath('/about', 'ko')).toBe('/about');
-    expect(buildLocalizedPath('/blog/123', 'ko')).toBe('/blog/123');
+    expect(buildLocalizedPath('/insights/123', 'ko')).toBe('/insights/123');
     expect(buildLocalizedPath('/', 'ko')).toBe('/');
   });
 
   it('builds English paths with /en prefix', () => {
     expect(buildLocalizedPath('/about', 'en')).toBe('/en/about');
-    expect(buildLocalizedPath('/blog/123', 'en')).toBe('/en/blog/123');
+    expect(buildLocalizedPath('/insights/123', 'en')).toBe('/en/insights/123');
     expect(buildLocalizedPath('/', 'en')).toBe('/en');
   });
 
@@ -122,8 +122,8 @@ function createWrapper(initialEntries: string[]) {
           React.createElement(Route, { index: true, element: children }),
           React.createElement(Route, { path: 'about', element: children }),
           React.createElement(Route, { path: 'contact', element: children }),
-          React.createElement(Route, { path: 'blog', element: children }),
-          React.createElement(Route, { path: 'blog/:id', element: children }),
+          React.createElement(Route, { path: 'insights', element: children }),
+          React.createElement(Route, { path: 'insights/:id', element: children }),
           React.createElement(Route, { path: 'profile', element: children }),
           React.createElement(Route, { path: 'share', element: children })
         ),
@@ -134,8 +134,8 @@ function createWrapper(initialEntries: string[]) {
           React.createElement(Route, { index: true, element: children }),
           React.createElement(Route, { path: 'about', element: children }),
           React.createElement(Route, { path: 'contact', element: children }),
-          React.createElement(Route, { path: 'blog', element: children }),
-          React.createElement(Route, { path: 'blog/:id', element: children }),
+          React.createElement(Route, { path: 'insights', element: children }),
+          React.createElement(Route, { path: 'insights/:id', element: children }),
           React.createElement(Route, { path: 'profile', element: children }),
           React.createElement(Route, { path: 'share', element: children })
         )
@@ -276,9 +276,9 @@ describe('useLocalizedPath hook', () => {
 
     it('switches language on nested path', () => {
       const { result } = renderHook(() => useLocalizedPath(), {
-        wrapper: createWrapper(['/en/blog/123']),
+        wrapper: createWrapper(['/en/insights/123']),
       });
-      expect(result.current.switchLanguagePath('ko')).toBe('/blog/123');
+      expect(result.current.switchLanguagePath('ko')).toBe('/insights/123');
     });
   });
 });

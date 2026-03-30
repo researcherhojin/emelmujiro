@@ -32,7 +32,7 @@ const Navbar: React.FC = memo(() => {
 
   const navItems: NavItem[] = [
     { label: t('common.profile'), path: localizedPath('/profile') },
-    { label: t('common.blog'), path: localizedPath('/blog') },
+    { label: t('common.blog'), path: localizedPath('/insights') },
   ];
 
   const handleNavigation = useCallback(

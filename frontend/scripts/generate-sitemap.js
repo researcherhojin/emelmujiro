@@ -8,7 +8,7 @@ const LANGUAGES = ['ko', 'en'];
 const staticRoutes = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
   { url: '/contact', changefreq: 'weekly', priority: 0.7 },
-  { url: '/blog', changefreq: 'daily', priority: 0.8 },
+  { url: '/insights', changefreq: 'daily', priority: 0.8 },
   { url: '/profile', changefreq: 'weekly', priority: 0.6 },
   { url: '/share', changefreq: 'monthly', priority: 0.5 },
 ];

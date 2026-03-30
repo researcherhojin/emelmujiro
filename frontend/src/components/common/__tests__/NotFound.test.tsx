@@ -125,6 +125,6 @@ describe('NotFound', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/contact');
 
     fireEvent.click(blogButton);
-    expect(mockNavigate).toHaveBeenCalledWith('/blog');
+    expect(mockNavigate).toHaveBeenCalledWith('/insights');
   });
 });

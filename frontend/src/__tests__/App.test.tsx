@@ -174,8 +174,8 @@ describe('App', () => {
     });
   });
 
-  it('renders the blog list page at /blog', async () => {
-    setUrl('/blog');
+  it('renders the blog list page at /insights', async () => {
+    setUrl('/insights');
     const { default: App } = await import('../App');
 
     await act(async () => {
@@ -187,8 +187,8 @@ describe('App', () => {
     });
   });
 
-  it('renders the blog detail page at /blog/:id', async () => {
-    setUrl('/blog/123');
+  it('renders the blog detail page at /insights/:id', async () => {
+    setUrl('/insights/123');
     const { default: App } = await import('../App');
 
     await act(async () => {
@@ -200,8 +200,8 @@ describe('App', () => {
     });
   });
 
-  it('renders the blog editor at /blog/new', async () => {
-    setUrl('/blog/new');
+  it('renders the blog editor at /insights/new', async () => {
+    setUrl('/insights/new');
     const { default: App } = await import('../App');
 
     await act(async () => {

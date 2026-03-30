@@ -93,7 +93,7 @@ const NotFound: React.FC = memo(() => {
             </button>
             <span className="text-gray-300">|</span>
             <button
-              onClick={() => localizedNavigate('/blog')}
+              onClick={() => localizedNavigate('/insights')}
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               {t('common.blog')}

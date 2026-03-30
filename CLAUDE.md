@@ -87,7 +87,7 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **About page**: Removed entirely — route, component file, and lazy import all deleted. Sitemap, prerender, StructuredData breadcrumb all updated.
 
-**Blog slug URLs**: `BlogPostViewSet` uses `lookup_field = "slug"`. Frontend routes use `blog/:slug` (NOT `blog/:id`). BlogCard links to `/blog/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
+**Blog (Insights) URLs**: Frontend routes use `/insights/:slug` (NOT `/blog`). `BlogPostViewSet` uses `lookup_field = "slug"`. Backend API stays at `/api/blog-posts/` (internal). Nginx redirects `/blog/*` → `/insights/*` (301). BlogCard links to `/insights/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
 
 **Contact email**: `contact@emelmujiro.com` — used in constants.ts, i18n, backend settings, swagger, CONTRIBUTING.md.
 

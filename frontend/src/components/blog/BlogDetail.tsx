@@ -55,7 +55,7 @@ const BlogDetailPage: React.FC = memo(() => {
     try {
       await api.deleteBlogPost(slug);
       showToast(t('blogAdmin.deleted'), 'success');
-      setTimeout(() => localizedNavigate('/blog'), 500);
+      setTimeout(() => localizedNavigate('/insights'), 500);
     } catch (err) {
       logger.error('Failed to delete post:', err);
       showToast(t('blogAdmin.deleteError'), 'error');
@@ -133,7 +133,7 @@ const BlogDetailPage: React.FC = memo(() => {
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => localizedNavigate(`/blog/edit/${post?.id}`)}
+                  onClick={() => localizedNavigate(`/insights/edit/${post?.id}`)}
                   className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
                 >
                   <Pencil className="w-3.5 h-3.5" />
@@ -175,7 +175,7 @@ const BlogDetailPage: React.FC = memo(() => {
               title={`${post.title} | ${t('blogDetail.blogTitle')}`}
               description={post.excerpt || post.title}
               keywords={`${post.category}, ${t('blogDetail.blogKeywords')}`}
-              url={`${SITE_URL}/blog/${slug}`}
+              url={`${SITE_URL}/insights/${slug}`}
               type="article"
               article={{
                 author: post.author,

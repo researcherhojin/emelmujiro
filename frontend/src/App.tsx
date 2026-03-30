@@ -158,10 +158,10 @@ const pageRoutes = [
   { path: 'contact', element: <ContactPage /> },
   { path: 'profile', element: <ProfilePage /> },
   { path: 'share', element: <SharePage /> },
-  { path: 'blog', element: <BlogListPage /> },
-  { path: 'blog/new', element: <BlogEditor /> },
-  { path: 'blog/edit/:id', element: <BlogEditor /> },
-  { path: 'blog/:slug', element: <BlogDetail /> },
+  { path: 'insights', element: <BlogListPage /> },
+  { path: 'insights/new', element: <BlogEditor /> },
+  { path: 'insights/edit/:id', element: <BlogEditor /> },
+  { path: 'insights/:slug', element: <BlogDetail /> },
   { path: '*', element: <NotFound /> },
 ];
 

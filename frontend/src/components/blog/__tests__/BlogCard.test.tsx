@@ -62,7 +62,7 @@ describe('BlogCard Component', () => {
 
     await waitFor(() => {
       const links = screen.getAllByRole('link');
-      const blogLink = links.find((link) => link.getAttribute('href')?.includes('/blog/'));
+      const blogLink = links.find((link) => link.getAttribute('href')?.includes('/insights/'));
       expect(blogLink).toBeInTheDocument();
     });
   });
@@ -194,7 +194,7 @@ describe('BlogCard Component', () => {
 
     await waitFor(() => {
       const link = screen.getByRole('link');
-      expect(link).toHaveAttribute('href', '/blog/test-blog-post');
+      expect(link).toHaveAttribute('href', '/insights/test-blog-post');
     });
   });
 

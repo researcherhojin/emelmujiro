@@ -252,13 +252,13 @@ describe('BlogEditor Component', () => {
       expect(mockCreateBlogPost).toHaveBeenCalled();
 
       // Navigate should not have been called yet (setTimeout 500ms pending)
-      expect(mockNavigate).not.toHaveBeenCalledWith('/blog');
+      expect(mockNavigate).not.toHaveBeenCalledWith('/insights');
 
       // Advance timers past the 500ms setTimeout
       await vi.advanceTimersByTimeAsync(500);
 
-      // localizedNavigate('/blog') -> navigate('/blog') for Korean default
-      expect(mockNavigate).toHaveBeenCalledWith('/blog');
+      // localizedNavigate('/blog') -> navigate('/insights') for Korean default
+      expect(mockNavigate).toHaveBeenCalledWith('/insights');
 
       vi.useRealTimers();
     });
@@ -349,7 +349,7 @@ describe('BlogEditor Component', () => {
       renderEditor();
       const backBtn = screen.getByText('Back');
       fireEvent.click(backBtn);
-      expect(mockNavigate).toHaveBeenCalledWith('/blog');
+      expect(mockNavigate).toHaveBeenCalledWith('/insights');
     });
   });
 
@@ -539,7 +539,7 @@ describe('BlogEditor Component', () => {
       renderEditor();
       const backBtn = screen.getByText('Back to Blog');
       fireEvent.click(backBtn);
-      expect(mockNavigate).toHaveBeenCalledWith('/blog');
+      expect(mockNavigate).toHaveBeenCalledWith('/insights');
     });
   });
 
