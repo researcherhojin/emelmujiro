@@ -10,11 +10,11 @@
 
 </div>
 
-AI education, consulting & development — React 19 + Django 6 full-stack monorepo, self-hosted via Docker + Cloudflare Tunnel.
+AI education · consulting · development company. React 19 + Django 6 monorepo, self-hosted on Mac Mini via Docker + Cloudflare Tunnel.
 
 <p align="center">
-  <img src=".github/assets/home-light.png" width="49%" alt="Light mode" />
-  <img src=".github/assets/home-dark.png" width="49%" alt="Dark mode" />
+  <img src=".github/assets/home-light.png" width="49%" alt="Homepage — Light mode" />
+  <img src=".github/assets/home-dark.png" width="49%" alt="Homepage — Dark mode" />
 </p>
 
 ## Tech Stack
@@ -25,7 +25,7 @@ AI education, consulting & development — React 19 + Django 6 full-stack monore
 ![Vite](https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tailwind Typography](https://img.shields.io/badge/Typography-0.5-06B6D4?logo=tailwindcss&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.38-E91E63)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.38-E91E63?logo=framer&logoColor=white)
 ![i18next](https://img.shields.io/badge/i18next-26.0-26A69A?logo=i18next&logoColor=white)
 ![React Router](https://img.shields.io/badge/React_Router-7.13-CA4245?logo=reactrouter&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.21-1a1a2e)
@@ -125,7 +125,7 @@ graph LR
 - **Bilingual (i18n)** — URL-based language routing (`/contact` for Korean, `/en/contact` for English)
 - **SSG Prerendering** — Static HTML pages for SEO, parallel rendering
 - **Teaching History** — 37 entries across 5 years, year-grouped with alternating backgrounds, bilingual
-- **Blog (Insights)** — TipTap rich text editor, SEO-friendly slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments. Old `/blog` URLs redirect to `/insights` via nginx 301
+- **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments. `/blog` → `/insights` nginx 301 redirect
 - **Service Modals** — Clickable service cards open detail modals with full service descriptions
 - **Auth** — httpOnly cookie JWT with automatic token refresh
 - **Testimonials** — Enterprise + government training reviews, 5x copy infinite scroll carousel
