@@ -12,7 +12,7 @@ dependencies = [
     "djangorestframework==3.17.1",
     "django-cors-headers==4.9.0",
     "python-dotenv==1.2.2",
-    "requests==2.32.5",
+    "requests==2.33.0",
     "django-extensions==4.1",
     "djangorestframework-simplejwt==5.5.1",
     "ipython==9.11.0",
