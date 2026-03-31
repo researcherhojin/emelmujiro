@@ -114,7 +114,7 @@ jobs:
           VITE_API_URL: https://api.emelmujiro.com/api
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v8
         with:
           name: frontend-build
           path: frontend/build/
