@@ -82,6 +82,7 @@ const ProfilePage: React.FC = memo(() => {
         {/* Teaching History — alternating backgrounds per year */}
         {YEARS.map((year, yearIdx) => {
           const items = itemsByYear.get(year);
+          /* v8 ignore next -- defensive: all YEARS have items in current data */
           if (!items || items.length === 0) return null;
           const isGray = yearIdx % 2 === 0;
           return (

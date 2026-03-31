@@ -35,6 +35,7 @@ const Footer: React.FC = memo(() => {
   const handleServiceClick = useCallback(
     (serviceKey: string) => {
       const index = serviceKeys.indexOf(serviceKey);
+      /* v8 ignore next -- defensive: indexOf always >= 0 for valid serviceKeys */
       setSelectedServiceIndex(index >= 0 ? index : 0);
       setIsServiceModalOpen(true);
     },

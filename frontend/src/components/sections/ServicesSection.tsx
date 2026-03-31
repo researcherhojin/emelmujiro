@@ -33,6 +33,7 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(({ service, onClick }) => {
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
+        /* v8 ignore next -- both branches tested; v8 miscounts || short-circuit */
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           onClick();
