@@ -2,6 +2,7 @@ import React, { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import SEOHelmet from '../common/SEOHelmet';
+import StructuredData from '../common/StructuredData';
 import { SITE_URL } from '../../utils/constants';
 import ContactInfo from '../contact/ContactInfo';
 
@@ -21,6 +22,8 @@ const ContactPage: React.FC = memo(() => {
         description={t('contact.subtitle')}
         url={`${SITE_URL}/contact`}
       />
+      <StructuredData type="LocalBusiness" />
+      <StructuredData type="Breadcrumb" />
 
       <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* Hero */}

@@ -14,6 +14,7 @@ interface SEOHelmetProps {
   url?: string;
   type?: string;
   lang?: string;
+  robots?: string;
   publishedTime?: string;
   modifiedTime?: string;
   article?: {
@@ -35,6 +36,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     url = SITE_URL,
     type = 'website',
     lang,
+    robots,
     publishedTime,
     modifiedTime,
     article,
@@ -94,7 +96,9 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         {/* Additional SEO Tags */}
         <meta
           name="robots"
-          content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+          content={
+            robots || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+          }
         />
         <meta
           name="googlebot"

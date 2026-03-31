@@ -173,6 +173,7 @@ const BlogDetailPage: React.FC = memo(() => {
               description={post.description || post.title}
               keywords={`${post.category}, ${t('blogDetail.blogKeywords')}`}
               url={`${SITE_URL}/insights/${slug}`}
+              image={post.image_url}
               type="article"
               article={{
                 author: post.author,
