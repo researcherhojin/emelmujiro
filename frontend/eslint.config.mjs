@@ -4,7 +4,6 @@ import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import typescriptPlugin from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
-import testingLibraryPlugin from 'eslint-plugin-testing-library';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 
 export default [
@@ -100,9 +99,6 @@ export default [
       '**/__mocks__/**/*',
       '**/*.spec.*',
     ],
-    plugins: {
-      'testing-library': testingLibraryPlugin,
-    },
     languageOptions: {
       globals: {
         vi: 'readonly',
@@ -118,10 +114,6 @@ export default [
     },
     rules: {
       // Relax rules for test files
-      'testing-library/no-node-access': 'off',
-      'testing-library/no-container': 'off',
-      'testing-library/no-wait-for-multiple-assertions': 'off',
-      'testing-library/no-unnecessary-act': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       'jsx-a11y/alt-text': 'off',

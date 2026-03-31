@@ -11,7 +11,7 @@ services:
       - DEBUG=True
       - DATABASE_URL=
     env_file:
-      - ./backend/.env.dev
+      - ./backend/.env
     volumes:
       - ./backend:/app
       - static_volume:/app/staticfiles

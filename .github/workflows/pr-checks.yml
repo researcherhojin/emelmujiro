@@ -111,24 +111,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Cache node_modules
-        uses: actions/cache@v5
-        id: node-cache
-        with:
-          path: |
-            node_modules
-            frontend/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-modules-
-
-      - name: Install dependencies
-        if: steps.node-cache.outputs.cache-hit != 'true'
-        run: npm ci --prefer-offline --no-audit
+      - name: Setup Node.js with cache
+        uses: ./.github/actions/setup-node
 
       - name: ESLint
         working-directory: ./frontend
@@ -279,24 +263,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Cache node_modules
-        uses: actions/cache@v5
-        id: node-cache
-        with:
-          path: |
-            node_modules
-            frontend/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-modules-
-
-      - name: Install dependencies
-        if: steps.node-cache.outputs.cache-hit != 'true'
-        run: npm ci --prefer-offline --no-audit
+      - name: Setup Node.js with cache
+        uses: ./.github/actions/setup-node
 
       - name: Build frontend
         working-directory: ./frontend
@@ -333,24 +301,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Cache node_modules
-        uses: actions/cache@v5
-        id: node-cache
-        with:
-          path: |
-            node_modules
-            frontend/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-modules-
-
-      - name: Install dependencies
-        if: steps.node-cache.outputs.cache-hit != 'true'
-        run: npm ci --prefer-offline --no-audit
+      - name: Setup Node.js with cache
+        uses: ./.github/actions/setup-node
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -381,24 +333,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Cache node_modules
-        uses: actions/cache@v5
-        id: node-cache
-        with:
-          path: |
-            node_modules
-            frontend/node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-modules-
-
-      - name: Install dependencies
-        if: steps.node-cache.outputs.cache-hit != 'true'
-        run: npm ci --prefer-offline --no-audit
+      - name: Setup Node.js with cache
+        uses: ./.github/actions/setup-node
 
       - name: Get Playwright version
         id: playwright-version

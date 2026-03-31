@@ -33,5 +33,9 @@ USER appuser
 # Expose port
 EXPOSE 8000
 
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD uv run python manage.py check || exit 1
+
 # Run development server with auto-reload
 CMD ["uv", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]

@@ -38,12 +38,12 @@ fi
 echo "✅ Docker is running."
 
 # Check environment variable files
-if [ ! -f "backend/.env.dev" ]; then
+if [ ! -f "backend/.env" ]; then
     if [ -f "backend/.env.example" ]; then
         echo "📝 Creating backend environment file..."
-        cp backend/.env.example backend/.env.dev
+        cp backend/.env.example backend/.env
     else
-        echo "⚠️  backend/.env.example not found — create backend/.env.dev manually"
+        echo "⚠️  backend/.env.example not found — create backend/.env manually"
     fi
 fi
 

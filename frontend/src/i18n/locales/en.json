@@ -570,32 +570,6 @@
     "hoursAgo": "{{count}}h ago",
     "daysAgo": "{{count}}d ago"
   },
-  "faq": {
-    "title": "Frequently Asked Questions",
-    "subtitle": "Find answers to common questions about our AI education and consulting services",
-    "items": {
-      "general1": {
-        "question": "What services does Emelmujiro provide?",
-        "answer": "Emelmujiro offers a comprehensive range of AI services.\n\n• AI Education & Lectures\n• AI Consulting\n• AI Agent Development (LLM, RAG, MCP)\n• Computer Vision Solutions\n\nWe provide end-to-end support from corporate training to technical consulting."
-      },
-      "education1": {
-        "question": "How are the AI education courses structured?",
-        "answer": "We offer courses for all levels, from beginners to experts.\n\n• Python Fundamentals & Data Analysis\n• Machine Learning / Deep Learning\n• LLM & RAG Applications\n• AI Agent Development\n\nAll courses are built around a practice-oriented curriculum."
-      },
-      "education3": {
-        "question": "Are courses available online?",
-        "answer": "We offer multiple training formats.\n\n• Online (live / recorded)\n• Offline\n• Hybrid\n\nTraining format and practice environment details are provided during consultation."
-      },
-      "consulting2": {
-        "question": "How long does a typical consulting project take?",
-        "answer": "Timelines vary by project scope and complexity.\n\n• PoC (Proof of Concept): typically 4–8 weeks\n• Full implementation: typically 3–6 months\n\nExact timelines are provided during the initial consultation."
-      },
-      "technical2": {
-        "question": "What is AI agent development?",
-        "answer": "AI systems that autonomously perform tasks based on LLMs (Large Language Models).\n\n• RAG — Retrieval-Augmented Generation\n• MCP — Model Context Protocol\n• Tool Use — External tool integration\n\nThese technologies enable automation of business processes."
-      }
-    }
-  },
   "testimonials": {
     "sectionLabel": "Testimonials",
     "subtitle": "REAL REVIEWS",

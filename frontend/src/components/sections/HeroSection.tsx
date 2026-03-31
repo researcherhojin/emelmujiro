@@ -11,7 +11,7 @@ const HeroSection: React.FC = memo(() => {
   return (
     <section
       aria-label={t('accessibility.heroSection')}
-      className="relative min-h-screen flex items-center justify-center bg-white dark:bg-gray-950"
+      className="relative min-h-[85vh] sm:min-h-screen flex items-center justify-center bg-white dark:bg-gray-950"
     >
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
         {/* Main Headline */}
