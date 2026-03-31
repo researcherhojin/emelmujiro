@@ -279,8 +279,6 @@ describe('Navbar Component', () => {
       localizedPath: (p: string) => `/en${p === '/' ? '' : p}`,
       localizedNavigate: vi.fn(),
       switchLanguagePath: (lang: string) => (lang === 'ko' ? '/insights' : '/en/insights'),
-      supportedLangs: ['ko', 'en'] as const,
-      defaultLang: 'ko',
     });
 
     renderWithProviders(<Navbar />);

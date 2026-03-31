@@ -13,17 +13,12 @@ dependencies = [
     "django-cors-headers==4.9.0",
     "python-dotenv==1.2.2",
     "requests==2.33.0",
-    "django-extensions==4.1",
     "djangorestframework-simplejwt==5.5.1",
-    "ipython==9.12.0",
     "drf-yasg==1.21.15",
     "gunicorn==25.3.0",
     "psycopg2-binary==2.9.11",
     "whitenoise==6.12.0",
     "PyJWT>=2.12.0",
-    "pyopenssl>=26.0.0",
-    "pyasn1>=0.6.3",
-    "ujson>=5.12.0",
 ]
 
 [project.optional-dependencies]
@@ -31,6 +26,8 @@ dev = [
     "black>=26.3.1",
     "coverage>=7.0.0",
     "flake8>=7.0.0",
+    "django-extensions==4.1",
+    "ipython==9.12.0",
 ]
 
 [tool.coverage.run]

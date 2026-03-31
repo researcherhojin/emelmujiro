@@ -15,7 +15,6 @@
     "switchLanguage": "언어 전환",
     "companyName": "에멜무지로",
     "inquireProject": "무료 상담 신청 →",
-    "inquireEducation": "교육 문의하기",
     "menu": "메뉴",
     "representativeProfile": "강의이력",
     "goBack": "뒤로 가기",
@@ -25,20 +24,14 @@
   "hero": {
     "badge": "삼성 · LG · SK 등 주요 기업이 선택한",
     "titleLine1": "AI 교육 · 컨설팅 · 개발",
-    "titleLine2": "원스톱 AI 파트너",
+    "titleLine2": "올인원 AI 파트너",
     "descriptionLine1": "생성형 AI, LLM·RAG, 바이브 코딩, CV",
     "descriptionLine2": "기업 맞춤 커리큘럼 설계부터 PoC 개발까지.",
-    "cta": {
-      "primary": "무료 상담 신청",
-      "secondary": "서비스 알아보기"
-    },
     "stats": {
       "hours": "누적 교육 시간",
       "projects": "완료 프로젝트",
       "satisfaction": "강의 만족도"
-    },
-    "expertise": "5년의 검증된 전문성",
-    "since": "Since 2022 •"
+    }
   },
   "services": {
     "sectionLabel": "WHAT WE DO",
@@ -81,8 +74,7 @@
     "sectionLabel": "GET STARTED",
     "title": "AI 교육 · 컨설팅이 필요하신가요?",
     "subtitleLine1": "교육 · 컨설팅 · AI Agent 개발,",
-    "subtitleLine2": "한 번에 해결하세요",
-    "emailAriaLabel": "이메일로 문의하기"
+    "subtitleLine2": "한 번에 해결하세요"
   },
   "footer": {
     "services": "서비스",
@@ -92,7 +84,6 @@
     "businessInfo": {
       "representative": "대표",
       "businessNumber": "사업자등록번호",
-      "address": "주소",
       "representativeName": "이호진",
       "businessNumberValue": "174-29-01733"
     }
@@ -111,10 +102,8 @@
       "email": "contact@emelmujiro.com",
       "phone": "010-7279-0380",
       "address": "서울특별시 강남구",
-      "hours": "평일 09:00 - 18:00",
       "emailLabel": "이메일",
       "phoneLabel": "전화번호",
-      "phoneValue": "직접 문의 부탁드립니다",
       "businessHours": "업무 시간",
       "weekdays": "월요일 - 금요일: 09:00 - 18:00",
       "weekends": "토요일 - 일요일: 휴무",
@@ -147,12 +136,6 @@
     "timeMinutesAgo": "{{count}}분 전",
     "timeHoursAgo": "{{count}}시간 전",
     "timeDaysAgo": "{{count}}일 전",
-    "preparing": "콘텐츠 준비 중",
-    "preparingSubtitle": "더 나은 콘텐츠로 곧 찾아뵙겠습니다",
-    "preparingDescription": "양질의 AI 인사이트와 기술 트렌드를 준비하고 있으니 조금만 기다려주세요.",
-    "backToMain": "메인으로 돌아가기",
-    "noPosts": "콘텐츠 준비 중",
-    "noPostsDescription": "양질의 AI 인사이트와 기술 트렌드를 준비하고 있습니다. 조금만 기다려주세요.",
     "sectionLabel": "INSIGHTS",
     "comingSoonLabel": "COMING SOON",
     "comingSoon": "콘텐츠 준비 중",
@@ -184,8 +167,7 @@
       "image": "이미지 업로드",
       "divider": "구분선"
     },
-    "allCategories": "전체",
-    "filterByCategory": "카테고리"
+    "allCategories": "전체"
   },
   "blogDetail": {
     "loading": "포스트를 불러오는 중입니다...",
@@ -210,19 +192,12 @@
     "description": "요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.\nURL을 다시 확인하시거나 아래 옵션을 이용해 주세요.",
     "goBack": "이전 페이지로",
     "goHome": "홈으로 가기",
-    "help": "도움말",
     "popularPages": "인기 페이지"
   },
   "errorBoundary": {
     "title": "문제가 발생했습니다",
     "message": "페이지를 불러오는 도중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
-    "description": "예상치 못한 오류가 발생했습니다. 불편을 드려 죄송합니다.",
-    "repeatedError": "오류가 반복적으로 발생하고 있습니다. 지원팀에 문의해 주세요.",
-    "errorDetail": "에러 상세:",
-    "retry": "다시 시도",
-    "contactSupport": "지원팀 문의",
-    "errorId": "오류 ID:",
-    "time": "시간:"
+    "retry": "다시 시도"
   },
   "apiErrors": {
     "400": "입력값을 확인해주세요.",
@@ -247,24 +222,11 @@
     "statsSection": "주요 실적",
     "servicesSection": "서비스 소개",
     "ctaSection": "문의하기",
-    "aboutHeroSection": "회사 소개",
-    "timelineSection": "연혁",
-    "coreValuesSection": "핵심 가치",
-    "achievementsSection": "주요 성과",
-    "aboutCtaSection": "문의하기",
     "footerNavServices": "서비스 목록",
     "footerNavMenu": "메뉴 목록",
     "closeModal": "모달 닫기",
     "closeModalOverlay": "모달 배경 클릭하여 닫기",
     "mainContent": "주요 콘텐츠",
-    "shortcutGoContact": "Alt+C를 눌러 문의하기로 이동",
-    "shortcutGoProfile": "Alt+P를 눌러 프로필로 이동",
-    "shortcutCloseModal": "Escape를 눌러 모달 닫기",
-    "searchFocused": "검색 입력란에 포커스됨",
-    "navigatedToHome": "홈 페이지로 이동됨",
-    "navigatedToBlog": "인사이트 페이지로 이동됨",
-    "navigatedToContact": "문의하기 페이지로 이동됨",
-    "navigatedToProfile": "프로필 페이지로 이동됨",
     "pageLoaded": "페이지 로드 완료: {{title}}",
     "closeShareMenu": "공유 메뉴 닫기"
   },
@@ -386,7 +348,6 @@
     "update": "수정",
     "published": "공개",
     "draft": "임시저장",
-    "enterUrl": "URL을 입력하세요:",
     "toolbar": {
       "bold": "굵게",
       "italic": "기울임",
@@ -429,25 +390,15 @@
       "ai": "인공지능",
       "ml": "머신러닝",
       "dl": "딥러닝",
-      "cv": "Computer Vision",
-      "rag": "RAG",
-      "agent": "AI Agent",
-      "mcp": "MCP",
-      "python": "Python",
-      "vibeCoding": "바이브 코딩"
+      "python": "Python"
     },
     "site": {
-      "name": "에멜무지로",
       "title": "AI 교육 · 컨설팅 · AI Agent 개발 전문 기업",
       "description": "기업 맞춤 AI 교육, AI 도입 컨설팅, AI Agent·RAG 서비스 개발, IT 창업 멘토링을 제공합니다. 삼성, LG 등 주요 기업이 신뢰하는 AI 전문 파트너."
     },
     "seoHead": {
       "defaultKeywords": "AI교육, AI컨설팅, AI Agent, RAG, MCP, Computer Vision, 기업교육, LLM, 생성형AI, 바이브코딩, 창업멘토링, 딥러닝, 머신러닝",
       "orgDescription": "AI 교육 · 컨설팅 · AI Agent 개발 전문 기업"
-    },
-    "faq": {
-      "title": "자주 묻는 질문",
-      "description": "에멜무지로의 AI 교육, 컨설팅, 에이전트 개발 서비스에 대해 자주 묻는 질문과 답변을 확인하세요."
     }
   },
   "teachingHistory": {
@@ -622,64 +573,27 @@
   "faq": {
     "title": "자주 묻는 질문",
     "subtitle": "AI 교육 및 컨설팅에 대한 궁금한 점을 확인하세요",
-    "categories": {
-      "all": "전체",
-      "general": "일반",
-      "education": "교육",
-      "consulting": "컨설팅",
-      "technical": "기술"
-    },
     "items": {
       "general1": {
         "question": "에멜무지로는 어떤 서비스를 제공하나요?",
-        "answer": "에멜무지로는 다양한 AI 관련 서비스를 제공합니다.\n\n• AI 교육 & 강의\n• AI 컨설팅\n• AI 에이전트 개발 (LLM, RAG, MCP)\n• 컴퓨터 비전 솔루션\n\n기업 맞춤형 교육부터 기술 컨설팅까지 원스톱으로 지원합니다.",
-        "category": "general"
-      },
-      "general2": {
-        "question": "상담은 어떻게 신청하나요?",
-        "answer": "문의하기 페이지에서 간단한 양식을 작성하시면, 담당자가 가능한 한 빠르게 연락드립니다. 전화 또는 이메일로도 상담 예약이 가능합니다.",
-        "category": "general"
+        "answer": "에멜무지로는 다양한 AI 관련 서비스를 제공합니다.\n\n• AI 교육 & 강의\n• AI 컨설팅\n• AI 에이전트 개발 (LLM, RAG, MCP)\n• 컴퓨터 비전 솔루션\n\n기업 맞춤형 교육부터 기술 컨설팅까지 올인원으로 지원합니다."
       },
       "education1": {
         "question": "AI 교육 과정은 어떻게 구성되어 있나요?",
-        "answer": "입문자부터 전문가까지 다양한 수준의 교육 과정을 운영합니다.\n\n• Python 기초 및 데이터 분석\n• 머신러닝 / 딥러닝\n• LLM·RAG 활용\n• AI 에이전트 개발\n\n모든 과정은 실무 중심의 커리큘럼으로 구성됩니다.",
-        "category": "education"
-      },
-      "education2": {
-        "question": "기업 맞춤형 교육도 가능한가요?",
-        "answer": "네, 기업의 산업 분야와 직무에 맞춘 커스터마이징 교육을 제공합니다. 사전 미팅을 통해 교육 목표, 참가자 수준, 기간 등을 협의한 후 최적의 커리큘럼을 설계합니다.",
-        "category": "education"
+        "answer": "입문자부터 전문가까지 다양한 수준의 교육 과정을 운영합니다.\n\n• Python 기초 및 데이터 분석\n• 머신러닝 / 딥러닝\n• LLM·RAG 활용\n• AI 에이전트 개발\n\n모든 과정은 실무 중심의 커리큘럼으로 구성됩니다."
       },
       "education3": {
         "question": "교육은 온라인으로도 진행되나요?",
-        "answer": "다양한 형태로 교육을 진행합니다.\n\n• 온라인 (실시간 / 녹화)\n• 오프라인\n• 하이브리드\n\n교육 형태와 실습 환경은 과정에 따라 상담 시 안내해 드립니다.",
-        "category": "education"
-      },
-      "consulting1": {
-        "question": "AI 컨설팅은 어떤 분야에서 가능한가요?",
-        "answer": "제조, 금융, 헬스케어, 리테일 등 다양한 산업 분야에서 AI 도입 전략 수립, PoC 개발, 모델 최적화, MLOps 구축 등의 컨설팅을 제공합니다.",
-        "category": "consulting"
+        "answer": "다양한 형태로 교육을 진행합니다.\n\n• 온라인 (실시간 / 녹화)\n• 오프라인\n• 하이브리드\n\n교육 형태와 실습 환경은 과정에 따라 상담 시 안내해 드립니다."
       },
       "consulting2": {
         "question": "컨설팅 프로젝트의 일반적인 기간은 얼마나 되나요?",
-        "answer": "프로젝트 규모와 복잡도에 따라 다릅니다.\n\n• PoC (개념 검증): 일반적으로 4~8주\n• 본격 도입 프로젝트: 일반적으로 3~6개월\n\n정확한 일정은 초기 상담 시 안내해 드립니다.",
-        "category": "consulting"
-      },
-      "technical1": {
-        "question": "어떤 AI 기술 스택을 사용하나요?",
-        "answer": "PyTorch, TensorFlow, Hugging Face, LangChain, OpenAI API, Claude API 등 최신 AI 프레임워크와 도구를 활용합니다. 프로젝트 요구사항에 따라 최적의 기술 스택을 선정합니다.",
-        "category": "technical"
+        "answer": "프로젝트 규모와 복잡도에 따라 다릅니다.\n\n• PoC (개념 검증): 일반적으로 4~8주\n• 본격 도입 프로젝트: 일반적으로 3~6개월\n\n정확한 일정은 초기 상담 시 안내해 드립니다."
       },
       "technical2": {
         "question": "AI 에이전트 개발이란 무엇인가요?",
-        "answer": "LLM(대규모 언어 모델)을 기반으로 자율적으로 작업을 수행하는 AI 시스템입니다.\n\n• RAG — 검색 증강 생성\n• MCP — 모델 컨텍스트 프로토콜\n• Tool Use — 외부 도구 연동\n\n이러한 기술을 활용하여 비즈니스 프로세스를 자동화합니다.",
-        "category": "technical"
+        "answer": "LLM(대규모 언어 모델)을 기반으로 자율적으로 작업을 수행하는 AI 시스템입니다.\n\n• RAG — 검색 증강 생성\n• MCP — 모델 컨텍스트 프로토콜\n• Tool Use — 외부 도구 연동\n\n이러한 기술을 활용하여 비즈니스 프로세스를 자동화합니다."
       }
-    },
-    "cta": {
-      "title": "더 궁금한 점이 있으신가요?",
-      "description": "문의하기를 통해 편하게 질문해 주세요. 빠르게 답변드리겠습니다.",
-      "button": "문의하기"
     }
   },
   "testimonials": {
@@ -697,7 +611,6 @@
     "startup2": "MVP를 구상하고 프로덕트를 자기 손으로 개발하는 것 까지의 한 사이클을 경험할 수 있게 해줍니다. 열정 있는 동료들도 많아서 즐겁게 공부할 수 있었습니다.",
     "startup3": "개발, 디자인, 마케팅, 비즈니스를 3개월 안에 다 경험해볼 수 있는 알찬 시간이었습니다. 과정이 끝난 지금, 기대 이상의 것들을 많이 얻은 것 같습니다.",
     "startup4": "정말 믿기지않은 성장을 했다. 팀빌딩부터 MVP까지 창업가를 꿈꾼다면 멋쟁이사자처럼으로. 본인 노력 여하에 따라 정말 많은 것을 얻어갈 수 있고 후속 지원도 계속 해주기 때문에 초보 창업가에게 강력 추천한다.",
-    "enterpriseProgram": "기업 AI 교육",
     "enterprise1": "단순 이론이 아니라 우리 팀 데이터로 직접 모델을 만들어보니, 교육이 끝난 뒤에도 실무에 바로 적용할 수 있었습니다. 실습 위주로 진행해 주셔서 좋았습니다.",
     "enterprise1Source": "S사 반도체 엔지니어 · ML/DL 심화 과정",
     "enterprise2": "비전공자인 저도 Python으로 데이터를 직접 다뤄볼 수 있게 되었습니다. 강사님이 현업 사례를 기반으로 설명해 주셔서 이해가 빨랐습니다.",

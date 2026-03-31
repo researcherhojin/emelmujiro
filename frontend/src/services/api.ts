@@ -20,6 +20,17 @@ const API_TIMEOUT = 30000;
 // Mock is only used in tests or when no API URL is configured.
 const USE_MOCK_API = env.IS_TEST || !env.API_URL;
 
+/** Build a resolved mock response matching Axios shape */
+function mockResponse<T>(data: T, status = 200, statusText = 'OK') {
+  return Promise.resolve({
+    data,
+    status,
+    statusText,
+    headers: {},
+    config: {} as InternalAxiosRequestConfig,
+  });
+}
+
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
   timeout: API_TIMEOUT,
@@ -123,13 +134,7 @@ export const api = {
 
     // Use mock data if backend is not available
     if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: paginateMockData(mockBlogPosts, page, size),
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
+      return mockResponse(paginateMockData(mockBlogPosts, page, size));
     }
 
     return axiosInstance.get<PaginatedResponse<BlogPost>>(
@@ -147,26 +152,14 @@ export const api = {
           title: `Mock Post ${id}`,
           content: `This is mock content for post ${id}`,
         };
-        return Promise.resolve({
-          data: {
-            ...defaultPost,
-            createdAt: defaultPost.created_at, // Add createdAt alias
-          },
-          status: 200,
-          statusText: 'OK',
-          headers: {},
-          config: {} as InternalAxiosRequestConfig,
+        return mockResponse({
+          ...defaultPost,
+          createdAt: defaultPost.created_at,
         });
       }
-      return Promise.resolve({
-        data: {
-          ...post,
-          createdAt: post.created_at, // Add createdAt alias
-        },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
+      return mockResponse({
+        ...post,
+        createdAt: post.created_at,
       });
     }
     return axiosInstance.get<BlogPost>(`blog-posts/${id}/`);
@@ -179,25 +172,13 @@ export const api = {
           post.content.toLowerCase().includes(query.toLowerCase()) ||
           (post.tags && post.tags.some((tag) => tag.toLowerCase().includes(query.toLowerCase())))
       );
-      return Promise.resolve({
-        data: paginateMockData(filtered, 1, 10),
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
+      return mockResponse(paginateMockData(filtered, 1, 10));
     }
     return axiosInstance.get<PaginatedResponse<BlogPost>>(`blog-posts/?search=${query}`);
   },
   getBlogCategories: () => {
     if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: mockCategories,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
+      return mockResponse(mockCategories);
     }
     return axiosInstance.get<string[]>('categories/');
   },
@@ -253,19 +234,11 @@ export const api = {
   // Contact
   createContact: async (data: ContactFormData) => {
     if (USE_MOCK_API) {
-      // Simulate successful contact submission
-      return Promise.resolve({
-        data: {
-          ...data,
-          success: true,
-          message: i18n.t('apiErrors.contactSuccess'),
-          id: Date.now(),
-        },
-        status: 201,
-        statusText: 'Created',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
+      return mockResponse(
+        { ...data, success: true, message: i18n.t('apiErrors.contactSuccess'), id: Date.now() },
+        201,
+        'Created'
+      );
     }
 
     try {
@@ -284,56 +257,32 @@ export const api = {
   // Auth
   getUser: () => {
     if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: { id: 1, email: 'mock@user.com', name: 'Mock User' },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
+      return mockResponse({ id: 1, email: 'mock@user.com', name: 'Mock User' });
     }
     return axiosInstance.get('/auth/user/');
   },
   login: (email: string, password: string) => {
     if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: {
-          access: 'mock-access-token',
-          refresh: 'mock-refresh-token',
-          user: { id: 1, email, name: 'Mock User' },
-        },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
+      return mockResponse({
+        access: 'mock-access-token',
+        refresh: 'mock-refresh-token',
+        user: { id: 1, email, name: 'Mock User' },
       });
     }
     return axiosInstance.post('/auth/login/', { username: email, password });
   },
   logout: () => {
     if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: {},
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
+      return mockResponse({});
     }
     return axiosInstance.post('/auth/logout/');
   },
   register: (email: string, password: string, name: string) => {
     if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: {
-          access: 'mock-access-token',
-          refresh: 'mock-refresh-token',
-          user: { id: 1, email, name },
-        },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
+      return mockResponse({
+        access: 'mock-access-token',
+        refresh: 'mock-refresh-token',
+        user: { id: 1, email, name },
       });
     }
     return axiosInstance.post('/auth/register/', {
@@ -348,49 +297,25 @@ export const api = {
   // Notifications
   getNotifications: (page: number = 1) => {
     if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: { count: 0, next: null, previous: null, results: [] as Notification[] },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
+      return mockResponse({ count: 0, next: null, previous: null, results: [] as Notification[] });
     }
     return axiosInstance.get<PaginatedResponse<Notification>>(`notifications/?page=${page}`);
   },
   getUnreadCount: () => {
     if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: { count: 0 },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
+      return mockResponse({ count: 0 });
     }
     return axiosInstance.get<{ count: number }>('notifications/unread_count/');
   },
   markNotificationRead: (id: number) => {
     if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: { id, is_read: true },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
+      return mockResponse({ id, is_read: true });
     }
     return axiosInstance.patch(`notifications/${id}/`, { is_read: true });
   },
   markAllNotificationsRead: () => {
     if (USE_MOCK_API) {
-      return Promise.resolve({
-        data: { status: 'ok' },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as InternalAxiosRequestConfig,
-      });
+      return mockResponse({ status: 'ok' });
     }
     return axiosInstance.post('notifications/mark_all_read/');
   },

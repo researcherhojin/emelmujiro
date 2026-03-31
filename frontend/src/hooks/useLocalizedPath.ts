@@ -1,23 +1,9 @@
 import { useCallback } from 'react';
 import { useNavigate, useLocation, useParams, type NavigateOptions } from 'react-router-dom';
 
-const SUPPORTED_LANGS = ['ko', 'en'] as const;
 const DEFAULT_LANG = 'ko';
 
-/**
- * Get the language prefix from a URL pathname.
- * Returns '/en' for English paths, '' for Korean (default).
- */
-export function getLangFromPath(pathname: string): string {
-  const match = pathname.match(/^\/(en)(\/|$)/);
-  return match ? match[1] : DEFAULT_LANG;
-}
-
-/**
- * Get the language prefix string for URL construction.
- * Returns '/en' for English, '' for Korean.
- */
-export function getLangPrefix(lang: string): string {
+function getLangPrefix(lang: string): string {
   return lang === DEFAULT_LANG ? '' : `/${lang}`;
 }
 
@@ -29,12 +15,7 @@ export function stripLangPrefix(pathname: string): string {
   return pathname.replace(/^\/(en)(\/|$)/, '$2').replace(/^\/$/, '/') || '/';
 }
 
-/**
- * Build a localized path.
- * localizedPath('/profile', 'en') → '/en/profile'
- * localizedPath('/profile', 'ko') → '/profile'
- */
-export function buildLocalizedPath(path: string, lang: string): string {
+function buildLocalizedPath(path: string, lang: string): string {
   const cleanPath = stripLangPrefix(path);
   const prefix = getLangPrefix(lang);
   if (cleanPath === '/') return prefix || '/';
@@ -92,7 +73,5 @@ export function useLocalizedPath() {
     localizedPath,
     localizedNavigate,
     switchLanguagePath,
-    supportedLangs: SUPPORTED_LANGS,
-    defaultLang: DEFAULT_LANG,
   };
 }

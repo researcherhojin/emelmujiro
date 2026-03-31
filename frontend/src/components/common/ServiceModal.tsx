@@ -98,22 +98,22 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
             aria-label={t('accessibility.closeModalOverlay')}
           ></div>
 
-          {/* Prev arrow */}
+          {/* Prev arrow — hidden on mobile, visible on sm+ */}
           {hasPrev && (
             <button
               onClick={goPrev}
-              className="fixed left-4 top-1/2 -translate-y-1/2 z-50 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-colors"
+              className="hidden sm:block fixed left-4 top-1/2 -translate-y-1/2 z-50 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-colors"
               aria-label="Previous service"
             >
               <ChevronLeft className="w-6 h-6 text-gray-700 dark:text-gray-300" />
             </button>
           )}
 
-          {/* Next arrow */}
+          {/* Next arrow — hidden on mobile, visible on sm+ */}
           {hasNext && (
             <button
               onClick={goNext}
-              className="fixed right-4 top-1/2 -translate-y-1/2 z-50 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-colors"
+              className="hidden sm:block fixed right-4 top-1/2 -translate-y-1/2 z-50 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-colors"
               aria-label="Next service"
             >
               <ChevronRight className="w-6 h-6 text-gray-700 dark:text-gray-300" />
@@ -133,36 +133,36 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
               </button>
             </div>
 
-            <div className="sm:flex sm:items-start">
+            {/* Header: icon + title + description */}
+            <div className="text-center sm:text-left sm:flex sm:items-start">
               <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 dark:bg-dark-800 sm:mx-0 sm:h-10 sm:w-10">
                 <IconComponent className="h-6 w-6 text-gray-700 dark:text-gray-300" />
               </div>
-              <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
+              <div className="mt-3 sm:mt-0 sm:ml-4 flex-1">
                 <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
                   {service.title}
                 </h3>
-                <p className="text-base text-gray-500 dark:text-gray-400 mb-6">
-                  {service.description}
-                </p>
-
-                <div className="mb-6">
-                  <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.15em] mb-4">
-                    {t('footer.mainServices')}
-                  </h4>
-                  <ul className="space-y-3">
-                    {service.details.map((detail, index) => (
-                      <li key={`detail-${index}`} className="flex items-center">
-                        <span className="text-sm font-bold text-gray-400 dark:text-gray-500 w-6 flex-shrink-0">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-                        <span className="text-base font-medium text-gray-700 dark:text-gray-300">
-                          {detail}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <p className="text-base text-gray-500 dark:text-gray-400">{service.description}</p>
               </div>
+            </div>
+
+            {/* Details list */}
+            <div className="mt-6 mb-6">
+              <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.15em] mb-4 text-center sm:text-left">
+                {t('footer.mainServices')}
+              </h4>
+              <ul className="space-y-3 pl-8 sm:pl-0">
+                {service.details.map((detail, index) => (
+                  <li key={`detail-${index}`} className="flex items-baseline gap-3">
+                    <span className="text-sm font-bold text-gray-400 dark:text-gray-500 flex-shrink-0 tabular-nums">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <span className="text-base font-medium text-gray-700 dark:text-gray-300">
+                      {detail}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {/* Dot indicators */}

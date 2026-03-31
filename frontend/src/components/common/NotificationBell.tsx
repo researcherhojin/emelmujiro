@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../../contexts/NotificationContext';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
+import { formatRelativeTime } from '../../utils/dateFormat';
 import type { Notification } from '../../types';
 
 // Static Tailwind class maps (no dynamic interpolation — pitfall 15)
@@ -36,24 +37,6 @@ const typeIconColors: Record<string, string> = {
   admin: 'text-red-400',
 };
 
-// Relative time formatting
-function getRelativeTime(
-  dateString: string,
-  t: (key: string, opts?: Record<string, unknown>) => string
-): string {
-  const now = Date.now();
-  const date = new Date(dateString).getTime();
-  const diffMs = now - date;
-  const diffMin = Math.floor(diffMs / 60000);
-  const diffHrs = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMin < 1) return t('notifications.justNow');
-  if (diffMin < 60) return t('notifications.minutesAgo', { count: diffMin });
-  if (diffHrs < 24) return t('notifications.hoursAgo', { count: diffHrs });
-  return t('notifications.daysAgo', { count: diffDays });
-}
-
 // --- Sub-components (same file per component extraction pattern) ---
 
 interface NotificationItemProps {
@@ -61,10 +44,11 @@ interface NotificationItemProps {
   onRead: (id: number) => void;
   onNavigate: (url: string) => void;
   t: (key: string, opts?: Record<string, unknown>) => string;
+  lang: string;
 }
 
 const NotificationItem: React.FC<NotificationItemProps> = memo(
-  ({ notification, onRead, onNavigate, t }) => {
+  ({ notification, onRead, onNavigate, t, lang }) => {
     const handleClick = () => {
       if (!notification.is_read) {
         onRead(notification.id);
@@ -117,7 +101,7 @@ const NotificationItem: React.FC<NotificationItemProps> = memo(
               {notification.message}
             </p>
             <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">
-              {getRelativeTime(notification.created_at, t)}
+              {formatRelativeTime(notification.created_at, lang, t, 'notifications')}
             </p>
           </div>
         </div>
@@ -133,7 +117,7 @@ interface NotificationPanelProps {
 }
 
 const NotificationPanel: React.FC<NotificationPanelProps> = memo(({ onClose }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { localizedPath } = useLocalizedPath();
   const { notifications, unreadCount, loading, fetchNotifications, markAsRead, markAllAsRead } =
@@ -191,6 +175,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = memo(({ onClose }) =
               onRead={handleRead}
               onNavigate={handleNavigate}
               t={t}
+              lang={i18n.language}
             />
           ))
         )}

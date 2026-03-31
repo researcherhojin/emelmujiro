@@ -8,7 +8,6 @@ import BlogSearch from './BlogSearch';
 import { useBlog } from '../../contexts/BlogContext';
 import { api } from '../../services/api';
 import { BlogPost } from '../../types';
-import { PageLoading } from '../common/UnifiedLoading';
 import logger from '../../utils/logger';
 
 interface Category {

@@ -15,7 +15,6 @@
     "switchLanguage": "Switch Language",
     "companyName": "Emelmujiro",
     "inquireProject": "Free Consultation →",
-    "inquireEducation": "Inquire About Training",
     "menu": "Menu",
     "representativeProfile": "Teaching History",
     "goBack": "Go Back",
@@ -27,18 +26,12 @@
     "titleLine1": "AI Training & Consulting",
     "titleLine2": "Your AI Partner",
     "descriptionLine1": "Generative AI, LLM·RAG, Vibe Coding, CV",
-    "descriptionLine2": "From curriculum design to PoC delivery.",
-    "cta": {
-      "primary": "Request Free Consultation",
-      "secondary": "Explore Services"
-    },
+    "descriptionLine2": "From curriculum design to PoC development.",
     "stats": {
       "hours": "Training Hrs",
       "projects": "Projects",
       "satisfaction": "Rating"
-    },
-    "expertise": "5 Years of Proven Expertise",
-    "since": "Since 2022 •"
+    }
   },
   "services": {
     "sectionLabel": "WHAT WE DO",
@@ -79,10 +72,9 @@
   },
   "cta": {
     "sectionLabel": "GET STARTED",
-    "title": "Need AI Training?",
+    "title": "Accelerate Your AI Journey",
     "subtitleLine1": "Training, consulting & AI Agent dev",
-    "subtitleLine2": "— all in one place",
-    "emailAriaLabel": "Contact via email"
+    "subtitleLine2": "— let's get started"
   },
   "footer": {
     "services": "Services",
@@ -92,7 +84,6 @@
     "businessInfo": {
       "representative": "CEO",
       "businessNumber": "Business Registration No.",
-      "address": "Address",
       "representativeName": "이호진",
       "businessNumberValue": "174-29-01733"
     }
@@ -111,10 +102,8 @@
       "email": "contact@emelmujiro.com",
       "phone": "+82 10-7279-0380",
       "address": "Gangnam-gu, Seoul",
-      "hours": "Weekdays 09:00 - 18:00",
       "emailLabel": "Email",
       "phoneLabel": "Phone",
-      "phoneValue": "Please contact us directly",
       "businessHours": "Business Hours",
       "weekdays": "Monday - Friday: 09:00 - 18:00",
       "weekends": "Saturday - Sunday: Closed",
@@ -147,12 +136,6 @@
     "timeMinutesAgo": "{{count}} min ago",
     "timeHoursAgo": "{{count}} hours ago",
     "timeDaysAgo": "{{count}} days ago",
-    "preparing": "Content Coming Soon",
-    "preparingSubtitle": "We'll be back with better content soon",
-    "preparingDescription": "We're preparing quality AI insights and technology trends. Please stay tuned.",
-    "backToMain": "Back to Home",
-    "noPosts": "Content Coming Soon",
-    "noPostsDescription": "We're preparing quality AI insights and tech trends. Please check back soon.",
     "sectionLabel": "INSIGHTS",
     "comingSoonLabel": "COMING SOON",
     "comingSoon": "Preparing Content",
@@ -184,8 +167,7 @@
       "image": "Upload image",
       "divider": "Divider"
     },
-    "allCategories": "All",
-    "filterByCategory": "Category"
+    "allCategories": "All"
   },
   "blogDetail": {
     "loading": "Loading post...",
@@ -210,19 +192,12 @@
     "description": "The page you requested may not exist or may have been moved.\nPlease check the URL or use the options below.",
     "goBack": "Go Back",
     "goHome": "Go Home",
-    "help": "Help",
     "popularPages": "Popular Pages"
   },
   "errorBoundary": {
     "title": "Something went wrong",
     "message": "An error occurred while loading the page. Please try again later.",
-    "description": "An unexpected error occurred. We apologize for the inconvenience.",
-    "repeatedError": "Errors are occurring repeatedly. Please contact our support team.",
-    "errorDetail": "Error details:",
-    "retry": "Try Again",
-    "contactSupport": "Contact Support",
-    "errorId": "Error ID:",
-    "time": "Time:"
+    "retry": "Try Again"
   },
   "apiErrors": {
     "400": "Please check your input.",
@@ -247,74 +222,61 @@
     "statsSection": "Key statistics",
     "servicesSection": "Services overview",
     "ctaSection": "Call to action",
-    "aboutHeroSection": "About us",
-    "timelineSection": "Company timeline",
-    "coreValuesSection": "Core values",
-    "achievementsSection": "Key achievements",
-    "aboutCtaSection": "Contact us",
     "footerNavServices": "Services list",
     "footerNavMenu": "Menu list",
     "closeModal": "Close modal",
     "closeModalOverlay": "Click overlay to close modal",
     "mainContent": "Main content",
-    "shortcutGoContact": "Press Alt+C to go to contact",
-    "shortcutGoProfile": "Press Alt+P to go to profile",
-    "shortcutCloseModal": "Press Escape to close modals",
-    "searchFocused": "Search input focused",
-    "navigatedToHome": "Navigated to home page",
-    "navigatedToBlog": "Navigated to insights page",
-    "navigatedToContact": "Navigated to contact page",
-    "navigatedToProfile": "Navigated to profile page",
     "pageLoaded": "Page loaded: {{title}}",
     "closeShareMenu": "Close share menu"
   },
   "footerServices": {
     "education": {
       "title": "AI Education & Training",
-      "description": "Custom AI training programs for enterprises, government, and startups.",
+      "description": "Custom AI programs for enterprise, government & startups.",
       "details": [
         "Custom curriculum design",
-        "Project-based practical training",
+        "Hands-on project training",
         "Vibe coding & AI utilization",
-        "Generative AI · LLM workplace training",
-        "AI onboarding for non-technical staff",
-        "AI literacy workshops for educators"
+        "GenAI · LLM work training",
+        "Non-tech AI onboarding",
+        "AI literacy workshops"
       ]
     },
     "consulting": {
       "title": "AI Consulting",
-      "description": "From AI adoption strategy to PoC development.",
+      "description": "AI adoption strategy through PoC development.",
       "details": [
-        "AI adoption strategy & technical review",
-        "PoC development & validation",
+        "AI strategy & tech review",
+        "PoC dev & validation",
         "Service prototype design",
-        "Open-source LLM adoption consulting",
-        "AI project timeline & risk management",
-        "Department-level AI adoption roadmap"
+        "Open-source LLM consulting",
+        "Timeline & risk management",
+        "AI adoption roadmap"
       ]
     },
     "llmGenai": {
       "title": "AI Agent Development",
-      "description": "Agentic AI service design and implementation.",
+      "description": "Agentic AI service design & implementation.",
       "details": [
-        "RAG · AI Agent design & development",
-        "Task automation workflow development",
-        "LLM deployment & optimization",
-        "Existing system integration design",
-        "Prompt design & quality improvement",
-        "MVP-level AI service prototyping"
+        "RAG · AI Agent design & dev",
+        "Task automation workflows",
+        "LLM deploy & optimization",
+        "System integration design",
+        "Prompt design & QA",
+        "MVP AI service prototyping"
       ]
     },
     "computerVision": {
       "title": "Computer Vision",
-      "description": "Vision AI project design and training.",
+      "description": "Vision AI project design & training.",
       "details": [
-        "Detection · classification · segmentation",
-        "Domain-specific CV project mentoring",
-        "End-to-end design including edge deployment",
-        "Project-based advanced CV training",
-        "Multimodal AI service integration",
-        "Edge device optimization & deployment"
+        "Detect · classify · segment",
+        "Domain CV mentoring",
+        "End-to-end w/ edge deploy",
+        "Advanced CV training",
+        "Multimodal AI integration",
+        "Edge device optimization"
       ]
     }
   },
@@ -386,7 +348,6 @@
     "update": "Update",
     "published": "Published",
     "draft": "Draft",
-    "enterUrl": "Enter URL:",
     "toolbar": {
       "bold": "Bold",
       "italic": "Italic",
@@ -429,25 +390,15 @@
       "ai": "Artificial Intelligence",
       "ml": "Machine Learning",
       "dl": "Deep Learning",
-      "cv": "Computer Vision",
-      "rag": "RAG",
-      "agent": "AI Agent",
-      "mcp": "MCP",
-      "python": "Python",
-      "vibeCoding": "Vibe Coding"
+      "python": "Python"
     },
     "site": {
-      "name": "Emelmujiro",
       "title": "AI Education · Consulting · AI Agent Development",
       "description": "We provide custom AI training, adoption consulting, AI Agent & RAG service development, and IT startup mentoring. Trusted AI partner for Samsung, LG and leading enterprises."
     },
     "seoHead": {
       "defaultKeywords": "AI education, AI consulting, AI Agent, RAG, MCP, Computer Vision, enterprise training, LLM, generative AI, Vibe Coding, startup mentoring, deep learning, machine learning",
       "orgDescription": "AI Education · Consulting · AI Agent Development"
-    },
-    "faq": {
-      "title": "FAQ",
-      "description": "Find answers to frequently asked questions about Emelmujiro's AI education, consulting, and agent development services."
     }
   },
   "teachingHistory": {
@@ -622,64 +573,27 @@
   "faq": {
     "title": "Frequently Asked Questions",
     "subtitle": "Find answers to common questions about our AI education and consulting services",
-    "categories": {
-      "all": "All",
-      "general": "General",
-      "education": "Education",
-      "consulting": "Consulting",
-      "technical": "Technical"
-    },
     "items": {
       "general1": {
         "question": "What services does Emelmujiro provide?",
-        "answer": "Emelmujiro offers a comprehensive range of AI services.\n\n• AI Education & Lectures\n• AI Consulting\n• AI Agent Development (LLM, RAG, MCP)\n• Computer Vision Solutions\n\nWe provide end-to-end support from corporate training to technical consulting.",
-        "category": "general"
-      },
-      "general2": {
-        "question": "How can I request a consultation?",
-        "answer": "Simply fill out the form on our Contact page, and a representative will reach out as soon as possible. You can also schedule a consultation via phone or email.",
-        "category": "general"
+        "answer": "Emelmujiro offers a comprehensive range of AI services.\n\n• AI Education & Lectures\n• AI Consulting\n• AI Agent Development (LLM, RAG, MCP)\n• Computer Vision Solutions\n\nWe provide end-to-end support from corporate training to technical consulting."
       },
       "education1": {
         "question": "How are the AI education courses structured?",
-        "answer": "We offer courses for all levels, from beginners to experts.\n\n• Python Fundamentals & Data Analysis\n• Machine Learning / Deep Learning\n• LLM & RAG Applications\n• AI Agent Development\n\nAll courses are built around a practice-oriented curriculum.",
-        "category": "education"
-      },
-      "education2": {
-        "question": "Do you offer customized corporate training?",
-        "answer": "Yes, we provide training customized to your industry and job roles. After an initial meeting to discuss training goals, participant levels, and duration, we design an optimal curriculum.",
-        "category": "education"
+        "answer": "We offer courses for all levels, from beginners to experts.\n\n• Python Fundamentals & Data Analysis\n• Machine Learning / Deep Learning\n• LLM & RAG Applications\n• AI Agent Development\n\nAll courses are built around a practice-oriented curriculum."
       },
       "education3": {
         "question": "Are courses available online?",
-        "answer": "We offer multiple training formats.\n\n• Online (live / recorded)\n• Offline\n• Hybrid\n\nTraining format and practice environment details are provided during consultation.",
-        "category": "education"
-      },
-      "consulting1": {
-        "question": "In which industries do you offer AI consulting?",
-        "answer": "We provide consulting across various industries including manufacturing, finance, healthcare, and retail. Services include AI adoption strategy, PoC development, model optimization, and MLOps implementation.",
-        "category": "consulting"
+        "answer": "We offer multiple training formats.\n\n• Online (live / recorded)\n• Offline\n• Hybrid\n\nTraining format and practice environment details are provided during consultation."
       },
       "consulting2": {
         "question": "How long does a typical consulting project take?",
-        "answer": "Timelines vary by project scope and complexity.\n\n• PoC (Proof of Concept): typically 4–8 weeks\n• Full implementation: typically 3–6 months\n\nExact timelines are provided during the initial consultation.",
-        "category": "consulting"
-      },
-      "technical1": {
-        "question": "What AI technology stack do you use?",
-        "answer": "We leverage cutting-edge AI frameworks and tools including PyTorch, TensorFlow, Hugging Face, LangChain, OpenAI API, and Claude API. We select the optimal technology stack based on project requirements.",
-        "category": "technical"
+        "answer": "Timelines vary by project scope and complexity.\n\n• PoC (Proof of Concept): typically 4–8 weeks\n• Full implementation: typically 3–6 months\n\nExact timelines are provided during the initial consultation."
       },
       "technical2": {
         "question": "What is AI agent development?",
-        "answer": "AI systems that autonomously perform tasks based on LLMs (Large Language Models).\n\n• RAG — Retrieval-Augmented Generation\n• MCP — Model Context Protocol\n• Tool Use — External tool integration\n\nThese technologies enable automation of business processes.",
-        "category": "technical"
+        "answer": "AI systems that autonomously perform tasks based on LLMs (Large Language Models).\n\n• RAG — Retrieval-Augmented Generation\n• MCP — Model Context Protocol\n• Tool Use — External tool integration\n\nThese technologies enable automation of business processes."
       }
-    },
-    "cta": {
-      "title": "Still have questions?",
-      "description": "Feel free to reach out through our contact page. We'll get back to you promptly.",
-      "button": "Contact Us"
     }
   },
   "testimonials": {
@@ -697,7 +611,6 @@
     "startup2": "You get to experience the full cycle — from ideating an MVP to building the product with your own hands. The passionate peers made learning enjoyable.",
     "startup3": "Development, design, marketing, and business — all experienced within 3 months. Looking back now, I gained far more than I expected.",
     "startup4": "Unbelievable growth — from team building to MVP. If you dream of being a founder, I strongly recommend this. The follow-up support continues after the program.",
-    "enterpriseProgram": "Enterprise AI Training",
     "enterprise1": "It wasn't just theory — we built models with our team's actual data, so I could apply what I learned right away after training. The hands-on approach was excellent.",
     "enterprise1Source": "S Corp. Semiconductor Engineer · ML/DL Advanced",
     "enterprise2": "Even as a non-developer, I was able to work with data in Python. The instructor explained everything through real workplace examples, which made it much easier to understand.",

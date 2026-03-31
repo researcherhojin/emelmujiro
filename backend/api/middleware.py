@@ -5,13 +5,10 @@ from django.core.cache import cache
 from django.conf import settings
 import re
 
+from api.constants import ONE_DAY, ONE_HOUR
 from api.views import get_client_ip
 
 logger = logging.getLogger("security")
-
-# Time constants (seconds)
-ONE_HOUR = 3600
-ONE_DAY = 86400
 
 # Rate limiting thresholds
 RATE_LIMIT_PER_HOUR = 100

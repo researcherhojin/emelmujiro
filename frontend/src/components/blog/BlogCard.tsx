@@ -4,16 +4,13 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { formatDate } from '../../utils/dateFormat';
+import { preventImageAction } from '../../utils/imageUtils';
 import type { BlogPost } from '../../types';
 
 interface BlogCardProps {
   post: BlogPost;
   featured?: boolean;
 }
-
-const preventImageAction = (e: React.MouseEvent | React.DragEvent) => {
-  e.preventDefault();
-};
 
 const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
   const { t } = useTranslation();

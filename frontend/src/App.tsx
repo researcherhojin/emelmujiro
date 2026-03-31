@@ -40,7 +40,6 @@ const ContactPage = lazy(() => import('./components/pages/ContactPage'));
 const BlogListPage = lazy(() => import('./components/blog/BlogListPage'));
 const BlogDetail = lazy(() => import('./components/blog/BlogDetail'));
 const BlogEditor = lazy(() => import('./components/blog/BlogEditor'));
-const FAQSection = lazy(() => import('./components/sections/FAQSection'));
 const LoginPage = lazy(() => import('./components/pages/LoginPage'));
 
 // ScrollToTop component to handle page navigation

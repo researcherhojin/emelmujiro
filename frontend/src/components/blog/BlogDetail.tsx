@@ -21,10 +21,7 @@ import logger from '../../utils/logger';
 import { SITE_URL } from '../../utils/constants';
 import { formatDate } from '../../utils/dateFormat';
 import { trackBlogView } from '../../utils/analytics';
-
-const preventImageAction = (e: React.MouseEvent | React.DragEvent) => {
-  e.preventDefault();
-};
+import { preventImageAction } from '../../utils/imageUtils';
 
 const BlogDetailPage: React.FC = memo(() => {
   const { t } = useTranslation();

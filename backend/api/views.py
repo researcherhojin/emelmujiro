@@ -20,7 +20,7 @@ import os
 import re
 import uuid as uuid_mod
 
-from .constants import SPAM_KEYWORDS
+from .constants import ONE_DAY, ONE_HOUR, is_spam
 
 import requests
 
@@ -47,10 +47,6 @@ from .serializers import (
 )
 
 logger = logging.getLogger(__name__)
-
-# Time constants
-ONE_HOUR = 3600  # seconds
-ONE_DAY = 86400  # seconds
 
 
 class ContactRateThrottle(AnonRateThrottle):
@@ -337,9 +333,8 @@ class BlogCommentViewSet(viewsets.ModelViewSet):
         ip_address = get_client_ip(self.request)
 
         # Spam keyword check
-        content = serializer.validated_data.get("content", "").lower()
-        spam_count = sum(1 for kw in SPAM_KEYWORDS if kw in content)
-        if spam_count >= 2:
+        content = serializer.validated_data.get("content", "")
+        if is_spam(content):
             raise ValidationError({"content": "스팸으로 의심되는 내용이 포함되어 있습니다."})
 
         serializer.save(post_id=post_id, ip_address=ip_address)

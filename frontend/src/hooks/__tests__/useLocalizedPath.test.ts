@@ -1,51 +1,9 @@
 import { renderHook, act } from '@testing-library/react';
 import { MemoryRouter, Routes, Route, Outlet } from 'react-router-dom';
 import React from 'react';
-import {
-  getLangFromPath,
-  getLangPrefix,
-  stripLangPrefix,
-  buildLocalizedPath,
-  useLocalizedPath,
-} from '../useLocalizedPath';
+import { stripLangPrefix, useLocalizedPath } from '../useLocalizedPath';
 
 // --- Pure utility function tests ---
-
-describe('getLangFromPath', () => {
-  it('returns "ko" for Korean paths (no prefix)', () => {
-    expect(getLangFromPath('/')).toBe('ko');
-    expect(getLangFromPath('/profile')).toBe('ko');
-    expect(getLangFromPath('/insights/123')).toBe('ko');
-  });
-
-  it('returns "en" for English paths', () => {
-    expect(getLangFromPath('/en')).toBe('en');
-    expect(getLangFromPath('/en/')).toBe('en');
-    expect(getLangFromPath('/en/profile')).toBe('en');
-    expect(getLangFromPath('/en/insights/123')).toBe('en');
-  });
-
-  it('returns "ko" for paths that contain "en" but not as prefix', () => {
-    expect(getLangFromPath('/enable')).toBe('ko');
-    expect(getLangFromPath('/content')).toBe('ko');
-    expect(getLangFromPath('/insights/en-post')).toBe('ko');
-  });
-});
-
-describe('getLangPrefix', () => {
-  it('returns empty string for Korean (default)', () => {
-    expect(getLangPrefix('ko')).toBe('');
-  });
-
-  it('returns "/en" for English', () => {
-    expect(getLangPrefix('en')).toBe('/en');
-  });
-
-  it('returns prefix for other languages', () => {
-    expect(getLangPrefix('ja')).toBe('/ja');
-    expect(getLangPrefix('fr')).toBe('/fr');
-  });
-});
 
 describe('stripLangPrefix', () => {
   it('strips /en prefix from paths', () => {
@@ -67,25 +25,6 @@ describe('stripLangPrefix', () => {
   it('does not strip "en" when not a prefix segment', () => {
     expect(stripLangPrefix('/enable')).toBe('/enable');
     expect(stripLangPrefix('/content')).toBe('/content');
-  });
-});
-
-describe('buildLocalizedPath', () => {
-  it('builds Korean paths without prefix', () => {
-    expect(buildLocalizedPath('/profile', 'ko')).toBe('/profile');
-    expect(buildLocalizedPath('/insights/123', 'ko')).toBe('/insights/123');
-    expect(buildLocalizedPath('/', 'ko')).toBe('/');
-  });
-
-  it('builds English paths with /en prefix', () => {
-    expect(buildLocalizedPath('/profile', 'en')).toBe('/en/profile');
-    expect(buildLocalizedPath('/insights/123', 'en')).toBe('/en/insights/123');
-    expect(buildLocalizedPath('/', 'en')).toBe('/en');
-  });
-
-  it('strips existing language prefix before rebuilding', () => {
-    expect(buildLocalizedPath('/en/profile', 'ko')).toBe('/profile');
-    expect(buildLocalizedPath('/en/profile', 'en')).toBe('/en/profile');
   });
 });
 
@@ -155,7 +94,6 @@ describe('useLocalizedPath hook', () => {
     });
     expect(result.current.currentLang).toBe('ko');
     expect(result.current.langPrefix).toBe('');
-    expect(result.current.defaultLang).toBe('ko');
   });
 
   it('returns Korean for unprefixed paths', () => {
@@ -172,13 +110,6 @@ describe('useLocalizedPath hook', () => {
     });
     expect(result.current.currentLang).toBe('en');
     expect(result.current.langPrefix).toBe('/en');
-  });
-
-  it('exposes supportedLangs', () => {
-    const { result } = renderHook(() => useLocalizedPath(), {
-      wrapper: createWrapper(['/']),
-    });
-    expect(result.current.supportedLangs).toEqual(['ko', 'en']);
   });
 
   describe('localizedPath', () => {

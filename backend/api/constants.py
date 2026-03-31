@@ -1,3 +1,9 @@
+# Time constants (seconds)
+ONE_HOUR = 3600
+ONE_DAY = 86400
+
+SPAM_THRESHOLD = 2
+
 SPAM_KEYWORDS = [
     # English spam terms
     "betting",
@@ -26,3 +32,9 @@ SPAM_KEYWORDS = [
     "투자",
     "홍보",
 ]
+
+
+def is_spam(text: str) -> bool:
+    """Check if text contains too many spam keywords."""
+    text_lower = text.lower()
+    return sum(1 for kw in SPAM_KEYWORDS if kw in text_lower) >= SPAM_THRESHOLD

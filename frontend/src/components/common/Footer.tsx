@@ -2,7 +2,7 @@ import React, { useState, memo, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail, Phone, ExternalLink } from 'lucide-react';
-import { getServices, type ServiceDetail } from '../../data/footerData';
+import { getServices } from '../../data/footerData';
 import { CONTACT_EMAIL } from '../../utils/constants';
 import ServiceModal from './ServiceModal';
 import { useScrollToSection } from '../../hooks/useScrollToSection';
