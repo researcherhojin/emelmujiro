@@ -57,7 +57,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
       const bookmarks: Array<{
         id: string | number;
         title: string;
-        excerpt: string;
+        description: string;
         date?: string;
         savedAt: string;
       }> = bookmarksData ? JSON.parse(bookmarksData) : [];
@@ -71,7 +71,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
         const bookmark = {
           id: post.id,
           title: post.title,
-          excerpt: post.excerpt || post.title,
+          description: post.description || post.title,
           date: post.date,
           savedAt: new Date().toISOString(),
         };
@@ -88,7 +88,7 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   // Share functions
   const shareUrl = window.location.href;
   const shareTitle = post.title;
-  const shareText = post.excerpt;
+  const shareText = post.description;
 
   const shareToKakao = () => {
     // Note: Kakao SDK would need to be initialized in index.html

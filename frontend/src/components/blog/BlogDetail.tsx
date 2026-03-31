@@ -115,17 +115,17 @@ const BlogDetailPage: React.FC = memo(() => {
                 <button
                   onClick={handleTogglePublish}
                   className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                    post.published
+                    post.is_published
                       ? 'bg-green-900/50 text-green-400 hover:bg-green-900/70'
                       : 'bg-yellow-900/50 text-yellow-400 hover:bg-yellow-900/70'
                   }`}
                 >
-                  {post.published ? (
+                  {post.is_published ? (
                     <Eye className="w-3.5 h-3.5" />
                   ) : (
                     <EyeOff className="w-3.5 h-3.5" />
                   )}
-                  {post.published ? t('blogAdmin.published') : t('blogAdmin.draft')}
+                  {post.is_published ? t('blogAdmin.published') : t('blogAdmin.draft')}
                 </button>
               </div>
               <div className="flex items-center gap-2">
@@ -170,7 +170,7 @@ const BlogDetailPage: React.FC = memo(() => {
           <>
             <SEOHelmet
               title={`${post.title} | ${t('blogDetail.blogTitle')}`}
-              description={post.excerpt || post.title}
+              description={post.description || post.title}
               keywords={`${post.category}, ${t('blogDetail.blogKeywords')}`}
               url={`${SITE_URL}/insights/${slug}`}
               type="article"
@@ -186,7 +186,7 @@ const BlogDetailPage: React.FC = memo(() => {
               type="Article"
               article={{
                 title: post.title,
-                description: post.excerpt || post.title,
+                description: post.description || post.title,
                 author: post.author,
                 publishedTime: post.date,
                 modifiedTime: post.updated_at || post.date,

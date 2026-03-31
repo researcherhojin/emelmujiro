@@ -57,18 +57,8 @@ class AdminUserSerializer(serializers.ModelSerializer):
 
 
 class BlogPostSerializer(serializers.ModelSerializer):
-    """Serializer aligned with frontend BlogPost type.
+    """Read serializer — snake_case fields only, matching frontend BlogPost type."""
 
-    camelCase aliases (publishedAt, imageUrl, views, published, excerpt) match
-    the frontend TypeScript BlogPost type. Snake_case originals (date, image_url,
-    view_count, is_published, description) are kept for admin/internal use.
-    """
-
-    excerpt = serializers.CharField(source="description", read_only=True)
-    publishedAt = serializers.DateTimeField(source="date", format="%Y-%m-%d", read_only=True)
-    imageUrl = serializers.URLField(source="image_url", read_only=True)
-    views = serializers.IntegerField(source="view_count", read_only=True)
-    published = serializers.BooleanField(source="is_published", read_only=True)
     category_display = serializers.SerializerMethodField()
     formatted_date = serializers.SerializerMethodField()
     relative_date = serializers.SerializerMethodField()
@@ -80,21 +70,18 @@ class BlogPostSerializer(serializers.ModelSerializer):
             "title",
             "slug",
             "content",
-            "excerpt",
+            "description",
             "author",
-            "publishedAt",
             "category",
             "category_display",
             "tags",
-            "imageUrl",
             "image_url",
             "date",
             "formatted_date",
             "relative_date",
             "created_at",
             "updated_at",
-            "published",
-            "views",
+            "is_published",
             "view_count",
             "likes",
             "is_featured",

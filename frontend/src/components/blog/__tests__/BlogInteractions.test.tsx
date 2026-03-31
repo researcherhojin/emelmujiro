@@ -44,16 +44,15 @@ const mockPost: BlogPost = {
   title: 'Test Blog Post',
   slug: 'test-blog-post',
   content: 'Test content',
-  excerpt: 'Test excerpt',
+  description: 'Test excerpt',
   author: 'Test Author',
   created_at: '2024-01-01',
   updated_at: '2024-01-01',
-  published: true,
+  is_published: true,
   category: 'Technology',
   tags: ['test'],
   image_url: 'https://example.com/test.jpg',
   date: '2024-01-01',
-  publishedAt: '2024-01-01',
   likes: 5,
 };
 
@@ -232,18 +231,18 @@ describe('BlogInteractions Component', () => {
 
       const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
       expect(bookmarks[0].title).toBe('Test Blog Post');
-      expect(bookmarks[0].excerpt).toBe('Test excerpt');
+      expect(bookmarks[0].description).toBe('Test excerpt');
       expect(bookmarks[0].savedAt).toBeDefined();
     });
 
     it('uses title as excerpt fallback when excerpt is missing', () => {
-      const postNoExcerpt = { ...mockPost, excerpt: '' };
+      const postNoExcerpt = { ...mockPost, description: '' };
       render(<BlogInteractions post={postNoExcerpt} />);
       const buttons = screen.getAllByRole('button');
       fireEvent.click(buttons[1]);
 
       const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      expect(bookmarks[0].excerpt).toBe('Test Blog Post');
+      expect(bookmarks[0].description).toBe('Test Blog Post');
     });
 
     it('handles corrupted localStorage bookmarks on mount', () => {

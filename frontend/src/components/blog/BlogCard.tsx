@@ -20,7 +20,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
     return null;
   }
 
-  const { slug, title, excerpt, date, image_url, category, readTime } = post;
+  const { slug, title, description, date, image_url, category } = post;
 
   if (featured) {
     return (
@@ -70,7 +70,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
                 {title}
               </h2>
               <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 mb-6">
-                {excerpt || ''}
+                {description || ''}
               </p>
               <div className="flex items-center gap-4">
                 <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors duration-300">
@@ -79,11 +79,6 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
                     &rarr;
                   </span>
                 </span>
-                {readTime && (
-                  <span className="text-xs text-gray-400 dark:text-gray-500">
-                    {readTime} min read
-                  </span>
-                )}
               </div>
             </div>
           </div>
@@ -142,7 +137,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
             </h3>
 
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 mb-5">
-              {excerpt || ''}
+              {description || ''}
             </p>
 
             <div className="mt-auto">

@@ -8,14 +8,13 @@ describe('Type definitions', () => {
         title: 'Test Post',
         slug: 'test-post',
         content: 'Test content',
-        excerpt: 'Test excerpt',
+        description: 'Test excerpt',
         author: 'Test Author',
-        publishedAt: '2024-01-01',
+        date: '2024-01-01',
         image_url: '/image.jpg',
         tags: ['test', 'typescript'],
         category: 'Technology',
-        readTime: 5,
-        views: 100,
+        view_count: 100,
         likes: 10,
       };
 
@@ -30,9 +29,9 @@ describe('Type definitions', () => {
         title: 'Minimal Post',
         slug: 'minimal-post',
         content: 'Content',
-        excerpt: 'Excerpt',
+        description: 'Excerpt',
         author: 'Author',
-        publishedAt: '2024-01-01',
+        date: '2024-01-01',
       };
 
       expect(minimalPost.image_url).toBeUndefined();
@@ -77,9 +76,9 @@ describe('Type definitions', () => {
         title: 'Test',
         slug: 'test',
         content: 'Content',
-        excerpt: 'Excerpt',
+        description: 'Excerpt',
         author: 'Author',
-        publishedAt: '2024-01-01',
+        date: '2024-01-01',
       };
 
       const isBlogPost = (obj: unknown): obj is BlogPost => {
@@ -127,18 +126,18 @@ describe('Type definitions', () => {
           title: 'Post 1',
           slug: 'post-1',
           content: 'Content 1',
-          excerpt: 'Excerpt 1',
+          description: 'Excerpt 1',
           author: 'Author 1',
-          publishedAt: '2024-01-01',
+          date: '2024-01-01',
         },
         {
           id: 2,
           title: 'Post 2',
           slug: 'post-2',
           content: 'Content 2',
-          excerpt: 'Excerpt 2',
+          description: 'Excerpt 2',
           author: 'Author 2',
-          publishedAt: '2024-01-02',
+          date: '2024-01-02',
         },
       ];
 
@@ -169,9 +168,9 @@ describe('Type definitions', () => {
           title: 'Success',
           slug: 'success',
           content: 'Content',
-          excerpt: 'Excerpt',
+          description: 'Excerpt',
           author: 'Author',
-          publishedAt: '2024-01-01',
+          date: '2024-01-01',
         },
       };
 

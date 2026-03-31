@@ -360,13 +360,13 @@ describe('BlogEditor Component', () => {
         data: {
           id: 42,
           title: 'Existing Post',
-          excerpt: 'Existing desc',
+          description: 'Existing desc',
           content: 'Existing text',
           content_html: '<p>Existing HTML</p>',
           category: 'ml',
           tags: ['python', 'ml'],
           image_url: 'https://example.com/img.jpg',
-          published: true,
+          is_published: true,
         },
       });
 
@@ -386,12 +386,12 @@ describe('BlogEditor Component', () => {
         data: {
           id: 42,
           title: 'Existing',
-          excerpt: 'Desc',
+          description: 'Desc',
           content: 'Text',
           content_html: '<p>HTML</p>',
           category: 'ai',
           tags: [],
-          published: true,
+          is_published: true,
         },
       });
 
@@ -457,7 +457,7 @@ describe('BlogEditor Component', () => {
           content_html: '',
           category: 'ai',
           tags: [],
-          published: true,
+          is_published: true,
         },
       });
 
@@ -481,7 +481,7 @@ describe('BlogEditor Component', () => {
           content_html: '',
           category: 'ai',
           tags: [],
-          published: true,
+          is_published: true,
         },
       });
 

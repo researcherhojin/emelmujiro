@@ -90,11 +90,11 @@ const BlogEditor: React.FC = () => {
         const post = response.data;
         setMeta({
           title: post.title,
-          description: post.excerpt || '',
+          description: post.description || '',
           category: post.category || 'ai',
           tags: post.tags?.join(', ') || '',
           image_url: post.image_url || '',
-          is_published: post.published ?? true,
+          is_published: post.is_published ?? true,
         });
         setInitialContent(post.content_html || post.content || '');
         setContentHtml(post.content_html || '');

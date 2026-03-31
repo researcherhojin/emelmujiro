@@ -36,12 +36,12 @@ describe('blogPosts data', () => {
         expect(typeof post.title).toBe('string');
         expect(post.slug).toBeDefined();
         expect(typeof post.slug).toBe('string');
-        expect(post.excerpt).toBeDefined();
+        expect(post.description).toBeDefined();
         expect(post.content).toBeDefined();
         expect(post.author).toBeDefined();
         expect(post.date).toBeDefined();
-        expect(post.published).toBeDefined();
-        expect(typeof post.published).toBe('boolean');
+        expect(post.is_published).toBeDefined();
+        expect(typeof post.is_published).toBe('boolean');
         expect(post.category).toBeDefined();
         expect(Array.isArray(post.tags)).toBe(true);
       });
@@ -62,10 +62,10 @@ describe('blogPosts data', () => {
 
   describe('Blog Posts Filtering', () => {
     it('should filter published posts', () => {
-      const publishedPosts = blogPosts.filter((p) => p.published);
+      const publishedPosts = blogPosts.filter((p) => p.is_published);
       expect(publishedPosts.length).toBeGreaterThan(0);
       publishedPosts.forEach((post) => {
-        expect(post.published).toBe(true);
+        expect(post.is_published).toBe(true);
       });
     });
 
@@ -169,7 +169,7 @@ describe('blogPosts data', () => {
       blogPosts.forEach((post) => {
         expect(post.title.trim()).not.toBe('');
         expect(post.slug.trim()).not.toBe('');
-        expect(post.excerpt.trim()).not.toBe('');
+        expect(post.description.trim()).not.toBe('');
         expect(post.content.trim()).not.toBe('');
         expect(post.author.trim()).not.toBe('');
         expect(post.category?.trim()).not.toBe('');
@@ -203,13 +203,13 @@ describe('blogPosts data', () => {
         id: 999,
         title: 'Custom Post',
         slug: 'custom-post',
-        excerpt: 'Custom',
+        description: 'Custom',
         content: 'Custom content',
         author: 'Test',
         date: '2025-01-01',
         created_at: '2025-01-01T00:00:00Z',
         updated_at: '2025-01-01T00:00:00Z',
-        published: true,
+        is_published: true,
         category: 'test',
         tags: [],
       };
@@ -223,13 +223,13 @@ describe('blogPosts data', () => {
         id: 1,
         title: 'Override Post',
         slug: 'override',
-        excerpt: 'Override',
+        description: 'Override',
         content: 'Override',
         author: 'Test',
         date: '2025-06-01',
         created_at: '2025-06-01T00:00:00Z',
         updated_at: '2025-06-01T00:00:00Z',
-        published: true,
+        is_published: true,
         category: 'test',
         tags: [],
       };
@@ -260,11 +260,11 @@ describe('blogPosts data', () => {
           id: 901,
           title: 'Date Only Post',
           slug: 'date-only',
-          excerpt: 'E',
+          description: 'E',
           content: 'C',
           author: 'T',
           date: '2025-06-01',
-          published: true,
+          is_published: true,
           category: 'test',
           tags: [],
         },
@@ -272,10 +272,10 @@ describe('blogPosts data', () => {
           id: 902,
           title: 'No Date Post',
           slug: 'no-date',
-          excerpt: 'E',
+          description: 'E',
           content: 'C',
           author: 'T',
-          published: true,
+          is_published: true,
           category: 'test',
           tags: [],
         },
@@ -318,13 +318,13 @@ describe('blogPosts data', () => {
         id: 888,
         title: 'Custom Single',
         slug: 'custom-single',
-        excerpt: 'E',
+        description: 'E',
         content: 'C',
         author: 'T',
         date: '2025-01-01',
         created_at: '2025-01-01T00:00:00Z',
         updated_at: '2025-01-01T00:00:00Z',
-        published: true,
+        is_published: true,
         category: 'test',
         tags: [],
       };

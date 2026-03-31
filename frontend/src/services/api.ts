@@ -152,15 +152,9 @@ export const api = {
           title: `Mock Post ${id}`,
           content: `This is mock content for post ${id}`,
         };
-        return mockResponse({
-          ...defaultPost,
-          createdAt: defaultPost.created_at,
-        });
+        return mockResponse(defaultPost);
       }
-      return mockResponse({
-        ...post,
-        createdAt: post.created_at,
-      });
+      return mockResponse(post);
     }
     return axiosInstance.get<BlogPost>(`blog-posts/${id}/`);
   },

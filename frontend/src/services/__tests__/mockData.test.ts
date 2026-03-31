@@ -17,13 +17,13 @@ describe('mockData', () => {
         expect(post).toHaveProperty('id');
         expect(post).toHaveProperty('title');
         expect(post).toHaveProperty('content');
-        expect(post).toHaveProperty('excerpt');
+        expect(post).toHaveProperty('description');
         expect(post).toHaveProperty('author');
-        expect(post).toHaveProperty('publishedAt');
+        expect(post).toHaveProperty('date');
         expect(post).toHaveProperty('category');
         expect(post).toHaveProperty('tags');
         expect(post).toHaveProperty('slug');
-        expect(post).toHaveProperty('published');
+        expect(post).toHaveProperty('is_published');
         expect(post).toHaveProperty('created_at');
         expect(post).toHaveProperty('updated_at');
       });
@@ -34,11 +34,11 @@ describe('mockData', () => {
         expect(typeof post.id).toBe('number');
         expect(typeof post.title).toBe('string');
         expect(typeof post.content).toBe('string');
-        expect(typeof post.excerpt).toBe('string');
+        expect(typeof post.description).toBe('string');
         expect(typeof post.author).toBe('string');
-        expect(typeof post.publishedAt).toBe('string');
+        expect(typeof post.date).toBe('string');
         expect(typeof post.slug).toBe('string');
-        expect(typeof post.published).toBe('boolean');
+        expect(typeof post.is_published).toBe('boolean');
         expect(Array.isArray(post.tags)).toBe(true);
       });
     });
@@ -57,7 +57,7 @@ describe('mockData', () => {
 
     it('should have all posts published', () => {
       mockBlogPosts.forEach((post) => {
-        expect(post.published).toBe(true);
+        expect(post.is_published).toBe(true);
       });
     });
 
@@ -65,7 +65,7 @@ describe('mockData', () => {
       mockBlogPosts.forEach((post) => {
         expect(post.title.trim().length).toBeGreaterThan(0);
         expect(post.content.trim().length).toBeGreaterThan(0);
-        expect(post.excerpt.trim().length).toBeGreaterThan(0);
+        expect(post.description.trim().length).toBeGreaterThan(0);
         expect(post.author.trim().length).toBeGreaterThan(0);
         expect(post.slug.trim().length).toBeGreaterThan(0);
       });
@@ -73,8 +73,8 @@ describe('mockData', () => {
 
     it('should have valid date formats for publishedAt', () => {
       mockBlogPosts.forEach((post) => {
-        expect(post.publishedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-        const date = new Date(post.publishedAt);
+        expect(post.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        const date = new Date(post.date);
         expect(date.toString()).not.toBe('Invalid Date');
       });
     });
@@ -98,9 +98,9 @@ describe('mockData', () => {
 
     it('should have numeric views and likes', () => {
       mockBlogPosts.forEach((post) => {
-        expect(typeof post.views).toBe('number');
+        expect(typeof post.view_count).toBe('number');
         expect(typeof post.likes).toBe('number');
-        expect(post.views).toBeGreaterThanOrEqual(0);
+        expect(post.view_count).toBeGreaterThanOrEqual(0);
         expect(post.likes).toBeGreaterThanOrEqual(0);
       });
     });

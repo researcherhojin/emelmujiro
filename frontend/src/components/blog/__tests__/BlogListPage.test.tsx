@@ -77,9 +77,9 @@ const makePosts = (count: number, category = 'ai') =>
     id: i + 1,
     title: `Post ${i + 1}`,
     content: '',
-    excerpt: '',
+    description: '',
     author: '',
-    publishedAt: '',
+    date: '',
     slug: `post-${i + 1}`,
     category: i % 2 === 0 ? category : 'ml',
   }));

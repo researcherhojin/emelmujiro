@@ -191,7 +191,7 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       const result = await api.getBlogPosts(1);
 
       result.data.results.forEach((post: BlogPost) => {
-        const dateField = post.created_at || post.publishedAt;
+        const dateField = post.created_at || post.date;
         expect(dateField).toEqual(expect.any(String));
         const date = new Date(dateField);
         expect(date).toBeInstanceOf(Date);

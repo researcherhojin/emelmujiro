@@ -23,16 +23,15 @@ const mockPost: BlogPost = {
   title: 'Test Blog Post',
   slug: 'test-blog-post',
   content: 'Test content',
-  excerpt: 'This is a test excerpt',
+  description: 'This is a test excerpt',
   author: 'Test Author',
-  publishedAt: '2024-01-01',
+  date: '2024-01-01',
   created_at: '2024-01-01',
   updated_at: '2024-01-01',
-  published: true,
+  is_published: true,
   category: 'Technology',
   tags: ['test', 'react'],
   image_url: 'https://example.com/test.jpg',
-  date: '2024-01-01',
 };
 
 const renderWithRouter = (component: React.ReactElement) => {
@@ -76,7 +75,7 @@ describe('BlogCard Component', () => {
   });
 
   it('handles missing excerpt', async () => {
-    const postWithoutExcerpt = { ...mockPost, excerpt: '' };
+    const postWithoutExcerpt = { ...mockPost, description: '' };
     renderWithRouter(<BlogCard post={postWithoutExcerpt} />);
 
     await waitFor(() => {
@@ -146,7 +145,7 @@ describe('BlogCard Component', () => {
   });
 
   it('does not show date when date is not provided', async () => {
-    const postWithoutDate = { ...mockPost, date: undefined };
+    const postWithoutDate = { ...mockPost, date: '' };
     renderWithRouter(<BlogCard post={postWithoutDate} />);
 
     await waitFor(() => {
@@ -167,26 +166,6 @@ describe('BlogCard Component', () => {
     });
 
     expect(screen.queryByText('Technology')).not.toBeInTheDocument();
-  });
-
-  it('shows readTime on featured card when provided', async () => {
-    const postWithReadTime = { ...mockPost, readTime: 5 };
-    renderWithRouter(<BlogCard post={postWithReadTime} featured />);
-
-    await waitFor(() => {
-      expect(screen.getByText('5 min read')).toBeInTheDocument();
-    });
-  });
-
-  it('does not show readTime on regular card', async () => {
-    const postWithReadTime = { ...mockPost, readTime: 5 };
-    renderWithRouter(<BlogCard post={postWithReadTime} />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Test Blog Post')).toBeInTheDocument();
-    });
-
-    expect(screen.queryByText('5 min read')).not.toBeInTheDocument();
   });
 
   it('links to the correct blog detail page', async () => {
@@ -230,7 +209,7 @@ describe('BlogCard Component', () => {
   });
 
   it('renders empty excerpt fallback on featured card (line 76)', async () => {
-    const postWithoutExcerpt = { ...mockPost, excerpt: '' };
+    const postWithoutExcerpt = { ...mockPost, description: '' };
     renderWithRouter(<BlogCard post={postWithoutExcerpt} featured />);
 
     await waitFor(() => {

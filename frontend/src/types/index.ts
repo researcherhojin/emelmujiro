@@ -5,19 +5,18 @@ export interface BlogPost {
   slug: string;
   content: string;
   content_html?: string;
-  excerpt: string;
+  description: string;
   author: string;
-  publishedAt: string;
   category?: string;
   tags?: string[];
   image_url?: string;
-  date?: string;
+  date: string;
   created_at?: string;
   updated_at?: string;
-  published?: boolean;
-  views?: number;
+  is_published?: boolean;
+  view_count?: number;
   likes?: number;
-  readTime?: number;
+  is_featured?: boolean;
 }
 
 export interface BlogComment {
