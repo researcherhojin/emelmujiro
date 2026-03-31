@@ -19,7 +19,7 @@ export default [
       'scripts/**',
       '*.config.js',
       '*.config.mjs',
-      '.lighthouserc.js',
+      'lighthouserc.js',
       'e2e/**/*.js',
       'e2e/**/*.ts',
     ],

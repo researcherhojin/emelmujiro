@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.core.cache import cache
 from datetime import timedelta
 
+from .constants import CACHE_ADMIN_STATS
 from .views import AdminRateThrottle
 from .serializers import AdminUserSerializer
 from .models import BlogPost, Contact, SiteVisit
@@ -33,7 +34,7 @@ def paginate_queryset(queryset, page, page_size):
 @throttle_classes([AdminRateThrottle])
 def admin_stats(request):
     """Admin dashboard statistics"""
-    cache_key = "admin_stats"
+    cache_key = CACHE_ADMIN_STATS
     cached = cache.get(cache_key)
     if cached is not None:
         return Response(cached)

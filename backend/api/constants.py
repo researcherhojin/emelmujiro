@@ -2,6 +2,11 @@
 ONE_HOUR = 3600
 ONE_DAY = 86400
 
+# Cache keys
+CACHE_BLOG_CATEGORIES = "blog_categories"
+CACHE_BLOG_POST_LIST = "blog_post_list"
+CACHE_ADMIN_STATS = "admin_stats"
+
 SPAM_THRESHOLD = 2
 
 SPAM_KEYWORDS = [

@@ -6,7 +6,7 @@ from django.conf import settings
 import re
 
 from api.constants import ONE_DAY, ONE_HOUR
-from api.views import get_client_ip
+from api.utils import get_client_ip
 
 logger = logging.getLogger("security")
 

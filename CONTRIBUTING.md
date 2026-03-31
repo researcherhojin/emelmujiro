@@ -114,7 +114,7 @@ test('renders correctly', () => {
 
 ```
 emelmujiro/
-├── frontend/               # React 19 + TypeScript + Vite 8
+├── frontend/               # React + TypeScript + Vite
 │   ├── src/
 │   │   ├── components/     # React 컴포넌트 (pages, common, sections, blog, layout)
 │   │   ├── contexts/       # React Context (UI, Auth, Blog, Notification)
@@ -126,7 +126,7 @@ emelmujiro/
 │   │   ├── i18n/           # 다국어 지원 (ko/en)
 │   │   └── test-utils/     # 테스트 유틸리티 + MSW 목 서버
 │   └── e2e/                # Playwright E2E 테스트
-├── backend/                # Django 6 + DRF
+├── backend/                # Django + DRF
 │   ├── api/                # REST API (단일 앱)
 │   └── config/             # Django 설정
 ├── scripts/                # 배포, 포트 관리, 테스트 카운트 등

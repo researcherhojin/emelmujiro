@@ -36,11 +36,10 @@ USER appuser
 # Collect static files (SECRET_KEY needed at build time for Django to load settings)
 RUN SECRET_KEY=build-only-placeholder SECURE_SSL_REDIRECT=False uv run python manage.py collectstatic --noinput
 
+EXPOSE 8000
+
 # Run gunicorn
 CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--threads", "2", "--timeout", "60", "--max-requests", "1000", "--max-requests-jitter", "50", "config.wsgi:application"]
-
-# Expose port
-EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \

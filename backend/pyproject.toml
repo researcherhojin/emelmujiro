@@ -18,7 +18,6 @@ dependencies = [
     "gunicorn==25.3.0",
     "psycopg2-binary==2.9.11",
     "whitenoise==6.12.0",
-    "PyJWT>=2.12.0",
 ]
 
 [project.optional-dependencies]

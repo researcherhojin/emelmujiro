@@ -18,7 +18,8 @@ from .models import (
     SiteVisit,
     NewsletterSubscription,
 )
-from .views import get_client_ip, _is_valid_ip, send_user_notification, ContactView
+from .utils import get_client_ip, _is_valid_ip
+from .views import send_user_notification, ContactView
 from django.core.mail import BadHeaderError
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -4344,5 +4345,3 @@ class UrlsDebugBranchTestCase(TestCase):
 
         # Reload with original settings to avoid side effects
         importlib.reload(urls_module)
-
-

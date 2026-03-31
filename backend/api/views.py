@@ -15,13 +15,13 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError as Djan
 from rest_framework.exceptions import ValidationError
 from datetime import timedelta
 import hashlib
-import ipaddress
 import logging
 import os
 import re
 import uuid as uuid_mod
 
-from .constants import ONE_DAY, ONE_HOUR, is_spam
+from .constants import ONE_DAY, ONE_HOUR, CACHE_BLOG_CATEGORIES, CACHE_BLOG_POST_LIST, is_spam
+from .utils import get_client_ip, toggle_like
 
 import requests
 
@@ -69,47 +69,6 @@ class AdminRateThrottle(UserRateThrottle):
 
     scope = "admin"
     rate = "120/hour"
-
-
-def get_client_ip(request: HttpRequest) -> str:
-    """Extract client IP address (security-hardened)"""
-    # Check proxy headers in priority order
-    headers = [
-        "HTTP_CF_CONNECTING_IP",  # Cloudflare
-        "HTTP_X_REAL_IP",  # Nginx
-        "HTTP_X_FORWARDED_FOR",  # Standard proxy header
-        "HTTP_X_FORWARDED",  # Alternative
-        "HTTP_X_CLUSTER_CLIENT_IP",
-        "HTTP_FORWARDED_FOR",
-        "HTTP_FORWARDED",
-        "REMOTE_ADDR",
-    ]
-
-    for header in headers:
-        value = request.META.get(header)
-        if value:
-            # For X-Forwarded-For, use only the first IP
-            if "FORWARDED" in header:
-                ip = value.split(",")[0].strip()
-            else:
-                ip = value.strip()
-
-            # Validate IP format
-            if _is_valid_ip(ip):
-                return ip
-
-    return "127.0.0.1"  # Fallback
-
-
-def _is_valid_ip(ip: str) -> bool:
-    """Validate IP address format"""
-    if not isinstance(ip, str):
-        return False
-    try:
-        ipaddress.ip_address(ip)
-        return True
-    except ValueError:
-        return False
 
 
 def verify_recaptcha(recaptcha_response: str, request_ip: str = None) -> bool:
@@ -227,18 +186,18 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         author = self.request.user.get_full_name() or self.request.user.username
         serializer.save(author=author)
-        cache.delete("blog_categories")
-        cache.delete("blog_post_list")
+        cache.delete(CACHE_BLOG_CATEGORIES)
+        cache.delete(CACHE_BLOG_POST_LIST)
 
     def perform_update(self, serializer):
         serializer.save()
-        cache.delete("blog_categories")
-        cache.delete("blog_post_list")
+        cache.delete(CACHE_BLOG_CATEGORIES)
+        cache.delete(CACHE_BLOG_POST_LIST)
 
     def perform_destroy(self, instance):
         instance.delete()
-        cache.delete("blog_categories")
-        cache.delete("blog_post_list")
+        cache.delete(CACHE_BLOG_CATEGORIES)
+        cache.delete(CACHE_BLOG_POST_LIST)
 
     def retrieve(self, request, *args, **kwargs):
         """Retrieve individual post with view count increment and visit log"""
@@ -266,7 +225,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         is_public = not (request.user and request.user.is_staff)
         has_filters = any(request.query_params.get(p) for p in ("category", "search", "featured", "page"))
         if is_public and not has_filters:
-            cache_key = "blog_post_list"
+            cache_key = CACHE_BLOG_POST_LIST
             cached = cache.get(cache_key)
             if cached is not None:
                 return Response(cached)
@@ -282,26 +241,14 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         post = self.get_object()
         post.is_published = not post.is_published
         post.save(update_fields=["is_published", "updated_at"])
-        cache.delete("blog_categories")
-        cache.delete("blog_post_list")
+        cache.delete(CACHE_BLOG_CATEGORIES)
+        cache.delete(CACHE_BLOG_POST_LIST)
         return Response({"id": post.id, "is_published": post.is_published})
 
     @action(detail=True, methods=["post"], url_path="like", permission_classes=[AllowAny])
     def like(self, request, slug=None):
         """Toggle like on a blog post (one per IP)."""
-        post = self.get_object()
-        ip_address = get_client_ip(request)
-
-        like, created = BlogLike.objects.get_or_create(post=post, ip_address=ip_address)
-        if created:
-            BlogPost.objects.filter(id=post.id).update(likes=F("likes") + 1)
-            post.refresh_from_db()
-            return Response({"liked": True, "likes": post.likes})
-        else:
-            like.delete()
-            BlogPost.objects.filter(id=post.id).update(likes=F("likes") - 1)
-            post.refresh_from_db()
-            return Response({"liked": False, "likes": post.likes})
+        return Response(toggle_like(self.get_object(), BlogLike, "post", get_client_ip(request)))
 
 
 class BlogCommentViewSet(viewsets.ModelViewSet):
@@ -341,19 +288,7 @@ class BlogCommentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="like")
     def like(self, request, post_pk=None, pk=None):
         """Toggle like on a comment (one per IP)."""
-        comment = self.get_object()
-        ip_address = get_client_ip(request)
-
-        like, created = CommentLike.objects.get_or_create(comment=comment, ip_address=ip_address)
-        if created:
-            BlogComment.objects.filter(id=comment.id).update(likes=F("likes") + 1)
-            comment.refresh_from_db()
-            return Response({"liked": True, "likes": comment.likes})
-        else:
-            like.delete()
-            BlogComment.objects.filter(id=comment.id).update(likes=F("likes") - 1)
-            comment.refresh_from_db()
-            return Response({"liked": False, "likes": comment.likes})
+        return Response(toggle_like(self.get_object(), CommentLike, "comment", get_client_ip(request)))
 
 
 class BlogImageUploadView(APIView):
@@ -397,7 +332,7 @@ class CategoryListView(APIView):
         log_site_visit(request)
 
         # Return cached category data if available
-        cached = cache.get("blog_categories")
+        cached = cache.get(CACHE_BLOG_CATEGORIES)
         if cached is not None:
             return Response(cached)
 
@@ -421,7 +356,7 @@ class CategoryListView(APIView):
                 }
             )
 
-        cache.set("blog_categories", category_data, timeout=ONE_HOUR)
+        cache.set(CACHE_BLOG_CATEGORIES, category_data, timeout=ONE_HOUR)
         return Response(category_data)
 
 

@@ -1,4 +1,4 @@
-.PHONY: help install dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy-staging deploy-production logs logs-security logs-debug ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron remove-cron
+.PHONY: help install dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy logs logs-security logs-debug ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron remove-cron
 
 help:
 	@echo "Available commands:"
@@ -45,7 +45,7 @@ test:
 	npx concurrently -n fe,be -c cyan,green "cd frontend && npx vitest run" "cd backend && DATABASE_URL='' uv run python manage.py test"
 
 test-ci:
-	npx concurrently -n fe,be -c cyan,green "cd frontend && npx vitest run --no-coverage" "cd backend && DATABASE_URL='' uv run coverage run --source=api manage.py test && uv run coverage report"
+	npx concurrently -n fe,be -c cyan,green "cd frontend && npx vitest run --coverage" "cd backend && DATABASE_URL='' uv run coverage run --source=api manage.py test && uv run coverage report"
 
 lint:
 	cd frontend && npx eslint src
@@ -60,12 +60,8 @@ clean:
 	find backend -type d -name '__pycache__' -exec rm -rf {} +
 	rm -rf backend/staticfiles
 
-deploy-staging:
-	docker compose build
-	docker compose up -d
-
-deploy-production:
-	@echo "Deploying to production..."
+deploy:
+	@echo "Deploying..."
 	docker compose build
 	docker compose up -d
 
