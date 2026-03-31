@@ -134,13 +134,17 @@ describe('API Service - Non-Mock Mode (real axios paths)', () => {
     it('should call axios.get for getBlogPosts', async () => {
       const { api } = await import('../api');
       await api.getBlogPosts(2, 10);
-      expect(mockGet).toHaveBeenCalledWith('blog-posts/?page=2&page_size=10');
+      expect(mockGet).toHaveBeenCalledWith('blog-posts/', {
+        params: { page: 2, page_size: 10 },
+      });
     });
 
     it('should use default page size of 6 for getBlogPosts', async () => {
       const { api } = await import('../api');
       await api.getBlogPosts(1);
-      expect(mockGet).toHaveBeenCalledWith('blog-posts/?page=1&page_size=6');
+      expect(mockGet).toHaveBeenCalledWith('blog-posts/', {
+        params: { page: 1, page_size: 6 },
+      });
     });
 
     it('should call axios.get for getBlogPost', async () => {
@@ -152,7 +156,9 @@ describe('API Service - Non-Mock Mode (real axios paths)', () => {
     it('should call axios.get for searchBlogPosts', async () => {
       const { api } = await import('../api');
       await api.searchBlogPosts('react');
-      expect(mockGet).toHaveBeenCalledWith('blog-posts/?search=react');
+      expect(mockGet).toHaveBeenCalledWith('blog-posts/', {
+        params: { search: 'react' },
+      });
     });
 
     it('should call axios.get for getBlogCategories', async () => {
@@ -201,7 +207,9 @@ describe('API Service - Non-Mock Mode (real axios paths)', () => {
     it('should call axios.get for getNotifications', async () => {
       const { api } = await import('../api');
       await api.getNotifications(2);
-      expect(mockGet).toHaveBeenCalledWith('notifications/?page=2');
+      expect(mockGet).toHaveBeenCalledWith('notifications/', {
+        params: { page: 2 },
+      });
     });
 
     it('should call axios.get for getUnreadCount', async () => {

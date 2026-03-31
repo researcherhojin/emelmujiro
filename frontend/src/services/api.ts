@@ -146,9 +146,9 @@ export const api = {
       return mockResponse(paginateMockData(mockBlogPosts, page, size));
     }
 
-    return axiosInstance.get<PaginatedResponse<BlogPost>>(
-      `blog-posts/?page=${page}&page_size=${size}`
-    );
+    return axiosInstance.get<PaginatedResponse<BlogPost>>('blog-posts/', {
+      params: { page, page_size: size },
+    });
   },
   getBlogPost: (id: number | string) => {
     if (USE_MOCK_API) {
@@ -177,7 +177,9 @@ export const api = {
       );
       return mockResponse(paginateMockData(filtered, 1, 10));
     }
-    return axiosInstance.get<PaginatedResponse<BlogPost>>(`blog-posts/?search=${query}`);
+    return axiosInstance.get<PaginatedResponse<BlogPost>>('blog-posts/', {
+      params: { search: query },
+    });
   },
   getBlogCategories: () => {
     if (USE_MOCK_API) {
@@ -302,7 +304,9 @@ export const api = {
     if (USE_MOCK_API) {
       return mockResponse({ count: 0, next: null, previous: null, results: [] as Notification[] });
     }
-    return axiosInstance.get<PaginatedResponse<Notification>>(`notifications/?page=${page}`);
+    return axiosInstance.get<PaginatedResponse<Notification>>('notifications/', {
+      params: { page },
+    });
   },
   getUnreadCount: () => {
     if (USE_MOCK_API) {
