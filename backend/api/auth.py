@@ -68,7 +68,9 @@ def register(request):
         return Response({"error": "Password must be at least 12 characters"}, status=status.HTTP_400_BAD_REQUEST)
 
     if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
-        return Response({"error": "Registration failed. Please try different credentials."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Registration failed. Please try different credentials."}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     # Create user
     user = User.objects.create_user(

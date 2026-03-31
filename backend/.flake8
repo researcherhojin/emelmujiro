@@ -5,3 +5,5 @@ exclude =
     .venv,
     migrations,
     __pycache__
+per-file-ignores =
+    api/management/commands/create_blog_posts.py:E501

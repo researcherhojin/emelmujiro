@@ -7,7 +7,6 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from api.models import BlogPost
 
-
 POSTS = [
     {
         "title": "Google TurboQuant: 3비트 양자화로 LLM 메모리 6배 절감, 정확도 손실은 0",

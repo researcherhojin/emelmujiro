@@ -170,10 +170,13 @@ CORS_ALLOWED_ORIGINS = [o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS"
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF trusted origins
-CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get(
-    "CSRF_TRUSTED_ORIGINS",
-    "https://emelmujiro.com,https://api.emelmujiro.com",
-).split(",")]
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in os.environ.get(
+        "CSRF_TRUSTED_ORIGINS",
+        "https://emelmujiro.com,https://api.emelmujiro.com",
+    ).split(",")
+]
 
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -264,12 +267,14 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.MultiPartParser",
         "rest_framework.parsers.FormParser",
     ],
-    "DEFAULT_THROTTLE_CLASSES": []
-    if DEBUG
-    else [
-        "rest_framework.throttling.AnonRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
-    ],
+    "DEFAULT_THROTTLE_CLASSES": (
+        []
+        if DEBUG
+        else [
+            "rest_framework.throttling.AnonRateThrottle",
+            "rest_framework.throttling.UserRateThrottle",
+        ]
+    ),
     "DEFAULT_THROTTLE_RATES": {
         "anon": "100/hour",
         "user": "1000/hour",
