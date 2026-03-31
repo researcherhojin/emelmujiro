@@ -63,7 +63,7 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Contact**: Google Form iframe, not backend API. Backend `/api/contact/` is preserved for future switch.
 
-**Blog**: Dual fields `content` (plain text/search) + `content_html` (TipTap HTML). Category API cached 1 hour (key: `"blog_categories"`), invalidated on CRUD/toggle-publish. Router `basename="blog"` (NOT `"blog-posts"`).
+**Blog**: Dual fields `content` (plain text/search) + `content_html` (TipTap HTML). Category API cached 1 hour (key: `"blog_categories"`), invalidated on CRUD/toggle-publish. Router `basename="blog"` (NOT `"blog-posts"`). All BlogPost fields use **snake_case only** — `description` (NOT `excerpt`), `date` (NOT `publishedAt`), `is_published` (NOT `published`), `view_count` (NOT `views`), `image_url` (NOT `imageUrl`). Backend serializer has no camelCase aliases.
 
 **State management**: React Context only — `UIContext` (theme/sidebar), `AuthContext` (JWT user), `BlogContext` (posts/categories), `NotificationContext` (alerts). No Redux or external state libraries.
 
@@ -73,7 +73,7 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Hero**: Centered layout, always dark-on-light / light-on-dark. No badge. Stats: 5,000+ hours, 50+ projects, 4.8+ satisfaction. CTA: "무료 상담 신청". No left-right grid — fully centered. Korean title uses "올인원 AI 파트너" (NOT "원스톱"). English CTA title: "Accelerate Your AI Journey". Mobile height: `min-h-[85vh]` (NOT full `min-h-screen`) to reduce navbar–content gap.
 
-**Homepage section order**: Hero (white/dark) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
+**Homepage section order**: Hero (white/dark) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). FAQSection component was removed — do NOT re-add or import. Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
 
 **Scroll carousels**: LogosSection uses 3x copies with `translateX(-33.333%)` looping (32s desktop, 18s mobile). TestimonialsSection uses 5x copies with `translateX(-20%)` looping (40s desktop, 25s mobile). Mobile speed override via CSS media query in `index.css` (`max-width: 639px`). Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via custom CSS utility `.group:hover .group-hover\:pause` in `index.css`. `motion-reduce:!animate-none` for accessibility.
 
@@ -142,7 +142,7 @@ Coverage target: 100%. Conventional commits required (`type(scope): description`
 
 **Blog HTML**: `content_html` (TipTap) is always sanitized with `DOMPurify.sanitize()` before rendering via `dangerouslySetInnerHTML`. Comments render as plain text only. Image right-click/drag prevention uses shared `preventImageAction` from `utils/imageUtils.ts`.
 
-**CI workflows**: Never use `${{ }}` expressions directly inside `run:` blocks — always bind to `env:` first, then reference as `"$VAR"`. This prevents script injection via user-controllable values like branch names.
+**CI workflows**: Never use `${{ }}` expressions directly inside `run:` blocks — always bind to `env:` first, then reference as `"$VAR"`. This prevents script injection via user-controllable values like branch names. Node setup/cache/install is extracted to `.github/actions/setup-node` composite action — use `uses: ./.github/actions/setup-node` instead of repeating the 3-step pattern.
 
 **Shell scripts**: No `eval` with variables, no `source` of untrusted files (use `read` loop parsing), validate Make variables that reach shell commands.
 
@@ -150,7 +150,7 @@ Coverage target: 100%. Conventional commits required (`type(scope): description`
 
 ## Pitfalls
 
-1. **`VITE_` prefix** for env vars (legacy `REACT_APP_` works via `config/env.ts` shim)
+1. **`VITE_` prefix** for env vars (legacy `REACT_APP_` works via `config/env.ts` shim). Analytics var is `VITE_GOOGLE_ANALYTICS_ID` (NOT `VITE_GA_TRACKING_ID`)
 2. **`useRef<T>(null)`** — React 19 requires initial value
 3. **`minimatch>=10.2.1`** override in both package.json — don't remove
 4. **`tsconfig.build.json`** excludes test types — don't add `@testing-library/jest-dom`
