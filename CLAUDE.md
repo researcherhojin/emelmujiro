@@ -150,7 +150,7 @@ Coverage target: 100%. Conventional commits required (`type(scope): description`
 
 ## Pitfalls
 
-1. **`VITE_` prefix** for env vars (legacy `REACT_APP_` works via `config/env.ts` shim). Analytics var is `VITE_GOOGLE_ANALYTICS_ID` (NOT `VITE_GA_TRACKING_ID`)
+1. **`VITE_` prefix** for env vars (legacy `REACT_APP_` works via `config/env.ts` shim). Analytics var is `VITE_GA_TRACKING_ID` (env.ts reads `REACT_APP_GA_TRACKING_ID` → `VITE_GA_TRACKING_ID`)
 2. **`useRef<T>(null)`** — React 19 requires initial value
 3. **`minimatch>=10.2.1`** override in both package.json — don't remove
 4. **`tsconfig.build.json`** excludes test types — don't add `@testing-library/jest-dom`

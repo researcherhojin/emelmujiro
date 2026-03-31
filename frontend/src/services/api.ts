@@ -61,6 +61,9 @@ interface CustomAxiosError extends AxiosError {
   _retry?: boolean;
 }
 
+// Token refresh queue — prevents concurrent refresh requests from blacklisting each other
+let refreshPromise: Promise<unknown> | null = null;
+
 // Request interceptor
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -111,11 +114,17 @@ axiosInstance.interceptors.response.use(
     }
 
     // Handle 401 - Try cookie-based token refresh (skip for auth endpoints)
+    // Uses a shared promise so concurrent 401s don't race to refresh (and blacklist each other's tokens)
     const isAuthEndpoint = originalRequest?.url?.includes('/auth/');
     if (status === 401 && originalRequest && !error._retry && !isAuthEndpoint) {
       error._retry = true;
       try {
-        await axiosInstance.post('/auth/token/refresh/');
+        if (!refreshPromise) {
+          refreshPromise = axiosInstance.post('/auth/token/refresh/').finally(() => {
+            refreshPromise = null;
+          });
+        }
+        await refreshPromise;
         return axiosInstance(originalRequest);
       } catch {
         // Refresh failed - user needs to re-login
