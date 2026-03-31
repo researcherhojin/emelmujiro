@@ -9,6 +9,10 @@ set -e
 # Usage: ./scripts/pre-deploy-check.sh
 # =====================================================
 
+# Clean up temp files on exit/signal
+cleanup() { rm -f "$TSC_RESULT_FILE" "$ESLINT_RESULT_FILE" "$ESLINT_RESULT_FILE.out" "$TEST_RESULT_FILE" "$TEST_RESULT_FILE.out" 2>/dev/null; }
+trap cleanup EXIT INT TERM
+
 # Resolve script directory and project root
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -139,8 +143,7 @@ else
     warn "$TEST_FAILED tests failed, $TEST_PASSED passed"
 fi
 
-# Cleanup temp files
-rm -f "$TSC_RESULT_FILE" "$ESLINT_RESULT_FILE" "$ESLINT_RESULT_FILE.out" "$TEST_RESULT_FILE" "$TEST_RESULT_FILE.out"
+# Temp files cleaned up by EXIT trap
 echo ""
 
 # =====================================================
