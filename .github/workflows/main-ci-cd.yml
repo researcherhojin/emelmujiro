@@ -39,11 +39,17 @@ jobs:
         run: CI=true npx vitest run --bail=1 --coverage
         timeout-minutes: 10
 
+      - name: Fix coverage paths for Codecov
+        if: always()
+        run: |
+          # lcov paths are relative to frontend/ — prefix with frontend/ for repo root
+          sed -i 's|SF:src/|SF:frontend/src/|g' frontend/coverage/lcov.info
+
       - name: Upload frontend coverage to Codecov
         if: always()
         uses: codecov/codecov-action@v6
         with:
-          directory: frontend/coverage
+          files: frontend/coverage/lcov.info
           flags: frontend
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
