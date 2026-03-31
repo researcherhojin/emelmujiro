@@ -84,7 +84,7 @@
     "businessInfo": {
       "representative": "CEO",
       "businessNumber": "Business Registration No.",
-      "representativeName": "이호진",
+      "representativeName": "Hojin Lee",
       "businessNumberValue": "174-29-01733"
     }
   },
@@ -93,7 +93,7 @@
     "title": "Contact Us",
     "subtitle": "Want to discuss your project?",
     "googleForm": {
-      "description": "Please fill out the form below and we will get back to you via the contact information you provide.",
+      "description": "We'll respond promptly after you submit.",
       "loading": "Loading form...",
       "openInNewTab": "Open in new tab",
       "formTitle": "Online Meeting Request"
@@ -296,7 +296,7 @@
   },
   "share": {
     "inquiryTemplate": "Hello, I would like to inquire about the following:",
-    "inquiryFooter": "I would like to receive a consultation regarding this.",
+    "inquiryFooter": "I'd like a consultation on this.",
     "defaultSubject": "Shared Content Inquiry",
     "saved": "Content has been saved!",
     "processing": "Processing shared content...",
@@ -420,8 +420,8 @@
       "title": "Vibe Coding AI Agent Service"
     },
     "3": {
-      "org": "KALIS",
-      "title": "AI Agent Dev & Prototyping"
+      "org": "Chungcheong Energy Service",
+      "title": "LLM·RAG·AI Agent Training & Project Mentoring"
     },
     "4": {
       "org": "MOEL (K-Digital)",
