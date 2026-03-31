@@ -232,7 +232,7 @@ def token_refresh(request):
 
         return response
 
-    except (InvalidToken, TokenError) as e:
+    except (InvalidToken, TokenError, User.DoesNotExist) as e:
         logger.error(f"Token refresh error: {e}")
         response = Response({"error": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
         _clear_jwt_cookies(response)

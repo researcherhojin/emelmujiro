@@ -21,7 +21,8 @@ if not SECRET_KEY:
     else:
         raise ImproperlyConfigured("SECRET_KEY must be set in production")
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "emelmujiro.com,api.emelmujiro.com,localhost,127.0.0.1").split(",")
+_default_hosts = "emelmujiro.com,api.emelmujiro.com,localhost,127.0.0.1"
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get("ALLOWED_HOSTS", _default_hosts).split(",")]
 
 # Add testserver for Django test client
 if "test" in sys.argv:
@@ -164,15 +165,15 @@ APPEND_SLASH = True  # Auto-append trailing slash
 _default_cors = (
     "http://localhost:5173,http://127.0.0.1:5173,https://emelmujiro.com" if DEBUG else "https://emelmujiro.com"
 )
-CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", _default_cors).split(",")
+CORS_ALLOWED_ORIGINS = [o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS", _default_cors).split(",")]
 
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF trusted origins
-CSRF_TRUSTED_ORIGINS = os.environ.get(
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get(
     "CSRF_TRUSTED_ORIGINS",
     "https://emelmujiro.com,https://api.emelmujiro.com",
-).split(",")
+).split(",")]
 
 CORS_ALLOW_METHODS = [
     "DELETE",

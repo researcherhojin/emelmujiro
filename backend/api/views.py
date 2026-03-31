@@ -15,6 +15,7 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError as Djan
 from rest_framework.exceptions import ValidationError
 from datetime import timedelta
 import hashlib
+import ipaddress
 import logging
 import os
 import re
@@ -102,14 +103,12 @@ def get_client_ip(request: HttpRequest) -> str:
 
 def _is_valid_ip(ip: str) -> bool:
     """Validate IP address format"""
+    if not isinstance(ip, str):
+        return False
     try:
-        # IPv4 regex
-        ipv4_pattern = r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-        # IPv6 basic pattern
-        ipv6_pattern = r"^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$"
-
-        return bool(re.match(ipv4_pattern, ip) or re.match(ipv6_pattern, ip))
-    except (re.error, TypeError):
+        ipaddress.ip_address(ip)
+        return True
+    except ValueError:
         return False
 
 
