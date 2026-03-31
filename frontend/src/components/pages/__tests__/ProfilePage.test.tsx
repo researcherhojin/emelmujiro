@@ -100,6 +100,15 @@ describe('ProfilePage — Teaching History', () => {
     expect(screen.getByText('common.contact')).toBeInTheDocument();
   });
 
+  it('navigates to contact page on CTA button click', () => {
+    renderPage();
+
+    const ctaButton = screen.getByText('common.contact');
+    fireEvent.click(ctaButton);
+
+    expect(mockNavigate).toHaveBeenCalledWith('/contact');
+  });
+
   it('has correct heading hierarchy', () => {
     renderPage();
 

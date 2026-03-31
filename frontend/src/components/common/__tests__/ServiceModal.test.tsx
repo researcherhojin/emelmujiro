@@ -17,7 +17,15 @@ const mockService: ServiceDetail = {
   details: ['Detail 1', 'Detail 2', 'Detail 3'],
 };
 
+const mockService2: ServiceDetail = {
+  title: 'AI Consulting',
+  icon: MockIcon as unknown as ServiceDetail['icon'],
+  description: 'AI consulting description',
+  details: ['Consulting Detail 1'],
+};
+
 const mockServices: ServiceDetail[] = [mockService];
+const multiServices: ServiceDetail[] = [mockService, mockService2];
 
 describe('ServiceModal', () => {
   const onClose = vi.fn();
@@ -223,6 +231,112 @@ describe('ServiceModal', () => {
 
     fireEvent.click(screen.getByText('common.close'));
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('navigates via prev/next arrows and dot indicators', () => {
+    render(
+      <ServiceModal
+        isOpen={true}
+        services={multiServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
+        onClose={onClose}
+        onContactClick={onContactClick}
+      />
+    );
+
+    // Next arrow (hidden on mobile but rendered in DOM for sm+)
+    const nextButton = screen.getByLabelText('Next service');
+    fireEvent.click(nextButton);
+    expect(onNavigate).toHaveBeenCalledWith(1);
+
+    // Dot indicator click
+    onNavigate.mockClear();
+    const dots = screen.getAllByLabelText(/Service \d/);
+    fireEvent.click(dots[1]);
+    expect(onNavigate).toHaveBeenCalledWith(1);
+  });
+
+  it('navigates via prev arrow when not on first service', () => {
+    render(
+      <ServiceModal
+        isOpen={true}
+        services={multiServices}
+        currentIndex={1}
+        onNavigate={onNavigate}
+        onClose={onClose}
+        onContactClick={onContactClick}
+      />
+    );
+
+    const prevButton = screen.getByLabelText('Previous service');
+    fireEvent.click(prevButton);
+    expect(onNavigate).toHaveBeenCalledWith(0);
+  });
+
+  it('navigates with Arrow keys', () => {
+    render(
+      <ServiceModal
+        isOpen={true}
+        services={multiServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
+        onClose={onClose}
+        onContactClick={onContactClick}
+      />
+    );
+
+    fireEvent.keyDown(document, { key: 'ArrowRight' });
+    expect(onNavigate).toHaveBeenCalledWith(1);
+
+    onNavigate.mockClear();
+    fireEvent.keyDown(document, { key: 'ArrowLeft' });
+    // currentIndex is 0, no prev — onNavigate should NOT be called
+    expect(onNavigate).not.toHaveBeenCalled();
+  });
+
+  it('traps focus — Tab on last element wraps to first', () => {
+    render(
+      <ServiceModal
+        isOpen={true}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
+        onClose={onClose}
+        onContactClick={onContactClick}
+      />
+    );
+
+    const dialog = screen.getByRole('dialog');
+    const buttons = dialog.querySelectorAll('button');
+    const lastButton = buttons[buttons.length - 1] as HTMLElement;
+
+    lastButton.focus();
+    expect(document.activeElement).toBe(lastButton);
+    fireEvent.keyDown(dialog, { key: 'Tab' });
+  });
+
+  it('traps focus — Shift+Tab on first element wraps to last', () => {
+    render(
+      <ServiceModal
+        isOpen={true}
+        services={mockServices}
+        currentIndex={0}
+        onNavigate={onNavigate}
+        onClose={onClose}
+        onContactClick={onContactClick}
+      />
+    );
+
+    const dialog = screen.getByRole('dialog');
+    const focusable = dialog.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstEl = focusable[0] as HTMLElement;
+
+    firstEl.focus();
+    expect(document.activeElement).toBe(firstEl);
+    fireEvent.keyDown(dialog, { key: 'Tab', shiftKey: true });
   });
 
   it('renders main services heading', () => {

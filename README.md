@@ -134,7 +134,7 @@ graph LR
 - **Performance** — Optimized chunk splitting (7 vendor chunks), Lighthouse CI assertions, < 10MB bundle budget
 - **CI/CD** — GitHub Actions with parallel jobs: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
 - **Security** — DOMPurify HTML sanitization, CI script injection prevention, uuid4 file uploads, rate limiting, IP blocking
-- **Testing** — Vitest (1182 unit tests) + Playwright E2E + Django unittest, 100% coverage target
+- **Testing** — Vitest (1188 unit tests) + Playwright E2E + Django unittest, 100% coverage target
 
 ## License
 
