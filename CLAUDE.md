@@ -71,7 +71,7 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Bundle splitting**: 7 vendor chunks in `vite.config.ts` — `react-vendor`, `ui-vendor` (framer-motion, lucide), `i18n`, `sentry`, `http-vendor` (axios), `dompurify`, `tiptap` (prosemirror, lowlight). When adding large dependencies, consider whether they belong in an existing chunk or need a new one.
 
-**Hero**: Centered layout, always dark-on-light / light-on-dark. No badge. Stats: 5,000+ hours, 50+ projects, 4.8+ satisfaction. CTA: "무료 상담 신청". No left-right grid — fully centered. Korean title uses "올인원 AI 파트너" (NOT "원스톱"). English CTA title: "Accelerate Your AI Journey". Mobile height: `min-h-[85vh]` (NOT full `min-h-screen`) to reduce navbar–content gap.
+**Hero**: Centered layout, always dark-on-light / light-on-dark. No badge. Stats: 5,000+ hours, 50+ projects, 4.8+ satisfaction. CTA: "무료 상담 신청". No left-right grid — fully centered. Korean title uses "올인원 AI 파트너" (NOT "원스톱"). English CTA title: "Accelerate Your AI Journey". Mobile uses padding-based layout (`pt-32 pb-16`, no `min-h` or flex centering), desktop uses `sm:min-h-screen` + `sm:flex sm:items-center sm:justify-center`.
 
 **Homepage section order**: Hero (white/dark) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). FAQSection component was removed — do NOT re-add or import. Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
 
@@ -93,7 +93,7 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Contact email**: `contact@emelmujiro.com` — used in constants.ts, i18n, backend settings, swagger, CONTRIBUTING.md.
 
-**Mobile responsive pattern**: All section heroes use split sizing — mobile `text-3xl`/`text-2xl`, desktop `sm:text-6xl`/`sm:text-5xl`. Section padding: `py-16 sm:py-32`. Use `break-keep` for Korean text to prevent mid-word breaks. For text that must break at specific points on mobile only, use `<br className="sm:hidden" />`. English i18n text must be shorter than Korean equivalents — abbreviate org names (MOEL, KALIS, KETI) and use `#` instead of "Cohort" for numbering. CTA subtitle uses `subtitleLine1`/`subtitleLine2` keys (not single `subtitle`) for controlled line breaks.
+**Mobile responsive pattern**: All page heroes use `pt-28 pb-12 sm:pt-32` padding-based layout (NOT `min-h` + flex centering on mobile). Text sizing: mobile `text-4xl`/`text-base`, tablet `sm:text-5xl`/`sm:text-lg`, desktop `md:text-7xl`/`md:text-xl` — three-step progression to avoid harsh 639→640px jumps. Section padding: `py-16 sm:py-32`. Use `break-keep` for Korean text to prevent mid-word breaks. For text that must break at specific points on mobile only, use `<br className="sm:hidden" />`. English i18n text must be shorter than Korean equivalents — abbreviate org names (MOEL, KALIS, KETI) and use `#` instead of "Cohort" for numbering. CTA subtitle uses `subtitleLine1`/`subtitleLine2` keys (not single `subtitle`) for controlled line breaks.
 
 **Blog → Insights branding**: All user-facing text uses "인사이트"/"Insights" (not "블로그"/"Blog"). Section label: "INSIGHTS" (not "TECH BLOG"). Internal code still uses `blog` in component names, routes, and API paths — only i18n display text changed.
 

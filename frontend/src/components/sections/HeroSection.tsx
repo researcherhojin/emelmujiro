@@ -11,11 +11,11 @@ const HeroSection: React.FC = memo(() => {
   return (
     <section
       aria-label={t('accessibility.heroSection')}
-      className="relative min-h-[85vh] sm:min-h-screen flex items-center justify-center bg-white dark:bg-gray-950"
+      className="relative sm:min-h-screen sm:flex sm:items-center sm:justify-center bg-white dark:bg-gray-950"
     >
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
+      <div className="relative z-10 max-w-5xl mx-auto px-5 sm:px-8 pt-32 pb-16 sm:py-24 text-center">
         {/* Main Headline */}
-        <h1 className="text-3xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.1] tracking-tight mb-6 sm:mb-8">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black leading-[1.1] tracking-tight mb-6 sm:mb-8">
           <span className="block text-gray-900 dark:text-white break-keep">
             {t('hero.titleLine1')}
           </span>
@@ -25,7 +25,7 @@ const HeroSection: React.FC = memo(() => {
         </h1>
 
         {/* Subheadline */}
-        <p className="text-sm sm:text-xl text-gray-500 dark:text-gray-400 mb-8 sm:mb-12 leading-relaxed max-w-2xl mx-auto font-medium break-keep">
+        <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 mb-8 sm:mb-12 leading-relaxed max-w-2xl mx-auto font-medium break-keep">
           {t('hero.descriptionLine1')}
           <br className="hidden sm:block" />
           <span className="block sm:inline">{t('hero.descriptionLine2')}</span>
@@ -38,26 +38,26 @@ const HeroSection: React.FC = memo(() => {
           aria-label={t('accessibility.statsSection')}
         >
           <div className="text-center">
-            <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-1">
+            <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-1">
               5,000+
             </div>
-            <div className="text-[10px] sm:text-sm font-semibold text-gray-400 dark:text-gray-500">
+            <div className="text-xs sm:text-sm font-semibold text-gray-400 dark:text-gray-500">
               {t('hero.stats.hours')}
             </div>
           </div>
           <div className="text-center">
-            <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-1">
+            <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-1">
               50+
             </div>
-            <div className="text-[10px] sm:text-sm font-semibold text-gray-400 dark:text-gray-500">
+            <div className="text-xs sm:text-sm font-semibold text-gray-400 dark:text-gray-500">
               {t('hero.stats.projects')}
             </div>
           </div>
           <div className="text-center">
-            <div className="text-2xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-1">
+            <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-1">
               4.8+
             </div>
-            <div className="text-[10px] sm:text-sm font-semibold text-gray-400 dark:text-gray-500">
+            <div className="text-xs sm:text-sm font-semibold text-gray-400 dark:text-gray-500">
               {t('hero.stats.satisfaction')}
             </div>
           </div>
@@ -67,7 +67,7 @@ const HeroSection: React.FC = memo(() => {
         <Link
           to={localizedPath('/contact')}
           onClick={() => trackCtaClick('hero')}
-          className="inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-sm sm:text-lg font-bold text-white dark:text-gray-900 bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 transition-all rounded-2xl"
+          className="inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-base sm:text-lg font-bold text-white dark:text-gray-900 bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 transition-all rounded-2xl"
         >
           {t('common.inquireProject')}
         </Link>

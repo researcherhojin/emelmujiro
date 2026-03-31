@@ -104,20 +104,30 @@ graph LR
         Tunnel["Cloudflare Tunnel"]
     end
 
-    subgraph MacMini["Mac Mini (Docker)"]
-        Nginx["nginx:alpine\nStatic files + SPA"]
-        DRF["Django 6 + DRF\nREST API"]
+    subgraph MacMini["Mac Mini (Docker · 127.0.0.1 only)"]
+        Nginx["nginx:alpine\nStatic + Rate Limit"]
+        Gunicorn["Gunicorn 3w\nSecurity MW"]
+        DRF["Django 6 + DRF"]
         DB[(SQLite)]
+    end
+
+    subgraph Monitoring["Monitoring"]
+        Sentry["Sentry"]
+        GA["Google Analytics"]
     end
 
     React -->|emelmujiro.com| Tunnel
     Tunnel -->|:8080| Nginx
-    Nginx -->|/api proxy| DRF
+    Nginx -->|/api proxy| Gunicorn
+    Gunicorn --> DRF
     DRF --> DB
+    React -.->|errors| Sentry
+    React -.->|events| GA
 
     style Tunnel fill:#F3E8FF,stroke:#7C3AED
     style MacMini fill:#ECFDF5,stroke:#059669
     style CF fill:#FEF3C7,stroke:#D97706
+    style Monitoring fill:#FEF9C3,stroke:#CA8A04
 ```
 
 ## Key Features

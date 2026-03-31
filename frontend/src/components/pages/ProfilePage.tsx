@@ -45,25 +45,25 @@ const ProfilePage: React.FC = memo(() => {
 
       <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* Hero */}
-        <section className="pt-24 pb-12 sm:pt-32 sm:pb-16 px-4 sm:px-6 lg:px-8">
+        <section className="pt-28 pb-12 sm:pt-32 sm:pb-16 px-5 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
             <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
               TEACHING HISTORY
             </span>
-            <h1 className="mt-3 text-3xl sm:mt-4 sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white">
+            <h1 className="mt-3 text-4xl sm:mt-4 sm:text-5xl md:text-7xl font-black text-gray-900 dark:text-white">
               {t('teachingHistory.pageTitle')}
             </h1>
-            <p className="mt-4 text-sm sm:mt-6 sm:text-lg text-gray-500 dark:text-gray-400 mx-auto break-keep">
+            <p className="mt-4 text-base sm:mt-6 sm:text-lg text-gray-500 dark:text-gray-400 mx-auto break-keep">
               {t('teachingHistory.pageSubtitle')}
             </p>
             <div className="mt-6 sm:mt-8 flex justify-center gap-4 sm:gap-6">
-              <span className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white">
+              <span className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
                 {t('teachingHistory.statsYears')}
               </span>
-              <span className="text-2xl sm:text-4xl font-black text-gray-300 dark:text-gray-600">
+              <span className="text-3xl sm:text-4xl font-black text-gray-300 dark:text-gray-600">
                 ·
               </span>
-              <span className="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white">
+              <span className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">
                 {t('teachingHistory.statsCount')}
               </span>
             </div>
