@@ -10,7 +10,3 @@
 
 - [ ] 강의이력 필터 UI — 연도별·기관유형별 필터 (현재 연도 그룹핑으로 충분하나 40건 초과 시 UX 저하 예상)
 - [ ] 멘토링/활동 이력 추가 검토 — ICT 피우다 멘토, 해커톤 심사위원, 오픈소스 컨트리뷰션 등 교육 외 활동을 별도 섹션 또는 기존 이력에 통합
-
-## 3. 코드 품질
-
-- [ ] BlogPostSerializer 필드 통일 — camelCase alias(`publishedAt`, `imageUrl`, `published`, `excerpt`)와 snake_case 원본(`date`, `image_url`, `is_published`, `description`) 양쪽 노출 중. 프론트엔드에서 한쪽으로 통일 후 serializer 정리
