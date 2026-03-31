@@ -19,8 +19,19 @@ __pycache__/
 *.so
 .Python
 build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
+.installed.cfg
 *.egg
 .coverage
 .coverage.*
@@ -40,8 +51,10 @@ ENV/
 backend/staticfiles/
 backend/media/
 backend/db.sqlite3
+backend/db.sqlite3-journal
 backend/logs/
 backend/.cache/
+local_settings.py
 
 # Node
 node_modules/
