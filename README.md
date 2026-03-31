@@ -23,13 +23,13 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![React](https://img.shields.io/badge/React-19.2.4-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6.0.2-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8.0.3-646CFF?logo=vite&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-7.13.2-CA4245?logo=reactrouter&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.19-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tailwind Typography](https://img.shields.io/badge/Typography-0.5.19-06B6D4?logo=tailwindcss&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.38.0-E91E63?logo=framer&logoColor=white)
 ![i18next](https://img.shields.io/badge/i18next-26.0.1-26A69A?logo=i18next&logoColor=white)
-![React Router](https://img.shields.io/badge/React_Router-7.13.2-CA4245?logo=reactrouter&logoColor=white)
-![TipTap](https://img.shields.io/badge/TipTap-3.21.0-1a1a2e)
 ![Axios](https://img.shields.io/badge/Axios-1.13.6-5A29E4?logo=axios&logoColor=white)
+![TipTap](https://img.shields.io/badge/TipTap-3.21.0-1a1a2e)
 ![DOMPurify](https://img.shields.io/badge/DOMPurify-3.3.3-4B32C3)
 
 **Backend**<br/>
@@ -41,18 +41,18 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 
 **Testing**<br/>
 ![Vitest](https://img.shields.io/badge/Vitest-4.1.2-6E9F18?logo=vitest&logoColor=white)
+![Testing Library](https://img.shields.io/badge/Testing_Library-16.3.2-E33332?logo=testinglibrary&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-1.58.2-2EAD33?logo=playwright&logoColor=white)
 ![MSW](https://img.shields.io/badge/MSW-2.12.14-FF6A33?logo=mockserviceworker&logoColor=white)
-![Testing Library](https://img.shields.io/badge/Testing_Library-16.3.2-E33332?logo=testinglibrary&logoColor=white)
 ![Lighthouse](https://img.shields.io/badge/Lighthouse_CI-Desktop-F44B21?logo=lighthouse&logoColor=white)
 
 **Infra**<br/>
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
-![Cloudflare](https://img.shields.io/badge/Cloudflare-Tunnel-F38020?logo=cloudflare&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
-![Nginx](https://img.shields.io/badge/Nginx-Alpine-009639?logo=nginx&logoColor=white)
 ![Node](https://img.shields.io/badge/Node-24-5FA04E?logo=nodedotjs&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-Alpine-009639?logo=nginx&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
+![Cloudflare](https://img.shields.io/badge/Cloudflare-Tunnel-F38020?logo=cloudflare&logoColor=white)
 
 ## Getting Started
 
