@@ -403,8 +403,13 @@ LOGGING = {
 
 # Development-only settings
 if DEBUG:
-    # Development tools
-    INSTALLED_APPS += ["django_extensions"]
+    # Development tools (installed via uv sync --extra dev)
+    try:
+        import django_extensions  # noqa: F401
+
+        INSTALLED_APPS += ["django_extensions"]
+    except ImportError:
+        pass
 
     # Allow all CORS origins in development
     CORS_ALLOW_ALL_ORIGINS = True
