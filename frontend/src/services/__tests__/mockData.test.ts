@@ -71,7 +71,7 @@ describe('mockData', () => {
       });
     });
 
-    it('should have valid date formats for publishedAt', () => {
+    it('should have valid date formats for date', () => {
       mockBlogPosts.forEach((post) => {
         expect(post.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
         const date = new Date(post.date);
