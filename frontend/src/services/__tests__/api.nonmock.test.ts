@@ -172,13 +172,13 @@ describe('API Service - Non-Mock Mode (real axios paths)', () => {
     it('should call axios.get for getUser', async () => {
       const { api } = await import('../api');
       await api.getUser();
-      expect(mockGet).toHaveBeenCalledWith('/auth/user/');
+      expect(mockGet).toHaveBeenCalledWith('auth/user/');
     });
 
     it('should call axios.post for login', async () => {
       const { api } = await import('../api');
       await api.login('test@test.com', 'pass123');
-      expect(mockPost).toHaveBeenCalledWith('/auth/login/', {
+      expect(mockPost).toHaveBeenCalledWith('auth/login/', {
         username: 'test@test.com',
         password: 'pass123',
       });
@@ -187,13 +187,13 @@ describe('API Service - Non-Mock Mode (real axios paths)', () => {
     it('should call axios.post for logout', async () => {
       const { api } = await import('../api');
       await api.logout();
-      expect(mockPost).toHaveBeenCalledWith('/auth/logout/');
+      expect(mockPost).toHaveBeenCalledWith('auth/logout/');
     });
 
     it('should call axios.post for register', async () => {
       const { api } = await import('../api');
       await api.register('new@test.com', 'pass123', 'New User');
-      expect(mockPost).toHaveBeenCalledWith('/auth/register/', {
+      expect(mockPost).toHaveBeenCalledWith('auth/register/', {
         username: 'new@test.com',
         email: 'new@test.com',
         password: 'pass123',

@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import {
+  BlogCategory,
   BlogPost,
   BlogComment,
   ContactFormData,
@@ -115,12 +116,12 @@ axiosInstance.interceptors.response.use(
 
     // Handle 401 - Try cookie-based token refresh (skip for auth endpoints)
     // Uses a shared promise so concurrent 401s don't race to refresh (and blacklist each other's tokens)
-    const isAuthEndpoint = originalRequest?.url?.includes('/auth/');
+    const isAuthEndpoint = originalRequest?.url?.includes('auth/');
     if (status === 401 && originalRequest && !error._retry && !isAuthEndpoint) {
       error._retry = true;
       try {
         if (!refreshPromise) {
-          refreshPromise = axiosInstance.post('/auth/token/refresh/').finally(() => {
+          refreshPromise = axiosInstance.post('auth/token/refresh/').finally(() => {
             refreshPromise = null;
           });
         }
@@ -185,7 +186,7 @@ export const api = {
     if (USE_MOCK_API) {
       return mockResponse(mockCategories);
     }
-    return axiosInstance.get<string[]>('categories/');
+    return axiosInstance.get<BlogCategory[]>('categories/');
   },
 
   // Blog Write (admin only — used by BlogEditor + BlogDetail admin toolbar)
@@ -264,7 +265,7 @@ export const api = {
     if (USE_MOCK_API) {
       return mockResponse({ id: 1, email: 'mock@user.com', name: 'Mock User' });
     }
-    return axiosInstance.get('/auth/user/');
+    return axiosInstance.get('auth/user/');
   },
   login: (email: string, password: string) => {
     if (USE_MOCK_API) {
@@ -274,13 +275,13 @@ export const api = {
         user: { id: 1, email, name: 'Mock User' },
       });
     }
-    return axiosInstance.post('/auth/login/', { username: email, password });
+    return axiosInstance.post('auth/login/', { username: email, password });
   },
   logout: () => {
     if (USE_MOCK_API) {
       return mockResponse({});
     }
-    return axiosInstance.post('/auth/logout/');
+    return axiosInstance.post('auth/logout/');
   },
   register: (email: string, password: string, name: string) => {
     if (USE_MOCK_API) {
@@ -290,7 +291,7 @@ export const api = {
         user: { id: 1, email, name },
       });
     }
-    return axiosInstance.post('/auth/register/', {
+    return axiosInstance.post('auth/register/', {
       username: email,
       email,
       password,

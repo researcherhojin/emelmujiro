@@ -1,4 +1,11 @@
 // Blog Types
+export interface BlogCategory {
+  id: number;
+  name: string;
+  slug: string;
+  count?: number;
+}
+
 export interface BlogPost {
   id: string | number;
   title: string;

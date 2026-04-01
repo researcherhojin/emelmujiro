@@ -1,4 +1,4 @@
-import { BlogPost } from '../types';
+import { BlogCategory, BlogPost } from '../types';
 
 // Mock blog posts data
 export const mockBlogPosts: BlogPost[] = [
@@ -112,14 +112,14 @@ export const mockBlogPosts: BlogPost[] = [
   },
 ];
 
-// Mock categories with id, name, and slug
-export const mockCategories = [
-  { id: 1, name: 'AI Technology', slug: 'ai-technology' },
-  { id: 2, name: 'Machine Learning', slug: 'machine-learning' },
-  { id: 3, name: 'Digital Transformation', slug: 'digital-transformation' },
-  { id: 4, name: 'AI Application', slug: 'ai-application' },
-  { id: 5, name: 'Data Science', slug: 'data-science' },
-  { id: 6, name: 'Education', slug: 'education' },
+// Mock categories with id, name, slug, and count (matches backend CategoryListView response)
+export const mockCategories: BlogCategory[] = [
+  { id: 1, name: 'AI Technology', slug: 'ai-technology', count: 1 },
+  { id: 2, name: 'Machine Learning', slug: 'machine-learning', count: 1 },
+  { id: 3, name: 'Digital Transformation', slug: 'digital-transformation', count: 1 },
+  { id: 4, name: 'AI Application', slug: 'ai-application', count: 1 },
+  { id: 5, name: 'Data Science', slug: 'data-science', count: 1 },
+  { id: 6, name: 'Education', slug: 'education', count: 1 },
 ];
 
 // Helper function to paginate data

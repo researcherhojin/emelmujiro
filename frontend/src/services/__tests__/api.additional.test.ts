@@ -204,19 +204,9 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
 
       if (Array.isArray(categories.data)) {
         categories.data.forEach((category) => {
-          if (typeof category === 'string') {
-            expect(typeof category).toBe('string');
-            expect(category.length).toBeGreaterThan(0);
-          } else if (typeof category === 'object' && category !== null) {
-            const cat = category as {
-              id: string | number;
-              name: string;
-              slug: string;
-            };
-            expect(typeof cat.name).toBe('string');
-            expect(typeof cat.slug).toBe('string');
-            expect(cat.id).toEqual(expect.anything());
-          }
+          expect(typeof category.name).toBe('string');
+          expect(typeof category.slug).toBe('string');
+          expect(category.id).toEqual(expect.anything());
         });
       }
     });

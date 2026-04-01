@@ -66,13 +66,7 @@ const BlogEditor: React.FC = () => {
         const response = await api.getBlogCategories();
         const data = response.data;
         if (data.length > 0) {
-          setApiCategories(
-            data.map((cat: string | { name: string; slug: string }) =>
-              typeof cat === 'string'
-                ? { value: cat, label: cat }
-                : { value: cat.slug, label: cat.name }
-            )
-          );
+          setApiCategories(data.map((cat) => ({ value: cat.slug, label: cat.name })));
         }
       } catch {
         // Keep fallback categories

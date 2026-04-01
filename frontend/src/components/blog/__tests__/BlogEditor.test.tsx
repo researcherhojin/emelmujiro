@@ -516,9 +516,12 @@ describe('BlogEditor Component', () => {
       });
     });
 
-    it('loads categories from API with string values', async () => {
+    it('loads categories from API with category objects', async () => {
       mockGetBlogCategories.mockResolvedValueOnce({
-        data: ['python', 'javascript'],
+        data: [
+          { id: 1, name: 'Python', slug: 'python', count: 3 },
+          { id: 2, name: 'JavaScript', slug: 'javascript', count: 5 },
+        ],
       });
 
       renderEditor();
@@ -527,8 +530,8 @@ describe('BlogEditor Component', () => {
         const select = screen.getByRole('combobox');
         const options = select.querySelectorAll('option');
         const optionTexts = Array.from(options).map((o) => o.textContent);
-        expect(optionTexts).toContain('python');
-        expect(optionTexts).toContain('javascript');
+        expect(optionTexts).toContain('Python');
+        expect(optionTexts).toContain('JavaScript');
       });
     });
   });

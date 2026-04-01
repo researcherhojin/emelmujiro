@@ -7,20 +7,14 @@ import BlogCard from './BlogCard';
 import BlogSearch from './BlogSearch';
 import { useBlog } from '../../contexts/BlogContext';
 import { api } from '../../services/api';
-import { BlogPost } from '../../types';
+import { BlogCategory, BlogPost } from '../../types';
 import logger from '../../utils/logger';
-
-interface Category {
-  slug: string;
-  name: string;
-  count?: number;
-}
 
 const BlogListPage: React.FC = memo(() => {
   const { t } = useTranslation();
   const { posts, loading, error, totalPages, currentPage, fetchPosts } = useBlog();
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isSearchActive, setIsSearchActive] = useState(false);
 
@@ -33,7 +27,7 @@ const BlogListPage: React.FC = memo(() => {
     const fetchCategories = async () => {
       try {
         const response = await api.getBlogCategories();
-        setCategories(response.data as Category[]);
+        setCategories(response.data as BlogCategory[]);
       } catch (err) {
         logger.warn('Failed to fetch blog categories:', err);
       }
