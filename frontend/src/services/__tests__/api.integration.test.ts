@@ -316,6 +316,103 @@ describe('API Service - Integration Tests', () => {
       }
     });
 
+    it('should retry original request after successful token refresh', async () => {
+      const axiosInstance = (await import('../api')).default;
+
+      const interceptorManager = axiosInstance.interceptors.response as any;
+      const handlers = interceptorManager.handlers;
+
+      if (handlers && handlers.length > 0) {
+        const errorHandler = handlers[0]?.rejected;
+        if (errorHandler) {
+          const retryResponse = { data: { id: 1, title: 'Retried' }, status: 200 };
+
+          // Mock refresh (post) and retry (request) to succeed
+          const origPost = axiosInstance.post;
+          const origRequest = axiosInstance.request;
+          axiosInstance.post = vi.fn().mockResolvedValueOnce({ data: {} });
+          axiosInstance.request = vi.fn().mockResolvedValueOnce(retryResponse);
+
+          const unauthorizedError = {
+            response: {
+              status: 401,
+              data: { message: 'Token expired' },
+            },
+            config: {
+              url: 'blog-posts/',
+              headers: new AxiosHeaders(),
+            } as InternalAxiosRequestConfig,
+            _retry: false,
+          };
+
+          const result = await errorHandler(unauthorizedError);
+
+          expect(unauthorizedError._retry).toBe(true);
+          expect(axiosInstance.post).toHaveBeenCalledWith('auth/token/refresh/');
+          expect(axiosInstance.request).toHaveBeenCalledWith(unauthorizedError.config);
+          expect(result).toEqual(retryResponse);
+
+          // Restore
+          axiosInstance.post = origPost;
+          axiosInstance.request = origRequest;
+        }
+      }
+    });
+
+    it('should reuse existing refreshPromise for concurrent 401s', async () => {
+      const axiosInstance = (await import('../api')).default;
+
+      const interceptorManager = axiosInstance.interceptors.response as any;
+      const handlers = interceptorManager.handlers;
+
+      if (handlers && handlers.length > 0) {
+        const errorHandler = handlers[0]?.rejected;
+        if (errorHandler) {
+          const retryResponse = { data: { id: 1 }, status: 200 };
+
+          // Use a deferred promise so we can control when refresh resolves
+          let resolveRefresh!: (v: unknown) => void;
+          const refreshDeferred = new Promise((r) => {
+            resolveRefresh = r;
+          });
+
+          const origPost = axiosInstance.post;
+          const origRequest = axiosInstance.request;
+          axiosInstance.post = vi.fn().mockReturnValueOnce(refreshDeferred);
+          axiosInstance.request = vi
+            .fn()
+            .mockResolvedValueOnce(retryResponse)
+            .mockResolvedValueOnce(retryResponse);
+
+          const makeError = () => ({
+            response: { status: 401, data: {} },
+            config: {
+              url: 'blog-posts/',
+              headers: new AxiosHeaders(),
+            } as InternalAxiosRequestConfig,
+            _retry: false,
+          });
+
+          // Fire two concurrent 401 errors
+          const p1 = errorHandler(makeError());
+          const p2 = errorHandler(makeError());
+
+          // Resolve the single refresh promise
+          resolveRefresh({ data: {} });
+
+          await Promise.all([p1, p2]);
+
+          // post should only be called ONCE (shared refreshPromise)
+          expect(axiosInstance.post).toHaveBeenCalledTimes(1);
+          // Both should have retried
+          expect(axiosInstance.request).toHaveBeenCalledTimes(2);
+
+          axiosInstance.post = origPost;
+          axiosInstance.request = origRequest;
+        }
+      }
+    });
+
     it('should NOT attempt refresh for auth endpoints on 401', async () => {
       const axiosInstance = (await import('../api')).default;
 

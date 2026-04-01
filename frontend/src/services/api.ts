@@ -95,7 +95,7 @@ axiosInstance.interceptors.response.use(
     if (error.code === 'ECONNABORTED' && originalRequest && !error._retry) {
       error._retry = true;
       logger.warn('Request timeout, retrying...');
-      return axiosInstance(originalRequest);
+      return axiosInstance.request(originalRequest);
     }
 
     // Handle network errors
@@ -126,7 +126,7 @@ axiosInstance.interceptors.response.use(
           });
         }
         await refreshPromise;
-        return axiosInstance(originalRequest);
+        return axiosInstance.request(originalRequest);
       } catch {
         // Refresh failed - user needs to re-login
       }
