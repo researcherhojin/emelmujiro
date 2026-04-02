@@ -99,17 +99,30 @@ HomePage.displayName = 'HomePage';
  * LanguageLayout — Sets i18n language based on the :lang URL param.
  * Korean (default): no prefix. English: /en prefix.
  */
+const SUPPORTED_LANGS = new Set(['en']);
+
 const LanguageLayout: React.FC = memo(() => {
   const { lang } = useParams();
   const { i18n } = useTranslation();
-  const targetLang = lang || 'ko';
+  const isValidLang = !lang || SUPPORTED_LANGS.has(lang);
+  const targetLang = isValidLang ? lang || 'ko' : 'ko';
 
   useEffect(() => {
-    if (i18n.language !== targetLang) {
+    if (isValidLang && i18n.language !== targetLang) {
       i18n.changeLanguage(targetLang);
     }
-    document.documentElement.lang = targetLang;
-  }, [targetLang, i18n]);
+    if (isValidLang) {
+      document.documentElement.lang = targetLang;
+    }
+  }, [targetLang, isValidLang, i18n]);
+
+  if (!isValidLang) {
+    return (
+      <Suspense fallback={null}>
+        <NotFound />
+      </Suspense>
+    );
+  }
 
   return <Outlet />;
 });
