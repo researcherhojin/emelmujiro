@@ -33,7 +33,6 @@ const CTASection = lazy(() => import('./components/sections/CTASection'));
 
 // Lazy load pages for code splitting
 const ProfilePage = lazy(() => import('./components/pages/ProfilePage'));
-const SharePage = lazy(() => import('./components/pages/SharePage'));
 const NotFound = lazy(() => import('./components/common/NotFound'));
 const ContactPage = lazy(() => import('./components/pages/ContactPage'));
 const BlogListPage = lazy(() => import('./components/blog/BlogListPage'));
@@ -151,7 +150,6 @@ const pageRoutes = [
   { index: true, element: <HomePage /> },
   { path: 'contact', element: <ContactPage /> },
   { path: 'profile', element: <ProfilePage /> },
-  { path: 'share', element: <SharePage /> },
   { path: 'insights', element: <BlogListPage /> },
   { path: 'insights/new', element: <BlogEditor /> },
   { path: 'insights/edit/:id', element: <BlogEditor /> },

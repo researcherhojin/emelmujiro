@@ -75,7 +75,6 @@ describe('i18n configuration', () => {
       'profilePage',
       'seo',
       'services',
-      'share',
     ];
 
     expectedKeys.forEach((key) => {

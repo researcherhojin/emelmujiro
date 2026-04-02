@@ -87,10 +87,6 @@ vi.mock('../components/pages/ProfilePage', () => ({
   default: () => <div data-testid="profile-page">ProfilePage</div>,
 }));
 
-vi.mock('../components/pages/SharePage', () => ({
-  default: () => <div data-testid="share-page">SharePage</div>,
-}));
-
 vi.mock('../components/common/NotFound', () => ({
   default: () => <div data-testid="not-found">NotFound</div>,
 }));
@@ -223,19 +219,6 @@ describe('App', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('profile-page')).toBeInTheDocument();
-    });
-  });
-
-  it('renders the share page at /share', async () => {
-    setUrl('/share');
-    const { default: App } = await import('../App');
-
-    await act(async () => {
-      render(<App />);
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId('share-page')).toBeInTheDocument();
     });
   });
 
