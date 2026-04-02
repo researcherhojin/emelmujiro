@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
-import { SITE_URL } from '../../utils/constants';
 import ContactInfo from '../contact/ContactInfo';
 
 const GOOGLE_FORM_URL =
@@ -17,11 +16,7 @@ const ContactPage: React.FC = memo(() => {
 
   return (
     <>
-      <SEOHelmet
-        title={t('contact.title')}
-        description={t('contact.subtitle')}
-        url={`${SITE_URL}/contact`}
-      />
+      <SEOHelmet title={t('contact.title')} description={t('contact.subtitle')} />
       <StructuredData type="LocalBusiness" />
       <StructuredData type="Breadcrumb" />
 

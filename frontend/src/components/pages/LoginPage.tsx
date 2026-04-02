@@ -4,7 +4,6 @@ import { LogIn, AlertTriangle } from 'lucide-react';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { useAuth } from '../../contexts/AuthContext';
 import SEOHelmet from '../common/SEOHelmet';
-import { SITE_URL } from '../../utils/constants';
 
 const LoginPage: React.FC = () => {
   const { t } = useTranslation();
@@ -59,7 +58,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <>
-      <SEOHelmet title={t('auth.login')} url={`${SITE_URL}/login`} robots="noindex, nofollow" />
+      <SEOHelmet title={t('auth.login')} robots="noindex, nofollow" />
 
       <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
         <div className="w-full max-w-sm">

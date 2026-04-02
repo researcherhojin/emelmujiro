@@ -2,7 +2,6 @@ import React, { memo, useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Construction } from 'lucide-react';
 import SEOHelmet from '../common/SEOHelmet';
-import { SITE_URL } from '../../utils/constants';
 import BlogCard from './BlogCard';
 import BlogSearch from './BlogSearch';
 import { useBlog } from '../../contexts/BlogContext';
@@ -77,11 +76,7 @@ const BlogListPage: React.FC = memo(() => {
 
   return (
     <>
-      <SEOHelmet
-        title={t('blog.seo.title')}
-        description={t('blog.seo.description')}
-        url={`${SITE_URL}/insights`}
-      />
+      <SEOHelmet title={t('blog.seo.title')} description={t('blog.seo.description')} />
 
       <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* Hero Section */}

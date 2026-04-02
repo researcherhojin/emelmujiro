@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import SEOHelmet from '../common/SEOHelmet';
 import StructuredData from '../common/StructuredData';
-import { SITE_URL } from '../../utils/constants';
 import { getTeachingHistory } from '../../data/profileData';
 
 const YEARS = [2026, 2025, 2024, 2023, 2022] as const;
@@ -38,7 +37,6 @@ const ProfilePage: React.FC = memo(() => {
         title={t('profilePage.seoTitle')}
         description={t('profilePage.seoDescription')}
         keywords={t('profilePage.seoKeywords')}
-        url={`${SITE_URL}/profile`}
       />
       <StructuredData type="Person" />
       <StructuredData type="Breadcrumb" />

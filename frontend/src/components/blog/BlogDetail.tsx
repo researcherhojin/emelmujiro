@@ -18,7 +18,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useBlog } from '../../contexts/BlogContext';
 import { api } from '../../services/api';
 import logger from '../../utils/logger';
-import { SITE_URL } from '../../utils/constants';
 import { formatDate } from '../../utils/dateFormat';
 import { trackBlogView } from '../../utils/analytics';
 import { preventImageAction } from '../../utils/imageUtils';
@@ -172,7 +171,6 @@ const BlogDetailPage: React.FC = memo(() => {
               title={`${post.title} | ${t('blogDetail.blogTitle')}`}
               description={post.description || post.title}
               keywords={`${post.category}, ${t('blogDetail.blogKeywords')}`}
-              url={`${SITE_URL}/insights/${slug}`}
               image={post.image_url}
               type="article"
               article={{

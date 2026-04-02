@@ -26,6 +26,7 @@ npm run test:e2e           # Playwright E2E (from frontend/). Also: test:e2e:ui,
 npm run type-check         # tsc --noEmit (from frontend/)
 npm run analyze:bundle     # source-map-explorer (from frontend/, requires build first)
 
+npm run knip                   # Dead code detection (unused files, exports, deps). Run from root
 uv sync --extra dev                    # Install backend deps (NOT --dev). Run from backend/
 uv run python manage.py test           # Django unittest (NOT pytest). Needs DATABASE_URL=""
 uv run python manage.py test api.tests.CategoryAPITestCase.test_list  # Single backend test
@@ -99,7 +100,7 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 ## Constraints
 
-**SEO**: `main.tsx` uses `createRoot()` (never `hydrateRoot`). Do NOT add static meta/title/OG tags to `index.html` — `SEOHelmet` handles everything. Use `SITE_URL` from `constants.ts` — never hardcode URLs. Page titles must NOT include `| 에멜무지로` suffix (appended automatically).
+**SEO**: `main.tsx` uses `createRoot()` (never `hydrateRoot`). Do NOT add static meta/title/OG tags to `index.html` — `SEOHelmet` handles everything. `SEOHelmet` auto-computes canonical URL from `location.pathname` — do NOT pass `url` props to `SEOHelmet` (it causes English pages to have wrong canonical). Page titles must NOT include `| 에멜무지로` suffix (appended automatically).
 
 **KakaoTalk WebView**: `window.__appLoaded` must be set in `AppLayout` (router layout), NOT at provider level. iOS banner uses `kakaotalk://web/openExternal` scheme (NOT `window.open()`).
 

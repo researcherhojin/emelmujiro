@@ -15,7 +15,6 @@ import { NotificationProvider } from './contexts/NotificationContext';
 import Layout from './components/layout/Layout';
 import { PageLoading } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
-import { SITE_URL } from './utils/constants';
 import { trackPageView } from './utils/analytics';
 import './i18n';
 
@@ -61,11 +60,7 @@ const HomePage: React.FC = memo(() => {
   return (
     <>
       <Suspense fallback={null}>
-        <SEOHelmet
-          title={t('seo.site.title')}
-          description={t('seo.site.description')}
-          url={SITE_URL}
-        />
+        <SEOHelmet title={t('seo.site.title')} description={t('seo.site.description')} />
         <StructuredData type="Organization" />
         <StructuredData type="Website" />
         <StructuredData type="LocalBusiness" />

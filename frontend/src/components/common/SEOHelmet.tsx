@@ -33,7 +33,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     keywords,
     author,
     image = `${SITE_URL}/og-image.png`,
-    url = SITE_URL,
+    url,
     type = 'website',
     lang,
     robots,
@@ -50,6 +50,10 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     const resolvedKeywords = keywords || t('seo.seoHead.defaultKeywords');
     const resolvedAuthor = author || siteName;
     const siteTitle = resolvedTitle === siteName ? resolvedTitle : `${resolvedTitle} | ${siteName}`;
+
+    // Auto-compute canonical URL from current path when not explicitly provided
+    const cleanPath = location.pathname.replace(/\/$/, '') || '/';
+    const canonicalUrl = url || `${SITE_URL}${cleanPath === '/' ? '' : cleanPath}`;
 
     // Build hreflang URLs: /profile (ko), /en/profile (en)
     const basePath = stripLangPrefix(location.pathname);
@@ -70,7 +74,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         <meta property="og:title" content={siteTitle} />
         <meta property="og:description" content={resolvedDescription} />
         <meta property="og:image" content={image} />
-        <meta property="og:url" content={url} />
+        <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content={type} />
         <meta property="og:site_name" content={siteName} />
         <meta property="og:locale" content={resolvedLang === 'en' ? 'en_US' : 'ko_KR'} />
@@ -83,7 +87,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         <meta name="twitter:image" content={image} />
 
         {/* Canonical URL */}
-        <link rel="canonical" href={url} />
+        <link rel="canonical" href={canonicalUrl} />
 
         {/* Language */}
         <html lang={resolvedLang} />
