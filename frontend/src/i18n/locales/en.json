@@ -568,6 +568,14 @@
     "enterprise3": "After the Spotfire training, I built and now operate a dashboard for my team. Since the exercises used real work data, I could connect it directly to my tasks.",
     "enterprise3Source": "S Corp. QC Manager · DS Spotfire Data Analysis",
     "enterprise4": "Computer vision was a totally new field for me, but the step-by-step approach from OpenCV to object detection gave me the foundation to work with image data in my role.",
-    "enterprise4Source": "T Corp. Employee · Computer Vision Hands-on"
+    "enterprise4Source": "T Corp. Employee · Computer Vision Hands-on",
+    "enterprise5": "The training covered Python basics through deep learning systematically. The project using real data was impressive — I now lead AI projects in my team.",
+    "enterprise5Source": "L Corp. Researcher · AI Python & Deep Learning",
+    "enterprise6": "Running AI models on edge devices hands-on was great. I learned how to optimize within embedded constraints systematically.",
+    "enterprise6Source": "Electronics Research Institute · Edge AI",
+    "enterprise7": "I only knew NLP theory before, but building and deploying a model myself was invaluable. The project-driven curriculum built real practical skills.",
+    "enterprise7Source": "IT Corp. Developer · NLP Project",
+    "enterprise8": "I learned how to apply ML to manufacturing data systematically. We were evaluating smart factory adoption, and the training clarified our approach.",
+    "enterprise8Source": "Industry Research Association · AI Training"
   }
 }

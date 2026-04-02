@@ -15,6 +15,10 @@ const getTestimonials = (
     { text: t('testimonials.enterprise2'), program: t('testimonials.enterprise2Source') },
     { text: t('testimonials.enterprise3'), program: t('testimonials.enterprise3Source') },
     { text: t('testimonials.enterprise4'), program: t('testimonials.enterprise4Source') },
+    { text: t('testimonials.enterprise5'), program: t('testimonials.enterprise5Source') },
+    { text: t('testimonials.enterprise6'), program: t('testimonials.enterprise6Source') },
+    { text: t('testimonials.enterprise7'), program: t('testimonials.enterprise7Source') },
+    { text: t('testimonials.enterprise8'), program: t('testimonials.enterprise8Source') },
   ],
   government: [
     { text: t('testimonials.cv1'), program: t('testimonials.cvProgram') },
