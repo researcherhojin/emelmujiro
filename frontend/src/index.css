@@ -164,19 +164,19 @@
 /* Faster carousel scroll on mobile (< 640px) */
 @media (max-width: 639px) {
   .animate-scroll {
-    animation-duration: 22s !important;
+    animation-duration: 24s !important;
   }
 
   .animate-scroll-reverse {
-    animation-duration: 22s !important;
+    animation-duration: 24s !important;
   }
 
   .animate-scroll-testimonial {
-    animation-duration: 12s !important;
+    animation-duration: 14s !important;
   }
 
   .animate-scroll-testimonial-reverse {
-    animation-duration: 12s !important;
+    animation-duration: 14s !important;
   }
 }
 
@@ -196,14 +196,14 @@
   /* Scroll carousels: keep original speed (reduce ≠ eliminate) */
   .animate-scroll,
   .animate-scroll-reverse {
-    animation-duration: 40s !important;
+    animation-duration: 44s !important;
   }
 
   .animate-scroll-testimonial {
-    animation-duration: 20s !important;
+    animation-duration: 22s !important;
   }
 
   .animate-scroll-testimonial-reverse {
-    animation-duration: 20s !important;
+    animation-duration: 22s !important;
   }
 }

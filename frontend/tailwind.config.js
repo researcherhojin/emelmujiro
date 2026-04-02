@@ -26,10 +26,10 @@ module.exports = {
       },
       // Scroll animations for logos and testimonials
       animation: {
-        scroll: 'scroll 40s linear infinite',
-        'scroll-reverse': 'scroll-reverse 40s linear infinite',
-        'scroll-testimonial': 'scroll-testimonial 20s linear infinite',
-        'scroll-testimonial-reverse': 'scroll-testimonial-reverse 20s linear infinite',
+        scroll: 'scroll 44s linear infinite',
+        'scroll-reverse': 'scroll-reverse 44s linear infinite',
+        'scroll-testimonial': 'scroll-testimonial 22s linear infinite',
+        'scroll-testimonial-reverse': 'scroll-testimonial-reverse 22s linear infinite',
       },
       keyframes: {
         scroll: {
