@@ -37,7 +37,7 @@ const ScrollRow: React.FC<ScrollRowProps> = memo(({ companies, direction = 'left
       <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-gray-50 dark:from-gray-950 to-transparent z-10" />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-gray-50 dark:from-gray-950 to-transparent z-10" />
 
-      <div className={`flex ${animationClass} group-hover:pause`}>
+      <div className={`flex w-max ${animationClass} group-hover:pause`}>
         {/* Render 3 copies for seamless looping */}
         {[0, 1, 2].map((copy) =>
           companies.map((company, index) => (
