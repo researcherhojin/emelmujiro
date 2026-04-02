@@ -88,7 +88,9 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **About page**: Removed entirely — route, component file, and lazy import all deleted. Sitemap, prerender, StructuredData breadcrumb all updated.
 
-**Blog (Insights) URLs**: Frontend routes use `/insights/:slug` (NOT `/blog`). `BlogPostViewSet` uses `lookup_field = "slug"`. Backend API stays at `/api/blog-posts/` (internal). Nginx redirects `/blog/*` → `/insights/*` (301). BlogCard links to `/insights/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
+**Share page**: Removed entirely — no backend API existed, frontend-only page with no real functionality. Nginx 301 redirects `/share` → `/` and `/en/share` → `/en`. Do NOT re-add.
+
+**Blog (Insights) URLs**: Frontend routes use `/insights/:slug` (NOT `/blog`). `BlogPostViewSet` uses `lookup_field = "slug"`. Backend API stays at `/api/blog-posts/` (internal). Nginx 301 redirects: `/blog/*` → `/insights/*`, `/share` → `/`, `/en/share` → `/en`. BlogCard links to `/insights/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
 
 **Contact page**: Uses same hero pattern as other pages (section label + font-black title + subtitle). Google Form iframe for submissions, ContactInfo sidebar.
 
