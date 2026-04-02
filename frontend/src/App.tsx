@@ -1,11 +1,5 @@
 import React, { lazy, Suspense, useEffect, memo } from 'react';
-import {
-  createBrowserRouter,
-  RouterProvider,
-  useLocation,
-  useParams,
-  Outlet,
-} from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, useLocation, Outlet } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { BlogProvider } from './contexts/BlogContext';
@@ -96,37 +90,21 @@ const HomePage: React.FC = memo(() => {
 HomePage.displayName = 'HomePage';
 
 /**
- * LanguageLayout — Sets i18n language based on the :lang URL param.
- * Korean (default): no prefix. English: /en prefix.
+ * LanguageLayout — Sets i18n language based on route.
+ * Korean (default): no prefix. English: explicit /en prefix.
  */
-const SUPPORTED_LANGS = new Set(['en']);
-
 const LanguageLayout: React.FC = memo(() => {
-  const { lang } = useParams();
+  const location = useLocation();
   const { i18n } = useTranslation();
-  const isValidLang = !lang || SUPPORTED_LANGS.has(lang);
-  const targetLang = isValidLang ? lang || 'ko' : 'ko';
+  const targetLang =
+    location.pathname === '/en' || location.pathname.startsWith('/en/') ? 'en' : 'ko';
 
   useEffect(() => {
-    if (isValidLang && i18n.language !== targetLang) {
+    if (i18n.language !== targetLang) {
       i18n.changeLanguage(targetLang);
     }
-    if (isValidLang) {
-      document.documentElement.lang = targetLang;
-    }
-    // Signal app loaded even for invalid lang paths (prevents 5s timeout fallback)
-    window.__appLoaded = true;
-  }, [targetLang, isValidLang, i18n]);
-
-  if (!isValidLang) {
-    return (
-      <Layout>
-        <Suspense fallback={null}>
-          <NotFound />
-        </Suspense>
-      </Layout>
-    );
-  }
+    document.documentElement.lang = targetLang;
+  }, [targetLang, i18n]);
 
   return <Outlet />;
 });
@@ -191,7 +169,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: '/:lang',
+    path: '/en',
     element: <LanguageLayout />,
     children: [
       {
