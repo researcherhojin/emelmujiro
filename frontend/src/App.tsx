@@ -114,13 +114,17 @@ const LanguageLayout: React.FC = memo(() => {
     if (isValidLang) {
       document.documentElement.lang = targetLang;
     }
+    // Signal app loaded even for invalid lang paths (prevents 5s timeout fallback)
+    window.__appLoaded = true;
   }, [targetLang, isValidLang, i18n]);
 
   if (!isValidLang) {
     return (
-      <Suspense fallback={null}>
-        <NotFound />
-      </Suspense>
+      <Layout>
+        <Suspense fallback={null}>
+          <NotFound />
+        </Suspense>
+      </Layout>
     );
   }
 
