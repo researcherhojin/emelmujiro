@@ -176,7 +176,7 @@
   }
 
   .animate-scroll-testimonial-reverse {
-    animation-duration: 10s !important;
+    animation-duration: 20s !important;
   }
 }
 
@@ -199,8 +199,11 @@
     animation-duration: 32s !important;
   }
 
-  .animate-scroll-testimonial,
-  .animate-scroll-testimonial-reverse {
+  .animate-scroll-testimonial {
     animation-duration: 16s !important;
+  }
+
+  .animate-scroll-testimonial-reverse {
+    animation-duration: 32s !important;
   }
 }
