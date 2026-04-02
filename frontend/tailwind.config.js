@@ -28,8 +28,8 @@ module.exports = {
       animation: {
         scroll: 'scroll 32s linear infinite',
         'scroll-reverse': 'scroll-reverse 32s linear infinite',
-        'scroll-testimonial': 'scroll-testimonial 40s linear infinite',
-        'scroll-testimonial-reverse': 'scroll-testimonial-reverse 40s linear infinite',
+        'scroll-testimonial': 'scroll-testimonial 16s linear infinite',
+        'scroll-testimonial-reverse': 'scroll-testimonial-reverse 16s linear infinite',
       },
       keyframes: {
         scroll: {
