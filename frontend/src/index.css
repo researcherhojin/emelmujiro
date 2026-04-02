@@ -196,11 +196,11 @@
   /* Scroll carousels: slow down instead of stopping (reduce ≠ eliminate) */
   .animate-scroll,
   .animate-scroll-reverse {
-    animation-duration: 90s !important;
+    animation-duration: 60s !important;
   }
 
   .animate-scroll-testimonial,
   .animate-scroll-testimonial-reverse {
-    animation-duration: 90s !important;
+    animation-duration: 60s !important;
   }
 }
