@@ -18,8 +18,8 @@ All `npm run` frontend commands run from `frontend/`. Root-level `npm run dev` r
 ```bash
 npm run dev                # Frontend + Backend (from root)
 npm run dev:clean          # Kill ports first, then start both (from root)
-npm run build              # sitemap → tsc → vite build → prerender → cp 404.html (from frontend/)
-npm run build:no-prerender # Faster build — skips SSG prerender step (from frontend/)
+npm run build              # sitemap → tsc → vite build → cp 404.html (from frontend/)
+npm run build:no-prerender # Same but skips prerender step (from frontend/)
 npm run validate           # lint + type-check + test:coverage (from frontend/)
 CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx  # Single test
 npm run test:e2e           # Playwright E2E (from frontend/). Also: test:e2e:ui, test:e2e:debug

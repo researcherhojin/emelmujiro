@@ -133,7 +133,6 @@ graph LR
 ## Key Features
 
 - **Bilingual (i18n)** — URL-based language routing (`/contact` for Korean, `/en/contact` for English)
-- **SSG Prerendering** — Static HTML pages for SEO, parallel rendering
 - **Teaching History** — 38 entries across 5 years, year-grouped with alternating backgrounds, bilingual
 - **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments. `/blog` → `/insights` nginx 301 redirect
 - **Service Modals** — Clickable service cards open detail modals with full service descriptions
