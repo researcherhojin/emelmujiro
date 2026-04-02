@@ -45,7 +45,7 @@ if [ -f "$REPO_DIR/frontend/.env.production" ]; then
     export "$key=$value"
   done < "$REPO_DIR/frontend/.env.production"
 fi
-VITE_API_URL="${VITE_API_URL:-https://api.emelmujiro.com/api}" npm run build
+VITE_API_URL="${VITE_API_URL:-https://api.emelmujiro.com/api}" npm run build:no-prerender
 
 # Ensure all services are running
 echo "$LOG_PREFIX Starting services..."
