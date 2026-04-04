@@ -12,7 +12,7 @@ Structured notes for cross-session context. Claude Code reads this to pick up wh
 - **Pages with redirects (2)**: Same `/blog` → `/insights` migration. Expected.
 - **Discovered but not indexed (3)**: `/en/profile`, `/en/share`, `/share` — **ROOT CAUSE FIXED**: canonical URLs were hardcoded to Korean paths. SEOHelmet now auto-computes canonical from `location.pathname`. Redeploy and request reindexing in GSC.
 - **404 (1)**: Likely a deleted page (e.g., `/about`). Will clear from GSC after Google recrawls.
-- **Privacy policy page** ("개인정보처리방침약관"): No route/component exists yet. Consider creating if legally required.
+- **Privacy policy page**: Implemented at `/privacy` (ko) and `/en/privacy` (en) — 13 sections per PIPA Article 30. Pending legal professional review.
 
 ## Mechanical Enforcement
 

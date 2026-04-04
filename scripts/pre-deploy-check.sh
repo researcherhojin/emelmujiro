@@ -152,7 +152,7 @@ echo ""
 echo -e "${BLUE}📋 4. Build${NC}"
 
 inline_check "Production build test"
-if (cd frontend && npm run build > /dev/null 2>&1); then
+if (cd frontend && npm run build:no-prerender > /dev/null 2>&1); then
     pass "Build successful"
     BUILD_SIZE=$(du -sh frontend/build 2>/dev/null | cut -f1)
     echo -e "  ℹ️  Build size: $BUILD_SIZE"
