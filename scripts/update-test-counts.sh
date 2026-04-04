@@ -2,7 +2,7 @@
 # Update hardcoded test counts in README.md
 # Usage: ./scripts/update-test-counts.sh (or: make update-test-counts)
 #   - Run from repo root
-#   - Counts frontend Vitest tests and updates README.md
+#   - Counts frontend (Vitest) and backend (Django) tests, updates README.md
 #   - Stages the changed file for commit
 
 set -e
@@ -30,13 +30,28 @@ if [ -z "$FRONTEND_COUNT" ]; then
   exit 1
 fi
 
-echo "   Frontend: $FRONTEND_COUNT unit tests"
+echo "   Frontend: $FRONTEND_COUNT tests"
 
-# Update README.md
-# Format: "Vitest (1190 unit tests)" — update only the number
-sedi -E "s/Vitest \([0-9]+ unit tests\)/Vitest (${FRONTEND_COUNT} unit tests)/g" README.md
+# Count backend tests
+BACKEND_OUTPUT=$(cd backend && DATABASE_URL="" uv run python manage.py test 2>&1)
+BACKEND_COUNT=$(echo "$BACKEND_OUTPUT" | grep -E 'Found [0-9]+ test' | sed -E 's/Found ([0-9]+) test.*/\1/')
 
-echo "✅ Updated test counts in README.md"
+if [ -z "$BACKEND_COUNT" ]; then
+  echo "❌ Failed to count backend tests"
+  exit 1
+fi
+
+echo "   Backend: $BACKEND_COUNT tests"
+
+# Update README.md — three patterns:
+# 1. "Vitest (N tests)" in Testing line
+sedi -E "s/Vitest \([0-9]+ tests\)/Vitest (${FRONTEND_COUNT} tests)/g" README.md
+# 2. "Django unittest (N tests)" in Testing line
+sedi -E "s/Django unittest \([0-9]+ tests\)/Django unittest (${BACKEND_COUNT} tests)/g" README.md
+# 3. "tests (N frontend + N backend)" in CI/CD line
+sedi -E "s/tests \([0-9]+ frontend \+ [0-9]+ backend\)/tests (${FRONTEND_COUNT} frontend + ${BACKEND_COUNT} backend)/g" README.md
+
+echo "✅ Updated test counts in README.md (${FRONTEND_COUNT} frontend + ${BACKEND_COUNT} backend)"
 
 # Stage if there are changes
 if ! git diff --quiet README.md 2>/dev/null; then
