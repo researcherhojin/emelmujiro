@@ -3,12 +3,14 @@ const path = require('path');
 
 const SITE_URL = process.env.SITE_URL || 'https://emelmujiro.com';
 const LANGUAGES = ['ko', 'en'];
+const DEFAULT_LANG = 'ko';
+const OUTPUT_DIR = path.join(__dirname, '../public');
 
-// Define all static routes (BrowserRouter — clean URLs)
+// Static routes — must match pageRoutes in App.tsx (excluding dynamic/auth routes)
 const staticRoutes = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
-  { url: '/contact', changefreq: 'weekly', priority: 0.7 },
   { url: '/insights', changefreq: 'daily', priority: 0.8 },
+  { url: '/contact', changefreq: 'weekly', priority: 0.7 },
   { url: '/profile', changefreq: 'weekly', priority: 0.6 },
   { url: '/privacy', changefreq: 'yearly', priority: 0.3 },
 ];
@@ -18,7 +20,7 @@ const staticRoutes = [
  * Korean (default): no prefix. English: /en prefix.
  */
 function buildLangUrl(routeUrl, lang) {
-  const prefix = lang === 'ko' ? '' : `/${lang}`;
+  const prefix = lang === DEFAULT_LANG ? '' : `/${lang}`;
   const urlPath = routeUrl === '/' ? '' : routeUrl;
   return `${SITE_URL}${prefix}${urlPath}`;
 }
@@ -31,16 +33,16 @@ function generateHreflangLinks(routeUrl) {
     (lang) =>
       `    <xhtml:link rel="alternate" hreflang="${lang}" href="${buildLangUrl(routeUrl, lang)}" />`
   );
-  // x-default points to Korean (default language)
   links.push(
-    `    <xhtml:link rel="alternate" hreflang="x-default" href="${buildLangUrl(routeUrl, 'ko')}" />`
+    `    <xhtml:link rel="alternate" hreflang="x-default" href="${buildLangUrl(routeUrl, DEFAULT_LANG)}" />`
   );
   return links.join('\n');
 }
 
-// Generate sitemap XML with bilingual hreflang links
+/**
+ * Generate sitemap.xml with bilingual hreflang links.
+ */
 const generateSitemap = () => {
-  // Generate URL entries for each language
   const urlEntries = [];
 
   for (const route of staticRoutes) {
@@ -54,7 +56,7 @@ ${generateHreflangLinks(route.url)}
     }
   }
 
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -62,83 +64,66 @@ ${generateHreflangLinks(route.url)}
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 ${urlEntries.join('\n')}
 </urlset>`;
-
-  return sitemap;
 };
 
-// Generate robots.txt
+/**
+ * Generate robots.txt.
+ * - /cdn-cgi/ blocked: Cloudflare injects email obfuscation URLs that cause 404 in GSC
+ * - Crawl-delay omitted for Googlebot (not supported, use GSC crawl rate instead)
+ */
 const generateRobotsTxt = () => {
-  const robotsTxt = `# Robots.txt for Emelmujiro
-# https://emelmujiro.com
+  return `# Robots.txt for Emelmujiro
+# ${SITE_URL}
 
 User-agent: *
 Allow: /
+Disallow: /cdn-cgi/
 Crawl-delay: 1
 
-# Sitemap location
 Sitemap: ${SITE_URL}/sitemap.xml
 
-# Specific rules for major search engines
+# Googlebot ignores Crawl-delay — configure crawl rate in Google Search Console
 User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
-User-agent: Bingbot
-Allow: /
-Crawl-delay: 1`;
-
-  return robotsTxt;
+Allow: /`;
 };
 
-// Main function
-const main = () => {
-  try {
-    // Generate sitemap
-    const sitemap = generateSitemap();
-    const sitemapPath = path.join(__dirname, '../public/sitemap.xml');
-    fs.writeFileSync(sitemapPath, sitemap);
-    console.log('✅ Sitemap generated successfully at:', sitemapPath);
-
-    // Generate robots.txt
-    const robotsTxt = generateRobotsTxt();
-    const robotsPath = path.join(__dirname, '../public/robots.txt');
-    fs.writeFileSync(robotsPath, robotsTxt);
-    console.log('✅ Robots.txt generated successfully at:', robotsPath);
-
-    // Generate sitemap index for large sites (future-proofing)
-    const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
+/**
+ * Generate sitemap-index.xml.
+ */
+const generateSitemapIndex = () => {
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>${SITE_URL}/sitemap.xml</loc>
     <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
   </sitemap>
 </sitemapindex>`;
+};
 
-    const sitemapIndexPath = path.join(
-      __dirname,
-      '../public/sitemap-index.xml'
-    );
-    fs.writeFileSync(sitemapIndexPath, sitemapIndex);
-    console.log(
-      '✅ Sitemap index generated successfully at:',
-      sitemapIndexPath
-    );
+const main = () => {
+  try {
+    const files = [
+      { name: 'sitemap.xml', content: generateSitemap() },
+      { name: 'robots.txt', content: generateRobotsTxt() },
+      { name: 'sitemap-index.xml', content: generateSitemapIndex() },
+    ];
 
-    // Log statistics
+    for (const { name, content } of files) {
+      const filePath = path.join(OUTPUT_DIR, name);
+      fs.writeFileSync(filePath, content);
+      console.log(`✅ ${name}`);
+    }
+
     const totalUrls = staticRoutes.length * LANGUAGES.length;
-    console.log(`\n📊 Statistics:`);
-    console.log(`   - Static routes: ${staticRoutes.length}`);
-    console.log(`   - Languages: ${LANGUAGES.join(', ')}`);
-    console.log(`   - Total URLs: ${totalUrls}`);
+    console.log(`\n📊 ${staticRoutes.length} routes × ${LANGUAGES.length} languages = ${totalUrls} URLs`);
   } catch (error) {
     console.error('❌ Error generating sitemap:', error);
     process.exit(1);
   }
 };
 
-// Run if called directly
 if (require.main === module) {
   main();
 }
 
-module.exports = { generateSitemap, generateRobotsTxt, staticRoutes, LANGUAGES };
+module.exports = { generateSitemap, generateRobotsTxt, staticRoutes, LANGUAGES, DEFAULT_LANG };

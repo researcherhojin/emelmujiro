@@ -16,8 +16,8 @@ const path = require('path');
 
 const BUILD_DIR = path.resolve(__dirname, '../build');
 
-// Import shared route list from sitemap generator
-const { staticRoutes, LANGUAGES } = require('./generate-sitemap');
+// Import shared constants from sitemap generator (single source of truth)
+const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('./generate-sitemap');
 
 /**
  * Start a simple static file server for the build directory.
@@ -76,7 +76,7 @@ function startServer() {
  * Korean (default): /contact. English: /en/contact.
  */
 function buildRoutePath(routeUrl, lang) {
-  const prefix = lang === 'ko' ? '' : `/${lang}`;
+  const prefix = lang === DEFAULT_LANG ? '' : `/${lang}`;
   return routeUrl === '/' ? (prefix || '/') : `${prefix}${routeUrl}`;
 }
 
