@@ -1,5 +1,5 @@
 name: "Setup Node.js with cache"
-description: "Checkout, setup Node.js, cache and install node_modules"
+description: "Setup Node.js, cache and install node_modules"
 
 runs:
   using: "composite"
