@@ -161,22 +161,22 @@
   }
 }
 
-/* Faster carousel scroll on mobile (< 640px) */
+/* Mobile carousel speed — unified with desktop (32s) */
 @media (max-width: 639px) {
   .animate-scroll {
-    animation-duration: 18s !important;
+    animation-duration: 32s !important;
   }
 
   .animate-scroll-reverse {
-    animation-duration: 18s !important;
+    animation-duration: 32s !important;
   }
 
   .animate-scroll-testimonial {
-    animation-duration: 18s !important;
+    animation-duration: 32s !important;
   }
 
   .animate-scroll-testimonial-reverse {
-    animation-duration: 18s !important;
+    animation-duration: 32s !important;
   }
 }
 

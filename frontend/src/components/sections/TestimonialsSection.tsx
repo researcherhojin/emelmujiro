@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Quote, ExternalLink } from 'lucide-react';
 
@@ -58,13 +58,27 @@ interface ScrollRowProps {
 const ScrollRow: React.FC<ScrollRowProps> = memo(({ testimonials, direction = 'left', rowKey }) => {
   const animationClass =
     direction === 'left' ? 'animate-scroll-testimonial' : 'animate-scroll-testimonial-reverse';
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleTouchStart = useCallback(() => {
+    scrollRef.current?.style.setProperty('animation-play-state', 'paused');
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    scrollRef.current?.style.setProperty('animation-play-state', 'running');
+  }, []);
 
   return (
     <div className="relative overflow-hidden group">
       <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-gray-50 dark:from-gray-950 to-transparent z-10" />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-gray-50 dark:from-gray-950 to-transparent z-10" />
 
-      <div className={`flex w-max ${animationClass} group-hover:pause`}>
+      <div
+        ref={scrollRef}
+        className={`flex w-max ${animationClass} group-hover:pause`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {[0, 1, 2, 3, 4].map((copy) =>
           testimonials.map((testimonial, index) => (
             <TestimonialCard key={`${rowKey}-${copy}-${index}`} testimonial={testimonial} />
