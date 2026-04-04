@@ -171,7 +171,7 @@
   },
   "blogDetail": {
     "loading": "포스트를 불러오는 중입니다...",
-    "blogTitle": "에멜무지로 인사이트",
+    "blogTitle": "인사이트",
     "blogKeywords": "에멜무지로, 인사이트",
     "relatedImage": "관련 이미지",
     "author": "작성자:"
@@ -182,7 +182,7 @@
     "logoAlt": "{{name}} 로고"
   },
   "profilePage": {
-    "seoTitle": "강의이력 - 에멜무지로",
+    "seoTitle": "강의이력",
     "seoDescription": "에멜무지로의 AI 교육·컨설팅 강의 이력입니다. 삼성전자, LG전자, 현대건설, SKT 등 대기업부터 공공기관·대학교까지 5년간 50건 이상의 교육을 수행했습니다.",
     "seoKeywords": "이호진, AI 전문가, AI Agent, Computer Vision, RAG, MCP, 바이브 코딩, 창업멘토링, 에멜무지로 대표, AI 교육, AI 컨설팅",
     "backToMain": "메인으로 돌아가기"

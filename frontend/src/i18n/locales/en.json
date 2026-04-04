@@ -171,7 +171,7 @@
   },
   "blogDetail": {
     "loading": "Loading post...",
-    "blogTitle": "Emelmujiro Insights",
+    "blogTitle": "Insights",
     "blogKeywords": "Emelmujiro, Insights",
     "relatedImage": "related image",
     "author": "Author:"
@@ -182,7 +182,7 @@
     "logoAlt": "{{name}} logo"
   },
   "profilePage": {
-    "seoTitle": "Teaching History - Emelmujiro",
+    "seoTitle": "Teaching History",
     "seoDescription": "Emelmujiro's AI education & consulting track record. 50+ programs delivered over 5 years for Samsung, LG, Hyundai, SK Telecom, government agencies and universities.",
     "seoKeywords": "Hojin Lee, AI expert, AI Agent, Computer Vision, RAG, MCP, Vibe Coding, startup mentoring, Emelmujiro CEO, AI education, AI consulting",
     "backToMain": "Back to Home"
