@@ -78,7 +78,7 @@ const Navbar: React.FC = memo(() => {
           {/* Logo */}
           <Link
             to={localizedPath('/')}
-            className="text-2xl font-black text-gray-900 dark:text-white hover:text-gray-800 dark:hover:text-gray-100 transition-colors tracking-tight select-none focus:outline-none border-none bg-transparent"
+            className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white hover:text-gray-800 dark:hover:text-gray-100 transition-colors tracking-tight select-none focus:outline-none border-none bg-transparent whitespace-nowrap"
           >
             {t('common.companyName')}
           </Link>
