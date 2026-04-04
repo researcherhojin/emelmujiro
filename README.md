@@ -142,6 +142,7 @@ graph LR
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data, SSG prerendering
 - **Performance** — 7 vendor chunks by update frequency, Lighthouse CI assertions, < 10MB bundle budget
 - **CI/CD** — GitHub Actions: lint, type-check, tests (1180 frontend + 366 backend), Trivy security scan, bundle size, Lighthouse, Playwright E2E (5 profiles), Codecov, auto-deploy via webhook
+- **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30, with TOC navigation
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
 - **Testing** — 100% coverage target: Vitest (1180 tests) + Django unittest (366 tests) + Playwright E2E
 

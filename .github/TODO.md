@@ -11,8 +11,9 @@
 
 ## 3. SEO
 
-- [ ] GSC 수동 재색인 요청 — 아래 "GSC 작업 가이드" 참고
-- [ ] GSC redirect 오류 (4건) + 404 (1건, `/about` 삭제) — Google 재크롤 후 자동 해소 예상. 모니터링
+- [ ] GSC 사이트맵 재제출 — `sitemap.xml`에 `/privacy` 추가됨. GSC → 사이트맵 → 재제출
+- [ ] GSC 색인 요청 — URL 검사에서 `/privacy`, `/en/privacy`, `/en/profile` 각각 "색인 생성 요청"
+- [ ] GSC redirect 오류 (4건) + `/cdn-cgi/` 404 — robots.txt에 `Disallow: /cdn-cgi/` 추가 완료 (배포 후 해소). redirect 오류는 재크롤 시 자동 해소 예상
 
 ## 4. CI/자동화
 
