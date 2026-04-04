@@ -141,9 +141,9 @@ graph LR
 - **Monitoring** — Sentry error tracking + Google Analytics
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data, SSG prerendering
 - **Performance** — 7 vendor chunks by update frequency, Lighthouse CI assertions, < 10MB bundle budget
-- **CI/CD** — GitHub Actions: lint, type-check, tests (1172 frontend + 366 backend), Trivy security scan, bundle size, Lighthouse, Playwright E2E (5 profiles), Codecov, auto-deploy via webhook
+- **CI/CD** — GitHub Actions: lint, type-check, tests (1180 frontend + 366 backend), Trivy security scan, bundle size, Lighthouse, Playwright E2E (5 profiles), Codecov, auto-deploy via webhook
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
-- **Testing** — 100% coverage target: Vitest (1172 tests) + Django unittest (366 tests) + Playwright E2E
+- **Testing** — 100% coverage target: Vitest (1180 tests) + Django unittest (366 tests) + Playwright E2E
 
 ## License
 
