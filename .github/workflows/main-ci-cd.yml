@@ -17,6 +17,10 @@ concurrency:
 env:
   NODE_VERSION: "24"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # Suppress "hint: Using 'master' as the name for the initial branch" from actions/checkout
+  GIT_CONFIG_COUNT: 1
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
 
 jobs:
   # ========================================
@@ -33,6 +37,8 @@ jobs:
 
       - name: Setup Node.js with cache
         uses: ./.github/actions/setup-node
+        with:
+          save-cache: "false"
 
       - name: Run frontend tests with coverage
         working-directory: ./frontend
@@ -110,7 +116,7 @@ jobs:
         timeout-minutes: 5
         env:
           DATABASE_URL: ""
-          SECRET_KEY: test-secret-key
+          SECRET_KEY: test-secret-key-that-is-at-least-fifty-bytes-long-for-hmac-sha256
           DEBUG: "True"
         run: |
           uv run coverage run --source=api manage.py test

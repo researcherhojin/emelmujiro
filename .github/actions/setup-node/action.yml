@@ -1,6 +1,12 @@
 name: "Setup Node.js with cache"
 description: "Setup Node.js, cache and install node_modules"
 
+inputs:
+  save-cache:
+    description: "Save cache after install (disable in parallel jobs to avoid race conditions)"
+    required: false
+    default: "true"
+
 runs:
   using: "composite"
   steps:
@@ -9,7 +15,19 @@ runs:
       with:
         node-version: "24"
 
-    - name: Cache node_modules
+    - name: Restore node_modules (read-only)
+      if: inputs.save-cache != 'true'
+      uses: actions/cache/restore@v5
+      id: node-cache-restore
+      with:
+        path: |
+          node_modules
+          frontend/node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+        restore-keys: ${{ runner.os }}-node-modules-
+
+    - name: Cache node_modules (restore + save)
+      if: inputs.save-cache == 'true'
       uses: actions/cache@v5
       id: node-cache
       with:
@@ -20,6 +38,6 @@ runs:
         restore-keys: ${{ runner.os }}-node-modules-
 
     - name: Install dependencies
-      if: steps.node-cache.outputs.cache-hit != 'true'
+      if: steps.node-cache.outputs.cache-hit != 'true' && steps.node-cache-restore.outputs.cache-hit != 'true'
       shell: bash
       run: npm ci --prefer-offline --no-audit

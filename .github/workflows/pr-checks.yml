@@ -12,6 +12,10 @@ permissions:
 env:
   NODE_VERSION: "24"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # Suppress "hint: Using 'master' as the name for the initial branch" from actions/checkout
+  GIT_CONFIG_COUNT: 1
+  GIT_CONFIG_KEY_0: init.defaultBranch
+  GIT_CONFIG_VALUE_0: main
 
 jobs:
   # Dependabot auto-approve and auto-merge
@@ -207,7 +211,7 @@ jobs:
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
         working-directory: ./backend
         env:
-          SECRET_KEY: test-secret-key
+          SECRET_KEY: test-secret-key-that-is-at-least-fifty-bytes-long-for-hmac-sha256
           DEBUG: "True"
           DATABASE_URL: ""
         run: |

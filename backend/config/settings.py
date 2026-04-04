@@ -427,6 +427,10 @@ else:
     LOGGING["loggers"]["django"]["level"] = "WARNING"
     LOGGING["loggers"]["api"]["level"] = "WARNING"
 
-# Disable SSL redirect in test environment (re-confirm)
+# Test environment overrides
 if "test" in sys.argv:
     SECURE_SSL_REDIRECT = False
+    # Tests skip collectstatic, so STATIC_ROOT (staticfiles/) doesn't exist.
+    # Remove WhiteNoise middleware and use default storage to avoid UserWarning.
+    MIDDLEWARE = [m for m in MIDDLEWARE if "whitenoise" not in m]
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
