@@ -14,7 +14,7 @@
     <meta name="author" content="이호진" />
 
     <!-- Security headers via meta -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' data: https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://api.emelmujiro.com https://api.github.com https://*.sentry.io https://cdn.jsdelivr.net https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com https://static.cloudflareinsights.com; frame-src https://docs.google.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' data: https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://api.emelmujiro.com https://api.github.com https://*.sentry.io https://cdn.jsdelivr.net https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com https://static.cloudflareinsights.com; frame-src https://docs.google.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta
       http-equiv="Referrer-Policy"
@@ -80,7 +80,10 @@
         if (!root) return;
         var href = location.href;
         var isKakao = window.__isKakaoInApp;
-        var kakaoExternal = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(href);
+        var isAndroid = window.__isKakaoAndroid;
+        var kakaoExternal = isAndroid
+          ? 'intent://web/openExternal?url=' + encodeURIComponent(href) + '#Intent;scheme=kakaotalk;end'
+          : 'kakaotalk://web/openExternal?url=' + encodeURIComponent(href);
         var ua = navigator.userAgent;
         root.innerHTML =
           '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif">' +
@@ -246,7 +249,10 @@
         if (!root) return;
         var href = location.href;
         var isKakao = window.__isKakaoInApp;
-        var kakaoExternal = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(href);
+        var isAndroid = window.__isKakaoAndroid;
+        var kakaoExternal = isAndroid
+          ? 'intent://web/openExternal?url=' + encodeURIComponent(href) + '#Intent;scheme=kakaotalk;end'
+          : 'kakaotalk://web/openExternal?url=' + encodeURIComponent(href);
         var errText = window.__errors.length
           ? window.__errors.join('<br>')
           : '앱이 5초 내에 로드되지 않았습니다.';

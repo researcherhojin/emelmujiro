@@ -17,7 +17,6 @@
     "@tiptap/pm": "^3.20.5",
     "@tiptap/react": "^3.21.0",
     "@tiptap/starter-kit": "^3.20.5",
-    "@vitejs/plugin-legacy": "^8.0.1",
     "axios": "^1.13.6",
     "dompurify": "^3.3.3",
     "framer-motion": "^12.38.0",

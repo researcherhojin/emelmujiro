@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import legacy from '@vitejs/plugin-legacy';
 import path from 'path';
 
 // Strip localhost CSP entries from production builds
@@ -27,10 +26,6 @@ function stripLocalhostCsp(): import('vite').Plugin {
 export default defineConfig({
   plugins: [
     react(),
-    legacy({
-      targets: ['defaults', 'not IE 11', 'Chrome >= 64', 'Samsung >= 9.2'],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
-    }),
     stripLocalhostCsp(),
   ],
   base: '/',

@@ -43,9 +43,7 @@ module.exports = {
         canonical: 'off', // No backend serving canonical in CI preview
         'errors-in-console': 'warn', // Console errors from missing API in CI
         'inspector-issues': 'warn',
-        // plugin-legacy injects polyfills that trigger these
-        'legacy-javascript': 'off',
-        'legacy-javascript-insight': 'off',
+        'legacy-javascript': 'warn',
         // Bundle size insights — warn only, not block
         'total-byte-weight': 'warn',
         'unused-javascript': 'warn',
