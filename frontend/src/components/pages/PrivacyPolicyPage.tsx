@@ -7,13 +7,16 @@ const sections = [
   'overview',
   'dataCollection',
   'usage',
-  'sharing',
-  'cookies',
   'retention',
+  'sharing',
+  'delegation',
   'rights',
+  'safety',
+  'cookies',
   'children',
+  'officer',
+  'remedies',
   'changes',
-  'contact',
 ] as const;
 
 const PrivacyPolicyPage: React.FC = memo(() => {
@@ -44,17 +47,45 @@ const PrivacyPolicyPage: React.FC = memo(() => {
           </div>
         </section>
 
+        {/* Table of Contents */}
+        <section className="px-5 sm:px-6 lg:px-8 pb-12">
+          <nav
+            className="max-w-3xl mx-auto bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 sm:p-8"
+            aria-label="Table of contents"
+          >
+            <h2 className="text-base font-bold text-gray-900 dark:text-white mb-4">
+              {t('privacy.sectionLabel')}
+            </h2>
+            <ol className="grid sm:grid-cols-2 gap-x-8 gap-y-2 text-sm text-gray-600 dark:text-gray-400">
+              {sections.map((section, idx) => (
+                <li key={section}>
+                  <a
+                    href={`#privacy-${section}`}
+                    className="hover:text-gray-900 dark:hover:text-white transition-colors"
+                  >
+                    {idx + 1}. {t(`privacy.${section}.title`)}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </section>
+
         {/* Content */}
         <section className="pb-16 sm:pb-32 px-5 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto space-y-12">
+          <div className="max-w-3xl mx-auto">
             {sections.map((section, idx) => (
-              <article key={section}>
+              <article
+                key={section}
+                id={`privacy-${section}`}
+                className="py-10 first:pt-0 border-t first:border-t-0 border-gray-200 dark:border-gray-800"
+              >
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
                   {idx + 1}. {t(`privacy.${section}.title`)}
                 </h2>
-                <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-line break-keep">
+                <div className="text-base text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-line break-keep">
                   {t(`privacy.${section}.content`)}
-                </p>
+                </div>
               </article>
             ))}
           </div>

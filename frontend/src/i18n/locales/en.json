@@ -580,47 +580,59 @@
   "privacy": {
     "sectionLabel": "PRIVACY POLICY",
     "title": "Privacy Policy",
-    "subtitle": "Emelmujiro values and protects your personal information.",
-    "lastUpdated": "Last updated",
+    "subtitle": "Emelmujiro protects your personal information in accordance with the Personal Information Protection Act.",
+    "lastUpdated": "Effective date",
     "overview": {
       "title": "Overview",
-      "content": "Emelmujiro ('Company') is committed to protecting user privacy in accordance with applicable data protection laws. This Privacy Policy explains how we collect, use, and safeguard your personal information."
+      "content": "Emelmujiro ('Company') establishes and publicly discloses this Privacy Policy pursuant to Article 30 of the Personal Information Protection Act (PIPA) to protect the personal information of data subjects and to promptly handle related complaints."
     },
     "dataCollection": {
-      "title": "Information We Collect",
-      "content": "We collect the minimum personal information necessary to provide our services.\n\n• Contact form: Name, email address, inquiry details\n• Account registration: Email address, password (encrypted)\n• Automatically collected: IP address, browser info, visit timestamps, page views"
+      "title": "Personal Information Collected",
+      "content": "We collect the minimum personal information necessary to provide our services.\n\n[Required items]\n• Contact form: Name, email address, inquiry details\n• Account registration: Email address, password (stored with one-way encryption)\n\n[Automatically collected]\n• IP address, browser type and version, operating system, visit timestamps, page views, service usage logs\n\n[Collection methods]\n• Website contact form, account registration, and automatic collection during service use"
     },
     "usage": {
-      "title": "How We Use Your Information",
-      "content": "Collected information is used solely for the following purposes.\n\n• Responding to inquiries and providing consultation services\n• Statistical analysis for service improvement (Google Analytics)\n• Security threat detection and fraud prevention\n• Compliance with legal obligations"
-    },
-    "sharing": {
-      "title": "Information Sharing",
-      "content": "We do not share your personal information with third parties, except in the following cases.\n\n• When you have given prior consent\n• When required by law"
-    },
-    "cookies": {
-      "title": "Cookies and Tracking",
-      "content": "We use the following cookies and tracking technologies.\n\n• Authentication: httpOnly cookies for JWT token management (session persistence)\n• Analytics: Google Analytics (anonymized visitor statistics)\n• Error tracking: Sentry (technical information collected on errors)\n\nYou can disable cookies in your browser settings, but some features may be limited."
+      "title": "Purpose of Processing",
+      "content": "We process collected personal information for the following purposes only.\n\n• Responding to inquiries and providing consultation services\n• Member registration and management, identity verification\n• Statistical analysis for service improvement\n• Security threat detection and fraud prevention\n• Compliance with legal obligations"
     },
     "retention": {
-      "title": "Data Retention",
-      "content": "We delete personal information promptly after its collection purpose has been fulfilled.\n\n• Account data: Deleted immediately upon account deletion\n• Inquiry records: Retained for 1 year after resolution, then deleted\n• Visit logs: Automatically deleted after 90 days\n• Legal requirements: Retained for the period required by applicable laws"
+      "title": "Retention Period and Destruction",
+      "content": "We destroy personal information without delay once the purpose of processing has been achieved.\n\n[Retention periods]\n• Member data: Until membership withdrawal\n• Inquiry records: 1 year after resolution\n• Visit logs (SiteVisit): Automatically deleted after 90 days\n• Legal retention: For the period required by applicable laws\n\n[Destruction procedures and methods]\n• Electronic files: Permanently deleted using irreversible methods\n• Paper documents: Not applicable (electronic processing only)"
+    },
+    "sharing": {
+      "title": "Disclosure to Third Parties",
+      "content": "We do not disclose personal information to third parties, except in the following cases.\n\n• When the data subject has given separate prior consent\n• When there is a specific provision in law\n• When necessary for urgent protection of life, body, or property of the data subject or a third party, and prior consent cannot be obtained"
+    },
+    "delegation": {
+      "title": "Outsourcing of Processing",
+      "content": "We outsource personal information processing to the following service providers.\n\n• Google LLC (Google Analytics): Website usage statistical analysis — anonymized visit data collection\n• Sentry (Functional Software, Inc.): Error tracking and service stability monitoring — technical information collection upon errors\n\nIn outsourcing contracts, pursuant to Article 26 of PIPA, we specify provisions regarding prohibition of processing beyond the outsourced purpose, technical and administrative protection measures, restrictions on re-outsourcing, supervision of processors, and liability for damages."
     },
     "rights": {
-      "title": "Your Rights",
-      "content": "You may exercise the following rights at any time.\n\n• Request access, correction, or deletion of your personal information\n• Request suspension of personal information processing\n• Withdraw consent\n\nPlease send requests to contact@emelmujiro.com. We will take prompt action."
+      "title": "Rights of Data Subjects",
+      "content": "Data subjects may exercise the following rights at any time.\n\n• Request to access personal information\n• Request correction of errors\n• Request deletion\n• Request suspension of processing\n\nRights may be exercised in writing or by email (contact@emelmujiro.com). We will take prompt action.\n\nWhen a data subject requests correction or deletion, the relevant personal information will not be used or provided until the correction or deletion is completed."
+    },
+    "safety": {
+      "title": "Safety Measures",
+      "content": "We take the following measures pursuant to Article 29 of PIPA to ensure the security of personal information.\n\n[Administrative measures]\n• Minimization and training of personal information handlers\n\n[Technical measures]\n• One-way encryption (hashing) of passwords\n• JWT authentication tokens managed via httpOnly cookies (XSS prevention)\n• DOMPurify sanitization of blog HTML content\n• IP-based access restriction and abnormal request blocking (rate limiting)\n• Access log retention and tamper prevention\n• Upload file extension, MIME type, and size validation\n\n[Physical measures]\n• Server bound to 127.0.0.1 only, blocking direct external access\n• Secure traffic delivery through Cloudflare Tunnel"
+    },
+    "cookies": {
+      "title": "Automated Collection Devices",
+      "content": "We operate the following automated collection devices for service usage information.\n\n• Authentication cookies: JWT token management via httpOnly cookies (session persistence)\n• Google Analytics: Anonymized visit statistics (page views, session duration, etc.)\n• Sentry: Technical environment information upon errors (browser, OS, etc.)\n\n[How to refuse cookies]\nYou can allow, block, or delete cookies through your web browser's settings. However, blocking cookies may limit some services such as login.\n\n• Chrome: Settings > Privacy and security > Cookies and other site data\n• Safari: Preferences > Privacy\n• Firefox: Settings > Privacy & Security"
     },
     "children": {
-      "title": "Children's Privacy",
-      "content": "We do not knowingly collect personal information from children under 14 years of age. If we learn that such information has been collected, we will delete it immediately."
+      "title": "Children Under 14",
+      "content": "We do not knowingly collect personal information from children under 14 years of age. If we learn that such information has been collected, we will destroy it without delay."
+    },
+    "officer": {
+      "title": "Privacy Officer",
+      "content": "The Company designates the following Privacy Officer to oversee personal information processing and handle complaints and remedies related to personal information.\n\n[Privacy Officer]\n• Name: Hojin Lee\n• Position: CEO\n• Email: contact@emelmujiro.com\n• Phone: +82 10-7279-0380\n\nData subjects may direct all inquiries, complaints, and remedy requests related to personal information protection to the Privacy Officer."
+    },
+    "remedies": {
+      "title": "Remedies for Rights Infringement",
+      "content": "Data subjects may contact the following organizations for dispute resolution or consultation regarding personal information infringement.\n\n• Personal Information Infringement Report Center (KISA): 118 (no area code) / privacy.kisa.or.kr\n• Personal Information Dispute Mediation Committee: 1833-6972 / www.kopico.go.kr\n• Supreme Prosecutors' Office Cyber Investigation Division: 1301 (no area code) / www.spo.go.kr\n• National Police Agency Cyber Bureau: 182 (no area code) / ecrm.police.go.kr"
     },
     "changes": {
       "title": "Changes to This Policy",
-      "content": "This Privacy Policy may be updated due to changes in law, policy, or services. Any changes will be announced on the website."
-    },
-    "contact": {
-      "title": "Privacy Inquiries",
-      "content": "For questions, complaints, or remedies regarding personal information processing, please contact us.\n\n• Email: contact@emelmujiro.com\n• Website: https://emelmujiro.com/contact"
+      "content": "This Privacy Policy may be updated due to changes in law, policy, or services. Changes will be announced on the website at least 7 days in advance, or 30 days in advance for significant changes affecting user rights."
     }
   }
 }

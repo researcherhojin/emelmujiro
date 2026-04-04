@@ -4,6 +4,22 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils';
 import PrivacyPolicyPage from '../PrivacyPolicyPage';
 
+const ALL_SECTIONS = [
+  'overview',
+  'dataCollection',
+  'usage',
+  'retention',
+  'sharing',
+  'delegation',
+  'rights',
+  'safety',
+  'cookies',
+  'children',
+  'officer',
+  'remedies',
+  'changes',
+];
+
 describe('PrivacyPolicyPage', () => {
   const renderPage = () => renderWithProviders(<PrivacyPolicyPage />);
 
@@ -15,7 +31,8 @@ describe('PrivacyPolicyPage', () => {
 
   it('renders section label', () => {
     renderPage();
-    expect(screen.getByText('privacy.sectionLabel')).toBeInTheDocument();
+    const labels = screen.getAllByText('privacy.sectionLabel');
+    expect(labels.length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders last updated date', () => {
@@ -24,50 +41,43 @@ describe('PrivacyPolicyPage', () => {
     expect(screen.getByText(/2026-04-05/)).toBeInTheDocument();
   });
 
-  it('renders all 10 section titles', () => {
+  it('renders table of contents with all 13 sections', () => {
     renderPage();
-    const sections = [
-      'overview',
-      'dataCollection',
-      'usage',
-      'sharing',
-      'cookies',
-      'retention',
-      'rights',
-      'children',
-      'changes',
-      'contact',
-    ];
-    sections.forEach((section, idx) => {
-      expect(screen.getByText(`${idx + 1}. privacy.${section}.title`)).toBeInTheDocument();
+    const nav = screen.getByRole('navigation', { name: /table of contents/i });
+    expect(nav).toBeInTheDocument();
+    const links = nav.querySelectorAll('a');
+    expect(links).toHaveLength(13);
+  });
+
+  it('renders all 13 section titles', () => {
+    renderPage();
+    ALL_SECTIONS.forEach((section, idx) => {
+      const elements = screen.getAllByText(`${idx + 1}. privacy.${section}.title`);
+      expect(elements.length).toBeGreaterThanOrEqual(1);
     });
   });
 
-  it('renders all 10 section contents', () => {
+  it('renders all 13 section contents', () => {
     renderPage();
-    const sections = [
-      'overview',
-      'dataCollection',
-      'usage',
-      'sharing',
-      'cookies',
-      'retention',
-      'rights',
-      'children',
-      'changes',
-      'contact',
-    ];
-    sections.forEach((section) => {
+    ALL_SECTIONS.forEach((section) => {
       expect(screen.getByText(`privacy.${section}.content`)).toBeInTheDocument();
     });
   });
 
-  it('renders articles with correct heading hierarchy', () => {
+  it('renders correct heading hierarchy (1 h1, 14 h2s)', () => {
     renderPage();
     const h1 = screen.getByRole('heading', { level: 1 });
     expect(h1).toHaveTextContent('privacy.title');
 
+    // 13 content h2s + 1 TOC h2
     const h2s = screen.getAllByRole('heading', { level: 2 });
-    expect(h2s).toHaveLength(10);
+    expect(h2s).toHaveLength(14);
+  });
+
+  it('renders anchor ids for each section', () => {
+    renderPage();
+    ALL_SECTIONS.forEach((section) => {
+      expect(document.getElementById(`privacy-${section}`)).toBeInTheDocument();
+    });
   });
 });
