@@ -82,7 +82,7 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **ServicesSection**: Service cards are clickable — clicking opens `ServiceModal` (same modal used by Footer). Modal state is local to ServicesSection (not UIContext). Mobile: left/right nav arrows hidden (`hidden sm:block`), navigation via dot indicators only. English detail text must fit one line on mobile (~25 chars max).
 
-**Teaching History page** (`/profile`): Replaced 4-tab profile (career/education/projects/timeline). Shows 38 teaching entries grouped by year (2026→2022) with alternating section backgrounds. Data uses end-client names as organization (삼성전자, not 엘리스). i18n keys: `teachingHistory.{0-37}.{org,title}`. `useMemo` depends on `i18n.language` for language switching. Items support `visibleAfter` date field for time-gated visibility.
+**Teaching History page** (`/profile`): Replaced 4-tab profile (career/education/projects/timeline). Shows 38 teaching entries grouped by year (2026→2022) with alternating section backgrounds. Data uses end-client names as organization (삼성전자, not 엘리스). i18n keys: `teachingHistory.{0-37}.{org,title}`. `useMemo` depends on `i18n.language` for language switching. Items support `visibleAfter` date field for time-gated visibility. **Filters**: Year (2026-2022) + OrgType (enterprise/government/university/education/research) pill buttons with AND logic. `OrgType` field on `TeachingItem` in `profileData.ts`. Filter labels: `teachingHistory.filter{All,Enterprise,Government,University,Education,Research}`.
 
 **Nav order**: 강의이력 → 인사이트 (teaching history first, blog second). Footer menu label: "강의이력" (not "대표 프로필").
 
