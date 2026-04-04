@@ -1,12 +1,6 @@
 import i18n from '../i18n';
 
-export type OrgType =
-  | 'enterprise'
-  | 'moel'
-  | 'government'
-  | 'university'
-  | 'education'
-  | 'research';
+export type OrgType = 'enterprise' | 'moel' | 'public' | 'academic';
 
 export interface TeachingItem {
   organization: string;
@@ -17,14 +11,7 @@ export interface TeachingItem {
   visibleAfter?: string; // ISO date string — hide until this date
 }
 
-export const ORG_TYPES: OrgType[] = [
-  'enterprise',
-  'moel',
-  'government',
-  'university',
-  'education',
-  'research',
-];
+export const ORG_TYPES: OrgType[] = ['enterprise', 'moel', 'public', 'academic'];
 
 export const getTeachingHistory = (): TeachingItem[] => [
   // 2026
@@ -32,27 +19,27 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.0.org'),
     title: i18n.t('teachingHistory.0.title'),
     year: 2026,
-    orgType: 'government',
+    orgType: 'public',
   },
   {
     organization: i18n.t('teachingHistory.1.org'),
     title: i18n.t('teachingHistory.1.title'),
     year: 2026,
-    orgType: 'education',
+    orgType: 'academic',
     visibleAfter: '2026-04-03',
   },
   {
     organization: i18n.t('teachingHistory.2.org'),
     title: i18n.t('teachingHistory.2.title'),
     year: 2026,
-    orgType: 'government',
+    orgType: 'public',
     upcoming: true,
   },
   {
     organization: i18n.t('teachingHistory.3.org'),
     title: i18n.t('teachingHistory.3.title'),
     year: 2026,
-    orgType: 'research',
+    orgType: 'public',
     upcoming: true,
   },
   // 2025
@@ -72,13 +59,13 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.6.org'),
     title: i18n.t('teachingHistory.6.title'),
     year: 2025,
-    orgType: 'research',
+    orgType: 'public',
   },
   {
     organization: i18n.t('teachingHistory.7.org'),
     title: i18n.t('teachingHistory.7.title'),
     year: 2025,
-    orgType: 'government',
+    orgType: 'public',
   },
   {
     organization: i18n.t('teachingHistory.8.org'),
@@ -91,7 +78,7 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.9.org'),
     title: i18n.t('teachingHistory.9.title'),
     year: 2024,
-    orgType: 'government',
+    orgType: 'public',
   },
   {
     organization: i18n.t('teachingHistory.10.org'),
@@ -134,7 +121,7 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.16.org'),
     title: i18n.t('teachingHistory.16.title'),
     year: 2023,
-    orgType: 'education',
+    orgType: 'academic',
   },
   {
     organization: i18n.t('teachingHistory.17.org'),
@@ -164,7 +151,7 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.21.org'),
     title: i18n.t('teachingHistory.21.title'),
     year: 2023,
-    orgType: 'education',
+    orgType: 'academic',
   },
   {
     organization: i18n.t('teachingHistory.22.org'),
@@ -176,7 +163,7 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.23.org'),
     title: i18n.t('teachingHistory.23.title'),
     year: 2023,
-    orgType: 'education',
+    orgType: 'academic',
   },
   {
     organization: i18n.t('teachingHistory.24.org'),
@@ -194,20 +181,20 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.26.org'),
     title: i18n.t('teachingHistory.26.title'),
     year: 2023,
-    orgType: 'university',
+    orgType: 'academic',
   },
   {
     organization: i18n.t('teachingHistory.27.org'),
     title: i18n.t('teachingHistory.27.title'),
     year: 2023,
-    orgType: 'government',
+    orgType: 'public',
   },
   // 2022
   {
     organization: i18n.t('teachingHistory.28.org'),
     title: i18n.t('teachingHistory.28.title'),
     year: 2022,
-    orgType: 'education',
+    orgType: 'academic',
   },
   {
     organization: i18n.t('teachingHistory.29.org'),
@@ -225,13 +212,13 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.31.org'),
     title: i18n.t('teachingHistory.31.title'),
     year: 2022,
-    orgType: 'government',
+    orgType: 'public',
   },
   {
     organization: i18n.t('teachingHistory.32.org'),
     title: i18n.t('teachingHistory.32.title'),
     year: 2022,
-    orgType: 'government',
+    orgType: 'public',
   },
   {
     organization: i18n.t('teachingHistory.33.org'),
@@ -243,19 +230,19 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.34.org'),
     title: i18n.t('teachingHistory.34.title'),
     year: 2022,
-    orgType: 'university',
+    orgType: 'academic',
   },
   {
     organization: i18n.t('teachingHistory.35.org'),
     title: i18n.t('teachingHistory.35.title'),
     year: 2022,
-    orgType: 'university',
+    orgType: 'academic',
   },
   {
     organization: i18n.t('teachingHistory.36.org'),
     title: i18n.t('teachingHistory.36.title'),
     year: 2022,
-    orgType: 'government',
+    orgType: 'public',
   },
   {
     organization: i18n.t('teachingHistory.37.org'),

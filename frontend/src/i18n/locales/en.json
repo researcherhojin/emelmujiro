@@ -385,10 +385,8 @@
     "filterAll": "All",
     "filterEnterprise": "Enterprise",
     "filterMoel": "MOEL",
-    "filterGovernment": "Gov't",
-    "filterUniversity": "University",
-    "filterEducation": "Training",
-    "filterResearch": "Research",
+    "filterPublic": "Public",
+    "filterAcademic": "Academic",
     "filterResultCount": "{{count}}",
     "noResults": "No results match the selected filters.",
     "0": {

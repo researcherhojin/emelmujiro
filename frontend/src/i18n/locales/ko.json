@@ -385,10 +385,8 @@
     "filterAll": "전체",
     "filterEnterprise": "대기업",
     "filterMoel": "고용노동부",
-    "filterGovernment": "정부·공공",
-    "filterUniversity": "대학",
-    "filterEducation": "교육기관",
-    "filterResearch": "연구·산업",
+    "filterPublic": "공공·연구",
+    "filterAcademic": "대학·교육",
     "filterResultCount": "{{count}}건",
     "noResults": "해당 조건의 이력이 없습니다.",
     "0": {

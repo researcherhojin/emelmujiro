@@ -11,10 +11,8 @@ const YEARS = [2026, 2025, 2024, 2023, 2022] as const;
 const ORG_TYPE_LABEL_KEYS: Record<OrgType, string> = {
   enterprise: 'teachingHistory.filterEnterprise',
   moel: 'teachingHistory.filterMoel',
-  government: 'teachingHistory.filterGovernment',
-  university: 'teachingHistory.filterUniversity',
-  education: 'teachingHistory.filterEducation',
-  research: 'teachingHistory.filterResearch',
+  public: 'teachingHistory.filterPublic',
+  academic: 'teachingHistory.filterAcademic',
 };
 
 const ProfilePage: React.FC = memo(() => {

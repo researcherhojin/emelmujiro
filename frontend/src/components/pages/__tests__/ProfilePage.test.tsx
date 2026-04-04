@@ -121,8 +121,8 @@ describe('ProfilePage — Teaching History', () => {
     expect(screen.getByText('teachingHistory.filterAll')).toBeInTheDocument();
     expect(screen.getByText('teachingHistory.filterEnterprise')).toBeInTheDocument();
     expect(screen.getByText('teachingHistory.filterMoel')).toBeInTheDocument();
-    expect(screen.getByText('teachingHistory.filterGovernment')).toBeInTheDocument();
-    expect(screen.getByText('teachingHistory.filterUniversity')).toBeInTheDocument();
+    expect(screen.getByText('teachingHistory.filterPublic')).toBeInTheDocument();
+    expect(screen.getByText('teachingHistory.filterAcademic')).toBeInTheDocument();
   });
 
   it('filters by org type when pill is clicked', () => {
