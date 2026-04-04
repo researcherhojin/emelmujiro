@@ -105,6 +105,75 @@ jobs:
           fi
           echo "All SEO files present"
 
+      - name: Check i18n unused keys
+        run: |
+          LOCALE="frontend/src/i18n/locales/ko.json"
+          SRC="frontend/src"
+          UNUSED=0
+          KEYS=$(node -e "
+            const d = require('./$LOCALE');
+            function leaves(o, p) { let r = [];
+              for (const [k,v] of Object.entries(o)) { const key = p ? p+'.'+k : k;
+                if (typeof v === 'object' && v !== null && !Array.isArray(v)) r = r.concat(leaves(v, key));
+                else r.push(key); } return r; }
+            leaves(d, '').forEach(k => console.log(k));
+          ")
+          for key in $KEYS; do
+            REFS=$(grep -r --include="*.ts" --include="*.tsx" -l "$key" "$SRC" 2>/dev/null \
+              | grep -v "locales/" | grep -v "__tests__/" | grep -v "test-utils/" | wc -l | tr -d ' ')
+            if [ "$REFS" -eq 0 ]; then
+              echo "⚠️  Unused i18n key: $key"
+              UNUSED=$((UNUSED + 1))
+            fi
+          done
+          if [ "$UNUSED" -gt 0 ]; then
+            echo "❌ $UNUSED unused i18n key(s) found"
+            exit 1
+          fi
+          echo "All i18n keys are referenced"
+
+      - name: Check README test counts match
+        run: |
+          # Extract counts from README
+          README_FE=$(grep -oE 'Vitest \([0-9]+ tests\)' README.md | grep -oE '[0-9]+')
+          README_BE=$(grep -oE 'Django unittest \([0-9]+ tests\)' README.md | grep -oE '[0-9]+')
+          # Extract counts from CI line too
+          CI_FE=$(grep -oE 'tests \([0-9]+ frontend' README.md | grep -oE '[0-9]+')
+          CI_BE=$(grep -oE '[0-9]+ backend\)' README.md | grep -oE '[0-9]+')
+          if [ "$README_FE" != "$CI_FE" ] || [ "$README_BE" != "$CI_BE" ]; then
+            echo "❌ README test counts are inconsistent"
+            echo "Testing line: $README_FE frontend, $README_BE backend"
+            echo "CI/CD line: $CI_FE frontend, $CI_BE backend"
+            exit 1
+          fi
+          echo "README test counts consistent ($README_FE frontend + $README_BE backend)"
+
+      - name: Check README badge versions match package.json
+        run: |
+          ERRORS=0
+          check_badge() {
+            local name="$1" pkg="$2"
+            local pkg_ver=$(node -e "const p=require('./frontend/package.json'); console.log((p.dependencies['$pkg']||p.devDependencies['$pkg']||'').replace('^',''))")
+            local badge_ver=$(grep -oE "$name-[0-9]+\.[0-9]+\.[0-9]+" README.md | head -1 | sed "s/${name}-//")
+            if [ -n "$pkg_ver" ] && [ -n "$badge_ver" ] && [ "$pkg_ver" != "$badge_ver" ]; then
+              echo "❌ $name badge: $badge_ver ≠ package.json: $pkg_ver"
+              ERRORS=$((ERRORS + 1))
+            fi
+          }
+          check_badge "React" "react"
+          check_badge "Vite" "vite"
+          check_badge "React_Router_DOM" "react-router-dom"
+          check_badge "i18next" "i18next"
+          check_badge "Axios" "axios"
+          check_badge "Vitest" "vitest"
+          check_badge "Playwright" "@playwright/test"
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "❌ $ERRORS README badge(s) out of sync with package.json"
+            echo "Run: scripts/update-test-counts.sh and manually update badges"
+            exit 1
+          fi
+          echo "All README badges match package.json"
+
   # Frontend linting (parallel with backend-lint)
   frontend-lint:
     name: Frontend Lint
