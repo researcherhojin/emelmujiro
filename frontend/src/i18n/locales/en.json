@@ -382,6 +382,14 @@
     "statsYears": "5 Years",
     "statsCount": "50+",
     "upcoming": "Upcoming",
+    "filterAll": "All",
+    "filterEnterprise": "Enterprise",
+    "filterGovernment": "Gov't",
+    "filterUniversity": "University",
+    "filterEducation": "Training",
+    "filterResearch": "Research",
+    "filterResultCount": "{{count}}",
+    "noResults": "No results match the selected filters.",
     "0": {
       "org": "KEITI",
       "title": "AI Eco-Innovation Lab — LLM·RAG Dev & Project"

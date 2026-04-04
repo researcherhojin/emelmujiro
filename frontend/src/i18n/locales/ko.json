@@ -382,6 +382,14 @@
     "statsYears": "5년",
     "statsCount": "50건+",
     "upcoming": "예정",
+    "filterAll": "전체",
+    "filterEnterprise": "대기업",
+    "filterGovernment": "정부·공공",
+    "filterUniversity": "대학",
+    "filterEducation": "교육기관",
+    "filterResearch": "연구·산업",
+    "filterResultCount": "{{count}}건",
+    "noResults": "해당 조건의 이력이 없습니다.",
     "0": {
       "org": "한국환경산업기술원",
       "title": "AI에코혁신랩 — LLM·RAG 서비스 개발 교육 & 프로젝트 멘토링"

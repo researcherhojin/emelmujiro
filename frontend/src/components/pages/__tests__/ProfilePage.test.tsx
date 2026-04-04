@@ -63,11 +63,10 @@ describe('ProfilePage — Teaching History', () => {
   it('renders year headings', () => {
     renderPage();
 
-    expect(screen.getByText('2026')).toBeInTheDocument();
-    expect(screen.getByText('2025')).toBeInTheDocument();
-    expect(screen.getByText('2024')).toBeInTheDocument();
-    expect(screen.getByText('2023')).toBeInTheDocument();
-    expect(screen.getByText('2022')).toBeInTheDocument();
+    // Year text appears in both filter pills and section headings
+    const headings = screen.getAllByRole('heading', { level: 2 });
+    const yearHeadings = headings.filter((h) => /^20\d{2}$/.test(h.textContent || ''));
+    expect(yearHeadings.length).toBe(5);
   });
 
   it('renders teaching history items', () => {
@@ -114,5 +113,50 @@ describe('ProfilePage — Teaching History', () => {
 
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     expect(screen.getAllByRole('heading', { level: 2 }).length).toBeGreaterThan(0);
+  });
+
+  it('renders filter pills for years and org types', () => {
+    renderPage();
+
+    // "All" pills (one for year, one for org type)
+    const allButtons = screen.getAllByText('teachingHistory.filterAll');
+    expect(allButtons).toHaveLength(2);
+
+    // Org type pills
+    expect(screen.getByText('teachingHistory.filterEnterprise')).toBeInTheDocument();
+    expect(screen.getByText('teachingHistory.filterGovernment')).toBeInTheDocument();
+    expect(screen.getByText('teachingHistory.filterUniversity')).toBeInTheDocument();
+  });
+
+  it('filters by year when year pill is clicked', () => {
+    renderPage();
+
+    // Click "2024" year pill
+    const yearButtons = screen.getAllByText('2024');
+    const yearPill = yearButtons.find((el) => el.tagName === 'BUTTON');
+    expect(yearPill).toBeTruthy();
+    fireEvent.click(yearPill!);
+
+    // Should show filter count
+    expect(screen.getByText(/teachingHistory\.filterResultCount/)).toBeInTheDocument();
+  });
+
+  it('filters by org type when org pill is clicked', () => {
+    renderPage();
+
+    fireEvent.click(screen.getByText('teachingHistory.filterEnterprise'));
+    expect(screen.getByText(/teachingHistory\.filterResultCount/)).toBeInTheDocument();
+  });
+
+  it('shows no results message when filters match nothing', () => {
+    renderPage();
+
+    // Select a year with no university entries
+    const year2026Buttons = screen.getAllByText('2026');
+    const yearPill = year2026Buttons.find((el) => el.tagName === 'BUTTON');
+    fireEvent.click(yearPill!);
+    fireEvent.click(screen.getByText('teachingHistory.filterUniversity'));
+
+    expect(screen.getByText('teachingHistory.noResults')).toBeInTheDocument();
   });
 });
