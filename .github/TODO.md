@@ -6,5 +6,17 @@
 
 ## 2. 기능 개선
 
-- [ ] 강의이력 필터 UI — 연도별·기관유형별 필터 (현재 38건, 40건 초과 시 UX 저하 예상). `upcoming` 2건 + `visibleAfter` 1건(2026-04-03) 대기 중 → 곧 40건 도달
+- [ ] 강의이력 필터 UI — 연도별·기관유형별 필터 (현재 38건, upcoming 2건 포함). 40건 초과 시 UX 저하 예상
 - [ ] 멘토링/활동 이력 추가 검토 — ICT 피우다 멘토, 해커톤 심사위원, 오픈소스 컨트리뷰션 등 교육 외 활동을 별도 섹션 또는 기존 이력에 통합
+- [ ] 개인정보처리방침 페이지 — 현재 라우트/컴포넌트 없음. 법적 필요 시 생성 (`/privacy`, i18n, Footer 링크)
+
+## 3. SEO
+
+- [ ] Google Search Console 재색인 요청 — canonical URL 버그 수정 배포 완료 (SEOHelmet이 pathname에서 자동 계산). `/en/profile` 등 미색인 페이지에 대해 GSC에서 수동 재색인 요청 필요
+- [ ] GSC redirect 오류 (4건) + 404 (1건, `/about` 삭제) — Google 재크롤 후 자동 해소 예상. 모니터링
+
+## 4. CI/자동화
+
+- [ ] i18n 미사용 키 탐지 — 현재 수동 (`grep -r "t('section."` 후 JSON에서 제거). 스크립트 또는 knip 플러그인으로 자동화 검토
+- [ ] TipTap 3.22.2 업그레이드 — Dependabot PR이 Lighthouse CI에서 번들 크기 경고로 실패. `npm run analyze:bundle`로 영향 분석 후 chunk 분리 전략 조정 필요
+- [ ] GitHub Pages actions Node.js deprecation — `upload-pages-artifact@v4`, `deploy-pages@v5` 등이 Node.js 20 타깃. 최신 버전 대기 중 (제어 불가, 모니터링)
