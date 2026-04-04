@@ -14,6 +14,9 @@ updates:
         patterns:
           - "react*"
           - "@types/react*"
+      tiptap:
+        patterns:
+          - "@tiptap/*"
       testing:
         patterns:
           - "@testing-library/*"
@@ -121,6 +124,9 @@ updates:
       - "dependencies"
       - "docker"
       - "frontend"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
   - package-ecosystem: "docker"
     directory: "/backend"
     schedule:
@@ -131,3 +137,6 @@ updates:
       - "dependencies"
       - "docker"
       - "backend"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
