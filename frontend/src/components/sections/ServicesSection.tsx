@@ -26,7 +26,7 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(({ service, onClick }) => {
   }) as unknown as string[];
 
   return (
-    <article
+    <div
       className="group relative bg-white dark:bg-gray-800 p-8 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all duration-300 cursor-pointer"
       aria-label={t(service.titleKey)}
       onClick={onClick}
@@ -69,7 +69,7 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(({ service, onClick }) => {
             </li>
           ))}
       </ul>
-    </article>
+    </div>
   );
 });
 
