@@ -102,7 +102,7 @@ const ProfilePage: React.FC = memo(() => {
                   {items.map((item, idx) => (
                     <div
                       key={`${year}-${idx}`}
-                      className={`group flex items-start justify-between gap-3 p-4 sm:p-5 rounded-2xl border-2 transition-all hover:border-gray-900 dark:hover:border-white ${isGray ? 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700' : 'bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700'}`}
+                      className={`group flex items-start justify-between gap-3 p-4 sm:p-5 rounded-2xl border-2 transition-colors hover:border-gray-900 dark:hover:border-white ${isGray ? 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700' : 'bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700'}`}
                     >
                       <div className="min-w-0">
                         <p className="text-sm font-bold text-gray-900 dark:text-white">

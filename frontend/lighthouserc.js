@@ -67,8 +67,7 @@ module.exports = {
         // LCP insights — CI preview server behaves differently
         'lcp-discovery-insight': 'off',
         'lcp-lazy-loaded': 'warn',
-        // Forced reflow — CI preview server triggers layout thrashing not seen in production
-        'forced-reflow-insight': 'off',
+        'forced-reflow-insight': 'warn',
       },
     },
     upload: {

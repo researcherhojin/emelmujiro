@@ -100,9 +100,8 @@ test.describe('Language Switching', () => {
     await page.waitForLoadState('domcontentloaded');
 
     const nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: 'About' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: 'Blog' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: 'Profile' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Teaching History' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Insights' }).first()).toBeVisible();
     await expect(nav.getByRole('button', { name: 'Contact' }).first()).toBeVisible();
   });
 
@@ -111,13 +110,13 @@ test.describe('Language Switching', () => {
     await page.waitForLoadState('domcontentloaded');
 
     const nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: 'About' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Teaching History' }).first()).toBeVisible();
 
     await page.reload();
     await page.waitForLoadState('domcontentloaded');
 
-    await expect(nav.getByRole('button', { name: 'About' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: 'Blog' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Teaching History' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Insights' }).first()).toBeVisible();
   });
 
   test('switch back to Korean', async ({ page }) => {
@@ -125,7 +124,7 @@ test.describe('Language Switching', () => {
     await page.waitForLoadState('domcontentloaded');
 
     let nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: 'About' }).first()).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Teaching History' }).first()).toBeVisible();
 
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');

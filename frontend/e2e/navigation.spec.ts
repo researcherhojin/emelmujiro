@@ -57,8 +57,5 @@ test.describe('Navigation', () => {
     await expect(page).toHaveURL(/\/profile/);
   });
 
-  test('/blog redirects to /insights', async ({ page }) => {
-    await page.goto('/blog');
-    await expect(page).toHaveURL(/\/insights/);
-  });
+  // /blog → /insights redirect is handled by nginx, not testable in Vite preview
 });
