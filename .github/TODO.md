@@ -17,6 +17,6 @@
 
 ## 4. CI/자동화
 
-- [ ] i18n 미사용 키 탐지 — 현재 수동 (`grep -r "t('section."` 후 JSON에서 제거). 스크립트 또는 knip 플러그인으로 자동화 검토
-- [ ] TipTap 3.22.2 업그레이드 — Dependabot PR이 Lighthouse CI에서 번들 크기 경고로 실패. `npm run analyze:bundle`로 영향 분석 후 chunk 분리 전략 조정 필요
+- [x] ~~i18n 미사용 키 탐지~~ — `scripts/check-i18n-keys.sh` 작성 완료. 381개 키 스캔, `hero.badge` 1건 제거
+- [x] ~~TipTap 3.22.2 업그레이드~~ — 11개 패키지 3.20.5/3.21.0 → 3.22.2 완료. 번들 +0.6 kB (0.11%), 영향 없음. Dependabot PR 실패는 번들이 아닌 PR checks Lighthouse preset 이슈
 - [ ] GitHub Pages actions Node.js deprecation — `upload-pages-artifact@v4`, `deploy-pages@v5` 등이 Node.js 20 타깃. 최신 버전 대기 중 (제어 불가, 모니터링)
