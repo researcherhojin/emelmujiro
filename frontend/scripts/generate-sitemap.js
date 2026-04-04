@@ -10,6 +10,7 @@ const staticRoutes = [
   { url: '/contact', changefreq: 'weekly', priority: 0.7 },
   { url: '/insights', changefreq: 'daily', priority: 0.8 },
   { url: '/profile', changefreq: 'weekly', priority: 0.6 },
+  { url: '/privacy', changefreq: 'yearly', priority: 0.3 },
 ];
 
 /**

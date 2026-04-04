@@ -99,6 +99,11 @@ const Footer: React.FC = memo(() => {
                     {t('common.contact')}
                   </Link>
                 </li>
+                <li>
+                  <Link to={localizedPath('/privacy')} className={footerLinkStyle}>
+                    {t('privacy.title')}
+                  </Link>
+                </li>
               </ul>
             </nav>
 

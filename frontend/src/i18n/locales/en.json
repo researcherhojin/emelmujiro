@@ -576,5 +576,51 @@
     "enterprise7Source": "IT Corp. Developer · NLP Project",
     "enterprise8": "I learned how to apply ML to manufacturing data systematically. We were evaluating smart factory adoption, and the training clarified our approach.",
     "enterprise8Source": "Industry Research Association · AI Training"
+  },
+  "privacy": {
+    "sectionLabel": "PRIVACY POLICY",
+    "title": "Privacy Policy",
+    "subtitle": "Emelmujiro values and protects your personal information.",
+    "lastUpdated": "Last updated",
+    "overview": {
+      "title": "Overview",
+      "content": "Emelmujiro ('Company') is committed to protecting user privacy in accordance with applicable data protection laws. This Privacy Policy explains how we collect, use, and safeguard your personal information."
+    },
+    "dataCollection": {
+      "title": "Information We Collect",
+      "content": "We collect the minimum personal information necessary to provide our services.\n\n• Contact form: Name, email address, inquiry details\n• Account registration: Email address, password (encrypted)\n• Automatically collected: IP address, browser info, visit timestamps, page views"
+    },
+    "usage": {
+      "title": "How We Use Your Information",
+      "content": "Collected information is used solely for the following purposes.\n\n• Responding to inquiries and providing consultation services\n• Statistical analysis for service improvement (Google Analytics)\n• Security threat detection and fraud prevention\n• Compliance with legal obligations"
+    },
+    "sharing": {
+      "title": "Information Sharing",
+      "content": "We do not share your personal information with third parties, except in the following cases.\n\n• When you have given prior consent\n• When required by law"
+    },
+    "cookies": {
+      "title": "Cookies and Tracking",
+      "content": "We use the following cookies and tracking technologies.\n\n• Authentication: httpOnly cookies for JWT token management (session persistence)\n• Analytics: Google Analytics (anonymized visitor statistics)\n• Error tracking: Sentry (technical information collected on errors)\n\nYou can disable cookies in your browser settings, but some features may be limited."
+    },
+    "retention": {
+      "title": "Data Retention",
+      "content": "We delete personal information promptly after its collection purpose has been fulfilled.\n\n• Account data: Deleted immediately upon account deletion\n• Inquiry records: Retained for 1 year after resolution, then deleted\n• Visit logs: Automatically deleted after 90 days\n• Legal requirements: Retained for the period required by applicable laws"
+    },
+    "rights": {
+      "title": "Your Rights",
+      "content": "You may exercise the following rights at any time.\n\n• Request access, correction, or deletion of your personal information\n• Request suspension of personal information processing\n• Withdraw consent\n\nPlease send requests to contact@emelmujiro.com. We will take prompt action."
+    },
+    "children": {
+      "title": "Children's Privacy",
+      "content": "We do not knowingly collect personal information from children under 14 years of age. If we learn that such information has been collected, we will delete it immediately."
+    },
+    "changes": {
+      "title": "Changes to This Policy",
+      "content": "This Privacy Policy may be updated due to changes in law, policy, or services. Any changes will be announced on the website."
+    },
+    "contact": {
+      "title": "Privacy Inquiries",
+      "content": "For questions, complaints, or remedies regarding personal information processing, please contact us.\n\n• Email: contact@emelmujiro.com\n• Website: https://emelmujiro.com/contact"
+    }
   }
 }
