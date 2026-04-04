@@ -51,6 +51,12 @@ jobs:
           # lcov paths are relative to frontend/ — prefix with frontend/ for repo root
           sed -i 's|SF:src/|SF:frontend/src/|g' frontend/coverage/lcov.info
 
+      - name: Pre-trust Codecov GPG key
+        if: always()
+        run: |
+          gpg --batch --import <(curl -fsSL https://keybase.io/codecovsecurity/pgp_keys.asc)
+          echo "27034E7FDB850E0BBC2C62FF806BB28AED779869:6:" | gpg --import-ownertrust
+
       - name: Upload frontend coverage to Codecov
         if: always()
         uses: codecov/codecov-action@v6
@@ -126,6 +132,12 @@ jobs:
           # Fix paths in coverage.xml for Codecov: api/file.py → backend/api/file.py
           sed -i 's|filename="api/|filename="backend/api/|g' coverage.xml
           sed -i 's|<source>.*</source>|<source>.</source>|g' coverage.xml
+
+      - name: Pre-trust Codecov GPG key
+        if: always()
+        run: |
+          gpg --batch --import <(curl -fsSL https://keybase.io/codecovsecurity/pgp_keys.asc)
+          echo "27034E7FDB850E0BBC2C62FF806BB28AED779869:6:" | gpg --import-ownertrust
 
       - name: Upload backend coverage to Codecov
         if: always()
