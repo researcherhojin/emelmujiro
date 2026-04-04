@@ -46,9 +46,10 @@ export const handlers = [
     });
   }),
 
-  http.get(`${API_BASE}/insights/:id`, ({ params }) => {
+  http.get(`${API_BASE}/insights/:slug`, ({ params }) => {
     return HttpResponse.json({
-      id: Number(params.id),
+      id: 1,
+      slug: params.slug as string,
       title: 'Test Blog Post',
       description: 'Test description',
       content: '# Test Content\n\nThis is a test blog post.',

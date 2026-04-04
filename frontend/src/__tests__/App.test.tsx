@@ -183,7 +183,7 @@ describe('App', () => {
     });
   });
 
-  it('renders the blog detail page at /insights/:id', async () => {
+  it('renders the blog detail page at /insights/:slug', async () => {
     setUrl('/insights/123');
     const { default: App } = await import('../App');
 

@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useNavigate, useLocation, useParams, type NavigateOptions } from 'react-router-dom';
+import { useNavigate, useLocation, type NavigateOptions } from 'react-router-dom';
 
 const DEFAULT_LANG = 'ko';
 
@@ -27,10 +27,10 @@ function buildLocalizedPath(path: string, lang: string): string {
  */
 export function useLocalizedPath() {
   const location = useLocation();
-  const params = useParams();
   const navigate = useNavigate();
 
-  const currentLang = (params.lang as string) || DEFAULT_LANG;
+  const currentLang =
+    location.pathname === '/en' || location.pathname.startsWith('/en/') ? 'en' : DEFAULT_LANG;
   const langPrefix = getLangPrefix(currentLang);
 
   /** Prefix a path with the current language */

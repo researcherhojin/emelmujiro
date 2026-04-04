@@ -42,8 +42,8 @@ vi.mock('react-router-dom', async () => {
 
 /**
  * Creates a wrapper matching the real App.tsx route structure:
- *   / → children (no :lang param → Korean default)
- *   /:lang → children (lang param → detected language)
+ *   / → children (Korean default, no lang param)
+ *   /en → children (English, literal path — no :lang param)
  */
 function createWrapper(initialEntries: string[]) {
   const outlet = React.createElement(Outlet);
@@ -54,29 +54,25 @@ function createWrapper(initialEntries: string[]) {
       React.createElement(
         Routes,
         null,
-        // Korean routes: / with explicit child paths (no :lang param)
+        // Korean routes: / with explicit child paths
         React.createElement(
           Route,
           { path: '/', element: outlet },
           React.createElement(Route, { index: true, element: children }),
-          React.createElement(Route, { path: 'about', element: children }),
           React.createElement(Route, { path: 'contact', element: children }),
           React.createElement(Route, { path: 'insights', element: children }),
-          React.createElement(Route, { path: 'insights/:id', element: children }),
-          React.createElement(Route, { path: 'profile', element: children }),
-          React.createElement(Route, { path: 'share', element: children })
+          React.createElement(Route, { path: 'insights/:slug', element: children }),
+          React.createElement(Route, { path: 'profile', element: children })
         ),
-        // English routes: /:lang with explicit child paths
+        // English routes: /en with explicit child paths (literal, not :lang)
         React.createElement(
           Route,
-          { path: '/:lang', element: outlet },
+          { path: '/en', element: outlet },
           React.createElement(Route, { index: true, element: children }),
-          React.createElement(Route, { path: 'about', element: children }),
           React.createElement(Route, { path: 'contact', element: children }),
           React.createElement(Route, { path: 'insights', element: children }),
-          React.createElement(Route, { path: 'insights/:id', element: children }),
-          React.createElement(Route, { path: 'profile', element: children }),
-          React.createElement(Route, { path: 'share', element: children })
+          React.createElement(Route, { path: 'insights/:slug', element: children }),
+          React.createElement(Route, { path: 'profile', element: children })
         )
       )
     );
