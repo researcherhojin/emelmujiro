@@ -1,6 +1,6 @@
 import React from 'react';
 import { vi, describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import LogosSection from '../LogosSection';
 
 // Override global i18n mock — this test needs custom t() behavior
@@ -113,5 +113,20 @@ describe('LogosSection', () => {
 
     const h2 = screen.getByText('logos.title');
     expect(h2.tagName).toBe('H2');
+  });
+
+  it('pauses animation on touch start and resumes on touch end', () => {
+    const { container } = render(<LogosSection />);
+
+    const scrollContainers = container.querySelectorAll('.animate-scroll, .animate-scroll-reverse');
+    expect(scrollContainers.length).toBeGreaterThan(0);
+
+    const scrollEl = scrollContainers[0] as HTMLElement;
+
+    fireEvent.touchStart(scrollEl);
+    expect(scrollEl.style.animationPlayState).toBe('paused');
+
+    fireEvent.touchEnd(scrollEl);
+    expect(scrollEl.style.animationPlayState).toBe('running');
   });
 });
