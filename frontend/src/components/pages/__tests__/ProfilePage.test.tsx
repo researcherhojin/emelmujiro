@@ -115,48 +115,30 @@ describe('ProfilePage — Teaching History', () => {
     expect(screen.getAllByRole('heading', { level: 2 }).length).toBeGreaterThan(0);
   });
 
-  it('renders filter pills for years and org types', () => {
+  it('renders org type filter pills', () => {
     renderPage();
 
-    // "All" pills (one for year, one for org type)
-    const allButtons = screen.getAllByText('teachingHistory.filterAll');
-    expect(allButtons).toHaveLength(2);
-
-    // Org type pills
+    expect(screen.getByText('teachingHistory.filterAll')).toBeInTheDocument();
     expect(screen.getByText('teachingHistory.filterEnterprise')).toBeInTheDocument();
+    expect(screen.getByText('teachingHistory.filterMoel')).toBeInTheDocument();
     expect(screen.getByText('teachingHistory.filterGovernment')).toBeInTheDocument();
     expect(screen.getByText('teachingHistory.filterUniversity')).toBeInTheDocument();
   });
 
-  it('filters by year when year pill is clicked', () => {
-    renderPage();
-
-    // Click "2024" year pill
-    const yearButtons = screen.getAllByText('2024');
-    const yearPill = yearButtons.find((el) => el.tagName === 'BUTTON');
-    expect(yearPill).toBeTruthy();
-    fireEvent.click(yearPill!);
-
-    // Should show filter count
-    expect(screen.getByText(/teachingHistory\.filterResultCount/)).toBeInTheDocument();
-  });
-
-  it('filters by org type when org pill is clicked', () => {
+  it('filters by org type when pill is clicked', () => {
     renderPage();
 
     fireEvent.click(screen.getByText('teachingHistory.filterEnterprise'));
     expect(screen.getByText(/teachingHistory\.filterResultCount/)).toBeInTheDocument();
   });
 
-  it('shows no results message when filters match nothing', () => {
+  it('toggles filter off when same pill is clicked again', () => {
     renderPage();
 
-    // Select a year with no university entries
-    const year2026Buttons = screen.getAllByText('2026');
-    const yearPill = year2026Buttons.find((el) => el.tagName === 'BUTTON');
-    fireEvent.click(yearPill!);
-    fireEvent.click(screen.getByText('teachingHistory.filterUniversity'));
+    fireEvent.click(screen.getByText('teachingHistory.filterEnterprise'));
+    expect(screen.getByText(/teachingHistory\.filterResultCount/)).toBeInTheDocument();
 
-    expect(screen.getByText('teachingHistory.noResults')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('teachingHistory.filterEnterprise'));
+    expect(screen.queryByText(/teachingHistory\.filterResultCount/)).not.toBeInTheDocument();
   });
 });

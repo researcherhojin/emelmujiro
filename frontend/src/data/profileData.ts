@@ -1,6 +1,12 @@
 import i18n from '../i18n';
 
-export type OrgType = 'enterprise' | 'government' | 'university' | 'education' | 'research';
+export type OrgType =
+  | 'enterprise'
+  | 'moel'
+  | 'government'
+  | 'university'
+  | 'education'
+  | 'research';
 
 export interface TeachingItem {
   organization: string;
@@ -13,6 +19,7 @@ export interface TeachingItem {
 
 export const ORG_TYPES: OrgType[] = [
   'enterprise',
+  'moel',
   'government',
   'university',
   'education',
@@ -53,13 +60,13 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.4.org'),
     title: i18n.t('teachingHistory.4.title'),
     year: 2025,
-    orgType: 'government',
+    orgType: 'moel',
   },
   {
     organization: i18n.t('teachingHistory.5.org'),
     title: i18n.t('teachingHistory.5.title'),
     year: 2025,
-    orgType: 'government',
+    orgType: 'moel',
   },
   {
     organization: i18n.t('teachingHistory.6.org'),
@@ -77,7 +84,7 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.8.org'),
     title: i18n.t('teachingHistory.8.title'),
     year: 2025,
-    orgType: 'government',
+    orgType: 'moel',
   },
   // 2024
   {
@@ -90,7 +97,7 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.10.org'),
     title: i18n.t('teachingHistory.10.title'),
     year: 2024,
-    orgType: 'government',
+    orgType: 'moel',
   },
   {
     organization: i18n.t('teachingHistory.11.org'),
@@ -102,13 +109,13 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.12.org'),
     title: i18n.t('teachingHistory.12.title'),
     year: 2024,
-    orgType: 'government',
+    orgType: 'moel',
   },
   {
     organization: i18n.t('teachingHistory.13.org'),
     title: i18n.t('teachingHistory.13.title'),
     year: 2024,
-    orgType: 'government',
+    orgType: 'moel',
   },
   {
     organization: i18n.t('teachingHistory.14.org'),
@@ -121,7 +128,7 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.15.org'),
     title: i18n.t('teachingHistory.15.title'),
     year: 2023,
-    orgType: 'government',
+    orgType: 'moel',
   },
   {
     organization: i18n.t('teachingHistory.16.org'),

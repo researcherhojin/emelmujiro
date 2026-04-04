@@ -10,6 +10,7 @@ const YEARS = [2026, 2025, 2024, 2023, 2022] as const;
 
 const ORG_TYPE_LABEL_KEYS: Record<OrgType, string> = {
   enterprise: 'teachingHistory.filterEnterprise',
+  moel: 'teachingHistory.filterMoel',
   government: 'teachingHistory.filterGovernment',
   university: 'teachingHistory.filterUniversity',
   education: 'teachingHistory.filterEducation',
@@ -19,7 +20,6 @@ const ORG_TYPE_LABEL_KEYS: Record<OrgType, string> = {
 const ProfilePage: React.FC = memo(() => {
   const { t, i18n } = useTranslation();
   const { localizedNavigate } = useLocalizedPath();
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedOrgType, setSelectedOrgType] = useState<OrgType | null>(null);
 
   const handleBackClick = useCallback(() => {
@@ -33,12 +33,9 @@ const ProfilePage: React.FC = memo(() => {
   }, [i18n.language]);
 
   const filteredHistory = useMemo(() => {
-    return teachingHistory.filter((item) => {
-      if (selectedYear && item.year !== selectedYear) return false;
-      if (selectedOrgType && item.orgType !== selectedOrgType) return false;
-      return true;
-    });
-  }, [teachingHistory, selectedYear, selectedOrgType]);
+    if (!selectedOrgType) return teachingHistory;
+    return teachingHistory.filter((item) => item.orgType === selectedOrgType);
+  }, [teachingHistory, selectedOrgType]);
 
   const itemsByYear = useMemo(() => {
     const map = new Map<number, typeof filteredHistory>();
@@ -49,7 +46,7 @@ const ProfilePage: React.FC = memo(() => {
     return map;
   }, [filteredHistory]);
 
-  const isFiltered = selectedYear !== null || selectedOrgType !== null;
+  const isFiltered = selectedOrgType !== null;
 
   const pillBase =
     'px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full transition-all whitespace-nowrap';
@@ -103,28 +100,9 @@ const ProfilePage: React.FC = memo(() => {
           </div>
         </section>
 
-        {/* Filters */}
+        {/* Org type filter */}
         <section className="px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8">
-          <div className="max-w-5xl mx-auto space-y-3">
-            {/* Year filter */}
-            <div className="flex flex-wrap gap-2 justify-center">
-              <button
-                onClick={() => setSelectedYear(null)}
-                className={`${pillBase} ${selectedYear === null ? pillActive : pillInactive}`}
-              >
-                {t('teachingHistory.filterAll')}
-              </button>
-              {YEARS.map((year) => (
-                <button
-                  key={year}
-                  onClick={() => setSelectedYear(selectedYear === year ? null : year)}
-                  className={`${pillBase} ${selectedYear === year ? pillActive : pillInactive}`}
-                >
-                  {year}
-                </button>
-              ))}
-            </div>
-            {/* Org type filter */}
+          <div className="max-w-5xl mx-auto">
             <div className="flex flex-wrap gap-2 justify-center">
               <button
                 onClick={() => setSelectedOrgType(null)}
@@ -142,9 +120,8 @@ const ProfilePage: React.FC = memo(() => {
                 </button>
               ))}
             </div>
-            {/* Filter result count */}
             {isFiltered && (
-              <p className="text-center text-sm text-gray-400 dark:text-gray-500">
+              <p className="mt-2 text-center text-sm text-gray-400 dark:text-gray-500">
                 {t('teachingHistory.filterResultCount', { count: filteredHistory.length })}
               </p>
             )}
