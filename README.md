@@ -23,13 +23,13 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![React](https://img.shields.io/badge/React-19.2.4-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6.0.2-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8.0.3-646CFF?logo=vite&logoColor=white)
-![React Router DOM](https://img.shields.io/badge/React_Router_DOM-7.13.2-CA4245?logo=reactrouter&logoColor=white)
+![React Router DOM](https://img.shields.io/badge/React_Router_DOM-7.14.0-CA4245?logo=reactrouter&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.19-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tailwind Typography](https://img.shields.io/badge/Typography-0.5.19-06B6D4?logo=tailwindcss&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.38.0-E91E63?logo=framer&logoColor=white)
-![i18next](https://img.shields.io/badge/i18next-26.0.1-26A69A?logo=i18next&logoColor=white)
-![Axios](https://img.shields.io/badge/Axios-1.13.6-5A29E4?logo=axios&logoColor=white)
-![TipTap](https://img.shields.io/badge/TipTap-3.21.0-1a1a2e)
+![i18next](https://img.shields.io/badge/i18next-26.0.3-26A69A?logo=i18next&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-1.14.0-5A29E4?logo=axios&logoColor=white)
+![TipTap](https://img.shields.io/badge/TipTap-3.20.5/3.21.0-1a1a2e)
 ![DOMPurify](https://img.shields.io/badge/DOMPurify-3.3.3-4B32C3)
 
 **Backend**<br/>
@@ -42,7 +42,7 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 **Testing**<br/>
 ![Vitest](https://img.shields.io/badge/Vitest-4.1.2-6E9F18?logo=vitest&logoColor=white)
 ![Testing Library](https://img.shields.io/badge/Testing_Library-16.3.2-E33332?logo=testinglibrary&logoColor=white)
-![Playwright](https://img.shields.io/badge/Playwright-1.58.2-2EAD33?logo=playwright&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-1.59.1-2EAD33?logo=playwright&logoColor=white)
 ![MSW](https://img.shields.io/badge/MSW-2.12.14-FF6A33?logo=mockserviceworker&logoColor=white)
 ![Lighthouse](https://img.shields.io/badge/Lighthouse_CI-Desktop-F44B21?logo=lighthouse&logoColor=white)
 
@@ -68,8 +68,8 @@ make install
 # Backend first-time setup
 cd backend && uv run python manage.py migrate && cd ..
 
-# Start both servers
-npm run dev                # Frontend (localhost:5173) + Backend (localhost:8000)
+# Start both servers (Frontend :5173 + Backend :8000)
+npm run dev
 ```
 
 ### Useful Commands
@@ -88,7 +88,7 @@ npm run test:e2e           # Headless
 npm run test:e2e:ui        # Interactive UI
 npm run test:e2e:debug     # Debug mode
 
-# Docker dev with optional services
+# Docker dev with optional PostgreSQL
 docker compose -f docker-compose.dev.yml --profile postgres up
 ```
 
@@ -106,7 +106,7 @@ graph LR
 
     subgraph MacMini["Mac Mini (Docker · 127.0.0.1 only)"]
         Nginx["nginx:alpine\nStatic + Rate Limit"]
-        Gunicorn["Gunicorn 3w\nSecurity MW"]
+        Gunicorn["Gunicorn 3w 2t\nSecurity MW"]
         DRF["Django 6 + DRF"]
         DB[(SQLite)]
     end
@@ -132,18 +132,18 @@ graph LR
 
 ## Key Features
 
-- **Bilingual (i18n)** — URL-based language routing (`/contact` for Korean, `/en/contact` for English)
-- **Teaching History** — 38 entries across 5 years, year-grouped with alternating backgrounds, bilingual
-- **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments. `/blog` → `/insights` nginx 301 redirect
-- **Service Modals** — Clickable service cards open detail modals with full service descriptions
-- **Auth** — httpOnly cookie JWT with automatic token refresh
-- **Testimonials** — Enterprise + government training reviews, 5x copy infinite scroll carousel
+- **Bilingual (i18n)** — URL-based routing: Korean default (`/contact`), English `/en/contact`
+- **Teaching History** — 38 entries across 5 years (2022-2026), year-grouped with alternating backgrounds
+- **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments
+- **Service Modals** — Clickable service cards with detail modals
+- **Auth** — httpOnly cookie JWT with shared-promise refresh queue (prevents concurrent 401 cascade)
+- **Testimonials** — Enterprise + K-Digital training reviews, infinite scroll carousel (2 rows, 8 items each)
 - **Monitoring** — Sentry error tracking + Google Analytics
-- **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data
-- **Performance** — Optimized chunk splitting (7 vendor chunks), Lighthouse CI assertions, < 10MB bundle budget
-- **CI/CD** — GitHub Actions with parallel jobs: lint, tests, security scan (Trivy), bundle size, Lighthouse CI, E2E (Playwright), auto-deploy via webhook
-- **Security** — DOMPurify HTML sanitization, CI script injection prevention, uuid4 file uploads, rate limiting, IP blocking
-- **Testing** — Vitest (1172 unit tests) + Playwright E2E + Django unittest, 100% coverage target
+- **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data, SSG prerendering
+- **Performance** — 7 vendor chunks by update frequency, Lighthouse CI assertions, < 10MB bundle budget
+- **CI/CD** — GitHub Actions: lint, type-check, tests (1172 frontend + 366 backend), Trivy security scan, bundle size, Lighthouse, Playwright E2E (5 profiles), Codecov, auto-deploy via webhook
+- **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
+- **Testing** — 100% coverage target: Vitest (1172 tests) + Django unittest (366 tests) + Playwright E2E
 
 ## License
 
