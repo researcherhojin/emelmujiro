@@ -90,25 +90,30 @@ const BlogInteractions: React.FC<BlogInteractionsProps> = ({ post }) => {
   const shareTitle = post.title;
   const shareText = post.description;
 
+  // window.open() can be blocked in in-app WebViews — fall back to location.href
+  const openShareUrl = (url: string) => {
+    const popup = window.open(url, '_blank', 'noopener,noreferrer,width=500,height=600');
+    if (!popup) location.href = url;
+  };
+
   const shareToKakao = () => {
-    // Note: Kakao SDK would need to be initialized in index.html
-    const kakaoUrl = `https://story.kakao.com/share?url=${encodeURIComponent(shareUrl)}`;
-    window.open(kakaoUrl, '_blank', 'noopener,noreferrer,width=500,height=600');
+    openShareUrl(`https://story.kakao.com/share?url=${encodeURIComponent(shareUrl)}`);
   };
 
   const shareToFacebook = () => {
-    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-    window.open(fbUrl, '_blank', 'noopener,noreferrer,width=500,height=600');
+    openShareUrl(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`);
   };
 
   const shareToTwitter = () => {
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`;
-    window.open(twitterUrl, '_blank', 'noopener,noreferrer,width=500,height=600');
+    openShareUrl(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`
+    );
   };
 
   const shareToLinkedIn = () => {
-    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-    window.open(linkedInUrl, '_blank', 'noopener,noreferrer,width=500,height=600');
+    openShareUrl(
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`
+    );
   };
 
   const copyLink = async () => {

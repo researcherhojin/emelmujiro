@@ -12,7 +12,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { t } = useTranslation();
-  // Show banner only on iOS KakaoTalk — Android renders fine via legacy plugin
+  // Show banner only on iOS KakaoTalk — Android WebView is Chrome-based and renders fine
   const [showKakaoBanner, setShowKakaoBanner] = useState(
     () => !!window.__isKakaoInApp && !window.__isKakaoAndroid
   );
