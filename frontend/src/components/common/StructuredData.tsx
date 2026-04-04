@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { CONTACT_EMAIL, SITE_URL } from '../../utils/constants';
 
 type SchemaType =
@@ -36,8 +37,10 @@ interface StructuredDataProps {
 const StructuredData: React.FC<StructuredDataProps> = memo(
   ({ type = 'Organization', article, service }) => {
     const { t, i18n } = useTranslation();
+    const location = useLocation();
     const siteName = t('common.companyName');
     const inLanguage = i18n.language === 'en' ? 'en-US' : 'ko-KR';
+    const currentUrl = `${SITE_URL}${location.pathname.replace(/\/$/, '') || '/'}`;
 
     const organizationSchema = {
       '@context': 'https://schema.org',
@@ -95,7 +98,6 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
       },
     };
 
-    // Breadcrumb only includes pages that are live (not under construction)
     const breadcrumbSchema = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -111,6 +113,12 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
           position: 2,
           name: t('common.representativeProfile'),
           item: `${SITE_URL}/profile`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: t('privacy.title'),
+          item: `${SITE_URL}/privacy`,
         },
       ],
     };
@@ -243,7 +251,7 @@ const StructuredData: React.FC<StructuredDataProps> = memo(
           dateModified: article.modifiedTime || article.publishedTime,
           mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': SITE_URL,
+            '@id': currentUrl,
           },
           articleSection: article.category,
           keywords: article.tags?.join(', '),

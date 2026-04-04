@@ -23,6 +23,7 @@ const NotFound: React.FC = memo(() => {
         title={t('notFound.title')}
         description={t('notFound.description')}
         type="website"
+        robots="noindex, nofollow"
       />
       <StructuredData type="Website" />
 
