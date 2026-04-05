@@ -82,7 +82,7 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **ServicesSection**: Service cards are clickable — clicking opens `ServiceModal` (same modal used by Footer). Modal state is local to ServicesSection (not UIContext). Mobile: left/right nav arrows hidden (`hidden sm:block`), navigation via dot indicators only. English detail text must fit one line on mobile (~25 chars max).
 
-**Teaching History page** (`/profile`): Replaced 4-tab profile (career/education/projects/timeline). Shows 38 teaching entries grouped by year (2026→2022) with alternating section backgrounds. Data uses end-client names as organization (삼성전자, not 엘리스). i18n keys: `teachingHistory.{0-37}.{org,title}`. `useMemo` depends on `i18n.language` for language switching. Items support `visibleAfter` date field for time-gated visibility. **Filters**: OrgType pill buttons — 4 categories: `enterprise`(13), `moel`(7, 고용노동부 K-Digital), `public`(10, 정부·공공+연구), `academic`(8, 대학+교육기관). `OrgType` field on `TeachingItem` in `profileData.ts`. Filter labels: `teachingHistory.filter{All,Enterprise,Moel,Public,Academic}`.
+**Teaching History page** (`/profile`): Replaced 4-tab profile (career/education/projects/timeline). Shows 35 teaching entries grouped by year (2026→2022) with alternating section backgrounds. Data uses end-client names as organization (삼성전자, not 엘리스). i18n keys: `teachingHistory.{0-37}.{org,title}`. `useMemo` depends on `i18n.language` for language switching. Items support `visibleAfter` date field for time-gated visibility; comment out entries in `profileData.ts` to temporarily hide them. **Filters**: OrgType pill buttons — 4 categories: `enterprise`(13), `moel`(7, 고용노동부 K-Digital), `public`(7, 정부·공공+연구), `academic`(8, 대학+교육기관). `OrgType` field on `TeachingItem` in `profileData.ts`. Filter labels: `teachingHistory.filter{All,Enterprise,Moel,Public,Academic}`.
 
 **Nav order**: 강의이력 → 인사이트 (teaching history first, blog second). Footer menu label: "강의이력" (not "대표 프로필").
 
@@ -119,6 +119,10 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 **Tailwind 3.x**: PostCSS uses `tailwindcss: {}` (NOT `@tailwindcss/postcss`). Dark mode is `class`-based (not media query). Never use dynamic class interpolation (`bg-${color}-600`).
 
 **Production keys**: `SECRET_KEY` and `RECAPTCHA_PRIVATE_KEY` raise `ImproperlyConfigured` if missing in production (DEBUG bypasses reCAPTCHA).
+
+**Bundle size**: Build output must be < 10MB (enforced in `pr-checks.yml`). When adding large dependencies, check impact with `npm run analyze:bundle`.
+
+**CI optimization**: `pr-checks.yml` uses `tj-actions/changed-files` to detect affected directories — frontend tests only run if `frontend/` changed, backend tests only if `backend/` changed. Trivy (`aquasecurity/trivy-action`) runs filesystem security scanning for dependency vulnerabilities on every PR.
 
 **Backend constants**: `api/constants.py` centralizes `ONE_HOUR`, `ONE_DAY`, `SPAM_KEYWORDS`, `SPAM_THRESHOLD`, `is_spam()`, and cache key constants (`CACHE_BLOG_CATEGORIES`, `CACHE_BLOG_POST_LIST`, `CACHE_ADMIN_STATS`). Do NOT re-define time constants or cache keys in views or middleware — import from here. `django-extensions` and `ipython` are dev-only dependencies (`uv sync --extra dev`).
 

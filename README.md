@@ -133,7 +133,7 @@ graph LR
 ## Key Features
 
 - **Bilingual (i18n)** — URL-based routing: Korean default (`/contact`), English `/en/contact`
-- **Teaching History** — 38 entries across 5 years (2022–2026), org type filter (4 categories), alternating section backgrounds
+- **Teaching History** — 35 entries across 5 years (2022–2026), org type filter (4 categories), alternating section backgrounds
 - **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments
 - **Service Modals** — Clickable service cards with detail modals
 - **Auth** — httpOnly cookie JWT with shared-promise refresh queue (prevents concurrent 401 cascade)

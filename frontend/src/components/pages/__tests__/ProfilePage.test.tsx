@@ -72,15 +72,14 @@ describe('ProfilePage — Teaching History', () => {
   it('renders teaching history items', () => {
     renderPage();
 
-    expect(screen.getByText('teachingHistory.0.org')).toBeInTheDocument();
-    expect(screen.getByText('teachingHistory.0.title')).toBeInTheDocument();
+    expect(screen.getByText('teachingHistory.1.org')).toBeInTheDocument();
+    expect(screen.getByText('teachingHistory.1.title')).toBeInTheDocument();
   });
 
-  it('renders upcoming badges for 2026 items', () => {
+  it('does not render upcoming badges when no upcoming items exist', () => {
     renderPage();
 
-    const badges = screen.getAllByText('teachingHistory.upcoming');
-    expect(badges.length).toBe(2);
+    expect(screen.queryByText('teachingHistory.upcoming')).not.toBeInTheDocument();
   });
 
   it('navigates home on back button click', () => {
