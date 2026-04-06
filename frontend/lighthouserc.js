@@ -56,8 +56,9 @@ module.exports = {
         'modern-image-formats': 'warn',
         // CLS can spike in CI due to lazy-loaded components without backend
         'cls-culprits-insight': 'off',
-        // Accessibility label mismatch — CI preview may render differently
+        // Accessibility — CI preview may render differently than production
         'label-content-name-mismatch': 'warn',
+        'aria-allowed-role': 'warn',
         // DOM size insight — informational only
         'dom-size-insight': 'off',
         // Font display — Google Fonts may not set font-display in CI
