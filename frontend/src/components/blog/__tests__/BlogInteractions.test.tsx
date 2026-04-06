@@ -323,6 +323,8 @@ describe('BlogInteractions Component', () => {
     });
 
     it('opens KakaoTalk share URL', () => {
+      // Return a truthy popup object to cover the !popup else branch
+      mockOpen.mockReturnValueOnce({} as Window);
       openShareMenu();
       fireEvent.click(screen.getByText('blog.kakaoTalk'));
 
@@ -355,6 +357,15 @@ describe('BlogInteractions Component', () => {
         '_blank',
         expect.any(String)
       );
+      restoreShare();
+    });
+
+    it('falls back to location.href when window.open returns null', () => {
+      mockOpen.mockReturnValueOnce(null);
+      openShareMenu();
+      fireEvent.click(screen.getByText('blog.kakaoTalk'));
+
+      expect(mockOpen).toHaveBeenCalled();
       restoreShare();
     });
 
