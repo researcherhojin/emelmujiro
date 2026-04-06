@@ -131,6 +131,16 @@ describe('ProfilePage — Teaching History', () => {
     expect(screen.getByText(/teachingHistory\.filterResultCount/)).toBeInTheDocument();
   });
 
+  it('resets to all when All pill is clicked while filtered', () => {
+    renderPage();
+
+    fireEvent.click(screen.getByText('teachingHistory.filterEnterprise'));
+    expect(screen.getByText(/teachingHistory\.filterResultCount/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('teachingHistory.filterAll'));
+    expect(screen.queryByText(/teachingHistory\.filterResultCount/)).not.toBeInTheDocument();
+  });
+
   it('toggles filter off when same pill is clicked again', () => {
     renderPage();
 
