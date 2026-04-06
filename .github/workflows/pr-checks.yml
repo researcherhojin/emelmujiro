@@ -110,6 +110,9 @@ jobs:
           LOCALE="frontend/src/i18n/locales/ko.json"
           SRC="frontend/src"
           UNUSED=0
+          # Detect sections using dynamic template literal keys (e.g. `privacy.${section}.title`)
+          DYNAMIC_SECTIONS=$(grep -roh --include="*.ts" --include="*.tsx" '\`[a-zA-Z]*\.\$' "$SRC" 2>/dev/null \
+            | sed 's/`//;s/\.\$//' | sort -u | tr '\n' '|')
           KEYS=$(node -e "
             const d = require('./$LOCALE');
             function leaves(o, p) { let r = [];
@@ -119,6 +122,11 @@ jobs:
             leaves(d, '').forEach(k => console.log(k));
           ")
           for key in $KEYS; do
+            # Skip keys from dynamically-accessed sections
+            SECTION=$(echo "$key" | cut -d. -f1)
+            if echo "$DYNAMIC_SECTIONS" | grep -q "$SECTION"; then
+              continue
+            fi
             REFS=$(grep -r --include="*.ts" --include="*.tsx" -l "$key" "$SRC" 2>/dev/null \
               | grep -v "locales/" | grep -v "__tests__/" | grep -v "test-utils/" | wc -l | tr -d ' ')
             if [ "$REFS" -eq 0 ]; then
