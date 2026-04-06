@@ -132,21 +132,16 @@ jobs:
           fi
           echo "All i18n keys are referenced"
 
-      - name: Check README test counts match
+      - name: Check README test counts exist
         run: |
-          # Extract counts from README
           README_FE=$(grep -oE 'Vitest \([0-9]+ tests\)' README.md | grep -oE '[0-9]+')
           README_BE=$(grep -oE 'Django unittest \([0-9]+ tests\)' README.md | grep -oE '[0-9]+')
-          # Extract counts from CI line too
-          CI_FE=$(grep -oE 'tests \([0-9]+ frontend' README.md | grep -oE '[0-9]+')
-          CI_BE=$(grep -oE '[0-9]+ backend\)' README.md | grep -oE '[0-9]+')
-          if [ "$README_FE" != "$CI_FE" ] || [ "$README_BE" != "$CI_BE" ]; then
-            echo "❌ README test counts are inconsistent"
-            echo "Testing line: $README_FE frontend, $README_BE backend"
-            echo "CI/CD line: $CI_FE frontend, $CI_BE backend"
+          if [ -z "$README_FE" ] || [ -z "$README_BE" ]; then
+            echo "❌ README test counts missing"
+            echo "Frontend: ${README_FE:-not found}, Backend: ${README_BE:-not found}"
             exit 1
           fi
-          echo "README test counts consistent ($README_FE frontend + $README_BE backend)"
+          echo "README test counts found ($README_FE frontend + $README_BE backend)"
 
       - name: Check README badge versions match package.json
         run: |

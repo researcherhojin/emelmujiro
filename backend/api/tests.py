@@ -19,7 +19,7 @@ from .models import (
     NewsletterSubscription,
 )
 from .utils import get_client_ip, _is_valid_ip
-from .views import send_user_notification, ContactView
+from .views import ContactView
 from django.core.mail import BadHeaderError
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -1661,7 +1661,7 @@ class AdminAnalyticsTestCase(APITestCase):
 
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})
 class NotificationPreferenceTestCase(APITestCase):
-    """Tests for Notification Preferences and enhanced send_user_notification"""
+    """Tests for Notification Preferences API"""
 
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass12345")
@@ -1701,71 +1701,6 @@ class NotificationPreferenceTestCase(APITestCase):
         response = self.client.get("/api/notifications/preferences/")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # --- send_user_notification with preferences ---
-
-    def test_notification_respects_disabled_type(self):
-        """Disabled type prevents notification creation"""
-        NotificationPreference.objects.create(user=self.user, blog_enabled=False)
-        result = send_user_notification(self.user, "Blog Update", "New post", notification_type="blog")
-        self.assertIsNone(result)
-        self.assertEqual(Notification.objects.filter(user=self.user).count(), 0)
-
-    def test_notification_created_when_type_enabled(self):
-        """Enabled type creates notification normally"""
-        NotificationPreference.objects.create(user=self.user, blog_enabled=True)
-        result = send_user_notification(self.user, "Blog Update", "New post", notification_type="blog")
-        self.assertIsNotNone(result)
-        self.assertEqual(Notification.objects.filter(user=self.user).count(), 1)
-
-    def test_notification_created_without_preferences(self):
-        """No preferences model = all enabled (default)"""
-        result = send_user_notification(self.user, "System Alert", "Test", notification_type="system")
-        self.assertIsNotNone(result)
-        self.assertEqual(Notification.objects.filter(user=self.user).count(), 1)
-
-    @override_settings(DEFAULT_FROM_EMAIL="test@emelmujiro.com")
-    def test_email_sent_when_enabled(self):
-        """Email is sent when email_enabled is True"""
-        from unittest.mock import patch
-
-        NotificationPreference.objects.create(user=self.user, email_enabled=True)
-        with patch("api.views.send_mail") as mock_send:
-            send_user_notification(self.user, "Test", "Message", notification_type="system")
-            mock_send.assert_called_once()
-            call_kwargs = mock_send.call_args
-            self.assertIn("test@example.com", call_kwargs[1]["recipient_list"])
-
-    def test_email_not_sent_when_disabled(self):
-        """Email is not sent when email_enabled is False"""
-        from unittest.mock import patch
-
-        NotificationPreference.objects.create(user=self.user, email_enabled=False)
-        with patch("api.views.send_mail") as mock_send:
-            send_user_notification(self.user, "Test", "Message", notification_type="system")
-            mock_send.assert_not_called()
-
-    def test_notification_type_stored_correctly(self):
-        """notification_type is stored in DB correctly"""
-        result = send_user_notification(self.user, "Admin Alert", "Test", notification_type="admin")
-        self.assertEqual(result.notification_type, "admin")
-
-    def test_is_type_enabled_method(self):
-        """NotificationPreference.is_type_enabled works correctly"""
-        pref = NotificationPreference.objects.create(user=self.user, system_enabled=True, blog_enabled=False)
-        self.assertTrue(pref.is_type_enabled("system"))
-        self.assertFalse(pref.is_type_enabled("blog"))
-        self.assertTrue(pref.is_type_enabled("unknown_type"))
-
-    def test_email_not_sent_when_user_has_no_email(self):
-        """Email is not sent when user.email is empty even with email_enabled"""
-        from unittest.mock import patch
-
-        self.user.email = ""
-        self.user.save()
-        NotificationPreference.objects.create(user=self.user, email_enabled=True)
-        with patch("api.views.send_mail") as mock_send:
-            send_user_notification(self.user, "Test", "Message", notification_type="system")
-            mock_send.assert_not_called()
 
 
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})
@@ -2090,47 +2025,6 @@ class NotificationAPITestCase(APITestCase):
         url = reverse("notification-unread-count")
         response = self.client.get(url)
         self.assertEqual(response.data["count"], 0)
-
-
-class SendUserNotificationTestCase(TestCase):
-    """Tests for send_user_notification utility"""
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = User.objects.create_user(username="notiuser", password="testpass123")
-
-    def test_send_notification_creates_record(self):
-        """Test that send_user_notification creates a Notification"""
-        notification = send_user_notification(
-            user=self.user,
-            title="New Post",
-            message="A new blog post was published",
-            level="info",
-            notification_type="blog",
-        )
-        self.assertIsNotNone(notification.id)
-        self.assertEqual(notification.user, self.user)
-        self.assertEqual(notification.title, "New Post")
-        self.assertEqual(notification.level, "info")
-
-    def test_send_notification_by_user_id(self):
-        """Test sending notification by user ID"""
-        notification = send_user_notification(
-            user=self.user.id,
-            title="By ID",
-            message="Sent by user ID",
-        )
-        self.assertEqual(notification.user, self.user)
-
-    def test_send_notification_with_url(self):
-        """Test sending notification with URL"""
-        notification = send_user_notification(
-            user=self.user,
-            title="Click here",
-            message="Check this out",
-            url="https://emelmujiro.com/insights/1",
-        )
-        self.assertEqual(notification.url, "https://emelmujiro.com/insights/1")
 
 
 # ============================================================
@@ -2850,23 +2744,6 @@ class NotificationPreferenceInvalidUpdateTestCase(APITestCase):
         self.assertIn(response.status_code, [status.HTTP_200_OK, status.HTTP_400_BAD_REQUEST])
 
 
-class SendUserNotificationEmailErrorTestCase(TestCase):
-    """Tests for send_user_notification email error handling (lines 728-729)"""
-
-    def test_email_send_failure_does_not_raise(self):
-        """Email send failure is logged but does not prevent notification creation"""
-        from unittest.mock import patch
-
-        user = User.objects.create_user(username="emailerr", email="err@example.com", password="pass12345")
-        NotificationPreference.objects.create(user=user, email_enabled=True)
-
-        with patch("api.views.send_mail", side_effect=Exception("SMTP error")):
-            result = send_user_notification(user, "Test", "Message", notification_type="system")
-
-        self.assertIsNotNone(result)
-        self.assertEqual(Notification.objects.filter(user=user).count(), 1)
-
-
 # =============================================================================
 # Django Admin Tests
 # =============================================================================
@@ -3561,17 +3438,6 @@ class ModelAdditionalTestCase(TestCase):
         pref = NotificationPreference.objects.create(user=user)
         result = str(pref)
         self.assertIn("prefuser", result)
-
-    def test_notification_preference_is_type_enabled(self):
-        """is_type_enabled returns correct values per type"""
-        user = User.objects.create_user(username="typeuser", password="pass12345")
-        pref = NotificationPreference.objects.create(user=user, blog_enabled=False)
-        self.assertTrue(pref.is_type_enabled("system"))
-        self.assertFalse(pref.is_type_enabled("blog"))
-        self.assertTrue(pref.is_type_enabled("contact"))
-        self.assertTrue(pref.is_type_enabled("admin"))
-        # Unknown type defaults to True
-        self.assertTrue(pref.is_type_enabled("unknown_type"))
 
     def test_notification_read_str(self):
         """Notification __str__ shows read status"""

@@ -466,6 +466,20 @@ describe('UIContext', () => {
     expect(removeListenerMock).toHaveBeenCalled();
   });
 
+  test('falls back to light theme when localStorage throws', () => {
+    mockLocalStorage.getItem.mockImplementation(() => {
+      throw new Error('SecurityError: localStorage is not available');
+    });
+
+    render(
+      <UIProvider>
+        <TestComponent />
+      </UIProvider>
+    );
+
+    expect(screen.getByTestId('theme')).toHaveTextContent('light');
+  });
+
   test('returns early when matchMedia is not available', () => {
     mockLocalStorage.getItem.mockReturnValue(null);
 

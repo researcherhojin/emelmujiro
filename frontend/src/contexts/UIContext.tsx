@@ -35,10 +35,14 @@ interface UIProviderProps {
 
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('theme');
-    // Validate the saved theme
-    if (savedTheme === 'light' || savedTheme === 'dark') {
-      return savedTheme;
+    try {
+      const savedTheme = localStorage.getItem('theme');
+      // Validate the saved theme
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        return savedTheme;
+      }
+    } catch {
+      // localStorage unavailable (private browsing, storage quota exceeded)
     }
     // If no saved preference, check system preference
     if (typeof window !== 'undefined' && window.matchMedia) {

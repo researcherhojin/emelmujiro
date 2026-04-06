@@ -1,5 +1,6 @@
 import ipaddress
 
+from django.db import transaction
 from django.db.models import F
 from django.http import HttpRequest
 
@@ -57,9 +58,10 @@ def toggle_like(obj, like_model, like_field, ip_address):
     Returns:
         dict with 'liked' (bool) and 'likes' (int)
     """
-    like, created = like_model.objects.get_or_create(**{like_field: obj}, ip_address=ip_address)
-    if not created:
-        like.delete()
-    type(obj).objects.filter(id=obj.id).update(likes=F("likes") + (1 if created else -1))
+    with transaction.atomic():
+        like, created = like_model.objects.get_or_create(**{like_field: obj}, ip_address=ip_address)
+        if not created:
+            like.delete()
+        type(obj).objects.filter(id=obj.id).update(likes=F("likes") + (1 if created else -1))
     obj.refresh_from_db()
     return {"liked": created, "likes": obj.likes}

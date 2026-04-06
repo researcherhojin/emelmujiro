@@ -291,16 +291,6 @@ class NotificationPreference(models.Model):
     def __str__(self):
         return f"{self.user.username} notification preferences"
 
-    def is_type_enabled(self, notification_type: str) -> bool:
-        """Check if a notification type is enabled"""
-        type_map = {
-            "system": self.system_enabled,
-            "blog": self.blog_enabled,
-            "contact": self.contact_enabled,
-            "admin": self.admin_enabled,
-        }
-        return type_map.get(notification_type, True)
-
 
 class NewsletterSubscription(models.Model):
     """Newsletter subscription"""

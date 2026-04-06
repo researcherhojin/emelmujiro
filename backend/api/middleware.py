@@ -79,14 +79,15 @@ class RequestSecurityMiddleware:
     def is_rate_limited(self, ip_address):
         """Rate limiting check"""
         rate_limit_key = f"rate_limit_{ip_address}"
-        current_requests = cache.get(rate_limit_key, 0)
 
-        if current_requests >= RATE_LIMIT_PER_HOUR:
-            return True
+        try:
+            current_requests = cache.incr(rate_limit_key)
+        except ValueError:
+            # Key doesn't exist yet — initialize it
+            cache.set(rate_limit_key, 1, ONE_HOUR)
+            return False
 
-        # Increment counter
-        cache.set(rate_limit_key, current_requests + 1, ONE_HOUR)
-        return False
+        return current_requests > RATE_LIMIT_PER_HOUR
 
     def contains_malicious_content(self, request):
         """Check for malicious content in request"""
