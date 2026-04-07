@@ -13,6 +13,8 @@ Full-stack monorepo (React 19 + Django 6) deployed on Mac Mini via Docker + Clou
 
 > See `.claude/rules/strategy.md` for the rationale behind key architecture decisions and documented LLM failure patterns from this repo's history (incomplete refactors, hallucinated versions, confirmation bias loops, etc).
 
+> **Sync with README**: The `Constraints`, `Code Conventions`, `Testing`, `Security`, and `Gotchas` sections in this file are _mirrored verbatim_ in [README.md](README.md)'s `Development` section. The user works across two macOS machines and chose to keep both docs in lockstep so any machine has a single complete reference. **When you change one of these 5 sections, update the other in the same commit** — otherwise the two files drift and lose the single-source-of-truth property.
+
 ## Commands
 
 All `npm run` frontend commands run from `frontend/`. Root-level `npm run dev` runs both servers.
