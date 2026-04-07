@@ -42,8 +42,27 @@ jobs:
 
       - name: Run frontend tests with coverage
         working-directory: ./frontend
-        run: CI=true npx vitest run --bail=1 --coverage
+        run: CI=true npx vitest run --bail=1 --coverage 2>&1 | tee /tmp/vitest-output.txt
         timeout-minutes: 10
+
+      - name: Verify README Vitest count matches reality
+        run: |
+          # Source of truth: actual Vitest stdout (handles it.each expansion correctly).
+          # Pattern matches vitest summary line: "Tests  1189 passed (1189)"
+          ACTUAL=$(grep -oE 'Tests +[0-9]+ passed' /tmp/vitest-output.txt | tail -1 | grep -oE '[0-9]+')
+          README=$(grep -oE 'Vitest \([0-9]+ tests\)' README.md | grep -oE '[0-9]+')
+          if [ -z "$ACTUAL" ]; then
+            echo "❌ Could not extract Vitest count from test output"
+            exit 1
+          fi
+          if [ "$ACTUAL" != "$README" ]; then
+            echo "❌ README Vitest count drift: README says $README, vitest reality is $ACTUAL"
+            echo ""
+            echo "Run locally and commit the result:"
+            echo "  ./scripts/update-test-counts.sh"
+            exit 1
+          fi
+          echo "✓ README Vitest count matches reality ($ACTUAL)"
 
       - name: Fix coverage paths for Codecov
         if: always()
@@ -127,11 +146,29 @@ jobs:
           SECRET_KEY: test-secret-key-that-is-at-least-fifty-bytes-long-for-hmac-sha256
           DEBUG: "True"
         run: |
-          uv run coverage run --source=api manage.py test
+          uv run coverage run --source=api manage.py test 2>&1 | tee /tmp/django-output.txt
           uv run coverage xml -o coverage.xml
           # Fix paths in coverage.xml for Codecov: api/file.py → backend/api/file.py
           sed -i 's|filename="api/|filename="backend/api/|g' coverage.xml
           sed -i 's|<source>.*</source>|<source>.</source>|g' coverage.xml
+
+      - name: Verify README Django count matches reality
+        run: |
+          # Source of truth: Django test runner stdout — "Ran 353 tests in 0.384s"
+          ACTUAL=$(grep -oE 'Ran [0-9]+ tests' /tmp/django-output.txt | tail -1 | grep -oE '[0-9]+')
+          README=$(grep -oE 'Django unittest \([0-9]+ tests\)' README.md | grep -oE '[0-9]+')
+          if [ -z "$ACTUAL" ]; then
+            echo "❌ Could not extract Django test count from test output"
+            exit 1
+          fi
+          if [ "$ACTUAL" != "$README" ]; then
+            echo "❌ README Django count drift: README says $README, Django reality is $ACTUAL"
+            echo ""
+            echo "Run locally and commit the result:"
+            echo "  ./scripts/update-test-counts.sh"
+            exit 1
+          fi
+          echo "✓ README Django count matches reality ($ACTUAL)"
 
       - name: Pre-trust Codecov GPG key
         if: always()

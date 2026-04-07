@@ -1702,7 +1702,6 @@ class NotificationPreferenceTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})
 class CookieJWTAuthenticationTestCase(APITestCase):
     """Tests for CookieJWTAuthentication (httpOnly cookie auth)"""
