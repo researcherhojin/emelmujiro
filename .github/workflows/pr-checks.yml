@@ -140,6 +140,59 @@ jobs:
           fi
           echo "All i18n keys are referenced"
 
+      - name: Verify CLAUDE.md ↔ README.md mirror sync
+        # The 5 sections (Constraints, Code Conventions, Testing, Security,
+        # Gotchas) must be byte-identical between CLAUDE.md (## level) and
+        # README.md's Development subsections (### level). When one is
+        # edited, the other MUST be updated in the same commit.
+        run: |
+          python3 << 'PY'
+          import re, sys
+          def extract(file, header_pattern):
+              with open(file) as f: text = f.read()
+              m = re.search(header_pattern, text, re.MULTILINE)
+              if not m: return None
+              rest = text[m.end():]
+              nh = re.search(r'^#{1,6} ', rest, re.MULTILINE)
+              return (rest[:nh.start()] if nh else rest).strip()
+
+          sections = [
+              ('Constraints',       r'^## Constraints$',       r'^### Constraints$'),
+              ('Code Conventions',  r'^## Code Conventions$',  r'^### Code Conventions$'),
+              ('Testing',           r'^## Testing$',           r'^### Testing$'),
+              ('Security',          r'^## Security$',          r'^### Security$'),
+              ('Gotchas',           r'^## Gotchas$',           r'^### Gotchas$'),
+          ]
+          drift = []
+          for name, c_h, r_h in sections:
+              c = extract('CLAUDE.md', c_h)
+              r = extract('README.md', r_h)
+              if c is None:
+                  drift.append(f'{name}: missing in CLAUDE.md ({c_h!r})')
+                  continue
+              if r is None:
+                  drift.append(f'{name}: missing in README.md ({r_h!r})')
+                  continue
+              if c != r:
+                  c_lines, r_lines = c.splitlines(), r.splitlines()
+                  for i in range(max(len(c_lines), len(r_lines))):
+                      cl = c_lines[i] if i < len(c_lines) else '<EOF>'
+                      rl = r_lines[i] if i < len(r_lines) else '<EOF>'
+                      if cl != rl:
+                          drift.append(f'{name}: differs at line {i+1}')
+                          drift.append(f'  CLAUDE: {cl[:120]}')
+                          drift.append(f'  README: {rl[:120]}')
+                          break
+          if drift:
+              print('❌ CLAUDE.md ↔ README.md mirror drift:')
+              for d in drift: print('  ' + d)
+              print()
+              print('Both files must keep the 5 sections byte-identical.')
+              print('Edit both in the same commit when changing any of them.')
+              sys.exit(1)
+          print('✓ CLAUDE.md ↔ README.md mirror is in sync (5/5 sections identical)')
+          PY
+
       - name: Check README test counts exist
         # Value-level verification (count == reality) lives in main-ci-cd.yml's
         # frontend-test/backend-test jobs, which parse the *real* Vitest/Django
