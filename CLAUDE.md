@@ -11,6 +11,8 @@ Full-stack monorepo (React 19 + Django 6) deployed on Mac Mini via Docker + Clou
 - **Dev proxy**: Vite proxies `/api` → `http://127.0.0.1:8000` (no CORS issues in dev)
 - **Node ≥ 24**, **Python 3.12** required. Husky pre-commit runs lint-staged automatically
 
+> See `.claude/rules/strategy.md` for the rationale behind key architecture decisions and documented LLM failure patterns from this repo's history (incomplete refactors, hallucinated versions, confirmation bias loops, etc).
+
 ## Commands
 
 All `npm run` frontend commands run from `frontend/`. Root-level `npm run dev` runs both servers.
@@ -52,9 +54,12 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 # make clean            # Remove build artifacts + __pycache__
 # make cleanup-visits DAYS=90  # Delete old SiteVisit records
 # make setup-cron       # Install daily 3 AM SiteVisit cleanup cron
+# make update-test-counts     # Run Vitest/Django and rewrite README test counts (use when count drift fails CI)
 ```
 
 ## Architecture
+
+System shape: providers, data flow, routing, and module boundaries.
 
 **i18n routing**: Korean default (no prefix: `/profile`), English `/en/profile`. Internal links must use `useLocalizedPath` hook — never raw `navigate()`/`<Link>`. Non-React data files must use getter functions (not module-level constants) so `i18n.t()` resolves at call time.
 
@@ -62,19 +67,23 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Auth**: JWT via httpOnly cookies (not localStorage). `auth_hint` flag in localStorage prevents 401 spam — if unset, `getUser()` is skipped on mount.
 
-**Contact**: Google Form iframe, not backend API. Backend `/api/contact/` is preserved for future switch.
-
-**Blog**: Dual fields `content` (plain text/search) + `content_html` (TipTap HTML). Category API cached 1 hour (key: `"blog_categories"`), invalidated on CRUD/toggle-publish. DRF router `basename="blog"` in `api/urls.py` (NOT `"blog-posts"`). All BlogPost fields use **snake_case only** — `description` (NOT `excerpt`), `date` (NOT `publishedAt`), `is_published` (NOT `published`), `view_count` (NOT `views`), `image_url` (NOT `imageUrl`). Backend serializer has no camelCase aliases.
-
 **State management**: React Context only — `UIContext` (theme/sidebar), `AuthContext` (JWT user), `BlogContext` (posts/categories), `NotificationContext` (alerts). No Redux or external state libraries.
 
 **API layer**: `services/api.ts` (Axios) with interceptors for JWT refresh. Mock API uses `mockResponse<T>(data, status?, statusText?)` helper to avoid boilerplate. Test mocks use MSW (`test-utils/`) for realistic HTTP stubbing.
 
 **Bundle splitting**: 7 vendor chunks in `vite.config.ts` — `react-vendor`, `ui-vendor` (framer-motion, lucide), `i18n`, `sentry`, `http-vendor` (axios), `dompurify`, `tiptap` (prosemirror, lowlight). When adding large dependencies, consider whether they belong in an existing chunk or need a new one.
 
+**Blog**: Dual fields `content` (plain text/search) + `content_html` (TipTap HTML). Category API cached 1 hour (key: `"blog_categories"`), invalidated on CRUD/toggle-publish. DRF router `basename="blog"` in `api/urls.py` (NOT `"blog-posts"`). All BlogPost fields use **snake_case only** — `description` (NOT `excerpt`), `date` (NOT `publishedAt`), `is_published` (NOT `published`), `view_count` (NOT `views`), `image_url` (NOT `imageUrl`). Backend serializer has no camelCase aliases. Frontend routes use `/insights/:slug` (NOT `/blog`); `BlogPostViewSet` uses `lookup_field = "slug"`. Backend API stays at `/api/blog-posts/` (internal). Nginx 301 redirects: `/blog/*` → `/insights/*`. BlogCard links to `/insights/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
+
+**Contact**: Google Form iframe, not backend API — backend `/api/contact/` is preserved for future switch. Page uses same hero pattern as other pages (section label + font-black title + subtitle), with ContactInfo sidebar. Contact email `contact@emelmujiro.com` is used in `constants.ts`, i18n, backend settings, swagger, and `CONTRIBUTING.md` — update all 5 in lockstep.
+
+## UI Conventions
+
+Page-level UX rules — copy, layout, and section structure. Change only when explicitly asked.
+
 **Hero**: Centered layout, always dark-on-light / light-on-dark. No badge. Stats: 5,000+ hours, 50+ projects, 4.8+ satisfaction. CTA: "무료 상담 신청". No left-right grid — fully centered. Korean title uses "올인원 AI 파트너" (NOT "원스톱"). English CTA title: "Accelerate Your AI Journey". Mobile uses padding-based layout (`pt-32 pb-16`, no `min-h` or flex centering), desktop uses `sm:min-h-screen` + `sm:flex sm:items-center sm:justify-center`.
 
-**Homepage section order**: Hero (white/dark) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). FAQSection component was removed — do NOT re-add or import. Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
+**Homepage section order**: Hero (white/dark) → Logos (gray) → Services (white) → Testimonials (gray) → CTA (white). Alternating backgrounds for visual rhythm. Logos before Services — social proof before value proposition. Testimonials before CTA — customer proof before conversion.
 
 **Scroll carousels**: All carousels use `w-max` on the animated flex container — required for `translateX` percentage to calculate against total content width (not viewport). LogosSection uses 3x copies with `translateX(-33.333%)` looping. TestimonialsSection uses 5x copies with `translateX(-20%)` looping. All use 32s on both desktop and mobile (unified speed). Mobile override in `index.css` (`max-width: 639px`) exists for future tuning. Gap between items must be on the item itself (`mx-2`/`px-8`), NOT `gap-*` on the flex container — otherwise the loop math breaks. Fade masks use `pointer-events-none` gradients matching section background. Hover pause via CSS `.group:hover .group-hover\:pause` + JS `touchstart`/`touchend` handlers (mobile touch-release resume). `prefers-reduced-motion: reduce` overrides in `index.css` keep carousels at their original speed instead of stopping — do NOT use `motion-reduce:!animate-none` on carousels (it kills animations on Windows where reduced-motion is often enabled by default). Both testimonial rows must have equal item counts to maintain equal visual speed at the same duration.
 
@@ -86,23 +95,21 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **Nav order**: 강의이력 → 인사이트 (teaching history first, blog second). Footer menu label: "강의이력" (not "대표 프로필").
 
-**About page**: Removed entirely — route, component file, and lazy import all deleted. Sitemap, prerender, StructuredData breadcrumb all updated.
-
-**Share page**: Removed entirely — no backend API existed, frontend-only page with no real functionality. Nginx 301 redirects `/share` → `/` and `/en/share` → `/en`. Do NOT re-add.
-
-**Blog (Insights) URLs**: Frontend routes use `/insights/:slug` (NOT `/blog`). `BlogPostViewSet` uses `lookup_field = "slug"`. Backend API stays at `/api/blog-posts/` (internal). Nginx 301 redirects: `/blog/*` → `/insights/*`, `/share` → `/`, `/en/share` → `/en`. BlogCard links to `/insights/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
-
-**Contact page**: Uses same hero pattern as other pages (section label + font-black title + subtitle). Google Form iframe for submissions, ContactInfo sidebar.
-
 **Privacy policy page** (`/privacy`): 13 sections per Korean PIPA Article 30. Includes processing delegation (Google Analytics, Sentry), safety measures (Art. 29), privacy officer (name/position/contact), remedies (KISA 118, KOPICO 1833-6972, prosecutors 1301, police 182). Table of contents with anchor links. Bilingual (ko/en). Footer link added.
-
-**Contact email**: `contact@emelmujiro.com` — used in constants.ts, i18n, backend settings, swagger, CONTRIBUTING.md.
 
 **Mobile responsive pattern**: All page heroes use `pt-28 pb-12 sm:pt-32` padding-based layout (NOT `min-h` + flex centering on mobile). Text sizing: mobile `text-4xl`/`text-base`, tablet `sm:text-5xl`/`sm:text-lg`, desktop `md:text-7xl`/`md:text-xl` — three-step progression to avoid harsh 639→640px jumps. Section padding: `py-16 sm:py-32`. Use `break-keep` for Korean text to prevent mid-word breaks. For text that must break at specific points on mobile only, use `<br className="sm:hidden" />`. English i18n text must be shorter than Korean equivalents — abbreviate org names (MOEL, KALIS, KETI) and use `#` instead of "Cohort" for numbering. CTA subtitle uses `subtitleLine1`/`subtitleLine2` keys (not single `subtitle`) for controlled line breaks.
 
 **Blog → Insights branding**: All user-facing text uses "인사이트"/"Insights" (not "블로그"/"Blog"). Section label: "INSIGHTS" (not "TECH BLOG"). Internal code still uses `blog` in component names, routes, and API paths — only i18n display text changed.
 
+**Removed pages (do NOT re-add)**:
+
+- **About page** — route, component file, lazy import, sitemap entry, prerender list, and StructuredData breadcrumb all deleted.
+- **Share page** — no backend API existed, frontend-only with no real functionality. Nginx 301 redirects `/share` → `/` and `/en/share` → `/en`.
+- **FAQSection** component — removed from homepage. Do NOT re-add or import. `faq` i18n keys also removed.
+
 ## Constraints
+
+Build, runtime, and infrastructure rules. Violating these breaks deploys, security, or production.
 
 **SEO**: `main.tsx` uses `createRoot()` (never `hydrateRoot`). Do NOT add static meta/title/OG tags to `index.html` — `SEOHelmet` handles everything. `SEOHelmet` auto-computes canonical URL from `location.pathname` — do NOT pass `url` props to `SEOHelmet` (it causes English pages to have wrong canonical). Page titles must NOT include `| 에멜무지로` suffix (appended automatically).
 
@@ -124,9 +131,23 @@ uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 **CI optimization**: `pr-checks.yml` uses `tj-actions/changed-files` to detect affected directories — frontend tests only run if `frontend/` changed, backend tests only if `backend/` changed. Trivy (`aquasecurity/trivy-action`) runs filesystem security scanning for dependency vulnerabilities on every PR.
 
+**README drift gates**: `pr-checks.yml` quick-checks job auto-validates README against reality every PR — 7 package badges compared to `package.json` (line 154-178), and Vitest/Django test counts compared to grep-counted reality with ±5 tolerance. On count drift failure, run `make update-test-counts` (or `./scripts/update-test-counts.sh`) which executes the real test runners and rewrites README.
+
 **Backend constants**: `api/constants.py` centralizes `ONE_HOUR`, `ONE_DAY`, `SPAM_KEYWORDS`, `SPAM_THRESHOLD`, `is_spam()`, and cache key constants (`CACHE_BLOG_CATEGORIES`, `CACHE_BLOG_POST_LIST`, `CACHE_ADMIN_STATS`). Do NOT re-define time constants or cache keys in views or middleware — import from here. `django-extensions` and `ipython` are dev-only dependencies (`uv sync --extra dev`).
 
 **Backend utilities**: `api/utils.py` contains `get_client_ip()`, `_is_valid_ip()`, and `toggle_like()`. IP extraction is used by both views and middleware — import from utils, not views.
+
+## Code Conventions
+
+Cross-cutting rules for how code is written. Enforced by linters and CI where possible.
+
+- **Conventional commits** required: `type(scope): description`. Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`.
+- **Branch naming**: `feature/name` or `fix/description`.
+- **ESLint flat config** (`eslint.config.mjs`, NOT `.eslintrc`). Zero warnings policy — CI fails on any warning.
+- **English comments only** — no Korean comments in source.
+- **All UI strings use i18n** — `useTranslation()` in components, `i18n.t()` in data files. No hardcoded user-facing text.
+- **No `window.alert()` / `window.prompt()`** — use toast pattern or inline inputs.
+- **Logger import**: `import logger from '../utils/logger'` — default export only. Use `env.IS_DEVELOPMENT` for environment checks.
 
 ## Testing
 
@@ -149,7 +170,7 @@ Non-React: `vi.mock('../../i18n', () => ({ default: { t: (key: string) => key, l
 
 Use `renderWithProviders` from `test-utils/` for component tests needing context (wraps MemoryRouter + providers). E2E tests: Playwright in `frontend/e2e/` — runs on 5 profiles (chromium, firefox, webkit, mobile chrome, mobile safari); PR checks run chromium only.
 
-Coverage target: 100%. Conventional commits required (`type(scope): description`). Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`. ESLint uses flat config (`eslint.config.mjs`, NOT `.eslintrc`). Zero warnings policy.
+Coverage target: 100%.
 
 ## Security
 
@@ -161,15 +182,12 @@ Coverage target: 100%. Conventional commits required (`type(scope): description`
 
 **File uploads**: Backend uses `uuid4` for filenames (no user-supplied paths). Validated against extension whitelist + MIME type check + 5MB limit.
 
-## Pitfalls
+## Gotchas
 
-1. **`VITE_` prefix** for env vars (legacy `REACT_APP_` works via `config/env.ts` shim). Analytics var is `VITE_GA_TRACKING_ID` (env.ts reads `REACT_APP_GA_TRACKING_ID` → `VITE_GA_TRACKING_ID`)
-2. **`useRef<T>(null)`** — React 19 requires initial value
-3. **`minimatch>=10.2.1`** override in both package.json — don't remove
-4. **`tsconfig.build.json`** excludes test types — don't add `@testing-library/jest-dom`
-5. **`DATABASE_URL=""`** for backend tests — Docker PostgreSQL breaks SQLite tests
-6. **Comments in English** only — no Korean comments
-7. **`import logger from '../utils/logger'`** — default export only, use `env.IS_DEVELOPMENT`
-8. **No `window.alert()`/`window.prompt()`** — use toast pattern or inline inputs
-9. **All UI strings use i18n** — `useTranslation()` in components, `i18n.t()` in data files
-10. **Branch naming**: `feature/name` or `fix/description`
+Quick code-level traps that cost time when missed.
+
+1. **`VITE_` prefix** for env vars (legacy `REACT_APP_` works via `config/env.ts` shim). Analytics var is `VITE_GA_TRACKING_ID` (env.ts reads `REACT_APP_GA_TRACKING_ID` → `VITE_GA_TRACKING_ID`).
+2. **`useRef<T>(null)`** — React 19 requires initial value.
+3. **`minimatch>=10.2.1`** override in `package.json` — don't remove.
+4. **`tsconfig.build.json`** excludes test types — don't add `@testing-library/jest-dom`.
+5. **`DATABASE_URL=""`** for backend tests — Docker PostgreSQL breaks SQLite tests.

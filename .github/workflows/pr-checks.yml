@@ -140,7 +140,7 @@ jobs:
           fi
           echo "All i18n keys are referenced"
 
-      - name: Check README test counts exist
+      - name: Check README test counts match reality
         run: |
           README_FE=$(grep -oE 'Vitest \([0-9]+ tests\)' README.md | grep -oE '[0-9]+')
           README_BE=$(grep -oE 'Django unittest \([0-9]+ tests\)' README.md | grep -oE '[0-9]+')
@@ -149,7 +149,34 @@ jobs:
             echo "Frontend: ${README_FE:-not found}, Backend: ${README_BE:-not found}"
             exit 1
           fi
-          echo "README test counts found ($README_FE frontend + $README_BE backend)"
+
+          # Count actual test cases via grep — fast (no test runner) and stable.
+          # Patterns mirror update-test-counts.sh's intent without needing Vitest/Django at runtime.
+          ACTUAL_FE=$(grep -rhE "^\s*(it|test)(\.skip|\.only|\.each\(.*\))?\(" \
+            frontend/src --include="*.test.ts" --include="*.test.tsx" 2>/dev/null | wc -l | tr -d ' ')
+          ACTUAL_BE=$(grep -hE "^\s*def test_" backend/api/tests.py backend/api/tests_urls.py 2>/dev/null | wc -l | tr -d ' ')
+
+          # Allow ±5 tolerance — grep heuristic may differ slightly from Vitest's
+          # actual report (dynamic tests, skipped variants), but real drift is always larger.
+          fe_diff=$(( README_FE > ACTUAL_FE ? README_FE - ACTUAL_FE : ACTUAL_FE - README_FE ))
+          be_diff=$(( README_BE > ACTUAL_BE ? README_BE - ACTUAL_BE : ACTUAL_BE - README_BE ))
+
+          DRIFT=0
+          if [ "$fe_diff" -gt 5 ]; then
+            echo "❌ README Vitest count drift: README says $README_FE, grep finds $ACTUAL_FE (diff $fe_diff)"
+            DRIFT=1
+          fi
+          if [ "$be_diff" -gt 5 ]; then
+            echo "❌ README Django count drift: README says $README_BE, grep finds $ACTUAL_BE (diff $be_diff)"
+            DRIFT=1
+          fi
+          if [ "$DRIFT" -eq 1 ]; then
+            echo ""
+            echo "Run: ./scripts/update-test-counts.sh"
+            echo "(it executes Vitest/Django for exact counts and rewrites README)"
+            exit 1
+          fi
+          echo "README test counts in sync ($README_FE frontend ≈ $ACTUAL_FE, $README_BE backend ≈ $ACTUAL_BE)"
 
       - name: Check README badge versions match package.json
         run: |
