@@ -193,3 +193,4 @@ Quick code-level traps that cost time when missed.
 3. **`minimatch>=10.2.1`** override in `package.json` — don't remove.
 4. **`tsconfig.build.json`** excludes test types — don't add `@testing-library/jest-dom`.
 5. **`DATABASE_URL=""`** for backend tests — Docker PostgreSQL breaks SQLite tests.
+6. **Never run `npm audit fix` (or `--force`)** — `make install` shows `8 vulnerabilities (4 low, 1 moderate, 3 high)` and that is the _expected_ state. The 3 high are transitive build-tool deps (`lodash`, `lodash-es`, `path-to-regexp`) with no production impact (nginx serves static `build/` without them). `--force` tries to downgrade `@lhci/cli` to 0.1.0 and would destroy Lighthouse CI. Update direct deps manually like vite 8.0.3 → 8.0.7 in `afd314e`; let dependabot handle transitives upstream.
