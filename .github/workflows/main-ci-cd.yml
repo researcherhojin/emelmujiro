@@ -42,6 +42,12 @@ jobs:
 
       - name: Run frontend tests with coverage
         working-directory: ./frontend
+        env:
+          # Disable ANSI color codes in vitest output so the verify step's
+          # grep can match plain text. Without this, summary line is wrapped
+          # in escape sequences like "[2m      Tests [22m [1m[32m1189 passed[39m"
+          # and the grep pattern fails to match.
+          NO_COLOR: "1"
         run: CI=true npx vitest run --bail=1 --coverage 2>&1 | tee /tmp/vitest-output.txt
         timeout-minutes: 10
 
@@ -49,8 +55,13 @@ jobs:
         run: |
           # Source of truth: actual Vitest stdout (handles it.each expansion correctly).
           # Pattern matches vitest summary line: "Tests  1189 passed (1189)"
-          ACTUAL=$(grep -oE 'Tests +[0-9]+ passed' /tmp/vitest-output.txt | tail -1 | grep -oE '[0-9]+')
-          README=$(grep -oE 'Vitest \([0-9]+ tests\)' README.md | grep -oE '[0-9]+')
+          # NO_COLOR=1 above ensures no ANSI escapes.
+          echo "─── Last 5 lines of vitest output ───"
+          tail -5 /tmp/vitest-output.txt
+          echo "─── Extracting count ───"
+          ACTUAL=$(grep -oE 'Tests +[0-9]+ passed' /tmp/vitest-output.txt | tail -1 | grep -oE '[0-9]+' || true)
+          README=$(grep -oE 'Vitest \([0-9]+ tests\)' README.md | grep -oE '[0-9]+' || true)
+          echo "ACTUAL=$ACTUAL  README=$README"
           if [ -z "$ACTUAL" ]; then
             echo "❌ Could not extract Vitest count from test output"
             exit 1
