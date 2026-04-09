@@ -319,6 +319,8 @@
     "postUpdated": "포스트가 수정되었습니다!",
     "saveError": "저장 중 오류가 발생했습니다.",
     "loadError": "포스트를 불러오는 중 오류가 발생했습니다.",
+    "loadingPost": "불러오는 중...",
+    "untitled": "제목 없음",
     "saving": "저장 중...",
     "update": "수정",
     "published": "공개",
@@ -377,6 +379,7 @@
     }
   },
   "teachingHistory": {
+    "sectionLabel": "TEACHING HISTORY",
     "pageTitle": "강의이력",
     "pageSubtitle": "기업 · 공공기관 · 대학교 대상 AI 교육 이력",
     "statsYears": "5년",

@@ -154,12 +154,10 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
   });
 
   describe('Error Handling in Mock Mode', () => {
-    it('should handle non-existent blog post gracefully', async () => {
-      const result = await api.getBlogPost(99999);
-
-      // In mock mode, should still return a post
-      expect(result).toHaveProperty('data');
-      expect(result.data).toHaveProperty('id');
+    it('should reject with 404 for non-existent blog post', async () => {
+      await expect(api.getBlogPost(99999)).rejects.toMatchObject({
+        response: { status: 404 },
+      });
     });
 
     it('should handle empty search query', async () => {

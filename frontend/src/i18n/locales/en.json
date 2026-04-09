@@ -319,6 +319,8 @@
     "postUpdated": "Post updated",
     "saveError": "Failed to save",
     "loadError": "Failed to load post",
+    "loadingPost": "Loading...",
+    "untitled": "Untitled",
     "saving": "Saving...",
     "update": "Update",
     "published": "Published",
@@ -377,6 +379,7 @@
     }
   },
   "teachingHistory": {
+    "sectionLabel": "TEACHING HISTORY",
     "pageTitle": "Teaching History",
     "pageSubtitle": "Enterprise & public sector AI training",
     "statsYears": "5 Years",

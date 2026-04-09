@@ -186,7 +186,7 @@ const BlogEditor: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
-        <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+        <div className="text-gray-500 dark:text-gray-400">{t('blogEditor.loadingPost')}</div>
       </div>
     );
   }
@@ -259,7 +259,9 @@ const BlogEditor: React.FC = () => {
                 className="w-full h-64 object-cover rounded-xl mb-6"
               />
             )}
-            <h1 className="text-3xl font-bold mb-4 dark:text-white">{meta.title || 'Untitled'}</h1>
+            <h1 className="text-3xl font-bold mb-4 dark:text-white">
+              {meta.title || t('blogEditor.untitled')}
+            </h1>
             {meta.description && (
               <p className="text-gray-500 dark:text-gray-400 mb-6">{meta.description}</p>
             )}

@@ -155,14 +155,10 @@ export const api = {
     if (USE_MOCK_API) {
       const post = mockBlogPosts.find((p) => p.id === Number(id) || p.slug === id);
       if (!post) {
-        // Instead of rejecting, return a default post for testing
-        const defaultPost = {
-          ...mockBlogPosts[0],
-          id: Number(id) || 99999,
-          title: `Mock Post ${id}`,
-          content: `This is mock content for post ${id}`,
-        };
-        return mockResponse(defaultPost);
+        return Promise.reject({
+          response: { status: 404, data: { detail: 'Not found.' } },
+          message: 'Request failed with status code 404',
+        });
       }
       return mockResponse(post);
     }

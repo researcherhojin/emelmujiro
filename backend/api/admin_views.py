@@ -12,6 +12,8 @@ from .views import AdminRateThrottle
 from .serializers import AdminUserSerializer
 from .models import BlogPost, Contact, SiteVisit
 
+from django.contrib.auth.models import User
+
 
 def parse_pagination_params(request, default_page_size=20):
     """Parse and validate page/page_size from query params. Returns (page, page_size) or raises ValueError."""
@@ -39,7 +41,6 @@ def admin_stats(request):
     if cached is not None:
         return Response(cached)
 
-    from django.contrib.auth.models import User
 
     total_users = User.objects.count()
     total_posts = BlogPost.objects.count()
@@ -163,7 +164,6 @@ def admin_message_detail(request, pk):
 @throttle_classes([AdminRateThrottle])
 def admin_users(request):
     """Admin user list with search and filter"""
-    from django.contrib.auth.models import User
 
     try:
         page, page_size = parse_pagination_params(request)
@@ -204,7 +204,6 @@ def admin_users(request):
 @throttle_classes([AdminRateThrottle])
 def admin_user_detail(request, pk):
     """Admin user detail / update / delete"""
-    from django.contrib.auth.models import User
 
     try:
         user = User.objects.get(pk=pk)

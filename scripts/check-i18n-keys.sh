@@ -1,6 +1,6 @@
 #!/bin/bash
 # Detect unused i18n keys in the codebase
-# Usage: ./scripts/check-i18n-keys.sh (or: make check-i18n)
+# Usage: ./scripts/check-i18n-keys.sh
 #   - Extracts all leaf keys from ko.json
 #   - Searches frontend/src/ for usage of each key
 #   - Reports keys with zero references

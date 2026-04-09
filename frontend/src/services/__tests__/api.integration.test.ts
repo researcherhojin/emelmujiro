@@ -107,15 +107,11 @@ describe('API Service - Integration Tests', () => {
   });
 
   describe('Blog Post Mock Methods', () => {
-    it('should handle getBlogPost with slug lookup', async () => {
+    it('should reject with 404 for non-existent slug', async () => {
       const { api } = await import('../api');
-      // Use slug 'mock-blog-post-1' which might match a mock post
-      const result = await api.getBlogPost('non-existent-slug');
-
-      expect(result.status).toBe(200);
-      // Should return a default post for non-existent slugs
-      expect(result.data).toHaveProperty('title');
-      expect(result.data).toHaveProperty('content');
+      await expect(api.getBlogPost('non-existent-slug')).rejects.toMatchObject({
+        response: { status: 404 },
+      });
     });
 
     it('should handle getBlogPosts with custom page size', async () => {

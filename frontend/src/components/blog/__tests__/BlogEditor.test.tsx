@@ -339,8 +339,8 @@ describe('BlogEditor Component', () => {
       // No image should be rendered
       expect(screen.queryByRole('img')).not.toBeInTheDocument();
 
-      // Title should show "Untitled" as fallback
-      expect(screen.getByText('Untitled')).toBeInTheDocument();
+      // Title should show untitled fallback via i18n key
+      expect(screen.getByText('blogEditor.untitled')).toBeInTheDocument();
     });
   });
 

@@ -67,7 +67,7 @@ const ProfilePage: React.FC = memo(() => {
         <section className="pt-28 pb-12 sm:pt-32 sm:pb-16 px-5 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
             <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase">
-              TEACHING HISTORY
+              {t('teachingHistory.sectionLabel')}
             </span>
             <h1 className="mt-3 text-4xl sm:mt-4 sm:text-5xl md:text-7xl font-black text-gray-900 dark:text-white">
               {t('teachingHistory.pageTitle')}
