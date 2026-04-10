@@ -170,7 +170,6 @@ check "sitemap.xml exists" "[ -f frontend/public/sitemap.xml ]"
 check "manifest.json exists" "[ -f frontend/public/manifest.json ]"
 check "favicon.ico exists" "[ -f frontend/public/favicon.ico ]"
 check "Open Graph image exists" "[ -f frontend/public/og-image.png ]" true
-check ".nojekyll exists" "[ -f frontend/public/.nojekyll ]"
 echo ""
 
 # =====================================================

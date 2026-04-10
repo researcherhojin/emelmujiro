@@ -93,7 +93,7 @@ jobs:
         run: |
           MISSING=0
           # robots.txt, sitemap.xml, sitemap-index.xml are generated at build time (not in git)
-          for f in frontend/public/manifest.json frontend/public/favicon.ico frontend/public/.nojekyll; do
+          for f in frontend/public/manifest.json frontend/public/favicon.ico; do
             if [ ! -f "$f" ]; then
               echo "Missing: $f"
               MISSING=$((MISSING + 1))

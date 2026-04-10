@@ -14,10 +14,6 @@
 - [ ] GSC 색인 요청 — URL 검사에서 `/privacy`, `/en/privacy`, `/en/profile` 각각 "색인 생성 요청"
 - [ ] GSC redirect 오류 (4건) + `/cdn-cgi/` 404 — robots.txt에 `Disallow: /cdn-cgi/` 추가 완료 (배포 후 해소). redirect 오류는 재크롤 시 자동 해소 예상
 
-## 4. CI/자동화
-
-- [ ] GitHub Pages actions Node.js deprecation — `upload-pages-artifact@v4`, `deploy-pages@v5` 등이 Node.js 20 타깃. 최신 버전 대기 중 (제어 불가, 모니터링)
-
-## 5. 하우스키핑
+## 4. 하우스키핑
 
 - [ ] 개인정보처리방침 법률 검토 — 개인정보 보호법 제30조 기준 13개 섹션 작성 완료. 법률 전문가 최종 검토 후 보완 필요 시 i18n JSON 수정
