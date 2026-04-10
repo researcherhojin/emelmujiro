@@ -2239,6 +2239,58 @@ class RequestSecurityMiddlewareTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 403)
 
+    # ---- False-positive regression guards ----
+    # The attack patterns are specific (e.g. `union\s+select`, not bare `union`)
+    # but regex changes under maintenance can accidentally broaden them. These
+    # tests lock in the expectation that common English words which happen to
+    # share a substring with an attack keyword are NOT blocked. A hit here
+    # would lock legitimate users out of forms, comments, and search.
+
+    def test_legitimate_union_word_not_blocked(self):
+        """Bare 'union' (no 'select' follow-up) must pass through."""
+        response = self.client.get(
+            "/api/health/",
+            {"q": "union workers meeting schedule"},
+            REMOTE_ADDR="44.44.44.101",
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_legitimate_select_word_not_blocked(self):
+        """Bare 'select' (no preceding 'union') must pass through."""
+        response = self.client.get(
+            "/api/health/",
+            {"q": "please select your preferred option"},
+            REMOTE_ADDR="44.44.44.102",
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_legitimate_script_word_not_blocked(self):
+        """Bare 'script' (not a full <script> tag) must pass through."""
+        response = self.client.get(
+            "/api/health/",
+            {"q": "typescript guide for beginners"},
+            REMOTE_ADDR="44.44.44.103",
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_legitimate_drop_word_not_blocked(self):
+        """Bare 'drop' (no 'table' follow-up) must pass through."""
+        response = self.client.get(
+            "/api/health/",
+            {"q": "drop by our office on friday"},
+            REMOTE_ADDR="44.44.44.104",
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_legitimate_insert_word_not_blocked(self):
+        """Bare 'insert' (no 'into' follow-up) must pass through."""
+        response = self.client.get(
+            "/api/health/",
+            {"q": "insert image here"},
+            REMOTE_ADDR="44.44.44.105",
+        )
+        self.assertEqual(response.status_code, 200)
+
 
 class ContentSecurityMiddlewareTestCase(TestCase):
     """Tests for ContentSecurityMiddleware — security headers"""

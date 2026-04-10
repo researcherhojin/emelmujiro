@@ -19,7 +19,7 @@ interface ReplyItemProps {
   t: (key: string, options?: Record<string, string>) => string;
 }
 
-const ReplyItem: React.FC<ReplyItemProps> = ({ reply, formatCommentDate, onLike, t }) => (
+const ReplyItem: React.FC<ReplyItemProps> = memo(({ reply, formatCommentDate, onLike, t }) => (
   <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded">
     <div className="flex items-center mb-1">
       <User className="w-3 h-3 mr-1 text-gray-500 dark:text-gray-400" />
@@ -41,7 +41,8 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ reply, formatCommentDate, onLike,
       <span>{reply.likes}</span>
     </button>
   </div>
-);
+));
+ReplyItem.displayName = 'ReplyItem';
 
 interface CommentItemProps {
   comment: BlogComment;
@@ -58,112 +59,115 @@ interface CommentItemProps {
   t: (key: string, options?: Record<string, string>) => string;
 }
 
-const CommentItem: React.FC<CommentItemProps> = ({
-  comment,
-  postId,
-  replyTo,
-  replyContent,
-  formatCommentDate,
-  onLike,
-  onDelete,
-  isAdmin,
-  setReplyTo,
-  setReplyContent,
-  onSubmitReply,
-  t,
-}) => (
-  <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-    <div className="flex items-start justify-between">
-      <div className="flex-1">
-        <div className="flex items-center mb-2">
-          <User className="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" />
-          <span className="font-medium text-gray-900 dark:text-gray-200">
-            {comment.author_name}
-          </span>
-          <span className="mx-2 text-gray-300 dark:text-gray-600">•</span>
-          <Calendar className="w-4 h-4 mr-1 text-gray-500 dark:text-gray-400" />
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            {formatCommentDate(comment.created_at)}
-          </span>
-        </div>
-        <p className="text-gray-700 dark:text-gray-300 mb-3">{comment.content}</p>
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => onLike(comment.id)}
-            aria-label={t('blog.likeComment', { author: comment.author_name })}
-            className="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-          >
-            <ThumbsUp className="w-4 h-4" />
-            <span>{comment.likes}</span>
-          </button>
-          <button
-            onClick={() => setReplyTo(comment.id)}
-            aria-label={t('blog.replyTo', { author: comment.author_name })}
-            className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-          >
-            {t('blog.reply')}
-          </button>
-          {isAdmin && (
+const CommentItem: React.FC<CommentItemProps> = memo(
+  ({
+    comment,
+    postId,
+    replyTo,
+    replyContent,
+    formatCommentDate,
+    onLike,
+    onDelete,
+    isAdmin,
+    setReplyTo,
+    setReplyContent,
+    onSubmitReply,
+    t,
+  }) => (
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center mb-2">
+            <User className="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" />
+            <span className="font-medium text-gray-900 dark:text-gray-200">
+              {comment.author_name}
+            </span>
+            <span className="mx-2 text-gray-300 dark:text-gray-600">•</span>
+            <Calendar className="w-4 h-4 mr-1 text-gray-500 dark:text-gray-400" />
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {formatCommentDate(comment.created_at)}
+            </span>
+          </div>
+          <p className="text-gray-700 dark:text-gray-300 mb-3">{comment.content}</p>
+          <div className="flex items-center space-x-4">
             <button
-              onClick={() => onDelete(comment.id)}
-              aria-label={t('common.delete')}
-              className="flex items-center space-x-1 text-sm text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+              onClick={() => onLike(comment.id)}
+              aria-label={t('blog.likeComment', { author: comment.author_name })}
+              className="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
             >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>{t('common.delete')}</span>
+              <ThumbsUp className="w-4 h-4" />
+              <span>{comment.likes}</span>
             </button>
+            <button
+              onClick={() => setReplyTo(comment.id)}
+              aria-label={t('blog.replyTo', { author: comment.author_name })}
+              className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+            >
+              {t('blog.reply')}
+            </button>
+            {isAdmin && (
+              <button
+                onClick={() => onDelete(comment.id)}
+                aria-label={t('common.delete')}
+                className="flex items-center space-x-1 text-sm text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{t('common.delete')}</span>
+              </button>
+            )}
+          </div>
+
+          {/* Reply form */}
+          {replyTo === comment.id && (
+            <div className="mt-4 ml-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded">
+              <textarea
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.target.value)}
+                placeholder={t('blog.replyPlaceholder')}
+                rows={2}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+              />
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => onSubmitReply(comment.id)}
+                  className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                >
+                  {t('blog.writeReply')}
+                </button>
+                <button
+                  onClick={() => {
+                    setReplyTo(null);
+                    setReplyContent('');
+                  }}
+                  className="px-3 py-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-400 dark:hover:bg-gray-500 text-sm"
+                >
+                  {t('common.cancel')}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Replies */}
+          {comment.replies && comment.replies.length > 0 && (
+            <div className="mt-4 ml-8 space-y-3">
+              {comment.replies.map((reply) => (
+                <ReplyItem
+                  key={reply.id}
+                  reply={reply}
+                  postId={postId}
+                  formatCommentDate={formatCommentDate}
+                  onLike={onLike}
+                  t={t}
+                />
+              ))}
+            </div>
           )}
         </div>
-
-        {/* Reply form */}
-        {replyTo === comment.id && (
-          <div className="mt-4 ml-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded">
-            <textarea
-              value={replyContent}
-              onChange={(e) => setReplyContent(e.target.value)}
-              placeholder={t('blog.replyPlaceholder')}
-              rows={2}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-            />
-            <div className="flex space-x-2">
-              <button
-                onClick={() => onSubmitReply(comment.id)}
-                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-              >
-                {t('blog.writeReply')}
-              </button>
-              <button
-                onClick={() => {
-                  setReplyTo(null);
-                  setReplyContent('');
-                }}
-                className="px-3 py-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-400 dark:hover:bg-gray-500 text-sm"
-              >
-                {t('common.cancel')}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Replies */}
-        {comment.replies && comment.replies.length > 0 && (
-          <div className="mt-4 ml-8 space-y-3">
-            {comment.replies.map((reply) => (
-              <ReplyItem
-                key={reply.id}
-                reply={reply}
-                postId={postId}
-                formatCommentDate={formatCommentDate}
-                onLike={onLike}
-                t={t}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </div>
-  </div>
+  )
 );
+CommentItem.displayName = 'CommentItem';
 
 const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
   const { t, i18n } = useTranslation();
@@ -256,9 +260,13 @@ const BlogComments: React.FC<BlogCommentsProps> = ({ postId }) => {
     [postId, fetchComments]
   );
 
-  // Format date — delegates to shared utility
-  const formatCommentDate = (dateString: string) =>
-    formatRelativeTime(dateString, i18n.language, t);
+  // Format date — delegates to shared utility. Memoized so memo'd
+  // CommentItem/ReplyItem don't re-render just because the parent
+  // re-rendered for reasons unrelated to locale.
+  const formatCommentDate = useCallback(
+    (dateString: string) => formatRelativeTime(dateString, i18n.language, t),
+    [i18n.language, t]
+  );
 
   return (
     <div className="mt-12">
