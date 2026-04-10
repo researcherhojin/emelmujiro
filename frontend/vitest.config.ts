@@ -12,8 +12,14 @@ export default defineConfig({
     css: true,
     testTimeout: process.env.CI ? 15000 : 10000, // 15s in CI, 10s locally
     hookTimeout: process.env.CI ? 15000 : 10000, // 15s in CI, 10s locally
-    pool: 'threads', // Threads are faster than forks (shared memory, lower spawn overhead)
-    maxThreads: process.env.CI ? 4 : undefined, // CI runners benefit from I/O parallelism beyond core count
+    // jsdom + vitest threads has a known worker-init race ("JSDOM is not a
+    // constructor") that surfaces sporadically in CI — global state doesn't
+    // transfer cleanly across worker threads when many isolated jsdom
+    // instances spin up in parallel. Use forks in CI for stability, threads
+    // locally for speed. Hit once in this repo on commit 172c4de (later
+    // rerun passed). Switching to forks eliminates the race entirely.
+    pool: process.env.CI ? 'forks' : 'threads',
+    maxThreads: process.env.CI ? 4 : undefined,
     minThreads: process.env.CI ? 2 : undefined,
     isolate: true, // Enable isolation for better test stability
     clearMocks: true, // Clear all mocks between tests
