@@ -407,6 +407,16 @@ LOGGING = {
     },
 }
 
+# Isolate test runs from production log files. The backend test suite
+# emits deliberate negative-path events (fake-IP middleware tests, SMTP/
+# reCAPTCHA failure simulations — see CLAUDE.md Testing notes) which would
+# otherwise accumulate in backend/logs/{debug,security}.log on every
+# `manage.py test` invocation (local or CI), polluting real security events.
+TESTING = len(sys.argv) > 1 and sys.argv[1] == "test"
+if TESTING:
+    for _handler in ("file", "security_file"):
+        LOGGING["handlers"][_handler] = {"class": "logging.NullHandler"}
+
 # Development-only settings
 if DEBUG:
     # Development tools (installed via uv sync --extra dev)

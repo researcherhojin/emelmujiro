@@ -163,6 +163,24 @@ jobs:
           sed -i 's|filename="api/|filename="backend/api/|g' coverage.xml
           sed -i 's|<source>.*</source>|<source>.</source>|g' coverage.xml
 
+      - name: Verify tests don't pollute production log files
+        working-directory: ./backend
+        # settings.py routes file/security_file handlers to NullHandler when
+        # sys.argv[1] == "test". If that isolation breaks, test fixtures (fake
+        # IPs, simulated reCAPTCHA/SMTP failures) accumulate in production
+        # backend/logs/{debug,security}.log on every test run.
+        run: |
+          if [ -s logs/security.log ] || [ -s logs/debug.log ]; then
+            echo "❌ Backend tests polluted production log files:"
+            ls -la logs/ 2>/dev/null
+            echo "--- security.log (first 5) ---"
+            head -5 logs/security.log 2>/dev/null || true
+            echo "--- debug.log (first 5) ---"
+            head -5 logs/debug.log 2>/dev/null || true
+            exit 1
+          fi
+          echo "✓ Production log files not polluted by test run"
+
       - name: Verify README Django count matches reality
         run: |
           # Source of truth: Django test runner stdout — "Ran 353 tests in 0.384s"
