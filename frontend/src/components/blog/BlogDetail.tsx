@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Eye, EyeOff, Trash2, Pencil } from 'lucide-react';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { useToast } from '../../hooks/useToast';
-import DOMPurify from 'dompurify';
+import { sanitizeBlogHtml } from '../../utils/sanitizeBlogHtml';
 
 const MarkdownRenderer = lazy(() => import('./MarkdownRenderer'));
 import { PageLoading } from '../common/UnifiedLoading';
@@ -274,10 +274,7 @@ const BlogDetailPage: React.FC = memo(() => {
               {post?.content_html ? (
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(post.content_html, {
-                      ADD_TAGS: ['table', 'thead', 'tbody', 'tr', 'th', 'td', 'colgroup', 'col'],
-                      ADD_ATTR: ['colspan', 'rowspan'],
-                    }),
+                    __html: sanitizeBlogHtml(post.content_html),
                   }}
                 />
               ) : (

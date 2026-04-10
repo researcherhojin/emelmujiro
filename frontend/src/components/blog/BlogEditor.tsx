@@ -9,7 +9,7 @@ import { api } from '../../services/api';
 import logger from '../../utils/logger';
 import TipTapEditor from './TipTapEditor';
 import Toast from '../common/Toast';
-import DOMPurify from 'dompurify';
+import { sanitizeBlogHtml } from '../../utils/sanitizeBlogHtml';
 
 interface PostMeta {
   title: string;
@@ -267,7 +267,7 @@ const BlogEditor: React.FC = () => {
             )}
             <div
               className="prose prose-lg prose-gray dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(contentHtml) }}
+              dangerouslySetInnerHTML={{ __html: sanitizeBlogHtml(contentHtml) }}
             />
           </div>
         ) : (
