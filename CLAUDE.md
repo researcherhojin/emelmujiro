@@ -123,6 +123,8 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 **Deployment**: Never `rm -rf frontend/build` (breaks nginx volume mount) — use `rm -rf frontend/build/*`. Docker ports bound to `127.0.0.1` only. `SECRET_KEY` loaded via `env_file` — do NOT set in docker-compose `environment` section.
 
+**Operational logs**: Cron jobs installed via Makefile targets (`make setup-cron`) must redirect output to `$(CURDIR)/backend/logs/<name>.log` — matches Django `LOG_DIR` (`backend/config/settings.py:355`), already gitignored, persists via Docker `logs_volume`. Never `/tmp` (evaporates on reboot), `~/logs/` (outside project), or `/var/log/` (host-specific). Enforced by `pr-checks.yml` quick-checks grep — any `crontab` line with `>>` not targeting `backend/logs/` fails CI.
+
 **CSP**: `'unsafe-inline'` required — index.html inline scripts (error handler, KakaoTalk detection, theme detection). `'unsafe-eval'` removed after `plugin-legacy` removal. Cloudflare Tunnel does not require CSP changes (transparent proxy).
 
 **Tailwind 3.x**: PostCSS uses `tailwindcss: {}` (NOT `@tailwindcss/postcss`). Dark mode is `class`-based (not media query). Never use dynamic class interpolation (`bg-${color}-600`).

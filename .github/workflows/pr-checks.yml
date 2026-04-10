@@ -181,6 +181,20 @@ jobs:
           fi
           echo "All README badges match package.json"
 
+      - name: Check cron log redirect paths
+        # Operational cron logs must live inside the project at backend/logs/
+        # (matches Django LOG_DIR, already gitignored, persists via logs_volume).
+        # Drift to /tmp, ~/logs/, or /var/log/ breaks on reboot or leaves
+        # emelmujiro logs outside the project tree. See CLAUDE.md Constraints.
+        run: |
+          BAD_CRON_LOGS=$(grep -nE 'crontab.*>>' Makefile 2>/dev/null | grep -v 'backend/logs/' || true)
+          if [ -n "$BAD_CRON_LOGS" ]; then
+            echo "❌ Cron log redirect must target backend/logs/ (not /tmp, ~/logs/, or /var/log/):"
+            echo "$BAD_CRON_LOGS"
+            exit 1
+          fi
+          echo "Cron log paths OK"
+
   # Frontend linting (parallel with backend-lint)
   frontend-lint:
     name: Frontend Lint
