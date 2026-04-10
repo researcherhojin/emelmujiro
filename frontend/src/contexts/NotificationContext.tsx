@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
   ReactNode,
 } from 'react';
 import { api } from '../services/api';
@@ -32,14 +33,18 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  // Pagination cursor kept in a ref so advancing a page does NOT recreate
+  // `fetchNotifications` and re-render every NotificationContext consumer.
+  // Consumers don't need to observe the page number — only the notifications
+  // list, unreadCount, and loading flag.
+  const currentPageRef = useRef(1);
 
   // Fetch unread count on mount when authenticated
   useEffect(() => {
     if (!isAuthenticated) {
       setNotifications([]);
       setUnreadCount(0);
-      setCurrentPage(1);
+      currentPageRef.current = 1;
       return;
     }
 
@@ -59,20 +64,19 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     if (!isAuthenticated) return;
     setLoading(true);
     try {
-      const response = await api.getNotifications(currentPage);
+      const page = currentPageRef.current;
+      const response = await api.getNotifications(page);
       const newNotifications = response.data.results;
-      setNotifications((prev) =>
-        currentPage === 1 ? newNotifications : [...prev, ...newNotifications]
-      );
+      setNotifications((prev) => (page === 1 ? newNotifications : [...prev, ...newNotifications]));
       if (response.data.next) {
-        setCurrentPage((prev) => prev + 1);
+        currentPageRef.current = page + 1;
       }
     } catch {
       logger.error('Failed to fetch notifications');
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated, currentPage]);
+  }, [isAuthenticated]);
 
   const markAsRead = useCallback(async (id: number) => {
     try {
