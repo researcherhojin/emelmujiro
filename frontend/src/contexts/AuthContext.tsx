@@ -41,28 +41,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Auth check on mount — inlined into the effect (previously a separate
+  // `checkAuthStatus` const defined after this hook). The separate-const
+  // form worked because the effect callback runs after the component body,
+  // but it made `exhaustive-deps` analysis fragile and invited stale-closure
+  // bugs if the function ever grew external dependencies. Inlining removes
+  // the question entirely.
   useEffect(() => {
-    checkAuthStatus();
-  }, []);
+    let cancelled = false;
 
-  const checkAuthStatus = async () => {
-    // Skip auth check if user has never logged in (no cookie hint).
-    // httpOnly cookies aren't readable from JS, so we use a localStorage flag
-    // that gets set on login and cleared on logout.
-    if (!localStorage.getItem('auth_hint')) {
-      setLoading(false);
-      return;
-    }
-    try {
-      const response = await api.getUser();
-      setUser(response.data);
-      setUserContext({ id: response.data.id, email: response.data.email });
-    } catch {
-      setUser(null);
-      localStorage.removeItem('auth_hint');
-    }
-    setLoading(false);
-  };
+    const run = async () => {
+      // Skip auth check if user has never logged in (no cookie hint).
+      // httpOnly cookies aren't readable from JS, so we use a localStorage
+      // flag that gets set on login and cleared on logout.
+      if (!localStorage.getItem('auth_hint')) {
+        if (!cancelled) setLoading(false);
+        return;
+      }
+      try {
+        const response = await api.getUser();
+        if (cancelled) return;
+        setUser(response.data);
+        setUserContext({ id: response.data.id, email: response.data.email });
+      } catch {
+        if (cancelled) return;
+        setUser(null);
+        localStorage.removeItem('auth_hint');
+      }
+      if (!cancelled) setLoading(false);
+    };
+
+    run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const login = useCallback(async (email: string, password: string) => {
     setLoading(true);

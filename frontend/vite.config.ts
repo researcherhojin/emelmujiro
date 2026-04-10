@@ -42,6 +42,14 @@ export default defineConfig({
   build: {
     outDir: 'build',
     sourcemap: process.env.NODE_ENV !== 'production',
+    // tiptap chunk is ~540 kB (170 kB gzipped) because it bundles @tiptap/*,
+    // prosemirror, and lowlight (syntax highlighting grammars) for the blog
+    // editor. BlogEditor is lazy-loaded via React.lazy at App.tsx:34 and
+    // only reachable from admin routes /insights/new and /insights/edit/:id,
+    // so regular users never pay this cost. The >500 kB default warning is
+    // cosmetic here — raise to 600 kB so intentional chunks don't spam the
+    // build log. Non-admin chunks all stay well under 200 kB.
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         manualChunks(id) {

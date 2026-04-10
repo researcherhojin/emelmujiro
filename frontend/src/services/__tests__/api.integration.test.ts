@@ -409,6 +409,65 @@ describe('API Service - Integration Tests', () => {
       }
     });
 
+    it('should reject original 401 (without infinite loop) when refresh itself fails', async () => {
+      // Edge case: refresh token is expired → refresh request returns 401 too.
+      // Expected behavior:
+      //  1. refresh is attempted once (axiosInstance.post called)
+      //  2. retry is NOT called (axiosInstance.request never hit)
+      //  3. original 401 propagates up the promise chain (no infinite loop)
+      //  4. the rejection carries the original error, not a new one
+      // The "no infinite loop" guarantee comes from the `isAuthEndpoint` check
+      // on the refresh request itself — without it, the refresh's own 401 would
+      // trigger a second refresh attempt and so on.
+      const axiosInstance = (await import('../api')).default;
+
+      const interceptorManager = axiosInstance.interceptors.response as any;
+      const handlers = interceptorManager.handlers;
+
+      expect(handlers.length).toBeGreaterThan(0);
+      const errorHandler = handlers[0]?.rejected;
+      expect(errorHandler).toBeDefined();
+
+      const origPost = axiosInstance.post;
+      const origRequest = axiosInstance.request;
+      // Refresh request itself rejects with 401 (refresh token expired)
+      const refreshError = new Error('refresh token expired') as any;
+      refreshError.response = { status: 401, data: {} };
+      axiosInstance.post = vi.fn().mockRejectedValueOnce(refreshError);
+      axiosInstance.request = vi.fn();
+
+      const unauthorizedError = {
+        response: { status: 401, data: { message: 'Token expired' } },
+        config: {
+          url: 'blog-posts/',
+          headers: new AxiosHeaders(),
+        } as InternalAxiosRequestConfig,
+        _retry: false,
+      };
+
+      let rejected: any = null;
+      try {
+        await errorHandler(unauthorizedError);
+      } catch (err: any) {
+        rejected = err;
+      }
+
+      // Refresh was attempted exactly once
+      expect(axiosInstance.post).toHaveBeenCalledTimes(1);
+      expect(axiosInstance.post).toHaveBeenCalledWith('auth/token/refresh/');
+      // Retry of original request was NOT called (refresh failed first)
+      expect(axiosInstance.request).not.toHaveBeenCalled();
+      // Original 401 propagated up, not a new error
+      expect(rejected).not.toBeNull();
+      expect(rejected).toBe(unauthorizedError);
+      expect(rejected.response.status).toBe(401);
+      // _retry flag was set (defended against re-entry)
+      expect(unauthorizedError._retry).toBe(true);
+
+      axiosInstance.post = origPost;
+      axiosInstance.request = origRequest;
+    });
+
     it('should NOT attempt refresh for auth endpoints on 401', async () => {
       const axiosInstance = (await import('../api')).default;
 

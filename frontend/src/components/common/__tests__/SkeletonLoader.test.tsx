@@ -38,70 +38,48 @@ describe('Skeleton Component', () => {
       expect(customSkeleton).toHaveClass('rounded');
     });
 
-    it('applies custom width and height', () => {
-      const { container } = render(<Skeleton width="100px" height="50px" data-testid="skeleton" />);
+    it('applies custom width and height as strings', () => {
+      render(<Skeleton width="100px" height="50px" data-testid="skeleton" />);
 
-      const skeletons = screen.getAllByTestId('skeleton');
-      expect(skeletons.length).toBeGreaterThan(0);
-
-      // Simply verify the component renders with the props
-      // CI environment may not apply inline styles correctly
-      const skeleton = skeletons[0];
-      expect(skeleton).toBeInTheDocument();
-
-      // Check if component received the props (component renders without error)
-      expect(container.firstChild).toBeTruthy();
+      const skeleton = screen.getAllByTestId('skeleton')[0];
+      // Strong assertion: the prop must actually produce a matching inline
+      // style. Previously this was a shallow "rendered without error" check,
+      // which masked regressions where the component ignored the prop.
+      expect(skeleton).toHaveStyle({ width: '100px', height: '50px' });
     });
 
-    it('applies numeric width and height', () => {
-      const { container } = render(<Skeleton width={200} height={100} data-testid="skeleton" />);
+    it('applies numeric width and height (converted to px)', () => {
+      render(<Skeleton width={200} height={100} data-testid="skeleton" />);
 
-      const skeletons = screen.getAllByTestId('skeleton');
-      expect(skeletons.length).toBeGreaterThan(0);
-
-      // Simply verify the component renders with the props
-      // CI environment may not apply inline styles correctly
-      const skeleton = skeletons[0];
-      expect(skeleton).toBeInTheDocument();
-
-      // Check if component received the props (component renders without error)
-      expect(container.firstChild).toBeTruthy();
+      const skeleton = screen.getAllByTestId('skeleton')[0];
+      // Numeric values must be converted to px strings in inline style.
+      expect(skeleton).toHaveStyle({ width: '200px', height: '100px' });
     });
 
     it('renders as circle when circle prop is true', () => {
-      const { container } = render(<Skeleton circle data-testid="skeleton" />);
+      render(<Skeleton circle data-testid="skeleton" />);
 
-      const skeletons = screen.getAllByTestId('skeleton');
-      expect(skeletons.length).toBeGreaterThan(0);
-
-      // Simply verify component renders with circle prop
-      const skeleton = skeletons[0];
-      expect(skeleton).toBeInTheDocument();
-      expect(container.firstChild).toBeTruthy();
+      const skeleton = screen.getAllByTestId('skeleton')[0];
+      // circle=true must produce rounded-full class, NOT plain `rounded`.
+      expect(skeleton).toHaveClass('rounded-full');
+      expect(skeleton).not.toHaveClass('rounded');
     });
 
     it('renders without rounded corners when rounded is false', () => {
-      const { container } = render(<Skeleton rounded={false} data-testid="skeleton" />);
+      render(<Skeleton rounded={false} data-testid="skeleton" />);
 
-      const skeletons = screen.getAllByTestId('skeleton');
-      expect(skeletons.length).toBeGreaterThan(0);
-
-      // Simply verify component renders with rounded=false prop
-      const skeleton = skeletons[0];
-      expect(skeleton).toBeInTheDocument();
-      expect(container.firstChild).toBeTruthy();
+      const skeleton = screen.getAllByTestId('skeleton')[0];
+      // rounded=false and circle=false → neither rounded class applies.
+      expect(skeleton).not.toHaveClass('rounded');
+      expect(skeleton).not.toHaveClass('rounded-full');
     });
 
     it('circle prop overrides rounded prop', () => {
-      const { container } = render(<Skeleton circle rounded={false} data-testid="skeleton" />);
+      render(<Skeleton circle rounded={false} data-testid="skeleton" />);
 
-      const skeletons = screen.getAllByTestId('skeleton');
-      expect(skeletons.length).toBeGreaterThan(0);
-
-      // Simply verify component renders with both props
-      const skeleton = skeletons[0];
-      expect(skeleton).toBeInTheDocument();
-      expect(container.firstChild).toBeTruthy();
+      const skeleton = screen.getAllByTestId('skeleton')[0];
+      // circle wins over rounded=false → rounded-full applies.
+      expect(skeleton).toHaveClass('rounded-full');
     });
 
     it('renders as div element', () => {
