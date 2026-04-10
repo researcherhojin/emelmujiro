@@ -17,7 +17,7 @@
     "@tiptap/pm": "^3.22.2",
     "@tiptap/react": "^3.22.2",
     "@tiptap/starter-kit": "^3.22.2",
-    "axios": "^1.14.0",
+    "axios": "^1.15.0",
     "dompurify": "^3.3.3",
     "framer-motion": "^12.38.0",
     "i18next": "^26.0.3",
