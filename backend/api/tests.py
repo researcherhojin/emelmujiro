@@ -1852,12 +1852,19 @@ class UtilityFunctionTestCase(TestCase):
         ip = get_client_ip(request)
         self.assertEqual(ip, "192.168.1.100")
 
-    def test_get_client_ip_x_forwarded_for(self):
-        """Test get_client_ip with X-Forwarded-For header"""
+    def test_get_client_ip_x_forwarded_for_not_trusted(self):
+        """X-Forwarded-For is NOT trusted — attackers can spoof it.
+
+        Verifies the security-hardened behavior: with HTTP_X_FORWARDED_FOR set,
+        the function ignores it and falls back to REMOTE_ADDR. Trusting the
+        first element of XFF would let any client bypass IP-based rate limiting
+        and view counting by sending that header.
+        """
         request = self.factory.get("/")
         request.META["HTTP_X_FORWARDED_FOR"] = "10.0.0.1, 10.0.0.2"
+        request.META["REMOTE_ADDR"] = "192.168.1.100"
         ip = get_client_ip(request)
-        self.assertEqual(ip, "10.0.0.1")
+        self.assertEqual(ip, "192.168.1.100")  # REMOTE_ADDR, not the spoofable XFF
 
     def test_get_client_ip_cloudflare(self):
         """Test get_client_ip with Cloudflare header"""

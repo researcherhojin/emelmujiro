@@ -6,33 +6,26 @@ from django.http import HttpRequest
 
 
 def get_client_ip(request: HttpRequest) -> str:
-    """Extract client IP address (security-hardened)"""
-    # Check proxy headers in priority order
-    headers = [
-        "HTTP_CF_CONNECTING_IP",  # Cloudflare
-        "HTTP_X_REAL_IP",  # Nginx
-        "HTTP_X_FORWARDED_FOR",  # Standard proxy header
-        "HTTP_X_FORWARDED",  # Alternative
-        "HTTP_X_CLUSTER_CLIENT_IP",
-        "HTTP_FORWARDED_FOR",
-        "HTTP_FORWARDED",
-        "REMOTE_ADDR",
-    ]
+    """Extract client IP address — trusts ONLY Cloudflare header + REMOTE_ADDR.
 
-    for header in headers:
-        value = request.META.get(header)
-        if value:
-            # For X-Forwarded-For, use only the first IP
-            if "FORWARDED" in header:
-                ip = value.split(",")[0].strip()
-            else:
-                ip = value.strip()
+    SECURITY: Does NOT trust X-Forwarded-For, X-Real-IP, or any other
+    client-settable header. Rationale: this deployment sits behind Cloudflare
+    Tunnel → nginx → Django. Cloudflare guarantees CF-Connecting-IP is set to
+    the real client IP and strips any client-provided value, so it is
+    authoritative in production. For local dev / test / direct hits, REMOTE_ADDR
+    is Django's view of the immediate peer. Trusting the first element of
+    X-Forwarded-For would let anyone spoof their apparent IP by sending that
+    header, bypassing IP-based rate limiting, view counting, and IP blocking.
+    """
+    cf_ip = request.META.get("HTTP_CF_CONNECTING_IP")
+    if cf_ip and _is_valid_ip(cf_ip.strip()):
+        return cf_ip.strip()
 
-            # Validate IP format
-            if _is_valid_ip(ip):
-                return ip
+    remote_addr = request.META.get("REMOTE_ADDR")
+    if remote_addr and _is_valid_ip(remote_addr.strip()):
+        return remote_addr.strip()
 
-    return "127.0.0.1"  # Fallback
+    return "127.0.0.1"
 
 
 def _is_valid_ip(ip: str) -> bool:
