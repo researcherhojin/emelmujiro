@@ -104,9 +104,15 @@ cleanup-visits:
 
 setup-cron:
 	@mkdir -p $(CURDIR)/backend/logs
-	@echo "Adding daily SiteVisit cleanup cron job (3 AM)..."
-	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits; echo "0 3 * * * cd '$(CURDIR)' && docker compose exec -T backend uv run python manage.py cleanup_sitevisits --days 90 >> '$(CURDIR)/backend/logs/sitevisit-cleanup.log' 2>&1") | crontab -
-	@echo "Cron job added. Verify with: crontab -l"
+	@DOCKER_BIN="$$(command -v docker)"; \
+	if [ -z "$$DOCKER_BIN" ]; then \
+		echo "Error: docker not found in PATH. Install Docker Desktop first."; exit 1; \
+	fi; \
+	echo "Adding daily SiteVisit cleanup cron job (3 AM)..."; \
+	echo "Using docker binary: $$DOCKER_BIN"; \
+	(crontab -l 2>/dev/null | grep -v cleanup_sitevisits; \
+	 echo "0 3 * * * cd '$(CURDIR)' && $$DOCKER_BIN compose exec -T backend uv run python manage.py cleanup_sitevisits --days 90 >> '$(CURDIR)/backend/logs/sitevisit-cleanup.log' 2>&1") | crontab -; \
+	echo "Cron job added. Verify with: crontab -l"
 
 remove-cron:
 	@echo "Removing SiteVisit cleanup cron job..."
