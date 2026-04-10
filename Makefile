@@ -56,7 +56,7 @@ lint-fix:
 	cd backend && uv run black .
 
 clean:
-	rm -rf frontend/build frontend/node_modules/.cache
+	rm -rf frontend/build/* frontend/node_modules/.cache
 	find backend -type d -name '__pycache__' -exec rm -rf {} +
 	rm -rf backend/staticfiles
 
