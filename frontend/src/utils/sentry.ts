@@ -1,13 +1,24 @@
 // Sentry configuration - Enhanced Error Tracking for 2025
 //
-// Note on bundle size: attempted lazy-import via `await import('@sentry/react')`
-// to skip the ~77 kB chunk when Sentry is disabled. Vite couldn't tree-shake
-// the dynamic import as aggressively as the static one, and the resulting
-// chunk ballooned to 438 kB. Reverted to static import — the 77 kB chunk
-// always ships, but it's at least tree-shaken to only the used methods.
-// Savings from lazy-init on disabled deployments (~25 kB unused-js) are not
-// worth the ~360 kB regression when Sentry is enabled.
-import * as Sentry from '@sentry/react';
+// Bundle note: the chunk is 77 kB (26 kB gz) and Lighthouse reports ~72 kB
+// of it as unused on the home page. The unused bytes are NOT tree-shakable
+// dead exports — they're module-eval overhead that Sentry's `init()` pulls
+// in transitively (default integrations, transports, scope manager, error
+// classifier). Two prior reduction attempts both failed:
+//   1. `import * as Sentry` → named imports: Vite was already tree-shaking
+//      the namespace import, named imports gave zero size delta.
+//   2. `await import('@sentry/react')`: dynamic import of a barrel package
+//      defeats tree-shaking entirely — chunk ballooned 77 kB → 438 kB.
+// Realistic next step is switching to `@sentry/browser` directly (smaller
+// surface, no React HOC bits we don't use) or moving to a re-export shim
+// pattern for true lazy loading. Both deferred — see TODO §1.x.
+import {
+  init as sentryInit,
+  captureException as sentryCaptureException,
+  withScope as sentryWithScope,
+  setUser as sentrySetUser,
+  addBreadcrumb as sentryAddBreadcrumb,
+} from '@sentry/react';
 import env from '../config/env';
 import logger from './logger';
 
@@ -25,7 +36,7 @@ interface ErrorInfo {
 export function initSentry(): void {
   if (env.ENABLE_SENTRY && env.SENTRY_DSN) {
     try {
-      Sentry.init({
+      sentryInit({
         dsn: env.SENTRY_DSN,
         environment: env.NODE_ENV,
         tracesSampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
@@ -115,14 +126,14 @@ export function initSentry(): void {
 export function captureException(error: Error | unknown, context?: Record<string, unknown>): void {
   if (env.ENABLE_SENTRY) {
     if (context) {
-      Sentry.withScope((scope) => {
+      sentryWithScope((scope) => {
         Object.keys(context).forEach((key) => {
           scope.setExtra(key, context[key]);
         });
-        Sentry.captureException(error);
+        sentryCaptureException(error);
       });
     } else {
-      Sentry.captureException(error);
+      sentryCaptureException(error);
     }
   } else {
     // Log to console in development
@@ -133,12 +144,12 @@ export function captureException(error: Error | unknown, context?: Record<string
 // Error reporter for use with React Error Boundary
 export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
   if (env.ENABLE_SENTRY) {
-    Sentry.withScope((scope) => {
+    sentryWithScope((scope) => {
       scope.setContext('errorBoundary', {
         componentStack: errorInfo.componentStack,
         digest: errorInfo.digest,
       });
-      Sentry.captureException(error);
+      sentryCaptureException(error);
     });
   } else {
     logger.error('Error Boundary:', { error, errorInfo });
@@ -148,14 +159,14 @@ export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
 // Set user context for error tracking (call on login)
 export function setUserContext(user: { id: number; email: string }): void {
   if (env.ENABLE_SENTRY) {
-    Sentry.setUser({ id: String(user.id), email: user.email });
+    sentrySetUser({ id: String(user.id), email: user.email });
   }
 }
 
 // Clear user context (call on logout)
 export function clearUserContext(): void {
   if (env.ENABLE_SENTRY) {
-    Sentry.setUser(null);
+    sentrySetUser(null);
   }
 }
 
@@ -166,7 +177,7 @@ export function addBreadcrumb(
   data?: Record<string, unknown>
 ): void {
   if (env.ENABLE_SENTRY) {
-    Sentry.addBreadcrumb({ category, message, data, level: 'info' });
+    sentryAddBreadcrumb({ category, message, data, level: 'info' });
   }
 }
 

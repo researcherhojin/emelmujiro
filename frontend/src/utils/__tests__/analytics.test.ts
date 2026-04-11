@@ -76,10 +76,10 @@ describe('analytics', () => {
       // scheduleIdle helper hits the `if (typeof ric === 'function')` branch
       // instead of the setTimeout fallback. Measured uncovered at analytics.ts:11.
       const ricCalls: Array<() => void> = [];
-      (window as Window & { requestIdleCallback?: (cb: () => void) => void }).requestIdleCallback =
-        (cb: () => void) => {
-          ricCalls.push(cb);
-        };
+      const win = window as unknown as { requestIdleCallback?: (cb: () => void) => void };
+      win.requestIdleCallback = (cb: () => void) => {
+        ricCalls.push(cb);
+      };
 
       try {
         const { initAnalytics } = await import('../analytics');
@@ -91,8 +91,7 @@ describe('analytics', () => {
         const script = document.head.querySelector('script[src*="googletagmanager"]');
         expect(script).not.toBeNull();
       } finally {
-        delete (window as Window & { requestIdleCallback?: (cb: () => void) => void })
-          .requestIdleCallback;
+        delete win.requestIdleCallback;
       }
     });
 
