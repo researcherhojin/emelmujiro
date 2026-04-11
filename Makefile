@@ -1,19 +1,47 @@
-.PHONY: help install dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy logs logs-security logs-debug ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron remove-cron
+.PHONY: help install setup-dev-machine save-secrets verify-setup dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy logs logs-security logs-debug ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron remove-cron
 
 help:
 	@echo "Available commands:"
-	@echo "  make install     - Install all dependencies"
-	@echo "  make dev         - Start development servers (Docker)"
-	@echo "  make dev-local   - Start local development servers"
-	@echo "  make dev-clean   - Kill ports and start dev servers"
-	@echo "  make build       - Build production images"
-	@echo "  make test        - Run all tests"
-	@echo "  make test-ci     - Run all tests (CI mode, no watch)"
-	@echo "  make lint        - Run linters"
-	@echo "  make lint-fix    - Auto-fix lint issues"
-	@echo "  make clean       - Clean build artifacts"
-	@echo "  make ports       - Check port status"
-	@echo "  make kill-ports  - Kill all dev ports"
+	@echo "  make setup-dev-machine - One-shot bootstrap on a fresh macOS dev machine"
+	@echo "  make save-secrets      - Save local .env files to 1Password (run on source machine)"
+	@echo "  make verify-setup      - Run all setup verification checks"
+	@echo "  make install           - Install all dependencies (npm + uv)"
+	@echo "  make dev               - Start development servers (Docker)"
+	@echo "  make dev-local         - Start local development servers"
+	@echo "  make dev-clean         - Kill ports and start dev servers"
+	@echo "  make build             - Build production images"
+	@echo "  make test              - Run all tests"
+	@echo "  make test-ci           - Run all tests (CI mode, no watch)"
+	@echo "  make lint              - Run linters"
+	@echo "  make lint-fix          - Auto-fix lint issues"
+	@echo "  make clean             - Clean build artifacts"
+	@echo "  make ports             - Check port status"
+	@echo "  make kill-ports        - Kill all dev ports"
+
+setup-dev-machine:
+	./scripts/setup-dev-machine.sh
+
+save-secrets:
+	./scripts/setup-dev-machine.sh --save-secrets
+
+# verify-setup: standalone setup health check. Used by setup-dev-machine.sh
+# Phase 9 AND can be run independently after manual setup or as a sanity
+# check on an existing machine. Each step echoes ✓/✗ — exits non-zero on
+# any failure.
+verify-setup:
+	@echo "═══ verify-setup ═══"
+	@command -v node >/dev/null 2>&1 && echo "✓ node $$(node --version)" || (echo "✗ node not on PATH"; exit 1)
+	@command -v uv >/dev/null 2>&1 && echo "✓ uv $$(uv --version | awk '{print $$2}')" || (echo "✗ uv not installed"; exit 1)
+	@command -v gh >/dev/null 2>&1 && echo "✓ gh $$(gh --version | head -1 | awk '{print $$3}')" || (echo "✗ gh not installed"; exit 1)
+	@test -f .env && echo "✓ .env present" || (echo "✗ .env missing"; exit 1)
+	@test -f backend/.env && echo "✓ backend/.env present" || (echo "✗ backend/.env missing"; exit 1)
+	@test -f backend/.env.production && echo "✓ backend/.env.production present" || (echo "✗ backend/.env.production missing"; exit 1)
+	@test -f frontend/.env.production && echo "✓ frontend/.env.production present" || (echo "✗ frontend/.env.production missing"; exit 1)
+	@test -d frontend/node_modules && echo "✓ frontend/node_modules installed" || (echo "✗ frontend/node_modules missing — run 'make install'"; exit 1)
+	@test -d backend/.venv && echo "✓ backend/.venv installed" || (echo "✗ backend/.venv missing — run 'make install'"; exit 1)
+	@cd frontend && CI=true npx vitest run --reporter=dot --no-coverage src/utils/__tests__/dateFormat.test.ts >/dev/null 2>&1 && echo "✓ vitest smoke test passes" || (echo "✗ vitest smoke test failed"; exit 1)
+	@cd backend && DATABASE_URL='' uv run python manage.py check >/dev/null 2>&1 && echo "✓ django check passes" || (echo "✗ django check failed"; exit 1)
+	@echo "═══ all verify-setup checks passed ═══"
 
 install:
 	npm install
