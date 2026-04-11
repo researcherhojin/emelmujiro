@@ -22,7 +22,7 @@
     "lint:fix:frontend": "cd frontend && eslint src --fix",
     "lint:fix:backend": "cd backend && uv run black .",
     "clean": "npm run clean:frontend && npm run clean:backend",
-    "clean:frontend": "rm -rf frontend/build frontend/node_modules/.cache",
+    "clean:frontend": "rm -rf frontend/build/* frontend/node_modules/.cache",
     "clean:backend": "find backend -type d -name '__pycache__' -exec rm -rf {} + && rm -rf backend/staticfiles",
     "install:all": "npm install && cd backend && uv sync --extra dev",
     "knip": "knip",

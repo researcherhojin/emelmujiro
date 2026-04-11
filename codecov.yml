@@ -61,4 +61,3 @@ ignore:
   # Barrel exports — no executable logic, V8 cannot track re-exports
   - "frontend/src/constants/index.ts"
   - "frontend/src/test-utils/index.ts"
-  - "frontend/src/test-utils/polyfills.ts"

@@ -2,11 +2,11 @@ import type { KnipConfig } from 'knip';
 
 const config: KnipConfig = {
   workspaces: {
-    'frontend': {
+    frontend: {
       entry: ['src/App.tsx', 'scripts/*.{js,ts}'],
       project: ['src/**/*.{ts,tsx}'],
       ignore: [
-        // Test infrastructure — intentionally set up for MSW-based testing
+        // Test helpers (renderWithProviders, etc.) — imported from test files only
         'src/test-utils/**',
       ],
       ignoreDependencies: [
