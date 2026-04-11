@@ -28,6 +28,7 @@ vi.mock('../components/layout/Layout', () => ({
 // Mock UnifiedLoading
 vi.mock('../components/common/UnifiedLoading', () => ({
   PageLoading: () => <div data-testid="page-loading">Loading...</div>,
+  RouteFallback: () => <div data-testid="route-fallback">Loading...</div>,
 }));
 
 // Mock ErrorBoundary

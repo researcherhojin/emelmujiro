@@ -13,6 +13,7 @@
     "close": "닫기",
     "back": "뒤로",
     "switchLanguage": "언어 전환",
+    "switchLanguageTo": "{{lang}}로 전환",
     "companyName": "에멜무지로",
     "inquireProject": "무료 상담 신청 →",
     "menu": "메뉴",

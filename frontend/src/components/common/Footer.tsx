@@ -147,7 +147,7 @@ const Footer: React.FC = memo(() => {
             <p className="text-center text-gray-600 dark:text-gray-400 text-sm">
               {t('footer.copyright', { year: currentYear })}
             </p>
-            <p className="text-center text-xs text-gray-400 dark:text-gray-500 leading-relaxed">
+            <p className="text-center text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
               {t('footer.businessInfo.representative')}:{' '}
               {t('footer.businessInfo.representativeName')} |{' '}
               {t('footer.businessInfo.businessNumber')}:{' '}

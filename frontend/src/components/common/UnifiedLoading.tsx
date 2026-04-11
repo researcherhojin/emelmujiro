@@ -211,6 +211,27 @@ export const PageLoading: React.FC<{ message?: string }> = ({ message }) => (
   <UnifiedLoading variant="page" message={message} />
 );
 
+/**
+ * RouteFallback — in-flow Suspense fallback for lazy-loaded route components.
+ *
+ * Unlike PageLoading (which is position:fixed and takes 0 document-flow space),
+ * this reserves `min-h-screen` and centers the spinner. Critical for CLS:
+ * a fixed-position fallback leaves `<main>` empty during lazy chunk load, so
+ * when the real content renders, `<main>` grows from ~viewport height to full
+ * content height and the footer shifts down by hundreds of pixels (measured
+ * as CLS 0.528 on /contact and /profile before this fix).
+ */
+export const RouteFallback: React.FC = memo(() => (
+  <div className="min-h-screen flex items-center justify-center" data-testid="route-fallback">
+    <motion.div
+      animate={{ rotate: 360 }}
+      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+      className="w-12 h-12 border-4 border-gray-300 dark:border-gray-700 border-t-gray-900 dark:border-t-white rounded-full"
+    />
+  </div>
+));
+RouteFallback.displayName = 'RouteFallback';
+
 export const InlineLoading: React.FC<{ message?: string }> = ({ message }) => (
   <UnifiedLoading variant="inline" message={message} size="sm" />
 );

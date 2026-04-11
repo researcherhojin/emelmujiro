@@ -7,7 +7,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { UIProvider } from './contexts/UIContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import Layout from './components/layout/Layout';
-import { PageLoading } from './components/common/UnifiedLoading';
+import { PageLoading, RouteFallback } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { trackPageView } from './utils/analytics';
 import './i18n';
@@ -126,7 +126,7 @@ const AppLayout: React.FC = memo(() => {
     <Layout>
       <ScrollToTop />
       <ErrorBoundary>
-        <Suspense fallback={<PageLoading />}>
+        <Suspense fallback={<RouteFallback />}>
           <Outlet />
         </Suspense>
       </ErrorBoundary>

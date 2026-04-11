@@ -110,7 +110,9 @@ const Navbar: React.FC = memo(() => {
             <button
               onClick={handleLanguageSwitch}
               className="flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-none border-none bg-transparent"
-              aria-label={t('common.switchLanguage')}
+              aria-label={t('common.switchLanguageTo', {
+                lang: currentLang === 'ko' ? 'EN' : 'KO',
+              })}
             >
               <Globe className="w-4 h-4" />
               <span>{currentLang === 'ko' ? 'EN' : 'KO'}</span>
@@ -136,7 +138,9 @@ const Navbar: React.FC = memo(() => {
             <button
               onClick={handleLanguageSwitch}
               className="flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-none border-none bg-transparent"
-              aria-label={t('common.switchLanguage')}
+              aria-label={t('common.switchLanguageTo', {
+                lang: currentLang === 'ko' ? 'EN' : 'KO',
+              })}
             >
               <Globe className="w-4 h-4" />
               <span>{currentLang === 'ko' ? 'EN' : 'KO'}</span>

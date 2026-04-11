@@ -13,6 +13,7 @@
     "close": "Close",
     "back": "Back",
     "switchLanguage": "Switch Language",
+    "switchLanguageTo": "Switch to {{lang}}",
     "companyName": "Emelmujiro",
     "inquireProject": "Free Consultation →",
     "menu": "Menu",

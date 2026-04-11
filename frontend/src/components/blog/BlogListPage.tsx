@@ -66,10 +66,11 @@ const BlogListPage: React.FC = memo(() => {
   // Single click handler for the category filter row. Reads the target slug
   // from the button's data-slug attribute instead of an inline arrow closure
   // per item, so we only allocate one callback regardless of category count.
+  // Non-null assertion is safe: every button that uses this handler sets
+  // data-slug explicitly (see the JSX below — 'all' + categories.map cat.slug).
   const handleCategoryClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      const slug = e.currentTarget.dataset.slug;
-      if (slug) handleCategoryChange(slug);
+      handleCategoryChange(e.currentTarget.dataset.slug!);
     },
     [handleCategoryChange]
   );
