@@ -20,8 +20,8 @@
 
   /* Typography */
   --font-family-primary:
-    "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue",
-    "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+    "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
   --letter-spacing-tight: -0.025em;
   --letter-spacing-tighter: -0.03em;
   --line-height-base: 1.7;

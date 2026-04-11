@@ -31,21 +31,24 @@
     <link rel="dns-prefetch" href="https://api.emelmujiro.com" />
     <link rel="preconnect" href="https://api.emelmujiro.com" crossorigin />
 
-    <!-- Pretendard font - static version (async to avoid render-blocking).
-         Previously we also loaded Inter from Google Fonts here, but the
-         codebase never referenced it — pure render-blocking dead weight
-         (368ms wasted per Lighthouse on /contact). Removed along with the
-         paired preconnect/dns-prefetch for fonts.googleapis.com. -->
+    <!-- Pretendard variable font (single ~2 MB woff2 covering all weights).
+         Previously loaded the static version (pretendard.min.css) which
+         pulled every weight × language subset as separate woff2 files —
+         measured 3.8 MB total from JSDelivr in Lighthouse. The variable
+         version is ~47% smaller because Pretendard's weight axis is a
+         single axis interpolation. Family name is 'Pretendard Variable'
+         (not 'Pretendard') — matched in index.css and this file's
+         critical inline style. -->
     <link
       rel="preload"
       as="style"
       onload="this.onload=null;this.rel='stylesheet'"
-      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
     />
     <noscript>
       <link
         rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
       />
     </noscript>
 
@@ -56,6 +59,7 @@
       /* Critical CSS for faster first paint */
       body {
         font-family:
+          'Pretendard Variable',
           'Pretendard',
           -apple-system,
           BlinkMacSystemFont,
