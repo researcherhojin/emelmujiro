@@ -74,6 +74,7 @@ const ContactPage: React.FC = memo(() => {
                     title={t('contact.googleForm.formTitle')}
                     className="w-full rounded-xl border-0"
                     style={{ height: '1200px' }}
+                    loading="lazy"
                     onLoad={() => setIframeLoaded(true)}
                   >
                     {t('contact.googleForm.loading')}

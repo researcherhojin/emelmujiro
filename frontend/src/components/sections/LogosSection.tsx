@@ -13,7 +13,8 @@ const LogoItem: React.FC<{ company: PartnerCompany }> = memo(({ company }) => {
           className="h-12 w-auto object-contain opacity-60 group-hover:opacity-40 hover:!opacity-100 transition-opacity duration-300"
           width={160}
           height={48}
-          loading="eager"
+          loading="lazy"
+          decoding="async"
         />
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // Mock env module before importing analytics
 const mockEnv = vi.hoisted(() => ({
@@ -17,6 +17,7 @@ vi.mock('../../config/env', () => ({
 describe('analytics', () => {
   beforeEach(() => {
     vi.resetModules();
+    vi.useFakeTimers();
     // Reset env defaults
     mockEnv.GA_TRACKING_ID = 'G-TEST123';
     mockEnv.ENABLE_ANALYTICS = true;
@@ -27,16 +28,29 @@ describe('analytics', () => {
     document.head.querySelectorAll('script[src*="googletagmanager"]').forEach((s) => s.remove());
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   describe('initAnalytics', () => {
     it('injects gtag script and initializes dataLayer when enabled', async () => {
       const { initAnalytics } = await import('../analytics');
       initAnalytics();
 
+      // Shim + dataLayer are set up synchronously so events queued during
+      // initial render aren't lost. The actual script injection is deferred
+      // until the `load` event + idle callback — advance timers to flush it.
+      expect(window.dataLayer).toBeDefined();
+      expect(typeof window.gtag).toBe('function');
+
+      // jsdom readyState is 'complete' at test time, so we go through the
+      // scheduleIdle path (setTimeout 200ms fallback — requestIdleCallback
+      // isn't polyfilled in jsdom).
+      await vi.advanceTimersByTimeAsync(300);
+
       const script = document.head.querySelector('script[src*="googletagmanager"]');
       expect(script).not.toBeNull();
       expect(script?.getAttribute('src')).toContain('G-TEST123');
-      expect(window.dataLayer).toBeDefined();
-      expect(typeof window.gtag).toBe('function');
     });
 
     it('does nothing when analytics is disabled', async () => {

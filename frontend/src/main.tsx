@@ -11,7 +11,8 @@ import { initPerformanceMonitoring, checkPerformanceBudget } from './utils/webVi
 // Initialize Sentry error tracking (no-op unless VITE_ENABLE_SENTRY=true and VITE_SENTRY_DSN is set)
 initSentry();
 
-// Initialize Google Analytics (no-op unless VITE_ENABLE_ANALYTICS=true and VITE_GA_TRACKING_ID is set)
+// Initialize Google Analytics shim synchronously; actual gtag.js script
+// injection is deferred until after `load` event + one idle callback tick.
 initAnalytics();
 
 const rootElement = document.getElementById('root');

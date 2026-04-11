@@ -85,12 +85,18 @@ describe('LogosSection', () => {
     expect(images).toHaveLength(12);
   });
 
-  it('renders images with eager loading for above-the-fold display', () => {
+  it('renders images with lazy loading (logos are below the fold)', () => {
+    // LogosSection sits below the hero and carousel is horizontally
+    // scrolling — most logos are off-screen at any given time. Lazy loading
+    // defers the fetch until the browser decides they're close to entering
+    // the viewport, which dropped wasted bytes on partner logos from ~55 kB
+    // to ~0 kB in Lighthouse uses-responsive-images.
     render(<LogosSection />);
 
     const images = screen.getAllByRole('img');
     images.forEach((img) => {
-      expect(img).toHaveAttribute('loading', 'eager');
+      expect(img).toHaveAttribute('loading', 'lazy');
+      expect(img).toHaveAttribute('decoding', 'async');
     });
   });
 
