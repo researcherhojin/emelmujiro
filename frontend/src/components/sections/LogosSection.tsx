@@ -53,8 +53,9 @@ const ScrollRow: React.FC<ScrollRowProps> = memo(({ companies, direction = 'left
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Render 3 copies for seamless looping */}
-        {[0, 1, 2].map((copy) =>
+        {/* Render 2 copies for seamless looping (was 3x; reduced to drop
+            homepage dom-size below Lighthouse 800-node threshold). */}
+        {[0, 1].map((copy) =>
           companies.map((company, index) => (
             <LogoItem key={`${rowKey}-${copy}-${index}`} company={company} />
           ))

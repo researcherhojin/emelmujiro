@@ -32,20 +32,25 @@ module.exports = {
         'scroll-testimonial-reverse': 'scroll-testimonial-reverse 32s linear infinite',
       },
       keyframes: {
+        // Carousel keyframes use translateX(-50%) because LogosSection and
+        // TestimonialsSection now render 2 copies of their content (was 3x
+        // and 5x respectively; reduced to drop homepage dom-size below the
+        // Lighthouse 800-node threshold). Math: with N copies the animation
+        // must move -((1/N) × 100%) to loop seamlessly — 2 copies = -50%.
         scroll: {
           '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-33.333%)' },
+          '100%': { transform: 'translateX(-50%)' },
         },
         'scroll-reverse': {
-          '0%': { transform: 'translateX(-33.333%)' },
+          '0%': { transform: 'translateX(-50%)' },
           '100%': { transform: 'translateX(0)' },
         },
         'scroll-testimonial': {
           '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-20%)' },
+          '100%': { transform: 'translateX(-50%)' },
         },
         'scroll-testimonial-reverse': {
-          '0%': { transform: 'translateX(-20%)' },
+          '0%': { transform: 'translateX(-50%)' },
           '100%': { transform: 'translateX(0)' },
         },
       },

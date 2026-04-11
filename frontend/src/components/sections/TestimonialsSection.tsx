@@ -79,7 +79,7 @@ const ScrollRow: React.FC<ScrollRowProps> = memo(({ testimonials, direction = 'l
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {[0, 1, 2, 3, 4].map((copy) =>
+        {[0, 1].map((copy) =>
           testimonials.map((testimonial, index) => (
             <TestimonialCard key={`${rowKey}-${copy}-${index}`} testimonial={testimonial} />
           ))
