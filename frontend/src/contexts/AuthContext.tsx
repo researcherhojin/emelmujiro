@@ -55,11 +55,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // httpOnly cookies aren't readable from JS, so we use a localStorage
       // flag that gets set on login and cleared on logout.
       if (!localStorage.getItem('auth_hint')) {
+        // The cancelled guard here is dead in practice — run() is called
+        // synchronously from the effect body, so line 57-59 execute before
+        // React can run the cleanup. But leaving it unguarded means
+        // setLoading would fire on an unmounted component in the rare
+        // React 18 concurrent-render interrupt case. Defensive, unreachable
+        // via current tests.
+        /* v8 ignore next */
         if (!cancelled) setLoading(false);
         return;
       }
       try {
         const response = await api.getUser();
+        // After-await cancelled checks ARE reachable: tests exercise both
+        // the "unmount after resolve" and "unmount after reject" paths.
         if (cancelled) return;
         setUser(response.data);
         setUserContext({ id: response.data.id, email: response.data.email });
@@ -68,6 +77,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(null);
         localStorage.removeItem('auth_hint');
       }
+      // Same reasoning as line 58: if we got here, cancelled was false at
+      // line 63/67 and there's no async barrier between there and here,
+      // so this guard's false branch is unreachable. Kept for symmetry.
+      /* v8 ignore next */
       if (!cancelled) setLoading(false);
     };
 

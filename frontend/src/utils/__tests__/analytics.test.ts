@@ -70,6 +70,64 @@ describe('analytics', () => {
       const script = document.head.querySelector('script[src*="googletagmanager"]');
       expect(script).toBeNull();
     });
+
+    it('uses requestIdleCallback when available (covers the non-setTimeout branch)', async () => {
+      // jsdom lacks requestIdleCallback by default — stub it so the
+      // scheduleIdle helper hits the `if (typeof ric === 'function')` branch
+      // instead of the setTimeout fallback. Measured uncovered at analytics.ts:11.
+      const ricCalls: Array<() => void> = [];
+      (window as Window & { requestIdleCallback?: (cb: () => void) => void }).requestIdleCallback =
+        (cb: () => void) => {
+          ricCalls.push(cb);
+        };
+
+      try {
+        const { initAnalytics } = await import('../analytics');
+        initAnalytics();
+
+        expect(ricCalls).toHaveLength(1);
+        // Execute the queued idle callback — it should inject the gtag script
+        ricCalls[0]();
+        const script = document.head.querySelector('script[src*="googletagmanager"]');
+        expect(script).not.toBeNull();
+      } finally {
+        delete (window as Window & { requestIdleCallback?: (cb: () => void) => void })
+          .requestIdleCallback;
+      }
+    });
+
+    it('defers script injection via load event when document is still loading', async () => {
+      // Default jsdom readyState is 'complete'. Override to 'loading' so the
+      // initAnalytics path takes the `else` branch (addEventListener on load).
+      // Measured uncovered at analytics.ts:57-60.
+      const originalReadyState = document.readyState;
+      Object.defineProperty(document, 'readyState', {
+        configurable: true,
+        get: () => 'loading',
+      });
+
+      try {
+        const { initAnalytics } = await import('../analytics');
+        initAnalytics();
+
+        // No script yet — we're still in the "waiting for load" phase
+        let script = document.head.querySelector('script[src*="googletagmanager"]');
+        expect(script).toBeNull();
+
+        // Fire the load event
+        window.dispatchEvent(new Event('load'));
+        // Flush the scheduleIdle setTimeout fallback
+        await vi.advanceTimersByTimeAsync(300);
+
+        script = document.head.querySelector('script[src*="googletagmanager"]');
+        expect(script).not.toBeNull();
+      } finally {
+        Object.defineProperty(document, 'readyState', {
+          configurable: true,
+          get: () => originalReadyState,
+        });
+      }
+    });
   });
 
   describe('trackPageView', () => {
