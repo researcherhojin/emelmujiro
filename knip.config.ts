@@ -10,9 +10,8 @@ const config: KnipConfig = {
         'src/test-utils/**',
       ],
       ignoreDependencies: [
-        'sitemap', // Used in scripts/generate-sitemap.js
-        'msw', // Test infrastructure — set up for future use
-        'playwright', // Provided by @playwright/test
+        'sitemap', // Used by scripts/generate-sitemap.js (CLI, not import)
+        'playwright', // Provided transitively by @playwright/test
       ],
     },
   },

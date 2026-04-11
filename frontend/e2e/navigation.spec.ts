@@ -2,19 +2,24 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Navigation', () => {
   test('full navigation flow across pages', async ({ page }) => {
+    // The label text "강의이력"/"인사이트"/"문의하기" appears in BOTH the
+    // top navbar and the footer "메뉴 목록" — Playwright strict mode rejects
+    // ambiguous role queries. Scope to navbar via aria-label.
+    const nav = page.getByLabel('Main navigation');
+
     await page.goto('/');
     await expect(page).toHaveURL(/\/$/);
 
     // Navigate to Teaching History (강의이력)
-    await page.getByRole('button', { name: '강의이력' }).click();
+    await nav.getByRole('button', { name: '강의이력' }).click();
     await expect(page).toHaveURL(/\/profile/);
 
     // Navigate to Insights (인사이트)
-    await page.getByRole('button', { name: '인사이트' }).click();
+    await nav.getByRole('button', { name: '인사이트' }).click();
     await expect(page).toHaveURL(/\/insights/);
 
     // Navigate to Contact
-    await page.getByRole('button', { name: '문의하기' }).click();
+    await nav.getByRole('button', { name: '문의하기' }).click();
     await expect(page).toHaveURL(/\/contact/);
 
     // Navigate back to Home via logo
@@ -39,7 +44,7 @@ test.describe('Navigation', () => {
 
   test('back button works', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: '강의이력' }).click();
+    await page.getByLabel('Main navigation').getByRole('button', { name: '강의이력' }).click();
     await expect(page).toHaveURL(/\/profile/);
 
     await page.goBack();
@@ -53,7 +58,12 @@ test.describe('Navigation', () => {
     const menuButton = page.getByRole('button', { name: '메뉴' });
     await menuButton.click();
 
-    await page.getByRole('button', { name: '강의이력', exact: true }).click();
+    // Mobile sheet is rendered inside <nav aria-label="Main navigation">,
+    // so the same scoping pattern as the desktop test works here.
+    await page
+      .getByLabel('Main navigation')
+      .getByRole('button', { name: '강의이력', exact: true })
+      .click();
     await expect(page).toHaveURL(/\/profile/);
   });
 
