@@ -73,21 +73,23 @@ npm run dev
 
 ### Useful Commands
 
+Run from the repo root unless noted otherwise.
+
 ```bash
-make test                  # Run all tests (frontend + backend)
-make lint                  # Run all linters
+make test                  # All tests (frontend + backend)
+make lint                  # All linters
 make lint-fix              # Auto-fix lint issues
-npm run validate           # lint + type-check + test:coverage (frontend)
+make update-test-counts    # Refresh README test-count badges from real runner output
 
-# Single test (from frontend/)
+# From frontend/
+cd frontend
+npm run validate           # lint + type-check + test:coverage
 CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx
+npm run test:e2e           # Playwright headless (5 profiles)
+npm run test:e2e:ui        # Playwright interactive UI
+npm run test:e2e:debug     # Playwright debug mode
 
-# E2E tests (from frontend/)
-npm run test:e2e           # Headless
-npm run test:e2e:ui        # Interactive UI
-npm run test:e2e:debug     # Debug mode
-
-# Docker dev with optional PostgreSQL
+# Docker dev (optional PostgreSQL profile)
 docker compose -f docker-compose.dev.yml --profile postgres up
 ```
 
