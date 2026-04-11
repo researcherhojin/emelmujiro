@@ -41,7 +41,6 @@ def admin_stats(request):
     if cached is not None:
         return Response(cached)
 
-
     total_users = User.objects.count()
     total_posts = BlogPost.objects.count()
     total_messages = Contact.objects.count()
