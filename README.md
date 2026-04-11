@@ -143,7 +143,7 @@ graph LR
 - **Performance** — Vendor chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
 - **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30
-- **Tests** — Vitest 1216 + Django 358 + Playwright E2E (5 profiles)
+- **Tests** — Vitest (1216 tests) + Django unittest (358 tests) + Playwright E2E (5 profiles)
 - **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Codecov, auto-deploy via webhook
 
 ## Development
