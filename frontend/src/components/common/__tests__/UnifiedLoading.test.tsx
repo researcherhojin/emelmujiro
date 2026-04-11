@@ -5,7 +5,12 @@ import { vi } from 'vitest';
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import UnifiedLoading, { PageLoading, InlineLoading, ButtonLoading } from '../UnifiedLoading';
+import UnifiedLoading, {
+  PageLoading,
+  RouteFallback,
+  InlineLoading,
+  ButtonLoading,
+} from '../UnifiedLoading';
 import type { LoadingVariant } from '../UnifiedLoading';
 
 // Mock SkeletonLoader components
@@ -399,6 +404,41 @@ describe('UnifiedLoading Component', () => {
 
         const fullscreenWrapper = container.querySelector('[data-testid="fullscreen-wrapper"]');
         expect(fullscreenWrapper).toBeInTheDocument();
+      });
+    });
+
+    describe('RouteFallback', () => {
+      // In-flow Suspense fallback for lazy routes. The critical assertions are
+      // the classes that prevent the CLS 0.528 regression we fixed in b6ad805:
+      // (1) NOT position:fixed (would leave <main> empty during lazy load) and
+      // (2) min-h-screen (reserves viewport height so footer doesn't shift).
+      it('renders with route-fallback testid', () => {
+        render(<RouteFallback />);
+        const fallback = screen.getByTestId('route-fallback');
+        expect(fallback).toBeInTheDocument();
+      });
+
+      it('reserves min-h-screen so footer does not shift during lazy load', () => {
+        render(<RouteFallback />);
+        const fallback = screen.getByTestId('route-fallback');
+        expect(fallback).toHaveClass('min-h-screen');
+      });
+
+      it('is in-flow, not fixed overlay (critical for CLS)', () => {
+        render(<RouteFallback />);
+        const fallback = screen.getByTestId('route-fallback');
+        // position:fixed would have 'fixed' class via the FullScreenWrapper;
+        // RouteFallback deliberately does NOT use FullScreenWrapper.
+        expect(fallback).not.toHaveClass('fixed');
+        // And it is NOT inside a fullscreen-wrapper
+        const fullscreenWrapper = screen.queryByTestId('fullscreen-wrapper');
+        expect(fullscreenWrapper).toBeNull();
+      });
+
+      it('centers its spinner', () => {
+        render(<RouteFallback />);
+        const fallback = screen.getByTestId('route-fallback');
+        expect(fallback).toHaveClass('flex', 'items-center', 'justify-center');
       });
     });
 

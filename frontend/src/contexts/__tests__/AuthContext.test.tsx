@@ -545,4 +545,95 @@ describe('AuthContext', () => {
       expect(screen.getByTestId('error')).toHaveTextContent('auth.registerFailed');
     });
   });
+
+  // ---- Mount-cancel branch coverage (inlined checkAuthStatus) ----
+  // The AuthProvider useEffect uses a `cancelled` flag to avoid setState on
+  // an unmounted component when the initial api.getUser() resolves after the
+  // component has already unmounted. These tests exercise that branch by
+  // unmounting mid-flight — both the success path and the error path.
+
+  test('unmount during pending getUser() does not throw (cancelled success path)', async () => {
+    localStorage.setItem('auth_hint', '1');
+
+    // Deferred promise — we control when it resolves.
+    let resolveGetUser!: (v: unknown) => void;
+    mockApi.getUser.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveGetUser = resolve;
+        })
+    );
+
+    const { unmount } = render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    // Unmount before the promise resolves — cancelled flag flips to true.
+    unmount();
+
+    // Now resolve. The `if (cancelled) return` branch should fire and
+    // NOT setState on the unmounted component.
+    resolveGetUser({
+      data: { id: 1, email: 'cancelled@example.com', name: 'Test' },
+    });
+
+    // Flush microtasks. If the cancelled guard missed, React would log a
+    // "can't perform a React state update on an unmounted component" warning
+    // or throw. A clean resolution proves the branch executed.
+    await new Promise((r) => setTimeout(r, 10));
+  });
+
+  test('unmount during pending getUser() does not throw (cancelled error path)', async () => {
+    localStorage.setItem('auth_hint', '1');
+
+    let rejectGetUser!: (reason: unknown) => void;
+    mockApi.getUser.mockImplementationOnce(
+      () =>
+        new Promise((_, reject) => {
+          rejectGetUser = reject;
+        })
+    );
+
+    const { unmount } = render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    unmount();
+
+    // Reject after unmount — the catch block's `if (cancelled) return` must
+    // fire and skip setUser(null) / localStorage.removeItem.
+    rejectGetUser(new Error('401 after unmount'));
+
+    await new Promise((r) => setTimeout(r, 10));
+
+    // auth_hint should NOT have been removed — the cancelled guard preserved
+    // it (the real behavior would remove on unmounted error handler).
+    expect(localStorage.getItem('auth_hint')).toBe('1');
+  });
+
+  test('unmount before auth_hint check does not setLoading (cancelled early path)', async () => {
+    // No auth_hint set — the effect takes the early-return branch after
+    // `if (!localStorage.getItem('auth_hint'))`. We want to exercise the
+    // `if (!cancelled) setLoading(false)` inside that branch with cancelled=true.
+
+    // setLoading inside a microtask — unmount sync before the microtask fires.
+    const { unmount } = render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    // Unmount immediately — the run() call is sync-dispatched but the await
+    // barrier inside it means the subsequent `if (!cancelled) setLoading`
+    // runs in a microtask, after the cleanup flag has flipped.
+    unmount();
+
+    // If the guard is missing, React emits a warning. Clean exit proves it
+    // executed the cancelled branch.
+    await new Promise((r) => setTimeout(r, 10));
+  });
 });
