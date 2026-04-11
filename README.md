@@ -134,17 +134,16 @@ graph LR
 ## Key Features
 
 - **Bilingual (i18n)** — URL-based routing: Korean default (`/contact`), English `/en/contact`
-- **Teaching History** — 35 entries across 5 years (2022–2026), org type filter (4 categories), alternating section backgrounds
+- **Teaching History** — 35 entries across 5 years (2022–2026), org type filter (4 categories)
 - **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments
-- **Service Modals** — Clickable service cards with detail modals
 - **Auth** — httpOnly cookie JWT with shared-promise refresh queue (prevents concurrent 401 cascade)
-- **Testimonials** — Enterprise + K-Digital training reviews, auto-scroll carousel (2 rows, 8 items each)
+- **Testimonials** — Enterprise + 고용노동부 K-디지털 reviews, dual-row auto-scroll carousel
 - **Monitoring** — Sentry error tracking + Google Analytics
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data, SSG prerendering
-- **Performance** — 7 vendor chunks by update frequency, Lighthouse CI assertions, < 10MB bundle budget
+- **Performance** — Vendor chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
-- **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30, with TOC navigation
-- **Testing** — 100% coverage target: Vitest (1216 tests) + Django unittest (358 tests) + Playwright E2E (5 profiles)
+- **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30
+- **Tests** — Vitest 1216 + Django 358 + Playwright E2E (5 profiles)
 - **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Codecov, auto-deploy via webhook
 
 ## Development
