@@ -63,6 +63,17 @@ const BlogListPage: React.FC = memo(() => {
     setActiveCategory(slug);
   }, []);
 
+  // Single click handler for the category filter row. Reads the target slug
+  // from the button's data-slug attribute instead of an inline arrow closure
+  // per item, so we only allocate one callback regardless of category count.
+  const handleCategoryClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const slug = e.currentTarget.dataset.slug;
+      if (slug) handleCategoryChange(slug);
+    },
+    [handleCategoryChange]
+  );
+
   const handlePageChange = useCallback(
     (page: number) => {
       fetchPosts(page);
@@ -115,7 +126,8 @@ const BlogListPage: React.FC = memo(() => {
                 {categories.length > 0 && (
                   <div className="flex flex-wrap justify-center gap-2 mb-16">
                     <button
-                      onClick={() => handleCategoryChange('all')}
+                      data-slug="all"
+                      onClick={handleCategoryClick}
                       className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
                         activeCategory === 'all'
                           ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
@@ -127,7 +139,8 @@ const BlogListPage: React.FC = memo(() => {
                     {categories.map((cat) => (
                       <button
                         key={cat.slug}
-                        onClick={() => handleCategoryChange(cat.slug)}
+                        data-slug={cat.slug}
+                        onClick={handleCategoryClick}
                         className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
                           activeCategory === cat.slug
                             ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'

@@ -27,6 +27,11 @@ const ProfilePage: React.FC = memo(() => {
   const teachingHistory = useMemo(() => {
     const now = new Date().toISOString().slice(0, 10);
     return getTeachingHistory().filter((item) => !item.visibleAfter || item.visibleAfter <= now);
+    // react-hooks/exhaustive-deps false positive: ESLint treats i18n.language
+    // as "unnecessary" because i18n from useTranslation() is a stable
+    // reference, but getTeachingHistory() internally calls i18n.t() 76 times
+    // (profileData.ts). Without i18n.language in the deps the memo would
+    // cache the original language forever across a language switch.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i18n.language]);
 

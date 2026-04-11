@@ -83,8 +83,16 @@ const ServicesSection: React.FC = memo(() => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalIndex, setModalIndex] = useState(0);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const serviceData = useMemo(() => getServices(), [i18n.language]);
+  // react-hooks/exhaustive-deps false positive: ESLint treats i18n.language
+  // as "unnecessary" because i18n from useTranslation() is a stable
+  // reference, but getServices() internally calls i18n.t() and the returned
+  // strings are language-dependent. Without i18n.language in the deps the
+  // memo would cache the original language forever across a switch.
+  const serviceData = useMemo(
+    () => getServices(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [i18n.language]
+  );
   const serviceList = useMemo(() => SERVICE_KEYS.map((key) => serviceData[key]), [serviceData]);
 
   const handleCardClick = useCallback((index: number) => {

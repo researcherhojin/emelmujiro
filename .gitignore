@@ -99,3 +99,4 @@ Thumbs.db
 *.tmp
 *.temp
 .gstack/
+frontend/.lighthouseci/

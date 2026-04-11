@@ -138,11 +138,13 @@ const NotificationPanel: React.FC<NotificationPanelProps> = memo(({ onClose }) =
     [onClose, navigate, localizedPath]
   );
 
-  // Fetch notifications on panel open
+  // Fetch notifications on panel open. fetchNotifications is useCallback
+  // with [isAuthenticated] deps in NotificationContext (post-refactor to
+  // move the page cursor into a ref), so it's stable while the user is
+  // logged in — safe to include without triggering re-fetch storms.
   useEffect(() => {
     fetchNotifications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchNotifications]);
 
   return (
     <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50">

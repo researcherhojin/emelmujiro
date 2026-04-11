@@ -31,11 +31,25 @@ const LoginPage: React.FC = () => {
     emailRef.current?.focus();
   }, []);
 
-  // Clear error when inputs change
-  useEffect(() => {
-    if (error) clearError();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [email, password]);
+  // Clear any lingering error as the user starts editing an input. Done in
+  // the input handlers instead of a `useEffect([email, password])` because
+  // the effect form required a stale-closure suppression (reading `error`
+  // in deps would cause an infinite clear-loop immediately after login
+  // failure). Imperative clear is more explicit and has no suppression.
+  const handleEmailChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setEmail(e.target.value);
+      if (error) clearError();
+    },
+    [error, clearError]
+  );
+  const handlePasswordChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPassword(e.target.value);
+      if (error) clearError();
+    },
+    [error, clearError]
+  );
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -79,7 +93,7 @@ const LoginPage: React.FC = () => {
                 id="email"
                 type="text"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 placeholder={t('auth.emailPlaceholder')}
                 required
                 autoComplete="username"
@@ -98,7 +112,7 @@ const LoginPage: React.FC = () => {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 placeholder={t('auth.passwordPlaceholder')}
                 required
                 autoComplete="current-password"

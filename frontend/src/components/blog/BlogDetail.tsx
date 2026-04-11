@@ -63,8 +63,9 @@ const BlogDetailPage: React.FC = memo(() => {
       fetchPostById(slug);
     }
     return () => clearCurrentPost();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug]);
+    // Both callbacks are useCallback([]) in BlogContext — stable refs,
+    // including them is safe and doesn't cause extra runs.
+  }, [slug, fetchPostById, clearCurrentPost]);
 
   useEffect(() => {
     if (post && slug) {
