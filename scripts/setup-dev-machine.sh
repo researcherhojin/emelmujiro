@@ -4,31 +4,28 @@
 # One-shot bootstrap for a fresh macOS dev machine.
 # Idempotent — safe to re-run on a fully-set-up machine.
 #
-# DEFAULT MODE (restore + install):
-#   ./scripts/setup-dev-machine.sh
-#
-#   1. Preflight (macOS, Homebrew, repo root)
-#   2. Install missing tools (node@24, python@3.12, uv, gh, 1password-cli)
-#   3. Verify gh + op CLI auth
-#   4. Restore .env / backend/.env / backend/.env.production /
-#      frontend/.env.production from 1Password Secure Notes
+# Phases:
+#   1. Preflight (macOS, Homebrew, repo root with emelmujiro remote)
+#   2. Install missing tools (node@24, python@3.12, uv, gh)
+#   3. Verify gh CLI auth
+#   4. Generate local dev .env files from .env.example templates
+#      (per-machine random SECRET_KEY — no inter-device secret sync needed)
 #   5. Install JS + Python dependencies (make install)
 #   6. Run Django migrations (idempotent)
-#   7. Configure git for two-device safety (pull.rebase, autoStash)
-#   8. Verify the setup (calls `make verify-setup`)
+#   7. Optional: Playwright Chromium (--with-playwright)
+#   8. Configure git for two-device safety (pull.rebase, autoStash)
+#   9. Verify the setup (calls `make verify-setup`)
 #
-# SAVE MODE (run on the SOURCE machine, e.g. Mac mini, ONCE):
-#   ./scripts/setup-dev-machine.sh --save-secrets
-#
-#   Reads the 4 local .env files and saves each as a 1Password Secure Note
-#   so the default mode can restore them on the next machine. Idempotent —
-#   updates existing items if they already exist.
+# DESIGN: This script does NOT manage production secrets. Production
+# .env.production files (real SECRET_KEY, real reCAPTCHA, real Sentry
+# DSN) live ONLY on the machine that runs `auto-deploy.sh` (Mac mini)
+# and in GitHub Actions secrets — they intentionally never reach a
+# dev-only machine like a MacBook. Principle of least privilege: a
+# stolen/lost MacBook cannot leak production credentials.
 #
 # OPTIONAL FLAGS:
 #   --with-playwright   Also install Playwright Chromium (~150 MB; needed
 #                       only if you run E2E tests on this machine)
-#   --skip-secrets      Skip the secret restore step (use if you're going
-#                       to manually copy .env files later)
 
 set -euo pipefail
 
@@ -52,26 +49,16 @@ hint()    { printf "${DIM}  %s${RESET}\n" "$*"; }
 # ----------------------------------------------------------------------
 # Argument parsing
 # ----------------------------------------------------------------------
-MODE="restore"
 WITH_PLAYWRIGHT=false
-SKIP_SECRETS=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --save-secrets)
-      MODE="save"
-      shift
-      ;;
     --with-playwright)
       WITH_PLAYWRIGHT=true
       shift
       ;;
-    --skip-secrets)
-      SKIP_SECRETS=true
-      shift
-      ;;
     -h|--help)
-      sed -n '3,40p' "$0"
+      sed -n '3,30p' "$0"
       exit 0
       ;;
     *)
@@ -86,28 +73,19 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
 # ----------------------------------------------------------------------
-# 1Password item naming convention.
-#
-# Each .env file maps to a Secure Note item with this exact title. The
-# script searches across all vaults — only the title needs to match.
+# Cross-platform sed -i wrapper (macOS BSD vs GNU)
 # ----------------------------------------------------------------------
-SECRET_TITLES=(
-  "emelmujiro:.env"
-  "emelmujiro:backend/.env"
-  "emelmujiro:backend/.env.production"
-  "emelmujiro:frontend/.env.production"
-)
-SECRET_PATHS=(
-  ".env"
-  "backend/.env"
-  "backend/.env.production"
-  "frontend/.env.production"
-)
+sedi() {
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "$@"
+  else
+    sed -i "$@"
+  fi
+}
 
 # ======================================================================
-# Phase 1: Preflight
-# ======================================================================
 header "Phase 1: Preflight"
+# ======================================================================
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
   err "macOS only (detected: $OSTYPE)"
@@ -135,9 +113,8 @@ fi
 ok "Inside emelmujiro repo"
 
 # ======================================================================
-# Phase 2: Install required tools (idempotent)
-# ======================================================================
 header "Phase 2: Install required tools"
+# ======================================================================
 
 install_brew_pkg() {
   local pkg="$1"
@@ -154,7 +131,6 @@ install_brew_pkg "node@24"
 install_brew_pkg "python@3.12"
 install_brew_pkg "uv"
 install_brew_pkg "gh"
-install_brew_pkg "1password-cli"
 
 # node@24 is keg-only (not in PATH by default after brew install)
 NODE24_BIN="$(brew --prefix node@24)/bin"
@@ -168,9 +144,8 @@ fi
 ok "node $(node --version)"
 
 # ======================================================================
-# Phase 3: Verify CLI auth
-# ======================================================================
 header "Phase 3: Verify CLI auth"
+# ======================================================================
 
 if gh auth status >/dev/null 2>&1; then
   GH_USER=$(gh api user -q .login 2>/dev/null || echo "?")
@@ -182,135 +157,66 @@ else
   exit 1
 fi
 
-if [[ "$SKIP_SECRETS" == "false" ]]; then
-  # `op whoami` works only when signed in for the current shell session
-  if op whoami >/dev/null 2>&1; then
-    ok "1Password CLI signed in as $(op whoami 2>/dev/null | head -1)"
-  else
-    err "1Password CLI not signed in for this shell."
-    hint "Sign in for this session:"
-    hint "  eval \$(op signin)"
-    hint "Then re-run this script."
-    hint ""
-    hint "Or skip secrets and copy .env files manually:"
-    hint "  ./scripts/setup-dev-machine.sh --skip-secrets"
-    exit 1
-  fi
-fi
-
 # ======================================================================
-# Phase 4: Save OR Restore secrets via 1Password
+header "Phase 4: Generate local dev .env files"
 # ======================================================================
-extract_note_from_op() {
-  # Read a Secure Note's content via 1Password CLI.
-  # Prints content to stdout. Exits non-zero if item not found.
-  local title="$1"
-  op item get "$title" --format=json 2>/dev/null | python3 -c "
-import json, sys
-try:
-    d = json.load(sys.stdin)
-    notes = [f.get('value', '') for f in d.get('fields', []) if f.get('purpose') == 'NOTES']
-    if notes and notes[0]:
-        sys.stdout.write(notes[0])
-        sys.exit(0)
-    sys.exit(2)
-except (json.JSONDecodeError, KeyError):
-    sys.exit(1)
-"
-}
+#
+# This generates ONLY the files needed for local dev — never the
+# .env.production files. Each call is idempotent: existing files are
+# preserved as-is (delete them manually to force regeneration).
 
-save_note_to_op() {
-  # Create or update a Secure Note in 1Password with file content.
-  local title="$1" file="$2"
-  if ! [[ -f "$file" ]]; then
-    warn "$file does not exist locally — skipping save"
-    return 0
-  fi
-  local content
-  content=$(<"$file")
-  if op item get "$title" >/dev/null 2>&1; then
-    info "Updating existing item: $title"
-    op item edit "$title" "notesPlain=$content" >/dev/null
-    ok "Updated $title (from $file)"
-  else
-    info "Creating new item: $title"
-    op item create --category="Secure Note" --title="$title" "notesPlain=$content" >/dev/null
-    ok "Created $title (from $file)"
-  fi
-}
-
-if [[ "$MODE" == "save" ]]; then
-  header "Phase 4: Save local secrets to 1Password"
-  warn "This will read your local .env files and write them to 1Password."
-  warn "Existing items with the same title will be UPDATED in place."
-  warn ""
-  for i in "${!SECRET_TITLES[@]}"; do
-    save_note_to_op "${SECRET_TITLES[$i]}" "${SECRET_PATHS[$i]}"
-  done
-  ok "All available secrets saved to 1Password."
-  hint "Now on your other machine, run:"
-  hint "  ./scripts/setup-dev-machine.sh"
-  exit 0
-fi
-
-if [[ "$SKIP_SECRETS" == "false" ]]; then
-  header "Phase 4: Restore secrets from 1Password"
-
-  MISSING=()
-  for i in "${!SECRET_TITLES[@]}"; do
-    title="${SECRET_TITLES[$i]}"
-    dest="${SECRET_PATHS[$i]}"
-
-    if [[ -f "$dest" && -s "$dest" ]]; then
-      ok "$dest already exists (skipping — delete the file to force restore)"
-      continue
-    fi
-
-    if content=$(extract_note_from_op "$title"); then
-      mkdir -p "$(dirname "$dest")"
-      printf '%s' "$content" >"$dest"
-      ok "Restored $dest from 1Password"
-    else
-      MISSING+=("$title|$dest")
-    fi
-  done
-
-  if [[ ${#MISSING[@]} -gt 0 ]]; then
-    err "Missing 1Password Secure Notes:"
-    for entry in "${MISSING[@]}"; do
-      title="${entry%|*}"
-      dest="${entry#*|}"
-      hint "  - Title: $title  →  $dest"
-    done
-    hint ""
-    hint "On your source machine (where the .env files exist), run:"
-    hint "  ./scripts/setup-dev-machine.sh --save-secrets"
-    hint ""
-    hint "Or create them manually in 1Password as Secure Notes with the"
-    hint "exact titles above and the file content in the Notes field."
-    exit 1
-  fi
+# (1) Root .env — Docker orchestration only, no real secrets
+if [[ -f .env ]]; then
+  ok ".env already exists (preserved)"
+elif [[ -f .env.example ]]; then
+  cp .env.example .env
+  ok "Created .env from .env.example"
 else
-  header "Phase 4: Skipping secret restore (--skip-secrets)"
-  warn "Don't forget to manually create the 4 .env files before running the app:"
-  for path in "${SECRET_PATHS[@]}"; do
-    hint "  - $path"
-  done
+  err ".env.example missing — repo state is wrong"
+  exit 1
 fi
 
-# ======================================================================
-# Phase 5: Install dependencies
+# (2) backend/.env — local dev Django config with random per-machine SECRET_KEY
+if [[ -f backend/.env ]]; then
+  ok "backend/.env already exists (preserved)"
+elif [[ -f backend/.env.example ]]; then
+  cp backend/.env.example backend/.env
+  # Django requires SECRET_KEY >= 50 chars. token_urlsafe(50) gives ~67 chars.
+  # Per-machine random value — does not need to match other devices.
+  RANDOM_KEY=$(python3 -c 'import secrets; print(secrets.token_urlsafe(50))')
+  # Escape & and / for sed substitution safety
+  ESCAPED_KEY=$(printf '%s\n' "$RANDOM_KEY" | sed -e 's/[\/&]/\\&/g')
+  sedi "s|^SECRET_KEY=.*|SECRET_KEY=$ESCAPED_KEY|" backend/.env
+  # Local dev sane defaults — DEBUG=True, allow localhost
+  sedi "s|^DEBUG=.*|DEBUG=True|" backend/.env
+  sedi "s|^SECURE_SSL_REDIRECT=.*|SECURE_SSL_REDIRECT=False|" backend/.env
+  ok "Created backend/.env with random SECRET_KEY + DEBUG=True"
+else
+  err "backend/.env.example missing — repo state is wrong"
+  exit 1
+fi
+
+# (3) backend/.env.production — INTENTIONALLY NOT CREATED on dev machines.
+# Production secrets only live on Mac mini (auto-deploy.sh source) and
+# GitHub Actions secrets. See script header for the rationale.
+ok "backend/.env.production intentionally absent (production-only file)"
+
+# (4) frontend/.env.production — same. Local dev uses defaults from
+# Vite + the dev proxy in vite.config.ts. Production builds run on
+# Mac mini (auto-deploy.sh) and CI, both of which have the file.
+ok "frontend/.env.production intentionally absent (production-only file)"
+
 # ======================================================================
 header "Phase 5: Install JS + Python dependencies"
+# ======================================================================
 
 info "Running make install..."
 make install
 ok "Dependencies installed"
 
 # ======================================================================
-# Phase 6: Backend migrations (idempotent — no-op if schema is current)
-# ======================================================================
 header "Phase 6: Backend migrations"
+# ======================================================================
 
 (
   cd backend
@@ -318,8 +224,6 @@ header "Phase 6: Backend migrations"
 )
 ok "Migrations up-to-date"
 
-# ======================================================================
-# Phase 7: Optional Playwright install
 # ======================================================================
 if [[ "$WITH_PLAYWRIGHT" == "true" ]]; then
   header "Phase 7: Install Playwright Chromium"
@@ -332,9 +236,8 @@ else
 fi
 
 # ======================================================================
-# Phase 8: Configure git for two-device safety
-# ======================================================================
 header "Phase 8: Configure git for two-device workflow"
+# ======================================================================
 
 # Auto-rebase on pull (avoids merge commits when both devices push)
 if [[ "$(git config --global pull.rebase || true)" == "true" ]]; then
@@ -353,9 +256,8 @@ else
 fi
 
 # ======================================================================
-# Phase 9: Verify the setup
-# ======================================================================
 header "Phase 9: Verify"
+# ======================================================================
 
 if make verify-setup; then
   ok "All verification checks passed"
@@ -379,3 +281,9 @@ hint "Daily two-device hygiene (now automated by git config):"
 hint "  - 'git pull' is now 'git pull --rebase' globally"
 hint "  - 'git rebase' auto-stashes uncommitted work"
 hint "  - Branch protection on main blocks force-push (sanity net)"
+hint ""
+hint "What this machine intentionally does NOT have:"
+hint "  - backend/.env.production    (production Django secrets — Mac mini only)"
+hint "  - frontend/.env.production   (production Vite secrets — Mac mini only)"
+hint "  This is least-privilege by design: a stolen dev machine cannot"
+hint "  leak production credentials."
