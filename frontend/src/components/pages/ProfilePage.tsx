@@ -55,7 +55,7 @@ const ProfilePage: React.FC = memo(() => {
     'px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full transition-all whitespace-nowrap';
   const pillActive = 'bg-gray-900 text-white dark:bg-white dark:text-gray-900';
   const pillInactive =
-    'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700';
+    'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700';
 
   return (
     <>
@@ -152,7 +152,7 @@ const ProfilePage: React.FC = memo(() => {
                       {year}
                     </h2>
                     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-                    <span className="text-sm font-bold text-gray-400 dark:text-gray-500 mr-2">
+                    <span className="text-sm font-bold text-gray-600 dark:text-gray-300 mr-2">
                       {items.length}
                     </span>
                   </div>

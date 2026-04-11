@@ -41,7 +41,7 @@ const TestimonialCard: React.FC<{ testimonial: Testimonial }> = memo(({ testimon
     <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed flex-1 line-clamp-4">
       {testimonial.text}
     </p>
-    <span className="text-xs text-gray-400 dark:text-gray-500 mt-3 flex-shrink-0">
+    <span className="text-xs text-gray-600 dark:text-gray-300 mt-3 flex-shrink-0">
       {testimonial.program}
     </span>
   </div>
@@ -121,7 +121,7 @@ const TestimonialsSection: React.FC = memo(() => {
           href="https://www.hrd.go.kr"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
         >
           <ExternalLink className="w-3 h-3" aria-hidden="true" />
           {t('testimonials.source')}

@@ -21,10 +21,13 @@
       content="strict-origin-when-cross-origin"
     />
 
-    <!-- Resource hints for better performance -->
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <!-- Resource hints for better performance. Preconnect > dns-prefetch for
+         origins we definitely hit — Lighthouse flagged both cdn.jsdelivr.net
+         (Pretendard font) and www.googletagmanager.com (GA) as missing
+         preconnect, costing ~90ms and ~60ms of wasted time respectively. -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="dns-prefetch" href="https://api.github.com" />
-    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://api.emelmujiro.com" />
     <link rel="preconnect" href="https://api.emelmujiro.com" crossorigin />
 

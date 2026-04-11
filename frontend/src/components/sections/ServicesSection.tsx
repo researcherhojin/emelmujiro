@@ -28,7 +28,6 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(({ service, onClick }) => {
   return (
     <div
       className="group relative bg-white dark:bg-gray-800 p-8 rounded-3xl border-2 border-gray-100 dark:border-gray-700 hover:border-gray-900 dark:hover:border-white transition-all duration-300 cursor-pointer"
-      aria-label={t(service.titleKey)}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -40,15 +39,12 @@ const ServiceCard: React.FC<ServiceCardProps> = memo(({ service, onClick }) => {
         }
       }}
     >
-      {/* Icon and Number */}
-      <div className="flex items-center justify-between mb-6">
+      {/* Icon */}
+      <div className="flex items-center mb-6">
         <Icon
           className="w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors"
           aria-hidden="true"
         />
-        <span className="text-4xl font-black text-gray-200 dark:text-gray-700 group-hover:text-gray-300 dark:group-hover:text-gray-600 transition-colors">
-          {service.number}
-        </span>
       </div>
 
       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">

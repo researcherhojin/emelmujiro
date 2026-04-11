@@ -86,7 +86,7 @@ const BlogDetailPage: React.FC = memo(() => {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950">
         <div className="max-w-3xl mx-auto px-6 py-24 text-center">
-          <p className="text-red-500 dark:text-red-400 text-sm mb-4">{error}</p>
+          <p className="text-red-700 dark:text-red-300 text-sm mb-4">{error}</p>
           <button
             onClick={() => navigate(-1)}
             className="text-sm font-medium text-gray-900 dark:text-white hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300"

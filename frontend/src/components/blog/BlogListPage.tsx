@@ -111,7 +111,7 @@ const BlogListPage: React.FC = memo(() => {
           <div className="max-w-7xl mx-auto">
             {/* Error */}
             {error && (
-              <div className="text-center text-red-500 dark:text-red-400 mb-12 text-sm">
+              <div className="text-center text-red-700 dark:text-red-300 mb-12 text-sm">
                 {error}
               </div>
             )}

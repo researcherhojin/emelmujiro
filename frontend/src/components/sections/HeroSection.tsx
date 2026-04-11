@@ -41,7 +41,7 @@ const HeroSection: React.FC = memo(() => {
             <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-1">
               5,000+
             </div>
-            <div className="text-xs sm:text-sm font-semibold text-gray-400 dark:text-gray-500">
+            <div className="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300">
               {t('hero.stats.hours')}
             </div>
           </div>
@@ -49,7 +49,7 @@ const HeroSection: React.FC = memo(() => {
             <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-1">
               50+
             </div>
-            <div className="text-xs sm:text-sm font-semibold text-gray-400 dark:text-gray-500">
+            <div className="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300">
               {t('hero.stats.projects')}
             </div>
           </div>
@@ -57,7 +57,7 @@ const HeroSection: React.FC = memo(() => {
             <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-1">
               4.8+
             </div>
-            <div className="text-xs sm:text-sm font-semibold text-gray-400 dark:text-gray-500">
+            <div className="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300">
               {t('hero.stats.satisfaction')}
             </div>
           </div>
