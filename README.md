@@ -28,12 +28,12 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![Tailwind Typography](https://img.shields.io/badge/Typography-0.5.19-06B6D4?logo=tailwindcss&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.38.0-E91E63?logo=framer&logoColor=white)
 ![i18next](https://img.shields.io/badge/i18next-26.0.3-26A69A?logo=i18next&logoColor=white)
-![Axios](https://img.shields.io/badge/Axios-1.14.0-5A29E4?logo=axios&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-1.15.0-5A29E4?logo=axios&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.22.2-1a1a2e)
 ![DOMPurify](https://img.shields.io/badge/DOMPurify-3.3.3-4B32C3)
 
 **Backend**<br/>
-![Django](https://img.shields.io/badge/Django-6.0.3-092E20?logo=django&logoColor=white)
+![Django](https://img.shields.io/badge/Django-6.0.4-092E20?logo=django&logoColor=white)
 ![DRF](https://img.shields.io/badge/DRF-3.17.1-A30000)
 ![SimpleJWT](https://img.shields.io/badge/SimpleJWT-5.5.1-000000?logo=jsonwebtokens&logoColor=white)
 ![Gunicorn](https://img.shields.io/badge/Gunicorn-25.3.0-499848?logo=gunicorn&logoColor=white)

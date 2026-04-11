@@ -125,6 +125,8 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 **Operational logs**: Cron jobs installed via Makefile targets (`make setup-cron`) must redirect output to `$(CURDIR)/backend/logs/<name>.log` — matches Django `LOG_DIR` (`backend/config/settings.py:355`), already gitignored, persists via Docker `logs_volume`. Never `/tmp` (evaporates on reboot), `~/logs/` (outside project), or `/var/log/` (host-specific). Enforced by `pr-checks.yml` quick-checks grep — any `crontab` line with `>>` not targeting `backend/logs/` fails CI.
 
+**Route Suspense fallback**: `<Suspense>` around the route `<Outlet />` in `AppLayout` (`src/App.tsx:129`) MUST use `RouteFallback` (in-flow, `min-h-screen`), NOT `PageLoading` (`position: fixed`, zero flow height). A fixed-position fallback leaves `<main>` empty during lazy chunk load → `main.flex-grow` only fills the viewport → footer sits at viewport bottom → real content mounts → footer shifts down by hundreds of pixels → CLS 0.528 (measured). The `RouteFallback` pattern lives in `src/components/common/UnifiedLoading.tsx` with a detailed JSDoc comment. Remove this note once `lighthouserc.js` `categories:performance` is tightened from `warn` → `error` at minScore 0.85 (`.github/TODO.md` §2.1) — at that point the invariant is enforced by CI instead of memory.
+
 **CSP**: `'unsafe-inline'` required — index.html inline scripts (error handler, KakaoTalk detection, theme detection). `'unsafe-eval'` removed after `plugin-legacy` removal. Cloudflare Tunnel does not require CSP changes (transparent proxy).
 
 **Tailwind 3.x**: PostCSS uses `tailwindcss: {}` (NOT `@tailwindcss/postcss`). Dark mode is `class`-based (not media query). Never use dynamic class interpolation (`bg-${color}-600`).
