@@ -1,4 +1,12 @@
 // Sentry configuration - Enhanced Error Tracking for 2025
+//
+// Note on bundle size: attempted lazy-import via `await import('@sentry/react')`
+// to skip the ~77 kB chunk when Sentry is disabled. Vite couldn't tree-shake
+// the dynamic import as aggressively as the static one, and the resulting
+// chunk ballooned to 438 kB. Reverted to static import — the 77 kB chunk
+// always ships, but it's at least tree-shaken to only the used methods.
+// Savings from lazy-init on disabled deployments (~25 kB unused-js) are not
+// worth the ~360 kB regression when Sentry is enabled.
 import * as Sentry from '@sentry/react';
 import env from '../config/env';
 import logger from './logger';
