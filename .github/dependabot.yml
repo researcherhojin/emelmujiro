@@ -70,33 +70,12 @@ updates:
       prefix-development: "deps-dev"
       include: "scope"
 
-  # Backend dependencies
-  - package-ecosystem: "pip"
-    directory: "/backend"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-    open-pull-requests-limit: 10
-    groups:
-      django:
-        patterns:
-          - "django*"
-          - "djangorestframework*"
-          - "drf-*"
-      testing:
-        patterns:
-          - "coverage*"
-      dev-tools:
-        patterns:
-          - "black"
-          - "flake8*"
-    labels:
-      - "dependencies"
-      - "backend"
-    commit-message:
-      prefix: "deps"
-      include: "scope"
+  # Backend dependencies are managed by uv (NOT pip).
+  # Dependabot doesn't yet support uv.lock — see
+  # https://github.com/dependabot/dependabot-core/issues/10478
+  # Manual cadence: run `cd backend && uv sync --upgrade` weekly and commit
+  # uv.lock + any pyproject.toml version bumps. CLAUDE.md "Commands" lists
+  # `uv sync --extra dev` as the install command.
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
