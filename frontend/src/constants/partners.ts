@@ -16,7 +16,7 @@ import scienceFoundationLogo from '../assets/logos/scienceFoundationLogo.webp';
 import moduLogo from '../assets/logos/moduLogo.webp';
 import nipaLogo from '../assets/logos/nipaLogo.webp';
 import ablearnLogo from '../assets/logos/ablearnLogo.webp';
-import nanoLogo from '../assets/logos/nanoLogo.jpg';
+import nanoLogo from '../assets/logos/nanoLogo.webp';
 import weatherLogo from '../assets/logos/weatherLogo.svg';
 import nepesLogo from '../assets/logos/nepesLogo.svg';
 
