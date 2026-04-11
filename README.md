@@ -61,15 +61,12 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 git clone https://github.com/researcherhojin/emelmujiro.git
 cd emelmujiro
 
-# Install all dependencies
-make install
-
-# Backend first-time setup
-cd backend && uv run python manage.py migrate && cd ..
-
-# Start both servers (Frontend :5173 + Backend :8000)
-npm run dev
+make install                                              # npm install + uv sync --extra dev
+cd backend && uv run python manage.py migrate && cd ..    # First-time DB setup
+npm run dev                                               # Frontend :5173 + Backend :8000
 ```
+
+**Fresh macOS machine?** `make setup-dev-machine` runs a one-shot bootstrap: brew installs (`node@24`, `python@3.12`, `uv`, `gh`), `make install`, local `.env` generation with a per-device random `SECRET_KEY`, Django migrations, and `make verify-setup`. Re-runnable health check alone: `make verify-setup`.
 
 ### Useful Commands
 
@@ -79,7 +76,7 @@ Run from the repo root unless noted otherwise.
 make test                  # All tests (frontend + backend)
 make lint                  # All linters
 make lint-fix              # Auto-fix lint issues
-make update-test-counts    # Refresh README test-count badges from real runner output
+make update-test-counts    # Regenerate README test counts locally (CI auto-syncs on main)
 
 # From frontend/
 cd frontend
