@@ -6,34 +6,23 @@ engineer (or a future Claude session) can pick it up without reading history.
 Items resolved in a session should be removed in the same commit that closes
 them.
 
-## 1. Performance — Lighthouse residual after 2026-04-11 Phase 4
+## 1. Performance — Lighthouse residual
 
-All four routes sit above the 0.85 performance warn threshold after the Phase
-4 pass (commits `3b254d7..5ff5f0f`). Current local-preview scores: `/` P 0.88,
-`/contact` P 0.86, `/profile` P 0.88, `/insights` P 0.89. Items below would
-close the individual audits still firing as warnings.
+Phase 4 (`3b254d7..5ff5f0f`) brought all four routes above the 0.85 perf
+warn threshold. Subsequent commits closed two of the four follow-ups:
 
-### 1.1 Virtualize homepage carousels (dom-size 0.5 → 1.0)
+- ✅ **dom-size 0.5 → 1.0** on `/` — carousel copies reduced 3x/5x → 2x
+  (`7952142`). Homepage DOM dropped 934 → 582 nodes. Math: `translateX(-50%)`
+  for 2-copy loop (see CLAUDE.md "Scroll carousels").
+- ✅ **uses-responsive-images** audit 100/100 — moduLogo 90% pixel waste
+  fixed by re-resize at 256×100 (`b0f6ab0`), nanoLogo JPEG → WebP (-51%
+  bytes), ablearnLogo + uosLogo also resized. Verified via Playwright
+  `naturalWidth × DPR` audit against the built site.
 
-- **Goal**: drop `/` DOM node count from ~934 to < 800 so the
-  `dom-size` audit stops warning.
-- **Why**: `LogosSection` renders 20 partners × 3 copies (60 nodes + img
-  children), `TestimonialsSection` renders 16 items × 2 copies (32 nodes +
-  children), both eagerly. The 3x/2x copies exist so the CSS
-  `translateX(-33.333%)` keyframe can loop without visible seams (see
-  CLAUDE.md "Scroll carousels"). Homepage-only — other routes score 1.0.
-- **How**:
-  - Option A (simpler): reduce copy count from 3x → 2x on Logos and verify
-    the CSS keyframe math still loops cleanly (`-50%` translate). Measures
-    ~30% fewer nodes.
-  - Option B: replace CSS marquee with a real scrolling `react-window`
-    virtualization that only mounts in-viewport items plus one-screen
-    buffers. Larger refactor, risk of animation jank.
-- **Verify**: `npx @lhci/cli autorun` — `/` `dom-size` audit ≥ 0.9 AND
-  overall `/` performance ≥ 0.90 (no regression).
-- **Effort**: 1–2 h (Option A), 4+ h (Option B).
+Items below close the audits **still** firing as warnings. The biggest
+remaining levers are structural — third-party scripts (Google Form, gtag).
 
-### 1.2 Replace Google Form with `backend/api/contact/`
+### 1.1 Replace Google Form with `backend/api/contact/`
 
 - **Goal**: `/contact` best-practices 0.78 → ≥ 0.90 and remove the
   third-party cookie warnings.
@@ -61,7 +50,7 @@ close the individual audits still firing as warnings.
   backend.
 - **Effort**: 2–3 h including UX polish and i18n.
 
-### 1.3 Replace Google Analytics with a lighter provider
+### 1.2 Replace Google Analytics with a lighter provider
 
 - **Goal**: `unused-javascript` ≥ 0.9 (currently 0) and `legacy-javascript`
   ≥ 0.9 (currently 0.5) on all four URLs.
@@ -85,21 +74,39 @@ close the individual audits still firing as warnings.
   staging deploy.
 - **Effort**: 3–4 h.
 
-### 1.4 moduLogo.webp re-encoding
+### 1.3 Lazy-load Sentry via re-export shim (chunk 77 kB → ~5 kB on home)
 
-- **Goal**: close the last entry on `/` `uses-responsive-images` (currently
-  0.5, moduLogo still 6 kB wasted / 6 kB total).
-- **Why**: Python PIL's Lanczos + quality 82 actually grew this specific
-  file from 6830 B → 8050 B and was reverted in commit `f7b785f`. Other
-  encoders (cwebp with tuned quality/method) usually produce smaller
-  output for already-optimized WebP inputs.
-- **How**:
-  - `brew install webp`
-  - `cwebp -q 75 -m 6 -resize 320 0 moduLogo.webp -o moduLogo.new.webp`
-  - If `moduLogo.new.webp` is smaller than the source, replace; otherwise
-    move on — this is a 2 kB savings at most.
-- **Verify**: `/` `uses-responsive-images` audit ≥ 0.9 after rebuild.
-- **Effort**: 15 min.
+- **Goal**: drop Sentry from `unused-javascript` (currently 72 kB wasted of
+  77 kB on `/`) by deferring chunk load until an error/login actually fires.
+- **Why**: 96% of the Sentry chunk is unused on the home page. Two prior
+  reduction attempts both failed and are documented in `frontend/src/utils/sentry.ts`:
+  (1) namespace → named imports gave zero size delta — Vite was already
+  tree-shaking. (2) `await import('@sentry/react')` ballooned the chunk
+  77 kB → 438 kB because dynamic import of a barrel package defeats
+  tree-shaking. The 72 kB unused is module-eval overhead from `init()`'s
+  default integrations, not dead exports.
+- **How**: re-export shim pattern.
+  - Create `src/utils/sentry-impl.ts` with **static** named imports of the
+    5 functions actually used (`init`, `captureException`, `withScope`,
+    `setUser`, `addBreadcrumb`) plus a tiny `init()` wrapper containing
+    the current config.
+  - Rewrite `src/utils/sentry.ts` so each public function:
+    1. Lazily resolves a module-level `implPromise = import('./sentry-impl')`
+       on first call.
+    2. Awaits and dispatches. The shim is local code, so Rollup tree-shakes
+       across the dynamic boundary.
+  - `initSentry()` becomes async and is called from `main.tsx` without
+    await — accept that errors during the first ~200 ms before the shim
+    chunk loads won't reach Sentry. ErrorBoundary still renders fallback UI.
+  - Verify `sentry-*.js` chunk is **not** preloaded in `index.html` after
+    rebuild (Vite should put it in `async` modulepreload only).
+- **Verify**: `/` `unused-javascript` ≥ 0.9 AND total `sentry-*.js` bytes
+  delivered on home page = 0 (check via `network` panel or Lighthouse
+  `network-requests` audit).
+- **Effort**: 1–2 h. Risk: if Vite bundles the shim chunk back into the
+  main graph (because it's referenced from a "hot" code path), the
+  pattern fails — at that point switch to a runtime feature flag and
+  load Sentry only on `window.error` / `unhandledrejection` listeners.
 
 ## 2. Infrastructure / Ops
 
@@ -117,7 +124,7 @@ close the individual audits still firing as warnings.
     `['error', { minScore: 0.85 }]`.
   - Consider adding numeric LCP assertion: `largest-contentful-paint`
     error at `maxNumericValue: 3500` (currently 5000 warn).
-  - Ratchet `best-practices` to error once Google Form is replaced (§1.2),
+  - Ratchet `best-practices` to error once Google Form is replaced (§1.1),
     not before — `/contact` currently sits at 0.78 for documented reasons.
 - **Verify**: create a PR with an intentional regression (e.g. re-add the
   Inter font link) — CI Lighthouse job must fail.
