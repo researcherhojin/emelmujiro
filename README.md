@@ -149,7 +149,7 @@ Detailed operational rules, architecture, and conventions live in [CLAUDE.md](CL
 
 **Conventions**: [Conventional commits](https://www.conventionalcommits.org/) required (`feat|fix|docs|style|refactor|test|chore|deps|ci`). ESLint zero warnings. All UI strings via i18n. English comments only.
 
-**Testing**: 100% coverage target — Vitest + Django unittest + Playwright E2E. Badge versions and test counts are CI-validated against `package.json` and actual test runner output on every PR/push.
+**Testing**: 100% coverage target — Vitest + Django unittest + Playwright E2E. Package badges (React, Vite, Vitest, etc.) are CI-validated against `package.json` on every PR. Test counts in the bullet above are auto-corrected by the `readme-sync` job in `main-ci-cd.yml` after each push to main — you don't need to update them manually.
 
 **Security**: DOMPurify on all user HTML. CI `${{ }}` bound to `env:` only. `uuid4` upload filenames. httpOnly cookie JWT.
 
