@@ -10,8 +10,6 @@ permissions:
   issues: write
 
 env:
-  NODE_VERSION: "24"
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   # Suppress "hint: Using 'master' as the name for the initial branch" from actions/checkout
   GIT_CONFIG_COUNT: 1
   GIT_CONFIG_KEY_0: init.defaultBranch
