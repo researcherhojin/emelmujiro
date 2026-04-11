@@ -183,7 +183,7 @@ describe('Navbar Component', () => {
     renderWithProviders(<Navbar />);
 
     // Find language switch button by aria-label
-    const langButtons = screen.getAllByRole('button', { name: 'common.switchLanguage' });
+    const langButtons = screen.getAllByRole('button', { name: 'common.switchLanguageTo' });
     // Click the desktop one
     fireEvent.click(langButtons[0]);
 
@@ -284,7 +284,7 @@ describe('Navbar Component', () => {
     renderWithProviders(<Navbar />);
 
     // When currentLang is 'en', the button should show "KO"
-    const langButtons = screen.getAllByRole('button', { name: 'common.switchLanguage' });
+    const langButtons = screen.getAllByRole('button', { name: 'common.switchLanguageTo' });
     expect(langButtons[0]).toHaveTextContent('KO');
 
     // Click should navigate to Korean path (targetLang = 'ko' since currentLang is 'en')
