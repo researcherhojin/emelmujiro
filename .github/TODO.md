@@ -25,6 +25,8 @@ All Lighthouse audits are now resolved except the Google Form iframe on
   on blog card/detail labels, contrast 2.53 → 4.63 (`715902e`).
 - ✅ **lcp-lazy-loaded** `/insights` — featured blog card image now
   `loading="eager"` (`715902e`).
+- ✅ **Umami provisioned** — Docker service + nginx exact-match proxy,
+  secrets in `.env`, dashboard at `localhost:3001` (`1390581`).
 
 ### 1.1 Replace Google Form with `backend/api/contact/`
 
@@ -59,29 +61,6 @@ All Lighthouse audits are now resolved except the Google Form iframe on
   Playwright e2e test submits the form end-to-end against a running
   backend.
 - **Effort**: 2–3 h including UX polish and i18n.
-
-## 2. Infrastructure / Ops
-
-### 2.1 Provision Umami analytics
-
-- **Goal**: Enable self-hosted analytics (currently `VITE_ENABLE_ANALYTICS=false`).
-- **Why**: GA was removed (`33fb32a`) and the frontend analytics.ts now
-  sends events to Umami's `/api/send` endpoint via sendBeacon/fetch.
-  The code is ready — only the Umami instance is missing.
-- **How**:
-  - Add Umami Docker service to `docker-compose.yml` (image:
-    `ghcr.io/umami-software/umami`, needs PostgreSQL).
-  - Start Umami, create a website in the admin UI → get website ID.
-  - Set `VITE_UMAMI_HOST` and `VITE_UMAMI_WEBSITE_ID` in
-    `frontend/.env.production`, flip `VITE_ENABLE_ANALYTICS=true`.
-  - If Umami is on a separate subdomain, add it to `connect-src` in
-    both `index.html` CSP meta tag and `nginx.conf` CSP variable. If
-    path-based (`/umami/*`), `'self'` covers it.
-  - Rebuild and deploy frontend.
-- **Verify**: Open browser DevTools Network tab, navigate pages — confirm
-  `POST /api/send` requests to Umami host with correct `website` payload.
-  Check Umami dashboard shows page views and custom events.
-- **Effort**: 1–2 h including Docker setup and CSP adjustment.
 
 ## 3. 콘텐츠
 
