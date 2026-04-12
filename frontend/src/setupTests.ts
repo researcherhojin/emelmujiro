@@ -506,11 +506,6 @@ Object.defineProperty(navigator, 'language', {
   value: 'ko-KR',
 });
 
-// Mock window.gtag for Google Analytics
-// gtag is already defined in @types/global.d.ts
-
-(global as typeof globalThis & { gtag?: ReturnType<typeof vi.fn> }).gtag = vi.fn();
-
 // Mock fetch if not available
 if (!global.fetch) {
   global.fetch = vi.fn().mockResolvedValue({

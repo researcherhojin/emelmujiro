@@ -1,9 +1,8 @@
 import React, { useEffect, useState, memo, useRef } from 'react';
 import { onCLS, onFCP, onLCP, onTTFB, onINP, Metric } from 'web-vitals';
 import logger from '../../utils/logger';
+import { trackWebVital } from '../../utils/analytics';
 import env from '../../config/env';
-
-// gtag is already defined in @types/global.d.ts
 
 interface VitalMetric {
   name: string;
@@ -129,13 +128,7 @@ const WebVitalsDashboard: React.FC = memo(() => {
       }
 
       // Send to analytics (if configured)
-      if (window.gtag) {
-        window.gtag('event', 'web_vital', {
-          metric_name: metric.name,
-          metric_value: metric.value,
-          metric_rating: vitalMetric.rating,
-        });
-      }
+      trackWebVital(metric.name, metric.value, vitalMetric.rating);
     };
 
     // Register Web Vitals observers

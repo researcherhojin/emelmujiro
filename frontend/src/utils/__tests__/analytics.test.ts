@@ -1,8 +1,9 @@
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock env module before importing analytics
 const mockEnv = vi.hoisted(() => ({
-  GA_TRACKING_ID: 'G-TEST123',
+  UMAMI_HOST: 'https://analytics.emelmujiro.com',
+  UMAMI_WEBSITE_ID: 'test-website-id',
   ENABLE_ANALYTICS: true,
   IS_TEST: true,
   IS_DEVELOPMENT: false,
@@ -15,238 +16,221 @@ vi.mock('../../config/env', () => ({
 }));
 
 describe('analytics', () => {
+  let sendBeaconSpy: ReturnType<typeof vi.fn>;
+  let fetchSpy: ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
     vi.resetModules();
-    vi.useFakeTimers();
     // Reset env defaults
-    mockEnv.GA_TRACKING_ID = 'G-TEST123';
+    mockEnv.UMAMI_HOST = 'https://analytics.emelmujiro.com';
+    mockEnv.UMAMI_WEBSITE_ID = 'test-website-id';
     mockEnv.ENABLE_ANALYTICS = true;
-    // Clear gtag and dataLayer
-    window.gtag = undefined as unknown as typeof window.gtag;
-    window.dataLayer = undefined as unknown as typeof window.dataLayer;
-    // Clean up any injected scripts
-    document.head.querySelectorAll('script[src*="googletagmanager"]').forEach((s) => s.remove());
-  });
 
-  afterEach(() => {
-    vi.useRealTimers();
+    // Mock sendBeacon
+    sendBeaconSpy = vi.fn(() => true);
+    Object.defineProperty(navigator, 'sendBeacon', {
+      value: sendBeaconSpy,
+      writable: true,
+      configurable: true,
+    });
+
+    // Mock fetch
+    fetchSpy = vi.fn(() => Promise.resolve(new Response()));
+    global.fetch = fetchSpy as unknown as typeof fetch;
   });
 
   describe('initAnalytics', () => {
-    it('injects gtag script and initializes dataLayer when enabled', async () => {
+    it('is a no-op (Umami needs no initialization)', async () => {
       const { initAnalytics } = await import('../analytics');
-      initAnalytics();
-
-      // Shim + dataLayer are set up synchronously so events queued during
-      // initial render aren't lost. The actual script injection is deferred
-      // until the `load` event + idle callback — advance timers to flush it.
-      expect(window.dataLayer).toBeDefined();
-      expect(typeof window.gtag).toBe('function');
-
-      // jsdom readyState is 'complete' at test time, so we go through the
-      // scheduleIdle path (setTimeout 200ms fallback — requestIdleCallback
-      // isn't polyfilled in jsdom).
-      await vi.advanceTimersByTimeAsync(300);
-
-      const script = document.head.querySelector('script[src*="googletagmanager"]');
-      expect(script).not.toBeNull();
-      expect(script?.getAttribute('src')).toContain('G-TEST123');
-    });
-
-    it('does nothing when analytics is disabled', async () => {
-      mockEnv.ENABLE_ANALYTICS = false;
-      const { initAnalytics } = await import('../analytics');
-      initAnalytics();
-
-      const script = document.head.querySelector('script[src*="googletagmanager"]');
+      // Should not throw and should not inject any scripts
+      expect(() => initAnalytics()).not.toThrow();
+      const script = document.head.querySelector('script[src*="umami"]');
       expect(script).toBeNull();
-    });
-
-    it('does nothing when GA_TRACKING_ID is empty', async () => {
-      mockEnv.GA_TRACKING_ID = '';
-      const { initAnalytics } = await import('../analytics');
-      initAnalytics();
-
-      const script = document.head.querySelector('script[src*="googletagmanager"]');
-      expect(script).toBeNull();
-    });
-
-    it('uses requestIdleCallback when available (covers the non-setTimeout branch)', async () => {
-      // jsdom lacks requestIdleCallback by default — stub it so the
-      // scheduleIdle helper hits the `if (typeof ric === 'function')` branch
-      // instead of the setTimeout fallback. Measured uncovered at analytics.ts:11.
-      const ricCalls: Array<() => void> = [];
-      const win = window as unknown as { requestIdleCallback?: (cb: () => void) => void };
-      win.requestIdleCallback = (cb: () => void) => {
-        ricCalls.push(cb);
-      };
-
-      try {
-        const { initAnalytics } = await import('../analytics');
-        initAnalytics();
-
-        expect(ricCalls).toHaveLength(1);
-        // Execute the queued idle callback — it should inject the gtag script
-        ricCalls[0]();
-        const script = document.head.querySelector('script[src*="googletagmanager"]');
-        expect(script).not.toBeNull();
-      } finally {
-        delete win.requestIdleCallback;
-      }
-    });
-
-    it('defers script injection via load event when document is still loading', async () => {
-      // Default jsdom readyState is 'complete'. Override to 'loading' so the
-      // initAnalytics path takes the `else` branch (addEventListener on load).
-      // Measured uncovered at analytics.ts:57-60.
-      const originalReadyState = document.readyState;
-      Object.defineProperty(document, 'readyState', {
-        configurable: true,
-        get: () => 'loading',
-      });
-
-      try {
-        const { initAnalytics } = await import('../analytics');
-        initAnalytics();
-
-        // No script yet — we're still in the "waiting for load" phase
-        let script = document.head.querySelector('script[src*="googletagmanager"]');
-        expect(script).toBeNull();
-
-        // Fire the load event
-        window.dispatchEvent(new Event('load'));
-        // Flush the scheduleIdle setTimeout fallback
-        await vi.advanceTimersByTimeAsync(300);
-
-        script = document.head.querySelector('script[src*="googletagmanager"]');
-        expect(script).not.toBeNull();
-      } finally {
-        Object.defineProperty(document, 'readyState', {
-          configurable: true,
-          get: () => originalReadyState,
-        });
-      }
     });
   });
 
   describe('trackPageView', () => {
-    it('sends page_view event when gtag is available', async () => {
-      const { initAnalytics, trackPageView } = await import('../analytics');
-      initAnalytics();
-
-      const gtagSpy = vi.fn();
-      window.gtag = gtagSpy;
+    it('sends page_view event via sendBeacon', async () => {
+      const { trackPageView } = await import('../analytics');
 
       trackPageView('/profile');
-      expect(gtagSpy).toHaveBeenCalledWith('event', 'page_view', { page_path: '/profile' });
+
+      expect(sendBeaconSpy).toHaveBeenCalledTimes(1);
+      const [url, blob] = sendBeaconSpy.mock.calls[0];
+      expect(url).toBe('https://analytics.emelmujiro.com/api/send');
+      const body = JSON.parse(await (blob as Blob).text());
+      expect(body.type).toBe('event');
+      expect(body.payload.url).toBe('/profile');
+      expect(body.payload.website).toBe('test-website-id');
+      expect(body.payload.name).toBeUndefined();
     });
 
-    it('does nothing when gtag is not initialized', async () => {
+    it('does nothing when analytics is disabled', async () => {
+      mockEnv.ENABLE_ANALYTICS = false;
       const { trackPageView } = await import('../analytics');
-      // gtag is undefined — should not throw
-      expect(() => trackPageView('/test')).not.toThrow();
+
+      trackPageView('/test');
+
+      expect(sendBeaconSpy).not.toHaveBeenCalled();
+    });
+
+    it('does nothing when UMAMI_HOST is empty', async () => {
+      mockEnv.UMAMI_HOST = '';
+      const { trackPageView } = await import('../analytics');
+
+      trackPageView('/test');
+
+      expect(sendBeaconSpy).not.toHaveBeenCalled();
+    });
+
+    it('does nothing when UMAMI_WEBSITE_ID is empty', async () => {
+      mockEnv.UMAMI_WEBSITE_ID = '';
+      const { trackPageView } = await import('../analytics');
+
+      trackPageView('/test');
+
+      expect(sendBeaconSpy).not.toHaveBeenCalled();
     });
   });
 
   describe('trackCtaClick', () => {
-    it('sends click_cta_email event when gtag is available', async () => {
-      const { initAnalytics, trackCtaClick } = await import('../analytics');
-      initAnalytics();
-
-      const gtagSpy = vi.fn();
-      window.gtag = gtagSpy;
+    it('sends click_cta_email event with location', async () => {
+      const { trackCtaClick } = await import('../analytics');
 
       trackCtaClick('hero');
-      expect(gtagSpy).toHaveBeenCalledWith('event', 'click_cta_email', { event_label: 'hero' });
+
+      expect(sendBeaconSpy).toHaveBeenCalledTimes(1);
+      const body = JSON.parse(await (sendBeaconSpy.mock.calls[0][1] as Blob).text());
+      expect(body.payload.name).toBe('click_cta_email');
+      expect(body.payload.data).toEqual({ location: 'hero' });
     });
 
-    it('does nothing when gtag is not initialized', async () => {
+    it('does nothing when disabled', async () => {
+      mockEnv.ENABLE_ANALYTICS = false;
       const { trackCtaClick } = await import('../analytics');
-      expect(() => trackCtaClick('cta')).not.toThrow();
+
+      trackCtaClick('cta');
+
+      expect(sendBeaconSpy).not.toHaveBeenCalled();
     });
   });
 
-  // --- New tests for uncovered lines ---
-
   describe('trackBlogView', () => {
     it('sends view_blog_post event with post id and category', async () => {
-      const { initAnalytics, trackBlogView } = await import('../analytics');
-      initAnalytics();
-
-      const gtagSpy = vi.fn();
-      window.gtag = gtagSpy;
+      const { trackBlogView } = await import('../analytics');
 
       trackBlogView(42, 'tech');
-      expect(gtagSpy).toHaveBeenCalledWith('event', 'view_blog_post', {
-        post_id: 42,
-        category: 'tech',
-      });
+
+      expect(sendBeaconSpy).toHaveBeenCalledTimes(1);
+      const body = JSON.parse(await (sendBeaconSpy.mock.calls[0][1] as Blob).text());
+      expect(body.payload.name).toBe('view_blog_post');
+      expect(body.payload.data).toEqual({ post_id: '42', category: 'tech' });
     });
 
-    it('sends view_blog_post event with string post id', async () => {
-      const { initAnalytics, trackBlogView } = await import('../analytics');
-      initAnalytics();
-
-      const gtagSpy = vi.fn();
-      window.gtag = gtagSpy;
+    it('sends event with string post id', async () => {
+      const { trackBlogView } = await import('../analytics');
 
       trackBlogView('slug-123');
-      expect(gtagSpy).toHaveBeenCalledWith('event', 'view_blog_post', {
-        post_id: 'slug-123',
-        category: undefined,
-      });
+
+      const body = JSON.parse(await (sendBeaconSpy.mock.calls[0][1] as Blob).text());
+      expect(body.payload.data).toEqual({ post_id: 'slug-123', category: undefined });
     });
 
-    it('does nothing when gtag is not initialized', async () => {
+    it('does nothing when disabled', async () => {
+      mockEnv.ENABLE_ANALYTICS = false;
       const { trackBlogView } = await import('../analytics');
-      expect(() => trackBlogView(1)).not.toThrow();
+
+      trackBlogView(1);
+
+      expect(sendBeaconSpy).not.toHaveBeenCalled();
     });
   });
 
   describe('trackDarkModeToggle', () => {
-    it('sends toggle_dark_mode event with is_dark true', async () => {
-      const { initAnalytics, trackDarkModeToggle } = await import('../analytics');
-      initAnalytics();
-
-      const gtagSpy = vi.fn();
-      window.gtag = gtagSpy;
+    it('sends toggle_dark_mode event', async () => {
+      const { trackDarkModeToggle } = await import('../analytics');
 
       trackDarkModeToggle(true);
-      expect(gtagSpy).toHaveBeenCalledWith('event', 'toggle_dark_mode', { is_dark: true });
+
+      const body = JSON.parse(await (sendBeaconSpy.mock.calls[0][1] as Blob).text());
+      expect(body.payload.name).toBe('toggle_dark_mode');
+      expect(body.payload.data).toEqual({ is_dark: true });
     });
 
-    it('sends toggle_dark_mode event with is_dark false', async () => {
-      const { initAnalytics, trackDarkModeToggle } = await import('../analytics');
-      initAnalytics();
-
-      const gtagSpy = vi.fn();
-      window.gtag = gtagSpy;
+    it('sends with is_dark false', async () => {
+      const { trackDarkModeToggle } = await import('../analytics');
 
       trackDarkModeToggle(false);
-      expect(gtagSpy).toHaveBeenCalledWith('event', 'toggle_dark_mode', { is_dark: false });
+
+      const body = JSON.parse(await (sendBeaconSpy.mock.calls[0][1] as Blob).text());
+      expect(body.payload.data).toEqual({ is_dark: false });
     });
 
-    it('does nothing when gtag is not initialized', async () => {
+    it('does nothing when disabled', async () => {
+      mockEnv.ENABLE_ANALYTICS = false;
       const { trackDarkModeToggle } = await import('../analytics');
-      expect(() => trackDarkModeToggle(true)).not.toThrow();
+
+      trackDarkModeToggle(true);
+
+      expect(sendBeaconSpy).not.toHaveBeenCalled();
     });
   });
 
   describe('trackLanguageSwitch', () => {
     it('sends switch_language event', async () => {
-      const { initAnalytics, trackLanguageSwitch } = await import('../analytics');
-      initAnalytics();
-
-      const gtagSpy = vi.fn();
-      window.gtag = gtagSpy;
+      const { trackLanguageSwitch } = await import('../analytics');
 
       trackLanguageSwitch('en');
-      expect(gtagSpy).toHaveBeenCalledWith('event', 'switch_language', { language: 'en' });
+
+      const body = JSON.parse(await (sendBeaconSpy.mock.calls[0][1] as Blob).text());
+      expect(body.payload.name).toBe('switch_language');
+      expect(body.payload.data).toEqual({ language: 'en' });
     });
 
-    it('does nothing when gtag is not initialized', async () => {
+    it('does nothing when disabled', async () => {
+      mockEnv.ENABLE_ANALYTICS = false;
       const { trackLanguageSwitch } = await import('../analytics');
-      expect(() => trackLanguageSwitch('ko')).not.toThrow();
+
+      trackLanguageSwitch('ko');
+
+      expect(sendBeaconSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('trackWebVital', () => {
+    it('sends web_vital event', async () => {
+      const { trackWebVital } = await import('../analytics');
+
+      trackWebVital('LCP', 1200.5, 'good');
+
+      const body = JSON.parse(await (sendBeaconSpy.mock.calls[0][1] as Blob).text());
+      expect(body.payload.name).toBe('web_vital');
+      expect(body.payload.data).toEqual({
+        metric_name: 'LCP',
+        metric_value: 1200.5,
+        metric_rating: 'good',
+      });
+    });
+  });
+
+  describe('fetch fallback', () => {
+    it('uses fetch when sendBeacon is not available', async () => {
+      // Remove sendBeacon
+      Object.defineProperty(navigator, 'sendBeacon', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
+
+      const { trackPageView } = await import('../analytics');
+
+      trackPageView('/test');
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      const [url, options] = fetchSpy.mock.calls[0];
+      expect(url).toBe('https://analytics.emelmujiro.com/api/send');
+      expect(options.method).toBe('POST');
+      expect(options.keepalive).toBe(true);
     });
   });
 });

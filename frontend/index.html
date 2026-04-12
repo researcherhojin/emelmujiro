@@ -14,7 +14,7 @@
     <meta name="author" content="이호진" />
 
     <!-- Security headers via meta -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' data: https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://api.emelmujiro.com https://api.github.com https://*.sentry.io https://cdn.jsdelivr.net https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com https://static.cloudflareinsights.com; frame-src https://docs.google.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' data: https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://api.emelmujiro.com https://api.github.com https://*.sentry.io https://cdn.jsdelivr.net https://cloudflareinsights.com https://static.cloudflareinsights.com; frame-src https://docs.google.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta
       http-equiv="Referrer-Policy"
@@ -22,11 +22,9 @@
     />
 
     <!-- Resource hints for better performance. Preconnect > dns-prefetch for
-         origins we definitely hit — Lighthouse flagged both cdn.jsdelivr.net
-         (Pretendard font) and www.googletagmanager.com (GA) as missing
-         preconnect, costing ~90ms and ~60ms of wasted time respectively. -->
+         origins we definitely hit — Lighthouse flagged cdn.jsdelivr.net
+         (Pretendard font) as missing preconnect. -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
     <link rel="dns-prefetch" href="https://api.github.com" />
     <link rel="dns-prefetch" href="https://api.emelmujiro.com" />
     <link rel="preconnect" href="https://api.emelmujiro.com" crossorigin />

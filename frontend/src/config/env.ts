@@ -36,7 +36,8 @@ export const env = {
   ENABLE_SENTRY: getEnvVar('REACT_APP_ENABLE_SENTRY', 'false') === 'true',
   // Third Party Keys
   SENTRY_DSN: getEnvVar('REACT_APP_SENTRY_DSN', ''),
-  GA_TRACKING_ID: getEnvVar('REACT_APP_GA_TRACKING_ID', ''),
+  UMAMI_HOST: getEnvVar('REACT_APP_UMAMI_HOST', ''),
+  UMAMI_WEBSITE_ID: getEnvVar('REACT_APP_UMAMI_WEBSITE_ID', ''),
 
   // App Configuration
   APP_NAME: getEnvVar('REACT_APP_APP_NAME', 'Emelmujiro'),

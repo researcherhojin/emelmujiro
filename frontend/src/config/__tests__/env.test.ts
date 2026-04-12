@@ -17,7 +17,8 @@ describe('env config', () => {
       expect(env).toHaveProperty('ENABLE_ANALYTICS');
       expect(env).toHaveProperty('ENABLE_SENTRY');
       expect(env).toHaveProperty('SENTRY_DSN');
-      expect(env).toHaveProperty('GA_TRACKING_ID');
+      expect(env).toHaveProperty('UMAMI_HOST');
+      expect(env).toHaveProperty('UMAMI_WEBSITE_ID');
       expect(env).toHaveProperty('APP_NAME');
       expect(env).toHaveProperty('APP_VERSION');
       expect(env).toHaveProperty('PUBLIC_URL');
@@ -40,7 +41,8 @@ describe('env config', () => {
       expect(env.APP_VERSION).toBe('1.0.0');
       expect(env.PUBLIC_URL).toBe('');
       expect(env.SENTRY_DSN).toBe('');
-      expect(env.GA_TRACKING_ID).toBe('');
+      expect(env.UMAMI_HOST).toBe('');
+      expect(env.UMAMI_WEBSITE_ID).toBe('');
     });
 
     it('should have feature flags as booleans', async () => {

@@ -3,7 +3,8 @@
 // Environment variable type definitions
 interface ImportMetaEnv {
   readonly VITE_API_URL: string;
-  readonly VITE_GA_TRACKING_ID: string;
+  readonly VITE_UMAMI_HOST: string;
+  readonly VITE_UMAMI_WEBSITE_ID: string;
   readonly VITE_SENTRY_DSN: string;
 }
 
@@ -13,8 +14,6 @@ interface ImportMeta {
 
 // Window object extension
 interface Window {
-  gtag?: (...args: unknown[]) => void;
-  dataLayer?: unknown[];
   __isKakaoInApp?: boolean;
   __isKakaoAndroid?: boolean;
   __appLoaded?: boolean;

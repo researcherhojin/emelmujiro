@@ -52,27 +52,25 @@ vi.mock('../../../config/env', async (importOriginal) => {
   };
 });
 
+// Mock analytics module
+const { mockTrackWebVital } = vi.hoisted(() => ({
+  mockTrackWebVital: vi.fn(),
+}));
+vi.mock('../../../utils/analytics', () => ({
+  trackWebVital: mockTrackWebVital,
+}));
+
 // Mock console.log
 const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 
 describe('WebVitalsDashboard', () => {
   let originalEnv: string | undefined;
-  let originalGtag: typeof window.gtag;
-  let mockGtag: any;
 
   beforeEach(() => {
     setupCommonMocks();
 
     // Store original environment
     originalEnv = process.env.NODE_ENV;
-    originalGtag = window.gtag;
-
-    // Mock gtag
-    mockGtag = vi.fn();
-    Object.defineProperty(window, 'gtag', {
-      writable: true,
-      value: mockGtag,
-    });
 
     vi.clearAllMocks();
     mockConsoleLog.mockClear();
@@ -88,12 +86,6 @@ describe('WebVitalsDashboard', () => {
       ...process.env,
       NODE_ENV: (originalEnv || 'test') as 'development' | 'production' | 'test',
     };
-
-    // Restore original gtag
-    Object.defineProperty(window, 'gtag', {
-      writable: true,
-      value: originalGtag,
-    });
 
     vi.restoreAllMocks();
   });
@@ -670,7 +662,7 @@ describe('WebVitalsDashboard', () => {
       process.env = { ...process.env, NODE_ENV: 'development' };
     });
 
-    test('sends metrics to gtag when available', () => {
+    test('sends metrics via trackWebVital', () => {
       render(<WebVitalsDashboard />);
 
       const clsHandler = mockOnCLS.mock.calls[0][0];
@@ -678,29 +670,7 @@ describe('WebVitalsDashboard', () => {
         clsHandler({ name: 'CLS', value: 0.05 });
       });
 
-      expect(mockGtag).toHaveBeenCalledWith('event', 'web_vital', {
-        metric_name: 'CLS',
-        metric_value: 0.05,
-        metric_rating: 'good',
-      });
-    });
-
-    test('handles missing gtag gracefully', () => {
-      // Remove gtag
-      Object.defineProperty(window, 'gtag', {
-        writable: true,
-        value: undefined,
-      });
-
-      render(<WebVitalsDashboard />);
-
-      const clsHandler = mockOnCLS.mock.calls[0][0];
-
-      expect(() => {
-        act(() => {
-          clsHandler({ name: 'CLS', value: 0.05 });
-        });
-      }).not.toThrow();
+      expect(mockTrackWebVital).toHaveBeenCalledWith('CLS', 0.05, 'good');
     });
   });
 

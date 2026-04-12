@@ -50,30 +50,6 @@ remaining levers are structural — third-party scripts (Google Form, gtag).
   backend.
 - **Effort**: 2–3 h including UX polish and i18n.
 
-### 1.2 Replace Google Analytics with a lighter provider
-
-- **Goal**: `unused-javascript` ≥ 0.9 (currently 0) and `legacy-javascript`
-  ≥ 0.9 (currently 0.5) on all four URLs.
-- **Why**: `gtag.js` is 156 kB with 86 kB wasted (56%) per page and ships
-  ES5 polyfills Lighthouse flags as legacy — these two audits are the
-  last things preventing `/` and `/insights` from scoring 0.90+. Our
-  actual tracking surface is 5 custom events (page view, CTA click, blog
-  view, dark mode toggle, language switch) in `src/utils/analytics.ts`.
-  Plausible (~1 kB script) or Umami (self-hostable, ~2 kB) both cover
-  this feature set.
-- **How**:
-  - Inventory the 5 `track*` functions and decide which events are
-    genuinely load-bearing for decision-making.
-  - Provision Plausible account _or_ install Umami Docker container
-    next to the backend on Mac mini.
-  - Rewrite `initAnalytics` implementation and the external script URL.
-    Keep the public `trackX` API unchanged so callers don't move.
-  - Update `.env.production` and CLAUDE.md "Monitoring" section.
-- **Verify**: Lighthouse `unused-javascript` ≥ 0.9, `legacy-javascript`
-  ≥ 0.9. Confirm new analytics backend receives the 5 events in a
-  staging deploy.
-- **Effort**: 3–4 h.
-
 ## 3. 콘텐츠
 
 - [ ] 블로그 포스트 기획 — AI Agent 실전 구축 가이드, RAG 파이프라인 설계 등 서비스 영역(교육·컨설팅·개발)과 직접 연결되는 기술 콘텐츠 시리즈. 첫 포스트는 최근 K-Digital 강의에서 받은 질문 기반이 좋음.
