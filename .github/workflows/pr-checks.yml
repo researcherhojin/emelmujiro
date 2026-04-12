@@ -306,6 +306,10 @@ jobs:
 
       - name: Build frontend
         working-directory: ./frontend
+        env:
+          # Use relative API URL so Lighthouse preview doesn't trigger CORS
+          # errors against the production API (errors-in-console audit).
+          VITE_API_URL: /api
         run: CI=false npm run build:no-prerender
 
       - name: Check bundle size
