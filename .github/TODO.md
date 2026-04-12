@@ -70,13 +70,19 @@ All Lighthouse audits are now resolved except the Google Form iframe on
 
 - [ ] 멘토링/활동 이력 추가 검토 — ICT 피우다 멘토, 해커톤 심사위원, 오픈소스 컨트리뷰션 등 교육 외 활동을 별도 섹션 또는 기존 이력에 통합할지 검토. Teaching History 35개 엔트리 옆에 "활동 이력" 서브섹션이 가장 자연스러움.
 
-## 5. SEO (2026-04-02 이후 이월)
+## 5. SEO
 
-작업 완료 후 GSC에 들어가 각 항목 상태를 직접 확인해야 함. 11일 이상 경과했으므로 대부분 자동 재크롤로 해소됐을 가능성 있음.
+2026-04-13 세션에서 GSC 작업 완료:
 
-- [ ] GSC 사이트맵 재제출 — `sitemap.xml`에 `/privacy` 추가됨. GSC → 사이트맵 → 재제출.
-- [ ] GSC 색인 요청 — URL 검사에서 `/privacy`, `/en/privacy`, `/en/profile` 각각 "색인 생성 요청".
-- [ ] GSC redirect 오류 (4건) + `/cdn-cgi/` 404 — robots.txt에 `Disallow: /cdn-cgi/` 추가 완료. 재크롤 시 자동 해소 예상.
+- ✅ 사이트맵 재제출 — 10개 URL 발견, 상태 "성공".
+- ✅ 색인 요청 — `/contact`, `/insights`, `/en/contact`, `/en/insights`,
+  `/privacy`, `/en/privacy` 각각 "색인 생성 요청" 완료.
+- ✅ 리디렉션 오류 4건 — "수정 확인" 요청 완료. nginx는 200 정상
+  반환 중, Google 재크롤 대기 (3–7일).
+- ✅ `/cdn-cgi/` 404 — nginx `location /cdn-cgi/ { return 404; }` 추가
+  (`ae227e2`), "수정 확인" 요청 완료.
+- `/profile/` 표준 태그 대체 페이지 — 정상 동작 (canonical이 `/profile`
+  가리킴, 조치 불필요).
 
 ## 6. 법률 / 컴플라이언스
 
