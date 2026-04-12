@@ -105,21 +105,28 @@ export function initSentry(): void {
     });
 }
 
+// Swallow import failures silently — if the chunk can't load (network down),
+// Sentry wouldn't be reachable anyway.
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noop = () => {};
+
 // Capture exception
 export function captureException(error: Error | unknown, context?: Record<string, unknown>): void {
   if (env.ENABLE_SENTRY) {
-    loadImpl().then((sentry) => {
-      if (context) {
-        sentry.withScope((scope) => {
-          Object.keys(context).forEach((key) => {
-            scope.setExtra(key, context[key]);
+    loadImpl()
+      .then((sentry) => {
+        if (context) {
+          sentry.withScope((scope) => {
+            Object.keys(context).forEach((key) => {
+              scope.setExtra(key, context[key]);
+            });
+            sentry.captureException(error);
           });
+        } else {
           sentry.captureException(error);
-        });
-      } else {
-        sentry.captureException(error);
-      }
-    });
+        }
+      })
+      .catch(noop);
   } else {
     logger.error('Error captured:', { error, context });
   }
@@ -128,15 +135,17 @@ export function captureException(error: Error | unknown, context?: Record<string
 // Error reporter for use with React Error Boundary
 export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
   if (env.ENABLE_SENTRY) {
-    loadImpl().then((sentry) => {
-      sentry.withScope((scope) => {
-        scope.setContext('errorBoundary', {
-          componentStack: errorInfo.componentStack,
-          digest: errorInfo.digest,
+    loadImpl()
+      .then((sentry) => {
+        sentry.withScope((scope) => {
+          scope.setContext('errorBoundary', {
+            componentStack: errorInfo.componentStack,
+            digest: errorInfo.digest,
+          });
+          sentry.captureException(error);
         });
-        sentry.captureException(error);
-      });
-    });
+      })
+      .catch(noop);
   } else {
     logger.error('Error Boundary:', { error, errorInfo });
   }
@@ -145,18 +154,22 @@ export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
 // Set user context for error tracking (call on login)
 export function setUserContext(user: { id: number; email: string }): void {
   if (env.ENABLE_SENTRY) {
-    loadImpl().then((sentry) => {
-      sentry.setUser({ id: String(user.id), email: user.email });
-    });
+    loadImpl()
+      .then((sentry) => {
+        sentry.setUser({ id: String(user.id), email: user.email });
+      })
+      .catch(noop);
   }
 }
 
 // Clear user context (call on logout)
 export function clearUserContext(): void {
   if (env.ENABLE_SENTRY) {
-    loadImpl().then((sentry) => {
-      sentry.setUser(null);
-    });
+    loadImpl()
+      .then((sentry) => {
+        sentry.setUser(null);
+      })
+      .catch(noop);
   }
 }
 
@@ -167,9 +180,11 @@ export function addBreadcrumb(
   data?: Record<string, unknown>
 ): void {
   if (env.ENABLE_SENTRY) {
-    loadImpl().then((sentry) => {
-      sentry.addBreadcrumb({ category, message, data, level: 'info' });
-    });
+    loadImpl()
+      .then((sentry) => {
+        sentry.addBreadcrumb({ category, message, data, level: 'info' });
+      })
+      .catch(noop);
   }
 }
 
