@@ -1,28 +1,21 @@
-// Sentry configuration - Enhanced Error Tracking for 2025
+// Sentry lazy-loading shim — defers the 77 kB @sentry/react chunk until
+// an error, login, or breadcrumb actually fires.
 //
-// Bundle note: the chunk is 77 kB (26 kB gz) and Lighthouse reports ~72 kB
-// of it as unused on the home page. The unused bytes are NOT tree-shakable
-// dead exports — they're module-eval overhead that Sentry's `init()` pulls
-// in transitively (default integrations, transports, scope manager, error
-// classifier). Two prior reduction attempts both failed:
-//   1. `import * as Sentry` → named imports: Vite was already tree-shaking
-//      the namespace import, named imports gave zero size delta.
-//   2. `await import('@sentry/react')`: dynamic import of a barrel package
-//      defeats tree-shaking entirely — chunk ballooned 77 kB → 438 kB.
-// Realistic next step is switching to `@sentry/browser` directly (smaller
-// surface, no React HOC bits we don't use) or moving to a re-export shim
-// pattern for true lazy loading. Both deferred — see TODO §1.x.
-import {
-  init as sentryInit,
-  captureException as sentryCaptureException,
-  withScope as sentryWithScope,
-  setUser as sentrySetUser,
-  addBreadcrumb as sentryAddBreadcrumb,
-} from '@sentry/react';
+// Why a shim: Lighthouse reports ~72 kB of the Sentry chunk as unused on
+// the home page. The bytes are module-eval overhead from init()'s default
+// integrations, not tree-shakable dead exports. Two prior approaches failed:
+//   1. namespace → named imports: zero size delta (Vite already tree-shook).
+//   2. await import('@sentry/react'): barrel dynamic import defeated
+//      tree-shaking entirely (77 kB → 438 kB).
+//
+// This shim dynamically imports ./sentry-impl (a local file with static
+// named imports), so Rollup tree-shakes across the dynamic boundary.
+// Trade-off: errors during the first ~200 ms before the chunk loads won't
+// reach Sentry. ErrorBoundary still renders fallback UI regardless.
 import env from '../config/env';
 import logger from './logger';
 
-// Type definitions for better type safety
+// Types
 interface WindowWithDevTools extends Window {
   __REACT_DEVTOOLS_GLOBAL_HOOK__?: unknown;
 }
@@ -32,81 +25,73 @@ interface ErrorInfo {
   digest?: string;
 }
 
-// Initialize Sentry
+// Lazy loader — single shared promise, resolved once
+type SentryImpl = typeof import('./sentry-impl');
+let implPromise: Promise<SentryImpl> | null = null;
+
+function loadImpl(): Promise<SentryImpl> {
+  if (!implPromise) {
+    implPromise = import('./sentry-impl');
+  }
+  return implPromise;
+}
+
+// Initialize Sentry (fire-and-forget from main.tsx — no await needed)
 export function initSentry(): void {
-  if (env.ENABLE_SENTRY && env.SENTRY_DSN) {
-    try {
-      sentryInit({
+  if (!env.ENABLE_SENTRY || !env.SENTRY_DSN) return;
+
+  loadImpl()
+    .then((sentry) => {
+      sentry.init({
         dsn: env.SENTRY_DSN,
         environment: env.NODE_ENV,
         tracesSampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
 
-        // Error filtering
         beforeSend(event, _hint) {
-          // Ignore errors when DevTools is open
           if ((window as WindowWithDevTools).__REACT_DEVTOOLS_GLOBAL_HOOK__) {
             return null;
           }
-
-          // Filter network errors
           if (event.exception?.values?.[0]?.type === 'NetworkError') {
             return null;
           }
-
-          // Filter user cancellation errors
           if (
             event.exception?.values?.[0]?.value?.includes('cancelled') ||
             event.exception?.values?.[0]?.value?.includes('aborted')
           ) {
             return null;
           }
-
-          // Filter browser extension errors
           if (
             event.exception?.values?.[0]?.value?.includes('extension://') ||
             event.exception?.values?.[0]?.value?.includes('chrome-extension://')
           ) {
             return null;
           }
-
           return event;
         },
 
-        // Errors to ignore
         ignoreErrors: [
-          // Network-related
           'Network request failed',
           'NetworkError',
           'Failed to fetch',
           'Load failed',
           'The request timed out',
-
-          // User actions
           'ResizeObserver loop limit exceeded',
           'ResizeObserver loop completed with undelivered notifications',
           'Non-Error promise rejection captured',
-
-          // Browser extensions
           'extension://',
           'chrome-extension://',
           'moz-extension://',
-
-          // Known third-party errors
           'top.GLOBALS',
           'grecaptcha',
           'fb_xd_fragment',
           '__tcfapi',
         ],
 
-        // Deny-listed URLs
         denyUrls: [
-          // Browser extensions
           /extensions\//i,
           /^chrome:\/\//i,
           /^chrome-extension:\/\//i,
           /^moz-extension:\/\//i,
-
-          // Third-party scripts
           /graph\.facebook\.com/i,
           /connect\.facebook\.net/i,
           /google-analytics\.com/i,
@@ -114,29 +99,28 @@ export function initSentry(): void {
           /doubleclick\.net/i,
         ],
       });
-
-      // Sentry initialized successfully
-    } catch (error) {
+    })
+    .catch((error) => {
       logger.error('Failed to initialize Sentry:', error);
-    }
-  }
+    });
 }
 
 // Capture exception
 export function captureException(error: Error | unknown, context?: Record<string, unknown>): void {
   if (env.ENABLE_SENTRY) {
-    if (context) {
-      sentryWithScope((scope) => {
-        Object.keys(context).forEach((key) => {
-          scope.setExtra(key, context[key]);
+    loadImpl().then((sentry) => {
+      if (context) {
+        sentry.withScope((scope) => {
+          Object.keys(context).forEach((key) => {
+            scope.setExtra(key, context[key]);
+          });
+          sentry.captureException(error);
         });
-        sentryCaptureException(error);
-      });
-    } else {
-      sentryCaptureException(error);
-    }
+      } else {
+        sentry.captureException(error);
+      }
+    });
   } else {
-    // Log to console in development
     logger.error('Error captured:', { error, context });
   }
 }
@@ -144,12 +128,14 @@ export function captureException(error: Error | unknown, context?: Record<string
 // Error reporter for use with React Error Boundary
 export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
   if (env.ENABLE_SENTRY) {
-    sentryWithScope((scope) => {
-      scope.setContext('errorBoundary', {
-        componentStack: errorInfo.componentStack,
-        digest: errorInfo.digest,
+    loadImpl().then((sentry) => {
+      sentry.withScope((scope) => {
+        scope.setContext('errorBoundary', {
+          componentStack: errorInfo.componentStack,
+          digest: errorInfo.digest,
+        });
+        sentry.captureException(error);
       });
-      sentryCaptureException(error);
     });
   } else {
     logger.error('Error Boundary:', { error, errorInfo });
@@ -159,14 +145,18 @@ export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
 // Set user context for error tracking (call on login)
 export function setUserContext(user: { id: number; email: string }): void {
   if (env.ENABLE_SENTRY) {
-    sentrySetUser({ id: String(user.id), email: user.email });
+    loadImpl().then((sentry) => {
+      sentry.setUser({ id: String(user.id), email: user.email });
+    });
   }
 }
 
 // Clear user context (call on logout)
 export function clearUserContext(): void {
   if (env.ENABLE_SENTRY) {
-    sentrySetUser(null);
+    loadImpl().then((sentry) => {
+      sentry.setUser(null);
+    });
   }
 }
 
@@ -177,7 +167,9 @@ export function addBreadcrumb(
   data?: Record<string, unknown>
 ): void {
   if (env.ENABLE_SENTRY) {
-    sentryAddBreadcrumb({ category, message, data, level: 'info' });
+    loadImpl().then((sentry) => {
+      sentry.addBreadcrumb({ category, message, data, level: 'info' });
+    });
   }
 }
 

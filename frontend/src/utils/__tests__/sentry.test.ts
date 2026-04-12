@@ -40,8 +40,8 @@ const { mockInit, mockCaptureException, mockWithScope, mockSetUser, mockAddBread
     };
   });
 
-// Mock @sentry/react
-vi.mock('@sentry/react', () => ({
+// Mock sentry-impl (the lazy-loaded module) instead of @sentry/react directly
+vi.mock('../sentry-impl', () => ({
   init: mockInit,
   captureException: mockCaptureException,
   withScope: mockWithScope,
@@ -76,6 +76,11 @@ import {
 } from '../sentry';
 import logger from '../logger';
 
+// Flush microtask queue — needed because the lazy shim uses import().then()
+async function flushPromises(): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 describe('sentry', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -96,28 +101,31 @@ describe('sentry', () => {
   });
 
   describe('initSentry', () => {
-    it('should not initialize Sentry when ENABLE_SENTRY is false', () => {
+    it('should not initialize Sentry when ENABLE_SENTRY is false', async () => {
       mockEnv.ENABLE_SENTRY = false;
 
       initSentry();
+      await flushPromises();
 
       expect(mockInit).not.toHaveBeenCalled();
     });
 
-    it('should not initialize Sentry when SENTRY_DSN is empty', () => {
+    it('should not initialize Sentry when SENTRY_DSN is empty', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = '';
 
       initSentry();
+      await flushPromises();
 
       expect(mockInit).not.toHaveBeenCalled();
     });
 
-    it('should initialize Sentry when both ENABLE_SENTRY and SENTRY_DSN are set', () => {
+    it('should initialize Sentry when both ENABLE_SENTRY and SENTRY_DSN are set', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
 
       initSentry();
+      await flushPromises();
 
       expect(mockInit).toHaveBeenCalledTimes(1);
       expect(mockInit).toHaveBeenCalledWith(
@@ -128,12 +136,13 @@ describe('sentry', () => {
       );
     });
 
-    it('should use 0.1 traces sample rate in production', () => {
+    it('should use 0.1 traces sample rate in production', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
       mockEnv.NODE_ENV = 'production';
 
       initSentry();
+      await flushPromises();
 
       expect(mockInit).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -142,12 +151,13 @@ describe('sentry', () => {
       );
     });
 
-    it('should use 1.0 traces sample rate in non-production', () => {
+    it('should use 1.0 traces sample rate in non-production', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
       mockEnv.NODE_ENV = 'development';
 
       initSentry();
+      await flushPromises();
 
       expect(mockInit).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -156,11 +166,12 @@ describe('sentry', () => {
       );
     });
 
-    it('should include ignoreErrors list', () => {
+    it('should include ignoreErrors list', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
 
       initSentry();
+      await flushPromises();
 
       const callArgs = mockInit.mock.calls[0][0];
       expect(callArgs.ignoreErrors).toContain('Network request failed');
@@ -168,18 +179,19 @@ describe('sentry', () => {
       expect(callArgs.ignoreErrors).toContain('ResizeObserver loop limit exceeded');
     });
 
-    it('should include denyUrls for extensions and third-party scripts', () => {
+    it('should include denyUrls for extensions and third-party scripts', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
 
       initSentry();
+      await flushPromises();
 
       const callArgs = mockInit.mock.calls[0][0];
       expect(callArgs.denyUrls).toBeDefined();
       expect(callArgs.denyUrls.length).toBeGreaterThan(0);
     });
 
-    it('should log error if Sentry init throws', () => {
+    it('should log error if lazy import fails', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
       mockInit.mockImplementationOnce(() => {
@@ -187,15 +199,17 @@ describe('sentry', () => {
       });
 
       initSentry();
+      await flushPromises();
 
       expect(logger.error).toHaveBeenCalledWith('Failed to initialize Sentry:', expect.any(Error));
     });
 
-    it('should configure beforeSend to filter NetworkError', () => {
+    it('should configure beforeSend to filter NetworkError', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
 
       initSentry();
+      await flushPromises();
 
       const callArgs = mockInit.mock.calls[0][0];
       const beforeSend = callArgs.beforeSend;
@@ -208,11 +222,12 @@ describe('sentry', () => {
       expect(beforeSend(networkEvent, {})).toBeNull();
     });
 
-    it('should configure beforeSend to filter cancelled/aborted errors', () => {
+    it('should configure beforeSend to filter cancelled/aborted errors', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
 
       initSentry();
+      await flushPromises();
 
       const callArgs = mockInit.mock.calls[0][0];
       const beforeSend = callArgs.beforeSend;
@@ -232,11 +247,12 @@ describe('sentry', () => {
       expect(beforeSend(abortedEvent, {})).toBeNull();
     });
 
-    it('should configure beforeSend to filter extension errors', () => {
+    it('should configure beforeSend to filter extension errors', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
 
       initSentry();
+      await flushPromises();
 
       const callArgs = mockInit.mock.calls[0][0];
       const beforeSend = callArgs.beforeSend;
@@ -249,7 +265,7 @@ describe('sentry', () => {
       expect(beforeSend(extensionEvent, {})).toBeNull();
     });
 
-    it('should configure beforeSend to pass through normal errors', () => {
+    it('should configure beforeSend to pass through normal errors', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
 
@@ -257,6 +273,7 @@ describe('sentry', () => {
       delete (window as unknown as Record<string, unknown>).__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
       initSentry();
+      await flushPromises();
 
       const callArgs = mockInit.mock.calls[0][0];
       const beforeSend = callArgs.beforeSend;
@@ -269,7 +286,7 @@ describe('sentry', () => {
       expect(beforeSend(normalEvent, {})).toEqual(normalEvent);
     });
 
-    it('should filter events when React DevTools hook is present (line 29)', () => {
+    it('should filter events when React DevTools hook is present', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
 
@@ -277,6 +294,7 @@ describe('sentry', () => {
       (window as unknown as Record<string, unknown>).__REACT_DEVTOOLS_GLOBAL_HOOK__ = {};
 
       initSentry();
+      await flushPromises();
 
       const callArgs = mockInit.mock.calls[0][0];
       const beforeSend = callArgs.beforeSend;
@@ -316,22 +334,24 @@ describe('sentry', () => {
       });
     });
 
-    it('should call Sentry.captureException directly without context', () => {
+    it('should call Sentry.captureException directly without context', async () => {
       mockEnv.ENABLE_SENTRY = true;
       const error = new Error('test error');
 
       captureException(error);
+      await flushPromises();
 
       expect(mockCaptureException).toHaveBeenCalledWith(error);
       expect(mockWithScope).not.toHaveBeenCalled();
     });
 
-    it('should call Sentry.captureException with scope when context is provided', () => {
+    it('should call Sentry.captureException with scope when context is provided', async () => {
       mockEnv.ENABLE_SENTRY = true;
       const error = new Error('test error');
       const context = { userId: '123', action: 'save' };
 
       captureException(error, context);
+      await flushPromises();
 
       expect(mockWithScope).toHaveBeenCalled();
       // Verify the scope callback sets extras
@@ -358,7 +378,7 @@ describe('sentry', () => {
       });
     });
 
-    it('should capture exception with errorBoundary context when enabled', () => {
+    it('should capture exception with errorBoundary context when enabled', async () => {
       mockEnv.ENABLE_SENTRY = true;
       const error = new Error('render error');
       const errorInfo = {
@@ -367,6 +387,7 @@ describe('sentry', () => {
       };
 
       reportErrorBoundary(error, errorInfo);
+      await flushPromises();
 
       expect(mockWithScope).toHaveBeenCalled();
       const scopeCallback = mockWithScope.mock.calls[0][0];
@@ -381,9 +402,10 @@ describe('sentry', () => {
   });
 
   describe('setUserContext', () => {
-    it('sets Sentry user when enabled', () => {
+    it('sets Sentry user when enabled', async () => {
       mockEnv.ENABLE_SENTRY = true;
       setUserContext({ id: 1, email: 'test@example.com' });
+      await flushPromises();
       expect(mockSetUser).toHaveBeenCalledWith({ id: '1', email: 'test@example.com' });
     });
 
@@ -396,9 +418,10 @@ describe('sentry', () => {
   });
 
   describe('clearUserContext', () => {
-    it('clears Sentry user when enabled', () => {
+    it('clears Sentry user when enabled', async () => {
       mockEnv.ENABLE_SENTRY = true;
       clearUserContext();
+      await flushPromises();
       expect(mockSetUser).toHaveBeenCalledWith(null);
     });
 
@@ -411,9 +434,10 @@ describe('sentry', () => {
   });
 
   describe('addBreadcrumb', () => {
-    it('adds breadcrumb when enabled', () => {
+    it('adds breadcrumb when enabled', async () => {
       mockEnv.ENABLE_SENTRY = true;
       addBreadcrumb('navigation', 'User clicked home', { page: '/' });
+      await flushPromises();
       expect(mockAddBreadcrumb).toHaveBeenCalledWith({
         category: 'navigation',
         message: 'User clicked home',

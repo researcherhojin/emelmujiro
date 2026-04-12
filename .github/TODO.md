@@ -74,40 +74,6 @@ remaining levers are structural — third-party scripts (Google Form, gtag).
   staging deploy.
 - **Effort**: 3–4 h.
 
-### 1.3 Lazy-load Sentry via re-export shim (chunk 77 kB → ~5 kB on home)
-
-- **Goal**: drop Sentry from `unused-javascript` (currently 72 kB wasted of
-  77 kB on `/`) by deferring chunk load until an error/login actually fires.
-- **Why**: 96% of the Sentry chunk is unused on the home page. Two prior
-  reduction attempts both failed and are documented in `frontend/src/utils/sentry.ts`:
-  (1) namespace → named imports gave zero size delta — Vite was already
-  tree-shaking. (2) `await import('@sentry/react')` ballooned the chunk
-  77 kB → 438 kB because dynamic import of a barrel package defeats
-  tree-shaking. The 72 kB unused is module-eval overhead from `init()`'s
-  default integrations, not dead exports.
-- **How**: re-export shim pattern.
-  - Create `src/utils/sentry-impl.ts` with **static** named imports of the
-    5 functions actually used (`init`, `captureException`, `withScope`,
-    `setUser`, `addBreadcrumb`) plus a tiny `init()` wrapper containing
-    the current config.
-  - Rewrite `src/utils/sentry.ts` so each public function:
-    1. Lazily resolves a module-level `implPromise = import('./sentry-impl')`
-       on first call.
-    2. Awaits and dispatches. The shim is local code, so Rollup tree-shakes
-       across the dynamic boundary.
-  - `initSentry()` becomes async and is called from `main.tsx` without
-    await — accept that errors during the first ~200 ms before the shim
-    chunk loads won't reach Sentry. ErrorBoundary still renders fallback UI.
-  - Verify `sentry-*.js` chunk is **not** preloaded in `index.html` after
-    rebuild (Vite should put it in `async` modulepreload only).
-- **Verify**: `/` `unused-javascript` ≥ 0.9 AND total `sentry-*.js` bytes
-  delivered on home page = 0 (check via `network` panel or Lighthouse
-  `network-requests` audit).
-- **Effort**: 1–2 h. Risk: if Vite bundles the shim chunk back into the
-  main graph (because it's referenced from a "hot" code path), the
-  pattern fails — at that point switch to a runtime feature flag and
-  load Sentry only on `window.error` / `unhandledrejection` listeners.
-
 ## 3. 콘텐츠
 
 - [ ] 블로그 포스트 기획 — AI Agent 실전 구축 가이드, RAG 파이프라인 설계 등 서비스 영역(교육·컨설팅·개발)과 직접 연결되는 기술 콘텐츠 시리즈. 첫 포스트는 최근 K-Digital 강의에서 받은 질문 기반이 좋음.
