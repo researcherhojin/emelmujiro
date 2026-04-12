@@ -43,13 +43,25 @@ fi
 
 echo "   Backend: $BACKEND_COUNT tests"
 
-# Update README.md — three patterns:
+# Update README.md — two patterns:
 # 1. "Vitest (N tests)" in Testing line
 sedi -E "s/Vitest \([0-9]+ tests\)/Vitest (${FRONTEND_COUNT} tests)/g" README.md
 # 2. "Django unittest (N tests)" in Testing line
 sedi -E "s/Django unittest \([0-9]+ tests\)/Django unittest (${BACKEND_COUNT} tests)/g" README.md
-# 3. "tests (N frontend + N backend)" in CI/CD line
-sedi -E "s/tests \([0-9]+ frontend \+ [0-9]+ backend\)/tests (${FRONTEND_COUNT} frontend + ${BACKEND_COUNT} backend)/g" README.md
+
+# Loud-fail: verify the expected patterns still exist in README after substitution.
+# If a README format change silently broke the sed regex, none of the patterns would
+# match and the counts would drift without anyone noticing (happened once: 03f8ed7).
+MATCH_COUNT=0
+grep -qE 'Vitest \([0-9]+ tests\)' README.md && MATCH_COUNT=$((MATCH_COUNT + 1))
+grep -qE 'Django unittest \([0-9]+ tests\)' README.md && MATCH_COUNT=$((MATCH_COUNT + 1))
+
+if [[ "$MATCH_COUNT" -lt 2 ]]; then
+  echo "❌ Expected 2 test-count patterns in README.md but found $MATCH_COUNT."
+  echo "   The README format may have changed — update the sed patterns in this script."
+  echo "   See CLAUDE.md 'README drift gates' for the expected format."
+  exit 1
+fi
 
 echo "✅ Updated test counts in README.md (${FRONTEND_COUNT} frontend + ${BACKEND_COUNT} backend)"
 

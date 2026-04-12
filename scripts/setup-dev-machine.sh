@@ -127,19 +127,37 @@ install_brew_pkg() {
   fi
 }
 
-install_brew_pkg "node@24"
+# Node: skip brew install if an existing node already satisfies ≥24
+NEED_NODE24_PATH=false
+
+if command -v node >/dev/null 2>&1; then
+  CURRENT_MAJOR=$(node -p "process.versions.node.split('.')[0]")
+  if [[ "$CURRENT_MAJOR" -ge 24 ]]; then
+    ok "node v$(node --version | sed 's/v//') already satisfies ≥24 requirement"
+  else
+    install_brew_pkg "node@24"
+    NEED_NODE24_PATH=true
+  fi
+else
+  install_brew_pkg "node@24"
+  NEED_NODE24_PATH=true
+fi
+
 install_brew_pkg "python@3.12"
 install_brew_pkg "uv"
 install_brew_pkg "gh"
 
-# node@24 is keg-only (not in PATH by default after brew install)
-NODE24_BIN="$(brew --prefix node@24)/bin"
-if [[ ":$PATH:" != *":$NODE24_BIN:"* ]]; then
-  warn "node@24 is not on your PATH."
-  hint "Add this to ~/.zshrc and restart your shell:"
-  hint "  export PATH=\"$NODE24_BIN:\$PATH\""
-  export PATH="$NODE24_BIN:$PATH"
-  info "Temporarily added to PATH for this script run."
+# node@24 is keg-only (not in PATH by default after brew install).
+# Only needed when we just installed node@24 above.
+if [[ "$NEED_NODE24_PATH" == "true" ]]; then
+  NODE24_BIN="$(brew --prefix node@24)/bin"
+  if [[ ":$PATH:" != *":$NODE24_BIN:"* ]]; then
+    warn "node@24 is not on your PATH."
+    hint "Add this to ~/.zshrc and restart your shell:"
+    hint "  export PATH=\"$NODE24_BIN:\$PATH\""
+    export PATH="$NODE24_BIN:$PATH"
+    info "Temporarily added to PATH for this script run."
+  fi
 fi
 ok "node $(node --version)"
 
