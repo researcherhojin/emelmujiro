@@ -18,6 +18,31 @@ Go to **Settings > Secrets and variables > Actions** to add these secrets.
   - Must match the `DEPLOY_SECRET` env var on the Mac Mini server
   - Generate: `openssl rand -hex 32`
 
+### Umami Analytics (root `.env`, not GitHub secrets)
+
+- `UMAMI_APP_SECRET`: Session signing key for Umami
+- `UMAMI_DB_PASSWORD`: PostgreSQL password for Umami's database
+
+Both are required — `docker compose` fails if missing. Generate with:
+
+```bash
+python3 -c "import secrets; print(secrets.token_urlsafe(32))"  # APP_SECRET
+python3 -c "import secrets; print(secrets.token_urlsafe(16))"  # DB_PASSWORD
+```
+
+**Dashboard**: `http://localhost:3001` (127.0.0.1 only, not public)
+
+**Password reset** (if admin password is lost — analytics data is erased):
+
+```bash
+docker compose down umami umami-db
+docker volume rm emelmujiro_umami_db
+docker compose up -d umami-db umami
+# Login at localhost:3001 with admin/umami → change password immediately
+# Recreate website: API or dashboard → copy new website ID to
+# frontend/.env.production VITE_UMAMI_WEBSITE_ID → rebuild frontend
+```
+
 ## Automatically Provided
 
 These secrets are provided by GitHub and do not need manual configuration:
