@@ -102,6 +102,9 @@ logs-security:
 logs-debug:
 	docker compose exec backend tail -100 /app/logs/debug.log 2>/dev/null || echo "No debug log yet"
 
+health: ## Docker health diagnostic (containers, resources, endpoints, errors)
+	./scripts/health-check.sh
+
 ps:
 	docker compose ps
 
@@ -142,7 +145,15 @@ setup-cron:
 	 echo "0 3 * * * cd '$(CURDIR)' && $$DOCKER_BIN compose exec -T backend uv run python manage.py cleanup_sitevisits --days 90 >> '$(CURDIR)/backend/logs/sitevisit-cleanup.log' 2>&1") | crontab -; \
 	echo "Cron job added. Verify with: crontab -l"
 
+setup-health-cron: ## Install health check cron (every 5 min, logs failures only)
+	@mkdir -p $(CURDIR)/backend/logs
+	@echo "Adding health check cron job (every 5 min)..."
+	@(crontab -l 2>/dev/null | grep -v health-check; \
+	 echo "*/5 * * * * cd '$(CURDIR)' && ./scripts/health-check.sh --quiet >> '$(CURDIR)/backend/logs/health-check.log' 2>&1") | crontab -
+	@echo "Cron job added. Verify with: crontab -l"
+	@echo "Failures will be logged to: backend/logs/health-check.log"
+
 remove-cron:
-	@echo "Removing SiteVisit cleanup cron job..."
-	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits) | crontab -
-	@echo "Cron job removed."
+	@echo "Removing cron jobs..."
+	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits | grep -v health-check) | crontab -
+	@echo "Cron jobs removed."
