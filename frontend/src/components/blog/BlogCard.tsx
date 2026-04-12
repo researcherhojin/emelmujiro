@@ -10,9 +10,10 @@ import type { BlogPost } from '../../types';
 interface BlogCardProps {
   post: BlogPost;
   featured?: boolean;
+  index?: number;
 }
 
-const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
+const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index = 0 }) => {
   const { t } = useTranslation();
   const { localizedPath } = useLocalizedPath();
 
@@ -38,7 +39,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
                   src={image_url}
                   alt={t('blog.thumbnailAlt', { title })}
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
-                  loading="lazy"
+                  loading={index === 0 && featured ? 'eager' : 'lazy'}
                   draggable="false"
                   onContextMenu={preventImageAction}
                   onDragStart={preventImageAction}
@@ -50,7 +51,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
             <div className="flex flex-col justify-center p-8 lg:p-12">
               <div className="flex items-center gap-3 mb-4">
                 {category && (
-                  <span className="text-xs font-medium tracking-widest uppercase text-gray-400 dark:text-gray-500">
+                  <span className="text-xs font-medium tracking-widest uppercase text-gray-500 dark:text-gray-400">
                     {category}
                   </span>
                 )}
@@ -60,7 +61,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
                 {date && (
                   <time
                     dateTime={date}
-                    className="text-xs tracking-wide text-gray-400 dark:text-gray-500"
+                    className="text-xs tracking-wide text-gray-500 dark:text-gray-400"
                   >
                     {formatDate(date)}
                   </time>
@@ -102,7 +103,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
                 src={image_url}
                 alt={t('blog.thumbnailAlt', { title })}
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
-                loading="lazy"
+                loading={index < 2 ? 'eager' : 'lazy'}
                 draggable="false"
                 onContextMenu={preventImageAction}
                 onDragStart={preventImageAction}
@@ -115,7 +116,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
           <div className="p-6 lg:p-7 flex flex-col flex-grow">
             <div className="flex items-center gap-3 mb-3">
               {category && (
-                <span className="text-[11px] font-medium tracking-widest uppercase text-gray-400 dark:text-gray-500">
+                <span className="text-[11px] font-medium tracking-widest uppercase text-gray-500 dark:text-gray-400">
                   {category}
                 </span>
               )}
@@ -125,7 +126,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false }) => {
               {date && (
                 <time
                   dateTime={date}
-                  className="text-[11px] tracking-wide text-gray-400 dark:text-gray-500"
+                  className="text-[11px] tracking-wide text-gray-500 dark:text-gray-400"
                 >
                   {formatDate(date)}
                 </time>

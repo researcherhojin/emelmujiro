@@ -191,15 +191,15 @@ const BlogListPage: React.FC = memo(() => {
                 {/* Featured Post */}
                 {featuredPost && (
                   <div className="mb-16">
-                    <BlogCard post={featuredPost} featured />
+                    <BlogCard post={featuredPost} featured index={0} />
                   </div>
                 )}
 
                 {/* Grid */}
                 {remainingPosts.length > 0 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                    {remainingPosts.map((post) => (
-                      <BlogCard key={post.id} post={post} />
+                    {remainingPosts.map((post, idx) => (
+                      <BlogCard key={post.id} post={post} index={idx + 1} />
                     ))}
                   </div>
                 )}

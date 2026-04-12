@@ -219,7 +219,7 @@ const BlogDetailPage: React.FC = memo(() => {
           {/* Back Navigation */}
           <button
             onClick={() => navigate(-1)}
-            className="mb-10 text-sm font-medium text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 transition-colors duration-300"
+            className="mb-10 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center gap-2 transition-colors duration-300"
           >
             <ArrowLeft className="w-4 h-4" />
             {t('common.goBack')}
@@ -229,7 +229,7 @@ const BlogDetailPage: React.FC = memo(() => {
             {/* Meta */}
             <div className="flex items-center gap-3 mb-6">
               {post?.category && (
-                <span className="text-[11px] font-medium tracking-[0.25em] uppercase text-gray-400 dark:text-gray-500">
+                <span className="text-[11px] font-medium tracking-[0.25em] uppercase text-gray-500 dark:text-gray-400">
                   {post.category}
                 </span>
               )}
@@ -239,7 +239,7 @@ const BlogDetailPage: React.FC = memo(() => {
               {post?.date && (
                 <time
                   dateTime={post.date}
-                  className="text-[11px] tracking-wide text-gray-400 dark:text-gray-500"
+                  className="text-[11px] tracking-wide text-gray-500 dark:text-gray-400"
                 >
                   {formatDate(post.date)}
                 </time>
@@ -261,7 +261,7 @@ const BlogDetailPage: React.FC = memo(() => {
                   {post.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-full"
+                      className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-full"
                     >
                       {tag}
                     </span>
