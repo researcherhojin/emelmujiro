@@ -24,6 +24,7 @@ jobs:
   dependabot-auto-merge:
     name: Auto-Merge Dependabot
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: github.actor == 'dependabot[bot]'
     permissions:
       contents: write
@@ -54,6 +55,7 @@ jobs:
   quick-checks:
     name: Quick Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Checkout code
@@ -174,6 +176,7 @@ jobs:
   frontend-lint:
     name: Frontend Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: quick-checks
 
     steps:
@@ -195,21 +198,15 @@ jobs:
   backend-lint:
     name: Backend Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: quick-checks
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-          cache-dependency-glob: "backend/uv.lock"
-
-      - name: Install backend dependencies
-        working-directory: ./backend
-        run: uv sync --frozen --extra dev
+      - name: Setup uv with cache
+        uses: ./.github/actions/setup-uv
 
       - name: Black check
         working-directory: ./backend
@@ -248,12 +245,9 @@ jobs:
         run: CI=true npm test -- --run --passWithNoTests
         timeout-minutes: 10
 
-      - name: Install uv
+      - name: Setup uv with cache
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-          cache-dependency-glob: "backend/uv.lock"
+        uses: ./.github/actions/setup-uv
 
       - name: Test backend changes
         if: contains(steps.changed-files.outputs.all_changed_files, 'backend/')
@@ -263,7 +257,6 @@ jobs:
           DEBUG: "True"
           DATABASE_URL: ""
         run: |
-          uv sync --frozen --extra dev
           uv run python manage.py makemigrations --check --noinput
           uv run python manage.py migrate --noinput
           uv run python manage.py test --parallel
@@ -272,6 +265,7 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: quick-checks
 
     steps:
@@ -300,6 +294,7 @@ jobs:
   build-for-analysis:
     name: Build for Analysis
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: quick-checks
 
     steps:
@@ -337,6 +332,7 @@ jobs:
   lighthouse:
     name: Lighthouse CI
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: build-for-analysis
     if: needs.build-for-analysis.result == 'success'
 
@@ -370,6 +366,7 @@ jobs:
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: quick-checks
 
     steps:
@@ -419,6 +416,7 @@ jobs:
   pr-comment:
     name: PR Summary
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: always()
     permissions:
       pull-requests: write
