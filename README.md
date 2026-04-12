@@ -111,7 +111,7 @@ graph LR
 
     subgraph Monitoring["Monitoring"]
         Sentry["Sentry"]
-        GA["Google Analytics"]
+        Umami["Umami Analytics"]
     end
 
     React -->|emelmujiro.com| Tunnel
@@ -135,7 +135,7 @@ graph LR
 - **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments
 - **Auth** — httpOnly cookie JWT with shared-promise refresh queue (prevents concurrent 401 cascade)
 - **Testimonials** — Enterprise + 고용노동부 K-디지털 reviews, dual-row auto-scroll carousel
-- **Monitoring** — Sentry error tracking + Google Analytics
+- **Monitoring** — Sentry error tracking + Umami analytics (self-hosted, zero external scripts)
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data, SSG prerendering
 - **Performance** — Vendor chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking

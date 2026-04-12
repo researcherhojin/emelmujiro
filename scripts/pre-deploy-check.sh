@@ -79,7 +79,7 @@ echo -e "${BLUE}📋 1. Environment configuration${NC}"
 check ".env.production file exists" "[ -f frontend/.env.production ]"
 check "VITE_API_URL configured" "grep -q 'VITE_API_URL=' frontend/.env.production"
 check "VITE_SENTRY_DSN configured" "grep -q 'VITE_SENTRY_DSN=' frontend/.env.production" true
-check "VITE_GA_TRACKING_ID configured" "grep -q 'VITE_GA_TRACKING_ID=' frontend/.env.production" true
+check "VITE_UMAMI_HOST configured" "grep -q 'VITE_UMAMI_HOST=' frontend/.env.production" true
 echo ""
 
 # =====================================================

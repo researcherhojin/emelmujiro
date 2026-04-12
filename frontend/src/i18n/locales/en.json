@@ -615,7 +615,7 @@
     },
     "delegation": {
       "title": "Outsourcing of Processing",
-      "content": "We outsource personal information processing to the following service providers.\n\n• Google LLC (Google Analytics): Website usage statistical analysis — anonymized visit data collection\n• Sentry (Functional Software, Inc.): Error tracking and service stability monitoring — technical information collection upon errors\n\nIn outsourcing contracts, pursuant to Article 26 of PIPA, we specify provisions regarding prohibition of processing beyond the outsourced purpose, technical and administrative protection measures, restrictions on re-outsourcing, supervision of processors, and liability for damages."
+      "content": "We outsource personal information processing to the following service providers.\n\n• Sentry (Functional Software, Inc.): Error tracking and service stability monitoring — technical information collection upon errors\n\n※ Website usage statistics are processed on our own servers using a self-hosted analytics tool (Umami), with no external outsourcing.\n\nIn outsourcing contracts, pursuant to Article 26 of PIPA, we specify provisions regarding prohibition of processing beyond the outsourced purpose, technical and administrative protection measures, restrictions on re-outsourcing, supervision of processors, and liability for damages."
     },
     "rights": {
       "title": "Rights of Data Subjects",
@@ -627,7 +627,7 @@
     },
     "cookies": {
       "title": "Automated Collection Devices",
-      "content": "We operate the following automated collection devices for service usage information.\n\n• Authentication cookies: JWT token management via httpOnly cookies (session persistence)\n• Google Analytics: Anonymized visit statistics (page views, session duration, etc.)\n• Sentry: Technical environment information upon errors (browser, OS, etc.)\n\n[How to refuse cookies]\nYou can allow, block, or delete cookies through your web browser's settings. However, blocking cookies may limit some services such as login.\n\n• Chrome: Settings > Privacy and security > Cookies and other site data\n• Safari: Preferences > Privacy\n• Firefox: Settings > Privacy & Security"
+      "content": "We operate the following automated collection devices for service usage information.\n\n• Authentication cookies: JWT token management via httpOnly cookies (session persistence)\n• Umami: Self-hosted web analytics — cookieless, anonymized visit statistics (page views, session duration, etc.)\n• Sentry: Technical environment information upon errors (browser, OS, etc.)\n\n[How to refuse cookies]\nYou can allow, block, or delete cookies through your web browser's settings. However, blocking cookies may limit some services such as login.\n\n• Chrome: Settings > Privacy and security > Cookies and other site data\n• Safari: Preferences > Privacy\n• Firefox: Settings > Privacy & Security"
     },
     "children": {
       "title": "Children Under 14",

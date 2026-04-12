@@ -97,7 +97,7 @@ Page-level UX rules — copy, layout, and section structure. Change only when ex
 
 **Nav order**: 강의이력 → 인사이트 (teaching history first, blog second). Footer menu label: "강의이력" (not "대표 프로필").
 
-**Privacy policy page** (`/privacy`): 13 sections per Korean PIPA Article 30. Includes processing delegation (Google Analytics, Sentry), safety measures (Art. 29), privacy officer (name/position/contact), remedies (KISA 118, KOPICO 1833-6972, prosecutors 1301, police 182). Table of contents with anchor links. Bilingual (ko/en). Footer link added.
+**Privacy policy page** (`/privacy`): 13 sections per Korean PIPA Article 30. Includes processing delegation (Sentry; Umami is self-hosted, no external delegation), safety measures (Art. 29), privacy officer (name/position/contact), remedies (KISA 118, KOPICO 1833-6972, prosecutors 1301, police 182). Table of contents with anchor links. Bilingual (ko/en). Footer link added.
 
 **Mobile responsive pattern**: All page heroes use `pt-28 pb-12 sm:pt-32` padding-based layout (NOT `min-h` + flex centering on mobile). Text sizing: mobile `text-4xl`/`text-base`, tablet `sm:text-5xl`/`sm:text-lg`, desktop `md:text-7xl`/`md:text-xl` — three-step progression to avoid harsh 639→640px jumps. Section padding: `py-16 sm:py-32`. Use `break-keep` for Korean text to prevent mid-word breaks. For text that must break at specific points on mobile only, use `<br className="sm:hidden" />`. English i18n text must be shorter than Korean equivalents — abbreviate org names (MOEL, KALIS, KETI) and use `#` instead of "Cohort" for numbering. CTA subtitle uses `subtitleLine1`/`subtitleLine2` keys (not single `subtitle`) for controlled line breaks.
 
