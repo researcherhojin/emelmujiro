@@ -8,21 +8,23 @@ them.
 
 ## 1. Performance — Lighthouse residual
 
-Phase 4 (`3b254d7..5ff5f0f`) brought all four routes above the 0.85 perf
-warn threshold. Subsequent work closed most follow-ups:
+All Lighthouse audits are now resolved except the Google Form iframe on
+`/contact`. Session 2026-04-12/13 closed the remaining items:
 
-- ✅ **dom-size 0.5 → 1.0** on `/` — carousel copies reduced 3x/5x → 2x
-  (`7952142`).
-- ✅ **uses-responsive-images** audit 100/100 — logo pixel waste fixed
-  (`b0f6ab0`).
-- ✅ **Sentry lazy-load** — re-export shim pattern, 77 kB → 0 bytes on
-  homepage (`0c9a261`).
-- ✅ **GA → Umami** — gtag.js 156 kB removed, zero external scripts
-  (`33fb32a`).
-- ✅ **Lighthouse CI gate** — `categories:performance` warn → error at
-  0.85 (`66bfefc`).
-
-One item remains — the Google Form iframe on `/contact`.
+- ✅ **dom-size 0.5 → 1.0** — carousel copies 3x/5x → 2x (`7952142`).
+- ✅ **uses-responsive-images** — logo pixel waste fixed (`b0f6ab0`),
+  hyundaiLogo/moduLogo re-resized to h-12 display size (`3d970aa`).
+- ✅ **Sentry lazy-load** — re-export shim, 77 kB → 0 bytes (`0c9a261`).
+- ✅ **GA → Umami** — gtag.js 156 kB removed (`33fb32a`).
+- ✅ **Lighthouse CI gates** — `categories:performance` warn → error
+  (`66bfefc`), `legacy-javascript` warn → error, `third-party-cookies`
+  off → warn (`fc2df1d`).
+- ✅ **errors-in-console** `/insights` — CORS fix via `VITE_API_URL=/api`
+  in CI build (`3d970aa`).
+- ✅ **color-contrast** `/insights` — `text-gray-400` → `text-gray-500`
+  on blog card/detail labels, contrast 2.53 → 4.63 (`715902e`).
+- ✅ **lcp-lazy-loaded** `/insights` — featured blog card image now
+  `loading="eager"` (`715902e`).
 
 ### 1.1 Replace Google Form with `backend/api/contact/`
 
