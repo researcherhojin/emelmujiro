@@ -72,7 +72,7 @@ services:
     environment:
       POSTGRES_DB: umami
       POSTGRES_USER: umami
-      POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD:-umami}
+      POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD:?Set UMAMI_DB_PASSWORD in .env}
     networks:
       - emelmujiro-network
     healthcheck:
@@ -90,8 +90,8 @@ services:
     ports:
       - "127.0.0.1:${UMAMI_PORT:-3000}:3000"
     environment:
-      DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD:-umami}@umami-db:5432/umami
-      APP_SECRET: ${UMAMI_APP_SECRET:-IK5ihm4Iaia9LNr0X5d0L6q3efQSiz6ROVHN_VG1lP4}
+      DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD:?Set UMAMI_DB_PASSWORD in .env}@umami-db:5432/umami
+      APP_SECRET: ${UMAMI_APP_SECRET:?Set UMAMI_APP_SECRET in .env}
     depends_on:
       umami-db:
         condition: service_healthy
