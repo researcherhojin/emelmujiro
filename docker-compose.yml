@@ -88,7 +88,7 @@ services:
     security_opt:
       - no-new-privileges:true
     ports:
-      - "127.0.0.1:${UMAMI_PORT:-3000}:3000"
+      - "127.0.0.1:${UMAMI_PORT:-3001}:3000"
     environment:
       DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD:?Set UMAMI_DB_PASSWORD in .env}@umami-db:5432/umami
       APP_SECRET: ${UMAMI_APP_SECRET:?Set UMAMI_APP_SECRET in .env}
