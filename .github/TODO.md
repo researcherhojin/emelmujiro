@@ -108,28 +108,6 @@ remaining levers are structural — third-party scripts (Google Form, gtag).
   pattern fails — at that point switch to a runtime feature flag and
   load Sentry only on `window.error` / `unhandledrejection` listeners.
 
-## 2. Infrastructure / Ops
-
-### 2.1 Tighten Lighthouse CI assertion gates
-
-- **Goal**: lock in Phase 4 perf gains so a future regression breaks CI
-  instead of silently shipping.
-- **Why**: `frontend/lighthouserc.js` currently has `categories:performance`
-  and `categories:best-practices` as `warn` (not `error`). That's exactly
-  why the Phase 4 residuals (CLS 0.528, perf 0.58) went silently unfixed
-  for months — CI never failed on them. Now that scores are healthy, the
-  gate should enforce them.
-- **How**:
-  - Bump `categories:performance` from `['warn', { minScore: 0.85 }]` to
-    `['error', { minScore: 0.85 }]`.
-  - Consider adding numeric LCP assertion: `largest-contentful-paint`
-    error at `maxNumericValue: 3500` (currently 5000 warn).
-  - Ratchet `best-practices` to error once Google Form is replaced (§1.1),
-    not before — `/contact` currently sits at 0.78 for documented reasons.
-- **Verify**: create a PR with an intentional regression (e.g. re-add the
-  Inter font link) — CI Lighthouse job must fail.
-- **Effort**: 30 min including gate test.
-
 ## 3. 콘텐츠
 
 - [ ] 블로그 포스트 기획 — AI Agent 실전 구축 가이드, RAG 파이프라인 설계 등 서비스 영역(교육·컨설팅·개발)과 직접 연결되는 기술 콘텐츠 시리즈. 첫 포스트는 최근 K-Digital 강의에서 받은 질문 기반이 좋음.
