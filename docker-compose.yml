@@ -60,6 +60,44 @@ services:
       retries: 3
       start_period: 10s
 
+  # Umami analytics — self-hosted, cookieless, zero external scripts
+  umami-db:
+    image: postgres:15-alpine
+    container_name: emelmujiro-umami-db
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - umami_db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD:-umami}
+    networks:
+      - emelmujiro-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    container_name: emelmujiro-umami
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "127.0.0.1:${UMAMI_PORT:-3000}:3000"
+    environment:
+      DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD:-umami}@umami-db:5432/umami
+      APP_SECRET: ${UMAMI_APP_SECRET:-IK5ihm4Iaia9LNr0X5d0L6q3efQSiz6ROVHN_VG1lP4}
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    networks:
+      - emelmujiro-network
+
   # PostgreSQL — only started with: docker compose --profile postgres up
   db:
     image: postgres:15-alpine
@@ -88,6 +126,8 @@ services:
 
 volumes:
   postgres_data:
+    driver: local
+  umami_db:
     driver: local
   static_volume:
     driver: local
