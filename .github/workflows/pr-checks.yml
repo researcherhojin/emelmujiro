@@ -4,10 +4,14 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+# Workflow-level default: read-only. Jobs that need write access
+# opt in explicitly at job level (least-privilege principle).
 permissions:
-  contents: write
-  pull-requests: write
-  issues: write
+  contents: read
+
+concurrency:
+  group: "pr-checks-${{ github.event.pull_request.number }}"
+  cancel-in-progress: true
 
 env:
   # Suppress "hint: Using 'master' as the name for the initial branch" from actions/checkout
@@ -21,6 +25,9 @@ jobs:
     name: Auto-Merge Dependabot
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Fetch Dependabot metadata
@@ -413,6 +420,8 @@ jobs:
     name: PR Summary
     runs-on: ubuntu-latest
     if: always()
+    permissions:
+      pull-requests: write
     needs:
       [
         frontend-lint,

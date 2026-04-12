@@ -1,0 +1,60 @@
+# Auto-label PRs based on changed files (actions/labeler@v6 format).
+
+backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "backend/**"
+          - "Makefile"
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "frontend/**"
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "frontend/src/**/__tests__/**"
+          - "frontend/e2e/**"
+          - "backend/api/tests.py"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - "frontend/lighthouserc.js"
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "*.md"
+          - "CLAUDE.md"
+          - "CONTRIBUTING.md"
+
+config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "docker-compose*.yml"
+          - "frontend/vite.config.ts"
+          - "frontend/tailwind.config.js"
+          - "frontend/tsconfig*.json"
+          - "backend/config/**"
+          - ".env*"
+
+security:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "frontend/nginx.conf"
+          - "backend/api/middleware*.py"
+          - "backend/api/authentication.py"
+          - "frontend/public/.well-known/**"
+
+scripts:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "scripts/**"
+
+i18n:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "frontend/src/i18n/**"
