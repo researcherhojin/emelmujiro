@@ -43,7 +43,7 @@ module.exports = {
         canonical: 'off', // No backend serving canonical in CI preview
         'errors-in-console': 'warn', // Console errors from missing API in CI
         'inspector-issues': 'warn',
-        'legacy-javascript': 'warn',
+        'legacy-javascript': 'error', // GA removal eliminated the ES5 polyfills that caused this
         // Bundle size insights — warn only, not block
         'total-byte-weight': 'warn',
         'unused-javascript': 'warn',
@@ -61,10 +61,10 @@ module.exports = {
         'aria-allowed-role': 'warn',
         // DOM size insight — informational only
         'dom-size-insight': 'off',
-        // Font display — Google Fonts may not set font-display in CI
+        // Font display — Pretendard CDN may not set font-display in CI
         'font-display-insight': 'off',
-        // Third-party cookies — triggered by external scripts (GA, Sentry)
-        'third-party-cookies': 'off',
+        // Third-party cookies — GA removed; Sentry lazy-loaded
+        'third-party-cookies': 'warn',
         // LCP insights — CI preview server behaves differently
         'lcp-discovery-insight': 'off',
         'lcp-lazy-loaded': 'warn',
