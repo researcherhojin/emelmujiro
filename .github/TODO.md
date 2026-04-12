@@ -9,18 +9,20 @@ them.
 ## 1. Performance — Lighthouse residual
 
 Phase 4 (`3b254d7..5ff5f0f`) brought all four routes above the 0.85 perf
-warn threshold. Subsequent commits closed two of the four follow-ups:
+warn threshold. Subsequent work closed most follow-ups:
 
 - ✅ **dom-size 0.5 → 1.0** on `/` — carousel copies reduced 3x/5x → 2x
-  (`7952142`). Homepage DOM dropped 934 → 582 nodes. Math: `translateX(-50%)`
-  for 2-copy loop (see CLAUDE.md "Scroll carousels").
-- ✅ **uses-responsive-images** audit 100/100 — moduLogo 90% pixel waste
-  fixed by re-resize at 256×100 (`b0f6ab0`), nanoLogo JPEG → WebP (-51%
-  bytes), ablearnLogo + uosLogo also resized. Verified via Playwright
-  `naturalWidth × DPR` audit against the built site.
+  (`7952142`).
+- ✅ **uses-responsive-images** audit 100/100 — logo pixel waste fixed
+  (`b0f6ab0`).
+- ✅ **Sentry lazy-load** — re-export shim pattern, 77 kB → 0 bytes on
+  homepage (`0c9a261`).
+- ✅ **GA → Umami** — gtag.js 156 kB removed, zero external scripts
+  (`33fb32a`).
+- ✅ **Lighthouse CI gate** — `categories:performance` warn → error at
+  0.85 (`66bfefc`).
 
-Items below close the audits **still** firing as warnings. The biggest
-remaining levers are structural — third-party scripts (Google Form, gtag).
+One item remains — the Google Form iframe on `/contact`.
 
 ### 1.1 Replace Google Form with `backend/api/contact/`
 
@@ -34,6 +36,10 @@ remaining levers are structural — third-party scripts (Google Form, gtag).
   `backend/api/urls.py:58`, reCAPTCHA flow, spam keyword check, rate
   limit). CLAUDE.md "Contact" explicitly notes the endpoint is preserved
   for exactly this swap.
+- **Prereq**: Gmail SMTP must be configured on Mac mini first — uncomment
+  and set `EMAIL_HOST_USER` + `EMAIL_HOST_PASSWORD` (Gmail app password)
+  in `backend/.env.production`. Without this, `send_mail()` fails and
+  the contact form returns 500.
 - **How**:
   - Build a simple controlled `<form>` in `ContactPage.tsx` posting via
     `api.createContact()` (need to add the helper to `services/api.ts`).
@@ -41,14 +47,39 @@ remaining levers are structural — third-party scripts (Google Form, gtag).
     var; backend already validates server-side).
   - Delete `<iframe src={GOOGLE_FORM_URL}>`, the `iframeLoaded` state,
     and the `frame-src https://docs.google.com` CSP exception in
-    `index.html`.
+    `index.html` and `nginx.conf`.
   - Update i18n copy for success/error toasts to match the existing
     patterns from other mutation endpoints.
+  - Ratchet `categories:best-practices` from `warn` to `error` in
+    `lighthouserc.js` once `/contact` score clears 0.90.
 - **Verify**: Lighthouse `/contact` `categories.best-practices` ≥ 0.90,
   `third-party-summary` audit no longer mentions `docs.google.com`, a new
   Playwright e2e test submits the form end-to-end against a running
   backend.
 - **Effort**: 2–3 h including UX polish and i18n.
+
+## 2. Infrastructure / Ops
+
+### 2.1 Provision Umami analytics
+
+- **Goal**: Enable self-hosted analytics (currently `VITE_ENABLE_ANALYTICS=false`).
+- **Why**: GA was removed (`33fb32a`) and the frontend analytics.ts now
+  sends events to Umami's `/api/send` endpoint via sendBeacon/fetch.
+  The code is ready — only the Umami instance is missing.
+- **How**:
+  - Add Umami Docker service to `docker-compose.yml` (image:
+    `ghcr.io/umami-software/umami`, needs PostgreSQL).
+  - Start Umami, create a website in the admin UI → get website ID.
+  - Set `VITE_UMAMI_HOST` and `VITE_UMAMI_WEBSITE_ID` in
+    `frontend/.env.production`, flip `VITE_ENABLE_ANALYTICS=true`.
+  - If Umami is on a separate subdomain, add it to `connect-src` in
+    both `index.html` CSP meta tag and `nginx.conf` CSP variable. If
+    path-based (`/umami/*`), `'self'` covers it.
+  - Rebuild and deploy frontend.
+- **Verify**: Open browser DevTools Network tab, navigate pages — confirm
+  `POST /api/send` requests to Umami host with correct `website` payload.
+  Check Umami dashboard shows page views and custom events.
+- **Effort**: 1–2 h including Docker setup and CSP adjustment.
 
 ## 3. 콘텐츠
 
@@ -60,7 +91,7 @@ remaining levers are structural — third-party scripts (Google Form, gtag).
 
 ## 5. SEO (2026-04-02 이후 이월)
 
-작업 완료 후 GSC에 들어가 각 항목 상태를 직접 확인해야 함. 9일 이상 경과했으므로 대부분 자동 재크롤로 해소됐을 가능성 있음.
+작업 완료 후 GSC에 들어가 각 항목 상태를 직접 확인해야 함. 11일 이상 경과했으므로 대부분 자동 재크롤로 해소됐을 가능성 있음.
 
 - [ ] GSC 사이트맵 재제출 — `sitemap.xml`에 `/privacy` 추가됨. GSC → 사이트맵 → 재제출.
 - [ ] GSC 색인 요청 — URL 검사에서 `/privacy`, `/en/privacy`, `/en/profile` 각각 "색인 생성 요청".
