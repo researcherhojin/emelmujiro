@@ -77,6 +77,7 @@ make test                  # All tests (frontend + backend)
 make lint                  # All linters
 make lint-fix              # Auto-fix lint issues
 make update-test-counts    # Regenerate README test counts locally (CI auto-syncs on main)
+make health                # Docker health diagnostic (containers, resources, endpoints)
 
 # From frontend/
 cd frontend
@@ -135,7 +136,7 @@ graph LR
 - **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments
 - **Auth** — httpOnly cookie JWT with shared-promise refresh queue (prevents concurrent 401 cascade)
 - **Testimonials** — Enterprise + 고용노동부 K-디지털 reviews, dual-row auto-scroll carousel
-- **Monitoring** — Sentry error tracking + Umami analytics (self-hosted, zero external scripts)
+- **Monitoring** — Sentry error tracking + Umami analytics (self-hosted, zero external scripts) + Docker health check cron
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data, SSG prerendering
 - **Performance** — Vendor chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
