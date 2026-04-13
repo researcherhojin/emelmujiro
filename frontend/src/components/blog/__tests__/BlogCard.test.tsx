@@ -208,6 +208,24 @@ describe('BlogCard Component', () => {
     });
   });
 
+  it('uses lazy loading for regular cards with index >= 2', async () => {
+    renderWithRouter(<BlogCard post={mockPost} index={3} />);
+
+    await waitFor(() => {
+      const img = screen.getByAltText('Test Blog Post blog.thumbnailAlt');
+      expect(img).toHaveAttribute('loading', 'lazy');
+    });
+  });
+
+  it('uses lazy loading for featured card with index > 0', async () => {
+    renderWithRouter(<BlogCard post={mockPost} featured index={1} />);
+
+    await waitFor(() => {
+      const img = screen.getByAltText('Test Blog Post blog.thumbnailAlt');
+      expect(img).toHaveAttribute('loading', 'lazy');
+    });
+  });
+
   it('renders empty excerpt fallback on featured card (line 76)', async () => {
     const postWithoutExcerpt = { ...mockPost, description: '' };
     renderWithRouter(<BlogCard post={postWithoutExcerpt} featured />);

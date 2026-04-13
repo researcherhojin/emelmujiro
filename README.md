@@ -66,7 +66,7 @@ cd backend && uv run python manage.py migrate && cd ..    # First-time DB setup
 npm run dev                                               # Frontend :5173 + Backend :8000
 ```
 
-**Fresh macOS machine?** `make setup-dev-machine` runs a one-shot bootstrap: brew installs (`node@24`, `python@3.12`, `uv`, `gh`), `make install`, local `.env` generation with a per-device random `SECRET_KEY`, Django migrations, and `make verify-setup`. Re-runnable health check alone: `make verify-setup`.
+**Fresh macOS machine?** `make setup-dev-machine` handles the full bootstrap (brew deps, `make install`, local `.env`, Django migrations). Re-runnable health check: `make verify-setup`.
 
 ### Useful Commands
 
