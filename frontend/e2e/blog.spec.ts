@@ -15,8 +15,8 @@ test.describe('Blog', () => {
     expect(metaDescription).toBeTruthy();
   });
 
-  test('blog/:id navigates to detail page', async ({ page }) => {
-    await page.goto('/insights/1');
+  test('insights/:slug navigates to detail page', async ({ page }) => {
+    await page.goto('/insights/test-slug');
     await page.waitForLoadState('domcontentloaded');
     // Should render blog detail or show not found — either way page should load
     await expect(page.locator('main, [role="main"], #main-content')).toBeVisible();

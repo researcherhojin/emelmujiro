@@ -61,6 +61,7 @@ node_modules/
 .npm
 .eslintcache
 *.tgz
+*.tsbuildinfo
 
 # Frontend
 frontend/node_modules/
@@ -92,6 +93,17 @@ Thumbs.db
 
 # Claude settings
 .claude/
+
+# Secrets / credentials — prevent accidental commit
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.jks
+id_rsa*
+id_ed25519*
+.htpasswd
 
 # Temporary files
 *.backup

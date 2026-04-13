@@ -71,6 +71,6 @@ Fix priority for a future session (each is its own investigation):
 
 1. **CLS on /contact and /profile (0.528)** — likely hero image or Google Form iframe pushing content down on load.
 2. **color-contrast / label-content-name-mismatch** — designer input required for contrast fixes; label mismatch is likely a specific component.
-3. **unused-javascript / total-byte-weight** — run `source-map-explorer` to find the largest dead code; consider lazy-loading Sentry or GA.
+3. **unused-javascript / total-byte-weight** — run `source-map-explorer` to find the largest dead code (Sentry is already lazy-loaded via `sentry-impl.ts` shim).
 4. **render-blocking-resources** — inline critical CSS, defer non-critical.
 5. **legacy-javascript 0.5** — check Vite target config; should be `esnext` for production, not a legacy-compatible default.

@@ -65,6 +65,7 @@ services:
     image: postgres:15-alpine
     container_name: emelmujiro-umami-db
     restart: unless-stopped
+    stop_grace_period: 30s
     security_opt:
       - no-new-privileges:true
     volumes:

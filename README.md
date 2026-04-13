@@ -108,25 +108,25 @@ graph LR
         Gunicorn["Gunicorn 3w 2t\nSecurity MW"]
         DRF["Django 6 + DRF"]
         DB[(SQLite)]
+        Umami["Umami Analytics"]
+        UmamiDB[(PostgreSQL 15)]
     end
 
-    subgraph Monitoring["Monitoring"]
-        Sentry["Sentry"]
-        Umami["Umami Analytics"]
-    end
+    Sentry["Sentry (SaaS)"]
 
     React -->|emelmujiro.com| Tunnel
     Tunnel -->|:8080| Nginx
-    Nginx -->|/api proxy| Gunicorn
+    Nginx -->|/api| Gunicorn
+    Nginx -->|/umami/api/send| Umami
     Gunicorn --> DRF
     DRF --> DB
+    Umami --> UmamiDB
     React -.->|errors| Sentry
-    React -.->|events| Umami
 
     style Tunnel fill:#F3E8FF,stroke:#7C3AED
     style MacMini fill:#ECFDF5,stroke:#059669
     style CF fill:#FEF3C7,stroke:#D97706
-    style Monitoring fill:#FEF9C3,stroke:#CA8A04
+    style Sentry fill:#FEF9C3,stroke:#CA8A04
 ```
 
 ## Key Features

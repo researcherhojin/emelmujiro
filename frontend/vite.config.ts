@@ -48,8 +48,7 @@ export default defineConfig({
     // warning (our own chunks were scoring 0.5 because Vite's default target
     // polyfilled modern syntax for hypothetical old browsers that never
     // visit this site). Regression guard: Lighthouse legacy-javascript audit
-    // should be >=0.9 for /assets/*.js chunks after this change (gtag will
-    // stay legacy — that's Google's code, not ours).
+    // should be >=0.9 for /assets/*.js chunks after this change.
     target: 'es2022',
     // tiptap chunk is ~540 kB (170 kB gzipped) because it bundles @tiptap/*,
     // prosemirror, and lowlight (syntax highlighting grammars) for the blog

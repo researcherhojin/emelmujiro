@@ -59,7 +59,5 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
-    // Ensure hoisted packages in root node_modules are found (npm workspaces)
-    modules: [path.resolve(__dirname, 'node_modules'), path.resolve(__dirname, '../node_modules')],
   },
 });

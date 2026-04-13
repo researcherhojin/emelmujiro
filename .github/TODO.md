@@ -8,26 +8,6 @@ them.
 
 ## 1. Performance — Lighthouse residual
 
-All Lighthouse audits are now resolved except the Google Form iframe on
-`/contact`. Session 2026-04-12/13 closed the remaining items:
-
-- ✅ **dom-size 0.5 → 1.0** — carousel copies 3x/5x → 2x (`7952142`).
-- ✅ **uses-responsive-images** — logo pixel waste fixed (`b0f6ab0`),
-  hyundaiLogo/moduLogo re-resized to h-12 display size (`3d970aa`).
-- ✅ **Sentry lazy-load** — re-export shim, 77 kB → 0 bytes (`0c9a261`).
-- ✅ **GA → Umami** — gtag.js 156 kB removed (`33fb32a`).
-- ✅ **Lighthouse CI gates** — `categories:performance` warn → error
-  (`66bfefc`), `legacy-javascript` warn → error, `third-party-cookies`
-  off → warn (`fc2df1d`).
-- ✅ **errors-in-console** `/insights` — CORS fix via `VITE_API_URL=/api`
-  in CI build (`3d970aa`).
-- ✅ **color-contrast** `/insights` — `text-gray-400` → `text-gray-500`
-  on blog card/detail labels, contrast 2.53 → 4.63 (`715902e`).
-- ✅ **lcp-lazy-loaded** `/insights` — featured blog card image now
-  `loading="eager"` (`715902e`).
-- ✅ **Umami provisioned** — Docker service + nginx exact-match proxy,
-  secrets in `.env`, dashboard at `localhost:3001` (`1390581`).
-
 ### 1.1 Replace Google Form with `backend/api/contact/`
 
 - **Goal**: `/contact` best-practices 0.78 → ≥ 0.90 and remove the
@@ -62,28 +42,14 @@ All Lighthouse audits are now resolved except the Google Form iframe on
   backend.
 - **Effort**: 2–3 h including UX polish and i18n.
 
-## 3. 콘텐츠
+## 2. 콘텐츠
 
 - [ ] 블로그 포스트 기획 — AI Agent 실전 구축 가이드, RAG 파이프라인 설계 등 서비스 영역(교육·컨설팅·개발)과 직접 연결되는 기술 콘텐츠 시리즈. 첫 포스트는 최근 K-Digital 강의에서 받은 질문 기반이 좋음.
 
-## 4. 기능 개선
+## 3. 기능 개선
 
 - [ ] 멘토링/활동 이력 추가 검토 — ICT 피우다 멘토, 해커톤 심사위원, 오픈소스 컨트리뷰션 등 교육 외 활동을 별도 섹션 또는 기존 이력에 통합할지 검토. Teaching History 35개 엔트리 옆에 "활동 이력" 서브섹션이 가장 자연스러움.
 
-## 5. SEO
-
-2026-04-13 세션에서 GSC 작업 완료:
-
-- ✅ 사이트맵 재제출 — 10개 URL 발견, 상태 "성공".
-- ✅ 색인 요청 — `/contact`, `/insights`, `/en/contact`, `/en/insights`,
-  `/privacy`, `/en/privacy` 각각 "색인 생성 요청" 완료.
-- ✅ 리디렉션 오류 4건 — "수정 확인" 요청 완료. nginx는 200 정상
-  반환 중, Google 재크롤 대기 (3–7일).
-- ✅ `/cdn-cgi/` 404 — nginx `location /cdn-cgi/ { return 404; }` 추가
-  (`ae227e2`), "수정 확인" 요청 완료.
-- `/profile/` 표준 태그 대체 페이지 — 정상 동작 (canonical이 `/profile`
-  가리킴, 조치 불필요).
-
-## 6. 법률 / 컴플라이언스
+## 4. 법률 / 컴플라이언스
 
 - [ ] 개인정보처리방침 법률 검토 — 개인정보 보호법 제30조 기준 13개 섹션 작성 완료. 법률 전문가 최종 검토 후 보완 필요 시 `frontend/src/i18n/locales/ko.json` → `privacy` 섹션 수정.
