@@ -146,13 +146,11 @@ graph LR
 
 ## Development
 
-Detailed operational rules, architecture, and conventions live in [CLAUDE.md](CLAUDE.md) (auto-loaded by Claude Code). This section covers the essentials.
+Detailed operational rules, architecture, and conventions live in [CLAUDE.md](CLAUDE.md) (auto-loaded by Claude Code). This section covers contributor essentials.
 
 **Conventions**: [Conventional commits](https://www.conventionalcommits.org/) required (`feat|fix|docs|style|refactor|test|chore|deps|ci`). ESLint zero warnings. All UI strings via i18n. English comments only.
 
-**Testing**: 100% coverage target — Vitest + Django unittest + Playwright E2E. Package badges (React, Vite, Vitest, etc.) are CI-validated against `package.json` on every PR. Test counts in the bullet above are auto-corrected by the `Sync Test Badges` job in `main-ci-cd.yml` after each push to main — you don't need to update them manually.
-
-**Security**: DOMPurify on all user HTML. CI `${{ }}` bound to `env:` only. `uuid4` upload filenames. httpOnly cookie JWT.
+**CI automation**: Package badges are validated against `package.json` on every PR. Test counts are auto-corrected by the `Sync Test Badges` job after each push to main.
 
 **Key gotchas**: `DATABASE_URL=""` for backend tests. Never `npm audit fix`. `VITE_` prefix for env vars. `minimatch>=10.2.1` override — don't remove.
 
