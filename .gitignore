@@ -93,6 +93,7 @@ Thumbs.db
 
 # Claude settings
 .claude/
+NOTES.md
 
 # Secrets / credentials — prevent accidental commit
 *.pem
