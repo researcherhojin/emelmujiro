@@ -42,7 +42,7 @@ const PrivacyPolicyPage: React.FC = memo(() => {
               {t('privacy.subtitle')}
             </p>
             <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
-              {t('privacy.lastUpdated')}: 2026-04-05
+              {t('privacy.lastUpdated')}: 2026-04-15
             </p>
           </div>
         </section>
