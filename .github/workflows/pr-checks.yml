@@ -144,12 +144,22 @@ jobs:
               ERRORS=$((ERRORS + 1))
             fi
           }
+          # Badge order mirrors README section layout (frontend / testing).
+          # Scoped packages (@*/*) work because bash expands $pkg into the
+          # JS string literal inside node -e, giving valid dict lookup.
           check_badge "React" "react"
+          check_badge "TypeScript" "typescript"
           check_badge "Vite" "vite"
           check_badge "React_Router_DOM" "react-router-dom"
+          check_badge "Tailwind_CSS" "tailwindcss"
+          check_badge "Typography" "@tailwindcss/typography"
+          check_badge "Framer_Motion" "framer-motion"
           check_badge "i18next" "i18next"
           check_badge "Axios" "axios"
+          check_badge "TipTap" "@tiptap/react"
+          check_badge "DOMPurify" "dompurify"
           check_badge "Vitest" "vitest"
+          check_badge "Testing_Library" "@testing-library/react"
           check_badge "Playwright" "@playwright/test"
           if [ "$ERRORS" -gt 0 ]; then
             echo "❌ $ERRORS README badge(s) out of sync with package.json"
@@ -242,7 +252,7 @@ jobs:
       - name: Test frontend changes
         if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/')
         working-directory: ./frontend
-        run: CI=true npm test -- --run --passWithNoTests
+        run: CI=true npm test -- --run
         timeout-minutes: 10
 
       - name: Setup uv with cache
