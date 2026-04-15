@@ -61,7 +61,11 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom/')) {
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom/') || id.includes('node_modules/react-router/')) {
+            // react-router-dom@7 has react-router (core) as a runtime dependency;
+            // without the `react-router/` match, core got a separate default chunk
+            // that scored 71% unused in Lighthouse — consolidating into react-vendor
+            // eliminates that duplicate chunk.
             return 'react-vendor';
           }
           if (id.includes('node_modules/framer-motion/') || id.includes('node_modules/lucide-react/')) {

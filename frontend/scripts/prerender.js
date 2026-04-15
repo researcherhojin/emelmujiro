@@ -121,7 +121,13 @@ async function prerenderRoute(page, baseUrl, route) {
     }
   });
 
-  // Capture the full rendered HTML
+  // Capture the full rendered HTML. NOTE: an earlier attempt rewrote the
+  // Vite-injected stylesheet link with `media="print" + onload="this.media='all'"`
+  // to silence the render-blocking-resources Lighthouse audit; that change
+  // regressed CLS from ~0 to 0.4-0.6 because the post-load media swap repaints
+  // the entire page with Pretendard metrics, causing text reflow. The correct
+  // fix is either inlining critical CSS at build time or self-hosting a
+  // Pretendard subset with explicit font-display — left as JOURNAL.md backlog.
   const html = await page.content();
 
   return html;
