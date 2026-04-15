@@ -79,6 +79,27 @@ swap`) was tried 2026-04-15 and regressed CLS from ~0 to 0.40–0.60 on
   all 10 prerendered routes still emit exactly 3 alternates.
 - **Effort**: Unknown — investigation-heavy, could be 30 min to 3 h.
 
+### Reduce ui-vendor unused-javascript (~62 KB)
+
+- **Goal**: `unused-javascript` Lighthouse audit 0 → ≥ 0.9 on `/` and
+  other non-admin pages.
+- **Why**: 2026-04-15 lhci autorun showed ~62 KB wasted bytes across
+  all four measured URLs, concentrated in `ui-vendor` (framer-motion +
+  lucide-react). Framer-motion's `motion.*` proxy imports a large HTML
+  element registry even when only `motion.article` / `motion.div` are
+  used. Lucide v1 tree-shakes named imports but some usage patterns
+  (e.g., dynamic `<Icon />` via props) pull in more than needed.
+- **How**: (a) audit `framer-motion` call sites — replace `motion.div`
+  - animate-on-mount patterns with CSS transitions where no gesture
+    tracking is needed; (b) switch `lucide-react` imports from
+    `import { X } from 'lucide-react'` to per-icon paths
+    (`import X from 'lucide-react/dist/esm/icons/x'`) which is the
+    recommended pattern for strict tree-shaking. Some files might not
+    need either library at all — `npm run knip` may surface dead imports.
+- **Verify**: `ui-vendor` chunk gzip size drops, lhci `unused-javascript`
+  score ≥ 0.9 on `/` and `/profile`.
+- **Effort**: 2–3 h — mostly grep + benchmark-per-change iterations.
+
 ### Unused CSS class detection
 
 - **Goal**: Automated audit for Tailwind classes shipped in `build/assets/*.css`
