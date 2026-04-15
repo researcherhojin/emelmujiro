@@ -41,24 +41,23 @@ Invariant rules → `CLAUDE.md`. Design rationale + LLM failure patterns →
   Playwright e2e submits the form end-to-end against a running backend.
 - **Effort**: 2–3 h after external prereqs are provisioned.
 
-### Inline critical CSS
+### Inline main CSS via critical-CSS plugin (optional follow-up)
 
-- **Goal**: `render-blocking-resources` Lighthouse audit 0.5 → ≥ 0.9 on
-  all four measured URLs.
-- **Why**: Pretendard CDN CSS (~222ms) + Vite-injected main CSS (~86ms)
-  block first paint. Naive fix (Filament Group `media="print" + onload
-swap`) was tried 2026-04-15 and regressed CLS from ~0 to 0.40–0.60 on
-  every page — post-load media swap repaints with Pretendard metrics and
-  reflows text. See `JOURNAL.md` Session History "Failed CSS non-blocking
-  rewrite" for evidence and `prerender.js` comment warning against
-  retrying the same approach.
-- **How**: Either a build-time critical CSS plugin (`beasties`, `critters`)
-  that inlines above-the-fold CSS and defers the rest, OR self-host a
-  Pretendard subset with `size-adjust` / `ascent-override` / `descent-override`
-  metrics matched to the system fallback font so swap doesn't reflow.
-- **Verify**: `render-blocking-resources` ≥ 0.9 AND CLS stays < 0.05 on
-  `/`, `/contact`, `/profile`, `/insights` via `npx @lhci/cli autorun`.
-- **Effort**: 3–4 h including verification cycle.
+- **Context**: 2026-04-16 Pretendard fix already took the
+  `render-blocking-resources` audit from 0.5 → 1.0 on all four measured
+  URLs. Main CSS wasn't being flagged — Vite's module preload ordering
+  keeps it off the critical path in practice. This is therefore a
+  _follow-up_ ticket: revisit only if the audit regresses or LCP needs
+  the extra headroom.
+- **If revisiting**: first integration attempt with `beasties` inlined
+  the CSS but left the original `<link rel="stylesheet">` alongside the
+  preload variant (so the audit didn't improve) and added 20–50 KB to
+  every per-route HTML. Reasonable path forward: either patch beasties
+  config to actually replace the source link, or skip the plugin and
+  handwrite a small critical stylesheet covering nav + hero + section
+  layouts, inlined in index.html. Keep CLS < 0.05 as a hard gate (the
+  2026-04-15 failed experiment shows why: losing above-the-fold styles
+  at first paint makes text reflow on CSS arrival).
 
 ---
 
@@ -85,7 +84,8 @@ improvement was SSG prerender enablement in production (commit chain
 Known remaining lab audits (tracked in Backlog, do not affect SEO
 ranking):
 
-- `render-blocking-resources` 0.5 on all URLs (Pretendard CDN + main CSS)
+- `render-blocking-resources` — cleared 2026-04-16 (0.5 → 1.0 on all
+  URLs) via Pretendard non-blocking preservation in prerender.
 - `unused-javascript` — partially addressed 2026-04-16 via framer-motion
   removal (ui-vendor 133 KB → 13 KB). Rerun lhci to refresh this figure.
 - `/contact` `third-party-cookies` failing (Google Form iframe, see Backlog)
@@ -95,6 +95,33 @@ ranking):
 ## Session History
 
 Non-obvious items only. Routine commits live in `git log`.
+
+### 2026-04-16 — render-blocking-resources 0.5 → 1.0 via Pretendard fix
+
+- Lighthouse was flagging the Pretendard CDN stylesheet as render-
+  blocking even though `index.html` already uses the non-blocking
+  Filament pattern (`rel="preload"` + `onload="this.rel='stylesheet'"`).
+  Root cause: during prerender, Playwright actually downloads the
+  stylesheet and fires `onload`, which rewrites `rel` to `"stylesheet"`
+  before `page.content()` captures the HTML. The prerendered files
+  therefore shipped the post-load mutated markup — a plain blocking
+  `<link rel="stylesheet">` — so every real browser visit paid the ~220
+  ms load blocking FCP. Fix: re-apply the source-of-truth attributes
+  (`rel="preload"` + `as="style"` + original onload) for any
+  pretendardvariable link in the captured DOM just before HTML capture,
+  skipping the `<noscript>` fallback copy.
+- Measured impact (lhci autorun, 1 run, desktop preset):
+  `render-blocking-resources` score went from 0.5 → 1.0 on `/`,
+  `/contact`, `/profile`, and from 0 → 1.0 on `/insights`. CLS stays at
+  0 on all four (no font-swap reflow regression like the 2026-04-15
+  experiment). Performance score unchanged at 0.87–0.88 — FCP/LCP saw
+  ~20-50 ms improvement, within measurement noise.
+- Beasties integration was also explored (full inline + defer for main
+  CSS) but left the original `<link rel="stylesheet">` alongside the
+  new preload and added 20–50 KB per prerendered route without moving
+  the audit score. Dropped the dependency; moved the remaining main-CSS
+  inline work to Backlog as an optional follow-up with the lessons
+  learned recorded there.
 
 ### 2026-04-16 — Remove framer-motion (ui-vendor 133 KB → 13 KB)
 

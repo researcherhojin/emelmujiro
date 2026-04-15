@@ -119,6 +119,25 @@ async function prerenderRoute(page, baseUrl, route) {
     if (canonicals.length > 1) {
       for (let i = 0; i < canonicals.length - 1; i++) canonicals[i].remove();
     }
+
+    // Restore non-blocking state for the Pretendard CDN stylesheet. The source
+    // index.html declares it as `<link rel="preload" as="style"
+    // onload="this.onload=null;this.rel='stylesheet'">` — non-blocking by
+    // design — but during prerender the browser actually fires the onload as
+    // soon as the stylesheet finishes downloading. The captured DOM therefore
+    // has `rel="stylesheet"`, which Lighthouse correctly flags as
+    // render-blocking. Rewrite it back to the source-of-truth non-blocking
+    // form so the prerendered HTML stays fast. The onload attribute is a
+    // no-op once rel is already stylesheet, but keeping the original attrs
+    // matches what a fresh browser load would see from source index.html.
+    document.querySelectorAll('link[href*="pretendardvariable"]').forEach((el) => {
+      if (el.closest('noscript')) return;
+      if (el.getAttribute('rel') === 'stylesheet') {
+        el.setAttribute('rel', 'preload');
+        el.setAttribute('as', 'style');
+        el.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
+      }
+    });
   });
 
   // Capture the full rendered HTML. NOTE: an earlier attempt rewrote the
@@ -126,8 +145,11 @@ async function prerenderRoute(page, baseUrl, route) {
   // to silence the render-blocking-resources Lighthouse audit; that change
   // regressed CLS from ~0 to 0.4-0.6 because the post-load media swap repaints
   // the entire page with Pretendard metrics, causing text reflow. The correct
-  // fix is either inlining critical CSS at build time or self-hosting a
-  // Pretendard subset with explicit font-display — left as JOURNAL.md backlog.
+  // fix for the main-CSS half of that audit is build-time critical-CSS
+  // extraction (beasties/critters) — left as JOURNAL.md backlog because a
+  // first integration pass duplicated the original stylesheet link and
+  // inflated per-route HTML by 20-50 KB for no score gain. Pretendard is
+  // handled above by restoring its source `rel="preload"` state.
   const html = await page.content();
 
   return html;
