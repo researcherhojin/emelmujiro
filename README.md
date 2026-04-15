@@ -68,6 +68,8 @@ npm run dev                                               # Frontend :5173 + Bac
 
 **Fresh macOS machine?** `make setup-dev-machine` handles the full bootstrap (brew deps, `make install`, local `.env`, Django migrations). Re-runnable health check: `make verify-setup`.
 
+Operational rules, architecture details, and conventions: [CLAUDE.md](CLAUDE.md).
+
 ### Useful Commands
 
 Run from the repo root unless noted otherwise.
@@ -143,16 +145,6 @@ graph LR
 - **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30
 - **Tests** — Vitest (1217 tests) + Django unittest (358 tests) + Playwright E2E (5 profiles)
 - **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Codecov, auto-deploy via webhook
-
-## Development
-
-Detailed operational rules, architecture, and conventions live in [CLAUDE.md](CLAUDE.md) (auto-loaded by Claude Code). This section covers contributor essentials.
-
-**Conventions**: [Conventional commits](https://www.conventionalcommits.org/) required (`feat|fix|docs|style|refactor|test|chore|deps|ci`). ESLint zero warnings. All UI strings via i18n. English comments only.
-
-**CI automation**: Package badges are validated against `package.json` on every PR. Test counts are auto-corrected by the `Sync Test Badges` job after each push to main.
-
-**Key gotchas**: `DATABASE_URL=""` for backend tests. Never `npm audit fix`. `VITE_` prefix for env vars. `minimatch>=10.2.1` override — don't remove.
 
 ## License
 
