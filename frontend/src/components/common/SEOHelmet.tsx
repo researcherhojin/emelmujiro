@@ -23,23 +23,36 @@ import { stripLangPrefix } from '../../hooks/useLocalizedPath';
  * <link> nodes marked with `data-seohelmet-hreflang`, clear them on each run,
  * and append fresh ones. Reruns only on URL prop change.
  */
+const HREFLANG_MARKER = 'data-seohelmet-hreflang';
+
+function removeAllHreflangAlternates() {
+  document.querySelectorAll(`link[${HREFLANG_MARKER}]`).forEach((el) => el.remove());
+}
+
 function useHreflangAlternates(koUrl: string, enUrl: string) {
   useEffect(() => {
-    const MARKER = 'data-seohelmet-hreflang';
-    document.querySelectorAll(`link[${MARKER}]`).forEach((el) => el.remove());
+    removeAllHreflangAlternates();
 
     const add = (hreflang: string, href: string) => {
       const link = document.createElement('link');
       link.setAttribute('rel', 'alternate');
       link.setAttribute('hreflang', hreflang);
       link.setAttribute('href', href);
-      link.setAttribute(MARKER, 'true');
+      link.setAttribute(HREFLANG_MARKER, 'true');
       document.head.appendChild(link);
     };
 
     add('ko', koUrl);
     add('en', enUrl);
     add('x-default', koUrl);
+
+    // Clean up on unmount / before re-run so alternates from a previous route
+    // don't linger in the head after SEOHelmet unmounts. This matters on SPA
+    // navigations where a route without a SEOHelmet (unlikely in practice but
+    // possible) would otherwise inherit the previous route's hreflang set.
+    return () => {
+      removeAllHreflangAlternates();
+    };
   }, [koUrl, enUrl]);
 }
 

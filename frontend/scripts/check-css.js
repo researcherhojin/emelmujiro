@@ -30,15 +30,13 @@ const EXTRA_SOURCE_FILES = [path.join(FRONTEND, 'index.html')];
 const SOURCE_EXTS = new Set(['.js', '.jsx', '.ts', '.tsx', '.css', '.html']);
 const SKIP_DIRS = new Set(['node_modules', '__tests__', '__mocks__']);
 
-// Classes that are legitimately set outside of source scanning:
-// - `dark` is applied to <html> by the theme-detection script in index.html
-//   and by DarkModeToggle via documentElement.classList.add('dark')
-// - `slow-connection` is applied imperatively by the network-detection inline
-//   script in index.html
-// - `group-hover:pause` is a runtime combined selector (group + hover) that
-//   Tailwind serializes with `:` between them; individual `pause` usage is
-//   in index.css media query overrides
-const ALLOWLIST = new Set(['dark', 'slow-connection']);
+// Classes that are legitimately set outside of source scanning. Currently
+// empty — `dark` is substring-matched via `dark:*` variants and dark color
+// utilities in source; `slow-connection` has no matching CSS rule so it
+// never reaches the unused list. Leave the hook here for future classes
+// that are (a) imperatively applied via classList.add and (b) have no
+// substring hit anywhere else in source.
+const ALLOWLIST = new Set([]);
 
 function extractClassesFromCss(cssPath) {
   const root = postcss.parse(fs.readFileSync(cssPath, 'utf8'));

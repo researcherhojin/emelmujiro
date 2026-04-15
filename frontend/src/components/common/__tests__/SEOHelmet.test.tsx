@@ -254,6 +254,22 @@ describe('SEOHelmet', () => {
     ]);
   });
 
+  it('removes injected hreflang alternates on unmount', () => {
+    const { unmount } = render(
+      <MemoryRouter initialEntries={['/profile']}>
+        <HelmetProvider>
+          <SEOHelmet title="Profile" />
+        </HelmetProvider>
+      </MemoryRouter>
+    );
+
+    expect(document.head.querySelectorAll('link[data-seohelmet-hreflang]')).toHaveLength(3);
+
+    unmount();
+
+    expect(document.head.querySelectorAll('link[data-seohelmet-hreflang]')).toHaveLength(0);
+  });
+
   it('falls back to ko when both lang prop and i18n.language are falsy', () => {
     mockI18nLanguage = '';
     renderWithHelmet(<SEOHelmet />);

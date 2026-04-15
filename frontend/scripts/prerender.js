@@ -101,7 +101,7 @@ async function prerenderRoute(page, baseUrl, route) {
   });
 
   // Clean up duplicate tags injected by react-helmet-async alongside static HTML
-  await page.evaluate(() => {
+  const pretendardRestore = await page.evaluate(() => {
     // Keep only the first <title> (Helmet-injected, page-specific one)
     const titles = document.querySelectorAll('title');
     if (titles.length > 1) {
@@ -127,18 +127,30 @@ async function prerenderRoute(page, baseUrl, route) {
     // soon as the stylesheet finishes downloading. The captured DOM therefore
     // has `rel="stylesheet"`, which Lighthouse correctly flags as
     // render-blocking. Rewrite it back to the source-of-truth non-blocking
-    // form so the prerendered HTML stays fast. The onload attribute is a
-    // no-op once rel is already stylesheet, but keeping the original attrs
-    // matches what a fresh browser load would see from source index.html.
-    document.querySelectorAll('link[href*="pretendardvariable"]').forEach((el) => {
+    // form so the prerendered HTML stays fast. Returns the count so the caller
+    // can fail loudly if a Pretendard version bump changes the URL pattern and
+    // silently breaks this fix.
+    const links = document.querySelectorAll('link[href*="pretendardvariable"]');
+    let restored = 0;
+    links.forEach((el) => {
       if (el.closest('noscript')) return;
       if (el.getAttribute('rel') === 'stylesheet') {
         el.setAttribute('rel', 'preload');
         el.setAttribute('as', 'style');
         el.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
+        restored++;
       }
     });
+    return { restoredPretendard: restored };
   });
+
+  if (pretendardRestore.restoredPretendard === 0) {
+    throw new Error(
+      `Prerender ${route}: expected to restore exactly 1 Pretendard <link> to rel="preload" ` +
+        `but found none matching link[href*="pretendardvariable"]. Did the CDN URL change in index.html? ` +
+        `If so, update the selector in scripts/prerender.js to match.`
+    );
+  }
 
   // Capture the full rendered HTML. NOTE: an earlier attempt rewrote the
   // Vite-injected stylesheet link with `media="print" + onload="this.media='all'"`
