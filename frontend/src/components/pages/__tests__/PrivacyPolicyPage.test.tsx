@@ -38,7 +38,7 @@ describe('PrivacyPolicyPage', () => {
   it('renders last updated date', () => {
     renderPage();
     expect(screen.getByText(/privacy\.lastUpdated/)).toBeInTheDocument();
-    expect(screen.getByText(/2026-04-05/)).toBeInTheDocument();
+    expect(screen.getByText(/2026-04-15/)).toBeInTheDocument();
   });
 
   it('renders table of contents with all 13 sections', () => {

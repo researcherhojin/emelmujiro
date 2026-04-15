@@ -169,6 +169,17 @@ stories `git log` fragments:
   for natural recrawl + indexing of new `/insights/:slug` entries; past
   "redirect errors" from the pre-2026-04-02 canonical bug should
   auto-resolve as Google recrawls.
+- **Google Form UX refactor + privacy policy sync** (`0cc1d4a`). Rebranded
+  `/contact` Google Form from "온라인 미팅 신청" to "에멜무지로 무료 상담
+  신청", split "성함/기관명" combined field into separate required 성함 +
+  optional 소속/기관명, realigned 상담 분야 options to match site Services
+  (교육/컨설팅/개발/멘토링/기타), kept dual email (Google-auto + optional
+  reply-to) per user's rigor — submitter's Google login email can
+  legitimately differ from their preferred reply address. Also synced
+  `privacy.dataCollection` and `privacy.delegation` in ko/en i18n to
+  match actual form schema and disclose Google LLC as a PIPA §26
+  processor (previously only Sentry was listed — mismatch with actual
+  data flow). Effective date bumped 2026-04-05 → 2026-04-15.
 
 ### 2026-04-11 — CI gates + security hardening pass
 
