@@ -37,32 +37,17 @@ fi
 
 echo "✅ Docker is running."
 
-# Check environment variable files
-if [ ! -f "backend/.env" ]; then
-    if [ -f "backend/.env.example" ]; then
-        echo "📝 Creating backend/.env from example..."
-        cp backend/.env.example backend/.env
-    else
-        echo "⚠️  backend/.env.example not found — create backend/.env manually"
-    fi
-fi
+# Check required env files — setup-dev-machine.sh creates these on first setup.
+# Blind-copying .env.example would give backend a placeholder SECRET_KEY,
+# so error out and direct the user to the proper bootstrap instead.
+MISSING=()
+[ ! -f ".env" ] && MISSING+=(".env")
+[ ! -f "backend/.env" ] && MISSING+=("backend/.env")
 
-if [ ! -f ".env" ]; then
-    if [ -f ".env.example" ]; then
-        echo "📝 Creating root .env from example..."
-        cp .env.example .env
-    else
-        echo "⚠️  .env.example not found — create .env manually"
-    fi
-fi
-
-if [ ! -f "frontend/.env" ]; then
-    if [ -f "frontend/.env.example" ]; then
-        echo "📝 Creating frontend/.env from example..."
-        cp frontend/.env.example frontend/.env
-    else
-        echo "⚠️  frontend/.env.example not found — create frontend/.env manually"
-    fi
+if [ ${#MISSING[@]} -gt 0 ]; then
+    echo "❌ Missing required env file(s): ${MISSING[*]}"
+    echo "   Run 'make setup-dev-machine' first to generate them with per-machine secrets."
+    exit 1
 fi
 
 # Start development environment with Docker Compose

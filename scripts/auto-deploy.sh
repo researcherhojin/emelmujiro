@@ -74,11 +74,11 @@ while [ $elapsed -lt 60 ]; do
   elapsed=$((elapsed + 5))
 done
 
-if [ "$backend_ok" = false ]; then
-  echo "$LOG_PREFIX WARNING: Backend health check did not pass within 60s"
-fi
-if [ "$frontend_ok" = false ]; then
-  echo "$LOG_PREFIX WARNING: Frontend health check did not pass within 60s"
+if [ "$backend_ok" = false ] || [ "$frontend_ok" = false ]; then
+  [ "$backend_ok" = false ] && echo "$LOG_PREFIX ERROR: Backend health check did not pass within 60s"
+  [ "$frontend_ok" = false ] && echo "$LOG_PREFIX ERROR: Frontend health check did not pass within 60s"
+  echo "$LOG_PREFIX Deploy failed: service(s) not healthy"
+  exit 1
 fi
 
 echo "$LOG_PREFIX Deploy completed at $(date)"

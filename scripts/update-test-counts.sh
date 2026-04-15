@@ -21,8 +21,13 @@ sedi() {
 
 echo "🧪 Counting tests..."
 
-# Count frontend tests (macOS compatible — no grep -P)
-FRONTEND_OUTPUT=$(cd frontend && CI=true npx vitest run 2>&1)
+# Count frontend tests (macOS compatible — no grep -P).
+# `if !` captures the exit code so set -e doesn't mask a failing test run.
+if ! FRONTEND_OUTPUT=$(cd frontend && CI=true npx vitest run 2>&1); then
+  echo "❌ Frontend tests failed — not updating README"
+  echo "$FRONTEND_OUTPUT" | tail -20
+  exit 1
+fi
 FRONTEND_COUNT=$(echo "$FRONTEND_OUTPUT" | grep -E '[0-9]+ passed' | tail -1 | sed -E 's/.*[^0-9]([0-9]+) passed.*/\1/')
 
 if [ -z "$FRONTEND_COUNT" ]; then
@@ -33,7 +38,11 @@ fi
 echo "   Frontend: $FRONTEND_COUNT tests"
 
 # Count backend tests
-BACKEND_OUTPUT=$(cd backend && DATABASE_URL="" uv run python manage.py test 2>&1)
+if ! BACKEND_OUTPUT=$(cd backend && DATABASE_URL="" uv run python manage.py test 2>&1); then
+  echo "❌ Backend tests failed — not updating README"
+  echo "$BACKEND_OUTPUT" | tail -20
+  exit 1
+fi
 BACKEND_COUNT=$(echo "$BACKEND_OUTPUT" | grep -E 'Found [0-9]+ test' | sed -E 's/Found ([0-9]+) test.*/\1/')
 
 if [ -z "$BACKEND_COUNT" ]; then
