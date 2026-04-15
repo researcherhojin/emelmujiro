@@ -9,7 +9,7 @@ This project's harness is built on three established engineering disciplines. Ea
 | Layer | Question | This project's implementation |
 |---|---|---|
 | **Prompt Engineering** | "How do I phrase this?" | Conventional commit format, i18n key naming, test descriptions |
-| **Context Engineering** | "What does the model need to see?" | `CLAUDE.md` (persistent), `NOTES.md` (session), `.claude/memory/` (cross-session), `grep`/`glob` (just-in-time retrieval) |
+| **Context Engineering** | "What does the model need to see?" | `CLAUDE.md` (persistent), `JOURNAL.md` (session history + backlog), `.claude/memory/` (cross-session), `grep`/`glob` (just-in-time retrieval) |
 | **Harness Engineering** | "What systems wrap the model?" | This document — guides, sensors, failure patterns, principles |
 
 ### Guides & Sensors (Fowler, 2026-04)
