@@ -1,6 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}',
+    './index.html',
+    // Exclude test files — they can reference class-looking words in comments
+    // or string literals (e.g. "lowercase kebab-case") that make Tailwind
+    // emit unused utilities into the production bundle.
+    '!./src/**/__tests__/**',
+    '!./src/**/__mocks__/**',
+    '!./src/**/*.test.{js,jsx,ts,tsx}',
+    '!./src/setupTests.ts',
+    '!./src/test-utils/**',
+  ],
   darkMode: 'class', // Enable class-based dark mode
   theme: {
     extend: {

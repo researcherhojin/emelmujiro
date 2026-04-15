@@ -81,18 +81,6 @@ swap`) was tried 2026-04-15 and regressed CLS from ~0 to 0.40–0.60 on
   score ≥ 0.9 on `/` and `/profile`.
 - **Effort**: 2–3 h — mostly grep + benchmark-per-change iterations.
 
-### Unused CSS class detection
-
-- **Goal**: Automated audit for Tailwind classes shipped in `build/assets/*.css`
-  but never referenced in source.
-- **Why**: Tailwind's content scanning is usually accurate, but template
-  literal patterns (`bg-${color}-600`) or dead files can ship classes
-  that never match. `knip` doesn't cover CSS.
-- **How**: Script parsing the CSS AST for selectors, grep source for
-  each, report unmatched. Could be a `frontend/scripts/check-css.js`
-  similar in shape to `scripts/check-i18n-keys.sh`.
-- **Effort**: 1–2 h.
-
 ---
 
 ## Baselines
@@ -128,6 +116,20 @@ ranking):
 ## Session History
 
 Non-obvious items only. Routine commits live in `git log`.
+
+### 2026-04-16 — Unused CSS detection + Tailwind content exclusion
+
+- Added `frontend/scripts/check-css.js` (`npm run check:css`) — parses
+  shipped `build/assets/*.css` with PostCSS, walks class selectors, greps
+  source under `src/` + `index.html`, reports classes emitted without any
+  literal reference. Exits non-zero on unused so it can gate CI later.
+  Initial run surfaced `isolate` and `lowercase` as "unused" — both
+  caused by Tailwind's content scanner matching those literal words in
+  test-file comments (`// Mock child components to isolate Layout behavior`,
+  `'should have slugs in lowercase kebab-case'`). Fixed by excluding test
+  paths from Tailwind's `content` config (`__tests__/**`, `*.test.*`,
+  `setupTests.ts`, `test-utils/**`) so test-only tokens don't enter the
+  production bundle. After rebuild: 690 classes scanned, 0 unused.
 
 ### 2026-04-16 — hreflang root cause
 

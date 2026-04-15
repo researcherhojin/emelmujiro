@@ -29,6 +29,7 @@ CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx  # Sin
 npm run test:e2e           # Playwright E2E (from frontend/). Also: test:e2e:ui, test:e2e:debug
 npm run type-check         # tsc --noEmit (from frontend/)
 npm run analyze:bundle     # source-map-explorer (from frontend/, requires build first)
+npm run check:css          # detect CSS classes shipped in build but never referenced in src/ (from frontend/, requires build first)
 
 npm run knip                   # Dead code detection (unused files, exports, deps). Run from root
 uv sync --extra dev                    # Install backend deps (NOT --dev). Run from backend/
