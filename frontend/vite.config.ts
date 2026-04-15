@@ -68,7 +68,7 @@ export default defineConfig({
             // eliminates that duplicate chunk.
             return 'react-vendor';
           }
-          if (id.includes('node_modules/framer-motion/') || id.includes('node_modules/lucide-react/')) {
+          if (id.includes('node_modules/lucide-react/')) {
             return 'ui-vendor';
           }
           if (id.includes('node_modules/i18next/') || id.includes('node_modules/react-i18next/') || id.includes('node_modules/i18next-browser-languagedetector/') || id.includes('/src/i18n')) {

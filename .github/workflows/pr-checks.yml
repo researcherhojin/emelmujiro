@@ -153,7 +153,6 @@ jobs:
           check_badge "React_Router_DOM" "react-router-dom"
           check_badge "Tailwind_CSS" "tailwindcss"
           check_badge "Typography" "@tailwindcss/typography"
-          check_badge "Framer_Motion" "framer-motion"
           check_badge "i18next" "i18next"
           check_badge "Axios" "axios"
           check_badge "TipTap" "@tiptap/react"

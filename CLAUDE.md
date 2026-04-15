@@ -76,7 +76,7 @@ System shape: providers, data flow, routing, and module boundaries.
 
 **API layer**: `services/api.ts` (Axios) with interceptors for JWT refresh. Mock API uses `mockResponse<T>(data, status?, statusText?)` helper to avoid boilerplate. Tests stub HTTP via `vi.mock('axios')` in individual test files — there is **no** MSW server. (A `test-utils/mocks/` MSW scaffold existed for years but was never wired into `setupTests.ts`; removed in the 2026-04-11 stability sweep along with the `msw` and `terser` packages — both dead-but-installed deps that generated dependabot churn.)
 
-**Bundle splitting**: 7 vendor chunks in `vite.config.ts` — `react-vendor`, `ui-vendor` (framer-motion, lucide), `i18n`, `sentry` (lazy-loaded via `sentry-impl.ts` re-export shim — 0 bytes on homepage), `http-vendor` (axios), `dompurify`, `tiptap` (prosemirror, lowlight). When adding large dependencies, consider whether they belong in an existing chunk or need a new one.
+**Bundle splitting**: 7 vendor chunks in `vite.config.ts` — `react-vendor`, `ui-vendor` (lucide icons; framer-motion was removed 2026-04-16 in favor of Tailwind keyframes), `i18n`, `sentry` (lazy-loaded via `sentry-impl.ts` re-export shim — 0 bytes on homepage), `http-vendor` (axios), `dompurify`, `tiptap` (prosemirror, lowlight). When adding large dependencies, consider whether they belong in an existing chunk or need a new one. CSS-based mount/loader animations live in `tailwind.config.js` under `animation`/`keyframes` (`fade-up`, `fade-up-sm`, `fade-up-delay`, `dot-bounce`, `scale-pulse`) — prefer these over re-introducing a JS animation library.
 
 **Blog**: Dual fields `content` (plain text/search) + `content_html` (TipTap HTML). Category API cached 1 hour (key: `"blog_categories"`), invalidated on CRUD/toggle-publish. DRF router `basename="blog"` in `api/urls.py` (NOT `"blog-posts"`). All BlogPost fields use **snake_case only** — `description` (NOT `excerpt`), `date` (NOT `publishedAt`), `is_published` (NOT `published`), `view_count` (NOT `views`), `image_url` (NOT `imageUrl`). Backend serializer has no camelCase aliases. Frontend routes use `/insights/:slug` (NOT `/blog`); `BlogPostViewSet` uses `lookup_field = "slug"`. Backend API stays at `/api/blog-posts/` (internal). Nginx 301 redirects: `/blog/*` → `/insights/*`. BlogCard links to `/insights/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
 
@@ -170,7 +170,7 @@ Cross-cutting rules for how code is written. Enforced by linters and CI where po
 
 ## Testing
 
-Global mocks in `setupTests.ts` (do NOT re-mock): `lucide-react`, `framer-motion`, `react-helmet-async`, browser APIs.
+Global mocks in `setupTests.ts` (do NOT re-mock): `lucide-react`, `react-helmet-async`, browser APIs.
 
 i18n mock — required in every test using `useTranslation()`:
 

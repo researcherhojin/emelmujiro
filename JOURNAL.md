@@ -60,27 +60,6 @@ swap`) was tried 2026-04-15 and regressed CLS from ~0 to 0.40–0.60 on
   `/`, `/contact`, `/profile`, `/insights` via `npx @lhci/cli autorun`.
 - **Effort**: 3–4 h including verification cycle.
 
-### Reduce ui-vendor unused-javascript (~62 KB)
-
-- **Goal**: `unused-javascript` Lighthouse audit 0 → ≥ 0.9 on `/` and
-  other non-admin pages.
-- **Why**: 2026-04-15 lhci autorun showed ~62 KB wasted bytes across
-  all four measured URLs, concentrated in `ui-vendor` (framer-motion +
-  lucide-react). Framer-motion's `motion.*` proxy imports a large HTML
-  element registry even when only `motion.article` / `motion.div` are
-  used. Lucide v1 tree-shakes named imports but some usage patterns
-  (e.g., dynamic `<Icon />` via props) pull in more than needed.
-- **How**: (a) audit `framer-motion` call sites — replace `motion.div`
-  - animate-on-mount patterns with CSS transitions where no gesture
-    tracking is needed; (b) switch `lucide-react` imports from
-    `import { X } from 'lucide-react'` to per-icon paths
-    (`import X from 'lucide-react/dist/esm/icons/x'`) which is the
-    recommended pattern for strict tree-shaking. Some files might not
-    need either library at all — `npm run knip` may surface dead imports.
-- **Verify**: `ui-vendor` chunk gzip size drops, lhci `unused-javascript`
-  score ≥ 0.9 on `/` and `/profile`.
-- **Effort**: 2–3 h — mostly grep + benchmark-per-change iterations.
-
 ---
 
 ## Baselines
@@ -116,6 +95,27 @@ ranking):
 ## Session History
 
 Non-obvious items only. Routine commits live in `git log`.
+
+### 2026-04-16 — Remove framer-motion (ui-vendor 133 KB → 13 KB)
+
+- framer-motion's only call sites were `UnifiedLoading.tsx` (spinner,
+  dots, pulse, inline, fade-up-on-mount for the spinner message) and
+  `BlogCard.tsx` (entrance fade-up on mount). All of these are mount-
+  time or infinite loops — no gesture tracking, no layout animations —
+  so they map cleanly to Tailwind keyframes. Added `fade-up`,
+  `fade-up-sm`, `fade-up-delay`, `dot-bounce`, `scale-pulse` to
+  `tailwind.config.js`; existing `animate-spin` covers the rotation
+  variants. Staggered dot animation uses inline `style={{
+animationDelay }}`.
+- Dropped the dependency from `package.json`, removed the 80-line
+  `framer-motion` global mock from `setupTests.ts`, removed the
+  Framer_Motion badge from README + the pr-checks badge gate, and
+  removed framer from the `ui-vendor` chunk rule in `vite.config.ts`.
+  Updated CLAUDE.md Bundle-Splitting note to reflect the new chunk
+  content and point future changes at the Tailwind keyframes.
+- Result: `ui-vendor` 133 KB → 12.85 KB raw (gzip ~40 KB → ~5 KB), and
+  LogosSection is now the only chunk above 40 KB raw on the homepage.
+  All 1217 Vitest tests still pass; lint and type-check clean.
 
 ### 2026-04-16 — Unused CSS detection + Tailwind content exclusion
 

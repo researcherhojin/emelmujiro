@@ -217,9 +217,8 @@ describe('UnifiedLoading Component', () => {
       expect(dotsContainer).toBeInTheDocument();
       expect(dotsContainer).toHaveClass('flex', 'items-center', 'justify-center', 'space-x-2');
 
-      // The dots are rendered by framer-motion which is mocked
-      // We verify the container exists with correct classes
-      // Individual dots testing is handled separately
+      // Individual dots are plain <div> with animate-dot-bounce; we verify
+      // the container exists with correct classes here.
     });
 
     it('renders dots with default color', () => {
@@ -227,8 +226,7 @@ describe('UnifiedLoading Component', () => {
 
       const dotsContainer = container.querySelector('[data-testid="loading-dots"]');
       expect(dotsContainer).toBeInTheDocument();
-      // Verify container exists - dots are mocked motion.div elements
-      // The actual color classes would be applied in real implementation
+      // Color classes are applied on the individual dot <div>s
     });
 
     it('renders dots with custom color', () => {
@@ -236,8 +234,7 @@ describe('UnifiedLoading Component', () => {
 
       const dotsContainer = container.querySelector('[data-testid="loading-dots"]');
       expect(dotsContainer).toBeInTheDocument();
-      // Verify container exists - dots are mocked motion.div elements
-      // The actual color classes would be applied in real implementation
+      // Color classes are applied on the individual dot <div>s
     });
 
     it('renders dots with message', () => {
