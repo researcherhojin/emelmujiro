@@ -86,8 +86,8 @@ Known remaining lab audits (tracked in Backlog, do not affect SEO
 ranking):
 
 - `render-blocking-resources` 0.5 on all URLs (Pretendard CDN + main CSS)
-- `unused-javascript` 0, ~62 KB savings (largely ui-vendor framer-motion
-  - lucide tree-shaking imperfection)
+- `unused-javascript` — partially addressed 2026-04-16 via framer-motion
+  removal (ui-vendor 133 KB → 13 KB). Rerun lhci to refresh this figure.
 - `/contact` `third-party-cookies` failing (Google Form iframe, see Backlog)
 
 ---
