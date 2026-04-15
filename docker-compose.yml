@@ -111,7 +111,7 @@ services:
     environment:
       - POSTGRES_DB=${DB_NAME:-emelmujiro}
       - POSTGRES_USER=${DB_USER:-postgres}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in .env before enabling the postgres profile}
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8
     ports:
       - "127.0.0.1:${DB_PORT:-5432}:5432"
