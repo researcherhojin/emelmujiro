@@ -11,7 +11,7 @@ Full-stack monorepo (React 19 + Django 6) deployed on Mac Mini via Docker + Clou
 - **Dev proxy**: Vite proxies `/api` → `http://127.0.0.1:8000` (no CORS issues in dev)
 - **Node ≥ 24**, **Python 3.12** required. Husky pre-commit runs lint-staged automatically
 
-> See `.claude/rules/strategy.md` for the rationale behind key architecture decisions and documented LLM failure patterns from this repo's history (incomplete refactors, hallucinated versions, confirmation bias loops, etc).
+> Design rationale and LLM failure patterns live in a local-only `.private/strategy.md` (gitignored) on this repo's maintainer devices. It is intentionally not published — past git history (pre-`01c4db8`) retains earlier versions for reference.
 
 > **CLAUDE.md is the single source of truth** for operational rules. README has a brief summary pointing here. Do NOT duplicate these sections back into README.
 

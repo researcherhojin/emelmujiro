@@ -94,6 +94,9 @@ Thumbs.db
 # Claude settings
 .claude/
 
+# Internal-only notes — never tracked
+.private/
+
 # Secrets / credentials — prevent accidental commit
 *.pem
 *.key
