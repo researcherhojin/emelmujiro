@@ -1,0 +1,11 @@
+name: "Pre-trust Codecov GPG key"
+description: "Imports and trusts Codecov's published GPG key so codecov-action can verify its signed binary. Fingerprint matches https://about.codecov.io/security-update/."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Import and trust Codecov GPG key
+      shell: bash
+      run: |
+        gpg --batch --import <(curl -fsSL https://keybase.io/codecovsecurity/pgp_keys.asc)
+        echo "27034E7FDB850E0BBC2C62FF806BB28AED779869:6:" | gpg --import-ownertrust

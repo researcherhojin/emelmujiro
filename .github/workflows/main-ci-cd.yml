@@ -65,9 +65,7 @@ jobs:
 
       - name: Pre-trust Codecov GPG key
         if: always()
-        run: |
-          gpg --batch --import <(curl -fsSL https://keybase.io/codecovsecurity/pgp_keys.asc)
-          echo "27034E7FDB850E0BBC2C62FF806BB28AED779869:6:" | gpg --import-ownertrust
+        uses: ./.github/actions/setup-codecov
 
       - name: Upload frontend coverage to Codecov
         if: always()
@@ -168,9 +166,7 @@ jobs:
 
       - name: Pre-trust Codecov GPG key
         if: always()
-        run: |
-          gpg --batch --import <(curl -fsSL https://keybase.io/codecovsecurity/pgp_keys.asc)
-          echo "27034E7FDB850E0BBC2C62FF806BB28AED779869:6:" | gpg --import-ownertrust
+        uses: ./.github/actions/setup-codecov
 
       - name: Upload backend coverage to Codecov
         if: always()
