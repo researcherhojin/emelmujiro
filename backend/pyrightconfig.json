@@ -10,7 +10,7 @@
     "**/build",
     "**/dist"
   ],
-  "venvPath": "../",
+  "venvPath": ".",
   "venv": ".venv",
   "pythonVersion": "3.12",
   "pythonPlatform": "All",
