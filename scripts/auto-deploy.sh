@@ -45,7 +45,18 @@ if [ -f "$REPO_DIR/frontend/.env.production" ]; then
     export "$key=$value"
   done < "$REPO_DIR/frontend/.env.production"
 fi
-VITE_API_URL="${VITE_API_URL:-https://api.emelmujiro.com/api}" npm run build:no-prerender
+# Ensure Playwright Chromium is installed — required by scripts/prerender.js
+# which runs headless Chromium to snapshot each route as static HTML. Idempotent:
+# no-op if the matching browser version is already cached.
+npx playwright install chromium
+
+# Build with SSG prerender. Each static route (/, /contact, /profile, /insights,
+# /privacy × ko + en = 10 routes) gets its own pre-rendered index.html so
+# Googlebot receives per-page title/meta/canonical/content without waiting for
+# JS execution. Falls back to build:no-prerender is NOT automatic — if prerender
+# fails, the deploy fails (set -eu pipefail at top). That is intentional: bad
+# prerender state should surface, not silently ship unprerendered.
+VITE_API_URL="${VITE_API_URL:-https://api.emelmujiro.com/api}" npm run build
 
 # Ensure all services are running
 echo "$LOG_PREFIX Starting services..."
