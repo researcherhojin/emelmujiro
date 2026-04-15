@@ -228,7 +228,9 @@ describe('SEOHelmet', () => {
     expect(data['article:modified_time']).toBe('2024-06-15');
   });
 
-  it('builds hreflang URLs with path for non-root pages', () => {
+  it('injects exactly 3 hreflang alternates (ko/en/x-default) with correct URLs', () => {
+    // Imperative injection (via useEffect) — not inside <Helmet> — to sidestep
+    // React 19's head-hoisting accumulation bug for <link rel="alternate">.
     render(
       <MemoryRouter initialEntries={['/profile']}>
         <HelmetProvider>
@@ -237,11 +239,19 @@ describe('SEOHelmet', () => {
       </MemoryRouter>
     );
 
-    const helmet = document.querySelector('[data-testid="helmet"]');
-    const raw = helmet?.getAttribute('data-helmet') || '{}';
-    // The hreflang links are rendered but our mock only captures canonical/script;
-    // the branch coverage is exercised by rendering at a non-root path
-    expect(raw).toBeTruthy();
+    const alternates = Array.from(
+      document.head.querySelectorAll('link[data-seohelmet-hreflang]')
+    ).map((el) => ({
+      hreflang: el.getAttribute('hreflang'),
+      href: el.getAttribute('href'),
+    }));
+
+    expect(alternates).toHaveLength(3);
+    expect(alternates).toEqual([
+      { hreflang: 'ko', href: 'https://emelmujiro.com/profile' },
+      { hreflang: 'en', href: 'https://emelmujiro.com/en/profile' },
+      { hreflang: 'x-default', href: 'https://emelmujiro.com/profile' },
+    ]);
   });
 
   it('falls back to ko when both lang prop and i18n.language are falsy', () => {

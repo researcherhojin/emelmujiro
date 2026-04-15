@@ -119,22 +119,6 @@ async function prerenderRoute(page, baseUrl, route) {
     if (canonicals.length > 1) {
       for (let i = 0; i < canonicals.length - 1; i++) canonicals[i].remove();
     }
-
-    // Deduplicate hreflang alternates by hreflang value (keep last).
-    // react-helmet-async does not dedupe link[rel="alternate"] across multiple
-    // render passes when their href values differ — SEOHelmet on /en/* and
-    // /privacy ended up with 6 alternates in the captured HTML (one set pointing
-    // at the homepage, one at the actual route). Google Search Console
-    // interprets conflicting hreflang as "alternate page with canonical"
-    // indexing errors. Keep only the last tag per hreflang value, which is the
-    // final route-specific render.
-    const alternates = document.querySelectorAll('link[rel="alternate"][hreflang]');
-    const seenHreflang = new Map();
-    alternates.forEach((el) => {
-      const key = el.getAttribute('hreflang');
-      if (seenHreflang.has(key)) seenHreflang.get(key).remove();
-      seenHreflang.set(key, el);
-    });
   });
 
   // Capture the full rendered HTML. NOTE: an earlier attempt rewrote the

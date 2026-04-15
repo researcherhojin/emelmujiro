@@ -60,25 +60,6 @@ swap`) was tried 2026-04-15 and regressed CLS from ~0 to 0.40–0.60 on
   `/`, `/contact`, `/profile`, `/insights` via `npx @lhci/cli autorun`.
 - **Effort**: 3–4 h including verification cycle.
 
-### hreflang root cause (remove prerender.js dedup workaround)
-
-- **Goal**: Fix SEOHelmet at source so prerendered HTML emits exactly 3
-  hreflang alternates per route without the dedup patch.
-- **Why**: 2026-04-15 fix (`8646358`) added a dedup pass in `prerender.js`
-  because `/en/*` + `/privacy` emitted 6 alternates (doubled). Root cause
-  is suspected react-helmet-async + lazy-loading interaction where
-  SEOHelmet renders twice with different `basePath` states during the
-  prerender snapshot, but the exact trigger wasn't pinned down during
-  initial investigation.
-- **How**: Instrument SEOHelmet render with a counter + basePath log,
-  run prerender, identify the two render paths. Likely one of: stale
-  closure in a memoized child, i18n language-change effect triggering a
-  second render before route-specific render settles, or an
-  `index: true` route briefly mounting alongside the matched route.
-- **Verify**: Delete the dedup block in `prerender.js`, rebuild, confirm
-  all 10 prerendered routes still emit exactly 3 alternates.
-- **Effort**: Unknown — investigation-heavy, could be 30 min to 3 h.
-
 ### Reduce ui-vendor unused-javascript (~62 KB)
 
 - **Goal**: `unused-javascript` Lighthouse audit 0 → ≥ 0.9 on `/` and
@@ -148,6 +129,30 @@ ranking):
 
 Non-obvious items only. Routine commits live in `git log`.
 
+### 2026-04-16 — hreflang root cause
+
+- **hreflang alternates: React 19 hoisting accumulation root cause.**
+  Prior session's workaround (`8646358`) deduped `link[rel="alternate"]`
+  in `prerender.js` post-render without isolating why they multiplied.
+  Instrumented prerender with a `MutationObserver` on `document.head`:
+  captured every hreflang add/remove across the render lifetime. Found
+  two separate drivers of accumulation — (1) SEOHelmet re-renders when
+  `t()` resolves or i18n language changes on `/en/*`, and (2)
+  react-helmet-async v3's `React19Dispatcher` renders `<link>` tags as
+  plain React children relying on React 19's automatic head-hoisting.
+  React 19 hoists and dedupes `<title>` by tag name and
+  `<link rel="canonical">` by `rel`, but multiple
+  `<link rel="alternate">` tags with matching rel and differing
+  hreflang/href are each treated as a distinct resource — old hoisted
+  nodes are never removed on re-render, so alternates accumulate. Fix:
+  move the three hreflang tags out of `<Helmet>` entirely and manage
+  them imperatively via a `useEffect` in SEOHelmet (clears
+  `link[data-seohelmet-hreflang]` then appends fresh nodes on each
+  `koUrl/enUrl` change). Prerender dedup workaround removed from
+  `scripts/prerender.js`, all 10 prerendered routes verified to emit
+  exactly 3 alternates with correct URLs. Added Vitest regression
+  asserting the injected set.
+
 ### 2026-04-15 — Rigor pass + SSG prerender
 
 Full-day session, 26 commits across security / docs / CI / performance /
@@ -181,8 +186,8 @@ stories `git log` fragments:
     homepage URLs). Root cause is suspected react-helmet-async + lazy-loading
     interaction but wasn't isolated. Workaround: dedupe
     `link[rel="alternate"][hreflang]` in `prerender.js` after helmet
-    cleanup, keep the last tag per hreflang value. Tracked in Backlog for
-    proper fix.
+    cleanup, keep the last tag per hreflang value. Root cause isolated
+    and workaround removed 2026-04-16 — see that session's entry.
 - **GSC sitemap resubmission**. Google's cached sitemap had 10 URLs
   (pre-refactor state). After `generate-sitemap.js` refactor adding blog
   posts (5 static × 2 langs + 2 blog × 2 langs = 14 URLs), resubmitted
