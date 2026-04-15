@@ -3,9 +3,11 @@ const path = require('path');
 
 // SITE_URL: env override > package.json "homepage". The old hardcoded
 // "https://emelmujiro.com" fallback duplicated the homepage field and
-// silently drifted if either changed.
+// silently drifted if either changed. Trailing slash is stripped so
+// `${SITE_URL}${prefix}${urlPath}` below can't accidentally produce
+// `https://emelmujiro.com//en/profile`.
 const pkg = require('../package.json');
-const SITE_URL = process.env.SITE_URL || pkg.homepage;
+const SITE_URL = (process.env.SITE_URL || pkg.homepage || '').replace(/\/+$/, '');
 const API_URL = process.env.API_URL || 'https://api.emelmujiro.com/api';
 const LANGUAGES = ['ko', 'en'];
 const DEFAULT_LANG = 'ko';

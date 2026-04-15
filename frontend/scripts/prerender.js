@@ -26,7 +26,20 @@ const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('./generate-sitemap');
 function startServer() {
   return new Promise((resolve) => {
     const server = http.createServer((req, res) => {
-      let filePath = path.join(BUILD_DIR, req.url === '/' ? 'index.html' : req.url);
+      const requestedPath = req.url === '/' ? 'index.html' : req.url;
+      let filePath = path.join(BUILD_DIR, requestedPath);
+
+      // Reject path-traversal attempts. path.join normalizes `..` segments, so
+      // a request like `/../../etc/passwd` resolves to a path outside BUILD_DIR.
+      // Server binds to 127.0.0.1 and is Playwright-controlled, so in practice
+      // we never see adversarial input — but the check is cheap insurance in
+      // case this server is ever reused or its binding widens.
+      const resolved = path.resolve(filePath);
+      if (resolved !== BUILD_DIR && !resolved.startsWith(BUILD_DIR + path.sep)) {
+        res.writeHead(403);
+        res.end('Forbidden');
+        return;
+      }
 
       // SPA fallback: if file doesn't exist and has no extension, serve index.html
       if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
@@ -193,7 +206,6 @@ function writePrerenderedHtml(route, html) {
  */
 async function prerenderBatch(browser, baseUrl, routes, concurrency = 4) {
   let successCount = 0;
-  const errors = [];
 
   // Group routes by language so each group shares a browser context
   const byLang = {};
@@ -232,8 +244,9 @@ async function prerenderBatch(browser, baseUrl, routes, concurrency = 4) {
           successCount++;
         } else {
           const route = chunk[j];
-          console.error(`   ❌ [${route.lang}] ${route.path.padEnd(16)} → Failed: ${results[j].reason.message}`);
-          errors.push(route.path);
+          console.error(
+            `   ❌ [${route.lang}] ${route.path.padEnd(16)} → Failed: ${results[j].reason.message}`
+          );
         }
       }
     }
@@ -241,7 +254,7 @@ async function prerenderBatch(browser, baseUrl, routes, concurrency = 4) {
     await context.close();
   }
 
-  return { successCount, errors };
+  return { successCount };
 }
 
 async function main() {
@@ -277,12 +290,16 @@ async function main() {
 
   console.log(`\n📊 Prerendered ${successCount}/${allRoutes.length} routes`);
 
-  if (successCount === 0) {
-    throw new Error('All routes failed to prerender');
-  }
-
+  // Exit non-zero on ANY failure — a missing /privacy/index.html would make
+  // nginx 404 that URL in production because `try_files $uri $uri/index.html
+  // =404` hard-fails unknown paths (see CLAUDE.md "SSG prerender + nginx
+  // routing"). Partial prerender is never acceptable: either every route ships
+  // as SSG or the deploy fails loudly.
   if (successCount < allRoutes.length) {
-    console.warn(`⚠️  ${allRoutes.length - successCount} route(s) failed to prerender`);
+    throw new Error(
+      `Prerender incomplete: ${successCount}/${allRoutes.length} routes succeeded. ` +
+        `Deploy aborted — nginx would 404 the missing routes in production.`
+    );
   }
 }
 
