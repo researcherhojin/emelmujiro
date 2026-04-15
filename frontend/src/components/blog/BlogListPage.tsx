@@ -116,48 +116,53 @@ const BlogListPage: React.FC = memo(() => {
               </div>
             )}
 
-            {/* Search + Category Filter — always visible when posts exist */}
-            {posts.length > 0 && (
-              <>
-                <div className="max-w-md mx-auto mb-8">
-                  <BlogSearch onSearch={handleSearch} />
-                </div>
+            {/* Search + Category Filter — reserve vertical space regardless of load
+                state so async posts/categories arrival doesn't insert content above
+                the posts grid (was a CLS contributor on /insights). Inner blocks
+                still only render when their data exists. */}
+            <div className="min-h-[136px]">
+              {posts.length > 0 && (
+                <>
+                  <div className="max-w-md mx-auto mb-8">
+                    <BlogSearch onSearch={handleSearch} />
+                  </div>
 
-                {/* Category Filter Tabs */}
-                {categories.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-2 mb-16">
-                    <button
-                      data-slug="all"
-                      onClick={handleCategoryClick}
-                      className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
-                        activeCategory === 'all'
-                          ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-                      }`}
-                    >
-                      {t('blog.allCategories')}
-                    </button>
-                    {categories.map((cat) => (
+                  {/* Category Filter Tabs */}
+                  {categories.length > 0 && (
+                    <div className="flex flex-wrap justify-center gap-2 mb-16">
                       <button
-                        key={cat.slug}
-                        data-slug={cat.slug}
+                        data-slug="all"
                         onClick={handleCategoryClick}
                         className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
-                          activeCategory === cat.slug
+                          activeCategory === 'all'
                             ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
                             : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                         }`}
                       >
-                        {cat.name}
-                        {cat.count != null && (
-                          <span className="ml-1.5 text-xs opacity-60">{cat.count}</span>
-                        )}
+                        {t('blog.allCategories')}
                       </button>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
+                      {categories.map((cat) => (
+                        <button
+                          key={cat.slug}
+                          data-slug={cat.slug}
+                          onClick={handleCategoryClick}
+                          className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+                            activeCategory === cat.slug
+                              ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          }`}
+                        >
+                          {cat.name}
+                          {cat.count != null && (
+                            <span className="ml-1.5 text-xs opacity-60">{cat.count}</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
 
             {/* Posts */}
             {loading ? (

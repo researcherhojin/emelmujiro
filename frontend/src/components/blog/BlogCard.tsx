@@ -38,6 +38,8 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
                 <img
                   src={image_url}
                   alt={t('blog.thumbnailAlt', { title })}
+                  width={1600}
+                  height={1000}
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
                   loading={index === 0 && featured ? 'eager' : 'lazy'}
                   draggable="false"
@@ -102,6 +104,8 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
               <img
                 src={image_url}
                 alt={t('blog.thumbnailAlt', { title })}
+                width={1600}
+                height={1000}
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
                 loading={index < 2 ? 'eager' : 'lazy'}
                 draggable="false"
