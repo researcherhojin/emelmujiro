@@ -148,6 +148,48 @@ ranking):
 
 Non-obvious items only. Routine commits live in `git log`.
 
+### 2026-04-16 — gstack 7-phase Flow adoption + codex review value
+
+3 commits (`1694be8` → `1488a89` → `88795b9`). Adopted gstack's
+Think → Plan → Build → Review → Test → Ship → Reflect cycle as a
+section in `CLAUDE.md` and created `VERSION` (1.0.0) + `CHANGELOG.md`
+curated from README Key Features + last-30d `feat/fix/perf` commits.
+Non-obvious items `git log` doesn't capture:
+
+- **`/codex review` caught 4 doc-level errors I would have shipped**.
+  P1: `CHANGELOG.md` Security section claimed "reCAPTCHA v2 for contact
+  form" — live contact is a Google Form iframe, reCAPTCHA only guards
+  the preserved backend endpoint. P2: the new `Development Flow`
+  invariants section claimed conventional commits were "enforced by
+  `commit-msg` hook" — no such hook exists, only `.husky/pre-commit`.
+  P3: `frontend/index.html` had a stale `<link rel="dns-prefetch"
+href="https://api.github.com">` that my CSP cleanup missed. Lesson:
+  doc changes benefit from adversarial independent review as much as
+  code; the failure mode for docs is silent factual drift that a single
+  reviewer can miss by carrying forward assumptions.
+- **Self-applied Flow on its own first deliverable**. The Review phase
+  of the new Flow caught P1/P2 errors in the Flow section itself (meta-
+  validation). Had we skipped Review and committed straight through, the
+  CHANGELOG would have shipped with factually wrong live-feature claims
+  and the doc would have advertised a hook that doesn't exist.
+- **`codex exec` in background mode silently dies**. Ran `codex exec ... &`
+  through Bash → 0-byte output file, no stderr, no process. Foreground
+  synchronous call with `timeout: 300000` works. Avoid backgrounding
+  codex unless you can `Monitor` its output stream.
+- **False-positive drift claim caught in session**. Flagged
+  `frontend/package.json` as missing `engines` enforcement before
+  checking that root `package.json` already has
+  `engines.node >= 24.0.0`; workspaces setup means root enforces for the
+  documented install path. Feedback rule
+  `feedback_apply_own_memory_rules_first` predicted this exact failure
+  mode — "verify before claiming". Claim retracted before commit.
+- **Contact email test-drift fix**. `ContactInfo.test.tsx` and
+  `Footer.test.tsx` hardcoded `'contact@emelmujiro.com'` in 4
+  assertions; source components already used `CONTACT_EMAIL` constant.
+  The CLAUDE.md "update all 5 in lockstep" rule would have left these
+  stale on an email change. Tests now import the constant and auto-
+  follow. Also surfaced by `feedback_search_all_dirs` memory rule.
+
 ### 2026-04-15 — Rigor pass + SSG prerender
 
 Full-day session, 26 commits across security / docs / CI / performance /
