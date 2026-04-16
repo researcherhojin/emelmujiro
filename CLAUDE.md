@@ -33,7 +33,7 @@ npm run analyze:bundle     # source-map-explorer (from frontend/, requires build
 npm run knip                   # Dead code detection (unused files, exports, deps). Run from root
 uv sync --extra dev                    # Install backend deps (NOT --dev). Run from backend/
 uv run python manage.py test           # Django unittest (NOT pytest). Needs DATABASE_URL=""
-uv run python manage.py test api.tests.CategoryAPITestCase.test_list  # Single backend test
+DATABASE_URL="" uv run python manage.py test api.tests.CategoryAPITestCase.test_list  # Single backend test
 uv run black . && uv run flake8 .      # Format + lint (line length 120)
 
 # Make shortcuts (run from root):
@@ -79,7 +79,7 @@ System shape: providers, data flow, routing, and module boundaries.
 
 **Blog**: Dual fields `content` (plain text/search) + `content_html` (TipTap HTML). Category API cached 1 hour (key: `"blog_categories"`), invalidated on CRUD/toggle-publish. DRF router `basename="blog"` in `api/urls.py` (NOT `"blog-posts"`). All BlogPost fields use **snake_case only** — `description` (NOT `excerpt`), `date` (NOT `publishedAt`), `is_published` (NOT `published`), `view_count` (NOT `views`), `image_url` (NOT `imageUrl`). Backend serializer has no camelCase aliases. Frontend routes use `/insights/:slug` (NOT `/blog`); `BlogPostViewSet` uses `lookup_field = "slug"`. Backend API stays at `/api/blog-posts/` (internal). Nginx 301 redirects: `/blog/*` → `/insights/*`. BlogCard links to `/insights/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
 
-**Contact**: Google Form iframe, not backend API — backend `/api/contact/` is preserved for future switch. Page uses same hero pattern as other pages (section label + font-black title + subtitle), with ContactInfo sidebar. Contact email `contact@emelmujiro.com` is used in `constants.ts`, i18n, backend settings, swagger, and `CONTRIBUTING.md` — update all 5 in lockstep. **When the Google Form schema changes (fields added/removed/retitled), update `privacy.dataCollection.content` in `ko.json` + `en.json` and bump the `2026-04-XX` effective date in `PrivacyPolicyPage.tsx` in the same commit** — PIPA Article 30 requires the published policy to match actual collection.
+**Contact**: Google Form iframe, not backend API — backend `/api/contact/` is preserved for future switch. Page uses same hero pattern as other pages (section label + font-black title + subtitle), with ContactInfo sidebar. Contact email `contact@emelmujiro.com` is used in `constants.ts` (exports `CONTACT_EMAIL`), i18n, backend settings, swagger, and `CONTRIBUTING.md` — update all 5 in lockstep. Frontend components and tests read from `CONTACT_EMAIL`, so they auto-follow. **When the Google Form schema changes (fields added/removed/retitled), update `privacy.dataCollection.content` in `ko.json` + `en.json` and bump the `2026-04-XX` effective date in `PrivacyPolicyPage.tsx` in the same commit** — PIPA Article 30 requires the published policy to match actual collection.
 
 ## UI Conventions
 
@@ -166,6 +166,35 @@ Cross-cutting rules for how code is written. Enforced by linters and CI where po
 - **All UI strings use i18n** — `useTranslation()` in components, `i18n.t()` in data files. No hardcoded user-facing text.
 - **No `window.alert()` / `window.prompt()`** — use toast pattern or inline inputs.
 - **Logger import**: `import logger from '../utils/logger'` — default export only. Use `env.IS_DEVELOPMENT` for environment checks.
+
+## Development Flow
+
+7-phase cycle adapted from [gstack](https://github.com/garrytan/gstack). Each phase maps to existing repo tooling plus a Claude Code skill command. Skip phases when scope doesn't warrant (typo fix ≠ full cycle).
+
+| Phase       | Purpose                                    | Repo tools                                                                                                                  | gstack skill                                                               |
+| ----------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| **Think**   | Understand problem, constraints, prior art | `git log`, Grep, `CLAUDE.md`, `JOURNAL.md`                                                                                  | `/office-hours`, `/investigate`                                            |
+| **Plan**    | Concrete change scope and tradeoffs        | plan file in `~/.claude/plans/` or inline                                                                                   | `/plan-ceo-review`, `/plan-eng-review`, `/plan-design-review`, `/autoplan` |
+| **Build**   | Implement                                  | editor, `npm run dev`, `make dev-local`                                                                                     | (direct coding)                                                            |
+| **Review**  | Independent 2nd opinion                    | `make lint`, `make type-check`, GitHub PR review                                                                            | `/review` (Claude), `/codex review` (Codex CLI), `/design-review`          |
+| **Test**    | Verify behavior                            | `make test`, `make test-ci`, Playwright E2E, Lighthouse CI                                                                  | `/qa`, `/qa-only`, `/benchmark`                                            |
+| **Ship**    | Land + deploy                              | bump `VERSION` + both `package.json` + `CHANGELOG.md`, conventional commit, PR, merge, `scripts/auto-deploy.sh` via webhook | `/ship`, `/land-and-deploy`, `/canary`                                     |
+| **Reflect** | Capture surprises                          | `JOURNAL.md` session log                                                                                                    | `/retro`, `/document-release`                                              |
+
+### Invariants
+
+- **Conventional commits** (convention, not enforced by a hook yet): `type(scope): description`, English only. Allowed types match `Code Conventions` above.
+- **Version sync on Ship**: `VERSION`, root `package.json`, and `frontend/package.json` must all match. Bump all three in the same commit.
+- **CHANGELOG on Ship**: move `## [Unreleased]` entries under a new `## [X.Y.Z] - YYYY-MM-DD` section, then append an empty `## [Unreleased]` on top.
+- **PR discipline**: one issue per PR, ≤ 3 commits, no mid-PR scope expansion (deferred work → new issue).
+- **`[skip ci]` guard**: only Ship-phase commits may include the literal substring, and only for pure README sync (Gotcha #10).
+
+### Skip rules
+
+- **Typo / comment / single-line README**: Think → Build → Ship.
+- **Hotfix on live bug**: Think → Build → Test → Ship → Reflect.
+- **Refactor touching ≥ 3 files or any `Constraints` section**: full 7 phases mandatory.
+- **Semver-compatible dependency bump**: Review → Test → Ship.
 
 ## Testing
 
