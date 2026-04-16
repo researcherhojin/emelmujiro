@@ -143,7 +143,7 @@ async function prerenderRoute(page, baseUrl, route) {
   // regressed CLS from ~0 to 0.4-0.6 because the post-load media swap repaints
   // the entire page with Pretendard metrics, causing text reflow. The correct
   // fix is either inlining critical CSS at build time or self-hosting a
-  // Pretendard subset with explicit font-display — left as JOURNAL.md backlog.
+  // Pretendard subset with explicit font-display — left as maintainer backlog.
   const html = await page.content();
 
   return html;
