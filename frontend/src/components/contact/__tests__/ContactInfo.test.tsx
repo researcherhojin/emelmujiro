@@ -2,6 +2,7 @@ import React from 'react';
 import { vi, describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ContactInfo from '../ContactInfo';
+import { CONTACT_EMAIL } from '../../../utils/constants';
 
 vi.mock('lucide-react', () => ({
   Mail: (props: Record<string, unknown>) => <div data-testid="mail-icon" {...props} />,
@@ -18,10 +19,10 @@ describe('ContactInfo', () => {
     render(<ContactInfo />);
 
     const emailLink = screen.getByRole('link', {
-      name: /contact@emelmujiro\.com/i,
+      name: (name) => name.toLowerCase().includes(CONTACT_EMAIL.toLowerCase()),
     });
     expect(emailLink).toBeInTheDocument();
-    expect(emailLink).toHaveAttribute('href', 'mailto:contact@emelmujiro.com');
+    expect(emailLink).toHaveAttribute('href', `mailto:${CONTACT_EMAIL}`);
   });
 
   it('displays the email icon', () => {
@@ -60,9 +61,6 @@ describe('ContactInfo', () => {
     render(<ContactInfo />);
 
     const emailLink = screen.getByRole('link');
-    expect(emailLink).toHaveAttribute(
-      'aria-label',
-      'contact.info.emailLabel: contact@emelmujiro.com'
-    );
+    expect(emailLink).toHaveAttribute('aria-label', `contact.info.emailLabel: ${CONTACT_EMAIL}`);
   });
 });

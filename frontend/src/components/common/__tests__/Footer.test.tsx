@@ -8,6 +8,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Footer from '../Footer';
+import { CONTACT_EMAIL } from '../../../utils/constants';
 
 // Mock i18n module used by footerData.ts
 vi.mock('../../../i18n', () => ({
@@ -134,9 +135,7 @@ describe('Footer Component', () => {
 
       // Check email info (in span tag)
       const emailSpans = container.querySelectorAll('span');
-      const email = Array.from(emailSpans).find(
-        (span) => span.textContent === 'contact@emelmujiro.com'
-      );
+      const email = Array.from(emailSpans).find((span) => span.textContent === CONTACT_EMAIL);
       expect(email).toBeInTheDocument();
 
       // Check phone number info (i18n key returned by mock)
