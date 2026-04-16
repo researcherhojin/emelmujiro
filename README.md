@@ -26,7 +26,6 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![React Router DOM](https://img.shields.io/badge/React_Router_DOM-7.14.0-CA4245?logo=reactrouter&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.19-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tailwind Typography](https://img.shields.io/badge/Typography-0.5.19-06B6D4?logo=tailwindcss&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.38.0-E91E63?logo=framer&logoColor=white)
 ![i18next](https://img.shields.io/badge/i18next-26.0.4-26A69A?logo=i18next&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-1.15.0-5A29E4?logo=axios&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.22.3-1a1a2e)
@@ -143,7 +142,7 @@ graph LR
 - **Performance** — Vendor chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
 - **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30
-- **Tests** — Vitest (1217 tests) + Django unittest (358 tests) + Playwright E2E (5 profiles)
+- **Tests** — Vitest (1218 tests) + Django unittest (358 tests) + Playwright E2E (5 profiles)
 - **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Codecov, auto-deploy via webhook
 
 ## License

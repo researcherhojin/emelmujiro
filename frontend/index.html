@@ -13,8 +13,12 @@
     <!-- SEO meta tags (description, OG, Twitter) are injected by SEOHelmet + prerendering per page -->
     <meta name="author" content="이호진" />
 
-    <!-- Security headers via meta -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://api.emelmujiro.com https://*.sentry.io https://cdn.jsdelivr.net; frame-src https://docs.google.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+    <!-- Security headers via meta. Production nginx serves this CSP too
+         (frontend/nginx.conf) and strips localhost/127.0.0.1 entries via
+         vite.config.ts stripLocalhostCsp plugin. Both must stay in sync;
+         `frame-ancestors` is omitted here because meta tags ignore it
+         (spec) — that directive only lives in the nginx header. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://api.emelmujiro.com https://*.sentry.io https://cdn.jsdelivr.net; frame-src https://docs.google.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta
       http-equiv="Referrer-Policy"

@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { formatDate } from '../../utils/dateFormat';
@@ -25,12 +24,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
 
   if (featured) {
     return (
-      <motion.article
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        className="group"
-      >
+      <article className="group opacity-0 animate-fade-up">
         <Link to={localizedPath(`/insights/${slug}`)} className="block">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
             <div className="relative aspect-[16/10] lg:aspect-auto overflow-hidden">
@@ -86,17 +80,12 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
             </div>
           </div>
         </Link>
-      </motion.article>
+      </article>
     );
   }
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-      className="group h-full"
-    >
+    <article className="group h-full opacity-0 animate-fade-up-sm">
       <Link to={localizedPath(`/insights/${slug}`)} className="block h-full">
         <div className="h-full bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 transition-all duration-500 ease-out hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700">
           <div className="relative aspect-[16/10] overflow-hidden">
@@ -156,7 +145,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
           </div>
         </div>
       </Link>
-    </motion.article>
+    </article>
   );
 });
 

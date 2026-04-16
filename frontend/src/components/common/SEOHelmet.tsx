@@ -1,9 +1,60 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { CONTACT_EMAIL, SITE_URL } from '../../utils/constants';
 import { stripLangPrefix } from '../../hooks/useLocalizedPath';
+
+/**
+ * Imperatively manage hreflang alternate <link> tags.
+ *
+ * We can't render these inside <Helmet> under React 19: react-helmet-async's
+ * React19Dispatcher renders tags as React children relying on React 19's
+ * automatic head-hoisting. React 19 hoists and dedupes <title> by tagName and
+ * <link rel="canonical"> by the `rel` key, but multiple <link rel="alternate">
+ * tags with the same rel and differing hreflang/href are each treated as a
+ * distinct resource. When SEOHelmet re-renders (e.g. i18n language change on
+ * /en/* routes, or i18next `t()` resolving keys after initial mount), the old
+ * hoisted alternates are NOT removed — they accumulate. Prerendered HTML ended
+ * up with 6–9 duplicate alternates per route, which GSC reads as conflicting
+ * canonical signals.
+ *
+ * Imperative DOM control sidesteps the hoisting path entirely: we own a set of
+ * <link> nodes marked with `data-seohelmet-hreflang`, clear them on each run,
+ * and append fresh ones. Reruns only on URL prop change.
+ */
+const HREFLANG_MARKER = 'data-seohelmet-hreflang';
+
+function removeAllHreflangAlternates() {
+  document.querySelectorAll(`link[${HREFLANG_MARKER}]`).forEach((el) => el.remove());
+}
+
+function useHreflangAlternates(koUrl: string, enUrl: string) {
+  useEffect(() => {
+    removeAllHreflangAlternates();
+
+    const add = (hreflang: string, href: string) => {
+      const link = document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', hreflang);
+      link.setAttribute('href', href);
+      link.setAttribute(HREFLANG_MARKER, 'true');
+      document.head.appendChild(link);
+    };
+
+    add('ko', koUrl);
+    add('en', enUrl);
+    add('x-default', koUrl);
+
+    // Clean up on unmount / before re-run so alternates from a previous route
+    // don't linger in the head after SEOHelmet unmounts. This matters on SPA
+    // navigations where a route without a SEOHelmet (unlikely in practice but
+    // possible) would otherwise inherit the previous route's hreflang set.
+    return () => {
+      removeAllHreflangAlternates();
+    };
+  }, [koUrl, enUrl]);
+}
 
 interface SEOHelmetProps {
   title?: string;
@@ -60,6 +111,8 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     const koUrl = `${SITE_URL}${basePath === '/' ? '' : basePath}`;
     const enUrl = `${SITE_URL}/en${basePath === '/' ? '' : basePath}`;
 
+    useHreflangAlternates(koUrl, enUrl);
+
     return (
       <Helmet>
         {/* Basic Meta Tags */}
@@ -92,10 +145,8 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
         {/* Language */}
         <html lang={resolvedLang} />
 
-        {/* hreflang alternate links for multilingual SEO */}
-        <link rel="alternate" hrefLang="ko" href={koUrl} />
-        <link rel="alternate" hrefLang="en" href={enUrl} />
-        <link rel="alternate" hrefLang="x-default" href={koUrl} />
+        {/* hreflang alternates are injected imperatively via useHreflangAlternates
+            (see the hook above for the React 19 rationale) */}
 
         {/* Additional SEO Tags */}
         <meta

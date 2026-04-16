@@ -29,6 +29,7 @@ CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx  # Sin
 npm run test:e2e           # Playwright E2E (from frontend/). Also: test:e2e:ui, test:e2e:debug
 npm run type-check         # tsc --noEmit (from frontend/)
 npm run analyze:bundle     # source-map-explorer (from frontend/, requires build first)
+npm run check:css          # detect CSS classes shipped in build but never referenced in src/ (from frontend/, requires build first)
 
 npm run knip                   # Dead code detection (unused files, exports, deps). Run from root
 uv sync --extra dev                    # Install backend deps (NOT --dev). Run from backend/
@@ -75,7 +76,7 @@ System shape: providers, data flow, routing, and module boundaries.
 
 **API layer**: `services/api.ts` (Axios) with interceptors for JWT refresh. Mock API uses `mockResponse<T>(data, status?, statusText?)` helper to avoid boilerplate. Tests stub HTTP via `vi.mock('axios')` in individual test files — there is **no** MSW server. (A `test-utils/mocks/` MSW scaffold existed for years but was never wired into `setupTests.ts`; removed in the 2026-04-11 stability sweep along with the `msw` and `terser` packages — both dead-but-installed deps that generated dependabot churn.)
 
-**Bundle splitting**: 7 vendor chunks in `vite.config.ts` — `react-vendor`, `ui-vendor` (framer-motion, lucide), `i18n`, `sentry` (lazy-loaded via `sentry-impl.ts` re-export shim — 0 bytes on homepage), `http-vendor` (axios), `dompurify`, `tiptap` (prosemirror, lowlight). When adding large dependencies, consider whether they belong in an existing chunk or need a new one.
+**Bundle splitting**: 7 vendor chunks in `vite.config.ts` — `react-vendor`, `ui-vendor` (lucide icons; framer-motion was removed 2026-04-16 in favor of Tailwind keyframes), `i18n`, `sentry` (lazy-loaded via `sentry-impl.ts` re-export shim — 0 bytes on homepage), `http-vendor` (axios), `dompurify`, `tiptap` (prosemirror, lowlight). When adding large dependencies, consider whether they belong in an existing chunk or need a new one. CSS-based mount/loader animations live in `tailwind.config.js` under `animation`/`keyframes` (`fade-up`, `fade-up-sm`, `fade-up-delay`, `dot-bounce`, `scale-pulse`) — prefer these over re-introducing a JS animation library.
 
 **Blog**: Dual fields `content` (plain text/search) + `content_html` (TipTap HTML). Category API cached 1 hour (key: `"blog_categories"`), invalidated on CRUD/toggle-publish. DRF router `basename="blog"` in `api/urls.py` (NOT `"blog-posts"`). All BlogPost fields use **snake_case only** — `description` (NOT `excerpt`), `date` (NOT `publishedAt`), `is_published` (NOT `published`), `view_count` (NOT `views`), `image_url` (NOT `imageUrl`). Backend serializer has no camelCase aliases. Frontend routes use `/insights/:slug` (NOT `/blog`); `BlogPostViewSet` uses `lookup_field = "slug"`. Backend API stays at `/api/blog-posts/` (internal). Nginx 301 redirects: `/blog/*` → `/insights/*`. BlogCard links to `/insights/{slug}`. Comments still use numeric `post.id` (separate URL pattern `<int:post_pk>`).
 
@@ -141,7 +142,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 **Operational logs**: Cron jobs installed via Makefile targets (`make setup-cron`, `make setup-health-cron`) must redirect output to `$(CURDIR)/backend/logs/<name>.log` — matches Django `LOG_DIR` (`backend/config/settings.py:355`), already gitignored, persists via Docker `logs_volume`. Never `/tmp` (evaporates on reboot), `~/logs/` (outside project), or `/var/log/` (host-specific). Enforced by `pr-checks.yml` quick-checks grep — any `crontab` line with `>>` not targeting `backend/logs/` fails CI. `make health` runs an interactive Docker diagnostic (containers, resources, disk, endpoints, error logs).
 
-**CSP**: `'unsafe-inline'` required — index.html inline scripts (error handler, KakaoTalk detection, theme detection). `'unsafe-eval'` removed after `plugin-legacy` removal. Cloudflare Tunnel does not require CSP changes (transparent proxy). Cloudflare Web Analytics (RUM beacon) is **disabled** — `cloudflareinsights.com` must NOT appear in CSP `script-src` or `connect-src` (removed from both `nginx.conf` and `index.html`). CSP is defined in two places that must stay in sync: `nginx.conf` line 58 (production) and `index.html` meta tag (dev/fallback).
+**CSP**: `'unsafe-inline'` required — index.html inline scripts (error handler, KakaoTalk detection, theme detection). `'unsafe-eval'` removed after `plugin-legacy` removal. `data:` removed from `script-src` (2026-04-16) — no actual data-URI script usage existed and it widened the XSS attack surface; `data:` stays on `img-src` for base64 SVG icons. `frame-ancestors 'none'` is set in the nginx header (meta tag ignores the directive per spec) to complement `X-Frame-Options: DENY` for clickjacking defense. Cloudflare Tunnel does not require CSP changes (transparent proxy). Cloudflare Web Analytics (RUM beacon) is **disabled** — `cloudflareinsights.com` must NOT appear in CSP `script-src` or `connect-src` (removed from both `nginx.conf` and `index.html`). CSP is defined in two places that must stay in sync: `nginx.conf` (production header) and `index.html` meta tag (dev/fallback); the `stripLocalhostCsp` Vite plugin removes `localhost:8000`/`127.0.0.1:8000` from the meta-tag CSP at production build time so they only apply in dev.
 
 **Tailwind 3.x**: PostCSS uses `tailwindcss: {}` (NOT `@tailwindcss/postcss`). Dark mode is `class`-based (not media query). Never use dynamic class interpolation (`bg-${color}-600`).
 
@@ -200,7 +201,7 @@ Cross-cutting rules for how code is written. Enforced by linters and CI where po
 
 ## Testing
 
-Global mocks in `setupTests.ts` (do NOT re-mock): `lucide-react`, `framer-motion`, `react-helmet-async`, browser APIs.
+Global mocks in `setupTests.ts` (do NOT re-mock): `lucide-react`, `react-helmet-async`, browser APIs.
 
 i18n mock — required in every test using `useTranslation()`:
 

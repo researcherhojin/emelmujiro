@@ -26,7 +26,20 @@ const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('./generate-sitemap');
 function startServer() {
   return new Promise((resolve) => {
     const server = http.createServer((req, res) => {
-      let filePath = path.join(BUILD_DIR, req.url === '/' ? 'index.html' : req.url);
+      const requestedPath = req.url === '/' ? 'index.html' : req.url;
+      let filePath = path.join(BUILD_DIR, requestedPath);
+
+      // Reject path-traversal attempts. path.join normalizes `..` segments, so
+      // a request like `/../../etc/passwd` resolves to a path outside BUILD_DIR.
+      // Server binds to 127.0.0.1 and is Playwright-controlled, so in practice
+      // we never see adversarial input — but the check is cheap insurance in
+      // case this server is ever reused or its binding widens.
+      const resolved = path.resolve(filePath);
+      if (resolved !== BUILD_DIR && !resolved.startsWith(BUILD_DIR + path.sep)) {
+        res.writeHead(403);
+        res.end('Forbidden');
+        return;
+      }
 
       // SPA fallback: if file doesn't exist and has no extension, serve index.html
       if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
@@ -101,7 +114,7 @@ async function prerenderRoute(page, baseUrl, route) {
   });
 
   // Clean up duplicate tags injected by react-helmet-async alongside static HTML
-  await page.evaluate(() => {
+  const pretendardRestore = await page.evaluate(() => {
     // Keep only the first <title> (Helmet-injected, page-specific one)
     const titles = document.querySelectorAll('title');
     if (titles.length > 1) {
@@ -120,30 +133,48 @@ async function prerenderRoute(page, baseUrl, route) {
       for (let i = 0; i < canonicals.length - 1; i++) canonicals[i].remove();
     }
 
-    // Deduplicate hreflang alternates by hreflang value (keep last).
-    // react-helmet-async does not dedupe link[rel="alternate"] across multiple
-    // render passes when their href values differ — SEOHelmet on /en/* and
-    // /privacy ended up with 6 alternates in the captured HTML (one set pointing
-    // at the homepage, one at the actual route). Google Search Console
-    // interprets conflicting hreflang as "alternate page with canonical"
-    // indexing errors. Keep only the last tag per hreflang value, which is the
-    // final route-specific render.
-    const alternates = document.querySelectorAll('link[rel="alternate"][hreflang]');
-    const seenHreflang = new Map();
-    alternates.forEach((el) => {
-      const key = el.getAttribute('hreflang');
-      if (seenHreflang.has(key)) seenHreflang.get(key).remove();
-      seenHreflang.set(key, el);
+    // Restore non-blocking state for the Pretendard CDN stylesheet. The source
+    // index.html declares it as `<link rel="preload" as="style"
+    // onload="this.onload=null;this.rel='stylesheet'">` — non-blocking by
+    // design — but during prerender the browser actually fires the onload as
+    // soon as the stylesheet finishes downloading. The captured DOM therefore
+    // has `rel="stylesheet"`, which Lighthouse correctly flags as
+    // render-blocking. Rewrite it back to the source-of-truth non-blocking
+    // form so the prerendered HTML stays fast. Returns the count so the caller
+    // can fail loudly if a Pretendard version bump changes the URL pattern and
+    // silently breaks this fix.
+    const links = document.querySelectorAll('link[href*="pretendardvariable"]');
+    let restored = 0;
+    links.forEach((el) => {
+      if (el.closest('noscript')) return;
+      if (el.getAttribute('rel') === 'stylesheet') {
+        el.setAttribute('rel', 'preload');
+        el.setAttribute('as', 'style');
+        el.setAttribute('onload', "this.onload=null;this.rel='stylesheet'");
+        restored++;
+      }
     });
+    return { restoredPretendard: restored };
   });
+
+  if (pretendardRestore.restoredPretendard === 0) {
+    throw new Error(
+      `Prerender ${route}: expected to restore exactly 1 Pretendard <link> to rel="preload" ` +
+        `but found none matching link[href*="pretendardvariable"]. Did the CDN URL change in index.html? ` +
+        `If so, update the selector in scripts/prerender.js to match.`
+    );
+  }
 
   // Capture the full rendered HTML. NOTE: an earlier attempt rewrote the
   // Vite-injected stylesheet link with `media="print" + onload="this.media='all'"`
   // to silence the render-blocking-resources Lighthouse audit; that change
   // regressed CLS from ~0 to 0.4-0.6 because the post-load media swap repaints
   // the entire page with Pretendard metrics, causing text reflow. The correct
-  // fix is either inlining critical CSS at build time or self-hosting a
-  // Pretendard subset with explicit font-display — left as maintainer backlog.
+  // fix for the main-CSS half of that audit is build-time critical-CSS
+  // extraction (beasties/critters) — left as maintainer backlog because a
+  // first integration pass duplicated the original stylesheet link and
+  // inflated per-route HTML by 20-50 KB for no score gain. Pretendard is
+  // handled above by restoring its source `rel="preload"` state.
   const html = await page.content();
 
   return html;
@@ -175,7 +206,6 @@ function writePrerenderedHtml(route, html) {
  */
 async function prerenderBatch(browser, baseUrl, routes, concurrency = 4) {
   let successCount = 0;
-  const errors = [];
 
   // Group routes by language so each group shares a browser context
   const byLang = {};
@@ -214,8 +244,9 @@ async function prerenderBatch(browser, baseUrl, routes, concurrency = 4) {
           successCount++;
         } else {
           const route = chunk[j];
-          console.error(`   ❌ [${route.lang}] ${route.path.padEnd(16)} → Failed: ${results[j].reason.message}`);
-          errors.push(route.path);
+          console.error(
+            `   ❌ [${route.lang}] ${route.path.padEnd(16)} → Failed: ${results[j].reason.message}`
+          );
         }
       }
     }
@@ -223,7 +254,7 @@ async function prerenderBatch(browser, baseUrl, routes, concurrency = 4) {
     await context.close();
   }
 
-  return { successCount, errors };
+  return { successCount };
 }
 
 async function main() {
@@ -259,12 +290,16 @@ async function main() {
 
   console.log(`\n📊 Prerendered ${successCount}/${allRoutes.length} routes`);
 
-  if (successCount === 0) {
-    throw new Error('All routes failed to prerender');
-  }
-
+  // Exit non-zero on ANY failure — a missing /privacy/index.html would make
+  // nginx 404 that URL in production because `try_files $uri $uri/index.html
+  // =404` hard-fails unknown paths (see CLAUDE.md "SSG prerender + nginx
+  // routing"). Partial prerender is never acceptable: either every route ships
+  // as SSG or the deploy fails loudly.
   if (successCount < allRoutes.length) {
-    console.warn(`⚠️  ${allRoutes.length - successCount} route(s) failed to prerender`);
+    throw new Error(
+      `Prerender incomplete: ${successCount}/${allRoutes.length} routes succeeded. ` +
+        `Deploy aborted — nginx would 404 the missing routes in production.`
+    );
   }
 }
 

@@ -1,5 +1,4 @@
 import React, { memo } from 'react';
-import { motion } from 'framer-motion';
 import {
   SkeletonHero,
   SkeletonServices,
@@ -102,19 +101,10 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
             data-testid="loading-dots"
           >
             {[0, 1, 2].map((index) => (
-              <motion.div
+              <div
                 key={`dot-${index}`}
-                className={`w-3 h-3 ${bgColorClasses[color as keyof typeof bgColorClasses] || bgColorClasses.indigo} rounded-full`}
-                animate={{
-                  y: [0, -10, 0],
-                  opacity: [1, 0.5, 1],
-                }}
-                transition={{
-                  duration: 0.6,
-                  repeat: Infinity,
-                  delay: index * 0.2,
-                  ease: 'easeInOut',
-                }}
+                className={`w-3 h-3 ${bgColorClasses[color as keyof typeof bgColorClasses] || bgColorClasses.indigo} rounded-full animate-dot-bounce`}
+                style={{ animationDelay: `${index * 0.2}s` }}
               />
             ))}
             {message && <span className="ml-4 text-gray-600">{message}</span>}
@@ -131,18 +121,9 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
             className={`flex flex-col items-center justify-center ${className}`}
             data-testid="loading-pulse"
           >
-            <motion.div
-              className={`${sizeClasses[size]} ${bgColorClasses[color as keyof typeof bgColorClasses] || bgColorClasses.indigo} rounded-full`}
+            <div
+              className={`${sizeClasses[size]} ${bgColorClasses[color as keyof typeof bgColorClasses] || bgColorClasses.indigo} rounded-full animate-scale-pulse`}
               data-testid="pulse-element"
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [1, 0.5, 1],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
             />
             {message && <p className="mt-4 text-gray-600">{message}</p>}
           </div>
@@ -154,15 +135,9 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
     if (variant === 'inline') {
       return (
         <span className={`inline-flex items-center ${className}`} data-testid="loading-inline">
-          <motion.span
-            className={`inline-block w-4 h-4 border-2 ${colorClasses[color as keyof typeof colorClasses] || colorClasses.indigo} border-t-transparent rounded-full`}
+          <span
+            className={`inline-block w-4 h-4 border-2 ${colorClasses[color as keyof typeof colorClasses] || colorClasses.indigo} border-t-transparent rounded-full animate-spin`}
             data-testid="inline-spinner"
-            animate={{ rotate: 360 }}
-            transition={{
-              duration: 1,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
           />
           {message && <span className="ml-2 text-sm text-gray-600">{message}</span>}
         </span>
@@ -176,27 +151,12 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
           className={`flex flex-col items-center justify-center ${className}`}
           data-testid="loading-spinner"
         >
-          <motion.div
-            animate={{
-              rotate: 360,
-            }}
-            transition={{
-              duration: 1,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-            className={`${sizeClasses[size]} border-4 ${colorClasses[color as keyof typeof colorClasses] || colorClasses.indigo} border-t-transparent rounded-full`}
+          <div
+            className={`${sizeClasses[size]} border-4 ${colorClasses[color as keyof typeof colorClasses] || colorClasses.indigo} border-t-transparent rounded-full animate-spin`}
             data-testid="spinner-element"
           />
           {message && (
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mt-4 text-gray-600"
-            >
-              {message}
-            </motion.p>
+            <p className="mt-4 text-gray-600 opacity-0 animate-fade-up-delay">{message}</p>
           )}
         </div>
       </FullScreenWrapper>
@@ -223,11 +183,7 @@ export const PageLoading: React.FC<{ message?: string }> = ({ message }) => (
  */
 export const RouteFallback: React.FC = memo(() => (
   <div className="min-h-screen flex items-center justify-center" data-testid="route-fallback">
-    <motion.div
-      animate={{ rotate: 360 }}
-      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-      className="w-12 h-12 border-4 border-gray-300 dark:border-gray-700 border-t-gray-900 dark:border-t-white rounded-full"
-    />
+    <div className="w-12 h-12 border-4 border-gray-300 dark:border-gray-700 border-t-gray-900 dark:border-t-white rounded-full animate-spin" />
   </div>
 ));
 RouteFallback.displayName = 'RouteFallback';
