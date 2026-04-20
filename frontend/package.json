@@ -59,7 +59,7 @@
     "source-map-explorer": "^2.5.3",
     "tailwindcss": "^3.4.19",
     "typescript": "^6.0.2",
-    "vite": "^8.0.8",
+    "vite": "^8.0.9",
     "vitest": "^4.1.2"
   },
   "scripts": {
