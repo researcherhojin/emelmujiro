@@ -154,6 +154,7 @@ jobs:
           check_badge "Tailwind_CSS" "tailwindcss"
           check_badge "Typography" "@tailwindcss/typography"
           check_badge "i18next" "i18next"
+          check_badge "React_i18next" "react-i18next"
           check_badge "Axios" "axios"
           check_badge "TipTap" "@tiptap/react"
           check_badge "DOMPurify" "dompurify"
