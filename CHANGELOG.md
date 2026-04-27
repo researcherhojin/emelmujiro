@@ -9,6 +9,55 @@ This project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0
 
 ## [Unreleased]
 
+Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com` is current main; this section records what has been merged but not yet cut as a release.
+
+### Added
+
+- Two-device sync helpers: `.private/` rsync via `scripts/sync_private.sh`, MBP/Mac mini divergence detector via `scripts/check_machine_sync.sh` — caught a silent 16-commit production drift incident retroactively (`0f84140`)
+- `npm run check:css` script for detecting CSS classes shipped in build but never referenced in `src/` (`0560f32`)
+- cSpell project dictionary (`cspell.json`, 60+ entries spanning Makefile, Docker, CLAUDE.md, gitignore, codecov, env files) (`bcaf16a`, `61f21e0`)
+
+### Changed
+
+- Performance: dropped `framer-motion` (~13 KB gzip) in favor of Tailwind keyframes (`fade-up`, `dot-bounce`, `scale-pulse`) — homepage JS bundle reduced (`ee6e075`)
+- Performance: restored Pretendard preload state (renderBlockingResources 0.5 → 1.0) (`cd909eb`)
+- Refactored `scripts/prerender.js` and sitemap generation after audit pass (`6110ff4`)
+- Tightened Task 2–5 implementations after rigor pass (`c9882de`)
+- Internal notes relocated to gitignored `.private/` (local-only) (`4b2b02b`)
+
+### Fixed
+
+- SEO: hreflang alternates emitted at source instead of post-prerender dedup (`c963433`)
+- `codecov.yml`: `require_ci_to_pass: yes` → `true` (YAML 1.1 alias failed strict schema validation) (`19edc2d`)
+- README package badges: 5 stale versions synced after 13 dependabot merges that updated `package.json` without touching badges, plus added `react-i18next` badge to close the gate gap that allowed the drift (`6409c11`)
+
+### Security
+
+- Tightened CSP: removed `data:` from `script-src`, removed `cloudflareinsights.com` references, dropped dead `msw` + `terser` deps that generated dependabot churn (`700c941`)
+
+### Dependencies
+
+| Group           | Bumps                                                                                                                                                          |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Build chain     | vite 8.0.8 → 8.0.9, typescript 6.0.2 → 6.0.3, prettier 3.8.2 → 3.8.3                                                                                           |
+| Routing/i18n    | react-router-dom 7.14.0 → 7.14.1, react-i18next 17.0.2 → 17.0.4, i18next 26.0.4 → 26.0.6                                                                       |
+| Editor (TipTap) | react, starter-kit, extension-typography, extension-task-item, extension-placeholder, extension-code-block-lowlight: 3.22.3 → 3.22.4                           |
+| Telemetry       | @sentry/react 10.48.0 → 10.50.0                                                                                                                                |
+| Lint/CSS        | @typescript-eslint/parser 8.58.2 → 8.59.0, @typescript-eslint/eslint-plugin (matching), eslint-plugin-react-hooks 7.0.1 → 7.1.1, autoprefixer 10.4.27 → 10.5.0 |
+| CI              | aquasecurity/trivy-action 0.35.0 → 0.36.0                                                                                                                      |
+
+### CI
+
+- `pr-checks.yml`: README badge drift gate expanded from 7 to 14 entries (added React_i18next; tightened detection of stale frontend badges before merge) (`6409c11`)
+
+### Documentation
+
+- README test counts auto-corrected (Vitest 1217 → 1218 after SEOHelmet unmount test) (`d9cff66`)
+- README: top-nav link to `CHANGELOG.md` (`ee9caaf`)
+- CLAUDE.md: two-device sync workflow + 2026-04-16 production drift incident postmortem (`6c53ae9`)
+- CLAUDE.md: Gotcha #12 — `Auto-Merge Dependabot` job auto-merges only `semver-patch`; minor/major are intentionally held for manual review (caught when 5 minor PRs sat green-but-open after CI unblock) (`f4d8f76`)
+- Journal: 2026-04-16 session consolidation + framer-motion baseline note (`f803626`, `45797c2`)
+
 ## [1.0.0] - 2026-04-16
 
 First documented release. Represents the current production state deployed at https://emelmujiro.com.
