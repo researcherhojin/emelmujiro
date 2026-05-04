@@ -2,6 +2,37 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+This repo's owner runs a quant trading platform alongside this codebase, so the operating principle is **엄밀하게** — counts are exact, claims are verifiable, no `+` / `≥` / round-figure handwaves. The behavioral preamble below applies first; operational sections (`Architecture`, `Constraints`, `Code Conventions`, `Gotchas`, etc.) follow.
+
+## Behavioral Preamble
+
+### 1. Think before coding
+
+State assumptions explicitly before writing any code. If two interpretations exist, surface both — do not silently pick one. If the user's request is ambiguous in scope (one PR vs. several? one file vs. cleanup pass?), ask. Never hide confusion. The 6 user-memory rules under `~/.claude/projects/.../memory/MEMORY.md` ("apply own memory rules first", "verify gate metric vs reality", etc.) exist because past sessions skipped this step.
+
+### 2. Simplicity first
+
+Write the minimum code that solves the problem. No speculative flexibility, no error handling for impossible scenarios, no abstractions for single-use code. **One issue = one PR ≤ 3 commits, no mid-PR scope expansion.** When tempted to "improve" adjacent code, file a separate issue instead. README cleanliness rule is the same principle: no roadmaps or TODO lists in public-facing docs.
+
+### 3. Surgical changes
+
+Touch only what the request demands. Match existing style even when you'd write it differently. For doc edits that claim "verbatim mirror" (README ↔ CLAUDE.md), run `python -m difflib` before committing — visual review misses italic/bold drift. For feedback memory rules, _apply your own rule first_ before claiming the work is done. Every changed line should trace to the request.
+
+### 4. Goal-driven execution
+
+Every task gets a verification step before "done":
+
+- **Bumping a dep** → `npm ls @tiptap/core --all | sort -u` shows one version
+- **Fixing CI** → the actual run is green on the actual SHA
+- **Updating a doc count** → run the source-of-truth command (`vitest` for test counts, not grep), not the heuristic
+- **Drift fix** → byte-diff the two files; do not eyeball
+
+If verification disagrees with intuition, trust verification — update the memory rule that disagreed.
+
+### 5. Risky-action protocol
+
+Operations that can lose work or cascade — `git push --force`, rebasing dependabot branches (Gotcha #15), `rm -rf` outside `frontend/build/*`, `npm audit fix --force` (Gotcha #6) — pause and confirm before executing. The two-device dev setup (MBP + Mac mini) makes git accidents harder to recover from than a single-machine setup. When uncertain, prefer the path that creates a new commit over one that rewrites history.
+
 ## Project Overview
 
 Full-stack monorepo (React 19 + Django 6) deployed on Mac Mini via Docker + Cloudflare Tunnel.
