@@ -2,36 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-This repo's owner runs a quant trading platform alongside this codebase, so the operating principle is **엄밀하게** — counts are exact, claims are verifiable, no `+` / `≥` / round-figure handwaves. The behavioral preamble below applies first; operational sections (`Architecture`, `Constraints`, `Code Conventions`, `Gotchas`, etc.) follow.
+This repo's owner runs a quant trading platform alongside this codebase, so the operating principle is **엄밀하게** — counts and claims **about the codebase** are exact and verifiable; no `+` / `≥` / round-figure handwaves in this doc, in README, or in commit messages. Marketing copy rendered in the UI itself (e.g. `5,000+` hours in the hero stats) is exempt — that's user-facing, not doc-facing.
 
-## Behavioral Preamble
-
-### 1. Think before coding
-
-State assumptions explicitly before writing any code. If two interpretations exist, surface both — do not silently pick one. If the user's request is ambiguous in scope (one PR vs. several? one file vs. cleanup pass?), ask. Never hide confusion. The 6 user-memory rules under `~/.claude/projects/.../memory/MEMORY.md` ("apply own memory rules first", "verify gate metric vs reality", etc.) exist because past sessions skipped this step.
-
-### 2. Simplicity first
-
-Write the minimum code that solves the problem. No speculative flexibility, no error handling for impossible scenarios, no abstractions for single-use code. **One issue = one PR ≤ 3 commits, no mid-PR scope expansion.** When tempted to "improve" adjacent code, file a separate issue instead. README cleanliness rule is the same principle: no roadmaps or TODO lists in public-facing docs.
-
-### 3. Surgical changes
-
-Touch only what the request demands. Match existing style even when you'd write it differently. For doc edits that claim "verbatim mirror" (README ↔ CLAUDE.md), run `python -m difflib` before committing — visual review misses italic/bold drift. For feedback memory rules, _apply your own rule first_ before claiming the work is done. Every changed line should trace to the request.
-
-### 4. Goal-driven execution
-
-Every task gets a verification step before "done":
-
-- **Bumping a dep** → `npm ls @tiptap/core --all | sort -u` shows one version
-- **Fixing CI** → the actual run is green on the actual SHA
-- **Updating a doc count** → run the source-of-truth command (`vitest` for test counts, not grep), not the heuristic
-- **Drift fix** → byte-diff the two files; do not eyeball
-
-If verification disagrees with intuition, trust verification — update the memory rule that disagreed.
-
-### 5. Risky-action protocol
-
-Operations that can lose work or cascade — `git push --force`, rebasing dependabot branches (Gotcha #15), `rm -rf` outside `frontend/build/*`, `npm audit fix --force` (Gotcha #6) — pause and confirm before executing. The two-device dev setup (MBP + Mac mini) makes git accidents harder to recover from than a single-machine setup. When uncertain, prefer the path that creates a new commit over one that rewrites history.
+Cross-project behavioral guidelines (Think before coding · Simplicity first · Surgical changes · Goal-driven execution · Risky-action protocol) live in user-level `~/.claude/CLAUDE.md` and are not repeated here. The sections below are project-specific only: `Project Overview`, `Architecture`, `UI Conventions`, `Constraints`, `Code Conventions`, `Development Flow`, `Testing`, `Security`, `Gotchas`.
 
 ## Project Overview
 
@@ -165,7 +138,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 **Branch protection**: `main` has minimal protection enabled — `allow_force_pushes: false` + `allow_deletions: false`. **No** PR/status check/signing requirements (direct push to main is intentional for solo-dev hotfix workflow). Rationale: dev environment is two devices (Mac mini + MacBook), and the classic "rebase on stale local → force push → wipe the other device's commits" accident is much more likely in that setup because `git reflog` only lives on the device where the commits were made — recovery is hard when you're sitting at the wrong machine. Repo setting `delete_branch_on_merge: true` is also set so dependabot branches auto-clean. Disable temporarily for emergency rebase: `gh api repos/researcherhojin/emelmujiro/branches/main/protection --method DELETE` (then re-PUT the same minimal config after).
 
-**Two-device dev bootstrap**: New macOS dev machines (or SSD recovery / second laptop) are set up via `make setup-dev-machine` (or `./scripts/setup-dev-machine.sh`). Idempotent, handles brew installs (`node@24`, `python@3.12`, `uv`, `gh`), gh auth check, local dev `.env` generation (per-machine random `SECRET_KEY` from `python -c 'secrets.token_urlsafe(50)'`), `make install`, Django migrations, optional Playwright (`--with-playwright`), and `git config --global pull.rebase true` + `rebase.autoStash true` for two-device safety. **Production secrets are intentionally NOT synced to dev machines** — `backend/.env.production` and `frontend/.env.production` exist only on Mac mini (the `auto-deploy.sh` source) and in GitHub Actions secrets. Principle of least privilege: a stolen/lost dev machine cannot leak production credentials. The script generates only `.env` (Docker orchestration, no secrets) and `backend/.env` (local Django with a random local `SECRET_KEY`, `DEBUG=True`); each device's local `SECRET_KEY` differs from every other device, which is correct because Django's `SECRET_KEY` is per-instance security material with no inter-device meaning. `make verify-setup` runs the standalone health check (10 checks: tools, dev .env files, deps, vitest smoke test, django check) — used by the script's Phase 9 and re-runnable any time. **Do NOT** add `backend/.env.production` or `frontend/.env.production` to the verify-setup check list — that would defeat the least-privilege design.
+**Two-device dev bootstrap**: New macOS dev machines (or SSD recovery / second laptop) are set up via `make setup-dev-machine` (or `./scripts/setup-dev-machine.sh`). Idempotent, handles brew installs (`node@24`, `python@3.12`, `uv`, `gh`), gh auth check, local dev `.env` generation (per-machine random `SECRET_KEY` from `python -c 'secrets.token_urlsafe(50)'`), `make install`, Django migrations, optional Playwright (`--with-playwright`), and `git config --global pull.rebase true` + `rebase.autoStash true` for two-device safety. **Production secrets are intentionally NOT synced to dev machines** — `backend/.env.production` (server-side secrets like `SECRET_KEY`, `RECAPTCHA_PRIVATE_KEY`) exists only on Mac mini (the `auto-deploy.sh` source) and in GitHub Actions secrets. `frontend/.env.production` is a separate case — it's **tracked in git** because every `VITE_*` value is inlined into the public client bundle at build time and therefore public-by-design (see Gotcha #7); it does not need syncing and is not a secret. Principle of least privilege: a stolen/lost dev machine cannot leak production credentials. The script generates only `.env` (Docker orchestration, no secrets) and `backend/.env` (local Django with a random local `SECRET_KEY`, `DEBUG=True`); each device's local `SECRET_KEY` differs from every other device, which is correct because Django's `SECRET_KEY` is per-instance security material with no inter-device meaning. `make verify-setup` runs the standalone health check (10 checks: tools, dev .env files, deps, vitest smoke test, django check) — used by the script's Phase 9 and re-runnable any time. **Do NOT** add `backend/.env.production` or `frontend/.env.production` to the verify-setup check list — that would defeat the least-privilege design.
 
 **Two-device sync helpers**: Two artifacts don't move via `git push` and need separate handling between MBP (dev) and Mac mini (production receiver). (1) `.private/` (gitignored opsec notes — `journal.md`, `secrets-setup.md`, `strategy.md`) syncs via `./scripts/sync_private.sh push|pull|dry`; the script never uses `--delete` so files unique to either side are preserved. (2) Divergence detection runs via `./scripts/check_machine_sync.sh` and reports MBP/Mac mini ahead/behind vs `origin/main` plus production `last-modified`; run before any push if a Mac mini Claude Code session may have happened. Both scripts honor `MACMINI_HOST` env override. **Why this matters**: 2026-04-16 had a 10/6 silent divergence where Mac mini had local commits never pushed to origin while MBP also pushed, and `auto-deploy.sh` failed quietly on `git pull` conflict — production stale 16 commits with no signal. Pre-action `check_machine_sync.sh` would have caught it instantly. Inherently-interactive bits (Mac mini Keychain unlock for Docker auth, GitHub SSH key registration, `gh` first OAuth) are deliberately NOT scripted; documented as manual steps in `.private/journal.md` Session History.
 
@@ -181,9 +154,9 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 **Bundle size**: Build output must be < 10MB (enforced in `pr-checks.yml`). When adding large dependencies, check impact with `npm run analyze:bundle`.
 
-**CI optimization**: `pr-checks.yml` uses `tj-actions/changed-files` to detect affected directories — frontend tests only run if `frontend/` changed, backend tests only if `backend/` changed. Trivy (`aquasecurity/trivy-action`) runs filesystem security scanning for dependency vulnerabilities on every PR. Workflow-level `permissions: contents: read` with job-level opt-in for write (least-privilege). `concurrency` group with `cancel-in-progress` on both PR and main workflows. All jobs have `timeout-minutes` (5–15). `auto-label.yml` auto-tags PRs by changed paths. `stale.yml` auto-closes inactive issues (90d) and PRs (60d).
+**CI optimization**: `pr-checks.yml` uses `tj-actions/changed-files` to detect affected directories — frontend tests only run if `frontend/` changed, backend tests only if `backend/` changed. Trivy (`aquasecurity/trivy-action`) runs filesystem security scanning for dependency vulnerabilities on every PR. Workflow-level `permissions: contents: read` with job-level opt-in for write (least-privilege). `concurrency` group with `cancel-in-progress` on both PR and main workflows. All jobs except `deploy-mac-mini` (which uses `continue-on-error: true`) have `timeout-minutes` set; values range from 2 (`auto-label.yml`) to 15 (test/e2e jobs). `auto-label.yml` auto-tags PRs by changed paths. `stale.yml` marks issues stale after 90d of inactivity and PRs after 60d, then closes them after another 30d / 14d.
 
-**README drift gates**: Two CI guards keep README aligned with reality. (1) **Package badges** — 14 package badges are validated in `pr-checks.yml` quick-checks (compared to `package.json` on every PR); failing the gate blocks merge. (2) **Test counts** — auto-corrected via the `Sync Test Badges` job in `main-ci-cd.yml`. Test counts are passed as job outputs from `frontend-test` and `backend-test` (no test re-run — saves ~90s). The job sed-replaces counts in README and pushes with `[skip ci]`. The `scripts/update-test-counts.sh` script (used by `make update-test-counts`) is the local equivalent — it runs tests, substitutes, and exits non-zero if the expected README patterns are missing (loud fail). The README format the sed is coupled to: `Vitest (N tests) + Django unittest (N tests)` in the `**Tests** —` bullet line. Changing that substring breaks the sed; if changed intentionally, also update `scripts/update-test-counts.sh:48,50` sed patterns. **Do NOT use grep-over-test-files for Vitest counts** — `it.each([...])` rows expand into N tests at runtime, so grep undercounts. Operational rules live only in CLAUDE.md — README has a brief summary pointing here, not a verbatim mirror.
+**README drift gates**: Two CI guards keep README aligned with reality. (1) **Package badges** — 14 package badges are validated in `pr-checks.yml` quick-checks (compared to `package.json` on every PR); failing the gate produces a red CI status. Note: `main` has no required-status-check rule (see Branch protection above), so the red status is informational, not merge-blocking — direct push to main can land a drifted badge. The gate's value is the visible red signal in PRs and on the commit page. (2) **Test counts** — auto-corrected via the `Sync Test Badges` job in `main-ci-cd.yml`. Test counts are passed as job outputs from `frontend-test` and `backend-test` (no test re-run — saves ~90s). The job sed-replaces counts in README and pushes with `[skip ci]`. The `scripts/update-test-counts.sh` script (used by `make update-test-counts`) is the local equivalent — it runs tests, substitutes, and exits non-zero if the expected README patterns are missing (loud fail). The README format the sed is coupled to: `Vitest (N tests) + Django unittest (N tests)` in the `**Tests** —` bullet line. Changing that substring breaks the sed; if changed intentionally, also update `scripts/update-test-counts.sh:48,50` sed patterns. **Do NOT use grep-over-test-files for Vitest counts** — `it.each([...])` rows expand into N tests at runtime, so grep undercounts. Operational rules live only in CLAUDE.md — README has a brief summary pointing here, not a verbatim mirror.
 
 **Backend constants**: `api/constants.py` centralizes `ONE_HOUR`, `ONE_DAY`, `SPAM_KEYWORDS`, `SPAM_THRESHOLD`, `is_spam()`, and cache key constants (`CACHE_BLOG_CATEGORIES`, `CACHE_BLOG_POST_LIST`, `CACHE_ADMIN_STATS`). Do NOT re-define time constants or cache keys in views or middleware — import from here. `django-extensions` and `ipython` are dev-only dependencies (`uv sync --extra dev`).
 
@@ -193,9 +166,9 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 Cross-cutting rules for how code is written. Enforced by linters and CI where possible.
 
-- **Conventional commits** required: `type(scope): description`. Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`.
+- **Conventional commits** required (English only; not enforced by a hook yet): `type(scope): description`. Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `deps`, `ci`.
 - **Branch naming**: `feature/name` or `fix/description`.
-- **ESLint flat config** (`eslint.config.mjs`, NOT `.eslintrc`). Zero warnings policy — CI fails on any warning.
+- **ESLint flat config** (`eslint.config.mjs`, NOT `.eslintrc`). Zero warnings is the **target**, but it is not currently enforced — the lint script in `frontend/package.json` is bare `eslint src` (no `--max-warnings=0`), so CI passes with warnings. To make this a hard gate, add `--max-warnings=0` to the `lint` script.
 - **English comments only** — no Korean comments in source.
 - **All UI strings use i18n** — `useTranslation()` in components, `i18n.t()` in data files. No hardcoded user-facing text.
 - **No `window.alert()` / `window.prompt()`** — use toast pattern or inline inputs.
@@ -217,7 +190,6 @@ Cross-cutting rules for how code is written. Enforced by linters and CI where po
 
 ### Invariants
 
-- **Conventional commits** (convention, not enforced by a hook yet): `type(scope): description`, English only. Allowed types match `Code Conventions` above.
 - **Version sync on Ship**: `VERSION`, root `package.json`, and `frontend/package.json` must all match. Bump all three in the same commit.
 - **CHANGELOG on Ship**: move `## [Unreleased]` entries under a new `## [X.Y.Z] - YYYY-MM-DD` section, then append an empty `## [Unreleased]` on top.
 - **PR discipline**: one issue per PR, ≤ 3 commits, no mid-PR scope expansion (deferred work → new issue).
@@ -251,7 +223,7 @@ Non-React: `vi.mock('../../i18n', () => ({ default: { t: (key: string) => key, l
 
 Use `renderWithProviders` from `test-utils/` for component tests needing context (wraps MemoryRouter + providers). E2E tests: Playwright in `frontend/e2e/` — runs on 5 profiles (chromium, firefox, webkit, mobile chrome, mobile safari); PR checks run chromium only.
 
-Coverage target: 100%.
+Coverage targets (`codecov.yml`): project `target: 100%, threshold: 1%` for both `frontend` and `backend` flags (effective floor 99%); patch `target: 90%, threshold: 3%` (effective floor 87%). The 100% number is the aim, not the merge gate — the threshold is what actually fails Codecov.
 
 **Backend test output is intentionally noisy** — `ERROR`/`WARNING` lines come from negative-path tests (XSS/SQL/path-traversal detection middleware, SMTP/DB failure simulations, JWT invalid/blacklisted token paths, reCAPTCHA network/JSON fallbacks, suspicious email patterns, blocked IPs). Trust `Ran N tests OK` + `exit code 0` as the success signal, not the absence of error logs.
 

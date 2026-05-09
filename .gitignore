@@ -97,6 +97,9 @@ Thumbs.db
 # Internal-only notes — never tracked
 .private/
 
+# Per-machine session state (codex, etc.)
+.context/
+
 # Secrets / credentials — prevent accidental commit
 *.pem
 *.key
