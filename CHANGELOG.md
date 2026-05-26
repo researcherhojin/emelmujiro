@@ -15,7 +15,10 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 
 - Two-device sync helpers: `.private/` rsync via `scripts/sync_private.sh`, MBP/Mac mini divergence detector via `scripts/check_machine_sync.sh` — caught a silent 16-commit production drift incident retroactively (`0f84140`)
 - `npm run check:css` script for detecting CSS classes shipped in build but never referenced in `src/` (`0560f32`)
-- cSpell project dictionary (`cspell.json`, 60+ entries spanning Makefile, Docker, CLAUDE.md, gitignore, codecov, env files) (`bcaf16a`, `61f21e0`)
+- cSpell project dictionary (`cspell.json`, 60+ entries spanning Makefile, Docker, CLAUDE.md, gitignore, codecov, env files; later expanded with proper-nouns from locales + scripts) (`bcaf16a`, `61f21e0`, `eceb64c`, `ddc8191`)
+- 4 new partner logos in `LogosSection` carousel: Starbucks Korea (AX 직무 아카데미), Day1 Company (AI 교육 콘텐츠), 한국지방재정공제회 (AX 업무혁신 교육), 암뮤니티 (cancer-survivor AI program) (`a014563`)
+- New teaching history entry — 암뮤니티 cancer-survivor AI training at 국립암센터 암환자사회복귀지원센터 (2026-05-12, UOS SI CORE venue) (`6385fe2`)
+- CLAUDE.md `Quick Orientation` block + one-line Gotchas index (#1–#16 navigation aid) (`5e53ee1`)
 
 ### Changed
 
@@ -24,27 +27,38 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 - Refactored `scripts/prerender.js` and sitemap generation after audit pass (`6110ff4`)
 - Tightened Task 2–5 implementations after rigor pass (`c9882de`)
 - Internal notes relocated to gitignored `.private/` (local-only) (`4b2b02b`)
+- CLAUDE.md `엄밀하게` verification pass: drift counts fixed (`35` → `39` teaching entries, `public(7)` → `public(11)`, `i18n keys 0-37` → `0-38`); Gotcha #6 npm audit narrative updated (`8 vulns / 4 low / 1 mod / 3 high` → `9 vulns / 3 low / 6 moderate / 0 high` — lodash/path-to-regexp patched, @lhci/cli transitives now top moderates) (`5e53ee1`)
+- CLAUDE.md size 43,023 → 39,863 chars (under Claude Code's 40k performance gate); incident detail in Gotchas #13/#14/#15 + Two-device sync helpers compressed to commit-hash references (`5e53ee1`)
 
 ### Fixed
 
 - SEO: hreflang alternates emitted at source instead of post-prerender dedup (`c963433`)
 - `codecov.yml`: `require_ci_to_pass: yes` → `true` (YAML 1.1 alias failed strict schema validation) (`19edc2d`)
 - README package badges: 5 stale versions synced after 13 dependabot merges that updated `package.json` without touching badges, plus added `react-i18next` badge to close the gate gap that allowed the drift (`6409c11`)
+- `react-dom` split-bump (Gotcha #8): dependabot's `react` group co-locates PRs in the review queue but does not bundle the bumps — react 19.2.5 → 19.2.6 (#301) merged alone, leaving Vitest crashing with "Incompatible React versions" on every test load (`8ab71fe`)
+- `@tiptap/*` peer-pin mismatch (Gotcha #14 reload): mixed `^3.23.1` / `^3.23.4` sibling ranges after #296/#298/#300/#307 produced `[MISSING_EXPORT] cancelPositionCheck` build error because `@tiptap/react@3.23.4` peer-pins `@tiptap/core: 3.23.4` EXACTLY but override `^3.23.4` resolved to 3.23.6. Aligned all 12 `@tiptap/*` direct deps + root + frontend overrides to `^3.23.6` and added `@tiptap/core` as direct frontend dep so `import from '@tiptap/core'` resolves from `src/` (`aca14b3`, `2c41535`)
+- README badge sync: 4 stale versions drifted again after the 2026-05-18 dependabot wave — React (19.2.5 → 19.2.6), React_Router_DOM (7.15.0 → 7.15.1), Axios (1.15.0 → 1.16.1), TipTap (3.23.1 → 3.23.6) — followed by Playwright (1.59.1 → 1.60.0) pre-bump for PR #303 (`b0e68e1`, `729d323`, `8c9915f`)
 
 ### Security
 
 - Tightened CSP: removed `data:` from `script-src`, removed `cloudflareinsights.com` references, dropped dead `msw` + `terser` deps that generated dependabot churn (`700c941`)
+- urllib3 2.6.3 → 2.7.0: patched CVE-2026-44431 (information disclosure via cross-origin redirects forwarding sensitive headers) and CVE-2026-44432 (DoS from excessive HTTP response decompression); Trivy HIGH-severity gate was blocking every PR Security Scan (`a7a2cc6`)
 
 ### Dependencies
 
-| Group           | Bumps                                                                                                                                                          |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Build chain     | vite 8.0.8 → 8.0.9, typescript 6.0.2 → 6.0.3, prettier 3.8.2 → 3.8.3                                                                                           |
-| Routing/i18n    | react-router-dom 7.14.0 → 7.14.1, react-i18next 17.0.2 → 17.0.4, i18next 26.0.4 → 26.0.6                                                                       |
-| Editor (TipTap) | react, starter-kit, extension-typography, extension-task-item, extension-placeholder, extension-code-block-lowlight: 3.22.3 → 3.22.4                           |
-| Telemetry       | @sentry/react 10.48.0 → 10.50.0                                                                                                                                |
-| Lint/CSS        | @typescript-eslint/parser 8.58.2 → 8.59.0, @typescript-eslint/eslint-plugin (matching), eslint-plugin-react-hooks 7.0.1 → 7.1.1, autoprefixer 10.4.27 → 10.5.0 |
-| CI              | aquasecurity/trivy-action 0.35.0 → 0.36.0                                                                                                                      |
+| Group           | Bumps                                                                                                                                                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Build chain     | vite 8.0.8 → 8.0.10, typescript 6.0.2 → 6.0.3, prettier 3.8.2 → 3.8.3, postcss 8.5.10 → 8.5.15 (#280, #306), @vitejs/plugin-react 6.0.1 → 6.0.2 (#305)                                                                                                                    |
+| React           | react 19.2.5 → 19.2.6 (#301), react-dom matched in `8ab71fe`, react-router-dom 7.14.0 → 7.15.1 (#297)                                                                                                                                                                     |
+| i18n            | react-i18next 17.0.2 → 17.0.7, i18next 26.0.4 → 26.0.6                                                                                                                                                                                                                    |
+| Editor (TipTap) | react, starter-kit, extension-typography, extension-link, extension-task-item, extension-task-list, extension-code-block-lowlight, extension-image, extension-placeholder, extension-underline, pm, core (override): aligned to `^3.23.6` (Gotcha #14 reload — see Fixed) |
+| HTTP / network  | axios 1.15.0 → 1.16.1 (#304), urllib3 2.6.3 → 2.7.0 (CVE patch, backend)                                                                                                                                                                                                  |
+| Telemetry       | @sentry/react 10.48.0 → 10.54.0 (#271, #299)                                                                                                                                                                                                                              |
+| Lint            | eslint 10.3.0 → 10.4.0 (#302), @typescript-eslint/parser 8.58.2 → 8.59.2, eslint-plugin-react-hooks 7.0.1 → 7.1.1, lint-staged 15.5.2 → 17.0.4 (#292)                                                                                                                     |
+| Test tooling    | @playwright/test 1.59.1 → 1.60.0 (#303), vitest 4.1.4 → 4.1.5, @vitest/coverage-v8 4.1.4 → 4.1.5 (#275, #279)                                                                                                                                                             |
+| CSS             | autoprefixer 10.4.27 → 10.5.0                                                                                                                                                                                                                                             |
+| Types           | @types/node 25.6.0 → 25.9.1 (#289, #308), DOMPurify (#274)                                                                                                                                                                                                                |
+| CI actions      | aquasecurity/trivy-action 0.35.0 → 0.36.0                                                                                                                                                                                                                                 |
 
 ### CI
 
@@ -56,7 +70,9 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 - README: top-nav link to `CHANGELOG.md` (`ee9caaf`)
 - CLAUDE.md: two-device sync workflow + 2026-04-16 production drift incident postmortem (`6c53ae9`)
 - CLAUDE.md: Gotcha #12 — `Auto-Merge Dependabot` job auto-merges only `semver-patch`; minor/major are intentionally held for manual review (caught when 5 minor PRs sat green-but-open after CI unblock) (`f4d8f76`)
+- CLAUDE.md: Gotcha #16 — Node major bump is a 3-file lockstep, not a dependabot drive-by (`bd4b7fe`)
 - Journal: 2026-04-16 session consolidation + framer-motion baseline note (`f803626`, `45797c2`)
+- README / CLAUDE.md / CHANGELOG.md / CONTRIBUTING.md refactored to Karpathy/gstack style — separate principles from implementation snapshots, move incident lore to commit references, tighten invariants
 
 ## [1.0.0] - 2026-04-16
 
