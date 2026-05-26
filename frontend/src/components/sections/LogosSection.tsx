@@ -10,7 +10,7 @@ const LogoItem: React.FC<{ company: PartnerCompany }> = memo(({ company }) => {
         <img
           src={company.logo}
           alt={t('logos.logoAlt', { name: company.name })}
-          className="h-12 w-auto object-contain opacity-60 group-hover:opacity-40 hover:!opacity-100 transition-opacity duration-300"
+          className="h-12 max-w-40 w-auto object-contain opacity-60 group-hover:opacity-40 hover:!opacity-100 transition-opacity duration-300"
           width={160}
           height={48}
           loading="lazy"
