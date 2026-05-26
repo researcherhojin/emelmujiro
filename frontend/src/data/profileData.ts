@@ -28,6 +28,13 @@ export const getTeachingHistory = (): TeachingItem[] => [
     orgType: 'academic',
     visibleAfter: '2026-04-03',
   },
+  {
+    organization: i18n.t('teachingHistory.38.org'),
+    title: i18n.t('teachingHistory.38.title'),
+    year: 2026,
+    orgType: 'public',
+    visibleAfter: '2026-05-12',
+  },
   // {
   //   organization: i18n.t('teachingHistory.2.org'),
   //   title: i18n.t('teachingHistory.2.title'),
