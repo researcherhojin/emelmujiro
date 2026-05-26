@@ -18,6 +18,7 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 - cSpell project dictionary (`cspell.json`, 60+ entries spanning Makefile, Docker, CLAUDE.md, gitignore, codecov, env files; later expanded with proper-nouns from locales + scripts) (`bcaf16a`, `61f21e0`, `eceb64c`, `ddc8191`)
 - 4 new partner logos in `LogosSection` carousel: Starbucks Korea (AX 직무 아카데미), Day1 Company (AI 교육 콘텐츠), 한국지방재정공제회 (AX 업무혁신 교육), 암뮤니티 (cancer-survivor AI program) (`a014563`)
 - New teaching history entry — 암뮤니티 cancer-survivor AI training at 국립암센터 암환자사회복귀지원센터 (2026-05-12, UOS SI CORE venue) (`6385fe2`)
+- 2 more teaching entries backfilled — Starbucks Korea (AX 직무 아카데미 — 바이브 코딩, `visibleAfter: 2026-05-01`) + 한국지방재정공제회 (생성형 AI 기반 업무혁신 AX 역량 강화 교육) — these got carousel logos in `a014563` but were missing from `/profile` until now. Counts: 39 → 41 entries (`a14a56c`, `7769f71`)
 - CLAUDE.md `Quick Orientation` block + one-line Gotchas index (#1–#16 navigation aid) (`5e53ee1`)
 
 ### Changed
@@ -29,6 +30,9 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 - Internal notes relocated to gitignored `.private/` (local-only) (`4b2b02b`)
 - CLAUDE.md `엄밀하게` verification pass: drift counts fixed (`35` → `39` teaching entries, `public(7)` → `public(11)`, `i18n keys 0-37` → `0-38`); Gotcha #6 npm audit narrative updated (`8 vulns / 4 low / 1 mod / 3 high` → `9 vulns / 3 low / 6 moderate / 0 high` — lodash/path-to-regexp patched, @lhci/cli transitives now top moderates) (`5e53ee1`)
 - CLAUDE.md size 43,023 → 39,863 chars (under Claude Code's 40k performance gate); incident detail in Gotchas #13/#14/#15 + Two-device sync helpers compressed to commit-hash references (`5e53ee1`)
+- CLAUDE.md/CONTRIBUTING.md/CHANGELOG.md/README.md refactored to Karpathy/gstack style — Architecture stripped to non-grep-derivable invariants, UI Conventions to principles (no copy strings or CSS snapshots), Gotchas compressed to rule + fix-cmd + commit-ref. CLAUDE.md final size 31,195 chars (-22 % vs the 40k-gate-trim baseline). Landed as PR #309 (`cdecbca`)
+- `LogosSection` carousel arrangement made deterministic: 24 partners split 12/12 by `Math.ceil(N/2)` — Row 1 now exactly 10 enterprise + 2 universities (SNU at index 4, UOS at 8), Row 2 strict public ↔ education alternation (6 + 6). UOS promoted from Row 2 area so the runtime split lands on the intended boundary (was: nipa landing in Row 1 next to chaebol logos because Row 1 area had 11 items vs 13 in Row 2 area). In-file header comment now documents the even-length invariant (equal-row-count rule from UI Conventions) (`d2214ed`)
+- Day1 partner description `'AI 교육 콘텐츠 협력'` → `'AI 교육 콘텐츠'` — dropped the speculative `'협력'` (cooperation) claim; the new wording describes Day1's business class, consistent with how 엘리스 / 멋쟁이사자처럼 entries describe partner activity (`621a8b7`)
 
 ### Fixed
 
@@ -38,6 +42,8 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 - `react-dom` split-bump (Gotcha #8): dependabot's `react` group co-locates PRs in the review queue but does not bundle the bumps — react 19.2.5 → 19.2.6 (#301) merged alone, leaving Vitest crashing with "Incompatible React versions" on every test load (`8ab71fe`)
 - `@tiptap/*` peer-pin mismatch (Gotcha #14 reload): mixed `^3.23.1` / `^3.23.4` sibling ranges after #296/#298/#300/#307 produced `[MISSING_EXPORT] cancelPositionCheck` build error because `@tiptap/react@3.23.4` peer-pins `@tiptap/core: 3.23.4` EXACTLY but override `^3.23.4` resolved to 3.23.6. Aligned all 12 `@tiptap/*` direct deps + root + frontend overrides to `^3.23.6` and added `@tiptap/core` as direct frontend dep so `import from '@tiptap/core'` resolves from `src/` (`aca14b3`, `2c41535`)
 - README badge sync: 4 stale versions drifted again after the 2026-05-18 dependabot wave — React (19.2.5 → 19.2.6), React_Router_DOM (7.15.0 → 7.15.1), Axios (1.15.0 → 1.16.1), TipTap (3.23.1 → 3.23.6) — followed by Playwright (1.59.1 → 1.60.0) pre-bump for PR #303 (`b0e68e1`, `729d323`, `8c9915f`)
+- `LogosSection` img overflow: `h-12 w-auto object-contain` let `imunityLogo.svg` (290×22, 13:1 aspect) render at 48×632 — far beyond the `w-40` (160 px) slot — disrupting carousel layout. Added `max-w-40` to clamp at slot boundary (`0ac9f64`); follow-up: normalized the source SVGs themselves via `viewBox` padding (Starbucks 1:1 → 3:1 canvas, Imunity 13:1 → 3:1 canvas via vertical padding) so all 24 slots now share identical 48×144 dimensions with content centered (`621a8b7`)
+- `vitest.config.ts`: import `defineConfig` from `'vitest/config'` instead of `'vite'` — VS Code TS server reported `test does not exist in type UserConfigExport` despite the triple-slash directive; `vitest/config` exposes the correctly-typed `defineConfig` (UserConfig with `test` built in) and removes the need for the triple-slash hack (`f03df2d`)
 
 ### Security
 
