@@ -34,8 +34,14 @@ export interface PartnerCompany {
   description: string;
 }
 
+// LogosSection splits this array in half (Math.ceil(N/2)) into two scroll rows.
+// Length must be EVEN so each row gets the same count (equal-speed invariant
+// per UI Conventions in CLAUDE.md). N=24 → 12 + 12.
+//
+// Row 1 (indices 0-11): 대기업 + 대학 (max brand recognition, leads the carousel).
+// Row 2 (indices 12-23): 공공기관 ↔ 교육 strict-alternating for visual rhythm.
 export const PARTNER_COMPANIES: PartnerCompany[] = [
-  // Row 1: Major enterprises + SNU
+  // Row 1: enterprise (10) + universities (2 — SNU at 4, UOS at 8)
   {
     id: 'samsung',
     name: '삼성전자',
@@ -93,6 +99,13 @@ export const PARTNER_COMPANIES: PartnerCompany[] = [
     description: 'AI 기반 건설 자동화',
   },
   {
+    id: 'uos',
+    name: '서울시립대',
+    logo: uosLogo,
+    category: 'education',
+    description: 'AI 커리큘럼 개발',
+  },
+  {
     id: 'hancom',
     name: '한글과컴퓨터',
     logo: hancomLogo,
@@ -114,7 +127,7 @@ export const PARTNER_COMPANIES: PartnerCompany[] = [
     description: 'AX 직무 아카데미',
   },
 
-  // Row 2: Education & public institutions
+  // Row 2: public ↔ education strict-alternating (6 + 6 = 12)
   {
     id: 'nipa',
     name: '정보통신산업진흥원',
@@ -137,25 +150,11 @@ export const PARTNER_COMPANIES: PartnerCompany[] = [
     description: 'AI 교육 혁신',
   },
   {
-    id: 'uos',
-    name: '서울시립대',
-    logo: uosLogo,
-    category: 'education',
-    description: 'AI 커리큘럼 개발',
-  },
-  {
     id: 'elice',
     name: '엘리스',
     logo: eliceLogo,
     category: 'education',
     description: 'AI 교육 플랫폼',
-  },
-  {
-    id: 'day1',
-    name: '데이원컴퍼니',
-    logo: day1Logo,
-    category: 'education',
-    description: 'AI 교육 콘텐츠',
   },
   {
     id: 'nano',
@@ -165,18 +164,18 @@ export const PARTNER_COMPANIES: PartnerCompany[] = [
     description: 'AI 연구 협력',
   },
   {
+    id: 'day1',
+    name: '데이원컴퍼니',
+    logo: day1Logo,
+    category: 'education',
+    description: 'AI 교육 콘텐츠',
+  },
+  {
     id: 'klfcc',
     name: '한국지방재정공제회',
     logo: klfccLogo,
     category: 'public',
     description: 'AX 업무혁신 교육',
-  },
-  {
-    id: 'imunity',
-    name: '암뮤니티',
-    logo: imunityLogo,
-    category: 'public',
-    description: '암환자 AI 교육',
   },
   {
     id: 'seoul-edu',
@@ -186,6 +185,13 @@ export const PARTNER_COMPANIES: PartnerCompany[] = [
     description: '교육 AI 도입',
   },
   {
+    id: 'weather',
+    name: '기상청',
+    logo: weatherLogo,
+    category: 'public',
+    description: 'AI 기상 예측',
+  },
+  {
     id: 'modu',
     name: '모두의연구소',
     logo: moduLogo,
@@ -193,17 +199,17 @@ export const PARTNER_COMPANIES: PartnerCompany[] = [
     description: 'AI 연구 협력',
   },
   {
+    id: 'imunity',
+    name: '암뮤니티',
+    logo: imunityLogo,
+    category: 'public',
+    description: '암환자 AI 교육',
+  },
+  {
     id: 'ablearn',
     name: 'ablearn',
     logo: ablearnLogo,
     category: 'education',
     description: 'AI 학습 솔루션',
-  },
-  {
-    id: 'weather',
-    name: '기상청',
-    logo: weatherLogo,
-    category: 'public',
-    description: 'AI 기상 예측',
   },
 ];
