@@ -155,7 +155,7 @@ export const PARTNER_COMPANIES: PartnerCompany[] = [
     name: '데이원컴퍼니',
     logo: day1Logo,
     category: 'education',
-    description: 'AI 교육 콘텐츠 협력',
+    description: 'AI 교육 콘텐츠',
   },
   {
     id: 'nano',
