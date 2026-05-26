@@ -19,6 +19,10 @@ import ablearnLogo from '../assets/logos/ablearnLogo.webp';
 import nanoLogo from '../assets/logos/nanoLogo.webp';
 import weatherLogo from '../assets/logos/weatherLogo.svg';
 import nepesLogo from '../assets/logos/nepesLogo.svg';
+import starbucksLogo from '../assets/logos/starbucksLogo.svg';
+import day1Logo from '../assets/logos/day1Logo.webp';
+import klfccLogo from '../assets/logos/klfccLogo.svg';
+import imunityLogo from '../assets/logos/imunityLogo.svg';
 
 export type CompanyCategory = 'enterprise' | 'education' | 'public';
 
@@ -102,6 +106,13 @@ export const PARTNER_COMPANIES: PartnerCompany[] = [
     category: 'enterprise',
     description: 'AI 반도체 솔루션',
   },
+  {
+    id: 'starbucks',
+    name: '스타벅스 코리아',
+    logo: starbucksLogo,
+    category: 'enterprise',
+    description: 'AX 직무 아카데미',
+  },
 
   // Row 2: Education & public institutions
   {
@@ -140,11 +151,32 @@ export const PARTNER_COMPANIES: PartnerCompany[] = [
     description: 'AI 교육 플랫폼',
   },
   {
+    id: 'day1',
+    name: '데이원컴퍼니',
+    logo: day1Logo,
+    category: 'education',
+    description: 'AI 교육 콘텐츠 협력',
+  },
+  {
     id: 'nano',
     name: '나노융합산업연구조합',
     logo: nanoLogo,
     category: 'public',
     description: 'AI 연구 협력',
+  },
+  {
+    id: 'klfcc',
+    name: '한국지방재정공제회',
+    logo: klfccLogo,
+    category: 'public',
+    description: 'AX 업무혁신 교육',
+  },
+  {
+    id: 'imunity',
+    name: '암뮤니티',
+    logo: imunityLogo,
+    category: 'public',
+    description: '암환자 AI 교육',
   },
   {
     id: 'seoul-edu',
