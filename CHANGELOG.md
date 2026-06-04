@@ -20,6 +20,7 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 - New teaching history entry — 암뮤니티 cancer-survivor AI training at 국립암센터 암환자사회복귀지원센터 (2026-05-12, UOS SI CORE venue) (`6385fe2`)
 - 2 more teaching entries backfilled — Starbucks Korea (AX 직무 아카데미 — 바이브 코딩, `visibleAfter: 2026-05-01`) + 한국지방재정공제회 (생성형 AI 기반 업무혁신 AX 역량 강화 교육) — these got carousel logos in `a014563` but were missing from `/profile` until now. Counts: 39 → 41 entries (`a14a56c`, `7769f71`)
 - CLAUDE.md `Quick Orientation` block + one-line Gotchas index (#1–#16 navigation aid) (`5e53ee1`)
+- Contact-form spam detection now tracks failed attempts: `ContactAttempt.failure_count` increments on each failed submission, and an IP with `failure_count >= MAX_FAILED_CONTACT_ATTEMPTS` (5) is blocked — catches bots that repeatedly fail validation without tripping the per-hour total-attempt limit. Wires up the previously-discarded `success` flag in `_log_contact_attempt`; new field surfaced in `ContactAttemptAdmin`. Migration `0012_contactattempt_failure_count`
 
 ### Changed
 
@@ -33,9 +34,13 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 - CLAUDE.md/CONTRIBUTING.md/CHANGELOG.md/README.md refactored to Karpathy/gstack style — Architecture stripped to non-grep-derivable invariants, UI Conventions to principles (no copy strings or CSS snapshots), Gotchas compressed to rule + fix-cmd + commit-ref. CLAUDE.md final size 31,195 chars (-22 % vs the 40k-gate-trim baseline). Landed as PR #309 (`cdecbca`)
 - `LogosSection` carousel arrangement made deterministic: 24 partners split 12/12 by `Math.ceil(N/2)` — Row 1 now exactly 10 enterprise + 2 universities (SNU at index 4, UOS at 8), Row 2 strict public ↔ education alternation (6 + 6). UOS promoted from Row 2 area so the runtime split lands on the intended boundary (was: nipa landing in Row 1 next to chaebol logos because Row 1 area had 11 items vs 13 in Row 2 area). In-file header comment now documents the even-length invariant (equal-row-count rule from UI Conventions) (`d2214ed`)
 - Day1 partner description `'AI 교육 콘텐츠 협력'` → `'AI 교육 콘텐츠'` — dropped the speculative `'협력'` (cooperation) claim; the new wording describes Day1's business class, consistent with how 엘리스 / 멋쟁이사자처럼 entries describe partner activity (`621a8b7`)
+- Removed dead `@jest-environment jsdom` docblocks from 4 frontend test files — Vitest reads `@vitest-environment` (not `@jest-environment`) and configures `jsdom` globally in `vitest.config`, and `jest-environment-jsdom` is not installed, so the docblocks were inert
+- cSpell: zeroed the project warning backlog (was 87 across 14 files). Two-pronged: (1) `ignorePaths` for files dominated by auto-accumulating identifiers rather than prose — test fixtures (`backend/api/tests.py`, `frontend/src/**/__tests__/**`, `*.test.ts(x)`), Django-generated migrations (`backend/api/migrations/**`), and `CHANGELOG.md` (every entry cites a git short-SHA, never dictionary-resolvable); (2) added 49 legitimate terms to the dictionary — bot user-agents (`Baiduspider`, `bingbot`, `Twitterbot`, `facebookexternalhit`, `Discordbot`), web-vitals/editor/tooling terms (`TTFB`, `tiptap`, `grecaptcha`, `rowspan`, `redoc`, `networkidle`, `domcontentloaded`), AI model names cited in blog content (`Qwen`, `Kimi`, `Nemotron`, `MMLU`), and code identifiers (`viewsets`, `remoteip`, `seohelmet`, `forex`, `nums`)
 
 ### Fixed
 
+- `vitest.config.ts`: top-level `maxThreads`/`minThreads` moved under `poolOptions.threads` — Vitest 4 removed them from the top-level `InlineConfig` type, so `tsc` flagged the config (tests ran fine; the keys were silently ignored). Behavior preserved
+- `sentry.ts`: removed a stale `// eslint-disable-next-line @typescript-eslint/no-empty-function` directive that the current ESLint config no longer needs (flagged as unused-disable)
 - SEO: hreflang alternates emitted at source instead of post-prerender dedup (`c963433`)
 - `codecov.yml`: `require_ci_to_pass: yes` → `true` (YAML 1.1 alias failed strict schema validation) (`19edc2d`)
 - README package badges: 5 stale versions synced after 13 dependabot merges that updated `package.json` without touching badges, plus added `react-i18next` badge to close the gate gap that allowed the drift (`6409c11`)
