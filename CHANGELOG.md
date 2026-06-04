@@ -24,6 +24,8 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 
 ### Changed
 
+- deps: bumped all 12 `@tiptap/*` packages `3.23.6` → `3.25.0` in lockstep + both `@tiptap/core` overrides (root + frontend) per Gotcha #14 — `npm ls @tiptap/core` confirms a single resolved version; `tsc`, `vite build`, and 1218 vitest tests pass (no `MISSING_EXPORT`/two-different-types). Also `knip` `6.4.1` → `6.15.0`. Bundles dependabot #310/#311/#312/#315 (individual `@tiptap/*` bumps, which Gotcha #14 forbids merging piecemeal) + #313 (knip) into one coordinated change
+
 - Performance: dropped `framer-motion` (~13 KB gzip) in favor of Tailwind keyframes (`fade-up`, `dot-bounce`, `scale-pulse`) — homepage JS bundle reduced (`ee6e075`)
 - Performance: restored Pretendard preload state (renderBlockingResources 0.5 → 1.0) (`cd909eb`)
 - Refactored `scripts/prerender.js` and sitemap generation after audit pass (`6110ff4`)

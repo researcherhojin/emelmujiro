@@ -6,18 +6,18 @@
   "dependencies": {
     "@sentry/react": "^10.54.0",
     "@tailwindcss/typography": "^0.5.19",
-    "@tiptap/core": "^3.23.6",
-    "@tiptap/extension-code-block-lowlight": "^3.23.6",
-    "@tiptap/extension-image": "^3.23.6",
-    "@tiptap/extension-link": "^3.23.6",
-    "@tiptap/extension-placeholder": "^3.23.6",
-    "@tiptap/extension-task-item": "^3.23.6",
-    "@tiptap/extension-task-list": "^3.23.6",
-    "@tiptap/extension-typography": "^3.23.6",
-    "@tiptap/extension-underline": "^3.23.6",
-    "@tiptap/pm": "^3.23.6",
-    "@tiptap/react": "^3.23.6",
-    "@tiptap/starter-kit": "^3.23.6",
+    "@tiptap/core": "^3.24.0",
+    "@tiptap/extension-code-block-lowlight": "^3.24.0",
+    "@tiptap/extension-image": "^3.24.0",
+    "@tiptap/extension-link": "^3.24.0",
+    "@tiptap/extension-placeholder": "^3.24.0",
+    "@tiptap/extension-task-item": "^3.24.0",
+    "@tiptap/extension-task-list": "^3.24.0",
+    "@tiptap/extension-typography": "^3.24.0",
+    "@tiptap/extension-underline": "^3.24.0",
+    "@tiptap/pm": "^3.24.0",
+    "@tiptap/react": "^3.24.0",
+    "@tiptap/starter-kit": "^3.24.0",
     "axios": "^1.16.1",
     "dompurify": "^3.4.2",
     "i18next": "^26.0.6",
@@ -104,6 +104,6 @@
   },
   "overrides": {
     "minimatch": ">=10.2.1",
-    "@tiptap/core": "^3.23.6"
+    "@tiptap/core": "^3.24.0"
   }
 }
