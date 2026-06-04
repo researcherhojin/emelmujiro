@@ -20,7 +20,14 @@ import os
 import re
 import uuid as uuid_mod
 
-from .constants import ONE_DAY, ONE_HOUR, CACHE_BLOG_CATEGORIES, CACHE_BLOG_POST_LIST, is_spam
+from .constants import (
+    ONE_DAY,
+    ONE_HOUR,
+    CACHE_BLOG_CATEGORIES,
+    CACHE_BLOG_POST_LIST,
+    MAX_FAILED_CONTACT_ATTEMPTS,
+    is_spam,
+)
 from .utils import get_client_ip, toggle_like
 
 import requests
@@ -454,6 +461,13 @@ class ContactView(APIView):
             if ip_attempts and ip_attempts.attempt_count >= 3:
                 return True
 
+            # Failure-based check: accumulated failed attempts from an IP signal a bot
+            if ContactAttempt.objects.filter(
+                ip_address=ip_address,
+                failure_count__gte=MAX_FAILED_CONTACT_ATTEMPTS,
+            ).exists():
+                return True
+
             # Email-based check (limit 2 per day)
             if email and self._is_valid_email(email):
                 email_attempts = ContactAttempt.objects.filter(
@@ -497,17 +511,20 @@ class ContactView(APIView):
         return False
 
     def _log_contact_attempt(self, ip_address: str, email: str, success: bool):
-        """Log contact attempt"""
+        """Log contact attempt; failed attempts feed spam detection."""
         try:
             normalized_email = (email or "").strip().lower()
             attempt, created = ContactAttempt.objects.get_or_create(
                 ip_address=ip_address,
                 email=normalized_email,
-                defaults={"attempt_count": 1},
+                defaults={"attempt_count": 1, "failure_count": 0 if success else 1},
             )
 
             if not created:
-                ContactAttempt.objects.filter(pk=attempt.pk).update(attempt_count=F("attempt_count") + 1)
+                updates = {"attempt_count": F("attempt_count") + 1}
+                if not success:
+                    updates["failure_count"] = F("failure_count") + 1
+                ContactAttempt.objects.filter(pk=attempt.pk).update(**updates)
 
         except Exception as e:
             logger.error(f"Failed to log contact attempt: {e}")

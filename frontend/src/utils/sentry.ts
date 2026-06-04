@@ -107,7 +107,6 @@ export function initSentry(): void {
 
 // Swallow import failures silently — if the chunk can't load (network down),
 // Sentry wouldn't be reachable anyway.
-// eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => {};
 
 // Capture exception

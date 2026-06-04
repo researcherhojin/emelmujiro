@@ -196,6 +196,7 @@ class ContactAttempt(models.Model):
     ip_address = models.GenericIPAddressField(verbose_name="IP 주소")
     email = models.EmailField(null=True, blank=True, verbose_name="이메일")
     attempt_count = models.PositiveIntegerField(default=1, verbose_name="시도 횟수")
+    failure_count = models.PositiveIntegerField(default=0, verbose_name="실패 횟수")
     last_attempt = models.DateTimeField(auto_now=True, verbose_name="마지막 시도")
     is_blocked = models.BooleanField(default=False, verbose_name="차단 여부")
     block_reason = models.CharField(max_length=200, blank=True, verbose_name="차단 사유")

@@ -130,6 +130,7 @@ class ContactAttemptAdmin(admin.ModelAdmin):
         "ip_address",
         "email",
         "attempt_count",
+        "failure_count",
         "last_attempt",
         "is_blocked",
     )

@@ -9,6 +9,9 @@ CACHE_ADMIN_STATS = "admin_stats"
 
 SPAM_THRESHOLD = 2
 
+# 누적 실패 문의 시도가 이 값에 도달하면 스팸으로 차단 (bot은 검증을 반복 실패함)
+MAX_FAILED_CONTACT_ATTEMPTS = 5
+
 SPAM_KEYWORDS = [
     # English spam terms
     "betting",

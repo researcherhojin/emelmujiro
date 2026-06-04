@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { announceToScreenReader } from '../accessibility';
 
