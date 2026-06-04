@@ -20,6 +20,7 @@ from .models import (
 )
 from .utils import get_client_ip, _is_valid_ip
 from .views import ContactView
+from .constants import MAX_FAILED_CONTACT_ATTEMPTS
 from django.core.mail import BadHeaderError
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -2604,6 +2605,28 @@ class ContactSpamCheckTestCase(APITestCase):
         view._log_contact_attempt("10.0.0.1", "test@example.com", True)
         attempt = ContactAttempt.objects.get(ip_address="10.0.0.1", email="test@example.com")
         self.assertEqual(attempt.attempt_count, 2)
+        self.assertEqual(attempt.failure_count, 0)
+
+    def test_log_contact_attempt_tracks_failures(self):
+        """Failed attempts increment failure_count; successes do not"""
+        view = ContactView()
+        view._log_contact_attempt("10.0.0.2", "fail@example.com", False)
+        view._log_contact_attempt("10.0.0.2", "fail@example.com", True)
+        view._log_contact_attempt("10.0.0.2", "fail@example.com", False)
+        attempt = ContactAttempt.objects.get(ip_address="10.0.0.2", email="fail@example.com")
+        self.assertEqual(attempt.attempt_count, 3)
+        self.assertEqual(attempt.failure_count, 2)
+
+    def test_is_spam_attempt_blocks_on_repeated_failures(self):
+        """Accumulated failed attempts from an IP are rejected as spam"""
+        ContactAttempt.objects.create(
+            ip_address="10.0.0.3",
+            email="bot@example.com",
+            attempt_count=MAX_FAILED_CONTACT_ATTEMPTS,
+            failure_count=MAX_FAILED_CONTACT_ATTEMPTS,
+        )
+        view = ContactView()
+        self.assertTrue(view._is_spam_attempt("10.0.0.3", "different@example.com"))
 
     def test_log_contact_attempt_exception_handling(self):
         """_log_contact_attempt handles exceptions gracefully"""
