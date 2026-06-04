@@ -117,7 +117,6 @@
 
   // ========== ESLint 설정 ==========
   "eslint.enable": true,
-  "eslint.packageManager": "npm",
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "eslint.workingDirectories": [{ "directory": "./frontend", "changeProcessCWD": true }],
 
