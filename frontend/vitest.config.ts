@@ -18,12 +18,9 @@ export default defineConfig({
     // locally for speed. Hit once in this repo on commit 172c4de (later
     // rerun passed). Switching to forks eliminates the race entirely.
     pool: process.env.CI ? 'forks' : 'threads',
-    poolOptions: {
-      threads: {
-        maxThreads: process.env.CI ? 4 : undefined,
-        minThreads: process.env.CI ? 2 : undefined,
-      },
-    },
+    // Vitest 4 removed per-pool maxThreads/minThreads/poolOptions in favor of a
+    // single top-level maxWorkers. Cap CI parallelism for stability; unlimited locally.
+    maxWorkers: process.env.CI ? 4 : undefined,
     isolate: true, // Enable isolation for better test stability
     clearMocks: true, // Clear all mocks between tests
     restoreMocks: true, // Restore all mocks between tests

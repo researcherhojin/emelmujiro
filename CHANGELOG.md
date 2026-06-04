@@ -41,7 +41,7 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 ### Fixed
 
 - CI `Test Affected Code` backend step: dropped `--parallel` from `manage.py test`. Django's parallel runner crashed with `TypeError: cannot pickle 'traceback' object` (a pre-existing test-isolation bug, reproducible on `main` independent of this branch). The 360-test suite runs serially in ~0.3s, so parallel bought no speed, and serial is already the standard everywhere else (`main-ci-cd.yml` coverage job, `CLAUDE.md`, local dev) — this just aligns the lone outlier
-- `vitest.config.ts`: top-level `maxThreads`/`minThreads` moved under `poolOptions.threads` — Vitest 4 removed them from the top-level `InlineConfig` type, so `tsc` flagged the config (tests ran fine; the keys were silently ignored). Behavior preserved
+- `vitest.config.ts`: replaced `maxThreads`/`minThreads` with the single top-level `maxWorkers` — Vitest 4 removed per-pool thread options (and `poolOptions`) from `InlineConfig`. The config is outside `tsconfig`'s `include: ["src"]` so `tsc` never type-checked it; the error only surfaced in-editor. Caps CI parallelism (the original intent); runtime unchanged
 - `sentry.ts`: removed a stale `// eslint-disable-next-line @typescript-eslint/no-empty-function` directive that the current ESLint config no longer needs (flagged as unused-disable)
 - SEO: hreflang alternates emitted at source instead of post-prerender dedup (`c963433`)
 - `codecov.yml`: `require_ci_to_pass: yes` → `true` (YAML 1.1 alias failed strict schema validation) (`19edc2d`)
