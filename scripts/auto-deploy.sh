@@ -13,9 +13,21 @@ cd "$REPO_DIR"
 
 # Pull latest code
 echo "$LOG_PREFIX Pulling latest changes..."
+PREV_HEAD=$(git rev-parse HEAD)
 if ! git pull origin main; then
   echo "$LOG_PREFIX ERROR: git pull failed, aborting deploy"
   exit 1
+fi
+
+# Detect whether this pull changed the nginx config. nginx.conf is a bind mount,
+# so a plain `docker compose up -d frontend` will NOT apply edits: compose sees
+# no service change (no-op), and on macOS Docker the mount keeps the pre-pull
+# inode after git rewrites the file, so even an `nginx -s reload` reads a stale
+# view. When it changed, the frontend container is force-recreated below.
+NGINX_CONF_CHANGED=false
+if ! git diff --quiet "$PREV_HEAD" HEAD -- frontend/nginx.conf; then
+  NGINX_CONF_CHANGED=true
+  echo "$LOG_PREFIX nginx.conf changed — frontend will be force-recreated"
 fi
 
 # Install dependencies (handles package-lock.json changes after git pull)
@@ -62,7 +74,19 @@ VITE_API_URL="${VITE_API_URL:-https://api.emelmujiro.com/api}" npm run build
 echo "$LOG_PREFIX Starting services..."
 cd "$REPO_DIR"
 docker compose up -d --build backend
-docker compose up -d frontend
+if [ "$NGINX_CONF_CHANGED" = true ]; then
+  # Validate the new nginx.conf in a throwaway container first, so a syntax
+  # error aborts the deploy WITHOUT killing the running frontend. Then
+  # force-recreate so the bind mount re-resolves to the current file.
+  echo "$LOG_PREFIX Validating new nginx.conf..."
+  if ! docker run --rm -v "$REPO_DIR/frontend/nginx.conf:/etc/nginx/nginx.conf:ro" nginx:alpine nginx -t; then
+    echo "$LOG_PREFIX ERROR: new nginx.conf failed validation — keeping current config, aborting deploy"
+    exit 1
+  fi
+  docker compose up -d --force-recreate frontend
+else
+  docker compose up -d frontend
+fi
 
 # Wait for services to be healthy (up to 60s)
 echo "$LOG_PREFIX Waiting for services to be healthy..."
