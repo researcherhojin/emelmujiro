@@ -269,7 +269,7 @@ jobs:
         run: |
           uv run python manage.py makemigrations --check --noinput
           uv run python manage.py migrate --noinput
-          uv run python manage.py test --parallel
+          uv run python manage.py test
 
   # Security scan for dependencies
   security-scan:
