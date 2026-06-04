@@ -75,13 +75,23 @@ echo "$LOG_PREFIX Starting services..."
 cd "$REPO_DIR"
 docker compose up -d --build backend
 if [ "$NGINX_CONF_CHANGED" = true ]; then
-  # Validate the new nginx.conf in a throwaway container first, so a syntax
-  # error aborts the deploy WITHOUT killing the running frontend. Then
-  # force-recreate so the bind mount re-resolves to the current file.
+  # Validate the new nginx.conf before applying it, so a syntax error aborts the
+  # deploy WITHOUT killing the running frontend. Test INSIDE the running
+  # container: it sits on the compose network, so `proxy_pass` upstreams
+  # (`backend`, `umami`) resolve — a throwaway `docker run` is off-network and
+  # false-fails with "host not found in upstream". Copy to a temp path because
+  # the live mount still serves the stale inode until the recreate below.
   echo "$LOG_PREFIX Validating new nginx.conf..."
-  if ! docker run --rm -v "$REPO_DIR/frontend/nginx.conf:/etc/nginx/nginx.conf:ro" nginx:alpine nginx -t; then
-    echo "$LOG_PREFIX ERROR: new nginx.conf failed validation — keeping current config, aborting deploy"
-    exit 1
+  if docker ps --format '{{.Names}}' | grep -qx emelmujiro-frontend; then
+    docker cp frontend/nginx.conf emelmujiro-frontend:/tmp/nginx-new.conf
+    if ! docker exec emelmujiro-frontend nginx -t -c /tmp/nginx-new.conf; then
+      echo "$LOG_PREFIX ERROR: new nginx.conf failed validation — keeping current config, aborting deploy"
+      docker exec emelmujiro-frontend rm -f /tmp/nginx-new.conf || true
+      exit 1
+    fi
+    docker exec emelmujiro-frontend rm -f /tmp/nginx-new.conf || true
+  else
+    echo "$LOG_PREFIX frontend container not running — skipping pre-validation"
   fi
   docker compose up -d --force-recreate frontend
 else

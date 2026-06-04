@@ -78,7 +78,7 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 
 ### CI
 
-- `scripts/auto-deploy.sh`: nginx.conf-only changes now actually deploy. `frontend/nginx.conf` is a bind mount, so the prior `docker compose up -d frontend` was a no-op for config edits (compose sees no service change; on macOS Docker the mount also caches the pre-pull inode after git rewrites the file, so even `nginx -s reload` reads a stale view). The script now diffs `PREV_HEAD..HEAD` for `frontend/nginx.conf`; when it changed, it validates the new config in a throwaway `nginx:alpine` container (`nginx -t`) — aborting WITHOUT touching the running frontend if invalid — then `--force-recreate frontend` so the mount re-resolves to the current file
+- `scripts/auto-deploy.sh`: nginx.conf-only changes now actually deploy. `frontend/nginx.conf` is a bind mount, so the prior `docker compose up -d frontend` was a no-op for config edits (compose sees no service change; on macOS Docker the mount also caches the pre-pull inode after git rewrites the file, so even `nginx -s reload` reads a stale view). The script now diffs `PREV_HEAD..HEAD` for `frontend/nginx.conf`; when it changed, it validates the new config inside the running frontend container (`docker cp` to a temp path + `nginx -t -c`, which resolves `proxy_pass` upstreams on the compose network — a throwaway off-network container false-fails with "host not found in upstream") — aborting WITHOUT touching the running frontend if invalid — then `--force-recreate frontend` so the mount re-resolves to the current file
 - `pr-checks.yml`: README badge drift gate expanded from 7 to 14 entries (added React_i18next; tightened detection of stale frontend badges before merge) (`6409c11`)
 
 ### Documentation
