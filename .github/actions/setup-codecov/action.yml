@@ -1,5 +1,5 @@
 name: "Pre-trust Codecov GPG key"
-description: "Imports and trusts Codecov's published GPG key so codecov-action can verify its signed binary. Fingerprint matches https://about.codecov.io/security-update/."
+description: "Best-effort import + trust of Codecov's published GPG key so codecov-action can verify its signed binary. Fingerprint matches https://about.codecov.io/security-update/. Degrades gracefully when the key host is unreachable — codecov-action does its own verification and uploads run with fail_ci_if_error:false, so a missing pre-trust must not break CI."
 
 runs:
   using: "composite"
@@ -7,5 +7,20 @@ runs:
     - name: Import and trust Codecov GPG key
       shell: bash
       run: |
-        gpg --batch --import <(curl -fsSL https://keybase.io/codecovsecurity/pgp_keys.asc)
-        echo "27034E7FDB850E0BBC2C62FF806BB28AED779869:6:" | gpg --import-ownertrust
+        FPR="27034E7FDB850E0BBC2C62FF806BB28AED779869"
+        TMP="$(mktemp)"
+        # Keybase has intermittently 404'd (codecov/codecov-action#1876); fall back to a keyserver.
+        if curl -fsSL "https://keybase.io/codecovsecurity/pgp_keys.asc" -o "$TMP"; then
+          :
+        elif gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-keys "$FPR" 2>/dev/null; then
+          gpg --batch --export "$FPR" > "$TMP" || TMP=""
+        else
+          TMP=""
+        fi
+        # Only trust if the fetched key actually carries the pinned fingerprint.
+        if [ -n "$TMP" ] && gpg --batch --import "$TMP" 2>/dev/null && gpg --batch --list-keys "$FPR" >/dev/null 2>&1; then
+          echo "$FPR:6:" | gpg --import-ownertrust
+          echo "Codecov key $FPR imported and trusted."
+        else
+          echo "::warning::Could not pre-trust Codecov GPG key $FPR — codecov-action will verify on its own (upload is fail_ci_if_error:false)."
+        fi
