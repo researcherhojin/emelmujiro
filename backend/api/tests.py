@@ -2619,10 +2619,12 @@ class ContactSpamCheckTestCase(APITestCase):
 
     def test_is_spam_attempt_blocks_on_repeated_failures(self):
         """Accumulated failed attempts from an IP are rejected as spam"""
+        # attempt_count stays below the IP rate-limit threshold (3) so the
+        # failure_count branch is what triggers the block, not the rate limit.
         ContactAttempt.objects.create(
             ip_address="10.0.0.3",
             email="bot@example.com",
-            attempt_count=MAX_FAILED_CONTACT_ATTEMPTS,
+            attempt_count=1,
             failure_count=MAX_FAILED_CONTACT_ATTEMPTS,
         )
         view = ContactView()
