@@ -91,8 +91,9 @@ Thumbs.db
 # Husky
 .husky/_
 
-# Claude settings
-.claude/
+# Claude settings — local-only, EXCEPT shared path-scoped rules (operational docs, must travel with the repo like CLAUDE.md)
+.claude/*
+!.claude/rules/
 
 # Internal-only notes — never tracked
 .private/
