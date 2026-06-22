@@ -42,6 +42,6 @@
   },
   "overrides": {
     "minimatch": ">=10.2.1",
-    "@tiptap/core": "^3.26.1"
+    "@tiptap/core": "^3.27.1"
   }
 }
