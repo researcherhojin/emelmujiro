@@ -7,6 +7,18 @@ set -euo pipefail
 REPO_DIR="${DEPLOY_REPO_DIR:-$HOME/workspace/emelmujiro}"
 LOG_PREFIX="[auto-deploy]"
 
+# Docker Desktop ships its credential helper (docker-credential-desktop) inside
+# the app bundle. The deploy webhook runs under a non-interactive launchd PATH
+# that does NOT include this dir, so `docker compose up -d --build backend` fails
+# resolving registry image metadata (COPY --from=ghcr.io/astral-sh/uv) with
+# `docker-credential-desktop: executable file not found`. set -e then aborts
+# BEFORE the frontend container/health steps — but the frontend `npm run build`
+# (bind mount) already ran, so the site looked deployed while the backend kept
+# running stale code. Prepend the Docker bin dir so the helper resolves.
+if [ -d "/Applications/Docker.app/Contents/Resources/bin" ]; then
+  export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
+fi
+
 echo "$LOG_PREFIX Starting deploy at $(date)"
 
 cd "$REPO_DIR"
