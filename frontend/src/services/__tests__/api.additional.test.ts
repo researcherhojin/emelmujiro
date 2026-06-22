@@ -229,13 +229,6 @@ describe('API Service - Mock Mode for GitHub Pages', () => {
       const result = await api.logout();
       expect(result.status).toBe(200);
     });
-
-    it('should return mock register response', async () => {
-      const result = await api.register('new@test.com', 'pass', 'User');
-      expect(result.status).toBe(200);
-      expect(result.data).toHaveProperty('access');
-      expect(result.data.user).toHaveProperty('name', 'User');
-    });
   });
 
   describe('Notification Operations', () => {

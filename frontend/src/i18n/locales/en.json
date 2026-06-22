@@ -287,8 +287,7 @@
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
     "loggingIn": "Logging in...",
-    "loginFailed": "Login failed.",
-    "registerFailed": "Registration failed."
+    "loginFailed": "Login failed."
   },
   "blogErrors": {
     "fetchPostsFailed": "Failed to load posts.",

@@ -7,7 +7,6 @@ const mockApi = vi.hoisted(() => ({
   getUser: vi.fn(),
   login: vi.fn(),
   logout: vi.fn(),
-  register: vi.fn(),
 }));
 
 vi.mock('../../services/api', () => ({
@@ -27,20 +26,12 @@ vi.mock('../../utils/sentry', () => ({
 
 // Test component to consume the context
 const TestComponent: React.FC = () => {
-  const { user, isAuthenticated, loading, error, login, logout, register, updateUser, clearError } =
+  const { user, isAuthenticated, loading, error, login, logout, updateUser, clearError } =
     useAuth();
 
   const handleLogin = async () => {
     try {
       await login('test@example.com', 'password');
-    } catch {
-      // Silently catch errors for testing
-    }
-  };
-
-  const handleRegister = async () => {
-    try {
-      await register('new@example.com', 'password123', 'New User');
     } catch {
       // Silently catch errors for testing
     }
@@ -55,7 +46,6 @@ const TestComponent: React.FC = () => {
       <div data-testid="error">{error || 'no-error'}</div>
       <button onClick={handleLogin}>Login</button>
       <button onClick={logout}>Logout</button>
-      <button onClick={handleRegister}>Register</button>
       <button onClick={() => updateUser({ name: 'Updated Name' })}>Update</button>
       <button onClick={clearError}>Clear Error</button>
     </div>
@@ -382,57 +372,6 @@ describe('AuthContext', () => {
     });
   });
 
-  test('handles successful registration', async () => {
-    mockApi.register.mockResolvedValueOnce({
-      data: {
-        user: { email: 'new@example.com', id: 2, name: 'New User' },
-      },
-    });
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId('loading')).toHaveTextContent('false');
-    });
-
-    fireEvent.click(screen.getByText('Register'));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
-      expect(screen.getByTestId('user')).toHaveTextContent('new@example.com');
-    });
-
-    expect(mockApi.register).toHaveBeenCalledWith('new@example.com', 'password123', 'New User');
-    expect(localStorage.setItem).toHaveBeenCalledWith('auth_hint', '1');
-  });
-
-  test('handles failed registration', async () => {
-    const error = { message: 'Email already exists' };
-    mockApi.register.mockRejectedValueOnce(error);
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId('loading')).toHaveTextContent('false');
-    });
-
-    fireEvent.click(screen.getByText('Register'));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('error')).toHaveTextContent('Email already exists');
-    });
-
-    expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
-  });
-
   test('updates user data with updateUser', async () => {
     // Start logged in
     localStorage.setItem('auth_hint', '1');
@@ -520,29 +459,6 @@ describe('AuthContext', () => {
     await waitFor(() => {
       // Falls back to i18n.t('auth.loginFailed') which returns the key
       expect(screen.getByTestId('error')).toHaveTextContent('auth.loginFailed');
-    });
-  });
-
-  test('falls back to i18n translation for register error when no message', async () => {
-    // Reject with an error object that has neither userMessage nor message
-    const error = { code: 500 };
-    mockApi.register.mockRejectedValueOnce(error);
-
-    render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId('loading')).toHaveTextContent('false');
-    });
-
-    fireEvent.click(screen.getByText('Register'));
-
-    await waitFor(() => {
-      // Falls back to i18n.t('auth.registerFailed') which returns the key
-      expect(screen.getByTestId('error')).toHaveTextContent('auth.registerFailed');
     });
   });
 

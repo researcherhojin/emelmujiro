@@ -287,8 +287,7 @@
     "password": "비밀번호",
     "passwordPlaceholder": "비밀번호를 입력하세요",
     "loggingIn": "로그인 중...",
-    "loginFailed": "로그인에 실패했습니다.",
-    "registerFailed": "회원가입에 실패했습니다."
+    "loginFailed": "로그인에 실패했습니다."
   },
   "blogErrors": {
     "fetchPostsFailed": "포스트를 불러오는데 실패했습니다.",

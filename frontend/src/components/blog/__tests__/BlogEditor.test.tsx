@@ -46,7 +46,6 @@ vi.mock('../../../contexts/AuthContext', () => ({
     error: null,
     login: vi.fn(),
     logout: vi.fn(),
-    register: vi.fn(),
     updateUser: vi.fn(),
     clearError: vi.fn(),
   }),

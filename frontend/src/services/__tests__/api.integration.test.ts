@@ -59,17 +59,6 @@ describe('API Service - Integration Tests', () => {
       expect(result.data).toEqual({});
     });
 
-    it('should return mock register response', async () => {
-      const { api } = await import('../api');
-      const result = await api.register('new@user.com', 'password123', 'New User');
-
-      expect(result.status).toBe(200);
-      expect(result.data).toHaveProperty('access');
-      expect(result.data).toHaveProperty('refresh');
-      expect(result.data.user).toHaveProperty('email', 'new@user.com');
-      expect(result.data.user).toHaveProperty('name', 'New User');
-    });
-
     it('should return mock notifications', async () => {
       const { api } = await import('../api');
       const result = await api.getNotifications(1);

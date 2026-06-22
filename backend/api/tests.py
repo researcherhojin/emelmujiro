@@ -745,27 +745,6 @@ class AuthenticationAPITestCase(APITestCase):
     def setUpTestData(cls):
         cls.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass12345")
 
-    def test_user_registration(self):
-        """Test user registration"""
-        url = reverse("register")
-        data = {
-            "username": "newuser",
-            "email": "newuser@example.com",
-            "password": "newpass123456",
-            "password_confirm": "newpass123456",
-            "first_name": "New",
-            "last_name": "User",
-        }
-        response: Response = self.client.post(url, data, format="json")  # type: ignore
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        assert response.data is not None
-        self.assertIn("user", response.data)
-        self.assertNotIn("access", response.data)
-        self.assertNotIn("refresh", response.data)
-        # Tokens are now in httpOnly cookies only
-        self.assertIn("access_token", response.cookies)
-        self.assertIn("refresh_token", response.cookies)
-
     def test_user_login(self):
         """Test user login"""
         url = reverse("login")
@@ -809,65 +788,6 @@ class AuthenticationAPITestCase(APITestCase):
         """Test login with missing fields"""
         url = reverse("login")
         data = {"username": "testuser"}
-        response: Response = self.client.post(url, data, format="json")  # type: ignore
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_password_mismatch_registration(self):
-        """Test registration with password mismatch"""
-        url = reverse("register")
-        data = {
-            "username": "newuser",
-            "email": "newuser@example.com",
-            "password": "newpass123456",
-            "password_confirm": "differentpass123",
-        }
-        response: Response = self.client.post(url, data, format="json")  # type: ignore
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        assert response.data is not None
-        self.assertIn("error", response.data)
-
-    def test_short_password_registration(self):
-        """Test registration with password shorter than 12 characters"""
-        url = reverse("register")
-        data = {
-            "username": "newuser",
-            "email": "newuser@example.com",
-            "password": "short123",
-            "password_confirm": "short123",
-        }
-        response: Response = self.client.post(url, data, format="json")  # type: ignore
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        assert response.data is not None
-        self.assertIn("12", response.data["error"])
-
-    def test_duplicate_username_registration(self):
-        """Test registration with existing username"""
-        url = reverse("register")
-        data = {
-            "username": "testuser",
-            "email": "another@example.com",
-            "password": "newpass123456",
-            "password_confirm": "newpass123456",
-        }
-        response: Response = self.client.post(url, data, format="json")  # type: ignore
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_duplicate_email_registration(self):
-        """Test registration with existing email"""
-        url = reverse("register")
-        data = {
-            "username": "anotheruser",
-            "email": "test@example.com",
-            "password": "newpass123456",
-            "password_confirm": "newpass123456",
-        }
-        response: Response = self.client.post(url, data, format="json")  # type: ignore
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_missing_fields_registration(self):
-        """Test registration with missing required fields"""
-        url = reverse("register")
-        data = {"username": "newuser"}
         response: Response = self.client.post(url, data, format="json")  # type: ignore
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 

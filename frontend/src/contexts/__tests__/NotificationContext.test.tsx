@@ -53,7 +53,6 @@ vi.mock('../../services/api', () => ({
     ),
     login: vi.fn(),
     logout: vi.fn(),
-    register: vi.fn(),
     getBlogPosts: vi.fn(() =>
       Promise.resolve({ data: { count: 0, next: null, previous: null, results: [] } })
     ),
