@@ -19,6 +19,26 @@ if [ -d "/Applications/Docker.app/Contents/Resources/bin" ]; then
   export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
 fi
 
+# Even with the helper on PATH, `credsStore: desktop` makes docker-credential-desktop
+# HANG under the non-interactive launchd session (it can't reach Docker Desktop's
+# credential backend), so BuildKit's metadata resolution for the public base images
+# (python:3.12-slim, ghcr.io/astral-sh/uv) times out with `DeadlineExceeded` and the
+# backend image never rebuilds. Build under a scoped Docker config that drops
+# credsStore (public images then resolve anonymously) while preserving cli-plugins
+# (so `docker compose` exists), contexts (so the desktop-linux daemon connection
+# resolves), and buildx. Selective copy — a blanket `cp -R ~/.docker` hits the unix
+# sockets under it and trips set -e.
+if [ -f "$HOME/.docker/config.json" ]; then
+  DEPLOY_DOCKER_CONFIG="$HOME/.docker-deploy-config"
+  rm -rf "$DEPLOY_DOCKER_CONFIG"
+  mkdir -p "$DEPLOY_DOCKER_CONFIG"
+  sed '/"credsStore"/d' "$HOME/.docker/config.json" > "$DEPLOY_DOCKER_CONFIG/config.json"
+  for _d in cli-plugins contexts buildx; do
+    [ -e "$HOME/.docker/$_d" ] && cp -R "$HOME/.docker/$_d" "$DEPLOY_DOCKER_CONFIG/$_d"
+  done
+  export DOCKER_CONFIG="$DEPLOY_DOCKER_CONFIG"
+fi
+
 echo "$LOG_PREFIX Starting deploy at $(date)"
 
 cd "$REPO_DIR"
