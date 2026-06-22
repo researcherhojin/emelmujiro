@@ -7,6 +7,7 @@
     "@sentry/react": "^10.59.0",
     "@tailwindcss/typography": "^0.5.19",
     "@tiptap/core": "^3.27.1",
+    "form-data": "^4.0.6",
     "@tiptap/extension-code-block-lowlight": "^3.27.1",
     "@tiptap/extension-image": "^3.27.1",
     "@tiptap/extension-link": "^3.27.1",
@@ -104,6 +105,7 @@
   },
   "overrides": {
     "minimatch": ">=10.2.1",
-    "@tiptap/core": "^3.27.1"
+    "@tiptap/core": "^3.27.1",
+    "form-data": "^4.0.6"
   }
 }
