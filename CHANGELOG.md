@@ -101,6 +101,8 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 - CLAUDE.md: Gotcha #16 — Node major bump is a 3-file lockstep, not a dependabot drive-by (`bd4b7fe`)
 - Journal: 2026-04-16 session consolidation + framer-motion baseline note (`f803626`, `45797c2`)
 - README / CLAUDE.md / CHANGELOG.md / CONTRIBUTING.md refactored to Karpathy/gstack style — separate principles from implementation snapshots, move incident lore to commit references, tighten invariants
+- `.npmrc`: corrected stale legacy-peer-deps rationale — the "React 19.2 peers resolve cleanly" comment omitted that a fresh `npm install` still ERESOLVEs because `eslint-plugin-jsx-a11y@6.10.2` peer-caps eslint at `^9` while we run `^10` (now cross-references Gotcha #13) (`ca415cb0`)
+- cSpell dictionary +6 terms surfaced by workflows / rules / locales: `axios`, `dompurify`, `hmac`, `makemigrations`, `autorun`, `Ewha` (`6ccbb381`, `8690fb5b`)
 
 ## [1.0.0] - 2026-04-16
 
