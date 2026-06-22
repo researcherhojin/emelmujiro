@@ -26,7 +26,6 @@ from .admin_views import (
     admin_analytics_pages,
 )
 from .auth import (
-    register,
     login,
     logout,
     get_user,
@@ -71,7 +70,6 @@ urlpatterns = [
     path("admin/analytics/visits/", admin_analytics_visits, name="admin-analytics-visits"),
     path("admin/analytics/pages/", admin_analytics_pages, name="admin-analytics-pages"),
     # Authentication endpoints
-    path("auth/register/", register, name="register"),
     path("auth/login/", login, name="login"),
     path("auth/logout/", logout, name="logout"),
     path("auth/user/", get_user, name="get_user"),

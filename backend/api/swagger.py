@@ -20,7 +20,7 @@ schema_view = get_schema_view(
         This API uses JWT (JSON Web Token) authentication.
 
         ### Authentication Flow:
-        1. Obtain tokens via `/api/auth/register/` or `/api/auth/login/`.
+        1. Obtain tokens via `/api/auth/login/`.
         2. Include the `access` token in the header: `Authorization: Bearer <access_token>`
         3. When the `access` token expires, use the `refresh` token to obtain a new one.
 

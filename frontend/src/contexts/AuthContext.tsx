@@ -25,7 +25,6 @@ interface AuthContextType {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (email: string, password: string, name: string) => Promise<void>;
   updateUser: (userData: Partial<User>) => void;
   clearError: () => void;
 }
@@ -120,24 +119,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('auth_hint');
   }, []);
 
-  const register = useCallback(async (email: string, password: string, name: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await api.register(email, password, name);
-      const { user: userData } = response.data;
-      setUser(userData);
-      setUserContext({ id: userData.id, email: userData.email });
-      localStorage.setItem('auth_hint', '1');
-    } catch (err) {
-      const error = err as Error & { userMessage?: string };
-      setError(error.userMessage || error.message || i18n.t('auth.registerFailed'));
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   const updateUser = useCallback((userData: Partial<User>) => {
     setUser((prev) => (prev ? { ...prev, ...userData } : null));
   }, []);
@@ -154,11 +135,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       error,
       login,
       logout,
-      register,
       updateUser,
       clearError,
     }),
-    [user, loading, error, login, logout, register, updateUser, clearError]
+    [user, loading, error, login, logout, updateUser, clearError]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

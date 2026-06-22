@@ -189,18 +189,6 @@ describe('API Service - Non-Mock Mode (real axios paths)', () => {
       await api.logout();
       expect(mockPost).toHaveBeenCalledWith('auth/logout/');
     });
-
-    it('should call axios.post for register', async () => {
-      const { api } = await import('../api');
-      await api.register('new@test.com', 'pass123', 'New User');
-      expect(mockPost).toHaveBeenCalledWith('auth/register/', {
-        username: 'new@test.com',
-        email: 'new@test.com',
-        password: 'pass123',
-        password_confirm: 'pass123',
-        first_name: 'New User',
-      });
-    });
   });
 
   describe('Notification Operations (non-mock)', () => {

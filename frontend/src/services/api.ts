@@ -279,22 +279,6 @@ export const api = {
     }
     return axiosInstance.post('auth/logout/');
   },
-  register: (email: string, password: string, name: string) => {
-    if (USE_MOCK_API) {
-      return mockResponse({
-        access: 'mock-access-token',
-        refresh: 'mock-refresh-token',
-        user: { id: 1, email, name },
-      });
-    }
-    return axiosInstance.post('auth/register/', {
-      username: email,
-      email,
-      password,
-      password_confirm: password,
-      first_name: name,
-    });
-  },
 
   // Notifications
   getNotifications: (page: number = 1) => {

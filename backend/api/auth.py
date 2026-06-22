@@ -43,48 +43,6 @@ def _clear_jwt_cookies(response):
     response.delete_cookie(settings.JWT_REFRESH_COOKIE, path="/")
 
 
-@api_view(["POST"])
-@permission_classes([AllowAny])
-@throttle_classes([AnonRateThrottle])
-def register(request):
-    """
-    User registration endpoint
-    """
-    username = request.data.get("username")
-    email = request.data.get("email")
-    password = request.data.get("password")
-    password_confirm = request.data.get("password_confirm")
-    first_name = request.data.get("first_name", "")
-    last_name = request.data.get("last_name", "")
-
-    # Validation
-    if not username or not email or not password:
-        return Response({"error": "Username, email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
-
-    if password != password_confirm:
-        return Response({"error": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
-
-    if len(password) < 12:
-        return Response({"error": "Password must be at least 12 characters"}, status=status.HTTP_400_BAD_REQUEST)
-
-    if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
-        return Response(
-            {"error": "Registration failed. Please try different credentials."}, status=status.HTTP_400_BAD_REQUEST
-        )
-
-    # Create user
-    user = User.objects.create_user(
-        username=username, email=email, password=password, first_name=first_name, last_name=last_name
-    )
-
-    # Generate tokens
-    refresh = RefreshToken.for_user(user)
-
-    response = Response({"user": UserSerializer(user).data}, status=status.HTTP_201_CREATED)
-    _set_jwt_cookies(response, refresh.access_token, refresh)
-    return response
-
-
 class LoginRateThrottle(AnonRateThrottle):
     """Dedicated brute-force throttle for the login endpoint (per-IP)."""
 
