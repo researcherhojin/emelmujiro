@@ -4294,3 +4294,29 @@ class UrlsDebugBranchTestCase(TestCase):
 
         # Reload with original settings to avoid side effects
         importlib.reload(urls_module)
+
+
+class LoginThrottleTestCase(APITestCase):
+    """LoginRateThrottle caps login attempts at the 'login' scope rate (10/hour)."""
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+        User.objects.create_user(username="throttleuser", email="throttle@example.com", password="testpass12345")
+
+    def tearDown(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
+    def test_login_throttled_after_rate_exceeded(self):
+        """The 11th login attempt from one IP within the hour returns 429."""
+        url = reverse("login")
+        data = {"username": "throttleuser", "password": "wrongpassword"}
+        statuses = [
+            self.client.post(url, data, format="json", REMOTE_ADDR="203.0.113.7").status_code for _ in range(11)
+        ]
+        # First 10 are processed (401 invalid creds), the 11th is throttled.
+        self.assertEqual(statuses[9], status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(statuses[10], status.HTTP_429_TOO_MANY_REQUESTS)

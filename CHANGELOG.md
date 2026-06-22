@@ -69,6 +69,7 @@ Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com
 - urllib3 2.6.3 → 2.7.0: patched CVE-2026-44431 (information disclosure via cross-origin redirects forwarding sensitive headers) and CVE-2026-44432 (DoS from excessive HTTP response decompression); Trivy HIGH-severity gate was blocking every PR Security Scan (`a7a2cc6`)
 - pyjwt 2.12.1 → 2.13.0: patched CVE-2026-48526 (authentication bypass via forged JSON Web Tokens), a `djangorestframework-simplejwt` transitive bumped in `uv.lock` only (simplejwt pins `pyjwt>=1.7.1`); Trivy HIGH gate (`046b2cff`)
 - form-data 4.0.5 → 4.0.6: patched CVE-2026-12143 (CRLF injection via unescaped multipart field/file names), an axios transitive pinned via root + frontend `^4.0.6` override (axios accepts `^4.0.5`); Trivy HIGH gate (`046b2cff`)
+- Dedicated brute-force throttle on the login endpoint: new `LoginRateThrottle` (`scope = "login"`, `10/hour` per IP) replaces reliance on the global `anon` rate (`100/hour`). `POST /api/auth/login/` previously allowed 100 password guesses per IP per hour against the single admin account with no account lockout; the new scope tightens that to 10, matching the priority of the `contact` (5/hour) and `newsletter` (3/hour) scopes. Regression test asserts the 11th attempt returns 429
 
 ### Dependencies
 
