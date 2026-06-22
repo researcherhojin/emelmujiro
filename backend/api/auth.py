@@ -85,8 +85,15 @@ def register(request):
     return response
 
 
+class LoginRateThrottle(AnonRateThrottle):
+    """Dedicated brute-force throttle for the login endpoint (per-IP)."""
+
+    scope = "login"
+
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@throttle_classes([LoginRateThrottle])
 def login(request):
     """
     User login endpoint
