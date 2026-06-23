@@ -1063,6 +1063,9 @@ class HealthCheckAPITestCase(APITestCase):
         assert response.data is not None
         self.assertEqual(response.data["status"], "healthy")
         self.assertIn("timestamp", response.data)
+        # Deployed commit is baked into the image at build time; defaults to
+        # "unknown" outside a built container (tests, local dev).
+        self.assertIn("commit", response.data)
 
 
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})

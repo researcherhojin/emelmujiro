@@ -13,6 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
+# Deployed git commit, baked into the image at build time (see backend/Dockerfile).
+# Surfaced by /api/health/ so the deploy script can assert the live backend runs
+# the pulled code instead of trusting a 200 from a stale container.
+GIT_COMMIT = os.environ.get("GIT_COMMIT", "unknown")
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 if not SECRET_KEY:

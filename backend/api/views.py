@@ -621,7 +621,7 @@ class NewsletterView(APIView):
 @throttle_classes([])
 def health_check(request):
     """Server health check (no throttle — called by Docker healthcheck every 30s)"""
-    return Response({"status": "healthy", "timestamp": timezone.now()})
+    return Response({"status": "healthy", "timestamp": timezone.now(), "commit": settings.GIT_COMMIT})
 
 
 @api_view(["GET"])

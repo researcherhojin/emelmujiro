@@ -105,6 +105,11 @@ VITE_API_URL="${VITE_API_URL:-https://api.emelmujiro.com/api}" npm run build
 # Ensure all services are running
 echo "$LOG_PREFIX Starting services..."
 cd "$REPO_DIR"
+# Bake the just-pulled commit into the backend image (compose build arg → image
+# ENV → /api/health/). Asserted post-deploy so a no-op/failed backend build can't
+# masquerade as success via a 200 from the stale container.
+GIT_COMMIT=$(git rev-parse HEAD)
+export GIT_COMMIT
 docker compose up -d --build backend
 if [ "$NGINX_CONF_CHANGED" = true ]; then
   # Validate the new nginx.conf before applying it, so a syntax error aborts the
@@ -156,6 +161,20 @@ if [ "$backend_ok" = false ] || [ "$frontend_ok" = false ]; then
   [ "$frontend_ok" = false ] && echo "$LOG_PREFIX ERROR: Frontend health check did not pass within 60s"
   echo "$LOG_PREFIX Deploy failed: service(s) not healthy"
   exit 1
+fi
+
+# A 200 from /api/health/ only proves *a* backend is up — it passes against a
+# stale container too (exactly what masked the silent backend-deploy failure).
+# Assert the live backend reports the commit we just deployed.
+LIVE_COMMIT=$(curl -sf http://127.0.0.1:8000/api/health/ 2>/dev/null | sed -n 's/.*"commit"[ ]*:[ ]*"\([^"]*\)".*/\1/p')
+if [ "$LIVE_COMMIT" = "unknown" ] || [ -z "$LIVE_COMMIT" ]; then
+  echo "$LOG_PREFIX WARNING: backend reports commit='$LIVE_COMMIT' (image built without GIT_COMMIT?) — cannot verify deployed code"
+elif [ "$LIVE_COMMIT" != "$GIT_COMMIT" ]; then
+  echo "$LOG_PREFIX ERROR: backend is running commit $LIVE_COMMIT but HEAD is $GIT_COMMIT — backend image did NOT rebuild"
+  echo "$LOG_PREFIX Deploy failed: stale backend"
+  exit 1
+else
+  echo "$LOG_PREFIX Backend verified running deployed commit ${GIT_COMMIT:0:8}"
 fi
 
 echo "$LOG_PREFIX Deploy completed at $(date)"
