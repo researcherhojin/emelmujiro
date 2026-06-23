@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
       cache_from:
         - emelmujiro/backend:latest
+      args:
+        GIT_COMMIT: ${GIT_COMMIT:-unknown}
     image: emelmujiro/backend:${TAG:-latest}
     container_name: emelmujiro-backend
     restart: unless-stopped

@@ -25,6 +25,13 @@ RUN uv sync --frozen --no-dev
 # Copy project
 COPY . .
 
+# Bake the deployed git commit into the image so /api/health/ can report exactly
+# which code is running. Placed after COPY . . so it only invalidates this final
+# cheap layer (not the dep install). Lets auto-deploy.sh assert the live backend
+# matches the pulled HEAD instead of trusting a bare 200 from a stale container.
+ARG GIT_COMMIT=unknown
+ENV GIT_COMMIT=$GIT_COMMIT
+
 # Create non-root user and data directory for SQLite
 RUN adduser --disabled-password --gecos '' appuser && \
     mkdir -p /app/data /app/logs && \
