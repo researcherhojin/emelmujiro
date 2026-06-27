@@ -171,7 +171,9 @@ const BlogDetailPage: React.FC = memo(() => {
             <SEOHelmet
               title={`${post.title} | ${t('blogDetail.blogTitle')}`}
               description={post.description || post.title}
-              keywords={`${post.category}, ${t('blogDetail.blogKeywords')}`}
+              keywords={[...(post.tags ?? []), post.category, t('blogDetail.blogKeywords')]
+                .filter(Boolean)
+                .join(', ')}
               image={post.image_url}
               type="article"
               article={{
