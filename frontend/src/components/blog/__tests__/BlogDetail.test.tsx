@@ -1060,6 +1060,39 @@ describe('BlogDetail Component', () => {
     expect(screen.getByText('Bare Post')).toBeInTheDocument();
   });
 
+  test('renders post without tags, falling back to empty keywords list (line 174)', () => {
+    // tags is undefined here, exercising the `post.tags ?? []` fallback branch
+    // that feeds the SEOHelmet keywords prop.
+    mockPost = {
+      id: 1,
+      title: 'No Tags Post',
+      content: 'Content',
+      description: 'Excerpt',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+      author: 'Author',
+      category: 'Test',
+      is_published: true,
+      slug: 'no-tags-post',
+      date: '2024-01-01',
+    };
+    (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
+      currentPost: mockPost,
+      loading: false,
+      error: null,
+      fetchPostById: mockFetchPostById,
+      clearCurrentPost: mockClearCurrentPost,
+      posts: [],
+      fetchPosts: vi.fn(),
+      totalPages: 1,
+      currentPage: 1,
+    });
+
+    renderComponent();
+
+    expect(screen.getByText('No Tags Post')).toBeInTheDocument();
+  });
+
   test('handleTogglePublish returns early when id is undefined (line 40)', async () => {
     // Remove id from params to trigger the early return guard
     mockParams = {};
