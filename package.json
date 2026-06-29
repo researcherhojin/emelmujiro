@@ -29,7 +29,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
+    "concurrently": "^10.0.3",
     "eslint": "^10.4.1",
     "husky": "^9.1.7",
     "knip": "^6.23.0",
