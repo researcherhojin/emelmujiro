@@ -76,7 +76,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 **Deployment**: Never `rm -rf frontend/build` (breaks nginx volume mount) — use `rm -rf frontend/build/*`. Docker ports bind to `127.0.0.1` only. `SECRET_KEY` loaded via `env_file` — do NOT set in docker-compose `environment` section.
 
-**SSG prerender + nginx routing**: `scripts/auto-deploy.sh` runs `npm run build`, which invokes `scripts/prerender.js` to generate `build/<path>/index.html` for **10 routes** (5 static × ko/en). Three non-obvious couplings:
+**SSG prerender + nginx routing**: `scripts/auto-deploy.sh` runs `npm run build`, which invokes `frontend/scripts/prerender.js` (referenced as `scripts/prerender.js` in the build script, which runs from `frontend/`) to generate `build/<path>/index.html` for **10 routes** (5 static × ko/en). Three non-obvious couplings:
 
 - `frontend/nginx.conf` `location /` uses `try_files $uri $uri/index.html =404` — the explicit `$uri/index.html`, NOT `$uri/`, because directory lookup triggers nginx's auto-301 trailing-slash append that downgrades `https://` to `http://` via `absolute_redirect`. The `=404` (not `/index.html` fallback) is what prevents soft-200s for unknown URLs.
 - SPA-fallback routes that prerender does NOT cover (dynamic blog posts `/insights/:slug`, admin `/insights/new` and `/insights/edit/:id`, standalone `/login`) get an explicit regex `location ~ ^/(en/)?(insights/.+|login)$` falling back to `/index.html`. **When adding a new dynamic route to `App.tsx`, update this regex** — otherwise it 404s in production.
