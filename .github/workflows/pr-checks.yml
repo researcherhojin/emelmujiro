@@ -163,7 +163,7 @@ jobs:
           check_badge "Playwright" "@playwright/test"
           if [ "$ERRORS" -gt 0 ]; then
             echo "❌ $ERRORS README badge(s) out of sync with package.json"
-            echo "Run: scripts/update-test-counts.sh and manually update badges"
+            echo "Run: scripts/sync-readme-badges.sh (auto-heals on main via the readme-sync job)"
             exit 1
           fi
           echo "All README badges match package.json"

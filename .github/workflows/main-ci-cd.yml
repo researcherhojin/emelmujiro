@@ -183,10 +183,10 @@ jobs:
   # README Sync — auto-corrects test count drift in README.md
   # ========================================
   # Replaces the prior strict drift gate that broke CI on a single
-  # Keep README test-count badges in sync with actual test output.
-  # Uses counts passed from prior test jobs (no re-run).
+  # Keep README badges in sync on main: test counts (from prior test-job
+  # outputs, no re-run) and shields.io version badges (from package.json).
   readme-sync:
-    name: Sync Test Badges
+    name: Sync README Badges
     runs-on: ubuntu-latest
     needs: [frontend-test, backend-test]
     if: github.ref == 'refs/heads/main'
@@ -214,6 +214,12 @@ jobs:
           sed -i -E "s/Vitest \([0-9]+ tests\)/Vitest (${FRONTEND_COUNT} tests)/g" README.md
           sed -i -E "s/Django unittest \([0-9]+ tests\)/Django unittest (${BACKEND_COUNT} tests)/g" README.md
 
+      - name: Sync version badges to package.json
+        # Self-heals README shields.io badges after dependency merges. Dependabot
+        # patch/minor auto-merges bump frontend/package.json but not the badge, so
+        # without this the drift would fail Quick Validation on every open PR.
+        run: ./scripts/sync-readme-badges.sh
+
       - name: Commit and push if README changed
         run: |
           if git diff --quiet README.md; then
@@ -223,7 +229,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add README.md
-          git commit -m "chore(readme): auto-sync test counts [skip ci]"
+          git commit -m "chore(readme): auto-sync test counts + version badges [skip ci]"
           # Retry handles the rare race where main moves between checkout
           # and push (workflow-level cancel-in-progress should prevent it,
           # but the retry is cheap insurance).
