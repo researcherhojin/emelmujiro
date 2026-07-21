@@ -230,8 +230,7 @@ describe('i18n configuration', () => {
 
       expect(botI18n).toBeDefined();
       const detection = botI18n.options.detection as
-        | { order?: string[]; caches?: string[] }
-        | undefined;
+        { order?: string[]; caches?: string[] } | undefined;
       expect(detection?.order).toEqual(['urlPrefix', 'htmlTag']);
       expect(detection?.caches).toEqual([]);
 

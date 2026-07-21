@@ -89,12 +89,7 @@ interface WebVitalsMetric {
   delta: number;
   entries: PerformanceEntry[];
   navigationType:
-    | 'navigate'
-    | 'reload'
-    | 'back-forward'
-    | 'back-forward-cache'
-    | 'prerender'
-    | 'restore';
+    'navigate' | 'reload' | 'back-forward' | 'back-forward-cache' | 'prerender' | 'restore';
 }
 
 // Custom event types
