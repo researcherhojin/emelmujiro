@@ -134,7 +134,7 @@ graph LR
 ## Key Features
 
 - **Bilingual (i18n)** — URL-based routing: Korean default (`/contact`), English `/en/contact`
-- **Teaching History** — 41 entries across 5 years (2022–2026), org type filter (4 categories)
+- **Teaching History** — 42 entries across 5 years (2022–2026), org type filter (4 categories)
 - **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments
 - **Auth** — httpOnly cookie JWT with shared-promise refresh queue (prevents concurrent 401 cascade)
 - **Testimonials** — Enterprise + 고용노동부 K-디지털 reviews, dual-row auto-scroll carousel
