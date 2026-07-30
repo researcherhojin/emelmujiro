@@ -24,7 +24,9 @@ import day1Logo from '../assets/logos/day1Logo.webp';
 import klfccLogo from '../assets/logos/klfccLogo.svg';
 import imunityLogo from '../assets/logos/imunityLogo.svg';
 
-export type CompanyCategory = 'enterprise' | 'education' | 'public';
+// Not exported — only `PartnerCompany.category` below consumes it. Export it
+// again if a consumer outside this file ever needs to narrow on the union.
+type CompanyCategory = 'enterprise' | 'education' | 'public';
 
 export interface PartnerCompany {
   id: string;
