@@ -353,4 +353,111 @@ describe('ServiceModal', () => {
 
     expect(screen.getByText('footer.mainServices')).toBeInTheDocument();
   });
+
+  describe('swipe and horizontal wheel navigation', () => {
+    const renderAt = (currentIndex: number) => {
+      render(
+        <ServiceModal
+          isOpen={true}
+          services={multiServices}
+          currentIndex={currentIndex}
+          onNavigate={onNavigate}
+          onClose={onClose}
+          onContactClick={onContactClick}
+        />
+      );
+      return screen.getByTestId('service-modal-panel');
+    };
+
+    const swipe = (panel: HTMLElement, dx: number, dy = 0) => {
+      fireEvent.touchStart(panel, { touches: [{ clientX: 200, clientY: 200 }] });
+      fireEvent.touchEnd(panel, {
+        changedTouches: [{ clientX: 200 + dx, clientY: 200 + dy }],
+      });
+    };
+
+    it('swiping left goes to the next service', () => {
+      swipe(renderAt(0), -80);
+      expect(onNavigate).toHaveBeenCalledWith(1);
+    });
+
+    it('swiping right goes to the previous service', () => {
+      swipe(renderAt(1), 80);
+      expect(onNavigate).toHaveBeenCalledWith(0);
+    });
+
+    it('ignores a swipe shorter than the threshold', () => {
+      swipe(renderAt(0), -20);
+      expect(onNavigate).not.toHaveBeenCalled();
+    });
+
+    it('ignores a mostly vertical swipe so page scrolling still works', () => {
+      swipe(renderAt(0), -60, -200);
+      expect(onNavigate).not.toHaveBeenCalled();
+    });
+
+    it('ignores touchEnd without a preceding touchStart', () => {
+      const panel = renderAt(0);
+      fireEvent.touchEnd(panel, { changedTouches: [{ clientX: 0, clientY: 200 }] });
+      expect(onNavigate).not.toHaveBeenCalled();
+    });
+
+    it('scrolling horizontally right goes to the next service', () => {
+      fireEvent.wheel(renderAt(0), { deltaX: 60, deltaY: 0 });
+      expect(onNavigate).toHaveBeenCalledWith(1);
+    });
+
+    it('scrolling horizontally left goes to the previous service', () => {
+      fireEvent.wheel(renderAt(1), { deltaX: -60, deltaY: 0 });
+      expect(onNavigate).toHaveBeenCalledWith(0);
+    });
+
+    it('ignores a mostly vertical wheel event', () => {
+      fireEvent.wheel(renderAt(0), { deltaX: 10, deltaY: 100 });
+      expect(onNavigate).not.toHaveBeenCalled();
+    });
+
+    it('accumulates small horizontal deltas within one gesture', () => {
+      const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(1_000);
+      const panel = renderAt(0);
+
+      fireEvent.wheel(panel, { deltaX: 25, deltaY: 0 });
+      expect(onNavigate).not.toHaveBeenCalled();
+
+      nowSpy.mockReturnValue(1_050);
+      fireEvent.wheel(panel, { deltaX: 25, deltaY: 0 });
+      expect(onNavigate).toHaveBeenCalledWith(1);
+
+      nowSpy.mockRestore();
+    });
+
+    it('ignores the momentum tail right after navigating', () => {
+      const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(1_000);
+      const panel = renderAt(0);
+
+      fireEvent.wheel(panel, { deltaX: 60, deltaY: 0 });
+      expect(onNavigate).toHaveBeenCalledTimes(1);
+
+      nowSpy.mockReturnValue(1_100);
+      fireEvent.wheel(panel, { deltaX: 60, deltaY: 0 });
+      expect(onNavigate).toHaveBeenCalledTimes(1);
+
+      nowSpy.mockRestore();
+    });
+
+    it('discards leftover delta when a gesture pauses', () => {
+      const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(1_000);
+      const panel = renderAt(0);
+
+      fireEvent.wheel(panel, { deltaX: 30, deltaY: 0 });
+      expect(onNavigate).not.toHaveBeenCalled();
+
+      // 500 ms later: a new gesture, so the earlier 30 px must not count
+      nowSpy.mockReturnValue(1_500);
+      fireEvent.wheel(panel, { deltaX: 30, deltaY: 0 });
+      expect(onNavigate).not.toHaveBeenCalled();
+
+      nowSpy.mockRestore();
+    });
+  });
 });

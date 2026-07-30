@@ -30,16 +30,12 @@ test.describe('Homepage', () => {
   test('displays feature sections', async ({ page }) => {
     await page.evaluate(() => window.scrollTo(0, 500));
 
-    const featureSection = page
-      .locator('section')
-      .filter({ hasText: /AI|교육|컨설팅/i });
+    const featureSection = page.locator('section').filter({ hasText: /AI|교육|컨설팅/i });
     await expect(featureSection.first()).toBeVisible();
   });
 
   test('footer contains company information', async ({ page }) => {
-    await page.evaluate(() =>
-      window.scrollTo(0, document.body.scrollHeight)
-    );
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
     const footer = page.locator('footer');
     await expect(footer).toContainText('에멜무지로');
@@ -73,7 +69,60 @@ test.describe('Homepage', () => {
 
     await menuButton.click();
 
-    await expect(page.locator('button').filter({ hasText: '강의이력' }).last()).toBeVisible({ timeout: 5000 });
-    await expect(page.locator('button').filter({ hasText: '인사이트' }).last()).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('button').filter({ hasText: '강의이력' }).last()).toBeVisible({
+      timeout: 5000,
+    });
+    await expect(page.locator('button').filter({ hasText: '인사이트' }).last()).toBeVisible({
+      timeout: 5000,
+    });
+  });
+
+  test('service modal navigates by horizontal scroll', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, 'Wheel is the desktop affordance; touch devices swipe instead');
+
+    await page.getByRole('button', { name: /AI 교육 & 강의/ }).click();
+
+    const panel = page.getByTestId('service-modal-panel');
+    await expect(panel).toContainText('AI 교육 & 강의');
+
+    // Horizontal wheel is the sideways affordance on desktop alongside the arrows
+    await panel.hover();
+    await page.mouse.wheel(60, 0);
+    await expect(panel).toContainText('AI 컨설팅');
+
+    // The momentum-tail cooldown swallows anything sooner than 400ms
+    await page.waitForTimeout(500);
+    await page.mouse.wheel(-60, 0);
+    await expect(panel).toContainText('AI 교육 & 강의');
+  });
+
+  test('service modal navigates by swipe on touch devices', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'Touch events require a touch-enabled context');
+
+    await page.getByRole('button', { name: /AI 교육 & 강의/ }).click();
+
+    const panel = page.getByTestId('service-modal-panel');
+    await expect(panel).toContainText('AI 교육 & 강의');
+
+    // Swipe left — mobile hides the arrows, so this is the only way forward
+    await panel.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      const y = rect.y + rect.height / 2;
+      const touch = (clientX: number) =>
+        new Touch({ identifier: 1, target: el, clientX, clientY: y });
+      el.dispatchEvent(
+        new TouchEvent('touchstart', {
+          bubbles: true,
+          touches: [touch(rect.x + rect.width - 20)],
+        })
+      );
+      el.dispatchEvent(
+        new TouchEvent('touchend', {
+          bubbles: true,
+          changedTouches: [touch(rect.x + 20)],
+        })
+      );
+    });
+    await expect(panel).toContainText('AI 컨설팅');
   });
 });
