@@ -100,7 +100,42 @@ npx playwright install chromium
 # JS execution. Falls back to build:no-prerender is NOT automatic — if prerender
 # fails, the deploy fails (set -eu pipefail at top). That is intentional: bad
 # prerender state should surface, not silently ship unprerendered.
-VITE_API_URL="${VITE_API_URL:-https://api.emelmujiro.com/api}" npm run build
+# Build into a staging dir, never into the directory nginx serves. Vite empties
+# outDir before writing, so building in place left every prerendered route
+# returning a hard 404 for the duration — measured at 3s and 2s across two real
+# deploys (issue #391). `=404` is deliberate (it replaced a soft-404 that got
+# junk URLs indexed), so that window costs a 404 on a canonical page rather than
+# a retryable error. BUILD_OUT_DIR is honoured by vite.config.ts, prerender.js
+# and the 404.html copy in the `build` script.
+STAGING_DIR="$REPO_DIR/frontend/build.new"
+rm -rf "$STAGING_DIR"
+VITE_API_URL="${VITE_API_URL:-https://api.emelmujiro.com/api}" \
+  BUILD_OUT_DIR=build.new npm run build
+
+# Fail loudly rather than publishing a partial build: set -e already aborts on a
+# failed build, but an empty or prerender-less staging dir would sync a broken
+# site over a working one.
+if [ ! -f "$STAGING_DIR/index.html" ]; then
+  echo "$LOG_PREFIX ERROR: staging build produced no index.html — refusing to publish"
+  exit 1
+fi
+STAGED_ROUTES=$(find "$STAGING_DIR" -name index.html | wc -l | tr -d ' ')
+if [ "$STAGED_ROUTES" -lt 10 ]; then
+  echo "$LOG_PREFIX ERROR: staging build has $STAGED_ROUTES index.html files, expected 10 (5 static routes x ko/en; the site root is one of them) — refusing to publish"
+  exit 1
+fi
+
+# Publish in two passes so no route is ever missing. Pass 1 adds and overwrites
+# without deleting, leaving the served dir a superset of old+new. Pass 2 prunes
+# what the new build doesn't contain — by then every new file is already in
+# place, and the removals are stale content-hashed assets nothing references.
+# `build/` keeps its inode throughout: CLAUDE.md forbids replacing the directory
+# itself because docker-compose bind-mounts it into nginx.
+echo "$LOG_PREFIX Publishing build ($STAGED_ROUTES prerendered documents)..."
+mkdir -p "$REPO_DIR/frontend/build"
+rsync -a "$STAGING_DIR/" "$REPO_DIR/frontend/build/"
+rsync -a --delete "$STAGING_DIR/" "$REPO_DIR/frontend/build/"
+rm -rf "$STAGING_DIR"
 
 # Ensure all services are running
 echo "$LOG_PREFIX Starting services..."

@@ -14,7 +14,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const BUILD_DIR = path.resolve(__dirname, '../build');
+// Must match vite.config.ts `build.outDir` — the deploy sets BUILD_OUT_DIR to a
+// staging dir so it never builds into the directory nginx is serving (#391).
+const BUILD_DIR = path.resolve(__dirname, '..', process.env.BUILD_OUT_DIR || 'build');
 
 // Import shared constants from sitemap generator (single source of truth)
 const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('./generate-sitemap');
