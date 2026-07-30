@@ -12,16 +12,21 @@ test.describe('Error States', () => {
     expect(text).toBeTruthy();
   });
 
-  test('non-existent route returns page content', async ({ page }) => {
-    // Vite dev server serves index.html for all routes (SPA fallback).
-    // React Router's catch-all (*) renders NotFound, but in CI the lazy-loaded
-    // component may not mount reliably. Verify the SPA shell at least renders.
+  test('non-existent route returns 404 with the SPA shell', async ({ page }) => {
+    // Production contract, per nginx.conf: `try_files ... =404` plus
+    // `error_page 404 /index.html`. Unknown URLs must return a real 404 status
+    // so Google deindexes them — the soft-404 pattern (200 + SPA shell) is what
+    // got garbage URLs like /cdn-cgi/l/email-protection indexed — while still
+    // serving the shell so React Router's catch-all renders NotFound.
+    //
+    // This previously asserted 200, encoding the Vite dev server's SPA
+    // fallback, i.e. the exact behaviour production was fixed to avoid. The
+    // suite now runs against scripts/e2e-server.mjs, so it can assert the real
+    // contract.
     const response = await page.goto('/this-page-does-not-exist', {
       waitUntil: 'domcontentloaded',
     });
-    // Vite SPA fallback returns 200 with index.html
-    expect(response?.status()).toBe(200);
-    // The page should have some content (React app shell)
+    expect(response?.status()).toBe(404);
     await expect(page.locator('body')).not.toBeEmpty();
   });
 
