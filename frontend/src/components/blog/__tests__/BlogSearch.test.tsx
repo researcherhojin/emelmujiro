@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import { HelmetProvider } from 'react-helmet-async';
 
 // Override global i18n mock — this test needs custom t() behavior

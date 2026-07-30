@@ -1,7 +1,7 @@
 import React from 'react';
 import { vi, describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import { HelmetProvider } from 'react-helmet-async';
 import ContactPage from '../ContactPage';
 

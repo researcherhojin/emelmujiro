@@ -15,8 +15,8 @@ vi.mock('react-i18next', () => ({
 // Mock useNavigate and useParams
 const mockNavigate = vi.fn();
 let mockParams: Record<string, string> = {};
-vi.mock('react-router-dom', async () => {
-  const actual = await import('react-router-dom');
+vi.mock('react-router', async () => {
+  const actual = await import('react-router');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
@@ -86,7 +86,7 @@ vi.mock('dompurify', () => ({
 }));
 
 import BlogEditor from '../BlogEditor';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 
 describe('BlogEditor Component', () => {
   const renderEditor = () => {

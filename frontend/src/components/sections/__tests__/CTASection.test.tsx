@@ -1,7 +1,7 @@
 import React from 'react';
 import { vi, describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import CTASection from '../CTASection';
 
 // Mock analytics

@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, memo } from 'react';
-import { createBrowserRouter, RouterProvider, useLocation, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, useLocation, Outlet } from 'react-router';
 import { HelmetProvider } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { BlogProvider } from './contexts/BlogContext';

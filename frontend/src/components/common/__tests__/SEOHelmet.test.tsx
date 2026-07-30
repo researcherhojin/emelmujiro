@@ -60,7 +60,7 @@ vi.mock('react-helmet-async', () => ({
   HelmetProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import { HelmetProvider } from 'react-helmet-async';
 import SEOHelmet from '../SEOHelmet';
 

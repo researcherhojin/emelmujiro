@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { render as rtlRender, RenderOptions, RenderResult } from '@testing-library/react';
-import { MemoryRouter as Router } from 'react-router-dom';
+import { MemoryRouter as Router } from 'react-router';
 import { HelmetProvider } from 'react-helmet-async';
 import { BlogProvider } from '../contexts/BlogContext';
 import { AuthProvider } from '../contexts/AuthContext';

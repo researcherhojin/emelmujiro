@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 
 vi.mock('../../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },
@@ -15,8 +15,8 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-vi.mock('react-router-dom', async () => {
-  const actual = await import('react-router-dom');
+vi.mock('react-router', async () => {
+  const actual = await import('react-router');
   return { ...actual, useNavigate: () => vi.fn() };
 });
 

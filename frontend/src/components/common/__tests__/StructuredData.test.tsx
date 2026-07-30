@@ -43,7 +43,7 @@ vi.mock('react-helmet-async', () => ({
   HelmetProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import StructuredData from '../StructuredData';
 
 const renderStructuredData = (props = {}) => {

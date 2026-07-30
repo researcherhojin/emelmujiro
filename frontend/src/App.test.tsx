@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { render, act } from '@testing-library/react';
 import { vi } from 'vitest';
-import { createMemoryRouter, RouterProvider, Outlet, useParams } from 'react-router-dom';
+import { createMemoryRouter, RouterProvider, Outlet, useParams } from 'react-router';
 import App from './App';
 
 // Override global mock to track changeLanguage calls
