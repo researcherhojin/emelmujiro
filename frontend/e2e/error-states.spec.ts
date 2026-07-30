@@ -16,7 +16,9 @@ test.describe('Error States', () => {
     // Vite dev server serves index.html for all routes (SPA fallback).
     // React Router's catch-all (*) renders NotFound, but in CI the lazy-loaded
     // component may not mount reliably. Verify the SPA shell at least renders.
-    const response = await page.goto('/this-page-does-not-exist', { waitUntil: 'domcontentloaded' });
+    const response = await page.goto('/this-page-does-not-exist', {
+      waitUntil: 'domcontentloaded',
+    });
     // Vite SPA fallback returns 200 with index.html
     expect(response?.status()).toBe(200);
     // The page should have some content (React app shell)
