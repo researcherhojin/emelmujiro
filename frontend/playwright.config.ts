@@ -85,7 +85,14 @@ export default defineConfig({
    * yourself after touching `src/`.
    */
   webServer: {
-    command: 'npm run build && npm run serve:build',
+    // build:e2e, not build — a plain production build inlines
+    // VITE_API_URL=https://api.emelmujiro.com/api from .env.production, so the
+    // app would call the LIVE backend and bypass this server's /api proxy
+    // entirely. That leaked test traffic to production (7 × `Not Found:
+    // /api/blog-posts/nonexistent-post-id-99999/` in the Mac mini logs before
+    // it was caught). build:e2e pins the API to the relative /api and turns
+    // analytics off.
+    command: 'npm run build:e2e && npm run serve:build',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 300 * 1000,
