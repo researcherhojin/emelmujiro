@@ -61,6 +61,8 @@ Non-React: `vi.mock('../../i18n', () => ({ default: { t: (key: string) => key, l
 
 Use `renderWithProviders` from `test-utils/` for component tests needing context (wraps MemoryRouter + providers). E2E in `frontend/e2e/` runs on 5 profiles (chromium, firefox, webkit, mobile chrome, mobile safari); PR checks run chromium only.
 
+E2E runs against the **production build**, not the dev server — see `Constraints` → E2E target in root `CLAUDE.md` for the two traps (`vite preview` serves the homepage snapshot for every route; a plain `build` calls the live API). Shared helpers live in `e2e/helpers.ts`: `openNav` (nav landmark + mobile sheet, Gotcha #9), `NAV_LABELS` (ko/en pair), `swipeHorizontal` (cross-engine touch swipe — the `Touch` constructor is Chromium-only). Because the suite serves prerendered HTML, specs may assert the real production contract: unknown URLs return `404` with the SPA shell, and each helmet-managed head tag must appear exactly once (`createRoot` cannot adopt prerendered tags, so `SEOHelmet` drops the superseded ones).
+
 **Coverage gate** (`codecov.yml`): project `target: 100%, threshold: 1%` (effective floor 99 %); patch `target: 90%, threshold: 3%` (effective floor 87 %). The 100 % number is the aim; the threshold is what actually fails Codecov.
 
 ## Security
