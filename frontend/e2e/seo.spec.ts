@@ -22,6 +22,22 @@ test.describe('SEO', () => {
       const canonical = page.locator('link[rel="canonical"]');
       await expect(canonical).toHaveAttribute('href', /emelmujiro\.com/);
     });
+
+    test(`${route} has exactly one of each SEO tag`, async ({ page }) => {
+      await page.goto(route, { waitUntil: 'networkidle' });
+
+      // Guards the duplicate-head-tag class of bug. Against the prerendered
+      // build the served HTML already carries these tags, and because main.tsx
+      // uses createRoot() rather than hydrateRoot() React cannot claim them —
+      // SEOHelmet's cleanup effect is what keeps the count at one. Against the
+      // dev server there is nothing prerendered to collide with, so here it
+      // guards the other direction: a second SEOHelmet mounting per route.
+      await expect(page.locator('head title')).toHaveCount(1);
+      await expect(page.locator('head meta[name="description"]')).toHaveCount(1);
+      await expect(page.locator('head meta[property="og:title"]')).toHaveCount(1);
+      await expect(page.locator('head meta[property="og:url"]')).toHaveCount(1);
+      await expect(page.locator('head link[rel="canonical"]')).toHaveCount(1);
+    });
   }
 
   test('homepage has OG tags', async ({ page }) => {

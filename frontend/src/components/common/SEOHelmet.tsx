@@ -25,6 +25,59 @@ import { stripLangPrefix } from '../../hooks/useLocalizedPath';
  */
 const HREFLANG_MARKER = 'data-seohelmet-hreflang';
 
+const PRERENDERED_MARKER = 'data-prerendered-seo';
+
+/**
+ * Identity of a head tag for duplicate detection: two nodes with the same key
+ * are the same logical SEO tag, so only one of them belongs in the document.
+ */
+function headTagKey(el: Element): string {
+  if (el.tagName === 'TITLE') return 'title';
+  const name = el.getAttribute('name');
+  if (name) return `meta:name=${name}`;
+  const property = el.getAttribute('property');
+  if (property) return `meta:property=${property}`;
+  return `${el.tagName.toLowerCase()}:${el.getAttribute('rel') ?? ''}`;
+}
+
+/**
+ * Drop the prerendered SEO tags that React has since replaced.
+ *
+ * `main.tsx` uses `createRoot()`, never `hydrateRoot()` (a documented
+ * constraint), so React 19 cannot claim the prerendered `<head>` tags as its
+ * own hoistables — it mounts fresh ones alongside them. Without this the live
+ * DOM carries two of every SEO tag on all 10 prerendered routes: measured
+ * `title 2, description 2, og:title 2, og:url 2, canonical 2`. `prerender.js`
+ * dedupes only inside the snapshot, which is why `curl` looks correct while a
+ * real browser does not.
+ *
+ * A marked node is removed **only** when an unmarked counterpart with the same
+ * key exists, so this can never leave a tag missing — and static tags that
+ * SEOHelmet does not render (theme-color and friends) keep their marker and
+ * stay put forever.
+ */
+function dropSupersededPrerenderedTags() {
+  const marked = new Map<string, Element[]>();
+  const liveKeys = new Set<string>();
+
+  document
+    .querySelectorAll('head title, head meta[name], head meta[property], head link[rel]')
+    .forEach((el) => {
+      const key = headTagKey(el);
+      if (el.hasAttribute(PRERENDERED_MARKER)) {
+        const list = marked.get(key);
+        if (list) list.push(el);
+        else marked.set(key, [el]);
+      } else {
+        liveKeys.add(key);
+      }
+    });
+
+  marked.forEach((els, key) => {
+    if (liveKeys.has(key)) els.forEach((el) => el.remove());
+  });
+}
+
 function removeAllHreflangAlternates() {
   document.querySelectorAll(`link[${HREFLANG_MARKER}]`).forEach((el) => el.remove());
 }
@@ -112,6 +165,13 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     const enUrl = `${SITE_URL}/en${basePath === '/' ? '' : basePath}`;
 
     useHreflangAlternates(koUrl, enUrl);
+
+    // Runs after commit, so React's hoisted <head> tags already exist and the
+    // superseded prerendered ones can be identified. Re-runs per route change
+    // because each prerendered document ships its own set.
+    useEffect(() => {
+      dropSupersededPrerenderedTags();
+    }, [canonicalUrl, siteTitle]);
 
     return (
       <Helmet>
