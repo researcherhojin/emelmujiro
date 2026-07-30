@@ -1,26 +1,20 @@
 import { test, expect } from '@playwright/test';
+import { NAV_LABELS, openNav } from './helpers';
 
 test.describe('Navigation', () => {
-  test('full navigation flow across pages', async ({ page }) => {
-    // The label text "강의이력"/"인사이트"/"문의하기" appears in BOTH the
-    // top navbar and the footer "메뉴 목록" — Playwright strict mode rejects
-    // ambiguous role queries. Scope to navbar via aria-label.
-    const nav = page.getByLabel('Main navigation');
-
+  test('full navigation flow across pages', async ({ page, isMobile }) => {
     await page.goto('/');
     await expect(page).toHaveURL(/\/$/);
 
-    // Navigate to Teaching History (강의이력)
-    await nav.getByRole('button', { name: '강의이력' }).click();
-    await expect(page).toHaveURL(/\/profile/);
-
-    // Navigate to Insights (인사이트)
-    await nav.getByRole('button', { name: '인사이트' }).click();
-    await expect(page).toHaveURL(/\/insights/);
-
-    // Navigate to Contact
-    await nav.getByRole('button', { name: '문의하기' }).click();
-    await expect(page).toHaveURL(/\/contact/);
+    for (const [label, url] of [
+      [NAV_LABELS.ko.profile, /\/profile/],
+      [NAV_LABELS.ko.blog, /\/insights/],
+      [NAV_LABELS.ko.contact, /\/contact/],
+    ] as const) {
+      const nav = await openNav(page, isMobile);
+      await nav.getByRole('button', { name: label }).click();
+      await expect(page).toHaveURL(url);
+    }
 
     // Navigate back to Home via logo
     await page.getByText('에멜무지로').first().click();
@@ -42,9 +36,10 @@ test.describe('Navigation', () => {
     await expect(body).toContainText(/404|찾을 수 없|not found/i);
   });
 
-  test('back button works', async ({ page }) => {
+  test('back button works', async ({ page, isMobile }) => {
     await page.goto('/');
-    await page.getByLabel('Main navigation').getByRole('button', { name: '강의이력' }).click();
+    const nav = await openNav(page, isMobile);
+    await nav.getByRole('button', { name: NAV_LABELS.ko.profile }).click();
     await expect(page).toHaveURL(/\/profile/);
 
     await page.goBack();
