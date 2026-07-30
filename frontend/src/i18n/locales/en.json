@@ -387,7 +387,7 @@
     "upcoming": "Upcoming",
     "filterAll": "All",
     "filterEnterprise": "Enterprise",
-    "filterMoel": "MOEL",
+    "filterMoel": "MOEL KDT",
     "filterPublic": "Public",
     "filterAcademic": "Academic",
     "filterResultCount": "{{count}}",
@@ -401,11 +401,11 @@
       "title": "Python Bootcamp : Project Ops & Dev with LLM, RAG, AI Agent"
     },
     "4": {
-      "org": "MOEL (K-Digital)",
+      "org": "MOEL KDT × LikeLion",
       "title": "AI CV Advanced #3"
     },
     "5": {
-      "org": "MOEL (K-Digital)",
+      "org": "MOEL KDT × LikeLion",
       "title": "AI CV Advanced #2"
     },
     "6": {
@@ -417,7 +417,7 @@
       "title": "School Consulting AI Education"
     },
     "8": {
-      "org": "MOEL (K-Digital)",
+      "org": "MOEL KDT × LikeLion",
       "title": "Startup Station #10"
     },
     "9": {
@@ -425,7 +425,7 @@
       "title": "School Consulting AI Education"
     },
     "10": {
-      "org": "MOEL (K-Digital)",
+      "org": "MOEL KDT × LikeLion",
       "title": "AI CV Advanced #1"
     },
     "11": {
@@ -433,11 +433,11 @@
       "title": "DSC Univ. × KT AI+X Case Study"
     },
     "12": {
-      "org": "MOEL (K-Digital)",
+      "org": "MOEL KDT × LikeLion",
       "title": "Startup Station #9"
     },
     "13": {
-      "org": "MOEL (K-Digital)",
+      "org": "MOEL KDT × LikeLion",
       "title": "Startup Station #8"
     },
     "14": {
@@ -445,7 +445,7 @@
       "title": "Spotfire Data Analysis & Visualization"
     },
     "15": {
-      "org": "MOEL (K-Digital)",
+      "org": "MOEL KDT × LikeLion",
       "title": "Startup Station #7"
     },
     "16": {

@@ -19,7 +19,7 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.43.org'),
     title: i18n.t('teachingHistory.43.title'),
     year: 2026,
-    orgType: 'enterprise',
+    orgType: 'moel',
   },
   {
     organization: i18n.t('teachingHistory.41.org'),
@@ -65,7 +65,7 @@ export const getTeachingHistory = (): TeachingItem[] => [
     organization: i18n.t('teachingHistory.1.org'),
     title: i18n.t('teachingHistory.1.title'),
     year: 2026,
-    orgType: 'enterprise',
+    orgType: 'moel',
     visibleAfter: '2026-04-03',
   },
   // 2025
