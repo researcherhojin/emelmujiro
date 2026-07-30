@@ -9,19 +9,8 @@ export default defineConfig({
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /*
-   * The suite runs against the Vite dev server (see `webServer` below), which
-   * transforms modules on demand. Under parallel load it starts dropping
-   * lazy-chunk requests: the browser reports `TypeError: Importing a module
-   * script failed`, React's lazy() rejects, and the ErrorBoundary renders a
-   * `fixed inset-0 z-50` overlay. The visible symptom is therefore a click
-   * timing out on "subtree intercepts pointer events", never an import error —
-   * which is why this reads as an unrelated flake. Measured on an 18-core
-   * machine: Playwright's local default (~9 workers) and 4 workers both flake;
-   * 2 and 1 are stable. CI already pins 1 worker, so it never sees this.
-   */
-  retries: process.env.CI ? 2 : 1,
-  workers: process.env.CI ? 1 : 2,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -72,11 +61,33 @@ export default defineConfig({
     // },
   ],
 
-  /* Run your local dev server before starting the tests */
+  /*
+   * Serve the production build, not the dev server.
+   *
+   * `npm run dev` transforms modules on demand and drops lazy-chunk requests
+   * under parallel load: the browser reports `TypeError: Importing a module
+   * script failed`, React's lazy() rejects, and the ErrorBoundary's
+   * `fixed inset-0 z-50` overlay then swallows clicks — so the visible failure
+   * was a click timing out on "subtree intercepts pointer events", nowhere near
+   * the cause. That capped useful parallelism at 2 workers. Static files remove
+   * the failure class outright, which is why `workers` is back to Playwright's
+   * default and local `retries` back to 0.
+   *
+   * It also means the suite exercises what users actually get, including the 10
+   * SSG prerendered documents. `scripts/e2e-server.mjs` mirrors `nginx.conf`
+   * (try_files, the dynamic-route SPA fallback, trailing-slash and /blog 301s,
+   * `error_page 404 /index.html`) — `vite preview` cannot stand in for it,
+   * because its SPA fallback answers /contact with the homepage snapshot.
+   *
+   * `reuseExistingServer` keeps the rebuild off the iteration loop: leave
+   * `npm run serve:build` running in another shell and repeated `playwright
+   * test` runs attach to it instead of rebuilding. Re-run `npm run build`
+   * yourself after touching `src/`.
+   */
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run build && npm run serve:build',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 300 * 1000,
   },
 });

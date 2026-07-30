@@ -70,6 +70,7 @@
     "build": "npx concurrently -n sitemap,tsc \"npm run generate:sitemap\" \"tsc -p tsconfig.build.json\" && vite build && node scripts/prerender.js && cp build/index.html build/404.html",
     "build:no-prerender": "npx concurrently -n sitemap,tsc \"npm run generate:sitemap\" \"tsc -p tsconfig.build.json\" && vite build && cp build/index.html build/404.html",
     "preview": "vite preview",
+    "serve:build": "node scripts/e2e-server.mjs",
     "test": "vitest",
     "test:ci": "vitest run --bail=1 --no-coverage",
     "test:run": "vitest run",

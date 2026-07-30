@@ -62,5 +62,18 @@ test.describe('Navigation', () => {
     await expect(page).toHaveURL(/\/profile/);
   });
 
-  // /blog → /insights redirect is handled by nginx, not testable in Vite preview
+  // Testable now that the suite runs against scripts/e2e-server.mjs, which
+  // mirrors nginx's redirect rules. Previously skipped as dev-server-only.
+  test('legacy /blog paths redirect to /insights', async ({ page }) => {
+    await page.goto('/blog');
+    await expect(page).toHaveURL(/\/insights$/);
+
+    await page.goto('/en/blog');
+    await expect(page).toHaveURL(/\/en\/insights$/);
+  });
+
+  test('trailing slash redirects to the canonical no-slash path', async ({ page }) => {
+    await page.goto('/profile/');
+    await expect(page).toHaveURL(/\/profile$/);
+  });
 });
