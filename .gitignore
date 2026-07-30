@@ -66,6 +66,7 @@ node_modules/
 # Frontend
 frontend/node_modules/
 frontend/build/
+frontend/build.new/
 frontend/coverage/
 frontend/public/sitemap.xml
 frontend/public/sitemap-index.xml

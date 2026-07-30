@@ -40,7 +40,12 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'build',
+    // `build` unless BUILD_OUT_DIR overrides it. The deploy builds into a
+    // staging dir instead, because Vite empties outDir before writing and
+    // nginx serves `build/` live — an in-place build 404s every prerendered
+    // route for the duration (measured ~3s, issue #391). `prerender.js` and
+    // the 404.html copy in the `build` script read the same variable.
+    outDir: process.env.BUILD_OUT_DIR || 'build',
     sourcemap: process.env.NODE_ENV !== 'production',
     // Modern browser target — CLAUDE.md requires Node >= 24 and we self-host
     // on Mac mini for a Korean audience that's reliably on current Chrome/
