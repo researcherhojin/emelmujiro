@@ -1,5 +1,5 @@
 import React from 'react';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { render } from '@testing-library/react';
 
 // Module-level variable to control i18n language for tests
@@ -278,5 +278,70 @@ describe('SEOHelmet', () => {
     // resolvedLang should fall back to 'ko'
     expect(data.lang).toBe('ko');
     expect(data['og:locale']).toBe('ko_KR');
+  });
+  describe('prerendered head tag cleanup', () => {
+    const seed = (html: string) => {
+      const holder = document.createElement('div');
+      holder.innerHTML = html;
+      [...holder.children].forEach((el) => document.head.appendChild(el));
+    };
+
+    const marked = (selector: string) =>
+      document.head.querySelectorAll(`${selector}[data-prerendered-seo]`).length;
+
+    afterEach(() => {
+      document.head
+        .querySelectorAll('[data-prerendered-seo], link[data-seohelmet-hreflang]')
+        .forEach((el) => el.remove());
+    });
+
+    it('removes a prerendered tag once an unmarked counterpart exists', () => {
+      seed(
+        '<link rel="canonical" href="https://emelmujiro.com/stale" data-prerendered-seo="true">' +
+          '<link rel="canonical" href="https://emelmujiro.com/live">'
+      );
+
+      renderWithHelmet(<SEOHelmet />);
+
+      expect(marked('link[rel="canonical"]')).toBe(0);
+      expect(document.head.querySelectorAll('link[rel="canonical"]')).toHaveLength(1);
+      expect(document.head.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(
+        'https://emelmujiro.com/live'
+      );
+    });
+
+    it('keeps a prerendered tag that React never replaces', () => {
+      // google-site-verification and theme-color live only in index.html —
+      // removing them unconditionally would drop Search Console verification.
+      seed(
+        '<meta name="google-site-verification" content="token" data-prerendered-seo="true">' +
+          '<meta name="theme-color" content="#ffffff" data-prerendered-seo="true">'
+      );
+
+      renderWithHelmet(<SEOHelmet />);
+
+      expect(marked('meta[name="google-site-verification"]')).toBe(1);
+      expect(marked('meta[name="theme-color"]')).toBe(1);
+    });
+
+    it('never leaves a tag missing when only the prerendered copy is present', () => {
+      seed('<title data-prerendered-seo="true">Prerendered title</title>');
+
+      renderWithHelmet(<SEOHelmet />);
+
+      expect(marked('title')).toBe(1);
+    });
+
+    it('matches meta tags by property as well as name', () => {
+      seed(
+        '<meta property="og:url" content="https://emelmujiro.com/stale" data-prerendered-seo="true">' +
+          '<meta property="og:url" content="https://emelmujiro.com/live">'
+      );
+
+      renderWithHelmet(<SEOHelmet />);
+
+      expect(marked('meta[property="og:url"]')).toBe(0);
+      expect(document.head.querySelectorAll('meta[property="og:url"]')).toHaveLength(1);
+    });
   });
 });

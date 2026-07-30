@@ -133,6 +133,19 @@ async function prerenderRoute(page, baseUrl, route) {
       for (let i = 0; i < canonicals.length - 1; i++) canonicals[i].remove();
     }
 
+    // Mark the SEO tags that survive into the snapshot so the client can drop
+    // them once React has mounted its own copies. main.tsx uses createRoot(),
+    // never hydrateRoot(), so React 19 cannot claim these nodes as its
+    // hoistables — it mounts fresh ones alongside, leaving two of every tag in
+    // the live DOM. Deduping here only fixes the snapshot; the marker is what
+    // lets SEOHelmet finish the job at runtime. Crawlers that never execute JS
+    // keep these tags, which is the whole point of the prerender step.
+    document
+      .querySelectorAll(
+        'head title, head meta[name], head meta[property], head link[rel="canonical"]'
+      )
+      .forEach((el) => el.setAttribute('data-prerendered-seo', 'true'));
+
     // Restore non-blocking state for the Pretendard CDN stylesheet. The source
     // index.html declares it as `<link rel="preload" as="style"
     // onload="this.onload=null;this.rel='stylesheet'">` — non-blocking by
