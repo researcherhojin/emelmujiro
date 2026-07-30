@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState, useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router';
 import { ArrowLeft, Eye, EyeOff, Trash2, Pencil } from 'lucide-react';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { useToast } from '../../hooks/useToast';

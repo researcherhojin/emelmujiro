@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import ProfilePage from '../ProfilePage';
 
 vi.mock('../../../i18n', () => ({
@@ -20,8 +20,8 @@ vi.mock('react-i18next', () => ({
 }));
 
 const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async () => {
-  const actual = await import('react-router-dom');
+vi.mock('react-router', async () => {
+  const actual = await import('react-router');
   return {
     ...actual,
     useNavigate: () => mockNavigate,

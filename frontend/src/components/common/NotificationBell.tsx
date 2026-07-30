@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { Bell, FileText, Mail, ShieldAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useNotification } from '../../contexts/NotificationContext';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { formatRelativeTime } from '../../utils/dateFormat';

@@ -150,7 +150,7 @@ jobs:
           check_badge "React" "react"
           check_badge "TypeScript" "typescript"
           check_badge "Vite" "vite"
-          check_badge "React_Router_DOM" "react-router-dom"
+          check_badge "React_Router" "react-router"
           check_badge "Tailwind_CSS" "tailwindcss"
           check_badge "Typography" "@tailwindcss/typography"
           check_badge "i18next" "i18next"

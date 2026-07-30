@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 
 // Override global i18n mock — this test needs custom t() behavior
 vi.mock('react-i18next', () => ({

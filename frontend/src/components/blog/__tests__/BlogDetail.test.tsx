@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import { BlogPost } from '../../../types';
 
 // Mock MarkdownRenderer (lazy-loaded in BlogDetail)
@@ -52,8 +52,8 @@ const mockClearCurrentPost = vi.fn();
 
 let mockParams: Record<string, string> = { slug: 'test-post' };
 
-vi.mock('react-router-dom', async () => {
-  const actual = await import('react-router-dom');
+vi.mock('react-router', async () => {
+  const actual = await import('react-router');
   return {
     ...actual,
     useNavigate: () => mockNavigate,

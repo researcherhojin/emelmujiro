@@ -1,5 +1,5 @@
 import React, { useState, memo, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Mail, Phone, ExternalLink } from 'lucide-react';
 import { getServices } from '../../data/footerData';

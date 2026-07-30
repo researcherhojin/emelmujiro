@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { CONTACT_EMAIL, SITE_URL } from '../../utils/constants';
 
 type SchemaType =

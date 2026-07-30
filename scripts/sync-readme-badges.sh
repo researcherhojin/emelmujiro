@@ -30,7 +30,7 @@ BADGES=(
   "React:react"
   "TypeScript:typescript"
   "Vite:vite"
-  "React_Router_DOM:react-router-dom"
+  "React_Router:react-router"
   "Tailwind_CSS:tailwindcss"
   "Typography:@tailwindcss/typography"
   "i18next:i18next"

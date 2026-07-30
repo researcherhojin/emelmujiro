@@ -1,5 +1,5 @@
 import { useRef, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 
 /**
  * Hook for scrolling to a section by ID, with cross-page navigation support.

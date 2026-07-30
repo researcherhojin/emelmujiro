@@ -6,7 +6,7 @@
 import { vi } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import Footer from '../Footer';
 import { CONTACT_EMAIL } from '../../../utils/constants';
 
@@ -34,8 +34,8 @@ const MODAL_TEST_TIMEOUT = 15000;
 // Mock useNavigate and useLocation
 const mockNavigate = vi.fn();
 let mockPathname = '/';
-vi.mock('react-router-dom', async () => {
-  const actual = await import('react-router-dom');
+vi.mock('react-router', async () => {
+  const actual = await import('react-router');
   return {
     ...actual,
     useNavigate: () => mockNavigate,

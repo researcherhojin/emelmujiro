@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import HeroSection from '../HeroSection';
 
 // Mock useNavigate — vi.hoisted ensures mockNavigate is available when vi.mock is hoisted
@@ -8,8 +8,8 @@ const { mockNavigate, mockTrackCtaClick } = vi.hoisted(() => ({
   mockNavigate: vi.fn(),
   mockTrackCtaClick: vi.fn(),
 }));
-vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react-router-dom')>();
+vi.mock('react-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router')>();
   return {
     ...actual,
     useNavigate: () => mockNavigate,

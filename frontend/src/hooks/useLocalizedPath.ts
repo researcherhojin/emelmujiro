@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useNavigate, useLocation, type NavigateOptions } from 'react-router-dom';
+import { useNavigate, useLocation, type NavigateOptions } from 'react-router';
 
 const DEFAULT_LANG = 'ko';
 

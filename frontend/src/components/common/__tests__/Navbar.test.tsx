@@ -6,8 +6,8 @@ import Navbar from '../Navbar';
 // Mock useNavigate
 const mockNavigate = vi.fn();
 const mockLocation = { pathname: '/', hash: '', search: '', state: null, key: 'default' };
-vi.mock('react-router-dom', async () => {
-  const actual = await import('react-router-dom');
+vi.mock('react-router', async () => {
+  const actual = await import('react-router');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
