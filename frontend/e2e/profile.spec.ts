@@ -22,10 +22,7 @@ test.describe('Teaching History Page', () => {
   });
 
   test('has proper SEO meta tags', async ({ page }) => {
-    const metaDescription = await page.getAttribute(
-      'meta[name="description"]',
-      'content'
-    );
+    const metaDescription = await page.getAttribute('meta[name="description"]', 'content');
     expect(metaDescription).toBeTruthy();
   });
 
