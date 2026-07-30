@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { openNav, swipeHorizontal } from './helpers';
 
 test.describe('Homepage', () => {
   test.beforeEach(async ({ page }) => {
@@ -14,11 +15,11 @@ test.describe('Homepage', () => {
     await expect(heading).toContainText('AI 교육');
   });
 
-  test('has navigation menu', async ({ page }) => {
-    const nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: '강의이력' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '인사이트' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '문의하기' }).first()).toBeVisible();
+  test('has navigation menu', async ({ page, isMobile }) => {
+    const nav = await openNav(page, isMobile);
+    await expect(nav.getByRole('button', { name: '강의이력' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: '인사이트' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: '문의하기' })).toBeVisible();
   });
 
   test('hero section has CTA link', async ({ page }) => {
@@ -44,16 +45,16 @@ test.describe('Homepage', () => {
     await expect(footer).toContainText(`© ${currentYear}`);
   });
 
-  test('navigation links work correctly', async ({ page }) => {
-    const nav = page.locator('nav');
-    await nav.getByRole('button', { name: '강의이력' }).first().click();
-    await expect(page).toHaveURL(/\/profile/);
-
-    await nav.getByRole('button', { name: '인사이트' }).first().click();
-    await expect(page).toHaveURL(/\/insights/);
-
-    await nav.getByRole('button', { name: '문의하기' }).first().click();
-    await expect(page).toHaveURL(/\/contact/);
+  test('navigation links work correctly', async ({ page, isMobile }) => {
+    for (const [label, url] of [
+      ['강의이력', /\/profile/],
+      ['인사이트', /\/insights/],
+      ['문의하기', /\/contact/],
+    ] as const) {
+      const nav = await openNav(page, isMobile);
+      await nav.getByRole('button', { name: label }).click();
+      await expect(page).toHaveURL(url);
+    }
 
     await page.getByText('에멜무지로').first().click();
     await expect(page).toHaveURL(/\/$/);
@@ -105,24 +106,11 @@ test.describe('Homepage', () => {
     await expect(panel).toContainText('AI 교육 & 강의');
 
     // Swipe left — mobile hides the arrows, so this is the only way forward
-    await panel.evaluate((el) => {
-      const rect = el.getBoundingClientRect();
-      const y = rect.y + rect.height / 2;
-      const touch = (clientX: number) =>
-        new Touch({ identifier: 1, target: el, clientX, clientY: y });
-      el.dispatchEvent(
-        new TouchEvent('touchstart', {
-          bubbles: true,
-          touches: [touch(rect.x + rect.width - 20)],
-        })
-      );
-      el.dispatchEvent(
-        new TouchEvent('touchend', {
-          bubbles: true,
-          changedTouches: [touch(rect.x + 20)],
-        })
-      );
-    });
+    await swipeHorizontal(panel, -120);
     await expect(panel).toContainText('AI 컨설팅');
+
+    // And back the other way
+    await swipeHorizontal(panel, 120);
+    await expect(panel).toContainText('AI 교육 & 강의');
   });
 });

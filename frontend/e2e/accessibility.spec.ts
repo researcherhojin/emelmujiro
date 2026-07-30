@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { NAV_LABELS, openNav } from './helpers';
 
 test.describe('Dark Mode', () => {
   test.beforeEach(async ({ page }) => {
@@ -84,54 +85,55 @@ test.describe('Language Switching', () => {
   // Language is determined by URL prefix: / = Korean, /en/ = English.
   // LanguageLayout always overrides i18n based on the URL param.
 
-  test('default language is Korean', async ({ page }) => {
+  test('default language is Korean', async ({ page, isMobile }) => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
-    // Use nav locator to avoid desktop/mobile duplicate elements
-    const nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: '강의이력' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '인사이트' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '문의하기' }).first()).toBeVisible();
+    const nav = await openNav(page, isMobile, 'ko');
+    await expect(nav.getByRole('button', { name: NAV_LABELS.ko.profile })).toBeVisible();
+    await expect(nav.getByRole('button', { name: NAV_LABELS.ko.blog })).toBeVisible();
+    await expect(nav.getByRole('button', { name: NAV_LABELS.ko.contact })).toBeVisible();
   });
 
-  test('switch to English via URL prefix', async ({ page }) => {
+  test('switch to English via URL prefix', async ({ page, isMobile }) => {
     await page.goto('/en/');
     await page.waitForLoadState('domcontentloaded');
 
-    const nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: 'Teaching History' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: 'Insights' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: 'Contact' }).first()).toBeVisible();
+    const nav = await openNav(page, isMobile, 'en');
+    await expect(nav.getByRole('button', { name: NAV_LABELS.en.profile })).toBeVisible();
+    await expect(nav.getByRole('button', { name: NAV_LABELS.en.blog })).toBeVisible();
+    await expect(nav.getByRole('button', { name: NAV_LABELS.en.contact })).toBeVisible();
   });
 
-  test('English language persists after reload', async ({ page }) => {
+  test('English language persists after reload', async ({ page, isMobile }) => {
     await page.goto('/en/');
     await page.waitForLoadState('domcontentloaded');
 
-    const nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: 'Teaching History' }).first()).toBeVisible();
+    let nav = await openNav(page, isMobile, 'en');
+    await expect(nav.getByRole('button', { name: NAV_LABELS.en.profile })).toBeVisible();
 
     await page.reload();
     await page.waitForLoadState('domcontentloaded');
 
-    await expect(nav.getByRole('button', { name: 'Teaching History' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: 'Insights' }).first()).toBeVisible();
+    // Reload closes the mobile sheet, so it has to be reopened
+    nav = await openNav(page, isMobile, 'en');
+    await expect(nav.getByRole('button', { name: NAV_LABELS.en.profile })).toBeVisible();
+    await expect(nav.getByRole('button', { name: NAV_LABELS.en.blog })).toBeVisible();
   });
 
-  test('switch back to Korean', async ({ page }) => {
+  test('switch back to Korean', async ({ page, isMobile }) => {
     await page.goto('/en/');
     await page.waitForLoadState('domcontentloaded');
 
-    let nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: 'Teaching History' }).first()).toBeVisible();
+    let nav = await openNav(page, isMobile, 'en');
+    await expect(nav.getByRole('button', { name: NAV_LABELS.en.profile })).toBeVisible();
 
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
-    nav = page.locator('nav');
-    await expect(nav.getByRole('button', { name: '강의이력' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '인사이트' }).first()).toBeVisible();
-    await expect(nav.getByRole('button', { name: '문의하기' }).first()).toBeVisible();
+    nav = await openNav(page, isMobile, 'ko');
+    await expect(nav.getByRole('button', { name: NAV_LABELS.ko.profile })).toBeVisible();
+    await expect(nav.getByRole('button', { name: NAV_LABELS.ko.blog })).toBeVisible();
+    await expect(nav.getByRole('button', { name: NAV_LABELS.ko.contact })).toBeVisible();
   });
 });
