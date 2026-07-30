@@ -69,6 +69,27 @@ jobs:
         run: |
           git merge-tree "$(git merge-base HEAD "$BASE_REF")" HEAD "$BASE_REF" | grep -q "<<<<<<< " && exit 1 || exit 0
 
+  # Informational only, and deliberately NOT a dependency of any other job.
+  # These all used to sit in quick-checks, where any `exit 1` failed that job
+  # and skipped all six downstream ones — Frontend Lint, Backend Lint, Test
+  # Affected Code, Security Scan, Build for Analysis, E2E Tests. So a stale
+  # README badge, a missing test-count line, a non-conventional commit subject
+  # or an i18n false positive silently disabled `npm ci` and the entire suite
+  # for that PR — which is how the jest-dom 7 lockfile drift reached a deploy.
+  # `main` has no required status checks, so gating never blocked a merge
+  # anyway; it only destroyed test signal. quick-checks now gates on merge
+  # conflicts alone, the one condition that makes running the rest pointless.
+  repo-checks:
+    name: Repo Checks (informational)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
       - name: Check commit messages
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -183,6 +204,7 @@ jobs:
           echo "Cron log paths OK"
 
   # Frontend linting (parallel with backend-lint)
+
   frontend-lint:
     name: Frontend Lint
     runs-on: ubuntu-latest
