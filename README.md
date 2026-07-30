@@ -85,7 +85,8 @@ make health                # Docker health diagnostic (containers, resources, en
 cd frontend
 npm run validate           # lint + type-check + test:coverage
 CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx
-npm run test:e2e           # Playwright headless (5 profiles)
+npm run test:e2e           # Playwright headless (5 profiles) — builds, then serves build/
+npm run serve:build        # Serve build/ as nginx does; leave running to skip E2E rebuilds
 npm run test:e2e:ui        # Playwright interactive UI
 npm run test:e2e:debug     # Playwright debug mode
 
