@@ -15,6 +15,15 @@ interface ServiceModalProps {
 const FOCUSABLE_SELECTOR =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
+// Horizontal distance a touch must travel before it counts as a swipe
+const SWIPE_THRESHOLD = 50;
+// Accumulated horizontal wheel delta before it counts as a navigation
+const WHEEL_THRESHOLD = 40;
+// Trackpad gestures emit a momentum tail — ignore it after navigating
+const WHEEL_COOLDOWN_MS = 400;
+// Gap between wheel events that ends a gesture, discarding leftover delta
+const WHEEL_GESTURE_GAP_MS = 200;
+
 const ServiceModal: React.FC<ServiceModalProps> = memo(
   ({ isOpen, services, currentIndex, onNavigate, onClose, onContactClick }) => {
     const { t } = useTranslation();
@@ -34,6 +43,54 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
       /* v8 ignore next -- guarded by hasNext; false branch is no-op */
       if (hasNext) onNavigate(currentIndex + 1);
     }, [hasNext, currentIndex, onNavigate]);
+
+    // Touch swipe — the only sideways affordance on mobile, where arrows are hidden
+    const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+    const handleTouchStart = useCallback((e: React.TouchEvent) => {
+      const touch = e.touches[0];
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    }, []);
+
+    const handleTouchEnd = useCallback(
+      (e: React.TouchEvent) => {
+        const start = touchStartRef.current;
+        if (!start) return;
+        touchStartRef.current = null;
+        const touch = e.changedTouches[0];
+        const dx = touch.clientX - start.x;
+        const dy = touch.clientY - start.y;
+        // Taps and vertical scrolls must not navigate
+        if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) <= Math.abs(dy)) return;
+        if (dx < 0) goNext();
+        else goPrev();
+      },
+      [goNext, goPrev]
+    );
+
+    // Horizontal wheel / two-finger trackpad swipe on desktop
+    const wheelRef = useRef({ accumulated: 0, lastAt: 0, lockedUntil: 0 });
+
+    const handleWheel = useCallback(
+      (e: React.WheelEvent) => {
+        // Vertical intent belongs to the modal's own scrolling
+        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+        const now = Date.now();
+        const wheel = wheelRef.current;
+        if (now < wheel.lockedUntil) return;
+        // A pause means a new gesture — don't carry stale delta into it
+        if (now - wheel.lastAt > WHEEL_GESTURE_GAP_MS) wheel.accumulated = 0;
+        wheel.lastAt = now;
+        wheel.accumulated += e.deltaX;
+        if (Math.abs(wheel.accumulated) < WHEEL_THRESHOLD) return;
+        const forward = wheel.accumulated > 0;
+        wheel.accumulated = 0;
+        wheel.lockedUntil = now + WHEEL_COOLDOWN_MS;
+        if (forward) goNext();
+        else goPrev();
+      },
+      [goNext, goPrev]
+    );
 
     // Keyboard: Escape to close, Arrow keys to navigate
     useEffect(() => {
@@ -83,8 +140,10 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
     const IconComponent = service.icon;
 
     return (
+      // overscroll-x-contain sits on the scroll container so a horizontal swipe
+      // can't chain out to the browser's back-navigation gesture
       <div
-        className="fixed inset-0 z-50 overflow-y-auto"
+        className="fixed inset-0 z-50 overflow-y-auto overscroll-x-contain"
         role="dialog"
         aria-modal="true"
         aria-label={service?.title}
@@ -125,7 +184,14 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
             </button>
           )}
 
-          <div className="relative bg-white dark:bg-dark-900 rounded-2xl px-6 pt-6 pb-5 text-left overflow-hidden shadow-xl max-w-2xl w-full sm:p-8">
+          {/* Swipe and horizontal-wheel target: the panel, not the overlay (overlay click closes) */}
+          <div
+            className="relative bg-white dark:bg-dark-900 rounded-2xl px-6 pt-6 pb-5 text-left overflow-hidden shadow-xl max-w-2xl w-full sm:p-8"
+            data-testid="service-modal-panel"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onWheel={handleWheel}
+          >
             <div className="absolute top-0 right-0 pt-4 pr-4">
               <button
                 ref={closeButtonRef}

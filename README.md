@@ -29,7 +29,7 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![i18next](https://img.shields.io/badge/i18next-26.3.6-26A69A?logo=i18next&logoColor=white)
 ![react-i18next](https://img.shields.io/badge/React_i18next-17.0.8-26A69A?logo=i18next&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-1.18.1-5A29E4?logo=axios&logoColor=white)
-![TipTap](https://img.shields.io/badge/TipTap-3.27.1-1a1a2e)
+![TipTap](https://img.shields.io/badge/TipTap-3.28.0-1a1a2e)
 ![DOMPurify](https://img.shields.io/badge/DOMPurify-3.4.12-4B32C3)
 
 **Backend**<br/>
@@ -143,7 +143,7 @@ graph LR
 - **Performance** — Vendor chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
 - **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30
-- **Tests** — Vitest (1213 tests) + Django unittest (355 tests) + Playwright E2E (5 profiles)
+- **Tests** — Vitest (1224 tests) + Django unittest (355 tests) + Playwright E2E (5 profiles)
 - **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Codecov, auto-deploy via webhook
 
 ## License
