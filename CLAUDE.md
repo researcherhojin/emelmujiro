@@ -53,7 +53,7 @@ npm run check:css          # detect CSS classes shipped in build but never refer
 npm run knip                                                                  # Dead code detection. Run from root
 uv sync --extra dev                                                           # Install backend deps (NOT --dev). Run from backend/
 uv run python manage.py test                                                  # Django unittest (NOT pytest). Needs DATABASE_URL=""
-DATABASE_URL="" uv run python manage.py test api.tests.CategoryAPITestCase.test_list  # Single backend test
+DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPITestCase          # Single backend test class
 uv run black . && uv run flake8 .                                             # Format + lint (line length 120)
 
 # Make shortcuts (run from root — see Makefile or `make help`):

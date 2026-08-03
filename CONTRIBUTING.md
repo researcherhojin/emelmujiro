@@ -30,7 +30,7 @@ This file lists only the contributor-facing checklist; for the "why" behind any 
 - **No `window.alert/prompt`** — use a toast or inline UI.
 - **Logger import**: `import logger from '../utils/logger'` (default export). Use `env.IS_DEVELOPMENT` for environment checks.
 - **`[skip ci]` only in Ship-phase README sync commits.** Putting the literal string anywhere in a commit message — even in prose describing the mechanism — causes GitHub to skip every workflow for that commit (see CLAUDE.md Gotcha #10).
-- **Pre-commit runs lint-staged** (Prettier + ESLint + Black + Flake8). Don't bypass with `--no-verify`.
+- **Pre-commit runs lint-staged** (Prettier + ESLint + Black + Flake8). Don't bypass with `--no-verify` — the one sanctioned use is the non-ASCII proper noun escape noted in the commit-message rule above, and it skips the formatters too.
 
 ## Testing
 
@@ -38,7 +38,7 @@ This file lists only the contributor-facing checklist; for the "why" behind any 
 make test                                                                     # all
 make test-ci                                                                  # CI mode (no watch, coverage)
 CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx     # single frontend
-DATABASE_URL="" uv run python manage.py test api.tests.CategoryAPITestCase    # single backend (from backend/)
+DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPITestCase   # single backend (from backend/)
 npm run test:e2e                                                              # Playwright (5 profiles, from frontend/)
 ```
 
