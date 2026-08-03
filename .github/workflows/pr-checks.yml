@@ -99,10 +99,19 @@ jobs:
           # accepted types and the merge/autosquash/revert/dependabot exemptions.
           # The .husky/commit-msg hook calls the same script, so this job and the
           # local hook cannot drift apart. Do not re-inline the regex here.
+          # git log's exit code must be checked separately: a `while` reading
+          # from process substitution reports only the loop's status, so a bad
+          # range (force-push, missing base) would feed zero subjects and pass
+          # green with nothing checked. Same trap as Gotcha #11.
+          if ! SUBJECTS=$(git log --format="%s" "${BASE_SHA}..${HEAD_SHA}"); then
+            echo "❌ Could not read commits in ${BASE_SHA}..${HEAD_SHA}"
+            exit 1
+          fi
           FAILED=0
           while read -r msg; do
+            [ -z "$msg" ] && continue
             ./scripts/check-commit-msg.sh "$msg" || FAILED=1
-          done < <(git log --format="%s" "${BASE_SHA}..${HEAD_SHA}")
+          done <<< "$SUBJECTS"
           exit "$FAILED"
 
       - name: File size check

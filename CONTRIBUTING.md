@@ -17,7 +17,7 @@ This file lists only the contributor-facing checklist; for the "why" behind any 
 ## Workflow checklist
 
 1. **Branch**: `feature/<name>` or `fix/<description>`. Target `main`.
-2. **Commit messages**: Conventional Commits, English only, enforced by the `commit-msg` hook locally and re-checked in CI by the `Repo Checks (informational)` job. Both call `scripts/check-commit-msg.sh`, so they cannot drift apart — change the accepted types there, not in either caller.
+2. **Commit messages**: Conventional Commits, English only, enforced by the `commit-msg` hook locally and re-checked in CI by the `Repo Checks (informational)` job. Both call `scripts/check-commit-msg.sh`, so they cannot drift apart — change the accepted types there, not in either caller. The check reads the **subject line**: format and the English-only (ASCII) rule are enforced there, and the body is not inspected. `git commit --no-verify` is the escape when a subject genuinely needs a non-ASCII proper noun.
    `type(scope): description` — types: `feat fix docs style refactor test chore perf deps-dev deps ci`. A description is required. Merge, `fixup!`/`squash!`/`amend!`, `Revert "…"`, and dependabot's own formats are exempt.
 3. **One issue per PR, ≤ 3 commits**, no mid-PR scope expansion. Defer follow-ups to a new issue.
 4. **Test before pushing**: `make test` (frontend + backend) and `make lint` from repo root.
