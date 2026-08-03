@@ -95,23 +95,15 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.sha }}
         run: |
-          # Validate commit message format (skip merge commits)
-          git log --format="%s" "${BASE_SHA}..${HEAD_SHA}" | while read msg; do
-            # Skip merge commits
-            if [[ "$msg" =~ ^Merge ]]; then
-              continue
-            fi
-            # Skip dependabot commits (they follow their own format)
-            if [[ "$msg" =~ ^Bump\ |^build\(deps|^chore\(deps|^ci\(deps|^deps-dev\(deps|^deps\(deps ]]; then
-              continue
-            fi
-            # deps-dev precedes deps so the longer type wins the alternation.
-            if [[ ! "$msg" =~ ^(feat|fix|docs|style|refactor|test|chore|perf|deps-dev|deps|ci)(\(.+\))?: ]]; then
-              echo "Invalid commit message: $msg"
-              echo "Please use conventional commits format: type(scope): description"
-              exit 1
-            fi
-          done
+          # scripts/check-commit-msg.sh is the single source of truth for the
+          # accepted types and the merge/autosquash/revert/dependabot exemptions.
+          # The .husky/commit-msg hook calls the same script, so this job and the
+          # local hook cannot drift apart. Do not re-inline the regex here.
+          FAILED=0
+          while read -r msg; do
+            ./scripts/check-commit-msg.sh "$msg" || FAILED=1
+          done < <(git log --format="%s" "${BASE_SHA}..${HEAD_SHA}")
+          exit "$FAILED"
 
       - name: File size check
         run: |
