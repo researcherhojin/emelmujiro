@@ -21,15 +21,23 @@ if [ $# -ne 1 ]; then
 fi
 
 if [ -f "$1" ]; then
-  # First line that is neither blank nor a scissors/comment line. `git commit
-  # -v` appends a diff below those, so anything past the subject is ignored.
-  subject=$(grep -v '^#' "$1" | grep -m1 -v '^[[:space:]]*$' || true)
+  # Cut at the `git commit -v` scissors line FIRST. Without that cut, a buffer
+  # whose subject is empty falls through the comment/blank filters and lands on
+  # the first diff line, so the message reported back is `diff --git a/x b/x`
+  # instead of "empty". sed stops at the marker; grep then drops comment and
+  # blank lines and takes the first survivor.
+  subject=$(sed '/^# -\{1,\} >8 -\{1,\}$/q' "$1" | grep -v '^#' | grep -m1 -v '^[[:space:]]*$' || true)
+  if [ -z "$subject" ]; then
+    echo "❌ Empty commit message."
+    exit 1
+  fi
 else
   subject="$1"
 fi
 
 # Merge commits: git generates the subject, and it is never conventional.
-if [[ "$subject" =~ ^Merge ]]; then
+# The trailing space matters — a bare `^Merge` also exempts `Mergeevil`.
+if [[ "$subject" =~ ^Merge\  ]]; then
   exit 0
 fi
 
@@ -39,14 +47,28 @@ if [[ "$subject" =~ ^(fixup|squash|amend)! ]]; then
   exit 0
 fi
 
-# Revert commits: `git revert` generates `Revert "<original subject>"`.
-if [[ "$subject" =~ ^Revert\ \" ]]; then
+# Revert commits: `git revert` generates exactly `Revert "<original subject>"`.
+# Anchored at both ends so hand-written text after the closing quote is judged.
+if [[ "$subject" =~ ^Revert\ \".+\"$ ]]; then
   exit 0
 fi
 
 # Dependabot writes its own format, which predates this check and is exempt.
-if [[ "$subject" =~ ^Bump\ |^build\(deps|^chore\(deps|^ci\(deps|^deps-dev\(deps|^deps\(deps ]]; then
+# The scope is pinned to (deps) / (deps-dev) — the five forms this repo has
+# actually received. An unanchored `^chore\(deps` also exempts `chore(depsnot):`.
+if [[ "$subject" =~ ^Bump\ [^[:space:]]+\ from\ |^(build|chore|ci|deps|deps-dev)\(deps(-dev)?\):\  ]]; then
   exit 0
+fi
+
+# English only, per CONTRIBUTING.md. Checked after the exemptions so a bot or
+# merge subject is never judged on charset. Use --no-verify if a subject
+# genuinely must carry a non-ASCII proper noun.
+if LC_ALL=C grep -q '[^[:print:][:space:]]' <<<"$subject"; then
+  echo "❌ Non-ASCII characters in commit subject: $subject"
+  echo ""
+  echo "Commit messages are English only. See CONTRIBUTING.md."
+  echo "If the subject genuinely needs a non-ASCII proper noun: git commit --no-verify"
+  exit 1
 fi
 
 if [[ ! "$subject" =~ ^($TYPES)(\(.+\))?:\ .+ ]]; then
