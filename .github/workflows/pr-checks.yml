@@ -105,7 +105,8 @@ jobs:
             if [[ "$msg" =~ ^Bump\ |^build\(deps|^chore\(deps|^ci\(deps|^deps-dev\(deps|^deps\(deps ]]; then
               continue
             fi
-            if [[ ! "$msg" =~ ^(feat|fix|docs|style|refactor|test|chore|deps|ci)(\(.+\))?: ]]; then
+            # deps-dev precedes deps so the longer type wins the alternation.
+            if [[ ! "$msg" =~ ^(feat|fix|docs|style|refactor|test|chore|perf|deps-dev|deps|ci)(\(.+\))?: ]]; then
               echo "Invalid commit message: $msg"
               echo "Please use conventional commits format: type(scope): description"
               exit 1

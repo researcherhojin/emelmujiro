@@ -114,7 +114,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 ## Code Conventions
 
-- **Conventional commits** required (English only): `type(scope): description`. Types: `feat fix docs style refactor test chore deps ci`.
+- **Conventional commits** required (English only): `type(scope): description`. Types: `feat fix docs style refactor test chore perf deps deps-dev ci` (the exact set the `pr-checks.yml` regex accepts — keep the two in sync). `deps-dev` exists because dependabot writes `deps-dev(deps-dev):` and the skip pattern exempts it, so a human finishing one of its PRs by hand needs the same type available.
 - **Branch naming**: `feature/name` or `fix/description`.
 - **ESLint flat config** (`eslint.config.mjs`, NOT `.eslintrc`). Zero-warnings is the **target**, not yet a hard gate (`lint` script lacks `--max-warnings=0`).
 - **English comments only**.
