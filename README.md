@@ -30,7 +30,7 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![react-i18next](https://img.shields.io/badge/React_i18next-17.0.8-26A69A?logo=i18next&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-1.18.1-5A29E4?logo=axios&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.29.2-1a1a2e)
-![DOMPurify](https://img.shields.io/badge/DOMPurify-3.4.12-4B32C3)
+![DOMPurify](https://img.shields.io/badge/DOMPurify-3.4.13-4B32C3)
 
 **Backend**<br/>
 ![Django](https://img.shields.io/badge/Django-6.0.4-092E20?logo=django&logoColor=white)
