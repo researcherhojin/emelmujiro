@@ -16,7 +16,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:4180',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     /* Screenshot on failure */
@@ -93,7 +93,10 @@ export default defineConfig({
     // it was caught). build:e2e pins the API to the relative /api and turns
     // analytics off.
     command: 'npm run build:e2e && npm run serve:build',
-    url: 'http://localhost:5173',
+    // 4180 is e2e-server.mjs's own port. It used to be 5173, which the Vite dev
+    // server also binds — with `reuseExistingServer` on, a running `npm run dev`
+    // was silently reused and the suite never built or served `build/` at all.
+    url: 'http://localhost:4180',
     reuseExistingServer: !process.env.CI,
     timeout: 300 * 1000,
   },
