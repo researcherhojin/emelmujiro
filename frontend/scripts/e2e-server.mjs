@@ -21,7 +21,14 @@ import { join, extname, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const BUILD_DIR = join(fileURLToPath(new URL('.', import.meta.url)), '..', 'build');
-const PORT = Number(process.env.E2E_PORT || 5173);
+// 4180, not 5173 — the Vite dev server owns 5173, and playwright.config.ts sets
+// `reuseExistingServer` locally, so sharing the port made `playwright test`
+// silently attach to a running `npm run dev` and skip building at all. The dev
+// server implements none of the nginx behavior below, so error-states.spec.ts
+// (404) and navigation.spec.ts (/blog + trailing-slash 301s) failed against it.
+// Not 4173 either: lighthouserc.js runs `vite preview` there, and that fallback
+// answers every route with the homepage snapshot.
+const PORT = Number(process.env.E2E_PORT || 4180);
 const API_TARGET = process.env.E2E_API_TARGET || 'http://127.0.0.1:8000';
 
 const MIME = {
