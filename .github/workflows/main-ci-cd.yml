@@ -222,8 +222,11 @@ jobs:
 
       - name: Commit and push if README changed
         run: |
-          if git diff --quiet README.md; then
-            echo "✓ README test counts already in sync — no commit needed"
+          # Compare against HEAD, not the index: sync-readme-badges.sh ends with
+          # `git add README.md`, so a bare `git diff README.md` sees nothing and
+          # every badge fix silently exits here instead of committing.
+          if git diff --quiet HEAD -- README.md; then
+            echo "✓ README already in sync — no commit needed"
             exit 0
           fi
           git config user.name "github-actions[bot]"
