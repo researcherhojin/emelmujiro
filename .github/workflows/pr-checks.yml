@@ -155,9 +155,28 @@ jobs:
           fi
           echo "README test counts present ($README_FE frontend + $README_BE backend)"
 
-      - name: Check README badge versions match package.json
+      - name: Check README badge versions match package.json and uv.lock
         run: |
           ERRORS=0
+          # Backend runtime badges resolve through backend/uv.lock, not
+          # pyproject.toml: pyproject mixes exact pins (gunicorn==26.0.0) with
+          # floors (coverage>=7.15.4), and a floor is not the installed version.
+          # The version pattern allows two components because PyPI ships them
+          # (Django's next minor is 6.1); a hardcoded X.Y.Z matches nothing there
+          # and would report clean while drifting.
+          check_backend_badge() {
+            local name="$1" pkg="$2"
+            local lock_ver=$(awk -v pkg="$pkg" '
+              /^\[\[package\]\]/ { in_pkg = 0 }
+              $0 == "name = \"" pkg "\"" { in_pkg = 1; next }
+              in_pkg && /^version = / { gsub(/[",]/, "", $3); print $3; exit }
+            ' backend/uv.lock)
+            local badge_ver=$(grep -oE "/badge/${name}-[0-9]+(\.[0-9]+){1,2}" README.md | head -1 | sed -E "s#/badge/${name}-##")
+            if [ -n "$lock_ver" ] && [ -n "$badge_ver" ] && [ "$lock_ver" != "$badge_ver" ]; then
+              echo "❌ $name badge: $badge_ver ≠ uv.lock: $lock_ver"
+              ERRORS=$((ERRORS + 1))
+            fi
+          }
           check_badge() {
             local name="$1" pkg="$2"
             local pkg_ver=$(node -e "const p=require('./frontend/package.json'); console.log((p.dependencies['$pkg']||p.devDependencies['$pkg']||'').replace('^',''))")
@@ -184,12 +203,18 @@ jobs:
           check_badge "Vitest" "vitest"
           check_badge "Testing_Library" "@testing-library/react"
           check_badge "Playwright" "@playwright/test"
+          # Backend section. Added 2026-08-17: these four were the only version
+          # badges in README with no gate at all on either side.
+          check_backend_badge "Django" "django"
+          check_backend_badge "DRF" "djangorestframework"
+          check_backend_badge "SimpleJWT" "djangorestframework-simplejwt"
+          check_backend_badge "Gunicorn" "gunicorn"
           if [ "$ERRORS" -gt 0 ]; then
-            echo "❌ $ERRORS README badge(s) out of sync with package.json"
+            echo "❌ $ERRORS README badge(s) out of sync with package.json / uv.lock"
             echo "Run: scripts/sync-readme-badges.sh (auto-heals on main via the readme-sync job)"
             exit 1
           fi
-          echo "All README badges match package.json"
+          echo "All README badges match package.json and uv.lock"
 
       - name: Check cron log redirect paths
         # Operational cron logs must live inside the project at backend/logs/
