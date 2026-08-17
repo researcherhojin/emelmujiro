@@ -20,7 +20,7 @@ test.describe('Error States', () => {
     // serving the shell so React Router's catch-all renders NotFound.
     //
     // This previously asserted 200, encoding the Vite dev server's SPA
-    // fallback, i.e. the exact behaviour production was fixed to avoid. The
+    // fallback, i.e. the exact behavior production was fixed to avoid. The
     // suite now runs against scripts/e2e-server.mjs, so it can assert the real
     // contract.
     const response = await page.goto('/this-page-does-not-exist', {

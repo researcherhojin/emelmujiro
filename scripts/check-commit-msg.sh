@@ -37,6 +37,8 @@ fi
 
 # Merge commits: git generates the subject, and it is never conventional.
 # The trailing space matters — a bare `^Merge` also exempts `Mergeevil`.
+# cspell:ignore Mergeevil depsnot -- deliberate counter-examples in the comments
+# below, showing what each anchor prevents. Not words; kept out of cspell.json.
 if [[ "$subject" =~ ^Merge\  ]]; then
   exit 0
 fi

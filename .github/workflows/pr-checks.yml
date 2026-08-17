@@ -82,7 +82,7 @@ jobs:
   repo-checks:
     name: Repo Checks (informational)
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
 
     steps:
       - name: Checkout code
@@ -215,6 +215,25 @@ jobs:
             exit 1
           fi
           echo "All README badges match package.json and uv.lock"
+
+      # Placed here, not at the top of the job: the bash-only checks above need
+      # no dependencies, so a failure in one of them ends the job without paying
+      # for setup. save-cache is false because this job runs in parallel with
+      # the jobs that do save it — restore read-only rather than race them.
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
+        with:
+          save-cache: false
+
+      - name: Spell check
+        # cspell was config-only until 2026-08-18: cspell.json existed and the
+        # maintainer's editor surfaced findings, but nothing ran it, so typos
+        # were caught by whoever happened to open the file. Now a declared
+        # devDependency (pinned, so a cspell release cannot silently change the
+        # verdict) run over the whole repo. ignorePaths excludes build output
+        # (coverage/, playwright-report/, test-results/, build/) — those carried
+        # 307 of the 314 findings in the first full scan and are all gitignored.
+        run: npm run spell
 
       - name: Check cron log redirect paths
         # Operational cron logs must live inside the project at backend/logs/
