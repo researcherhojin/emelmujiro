@@ -1,0 +1,88 @@
+name: Deploy Drift Check
+
+# Why this exists: a push made with the automatic GITHUB_TOKEN does not trigger
+# workflows ("if a workflow run pushes code using the repository's GITHUB_TOKEN,
+# a new workflow will not run"), and the Auto-Merge Dependabot job in
+# pr-checks.yml merges with exactly that token. So every dependabot PR it lands
+# leaves main undeployed. Measured across 8 such commits — 99adf7cd, aa7cc935,
+# c97e086d, b9772aa1, 0ecd2601, b2c93607, b8d90db1, d4fb70a6 — every one has
+# zero Main CI/CD Pipeline runs. It went unnoticed because the next human push
+# deploys whatever had piled up behind it, so the gap always closed late instead
+# of never. The risk it leaves open is a CVE patch arriving as a semver-patch:
+# auto-merged, and then sitting on main unshipped.
+#
+# The same hole swallows a deploy that failed for an unrelated reason. On
+# 2026-08-17 the Frontend Tests job died downloading codecov-action (HTTP 429),
+# which skipped deploy-mac-mini entirely and left main undeployed until the run
+# was manually re-run.
+#
+# workflow_dispatch and repository_dispatch are the documented exceptions to the
+# loop-prevention rule — they "always create workflow runs" — so re-arming the
+# pipeline needs no PAT, just the plain GITHUB_TOKEN.
+#
+# Note: the Sync README Badges job pushes its `[skip ci]` commit to main, which
+# by design never deploys. This check will therefore dispatch one deploy after
+# such a commit, bringing the baked backend commit back in line with main. That
+# is the intended trade: "production == main" becomes an invariant that is
+# actually checked, at the cost of an occasional deploy for a README-only diff.
+# `[skip ci]` does not suppress workflow_dispatch, so the dispatch still runs.
+
+on:
+  schedule:
+    - cron: "30 19 * * *" # 04:30 KST daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Compare production against main
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: write # required to workflow_dispatch the deploy pipeline
+
+    steps:
+      - name: Read the commit production is running
+        id: live
+        run: |
+          # /api/health/ reports the commit baked into the running backend image
+          # via the GIT_COMMIT build arg. auto-deploy.sh asserts it post-deploy,
+          # so it is the same marker the deploy itself trusts.
+          BODY=""
+          for attempt in 1 2 3; do
+            if BODY=$(curl -sf --max-time 20 https://emelmujiro.com/api/health/); then
+              break
+            fi
+            echo "attempt $attempt: /api/health/ unreachable"
+            BODY=""
+            sleep 15
+          done
+          if [ -z "$BODY" ]; then
+            echo "::error::/api/health/ unreachable after 3 attempts — refusing to dispatch a deploy blind"
+            exit 1
+          fi
+          LIVE=$(printf '%s' "$BODY" | sed -n 's/.*"commit"[ ]*:[ ]*"\([^"]*\)".*/\1/p')
+          echo "live=$LIVE" >> "$GITHUB_OUTPUT"
+          echo "Production reports commit: ${LIVE:-<absent>}"
+
+      - name: Dispatch the deploy pipeline when production is behind main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LIVE: ${{ steps.live.outputs.live }}
+          HEAD_SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$LIVE" = "$HEAD_SHA" ]; then
+            echo "✅ production is on $HEAD_SHA — nothing to deploy"
+            exit 0
+          fi
+          if [ -z "$LIVE" ] || [ "$LIVE" = "unknown" ]; then
+            echo "::warning::backend reports commit='$LIVE' — image built without GIT_COMMIT; redeploying to restore provenance"
+          else
+            echo "::warning::production is on $LIVE but main is $HEAD_SHA — dispatching deploy"
+          fi
+          gh workflow run "Main CI/CD Pipeline" --repo "$REPO" --ref main
+          echo "Dispatched Main CI/CD Pipeline on main"
