@@ -119,3 +119,27 @@ updates:
     commit-message:
       prefix: "deps"
       include: "scope"
+  # Backend Python deps. Every other ecosystem here was registered from the start;
+  # this one was not, so backend versions drifted with no automation at all — which
+  # is why the urllib3 (CVE-2026-44431/44432) and pyjwt (CVE-2026-48526) advisories
+  # were both first seen as a red Trivy gate blocking unrelated PRs rather than as a
+  # dependabot PR. uv.lock lives in /backend alongside pyproject.toml.
+  - package-ecosystem: "uv"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
+        patterns:
+          - "*"
+    labels:
+      - "dependencies"
+      - "backend"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
