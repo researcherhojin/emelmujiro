@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=84.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -15,7 +15,7 @@ dependencies = [
     "requests==2.33.1",
     "djangorestframework-simplejwt==5.5.1",
     "drf-yasg==1.21.15",
-    "gunicorn==25.3.0",
+    "gunicorn==26.0.0",
     "psycopg2-binary==2.9.12",
     "whitenoise==6.12.0",
 ]
@@ -23,10 +23,10 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "black>=26.3.1",
-    "coverage>=7.0.0",
+    "coverage>=7.15.4",
     "flake8>=7.0.0",
     "django-extensions==4.1",
-    "ipython==9.12.0",
+    "ipython==9.16.1",
 ]
 
 [tool.coverage.run]
