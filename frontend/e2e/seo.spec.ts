@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test';
 
-const routes = ['/', '/contact', '/profile', '/insights'];
+// Must stay in sync with `staticRoutes` in scripts/generate-sitemap.js — the
+// array that feeds both sitemap.xml and the prerender pass. `/privacy` was
+// prerendered but absent here until 2026-08-18, so one of the five prerendered
+// documents went unchecked for title / description / canonical / duplicate head
+// tags. Nothing cross-references the two lists, so adding a static route means
+// adding it in both places by hand.
+const routes = ['/', '/contact', '/profile', '/insights', '/privacy'];
 
 test.describe('SEO', () => {
   for (const route of routes) {
