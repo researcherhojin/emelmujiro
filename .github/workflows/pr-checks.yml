@@ -216,6 +216,16 @@ jobs:
           fi
           echo "All README badges match package.json and uv.lock"
 
+      - name: Check route lists agree
+        # App.tsx, staticRoutes, e2e/seo.spec.ts and lighthouserc.js each
+        # hardcode their own route list and none consults another. The costly
+        # one is a static route in App.tsx but not staticRoutes: it ships a
+        # hard 404 while the prerender step still prints success, because that
+        # step asserts the count of routes it was handed. Sits above Setup
+        # Node.js on purpose — the script requires only node builtins and
+        # package.json, so it needs no npm ci to run.
+        run: node frontend/scripts/check-route-lists.js
+
       # Placed here, not at the top of the job: the bash-only checks above need
       # no dependencies, so a failure in one of them ends the job without paying
       # for setup. save-cache is false because this job runs in parallel with

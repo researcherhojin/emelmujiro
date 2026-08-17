@@ -4,8 +4,9 @@ import { test, expect } from '@playwright/test';
 // array that feeds both sitemap.xml and the prerender pass. `/privacy` was
 // prerendered but absent here until 2026-08-18, so one of the five prerendered
 // documents went unchecked for title / description / canonical / duplicate head
-// tags. Nothing cross-references the two lists, so adding a static route means
-// adding it in both places by hand.
+// tags. `npm run check:routes` (scripts/check-route-lists.js) now compares this
+// array against staticRoutes, App.tsx and lighthouserc.js in CI, so a route
+// added to one list and not this one fails rather than going unchecked.
 const routes = ['/', '/contact', '/profile', '/insights', '/privacy'];
 
 test.describe('SEO', () => {

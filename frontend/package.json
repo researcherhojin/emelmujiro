@@ -81,6 +81,7 @@
     "generate:sitemap": "node scripts/generate-sitemap.js",
     "analyze:bundle": "source-map-explorer 'build/assets/*.js'",
     "check:css": "node scripts/check-css.js",
+    "check:routes": "node scripts/check-route-lists.js",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
