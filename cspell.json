@@ -13,7 +13,11 @@
     "frontend/build/**",
     "**/node_modules/**",
     "**/.venv/**",
-    "**/__pycache__/**"
+    "**/__pycache__/**",
+    "frontend/coverage/**",
+    "frontend/playwright-report/**",
+    "frontend/test-results/**",
+    "**/*.egg-info/**"
   ],
   "words": [
     "ablearn",
@@ -83,6 +87,7 @@
     "Gottesbüren",
     "grecaptcha",
     "gstack",
+    "gsub",
     "guerrillamail",
     "gunicorn",
     "hackathon",
@@ -93,6 +98,7 @@
     "healthcheck",
     "hkps",
     "hmac",
+    "hoistables",
     "hojin",
     "hreflang",
     "hsts",
@@ -231,6 +237,7 @@
     "Twitterbot",
     "tzdata",
     "umami",
+    "undeployed",
     "undercounts",
     "unparseable",
     "unprerendered",

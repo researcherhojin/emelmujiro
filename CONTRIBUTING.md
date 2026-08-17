@@ -21,7 +21,7 @@ This file lists only the contributor-facing checklist; for the "why" behind any 
    `type(scope): description` — types: `feat fix docs style refactor test chore perf deps-dev deps ci`. A description is required. Merge, `fixup!`/`squash!`/`amend!`, `Revert "…"`, and dependabot's own formats are exempt.
 3. **One issue per PR, ≤ 3 commits**, no mid-PR scope expansion. Defer follow-ups to a new issue.
 4. **Test before pushing**: `make test` (frontend + backend) and `make lint` from repo root.
-5. **PR**: open against `main` with a short summary + test plan. CI runs lint, type-check, test, Trivy, bundle size, Lighthouse, Codecov.
+5. **PR**: open against `main` with a short summary + test plan. CI runs lint, type-check, test, Trivy, bundle size, Lighthouse, Codecov, and a repo-wide `cspell` spell check.
 
 ## Code rules (the short version)
 
@@ -30,6 +30,7 @@ This file lists only the contributor-facing checklist; for the "why" behind any 
 - **No `window.alert/prompt`** — use a toast or inline UI.
 - **Logger import**: `import logger from '../utils/logger'` (default export). Use `env.IS_DEVELOPMENT` for environment checks.
 - **`[skip ci]` only in Ship-phase README sync commits.** Putting the literal string anywhere in a commit message — even in prose describing the mechanism — causes GitHub to skip every workflow for that commit (see CLAUDE.md Gotcha #10).
+- **Spelling is gated.** `npm run spell` runs `cspell` over the whole repo and CI runs it in `Repo Checks (informational)`. A real word it does not know goes in `cspell.json`'s `words`; a deliberate non-word (an example string in a comment) goes in a file-scoped `# cspell:ignore` instead, so the project dictionary never starts accepting typo-shaped tokens everywhere.
 - **Pre-commit runs lint-staged** (Prettier + ESLint + Black + Flake8). Don't bypass with `--no-verify` — the one sanctioned use is the non-ASCII proper noun escape noted in the commit-message rule above, and it skips the formatters too.
 
 ## Testing
