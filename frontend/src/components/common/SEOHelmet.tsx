@@ -37,7 +37,13 @@ function headTagKey(el: Element): string {
   if (name) return `meta:name=${name}`;
   const property = el.getAttribute('property');
   if (property) return `meta:property=${property}`;
-  return `${el.tagName.toLowerCase()}:${el.getAttribute('rel') ?? ''}`;
+  // No `?? ''` here: the only nodes reaching this line without a rel are the
+  // odd `<meta name="">` / `<meta property="">` that `[name]`/`[property]`
+  // match but whose empty value is falsy. Those key as `meta:null` instead of
+  // `meta:` — identical behavior, since either way the key is unique to that
+  // shape and collides with nothing else. Verified by mutation: dropping the
+  // fallback leaves all SEOHelmet tests passing, so it guarded nothing.
+  return `${el.tagName.toLowerCase()}:${el.getAttribute('rel')}`;
 }
 
 /**

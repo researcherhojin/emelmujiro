@@ -343,5 +343,41 @@ describe('SEOHelmet', () => {
       expect(marked('meta[property="og:url"]')).toBe(0);
       expect(document.head.querySelectorAll('meta[property="og:url"]')).toHaveLength(1);
     });
+
+    it('removes every prerendered copy when the snapshot shipped the tag twice', () => {
+      // The cases above seed one marked tag per key, which only ever exercises
+      // the "first sighting" path of the grouping map. Duplicates are the
+      // situation this component exists for — prerendered documents carried
+      // 6-9 alternates per route — so a second copy under the same key must
+      // also be collected and removed, not silently dropped from the group.
+      seed(
+        '<meta property="og:description" content="stale A" data-prerendered-seo="true">' +
+          '<meta property="og:description" content="stale B" data-prerendered-seo="true">' +
+          '<meta property="og:description" content="live">'
+      );
+
+      renderWithHelmet(<SEOHelmet />);
+
+      expect(marked('meta[property="og:description"]')).toBe(0);
+      const remaining = document.head.querySelectorAll('meta[property="og:description"]');
+      expect(remaining).toHaveLength(1);
+      expect(remaining[0].getAttribute('content')).toBe('live');
+
+      remaining.forEach((el) => el.remove()); // seeded unmarked tag: afterEach only clears marked ones
+    });
+
+    it('keys a tag with an empty name attribute without throwing', () => {
+      // `[name]` matches name="" , but the empty value is falsy, so such a tag
+      // falls past both the name and property branches to the rel-based key —
+      // where a <meta> has no rel at all. Guards the fall-through against a
+      // throw; it deliberately does not assert the key's exact text, which is
+      // an internal detail with no observable effect.
+      seed('<meta name="" content="odd" data-prerendered-seo="true">');
+
+      expect(() => renderWithHelmet(<SEOHelmet />)).not.toThrow();
+
+      // No unmarked counterpart exists, so it must be left alone.
+      expect(marked('meta[content="odd"]')).toBe(1);
+    });
   });
 });
