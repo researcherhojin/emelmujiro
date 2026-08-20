@@ -692,6 +692,11 @@ class ContactAPITestCase(APITestCase):
 class NewsletterAPITestCase(APITestCase):
     """Tests for Newsletter Subscription API endpoints"""
 
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()  # Reset view-level NewsletterRateThrottle counters
+
     def test_newsletter_subscription(self):
         """Test newsletter subscription"""
         url = reverse("newsletter-subscribe")
@@ -2647,6 +2652,11 @@ class ContactRecaptchaFailureTestCase(APITestCase):
 class NewsletterExceptionTestCase(APITestCase):
     """Tests for Newsletter exception handling (lines 591-593)"""
 
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()  # Reset view-level NewsletterRateThrottle counters
+
     def test_newsletter_exception_returns_500(self):
         """Generic exception during newsletter subscription returns 500"""
         from unittest.mock import patch
@@ -4243,3 +4253,47 @@ class LoginThrottleTestCase(APITestCase):
         # First 10 are processed (401 invalid creds), the 11th is throttled.
         self.assertEqual(statuses[9], status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(statuses[10], status.HTTP_429_TOO_MANY_REQUESTS)
+
+
+class NewsletterThrottleTestCase(APITestCase):
+    """NewsletterRateThrottle caps signups at the 'newsletter' scope rate (3/hour).
+
+    Regression guard: NewsletterView used a bare AnonRateThrottle, whose scope is
+    'anon', so the configured newsletter rate was dead config and signups got the
+    100/hour anon bucket instead.
+    """
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
+    def tearDown(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
+    def test_newsletter_throttled_after_rate_exceeded(self):
+        """The 4th signup from one IP within the hour returns 429."""
+        url = reverse("newsletter-subscribe")
+        statuses = [
+            self.client.post(
+                url, {"email": f"sub{i}@example.com", "name": "Test"}, format="json", REMOTE_ADDR="203.0.113.9"
+            ).status_code
+            for i in range(4)
+        ]
+        self.assertEqual(statuses[:3], [status.HTTP_201_CREATED] * 3)
+        self.assertEqual(statuses[3], status.HTTP_429_TOO_MANY_REQUESTS)
+
+    def test_newsletter_throttle_scope_is_wired_to_settings(self):
+        """The scope resolves to the configured rate, with no inline override."""
+        from django.conf import settings
+
+        from api.views import NewsletterRateThrottle
+
+        self.assertEqual(NewsletterRateThrottle.scope, "newsletter")
+        self.assertIsNone(NewsletterRateThrottle.__dict__.get("rate"))
+        self.assertEqual(
+            NewsletterRateThrottle().rate,
+            settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["newsletter"],
+        )

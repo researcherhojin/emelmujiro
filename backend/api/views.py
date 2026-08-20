@@ -71,6 +71,17 @@ class CommentRateThrottle(AnonRateThrottle):
     rate = "10/hour"
 
 
+class NewsletterRateThrottle(AnonRateThrottle):
+    """Newsletter subscription rate throttle.
+
+    No inline `rate` on purpose: the sibling classes here override the
+    configured rate, so settings.DEFAULT_THROTTLE_RATES['newsletter'] is the
+    single source of truth for this scope (same as LoginRateThrottle).
+    """
+
+    scope = "newsletter"
+
+
 class AdminRateThrottle(UserRateThrottle):
     """Admin endpoint rate throttle"""
 
@@ -561,7 +572,7 @@ class ContactView(APIView):
 
 class NewsletterView(APIView):
     permission_classes = [AllowAny]
-    throttle_classes = [AnonRateThrottle]
+    throttle_classes = [NewsletterRateThrottle]
 
     def post(self, request):
         """Newsletter subscription"""
