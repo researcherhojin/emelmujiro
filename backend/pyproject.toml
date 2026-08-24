@@ -11,7 +11,7 @@ dependencies = [
     "Django==6.0.4",
     "djangorestframework==3.17.1",
     "django-cors-headers==4.9.0",
-    "python-dotenv==1.2.2",
+    "python-dotenv==1.2.3",
     "requests==2.33.1",
     "djangorestframework-simplejwt==5.5.1",
     "drf-yasg==1.21.15",
