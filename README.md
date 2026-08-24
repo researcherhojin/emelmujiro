@@ -26,7 +26,7 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![React Router](https://img.shields.io/badge/React_Router-8.3.0-CA4245?logo=reactrouter&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.19-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tailwind Typography](https://img.shields.io/badge/Typography-0.5.19-06B6D4?logo=tailwindcss&logoColor=white)
-![i18next](https://img.shields.io/badge/i18next-26.3.6-26A69A?logo=i18next&logoColor=white)
+![i18next](https://img.shields.io/badge/i18next-26.4.0-26A69A?logo=i18next&logoColor=white)
 ![react-i18next](https://img.shields.io/badge/React_i18next-17.0.11-26A69A?logo=i18next&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-1.19.0-5A29E4?logo=axios&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.30.1-1a1a2e)
