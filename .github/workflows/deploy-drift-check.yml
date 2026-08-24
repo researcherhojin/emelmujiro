@@ -43,10 +43,15 @@ jobs:
     permissions:
       contents: read
       actions: write # required to workflow_dispatch the deploy pipeline
+      issues: write # required to file/close the production-unreachable issue
 
     steps:
       - name: Read the commit production is running
         id: live
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           # /api/health/ reports the commit baked into the running backend image
           # via the GIT_COMMIT build arg. auto-deploy.sh asserts it post-deploy,
@@ -60,9 +65,27 @@ jobs:
             BODY=""
             sleep 15
           done
+          TITLE="Production unreachable: /api/health/ failed the drift check"
           if [ -z "$BODY" ]; then
             echo "::error::/api/health/ unreachable after 3 attempts — refusing to dispatch a deploy blind"
+            # A red scheduled run notifies nobody (measured: the Mac mini sat
+            # dead 2026-08-23 09:59 → 08-25 03:45 KST behind one silent red run,
+            # because FileVault blocks the post-power-loss auto-restart at the
+            # unlock screen). An issue does notify — file one, or bump the one
+            # already open so repeat failures thread instead of piling up.
+            EXISTING=$(gh issue list --repo "$REPO" --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
+            if [ -n "$EXISTING" ]; then
+              gh issue comment "$EXISTING" --repo "$REPO" --body "Still unreachable after 3 attempts — $RUN_URL"
+            else
+              gh issue create --repo "$REPO" --title "$TITLE" --body "$(printf 'The daily deploy drift check could not reach https://emelmujiro.com/api/health/ after 3 attempts, so it refused to dispatch a deploy.\n\nLikely causes, most common first: Mac mini down at the FileVault unlock screen after a power loss (needs a physical unlock), Cloudflare tunnel down, or Docker Desktop not running.\n\nThis issue auto-closes when the next scheduled run reaches the endpoint.\n\nRun: %s' "$RUN_URL")"
+            fi
             exit 1
+          fi
+          # Recovery path: the endpoint answered, so close any outage issue the
+          # unreachable path filed on a previous night.
+          OPEN=$(gh issue list --repo "$REPO" --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$OPEN" ]; then
+            gh issue close "$OPEN" --repo "$REPO" --comment "/api/health/ is reachable again — $RUN_URL"
           fi
           LIVE=$(printf '%s' "$BODY" | sed -n 's/.*"commit"[ ]*:[ ]*"\([^"]*\)".*/\1/p')
           echo "live=$LIVE" >> "$GITHUB_OUTPUT"
