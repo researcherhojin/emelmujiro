@@ -11,6 +11,10 @@ This project adheres to [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0
 
 Accumulating since `[1.0.0]` (2026-04-16). Production at `https://emelmujiro.com` is current main; this section records what has been merged but not yet cut as a release.
 
+### Changed
+
+- Teaching history org label consistency — entries 1 (Python 부트캠프 특강) and 43 (그로스 마케팅 부트캠프 특강) displayed org as bare `멋쟁이사자처럼` / `LikeLion` while the other 8 LikeLion engagements (and both entries' own `orgType: moel` classification) already carried the `고용노동부 KDT × 멋쟁이사자처럼` / `MOEL KDT × LikeLion` operator prefix. Both now use the prefixed form in ko and en; strings only, no orgType or count changes
+
 ### Added
 
 - Deploy drift check now files a GitHub issue when production is unreachable — the check already refused to dispatch a blind deploy after 3 failed `/api/health/` attempts, but that refusal was only a red scheduled run, which notifies nobody. Measured cost of the silence: the Mac mini went down with a power loss around 2026-08-23 09:59 KST (`pmset autorestart 1` rebooted it, but FileVault held the boot at the unlock screen, where no login session means no Docker Desktop and no SSH) and production stayed dark until a manual unlock on 08-25 03:45 KST — 1.7 days behind exactly one silent red `Deploy Drift Check` run (2026-08-24 04:45 KST). The unreachable path now creates a `Production unreachable: /api/health/ failed the drift check` issue (which does send a notification), comments on the existing one instead of piling up duplicates when the outage spans multiple nights, and the healthy path auto-closes it once the endpoint answers again. Job gains `issues: write`; all `${{ }}` values reach the script via `env:` per the CI injection rule
