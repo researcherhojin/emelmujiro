@@ -278,6 +278,15 @@ jobs:
         working-directory: ./frontend
         run: npm run lint
 
+      - name: Type check
+        # No CI job ran tsc until 2026-08-25: type-check lived only in the
+        # local `npm run validate`, and the deploy build's tsc pass ran on the
+        # Mac mini's node_modules, which can lag the lockfile. That is how the
+        # @tiptap 3.30.2 bumps (#459/#465) broke `npm run type-check` on main
+        # for two days with every check green.
+        working-directory: ./frontend
+        run: npm run type-check
+
       - name: Prettier
         working-directory: ./frontend
         run: npx prettier --check "src/**/*.{js,jsx,ts,tsx,css,md}"
