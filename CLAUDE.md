@@ -10,7 +10,7 @@ Cross-project behavioral guidelines (Think before coding · Simplicity first · 
 
 This root file holds the always-loaded, cross-cutting rules. Domain specifics live in `.claude/rules/` and auto-load when Claude reads matching files: `frontend.md` (Architecture, UI Conventions, Testing — paths `frontend/**`), `backend.md` (constants, utilities, backend test output — paths `backend/**`).
 
-**Size**: the official target is **under 200 lines**; there is no byte target. Currently 191 lines / 45.0 KB — within it. The `25 KB` half of the `< 200 lines / 25 KB` target the 2026-06 restructure adopted was borrowed from the wrong limit: [Memory](https://code.claude.com/docs/en/memory) applies `200 lines or 25 KB, whichever comes first` to the auto-memory `MEMORY.md` index, and states that CLAUDE.md "files are loaded in full regardless of length, though shorter files produce better adherence." So the long-standing "bytes over" note described an overage against a limit that does not apply here. Shorter is still better — adherence, not truncation, is what degrades — and `/doctor` proposes trims, cutting what Claude can derive from the codebase and keeping pitfalls and rationale. **The lever is compressing wording in place, not relocating entries.** Splitting the 8 dependency Gotchas into a path-scoped `.claude/rules/dependencies.md` was tried on 2026-07-31 and reverted, for two reasons worth not rediscovering: (1) markdown auto-renumbers ordered lists, so the Gotcha IDs — cited from commits, CHANGELOG and PRs — silently shifted and every in-file `Gotcha #N` cross-reference broke; (2) these rules are triggered by _situations_ (a red security scan, a dependabot PR, a Vitest crash), not by reading `package.json`, so a path-scoped trigger would mostly fail to fire. Path-scoping works for `frontend.md`/`backend.md` because those genuinely key on file reads.
+**Size**: the official target is **under 200 lines**; there is no byte target. Currently 185 lines / 44.5 KB — within it. The `25 KB` half of the `< 200 lines / 25 KB` target the 2026-06 restructure adopted was borrowed from the wrong limit: [Memory](https://code.claude.com/docs/en/memory) applies `200 lines or 25 KB, whichever comes first` to the auto-memory `MEMORY.md` index, and states that CLAUDE.md "files are loaded in full regardless of length, though shorter files produce better adherence." So the long-standing "bytes over" note described an overage against a limit that does not apply here. Shorter is still better — adherence, not truncation, is what degrades — and `/doctor` proposes trims, cutting what Claude can derive from the codebase and keeping pitfalls and rationale. **The lever is compressing wording in place, not relocating entries.** Splitting the 8 dependency Gotchas into a path-scoped `.claude/rules/dependencies.md` was tried on 2026-07-31 and reverted, for two reasons worth not rediscovering: (1) markdown auto-renumbers ordered lists, so the Gotcha IDs — cited from commits, CHANGELOG and PRs — silently shifted and every in-file `Gotcha #N` cross-reference broke; (2) these rules are triggered by _situations_ (a red security scan, a dependabot PR, a Vitest crash), not by reading `package.json`, so a path-scoped trigger would mostly fail to fire. Path-scoping works for `frontend.md`/`backend.md` because those genuinely key on file reads.
 
 By task type:
 
@@ -57,13 +57,7 @@ uv run python manage.py test                                                  # 
 DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPITestCase          # Single backend test class
 uv run black . && uv run flake8 .                                             # Format + lint (line length 120)
 
-# Make shortcuts (run from root — see Makefile or `make help`):
-# Setup:    make install · make setup-dev-machine · make verify-setup
-# Dev:      make dev (Docker) · make dev-local · make dev-clean · make down · make restart
-# Quality:  make test · make test-ci · make lint · make lint-fix · make update-test-counts
-# Ops:      make build · make logs · make logs-security · make logs-debug · make health · make ps
-# Django:   make migrate · make shell · make createsuperuser
-# Cron:     make setup-cron (SiteVisit cleanup) · make setup-health-cron · make cleanup-visits DAYS=90
+# Make shortcuts: run `make help` from root
 ```
 
 ## Constraints
