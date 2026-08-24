@@ -10,6 +10,8 @@ import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import Typography from '@tiptap/extension-typography';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import type { EditorView } from '@tiptap/pm/view';
+import type { Slice } from '@tiptap/pm/model';
 import { common, createLowlight } from 'lowlight';
 import { api } from '../../services/api';
 import logger from '../../utils/logger';
@@ -63,7 +65,7 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({ content = '', onChange, pla
         class:
           'prose prose-lg prose-gray dark:prose-invert max-w-none min-h-[400px] px-4 py-3 focus:outline-none',
       },
-      handleDrop: (_view, event, _slice, moved) => {
+      handleDrop: (_view: EditorView, event: DragEvent, _slice: Slice, moved: boolean) => {
         if (moved) return false;
         const files = event.dataTransfer?.files;
         if (!files?.length) return false;
@@ -77,7 +79,7 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({ content = '', onChange, pla
         });
         return true;
       },
-      handlePaste: (_view, event) => {
+      handlePaste: (_view: EditorView, event: ClipboardEvent) => {
         const items = event.clipboardData?.items;
         if (!items) return false;
         for (const item of items) {
