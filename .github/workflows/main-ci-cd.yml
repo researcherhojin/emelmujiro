@@ -261,6 +261,11 @@ jobs:
       - name: Trigger Mac Mini deploy
         env:
           DEPLOY_SECRET: ${{ secrets.MAC_MINI_DEPLOY_SECRET }}
+          # The commit THIS run tested. auto-deploy.sh checks out exactly this
+          # instead of `git pull origin main`, which would ship whatever landed
+          # on main while the run was still going — including an auto-merged
+          # dependabot patch that never got a pipeline run of its own.
+          DEPLOY_SHA: ${{ github.sha }}
         run: |
           if [ -z "$DEPLOY_SECRET" ]; then
             echo "⏭️ MAC_MINI_DEPLOY_SECRET not set — skipping Mac Mini deploy"
@@ -269,6 +274,8 @@ jobs:
           HTTP_CODE=$(curl -s -o /tmp/deploy-response.txt -w "%{http_code}" \
             -X POST https://deploy.emelmujiro.com/deploy \
             -H "X-Deploy-Secret: $DEPLOY_SECRET" \
+            -H "Content-Type: application/json" \
+            -d "{\"sha\":\"$DEPLOY_SHA\"}" \
             --max-time 300) || {
             echo "::error::curl failed to connect (exit code $?)"
             exit 1

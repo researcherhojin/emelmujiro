@@ -43,12 +43,57 @@ echo "$LOG_PREFIX Starting deploy at $(date)"
 
 cd "$REPO_DIR"
 
-# Pull latest code
-echo "$LOG_PREFIX Pulling latest changes..."
+# Check out exactly the commit CI tested.
+#
+# This used to be `git pull origin main`, which deploys whatever main HEAD is AT
+# PULL TIME — not the commit the pipeline actually tested. The gap is real and
+# routinely open: deploy-mac-mini is the LAST job in the run, and a dependabot
+# PR auto-merged by pr-checks.yml lands with GITHUB_TOKEN, which triggers no
+# workflow run of its own. So such a commit gets pulled in by the next run's
+# deploy and ships having never been tested by anything. Measured 2026-08-31:
+# run 33390606447 tested 3d05c5b0; bb1839c4 (vite 8.2.1 -> 8.2.2, #488)
+# auto-merged at 12:12:57Z, 51s BEFORE that run's webhook fired at 12:13:48Z;
+# production came up reporting commit bb1839c4, which has zero workflow runs.
+# The GIT_COMMIT assertion at the bottom of this script cannot catch it: it
+# compares the live backend commit against this script's own HEAD, so once a
+# newer HEAD is pulled both sides agree and the assertion passes.
+echo "$LOG_PREFIX Fetching origin/main..."
 PREV_HEAD=$(git rev-parse HEAD)
-if ! git pull origin main; then
-  echo "$LOG_PREFIX ERROR: git pull failed, aborting deploy"
+if ! git fetch origin main; then
+  echo "$LOG_PREFIX ERROR: git fetch failed, aborting deploy"
   exit 1
+fi
+
+# DEPLOY_SHA comes from the CI payload via deploy-webhook.js, which validates it
+# as exactly 40 hex chars before it reaches this script. Absent (a manual run,
+# or an older webhook) — fall back to origin/main so this stays runnable by hand.
+TARGET_SHA="${DEPLOY_SHA:-}"
+if [ -z "$TARGET_SHA" ]; then
+  TARGET_SHA=$(git rev-parse FETCH_HEAD)
+  echo "$LOG_PREFIX No DEPLOY_SHA supplied — deploying origin/main (${TARGET_SHA:0:8})"
+else
+  echo "$LOG_PREFIX Deploying CI-tested commit ${TARGET_SHA:0:8}"
+fi
+
+# Refuse any object that is not on main, so a malformed or hostile payload
+# cannot deploy an arbitrary commit even if the shared secret leaks.
+if ! git merge-base --is-ancestor "$TARGET_SHA" FETCH_HEAD; then
+  echo "$LOG_PREFIX ERROR: $TARGET_SHA is not an ancestor of origin/main — refusing to deploy"
+  exit 1
+fi
+
+# --ff-only keeps the repo on the main branch (no detached HEAD to surprise a
+# manual session on the mini) and refuses rather than discarding anything if the
+# working tree has diverged.
+if ! git merge --ff-only "$TARGET_SHA"; then
+  echo "$LOG_PREFIX ERROR: cannot fast-forward to $TARGET_SHA, aborting deploy"
+  exit 1
+fi
+
+if [ "$(git rev-parse HEAD)" != "$TARGET_SHA" ]; then
+  # Out-of-order webhooks: HEAD is already past the requested commit. Both are
+  # CI-tested commits, so ship HEAD rather than rewinding production.
+  echo "$LOG_PREFIX WARNING: HEAD $(git rev-parse HEAD) is ahead of requested $TARGET_SHA — deploying HEAD"
 fi
 
 # Detect whether this pull changed the nginx config. nginx.conf is a bind mount,

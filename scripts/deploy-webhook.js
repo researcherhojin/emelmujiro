@@ -29,6 +29,7 @@ if (!SECRET) {
 
 const LOCK_FILE = '/tmp/emelmujiro-deploy.lock';
 const LOCK_MAX_AGE_MS = 15 * 60 * 1000;
+const MAX_BODY_BYTES = 4096;
 
 let deployChild = null;
 
@@ -84,6 +85,42 @@ function gracefulShutdown(signal) {
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
+function startDeploy(res, sha) {
+  if (isDeploying()) {
+    console.log(`[${timestamp()}] Deploy already in progress, skipping`);
+    res.writeHead(409, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Deploy already in progress' }));
+    return;
+  }
+
+  acquireLock(process.pid);
+  console.log(
+    `[${timestamp()}] Deploy triggered${sha ? ` for ${sha.slice(0, 8)}` : ' (no sha \u2014 falling back to origin/main)'}`
+  );
+
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ status: 'deploy started', sha: sha || null }));
+
+  deployChild = execFile(
+    'bash',
+    [DEPLOY_SCRIPT],
+    { timeout: 600000, env: { ...process.env, DEPLOY_SHA: sha } },
+    (error, stdout, stderr) => {
+      releaseLock();
+      if (error) {
+        console.error(`[${timestamp()}] Deploy failed:`, error.message);
+        if (stderr) console.error(stderr);
+      } else {
+        console.log(`[${timestamp()}] Deploy completed successfully`);
+      }
+      if (stdout) console.log(stdout);
+    }
+  );
+
+  // Update lock with child PID so orphan detection works if webhook dies
+  acquireLock(deployChild.pid);
+}
+
 const server = http.createServer((req, res) => {
   // Health check
   if (req.method === 'GET' && req.url === '/health') {
@@ -105,32 +142,42 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    if (isDeploying()) {
-      console.log(`[${timestamp()}] Deploy already in progress, skipping`);
-      res.writeHead(409, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Deploy already in progress' }));
-      return;
-    }
-
-    acquireLock(process.pid);
-    console.log(`[${timestamp()}] Deploy triggered`);
-
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'deploy started' }));
-
-    deployChild = execFile('bash', [DEPLOY_SCRIPT], { timeout: 600000 }, (error, stdout, stderr) => {
-      releaseLock();
-      if (error) {
-        console.error(`[${timestamp()}] Deploy failed:`, error.message);
-        if (stderr) console.error(stderr);
-      } else {
-        console.log(`[${timestamp()}] Deploy completed successfully`);
+    // Read the body only after authenticating, so an unauthenticated caller
+    // never gets to buffer anything. main-ci-cd.yml sends {"sha": github.sha} —
+    // the commit the pipeline actually tested. auto-deploy.sh checks that exact
+    // commit out instead of racing main's HEAD.
+    let body = '';
+    let rejected = false;
+    req.on('data', (chunk) => {
+      if (rejected) return;
+      body += chunk;
+      if (body.length > MAX_BODY_BYTES) {
+        rejected = true;
+        res.writeHead(413, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Body too large' }));
+        req.destroy();
       }
-      if (stdout) console.log(stdout);
     });
-
-    // Update lock with child PID so orphan detection works if webhook dies
-    acquireLock(deployChild.pid);
+    req.on('end', () => {
+      if (rejected) return;
+      let sha = '';
+      try {
+        const parsed = body.trim() ? JSON.parse(body) : {};
+        if (typeof parsed.sha === 'string') sha = parsed.sha.trim();
+      } catch (_) {
+        // No body, or not JSON — treat as an older caller and fall back to
+        // origin/main inside auto-deploy.sh.
+      }
+      // This value is exported into a shell script, so accept only a full
+      // 40-character hex object name and nothing else.
+      if (sha && !/^[0-9a-f]{40}$/.test(sha)) {
+        console.log(`[${timestamp()}] Rejecting deploy: malformed sha in payload`);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid sha' }));
+        return;
+      }
+      startDeploy(res, sha);
+    });
 
     return;
   }
