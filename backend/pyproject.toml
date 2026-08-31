@@ -15,7 +15,7 @@ dependencies = [
     "requests==2.34.2",
     "djangorestframework-simplejwt==5.5.1",
     "drf-yasg==1.21.15",
-    "gunicorn==26.1.0",
+    "gunicorn==26.2.0",
     "psycopg2-binary==2.9.12",
     "whitenoise==6.12.0",
 ]
