@@ -70,12 +70,14 @@ updates:
       prefix-development: "deps-dev"
       include: "scope"
 
-  # Backend dependencies are managed by uv (NOT pip).
-  # Dependabot doesn't yet support uv.lock — see
-  # https://github.com/dependabot/dependabot-core/issues/10478
-  # Manual cadence: run `cd backend && uv sync --upgrade` weekly and commit
-  # uv.lock + any pyproject.toml version bumps. CLAUDE.md "Commands" lists
-  # `uv sync --extra dev` as the install command.
+  # Backend dependencies are managed by uv (NOT pip). The `uv` ecosystem at the
+  # bottom of this file now handles pyproject.toml + uv.lock, so the manual
+  # `uv sync --upgrade` cadence this block used to prescribe is retired.
+  # Dependency names in backend/pyproject.toml MUST be PEP 503-normalized
+  # (lowercase): dependabot builds its manifest-rewrite regex from the
+  # normalized name and matches it case-sensitively, so a capitalized pin is
+  # never rewritten, and the `uv lock --upgrade-package <name>==<new>` that
+  # follows then contradicts the untouched pin. See CLAUDE.md Gotcha #19.
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
