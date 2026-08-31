@@ -33,7 +33,7 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![DOMPurify](https://img.shields.io/badge/DOMPurify-3.4.14-4B32C3)
 
 **Backend**<br/>
-![Django](https://img.shields.io/badge/Django-6.0.4-092E20?logo=django&logoColor=white)
+![Django](https://img.shields.io/badge/Django-6.1-092E20?logo=django&logoColor=white)
 ![DRF](https://img.shields.io/badge/DRF-3.18.0-A30000)
 ![SimpleJWT](https://img.shields.io/badge/SimpleJWT-5.5.1-000000?logo=jsonwebtokens&logoColor=white)
 ![Gunicorn](https://img.shields.io/badge/Gunicorn-26.2.0-499848?logo=gunicorn&logoColor=white)
