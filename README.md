@@ -30,13 +30,13 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![react-i18next](https://img.shields.io/badge/React_i18next-17.0.11-26A69A?logo=i18next&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-1.19.0-5A29E4?logo=axios&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.30.5-1a1a2e)
-![DOMPurify](https://img.shields.io/badge/DOMPurify-3.4.13-4B32C3)
+![DOMPurify](https://img.shields.io/badge/DOMPurify-3.4.14-4B32C3)
 
 **Backend**<br/>
 ![Django](https://img.shields.io/badge/Django-6.0.4-092E20?logo=django&logoColor=white)
 ![DRF](https://img.shields.io/badge/DRF-3.18.0-A30000)
 ![SimpleJWT](https://img.shields.io/badge/SimpleJWT-5.5.1-000000?logo=jsonwebtokens&logoColor=white)
-![Gunicorn](https://img.shields.io/badge/Gunicorn-26.1.0-499848?logo=gunicorn&logoColor=white)
+![Gunicorn](https://img.shields.io/badge/Gunicorn-26.2.0-499848?logo=gunicorn&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
 
 **Testing**<br/>
