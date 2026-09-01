@@ -59,6 +59,13 @@ const getErrorMessage = (status: number): string => {
 // Custom error interface
 interface CustomAxiosError extends AxiosError {
   userMessage?: string;
+}
+
+// The re-entry guard MUST live on the request config, not on the error. Axios
+// mints a fresh AxiosError for every attempt, so a flag set on the error never
+// survives into the retry and the guard silently never fires. The config object
+// is the one thing `axiosInstance.request(originalRequest)` carries through.
+interface RetryableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
@@ -89,11 +96,11 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: CustomAxiosError) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as RetryableRequestConfig | undefined;
 
     // Handle timeout errors
-    if (error.code === 'ECONNABORTED' && originalRequest && !error._retry) {
-      error._retry = true;
+    if (error.code === 'ECONNABORTED' && originalRequest && !originalRequest._retry) {
+      originalRequest._retry = true;
       logger.warn('Request timeout, retrying...');
       return axiosInstance.request(originalRequest);
     }
@@ -117,8 +124,8 @@ axiosInstance.interceptors.response.use(
     // Handle 401 - Try cookie-based token refresh (skip for auth endpoints)
     // Uses a shared promise so concurrent 401s don't race to refresh (and blacklist each other's tokens)
     const isAuthEndpoint = originalRequest?.url?.includes('auth/');
-    if (status === 401 && originalRequest && !error._retry && !isAuthEndpoint) {
-      error._retry = true;
+    if (status === 401 && originalRequest && !originalRequest._retry && !isAuthEndpoint) {
+      originalRequest._retry = true;
       try {
         if (!refreshPromise) {
           refreshPromise = axiosInstance.post('auth/token/refresh/').finally(() => {

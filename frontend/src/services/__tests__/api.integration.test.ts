@@ -254,7 +254,6 @@ describe('API Service - Integration Tests', () => {
             code: 'ECONNABORTED',
             config: { url: '/test', headers: new AxiosHeaders() } as InternalAxiosRequestConfig,
             response: undefined,
-            _retry: false,
             message: 'timeout of 30000ms exceeded',
           };
 
@@ -263,7 +262,7 @@ describe('API Service - Integration Tests', () => {
             await errorHandler(timeoutError);
           } catch {
             // Expected to fail since mock axios won't handle retry
-            expect(timeoutError._retry).toBe(true);
+            expect((timeoutError.config as { _retry?: boolean })._retry).toBe(true);
           }
         }
       }
@@ -287,14 +286,13 @@ describe('API Service - Integration Tests', () => {
               url: '/blog-posts/',
               headers: new AxiosHeaders(),
             } as InternalAxiosRequestConfig,
-            _retry: false,
           };
 
           try {
             await errorHandler(unauthorizedError);
           } catch (err: any) {
             // Should have attempted retry
-            expect(unauthorizedError._retry).toBe(true);
+            expect((unauthorizedError.config as { _retry?: boolean })._retry).toBe(true);
             expect(err.userMessage).toBeDefined();
           }
         }
@@ -327,12 +325,11 @@ describe('API Service - Integration Tests', () => {
               url: 'blog-posts/',
               headers: new AxiosHeaders(),
             } as InternalAxiosRequestConfig,
-            _retry: false,
           };
 
           const result = await errorHandler(unauthorizedError);
 
-          expect(unauthorizedError._retry).toBe(true);
+          expect((unauthorizedError.config as { _retry?: boolean })._retry).toBe(true);
           expect(axiosInstance.post).toHaveBeenCalledWith('auth/token/refresh/');
           expect(axiosInstance.request).toHaveBeenCalledWith(unauthorizedError.config);
           expect(result).toEqual(retryResponse);
@@ -375,7 +372,6 @@ describe('API Service - Integration Tests', () => {
               url: 'blog-posts/',
               headers: new AxiosHeaders(),
             } as InternalAxiosRequestConfig,
-            _retry: false,
           });
 
           // Fire two concurrent 401 errors
@@ -431,7 +427,6 @@ describe('API Service - Integration Tests', () => {
           url: 'blog-posts/',
           headers: new AxiosHeaders(),
         } as InternalAxiosRequestConfig,
-        _retry: false,
       };
 
       let rejected: any = null;
@@ -450,8 +445,75 @@ describe('API Service - Integration Tests', () => {
       expect(rejected).not.toBeNull();
       expect(rejected).toBe(unauthorizedError);
       expect(rejected.response.status).toBe(401);
-      // _retry flag was set (defended against re-entry)
-      expect(unauthorizedError._retry).toBe(true);
+      // _retry flag was set on the CONFIG (defended against re-entry)
+      expect((unauthorizedError.config as { _retry?: boolean })._retry).toBe(true);
+
+      axiosInstance.post = origPost;
+      axiosInstance.request = origRequest;
+    });
+
+    it('bounds the ECONNABORTED retry to one attempt per request config', async () => {
+      // Regression: the guard used to live on the AxiosError. Axios mints a new
+      // error per attempt, so it never survived into the retry and the timeout
+      // branch re-entered forever. Feeding the SAME config back through the
+      // handler is what the old code could not survive.
+      const axiosInstance = (await import('../api')).default;
+      const errorHandler = (axiosInstance.interceptors.response as any).handlers[0]?.rejected;
+      expect(errorHandler).toBeDefined();
+
+      const origRequest = axiosInstance.request;
+      axiosInstance.request = vi.fn().mockResolvedValue({ data: 'ok' });
+
+      const config = {
+        url: 'blog-posts/',
+        headers: new AxiosHeaders(),
+      } as InternalAxiosRequestConfig;
+
+      // Each attempt arrives as a DISTINCT error object carrying the same config,
+      // which is exactly what axios does on a retry.
+      const makeTimeout = () => ({
+        code: 'ECONNABORTED',
+        config,
+        response: undefined,
+        message: 'timeout of 30000ms exceeded',
+      });
+
+      await errorHandler(makeTimeout());
+      await expect(errorHandler(makeTimeout())).rejects.toBeDefined();
+
+      expect(axiosInstance.request).toHaveBeenCalledTimes(1);
+      expect((config as { _retry?: boolean })._retry).toBe(true);
+
+      axiosInstance.request = origRequest;
+    });
+
+    it('bounds the 401 refresh retry to one attempt per request config', async () => {
+      // Same regression on the 401 branch, which is the more dangerous of the two:
+      // it is not paced by API_TIMEOUT, so an unbounded loop runs at full speed.
+      const axiosInstance = (await import('../api')).default;
+      const errorHandler = (axiosInstance.interceptors.response as any).handlers[0]?.rejected;
+      expect(errorHandler).toBeDefined();
+
+      const origPost = axiosInstance.post;
+      const origRequest = axiosInstance.request;
+      axiosInstance.post = vi.fn().mockResolvedValue({ data: {} });
+      axiosInstance.request = vi.fn().mockResolvedValue({ data: 'ok' });
+
+      const config = {
+        url: 'blog-posts/',
+        headers: new AxiosHeaders(),
+      } as InternalAxiosRequestConfig;
+      const make401 = () => ({
+        response: { status: 401, data: { message: 'Token expired' } },
+        config,
+      });
+
+      await errorHandler(make401());
+      await expect(errorHandler(make401())).rejects.toBeDefined();
+
+      expect(axiosInstance.post).toHaveBeenCalledTimes(1);
+      expect(axiosInstance.request).toHaveBeenCalledTimes(1);
+      expect((config as { _retry?: boolean })._retry).toBe(true);
 
       axiosInstance.post = origPost;
       axiosInstance.request = origRequest;
@@ -475,14 +537,13 @@ describe('API Service - Integration Tests', () => {
               url: '/auth/login/',
               headers: new AxiosHeaders(),
             } as InternalAxiosRequestConfig,
-            _retry: false,
           };
 
           try {
             await errorHandler(authError);
           } catch (err: any) {
             // Should NOT have attempted retry for auth endpoints
-            expect(authError._retry).toBe(false);
+            expect((authError.config as { _retry?: boolean })._retry).toBeUndefined();
             expect(err.userMessage).toBeDefined();
           }
         }
@@ -507,7 +568,6 @@ describe('API Service - Integration Tests', () => {
               url: '/blog-posts/',
               headers: new AxiosHeaders(),
             } as InternalAxiosRequestConfig,
-            _retry: false,
           };
 
           try {
@@ -537,7 +597,6 @@ describe('API Service - Integration Tests', () => {
               url: '/blog-posts/999/',
               headers: new AxiosHeaders(),
             } as InternalAxiosRequestConfig,
-            _retry: false,
           };
 
           try {
@@ -568,7 +627,6 @@ describe('API Service - Integration Tests', () => {
               url: '/teapot/',
               headers: new AxiosHeaders(),
             } as InternalAxiosRequestConfig,
-            _retry: false,
           };
 
           try {

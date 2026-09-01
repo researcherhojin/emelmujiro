@@ -169,7 +169,28 @@ async function prerenderRoute(page, baseUrl, route) {
         restored++;
       }
     });
-    return { restoredPretendard: restored };
+    // Rewrite absolute same-origin URLs back to root-relative. React injects a
+    // <link rel="modulepreload"> for every lazily-imported route chunk as it
+    // renders, and it resolves them against the page's origin — which during
+    // prerender is this script's throwaway server on 127.0.0.1:<random port>.
+    // page.content() then bakes that dead loopback URL into the shipped HTML,
+    // so every visitor gets a preload pointing at a host that does not exist,
+    // over http:// on an https:// page, which CSP blocks outright. Measured on
+    // production 2026-09-01: 9 such tags per prerendered route, all pointing at
+    // http://127.0.0.1:55478/. Returns the count so a future change that stops
+    // matching fails the build instead of silently shipping dead preloads.
+    const origin = location.origin;
+    let rewritten = 0;
+    document.querySelectorAll('link[href], script[src]').forEach((el) => {
+      const attr = el.hasAttribute('href') ? 'href' : 'src';
+      const value = el.getAttribute(attr);
+      if (value && value.startsWith(origin + '/')) {
+        el.setAttribute(attr, value.slice(origin.length));
+        rewritten++;
+      }
+    });
+
+    return { restoredPretendard: restored, rewrittenAbsoluteUrls: rewritten };
   });
 
   if (pretendardRestore.restoredPretendard === 0) {
@@ -191,6 +212,22 @@ async function prerenderRoute(page, baseUrl, route) {
   // inflated per-route HTML by 20-50 KB for no score gain. Pretendard is
   // handled above by restoring its source `rel="preload"` state.
   const html = await page.content();
+
+  // The invariant that actually matters: no reference to this run's throwaway
+  // server may survive into the shipped HTML. Asserting "at least one rewrite
+  // happened" was tried first and is wrong — `/en` legitimately injects zero
+  // lazy-chunk preloads, so that guard failed a correct build. Checking the
+  // output for the origin instead cannot false-positive, and fails exactly when
+  // the bug is present.
+  if (html.includes(baseUrl)) {
+    const sample = html.match(new RegExp(`[^"']*${baseUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^"']*`))?.[0];
+    throw new Error(
+      `Prerender ${route}: the captured HTML still references the prerender server ${baseUrl} ` +
+        `(e.g. ${sample}). That URL is dead the moment this build finishes, and it is http:// on an ` +
+        `https:// page, so CSP blocks it for every visitor. Extend the rewrite in the cleanup ` +
+        `page.evaluate() in scripts/prerender.js to cover the attribute that carries it.`
+    );
+  }
 
   return html;
 }
