@@ -17,7 +17,8 @@
     "frontend/coverage/**",
     "frontend/playwright-report/**",
     "frontend/test-results/**",
-    "**/*.egg-info/**"
+    "**/*.egg-info/**",
+    "**/*.tsbuildinfo"
   ],
   "words": [
     "ablearn",
@@ -66,6 +67,7 @@
     "dompurify",
     "dotenv",
     "doubleclick",
+    "eabi",
     "ecrm",
     "ehbebeui",
     "elice",
