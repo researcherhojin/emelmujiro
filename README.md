@@ -27,13 +27,13 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.19-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tailwind Typography](https://img.shields.io/badge/Typography-0.5.19-06B6D4?logo=tailwindcss&logoColor=white)
 ![i18next](https://img.shields.io/badge/i18next-26.4.0-26A69A?logo=i18next&logoColor=white)
-![react-i18next](https://img.shields.io/badge/React_i18next-17.0.11-26A69A?logo=i18next&logoColor=white)
+![react-i18next](https://img.shields.io/badge/React_i18next-17.0.13-26A69A?logo=i18next&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-1.20.0-5A29E4?logo=axios&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.30.5-1a1a2e)
 ![DOMPurify](https://img.shields.io/badge/DOMPurify-3.4.14-4B32C3)
 
 **Backend**<br/>
-![Django](https://img.shields.io/badge/Django-6.1-092E20?logo=django&logoColor=white)
+![Django](https://img.shields.io/badge/Django-6.1.1-092E20?logo=django&logoColor=white)
 ![DRF](https://img.shields.io/badge/DRF-3.18.0-A30000)
 ![SimpleJWT](https://img.shields.io/badge/SimpleJWT-5.5.1-000000?logo=jsonwebtokens&logoColor=white)
 ![Gunicorn](https://img.shields.io/badge/Gunicorn-26.2.0-499848?logo=gunicorn&logoColor=white)
