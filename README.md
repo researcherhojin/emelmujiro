@@ -40,7 +40,7 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
 
 **Testing**<br/>
-![Vitest](https://img.shields.io/badge/Vitest-4.1.5-6E9F18?logo=vitest&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-5.0.0-6E9F18?logo=vitest&logoColor=white)
 ![Testing Library](https://img.shields.io/badge/Testing_Library-16.3.2-E33332?logo=testinglibrary&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-1.62.1-2EAD33?logo=playwright&logoColor=white)
 ![Lighthouse](https://img.shields.io/badge/Lighthouse_CI-Desktop-F44B21?logo=lighthouse&logoColor=white)
