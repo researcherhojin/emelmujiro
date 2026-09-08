@@ -289,7 +289,6 @@ describe('webVitals', () => {
   describe('error handling', () => {
     it('catches errors when web-vitals callbacks throw', async () => {
       const webVitals = await import('web-vitals');
-      const originalOnCLS = webVitals.onCLS;
       vi.mocked(webVitals.onCLS).mockImplementationOnce(() => {
         throw new Error('test error');
       });
@@ -302,8 +301,6 @@ describe('webVitals', () => {
         'Web Vitals measurement failed:',
         expect.any(Error)
       );
-
-      vi.mocked(webVitals.onCLS).mockImplementation(originalOnCLS as any);
     });
 
     it('catches errors when web-vitals import fails', async () => {

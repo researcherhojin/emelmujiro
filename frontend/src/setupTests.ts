@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 // Vitest setup file
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { vi, afterEach } from 'vitest';
 import { beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/react';
