@@ -28,7 +28,7 @@ from .constants import (
     MAX_FAILED_CONTACT_ATTEMPTS,
     is_spam,
 )
-from .utils import get_client_ip, toggle_like
+from .utils import get_client_ip, sanitize_referer, toggle_like
 
 import requests
 
@@ -144,7 +144,10 @@ def log_site_visit(request: HttpRequest):
     try:
         ip_address = get_client_ip(request)
         user_agent = request.META.get("HTTP_USER_AGENT", "")
-        referer = request.META.get("HTTP_REFERER", "")
+        referer = sanitize_referer(
+            request.META.get("HTTP_REFERER", ""),
+            SiteVisit._meta.get_field("referer").max_length,
+        )
         page_path = request.path
         session_id = request.session.session_key or ""
 

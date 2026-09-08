@@ -25,7 +25,7 @@ Invariants only. Grep the code for everything else. Single app `api/`; `config/`
 
 ## Utilities
 
-`api/utils.py` has `get_client_ip()`, `_is_valid_ip()`, `toggle_like()`. IP extraction is shared by views and middleware — import from utils, not views.
+`api/utils.py` has `get_client_ip()`, `_is_valid_ip()`, `toggle_like()`, `sanitize_referer()`. IP extraction is shared by views and middleware — import from utils, not views.
 
 ## Testing
 

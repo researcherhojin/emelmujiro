@@ -1,8 +1,30 @@
 import ipaddress
 
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from django.db import transaction
 from django.db.models import F
 from django.http import HttpRequest
+
+# Referer is a client-controlled header. Only http(s) URLs are worth keeping;
+# anything else (javascript:, data:, garbage, oversize) is dropped to "".
+_referer_validator = URLValidator(schemes=["http", "https"])
+
+
+def sanitize_referer(value: str | None, max_length: int) -> str:
+    """Return a stored-safe Referer: a valid http(s) URL cut to max_length, else "".
+
+    Validation runs on the full value so a truncated tail cannot smuggle a bad
+    scheme past the check; truncation only ever shortens an already-valid URL.
+    """
+    if not value:
+        return ""
+    value = value.strip()
+    try:
+        _referer_validator(value)
+    except ValidationError:
+        return ""
+    return value[:max_length]
 
 
 def get_client_ip(request: HttpRequest) -> str:

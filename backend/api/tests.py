@@ -2395,6 +2395,49 @@ class LogSiteVisitTestCase(TestCase):
             # Should not raise, just log the error
             log_site_visit(request)
 
+    def _log(self, referer):
+        from api.views import log_site_visit
+
+        request = RequestFactory().get("/test")
+        request.META["REMOTE_ADDR"] = "10.0.0.1"
+        if referer is not None:
+            request.META["HTTP_REFERER"] = referer
+        request.session = type("Session", (), {"session_key": "abc123"})()
+        log_site_visit(request)
+        return SiteVisit.objects.latest("visit_time").referer
+
+    def test_log_site_visit_stores_valid_referer(self):
+        """A well-formed http(s) Referer is stored unchanged"""
+        self.assertEqual(self._log("https://example.com/path?q=1"), "https://example.com/path?q=1")
+
+    def test_log_site_visit_missing_referer_is_empty(self):
+        """No Referer header stores an empty string"""
+        self.assertEqual(self._log(None), "")
+
+    def test_log_site_visit_drops_non_http_scheme(self):
+        """javascript:/data: schemes are dropped, never persisted"""
+        for bad in ("javascript:alert(1)", "data:text/html,<script>alert(1)</script>", "ftp://example.com/"):
+            with self.subTest(referer=bad):
+                self.assertEqual(self._log(bad), "")
+
+    def test_log_site_visit_drops_non_url_garbage(self):
+        """A Referer that is not a URL at all is dropped"""
+        for bad in ("<script>alert(1)</script>", "not a url", "https://"):
+            with self.subTest(referer=bad):
+                self.assertEqual(self._log(bad), "")
+
+    def test_log_site_visit_truncates_long_valid_referer(self):
+        """A valid Referer longer than the field is cut to max_length, not rejected"""
+        max_length = SiteVisit._meta.get_field("referer").max_length
+        long_url = "https://example.com/" + "a" * 500
+        stored = self._log(long_url)
+        self.assertEqual(len(stored), max_length)
+        self.assertEqual(stored, long_url[:max_length])
+
+    def test_log_site_visit_truncation_cannot_rescue_invalid_referer(self):
+        """Validation runs on the full value: an invalid URL padded past max_length is still dropped"""
+        self.assertEqual(self._log("javascript:" + "a" * 500), "")
+
 
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})
 class BlogImageUploadTestCase(APITestCase):
