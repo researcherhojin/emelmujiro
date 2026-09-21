@@ -12,7 +12,8 @@
 #      (per-machine random SECRET_KEY — no inter-device secret sync needed)
 #   5. Install JS + Python dependencies (make install)
 #   6. Run Django migrations (idempotent)
-#   7. Optional: Playwright Chromium (--with-playwright)
+#   7. Optional: Playwright Chromium (--with-playwright) -- but see the
+#      flag note below: it is NOT optional if you run `npm run build`
 #   8. Configure git for two-device safety (pull.rebase, autoStash)
 #   9. Verify the setup (calls `make verify-setup`)
 #
@@ -24,8 +25,12 @@
 # stolen/lost MacBook cannot leak production credentials.
 #
 # OPTIONAL FLAGS:
-#   --with-playwright   Also install Playwright Chromium (~150 MB; needed
-#                       only if you run E2E tests on this machine)
+#   --with-playwright   Also install Playwright Chromium (~150 MB).
+#                       NOT just for E2E: `npm run build` runs
+#                       frontend/scripts/prerender.js, which calls
+#                       chromium.launch() to render the 10 SSG routes,
+#                       so a machine without it fails the production
+#                       build -- vite build succeeds, prerender dies.
 
 set -euo pipefail
 
@@ -249,7 +254,8 @@ if [[ "$WITH_PLAYWRIGHT" == "true" ]]; then
   ok "Playwright Chromium installed"
 else
   header "Phase 7: Skipping Playwright (use --with-playwright to enable)"
-  hint "Run later if you want E2E tests on this machine:"
+  hint "Required before 'npm run build' (prerender launches Chromium),"
+  hint "not only for E2E. Run later with:"
   hint "  cd frontend && npx playwright install chromium"
 fi
 
