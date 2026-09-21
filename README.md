@@ -145,7 +145,7 @@ graph LR
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
 - **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30
 - **Tests** — Vitest (1232 tests) + Django unittest (363 tests) + Playwright E2E (5 profiles)
-- **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Codecov, auto-deploy via webhook
+- **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Codecov, auto-deploy via webhook, plus self-healing guards that redeploy on production drift and alarm when a commit reaches `main` untested
 
 ## License
 
