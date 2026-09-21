@@ -24,11 +24,15 @@ jobs:
   dependabot-auto-merge:
     name: Auto-Merge Dependabot
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # 8, not 5: the re-arm step below polls for the merge to land, and the
+    # slowest measured auto-merge took 166 s (#509).
+    timeout-minutes: 8
     if: github.actor == 'dependabot[bot]'
     permissions:
       contents: write
       pull-requests: write
+      # Required by the re-arm step's `gh workflow run`.
+      actions: write
 
     steps:
       - name: Fetch Dependabot metadata
@@ -50,6 +54,46 @@ jobs:
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # A push made with GITHUB_TOKEN creates no workflow run, and the step
+      # above merges with exactly that token. So the merge commit this job puts
+      # on main runs neither Sync README Badges nor deploy-mac-mini.
+      #
+      # deploy-drift-check.yml already covers the deploy half, but only the
+      # deploy half and only nightly: it dispatches when production != main, so
+      # when production happens to already match main it exits 0 and the badge
+      # sync still never runs. Measured cost of that gap: i18next 26.4.0 ->
+      # 26.4.2 auto-merged as d39a2723 (2026-09-14 04:16:25Z, zero Main CI/CD
+      # Pipeline runs) and README carried the stale badge until e0484722 at
+      # 22:39:45Z -- 18 h 24 m, during which four open PRs (#501 #504 #505 #507)
+      # inherited a red Repo Checks that had nothing to do with their diffs.
+      #
+      # workflow_dispatch is the documented exception to the loop-prevention
+      # rule ("always create workflow runs"), so this needs no PAT -- same
+      # mechanism deploy-drift-check.yml relies on.
+      - name: Re-arm the pipeline once the auto-merge lands
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          # --auto lands almost immediately because main has no required status
+          # checks. Measured create -> merge across the five most recent
+          # auto-merged PRs: 12 s (#503), 15 s (#506), 14 s (#508), 166 s
+          # (#509), 15 s (#511). 20 x 15 s = 5 min covers that with headroom.
+          for attempt in $(seq 1 20); do
+            if [ "$(gh api "repos/$REPO/pulls/$PR_NUM" -q .merged)" = "true" ]; then
+              gh workflow run "Main CI/CD Pipeline" --repo "$REPO" --ref main
+              echo "Dispatched Main CI/CD Pipeline after auto-merge (attempt $attempt)"
+              exit 0
+            fi
+            sleep 15
+          done
+          # Yield, do not fail. A late merge is normal behavior, and the
+          # nightly drift check is the backstop -- turning it red here would
+          # make correct operation look broken.
+          echo "::notice::auto-merge has not landed within 5 min - leaving it to deploy-drift-check.yml"
 
   # Quick validation checks that should pass before running expensive tests
   quick-checks:
