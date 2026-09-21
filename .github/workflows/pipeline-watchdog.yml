@@ -1,0 +1,87 @@
+name: Pipeline Watchdog
+
+# Makes "main was never tested" loud.
+#
+# On 2026-09-08 the last `push` run of Main CI/CD fired. For the next 13 days
+# every commit that reached main arrived through a dependabot patch auto-merge,
+# and GITHUB_TOKEN-created events start no workflow run — so main was never
+# tested, never deployed, and the README badges drifted until a human noticed
+# and clicked Run workflow by hand. Nothing was red the whole time, because
+# nothing ran. The token fix lives in pr-checks.yml; this job is the alarm for
+# whatever bypasses the pipeline next.
+
+on:
+  schedule:
+    # 09:00 UTC = 18:00 KST, daily.
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  main-has-green-pipeline:
+    name: Main HEAD has a green pipeline run
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 50
+
+      - name: Pick the commit that should have been tested
+        id: target
+        run: |
+          # readme-sync pushes its own commit with [skip ci], which correctly
+          # has no run of its own. Walk past those to the newest commit that
+          # the pipeline was supposed to cover. -F because [skip ci] is a
+          # bracket expression to grep, not a literal, without it.
+          LINE=$(git log -50 --format='%H %cI %s' | grep -vF '[skip ci]' | head -1)
+          if [ -z "$LINE" ]; then
+            echo "::error::No non-[skip ci] commit in the last 50 on main"
+            exit 1
+          fi
+          SHA=${LINE%% *}
+          REST=${LINE#* }
+          COMMITTED=${REST%% *}
+          {
+            echo "sha=$SHA"
+            echo "committed=$COMMITTED"
+          } >> "$GITHUB_OUTPUT"
+          echo "Target commit: $SHA ($COMMITTED)"
+
+      - name: Require a successful Main CI/CD run for it
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ steps.target.outputs.sha }}
+          COMMITTED: ${{ steps.target.outputs.committed }}
+        run: |
+          # A commit merged minutes ago may still be mid-pipeline. Only alarm
+          # once it has had two hours, which is well past the ~15 min the
+          # slowest job takes.
+          AGE=$(( $(date -u +%s) - $(date -u -d "$COMMITTED" +%s) ))
+          if [ "$AGE" -lt 7200 ]; then
+            echo "⏭️ $SHA is $((AGE / 60))m old — still inside the grace window"
+            exit 0
+          fi
+
+          # head_sha must be the full 40-char SHA. An abbreviated one matches
+          # nothing and the query returns an empty list, which reads here as
+          # "never tested" and alarms on a perfectly healthy main. git log's
+          # %H above is already full; keep it that way.
+          SUCCESSES=$(gh api \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/main-ci-cd.yml/runs?head_sha=${SHA}&per_page=100" \
+            --jq '[.workflow_runs[] | select(.conclusion == "success")] | length')
+
+          if [ "${SUCCESSES:-0}" -eq 0 ]; then
+            echo "::error::main is at $SHA ($((AGE / 3600))h old) with no successful Main CI/CD run."
+            echo "That commit has not been tested and has not been deployed."
+            echo "Check whether it reached main through a token whose events start no workflow run."
+            echo "Recover now: gh workflow run main-ci-cd.yml --ref main"
+            exit 1
+          fi
+          echo "✓ $SHA has $SUCCESSES successful Main CI/CD run(s)"

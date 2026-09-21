@@ -44,12 +44,40 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # Auto-merge MUST be enabled with an app token, not GITHUB_TOKEN.
+      # GitHub starts no workflow run from an event that GITHUB_TOKEN created
+      # (the rule that stops recursive CI loops), and that covers the merge
+      # this step schedules. So a patch auto-merge used to land on main and
+      # fire nothing: Main CI/CD never tested the commit, readme-sync never
+      # healed the README version badges, and deploy-mac-mini never shipped.
+      # Nothing turned red — every PR check stayed green while main sat
+      # untested and undeployed from 2026-09-08 to 2026-09-21. The badge drift
+      # that leaked out of it then failed Repo Checks on four open PRs for a
+      # week (#501 #504 #505 #507), all of them clean bumps.
+      # Switching triggers does not help: `pull_request: closed` is suppressed
+      # for the same reason. Only the token identity changes the outcome.
+      # A PAT would work too, but its expiry restores this exact silent gap;
+      # an app installation does not expire.
+      #
+      # The app installation needs contents:write, pull-requests:write AND
+      # workflows:write. Without the last one GitHub refuses to enable
+      # auto-merge on any PR that touches .github/workflows/ — which is every
+      # bump from the github-actions ecosystem, the one dependabot config that
+      # updates this file.
+      - name: Mint app token for auto-merge
+        id: app-token
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.AUTOMERGE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.AUTOMERGE_APP_PRIVATE_KEY }}
+
       - name: Enable auto-merge for patch updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
   # Quick validation checks that should pass before running expensive tests
   quick-checks:
