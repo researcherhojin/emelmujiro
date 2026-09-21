@@ -1,0 +1,126 @@
+name: Pipeline Watchdog
+
+# Makes "main was never tested" loud.
+#
+# The hole it watches: a push made with GITHUB_TOKEN starts no workflow run,
+# and Auto-Merge Dependabot merges with exactly that token, so a patch that
+# lands on main this way used to run neither Main CI/CD nor Sync README Badges
+# nor deploy-mac-mini. Nothing turned red, because nothing ran. That hole is
+# now closed at the source by the `Re-arm the pipeline once the auto-merge
+# lands` step in pr-checks.yml, with deploy-drift-check.yml as the nightly
+# backstop. This job exists for whatever bypasses the pipeline NEXT -- it
+# asserts the outcome (main has a green run) rather than any one mechanism,
+# so it still fires if both of those dispatch paths break.
+#
+# Two things measured 2026-09-21 that earlier drafts of this file got wrong,
+# recorded so they are not re-derived:
+#   1. The Main CI/CD runs on e0484722 (2026-09-15 22:23:51Z) and 8c839724
+#      (09-14 22:38:48Z) were NOT a human clicking Run workflow. Both carry
+#      actor=github-actions[bot] and fire 6 s after a deploy-drift-check
+#      schedule run (22:23:45Z, 22:38:42Z) -- the existing nightly backstop
+#      working as designed.
+#   2. The span from the last push run (123fcda0, 09-08) to the next main
+#      commit (d39a2723, 09-14) is not 6 days of untested main: main had
+#      ZERO commits in it. Count commits that went untested, not calendar days.
+#
+# Why it files an issue instead of just exiting 1: a red scheduled run
+# notifies nobody. Measured -- the 2026-08-23 -> 08-25 Mac mini outage sat
+# 1.7 days behind exactly one silent red Deploy Drift Check run, which is why
+# that workflow files an issue too. A watchdog that cannot raise its voice is
+# not a watchdog.
+
+on:
+  schedule:
+    # 09:00 UTC = 18:00 KST, daily. Deliberately ~10 h before
+    # deploy-drift-check (19:30 UTC) so the two alarms do not land together.
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  main-has-green-pipeline:
+    name: Main HEAD has a green pipeline run
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read # read Main CI/CD run history
+      issues: write # file/close the untested-main issue
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 50
+
+      - name: Pick the commit that should have been tested
+        id: target
+        run: |
+          # readme-sync pushes its own commit with a skip-ci marker, which
+          # correctly has no run of its own. Walk past those to the newest
+          # commit the pipeline was supposed to cover. -F because the marker
+          # is a bracket expression to grep, not a literal, without it.
+          LINE=$(git log -50 --format='%H %cI %s' | grep -vF '[skip ci]' | head -1)
+          if [ -z "$LINE" ]; then
+            echo "::error::No non-skip-ci commit in the last 50 on main"
+            exit 1
+          fi
+          SHA=${LINE%% *}
+          REST=${LINE#* }
+          COMMITTED=${REST%% *}
+          {
+            echo "sha=$SHA"
+            echo "committed=$COMMITTED"
+          } >> "$GITHUB_OUTPUT"
+          echo "Target commit: $SHA ($COMMITTED)"
+
+      - name: Require a successful Main CI/CD run for it
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ steps.target.outputs.sha }}
+          COMMITTED: ${{ steps.target.outputs.committed }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # A commit merged minutes ago may still be mid-pipeline. Only alarm
+          # once it has had two hours, which is well past the ~15 min the
+          # slowest job takes.
+          AGE=$(( $(date -u +%s) - $(date -u -d "$COMMITTED" +%s) ))
+          if [ "$AGE" -lt 7200 ]; then
+            echo "$SHA is $((AGE / 60))m old — still inside the grace window"
+            exit 0
+          fi
+
+          # head_sha must be the full 40-char SHA. An abbreviated one matches
+          # nothing and the query returns an empty list, which reads here as
+          # "never tested" and alarms on a perfectly healthy main. git log's
+          # %H above is already full; keep it that way.
+          SUCCESSES=$(gh api \
+            "repos/${REPO}/actions/workflows/main-ci-cd.yml/runs?head_sha=${SHA}&per_page=100" \
+            --jq '[.workflow_runs[] | select(.conclusion == "success")] | length')
+
+          TITLE="Untested main: no successful Main CI/CD run for main HEAD"
+          EXISTING=$(gh issue list --repo "$REPO" --state open \
+            --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
+
+          if [ "${SUCCESSES:-0}" -eq 0 ]; then
+            echo "::error::main is at $SHA ($((AGE / 3600))h old) with no successful Main CI/CD run."
+            # Thread repeats onto the open issue rather than piling up duplicates.
+            if [ -n "$EXISTING" ]; then
+              gh issue comment "$EXISTING" --repo "$REPO" \
+                --body "Still untested: main is at \`$SHA\`, $((AGE / 3600))h old, 0 successful Main CI/CD runs — $RUN_URL"
+            else
+              gh issue create --repo "$REPO" --title "$TITLE" --body "$(printf 'main is at `%s` (%sh old) and no `Main CI/CD Pipeline` run for that commit has succeeded, so it has not been tested. It has most likely not been deployed either, though `deploy-mac-mini` is `continue-on-error`, so a green run is not by itself proof of a deploy — `/api/health/` reports what production actually runs.\n\nMost likely cause: the commit reached main through a token whose events start no workflow run, and both dispatch paths (the re-arm step in `pr-checks.yml`, `deploy-drift-check.yml`) failed to cover it.\n\nRecover now:\n\n```\ngh workflow run main-ci-cd.yml --ref main\n```\n\nThis issue auto-closes on the next run that finds a green pipeline for main HEAD.\n\nRun: %s' "$SHA" "$((AGE / 3600))" "$RUN_URL")"
+            fi
+            exit 1
+          fi
+
+          echo "$SHA has $SUCCESSES successful Main CI/CD run(s)"
+          # Recovery path: close any issue a previous night filed.
+          if [ -n "$EXISTING" ]; then
+            gh issue close "$EXISTING" --repo "$REPO" \
+              --comment "main HEAD \`$SHA\` now has $SUCCESSES successful Main CI/CD run(s) — $RUN_URL"
+          fi
