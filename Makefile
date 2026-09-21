@@ -41,6 +41,18 @@ verify-setup:
 	@test -d backend/.venv && echo "✓ backend/.venv installed" || (echo "✗ backend/.venv missing — run 'make install'"; exit 1)
 	@cd frontend && CI=true npx vitest run --reporter=dot --no-coverage src/utils/__tests__/dateFormat.test.ts >/dev/null 2>&1 && echo "✓ vitest smoke test passes" || (echo "✗ vitest smoke test failed"; exit 1)
 	@cd backend && DATABASE_URL='' uv run python manage.py check >/dev/null 2>&1 && echo "✓ django check passes" || (echo "✗ django check failed"; exit 1)
+# Chromium is a BUILD dependency, not E2E-only: `npm run build` runs
+# frontend/scripts/prerender.js, which calls chromium.launch(). A machine
+# without it gets a green `vite build` and a dead prerender.
+# Launches the browser rather than asking Playwright whether it is
+# installed: `playwright install --dry-run` exits 0 even when the binary is
+# absent (measured), and executablePath() names the HEADED build while
+# headless launch resolves chromium_headless_shell, so neither proves what
+# prerender needs. Launch+close costs ~0.2 s and is validated on the
+# failing path: removing chromium_headless_shell-<rev> makes it exit 1.
+# Warns rather than fails -- a dev who only runs `npm run dev` never needs
+# the browser, and setup-dev-machine.sh makes the install opt-in.
+	@cd frontend && node -e 'require("playwright").chromium.launch({headless:true}).then(b=>b.close()).then(()=>process.exit(0)).catch(()=>process.exit(1))' >/dev/null 2>&1 && echo "✓ playwright chromium launches" || echo "⚠ playwright chromium missing or version-mismatched — 'npm run build' will fail at prerender; run 'cd frontend && npx playwright install chromium'"
 	@echo "═══ all verify-setup checks passed ═══"
 
 install:
