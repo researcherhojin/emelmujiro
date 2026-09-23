@@ -14,7 +14,7 @@ test.describe('Error States', () => {
 
   test('non-existent route returns 404 with the SPA shell', async ({ page }) => {
     // Production contract, per nginx.conf: `try_files ... =404` plus
-    // `error_page 404 /index.html`. Unknown URLs must return a real 404 status
+    // `error_page 404 /app.html`. Unknown URLs must return a real 404 status
     // so Google deindexes them — the soft-404 pattern (200 + SPA shell) is what
     // got garbage URLs like /cdn-cgi/l/email-protection indexed — while still
     // serving the shell so React Router's catch-all renders NotFound.
