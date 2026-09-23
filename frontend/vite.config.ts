@@ -44,7 +44,7 @@ export default defineConfig({
     // staging dir instead, because Vite empties outDir before writing and
     // nginx serves `build/` live — an in-place build 404s every prerendered
     // route for the duration (measured ~3s, issue #391). `prerender.js` and
-    // the 404.html copy in the `build` script read the same variable.
+    // the app.html / 404.html copies in the `build` script read the same variable.
     outDir: process.env.BUILD_OUT_DIR || 'build',
     sourcemap: process.env.NODE_ENV !== 'production',
     // Modern browser target — CLAUDE.md requires Node >= 24 and we self-host

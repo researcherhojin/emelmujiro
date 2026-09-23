@@ -67,3 +67,36 @@ test.describe('SEO', () => {
     await expect(html).toHaveAttribute('lang', /ko|en/);
   });
 });
+
+// Routes prerender skips are served build/app.html — the pristine Vite shell —
+// not build/index.html, which prerender overwrites with the homepage snapshot.
+// Until 2026-09-24 the fallback WAS that snapshot, so every /insights/:slug and
+// /login shipped the homepage's title, canonical and robots in its raw HTML and
+// only JS corrected them; Google's JavaScript SEO guidance requires a JS-set
+// canonical to equal the original HTML's. These use `request`, not `page`, so
+// they read the bytes a crawler gets before any script runs.
+test.describe('SPA-fallback document', () => {
+  for (const route of ['/insights/some-post-slug', '/en/insights/some-post-slug', '/login']) {
+    test(`${route} raw HTML carries no prerendered SEO tags`, async ({ request }) => {
+      const response = await request.get(route);
+      expect(response.status()).toBe(200);
+      const html = await response.text();
+      expect(html).not.toContain('data-prerendered-seo');
+      expect(html).not.toContain('rel="canonical"');
+      expect(html).not.toContain('<title');
+    });
+  }
+
+  test('/profile raw HTML still carries its own prerendered canonical (control)', async ({
+    request,
+  }) => {
+    const html = await (await request.get('/profile')).text();
+    expect(html).toMatch(/<link rel="canonical" href="https:\/\/emelmujiro\.com\/profile"/);
+    expect(html).toContain('data-prerendered-seo');
+  });
+
+  test('/app.html is not reachable directly (nginx `internal`)', async ({ request }) => {
+    const response = await request.get('/app.html');
+    expect(response.status()).toBe(404);
+  });
+});

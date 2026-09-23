@@ -6,6 +6,12 @@
  * 2. For each static route in each language, navigates with Playwright
  * 3. Captures the rendered HTML and writes to build/<route>/index.html
  *
+ * The `build` script copies the pristine Vite shell to build/app.html BEFORE
+ * this runs, because rendering '/' overwrites build/index.html with the
+ * homepage snapshot. Every route here is rendered from app.html, and nginx
+ * serves app.html (not index.html) as the SPA-fallback and 404 document — see
+ * `location = /app.html` in nginx.conf for why the snapshot must not be it.
+ *
  * Usage: node scripts/prerender.js
  */
 
@@ -17,18 +23,23 @@ const path = require('path');
 // Must match vite.config.ts `build.outDir` — the deploy sets BUILD_OUT_DIR to a
 // staging dir so it never builds into the directory nginx is serving (#391).
 const BUILD_DIR = path.resolve(__dirname, '..', process.env.BUILD_OUT_DIR || 'build');
+// Pristine Vite shell, copied from index.html by the `build` script before this
+// runs. Also what nginx.conf serves for SPA-fallback routes and 404s.
+const SHELL_FILE = 'app.html';
 
 // Import shared constants from sitemap generator (single source of truth)
 const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('./generate-sitemap');
 
 /**
  * Start a simple static file server for the build directory.
- * Implements SPA fallback: any path without a file extension returns index.html.
+ * Implements SPA fallback: any path without a file extension returns app.html,
+ * the pristine shell — never index.html, which becomes the '/' snapshot as soon
+ * as that route is written and would leak its head tags into later routes.
  */
 function startServer() {
   return new Promise((resolve) => {
     const server = http.createServer((req, res) => {
-      const requestedPath = req.url === '/' ? 'index.html' : req.url;
+      const requestedPath = req.url === '/' ? SHELL_FILE : req.url;
       let filePath = path.join(BUILD_DIR, requestedPath);
 
       // Reject path-traversal attempts. path.join normalizes `..` segments, so
@@ -43,11 +54,11 @@ function startServer() {
         return;
       }
 
-      // SPA fallback: if file doesn't exist and has no extension, serve index.html
+      // SPA fallback: if file doesn't exist and has no extension, serve the shell
       if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
         const ext = path.extname(filePath);
         if (!ext) {
-          filePath = path.join(BUILD_DIR, 'index.html');
+          filePath = path.join(BUILD_DIR, SHELL_FILE);
         }
       }
 
@@ -313,6 +324,13 @@ async function main() {
   // Check that build directory exists
   if (!fs.existsSync(BUILD_DIR)) {
     console.error('❌ Build directory not found. Run `npm run build` first.');
+    process.exit(1);
+  }
+  if (!fs.existsSync(path.join(BUILD_DIR, SHELL_FILE))) {
+    console.error(
+      `❌ ${SHELL_FILE} not found in ${BUILD_DIR}. The \`build\` script must copy index.html to ` +
+        `${SHELL_FILE} before running this script — nginx serves it for every SPA-fallback route.`
+    );
     process.exit(1);
   }
 

@@ -61,6 +61,13 @@ const BLOG_REDIRECT = /^\/(en\/)?blog(.*)$/;
 const SHARE_REDIRECT = /^\/(en\/)?share$/;
 /** nginx `location ~ ^/(?!api/|umami/)(.+)/$` — trailing-slash 301. */
 const TRAILING_SLASH = /^\/(?!api\/|umami\/)(.+)\/$/;
+/**
+ * nginx `location = /app.html { internal; }` — the pristine Vite shell that the
+ * `build` script copies before prerender overwrites index.html with the
+ * homepage snapshot. It is the SPA-fallback and 404 document, and is reachable
+ * only through those paths: a direct request is a 404 like any unknown URL.
+ */
+const SHELL = '/app.html';
 
 const resolveFile = async (urlPath) => {
   // Reject traversal before touching the filesystem.
@@ -133,19 +140,22 @@ createServer(async (req, res) => {
     return res.end();
   }
 
-  // nginx `try_files $uri /index.html` for the dynamic-route fallback.
+  // nginx `try_files $uri /app.html` for the dynamic-route fallback.
   if (SPA_FALLBACK.test(urlPath)) {
-    const hit = (await resolveFile(urlPath)) || (await resolveFile('/index.html'));
+    const hit = (await resolveFile(urlPath)) || (await resolveFile(SHELL));
     if (hit) return send(res, 200, hit);
   }
 
-  // nginx `location /`: try_files $uri $uri/index.html =404
-  const hit = (await resolveFile(urlPath)) || (await resolveFile(join(urlPath, 'index.html')));
-  if (hit) return send(res, 200, hit);
+  // nginx `location /`: try_files $uri $uri/index.html =404 — except the shell
+  // itself, which `internal` hides from direct requests.
+  if (urlPath !== SHELL) {
+    const hit = (await resolveFile(urlPath)) || (await resolveFile(join(urlPath, 'index.html')));
+    if (hit) return send(res, 200, hit);
+  }
 
-  // nginx `error_page 404 /index.html` — real 404 status, SPA shell body, so
+  // nginx `error_page 404 /app.html` — real 404 status, SPA shell body, so
   // React Router's catch-all renders the localized NotFound page.
-  const shell = await resolveFile('/index.html');
+  const shell = await resolveFile(SHELL);
   if (shell) return send(res, 404, shell);
 
   res.writeHead(404, { 'content-type': 'text/plain' });

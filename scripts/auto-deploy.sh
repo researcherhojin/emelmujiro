@@ -151,7 +151,7 @@ npx playwright install chromium
 # deploys (issue #391). `=404` is deliberate (it replaced a soft-404 that got
 # junk URLs indexed), so that window costs a 404 on a canonical page rather than
 # a retryable error. BUILD_OUT_DIR is honoured by vite.config.ts, prerender.js
-# and the 404.html copy in the `build` script.
+# and the app.html / 404.html copies in the `build` script.
 STAGING_DIR="$REPO_DIR/frontend/build.new"
 rm -rf "$STAGING_DIR"
 VITE_API_URL="${VITE_API_URL:-https://api.emelmujiro.com/api}" \
@@ -162,6 +162,12 @@ VITE_API_URL="${VITE_API_URL:-https://api.emelmujiro.com/api}" \
 # site over a working one.
 if [ ! -f "$STAGING_DIR/index.html" ]; then
   echo "$LOG_PREFIX ERROR: staging build produced no index.html — refusing to publish"
+  exit 1
+fi
+# nginx serves app.html (the pristine shell) for every /insights/:slug, /login
+# and 404 — without it those routes are bare nginx 404s.
+if [ ! -f "$STAGING_DIR/app.html" ]; then
+  echo "$LOG_PREFIX ERROR: staging build produced no app.html (SPA-fallback shell) — refusing to publish"
   exit 1
 fi
 STAGED_ROUTES=$(find "$STAGING_DIR" -name index.html | wc -l | tr -d ' ')
