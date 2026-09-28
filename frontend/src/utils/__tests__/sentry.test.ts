@@ -137,6 +137,29 @@ describe('sentry', () => {
       );
     });
 
+    // @sentry/react 11 defaults every dataCollection field to collecting, so
+    // dropping this block silently re-enables Sentry-side IP inference. The
+    // assertion is exact, not objectContaining, so an added field fails here.
+    it('should pass the minimizing dataCollection policy to init', async () => {
+      mockEnv.ENABLE_SENTRY = true;
+      mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';
+
+      initSentry();
+      await flushPromises();
+
+      expect(mockInit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          dataCollection: {
+            userInfo: false,
+            cookies: false,
+            httpHeaders: false,
+            httpBodies: [],
+            urlQueryParams: false,
+          },
+        })
+      );
+    });
+
     it('should use 0.1 traces sample rate in production', async () => {
       mockEnv.ENABLE_SENTRY = true;
       mockEnv.SENTRY_DSN = 'https://test@sentry.io/123';

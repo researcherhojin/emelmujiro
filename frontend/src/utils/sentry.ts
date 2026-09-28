@@ -47,6 +47,22 @@ export function initSentry(): void {
         environment: env.NODE_ENV,
         tracesSampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
 
+        // @sentry/react 11 removed `sendDefaultPii` and replaced it with this
+        // object, whose every field defaults to collecting. Naming them is a
+        // deliberate minimization policy, NOT a restoration of the v10
+        // defaults — v10 already collected query params and some headers.
+        // `userInfo: false` is the one that matters on a browser SDK: it stops
+        // Sentry-side IP inference on events and sessions.
+        // Note this does NOT undo an explicit `setUser` — see setUserContext
+        // below, which sends the signed-in admin's email on purpose.
+        dataCollection: {
+          userInfo: false,
+          cookies: false,
+          httpHeaders: false,
+          httpBodies: [],
+          urlQueryParams: false,
+        },
+
         beforeSend(event, _hint) {
           if ((window as WindowWithDevTools).__REACT_DEVTOOLS_GLOBAL_HOOK__) {
             return null;
