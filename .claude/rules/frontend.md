@@ -32,7 +32,7 @@ Principles, not specifics. UI strings live in `frontend/src/i18n/locales/`; CSS 
 - **Mobile responsive**: Page heroes use padding-based layout (NOT `min-h` + flex centering on mobile). Three-step text size progression (mobile/sm/md) to avoid harsh 639→640px jumps. Korean text uses `break-keep` to prevent mid-word breaks; mobile-only line breaks use `<br className="sm:hidden" />`. English i18n strings must be shorter than Korean equivalents — abbreviate org names (MOEL, KALIS, KETI), `#` instead of "Cohort".
 - **Insights branding**: User-facing text says "인사이트"/"Insights" (not "블로그"/"Blog"). Section label "INSIGHTS" (not "TECH BLOG"). Internal code keeps `blog` names/paths — only display text changed.
 - **Nav order**: 강의이력 → 인사이트 (teaching history first, blog second). Footer menu label is "강의이력".
-- **Privacy policy**: 13 sections per Korean PIPA Article 30. Self-hosted Umami counts as no external delegation; Sentry counts as delegation. ToC anchor links, bilingual.
+- **Privacy policy**: 13 sections per Korean PIPA Article 30. Self-hosted Umami counts as no external delegation; Sentry counts as delegation. ToC anchor links, bilingual. **Note the policy currently over-discloses**: it names Sentry as a processor, but `frontend/.env.production` leaves `VITE_SENTRY_DSN` empty and never sets `VITE_ENABLE_SENTRY` (default `false`), so `initSentry()` returns early and no DSN ships — verified in the live bundle 2026-09-28. Over-disclosure is the safe direction, but do not read the policy as evidence that Sentry is running.
 
 **Removed pages — do NOT re-add**:
 

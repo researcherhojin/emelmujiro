@@ -17,7 +17,7 @@ This file lists only the contributor-facing checklist; for the "why" behind any 
 ## Workflow checklist
 
 1. **Branch**: `feature/<name>` or `fix/<description>`. Target `main`.
-2. **Commit messages**: Conventional Commits, English only, enforced by the `commit-msg` hook locally and re-checked in CI by the `Repo Checks (informational)` job. Both call `scripts/check-commit-msg.sh`, so they cannot drift apart — change the accepted types there, not in either caller. The check reads the **subject line**: format and the English-only (ASCII) rule are enforced there, and the body is not inspected. `git commit --no-verify` is the escape when a subject genuinely needs a non-ASCII proper noun.
+2. **Commit messages**: Conventional Commits, English only, enforced by the `commit-msg` hook locally and re-checked in CI by the `Repo Checks (informational)` job. Both call `scripts/check-commit-msg.sh`, so they cannot drift apart — change the accepted types there, not in either caller. Format and the English-only (ASCII) rule are enforced on the **subject line**; the **whole message**, body included, is additionally rejected if it carries an unescaped CI-skip marker (see below). `git commit --no-verify` is the escape when a subject genuinely needs a non-ASCII proper noun.
    `type(scope): description` — types: `feat fix docs style refactor test chore perf deps-dev deps ci`. A description is required. Merge, `fixup!`/`squash!`/`amend!`, `Revert "…"`, and dependabot's own formats are exempt.
 3. **One issue per PR, ≤ 3 commits**, no mid-PR scope expansion. Defer follow-ups to a new issue.
 4. **Test before pushing**: `make test` (frontend + backend) and `make lint` from repo root.
@@ -29,7 +29,7 @@ This file lists only the contributor-facing checklist; for the "why" behind any 
 - **English comments only** in source.
 - **No `window.alert/prompt`** — use a toast or inline UI.
 - **Logger import**: `import logger from '../utils/logger'` (default export). Use `env.IS_DEVELOPMENT` for environment checks.
-- **`[skip ci]` only in Ship-phase README sync commits.** Putting the literal string anywhere in a commit message — even in prose describing the mechanism — causes GitHub to skip every workflow for that commit (see CLAUDE.md Gotcha #10).
+- **CI-skip markers are rejected, not just discouraged.** GitHub parses the whole commit message — subject and body — so prose describing the mechanism skips every workflow for that commit. It happened 10 times here before the guard existed, 8 of them with zero check-runs. `scripts/check-commit-msg.sh` now rejects all five markers anywhere in the message; escape the brackets to write about one (`\[skip ci\]`), or use `git commit --no-verify` if you genuinely mean to skip. The generated README-sync commit is the only exemption (see CLAUDE.md Gotcha #10).
 - **Spelling is gated.** `npm run spell` runs `cspell` over the whole repo and CI runs it in `Repo Checks (informational)`. A real word it does not know goes in `cspell.json`'s `words`; a deliberate non-word (an example string in a comment) goes in a file-scoped `# cspell:ignore` instead, so the project dictionary never starts accepting typo-shaped tokens everywhere.
 - **Pre-commit runs lint-staged** (Prettier + ESLint + Black + Flake8). Don't bypass with `--no-verify` — the one sanctioned use is the non-ASCII proper noun escape noted in the commit-message rule above, and it skips the formatters too.
 

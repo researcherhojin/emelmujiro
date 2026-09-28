@@ -10,7 +10,7 @@
 
 </div>
 
-AI education, consulting & development — React 19 + Django 6 monorepo, self-hosted on Mac Mini via Docker + Cloudflare Tunnel.
+AI education, consulting & development — React 19 + Django 6 monorepo, self-hosted via Docker behind a Cloudflare Tunnel.
 
 <p align="center">
   <img src=".github/assets/home-light.png" width="49%" alt="Homepage — Light mode" />
@@ -106,7 +106,7 @@ graph LR
         Tunnel["Cloudflare Tunnel"]
     end
 
-    subgraph MacMini["Mac Mini (Docker · 127.0.0.1 only)"]
+    subgraph Host["Self-hosted (Docker · 127.0.0.1 only)"]
         Nginx["nginx:alpine\nStatic + Rate Limit"]
         Gunicorn["Gunicorn 3w 2t\nSecurity MW"]
         DRF["Django 6 + DRF"]
@@ -115,7 +115,7 @@ graph LR
         UmamiDB[(PostgreSQL 15)]
     end
 
-    Sentry["Sentry (SaaS)"]
+    Sentry["Sentry (SaaS)\nwired, DSN unset"]
 
     React -->|emelmujiro.com| Tunnel
     Tunnel -->|:8080| Nginx
@@ -124,10 +124,10 @@ graph LR
     Gunicorn --> DRF
     DRF --> DB
     Umami --> UmamiDB
-    React -.->|errors| Sentry
+    React -.->|errors, when a DSN is set| Sentry
 
     style Tunnel fill:#F3E8FF,stroke:#7C3AED
-    style MacMini fill:#ECFDF5,stroke:#059669
+    style Host fill:#ECFDF5,stroke:#059669
     style CF fill:#FEF3C7,stroke:#D97706
     style Sentry fill:#FEF9C3,stroke:#CA8A04
 ```
@@ -139,7 +139,7 @@ graph LR
 - **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments
 - **Auth** — httpOnly cookie JWT with shared-promise refresh queue (prevents concurrent 401 cascade)
 - **Testimonials** — Enterprise + 고용노동부 K-디지털 reviews, dual-row auto-scroll carousel
-- **Monitoring** — Sentry error tracking + Umami analytics (self-hosted, zero external scripts) + Docker health check cron
+- **Monitoring** — Umami analytics (self-hosted, zero external scripts) + Docker health check cron. Sentry is wired behind a lazy-loaded shim but inactive: `VITE_SENTRY_DSN` is unset in production, so `initSentry()` returns early and no DSN ships in the bundle
 - **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data, SSG prerendering
 - **Performance** — Vendor chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
