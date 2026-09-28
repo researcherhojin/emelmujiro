@@ -1,6 +1,14 @@
+// Type-checks the build configs, which `tsconfig.json` does not see:
+// it includes only `src` and additionally excludes `vite.config.ts`.
+// Wired into the `type-check` script, so `Frontend Lint` runs it on every PR.
+//
+// `composite: true` was removed on 2026-09-28. It makes tsc write
+// `tsconfig.node.tsbuildinfo` even under `--noEmit` (measured: 58 KB), and
+// that file is gitignored build output that once produced 43 cspell findings.
+// Keep this project no-emit; it is a check, not a build.
 {
   "compilerOptions": {
-    "composite": true,
+    "noEmit": true,
     "skipLibCheck": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
