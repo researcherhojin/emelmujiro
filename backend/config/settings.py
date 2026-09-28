@@ -158,8 +158,29 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# Static file compression (WhiteNoise)
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# No STATICFILES_STORAGE / STORAGES override here, deliberately.
+#
+# This file used to set STATICFILES_STORAGE to WhiteNoise's
+# CompressedManifestStaticFilesStorage. Django removed that setting in 5.1 and
+# ignores it silently -- only STORAGES["staticfiles"]["BACKEND"] is read -- so
+# the compressed manifest storage was never active on 6.x. Measured inside the
+# running app on Django 6.1.1: the attribute read back the WhiteNoise class
+# while the resolved backend was django...StaticFilesStorage.
+#
+# It was deleted rather than migrated to STORAGES, because the compression it
+# would enable is already being done, better, one layer out. Measured against
+# production on 2026-09-28, /static/admin/css/base.css:
+#     Accept-Encoding: identity  -> 22,120 bytes
+#     Accept-Encoding: gzip, br  ->  5,302 bytes, content-encoding: br,
+#                                    server: cloudflare, cf-cache-status: HIT
+# Cloudflare compresses at the edge and caches the result, so precompressed
+# .gz/.br siblings on disk would be redundant. WhiteNoise middleware stays --
+# it is what serves STATIC_ROOT to Cloudflare in the first place.
+#
+# The manifest half was not worth its failure modes either: hashed names buy
+# cache-busting the admin assets do not need (they change only on a Django
+# upgrade, and cache-control is max-age=14400), at the cost of collectstatic
+# hard-failing on any reference it cannot resolve.
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -447,6 +468,8 @@ else:
 if "test" in sys.argv:
     SECURE_SSL_REDIRECT = False
     # Tests skip collectstatic, so STATIC_ROOT (staticfiles/) doesn't exist.
-    # Remove WhiteNoise middleware and use default storage to avoid UserWarning.
+    # Dropping WhiteNoise middleware avoids the UserWarning it raises for the
+    # missing directory. This line is the effective one -- keep it. The
+    # STATICFILES_STORAGE override that used to sit beside it was dead for the
+    # same reason as the one at the top of this file and has been removed.
     MIDDLEWARE = [m for m in MIDDLEWARE if "whitenoise" not in m]
-    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
