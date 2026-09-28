@@ -398,6 +398,10 @@ LOGGING = {
             "format": "[SECURITY] {levelname} {asctime} {module} {message}",
             "style": "{",
         },
+        "access": {
+            "format": "{asctime} {message}",
+            "style": "{",
+        },
     },
     "handlers": {
         "console": {
@@ -413,6 +417,18 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": os.path.join(BASE_DIR, "logs", "security.log"),
             "formatter": "security",
+        },
+        # The only request-level record of api.emelmujiro.com traffic.
+        # Rotating, unlike the two above, because this one grows per request:
+        # 5 MB x 4 caps it at ~20 MB, the order of the existing health-check
+        # log. gunicorn has no --access-logfile and cannot rotate anyway, and
+        # its stdout would land in container logs that every deploy discards.
+        "access_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "access.log"),
+            "formatter": "access",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 3,
         },
     },
     "loggers": {
@@ -431,6 +447,14 @@ LOGGING = {
             "level": "WARNING",
             "propagate": False,
         },
+        # File only, never console: console goes to container stdout, which
+        # is per-deploy and would bury the startup lines worth reading there.
+        # propagate False so these do not also reach the `api` logger's file.
+        "api.access": {
+            "handlers": ["access_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
     },
 }
 
@@ -441,7 +465,7 @@ LOGGING = {
 # `manage.py test` invocation (local or CI), polluting real security events.
 TESTING = len(sys.argv) > 1 and sys.argv[1] == "test"
 if TESTING:
-    for _handler in ("file", "security_file"):
+    for _handler in ("file", "security_file", "access_file"):
         LOGGING["handlers"][_handler] = {"class": "logging.NullHandler"}
 
 # Development-only settings
@@ -460,7 +484,8 @@ else:
     # Additional security settings for production
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-    # Route all logs to file in production
+    # Route all logs to file in production. `api.access` is deliberately NOT
+    # raised to WARNING -- it is an access log, and INFO is its only level.
     LOGGING["loggers"]["django"]["level"] = "WARNING"
     LOGGING["loggers"]["api"]["level"] = "WARNING"
 

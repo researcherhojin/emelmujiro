@@ -9,6 +9,10 @@ from api.constants import ONE_DAY, ONE_HOUR
 from api.utils import get_client_ip
 
 logger = logging.getLogger("security")
+# File-only access log — the single request-level record of traffic to
+# api.emelmujiro.com. See config/settings.py for why gunicorn's own access
+# log could not serve this, and APIResponseTimeMiddleware for what it writes.
+access_logger = logging.getLogger("api.access")
 
 # Rate limiting thresholds
 RATE_LIMIT_PER_HOUR = 100
@@ -186,7 +190,12 @@ class ContentSecurityMiddleware:
 
 
 class APIResponseTimeMiddleware:
-    """API response time monitoring middleware"""
+    """API response time monitoring, and the API access log."""
+
+    # Excluded from the access log because they are machine noise, not traffic:
+    # the Docker healthcheck probes /api/health/ every 30s (~2,880/day) and the
+    # health cron adds more. Including them would rotate the real requests out.
+    ACCESS_LOG_EXCLUDE = ("/api/health/",)
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -207,4 +216,34 @@ class APIResponseTimeMiddleware:
             if settings.DEBUG:
                 response["X-Response-Time"] = f"{duration:.3f}s"
 
+            self.log_access(request, response, duration)
+
         return response
+
+    def log_access(self, request, response, duration):
+        """Write one access-log line per API request.
+
+        Referer and user-agent are the point: they are what separates a
+        first-party call (referer on emelmujiro.com, browser UA) from an
+        external consumer (no referer, script UA). Without them this log
+        cannot answer the question it exists for.
+
+        IP comes from the shared `get_client_ip`, which trusts only
+        CF-Connecting-IP and REMOTE_ADDR — never a client-settable
+        forwarding header (see api/utils.py).
+        """
+        if not request.path.startswith("/api/"):
+            return
+        if request.path in self.ACCESS_LOG_EXCLUDE:
+            return
+
+        access_logger.info(
+            '%s %s %s %.3fs ip=%s ref="%s" ua="%s"',
+            request.method,
+            request.get_full_path(),
+            getattr(response, "status_code", "-"),
+            duration,
+            get_client_ip(request),
+            request.META.get("HTTP_REFERER", "-"),
+            request.META.get("HTTP_USER_AGENT", "-"),
+        )

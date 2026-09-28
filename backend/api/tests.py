@@ -28,6 +28,7 @@ from datetime import datetime, timezone, timedelta
 from django.utils import timezone as django_timezone
 from django.contrib import admin
 import requests
+import logging
 
 # Disable throttling for all tests to avoid rate-limit interference
 NO_THROTTLE = {
@@ -4340,3 +4341,43 @@ class NewsletterThrottleTestCase(APITestCase):
             NewsletterRateThrottle().rate,
             settings.REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]["newsletter"],
         )
+
+
+class APIAccessLogTestCase(APITestCase):
+    """The access log is the only request-level record of api.emelmujiro.com
+    traffic — gunicorn writes none, Django's file logs sit at WARNING, and the
+    backend container's logs are discarded on every deploy. These assert the
+    three properties that make it usable for that job."""
+
+    def _capture(self, path, **extra):
+        with self.assertLogs("api.access", level="INFO") as captured:
+            self.client.get(path, **extra)
+            # assertLogs fails the test if nothing was logged, so emit a
+            # sentinel to distinguish "nothing logged" from "logged nothing
+            # useful" in the exclusion tests below.
+            logging.getLogger("api.access").info("sentinel")
+        return [r for r in captured.output if not r.endswith("sentinel")]
+
+    def test_logs_api_request_with_referer_and_user_agent(self):
+        """Referer and UA are the fields that separate first-party traffic
+        from an external consumer. Without them the log cannot answer the
+        question it exists for."""
+        lines = self._capture(
+            "/api/blog-posts/",
+            HTTP_REFERER="https://emelmujiro.com/insights",
+            HTTP_USER_AGENT="Mozilla/5.0 (probe)",
+        )
+        self.assertEqual(len(lines), 1)
+        entry = lines[0]
+        self.assertIn("GET /api/blog-posts/", entry)
+        self.assertIn('ref="https://emelmujiro.com/insights"', entry)
+        self.assertIn('ua="Mozilla/5.0 (probe)"', entry)
+        self.assertIn("ip=", entry)
+
+    def test_excludes_health_check(self):
+        """The Docker probe hits /api/health/ every 30s (~2,880/day). Logging
+        it would rotate real requests out of the file."""
+        self.assertEqual(self._capture("/api/health/"), [])
+
+    def test_ignores_non_api_paths(self):
+        self.assertEqual(self._capture("/admin/"), [])
