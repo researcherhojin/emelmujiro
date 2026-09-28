@@ -25,9 +25,26 @@ jobs:
     name: Auto-Merge Dependabot
     runs-on: ubuntu-latest
     # 8, not 5: the re-arm step below polls for the merge to land, and the
-    # slowest measured auto-merge took 166 s (#509).
+    # slowest measured auto-merge took 166 s (#509). Time spent waiting on
+    # `needs` does not count against this.
     timeout-minutes: 8
-    if: github.actor == 'dependabot[bot]'
+    # Gated on the tests, which it was NOT until 2026-09-28. `main` carries no
+    # required status checks, so `--auto` merged the moment it was called and
+    # every check landed after the fact. Measured across 9 auto-merged PRs:
+    # `Test Affected Code` concluded +16 s to +92 s past the merge, E2E +107 s
+    # to +167 s, Lighthouse CI +187 s to +276 s. Worse, the verdict was
+    # ignored -- #517, #521 and #522 each merged with `Test Affected Code =
+    # failure`, and that failure was the vitest de-hoisting bug that broke
+    # `main` and reddened all seven open PRs.
+    #
+    # `affected-tests` carries no job-level `if:`, so it always reports
+    # success or failure; it is `skipped` only when `quick-checks` fails on a
+    # merge conflict, and a conflicted PR must not auto-merge either. Testing
+    # for `success` therefore covers both without a `skipped` escape hatch.
+    # Cost: a patch merge now waits for quick-checks plus the test job --
+    # roughly 1.5-2 min instead of ~15 s.
+    needs: affected-tests
+    if: github.actor == 'dependabot[bot]' && needs.affected-tests.result == 'success'
     permissions:
       contents: write
       pull-requests: write
@@ -48,9 +65,26 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Enable auto-merge for patch updates
+      # Bare --squash, not --auto. The repo has `allow_auto_merge: false`, so
+      # --auto has no queue to sit in; measured, it merged ~2 s after the call
+      # anyway, which is undocumented fallback behavior this job should not
+      # depend on. Now that the job is gated on `affected-tests`, "merge when
+      # checks pass" is already satisfied and the honest instruction is "merge
+      # now". Retried because mergeability flips to UNKNOWN for 60-90 s while
+      # GitHub recomputes after a sibling PR lands (Gotcha #12).
+      - name: Merge patch updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
-        run: gh pr merge --auto --squash "$PR_URL"
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if gh pr merge --squash "$PR_URL"; then
+              echo "Merged on attempt $attempt"
+              exit 0
+            fi
+            echo "Merge attempt $attempt failed; mergeability may still be recomputing"
+            sleep 20
+          done
+          echo "::error::Could not merge $PR_URL after 6 attempts"
+          exit 1
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -71,17 +105,19 @@ jobs:
       # workflow_dispatch is the documented exception to the loop-prevention
       # rule ("always create workflow runs"), so this needs no PAT -- same
       # mechanism deploy-drift-check.yml relies on.
-      - name: Re-arm the pipeline once the auto-merge lands
+      - name: Re-arm the pipeline once the merge lands
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUM: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
         run: |
-          # --auto lands almost immediately because main has no required status
-          # checks. Measured create -> merge across the five most recent
-          # auto-merged PRs: 12 s (#503), 15 s (#506), 14 s (#508), 166 s
-          # (#509), 15 s (#511). 20 x 15 s = 5 min covers that with headroom.
+          # The step above merges synchronously and fails the job if it cannot,
+          # so in practice attempt 1 sees merged == true. The poll is kept for
+          # the window where the API has not yet caught up. It was sized when
+          # the merge was asynchronous (`--auto`), against measured create ->
+          # merge times of 12 s (#503), 15 s (#506), 14 s (#508), 166 s (#509)
+          # and 15 s (#511); 20 x 15 s = 5 min still covers that with headroom.
           for attempt in $(seq 1 20); do
             if [ "$(gh api "repos/$REPO/pulls/$PR_NUM" -q .merged)" = "true" ]; then
               gh workflow run "Main CI/CD Pipeline" --repo "$REPO" --ref main
