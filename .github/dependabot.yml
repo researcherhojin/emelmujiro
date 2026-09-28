@@ -1,48 +1,46 @@
 # Dependabot configuration for automated dependency updates
 version: 2
 updates:
-  # Frontend dependencies
+  # All npm dependencies -- root AND the `frontend` workspace.
+  #
+  # There is deliberately only ONE npm entry. A second one at `/frontend` was
+  # registered here from the start and produced exactly three PRs in the repo's
+  # history -- #489, #490 and #516 -- every one of them unmergeable as filed and
+  # every one a duplicate of a PR this entry had already opened. The cause is
+  # structural: root `package.json` declares `frontend` as a workspace, so this
+  # scan already sees every frontend dependency -- every frontend bump it files
+  # carries the `frontend` label, #517 and #519-#523 among them -- while
+  # `package-lock.json` lives at the repo root, OUTSIDE `/frontend`. A
+  # `/frontend`-scoped job therefore rewrites
+  # `frontend/package.json` and cannot touch the lockfile that resolves it.
+  # #516 (`@sentry/react` 11.0.0) is the clean example -- a one-file diff, filed
+  # 98 s before #519 proposed the identical bump with its lockfile.
   - package-ecosystem: "npm"
-    directory: "/frontend"
+    directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "04:00"
+    # 10, not 5: this entry now carries the whole npm surface.
     open-pull-requests-limit: 10
-    groups:
-      react:
-        patterns:
-          - "react*"
-          - "@types/react*"
-      tiptap:
-        patterns:
-          - "@tiptap/*"
-      testing:
-        patterns:
-          - "@testing-library/*"
-          - "jest*"
-          - "playwright*"
-          - "vitest*"
-      dev-dependencies:
-        dependency-type: "development"
-        patterns:
-          - "*"
-        exclude-patterns:
-          - "tailwindcss"
     labels:
       - "dependencies"
-      - "frontend"
+      - "root"
     commit-message:
       prefix: "deps"
       prefix-development: "deps-dev"
       include: "scope"
+    # Majors that need a migration rather than a merge. These lived on the
+    # deleted `/frontend` entry, where they only ever filtered the three broken
+    # PRs above -- this is the first time they apply to the PRs actually filed.
+    # The `tailwindcss` ignore is unaffected by the deletion either way: it is
+    # also stored against THIS entry, set by `@dependabot ignore this major
+    # version` on #461, which carries the `root` label.
     ignore:
-      # Ignore major versions that require manual migration
       - dependency-name: "framer-motion"
         update-types: ["version-update:semver-major"]
       - dependency-name: "web-vitals"
         update-types: ["version-update:semver-major"]
-      # Dev dependencies with major changes
       - dependency-name: "lint-staged"
         update-types: ["version-update:semver-major"]
       - dependency-name: "tailwindcss"
@@ -53,22 +51,14 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
-
-  # Root dependencies (eslint, husky, prettier, lint-staged, concurrently)
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-    open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-      - "root"
-    commit-message:
-      prefix: "deps"
-      prefix-development: "deps-dev"
-      include: "scope"
+    # No `groups:` on purpose. The deleted entry defined react / tiptap /
+    # testing / dev-dependencies groups, and the only PRs they ever produced
+    # were #489 and #490 -- the two the CHANGELOG records as filed without a
+    # lockfile and as a major smuggled into a dev-dependencies group. Grouping
+    # also breaks the patch auto-merge in `pr-checks.yml`, which keys on
+    # `update-type == version-update:semver-patch`: a grouped PR reports the
+    # HIGHEST update type it contains, so one minor in the batch holds every
+    # patch in it for manual review (Gotcha #12).
 
   # Backend dependencies are managed by uv (NOT pip). The `uv` ecosystem at the
   # bottom of this file now handles pyproject.toml + uv.lock, so the manual
