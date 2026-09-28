@@ -83,18 +83,23 @@ describe('sanitizeBlogHtml (real DOMPurify via shared config)', () => {
     expect(result).toContain('<em>italic</em>');
   });
 
-  it('preserves tables (allowed via ADD_TAGS for blog content)', () => {
+  // These two pin DOMPurify's DEFAULT allowlist, not an ADD_TAGS/ADD_ATTR
+  // opt-in — those options were removed on 2026-09-28 after being measured as
+  // no-ops. If a future DOMPurify narrows its defaults, these go red, which is
+  // the review the removed options would have silently suppressed.
+  it('preserves all eight table structure tags via the default allowlist', () => {
     const html =
-      '<table><thead><tr><th>h</th></tr></thead><tbody><tr><td>d</td></tr></tbody></table>';
+      '<table><colgroup><col></colgroup><thead><tr><th>h</th></tr></thead>' +
+      '<tbody><tr><td>d</td></tr></tbody></table>';
     const result = sanitizeBlogHtml(html);
-    expect(result).toContain('<table>');
-    expect(result).toContain('<thead>');
-    expect(result).toContain('<tbody>');
+    for (const tag of ['table', 'colgroup', 'col', 'thead', 'tbody', 'tr', 'th', 'td']) {
+      expect(result).toContain(`<${tag}`);
+    }
     expect(result).toContain('<th>h</th>');
     expect(result).toContain('<td>d</td>');
   });
 
-  it('preserves table colspan/rowspan (allowed via ADD_ATTR)', () => {
+  it('preserves table colspan/rowspan via the default allowlist', () => {
     const html = '<table><tr><td colspan="2" rowspan="3">cell</td></tr></table>';
     const result = sanitizeBlogHtml(html);
     expect(result).toMatch(/colspan=["']?2/);
