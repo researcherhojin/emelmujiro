@@ -426,17 +426,19 @@ describe('sentry', () => {
   });
 
   describe('setUserContext', () => {
-    it('sets Sentry user when enabled', async () => {
+    // Exact object, not objectContaining: an explicit setUser bypasses the
+    // `userInfo: false` data-collection policy, so anything added here ships.
+    it('sets Sentry user to the id alone, with no email', async () => {
       mockEnv.ENABLE_SENTRY = true;
-      setUserContext({ id: 1, email: 'test@example.com' });
+      setUserContext({ id: 1 });
       await flushPromises();
-      expect(mockSetUser).toHaveBeenCalledWith({ id: '1', email: 'test@example.com' });
+      expect(mockSetUser).toHaveBeenCalledWith({ id: '1' });
     });
 
     it('does nothing when Sentry is disabled', () => {
       mockEnv.ENABLE_SENTRY = false;
       mockSetUser.mockClear();
-      setUserContext({ id: 1, email: 'test@example.com' });
+      setUserContext({ id: 1 });
       expect(mockSetUser).not.toHaveBeenCalled();
     });
   });

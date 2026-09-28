@@ -54,7 +54,7 @@ export function initSentry(): void {
         // `userInfo: false` is the one that matters on a browser SDK: it stops
         // Sentry-side IP inference on events and sessions.
         // Note this does NOT undo an explicit `setUser` — see setUserContext
-        // below, which sends the signed-in admin's email on purpose.
+        // below, which is why that function takes an id and nothing else.
         dataCollection: {
           userInfo: false,
           cookies: false,
@@ -166,12 +166,21 @@ export function reportErrorBoundary(error: Error, errorInfo: ErrorInfo): void {
   }
 }
 
-// Set user context for error tracking (call on login)
-export function setUserContext(user: { id: number; email: string }): void {
+// Set user context for error tracking (call on login).
+//
+// ID only, deliberately. This is an explicit `setUser`, so the `userInfo:
+// false` in the dataCollection policy above does NOT cover it -- whatever is
+// passed here is sent verbatim. The email used to be included; it bought
+// nothing, because `/login` is the sole standalone route (App.tsx) and there
+// is no signup, so the only account that ever reaches this is the admin's and
+// the id already identifies it uniquely. The parameter type is narrowed to
+// `{ id: number }` rather than just dropping the field at the call site, so
+// an email cannot be reintroduced by accident.
+export function setUserContext(user: { id: number }): void {
   if (env.ENABLE_SENTRY) {
     loadImpl()
       .then((sentry) => {
-        sentry.setUser({ id: String(user.id), email: user.email });
+        sentry.setUser({ id: String(user.id) });
       })
       .catch(noop);
   }
