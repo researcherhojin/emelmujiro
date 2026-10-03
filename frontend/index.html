@@ -74,37 +74,23 @@
 
     <!-- Global error handler for debugging blank page issues -->
     <script>
+      // Record only. Rendering a fallback from here replaced #root on ANY error,
+      // including ones from scripts the browser injects into every page (Brave
+      // iOS wallet: "window.ethereum.selectedAddress = undefined"; WebKit
+      // reports cross-origin ones as bare "Script error."), so a working page
+      // was torn down mid-mount. The 5 s timeout below shows these errors if
+      // the app genuinely never loads.
       window.__appLoaded = false;
       window.__errors = [];
-      function __showError(msg) {
+      function __recordError(msg) {
         if (window.__appLoaded) return;
         window.__errors.push(msg);
-        var root = document.getElementById('root');
-        if (!root) return;
-        var href = location.href;
-        var isKakao = window.__isKakaoInApp;
-        var isAndroid = window.__isKakaoAndroid;
-        var kakaoExternal = isAndroid
-          ? 'intent://web/openExternal?url=' + encodeURIComponent(href) + '#Intent;scheme=kakaotalk;end'
-          : 'kakaotalk://web/openExternal?url=' + encodeURIComponent(href);
-        var ua = navigator.userAgent;
-        root.innerHTML =
-          '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif">' +
-          '<div style="text-align:center;padding:20px;max-width:360px">' +
-          '<p style="font-size:16px;color:#333;margin-bottom:8px;font-weight:600">페이지를 불러오는 중 오류가 발생했습니다.</p>' +
-          '<p style="font-size:11px;color:#999;margin-bottom:16px;word-break:break-all;text-align:left;background:#f5f5f5;padding:8px;border-radius:6px">' +
-          '<b>Error:</b> ' + window.__errors.join('<br>') + '<br><b>UA:</b> ' + ua.substring(0, 120) + '</p>' +
-          (isKakao
-            ? '<a href="' + kakaoExternal + '" style="display:inline-block;width:100%;padding:12px 24px;background:#FDE047;color:#333;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;margin-bottom:8px;box-sizing:border-box">외부 브라우저에서 열기</a>'
-            : '') +
-          '<a href="' + href + '" style="display:inline-block;width:100%;padding:12px 24px;background:#4F46E5;color:#fff;border-radius:8px;text-decoration:none;font-size:14px;box-sizing:border-box">새로고침</a>' +
-          '</div></div>';
       }
-      window.onerror = function(msg, src, line, col, err) {
-        __showError(String(msg) + (src ? ' at ' + src.split('/').pop() + ':' + line : ''));
+      window.onerror = function(msg, src, line) {
+        __recordError(String(msg) + (src ? ' at ' + src.split('/').pop() + ':' + line : ''));
       };
       window.addEventListener('unhandledrejection', function(e) {
-        __showError(e.reason ? String(e.reason) : 'Promise rejected');
+        __recordError(e.reason ? String(e.reason) : 'Promise rejected');
       });
     </script>
 
