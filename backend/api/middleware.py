@@ -1,9 +1,10 @@
 import logging
-import time
-from django.http import HttpResponseForbidden, JsonResponse
-from django.core.cache import cache
-from django.conf import settings
 import re
+import time
+
+from django.conf import settings
+from django.core.cache import cache
+from django.http import HttpResponseForbidden, JsonResponse
 
 from api.constants import ONE_DAY, ONE_HOUR
 from api.utils import get_client_ip
@@ -43,7 +44,7 @@ class RequestSecurityMiddleware:
         self.compiled_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.malicious_patterns]
 
     # Paths exempt from rate limiting (Docker healthcheck, etc.)
-    RATE_LIMIT_EXEMPT_PATHS = {"/api/health/"}
+    RATE_LIMIT_EXEMPT_PATHS = frozenset({"/api/health/"})
 
     def __call__(self, request):
         """Process incoming request and return response"""
@@ -81,15 +82,33 @@ class RequestSecurityMiddleware:
         return ip_address in blocked_ips or cache.get(temp_block_key, False)
 
     def is_rate_limited(self, ip_address):
-        """Rate limiting check"""
-        rate_limit_key = f"rate_limit_{ip_address}"
+        """Fixed one-hour window per IP, starting at that IP's first request.
 
-        try:
-            current_requests = cache.incr(rate_limit_key)
-        except ValueError:
-            # Key doesn't exist yet — initialize it
-            cache.set(rate_limit_key, 1, ONE_HOUR)
-            return False
+        Deliberately not cache.incr(): BaseCache.incr() re-saves the key with no
+        timeout, i.e. the backend's default TIMEOUT (300 s), and FileBasedCache
+        inherits it — so every request cut the window to 5 minutes. Django's docs
+        say nothing about incr() and expiry, so the window start is stored in the
+        value and the remaining lifetime is passed explicitly. Not atomic across
+        workers; per the docs, incr() on this backend was a two-step
+        retrieve/update too.
+        """
+        rate_limit_key = f"rate_limit_{ip_address}"
+        now = time.time()
+
+        entry = cache.get(rate_limit_key)
+        # Reuse only an unexpired window in the current format; anything else
+        # (no entry, a bare int written before this format, or an entry the
+        # backend has not culled yet) starts a new one. Checking expiry here,
+        # not trusting the cache TTL, keeps `remaining` positive — per the docs
+        # a timeout of 0 would not cache the value at all.
+        if isinstance(entry, tuple) and len(entry) == 2 and now < entry[0] + ONE_HOUR:
+            window_start, current_requests = entry
+        else:
+            window_start, current_requests = now, 0
+
+        current_requests += 1
+        remaining = window_start + ONE_HOUR - now
+        cache.set(rate_limit_key, (window_start, current_requests), remaining)
 
         return current_requests > RATE_LIMIT_PER_HOUR
 
@@ -100,11 +119,13 @@ class RequestSecurityMiddleware:
             if pattern.search(request.path):
                 return True
 
-        # Query parameters check
-        for key, value in request.GET.items():
-            for pattern in self.compiled_patterns:
-                if pattern.search(str(value)):
-                    return True
+        # Query parameters check — every value of a repeated key, not just the
+        # last one that QueryDict.items() returns, or `?q=<payload>&q=ok` passes
+        for _key, values in request.GET.lists():
+            for value in values:
+                for pattern in self.compiled_patterns:
+                    if pattern.search(value):
+                        return True
 
         # POST body check
         if hasattr(request, "body") and request.body:
