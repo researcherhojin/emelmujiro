@@ -1,34 +1,39 @@
-from django.test import TestCase, RequestFactory, override_settings
+import logging
+import shutil
+import tempfile
+import time
+from datetime import UTC, datetime, timedelta
+
+import requests
+from django.conf import settings
+from django.contrib import admin
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.core.mail import BadHeaderError
 from django.db import IntegrityError, models
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone as django_timezone
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.test import APITestCase
-from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from .constants import MAX_FAILED_CONTACT_ATTEMPTS
 from .models import (
-    BlogPost,
-    BlogLike,
     BlogComment,
+    BlogLike,
+    BlogPost,
     CommentLike,
     Contact,
     ContactAttempt,
+    NewsletterSubscription,
     Notification,
     NotificationPreference,
     SiteVisit,
-    NewsletterSubscription,
 )
-from .utils import get_client_ip, _is_valid_ip
+from .utils import _is_valid_ip, get_client_ip
 from .views import ContactView
-from .constants import MAX_FAILED_CONTACT_ATTEMPTS
-from django.core.mail import BadHeaderError
-from django.core.exceptions import ValidationError
-from django.conf import settings
-from datetime import datetime, timezone, timedelta
-from django.utils import timezone as django_timezone
-from django.contrib import admin
-import requests
-import logging
 
 # Disable throttling for all tests to avoid rate-limit interference
 NO_THROTTLE = {
@@ -52,7 +57,7 @@ class BlogPostAPITestCase(APITestCase):
             description="Test description",
             content="Test content",
             category="ai",
-            date=datetime.now(timezone.utc),
+            date=datetime.now(UTC),
             image_url="https://example.com/image.jpg",
             is_featured=True,
             view_count=0,
@@ -1091,7 +1096,7 @@ class AdminAPITestCase(APITestCase):
             description="Desc",
             content="Content",
             category="ai",
-            date=datetime.now(timezone.utc),
+            date=datetime.now(UTC),
             author="Admin Author",
             is_published=True,
             view_count=42,
@@ -2043,8 +2048,9 @@ class ValidatorTestCase(TestCase):
 
     def test_mime_type_skip_for_unknown_extension(self):
         """Extension not in EXTENSION_MIME_MAP skips MIME check"""
-        from api.validators import _validate_mime_type
         from django.core.files.uploadedfile import SimpleUploadedFile
+
+        from api.validators import _validate_mime_type
 
         # .doc is in allowed extensions and in EXTENSION_MIME_MAP, but .docx with wrong MIME
         f = SimpleUploadedFile(name="file.docx", content=b"x", content_type="application/pdf")
@@ -2107,7 +2113,7 @@ class RequestSecurityMiddlewareTestCase(TestCase):
         from django.core.cache import cache
 
         # Set counter above threshold (use /api/categories/ — /api/health/ is exempt)
-        cache.set("rate_limit_9.9.9.9", 100, 3600)
+        cache.set("rate_limit_9.9.9.9", (time.time(), 100), 3600)
         response = self.client.get("/api/categories/", REMOTE_ADDR="9.9.9.9")
         self.assertEqual(response.status_code, 429)
 
@@ -2115,7 +2121,7 @@ class RequestSecurityMiddlewareTestCase(TestCase):
         """Health check bypasses rate limiting even when IP is exhausted"""
         from django.core.cache import cache
 
-        cache.set("rate_limit_127.0.0.1", 200, 3600)
+        cache.set("rate_limit_127.0.0.1", (time.time(), 200), 3600)
         response = self.client.get("/api/health/")
         self.assertEqual(response.status_code, 200)
 
@@ -2129,6 +2135,20 @@ class RequestSecurityMiddlewareTestCase(TestCase):
         """SQL injection pattern in query param is blocked"""
         response = self.client.get("/api/health/", {"q": "1 UNION SELECT * FROM users"}, REMOTE_ADDR="22.22.22.22")
         self.assertEqual(response.status_code, 403)
+
+    def test_malicious_value_in_repeated_query_param_blocked(self):
+        """A payload in a non-last value of a repeated key is still checked.
+
+        QueryDict.items() yields only the last value per key, so the check
+        used to pass `?q=<payload>&q=ok`.
+        """
+        cases = ("q=<script>x</script>&q=ok", "q=1 UNION SELECT 1&q=ok", "q=ok&q=<script>x</script>")
+        # One IP per case: a detection temp-blocks the IP, which would also return 403
+        for i, qs in enumerate(cases):
+            with self.subTest(qs=qs):
+                response = self.client.get(f"/api/health/?{qs}", REMOTE_ADDR=f"22.22.23.{i + 1}")
+                self.assertEqual(response.status_code, 403)
+                self.assertIn(b"Malicious", response.content)
 
     def test_path_traversal_blocked(self):
         """Path traversal pattern is blocked"""
@@ -2150,6 +2170,7 @@ class RequestSecurityMiddlewareTestCase(TestCase):
     def test_block_escalation_increments_count(self):
         """Multiple blocks increment the block count"""
         from django.core.cache import cache
+
         from api.middleware import RequestSecurityMiddleware
 
         middleware = RequestSecurityMiddleware(lambda r: None)
@@ -2220,6 +2241,85 @@ class RequestSecurityMiddlewareTestCase(TestCase):
             REMOTE_ADDR="44.44.44.105",
         )
         self.assertEqual(response.status_code, 200)
+
+
+class RateLimitWindowTestCase(TestCase):
+    """RequestSecurityMiddleware.is_rate_limited on FileBasedCache, the production backend.
+
+    RequestSecurityMiddlewareTestCase uses LocMemCache, whose incr() keeps the
+    key's expiry; BaseCache.incr(), which FileBasedCache inherits, resets it to
+    the default TIMEOUT. The window bug therefore cannot reproduce there.
+    """
+
+    def setUp(self):
+        from unittest.mock import patch
+
+        from api.middleware import RequestSecurityMiddleware
+
+        cache_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, cache_dir, ignore_errors=True)
+        # Same backend and TIMEOUT as config/settings.py
+        override = self.settings(
+            CACHES={
+                "default": {
+                    "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+                    "LOCATION": cache_dir,
+                    "TIMEOUT": 300,
+                }
+            }
+        )
+        override.enable()
+        self.addCleanup(override.disable)
+
+        self.now = 1_000_000.0
+        clock = patch("time.time", side_effect=lambda: self.now)
+        clock.start()
+        self.addCleanup(clock.stop)
+
+        self.middleware = RequestSecurityMiddleware(lambda r: None)
+
+    def _requests(self, ip, count, gap):
+        """Make `count` requests `gap` seconds apart; return the 1-based indices that were limited."""
+        limited = []
+        for i in range(1, count + 1):
+            if self.middleware.is_rate_limited(ip):
+                limited.append(i)
+            self.now += gap
+        return limited
+
+    def test_101st_request_within_an_hour_is_limited(self):
+        self.assertEqual(self._requests("10.0.0.1", 101, 1), [101])
+
+    def test_steady_client_under_the_limit_is_never_limited(self):
+        # 15 requests/hour for 8 hours. The old incr()-based counter never
+        # expired with 4-minute gaps and limited request #101.
+        self.assertEqual(self._requests("10.0.0.2", 120, 240), [])
+
+    def test_counter_survives_a_gap_longer_than_the_default_timeout(self):
+        # The old counter expired after any 5-minute pause, resetting to 0.
+        self._requests("10.0.0.3", 100, 1)
+        self.now += 360
+        self.assertTrue(self.middleware.is_rate_limited("10.0.0.3"))
+
+    def test_window_resets_one_hour_after_the_first_request(self):
+        self._requests("10.0.0.4", 101, 1)
+        self.now += 3600
+        self.assertFalse(self.middleware.is_rate_limited("10.0.0.4"))
+
+    def test_window_ends_on_time_for_a_client_straddling_the_boundary(self):
+        # Fast requests across the window end must not keep extending it
+        self._requests("10.0.0.6", 101, 1)
+        self.now = 1_000_000.0 + 3600 - 2
+        limited = self._requests("10.0.0.6", 8, 0.5)
+        # Requests 1-4 land before the end (limited); 5-8 land at/after it (new window)
+        self.assertEqual(limited, [1, 2, 3, 4])
+
+    def test_legacy_int_counter_starts_a_new_window(self):
+        from django.core.cache import cache
+
+        # Format written before this change; must not raise on the first deploy
+        cache.set("rate_limit_10.0.0.5", 100, 3600)
+        self.assertFalse(self.middleware.is_rate_limited("10.0.0.5"))
 
 
 class ContentSecurityMiddlewareTestCase(TestCase):
@@ -2300,7 +2400,8 @@ class VerifyRecaptchaTestCase(TestCase):
 
     def test_recaptcha_success(self):
         """Successful reCAPTCHA verification returns True"""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         from api.views import verify_recaptcha
 
         mock_response = MagicMock()
@@ -2312,7 +2413,8 @@ class VerifyRecaptchaTestCase(TestCase):
 
     def test_recaptcha_failure(self):
         """Failed reCAPTCHA verification returns False"""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         from api.views import verify_recaptcha
 
         mock_response = MagicMock()
@@ -2324,7 +2426,8 @@ class VerifyRecaptchaTestCase(TestCase):
 
     def test_recaptcha_non_200_status(self):
         """Non-200 status from reCAPTCHA API returns False"""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         from api.views import verify_recaptcha
 
         mock_response = MagicMock()
@@ -2336,6 +2439,7 @@ class VerifyRecaptchaTestCase(TestCase):
     def test_recaptcha_network_error(self):
         """Network error during reCAPTCHA returns False"""
         from unittest.mock import patch
+
         from api.views import verify_recaptcha
 
         with patch("api.views.requests.post", side_effect=requests.RequestException("timeout")):
@@ -2343,7 +2447,8 @@ class VerifyRecaptchaTestCase(TestCase):
 
     def test_recaptcha_json_decode_error(self):
         """JSON decode error returns False"""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         from api.views import verify_recaptcha
 
         mock_response = MagicMock()
@@ -2356,6 +2461,7 @@ class VerifyRecaptchaTestCase(TestCase):
     def test_recaptcha_unexpected_exception(self):
         """Unexpected exception returns False"""
         from unittest.mock import patch
+
         from api.views import verify_recaptcha
 
         with patch("api.views.requests.post", side_effect=RuntimeError("unexpected")):
@@ -2385,6 +2491,7 @@ class LogSiteVisitTestCase(TestCase):
     def test_log_site_visit_exception_handling(self):
         """log_site_visit handles exceptions gracefully"""
         from unittest.mock import patch
+
         from api.views import log_site_visit
 
         factory = RequestFactory()
@@ -2466,8 +2573,9 @@ class BlogImageUploadTestCase(APITestCase):
 
     def test_upload_valid_image_returns_201(self):
         """POST with valid image returns 201 with URL"""
-        from django.core.files.uploadedfile import SimpleUploadedFile
         import tempfile
+
+        from django.core.files.uploadedfile import SimpleUploadedFile
 
         self.client.force_authenticate(user=self.admin)
         f = SimpleUploadedFile("photo.png", b"\x89PNG\r\n\x1a\n" + b"x" * 100, content_type="image/png")
@@ -2671,7 +2779,7 @@ class ContactRecaptchaFailureTestCase(APITestCase):
     @override_settings(RECAPTCHA_PRIVATE_KEY="test-key", REST_FRAMEWORK={**NO_THROTTLE})
     def test_recaptcha_failure_rejects_contact(self):
         """Failed reCAPTCHA verification rejects contact form"""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
 
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -2823,8 +2931,8 @@ class DjangoAdminTestCase(TestCase):
 
         request = self.factory.get("/admin/")
         request.user = self.admin_user
-        setattr(request, "session", "session")
-        setattr(request, "_messages", FallbackStorage(request))
+        request.session = "session"
+        request._messages = FallbackStorage(request)
         return request
 
     # --- BlogCommentAdmin ---
@@ -3600,8 +3708,9 @@ class ContactEmailValidationEdgeCaseTestCase(TestCase):
 
     def test_contact_validate_email_direct_invalid(self):
         """Calling validate_email directly with invalid email raises ValidationError"""
-        from .serializers import ContactSerializer
         from rest_framework.exceptions import ValidationError as DRFValidationError
+
+        from .serializers import ContactSerializer
 
         serializer = ContactSerializer()
         with self.assertRaises(DRFValidationError):
@@ -3627,8 +3736,9 @@ class NewsletterEmailValidationEdgeCaseTestCase(TestCase):
 
     def test_newsletter_validate_email_direct_invalid(self):
         """Calling validate_email directly with invalid email raises ValidationError"""
-        from .serializers import NewsletterSubscriptionSerializer
         from rest_framework.exceptions import ValidationError as DRFValidationError
+
+        from .serializers import NewsletterSubscriptionSerializer
 
         serializer = NewsletterSubscriptionSerializer()
         with self.assertRaises(DRFValidationError):
@@ -3660,7 +3770,9 @@ class BlogPostSlugIntegrityErrorRetryTestCase(TestCase):
     def test_slug_retry_on_concurrent_integrity_error(self):
         """BlogPost.save() regenerates slug when IntegrityError is raised by DB"""
         from unittest.mock import patch
-        from django.db import IntegrityError, models as django_models
+
+        from django.db import IntegrityError
+        from django.db import models as django_models
 
         call_count = {"n": 0}
         original_model_save = django_models.Model.save
@@ -3697,14 +3809,17 @@ class ValidatorMimeEdgeCaseTestCase(TestCase):
 
     def test_guessed_mime_mismatch_raises(self):
         """File with matching content_type but wrong guessed MIME raises"""
-        from api.validators import _validate_mime_type
         from unittest.mock import patch
+
+        from api.validators import _validate_mime_type
 
         # .png extension, correct content_type, but mock guess_type to return wrong MIME
         f = self._make_file(name="image.png", size=10, content_type="image/png")
-        with patch("api.validators.mimetypes.guess_type", return_value=("text/plain", None)):
-            with self.assertRaises(ValidationError):
-                _validate_mime_type(f)
+        with (
+            patch("api.validators.mimetypes.guess_type", return_value=("text/plain", None)),
+            self.assertRaises(ValidationError),
+        ):
+            _validate_mime_type(f)
 
 
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})
@@ -3799,9 +3914,10 @@ class ContentSecurityMiddlewareServerHeaderTestCase(TestCase):
 
     def test_server_header_removed(self):
         """ContentSecurityMiddleware removes Server header if present"""
-        from api.middleware import ContentSecurityMiddleware
-        from django.test import RequestFactory
         from django.http import HttpResponse
+        from django.test import RequestFactory
+
+        from api.middleware import ContentSecurityMiddleware
 
         factory = RequestFactory()
         request = factory.get("/api/health/")
@@ -3823,10 +3939,12 @@ class APIResponseTimeSlowRequestTestCase(TestCase):
 
     def test_slow_request_logged(self):
         """Slow request (>3s) triggers warning log"""
-        from api.middleware import APIResponseTimeMiddleware
-        from django.test import RequestFactory
-        from django.http import HttpResponse
         from unittest.mock import patch
+
+        from django.http import HttpResponse
+        from django.test import RequestFactory
+
+        from api.middleware import APIResponseTimeMiddleware
 
         factory = RequestFactory()
         request = factory.get("/api/health/")
@@ -3894,6 +4012,7 @@ class SecurityCheckCommandTestCase(TestCase):
     def test_clean_action(self):
         """Clean action runs and reports cleaned cache entries"""
         from io import StringIO
+
         from django.core.cache import cache
 
         # Seed some cache entries
@@ -3909,6 +4028,7 @@ class SecurityCheckCommandTestCase(TestCase):
     def test_unblock_action_with_blocked_ip(self):
         """Unblock action removes temporary block for given IP"""
         from io import StringIO
+
         from django.core.cache import cache
 
         cache.set("temp_blocked_1.2.3.4", True, 3600)
@@ -4113,6 +4233,7 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
     def test_security_check_all_pass(self):
         """security_check reports success when all settings are correct (line 78)"""
         from io import StringIO
+
         from django.core.management import call_command
 
         out = StringIO()
@@ -4124,6 +4245,7 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
     def test_security_check_short_secret_key(self):
         """security_check reports short SECRET_KEY (line 47)"""
         from io import StringIO
+
         from django.core.management import call_command
 
         out = StringIO()
@@ -4142,6 +4264,7 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
     def test_security_check_missing_headers(self):
         """security_check reports missing security headers (line 64)"""
         from io import StringIO
+
         from django.core.management import call_command
 
         out = StringIO()
@@ -4154,8 +4277,9 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
     def test_security_check_stats_db_error(self):
         """security_check stats handles DB errors gracefully (lines 150-151)"""
         from io import StringIO
-        from django.core.management import call_command
         from unittest.mock import patch
+
+        from django.core.management import call_command
 
         out = StringIO()
         with patch("api.models.SiteVisit.objects") as mock_qs:
@@ -4251,9 +4375,11 @@ class BlogPostSlugMaxRetriesTestCase(TestCase):
         from unittest.mock import patch
 
         post = BlogPost(title="Retry Test", description="D", content="C", category="ai")
-        with patch.object(BlogPost.__mro__[1], "save", side_effect=IntegrityError("slug conflict")):
-            with self.assertRaises(IntegrityError):
-                post.save()
+        with (
+            patch.object(BlogPost.__mro__[1], "save", side_effect=IntegrityError("slug conflict")),
+            self.assertRaises(IntegrityError),
+        ):
+            post.save()
 
 
 class UrlsDebugBranchTestCase(TestCase):
@@ -4262,6 +4388,7 @@ class UrlsDebugBranchTestCase(TestCase):
     def test_debug_urls_include_send_test_email(self):
         """When DEBUG=True, send-test-email URL is registered (line 94)"""
         import importlib
+
         from api import urls as urls_module
 
         with override_settings(DEBUG=True):

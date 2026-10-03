@@ -52,6 +52,18 @@ exclude = '''
 )/
 '''
 
+# Ruff is not a CI gate here (black + flake8 are); this pins what the VS Code
+# Ruff extension checks so it agrees with them: same line length, and `api` /
+# `config` sorted as first-party regardless of which folder the editor opened.
+# cspell:ignore isort
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["api", "config"]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["api*", "config*"]
