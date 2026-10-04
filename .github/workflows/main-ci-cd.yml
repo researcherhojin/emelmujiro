@@ -184,7 +184,8 @@ jobs:
   # ========================================
   # Replaces the prior strict drift gate that broke CI on a single
   # Keep README badges in sync on main: test counts (from prior test-job
-  # outputs, no re-run) and shields.io version badges (from package.json).
+  # outputs, no re-run) and shields.io version badges (installed versions from
+  # package-lock.json and backend/uv.lock).
   readme-sync:
     name: Sync README Badges
     runs-on: ubuntu-latest
@@ -214,10 +215,10 @@ jobs:
           sed -i -E "s/Vitest \([0-9]+ tests\)/Vitest (${FRONTEND_COUNT} tests)/g" README.md
           sed -i -E "s/Django unittest \([0-9]+ tests\)/Django unittest (${BACKEND_COUNT} tests)/g" README.md
 
-      - name: Sync version badges to package.json
+      - name: Sync version badges to installed versions
         # Self-heals README shields.io badges after dependency merges. Dependabot
-        # patch/minor auto-merges bump frontend/package.json but not the badge, so
-        # without this the drift would fail Quick Validation on every open PR.
+        # merges move the lockfiles but not the badge, so without this the drift
+        # would redden Repo Checks (informational) on every open PR.
         run: ./scripts/sync-readme-badges.sh
 
       - name: Commit and push if README changed
