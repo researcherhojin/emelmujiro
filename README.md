@@ -107,24 +107,29 @@ graph LR
     end
 
     subgraph Host["Self-hosted (Docker · 127.0.0.1 only)"]
-        Nginx["nginx:alpine\nStatic + Rate Limit"]
-        Gunicorn["Gunicorn 3w 2t\nSecurity MW"]
+        Nginx["nginx:alpine\nStatic + prerendered pages"]
+        Gunicorn["Gunicorn 3w 2t\nSecurity MW + file cache"]
         DRF["Django 6 + DRF"]
-        DB[(SQLite)]
+        DB[(SQLite\nsqlite_data volume)]
         Umami["Umami Analytics"]
         UmamiDB[(PostgreSQL 15)]
     end
 
     Sentry["Sentry (SaaS)\nwired, DSN unset"]
+    GHA["GitHub Actions\nCI + deploy trigger"]
 
     React -->|emelmujiro.com| Tunnel
+    React -->|api.emelmujiro.com| Tunnel
     Tunnel -->|:8080| Nginx
-    Nginx -->|/api| Gunicorn
+    Tunnel -->|:8000 API| Gunicorn
+    Nginx -.->|/api - not used by the SPA| Gunicorn
     Nginx -->|/umami/api/send| Umami
     Gunicorn --> DRF
     DRF --> DB
     Umami --> UmamiDB
     React -.->|errors, when a DSN is set| Sentry
+    GHA -.->|deploy webhook| Tunnel
+    Tunnel -.->|auto-deploy.sh on the host: build/ + backend image| Host
 
     style Tunnel fill:#F3E8FF,stroke:#7C3AED
     style Host fill:#ECFDF5,stroke:#059669
