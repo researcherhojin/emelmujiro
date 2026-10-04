@@ -4,48 +4,35 @@ Thanks for your interest. This is a small monorepo — keep changes surgical.
 
 ## Setup
 
-See [README — Getting Started](README.md#getting-started). Prerequisites: Node ≥ 24, Python 3.12, [uv](https://docs.astral.sh/uv/).
-
-Fork → clone → `make install` → `make dev-local`. On a fresh macOS box, `make setup-dev-machine` automates the brew + env bootstrap; `make verify-setup` is a re-runnable health check.
+Fork → clone → follow [README — Getting Started](README.md#getting-started) (`make install`, first-time `migrate`, `npm run dev`). On a fresh macOS box, `make setup-dev-machine` automates the bootstrap; `make verify-setup` is a re-runnable health check.
 
 ## Where the rules live
 
-**[CLAUDE.md](CLAUDE.md) is the single source of truth** for operational rules: architecture invariants, UI conventions, CI constraints, gotchas. Read the `Quick Orientation` block first — it routes you to the relevant section by task type.
-
-This file lists only the contributor-facing checklist; for the "why" behind any rule, look there.
+**[CLAUDE.md](CLAUDE.md) is the single source of truth** for operational rules — architecture invariants, CI constraints, gotchas — with domain rules in [`.claude/rules/`](.claude/rules/). Start with its `Quick Orientation` block. This file is only the contributor checklist; the "why" behind each item lives there.
 
 ## Workflow checklist
 
-1. **Branch**: `feature/<name>` or `fix/<description>`. Target `main`.
-2. **Commit messages**: Conventional Commits, English only, enforced by the `commit-msg` hook locally and re-checked in CI by the `Repo Checks (informational)` job. Both call `scripts/check-commit-msg.sh`, so they cannot drift apart — change the accepted types there, not in either caller. Format and the English-only (ASCII) rule are enforced on the **subject line**; the **whole message**, body included, is additionally rejected if it carries an unescaped CI-skip marker (see below). `git commit --no-verify` is the escape when a subject genuinely needs a non-ASCII proper noun.
-   `type(scope): description` — types: `feat fix docs style refactor test chore perf deps-dev deps ci`. A description is required. Merge, `fixup!`/`squash!`/`amend!`, `Revert "…"`, and dependabot's own formats are exempt.
-3. **One issue per PR, ≤ 3 commits**, no mid-PR scope expansion. Defer follow-ups to a new issue.
-4. **Test before pushing**: `make test` (frontend + backend) and `make lint` from repo root.
-5. **PR**: open against `main` with a short summary + test plan. CI runs lint, type-check, test, Trivy, bundle size, Lighthouse, Codecov, and a repo-wide `cspell` spell check.
+1. **Branch**: `feature/<name>` or `fix/<description>`, targeting `main`.
+2. **Commit messages**: Conventional Commits in English — `type(scope): description`, types `feat fix docs style refactor test chore perf deps-dev deps ci`. Enforced by `scripts/check-commit-msg.sh`, which both the `commit-msg` hook and CI call; change accepted types there only. ASCII is required on the subject line; `git commit --no-verify` is the escape for a non-ASCII proper noun.
+3. **No CI-skip markers anywhere in the message**, body included — GitHub reads the whole message, so prose about the mechanism skips CI. Escape the brackets to write about one (`\[skip ci\]`). See CLAUDE.md Gotcha #10.
+4. **One issue per PR, ≤ 3 commits**, no mid-PR scope expansion. Defer follow-ups to a new issue.
+5. **Before pushing**: `make test` and `make lint` from the repo root. Pre-commit runs lint-staged (Prettier, ESLint, Black, Flake8); don't bypass it.
+6. **PR**: against `main`, with a short summary and test plan. CI runs lint, type-check, tests, Trivy, bundle size, Lighthouse, Codecov and `cspell`.
 
 ## Code rules (the short version)
 
 - **i18n always**: `useTranslation()` in components, `i18n.t()` in data files. No hardcoded user-facing strings.
 - **English comments only** in source.
 - **No `window.alert/prompt`** — use a toast or inline UI.
-- **Logger import**: `import logger from '../utils/logger'` (default export). Use `env.IS_DEVELOPMENT` for environment checks.
-- **CI-skip markers are rejected, not just discouraged.** GitHub parses the whole commit message — subject and body — so prose describing the mechanism skips every workflow for that commit. It happened 10 times here before the guard existed, 8 of them with zero check-runs. `scripts/check-commit-msg.sh` now rejects all five markers anywhere in the message; escape the brackets to write about one (`\[skip ci\]`), or use `git commit --no-verify` if you genuinely mean to skip. The generated README-sync commit is the only exemption (see CLAUDE.md Gotcha #10).
-- **Spelling is gated.** `npm run spell` runs `cspell` over the whole repo and CI runs it in `Repo Checks (informational)`. A real word it does not know goes in `cspell.json`'s `words`; a deliberate non-word (an example string in a comment) goes in a file-scoped `# cspell:ignore` instead, so the project dictionary never starts accepting typo-shaped tokens everywhere.
-- **Pre-commit runs lint-staged** (Prettier + ESLint + Black + Flake8). Don't bypass with `--no-verify` — the one sanctioned use is the non-ASCII proper noun escape noted in the commit-message rule above, and it skips the formatters too.
+- **Logger**: `import logger from '../utils/logger'` (default export); `env.IS_DEVELOPMENT` for environment checks.
+- **Spelling**: `npm run spell`. A real word goes in `cspell.json`'s `words`; a deliberate non-word goes in a file-scoped `cspell:ignore` comment, so the dictionary never accepts typo-shaped tokens.
 
 ## Testing
 
-```bash
-make test                                                                     # all
-make test-ci                                                                  # CI mode (no watch, coverage)
-CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx     # single frontend
-DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPITestCase   # single backend (from backend/)
-npm run test:e2e                                                              # Playwright (5 profiles, from frontend/)
-```
+Commands are in [README — Useful Commands](README.md#useful-commands); single-test invocations are in CLAUDE.md `Commands`. Two things to know:
 
-Coverage target is 100 %; the merge gate ([`codecov.yml`](codecov.yml)) actually fails at project floor 99 % / patch floor 87 % (`threshold: 1%` and `threshold: 3%`). Aim for 100 %, ship at ≥ 99 %.
-
-Backend test output is intentionally noisy — negative-path tests (XSS/SQL/path-traversal middleware, SMTP/DB failure paths, JWT invalid tokens, reCAPTCHA fallbacks) log errors on purpose. Trust `Ran N tests OK` + exit code 0, not the absence of log lines.
+- **Coverage** aims for 100 %; [`codecov.yml`](codecov.yml) fails below 99 % per project and 87 % on the patch.
+- **Backend test output is noisy on purpose** — negative-path tests log errors. Trust `Ran N tests` + `OK` and exit code 0.
 
 ## Questions
 
