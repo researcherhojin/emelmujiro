@@ -217,7 +217,7 @@ jobs:
 
       - name: Sync version badges to installed versions
         # Self-heals README shields.io badges after dependency merges. Dependabot
-        # merges move the lockfiles but not the badge, so without this the drift
+        # merges move the lock files but not the badge, so without this the drift
         # would redden Repo Checks (informational) on every open PR.
         run: ./scripts/sync-readme-badges.sh
 
