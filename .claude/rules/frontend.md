@@ -13,6 +13,7 @@ Invariants only. Grep the code for everything else.
 
 - **i18n routing**: Korean default (no prefix: `/profile`), English `/en/profile`. Internal links must use `useLocalizedPath` hook — never raw `navigate()`/`<Link>`. Non-React data files must use getter functions (not module-level constants) so `i18n.t()` resolves at call time.
 - **Provider order** (`App.tsx`): HelmetProvider → ErrorBoundary → UIProvider → AuthProvider → NotificationProvider → BlogProvider → RouterProvider.
+- **`index.html`'s pre-load error handler only records, never renders.** `window.onerror` and the unhandled-rejection listener push into `window.__errors`; the one fallback is the 5 s `__appLoaded` timeout, which displays them. Rendering from the handler replaced `#root` on any error, including code the browser injects into every page — Brave on iOS throws `window.ethereum.selectedAddress = undefined` — and tore down pages that were loading fine (fixed 2026-10-04, `ff788880`). `e2e/error-states.spec.ts` asserts both halves: injected errors leave the nav in place, and aborting every `/assets/*.js` still shows the timeout fallback.
 - **Auth**: JWT in httpOnly cookies (not localStorage). `auth_hint` flag in localStorage skips `getUser()` on mount when unset — prevents 401 spam.
 - **State**: React Context only (`UIContext`, `AuthContext`, `BlogContext`, `NotificationContext`). No Redux or external state libs.
 - **HTTP**: `services/api.ts` (Axios) with JWT-refresh interceptors. Tests stub via `vi.mock('axios')` per file — **no MSW server** (scaffold removed 2026-04-11).
