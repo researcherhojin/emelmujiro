@@ -3,7 +3,7 @@
 #
 # .private/ holds local-only operational notes (journal, secrets-setup,
 # strategy) that are gitignored. They need manual sync because git won't
-# carry them. See CLAUDE.md "Constraints" → opsec relocation.
+# carry them. See CLAUDE.md "Project Overview" and "Constraints" → Two-device sync helpers.
 #
 # Usage:
 #   ./scripts/sync_private.sh push   # MBP → Mac mini (default)
