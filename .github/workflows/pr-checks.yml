@@ -241,7 +241,7 @@ jobs:
           fi
           echo "README test counts present ($README_FE frontend + $README_BE backend)"
 
-      - name: Check README badge versions match package.json and uv.lock
+      - name: Check README badge versions match package-lock.json and uv.lock
         run: |
           ERRORS=0
           # Backend runtime badges resolve through backend/uv.lock, not
@@ -265,16 +265,18 @@ jobs:
           }
           check_badge() {
             local name="$1" pkg="$2"
-            local pkg_ver=$(node -e "const p=require('./frontend/package.json'); console.log((p.dependencies['$pkg']||p.devDependencies['$pkg']||'').replace('^',''))")
-            local badge_ver=$(grep -oE "$name-[0-9]+\.[0-9]+\.[0-9]+" README.md | head -1 | sed "s/${name}-//")
+            # Installed version, not the package.json range floor; frontend/
+            # node_modules first because a de-hoisted copy is what ships.
+            local pkg_ver=$(node -e "const l=require('./package-lock.json').packages; const n=process.argv[1]; const e=l['frontend/node_modules/'+n]||l['node_modules/'+n]; console.log(e&&e.version||'')" "$pkg")
+            # Anchored on /badge/ so `i18next` cannot match `React_i18next`.
+            local badge_ver=$(grep -oE "/badge/${name}-[0-9]+\.[0-9]+\.[0-9]+" README.md | head -1 | sed -E "s#/badge/${name}-##")
             if [ -n "$pkg_ver" ] && [ -n "$badge_ver" ] && [ "$pkg_ver" != "$badge_ver" ]; then
-              echo "❌ $name badge: $badge_ver ≠ package.json: $pkg_ver"
+              echo "❌ $name badge: $badge_ver ≠ package-lock.json: $pkg_ver"
               ERRORS=$((ERRORS + 1))
             fi
           }
           # Badge order mirrors README section layout (frontend / testing).
-          # Scoped packages (@*/*) work because bash expands $pkg into the
-          # JS string literal inside node -e, giving valid dict lookup.
+          # Package names reach node as argv, so scoped names (@*/*) need no quoting.
           check_badge "React" "react"
           check_badge "TypeScript" "typescript"
           check_badge "Vite" "vite"
@@ -296,11 +298,11 @@ jobs:
           check_backend_badge "SimpleJWT" "djangorestframework-simplejwt"
           check_backend_badge "Gunicorn" "gunicorn"
           if [ "$ERRORS" -gt 0 ]; then
-            echo "❌ $ERRORS README badge(s) out of sync with package.json / uv.lock"
+            echo "❌ $ERRORS README badge(s) out of sync with package-lock.json / uv.lock"
             echo "Run: scripts/sync-readme-badges.sh (auto-heals on main via the readme-sync job)"
             exit 1
           fi
-          echo "All README badges match package.json and uv.lock"
+          echo "All README badges match package-lock.json and uv.lock"
 
       - name: Check route lists agree
         # App.tsx, staticRoutes, e2e/seo.spec.ts and lighthouserc.js each

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Sync README shields.io version badges to frontend/package.json (frontend) and
-# backend/uv.lock (backend).
+# Sync README shields.io version badges to the versions actually installed:
+# package-lock.json (frontend) and backend/uv.lock (backend).
 # Usage: ./scripts/sync-readme-badges.sh
 #   - Run from repo root (or anywhere; resolves its own path)
 #   - Write-counterpart to the read-only badge check in pr-checks.yml
@@ -13,7 +13,9 @@
 # Why the backend reads uv.lock and not pyproject.toml: pyproject mixes exact
 # pins (`gunicorn==26.0.0`) with floors (`coverage>=7.15.4`), and a floor is not
 # the installed version. uv.lock records what is actually resolved, which is what
-# a version badge claims.
+# a version badge claims. The frontend reads package-lock.json for the same
+# reason: a `^8.2.2` range in package.json is a floor, while the lockfile
+# records the 8.3.1 that is built and shipped.
 
 set -e
 
@@ -29,7 +31,7 @@ sedi() {
   fi
 }
 
-# Badge label -> package.json dependency name.
+# Badge label -> npm package name (resolved through package-lock.json).
 # Order and mapping mirror pr-checks.yml's "Check README badge versions" step —
 # keep the two lists in lockstep when adding a badged dependency.
 BADGES=(
@@ -75,9 +77,10 @@ CHANGED=0
 for entry in "${BADGES[@]}"; do
   name="${entry%%:*}"
   pkg="${entry#*:}"
-  pkg_ver=$(node -e "const p=require('./frontend/package.json'); console.log(((p.dependencies||{})['$pkg']||(p.devDependencies||{})['$pkg']||'').replace(/^[\^~]/,''))")
+  # frontend/node_modules first: a de-hoisted copy is what the frontend resolves.
+  pkg_ver=$(node -e "const l=require('./package-lock.json').packages; const n=process.argv[1]; const e=l['frontend/node_modules/'+n]||l['node_modules/'+n]; console.log(e&&e.version||'')" "$pkg")
   if [ -z "$pkg_ver" ]; then
-    echo "⚠️  $pkg not found in frontend/package.json — skipping $name badge"
+    echo "⚠️  $pkg not found in package-lock.json — skipping $name badge"
     continue
   fi
   # Anchor on /badge/<name>- so labels that are substrings of others stay distinct.
@@ -118,7 +121,7 @@ for entry in "${BACKEND_BADGES[@]}"; do
 done
 
 if [ "$CHANGED" -eq 0 ]; then
-  echo "All README badges already match frontend/package.json and backend/uv.lock"
+  echo "All README badges already match package-lock.json and backend/uv.lock"
 else
   echo "Updated $CHANGED badge(s)"
   git add README.md 2>/dev/null || true
