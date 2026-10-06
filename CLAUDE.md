@@ -78,6 +78,8 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 **Deployment**: Never `rm -rf frontend/build` (breaks nginx volume mount) — use `rm -rf frontend/build/*`. Docker ports bind to `127.0.0.1` only. `SECRET_KEY` loaded via `env_file` — do NOT set in docker-compose `environment` section.
 
+- **An edit to `auto-deploy.sh` takes effect one deploy late.** The script checks out the target commit while running, and bash keeps executing the copy it opened, so the deploy of `9587ac3e` ran without that commit's new `up -d umami-db umami` line. Verify a deploy-script change on the deploy after it.
+
 **Compose-only images (`nginx`, `umami`, `postgres`) are pinned to exact versions in `docker-compose.yml` — never revert to a floating tag.** Nothing re-pulls a floating tag (`auto-deploy.sh` only builds the backend), which left all three 6–9 months stale until 2026-10-06.
 
 - Dependabot's `docker-compose` ecosystem bumps the pins, and `auto-deploy.sh` applies them: `up -d umami-db umami` and the frontend's `up -d` pull a changed tag. Patch bumps auto-merge (Gotcha #12), so an Umami patch runs its DB migrations without review.
