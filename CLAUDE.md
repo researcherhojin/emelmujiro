@@ -1,10 +1,12 @@
 # CLAUDE.md
 
+<!-- cspell:ignore andrej multica -->
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 This repo's owner runs a quant trading platform alongside this codebase, so the operating principle is **엄밀하게** — counts and claims **about the codebase** are exact and verifiable; no `+` / `≥` / round-figure handwaves in this doc, in README, or in commit messages. Marketing copy rendered in the UI itself (e.g. `5,000+` hours in the hero stats) is exempt — that's user-facing, not doc-facing.
 
-Cross-project behavioral guidelines (Think before coding · Simplicity first · Surgical changes · Goal-driven execution · Risky-action protocol) are not restated here, and `~/.claude/CLAUDE.md` does not exist (checked 2026-09-28), so they currently live nowhere. Recreate that file if they should apply; nothing in this repo depends on them.
+Cross-project behavioral guidelines (Think before coding · Simplicity first · Surgical changes · Goal-driven execution · Risky-action protocol) are not restated here. Since 2026-10-06 the first four ship as the `karpathy-guidelines` skill of the user-scope plugin `andrej-karpathy-skills@karpathy-skills` (source `multica-ai/andrej-karpathy-skills`, MIT), which loads on demand rather than on every turn; Risky-action protocol still lives nowhere, and `~/.claude/CLAUDE.md` still does not exist. Nothing in this repo depends on them.
 
 ## Quick Orientation
 
