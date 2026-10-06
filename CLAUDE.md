@@ -1,21 +1,18 @@
 # CLAUDE.md
 
-<!-- cspell:ignore andrej multica -->
+<!-- cspell:ignore andrej -->
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 This repo's owner runs a quant trading platform alongside this codebase, so the operating principle is **엄밀하게** — counts and claims **about the codebase** are exact and verifiable; no `+` / `≥` / round-figure handwaves in this doc, in README, or in commit messages. Marketing copy rendered in the UI itself (e.g. `5,000+` hours in the hero stats) is exempt — that's user-facing, not doc-facing.
 
-Cross-project behavioral guidelines (Think before coding · Simplicity first · Surgical changes · Goal-driven execution · Risky-action protocol) are not restated here. Since 2026-10-06 the first four ship as the `karpathy-guidelines` skill of the user-scope plugin `andrej-karpathy-skills@karpathy-skills` (source `multica-ai/andrej-karpathy-skills`, MIT), which loads on demand rather than on every turn; Risky-action protocol still lives nowhere, and `~/.claude/CLAUDE.md` still does not exist. Nothing in this repo depends on them.
+Cross-project behavioral guidelines are not restated here; they load on demand from the user-scope `andrej-karpathy-skills` plugin, and nothing in this repo depends on them.
 
 ## Quick Orientation
 
 This root file holds the always-loaded, cross-cutting rules. Domain specifics live in `.claude/rules/` and auto-load when Claude reads matching files: `frontend.md` (Architecture, UI Conventions, Testing, Security — paths `frontend/**`), `backend.md` (Architecture, Constants, Utilities, Testing, Tooling, Security — paths `backend/**`).
 
-**Size and shape**: CLAUDE.md files "are loaded in full regardless of length, though shorter files produce better adherence" ([Memory](https://code.claude.com/docs/en/memory)); the `200 lines or 25 KB` limit there applies to the auto-memory `MEMORY.md` index, not to this file. What matters is bytes, so:
-
-- **No line target.** The former "under 200 lines" target was met by packing paragraphs of up to 3,231 characters onto single lines (25 lines over 600 characters on 2026-10-06), which is what the current shape undid: every rule is one bold lead sentence, and its evidence sits in sub-bullets below it, so the rule can be read without the backstory.
-- **The lever on bytes is compressing wording in place, not relocating entries.** Moving the dependency Gotchas to a path-scoped `.claude/rules/dependencies.md` was tried on 2026-07-31 and reverted: markdown renumbered the list, breaking the Gotcha IDs cited from commits, CHANGELOG and PRs; and these rules are triggered by _situations_ (a red scan, a dependabot PR, a Vitest crash), not by reading `package.json`, so a path trigger would rarely fire. Path-scoping suits `frontend.md`/`backend.md` because those do key on file reads.
+**Size and shape**: every rule is one bold lead sentence with its evidence in sub-bullets; there is no line target, only bytes. **Cut bytes by compressing wording in place, never by relocating Gotchas** — a path-scoped `.claude/rules/dependencies.md` was tried on 2026-07-31 and reverted, because renumbering broke the Gotcha IDs cited from commits, CHANGELOG and PRs, and these rules fire on situations (a red scan, a dependabot PR), not on file reads. Dated measurements belong under `Baselines` in `.private/journal.md`.
 
 By task type:
 
@@ -177,17 +174,17 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 ## Development Flow
 
-7-phase cycle adapted from [gstack](https://github.com/garrytan/gstack). Skip phases when scope doesn't warrant (typo fix ≠ full cycle). The `gstack skill` column names that toolkit's commands for reference only: none of them is installed in this repo or at user level (checked 2026-10-06), so the `Repo tools` column is what runs here.
+7-phase cycle adapted from [gstack](https://github.com/garrytan/gstack). Skip phases when scope doesn't warrant (typo fix ≠ full cycle).
 
-| Phase       | Purpose                                    | Repo tools                                                                                 | gstack skill                                                               |
-| ----------- | ------------------------------------------ | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| **Think**   | Understand problem, constraints, prior art | `git log`, Grep, `CLAUDE.md`, `.private/journal.md`                                        | `/office-hours`, `/investigate`                                            |
-| **Plan**    | Concrete change scope and tradeoffs        | plan file in `~/.claude/plans/` or inline                                                  | `/plan-ceo-review`, `/plan-eng-review`, `/plan-design-review`, `/autoplan` |
-| **Build**   | Implement                                  | editor, `npm run dev`, `make dev-local`                                                    | (direct coding)                                                            |
-| **Review**  | Independent 2nd opinion                    | `make lint`, `make type-check`, GitHub PR review                                           | `/review` (Claude), `/codex review` (Codex CLI), `/design-review`          |
-| **Test**    | Verify behavior                            | `make test`, `make test-ci`, Playwright E2E, Lighthouse CI                                 | `/qa`, `/qa-only`, `/benchmark`                                            |
-| **Ship**    | Land + deploy                              | `CHANGELOG.md` entry, conventional commit, PR, merge, `scripts/auto-deploy.sh` via webhook | `/ship`, `/land-and-deploy`, `/canary`                                     |
-| **Reflect** | Capture surprises                          | `.private/journal.md` session log                                                          | `/retro`, `/document-release`                                              |
+| Phase       | Purpose                                    | Repo tools                                                                                 |
+| ----------- | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **Think**   | Understand problem, constraints, prior art | `git log`, Grep, `CLAUDE.md`, `.private/journal.md`                                        |
+| **Plan**    | Concrete change scope and tradeoffs        | plan file in `~/.claude/plans/` or inline                                                  |
+| **Build**   | Implement                                  | editor, `npm run dev`, `make dev-local`                                                    |
+| **Review**  | Independent 2nd opinion                    | `make lint`, `make type-check`, GitHub PR review                                           |
+| **Test**    | Verify behavior                            | `make test`, `make test-ci`, Playwright E2E, Lighthouse CI                                 |
+| **Ship**    | Land + deploy                              | `CHANGELOG.md` entry, conventional commit, PR, merge, `scripts/auto-deploy.sh` via webhook |
+| **Reflect** | Capture surprises                          | `.private/journal.md` session log                                                          |
 
 ### Invariants
 
@@ -224,11 +221,7 @@ Quick code-level traps that cost time when missed. Each entry: a bold rule, then
 4. **`tsconfig.build.json`** excludes test types — don't add `@testing-library/jest-dom`.
 5. **`DATABASE_URL=""`** for backend tests — Docker PostgreSQL breaks SQLite tests.
 6. **Never run `npm audit fix` (or `--force`)** — `--force` downgrades `@lhci/cli` to 0.1.0 and destroys Lighthouse CI; it is what `fixAvailable: @lhci/cli@0.1.0` offers.
-   - **Expected state (measured 2026-10-06)**: `26 vulnerabilities (2 low, 7 moderate, 17 high)`, all dev-only, in four chains that sum to 26. The 2026-10-04 count was 19; the 7 added arrived upstream, with no manifest change here.
-     - 17 in the `@lhci/cli@0.15.1` tree: `@lhci/cli`, `@lhci/utils`, `@puppeteer/browsers`, `puppeteer-core`, `lighthouse`, `extract-zip`, `tmp`, `uuid`, `inquirer`, `external-editor`, `basic-ftp` → `get-uri` → `pac-proxy-agent` → `proxy-agent`, and `sprintf-js@1.0.3` → `argparse` → `js-yaml@3.15.2` → `@lhci/utils` (GHSA-hp3w-g68c-fv3c).
-     - 5 from `braces@3.0.3` (GHSA-vfj7-8cjw-p6xm, no patched release): `braces`, `micromatch`, `chokidar`, `fast-glob`, `tailwindcss`.
-     - 3 from `postcss-selector-parser` `<7.1.6` (GHSA-rj75-hqrm-r3gf): the parser, `postcss-nested`, `@tailwindcss/typography`. The root copy is the patched `7.1.6`; the counted ones are `6.0.10` under `@tailwindcss/typography@0.5.20` and `6.1.4` under `tailwindcss@3.4.19` and `postcss-nested@6.2.0`.
-     - 1, `source-map-js@1.2.1` under `postcss@8.5.28` (GHSA-68fv-2mgg-jv7q, fixed in `1.2.2`, a parent-bump candidate for dependabot).
+   - **Expected state (measured 2026-10-06)**: `26 vulnerabilities (2 low, 7 moderate, 17 high)`, all dev-only, in four chains: 17 in the `@lhci/cli` tree, 5 from `braces`, 3 from `postcss-selector-parser` `<7.1.6`, 1 from `source-map-js`. Per-package breakdown and advisory IDs: `npm audit (2026-10-06)` under `Baselines` in `.private/journal.md`.
    - **A rising count is not automatically something this repo did** — advisories arrive upstream — and **a regenerated lockfile can drop findings no override or parent bump would**.
    - **"Expected" is not "ignorable" — measure whether each one ships.** `dompurify` (direct dep, the sanitizer guarding `dangerouslySetInnerHTML`) once carried an XSS here (GHSA-55q2-fjhq-7xh7, fixed `3.4.13`). Shipping test: `npm run build && grep -rl <pkg> build/assets/*.js`, and **read the hit** — short names false-match (`tmp` hits highlight.js keywords; `braces` hits a React error string); a sourcemap build (`npx vite build --sourcemap --outDir <tmp>`) and its `sources` list is the exact check.
    - **`npm audit` alone is not the gate** — CI's Trivy counts anything the lockfile does not mark `"dev": true`. After any lockfile write, check per package that everything `npm audit` reports still carries the marker (all 26 do), and when one does not, run `npm ls <pkg> --omit=dev` before blaming the lockfile: `braces` was counted because `@tailwindcss/typography` sat in `dependencies` and peer-pulled `tailwindcss` into the production graph. Markers have also moved with no manifest change (`37aa60f6`: 779 → 858, back to 784 after three dependabot merges, surfacing `nanoid@3.3.16` as a production HIGH), so assume no direction.
