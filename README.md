@@ -81,14 +81,8 @@ make lint-fix              # Auto-fix lint issues
 make update-test-counts    # Regenerate README test counts locally (CI auto-syncs on main)
 make health                # Docker health diagnostic (containers, resources, endpoints)
 
-# From frontend/
-cd frontend
-npm run validate           # lint + type-check + test:coverage
-CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx
-npm run test:e2e           # Playwright headless (5 profiles) — builds, then serves build/
-npm run serve:build        # Serve build/ as nginx does; leave running to skip E2E rebuilds
-npm run test:e2e:ui        # Playwright interactive UI
-npm run test:e2e:debug     # Playwright debug mode
+# From frontend/: npm run validate (lint + type-check + coverage) and npm run test:e2e (Playwright, 5 profiles).
+# Single-test, serve:build, bundle-analysis and route-check commands are listed once, in CLAUDE.md → Commands.
 
 # Docker dev (optional PostgreSQL profile)
 docker compose -f docker-compose.dev.yml --profile postgres up

@@ -17,7 +17,7 @@ Fork → clone → follow [README — Getting Started](README.md#getting-started
 3. **No CI-skip markers anywhere in the message**, body included — GitHub reads the whole message, so prose about the mechanism skips CI. Escape the brackets to write about one (`\[skip ci\]`). See CLAUDE.md Gotcha #10.
 4. **One issue per PR, ≤ 3 commits**, no mid-PR scope expansion. Defer follow-ups to a new issue.
 5. **Before pushing**: `make test` and `make lint` from the repo root. Pre-commit runs lint-staged (Prettier, ESLint, Black, Flake8); don't bypass it.
-6. **PR**: against `main`, with a short summary and test plan. CI runs lint, type-check, tests, Trivy, bundle size, Lighthouse, Codecov and `cspell`.
+6. **PR**: against `main`, with a short summary and test plan. PR CI runs lint, type-check, tests, Trivy, bundle size, Lighthouse and `cspell`; Codecov uploads run on the `main` pipeline after merge.
 
 ## Code rules (the short version)
 
