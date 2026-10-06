@@ -111,6 +111,26 @@ updates:
     commit-message:
       prefix: "deps"
       include: "scope"
+  # Images pulled straight from docker-compose*.yml (nginx, Umami, its Postgres).
+  # The two `docker` entries above watch only `Dockerfile`s, so these drifted 6-9
+  # months until 2026-10-06. Postgres majors are ignored: a new major cannot
+  # read the existing `umami_db` volume, so that upgrade is a dump-and-restore
+  # project, not a tag bump.
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    ignore:
+      - dependency-name: "postgres"
+        update-types: ["version-update:semver-major"]
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
   # Backend Python deps. Every other ecosystem here was registered from the start;
   # this one was not, so backend versions drifted with no automation at all — which
   # is why the urllib3 (CVE-2026-44431/44432) and pyjwt (CVE-2026-48526) advisories

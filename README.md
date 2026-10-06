@@ -101,7 +101,7 @@ graph LR
     end
 
     subgraph Host["Self-hosted (Docker · 127.0.0.1 only)"]
-        Nginx["nginx:alpine\nStatic + prerendered pages"]
+        Nginx["nginx (alpine)\nStatic + prerendered pages"]
         Gunicorn["Gunicorn 3w 2t\nSecurity MW + file cache"]
         DRF["Django 6 + DRF"]
         DB[(SQLite\nsqlite_data volume)]

@@ -197,6 +197,9 @@ cd "$REPO_DIR"
 GIT_COMMIT=$(git rev-parse HEAD)
 export GIT_COMMIT
 docker compose up -d --build backend
+# Apply a bumped image pin (docker-compose.yml) for Umami. A no-op when the pin
+# is unchanged; the frontend's pin is applied by its own `up -d` below.
+docker compose up -d umami-db umami
 if [ "$NGINX_CONF_CHANGED" = true ]; then
   # Validate the new nginx.conf before applying it, so a syntax error aborts the
   # deploy WITHOUT killing the running frontend. Test INSIDE the running

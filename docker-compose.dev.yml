@@ -59,7 +59,7 @@ services:
 
   # PostgreSQL — only started with: docker compose --profile postgres up
   db:
-    image: postgres:15-alpine
+    image: postgres:15.19-alpine
     container_name: emelmujiro-db-dev
     restart: unless-stopped
     security_opt:

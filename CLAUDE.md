@@ -78,6 +78,11 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 **Deployment**: Never `rm -rf frontend/build` (breaks nginx volume mount) — use `rm -rf frontend/build/*`. Docker ports bind to `127.0.0.1` only. `SECRET_KEY` loaded via `env_file` — do NOT set in docker-compose `environment` section.
 
+**Compose-only images (`nginx`, `umami`, `postgres`) are pinned to exact versions in `docker-compose.yml` — never revert to a floating tag.** Nothing re-pulls a floating tag (`auto-deploy.sh` only builds the backend), which left all three 6–9 months stale until 2026-10-06.
+
+- Dependabot's `docker-compose` ecosystem bumps the pins, and `auto-deploy.sh` applies them: `up -d umami-db umami` and the frontend's `up -d` pull a changed tag. Patch bumps auto-merge (Gotcha #12), so an Umami patch runs its DB migrations without review.
+- **Postgres majors are dependabot-ignored**: a new major cannot read the `umami_db` volume. Upgrade by `pg_dump` → new volume → restore, as its own change.
+
 **SSG prerender + nginx routing**: `scripts/auto-deploy.sh` runs `npm run build`, which invokes `frontend/scripts/prerender.js` (referenced as `scripts/prerender.js` in the build script, which runs from `frontend/`) to generate `build/<path>/index.html` for **10 routes** (5 static × ko/en). Four non-obvious couplings:
 
 - **`location /` in `frontend/nginx.conf` is `try_files $uri $uri/index.html =404`.** The explicit `$uri/index.html`, NOT `$uri/`: directory lookup triggers nginx's auto-301 trailing-slash append that downgrades `https://` to `http://` via `absolute_redirect`. The `=404` (not `/index.html` fallback) is what prevents soft-200s for unknown URLs.
