@@ -85,15 +85,6 @@ jobs:
           COMMITTED: ${{ steps.target.outputs.committed }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          # A commit merged minutes ago may still be mid-pipeline. Only alarm
-          # once it has had two hours, which is well past the ~15 min the
-          # slowest job takes.
-          AGE=$(( $(date -u +%s) - $(date -u -d "$COMMITTED" +%s) ))
-          if [ "$AGE" -lt 7200 ]; then
-            echo "$SHA is $((AGE / 60))m old — still inside the grace window"
-            exit 0
-          fi
-
           # head_sha must be the full 40-char SHA. An abbreviated one matches
           # nothing and the query returns an empty list, which reads here as
           # "never tested" and alarms on a perfectly healthy main. git log's
@@ -106,21 +97,35 @@ jobs:
           EXISTING=$(gh issue list --repo "$REPO" --state open \
             --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
 
-          if [ "${SUCCESSES:-0}" -eq 0 ]; then
-            echo "::error::main is at $SHA ($((AGE / 3600))h old) with no successful Main CI/CD run."
-            # Thread repeats onto the open issue rather than piling up duplicates.
+          # Recovery path first, before the grace window: a green run for
+          # HEAD closes any issue a previous night filed, however young HEAD
+          # is. Until 2026-10-06 the grace exit came before this check, so a
+          # main that was fixed and then touched again within two hours kept
+          # its "untested" issue open (#548) until the next cron.
+          if [ "${SUCCESSES:-0}" -gt 0 ]; then
+            echo "$SHA has $SUCCESSES successful Main CI/CD run(s)"
             if [ -n "$EXISTING" ]; then
-              gh issue comment "$EXISTING" --repo "$REPO" \
-                --body "Still untested: main is at \`$SHA\`, $((AGE / 3600))h old, 0 successful Main CI/CD runs — $RUN_URL"
-            else
-              gh issue create --repo "$REPO" --title "$TITLE" --body "$(printf 'main is at `%s` (%sh old) and no `Main CI/CD Pipeline` run for that commit has succeeded, so it has not been tested. It has most likely not been deployed either, though `deploy-mac-mini` is `continue-on-error`, so a green run is not by itself proof of a deploy — `/api/health/` reports what production actually runs.\n\nMost likely cause: the commit reached main through a token whose events start no workflow run, and both dispatch paths (the re-arm step in `pr-checks.yml`, `deploy-drift-check.yml`) failed to cover it.\n\nRecover now:\n\n```\ngh workflow run main-ci-cd.yml --ref main\n```\n\nThis issue auto-closes on the next run that finds a green pipeline for main HEAD.\n\nRun: %s' "$SHA" "$((AGE / 3600))" "$RUN_URL")"
+              gh issue close "$EXISTING" --repo "$REPO" \
+                --comment "main HEAD \`$SHA\` now has $SUCCESSES successful Main CI/CD run(s) — $RUN_URL"
             fi
-            exit 1
+            exit 0
           fi
 
-          echo "$SHA has $SUCCESSES successful Main CI/CD run(s)"
-          # Recovery path: close any issue a previous night filed.
-          if [ -n "$EXISTING" ]; then
-            gh issue close "$EXISTING" --repo "$REPO" \
-              --comment "main HEAD \`$SHA\` now has $SUCCESSES successful Main CI/CD run(s) — $RUN_URL"
+          # A commit merged minutes ago may still be mid-pipeline. Only alarm
+          # once it has had two hours, which is well past the ~15 min the
+          # slowest job takes.
+          AGE=$(( $(date -u +%s) - $(date -u -d "$COMMITTED" +%s) ))
+          if [ "$AGE" -lt 7200 ]; then
+            echo "$SHA is $((AGE / 60))m old with no successful run yet — still inside the grace window"
+            exit 0
           fi
+
+          echo "::error::main is at $SHA ($((AGE / 3600))h old) with no successful Main CI/CD run."
+          # Thread repeats onto the open issue rather than piling up duplicates.
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --repo "$REPO" \
+              --body "Still untested: main is at \`$SHA\`, $((AGE / 3600))h old, 0 successful Main CI/CD runs — $RUN_URL"
+          else
+            gh issue create --repo "$REPO" --title "$TITLE" --body "$(printf 'main is at `%s` (%sh old) and no `Main CI/CD Pipeline` run for that commit has succeeded, so it has not been tested. It has most likely not been deployed either, though `deploy-mac-mini` is `continue-on-error`, so a green run is not by itself proof of a deploy — `/api/health/` reports what production actually runs.\n\nMost likely cause: the commit reached main through a token whose events start no workflow run, and both dispatch paths (the re-arm step in `pr-checks.yml`, `deploy-drift-check.yml`) failed to cover it.\n\nRecover now:\n\n```\ngh workflow run main-ci-cd.yml --ref main\n```\n\nThis issue auto-closes on the next run that finds a green pipeline for main HEAD.\n\nRun: %s' "$SHA" "$((AGE / 3600))" "$RUN_URL")"
+          fi
+          exit 1
