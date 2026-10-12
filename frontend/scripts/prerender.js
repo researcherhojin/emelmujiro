@@ -157,7 +157,8 @@ async function prerenderRoute(page, baseUrl, route) {
     throw new Error(`API request(s) failed during prerender: ${apiFailures.join('; ')}`);
   }
 
-  // Mark root element as prerendered so main.tsx uses hydrateRoot
+  // Mark the root as prerendered. Nothing reads this marker: main.tsx always
+  // uses createRoot(), which replaces the prerendered nodes (see its comment).
   await page.evaluate(() => {
     const root = document.getElementById('root');
     if (root) root.setAttribute('data-prerendered', 'true');

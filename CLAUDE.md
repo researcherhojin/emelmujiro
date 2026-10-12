@@ -1,12 +1,8 @@
 # CLAUDE.md
 
-<!-- cspell:ignore andrej -->
-
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 This repo's owner runs a quant trading platform alongside this codebase, so the operating principle is **엄밀하게** — counts and claims **about the codebase** are exact and verifiable; no `+` / `≥` / round-figure handwaves in this doc, in README, or in commit messages. Marketing copy rendered in the UI itself (e.g. `5,000+` hours in the hero stats) is exempt — that's user-facing, not doc-facing.
-
-Cross-project behavioral guidelines are not restated here; they load on demand from the user-scope `andrej-karpathy-skills` plugin, and nothing in this repo depends on them.
 
 ## Quick Orientation
 
@@ -18,6 +14,7 @@ By task type:
 
 - **UI / page work** → `frontend.md` rule (Architecture, UI Conventions) auto-loads on `frontend/**` reads
 - **Build / deploy / CI** → `Constraints` (SSG prerender, branch protection, CSP, README drift gates) + `Gotchas` #17 (backend deploy: verify by commit, never a bare `200`)
+- **Search Console report** → `Constraints` (SEO, SSG prerender couplings). Get the URL from the reason's drill-down page first, then check raw bytes (`curl`) and the rendered DOM separately: the 2026-09-24 canonical bug and the 2026-10-12 Soft 404 both lived only in the raw bytes
 - **Dependency bumps** → `Gotchas` #6, #8, #13, #14, #15, #16
 - **Backend changes** → `backend.md` rule (auto-loads on `backend/**` reads) + `Constraints` (ENV files, Local dev vs Docker)
 - **All work** → `Code Conventions`, `Development Flow` invariants, `Gotchas` index
@@ -155,7 +152,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 - Both scheduled alarms file a GitHub issue, because a red scheduled run notifies nobody. **Both fire hours after their cron** — allow ~9 h for the drift check and ~7 h for the watchdog before treating a slot as missed, and do not re-cut the cron to compensate. `workflow_dispatch` always creates runs, so none of this needs a PAT.
 - A green pipeline is not deploy evidence (Gotcha #17). Lag measurements and incident history: `.private/operations.md` and the journal Baselines.
 
-**Spell check: `npm run spell` is `cspell --no-progress "**" ".claude/rules/**" ".github/**"`.** cspell is a root devDependency declared as `^10.3.6` (the lockfile fixes the version; dependabot moves it through a PR such as #540, which is where a changed verdict surfaces). It runs in `Repo Checks (informational)` after the bash-only checks that precede `Setup Node.js` (their failure ends the job before `npm ci`; `Check cron log redirect paths` runs after it), with `save-cache: false` because parallel jobs save that cache. Three rules:
+**Spell check: `npm run spell` is `cspell --no-progress "**" ".claude/rules/**" ".github/**"`.** It runs in `Repo Checks (informational)` with `save-cache: false`, because parallel jobs save that cache. Three rules:
 
 1. `ignorePaths` must keep excluding build output — `frontend/coverage/**`, `frontend/playwright-report/**`, `frontend/test-results/**`, `frontend/build/**`, `**/*.egg-info/**` — which carried 307 of the 314 findings in the first full scan. `CHANGELOG.md` is in `ignorePaths` too, so its prose is never spell-checked, while CLAUDE.md and the rule files are.
 2. Deliberate non-words go in a file-scoped `# cspell:ignore`, **not** `cspell.json`'s `words`: `scripts/check-commit-msg.sh` intentionally contains `Mergeevil` and `depsnot`, and dictionary entries would let a real typo of that shape pass everywhere.

@@ -142,8 +142,8 @@ graph LR
 - **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments
 - **Auth** — httpOnly cookie JWT with shared-promise refresh queue (prevents concurrent 401 cascade)
 - **Testimonials** — Enterprise + 고용노동부 K-디지털 reviews, dual-row auto-scroll carousel
-- **Monitoring** — Umami analytics (self-hosted, zero external scripts) + Docker health check cron. Sentry is wired behind a lazy-loaded shim but inactive: `VITE_SENTRY_DSN` is unset in production, so `initSentry()` returns early and no DSN ships in the bundle
-- **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data, SSG prerendering
+- **Monitoring** — Umami analytics (self-hosted, zero external scripts) + Docker health check (`make health`; a 5-minute cron appends only failures, timestamped, to `backend/logs/health-check.log`). Sentry is wired behind a lazy-loaded shim but inactive: `VITE_SENTRY_DSN` is unset in production, so `initSentry()` returns early and no DSN ships in the bundle
+- **SEO** — Search Console, sitemap, hreflang, JSON-LD structured data, SSG prerendering of 10 routes (the Insights list is baked in from the live API at build time; a failed API call fails the build)
 - **Performance** — Vendor chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
 - **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30
