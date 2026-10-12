@@ -20,7 +20,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "04:00"
+      time: "09:00"
+      timezone: "Asia/Seoul"
     # 10, not 5: this entry now carries the whole npm surface.
     open-pull-requests-limit: 10
     labels:
@@ -75,7 +76,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "04:00"
+      time: "09:00"
+      timezone: "Asia/Seoul"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
@@ -90,7 +92,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "04:00"
+      time: "09:00"
+      timezone: "Asia/Seoul"
     labels:
       - "dependencies"
       - "docker"
@@ -103,7 +106,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "04:00"
+      time: "09:00"
+      timezone: "Asia/Seoul"
     labels:
       - "dependencies"
       - "docker"
@@ -121,7 +125,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "04:00"
+      time: "09:00"
+      timezone: "Asia/Seoul"
     ignore:
       - dependency-name: "postgres"
         update-types: ["version-update:semver-major"]
@@ -141,7 +146,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "04:00"
+      time: "09:00"
+      timezone: "Asia/Seoul"
     open-pull-requests-limit: 5
     groups:
       dev-dependencies:
