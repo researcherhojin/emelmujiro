@@ -10,6 +10,7 @@ const MarkdownRenderer = lazy(() => import('./MarkdownRenderer'));
 import { PageLoading } from '../common/UnifiedLoading';
 import ErrorBoundary from '../common/ErrorBoundary';
 import SEOHelmet from '../common/SEOHelmet';
+import NotFound from '../common/NotFound';
 import StructuredData from '../common/StructuredData';
 import BlogInteractions from './BlogInteractions';
 import BlogComments from './BlogComments';
@@ -28,7 +29,14 @@ const BlogDetailPage: React.FC = memo(() => {
   const navigate = useNavigate();
   const { localizedNavigate } = useLocalizedPath();
   const { user } = useAuth();
-  const { currentPost: post, loading, error, fetchPostById, clearCurrentPost } = useBlog();
+  const {
+    currentPost: post,
+    loading,
+    error,
+    notFound,
+    fetchPostById,
+    clearCurrentPost,
+  } = useBlog();
   const isAdmin = user?.role === 'admin';
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { toast, showToast } = useToast();
@@ -77,9 +85,12 @@ const BlogDetailPage: React.FC = memo(() => {
     return <PageLoading message={t('blogDetail.loading')} />;
   }
 
-  if (error && error.includes('404')) {
-    localizedNavigate('/404', { replace: true });
-    return null;
+  // Render NotFound in place: it carries robots noindex, so a deleted or
+  // mistyped slug is not a soft 404. The old `error.includes('404')` check
+  // never matched the localized message, so missing posts fell through to
+  // the generic error branch below (200, no title, no robots).
+  if (notFound) {
+    return <NotFound />;
   }
 
   if (error) {

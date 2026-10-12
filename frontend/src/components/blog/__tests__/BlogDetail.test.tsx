@@ -77,6 +77,10 @@ vi.mock('../../common/SEOHelmet', () => ({
     return null;
   },
 }));
+vi.mock('../../common/NotFound', () => ({
+  default: () => <div data-testid="not-found">NotFound</div>,
+}));
+
 vi.mock('../../common/StructuredData', () => ({
   default: function StructuredData() {
     return null;
@@ -203,12 +207,12 @@ describe('BlogDetail Component', () => {
     expect(screen.getByText('blogDetail.loading')).toBeInTheDocument();
   });
 
-  test('renders error state for 404', () => {
-    mockError = '404';
+  test('renders NotFound in place when the post is missing', () => {
     (useBlog as ReturnType<typeof vi.fn>).mockReturnValue({
-      currentPost: mockPost,
-      loading: mockLoading,
-      error: mockError,
+      currentPost: null,
+      loading: false,
+      error: 'blogErrors.fetchPostFailed',
+      notFound: true,
       fetchPostById: mockFetchPostById,
       clearCurrentPost: mockClearCurrentPost,
       posts: [],
@@ -218,8 +222,9 @@ describe('BlogDetail Component', () => {
     });
 
     renderComponent();
-    // 404 errors navigate to /404 page via localizedNavigate, so component returns null
-    expect(mockLocalizedNavigate).toHaveBeenCalledWith('/404', { replace: true });
+    // NotFound carries robots noindex; a blank 200 here is a soft 404.
+    expect(screen.getByTestId('not-found')).toBeInTheDocument();
+    expect(mockLocalizedNavigate).not.toHaveBeenCalled();
   });
 
   test('renders error state for other errors', () => {
