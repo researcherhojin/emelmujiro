@@ -140,7 +140,13 @@ else
 fi
 
 # ── Summary ──
-echo ""
+# In --quiet (cron) mode a healthy run prints nothing at all — an unguarded
+# blank line here appended one empty line to the log every 5 minutes — and a
+# run with findings gets a timestamp, since the check lines carry none.
+$QUIET || echo ""
+if $QUIET && [ $((FAILURES + WARNINGS)) -gt 0 ]; then
+  date '+── %Y-%m-%d %H:%M:%S %Z ──'
+fi
 if [ "$FAILURES" -gt 0 ]; then
   fail "Health check: $FAILURES failure(s), $WARNINGS warning(s)"
   exit 1
