@@ -22,19 +22,19 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 **Frontend**<br/>
 ![React](https://img.shields.io/badge/React-19.3.0-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-8.3.2-646CFF?logo=vite&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8.3.4-646CFF?logo=vite&logoColor=white)
 ![React Router](https://img.shields.io/badge/React_Router-8.4.0-CA4245?logo=reactrouter&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.19-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tailwind Typography](https://img.shields.io/badge/Typography-0.5.20-06B6D4?logo=tailwindcss&logoColor=white)
 ![i18next](https://img.shields.io/badge/i18next-26.4.2-26A69A?logo=i18next&logoColor=white)
-![react-i18next](https://img.shields.io/badge/React_i18next-17.0.15-26A69A?logo=i18next&logoColor=white)
+![react-i18next](https://img.shields.io/badge/React_i18next-17.0.16-26A69A?logo=i18next&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-1.20.0-5A29E4?logo=axios&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.31.4-1a1a2e)
 ![DOMPurify](https://img.shields.io/badge/DOMPurify-3.4.16-4B32C3)
 
 **Backend**<br/>
 ![Django](https://img.shields.io/badge/Django-6.1.1-092E20?logo=django&logoColor=white)
-![DRF](https://img.shields.io/badge/DRF-3.18.1-A30000)
+![DRF](https://img.shields.io/badge/DRF-3.18.3-A30000)
 ![SimpleJWT](https://img.shields.io/badge/SimpleJWT-5.5.1-000000?logo=jsonwebtokens&logoColor=white)
 ![Gunicorn](https://img.shields.io/badge/Gunicorn-26.2.0-499848?logo=gunicorn&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
