@@ -75,6 +75,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 **Deployment**: Never `rm -rf frontend/build` (breaks nginx volume mount) — use `rm -rf frontend/build/*`. Docker ports bind to `127.0.0.1` only. `SECRET_KEY` loaded via `env_file` — do NOT set in docker-compose `environment` section.
 
+- **Cloudflare owns the http→https upgrade; nginx must never redirect by scheme.** "Always Use HTTPS" (SSL/TLS → Edge Certificates) is on since 2026-10-12, and behind the tunnel nginx sees `http` on every request, https ones included. An origin-side `return 301 https://…` therefore loops forever, and every `return 301` needs `absolute_redirect off` with a relative target, or nginx writes `http://` into `Location`. The `/blog` and `/share` redirects did exactly that until `aaa521be`. Verify a redirect with `curl -sI` against production, because `e2e-server.mjs` always emits relative locations.
 - **An edit to `auto-deploy.sh` takes effect one deploy late.** The script checks out the target commit while running, and bash keeps executing the copy it opened, so the deploy of `9587ac3e` ran without that commit's new `up -d umami-db umami` line. Verify a deploy-script change on the deploy after it.
 
 **Compose-only images (`nginx`, `umami`, `postgres`) are pinned to exact versions in `docker-compose.yml` — never revert to a floating tag.** Nothing re-pulls a floating tag (`auto-deploy.sh` only builds the backend), which left all three 6–9 months stale until 2026-10-06.
