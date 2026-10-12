@@ -112,6 +112,39 @@ function buildRoutePath(routeUrl, lang) {
  */
 async function prerenderRoute(page, baseUrl, route) {
   const url = `${baseUrl}${route}`;
+
+  // Cross-origin API calls (VITE_API_URL=https://api.emelmujiro.com/api/) are
+  // fetched Node-side and relayed with CORS headers for this throwaway origin.
+  // Straight from the page they fail CORS — production allows only
+  // https://emelmujiro.com — and until 2026-10-12 /insights and /en/insights
+  // shipped "Failed to load posts" + "Coming soon" as their prerendered body,
+  // which Search Console reported as a Soft 404. Same-origin /api (build:e2e)
+  // is left alone. Any API failure fails the route: an error state must never
+  // be baked into a document, and a failed prerender keeps the previous build
+  // live (auto-deploy.sh refuses to publish an incomplete staging dir).
+  const apiFailures = [];
+  await page.route(
+    (u) => u.origin !== baseUrl && u.pathname.startsWith('/api/'),
+    async (apiRoute) => {
+      const apiUrl = apiRoute.request().url();
+      try {
+        const response = await apiRoute.fetch();
+        if (response.status() >= 400) apiFailures.push(`${response.status()} ${apiUrl}`);
+        await apiRoute.fulfill({
+          response,
+          headers: {
+            ...response.headers(),
+            'access-control-allow-origin': baseUrl,
+            'access-control-allow-credentials': 'true',
+          },
+        });
+      } catch (err) {
+        apiFailures.push(`${err.message} ${apiUrl}`);
+        await apiRoute.abort();
+      }
+    }
+  );
+
   await page.goto(url, { waitUntil: 'networkidle' });
 
   // Wait for React to finish rendering (AppLayout sets window.__appLoaded = true)
@@ -119,6 +152,10 @@ async function prerenderRoute(page, baseUrl, route) {
 
   // Small delay for any pending state updates / animations
   await page.waitForTimeout(500);
+
+  if (apiFailures.length > 0) {
+    throw new Error(`API request(s) failed during prerender: ${apiFailures.join('; ')}`);
+  }
 
   // Mark root element as prerendered so main.tsx uses hydrateRoot
   await page.evaluate(() => {
