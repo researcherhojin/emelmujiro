@@ -43,7 +43,7 @@ Principles, not specifics. UI strings live in `frontend/src/i18n/locales/`; CSS 
 
 ## Testing
 
-Global mocks in `setupTests.ts` (do NOT re-mock): `react-i18next` (`t: key => key`, `language: 'ko'`, `Trans` passthrough), `lucide-react`, `react-helmet-async`, browser APIs. A test that needs a custom `t()` re-mocks `react-i18next` locally (16 files do, measured 2026-10-06); copy the shape from `setupTests.ts`, not from memory.
+Global mocks in `setupTests.ts` (do NOT re-mock): `react-i18next` (`t: key => key`, `language: 'ko'`, `Trans` passthrough), `lucide-react`, `react-helmet-async`, browser APIs. The `lucide-react` mock is a Proxy that returns a component for any name, so Vitest cannot catch an icon removed upstream; on a `lucide-react` bump the gate is `tsc` in `Build for Analysis`. A test that needs a custom `t()` re-mocks `react-i18next` locally (16 files do, measured 2026-10-06); copy the shape from `setupTests.ts`, not from memory.
 
 Non-React: `vi.mock('../../i18n', () => ({ default: { t: (key: string) => key, language: 'ko' } }));`
 
