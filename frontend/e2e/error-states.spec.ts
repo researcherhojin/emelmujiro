@@ -1,15 +1,25 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Error States', () => {
-  test('invalid blog post shows error or 404', async ({ page }) => {
+  test('missing blog post renders a noindex NotFound', async ({ page }) => {
+    // Pin the API to a 404 so the test exercises the not-found branch even
+    // when no backend sits behind the /api proxy (which would be a 502).
+    // Until 2026-10-12 this rendered only an error string with no title or
+    // robots meta, which Search Console reported as a soft 404.
+    await page.route(
+      (url) => url.pathname.startsWith('/api/blog-posts/nonexistent-post-id-99999'),
+      (route) =>
+        route.fulfill({
+          status: 404,
+          contentType: 'application/json',
+          body: '{"detail":"Not found."}',
+        })
+    );
     await page.goto('/insights/nonexistent-post-id-99999');
 
-    // Should show error message or redirect to 404
-    await page.waitForTimeout(2000);
-    const body = page.locator('body');
-    const text = await body.textContent();
-    // Either shows an error, 404 page, or goes back
-    expect(text).toBeTruthy();
+    await expect(page.locator('h1')).toHaveText('404');
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
+    await expect(page).toHaveURL(/\/insights\/nonexistent-post-id-99999$/);
   });
 
   test('non-existent route returns 404 with the SPA shell', async ({ page }) => {

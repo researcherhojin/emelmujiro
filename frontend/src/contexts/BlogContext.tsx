@@ -10,6 +10,9 @@ interface BlogContextType {
   currentPost: BlogPost | null;
   loading: boolean;
   error: string | null;
+  /** True when the last fetchPostById got a 404 — lets BlogDetail render a
+   *  noindex NotFound instead of a generic error (a blank 200 is a soft 404). */
+  notFound: boolean;
   totalPages: number;
   currentPage: number;
   fetchPosts: (page?: number) => Promise<void>;
@@ -28,6 +31,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
   const [currentPost, setCurrentPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -60,6 +64,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
   const fetchPostById = useCallback(async (id: string | number) => {
     setLoading(true);
     setError(null);
+    setNotFound(false);
     try {
       // Try API call first
       const response = await api.getBlogPost(id);
@@ -72,6 +77,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
     } catch (err) {
       logger.warn('API call failed:', err instanceof Error ? err.message : 'Unknown error');
       setError(i18n.t('blogErrors.fetchPostFailed'));
+      setNotFound((err as { response?: { status?: number } })?.response?.status === 404);
       setCurrentPost(null);
     } finally {
       setLoading(false);
@@ -88,6 +94,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
       currentPost,
       loading,
       error,
+      notFound,
       totalPages,
       currentPage,
       fetchPosts,
@@ -99,6 +106,7 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
       currentPost,
       loading,
       error,
+      notFound,
       totalPages,
       currentPage,
       fetchPosts,

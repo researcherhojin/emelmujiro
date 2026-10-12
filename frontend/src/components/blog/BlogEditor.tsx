@@ -9,6 +9,7 @@ import { api } from '../../services/api';
 import logger from '../../utils/logger';
 import TipTapEditor from './TipTapEditor';
 import Toast from '../common/Toast';
+import SEOHelmet from '../common/SEOHelmet';
 import { sanitizeBlogHtml } from '../../utils/sanitizeBlogHtml';
 
 interface PostMeta {
@@ -163,8 +164,11 @@ const BlogEditor: React.FC = () => {
   // Auth check: admin only
   const isAdmin = user?.role === 'admin';
   if (!user || !isAdmin) {
+    // Crawlers always land here (no session); without noindex this
+    // near-empty 200 is reported as a soft 404.
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+        <SEOHelmet title={t('blogEditor.adminRequired')} robots="noindex, nofollow" />
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
           <h2 className="text-2xl font-bold mb-4 dark:text-white">
             {t('blogEditor.adminRequired')}

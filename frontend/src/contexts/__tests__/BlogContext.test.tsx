@@ -471,6 +471,37 @@ describe('BlogContext', () => {
     expect(screen.getByTestId('post-title')).toHaveTextContent('none');
   });
 
+  test.each([
+    [404, 'true'],
+    [500, 'false'],
+  ])('fetchPostById sets notFound only for a 404 (status %i)', async (status, expected) => {
+    (mockedApi.getBlogPost as any).mockRejectedValue({ response: { status } });
+
+    const PostTestComponent: React.FC = () => {
+      const { error, notFound, fetchPostById } = useBlog();
+      return (
+        <div>
+          <div data-testid="error">{error || 'no-error'}</div>
+          <div data-testid="not-found">{String(notFound)}</div>
+          <button onClick={() => fetchPostById('deleted-slug')}>Fetch Post</button>
+        </div>
+      );
+    };
+
+    render(
+      <BlogProvider>
+        <PostTestComponent />
+      </BlogProvider>
+    );
+
+    fireEvent.click(screen.getByText('Fetch Post'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('error')).toHaveTextContent('blogErrors.fetchPostFailed');
+    });
+    expect(screen.getByTestId('not-found')).toHaveTextContent(expected);
+  });
+
   test('clearCurrentPost resets the current post', async () => {
     const mockPost: BlogPost = {
       id: 5,
