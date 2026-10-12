@@ -11,6 +11,15 @@
 
 set -euo pipefail
 
+# cron runs with PATH=/usr/bin:/bin, where docker does not exist, so every
+# cron run from 2026-04-13 to 2026-10-12 logged all four services as
+# "not found" and then exited 127. Same prefix as auto-deploy.sh.
+export PATH="/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin:/opt/homebrew/bin:$PATH"
+if ! command -v docker >/dev/null 2>&1; then
+  printf '✗ docker: not on PATH (%s)\n' "$PATH"
+  exit 1
+fi
+
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
@@ -74,9 +83,12 @@ else
   ok "Disk ${DISK_USED}% used"
 fi
 
-# Docker volumes
-VOLUMES_SIZE=$(docker system df --format '{{.Size}}' 2>/dev/null | tail -1)
-ok "Docker volumes: ${VOLUMES_SIZE:-unknown}"
+# Docker volumes and build cache. Select rows by type: the last row is the
+# build cache, which this line used to report as "volumes".
+DF=$(docker system df --format '{{.Type}}\t{{.Size}}' 2>/dev/null || true)
+VOLUMES_SIZE=$(printf '%s\n' "$DF" | awk -F'\t' '$1 == "Local Volumes" {print $2}')
+CACHE_SIZE=$(printf '%s\n' "$DF" | awk -F'\t' '$1 == "Build Cache" {print $2}')
+ok "Docker volumes: ${VOLUMES_SIZE:-unknown}, build cache: ${CACHE_SIZE:-unknown}"
 
 # ── 4. Endpoint checks ──
 $QUIET || echo ""
