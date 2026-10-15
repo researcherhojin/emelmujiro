@@ -187,6 +187,11 @@ const BlogDetailPage: React.FC = memo(() => {
                 .join(', ')}
               image={post.image_url}
               type="article"
+              // Posts are Korean-only, so /en/insights/:slug duplicates the
+              // Korean page: canonical to it, no hreflang. Flip together with
+              // the en sitemap entry in generate-sitemap.js on translation.
+              translated={false}
+              lang="ko"
               article={{
                 author: post.author,
                 publishedTime: post.date,

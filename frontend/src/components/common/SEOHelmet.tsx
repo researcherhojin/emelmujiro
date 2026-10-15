@@ -88,9 +88,14 @@ function removeAllHreflangAlternates() {
   document.querySelectorAll(`link[${HREFLANG_MARKER}]`).forEach((el) => el.remove());
 }
 
-function useHreflangAlternates(koUrl: string, enUrl: string) {
+/**
+ * `null` URLs mean the page has a single language version: no alternates are
+ * injected, and any left by a previous route are cleared.
+ */
+function useHreflangAlternates(koUrl: string | null, enUrl: string | null) {
   useEffect(() => {
     removeAllHreflangAlternates();
+    if (!koUrl || !enUrl) return;
 
     const add = (hreflang: string, href: string) => {
       const link = document.createElement('link');
@@ -125,6 +130,14 @@ interface SEOHelmetProps {
   type?: string;
   lang?: string;
   robots?: string;
+  /**
+   * `false` when the content exists in Korean only, so `/en/...` renders the
+   * same Korean body: canonical points at the Korean URL on both paths and no
+   * hreflang alternates are emitted. Every blog post sets it today; flip it
+   * per post together with its en sitemap entry (generate-sitemap.js) once a
+   * real translation exists.
+   */
+  translated?: boolean;
   publishedTime?: string;
   modifiedTime?: string;
   article?: {
@@ -147,6 +160,7 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     type = 'website',
     lang,
     robots,
+    translated = true,
     publishedTime,
     modifiedTime,
     article,
@@ -161,16 +175,18 @@ const SEOHelmet: React.FC<SEOHelmetProps> = memo(
     const resolvedAuthor = author || siteName;
     const siteTitle = resolvedTitle === siteName ? resolvedTitle : `${resolvedTitle} | ${siteName}`;
 
-    // Auto-compute canonical URL from current path when not explicitly provided
-    const cleanPath = location.pathname.replace(/\/$/, '') || '/';
-    const canonicalUrl = url || `${SITE_URL}${cleanPath === '/' ? '' : cleanPath}`;
-
     // Build hreflang URLs: /profile (ko), /en/profile (en)
     const basePath = stripLangPrefix(location.pathname);
     const koUrl = `${SITE_URL}${basePath === '/' ? '' : basePath}`;
     const enUrl = `${SITE_URL}/en${basePath === '/' ? '' : basePath}`;
 
-    useHreflangAlternates(koUrl, enUrl);
+    // Auto-compute canonical URL from current path when not explicitly provided.
+    // Untranslated content has one version, the Korean one.
+    const cleanPath = location.pathname.replace(/\/$/, '') || '/';
+    const canonicalUrl =
+      url || (translated ? `${SITE_URL}${cleanPath === '/' ? '' : cleanPath}` : koUrl);
+
+    useHreflangAlternates(translated ? koUrl : null, translated ? enUrl : null);
 
     // Runs after commit, so React's hoisted <head> tags already exist and the
     // superseded prerendered ones can be identified. Re-runs per route change

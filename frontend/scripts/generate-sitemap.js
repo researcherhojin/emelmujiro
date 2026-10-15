@@ -51,20 +51,39 @@ function generateHreflangLinks(routeUrl) {
   return links.join('\n');
 }
 
+// Must equal max_page_size in backend/api/pagination.py: DRF silently caps a
+// larger page_size, which is how the old `?page_size=500` would have dropped
+// every post past the 100th without a warning.
+const PAGE_SIZE = 100;
+
 /**
  * Fetch published blog posts from the backend so dynamic /insights/:slug
- * URLs can be included in the sitemap. Fails soft: if the backend is
- * unreachable (build on a dev machine, API down, etc.), logs a warning
- * and returns [] so the sitemap generates with static routes only.
+ * URLs can be included in the sitemap. Walks every page by number against
+ * API_URL (rather than trusting `next`) and requires the total to equal the
+ * API's `count`. Fails soft: if the backend is unreachable (build on a dev
+ * machine, API down, etc.) or any page fails, logs a warning and returns []
+ * so the sitemap generates with static routes only — never a truncated list.
  */
 async function fetchBlogPosts() {
   try {
-    const res = await fetch(`${API_URL}/blog-posts/?page_size=500`, {
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    const posts = (data.results || []).filter((p) => p.is_published);
+    const all = [];
+    let count = Infinity;
+    for (let page = 1; all.length < count; page++) {
+      const res = await fetch(`${API_URL}/blog-posts/?page=${page}&page_size=${PAGE_SIZE}`, {
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status} on page ${page}`);
+      const data = await res.json();
+      count = data.count;
+      const results = data.results || [];
+      if (!Number.isInteger(count)) throw new Error('response has no integer count');
+      if (results.length === 0 && all.length < count) {
+        throw new Error(`page ${page} empty with ${all.length}/${count} fetched`);
+      }
+      all.push(...results);
+    }
+    if (all.length !== count) throw new Error(`fetched ${all.length} posts, API count ${count}`);
+    const posts = all.filter((p) => p.is_published);
     console.log(`   Fetched ${posts.length} published blog post(s) from ${API_URL}`);
     return posts;
   } catch (err) {
@@ -94,19 +113,22 @@ ${generateHreflangLinks(route.url)}
     }
   }
 
-  // Dynamic blog posts
+  // Dynamic blog posts: Korean URL only, no hreflang. Posts have no English
+  // translation, so /en/insights/:slug renders the same Korean body and
+  // canonicalizes to the Korean URL (SEOHelmet `translated={false}` in
+  // BlogDetail.tsx). Re-enable the en entry and its hreflang links together
+  // with that prop once a post has a real translation.
+  // lastmod is updated_at, not the author-chosen `date`: views and likes are
+  // written with .update(F(...)), which leaves auto_now untouched, so it moves
+  // only on an edit or a publish toggle.
   const posts = await fetchBlogPosts();
   for (const post of posts) {
-    const routeUrl = `/insights/${post.slug}`;
-    for (const lang of LANGUAGES) {
-      urlEntries.push(`  <url>
-    <loc>${buildLangUrl(routeUrl, lang)}</loc>
-    <lastmod>${post.date}</lastmod>
+    urlEntries.push(`  <url>
+    <loc>${buildLangUrl(`/insights/${post.slug}`, DEFAULT_LANG)}</loc>
+    <lastmod>${post.updated_at || post.date}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-${generateHreflangLinks(routeUrl)}
   </url>`);
-    }
   }
 
   return {
@@ -172,11 +194,10 @@ const main = async () => {
     }
 
     const staticUrls = staticRoutes.length * LANGUAGES.length;
-    const dynamicUrls = sitemap.postCount * LANGUAGES.length;
     console.log(
       `\n📊 ${staticRoutes.length} static × ${LANGUAGES.length} langs (${staticUrls}) ` +
-        `+ ${sitemap.postCount} blog × ${LANGUAGES.length} langs (${dynamicUrls}) = ` +
-        `${staticUrls + dynamicUrls} URLs`
+        `+ ${sitemap.postCount} blog × 1 lang (ko only, untranslated) = ` +
+        `${staticUrls + sitemap.postCount} URLs`
     );
   } catch (error) {
     console.error('❌ Error generating sitemap:', error);

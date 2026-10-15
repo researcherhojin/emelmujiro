@@ -65,7 +65,7 @@ make verify-setup                                                             # 
 
 Build, runtime, and infrastructure rules. Violating these breaks deploys, security, or production.
 
-**SEO**: `main.tsx` uses `createRoot()` (never `hydrateRoot`). Do NOT add static meta/title/OG to `index.html` — `SEOHelmet` handles everything. `SEOHelmet` auto-computes canonical from `location.pathname` — do NOT pass a `url` prop (English pages get wrong canonical). Page titles must NOT include `| 에멜무지로` suffix (appended automatically).
+**SEO**: `main.tsx` uses `createRoot()` (never `hydrateRoot`). Do NOT add static meta/title/OG to `index.html` — `SEOHelmet` handles everything. `SEOHelmet` auto-computes canonical from `location.pathname` — do NOT pass a `url` prop (English pages get wrong canonical). Untranslated content passes `translated={false}` instead (every blog post today): canonical goes to the Korean URL on both paths, no hreflang, and `generate-sitemap.js` lists the Korean URL only — flip both together on translation. Page titles must NOT include `| 에멜무지로` suffix (appended automatically).
 
 **KakaoTalk WebView**: `window.__appLoaded` must be set in `AppLayout` (router layout), NOT at provider level. iOS uses `kakaotalk://web/openExternal`; Android uses `intent://...#Intent;scheme=kakaotalk;end`. Android WebView is Chrome-based, so the banner is hidden — only error fallback uses the intent scheme.
 

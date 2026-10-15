@@ -270,6 +270,45 @@ describe('SEOHelmet', () => {
     expect(document.head.querySelectorAll('link[data-seohelmet-hreflang]')).toHaveLength(0);
   });
 
+  it.each(['/insights/some-post', '/en/insights/some-post'])(
+    'untranslated content on %s canonicalizes to the Korean URL with no hreflang',
+    (path) => {
+      render(
+        <MemoryRouter initialEntries={[path]}>
+          <HelmetProvider>
+            <SEOHelmet title="Post" translated={false} />
+          </HelmetProvider>
+        </MemoryRouter>
+      );
+
+      const data = getHelmetData();
+      expect(data.canonical).toBe('https://emelmujiro.com/insights/some-post');
+      expect(data['og:url']).toBe('https://emelmujiro.com/insights/some-post');
+      expect(document.head.querySelectorAll('link[data-seohelmet-hreflang]')).toHaveLength(0);
+    }
+  );
+
+  it('clears alternates left by a translated route when untranslated content mounts', () => {
+    const { unmount } = render(
+      <MemoryRouter initialEntries={['/en/profile']}>
+        <HelmetProvider>
+          <SEOHelmet title="Profile" />
+        </HelmetProvider>
+      </MemoryRouter>
+    );
+    expect(document.head.querySelectorAll('link[data-seohelmet-hreflang]')).toHaveLength(3);
+    unmount();
+
+    render(
+      <MemoryRouter initialEntries={['/en/insights/some-post']}>
+        <HelmetProvider>
+          <SEOHelmet title="Post" translated={false} />
+        </HelmetProvider>
+      </MemoryRouter>
+    );
+    expect(document.head.querySelectorAll('link[data-seohelmet-hreflang]')).toHaveLength(0);
+  });
+
   it('falls back to ko when both lang prop and i18n.language are falsy', () => {
     mockI18nLanguage = '';
     renderWithHelmet(<SEOHelmet />);
