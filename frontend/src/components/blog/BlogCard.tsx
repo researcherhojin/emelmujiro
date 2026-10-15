@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { formatDate } from '../../utils/dateFormat';
 import { preventImageAction } from '../../utils/imageUtils';
+import { localizePost } from '../../utils/localizePost';
 import type { BlogPost } from '../../types';
 
 interface BlogCardProps {
@@ -13,14 +14,14 @@ interface BlogCardProps {
 }
 
 const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index = 0 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { localizedPath } = useLocalizedPath();
 
   if (!post) {
     return null;
   }
 
-  const { slug, title, description, date, image_url, category } = post;
+  const { slug, title, description, date, image_url, category } = localizePost(post, i18n.language);
 
   if (featured) {
     return (

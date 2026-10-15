@@ -86,6 +86,11 @@ class BlogPostSerializer(serializers.ModelSerializer):
             "likes",
             "is_featured",
             "content_html",
+            "title_en",
+            "description_en",
+            "content_html_en",
+            "tags_en",
+            "is_translated",
         ]
 
     def get_category_display(self, obj):
@@ -136,6 +141,10 @@ class BlogPostWriteSerializer(serializers.ModelSerializer):
             "is_published",
             "is_featured",
             "date",
+            "title_en",
+            "description_en",
+            "content_html_en",
+            "tags_en",
         ]
         read_only_fields = ["id"]
         extra_kwargs = {

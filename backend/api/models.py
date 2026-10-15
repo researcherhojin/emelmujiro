@@ -25,6 +25,14 @@ class BlogPost(models.Model):
     description = models.TextField(verbose_name="설명")
     content = models.TextField(verbose_name="내용")
     content_html = models.TextField(blank=True, default="", verbose_name="HTML 내용")
+    # English translation. A post counts as translated only when all three of
+    # title_en, description_en and content_html_en are filled (is_translated):
+    # a partial set would ship an English title over a Korean meta description
+    # while still declaring hreflang="en".
+    title_en = models.CharField(max_length=200, blank=True, default="", verbose_name="제목 (영어)")
+    description_en = models.TextField(blank=True, default="", verbose_name="설명 (영어)")
+    content_html_en = models.TextField(blank=True, default="", verbose_name="HTML 내용 (영어)")
+    tags_en = models.JSONField(default=list, blank=True, verbose_name="태그 (영어)")
     author = models.CharField(max_length=100, default="이호진", verbose_name="작성자")
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, verbose_name="카테고리")
     tags = models.JSONField(default=list, blank=True, verbose_name="태그")
@@ -48,6 +56,10 @@ class BlogPost(models.Model):
             models.Index(fields=["is_published", "-date"]),
             models.Index(fields=["category"]),
         ]
+
+    @property
+    def is_translated(self):
+        return bool(self.title_en.strip() and self.description_en.strip() and self.content_html_en.strip())
 
     def save(self, *args, **kwargs):
         if not self.slug:

@@ -45,8 +45,12 @@ RUN SECRET_KEY=build-only-placeholder SECURE_SSL_REDIRECT=False uv run python ma
 
 EXPOSE 8000
 
-# Run gunicorn
-CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "--threads", "2", "--timeout", "60", "--max-requests", "1000", "--max-requests-jitter", "50", "config.wsgi:application"]
+# Apply migrations, then run gunicorn. Nothing in auto-deploy.sh migrates, and
+# the new image serves the new models the moment it starts, so an unapplied
+# migration would 500 every endpoint that reads the changed table while
+# /api/health/ stays green. `exec` hands PID 1 to uv/gunicorn for signals; a
+# failed migration stops the container instead of serving a mismatched schema.
+CMD ["sh", "-c", "uv run python manage.py migrate --noinput && exec uv run gunicorn --bind 0.0.0.0:8000 --workers 3 --threads 2 --timeout 60 --max-requests 1000 --max-requests-jitter 50 config.wsgi:application"]
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \

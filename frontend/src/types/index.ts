@@ -24,6 +24,12 @@ export interface BlogPost {
   view_count?: number;
   likes?: number;
   is_featured?: boolean;
+  // English translation; see utils/localizePost.ts
+  title_en?: string;
+  description_en?: string;
+  content_html_en?: string;
+  tags_en?: string[];
+  is_translated?: boolean;
 }
 
 export interface BlogComment {

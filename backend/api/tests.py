@@ -63,6 +63,24 @@ class BlogPostAPITestCase(APITestCase):
             view_count=0,
         )
 
+    def test_is_translated_requires_title_description_and_body(self):
+        """is_translated is true only when all three English fields are non-blank"""
+        url = reverse("blog-detail", kwargs={"slug": self.blog_post.slug})
+        self.assertFalse(self.client.get(url).data["is_translated"])
+        cases = [
+            ({"title_en": "T", "description_en": "D", "content_html_en": ""}, False),
+            ({"title_en": "T", "description_en": "  ", "content_html_en": "<p>B</p>"}, False),
+            ({"title_en": "", "description_en": "D", "content_html_en": "<p>B</p>"}, False),
+            ({"title_en": "T", "description_en": "D", "content_html_en": "<p>B</p>"}, True),
+        ]
+        for fields, expected in cases:
+            BlogPost.objects.filter(pk=self.blog_post.pk).update(**fields)
+            data = self.client.get(url).data
+            self.assertEqual(data["is_translated"], expected, fields)
+        self.assertEqual(data["title_en"], "T")
+        self.assertEqual(data["content_html_en"], "<p>B</p>")
+        self.assertEqual(data["tags_en"], [])
+
     def test_list_blog_posts(self):
         """Test listing all blog posts"""
         url = reverse("blog-list")
@@ -196,6 +214,34 @@ class BlogPostWriteAPITestCase(APITestCase):
         self.assertEqual(created.author, "Admin User")
         self.assertEqual(created.content_html, "<p>New content body</p>")
         self.assertTrue(len(created.slug) > 0)
+
+    def test_patch_english_fields_marks_post_translated(self):
+        """Admin PATCH of the three English fields flips is_translated; Korean fields are untouched"""
+        self._auth_as(self.admin_user)
+        data = {
+            "title_en": "Existing Post (EN)",
+            "description_en": "English description",
+            "content_html_en": "<p>English body</p>",
+            "tags_en": ["python"],
+        }
+        response = self.client.patch(self.detail_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        post = BlogPost.objects.get(pk=self.blog_post.pk)
+        self.assertTrue(post.is_translated)
+        self.assertEqual(post.title, "Existing Post")
+        self.assertEqual(post.tags_en, ["python"])
+
+    def test_patch_korean_fields_keeps_english_fields(self):
+        """An editor PATCH that omits the English fields must not clear them"""
+        BlogPost.objects.filter(pk=self.blog_post.pk).update(
+            title_en="T", description_en="D", content_html_en="<p>B</p>"
+        )
+        self._auth_as(self.admin_user)
+        response = self.client.patch(self.detail_url, {"description": "Edited"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        post = BlogPost.objects.get(pk=self.blog_post.pk)
+        self.assertEqual(post.description, "Edited")
+        self.assertTrue(post.is_translated)
 
     def test_create_blog_post_as_regular_user_forbidden(self):
         """Non-admin user cannot create a blog post"""

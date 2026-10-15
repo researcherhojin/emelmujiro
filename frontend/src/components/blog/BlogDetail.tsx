@@ -1,10 +1,11 @@
-import React, { lazy, Suspense, useEffect, useState, useCallback, memo } from 'react';
+import React, { lazy, Suspense, useEffect, useMemo, useState, useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router';
 import { ArrowLeft, Eye, EyeOff, Trash2, Pencil } from 'lucide-react';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { useToast } from '../../hooks/useToast';
 import { sanitizeBlogHtml } from '../../utils/sanitizeBlogHtml';
+import { isTranslated, localizePost } from '../../utils/localizePost';
 
 const MarkdownRenderer = lazy(() => import('./MarkdownRenderer'));
 import { PageLoading } from '../common/UnifiedLoading';
@@ -24,19 +25,28 @@ import { trackBlogView } from '../../utils/analytics';
 import { preventImageAction } from '../../utils/imageUtils';
 
 const BlogDetailPage: React.FC = memo(() => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { localizedNavigate } = useLocalizedPath();
   const { user } = useAuth();
   const {
-    currentPost: post,
+    currentPost: rawPost,
     loading,
     error,
     notFound,
     fetchPostById,
     clearCurrentPost,
   } = useBlog();
+  // Everything below renders `post`, the reader's language version; the SEO
+  // flags read the raw post, because a translation exists or not regardless
+  // of which route is showing it.
+  const post = useMemo(
+    () => (rawPost ? localizePost(rawPost, i18n.language) : rawPost),
+    [rawPost, i18n.language]
+  );
+  const translated = isTranslated(rawPost);
+  const showsEnglish = translated && Boolean(i18n.language?.startsWith('en'));
   const isAdmin = user?.role === 'admin';
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { toast, showToast } = useToast();
@@ -187,11 +197,12 @@ const BlogDetailPage: React.FC = memo(() => {
                 .join(', ')}
               image={post.image_url}
               type="article"
-              // Posts are Korean-only, so /en/insights/:slug duplicates the
-              // Korean page: canonical to it, no hreflang. Flip together with
-              // the en sitemap entry in generate-sitemap.js on translation.
-              translated={false}
-              lang="ko"
+              // Untranslated: /en/insights/:slug shows the Korean body, so it
+              // canonicalizes to the Korean URL with no hreflang. Translated:
+              // both URLs are real language versions. Same rule as the
+              // sitemap in generate-sitemap.js, both driven by is_translated.
+              translated={translated}
+              lang={showsEnglish ? 'en' : 'ko'}
               article={{
                 author: post.author,
                 publishedTime: post.date,

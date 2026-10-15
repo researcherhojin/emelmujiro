@@ -113,22 +113,30 @@ ${generateHreflangLinks(route.url)}
     }
   }
 
-  // Dynamic blog posts: Korean URL only, no hreflang. Posts have no English
-  // translation, so /en/insights/:slug renders the same Korean body and
-  // canonicalizes to the Korean URL (SEOHelmet `translated={false}` in
-  // BlogDetail.tsx). Re-enable the en entry and its hreflang links together
-  // with that prop once a post has a real translation.
+  // Dynamic blog posts. A translated post (the API's is_translated, true only
+  // when title_en, description_en and content_html_en are all filled) lists
+  // both URLs with hreflang, like a static route. An untranslated one lists
+  // the Korean URL only: /en/insights/:slug shows the Korean body and
+  // canonicalizes to it (SEOHelmet `translated` in BlogDetail.tsx follows the
+  // same flag). A missing flag — an API older than the field — counts as
+  // untranslated.
   // lastmod is updated_at, not the author-chosen `date`: views and likes are
   // written with .update(F(...)), which leaves auto_now untouched, so it moves
   // only on an edit or a publish toggle.
   const posts = await fetchBlogPosts();
+  let translatedCount = 0;
   for (const post of posts) {
-    urlEntries.push(`  <url>
-    <loc>${buildLangUrl(`/insights/${post.slug}`, DEFAULT_LANG)}</loc>
+    const routeUrl = `/insights/${post.slug}`;
+    const translated = post.is_translated === true;
+    if (translated) translatedCount++;
+    for (const lang of translated ? LANGUAGES : [DEFAULT_LANG]) {
+      urlEntries.push(`  <url>
+    <loc>${buildLangUrl(routeUrl, lang)}</loc>
     <lastmod>${post.updated_at || post.date}</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.5</priority>${translated ? `\n${generateHreflangLinks(routeUrl)}` : ''}
   </url>`);
+    }
   }
 
   return {
@@ -141,6 +149,7 @@ ${generateHreflangLinks(route.url)}
 ${urlEntries.join('\n')}
 </urlset>`,
     postCount: posts.length,
+    translatedCount,
   };
 };
 
@@ -194,10 +203,11 @@ const main = async () => {
     }
 
     const staticUrls = staticRoutes.length * LANGUAGES.length;
+    const blogUrls = sitemap.postCount + sitemap.translatedCount;
     console.log(
       `\n📊 ${staticRoutes.length} static × ${LANGUAGES.length} langs (${staticUrls}) ` +
-        `+ ${sitemap.postCount} blog × 1 lang (ko only, untranslated) = ` +
-        `${staticUrls + sitemap.postCount} URLs`
+        `+ ${sitemap.postCount} blog (${sitemap.translatedCount} translated, ko+en) (${blogUrls}) = ` +
+        `${staticUrls + blogUrls} URLs`
     );
   } catch (error) {
     console.error('❌ Error generating sitemap:', error);

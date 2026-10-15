@@ -33,6 +33,7 @@ class BlogPostAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("기본 정보", {"fields": ("title", "description", "content", "category")}),
+        ("영어 번역", {"fields": ("title_en", "description_en", "content_html_en", "tags_en")}),
         ("설정", {"fields": ("is_published", "is_featured", "date")}),
         ("미디어", {"fields": ("image_url",)}),
         ("통계", {"fields": ("view_count",), "classes": ("collapse",)}),
