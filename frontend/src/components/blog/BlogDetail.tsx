@@ -227,24 +227,10 @@ const BlogDetailPage: React.FC = memo(() => {
           </>
         )}
 
-        {/* Hero Image */}
-        {post?.image_url && (
-          <div className="w-full max-w-5xl mx-auto px-6 sm:px-8 pt-8">
-            <div className="relative aspect-[21/9] rounded-2xl overflow-hidden">
-              <img
-                src={post.image_url}
-                alt={`${post.title} ${t('blogDetail.relatedImage')}`}
-                className="w-full h-full object-cover select-none pointer-events-none"
-                draggable="false"
-                onContextMenu={preventImageAction}
-                onDragStart={preventImageAction}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Article Content */}
-        <div className="max-w-3xl mx-auto px-6 sm:px-8 py-12 sm:py-16">
+        {/* Article Content. One column for title, cover and body, as on the
+            Meta and NVIDIA engineering blogs (769px / 907px bodies, measured
+            2026-10-16); max-w-4xl minus sm:px-8 gives an 832px body. */}
+        <div className="max-w-4xl mx-auto px-6 sm:px-8 py-12 sm:py-16">
           {/* Back Navigation */}
           <button
             onClick={() => navigate(-1)}
@@ -280,24 +266,35 @@ const BlogDetailPage: React.FC = memo(() => {
               {post?.title}
             </h1>
 
-            {/* Author & Tags */}
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pb-10 mb-10 border-b border-gray-100 dark:border-gray-800">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                {t('blogDetail.author')} {post?.author}
-              </span>
-              {post?.tags && post.tags.length > 0 && (
-                <div className="flex gap-2">
-                  {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Tags */}
+            {post?.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-10">
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Cover Image */}
+            {post?.image_url && (
+              <div className="relative aspect-[2/1] rounded-2xl overflow-hidden mb-12 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+                <img
+                  src={post.image_url}
+                  alt={`${post.title} ${t('blogDetail.relatedImage')}`}
+                  className="w-full h-full object-cover select-none pointer-events-none"
+                  draggable="false"
+                  onContextMenu={preventImageAction}
+                  onDragStart={preventImageAction}
+                />
+              </div>
+            )}
+
+            <hr className="mb-12 border-gray-100 dark:border-gray-800" />
 
             {/* Content */}
             <div className="prose prose-lg prose-gray dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-p:leading-relaxed prose-p:text-gray-600 dark:prose-p:text-gray-400 prose-a:text-gray-900 dark:prose-a:text-white prose-a:underline-offset-4 prose-img:rounded-xl">

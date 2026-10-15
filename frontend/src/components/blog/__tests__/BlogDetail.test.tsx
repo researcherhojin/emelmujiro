@@ -284,8 +284,9 @@ describe('BlogDetail Component', () => {
     await waitFor(() => {
       expect(screen.getByTestId('markdown-content')).toHaveTextContent('This is test content');
     });
-    // Author is shown with t('blogDetail.author') prefix (which returns key)
-    expect(screen.getByText(/blogDetail\.author/)).toBeInTheDocument();
+    // The author is not shown on the page (kept only in the Article JSON-LD)
+    expect(screen.queryByText(/blogDetail\.author/)).not.toBeInTheDocument();
+    expect(screen.queryByText('Test Author')).not.toBeInTheDocument();
     expect(screen.getByText('Technology')).toBeInTheDocument();
   });
 
