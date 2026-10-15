@@ -33,13 +33,47 @@ class BlogPostAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("기본 정보", {"fields": ("title", "description", "content", "category")}),
-        ("영어 번역", {"fields": ("title_en", "description_en", "content_html_en", "tags_en")}),
+        (
+            "영어 번역",
+            {
+                "fields": ("title_en", "description_en", "content_html_en", "tags_en", "translation_status"),
+                "description": "영어 필드를 저장하면 그 시점의 한국어 원문 기준으로 번역이 최신 상태가 됩니다. "
+                "한국어 제목·설명·본문만 바꾸면 영어 페이지는 번역을 갱신하거나 "
+                "'번역이 여전히 유효함' 액션으로 확인할 때까지 한국어 원문으로 대체됩니다.",
+            },
+        ),
         ("설정", {"fields": ("is_published", "is_featured", "date")}),
         ("미디어", {"fields": ("image_url",)}),
         ("통계", {"fields": ("view_count",), "classes": ("collapse",)}),
     )
 
-    readonly_fields = ("view_count", "created_at", "updated_at")
+    readonly_fields = ("view_count", "created_at", "updated_at", "translation_status")
+    actions = ["confirm_translation_current"]
+
+    EN_FIELDS = {"title_en", "description_en", "content_html_en", "tags_en"}
+
+    @admin.display(description="번역 상태")
+    def translation_status(self, obj):
+        if obj.is_translated:
+            return "최신 (영어 페이지 노출)"
+        if obj.translation_outdated:
+            return "원문 변경됨: 영어 페이지 숨김"
+        return "번역 없음"
+
+    def save_model(self, request, obj, form, change):
+        if self.EN_FIELDS & set(form.changed_data):
+            obj.mark_translation_current()
+        super().save_model(request, obj, form, change)
+
+    @admin.action(description="번역이 여전히 유효함 (현재 한국어 원문 기준으로 확인)")
+    def confirm_translation_current(self, request, queryset):
+        confirmed = 0
+        for post in queryset:
+            if post.has_english_fields:
+                post.mark_translation_current()
+                post.save(update_fields=["translation_source_hash"])
+                confirmed += 1
+        self.message_user(request, f"{confirmed}개 글의 번역을 현재 원문 기준으로 확인했습니다.")
 
 
 @admin.register(BlogComment)

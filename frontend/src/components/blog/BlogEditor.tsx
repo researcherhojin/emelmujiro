@@ -34,6 +34,14 @@ const CATEGORY_KEYS = [
   { value: 'other', labelKey: 'blogEditor.categoryOther' },
 ] as const;
 
+/**
+ * English-translation state of the post being edited, from the read API.
+ * 'current': the English page is served; a Korean title/description/body edit
+ * saved here withdraws it until the translation is updated in Django admin.
+ * 'outdated': it is already withdrawn for that reason.
+ */
+type TranslationState = 'none' | 'current' | 'outdated';
+
 const BlogEditor: React.FC = () => {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
@@ -58,6 +66,7 @@ const BlogEditor: React.FC = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(isEditMode);
+  const [translationState, setTranslationState] = useState<TranslationState>('none');
   const { toast, showToast } = useToast();
 
   // Fetch categories from API (fallback to hardcoded list)
@@ -91,6 +100,9 @@ const BlogEditor: React.FC = () => {
           image_url: post.image_url || '',
           is_published: post.is_published ?? true,
         });
+        setTranslationState(
+          post.is_translated ? 'current' : post.translation_outdated ? 'outdated' : 'none'
+        );
         setInitialContent(post.content_html || post.content || '');
         setContentHtml(post.content_html || '');
         setContentText(post.content || '');
@@ -277,6 +289,16 @@ const BlogEditor: React.FC = () => {
         ) : (
           /* Editor Mode */
           <div className="space-y-6">
+            {translationState !== 'none' && (
+              <p
+                role="note"
+                className="px-4 py-3 rounded-lg text-sm bg-amber-50 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300"
+              >
+                {translationState === 'current'
+                  ? t('blogEditor.translationCurrent')
+                  : t('blogEditor.translationOutdated')}
+              </p>
+            )}
             {/* Title */}
             <input
               type="text"

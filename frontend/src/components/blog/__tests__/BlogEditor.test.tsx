@@ -352,6 +352,45 @@ describe('BlogEditor Component', () => {
     });
   });
 
+  describe('Translation notice', () => {
+    const loadWith = (flags: Record<string, boolean | undefined>) => {
+      mockParams = { id: '70' };
+      mockGetBlogPost.mockResolvedValueOnce({
+        data: {
+          id: 70,
+          title: 'Post',
+          description: 'desc',
+          content: 'text',
+          content_html: '<p>text</p>',
+          category: 'ai',
+          is_published: true,
+          ...flags,
+        },
+      });
+      renderEditor();
+    };
+
+    it('warns that a Korean edit withdraws a current translation', async () => {
+      loadWith({ is_translated: true, translation_outdated: false });
+      expect(await screen.findByRole('note')).toHaveTextContent('blogEditor.translationCurrent');
+    });
+
+    it('says an outdated translation is already withdrawn', async () => {
+      loadWith({ is_translated: false, translation_outdated: true });
+      expect(await screen.findByRole('note')).toHaveTextContent('blogEditor.translationOutdated');
+    });
+
+    it('shows nothing for an untranslated post or an API without the flags', async () => {
+      loadWith({});
+      await waitFor(() => {
+        expect((screen.getByPlaceholderText('Enter title...') as HTMLInputElement).value).toBe(
+          'Post'
+        );
+      });
+      expect(screen.queryByRole('note')).not.toBeInTheDocument();
+    });
+  });
+
   describe('Edit Mode', () => {
     it('loads existing post in edit mode', async () => {
       mockParams = { id: '42' };

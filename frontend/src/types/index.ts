@@ -30,6 +30,7 @@ export interface BlogPost {
   content_html_en?: string;
   tags_en?: string[];
   is_translated?: boolean;
+  translation_outdated?: boolean;
 }
 
 export interface BlogComment {

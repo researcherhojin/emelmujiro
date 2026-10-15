@@ -355,7 +355,9 @@
     "categoryEducation": "Education",
     "categoryCareer": "Career",
     "categoryProject": "Project",
-    "categoryOther": "Other"
+    "categoryOther": "Other",
+    "translationCurrent": "This post has an English translation. Editing the title, description or body hides it, and the English page shows the Korean original until the translation is updated in Django admin, or confirmed there with the \"번역이 여전히 유효함\" (translation still valid) action if your edit doesn't affect it.",
+    "translationOutdated": "The English translation is older than the Korean text, so the English page currently shows the Korean original. Update the translation in Django admin, or confirm it there with the \"번역이 여전히 유효함\" (translation still valid) action."
   },
   "seo": {
     "personName": "Hojin Lee",

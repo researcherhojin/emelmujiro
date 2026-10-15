@@ -91,6 +91,7 @@ class BlogPostSerializer(serializers.ModelSerializer):
             "content_html_en",
             "tags_en",
             "is_translated",
+            "translation_outdated",
         ]
 
     def get_category_display(self, obj):
@@ -125,7 +126,30 @@ class BlogPostSerializer(serializers.ModelSerializer):
 
 
 class BlogPostWriteSerializer(serializers.ModelSerializer):
-    """Serializer for creating and updating blog posts (admin only)."""
+    """Serializer for creating and updating blog posts (admin only).
+
+    Writing any English field stamps translation_source_hash with the Korean
+    text saved in the same request, so the English version counts as current.
+    A request that touches only Korean fields leaves the stamp alone, which is
+    what withdraws a translation the edit made stale.
+    """
+
+    EN_FIELDS = {"title_en", "description_en", "content_html_en", "tags_en"}
+
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        self._stamp_translation(instance, validated_data)
+        return instance
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        self._stamp_translation(instance, validated_data)
+        return instance
+
+    def _stamp_translation(self, instance, validated_data):
+        if self.EN_FIELDS & validated_data.keys():
+            instance.mark_translation_current()
+            instance.save(update_fields=["translation_source_hash"])
 
     class Meta:
         model = BlogPost

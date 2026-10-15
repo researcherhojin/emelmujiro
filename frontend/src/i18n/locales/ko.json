@@ -355,7 +355,9 @@
     "categoryEducation": "교육",
     "categoryCareer": "경력",
     "categoryProject": "프로젝트",
-    "categoryOther": "기타"
+    "categoryOther": "기타",
+    "translationCurrent": "이 글에는 영어 번역이 있습니다. 제목·설명·본문을 수정하면 영어 번역을 갱신할 때까지 영어 페이지에는 한국어 원문이 표시됩니다. 번역은 Django 관리자에서 갱신하거나, 수정이 번역에 영향을 주지 않으면 '번역이 여전히 유효함' 액션으로 확인하세요.",
+    "translationOutdated": "영어 번역이 한국어 원문보다 오래되어 영어 페이지에는 한국어 원문이 표시되고 있습니다. Django 관리자에서 번역을 갱신하거나 '번역이 여전히 유효함' 액션으로 확인하세요."
   },
   "seo": {
     "personName": "이호진",

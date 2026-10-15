@@ -74,7 +74,11 @@ class BlogPostAPITestCase(APITestCase):
             ({"title_en": "T", "description_en": "D", "content_html_en": "<p>B</p>"}, True),
         ]
         for fields, expected in cases:
-            BlogPost.objects.filter(pk=self.blog_post.pk).update(**fields)
+            post = BlogPost.objects.get(pk=self.blog_post.pk)
+            for key, value in fields.items():
+                setattr(post, key, value)
+            post.mark_translation_current()
+            post.save()
             data = self.client.get(url).data
             self.assertEqual(data["is_translated"], expected, fields)
         self.assertEqual(data["title_en"], "T")
@@ -231,17 +235,72 @@ class BlogPostWriteAPITestCase(APITestCase):
         self.assertEqual(post.title, "Existing Post")
         self.assertEqual(post.tags_en, ["python"])
 
-    def test_patch_korean_fields_keeps_english_fields(self):
-        """An editor PATCH that omits the English fields must not clear them"""
-        BlogPost.objects.filter(pk=self.blog_post.pk).update(
-            title_en="T", description_en="D", content_html_en="<p>B</p>"
-        )
+    def _translate_existing_post(self):
         self._auth_as(self.admin_user)
+        en = {"title_en": "T", "description_en": "D", "content_html_en": "<p>B</p>"}
+        self.client.patch(self.detail_url, en, format="json")
+        self.assertTrue(BlogPost.objects.get(pk=self.blog_post.pk).is_translated)
+
+    def test_patch_korean_fields_withdraws_stale_translation(self):
+        """A Korean-only edit keeps the English fields but stops serving them"""
+        self._translate_existing_post()
         response = self.client.patch(self.detail_url, {"description": "Edited"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         post = BlogPost.objects.get(pk=self.blog_post.pk)
         self.assertEqual(post.description, "Edited")
-        self.assertTrue(post.is_translated)
+        self.assertEqual(post.title_en, "T")
+        self.assertFalse(post.is_translated)
+        self.assertTrue(post.translation_outdated)
+        data = self.client.get(self.detail_url).data
+        self.assertEqual((data["is_translated"], data["translation_outdated"]), (False, True))
+
+    def test_patch_korean_body_withdraws_stale_translation(self):
+        """The rendered Korean body is part of the fingerprint, not just title and description"""
+        self._translate_existing_post()
+        self.client.patch(self.detail_url, {"content_html": "<p>New body</p>"}, format="json")
+        self.assertFalse(BlogPost.objects.get(pk=self.blog_post.pk).is_translated)
+
+    def test_patch_non_text_fields_keeps_translation(self):
+        """Publishing state, tags and image are not translated text and do not withdraw it"""
+        self._translate_existing_post()
+        self.client.patch(
+            self.detail_url,
+            {"is_featured": True, "tags": ["x"], "image_url": "https://example.com/i.png"},
+            format="json",
+        )
+        self.assertTrue(BlogPost.objects.get(pk=self.blog_post.pk).is_translated)
+
+    def test_patch_korean_and_english_together_stays_translated(self):
+        """Updating both languages in one request stamps the new Korean text"""
+        self._translate_existing_post()
+        data = {"description": "Edited", "description_en": "Edited EN"}
+        self.client.patch(self.detail_url, data, format="json")
+        self.assertTrue(BlogPost.objects.get(pk=self.blog_post.pk).is_translated)
+
+    def test_patch_english_after_korean_edit_restores_translation(self):
+        """Re-saving the English fields after a Korean edit makes the translation current again"""
+        self._translate_existing_post()
+        self.client.patch(self.detail_url, {"title": "New title"}, format="json")
+        self.assertFalse(BlogPost.objects.get(pk=self.blog_post.pk).is_translated)
+        self.client.patch(self.detail_url, {"title_en": "New title EN"}, format="json")
+        self.assertTrue(BlogPost.objects.get(pk=self.blog_post.pk).is_translated)
+
+    def test_create_with_english_fields_is_translated(self):
+        """A post created with all three English fields is translated from the start"""
+        self._auth_as(self.admin_user)
+        data = {
+            "title": "Bilingual",
+            "description": "desc",
+            "content": "body",
+            "content_html": "<p>body</p>",
+            "category": "ai",
+            "title_en": "Bilingual EN",
+            "description_en": "desc EN",
+            "content_html_en": "<p>body EN</p>",
+        }
+        response = self.client.post(self.create_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(BlogPost.objects.get(title="Bilingual").is_translated)
 
     def test_create_blog_post_as_regular_user_forbidden(self):
         """Non-admin user cannot create a blog post"""
@@ -2997,6 +3056,101 @@ class DjangoAdminTestCase(TestCase):
         request.session = "session"
         request._messages = FallbackStorage(request)
         return request
+
+    # --- BlogPostAdmin translation upkeep ---
+
+    def _stale_post(self):
+        post = BlogPost.objects.create(
+            title="Post",
+            description="D",
+            content="C",
+            content_html="<p>C</p>",
+            category="ai",
+            title_en="Post EN",
+            description_en="D EN",
+            content_html_en="<p>C EN</p>",
+        )
+        post.mark_translation_current()
+        post.save()
+        post.description = "Changed"
+        post.save()
+        self.assertTrue(post.translation_outdated)
+        return post
+
+    def test_blog_post_admin_confirm_translation_current(self):
+        """The admin action re-stamps a stale translation; posts without English fields are skipped"""
+        from .admin import BlogPostAdmin
+
+        stale = self._stale_post()
+        bare = BlogPost.objects.create(title="Bare", description="D", content="C", category="ai")
+        admin_obj = BlogPostAdmin(BlogPost, admin.site)
+        admin_obj.confirm_translation_current(self._make_request(), BlogPost.objects.all())
+        stale.refresh_from_db()
+        bare.refresh_from_db()
+        self.assertTrue(stale.is_translated)
+        self.assertEqual(bare.translation_source_hash, "")
+
+    def test_blog_post_admin_save_model_stamps_on_english_change(self):
+        """Saving an English field in Django admin makes the translation current"""
+        from .admin import BlogPostAdmin
+
+        post = self._stale_post()
+        admin_obj = BlogPostAdmin(BlogPost, admin.site)
+        post.description_en = "D EN v2"
+        form = type("Form", (), {"changed_data": ["description_en"]})()
+        admin_obj.save_model(self._make_request(), post, form, change=True)
+        post.refresh_from_db()
+        self.assertTrue(post.is_translated)
+
+    def test_blog_post_admin_save_model_korean_only_keeps_stale(self):
+        """Saving only Korean fields in Django admin does not re-stamp the translation"""
+        from .admin import BlogPostAdmin
+
+        post = self._stale_post()
+        admin_obj = BlogPostAdmin(BlogPost, admin.site)
+        form = type("Form", (), {"changed_data": ["title"]})()
+        admin_obj.save_model(self._make_request(), post, form, change=True)
+        post.refresh_from_db()
+        self.assertFalse(post.is_translated)
+
+    def test_blog_post_admin_translation_status(self):
+        """The read-only status reflects current, outdated and missing translations"""
+        from .admin import BlogPostAdmin
+
+        admin_obj = BlogPostAdmin(BlogPost, admin.site)
+        stale = self._stale_post()
+        self.assertIn("숨김", admin_obj.translation_status(stale))
+        stale.mark_translation_current()
+        self.assertIn("최신", admin_obj.translation_status(stale))
+        bare = BlogPost.objects.create(title="Bare", description="D", content="C", category="ai")
+        self.assertEqual(admin_obj.translation_status(bare), "번역 없음")
+
+    def test_migration_0014_hash_matches_model_and_backfills(self):
+        """The migration's frozen hash equals the model's, and its backfill stamps only translated posts"""
+        import importlib
+
+        from django.apps import apps as global_apps
+
+        from .models import korean_source_hash
+
+        mig = importlib.import_module("api.migrations.0014_blogpost_translation_source_hash")
+        args = ("제목", '설명 "따옴표"', "<p>본문</p>")
+        self.assertEqual(mig._source_hash(*args), korean_source_hash(*args))
+        translated = BlogPost.objects.create(
+            title="T",
+            description="D",
+            content="C",
+            category="ai",
+            title_en="T EN",
+            description_en="D EN",
+            content_html_en="<p>EN</p>",
+        )
+        bare = BlogPost.objects.create(title="B", description="D", content="C", category="ai")
+        mig.stamp_existing_translations(global_apps, None)
+        translated.refresh_from_db()
+        bare.refresh_from_db()
+        self.assertTrue(translated.is_translated)
+        self.assertEqual(bare.translation_source_hash, "")
 
     # --- BlogCommentAdmin ---
 
