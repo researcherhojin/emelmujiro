@@ -127,7 +127,7 @@ graph LR
     Umami --> UmamiDB
     React -.->|errors, when a DSN is set| Sentry
     GHA -.->|deploy webhook| Tunnel
-    Tunnel -.->|auto-deploy.sh on the host: build/ + backend image| Host
+    Tunnel -.->|auto-deploy.sh on the host: build/ + backend image, migrations applied on container start| Host
 
     style Tunnel fill:#F3E8FF,stroke:#7C3AED
     style Host fill:#ECFDF5,stroke:#059669
