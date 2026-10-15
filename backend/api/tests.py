@@ -998,6 +998,23 @@ class CategoryCacheTestCase(APITestCase):
 
         cache.clear()
 
+    def test_blog_list_cache_ignores_parameterized_requests(self):
+        """A ?page_size request must neither fill nor read the bare-list cache"""
+        for i in range(3):
+            BlogPost.objects.create(title=f"P{i}", description="D", content="C", category="ai")
+        url = reverse("blog-list")
+
+        narrow = self.client.get(url, {"page_size": 1})
+        self.assertEqual(len(narrow.data["results"]), 1)
+        bare = self.client.get(url)
+        self.assertEqual(len(bare.data["results"]), 3)
+
+        # The bare list is cached: a new post is not visible until expiry
+        BlogPost.objects.create(title="P3", description="D", content="C", category="ai")
+        self.assertEqual(len(self.client.get(url).data["results"]), 3)
+        # ...while a parameterized request still reads the database
+        self.assertEqual(self.client.get(url, {"page_size": 10}).data["count"], 4)
+
     def test_category_list_is_cached(self):
         """Second request returns cached data without extra DB query"""
         BlogPost.objects.create(title="P1", description="D", content="C", category="ai")

@@ -242,10 +242,12 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         """List posts with visit log"""
         log_site_visit(request)
 
-        # Cache unfiltered public list for 30 seconds
+        # Cache the bare public list (no query string at all) for 30 seconds.
+        # The key is fixed, so any parameter that shapes the response must
+        # bypass it: allow-listing filters missed `page_size`, and a cold-cache
+        # `?page_size=1` then served a 1-item list to every bare request.
         is_public = not (request.user and request.user.is_staff)
-        has_filters = any(request.query_params.get(p) for p in ("category", "search", "featured", "page"))
-        if is_public and not has_filters:
+        if is_public and not request.query_params:
             cache_key = CACHE_BLOG_POST_LIST
             cached = cache.get(cache_key)
             if cached is not None:
