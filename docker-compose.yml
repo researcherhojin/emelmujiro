@@ -103,6 +103,23 @@ services:
     depends_on:
       umami-db:
         condition: service_healthy
+    # /api/heartbeat answers 200 without touching the session or the database
+    # schema; wget ships in the umami image (Alpine). Without this, `docker ps`
+    # showed the container "Up" with no health state, unlike the other three.
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://127.0.0.1:3000/api/heartbeat",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     networks:
       - emelmujiro-network
 
