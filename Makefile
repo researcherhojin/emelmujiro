@@ -1,12 +1,12 @@
-.PHONY: help install setup-dev-machine verify-setup dev dev-local dev-clean dev-docker ports kill-ports build test test-ci lint lint-fix clean deploy logs logs-security logs-debug ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron remove-cron
+.PHONY: help install setup-dev-machine verify-setup dev dev-local dev-clean ports kill-ports build test test-ci lint lint-fix clean logs logs-security logs-debug health ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron setup-health-cron remove-cron
 
 help:
 	@echo "Available commands:"
 	@echo "  make setup-dev-machine - One-shot bootstrap on a fresh macOS dev machine"
 	@echo "  make verify-setup      - Run all setup verification checks"
 	@echo "  make install           - Install all dependencies (npm + uv)"
-	@echo "  make dev               - Start development servers (Docker)"
-	@echo "  make dev-local         - Start local development servers"
+	@echo "  make dev               - Start local dev servers (frontend :5173 + backend :8000)"
+	@echo "  make dev-local         - Same as make dev"
 	@echo "  make dev-clean         - Kill ports and start dev servers"
 	@echo "  make build             - Build production images"
 	@echo "  make test              - Run all tests"
@@ -60,7 +60,7 @@ install:
 	cd backend && uv sync --extra dev
 
 dev:
-	./scripts/start-dev.sh
+	npm run dev
 
 dev-local:
 	npm run dev
@@ -68,9 +68,6 @@ dev-local:
 dev-clean:
 	./scripts/ports.sh --kill
 	npm run dev
-
-dev-docker:
-	docker compose -f docker-compose.dev.yml up
 
 ports:
 	./scripts/ports.sh
@@ -99,11 +96,6 @@ clean:
 	rm -rf frontend/build/* frontend/node_modules/.cache
 	find backend -type d -name '__pycache__' -exec rm -rf {} +
 	rm -rf backend/staticfiles
-
-deploy:
-	@echo "Deploying..."
-	docker compose build
-	docker compose up -d
 
 logs:
 	docker compose logs -f

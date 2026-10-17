@@ -106,35 +106,7 @@ services:
     networks:
       - emelmujiro-network
 
-  # PostgreSQL — only started with: docker compose --profile postgres up
-  db:
-    image: postgres:15.19-alpine
-    container_name: emelmujiro-db
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=${DB_NAME:-emelmujiro}
-      - POSTGRES_USER=${DB_USER:-postgres}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in .env before enabling the postgres profile}
-      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
-    ports:
-      - "127.0.0.1:${DB_PORT:-5432}:5432"
-    networks:
-      - emelmujiro-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-emelmujiro}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    profiles:
-      - postgres
-
 volumes:
-  postgres_data:
-    driver: local
   umami_db:
     driver: local
   static_volume:

@@ -7,8 +7,7 @@ set -e
 #   ./scripts/ports.sh --kill   # Kill dev ports non-interactively
 
 PORTS_DEV=(5173 8000)
-PORTS_INFRA=(5432)
-LABELS=([5173]="Frontend" [8000]="Backend" [5432]="PostgreSQL")
+LABELS=([5173]="Frontend" [8000]="Backend")
 
 kill_port() {
     local port=$1
@@ -49,7 +48,7 @@ if [[ "$1" == "--kill" ]]; then
     echo "✨ Port cleanup complete"
 else
     echo "🔍 Checking port status..."
-    for port in "${PORTS_DEV[@]}" "${PORTS_INFRA[@]}"; do
+    for port in "${PORTS_DEV[@]}"; do
         check_port "$port" || true
     done
     echo "✨ Port check complete"
