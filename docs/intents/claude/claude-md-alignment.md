@@ -1,5 +1,5 @@
 ---
-status: approved
+status: in-progress
 module: claude
 created: 2026-10-17
 updated: 2026-10-17
@@ -22,21 +22,21 @@ updated: 2026-10-17
 
 - **Approach** (owner-chosen 2026-10-17):
   1. **Move file-bound `Constraints` into path-scoped rules.** The memory page: "Move instructions that matter for only part of the codebase into path-scoped rules, which load only when Claude works with matching files." A rule loads "when Claude uses the Read, Write, or Edit tool on a matching file", and also for `cat`/`head` on a single file. Candidates, by the files whose edit is the trigger:
-     - `.claude/rules/routing-seo.md` — `SEO`, `KakaoTalk WebView`, `SSG prerender + nginx routing`, `E2E target`, `Lighthouse never audits a prerendered document`, `CSP is defined twice` (paths: `frontend/nginx.conf`, `frontend/index.html`, `frontend/scripts/**`, `frontend/e2e/**`, `frontend/playwright.config.ts`, `frontend/lighthouserc.js`, `frontend/src/App.tsx`, `frontend/src/components/common/SEOHelmet.tsx`, `scripts/auto-deploy.sh`).
+     - `.claude/rules/frontend-build.md` — `SEO`, `KakaoTalk WebView`, `SSG prerender + nginx routing`, `E2E target`, `Lighthouse never audits a prerendered document`, `CSP is defined twice` (paths: `frontend/nginx.conf`, `frontend/index.html`, `frontend/scripts/**`, `frontend/e2e/**`, `frontend/playwright.config.ts`, `frontend/lighthouserc.js`, `frontend/src/App.tsx`, `frontend/src/components/common/SEOHelmet.tsx`, `scripts/auto-deploy.sh`).
      - `.claude/rules/ci.md` — `CI job gating`, `Auto-merged commits do not deploy`, `Spell check`, `README drift gates`, `Operational logs` (paths: `.github/**`, `scripts/**`, `Makefile`, `cspell.json`, `README.md`).
      - Each moved rule keeps a one-line pointer in `Quick Orientation` › `By task type`, because some triggers are situations, not file reads (a Search Console report, a red CI check); the pointer tells Claude which rule file to read first.
   2. **Turn human-only evidence into block-level HTML comments.** The memory page: "Block-level HTML comments (`<!-- maintainer notes -->`) in CLAUDE.md files are stripped before the content is injected into Claude's context." Incident counts and history that do not change what Claude should do move into comments in place; the rule sentence stays visible. This reduces context bytes, not `wc -l`.
   3. **Mark hook-enforced Gotchas.** `#6`, `#7` and `#15` become `(enforced)` in the index, as `#10` already is, and their bodies keep the rule plus evidence but drop prose the hook now guarantees. Best practices: "If Claude already does something correctly without the instruction, delete it or convert it to a hook."
   4. **Rewrite `Size and shape`** to state the official target and this file's own exceptions (Gotchas stay, IDs stay), citing the memory page.
   - Rejected: moving Gotchas to a skill (more invasive; not chosen); `@path` imports (no context saving); merging separate rules onto one line or deleting blank lines that Prettier needs (would game `wc -l` without reducing what Claude reads).
-- **Files and interfaces**: `CLAUDE.md`; new `.claude/rules/routing-seo.md` and `.claude/rules/ci.md` with `paths:` frontmatter (`paths` is "the only field Claude Code reads from a rule"); `CHANGELOG.md`.
+- **Files and interfaces**: `CLAUDE.md`; new `.claude/rules/frontend-build.md` and `.claude/rules/ci.md` with `paths:` frontmatter (`paths` is "the only field Claude Code reads from a rule"); `CHANGELOG.md`.
 - **Out of scope**: renumbering or relocating any Gotcha; `.claude/rules/frontend.md` and `backend.md` content; `AGENTS.md`; skills; README.
 - **Done when**:
   - `wc -l CLAUDE.md` prints a number below 200, reported with bytes before and after.
   - Every rule paragraph removed from `CLAUDE.md` appears verbatim in exactly one rule file (a script diffs the removed lines against the new files and prints zero unmatched lines), except lines turned into comments, which still appear in `CLAUDE.md`.
-  - `grep -cE '^[0-9]+\. \*\*' CLAUDE.md` in `Gotchas` still prints 19, and each number maps to the same rule as on `main`.
+  - Counting only from `## Gotchas` onward, `^[0-9]+\. \*\*` matches 19 lines, identical to `main`. (Counted over the whole file it printed 21 on `main`, because `README drift gates` carried a numbered list; that list moves to `ci.md`.)
   - `npm run spell` 0 issues, `prettier --check` clean, `npm run check:routes` and the guard-hook tests still pass.
-  - End to end: a fresh Claude Code session that reads `frontend/nginx.conf` shows `.claude/rules/routing-seo.md` under **Memory files** in `/context` (the check the memory page itself uses), and one that has not touched a matching file does not.
+  - End to end (measured with `claude -p` and an `InstructionsLoaded` hook passed via `--settings`, a script-friendly equivalent of `/context`): a fresh Claude Code session that reads `frontend/nginx.conf` shows `.claude/rules/frontend-build.md` under **Memory files** in `/context` (the check the memory page itself uses), and one that has not touched a matching file does not.
 
 ## Plan
 

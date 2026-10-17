@@ -6,7 +6,7 @@ Adapted from the intent → spec → plan chain in Anthropic's [AI-native SDLC p
 
 ## When to write one
 
-- **Write one** for work that touches a `Constraints` section of `CLAUDE.md`, spans 3 or more files, or is deferred with a decision still open. This matches where the official [best practices](https://code.claude.com/docs/en/best-practices) say planning pays: "when you're uncertain about the approach, when the change modifies multiple files, or when you're unfamiliar with the code being modified."
+- **Write one** for work that touches a `Constraints` section of `CLAUDE.md` (or of `.claude/rules/ci.md` or `frontend-build.md`, which hold the ones moved out), spans 3 or more files, or is deferred with a decision still open. This matches where the official [best practices](https://code.claude.com/docs/en/best-practices) say planning pays: "when you're uncertain about the approach, when the change modifies multiple files, or when you're unfamiliar with the code being modified."
 - **Skip it** for a typo, a single-line fix, a dependency bump, or a hotfix — the same page: "If you could describe the diff in one sentence, skip the plan." The `Skip rules` in `CLAUDE.md` decide; this file adds no phase of its own.
 
 ## Working an intent with Claude Code

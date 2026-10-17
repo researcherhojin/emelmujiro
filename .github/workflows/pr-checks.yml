@@ -341,7 +341,7 @@ jobs:
         # Operational cron logs must live inside the project at backend/logs/
         # (matches Django LOG_DIR, already gitignored, persists via logs_volume).
         # Drift to /tmp, ~/logs/, or /var/log/ breaks on reboot or leaves
-        # emelmujiro logs outside the project tree. See CLAUDE.md Constraints.
+        # emelmujiro logs outside the project tree. See .claude/rules/ci.md "Operational logs".
         run: |
           BAD_CRON_LOGS=$(grep -nE 'crontab.*>>' Makefile 2>/dev/null | grep -v 'backend/logs/' || true)
           if [ -n "$BAD_CRON_LOGS" ]; then
