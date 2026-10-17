@@ -3,7 +3,7 @@ paths:
   - 'backend/**'
 ---
 
-<!-- Path-scoped rule: loads when Claude reads files under backend/. Cross-cutting build/deploy/CI/dependency rules stay in root CLAUDE.md. -->
+<!-- Path-scoped rule: loads when Claude reads files under backend/. Cross-cutting rules and all Gotchas stay in root CLAUDE.md; frontend build/prerender/E2E rules are in frontend-build.md, CI rules in ci.md. -->
 
 # Backend rules
 

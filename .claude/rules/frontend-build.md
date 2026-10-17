@@ -1,0 +1,64 @@
+---
+paths:
+  - 'frontend/nginx.conf'
+  - 'frontend/index.html'
+  - 'frontend/package.json'
+  - 'frontend/vite.config.ts'
+  - 'frontend/tailwind.config.*'
+  - 'frontend/postcss.config.*'
+  - 'frontend/scripts/**'
+  - 'frontend/e2e/**'
+  - 'frontend/playwright.config.ts'
+  - 'frontend/lighthouserc.js'
+  - 'frontend/src/**'
+  - 'scripts/auto-deploy.sh'
+---
+
+<!-- Path-scoped rule: loads when Claude reads the frontend build, prerender, nginx, E2E, CSP config files above, or any frontend source file (SEO, KakaoTalk and Tailwind rules apply across `frontend/src`). Moved verbatim from the root CLAUDE.md `Constraints` section on 2026-10-17; Gotcha numbers cited here are root CLAUDE.md's. -->
+
+# Frontend build rules
+
+**SEO**: `main.tsx` uses `createRoot()` (never `hydrateRoot`). Do NOT add static meta/title/OG to `index.html` — `SEOHelmet` handles everything. `SEOHelmet` auto-computes canonical from `location.pathname` — do NOT pass a `url` prop (English pages get wrong canonical). Untranslated content passes `translated={false}` instead: canonical goes to the Korean URL on both paths and no hreflang. For blog posts both that prop and `generate-sitemap.js` (en URL + hreflang, or ko only) follow the API's `is_translated`, true only when `title_en`, `description_en` and `content_html_en` are all filled and the Korean title/description/`content_html` still match `translation_source_hash` (a Korean edit withdraws the English page until the translation is re-saved or re-confirmed in Django admin); `utils/localizePost.ts` swaps those fields in on `/en`. Page titles must NOT include `| 에멜무지로` suffix (appended automatically).
+
+**KakaoTalk WebView**: `window.__appLoaded` must be set in `AppLayout` (router layout), NOT at provider level. iOS uses `kakaotalk://web/openExternal`; Android uses `intent://...#Intent;scheme=kakaotalk;end`. Android WebView is Chrome-based, so the banner is hidden — only error fallback uses the intent scheme.
+
+**SSG prerender + nginx routing**: `scripts/auto-deploy.sh` runs `npm run build`, which invokes `frontend/scripts/prerender.js` (referenced as `scripts/prerender.js` in the build script, which runs from `frontend/`) to generate `build/<path>/index.html` for **10 routes** (5 static × ko/en). Five non-obvious couplings:
+
+- **`location /` in `frontend/nginx.conf` is `try_files $uri $uri/index.html =404`.** The explicit `$uri/index.html`, NOT `$uri/`: directory lookup triggers nginx's auto-301 trailing-slash append that downgrades `https://` to `http://` via `absolute_redirect`. The `=404` (not `/index.html` fallback) is what prevents soft-200s for unknown URLs.
+- **Routes prerender does not cover fall back to `/app.html`, never `/index.html`.** The dynamic blog posts `/insights/:slug`, admin `/insights/new` and `/insights/edit/:id`, and standalone `/login` match the regex `location ~ ^/(en/)?(insights/.+|login)$`.
+  - `app.html` is the pristine Vite shell the `build` script copies from `index.html` **before** prerender overwrites `index.html` with the homepage snapshot. It is also the `error_page 404` document, and `internal`, so a direct GET is a `404`.
+  - Falling back to `/index.html` (the case until 2026-09-24) ships the homepage `<title>`, canonical and `robots` in raw HTML for every blog post, and Google requires a JS-set canonical to equal the original HTML's; `app.html` carries none, so the JS-injected tags are the only ones.
+  - Guards: `prerender.js` exits `1` without it, `auto-deploy.sh` refuses to publish a staging dir without it, and `e2e/seo.spec.ts` asserts those routes' raw bytes carry zero `data-prerendered-seo` markers and that a direct `/app.html` is `404`.
+  - **When adding a new dynamic route to `App.tsx`, update this regex in BOTH `frontend/nginx.conf` and `frontend/scripts/e2e-server.mjs`** — nginx 404s it in production, the E2E server 404s it in tests, and `npm run check:routes` fails CI on either omission. Each rule in `e2e-server.mjs` cites its nginx counterpart; keep the two files in sync.
+- **The route list is `staticRoutes` in `frontend/scripts/generate-sitemap.js`; a static page added to `App.tsx` but not there ships a hard 404.** `prerender.js` imports it by name (`const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('./generate-sitemap')` — cite the require, not a line number, which drifts), so one array feeds both `sitemap.xml` and the prerender pass.
+  - Why a hard 404: no `build/<path>/index.html` exists, the SPA-fallback regex doesn't match, so `try_files … =404` fires on a real page, and the sitemap omits it — while prerender still prints `Prerendered 10/10 routes`, because it counts only the routes it was handed.
+  - **`npm run check:routes`** (`frontend/scripts/check-route-lists.js`, in `Repo Checks (informational)` before `Setup Node.js`, node builtins only) cross-references all four hardcoded route lists — `App.tsx`, `staticRoutes`, `e2e/seo.spec.ts`, `lighthouserc.js` — so this fails CI instead of shipping. Deliberately SPA-only routes live in its `NOT_PRERENDERED` map, itself asserted against `App.tsx` so an exception cannot outlive its route.
+  - It also covers the SPA-fallback regex without attempting regex equivalence: it asserts `nginx.conf` and `e2e-server.mjs` carry the byte-identical pattern, then runs it against one URL per `App.tsx` route in both languages — every non-prerendered route must match (else `=404`) and no prerendered route may (regex locations beat `location /`, so the shell would replace the document). nginx itself is never executed.
+- **Prerender reads the live API, and an API failure fails the build.** `/insights` and `/en/insights` list posts, and the page's own cross-origin call fails CORS from the prerender server's `127.0.0.1` origin, so until 2026-10-12 both shipped "Failed to load posts" + "Coming soon" as their raw HTML, which Search Console reported as a `Soft 404` on `/en/insights`.
+  - `prerenderRoute` relays cross-origin `/api/` requests through `route.fetch()` with CORS headers for its own origin, and throws on any `>= 400` or network error. Same-origin `/api` (`build:e2e`) is not intercepted.
+  - A deploy while the API is down therefore aborts and keeps the previous build live. The baked post list is as of the last deploy; the client re-fetches on load.
+- **Chromium is a build dependency, not an E2E-only one.** `prerender.js` calls `chromium.launch()`, so without the browser `vite build` succeeds and prerender dies, which reads like a build bug. `scripts/auto-deploy.sh` therefore runs `npx playwright install chromium` before build (idempotent), so a Playwright dependabot bump cannot break the next deploy.
+  - The error also misdirects: `~/Library/Caches/ms-playwright` is **machine-global, shared across projects**, so another project's newer Playwright can fill it with a revision this repo's pin rejects, and Playwright then blames the package ("Looks like Playwright was just installed or updated"). `npx playwright install chromium` fixes it without removing the other revision.
+
+**E2E target: the Playwright suite serves the production build, not the dev server.** `playwright.config.ts` `webServer` runs `npm run build:e2e && npm run serve:build`, and `frontend/scripts/e2e-server.mjs` mirrors `nginx.conf` (try_files, the dynamic-route SPA fallback, trailing-slash / `/blog` / `/share` 301s, `error_page 404 /app.html`, `/api` proxy).
+
+- `vite preview` is **not** a substitute — its SPA fallback answers `/contact` with `build/index.html`, so every prerendered route silently serves the homepage snapshot.
+- The build must be `build:e2e`, not `build`, because a plain production build inlines `VITE_API_URL=https://api.emelmujiro.com/api` and calls the live backend (Gotcha #18).
+- `reuseExistingServer` keeps the rebuild off the iteration loop — leave `npm run serve:build` running in another shell.
+
+**Lighthouse never audits a prerendered document.** `frontend/lighthouserc.js` collects via `startServerCommand: npx vite preview --port 4173` — the substitute the E2E rule above rejects — so all four configured URLs receive the homepage document, and every per-route score describes the **hydrated SPA reached from it**, not what a crawler gets.
+
+- Scores still differ per route because Lighthouse audits the final DOM, which is why this reads as working. A regression that lives only in a prerendered document (a missing `SEOHelmet` tag, a route absent from `staticRoutes`) is invisible to Lighthouse CI.
+- **Do not "just re-point" `startServerCommand` at `serve:build`** as a drive-by: it re-baselines every threshold in `assert` and every figure under `Baselines` in `.private/journal.md`, so it is its own change with its own before/after (`/contact` best-practices measures `0.74` against the correct server, below the `0.9` warn floor, from the Google Form iframe's third-party cookies).
+- **To compare served documents by hash, two traps.** Against production, normalize first — Cloudflare Email Obfuscation rewrites `contact@emelmujiro.com` with a fresh XOR key per response (`sed -E 's/data-cfemail="[0-9a-f]*"/data-cfemail="X"/g; s#email-protection\#[0-9a-f]*#email-protection\#X#g'`). And include a control, a non-prerendered route (`/login`, `/insights/<slug>`, `/en/login`), which must hash to the `app.html` shell and differ from `/`, plus an unknown path, which must be a hard `404`. Ten distinct normalized hashes for the ten routes is the healthy state; every route hashing to the shell is a broken prerender.
+
+**CSP is defined twice and must stay in sync**: `nginx.conf` (production) + `index.html` meta tag (dev/fallback); the `stripLocalhostCsp` Vite plugin strips `localhost:8000`/`127.0.0.1:8000` from the meta-tag CSP at production build.
+
+- `'unsafe-inline'` required (inline scripts: error handler, KakaoTalk detection, theme detection). `'unsafe-eval'` removed after `plugin-legacy` removal.
+- `data:` is **not** in `script-src` (XSS-narrowing); stays in `img-src` for base64 SVG icons.
+- `frame-ancestors 'none'` in nginx header (meta tag ignores it per spec) complements `X-Frame-Options: DENY`.
+- Cloudflare Web Analytics is **disabled** — `cloudflareinsights.com` must NOT appear in `script-src`/`connect-src`.
+
+**Tailwind 3.x**: PostCSS uses `tailwindcss: {}` (NOT `@tailwindcss/postcss`). Dark mode is `class`-based. Never use dynamic class interpolation (`bg-${color}-600`). The v4 major is dependabot-ignored (`@dependabot ignore this major version` on #461, 2026-08-25, after it failed build/E2E/tests wholesale) — comment `@dependabot unignore this major version` only when a v4 migration is planned as its own project.
+
+**Bundle size**: Build output must be < 10MB (enforced in `pr-checks.yml`). Check large dep impact with `npm run analyze:bundle`.

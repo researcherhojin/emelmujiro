@@ -68,7 +68,7 @@ grep -qE 'Django unittest \([0-9]+ tests\)' README.md && MATCH_COUNT=$((MATCH_CO
 if [[ "$MATCH_COUNT" -lt 2 ]]; then
   echo "❌ Expected 2 test-count patterns in README.md but found $MATCH_COUNT."
   echo "   The README format may have changed — update the sed patterns in this script."
-  echo "   See CLAUDE.md 'README drift gates' for the expected format."
+  echo "   See .claude/rules/ci.md 'README drift gates' for the expected format."
   exit 1
 fi
 

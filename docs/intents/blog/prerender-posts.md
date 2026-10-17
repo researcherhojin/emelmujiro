@@ -9,10 +9,10 @@ updated: 2026-10-17
 
 ## Intent
 
-- **Problem**: since 2026-09-24, `/insights/:slug` falls back to `app.html`, the pristine shell (`CLAUDE.md` `SSG prerender + nginx routing`). A crawler that does not run JavaScript therefore gets no title, description or canonical for a blog post. That is consistent, but empty; before 2026-09-24 it got the homepage's, which was worse. Google renders JavaScript, and the rendered DOM was correct when measured on 2026-09-24.
+- **Problem**: since 2026-09-24, `/insights/:slug` falls back to `app.html`, the pristine shell (`.claude/rules/frontend-build.md` `SSG prerender + nginx routing`). A crawler that does not run JavaScript therefore gets no title, description or canonical for a blog post. That is consistent, but empty; before 2026-09-24 it got the homepage's, which was worse. Google renders JavaScript, and the rendered DOM was correct when measured on 2026-09-24.
 - **Outcome wanted**: either the raw HTML of each post URL carries its own head tags, or it is shown that Google indexes posts correctly without them and this is closed as `dropped`.
 - **Affected systems** (if prerendering): `frontend/scripts/prerender.js`, `frontend/scripts/generate-sitemap.js`, the SPA-fallback regex in `frontend/nginx.conf` and its mirror in `frontend/scripts/e2e-server.mjs`, `npm run check:routes`, the "expected 10" staged-document guard in `scripts/auto-deploy.sh`, `e2e/seo.spec.ts`.
-- **Constraints**: posts are created in Django admin, not by a deploy, so a build-time snapshot is stale from the next publish or edit until the next deploy. A deleted post would keep serving its old raw HTML until then. Prerender already fails the build on any API error (`CLAUDE.md`, "Prerender reads the live API").
+- **Constraints**: posts are created in Django admin, not by a deploy, so a build-time snapshot is stale from the next publish or edit until the next deploy. A deleted post would keep serving its old raw HTML until then. Prerender already fails the build on any API error (`.claude/rules/frontend-build.md`, "Prerender reads the live API").
 - **Options**:
   - (a) Prerender posts at build time. Cheaper since 2026-10-12, when `prerender.js` began relaying cross-origin API calls through `route.fetch()`; what remains is enumerating slugs at build time and a redeploy per publish.
   - (b) An nginx-side or backend-side endpoint that emits head tags for `/insights/:slug` and lets the SPA take over.

@@ -400,9 +400,9 @@ async function main() {
 
   // Exit non-zero on ANY failure — a missing /privacy/index.html would make
   // nginx 404 that URL in production because `try_files $uri $uri/index.html
-  // =404` hard-fails unknown paths (see CLAUDE.md "SSG prerender + nginx
-  // routing"). Partial prerender is never acceptable: either every route ships
-  // as SSG or the deploy fails loudly.
+  // =404` hard-fails unknown paths (see .claude/rules/frontend-build.md "SSG
+  // prerender + nginx routing"). Partial prerender is never acceptable: either
+  // every route ships as SSG or the deploy fails loudly.
   if (successCount < allRoutes.length) {
     throw new Error(
       `Prerender incomplete: ${successCount}/${allRoutes.length} routes succeeded. ` +
