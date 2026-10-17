@@ -120,13 +120,13 @@ class Command(BaseCommand):
             week_ago = timezone.now() - timedelta(days=7)
             week_contacts = ContactAttempt.objects.filter(last_attempt__gte=week_ago).count()
 
-            # Blocked IP stats (check from cache)
-            blocked_ips_count = 0
+            # No blocked-IP count: FileBasedCache stores keys as hashed file
+            # names, so temp_block_key() entries cannot be enumerated. The
+            # count this printed was a hardcoded 0; `--action=unblock --ip <ip>` clears one.
 
             self.stdout.write(f"📊 오늘 문의 시도: {today_contacts}건")
             self.stdout.write(f"📊 오늘 사이트 방문: {today_visits}건")
             self.stdout.write(f"📊 주간 문의 시도: {week_contacts}건")
-            self.stdout.write(f"🚫 현재 차단된 IP: {blocked_ips_count}개")
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"통계 조회 중 오류 발생: {str(e)}"))
