@@ -87,9 +87,6 @@ make health                # Docker health diagnostic (containers, resources, en
 
 # From frontend/: npm run validate (lint + type-check + coverage) and npm run test:e2e (Playwright, 5 profiles).
 # Single-test, serve:build, bundle-analysis and route-check commands are listed once, in CLAUDE.md → Commands.
-
-# Docker dev (optional PostgreSQL profile)
-docker compose -f docker-compose.dev.yml --profile postgres up
 ```
 
 ## Architecture

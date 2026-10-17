@@ -86,21 +86,9 @@ updates:
       prefix: "ci"
       include: "scope"
 
-  # Docker
-  - package-ecosystem: "docker"
-    directory: "/frontend"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-      timezone: "Asia/Seoul"
-    labels:
-      - "dependencies"
-      - "docker"
-      - "frontend"
-    commit-message:
-      prefix: "deps"
-      include: "scope"
+  # Docker. backend/Dockerfile is the only Dockerfile in the repo: a `/frontend`
+  # entry watched the frontend dev Dockerfile until the Docker dev environment was
+  # retired on 2026-10-18, and the frontend image is the compose-pinned nginx below.
   - package-ecosystem: "docker"
     directory: "/backend"
     schedule:
@@ -115,8 +103,8 @@ updates:
     commit-message:
       prefix: "deps"
       include: "scope"
-  # Images pulled straight from docker-compose*.yml (nginx, Umami, its Postgres).
-  # The two `docker` entries above watch only `Dockerfile`s, so these drifted 6-9
+  # Images pulled straight from docker-compose.yml (nginx, Umami, its Postgres).
+  # The `docker` entry above watches only a `Dockerfile`, so these drifted 6-9
   # months until 2026-10-06. Postgres majors are ignored: a new major cannot
   # read the existing `umami_db` volume, so that upgrade is a dump-and-restore
   # project, not a tag bump.
