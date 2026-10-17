@@ -223,6 +223,7 @@ class BlogPostEnglishSearchTestCase(APITestCase):
         self.assertEqual(self.slugs({"search": "english body", "lang": "en"}), [self.post.slug])
 
 
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
 class BlogPostWriteAPITestCase(APITestCase):
     """Tests for BlogPost write API endpoints (create, update, delete)"""
 
