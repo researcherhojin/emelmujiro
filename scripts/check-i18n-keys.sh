@@ -8,7 +8,8 @@
 # Dynamic-key handling:
 #   Keys accessed via template literals (e.g. `privacy.${section}.title`) are
 #   skipped by detecting the prefix section before `.${` and excluding all
-#   leaf keys under that section. Matches the CI logic in pr-checks.yml.
+#   leaf keys under that section. pr-checks.yml's "Check i18n unused keys"
+#   step runs this script with --strict; there is no second copy of the logic.
 
 set -e
 

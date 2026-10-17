@@ -18,8 +18,10 @@ const config: KnipConfig = {
       ],
     },
   },
-  ignoreBinaries: ['uv', 'run'],
-  ignore: ['scripts/deploy-webhook.js'],
+  ignoreBinaries: ['uv'],
+  // .claude/ holds per-machine, gitignored skills next to the tracked ones;
+  // their files are not part of either workspace.
+  ignore: ['scripts/deploy-webhook.js', '.claude/**'],
   rules: {
     duplicates: 'off', // env.ts intentionally has named + default export
   },
