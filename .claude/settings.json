@@ -1,12 +1,12 @@
 {
   "permissions": {
     "deny": [
-      "Read(./.env)",
-      "Read(./backend/.env)",
-      "Read(./backend/.env.production)",
-      "Edit(./.env)",
-      "Edit(./backend/.env)",
-      "Edit(./backend/.env.production)"
+      "Read(/.env)",
+      "Read(/backend/.env)",
+      "Read(/backend/.env.production)",
+      "Edit(/.env)",
+      "Edit(/backend/.env)",
+      "Edit(/backend/.env.production)"
     ]
   },
   "hooks": {
