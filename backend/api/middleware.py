@@ -144,7 +144,7 @@ class RequestSecurityMiddleware:
 
         # Escalation threshold check
         if block_count >= BLOCK_ESCALATION_THRESHOLD:
-            logger.critical(f"IP {ip_address} blocked {block_count} times. Consider permanent block.")
+            logger.critical(f"IP {ip_address} blocked {block_count} times. Consider blocking it at Cloudflare.")
 
     def log_request(self, request, ip_address):
         """Log request (exclude sensitive information)"""
