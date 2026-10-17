@@ -23,7 +23,7 @@ paths:
 **Operational logs: cron jobs must redirect output to `$(CURDIR)/backend/logs/<name>.log`.** That matches Django `LOG_DIR` (`backend/config/settings.py`), is already gitignored, and persists via the Docker logs volume. Never `/tmp`, `~/logs/` or `/var/log/`. Enforced by a `pr-checks.yml` grep: any `crontab` line with `>>` not targeting `backend/logs/` fails CI.
 
 - **cron's `PATH` is `/usr/bin:/bin`, which has no `docker`.** Call it by absolute path (`make setup-cron` bakes in `command -v docker`) or prepend the Docker paths inside the script, as `auto-deploy.sh` and `health-check.sh` do. A bare `docker` made every `health-check.sh` cron run from 2026-04-13 to 2026-10-12 exit `127` before its first check: 51,463 runs, zero `✓`. Test a cron script with `env -i PATH=/usr/bin:/bin HOME=$HOME`, not from a login shell.
-- **`access.log` is the one rotating log here**: `debug.log` and `security.log` use a plain `FileHandler`, but the API access log grows per request, so it is a `RotatingFileHandler` capped at 5 MB with 3 backups (`backupCount: 3`, so 4 files, ~20 MB). Copy that shape for anything else that logs per request.
+- **All three Django file logs rotate**: `access.log`, `debug.log` and `security.log` are each a `RotatingFileHandler` capped at 5 MB with 3 backups (`backupCount: 3`, so 4 files, ~20 MB). `debug.log` and `security.log` were plain `FileHandler`s until #605 (2026-10-18). Copy that shape for any new file log; the cron-written `backend/logs/health-check.log` is outside Django and not rotated by it.
 
 **CI job gating: `quick-checks` checks only for merge conflicts, and every cosmetic or policy check lives in `Repo Checks (informational)`, which nothing depends on.**
 
