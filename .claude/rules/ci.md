@@ -27,7 +27,7 @@ paths:
 
 **CI job gating: `quick-checks` checks only for merge conflicts, and every cosmetic or policy check lives in `Repo Checks (informational)`, which nothing depends on.**
 
-- `quick-checks` gates the six substantive jobs (Frontend Lint, Backend Lint, Test Affected Code, Security Scan, Build for Analysis, E2E Tests); a merge conflict is the one condition that makes running the rest pointless. `Auto-Merge Dependabot` is gated transitively (`needs: affected-tests`, which needs `quick-checks`).
+- `quick-checks` gates the six substantive jobs (Frontend Lint, Backend Lint, Test Affected Code, Security Scan, Build for Analysis, E2E Tests); a merge conflict is the one condition that makes running the rest pointless. `Auto-Merge Dependabot` is gated transitively (`needs: [affected-tests, frontend-lint, backend-lint]`, each of which needs `quick-checks`).
 - `Repo Checks (informational)` holds commit-message format, file size, SEO files, i18n keys, the Claude Code guard-hook cases, README test counts and badges, route lists, **spelling**, cron log paths, and the CHANGELOG check's cases and entry check.
 - **Do not move a check back into `quick-checks`**: when they sat there, a stale badge or a non-conventional subject skipped `npm ci` and the whole suite — that is how the jest-dom 7 lockfile drift reached a deploy. `main` has no required status checks, so that gating never blocked a merge; it only destroyed test signal.
 

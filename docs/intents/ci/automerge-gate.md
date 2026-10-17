@@ -1,5 +1,5 @@
 ---
-status: draft
+status: in-progress
 module: ci
 created: 2026-10-17
 updated: 2026-10-18
@@ -25,11 +25,16 @@ updated: 2026-10-18
 
 ## Spec
 
-<!-- Filled when status becomes approved. -->
+- **Approach** (owner chose option 1 on 2026-10-18, without waiting for a lint-only failure to be observed): `dependabot-auto-merge` needs `affected-tests`, `frontend-lint` and `backend-lint`, and its `if:` requires all three `success`. `Backend Lint` is included as well as the `Frontend Lint` the Intent names, because a formatter bump (black) can fail lint with every test green. Neither lint job has a job-level `if:`, so each is `skipped` only behind a failed `quick-checks`, which must block too — testing for `success` covers it with no escape hatch.
+- **Files and interfaces**: `.github/workflows/pr-checks.yml` (`dependabot-auto-merge` `needs` and `if`, plus its comment); `CLAUDE.md` Gotcha #12 (edited in place, number unchanged); `.claude/rules/ci.md` `CI job gating`; `CHANGELOG.md`.
+- **Out of scope**: E2E, Lighthouse and Security Scan as gates; the merge-retry loop; required status checks on `main`.
+- **Done when**: the workflow parses and the job's `needs` lists the three jobs; `CLAUDE.md` stays at 199 lines with 19 Gotchas; the next patch PR after merge is auto-merged only after both lint jobs report `success` (job timestamps), recorded in `Outcome`.
 
 ## Plan
 
-<!-- Filled before the first edit. -->
+- **Change**: one `needs` list and one `if:` in `pr-checks.yml`; the docs that quote the old `needs: affected-tests`.
+- **Cost, measured**: across the 7 auto-merged PRs of 2026-10-17 (#587, #588, #594, #596, #597, #598, #601), the later lint job finished 0 s to 38 s after `Test Affected Code` — the added wait before a merge.
+- **Risk**: a lint job that starts failing for a reason unrelated to the bump would hold every patch open; it shows as open dependabot PRs with a red lint check, and the fix is the lint, not the gate.
 
 ## Outcome
 
