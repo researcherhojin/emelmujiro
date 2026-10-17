@@ -226,6 +226,10 @@ jobs:
         # --strict exits 1 on unused keys; default mode is informational (local use).
         run: ./scripts/check-i18n-keys.sh --strict
 
+      - name: Test Claude Code guard hooks
+        # Block/allow cases for the PreToolUse Bash hook in .claude/settings.json.
+        run: ./.claude/hooks/test-guard-bash.sh
+
       - name: Check README test counts exist
         # Value-level verification (count == reality) lives in main-ci-cd.yml's
         # frontend-test/backend-test jobs, which parse the *real* Vitest/Django

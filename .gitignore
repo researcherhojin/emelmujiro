@@ -93,8 +93,11 @@ Thumbs.db
 .husky/_
 
 # Claude settings — local-only, EXCEPT shared path-scoped rules (operational docs, must travel with the repo like CLAUDE.md)
+# and the shared guard hooks + the settings.json that wires them (settings.local.json stays per-machine)
 .claude/*
 !.claude/rules/
+!.claude/hooks/
+!.claude/settings.json
 
 # Internal-only notes — never tracked
 .private/

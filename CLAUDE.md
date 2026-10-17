@@ -155,11 +155,11 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 - Both scheduled alarms file a GitHub issue, because a red scheduled run notifies nobody. **Both fire hours after their cron** — allow ~9 h for the drift check and ~7 h for the watchdog before treating a slot as missed, and do not re-cut the cron to compensate. `workflow_dispatch` always creates runs, so none of this needs a PAT.
 - A green pipeline is not deploy evidence (Gotcha #17). Lag measurements and incident history: `.private/operations.md` and the journal Baselines.
 
-**Spell check: `npm run spell` is `cspell --no-progress "**" ".claude/rules/**" ".github/**"`.** It runs in `Repo Checks (informational)` with `save-cache: false`, because parallel jobs save that cache. Three rules:
+**Spell check: `npm run spell` is `cspell --no-progress "**" ".claude/rules/**" ".claude/hooks/**" ".github/**"`.** It runs in `Repo Checks (informational)` with `save-cache: false`, because parallel jobs save that cache. Three rules:
 
 1. `ignorePaths` must keep excluding build output — `frontend/coverage/**`, `frontend/playwright-report/**`, `frontend/test-results/**`, `frontend/build/**`, `**/*.egg-info/**` — which carried 307 of the 314 findings in the first full scan. `CHANGELOG.md` is in `ignorePaths` too, so its prose is never spell-checked, while CLAUDE.md and the rule files are.
 2. Deliberate non-words go in a file-scoped `# cspell:ignore`, **not** `cspell.json`'s `words`: `scripts/check-commit-msg.sh` intentionally contains `Mergeevil` and `depsnot`, and dictionary entries would let a real typo of that shape pass everywhere.
-3. `"**"` does not match dot-directories, so the `.claude/rules/**` and `.github/**` globs are load-bearing — without the first, the two path-scoped rule files were not scanned until 2026-09-21. **Do not reach for `--dot`**: it takes the scan from about 180 files to 1196 and from 0 findings to 6458, because `ignorePaths` does not cover dot-directory build output. Scope to what git tracks instead — `.claude/*` is gitignored except `!.claude/rules/` (`.gitignore:96-97`), which is why the glob names `rules`, not `.claude`.
+3. `"**"` does not match dot-directories, so the `.claude/rules/**`, `.claude/hooks/**` and `.github/**` globs are load-bearing — without the first, the two path-scoped rule files were not scanned until 2026-09-21. **Do not reach for `--dot`**: it takes the scan from about 180 files to 1196 and from 0 findings to 6458, because `ignorePaths` does not cover dot-directory build output. Scope to what git tracks instead — `.claude/*` is gitignored except `!.claude/rules/`, `!.claude/hooks/` and `!.claude/settings.json` (`.gitignore:97-100`), which is why the globs name `rules` and `hooks`, not `.claude`.
 
 **README drift gates: two CI guards, both auto-healed on `main` by the `Sync README Badges` job in `main-ci-cd.yml`** (it pushes with the CI-skip marker).
 
@@ -217,6 +217,9 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 - **CI workflows**: Never use `${{ }}` directly inside `run:` blocks — bind to `env:` first, reference as `"$VAR"`. Prevents script injection via branch names. Composite actions `.github/actions/setup-node` and `.github/actions/setup-uv` replace inline setup.
 - **Shell scripts**: No `eval` with variables, no `source` of untrusted files (use `read` loop parsing), validate Make variables that reach shell commands.
+- **Claude Code guard hooks: `.claude/settings.json` (tracked) runs `.claude/hooks/guard-bash.sh` before every Bash call, and it exits `2` on the commands this file forbids** — `npm audit fix` (#6), removing `frontend/build` itself (Deployment), any push to `dependabot/*` (#15), `git rm` of `.env.production` (#7). The same file denies Read/Edit of `.env`, `backend/.env` and `backend/.env.production`.
+  - It matches after removing heredoc bodies and multi-word quoted strings (a quoted single word such as `"frontend/build"` keeps its contents), so a commit message naming a command passes. So do `bash -c "…"`, a heredoc piped to `bash`, and `cat backend/.env`: a backstop for habit, not a sandbox. It fails open without `jq`.
+  - A new "never run X" rule gets a guard plus a block and an adjacent allow case in `.claude/hooks/test-guard-bash.sh`, which `Repo Checks (informational)` runs. `settings.local.json` stays per-machine and gitignored.
 
 > Domain-specific security rules live in the path-scoped rules: blog HTML sanitization in `.claude/rules/frontend.md`, file-upload validation in `.claude/rules/backend.md`.
 
