@@ -231,6 +231,7 @@
     "sendfile",
     "seohelmet",
     "setuptools",
+    "shellcheck",
     "signups",
     "simplejwt",
     "sitevisit",
