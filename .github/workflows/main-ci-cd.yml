@@ -24,7 +24,7 @@ jobs:
   # ========================================
   frontend-test:
     name: Frontend Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
       test-count: ${{ steps.count.outputs.count }}
@@ -83,7 +83,7 @@ jobs:
   # ========================================
   frontend-build:
     name: Frontend Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.ref == 'refs/heads/main'
     timeout-minutes: 15
 
@@ -112,7 +112,7 @@ jobs:
   # ========================================
   backend-test:
     name: Backend Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
       test-count: ${{ steps.count.outputs.count }}
@@ -188,7 +188,7 @@ jobs:
   # package-lock.json and backend/uv.lock).
   readme-sync:
     name: Sync README Badges
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [frontend-test, backend-test]
     if: github.ref == 'refs/heads/main'
     permissions:
@@ -253,7 +253,7 @@ jobs:
   # ========================================
   deploy-mac-mini:
     name: Deploy to Mac Mini
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [frontend-test, frontend-build, backend-test]
     if: github.ref == 'refs/heads/main'
     continue-on-error: true

@@ -23,7 +23,7 @@ jobs:
   # Dependabot auto-approve and auto-merge
   dependabot-auto-merge:
     name: Auto-Merge Dependabot
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # 8, not 5: the re-arm step below polls for the merge to land, and the
     # slowest measured auto-merge took 166 s (#509). Time spent waiting on
     # `needs` does not count against this.
@@ -134,7 +134,7 @@ jobs:
   # Quick validation checks that should pass before running expensive tests
   quick-checks:
     name: Quick Validation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
 
     steps:
@@ -161,7 +161,7 @@ jobs:
   # conflicts alone, the one condition that makes running the rest pointless.
   repo-checks:
     name: Repo Checks (informational)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 8
 
     steps:
@@ -375,7 +375,7 @@ jobs:
 
   frontend-lint:
     name: Frontend Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     needs: quick-checks
 
@@ -406,7 +406,7 @@ jobs:
   # Backend linting (parallel with frontend-lint)
   backend-lint:
     name: Backend Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     needs: quick-checks
 
@@ -428,7 +428,7 @@ jobs:
   # Run only affected tests based on changed files
   affected-tests:
     name: Test Affected Code
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     needs: quick-checks
 
@@ -473,7 +473,7 @@ jobs:
   # Security scan for dependencies
   security-scan:
     name: Security Scan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     needs: quick-checks
 
@@ -502,7 +502,7 @@ jobs:
   # Shared build job for bundle-analysis and lighthouse
   build-for-analysis:
     name: Build for Analysis
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     needs: quick-checks
 
@@ -544,7 +544,7 @@ jobs:
   # Lighthouse CI performance audit (uses shared build + bundle check)
   lighthouse:
     name: Lighthouse CI
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     needs: build-for-analysis
     if: needs.build-for-analysis.result == 'success'
@@ -578,7 +578,7 @@ jobs:
   # E2E tests (Playwright — Chromium only for speed)
   e2e-tests:
     name: E2E Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     needs: quick-checks
 
@@ -628,7 +628,7 @@ jobs:
   # PR comment with results summary
   pr-comment:
     name: PR Summary
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     if: always()
     permissions:
