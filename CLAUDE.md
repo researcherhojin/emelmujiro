@@ -189,8 +189,8 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 | Phase       | Purpose                                    | Repo tools                                                                                 |
 | ----------- | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| **Think**   | Understand problem, constraints, prior art | `git log`, Grep, `CLAUDE.md`, `.private/journal.md`                                        |
-| **Plan**    | Concrete change scope and tradeoffs        | plan file in `~/.claude/plans/` or inline                                                  |
+| **Think**   | Understand problem, constraints, prior art | `git log`, Grep, `CLAUDE.md`, `.private/journal.md`, `docs/intents/`                       |
+| **Plan**    | Concrete change scope and tradeoffs        | `Spec` + `Plan` of the intent file in `docs/intents/`; else `~/.claude/plans/` or inline   |
 | **Build**   | Implement                                  | editor, `npm run dev`, `make dev-local`                                                    |
 | **Review**  | Independent 2nd opinion                    | `make lint`, `make type-check`, GitHub PR review                                           |
 | **Test**    | Verify behavior                            | `make test`, `make test-ci`, Playwright E2E, Lighthouse CI                                 |
@@ -199,6 +199,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 ### Invariants
 
+- **Work that needs an intent gets a file in `docs/intents/<module>/<slug>.md`** (when, statuses and template: `docs/intents/README.md`). The repo is public, so host and opsec details stay in `.private/` and are linked by name. A `dropped` intent stays in the tree with its reason, so the idea is not re-raised from scratch; the journal Backlog points to the intent instead of repeating it.
 - **Deployed code is identified by commit SHA, not by a version number.** There is no release cut and no version to bump: `auto-deploy.sh` bakes `GIT_COMMIT` into the backend image and `/api/health/` reports it.
   - The `version` fields in both `package.json` files are inert metadata (both are `private: true`) and **must not be re-coupled into a sync rule**; the `VERSION` file was deleted on 2026-09-28 because nothing read it.
   - Retiring the release number says nothing about API compatibility — `backend/api/` serves blog list and retrieval anonymously, so external consumers cannot be ruled out from this repo.
