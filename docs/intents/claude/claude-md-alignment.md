@@ -61,6 +61,6 @@ Departures from the Plan, each recorded in the PR:
 
 - **More globs.** `frontend-build.md` matches all of `frontend/src/**`, not the listed files, and `ci.md` also matches `backend/config/settings.py`. Found by `/code-review`: SEO, KakaoTalk and Tailwind rules apply across the source tree, and `LOG_DIR` couples to the cron log paths.
 - **More pointers.** `Quick Orientation` also sends dependency bumps to `ci.md` (Postgres majors) and `frontend-build.md` (Tailwind v4). Both dependabot-ignore rules were always loaded before this change.
-- **Deferred.** Trimming the bodies of Gotchas `#6`, `#7` and `#15`, and wrapping history in HTML comments. Neither changes `wc -l`; they belong to a separate pass if context bytes become the target.
+- **Deferred, then dropped.** Trimming the bodies of Gotchas `#6`, `#7` and `#15`, and wrapping history in HTML comments. Neither changes `wc -l`. A prompt audit on 2026-10-17 found the Gotcha sub-bullets are almost all operative (what a failure looks like, how to diagnose it); only two lines are pure history (`#10` "It happened 10 times…", `#19` "Every scheduled `uv in /backend` full run failed…"), worth about 100 est. tokens. Not worth a pass.
 
 Lesson for the next intent: the `Done when` grep counted the whole file (21 on `main`, not 19). Scope a count to the section it claims to measure.

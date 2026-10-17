@@ -107,7 +107,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 | **Think**   | Understand problem, constraints, prior art | `git log`, Grep, `CLAUDE.md`, `.private/journal.md`, `docs/intents/`                       |
 | **Plan**    | Concrete change scope and tradeoffs        | `Spec` + `Plan` of the intent file in `docs/intents/`; else `~/.claude/plans/` or inline   |
 | **Build**   | Implement                                  | editor, `npm run dev`, `make dev-local`                                                    |
-| **Review**  | Independent 2nd opinion                    | `make lint`, `make type-check`, GitHub PR review                                           |
+| **Review**  | Independent 2nd opinion                    | `make lint`, `npm run type-check` (from `frontend/`), `/code-review`, GitHub PR review     |
 | **Test**    | Verify behavior                            | `make test`, `make test-ci`, Playwright E2E, Lighthouse CI                                 |
 | **Ship**    | Land + deploy                              | `CHANGELOG.md` entry, conventional commit, PR, merge, `scripts/auto-deploy.sh` via webhook |
 | **Reflect** | Capture surprises                          | `.private/journal.md` session log                                                          |
