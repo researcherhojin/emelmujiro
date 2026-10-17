@@ -98,6 +98,11 @@ Thumbs.db
 !.claude/rules/
 !.claude/hooks/
 !.claude/settings.json
+# Shared workflow: the /intent skill and the intent-reviewer subagent. Other skills under .claude/skills/ are per-machine installs and stay ignored.
+!.claude/agents/
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/intent/
 
 # Internal-only notes — never tracked
 .private/

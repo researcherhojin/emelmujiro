@@ -49,7 +49,7 @@ npm run check:css          # detect CSS classes shipped in build but never refer
 npm run check:routes       # cross-reference the 4 hardcoded route lists (from frontend/, no build or node_modules needed)
 
 npm run knip                                                                  # Dead code detection. Run from root
-npm run spell                                                                 # cspell over tracked files + .claude/rules + .claude/hooks + .github. Run from root
+npm run spell                                                                 # cspell over tracked files + .claude/{rules,hooks,skills/intent,agents} + .github. Run from root
 uv sync --extra dev                                                           # Install backend deps (NOT --dev). Run from backend/
 uv run python manage.py test                                                  # Django unittest (NOT pytest). Needs DATABASE_URL=""
 DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPITestCase          # Single backend test class
@@ -114,7 +114,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 ### Invariants
 
-- **Work that needs an intent gets a file in `docs/intents/<module>/<slug>.md`** (when, statuses and template: `docs/intents/README.md`). The repo is public, so host and opsec details stay in `.private/` and are linked by name. A `dropped` intent stays in the tree with its reason, so the idea is not re-raised from scratch; the journal Backlog points to the intent instead of repeating it.
+- **Work that needs an intent gets a file in `docs/intents/<module>/<slug>.md`** (when, statuses and template: `docs/intents/README.md`); `/intent <module>/<slug>` runs its next step, and the `intent-reviewer` subagent checks a branch against its Spec. The repo is public, so host and opsec details stay in `.private/` and are linked by name. A `dropped` intent stays in the tree with its reason, so the idea is not re-raised from scratch; the journal Backlog points to the intent instead of repeating it.
 - **Deployed code is identified by commit SHA, not by a version number.** There is no release cut and no version to bump: `auto-deploy.sh` bakes `GIT_COMMIT` into the backend image and `/api/health/` reports it.
   - The `version` fields in both `package.json` files are inert metadata (both are `private: true`) and **must not be re-coupled into a sync rule**; the `VERSION` file was deleted on 2026-09-28 because nothing read it.
   - Retiring the release number says nothing about API compatibility — `backend/api/` serves blog list and retrieval anonymously, so external consumers cannot be ruled out from this repo.

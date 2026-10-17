@@ -11,6 +11,8 @@ Adapted from the intent → spec → plan chain in Anthropic's [AI-native SDLC p
 
 ## Working an intent with Claude Code
 
+`/intent <module>/<slug>` (`.claude/skills/intent/`) performs the next step below for the file's `status`, and the `intent-reviewer` subagent (`.claude/agents/`) is step 5's review against the Spec. The steps stay the source of truth.
+
 The sections follow the official explore → plan → implement → commit workflow ([best practices](https://code.claude.com/docs/en/best-practices), "Explore first, then plan, then code"):
 
 1. **Intent — explore.** Start in plan mode (`Shift+Tab` until `⏸ plan mode on`, or `claude --permission-mode plan`), so Claude reads and measures without editing. Write what it finds into `Intent` with its evidence.

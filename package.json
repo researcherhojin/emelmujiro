@@ -27,7 +27,7 @@
     "install:all": "npm install && cd backend && uv sync --extra dev",
     "knip": "knip",
     "prepare": "husky",
-    "spell": "cspell --no-progress \"**\" \".claude/rules/**\" \".claude/hooks/**\" \".github/**\""
+    "spell": "cspell --no-progress \"**\" \".claude/rules/**\" \".claude/hooks/**\" \".claude/skills/intent/**\" \".claude/agents/**\" \".github/**\""
   },
   "devDependencies": {
     "concurrently": "^10.0.6",
