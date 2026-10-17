@@ -351,6 +351,26 @@ jobs:
           fi
           echo "Cron log paths OK"
 
+      # The two CHANGELOG steps run last on purpose: a failed step skips every
+      # later step in the job, so placed earlier a missing entry would hide
+      # the results of every check above.
+      - name: Test CHANGELOG check
+        # Pass/warn cases for scripts/check-changelog.sh in a throwaway repo.
+        run: ./scripts/test-check-changelog.sh
+
+      - name: Check CHANGELOG entry
+        # scripts/check-changelog.sh is the single source of truth for the
+        # exempt paths; .husky/pre-push calls it for direct pushes to main.
+        # Dependabot PRs deliberately carry no entry, and patch ones merge with
+        # no human in the loop, so a check that reddened them would be ignored.
+        # head.sha, not github.sha: github.sha is the synthetic merge commit.
+        # See .claude/rules/ci.md "CHANGELOG entry".
+        if: github.actor != 'dependabot[bot]'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: ./scripts/check-changelog.sh "$BASE_SHA" "$HEAD_SHA"
+
   # Frontend linting (parallel with backend-lint)
 
   frontend-lint:

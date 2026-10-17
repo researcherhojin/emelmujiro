@@ -1,0 +1,18 @@
+# Warn, never block, when a push to main carries no CHANGELOG.md entry.
+# Direct pushes to main are the intended hotfix path, which the PR step in
+# pr-checks.yml never sees. Husky runs this with `sh -e`, so every command that
+# can fail is guarded, and the hook always exits 0.
+# stdin: one line per ref, `<local ref> <local sha> <remote ref> <remote sha>`.
+zero=0000000000000000000000000000000000000000
+while read -r _local_ref local_sha remote_ref remote_sha; do
+  # The remote ref, not the local one: `git push origin HEAD:main` from a
+  # feature branch has a feature local ref and a main remote ref.
+  [ "$remote_ref" = refs/heads/main ] || continue
+  # A zero local SHA is a delete; a zero remote SHA is a new branch.
+  [ "$local_sha" = "$zero" ] && continue
+  [ "$remote_sha" = "$zero" ] && continue
+  if ! ./scripts/check-changelog.sh "$remote_sha" "$local_sha"; then
+    echo "husky - pre-push: warning only, the push continues."
+  fi
+done
+exit 0

@@ -1,5 +1,5 @@
 ---
-status: approved
+status: in-progress
 module: ci
 created: 2026-10-17
 updated: 2026-10-18
@@ -43,6 +43,12 @@ updated: 2026-10-18
 - **Changes**: (1) `scripts/check-changelog.sh`; (2) `scripts/test-check-changelog.sh`; (3) `.husky/pre-push`; (4) `pr-checks.yml`: one step after `Check commit messages`, running the test and then the check, with `if: github.actor != 'dependabot[bot]'` on the check; (5) `.claude/rules/ci.md`: a bold-lead paragraph naming the script, the exemption and the two call sites; (6) `CHANGELOG.md`.
 - **Risks**: `git diff --name-only <base>...<head>` on a shallow checkout fails, so the step relies on the job's existing `fetch-depth: 0`; the check must fail loudly on an unreadable range rather than pass on zero files (the same trap the commit-message step guards, Gotcha #11). A pre-push hook that errors would block pushes, so it wraps the script and exits `0` regardless.
 - **Verification**: the `Done when` list; then the `intent-reviewer` subagent in a fresh session.
+- **Departures during implementation** (2026-10-18):
+  - Two steps, `Test CHANGELOG check` and `Check CHANGELOG entry`, not one: an `if:` applies to a whole step, so the test could not run for dependabot PRs while the check skipped them.
+  - Both run **last** in the job, not after `Check commit messages`: a failed step skips every later step, so a missing entry there would have hidden the file size, SEO, i18n, badge, route, spell and cron results.
+  - The PR range uses `pull_request.head.sha`, not `github.sha`, which is the synthetic merge commit.
+  - A sixth test case, an unreadable range expecting exit `2`, covers the failure mode the Risks name.
+  - `.claude/rules/ci.md`'s `CI job gating` list of what `Repo Checks` holds gains the CHANGELOG entry, besides the new paragraph.
 
 ## Outcome
 
