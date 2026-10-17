@@ -414,20 +414,27 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
+        # All three file logs rotate at 5 MB with 3 backups (about 20 MB each).
+        # debug.log and security.log were plain FileHandlers until 2026-10-18
+        # and had grown to 668 KB and 322 KB since 2026-03 with no cap; a scan
+        # burst writes hundreds of security lines a day (467 on 2026-10-11).
         "file": {
-            "class": "logging.FileHandler",
+            "class": "logging.handlers.RotatingFileHandler",
             "filename": os.path.join(BASE_DIR, "logs", "debug.log"),
             "formatter": "verbose",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 3,
         },
         "security_file": {
-            "class": "logging.FileHandler",
+            "class": "logging.handlers.RotatingFileHandler",
             "filename": os.path.join(BASE_DIR, "logs", "security.log"),
             "formatter": "security",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 3,
         },
-        # The only request-level record of api.emelmujiro.com traffic.
-        # Rotating, unlike the two above, because this one grows per request:
-        # 5 MB x 4 caps it at ~20 MB, the order of the existing health-check
-        # log. gunicorn has no --access-logfile and cannot rotate anyway, and
+        # The only request-level record of api.emelmujiro.com traffic, and
+        # the one that grows per request: 5 MB x 4 caps it at ~20 MB, the
+        # order of the existing health-check log. gunicorn has no --access-logfile and cannot rotate anyway, and
         # its stdout would land in container logs that every deploy discards.
         "access_file": {
             "class": "logging.handlers.RotatingFileHandler",
