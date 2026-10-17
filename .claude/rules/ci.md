@@ -11,7 +11,7 @@ paths:
   - 'backend/config/settings.py'
 ---
 
-<!-- Path-scoped rule: loads when Claude reads CI workflows, repo scripts, husky hooks, the Makefile, docker-compose.yml, cspell.json, the root package.json, README, or `backend/config/settings.py` (whose `LOG_DIR` the cron log paths must match). Moved verbatim from the root CLAUDE.md `Constraints` section on 2026-10-17 (`CHANGELOG entry` was written here directly in #575); Gotcha numbers cited here are root CLAUDE.md's. -->
+<!-- Path-scoped rule: loads when Claude reads CI workflows, repo scripts, husky hooks, the Makefile, docker-compose.yml, cspell.json, the root package.json, README, or `backend/config/settings.py` (whose `LOG_DIR` the cron log paths must match). Moved verbatim from the root CLAUDE.md `Constraints` section on 2026-10-17 (`CHANGELOG entry` was written here directly in #575, the runner pin in #599); Gotcha numbers cited here are root CLAUDE.md's. -->
 
 # CI and repo-automation rules
 
