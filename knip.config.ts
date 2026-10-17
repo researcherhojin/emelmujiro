@@ -11,9 +11,10 @@ const config: KnipConfig = {
       ],
       ignoreDependencies: [
         'playwright', // Provided transitively by @playwright/test
-        // Declared to pin the transitive resolution, never imported: the
-        // `overrides` entry is what cleared CVE-2026-12143 (Gotcha #6). knip
-        // only sees the unused direct dependency. Do NOT "clean up" either one.
+        // Declared as a floor, never imported: CVE-2026-12143 (Gotcha #6) is
+        // fixed in 4.0.6, and axios 1.20.0 now requires ^4.0.6 itself, so the
+        // root `overrides` entry was dropped on 2026-10-18 as a no-op. This
+        // direct dependency keeps the floor if axios ever relaxes its range.
         'form-data',
       ],
     },
