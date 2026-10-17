@@ -29,7 +29,7 @@ docs/intents/
 └── <module>/<slug>.md
 ```
 
-Modules are folders, created when the first intent needs one: `blog`, `seo`, `contact`, `infra` (Docker, nginx, deploy, cron), `ci`, `frontend`, `backend`. The slug is kebab-case and names the outcome, not the mechanism (`health-check-alerting`, not `add-gh-issue-to-cron`).
+Modules are folders, created when the first intent needs one: `blog`, `seo`, `contact`, `infra` (Docker, nginx, deploy, cron), `ci`, `frontend`, `backend`, `claude` (Claude Code setup: `CLAUDE.md`, rules, hooks, settings). The slug is kebab-case and names the outcome, not the mechanism (`health-check-alerting`, not `add-gh-issue-to-cron`).
 
 ## Status
 
