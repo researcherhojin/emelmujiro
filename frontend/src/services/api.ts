@@ -18,8 +18,12 @@ const API_URL = env.API_URL;
 const API_TIMEOUT = 30000;
 
 // Check if we should use mock API
-// Mock is only used in tests or when no API URL is configured.
-const USE_MOCK_API = env.IS_TEST || !env.API_URL;
+// Mock is only used in tests or when no API URL is configured. The leading
+// `!import.meta.env.PROD` is replaced with a literal `false` by `vite build`,
+// so every mock branch and the `./mockData` fixtures are dropped from the
+// production bundle. It changes nothing reachable: a production build always
+// has a non-empty `env.API_URL` (see `config/env.ts`) and is never in test mode.
+const USE_MOCK_API = !import.meta.env.PROD && (env.IS_TEST || !env.API_URL);
 
 /** Build a resolved mock response matching Axios shape */
 function mockResponse<T>(data: T, status = 200, statusText = 'OK') {

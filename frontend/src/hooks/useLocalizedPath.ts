@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useNavigate, useLocation, type NavigateOptions } from 'react-router';
-
-const DEFAULT_LANG = 'ko';
+import { DEFAULT_LANG, langFromPath } from '../utils/langFromPath';
 
 function getLangPrefix(lang: string): string {
   return lang === DEFAULT_LANG ? '' : `/${lang}`;
@@ -12,7 +11,7 @@ function getLangPrefix(lang: string): string {
  * '/en/profile' → '/profile', '/profile' → '/profile'
  */
 export function stripLangPrefix(pathname: string): string {
-  return pathname.replace(/^\/(en)(\/|$)/, '$2').replace(/^\/$/, '/') || '/';
+  return (langFromPath(pathname) === 'en' ? pathname.slice('/en'.length) : pathname) || '/';
 }
 
 function buildLocalizedPath(path: string, lang: string): string {
@@ -29,8 +28,7 @@ export function useLocalizedPath() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const currentLang =
-    location.pathname === '/en' || location.pathname.startsWith('/en/') ? 'en' : DEFAULT_LANG;
+  const currentLang = langFromPath(location.pathname);
   const langPrefix = getLangPrefix(currentLang);
 
   /** Prefix a path with the current language */
@@ -39,7 +37,7 @@ export function useLocalizedPath() {
       // Don't prefix external URLs or hash-only paths
       if (path.startsWith('http') || path.startsWith('#')) return path;
       // Don't prefix paths that already have a language prefix
-      if (path.startsWith('/en/') || path === '/en') return path;
+      if (langFromPath(path) === 'en') return path;
       // Build localized path
       return buildLocalizedPath(path, currentLang);
     },
