@@ -1,5 +1,5 @@
 ---
-status: approved
+status: in-progress
 module: blog
 created: 2026-10-17
 updated: 2026-10-18
@@ -46,6 +46,9 @@ updated: 2026-10-18
   7. `CHANGELOG.md` entry.
 - **Risks**: `setupTests.ts` mocks `react-i18next` with `language: 'ko'`, so existing component tests keep Korean output; an `en` case needs a local re-mock (copy the shape from `setupTests.ts`, `.claude/rules/frontend.md` Testing). `BlogDetail.test.tsx` mocks `utils/dateFormat` wholesale, so a signature change there is invisible to it — assert the call arguments instead. Node's ICU must format `en-US` and `ko-KR` the same in CI (`ubuntu-24.04`, full ICU) as locally; assert exact strings once and let CI confirm.
 - **Verification**: the `Done when` list; `intent-reviewer` in a fresh session; the end-to-end `curl` checks after deploy.
+- **Departures during implementation**:
+  - Step 5: the local fallback reuses one matcher for the Korean post and for `localizePost(post, i18n.language)`, so on `/en` it also matches `tags_en` (which `localizePost` swaps in), not only title and description. The Spec asks for "the `localizePost` view of each post"; restricting it to two fields would have needed a second matcher.
+  - Step 6: `BlogDetail.test.tsx` keeps its wholesale `utils/dateFormat` mock. The language reaching `formatDate` is asserted in `BlogDetail.localization.test.tsx` instead, which renders the real `formatDate` and expects `October 16, 2026` on `/en` and `2026년 10월 16일` on `/` — the output itself rather than the call arguments.
 
 ## Outcome
 

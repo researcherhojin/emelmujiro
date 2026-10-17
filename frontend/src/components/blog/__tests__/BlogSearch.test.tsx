@@ -4,6 +4,9 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { HelmetProvider } from 'react-helmet-async';
 
+// The route language is mutable so a test can render BlogSearch on /en.
+const i18nState = vi.hoisted(() => ({ lang: 'ko' }));
+
 // Override global i18n mock — this test needs custom t() behavior
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -11,7 +14,7 @@ vi.mock('react-i18next', () => ({
       if (opts && 'count' in opts) return `${opts.count} ${key}`;
       return key;
     },
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
+    i18n: { language: i18nState.lang, changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: { children: React.ReactNode }) => children,
   initReactI18next: { type: '3rdParty', init: vi.fn() },
@@ -20,6 +23,7 @@ vi.mock('react-i18next', () => ({
 import BlogSearch from '../BlogSearch';
 import { BlogProvider } from '../../../contexts/BlogContext';
 import { api } from '../../../services/api';
+import type { BlogPost } from '../../../types';
 
 // Mock the api module properly
 vi.mock('../../../services/api', () => ({
@@ -32,7 +36,7 @@ vi.mock('../../../services/api', () => ({
 }));
 
 // Mock posts data for local search fallback
-const mockPosts = [
+const mockPosts: BlogPost[] = [
   {
     id: 1,
     title: 'React Tutorial',
@@ -46,6 +50,24 @@ const mockPosts = [
     likes: 0,
     view_count: 0,
     is_featured: false,
+  },
+  {
+    id: 2,
+    title: '경사 하강법',
+    slug: 'gradient-descent',
+    content: '한국어 본문',
+    description: '한국어 설명',
+    author: 'Author',
+    date: '2024-01-02',
+    category: 'ai',
+    tags: ['ml'],
+    likes: 0,
+    view_count: 0,
+    is_featured: false,
+    title_en: 'Gradient descent explained',
+    description_en: 'An English description',
+    content_html_en: '<p>English body</p>',
+    is_translated: true,
   },
 ];
 
@@ -85,6 +107,7 @@ describe('BlogSearch', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    i18nState.lang = 'ko';
     // Default mock implementation with complete AxiosResponse structure
     vi.mocked(api.searchBlogPosts).mockResolvedValue({
       data: {
@@ -760,6 +783,55 @@ describe('BlogSearch', () => {
     await waitFor(() => {
       // Results count should show
       expect(screen.getByText('1 blog.searchResults')).toBeInTheDocument();
+    });
+  });
+
+  it('passes the route language to the API search', async () => {
+    i18nState.lang = 'en';
+    renderWithProviders(<BlogSearch onSearch={vi.fn()} />);
+    fireEvent.change(screen.getByPlaceholderText('blog.searchPlaceholder'), {
+      target: { value: 'gradient' },
+    });
+    await waitFor(() => {
+      expect(api.searchBlogPosts).toHaveBeenCalledWith('gradient', 'en');
+    });
+  });
+
+  it('local fallback finds a translated post by its English title on /en only', async () => {
+    vi.mocked(api.searchBlogPosts).mockRejectedValue(new Error('offline'));
+    const onSearch = vi.fn();
+
+    i18nState.lang = 'en';
+    const { unmount } = renderWithProviders(<BlogSearch onSearch={onSearch} />);
+    fireEvent.change(screen.getByPlaceholderText('blog.searchPlaceholder'), {
+      target: { value: 'gradient' },
+    });
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenLastCalledWith([mockPosts[1]]);
+    });
+    unmount();
+
+    onSearch.mockClear();
+    i18nState.lang = 'ko';
+    renderWithProviders(<BlogSearch onSearch={onSearch} />);
+    fireEvent.change(screen.getByPlaceholderText('blog.searchPlaceholder'), {
+      target: { value: 'gradient' },
+    });
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenLastCalledWith([]);
+    });
+  });
+
+  it('local fallback on /en still finds a post by its Korean title', async () => {
+    vi.mocked(api.searchBlogPosts).mockRejectedValue(new Error('offline'));
+    const onSearch = vi.fn();
+    i18nState.lang = 'en';
+    renderWithProviders(<BlogSearch onSearch={onSearch} />);
+    fireEvent.change(screen.getByPlaceholderText('blog.searchPlaceholder'), {
+      target: { value: '경사' },
+    });
+    await waitFor(() => {
+      expect(onSearch).toHaveBeenLastCalledWith([mockPosts[1]]);
     });
   });
 });
