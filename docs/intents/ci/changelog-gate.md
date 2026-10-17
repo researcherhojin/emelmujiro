@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: ci
 created: 2026-10-17
 updated: 2026-10-18
@@ -52,4 +52,8 @@ updated: 2026-10-18
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+**Shipped 2026-10-18 in #575** (`27672176`). Every `Done when` item passed; the evidence is in the PR body. End to end: on #575 itself, `Test CHANGELOG check` and `Check CHANGELOG entry` both concluded `success`, because the PR changes `CHANGELOG.md`.
+
+- **Departures:** the five listed under `Plan`. Implementation was delegated to a subagent given only this file, as the README's step 4 says.
+- **Measurement corrected:** the first draft's 59/89/14 split did not reproduce; the author-based count in `Intent` (57/18/91, 13) replaced it before merge.
+- **Lesson:** re-derive every number a delegated agent or an earlier draft cites before it ships; the reviewer checks that a claim matches the intent, not that the intent's measurement is right.
