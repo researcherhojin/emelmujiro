@@ -5,6 +5,8 @@ from django.utils import timezone
 from datetime import timedelta
 import logging
 
+from api.constants import block_count_key, rate_limit_key, temp_block_key
+
 logger = logging.getLogger("security")
 
 
@@ -15,7 +17,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--action",
             type=str,
-            choices=["check", "clean", "unblock", "stats"],
+            choices=["check", "unblock", "stats"],
             default="check",
             help="Action to perform",
         )
@@ -26,8 +28,6 @@ class Command(BaseCommand):
 
         if action == "check":
             self.security_check()
-        elif action == "clean":
-            self.clean_old_logs()
         elif action == "unblock":
             self.unblock_ip(options.get("ip"))
         elif action == "stats":
@@ -77,23 +77,6 @@ class Command(BaseCommand):
         else:
             self.stdout.write(self.style.SUCCESS("✅ 주요 보안 설정이 올바르게 구성되었습니다."))
 
-    def clean_old_logs(self):
-        """Clean up old security logs"""
-        self.stdout.write(self.style.SUCCESS("=== 보안 로그 정리 ==="))
-
-        # Clean rate limiting cache entries older than 7 days
-        # In production, use Redis SCAN; here we simulate
-        cleaned_count = 0
-
-        # Clean rate_limit_ pattern cache entries
-        cache_keys = [f"rate_limit_192.168.1.{i}" for i in range(1, 255)]
-        for key in cache_keys:
-            if cache.get(key) is not None:
-                cache.delete(key)
-                cleaned_count += 1
-
-        self.stdout.write(self.style.SUCCESS(f"✅ {cleaned_count}개의 오래된 캐시 항목이 정리되었습니다."))
-
     def unblock_ip(self, ip_address):
         """Unblock an IP address"""
         if not ip_address:
@@ -103,20 +86,18 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"=== IP 차단 해제: {ip_address} ==="))
 
         # Remove temporary block
-        temp_block_key = f"temp_blocked_{ip_address}"
-        if cache.get(temp_block_key):
-            cache.delete(temp_block_key)
+        temp_key = temp_block_key(ip_address)
+        if cache.get(temp_key):
+            cache.delete(temp_key)
             self.stdout.write("✅ 임시 차단이 해제되었습니다.")
         else:
             self.stdout.write("ℹ️  임시 차단 상태가 아닙니다.")
 
         # Reset rate limiting
-        rate_limit_key = f"rate_limit_{ip_address}"
-        cache.delete(rate_limit_key)
+        cache.delete(rate_limit_key(ip_address))
 
         # Reset block count
-        block_count_key = f"block_count_{ip_address}"
-        cache.delete(block_count_key)
+        cache.delete(block_count_key(ip_address))
 
         self.stdout.write(f"✅ {ip_address}의 모든 제한이 해제되었습니다.")
         logger.info(f"IP unblocked by admin: {ip_address}")

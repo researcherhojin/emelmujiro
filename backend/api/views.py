@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, throttle_classes, action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+from rest_framework.throttling import AnonRateThrottle
 from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 from django.db.models import Q, F, Count
@@ -80,13 +80,6 @@ class NewsletterRateThrottle(AnonRateThrottle):
     """
 
     scope = "newsletter"
-
-
-class AdminRateThrottle(UserRateThrottle):
-    """Admin endpoint rate throttle"""
-
-    scope = "admin"
-    rate = "120/hour"
 
 
 def verify_recaptcha(recaptcha_response: str, request_ip: str = None) -> bool:
