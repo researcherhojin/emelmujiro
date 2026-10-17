@@ -44,6 +44,8 @@ Invariants only. Grep the code for everything else. Single app `api/`; `config/`
 
 `black` + `flake8` (line length 120) are the only Python lint gates. `[tool.ruff]` in `pyproject.toml` exists so the VS Code Ruff extension agrees with them (line length, `py312`, `api`/`config` first-party). Without it the extension ran Ruff's 413 default rules at line length 88. It is not run in CI, and the rest of `backend/` still carries 78 findings under it, measured 2026-10-04.
 
+**Re-lock with the image's uv, not the local one**: `backend/Dockerfile` copies uv `0.12.5` and builds with `uv sync --frozen`, while a newer local uv (Homebrew `0.13.0` on 2026-10-18) rewrote `uv.lock`'s `revision = 3` to `5` on a one-package `--upgrade-package`. Use `uvx uv@<Dockerfile version> lock --upgrade-package <pkg>` and confirm the diff touches only that package.
+
 ## Security
 
 - **File uploads**: Backend uses `uuid4` filenames (no user-supplied paths). Validated against extension whitelist + MIME type + 5 MB limit.
