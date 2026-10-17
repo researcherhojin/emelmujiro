@@ -282,6 +282,9 @@
     "xpanse",
     "yasg",
     "Zandieh",
-    "Zhipu"
+    "Zhipu",
+    "atexit",
+    "shutil",
+    "rmtree"
   ]
 }
