@@ -28,7 +28,7 @@ Full-stack monorepo (React 19 + Django 6), self-hosted via Docker behind a Cloud
 
 > Maintainer-local, gitignored, synced via `scripts/sync_private.sh`: design rationale in `.private/strategy.md`; session log + opsec notes in `.private/journal.md`; secret setup in `.private/secrets-setup.md`; **host topology, deploy forensics and incident history in `.private/operations.md`**. The repo is public, so those moved out on 2026-09-28; each entry left an actionable summary behind, and this file remains the source of truth for the rules themselves. Past git history (pre-`01c4db8`) retains earlier strategy versions.
 
-> **CLAUDE.md + `.claude/rules/` are the single source of truth** for operational rules. Do NOT duplicate these sections into README.
+> **CLAUDE.md + `.claude/rules/` are the single source of truth** for operational rules. Do NOT duplicate these sections into README; `AGENTS.md` is a short index for other coding agents that points here, so a rule changed here may need its one-line summary there updated too.
 
 ## Commands
 
@@ -55,8 +55,8 @@ uv run python manage.py test                                                  # 
 DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPITestCase          # Single backend test class
 uv run black . && uv run flake8 .                                             # Format + lint (line length 120)
 
-make verify-setup                                                             # 10-check dev-machine health pass. Run from root
-# Make shortcuts: run `make help` from root
+make verify-setup                                                             # 10-check dev-machine health pass; `make help` lists the main targets. Run from root
+./scripts/check-changelog.sh origin/main HEAD                                 # Repo checks CI runs, from root; cases: scripts/test-check-changelog.sh, .claude/hooks/test-guard-bash.sh
 ```
 
 ## Constraints
