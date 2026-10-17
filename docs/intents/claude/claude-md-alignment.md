@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: claude
 created: 2026-10-17
 updated: 2026-10-17
@@ -55,4 +55,12 @@ Line counts below include each paragraph's trailing blank line, measured on `4e5
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+**Shipped 2026-10-17 in #572** (`f74f5abb`); CHANGELOG entry "CLAUDE.md is under the official 200-line target". `CLAUDE.md` 286 → 199 lines, 49,559 → 33,014 bytes; all 19 Gotchas unchanged; the end-to-end `InstructionsLoaded` check passed for both new rules and the backend control.
+
+Departures from the Plan, each recorded in the PR:
+
+- **More globs.** `frontend-build.md` matches all of `frontend/src/**`, not the listed files, and `ci.md` also matches `backend/config/settings.py`. Found by `/code-review`: SEO, KakaoTalk and Tailwind rules apply across the source tree, and `LOG_DIR` couples to the cron log paths.
+- **More pointers.** `Quick Orientation` also sends dependency bumps to `ci.md` (Postgres majors) and `frontend-build.md` (Tailwind v4). Both dependabot-ignore rules were always loaded before this change.
+- **Deferred.** Trimming the bodies of Gotchas `#6`, `#7` and `#15`, and wrapping history in HTML comments. Neither changes `wc -l`; they belong to a separate pass if context bytes become the target.
+
+Lesson for the next intent: the `Done when` grep counted the whole file (21 on `main`, not 19). Scope a count to the section it claims to measure.
