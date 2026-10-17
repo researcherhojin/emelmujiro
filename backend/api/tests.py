@@ -2270,14 +2270,6 @@ class RequestSecurityMiddlewareTestCase(TestCase):
         response = self.client.get("/api/health/", REMOTE_ADDR="1.2.3.4")
         self.assertEqual(response.status_code, 403)
 
-    def test_permanently_blocked_ip_returns_403(self):
-        """Permanently blocked IP receives 403"""
-        from django.core.cache import cache
-
-        cache.set("permanently_blocked_ips", {"5.6.7.8"}, 3600)
-        response = self.client.get("/api/health/", REMOTE_ADDR="5.6.7.8")
-        self.assertEqual(response.status_code, 403)
-
     def test_rate_limiting_returns_429(self):
         """Exceeding rate limit returns 429"""
         from django.core.cache import cache
@@ -4274,22 +4266,6 @@ class SecurityCheckCommandTestCase(TestCase):
         output = out.getvalue()
         self.assertIn("CORS_ALLOW_ALL_ORIGINS", output)
 
-    def test_clean_action(self):
-        """Clean action runs and reports cleaned cache entries"""
-        from io import StringIO
-
-        from django.core.cache import cache
-
-        # Seed some cache entries
-        cache.set("rate_limit_192.168.1.1", 5, 3600)
-        cache.set("rate_limit_192.168.1.2", 10, 3600)
-
-        out = StringIO()
-        self.call_command("security_check", "--action=clean", stdout=out)
-        output = out.getvalue()
-        self.assertIn("보안 로그 정리", output)
-        self.assertIn("캐시 항목이 정리되었습니다", output)
-
     def test_unblock_action_with_blocked_ip(self):
         """Unblock action removes temporary block for given IP"""
         from io import StringIO
@@ -4352,6 +4328,40 @@ class SecurityCheckCommandTestCase(TestCase):
         self.call_command("security_check", "--action=stats", stdout=out)
         output = out.getvalue()
         self.assertIn("보안 통계", output)
+
+
+class SecurityCacheKeyTestCase(TestCase):
+    """The per-IP cache key strings are pinned: middleware writes them, security_check deletes them."""
+
+    def test_key_strings(self):
+        from .constants import block_count_key, rate_limit_key, temp_block_key
+
+        self.assertEqual(temp_block_key("1.2.3.4"), "temp_blocked_1.2.3.4")
+        self.assertEqual(rate_limit_key("1.2.3.4"), "rate_limit_1.2.3.4")
+        self.assertEqual(block_count_key("1.2.3.4"), "block_count_1.2.3.4")
+
+    def test_clean_action_removed(self):
+        """--action=clean only deleted hardcoded 192.168.1.x keys and was removed"""
+        from django.core.management import call_command
+        from django.core.management.base import CommandError
+
+        with self.assertRaises(CommandError):
+            call_command("security_check", "--action=clean")
+
+
+class AdminPaginationParamsTestCase(TestCase):
+    """Admin list endpoints share StandardPagination's max page size"""
+
+    def test_page_size_capped_at_standard_max(self):
+        from types import SimpleNamespace
+
+        from .admin_views import parse_pagination_params
+        from .pagination import StandardPagination
+
+        request = SimpleNamespace(query_params={"page": "2", "page_size": "500"})
+        self.assertEqual(StandardPagination.max_page_size, 100)
+        self.assertEqual(parse_pagination_params(request), (2, 100))
+        self.assertEqual(parse_pagination_params(SimpleNamespace(query_params={})), (1, 20))
 
 
 class AdminViewsActiveFilterTestCase(APITestCase):

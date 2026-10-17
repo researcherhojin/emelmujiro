@@ -7,6 +7,22 @@ CACHE_BLOG_CATEGORIES = "blog_categories"
 CACHE_BLOG_POST_LIST = "blog_post_list"
 CACHE_ADMIN_STATS = "admin_stats"
 
+
+# Per-IP cache keys shared by RequestSecurityMiddleware (writer) and the
+# security_check command (unblock deletes them by name). The strings are
+# load-bearing: changing one orphans every entry already in the cache.
+def temp_block_key(ip_address: str) -> str:
+    return f"temp_blocked_{ip_address}"
+
+
+def rate_limit_key(ip_address: str) -> str:
+    return f"rate_limit_{ip_address}"
+
+
+def block_count_key(ip_address: str) -> str:
+    return f"block_count_{ip_address}"
+
+
 SPAM_THRESHOLD = 2
 
 # 누적 실패 문의 시도가 이 값에 도달하면 스팸으로 차단 (bot은 검증을 반복 실패함)

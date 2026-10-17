@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponseForbidden, JsonResponse
 
-from api.constants import ONE_DAY, ONE_HOUR
+from api.constants import ONE_DAY, ONE_HOUR, block_count_key, rate_limit_key, temp_block_key
 from api.utils import get_client_ip
 
 logger = logging.getLogger("security")
@@ -72,14 +72,8 @@ class RequestSecurityMiddleware:
         return self.get_response(request)
 
     def is_blocked_ip(self, ip_address):
-        """Check if IP is blocked"""
-        # Permanent block list (ideally managed via Redis or DB)
-        blocked_ips = cache.get("permanently_blocked_ips", set())
-
-        # Temporary block check
-        temp_block_key = f"temp_blocked_{ip_address}"
-
-        return ip_address in blocked_ips or cache.get(temp_block_key, False)
+        """Check if IP is temporarily blocked (set by block_ip_temporarily)"""
+        return cache.get(temp_block_key(ip_address), False)
 
     def is_rate_limited(self, ip_address):
         """Fixed one-hour window per IP, starting at that IP's first request.
@@ -92,10 +86,10 @@ class RequestSecurityMiddleware:
         workers; per the docs, incr() on this backend was a two-step
         retrieve/update too.
         """
-        rate_limit_key = f"rate_limit_{ip_address}"
+        key = rate_limit_key(ip_address)
         now = time.time()
 
-        entry = cache.get(rate_limit_key)
+        entry = cache.get(key)
         # Reuse only an unexpired window in the current format; anything else
         # (no entry, a bare int written before this format, or an entry the
         # backend has not culled yet) starts a new one. Checking expiry here,
@@ -108,7 +102,7 @@ class RequestSecurityMiddleware:
 
         current_requests += 1
         remaining = window_start + ONE_HOUR - now
-        cache.set(rate_limit_key, (window_start, current_requests), remaining)
+        cache.set(key, (window_start, current_requests), remaining)
 
         return current_requests > RATE_LIMIT_PER_HOUR
 
@@ -141,13 +135,12 @@ class RequestSecurityMiddleware:
 
     def block_ip_temporarily(self, ip_address, duration=ONE_HOUR):
         """Temporarily block an IP address"""
-        temp_block_key = f"temp_blocked_{ip_address}"
-        cache.set(temp_block_key, True, duration)
+        cache.set(temp_block_key(ip_address), True, duration)
 
         # Increment block count
-        block_count_key = f"block_count_{ip_address}"
-        block_count = cache.get(block_count_key, 0) + 1
-        cache.set(block_count_key, block_count, ONE_DAY)
+        count_key = block_count_key(ip_address)
+        block_count = cache.get(count_key, 0) + 1
+        cache.set(count_key, block_count, ONE_DAY)
 
         # Escalation threshold check
         if block_count >= BLOCK_ESCALATION_THRESHOLD:

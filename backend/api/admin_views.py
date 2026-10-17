@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view, throttle_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
+from rest_framework.throttling import UserRateThrottle
 from django.db.models import Q, Count
 from django.db.models.functions import TruncDate
 from django.utils import timezone
@@ -8,17 +9,26 @@ from django.core.cache import cache
 from datetime import timedelta
 
 from .constants import CACHE_ADMIN_STATS
-from .views import AdminRateThrottle
+from .pagination import StandardPagination
 from .serializers import AdminUserSerializer
 from .models import BlogPost, Contact, SiteVisit
 
 from django.contrib.auth.models import User
 
 
+class AdminRateThrottle(UserRateThrottle):
+    """Admin endpoint rate throttle"""
+
+    scope = "admin"
+    rate = "120/hour"
+
+
 def parse_pagination_params(request, default_page_size=20):
     """Parse and validate page/page_size from query params. Returns (page, page_size) or raises ValueError."""
     page = max(1, int(request.query_params.get("page", 1)))
-    page_size = min(100, max(1, int(request.query_params.get("page_size", default_page_size))))
+    page_size = min(
+        StandardPagination.max_page_size, max(1, int(request.query_params.get("page_size", default_page_size)))
+    )
     return page, page_size
 
 
