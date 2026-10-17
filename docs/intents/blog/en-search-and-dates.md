@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: blog
 created: 2026-10-17
 updated: 2026-10-18
@@ -52,4 +52,11 @@ updated: 2026-10-18
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+**Shipped 2026-10-18 in #577** (`830fe704`); production reports `830fe704`. Every `Done when` item passed; the local evidence is in the PR body.
+
+- **End to end, measured on production after the deploy:**
+  - `?search=picking&lang=en` → 1 post (`Picking an Open-Source LLM…`, a word in none of the 3 posts' Korean fields); `?search=picking` → 0.
+  - `?search=오픈소스` → 1 with and without `lang=en`, so a Korean query still works on `/en`; `?search=LLM` → 2, and 3 with `lang=en`.
+  - `/en/insights` raw bytes: `March 27, 2026` × 2 and `October 16, 2026` × 1, no Korean date; `/insights`: `2026년 3월 27일` × 2 and `2026년 10월 16일` × 1.
+- **Departures:** the two recorded under `Plan`, plus one found by `intent-reviewer`: the new test class had been inserted between `BlogPostWriteAPITestCase` and its `@override_settings` decorator, fixed in the PR before merge.
+- **Lesson:** inserting a class above an existing one can steal its decorator, and every test still passes. Read the diff's hunk boundaries, not only the test result.
