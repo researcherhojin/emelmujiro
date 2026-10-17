@@ -10,6 +10,7 @@ import Layout from './components/layout/Layout';
 import { PageLoading, RouteFallback } from './components/common/UnifiedLoading';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { trackPageView } from './utils/analytics';
+import { langFromPath } from './utils/langFromPath';
 import './i18n';
 
 // Lazy load even more components for better code splitting
@@ -97,8 +98,7 @@ HomePage.displayName = 'HomePage';
 const LanguageLayout: React.FC = memo(() => {
   const location = useLocation();
   const { i18n } = useTranslation();
-  const targetLang =
-    location.pathname === '/en' || location.pathname.startsWith('/en/') ? 'en' : 'ko';
+  const targetLang = langFromPath(location.pathname);
 
   useEffect(() => {
     if (i18n.language !== targetLang) {

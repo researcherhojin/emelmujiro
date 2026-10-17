@@ -25,6 +25,16 @@ describe('stripLangPrefix', () => {
   it('does not strip "en" when not a prefix segment', () => {
     expect(stripLangPrefix('/enable')).toBe('/enable');
     expect(stripLangPrefix('/content')).toBe('/content');
+    expect(stripLangPrefix('/enx')).toBe('/enx');
+  });
+
+  it('strips only the leading segment and keeps a trailing slash', () => {
+    expect(stripLangPrefix('/en/insights/')).toBe('/insights/');
+    expect(stripLangPrefix('/en/en')).toBe('/en');
+  });
+
+  it('returns "/" for an empty pathname', () => {
+    expect(stripLangPrefix('')).toBe('/');
   });
 });
 

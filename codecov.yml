@@ -53,11 +53,9 @@ ignore:
   - "**/*.test.*"
   - "**/*.spec.*"
   - "**/test-utils/**"
-  - "**/mocks/**"
   - "frontend/src/setupTests.ts"
   - "backend/api/tests.py"
   - "backend/api/tests_urls.py"
   - "backend/api/migrations/**"
   # Barrel exports — no executable logic, V8 cannot track re-exports
   - "frontend/src/constants/index.ts"
-  - "frontend/src/test-utils/index.ts"
