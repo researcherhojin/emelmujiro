@@ -256,7 +256,7 @@ const BlogDetailPage: React.FC = memo(() => {
                   dateTime={post.date}
                   className="text-[11px] tracking-wide text-gray-500 dark:text-gray-400"
                 >
-                  {formatDate(post.date)}
+                  {formatDate(post.date, i18n.language)}
                 </time>
               )}
             </div>

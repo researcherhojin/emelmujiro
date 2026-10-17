@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import type { BlogPost } from '../../../types';
@@ -100,6 +100,15 @@ describe('BlogDetail language versions', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('한국어 제목');
     expect(screen.getByText('한국어 본문')).toBeInTheDocument();
     expect(state.seo).toMatchObject({ translated: false, lang: 'ko' });
+  });
+
+  test('the date reads in English on /en and in Korean on /', () => {
+    renderAt('en', korean);
+    expect(screen.getByText('October 16, 2026')).toBeInTheDocument();
+    expect(screen.queryByText('2026년 10월 16일')).not.toBeInTheDocument();
+    cleanup();
+    renderAt('ko', translated);
+    expect(screen.getByText('2026년 10월 16일')).toBeInTheDocument();
   });
 
   test('a post from an API without is_translated is treated as untranslated', () => {

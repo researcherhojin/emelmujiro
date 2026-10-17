@@ -2,6 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router';
 
+// The route language is mutable so a test can render the card on /en.
+const i18nState = vi.hoisted(() => ({ lang: 'ko' }));
+
 // Override global i18n mock — this test needs custom t() behavior
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -9,7 +12,7 @@ vi.mock('react-i18next', () => ({
       if (opts && 'title' in opts) return `${opts.title} ${key}`;
       return key;
     },
-    i18n: { language: 'ko', changeLanguage: vi.fn() },
+    i18n: { language: i18nState.lang, changeLanguage: vi.fn() },
   }),
   Trans: ({ children }: { children: React.ReactNode }) => children,
   initReactI18next: { type: '3rdParty', init: vi.fn() },
@@ -142,6 +145,21 @@ describe('BlogCard Component', () => {
       expect(timeElement.tagName).toBe('TIME');
       expect(timeElement).toHaveAttribute('dateTime', '2024-01-01');
     });
+  });
+
+  it('formats the date in Korean on / and in English on /en', () => {
+    const { unmount } = renderWithRouter(<BlogCard post={mockPost} />);
+    expect(screen.getByText('2024년 1월 1일').tagName).toBe('TIME');
+    unmount();
+
+    i18nState.lang = 'en';
+    try {
+      renderWithRouter(<BlogCard post={mockPost} />);
+      expect(screen.getByText('January 1, 2024').tagName).toBe('TIME');
+      expect(screen.queryByText('2024년 1월 1일')).not.toBeInTheDocument();
+    } finally {
+      i18nState.lang = 'ko';
+    }
   });
 
   it('does not show date when date is not provided', async () => {

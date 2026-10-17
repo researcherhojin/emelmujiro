@@ -171,7 +171,9 @@ export const api = {
     }
     return axiosInstance.get<BlogPost>(`blog-posts/${id}/`);
   },
-  searchBlogPosts: (query: string) => {
+  // `lang` is the route language; on /en the backend also matches the
+  // English fields. Any other language sends the Korean-only search.
+  searchBlogPosts: (query: string, lang?: string) => {
     if (USE_MOCK_API) {
       const filtered = mockBlogPosts.filter(
         (post) =>
@@ -182,7 +184,7 @@ export const api = {
       return mockResponse(paginateMockData(filtered, 1, 10));
     }
     return axiosInstance.get<PaginatedResponse<BlogPost>>('blog-posts/', {
-      params: { search: query },
+      params: lang?.startsWith('en') ? { search: query, lang: 'en' } : { search: query },
     });
   },
   getBlogCategories: () => {

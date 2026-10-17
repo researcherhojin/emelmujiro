@@ -56,6 +56,13 @@ describe('DateFormat Utility', () => {
       expect(formatDate('2025-10-01')).toBe('2025년 10월 1일');
     });
 
+    it('formats in English on an English route and in Korean otherwise', () => {
+      expect(formatDate('2026-10-18', 'en')).toBe('October 18, 2026');
+      expect(formatDate('2026-10-18', 'en-US')).toBe('October 18, 2026');
+      expect(formatDate('2026-10-18', 'ko')).toBe('2026년 10월 18일');
+      expect(formatDate('2026-10-18')).toBe('2026년 10월 18일');
+    });
+
     it('should handle date objects converted to string', () => {
       const date = new Date('2025-05-20');
       const result = formatDate(date.toISOString());

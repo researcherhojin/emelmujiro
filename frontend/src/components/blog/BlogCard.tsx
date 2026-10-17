@@ -60,7 +60,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
                     dateTime={date}
                     className="text-xs tracking-wide text-gray-500 dark:text-gray-400"
                   >
-                    {formatDate(date)}
+                    {formatDate(date, i18n.language)}
                   </time>
                 )}
               </div>
@@ -122,7 +122,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
                   dateTime={date}
                   className="text-[11px] tracking-wide text-gray-500 dark:text-gray-400"
                 >
-                  {formatDate(date)}
+                  {formatDate(date, i18n.language)}
                 </time>
               )}
             </div>

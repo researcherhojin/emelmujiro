@@ -1,10 +1,16 @@
-export const formatDate = (dateString: string): string => {
+/**
+ * Format a date string as a long calendar date in the route language:
+ * `en-US` ("October 18, 2026") when `lang` starts with `en`, otherwise
+ * `ko-KR` ("2026년 10월 18일"). Callers that pass no language get Korean.
+ */
+export const formatDate = (dateString: string, lang?: string): string => {
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   };
-  return new Date(dateString).toLocaleDateString('ko-KR', options);
+  const locale = lang?.startsWith('en') ? 'en-US' : 'ko-KR';
+  return new Date(dateString).toLocaleDateString(locale, options);
 };
 
 /**

@@ -176,6 +176,54 @@ class BlogPostAPITestCase(APITestCase):
 
 
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})
+class BlogPostEnglishSearchTestCase(APITestCase):
+    """?search= matches the English fields only when lang=en is sent"""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.post = BlogPost.objects.create(
+            title="한국어 제목",
+            description="한국어 설명",
+            content="한국어 본문",
+            content_html="<p>한국어 본문</p>",
+            title_en="Gradient descent explained",
+            description_en="An English description",
+            content_html_en="<p>English body</p>",
+            category="ai",
+        )
+        cls.post.mark_translation_current()
+        cls.post.save()
+        cls.url = reverse("blog-list")
+
+    def slugs(self, params):
+        response = self.client.get(self.url, params)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        return [item["slug"] for item in response.data["results"]]
+
+    def test_english_word_absent_from_korean_fields(self):
+        """The fixture word appears only in the English title"""
+        self.assertTrue(self.post.is_translated)
+        for field in ("title", "description", "content", "content_html"):
+            self.assertNotIn("gradient", getattr(self.post, field).lower())
+
+    def test_english_query_with_lang_en_finds_post(self):
+        self.assertEqual(self.slugs({"search": "gradient", "lang": "en"}), [self.post.slug])
+
+    def test_english_query_without_lang_misses_post(self):
+        self.assertEqual(self.slugs({"search": "gradient"}), [])
+
+    def test_other_lang_value_keeps_korean_only_search(self):
+        self.assertEqual(self.slugs({"search": "gradient", "lang": "ko"}), [])
+
+    def test_korean_query_with_lang_en_still_finds_post(self):
+        self.assertEqual(self.slugs({"search": "한국어", "lang": "en"}), [self.post.slug])
+
+    def test_english_description_and_body_match_with_lang_en(self):
+        self.assertEqual(self.slugs({"search": "english description", "lang": "en"}), [self.post.slug])
+        self.assertEqual(self.slugs({"search": "english body", "lang": "en"}), [self.post.slug])
+
+
+@override_settings(REST_FRAMEWORK={**NO_THROTTLE})
 class BlogPostWriteAPITestCase(APITestCase):
     """Tests for BlogPost write API endpoints (create, update, delete)"""
 

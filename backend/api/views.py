@@ -196,9 +196,17 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         if search:
             # Limit search query length to prevent abuse
             search = search[:200]
-            queryset = queryset.filter(
-                Q(title__icontains=search) | Q(description__icontains=search) | Q(content__icontains=search)
-            )
+            match = Q(title__icontains=search) | Q(description__icontains=search) | Q(content__icontains=search)
+            # /en sends lang=en: the English fields add matches on top of the
+            # Korean ones, because /en still lists untranslated posts in Korean.
+            # Without lang=en the query is exactly the Korean-only one.
+            if self.request.query_params.get("lang") == "en":
+                match |= (
+                    Q(title_en__icontains=search)
+                    | Q(description_en__icontains=search)
+                    | Q(content_html_en__icontains=search)
+                )
+            queryset = queryset.filter(match)
         if featured and featured.lower() == "true":
             queryset = queryset.filter(is_featured=True)
 

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { BlogPost } from '../../types';
 import { useBlog } from '../../contexts/BlogContext';
 import { api } from '../../services/api';
+import { localizePost } from '../../utils/localizePost';
 import logger from '../../utils/logger';
 
 interface BlogSearchProps {
@@ -11,7 +12,7 @@ interface BlogSearchProps {
 }
 
 const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { posts } = useBlog();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<BlogPost[]>([]);
@@ -63,7 +64,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
 
       try {
         // Try API search first
-        const response = await api.searchBlogPosts(term);
+        const response = await api.searchBlogPosts(term, i18n.language);
         if (response.data && response.data.results) {
           const results = response.data.results;
           setSearchResults(results);
@@ -74,21 +75,24 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
         logger.warn('API search failed, using local search:', error);
       }
 
-      // Fallback to local search
+      // Fallback to local search: the Korean fields, plus the view the
+      // reader sees (English title, description and tags on /en for a
+      // translated post; identical to the Korean post otherwise).
       const lowerTerm = term.toLowerCase();
+      const matches = (post: BlogPost) =>
+        post.title.toLowerCase().includes(lowerTerm) ||
+        post.content.toLowerCase().includes(lowerTerm) ||
+        (post.description && post.description.toLowerCase().includes(lowerTerm)) ||
+        (post.category && post.category.toLowerCase().includes(lowerTerm)) ||
+        (post.tags && post.tags.some((tag) => tag.toLowerCase().includes(lowerTerm)));
       const results = posts.filter(
-        (post) =>
-          post.title.toLowerCase().includes(lowerTerm) ||
-          post.content.toLowerCase().includes(lowerTerm) ||
-          (post.description && post.description.toLowerCase().includes(lowerTerm)) ||
-          (post.category && post.category.toLowerCase().includes(lowerTerm)) ||
-          (post.tags && post.tags.some((tag) => tag.toLowerCase().includes(lowerTerm)))
+        (post) => matches(post) || matches(localizePost(post, i18n.language))
       );
 
       setSearchResults(results);
       if (onSearch) onSearch(results);
     },
-    [posts, onSearch]
+    [posts, onSearch, i18n.language]
   );
 
   // Handle search input change

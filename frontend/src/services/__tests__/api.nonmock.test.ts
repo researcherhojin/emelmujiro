@@ -161,6 +161,18 @@ describe('API Service - Non-Mock Mode (real axios paths)', () => {
       });
     });
 
+    it('sends lang=en with searchBlogPosts only on an English route', async () => {
+      const { api } = await import('../api');
+      await api.searchBlogPosts('react', 'en');
+      expect(mockGet).toHaveBeenLastCalledWith('blog-posts/', {
+        params: { search: 'react', lang: 'en' },
+      });
+      await api.searchBlogPosts('react', 'ko');
+      expect(mockGet).toHaveBeenLastCalledWith('blog-posts/', {
+        params: { search: 'react' },
+      });
+    });
+
     it('should call axios.get for getBlogCategories', async () => {
       const { api } = await import('../api');
       await api.getBlogCategories();
