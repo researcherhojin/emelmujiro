@@ -47,7 +47,7 @@ updated: 2026-10-18
   - Two steps, `Test CHANGELOG check` and `Check CHANGELOG entry`, not one: an `if:` applies to a whole step, so the test could not run for dependabot PRs while the check skipped them.
   - Both run **last** in the job, not after `Check commit messages`: a failed step skips every later step, so a missing entry there would have hidden the file size, SEO, i18n, badge, route, spell and cron results.
   - The PR range uses `pull_request.head.sha`, not `github.sha`, which is the synthetic merge commit.
-  - A sixth test case, an unreadable range expecting exit `2`, covers the failure mode the Risks name.
+  - Three test cases beyond the five in `Done when`: an unreadable range expecting exit `2` (the failure mode the Risks name), `docs/` outside `docs/intents/` expecting `1`, and code renamed into `docs/intents/` expecting `1`. The last two pin the exemption's edge and `--no-renames`: without them, broadening the pattern to `docs/*` or dropping `--no-renames` still passed every case.
   - `.claude/rules/ci.md`'s `CI job gating` list of what `Repo Checks` holds gains the CHANGELOG entry, besides the new paragraph.
 
 ## Outcome

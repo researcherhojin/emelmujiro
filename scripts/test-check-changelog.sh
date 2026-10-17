@@ -58,6 +58,18 @@ check 0 'empty range' "$base" "$base"
 mixed=$(commit src/app.js)
 check 1 'docs/intents/ mixed with code' "$base" "$mixed"
 
+# The exemption is docs/intents/, not docs/.
+g checkout -q -b other-docs "$base"
+other_docs=$(commit docs/other.md)
+check 1 'docs/ outside docs/intents/' "$base" "$other_docs"
+
+# A rename lists both sides, so moving code into docs/intents/ is not exempt.
+# The file is moved unchanged, a 100% rename, so rename detection does fire.
+g checkout -q -b move "$code"
+mkdir -p "$tmp/docs/intents" && g mv src/app.js docs/intents/app.js
+g commit -q -m 'test: move'
+check 1 'code moved into docs/intents/' "$code" "$(g rev-parse HEAD)"
+
 # A range git cannot read must fail loudly, never pass on zero files.
 check 2 'unreadable range' "$base" 0123456789abcdef0123456789abcdef01234567
 
