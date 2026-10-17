@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: claude
 created: 2026-10-18
 updated: 2026-10-18
@@ -40,4 +40,7 @@ updated: 2026-10-18
 
 ## Outcome
 
-<!-- Filled when status becomes shipped. -->
+**Shipped 2026-10-18 in #574** (`68abe5b1`). Every `Done when` item passed; the evidence is in the PR body.
+
+- **Departure:** the review ran in a fresh headless session (`claude -p '@"intent-reviewer (agent)" …'`), not as a subagent of the implementing session. A session loads `.claude/agents/` at startup, so an agent created mid-session is not available to it. That was found by trying, and it doubles as the end-to-end check that a new session picks the agent up.
+- **Lesson:** to test a new skill or agent, use a fresh session from the start. A skill was usable in the session that created it; an agent was not.
