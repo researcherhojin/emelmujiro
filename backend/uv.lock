@@ -314,7 +314,7 @@ wheels = [
 
 [[package]]
 name = "drf-yasg"
-version = "1.21.17"
+version = "1.21.18"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
@@ -326,9 +326,9 @@ dependencies = [
     { name = "swagger-spec-validator" },
     { name = "uritemplate" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/af/5a/97fc8f3371a84708619a337229c554ce87dc832ef031c27802f03af657ca/drf_yasg-1.21.17.tar.gz", hash = "sha256:05b4fcac07f4359aa0af51adee8ede2e74208a41d43ca0350a50a0bb9e2f3b76", size = 5350342, upload-time = "2026-10-04T12:59:39.226Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/76/41/b2ac9af26fb1a5e6ebabdbc24e078f9d382183e2059e7eded44ab9000cf4/drf_yasg-1.21.18.tar.gz", hash = "sha256:c93b1395da8f3b912085c96b45f561b6c5d6326825ea0040761bc8c744acba52", size = 6940857, upload-time = "2026-10-09T16:45:08.57Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6d/b1/582f31593df3b5efaf5338fd064db3cf4ec1f17d62f768b63af9c3de84a5/drf_yasg-1.21.17-py3-none-any.whl", hash = "sha256:e89360056070a816ecf9fb54bf7d8b98ee19596f4661124cacbb7874735999ca", size = 4947408, upload-time = "2026-10-04T12:59:37.205Z" },
+    { url = "https://files.pythonhosted.org/packages/24/9d/0fd092986f7b2dc00142f3e9deed742db6e56e2c74f553f8cd537a2e7438/drf_yasg-1.21.18-py3-none-any.whl", hash = "sha256:eb26c56bc7e71e7098a817660c7d8e83b858b16e372864218de29bb06d681611", size = 6552354, upload-time = "2026-10-09T16:45:06.283Z" },
 ]
 
 [[package]]
@@ -366,7 +366,7 @@ requires-dist = [
     { name = "django-extensions", marker = "extra == 'dev'", specifier = "==4.1" },
     { name = "djangorestframework", specifier = "==3.18.3" },
     { name = "djangorestframework-simplejwt", specifier = "==5.5.1" },
-    { name = "drf-yasg", specifier = "==1.21.17" },
+    { name = "drf-yasg", specifier = "==1.21.18" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "gunicorn", specifier = "==26.2.0" },
     { name = "ipython", marker = "extra == 'dev'", specifier = "==9.17.1" },
