@@ -43,8 +43,21 @@ jobs:
     # for `success` therefore covers both without a `skipped` escape hatch.
     # Cost: a patch merge now waits for quick-checks plus the test job --
     # roughly 1.5-2 min instead of ~15 s.
-    needs: affected-tests
-    if: github.actor == 'dependabot[bot]' && needs.affected-tests.result == 'success'
+    #
+    # The two lint jobs gate it too (2026-10-18). Tests alone let #543 merge
+    # while `Frontend Lint` (which runs tsc) had already failed, and a
+    # formatter bump such as black can fail `Backend Lint` with every test
+    # green. Neither lint job has a job-level `if:`, so, like affected-tests,
+    # each is `skipped` only behind a failed quick-checks. They run in
+    # parallel with the tests: across the 7 auto-merged PRs of 2026-10-17
+    # (#587, #588, #594, #596, #597, #598, #601) the later lint finished 0 s
+    # to 38 s after `Test Affected Code`, so that is the added wait.
+    needs: [affected-tests, frontend-lint, backend-lint]
+    if: >-
+      github.actor == 'dependabot[bot]' &&
+      needs.affected-tests.result == 'success' &&
+      needs.frontend-lint.result == 'success' &&
+      needs.backend-lint.result == 'success'
     permissions:
       contents: write
       pull-requests: write
