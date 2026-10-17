@@ -2,7 +2,7 @@
 status: dropped
 module: infra
 created: 2026-10-17
-updated: 2026-10-17
+updated: 2026-10-18
 ---
 
 # A failing health check reaches a person, not only a log file
@@ -24,5 +24,7 @@ updated: 2026-10-17
 What a notifier would add is limited to failures the external probe cannot see while `/api/health/` answers: the `umami` or `umami-db` container down, or disk above 90 %. A frontend nginx outage is not on that list: the external probe goes through its `location /api` proxy, so it already fails then. Against that, it needs dedup, an absolute `gh` path, and cron-context auth verified on the deploy host — which cannot be tested end to end from a dev machine.
 
 The cron and its log stay: they are the forensic record after an incident.
+
+**Update 2026-10-18 — the host-down case now has an external alarm at no cost**: a Cloudflare Tunnel Health Alert (free on every Zero Trust plan, per the Cloudflare notifications docs) emails the owner when the site's tunnel becomes healthy, degraded or down. It is configured in the Cloudflare dashboard, not in this repo; the details live in the private operations notes. It covers the host or `cloudflared` going away — the 2026-08 FileVault outage shape — within minutes instead of the daily probe's hours. It does not cover a container down behind a healthy tunnel, which stays as accepted above.
 
 **Revisit if** an outage of one of those host-only kinds is found late. The fix then is an external uptime monitor watching more than `/api/health/`, not a notifier inside the cron.
