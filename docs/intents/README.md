@@ -19,7 +19,7 @@ The sections follow the official explore → plan → implement → commit workf
 2. **Spec — interview.** Have Claude interview you with the `AskUserQuestion` tool until the open questions are closed, then fill `Spec`. The official bar for a spec: "The most useful specs are self-contained: they name the files and interfaces involved, state what is out of scope, and end with an end-to-end verification step that proves the feature works." The template's `Spec` fields are those three, plus the approach.
 3. **Plan — plan mode.** Still in plan mode, have Claude write the implementation plan (`Ctrl+G` opens it in your editor), and copy the approved plan into `Plan`.
 4. **Implement — fresh session.** "Once the spec is complete, start a fresh session to execute it." Point the new session at the intent file; it needs no other context.
-5. **Verify and review.** Run the `Done when` checks and show their output; then run the bundled `/code-review` for a review in a fresh subagent context. The official caution applies: a reviewer asked for gaps usually reports some, so act on gaps in correctness or the stated requirements and treat the rest as optional.
+5. **Verify and review.** Run the `Done when` checks and show their output; then run the `intent-reviewer` subagent against the Spec and the bundled `/code-review` for correctness, each in a fresh subagent context. The official caution applies: a reviewer asked for gaps usually reports some, so act on gaps in correctness or the stated requirements and treat the rest as optional.
 6. **Ship.** PR, merge, deploy, then fill `Outcome` and set `status`.
 
 ## Layout
@@ -37,13 +37,13 @@ Modules are folders, created when the first intent needs one: `blog`, `seo`, `co
 
 `status:` in the front matter is one of:
 
-| Status        | Meaning                                                     | Sections filled    |
-| ------------- | ----------------------------------------------------------- | ------------------ |
-| `draft`       | Problem stated, approach or a decision still open           | Intent             |
-| `approved`    | Approach decided                                            | Intent, Spec       |
-| `in-progress` | A branch exists                                             | Intent, Spec, Plan |
-| `shipped`     | Merged and deployed; `Outcome` cites the commit or PR       | all                |
-| `dropped`     | Decided against; `Outcome` says why, so it is not re-raised | Intent, Outcome    |
+| Status        | Meaning                                                     | Sections filled     |
+| ------------- | ----------------------------------------------------------- | ------------------- |
+| `draft`       | Problem stated, approach or a decision still open           | Intent              |
+| `approved`    | Approach decided; the Plan and the branch may follow        | Intent, Spec (Plan) |
+| `in-progress` | Implementation started                                      | Intent, Spec, Plan  |
+| `shipped`     | Merged and deployed; `Outcome` cites the commit or PR       | all                 |
+| `dropped`     | Decided against; `Outcome` says why, so it is not re-raised | Intent, Outcome     |
 
 A `dropped` intent stays in the tree. The reasoning for not doing something is as reusable as the reasoning for doing it.
 

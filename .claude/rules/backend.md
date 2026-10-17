@@ -36,6 +36,8 @@ Invariants only. Grep the code for everything else. Single app `api/`; `config/`
 
 **Backend test output is intentionally noisy** — `ERROR`/`WARNING` lines come from negative-path tests (XSS/SQL/path-traversal middleware, SMTP/DB failure paths, JWT invalid tokens, reCAPTCHA fallbacks, blocked IPs). Trust `Ran N tests OK` + exit code 0, not the absence of log lines.
 
+**Tests keep the production `FileBasedCache`, in a `mkdtemp` directory** (`config/settings.py`, `Test environment overrides`, removed at exit), so a run never reads or writes the dev server's `backend/.cache`. Do not reintroduce a `DummyCache` default: `CategoryCacheTestCase` and `RateLimitWindowTestCase` need a real cache, and the early-block `DummyCache` that claimed to isolate tests never applied (overridden by the later `CACHES`, removed in #576).
+
 ## Tooling
 
 **Inside the backend container, run Django through `uv run`**: `docker exec emelmujiro-backend python manage.py …` fails with `No module named 'django'`, because the image's virtual environment is uv-managed (`uv sync` in `backend/Dockerfile`). Use `docker exec -i emelmujiro-backend uv run python manage.py shell < script.py` for one-off data scripts.
