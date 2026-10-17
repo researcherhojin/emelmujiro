@@ -1,8 +1,8 @@
 ---
-status: approved
+status: in-progress
 module: backend
 created: 2026-10-17
-updated: 2026-10-17
+updated: 2026-10-18
 ---
 
 # Backend tests use their own cache directory, and the dead `DummyCache` block is gone
@@ -24,7 +24,10 @@ updated: 2026-10-17
 
 ## Plan
 
-<!-- Filled before the first edit. -->
+- **Changes**: (1) delete the `DummyCache` line and its comment from the early `if "test" in sys.argv` block; (2) in the `Test environment overrides` block at the end of `settings.py`, after the real `CACHES` is defined, set `CACHES["default"]["LOCATION"]` to `tempfile.mkdtemp(prefix="emelmujiro-test-cache-")` and remove it at exit with `atexit.register(shutil.rmtree, …, ignore_errors=True)`. Backend, `TIMEOUT` and `MAX_ENTRIES` stay those of production, which `RateLimitWindowTestCase` relies on.
+- **Risks**: a parallel test run would need one directory per worker; no caller passes `--parallel` (`Makefile`, `pr-checks.yml`, `main-ci-cd.yml`, `scripts/update-test-counts.sh`), and `coverage run manage.py test` keeps `sys.argv[1] == "test"`.
+- **Results** (2026-10-18): `settings.CACHES` under `manage.py test` prints `FileBasedCache` with `LOCATION` `$TMPDIR/emelmujiro-test-cache-<random>`; `DATABASE_URL="" uv run python manage.py test` → `Ran 387 tests`, `OK`; `ls -lT backend/.cache | md5 -q` is `d82a4697…` before and after, and no `emelmujiro-test-cache-*` directory remains. Control: the same run with `main`'s settings changed it to `633e8b26…`.
+- **Verification**: the `Done when` list; `backend/.cache` compared by a listing of names, sizes and mtimes before and after a full run.
 
 ## Outcome
 

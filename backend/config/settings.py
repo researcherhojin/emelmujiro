@@ -1,6 +1,9 @@
 from pathlib import Path
+import atexit
 import os
+import shutil
 import sys
+import tempfile
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
 
@@ -36,8 +39,6 @@ if "test" in sys.argv:
     SECURE_SSL_REDIRECT = False
     # Use fast password hasher for tests (PBKDF2 is intentionally slow)
     PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
-    # DummyCache prevents middleware rate limiting from leaking between test classes
-    CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
 
 # Application definition
 CUSTOM_APPS = [
@@ -498,3 +499,8 @@ if "test" in sys.argv:
     # STATICFILES_STORAGE override that used to sit beside it was dead for the
     # same reason as the one at the top of this file and has been removed.
     MIDDLEWARE = [m for m in MIDDLEWARE if "whitenoise" not in m]
+    # Tests keep the production cache backend (RateLimitWindowTestCase depends
+    # on FileBasedCache semantics) but write to a throwaway directory, so a
+    # test run never reads or clobbers the dev server's backend/.cache.
+    CACHES["default"]["LOCATION"] = tempfile.mkdtemp(prefix="emelmujiro-test-cache-")
+    atexit.register(shutil.rmtree, CACHES["default"]["LOCATION"], ignore_errors=True)
