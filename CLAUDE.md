@@ -11,7 +11,7 @@ This repo's owner runs a quant trading platform alongside this codebase, so the 
 This root file holds the always-loaded, cross-cutting rules. Each file in `.claude/rules/` auto-loads when Claude reads a file matching its `paths`; a situation is not a file read, so by task type, read the named rule file first:
 
 - **UI / page work** → `frontend.md` (Architecture, UI Conventions, Testing, Security incl. blog HTML sanitization — paths `frontend/**`) + `frontend-build.md` (SEO, KakaoTalk WebView, Tailwind 3.x — loads on any `frontend/src` read)
-- **Build / deploy / CI, or a red CI check** → `ci.md` (Compose-only images, Operational logs, CI job gating, Auto-merged commits do not deploy, Spell check, README drift gates) + `frontend-build.md` (SSG prerender + nginx routing, E2E target, Lighthouse, CSP, Tailwind, Bundle size) + `Constraints` (Deployment, Branch protection) + `Gotchas` #17 (backend deploy: verify by commit, never a bare `200`)
+- **Build / deploy / CI, or a red CI check** → `ci.md` (Compose-only images, Operational logs, CI job gating, CHANGELOG entry, Auto-merged commits do not deploy, Spell check, README drift gates) + `frontend-build.md` (SSG prerender + nginx routing, E2E target, Lighthouse, CSP, Tailwind, Bundle size) + `Constraints` (Deployment, Branch protection) + `Gotchas` #17 (backend deploy: verify by commit, never a bare `200`)
 - **Search Console report** → `frontend-build.md` (SEO, SSG prerender + nginx routing). Get the URL from the reason's drill-down page first, then check raw bytes (`curl`) and the rendered DOM separately: the 2026-09-24 canonical bug and the 2026-10-12 Soft 404 both lived only in the raw bytes
 - **Dependency bumps** → `Gotchas` #6, #8, #13, #14, #15, #16 + `ci.md` (Compose-only images: Postgres majors are dependabot-ignored) + `frontend-build.md` (Tailwind 3.x: the v4 major is dependabot-ignored)
 - **Backend changes** → `backend.md` (Architecture, Constants, Utilities, Testing, Tooling, Security incl. file-upload validation — paths `backend/**`) + `Constraints` (ENV files, Local dev vs Docker)
@@ -24,7 +24,7 @@ Full-stack monorepo (React 19 + Django 6), self-hosted via Docker behind a Cloud
 - **Frontend**: http://localhost:5173 (Vite, NOT port 3000). Build output: `build/` (NOT `dist/`). Import alias `@` → `src/`
 - **Backend**: http://localhost:8000. Single app: `api/`. Uses **uv** (NOT pip)
 - **Dev proxy**: Vite proxies `/api` → `http://127.0.0.1:8000` (no CORS issues in dev)
-- **Node ≥ 24**, **Python 3.12** required. Husky runs lint-staged on `pre-commit` and `scripts/check-commit-msg.sh` on `commit-msg`
+- **Node ≥ 24**, **Python 3.12** required. Husky runs lint-staged on `pre-commit`, `scripts/check-commit-msg.sh` on `commit-msg`, and `scripts/check-changelog.sh` on a `pre-push` to `main` (warns, never blocks)
 
 > Maintainer-local, gitignored, synced via `scripts/sync_private.sh`: design rationale in `.private/strategy.md`; session log + opsec notes in `.private/journal.md`; secret setup in `.private/secrets-setup.md`; **host topology, deploy forensics and incident history in `.private/operations.md`**. The repo is public, so those moved out on 2026-09-28; each entry left an actionable summary behind, and this file remains the source of truth for the rules themselves. Past git history (pre-`01c4db8`) retains earlier strategy versions.
 
@@ -118,7 +118,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 - **Deployed code is identified by commit SHA, not by a version number.** There is no release cut and no version to bump: `auto-deploy.sh` bakes `GIT_COMMIT` into the backend image and `/api/health/` reports it.
   - The `version` fields in both `package.json` files are inert metadata (both are `private: true`) and **must not be re-coupled into a sync rule**; the `VERSION` file was deleted on 2026-09-28 because nothing read it.
   - Retiring the release number says nothing about API compatibility — `backend/api/` serves blog list and retrieval anonymously, so external consumers cannot be ruled out from this repo.
-- **CHANGELOG on Ship**: append the entry under `## Merged since [1.0.0]`. Do **not** re-section it by date or cut it into releases — there is no measured benefit to pay the reconstruction cost for. `[1.0.0]` stays as a historical record.
+- **CHANGELOG on Ship**: append the entry under `## Merged since [1.0.0]`; `scripts/check-changelog.sh` warns, never blocks, when a change outside `docs/intents/` has none (`ci.md` › CHANGELOG entry). Do **not** re-section it by date or cut it into releases — there is no measured benefit to pay the reconstruction cost for. `[1.0.0]` stays as a historical record.
 - **PR discipline**: one issue per PR, ≤ 3 commits, no mid-PR scope expansion (deferred work → new issue).
 - **CI-skip guard**: only the `Sync README Badges` bot may carry the literal; every other commit is rejected by `scripts/check-commit-msg.sh` (Gotcha #10). Escape it to write about it.
 

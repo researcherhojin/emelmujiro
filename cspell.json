@@ -31,6 +31,7 @@
     "aquasecurity",
     "asgi",
     "asgiref",
+    "atexit",
     "autoplan",
     "autorestart",
     "autorun",
@@ -223,6 +224,7 @@
     "reflog",
     "remoteip",
     "researcherhojin",
+    "rmtree",
     "rowspan",
     "runserver",
     "sdist",
@@ -232,6 +234,7 @@
     "seohelmet",
     "setuptools",
     "shellcheck",
+    "shutil",
     "signups",
     "simplejwt",
     "sitevisit",
@@ -282,9 +285,6 @@
     "xpanse",
     "yasg",
     "Zandieh",
-    "Zhipu",
-    "atexit",
-    "shutil",
-    "rmtree"
+    "Zhipu"
   ]
 }

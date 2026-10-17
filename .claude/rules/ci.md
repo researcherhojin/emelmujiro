@@ -2,6 +2,7 @@
 paths:
   - '.github/**'
   - 'scripts/**'
+  - '.husky/**'
   - 'Makefile'
   - 'docker-compose.yml'
   - 'cspell.json'
@@ -10,7 +11,7 @@ paths:
   - 'backend/config/settings.py'
 ---
 
-<!-- Path-scoped rule: loads when Claude reads CI workflows, repo scripts, the Makefile, docker-compose.yml, cspell.json, the root package.json, README, or `backend/config/settings.py` (whose `LOG_DIR` the cron log paths must match). Moved verbatim from the root CLAUDE.md `Constraints` section on 2026-10-17; Gotcha numbers cited here are root CLAUDE.md's. -->
+<!-- Path-scoped rule: loads when Claude reads CI workflows, repo scripts, husky hooks, the Makefile, docker-compose.yml, cspell.json, the root package.json, README, or `backend/config/settings.py` (whose `LOG_DIR` the cron log paths must match). Moved verbatim from the root CLAUDE.md `Constraints` section on 2026-10-17 (`CHANGELOG entry` was written here directly in #575); Gotcha numbers cited here are root CLAUDE.md's. -->
 
 # CI and repo-automation rules
 
@@ -27,12 +28,12 @@ paths:
 **CI job gating: `quick-checks` checks only for merge conflicts, and every cosmetic or policy check lives in `Repo Checks (informational)`, which nothing depends on.**
 
 - `quick-checks` gates the six substantive jobs (Frontend Lint, Backend Lint, Test Affected Code, Security Scan, Build for Analysis, E2E Tests); a merge conflict is the one condition that makes running the rest pointless. `Auto-Merge Dependabot` is gated transitively (`needs: affected-tests`, which needs `quick-checks`).
-- `Repo Checks (informational)` holds commit-message format, file size, SEO files, i18n keys, README test counts and badges, **spelling**, cron log paths, CHANGELOG entry.
+- `Repo Checks (informational)` holds commit-message format, file size, SEO files, i18n keys, the Claude Code guard-hook cases, README test counts and badges, route lists, **spelling**, cron log paths, and the CHANGELOG check's cases and entry check.
 - **Do not move a check back into `quick-checks`**: when they sat there, a stale badge or a non-conventional subject skipped `npm ci` and the whole suite — that is how the jest-dom 7 lockfile drift reached a deploy. `main` has no required status checks, so that gating never blocked a merge; it only destroyed test signal.
 
 **CHANGELOG entry: `scripts/check-changelog.sh <base> <head>` warns when a human change ships without a `CHANGELOG.md` entry, and never blocks.** It exits `1` when `<base>...<head>` changes anything outside `docs/intents/` (intent records link to their entry instead) without touching `CHANGELOG.md`, and `2` on an unreadable range rather than passing on zero files (Gotcha #11).
 
-- Two call sites, as with `check-commit-msg.sh`: the `Check CHANGELOG entry` step, last in `Repo Checks (informational)` so a miss hides no other result, skipped for `dependabot[bot]`, whose PRs deliberately carry no entry; and `.husky/pre-push` for direct pushes to `main`, which the PR step never sees. The hook keys on the **remote** ref (`HEAD:main` from a feature branch counts), skips all-zero SHAs, and always exits `0`, because the owner chose a warning over a block; every command that can fail is guarded because husky runs it under `sh -e`.
+- Two call sites, as with `check-commit-msg.sh`: the `Check CHANGELOG entry` step, last in `Repo Checks (informational)` so a miss hides no other result, skipped for `dependabot[bot]`, whose PRs deliberately carry no entry; and `.husky/pre-push` for direct pushes to `main`, which the PR step never sees. The hook keys on the **remote** ref (`HEAD:main` from a feature branch counts), skips all-zero SHAs, and always exits `0`, because the owner chose a warning over a block; every command that can fail is guarded because husky runs it under `sh -e`. When `origin/main` has moved past the local clone (the badge bot's commit, say), the remote SHA is unknown locally, so the hook prints the exit-`2` "Could not read" line and git then rejects the push as non-fast-forward anyway — pull, then push again (observed 2026-10-18).
 - `scripts/test-check-changelog.sh` holds the cases in a throwaway repo and runs in the same job; add a case with any change to the exempt list.
 
 **Auto-merged commits do not deploy.** A push made with `GITHUB_TOKEN` creates no workflow run, and `Auto-Merge Dependabot` merges with that token, so its merge commit runs neither `deploy-mac-mini` nor `Sync README Badges`. Three mechanisms close it, each asserted by outcome:
@@ -47,7 +48,7 @@ paths:
 
 1. `ignorePaths` must keep excluding build output — `frontend/coverage/**`, `frontend/playwright-report/**`, `frontend/test-results/**`, `frontend/build/**`, `**/*.egg-info/**` — which carried 307 of the 314 findings in the first full scan. `CHANGELOG.md` is in `ignorePaths` too, so its prose is never spell-checked, while CLAUDE.md and the rule files are.
 2. Deliberate non-words go in a file-scoped `# cspell:ignore`, **not** `cspell.json`'s `words`: `scripts/check-commit-msg.sh` intentionally contains `Mergeevil` and `depsnot`, and dictionary entries would let a real typo of that shape pass everywhere.
-3. `"**"` does not match dot-directories, so the `.claude/rules/**`, `.claude/hooks/**`, `.claude/skills/intent/**`, `.claude/agents/**` and `.github/**` globs are load-bearing — without the first, the two path-scoped rule files were not scanned until 2026-09-21. **Do not reach for `--dot`**: it takes the scan from about 180 files to 1196 and from 0 findings to 6458, because `ignorePaths` does not cover dot-directory build output. Scope to what git tracks instead — `.claude/*` is gitignored except `!.claude/rules/`, `!.claude/hooks/`, `!.claude/settings.json`, `!.claude/agents/` and `!.claude/skills/intent/` (`.gitignore:97-105`; the other per-machine skills stay ignored by `.claude/skills/*`), which is why the globs name those directories, not `.claude`.
+3. `"**"` does not match dot-directories, so the `.claude/rules/**`, `.claude/hooks/**`, `.claude/skills/intent/**`, `.claude/agents/**` and `.github/**` globs are load-bearing — without the first, the two path-scoped rule files were not scanned until 2026-09-21. **Do not reach for `--dot`**: it took the scan from 0 findings to 6458 when measured, because `ignorePaths` does not cover dot-directory build output. Scope to what git tracks instead — `.claude/*` is gitignored except `!.claude/rules/`, `!.claude/hooks/`, `!.claude/settings.json`, `!.claude/agents/` and `!.claude/skills/intent/` (`.gitignore:97-105`; the other per-machine skills stay ignored by `.claude/skills/*`), which is why the globs name those directories, not `.claude`.
 
 **README drift gates: two CI guards, both auto-healed on `main` by the `Sync README Badges` job in `main-ci-cd.yml`** (it pushes with the CI-skip marker).
 

@@ -461,7 +461,7 @@ LOGGING = {
 
 # Isolate test runs from production log files. The backend test suite
 # emits deliberate negative-path events (fake-IP middleware tests, SMTP/
-# reCAPTCHA failure simulations — see CLAUDE.md Testing notes) which would
+# reCAPTCHA failure simulations — see `.claude/rules/backend.md` Testing) which would
 # otherwise accumulate in backend/logs/{debug,security}.log on every
 # `manage.py test` invocation (local or CI), polluting real security events.
 TESTING = len(sys.argv) > 1 and sys.argv[1] == "test"

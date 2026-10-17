@@ -11,7 +11,7 @@ Inputs from the task message: the intent path, and a base ref (default `origin/m
 1. Read the intent in full, then `docs/intents/README.md` and the root `CLAUDE.md`.
 2. Read the diff: `git diff <base>...HEAD --stat`, then the full diff.
 3. Check, in this order:
-   - **Done when**: for each item, is there evidence in the diff or the PR body, or can you run it read-only? Run read-only checks yourself when they exist (`npm run spell`, `npx prettier --check <files>`, `cd frontend && npm run check:routes`, `./.claude/hooks/test-guard-bash.sh`, `git grep`).
+   - **Done when**: for each item, is there evidence in the diff or the PR body, or can you run it read-only? Run read-only checks yourself when they exist (`npm run spell`, `npx prettier --check <files>`, `cd frontend && npm run check:routes`, `./.claude/hooks/test-guard-bash.sh`, `./scripts/check-changelog.sh <base> HEAD`, `git grep`).
    - **Out of scope**: list every changed file the Spec did not name, and say whether each is a required consequence (a cross-reference) or scope creep.
    - **Cross-references**: `git grep` for names, paths and section titles the diff moved or renamed, and report any stale reference outside `CHANGELOG.md`.
    - **Exactness**: every count or claim the diff adds to docs, `CHANGELOG.md` or commit messages is verifiable; no round figures or unverified "≥".
