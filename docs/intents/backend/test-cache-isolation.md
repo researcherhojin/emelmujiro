@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: backend
 created: 2026-10-17
 updated: 2026-10-18
@@ -31,4 +31,7 @@ updated: 2026-10-18
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+**Shipped 2026-10-18 in #576** (`3bad07d2`); production reports `3bad07d2`. Every `Done when` item passed; the evidence is in `Plan` › `Results` and the PR body.
+
+- **Departure:** none in the code. The first CI run failed `Spell check` on `atexit`, `shutil`, `rmtree` (added to `cspell.json`) and one abbreviation (reworded).
+- **Lesson:** run `npm run spell` before pushing an intent whose Plan names code identifiers; the reviewer ran `black` and `prettier` but not spell.
