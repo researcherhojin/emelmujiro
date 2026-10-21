@@ -16,6 +16,12 @@ export const ORG_TYPES: OrgType[] = ['enterprise', 'moel', 'public', 'academic']
 export const getTeachingHistory = (): TeachingItem[] => [
   // 2026
   {
+    organization: i18n.t('teachingHistory.47.org'),
+    title: i18n.t('teachingHistory.47.title'),
+    year: 2026,
+    orgType: 'public',
+  },
+  {
     organization: i18n.t('teachingHistory.46.org'),
     title: i18n.t('teachingHistory.46.title'),
     year: 2026,
