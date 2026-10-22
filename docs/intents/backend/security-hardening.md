@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: backend
 created: 2026-10-22
 updated: 2026-10-22
@@ -45,7 +45,7 @@ anonymous access to draft comments. The user authorized remediation.
 
 ## Outcome
 
-Implementation verified; deployment authorized on 2026-10-22 and pending. Verification on
+Deployed on 2026-10-22 as `bab3c68b3b98b79142272edf9b0bd1199e7f2fd5`. Verification on
 2026-10-22: all 411 backend tests passed, including 17 security regression tests;
 all 1,284 frontend tests across 69 files passed. Type checking, frontend ESLint,
 changed Python files' Black and flake8 checks, spelling and Compose configuration
@@ -77,6 +77,11 @@ excluded from spelling checks. The backend's 411 tests, selected Ruff rules acro
 the changed application modules, Black, flake8 and repository spelling checks
 passed again; independent review found no concrete regression in this follow-up.
 
-Deployment must update frontend and backend together, recreate containers to
-apply log limits, and verify the baked commit and effective production CORS
-origins. Existing sessions must sign in again after deployment.
+Frontend and backend were deployed together. All four containers are healthy
+and use the configured log limits. Live checks confirmed secure CSRF cookies,
+allowed production Origin, excluded localhost Origin and a 403 for login without
+CSRF. Existing sessions must sign in again after this deployment.
+
+Deployment verified against the public health endpoint, whose baked commit matched
+the tested SHA. All five jobs in [Main CI/CD run 39746839447](https://github.com/researcherhojin/emelmujiro/actions/runs/39746839447)
+succeeded. The deployed English homepage and sitemap were checked again.

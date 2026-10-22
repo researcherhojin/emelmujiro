@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: seo
 created: 2026-10-22
 updated: 2026-10-22
@@ -34,7 +34,7 @@ risk: an API failure silently generates a sitemap without any article URLs.
 
 ## Outcome
 
-Implementation verified; deployment authorized on 2026-10-22 and pending. All
+Deployed on 2026-10-22 as `bab3c68b3b98b79142272edf9b0bd1199e7f2fd5`. All
 12 Node regression tests passed, including the CLI failure/no-overwrite case.
 Route-list consistency, formatting, spelling and diff checks passed. Independent
 review found no concrete correctness regressions.
@@ -44,3 +44,7 @@ translated; both TurboQuant URLs were present and the redirecting `/en/` URL was
 absent. No generated public file was overwritten by this verification. The new
 test suite runs in the `Test sitemap generation` step of both PR and main CI. Indexing decisions and
 Google's live URL inspection remain outside this change.
+
+Deployment verified against the public health endpoint, whose baked commit matched
+the tested SHA. All five jobs in [Main CI/CD run 39746839447](https://github.com/researcherhojin/emelmujiro/actions/runs/39746839447)
+succeeded. The deployed English homepage and sitemap were checked again.
