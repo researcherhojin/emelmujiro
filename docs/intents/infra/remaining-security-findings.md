@@ -140,6 +140,13 @@ still inside its advisory range (`braces` 3.0.3, `extract-zip` 2.0.1,
   `@lhci/utils`, `lighthouse`, `puppeteer-core`, `@puppeteer/browsers` and
   `extract-zip` dropped out or fell to moderate.
 
+Deployed as `863c187b` ([#625](https://github.com/researcherhojin/emelmujiro/pull/625)).
+All 12 PR jobs passed, including `Lighthouse CI` on `ubuntu-24.04` and
+`Security Scan`, whose Trivy found 0 vulnerabilities in `package-lock.json` and
+in both Umami `pnpm` locks. [Main run
+39759739710](https://github.com/researcherhojin/emelmujiro/actions/runs/39759739710)
+passed all five jobs. `/api/health/` reports `863c187b` and the homepage returns 200.
+
 Still open, with blockers:
 
 - `braces` (5 high: `braces`, `chokidar`, `micromatch`, `fast-glob`,
