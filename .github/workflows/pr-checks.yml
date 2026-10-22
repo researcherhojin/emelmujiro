@@ -52,12 +52,17 @@ jobs:
     # parallel with the tests: across the 7 auto-merged PRs of 2026-10-17
     # (#587, #588, #594, #596, #597, #598, #601) the later lint finished 0 s
     # to 38 s after `Test Affected Code`, so that is the added wait.
-    needs: [affected-tests, frontend-lint, backend-lint]
+    #
+    # `docker-images` gates it too (2026-10-23): it builds and checks only the
+    # images whose inputs changed, so a docker or docker-compose bump such as
+    # nginx (#618) no longer merges without a build. It always runs, like the others.
+    needs: [affected-tests, frontend-lint, backend-lint, docker-images]
     if: >-
       github.actor == 'dependabot[bot]' &&
       needs.affected-tests.result == 'success' &&
       needs.frontend-lint.result == 'success' &&
-      needs.backend-lint.result == 'success'
+      needs.backend-lint.result == 'success' &&
+      needs.docker-images.result == 'success'
     permissions:
       contents: write
       pull-requests: write
@@ -569,6 +574,81 @@ jobs:
           path: frontend/build/
           retention-days: 1
 
+  # Images are otherwise built only on the deploy host, where a failure stays
+  # green (Gotcha #17), and Dependabot's docker and docker-compose bumps
+  # auto-merge on tests and lint alone (#618, nginx, merged with zero tests).
+  # This builds and checks only the images whose inputs the PR touches, with
+  # no layer cache (a PR-scoped cache refills the 10 GB limit). It has no
+  # `needs` and no job-level `if:`, so it always reports success or failure
+  # and the auto-merge gate can require it.
+  # Intent: docs/intents/ci/docker-image-checks.md
+  docker-images:
+    name: Docker Images
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Detect image changes
+        id: changed
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          if ! FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA"); then
+            echo "❌ Could not diff ${BASE_SHA}..${HEAD_SHA}"
+            exit 1
+          fi
+          flag() {
+            if printf '%s\n' "$FILES" | grep -qE "$2"; then
+              echo "$1=true" >> "$GITHUB_OUTPUT"
+              echo "$1: changed, will check"
+            else
+              echo "$1=false" >> "$GITHUB_OUTPUT"
+            fi
+          }
+          flag backend '^backend/(Dockerfile|\.dockerignore|pyproject\.toml|uv\.lock)$'
+          flag postgres '^docker/postgres/'
+          flag umami '^docker/umami/'
+          flag nginx '^(docker-compose\.yml|frontend/nginx\.conf)$'
+
+      - name: Build backend image
+        if: steps.changed.outputs.backend == 'true'
+        run: docker build --build-arg GIT_COMMIT=ci-check -t emelmujiro/backend:ci-check ./backend
+
+      - name: Build and verify PostgreSQL image
+        if: steps.changed.outputs.postgres == 'true'
+        run: |
+          docker build -t emelmujiro/postgres:ci-check ./docker/postgres
+          sh docker/postgres/verify.sh emelmujiro/postgres:ci-check
+
+      - name: Build and verify Umami image
+        if: steps.changed.outputs.umami == 'true'
+        env:
+          UMAMI_TEST_IMAGE: emelmujiro/umami:ci-check
+        run: |
+          docker build -t "$UMAMI_TEST_IMAGE" ./docker/umami
+          sh docker/umami/verify.sh
+
+      # The pinned upstream image is not built here; this proves it starts
+      # with the repo's config, mounted where Compose mounts it. `nginx -t`
+      # resolves proxy_pass hosts, so the two upstreams get loopback entries.
+      - name: Check nginx config against the pinned image
+        if: steps.changed.outputs.nginx == 'true'
+        run: |
+          IMAGE=$(grep -m1 -oE 'image: nginx:[^[:space:]]+' docker-compose.yml | cut -d' ' -f2)
+          if [ -z "$IMAGE" ]; then
+            echo "❌ No nginx image pin found in docker-compose.yml"
+            exit 1
+          fi
+          echo "Checking frontend/nginx.conf with $IMAGE"
+          docker run --rm --add-host backend:127.0.0.1 --add-host umami:127.0.0.1 \
+            -v "$PWD/frontend/nginx.conf:/etc/nginx/nginx.conf:ro" "$IMAGE" nginx -t
+
   # Lighthouse CI performance audit (uses shared build + bundle check)
   lighthouse:
     name: Lighthouse CI
@@ -674,6 +754,7 @@ jobs:
         build-for-analysis,
         lighthouse,
         e2e-tests,
+        docker-images,
       ]
     steps:
       - name: Comment PR
@@ -701,6 +782,7 @@ jobs:
             | Build & Size | ${{ needs.build-for-analysis.result == 'success' && '✅' || '❌' }} |
             | Lighthouse | ${{ needs.lighthouse.result == 'success' && '✅' || '❌' }} |
             | E2E Tests | ${{ needs.e2e-tests.result == 'success' && '✅' || needs.e2e-tests.result == 'failure' && '❌' || '⏭️' }} |
+            | Docker Images | ${{ needs.docker-images.result == 'success' && '✅' || '❌' }} |
 
             <details>
             <summary>Details</summary>

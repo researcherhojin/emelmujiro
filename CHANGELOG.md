@@ -8,6 +8,13 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- ci: Build and check Docker images in PRs. A new `Docker Images` job builds only the images whose inputs a PR touches:
+  - backend: `Dockerfile`, `.dockerignore`, `pyproject.toml` or `uv.lock`
+  - `docker/postgres` and `docker/umami`: each runs its `verify.sh` after the build
+  - nginx: `nginx -t` with `frontend/nginx.conf` on the Compose-pinned image
+
+  Until now, images were built only on the deploy host, where a failure stays green, and the nginx bump #618 auto-merged with zero tests. `Auto-Merge Dependabot` now requires this job, and the PR Summary shows it. It uses no layer cache and pushes nothing. Intent: `docs/intents/ci/docker-image-checks.md`.
+
 - ci(drift): File a "Deploy not landing" issue when production has not reached the commit that the previous drift check dispatched. A failed deploy stays green (`deploy-mac-mini` is `continue-on-error`), and the drift check only warned on a mismatch, so a deploy that kept failing notified nobody. Each dispatch now records its target as a `drift-target` annotation. The next run compares that target with the live commit and closes the issue once production reaches it or `main`. A mismatch alone still does not alarm, because `main` moves most days. Intent: `docs/intents/ci/deploy-not-landing-alarm.md`.
 
 - ci: Remove `quick-checks` (`Quick Validation`), whose only step checked for merge conflicts. GitHub starts no `pull_request` run for a PR with a merge conflict, so the step could never fail. It also printed `fatal: Not a valid object name main` on every run, because a PR checkout has no local `main`. The six jobs that waited on it now start at once, and `ci.md` "CI job gating" describes the graph as it is. Intent: `docs/intents/ci/remove-quick-checks.md`.
