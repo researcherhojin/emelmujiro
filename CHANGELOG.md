@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(claude): Point Gotcha #6's audit history at `docs/intents/infra/remaining-security-findings.md`, which already holds it in full, and keep only the expected `0` and the two traps. A pass over all of `CLAUDE.md` for wording that could be cut without dropping a fact found nothing else of size: a fact-token diff (backticked spans, `#NNN`, SHAs, dates, numbers, paths, URLs) shows only this sub-bullet's history leaving, every token of it present in the intent. `CLAUDE.md` goes from 32,989 to 32,857 bytes and stays at 193 lines.
+
 - ci: Build no image for a PR whose changes under `docker/` are all Markdown. `Detect image changes` flagged Umami on any path under `docker/umami/`, so #642, a docs-only PR, spent 2m38s building and verifying Umami for a README edit; with nothing to build, the job takes 5 s. `.md` paths are now dropped before the four patterns match. No Markdown file is a build input, because Umami's `.dockerignore` keeps only the build files and the PostgreSQL Dockerfile copies nothing. `verify.sh`, `verify.mjs` and `.dockerignore` still trigger. The step's script, run verbatim under `bash -e` with a stubbed diff, passed 11 of 11 cases; on `main` it failed the 2 Markdown-only ones. Intent: `docs/intents/ci/image-checks-skip-markdown.md`.
 
 - docs: Bring the entry docs up to date with the changes of 2026-10-23.
