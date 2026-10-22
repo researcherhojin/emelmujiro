@@ -2,6 +2,10 @@ import type { KnipConfig } from 'knip';
 
 const config: KnipConfig = {
   workspaces: {
+    scripts: {
+      entry: ['deploy-webhook.js', '*security*.ts', 'scan-running-images.ts'],
+      project: ['*.ts'],
+    },
     frontend: {
       entry: ['src/App.tsx', 'scripts/*.{js,ts}'],
       project: ['src/**/*.{ts,tsx}'],
@@ -22,7 +26,7 @@ const config: KnipConfig = {
   ignoreBinaries: ['uv'],
   // .claude/ holds per-machine, gitignored skills next to the tracked ones;
   // their files are not part of either workspace.
-  ignore: ['scripts/deploy-webhook.js', '.claude/**'],
+  ignore: ['.claude/**'],
   rules: {
     duplicates: 'off', // env.ts intentionally has named + default export
   },

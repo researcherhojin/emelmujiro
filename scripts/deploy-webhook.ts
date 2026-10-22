@@ -1,0 +1,229 @@
+/**
+ * Deploy Webhook Server
+ *
+ * Lightweight HTTP server that listens for deploy requests from GitHub Actions.
+ * Validates the request with a shared secret, then runs auto-deploy.sh.
+ *
+ * Usage:
+ *   DEPLOY_SECRET=your-secret node scripts/deploy-webhook.js
+ *
+ * Environment:
+ *   DEPLOY_SECRET  — Required. Shared secret for authentication.
+ *   DEPLOY_PORT    — Optional. Default: 9000.
+ */
+
+import http from 'node:http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import type { ChildProcess } from 'node:child_process';
+import type { AddressInfo } from 'node:net';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import { execFile } from 'node:child_process';
+import path from 'node:path';
+import { readSummary } from './security-report.ts';
+
+const PORT = parseInt(process.env.DEPLOY_PORT || '9000', 10);
+const SECRET = process.env.DEPLOY_SECRET;
+const DEPLOY_SCRIPT = path.join(import.meta.dirname, 'auto-deploy.sh');
+
+if (!SECRET) {
+  console.error('ERROR: DEPLOY_SECRET environment variable is required');
+  process.exit(1);
+}
+
+const LOCK_FILE = '/tmp/emelmujiro-deploy.lock';
+const LOCK_MAX_AGE_MS = 15 * 60 * 1000;
+const MAX_BODY_BYTES = 4096;
+
+let deployChild: ChildProcess | null = null;
+
+function isProcessAlive(pid: number) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function isDeploying() {
+  if (!fs.existsSync(LOCK_FILE)) return false;
+  try {
+    const stat = fs.statSync(LOCK_FILE);
+    const age = Date.now() - stat.mtimeMs;
+    if (age > LOCK_MAX_AGE_MS) {
+      console.log(`[${timestamp()}] Removing stale lock file (age: ${Math.round(age / 1000)}s)`);
+      fs.unlinkSync(LOCK_FILE);
+      return false;
+    }
+    const pid = parseInt(fs.readFileSync(LOCK_FILE, 'utf8').trim(), 10);
+    if (pid && !isProcessAlive(pid)) {
+      console.log(`[${timestamp()}] Removing orphaned lock file (PID ${pid} no longer running)`);
+      fs.unlinkSync(LOCK_FILE);
+      return false;
+    }
+    return true;
+  } catch (_) {
+    releaseLock();
+    return false;
+  }
+}
+
+function acquireLock(pid: number) {
+  fs.writeFileSync(LOCK_FILE, String(pid));
+}
+
+function releaseLock() {
+  deployChild = null;
+  try {
+    fs.unlinkSync(LOCK_FILE);
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+function gracefulShutdown(signal: string) {
+  console.log(`[${timestamp()}] Received ${signal}, shutting down...`);
+  if (deployChild) {
+    deployChild.kill();
+  }
+  releaseLock();
+  process.exit(0);
+}
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+function startDeploy(res: ServerResponse, sha: string) {
+  if (isDeploying()) {
+    console.log(`[${timestamp()}] Deploy already in progress, skipping`);
+    res.writeHead(409, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Deploy already in progress' }));
+    return;
+  }
+
+  acquireLock(process.pid);
+  console.log(
+    `[${timestamp()}] Deploy triggered${sha ? ` for ${sha.slice(0, 8)}` : ' (no sha \u2014 falling back to origin/main)'}`
+  );
+
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ status: 'deploy started', sha: sha || null }));
+
+  deployChild = execFile(
+    'bash',
+    [DEPLOY_SCRIPT],
+    { timeout: 600000, env: { ...process.env, DEPLOY_SHA: sha } },
+    (error, stdout, stderr) => {
+      releaseLock();
+      if (error) {
+        console.error(`[${timestamp()}] Deploy failed:`, error.message);
+        if (stderr) console.error(stderr);
+      } else {
+        console.log(`[${timestamp()}] Deploy completed successfully`);
+      }
+      if (stdout) console.log(stdout);
+    }
+  );
+
+  // Update lock with child PID so orphan detection works if webhook dies
+  if (deployChild.pid) acquireLock(deployChild.pid);
+}
+
+function isAuthorized(req: IncomingMessage): boolean {
+  const header = req.headers['x-deploy-secret'];
+  if (typeof header !== 'string') return false;
+  const token = Buffer.from(header);
+  const expected = Buffer.from(SECRET || '');
+  return token.length === expected.length && crypto.timingSafeEqual(token, expected);
+}
+
+const server = http.createServer((req, res) => {
+  if (req.method === 'GET' && req.url === '/security-status') {
+    res.setHeader('Cache-Control', 'no-store');
+    if (!isAuthorized(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    try {
+      const summary = readSummary(
+        path.join(import.meta.dirname, '../backend/logs/security/summary.json')
+      );
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(summary));
+    } catch (_) {
+      res.writeHead(503, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Security report unavailable or stale' }));
+    }
+    return;
+  }
+
+  // Health check
+  if (req.method === 'GET' && req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'ok', deploying: isDeploying() }));
+    return;
+  }
+
+  // Deploy endpoint
+  if (req.method === 'POST' && req.url === '/deploy') {
+    if (!isAuthorized(req)) {
+      console.log(`[${timestamp()}] Unauthorized deploy attempt from ${req.socket.remoteAddress}`);
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+
+    // Read the body only after authenticating, so an unauthenticated caller
+    // never gets to buffer anything. main-ci-cd.yml sends {"sha": github.sha} —
+    // the commit the pipeline actually tested. auto-deploy.sh checks that exact
+    // commit out instead of racing main's HEAD.
+    let body = '';
+    let rejected = false;
+    req.on('data', (chunk) => {
+      if (rejected) return;
+      body += chunk;
+      if (body.length > MAX_BODY_BYTES) {
+        rejected = true;
+        res.writeHead(413, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Body too large' }));
+        req.destroy();
+      }
+    });
+    req.on('end', () => {
+      if (rejected) return;
+      let sha = '';
+      try {
+        const parsed = body.trim() ? JSON.parse(body) : {};
+        if (typeof parsed.sha === 'string') sha = parsed.sha.trim();
+      } catch (_) {
+        // No body, or not JSON — treat as an older caller and fall back to
+        // origin/main inside auto-deploy.sh.
+      }
+      // This value is exported into a shell script, so accept only a full
+      // 40-character hex object name and nothing else.
+      if (sha && !/^[0-9a-f]{40}$/.test(sha)) {
+        console.log(`[${timestamp()}] Rejecting deploy: malformed sha in payload`);
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid sha' }));
+        return;
+      }
+      startDeploy(res, sha);
+    });
+
+    return;
+  }
+
+  res.writeHead(404, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ error: 'Not found' }));
+});
+
+server.listen(PORT, '127.0.0.1', () => {
+  console.log(
+    `[${timestamp()}] Deploy webhook listening on 127.0.0.1:${(server.address() as AddressInfo).port}`
+  );
+});
+
+function timestamp() {
+  return new Date().toISOString();
+}

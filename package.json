@@ -7,6 +7,7 @@
     "frontend"
   ],
   "scripts": {
+    "check:scripts": "npm run type-check:scripts --workspace=frontend && node --test scripts/test-security-monitoring.ts",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:clean": "./scripts/ports.sh --kill && npm run dev",
     "dev:frontend": "npm run dev --workspace=frontend",

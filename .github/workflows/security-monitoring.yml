@@ -1,0 +1,82 @@
+name: Security Monitoring
+
+on:
+  schedule:
+    - cron: "17 22 * * *" # 07:17 KST; host scans earlier, timestamps are checked.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-monitoring
+  cancel-in-progress: false
+
+jobs:
+  dependencies:
+    name: Audit all locked dependencies
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - uses: aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567 # v0.3.1
+        with:
+          version: v0.76.1
+          cache: true
+      - name: Audit runtime and development dependencies at every severity
+        env:
+          SECURITY_REPORT_DIR: ${{ runner.temp }}/dependency-reports
+        run: bash scripts/scan-dependencies.sh
+      - name: Retain dependency reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dependency-security-reports
+          path: ${{ runner.temp }}/dependency-reports
+          retention-days: 14
+
+  production:
+    name: Require fresh running-image scan results
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Check authenticated production summary
+        env:
+          DEPLOY_SECRET: ${{ secrets.MAC_MINI_DEPLOY_SECRET }}
+          REPORT_PATH: ${{ runner.temp }}/production-security.json
+        run: |
+          test -n "$DEPLOY_SECRET"
+          curl --fail --silent --show-error --max-time 30 --retry 2 \
+            -H "X-Deploy-Secret: $DEPLOY_SECRET" \
+            https://deploy.emelmujiro.com/security-status -o "$REPORT_PATH"
+          node scripts/security-report.ts "$REPORT_PATH"
+
+  notify:
+    name: Report monitoring failures and recovery
+    needs: [dependencies, production]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Update the monitoring issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          DEPENDENCIES_RESULT: ${{ needs.dependencies.result }}
+          PRODUCTION_RESULT: ${{ needs.production.result }}
+        run: node scripts/security-monitor-issue.ts
