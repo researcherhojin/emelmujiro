@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(docker): Exclude the backend's local cache from its build context so host-installed security tools and runtime cache data are not copied into the production image.
+
 - ci(security): Add local manual dependency and running-image audits, including development dependencies and all severities. Reject missing inventories, scanner errors and containers replaced during scans. Split operational TypeScript into security, deployment and shared modules; preserve the webhook's JavaScript entry path and verify its deployment contract. Enforce the existing 4096-byte request limit by UTF-8 byte count. Add strict type checking and regression tests to existing CI. No scheduler or external notification service is added. Intent: `docs/intents/infra/security-monitoring.md`.
 
 - deps-dev(tailwind): Migrate Tailwind CSS 3.4.19 to 4.3.3 while keeping the site visually identical. The theme, dark mode and typography stay in `tailwind.config.js` through `@config`; the v3 palette and prose colors are pinned; preflight differences are restored in `src/index.css`; and renamed or removed utilities are migrated (`outline-hidden`, `shadow-xs`, `/NN` opacity, sRGB gradients, explicit responsive `leading`), and the 7 canonical v4 class names whose CSS is identical are adopted. The px arbitrary values stay, because their rem equivalents scale with the browser font size. Comparing 66 screenshots against `main` with no tolerance, everything matches within capture noise except login focus anti-aliasing and a 1.188 px shift on the admin editor. This removes `braces`, and `npm audit` now reports 0 vulnerabilities. Intent: `docs/intents/frontend/tailwind-v4-migration.md`

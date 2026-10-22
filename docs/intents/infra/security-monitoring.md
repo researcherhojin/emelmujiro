@@ -43,7 +43,10 @@ behavior. No new scheduler, hosted monitoring or notification service is wanted.
 
 ## Outcome
 
-Implementation is on draft PR #629; it is not merged or deployed.
+PR #629 was merged and deployed as `de04f5bb`. Post-deployment validation
+identified that the backend build context included the local scanner cache;
+`.cache/` is now excluded from the Docker context. Final image verification is
+in progress.
 
 - Full npm audit and Trivy 0.76.1 scans of all four lock files report 0 findings,
   including development dependencies. Image scanning covers installed packages;

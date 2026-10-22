@@ -3,6 +3,7 @@ __pycache__
 *.pyo
 .git/
 .venv/
+.cache/
 .env
 .env.*
 *.sqlite3
