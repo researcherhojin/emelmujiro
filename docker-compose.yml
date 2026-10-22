@@ -75,7 +75,13 @@ services:
   # Umami analytics — self-hosted, cookieless, zero external scripts
   umami-db:
     logging: *bounded-logging
-    build: ./docker/postgres
+    build:
+      context: ./docker/postgres
+      # No attestation index: an unchanged rebuild keeps the same image ID, so
+      # Compose leaves the running container alone and `docker image inspect`
+      # can still read its .Image (an index digest changed on every build).
+      provenance: false
+      sbom: false
     image: emelmujiro/postgres:15.19-security-1
     container_name: emelmujiro-umami-db
     restart: unless-stopped
@@ -98,7 +104,11 @@ services:
 
   umami:
     logging: *bounded-logging
-    build: ./docker/umami
+    build:
+      context: ./docker/umami
+      # Same reason as umami-db: keep the image ID stable across rebuilds.
+      provenance: false
+      sbom: false
     image: emelmujiro/umami:3.4.0-security-1
     container_name: emelmujiro-umami
     restart: unless-stopped

@@ -199,12 +199,13 @@ export GIT_COMMIT
 docker compose up -d --build backend
 # Build the reviewed analytics recipes; cached layers keep unchanged builds cheap.
 # The frontend upstream pin is applied by its own `up -d` below.
+UMAMI_CONTAINER_BEFORE=$(docker container inspect --format '{{.Id}}' emelmujiro-umami 2>/dev/null || true)
 docker compose up -d --build umami-db umami
-# Docker Desktop can replace an image manifest while Compose retains the
-# existing container because its configuration is unchanged. The container
-# keeps running, but its exact image ID becomes unavailable to inspection.
-# Recreate the analytics pair only when that condition is observed; retain
-# the database volume and verify that the replacement image IDs are readable.
+# Fallback: a rebuild that only moved the tag to a new image index (the platform
+# manifest is unchanged, so Compose keeps the container) leaves the container's
+# exact image ID unreadable by `docker image inspect`. The analytics builds set
+# `provenance: false`, so this should not fire; if it does, recreate the pair
+# (volume retained) and verify that the replacement image IDs are readable.
 ANALYTICS_IMAGE_MISSING=false
 for service in umami-db umami; do
   IMAGE_ID=$(docker container inspect --format '{{.Image}}' "emelmujiro-$service")
@@ -219,6 +220,11 @@ if [ "$ANALYTICS_IMAGE_MISSING" = true ]; then
     IMAGE_ID=$(docker container inspect --format '{{.Image}}' "emelmujiro-$service")
     docker image inspect "$IMAGE_ID" >/dev/null
   done
+fi
+UMAMI_CONTAINER_AFTER=$(docker container inspect --format '{{.Id}}' emelmujiro-umami)
+ANALYTICS_RECREATED=false
+if [ "$UMAMI_CONTAINER_BEFORE" != "$UMAMI_CONTAINER_AFTER" ]; then
+  ANALYTICS_RECREATED=true
 fi
 if [ "$NGINX_CONF_CHANGED" = true ]; then
   # Validate the new nginx.conf before applying it, so a syntax error aborts the
@@ -243,9 +249,10 @@ if [ "$NGINX_CONF_CHANGED" = true ]; then
 else
   docker compose up -d frontend
 fi
-if [ "$ANALYTICS_IMAGE_MISSING" = true ]; then
-  # nginx resolves the static analytics upstream at startup/reload. A recreated
-  # container can have a new address even though its service name is unchanged.
+if [ "$ANALYTICS_RECREATED" = true ]; then
+  # nginx resolves the static analytics upstream at startup/reload. Any umami
+  # recreate (fallback above, or a real image change through `up -d --build`)
+  # can give it a new address even though its service name is unchanged.
   docker exec emelmujiro-frontend nginx -t
   docker exec emelmujiro-frontend nginx -s reload
 fi
@@ -265,7 +272,11 @@ while [ $elapsed -lt 60 ]; do
     echo "$LOG_PREFIX Frontend health check passed after ${elapsed}s"
     frontend_ok=true
   fi
-  if [ "$analytics_ok" = false ] && curl -sf http://127.0.0.1:3001/api/heartbeat > /dev/null 2>&1; then
+  # The tracking route through nginx must reach umami: a GET is rejected by
+  # umami with a 4xx and stores nothing, while a stale upstream gives a 5xx.
+  ANALYTICS_ROUTE=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/umami/api/send 2>/dev/null || true)
+  if [ "$analytics_ok" = false ] && curl -sf http://127.0.0.1:3001/api/heartbeat > /dev/null 2>&1 \
+    && case "$ANALYTICS_ROUTE" in 4??) true ;; *) false ;; esac; then
     echo "$LOG_PREFIX Analytics health check passed after ${elapsed}s"
     analytics_ok=true
   fi
