@@ -43,7 +43,8 @@ jobs:
     permissions:
       contents: read
       actions: write # required to workflow_dispatch the deploy pipeline
-      issues: write # required to file/close the production-unreachable issue
+      checks: read # required to read the previous run's drift-target annotation
+      issues: write # required to file/close the unreachable and not-landing issues
 
     steps:
       - name: Read the commit production is running
@@ -97,15 +98,76 @@ jobs:
           LIVE: ${{ steps.live.outputs.live }}
           HEAD_SHA: ${{ github.sha }}
           REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          # A deploy that fails stays green (deploy-mac-mini is continue-on-error,
+          # Gotcha #17), so a mismatch alone is not an alarm: main moves most
+          # days, and two mismatches in a row can be two good deploys. The
+          # alarm is narrower: each dispatch records its target as a
+          # `drift-target` notice, and if production has not reached the
+          # previous run's target by this run, that dispatched deploy never
+          # landed. Intent: docs/intents/ci/deploy-not-landing-alarm.md
+          TITLE="Deploy not landing: production missed the commit the drift check dispatched"
+          close_alarm() {
+            OPEN=$(gh issue list --repo "$REPO" --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
+            if [ -n "$OPEN" ]; then
+              gh issue close "$OPEN" --repo "$REPO" --comment "$1 — $RUN_URL"
+            fi
+          }
           if [ "$LIVE" = "$HEAD_SHA" ]; then
             echo "✅ production is on $HEAD_SHA — nothing to deploy"
+            close_alarm "Production is on main ($HEAD_SHA) again"
             exit 0
           fi
+          ALARM=false
           if [ -z "$LIVE" ] || [ "$LIVE" = "unknown" ]; then
             echo "::warning::backend reports commit='$LIVE' — image built without GIT_COMMIT; redeploying to restore provenance"
           else
             echo "::warning::production is on $LIVE but main is $HEAD_SHA — dispatching deploy"
+            PREV_TARGET=""
+            # "<run id> <seconds since it finished>". A run that finished under
+            # 2 h ago (a manual re-run) may still have its deploy in flight, so
+            # it is not judged.
+            PREV=$(gh run list --repo "$REPO" --workflow deploy-drift-check.yml --status completed --limit 1 --json databaseId,updatedAt --jq '.[0] // empty | "\(.databaseId) \(now - (.updatedAt | fromdateiso8601) | floor)"')
+            PREV_RUN=${PREV%% *}
+            PREV_AGE=${PREV#* }
+            if [ -n "$PREV_RUN" ] && [ "$PREV_AGE" -lt 7200 ]; then
+              echo "The previous drift check finished ${PREV_AGE}s ago; too recent to judge its dispatch"
+            elif [ -n "$PREV_RUN" ]; then
+              PREV_JOB=$(gh api "repos/$REPO/actions/runs/$PREV_RUN/jobs" --jq '.jobs[0].id // empty')
+              if [ -n "$PREV_JOB" ]; then
+                PREV_TARGET=$(gh api "repos/$REPO/check-runs/$PREV_JOB/annotations" --jq '[.[] | select(.title == "drift-target") | .message][0] // empty')
+              fi
+            fi
+            if [ -n "$PREV_TARGET" ]; then
+              if ! STATUS=$(gh api "repos/$REPO/compare/$PREV_TARGET...$LIVE" --jq .status); then
+                STATUS=error
+              fi
+              case "$STATUS" in
+                identical | ahead)
+                  echo "Production reached the previous target $PREV_TARGET"
+                  close_alarm "Production reached $PREV_TARGET, so deploys are landing again"
+                  ;;
+                behind | diverged)
+                  ALARM=true
+                  ;;
+                *)
+                  echo "::warning::could not compare the previous target $PREV_TARGET with $LIVE ($STATUS)"
+                  ;;
+              esac
+            fi
           fi
+          echo "::notice title=drift-target::$HEAD_SHA"
           gh workflow run "Main CI/CD Pipeline" --repo "$REPO" --ref main
           echo "Dispatched Main CI/CD Pipeline on main"
+          if [ "$ALARM" = true ]; then
+            echo "::error::production is still on $LIVE, behind $PREV_TARGET, which the previous drift check dispatched"
+            EXISTING=$(gh issue list --repo "$REPO" --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
+            if [ -n "$EXISTING" ]; then
+              gh issue comment "$EXISTING" --repo "$REPO" --body "Still not landing: production is on \`$LIVE\`, main is \`$HEAD_SHA\`, and the previous dispatch targeted \`$PREV_TARGET\`. Dispatched again — $RUN_URL"
+            else
+              # shellcheck disable=SC2016 # the backticks are Markdown, not command substitution
+              gh issue create --repo "$REPO" --title "$TITLE" --body "$(printf 'The previous drift check dispatched a deploy of `%s`, but production still reports `%s`, which is behind it. Main is `%s`.\n\nA failed deploy stays green, because `deploy-mac-mini` is `continue-on-error` (CLAUDE.md Gotcha #17), so the run list will not show the failure. Read the `Deploy to Mac Mini` step of the latest Main CI/CD run, then `~/logs/deploy-webhook.log` on the deploy host.\n\nThis run dispatched another deploy. The issue auto-closes when a later drift check finds production on main, or on the commit it dispatched.\n\nRun: %s' "$PREV_TARGET" "$LIVE" "$HEAD_SHA" "$RUN_URL")"
+            fi
+            exit 1
+          fi
