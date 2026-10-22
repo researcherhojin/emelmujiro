@@ -7,6 +7,8 @@ updated: 2026-10-22
 
 # Remediate remaining dependency and container findings
 
+<!-- cspell:ignore modelcontextprotocol -->
+
 ## Intent
 
 Continue the dependency audit with compatible fixes for remaining production
@@ -158,3 +160,36 @@ Still open, with blockers:
   `js-yaml@3` uses `argparse@1` only in its own CLI. Overriding `argparse` to 2
   would break that CLI rather than fix anything, so it was not done. This needs
   an upstream LHCI release on `js-yaml` 4 or a fixed `sprintf-js`.
+
+### Verification gaps closed (2026-10-22)
+
+- Trivy 0.76.1 (release binary, checksum verified) on `9abbdd2d`, default
+  mode as in CI: 0 findings in `backend/uv.lock`, `package-lock.json` and both
+  Umami locks. With `--include-dev-deps`: `backend/uv.lock` 0, Umami runner 0,
+  `package-lock.json` 1 (`braces@3.0.3`, no fixed version; Trivy's database
+  lacks the five `sprintf-js`-path entries `npm audit` reports), and **the Umami
+  builder lock `docker/umami/pnpm-lock.yaml` 23** (6 high, 12 medium, 5 low in
+  `undici@8.9.0`, `vite@8.0.16`, `brace-expansion@5.0.9`,
+  `@modelcontextprotocol/client@2.0.0`, `@vitest/mocker@4.1.11`,
+  `postcss-selector-parser@7.1.4`), every one with a fixed release. They are
+  development dependencies of the upstream source, installed only in the
+  `source`/`builder` stages; the runner installs from its own lock. Not yet
+  fixed: the change needs a regenerated pnpm lock, an image rebuild and
+  `docker/umami/verify.sh`, and this machine has no Docker.
+- Bundle: `vite build` of `b1acc7d6` (fresh worktree, `npm ci`) and of
+  `9abbdd2d` produced 55 byte-identical files (SHA-256); the only difference was
+  the gitignored, generated `robots.txt` and `sitemap.xml` missing from the
+  fresh worktree. The dependency change does not alter shipped frontend code.
+- `@puppeteer/browsers@3.2.5` zip path exercised: `install()` of
+  `chrome-headless-shell` 156.0.8078.47 extracted through the system
+  `unzip -o` (`execFile`, no shell) and the binary ran. The optional `yauzl`
+  fallback validates symlink targets before writing.
+- Reachability of the 10 remaining `npm audit` findings: `sprintf-js` is
+  reached only through `argparse`, which `js-yaml@3` requires only in its own
+  CLI, and nothing in the repository runs that CLI. `braces` expands the
+  developer-written Tailwind content globs (`frontend/tailwind.config.js`), not
+  external input.
+- Not done: Trivy scans of the running production images. Exporting them from
+  the deploy host over SSH was refused by this session's permission policy, so
+  the image-ID table above (scanned earlier on 2026-10-22) remains the latest
+  image evidence; this change did not rebuild any image.
