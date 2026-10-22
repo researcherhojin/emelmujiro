@@ -103,6 +103,17 @@ braces --all` resolves Tailwind 4.3.3 and contains no `braces` package.
   `@dependabot unignore` command; no bot command was posted during this
   deployment verification.
 
+### Facts added after shipping (2026-10-23, read-only shim inventory)
+
+- **Dark mode** keeps the JS config's `darkMode: 'class'` through `@config`.
+  The built CSS uses `:is(.dark *)` (for example
+  `.dark\:bg-dark-800:is(.dark *)`). It does not use the
+  `@custom-variant dark (&:where(.dark, .dark *))` that the Spec table lists.
+- **The screenshot harness is not tracked.** It is the harness used below, and
+  `git grep` finds no copy of it. Any later change to the palette or to the
+  parity shims needs the harness committed first, or parity cannot be
+  re-measured.
+
 ### Verification before merge (2026-10-22)
 
 Method: `build:e2e` builds of `origin/main` (separate worktree, port 4181) and

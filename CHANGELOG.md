@@ -8,6 +8,14 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs: Correct stale references found by a read-only doc audit.
+  - `CLAUDE.md`'s task index named a `ci.md` section that no longer exists ("Compose-only images", now "Runtime image recipes") and left out the manual security audit and shared cache rules.
+  - Gotcha #16 said no Dockerfile pins Node, though `docker/umami/Dockerfile` builds on `node:22-alpine`.
+  - Gotcha #18 quoted `VITE_API_URL` without the trailing slash the file has.
+  - `AGENTS.md` listed 3 of the root overrides as if they were all of them.
+  - `ci.md` left two `Repo Checks` steps out of its list and placed both `sedi` lines under `# 1.`.
+  - The Tailwind intent now records that dark mode compiles to `:is(.dark *)` through `@config`, and that its screenshot harness is not tracked.
+
 - ci(lighthouse): Upload the Lighthouse CI reports. `actions/upload-artifact` skips hidden paths by default, and the reports live in `frontend/.lighthouseci/`, so every run logged "No files were found with the provided path" (#625, #630 and #631 checked) and no `lighthouse-results` artifact was ever kept. The step now sets `include-hidden-files: true`.
 
 - ci(cache): Save the Playwright browser and the Trivy DB only in `main`'s cache scope, from a new `Warm Shared Caches` workflow (push to `main`, daily, manual). The PR jobs now restore them read-only. Each PR had been storing its own 279 MB browser and 91 MB DB, which on 2026-10-22 put the repository at 88 caches and 11,066,677,423 bytes, over GitHub's 10 GB limit. The `Security Scan` cache step for `~/.cache/trivy`, which never stored anything because the action uses its own cache directory, is removed. Intent: `docs/intents/ci/actions-cache-scope.md`
