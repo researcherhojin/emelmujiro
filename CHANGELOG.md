@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- feat(frontend): Add a visual-diff harness that compares two frontend builds pixel by pixel, the method that verified the Tailwind 4 migration (#628), whose scripts were never committed. `npm run visual:capture -- <outDir> <baseUrl>` takes full-page Chromium screenshots of every `staticRoutes` route in both languages plus `/login`, light and dark, at 390 and 1440 px, with opt-in blog post, 404, service modal, mobile menu and signed-in editor states (credentials through env vars only). `npm run visual:compare -- <dirA> <dirB>` decodes both PNGs in Chromium and compares them per channel with no tolerance; it writes diff masks with `--out` and exits 1 when an image exceeds `--max-ratio` (default 0), changes size or exists on one side only. No dependency and no baseline image is added. On `5ff20006`, two captures of one `build:e2e` build differed in 3 of 44 screenshots by at most 0.002451%, each pixel by 1/255 and all inside the contact pages' Google Form iframe. A rebuild with the input placeholder color moved to `gray-500` was reported on exactly the 4 `/login` screenshots (2,071 px each) with exit 1, and reverting it restored the floor. Intent: `docs/intents/frontend/visual-diff-harness.md`
+
 - docs(claude): Move four rules that apply only to particular files out of `CLAUDE.md` and into the path-scoped rule file for those files. `CLAUDE.md` goes from 199 to 192 lines, with room again under the 200-line target. No Gotcha moved, and no wording changed.
   - Migrations run in the container: now in `backend.md` › Deployment.
   - Production keys: now in `backend.md` › Security.

@@ -82,6 +82,8 @@
     "analyze:bundle": "source-map-explorer 'build/assets/*.js'",
     "check:css": "node scripts/check-css.js",
     "check:routes": "node scripts/check-route-lists.js",
+    "visual:capture": "node scripts/visual-diff/capture.mjs",
+    "visual:compare": "node scripts/visual-diff/compare.mjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
