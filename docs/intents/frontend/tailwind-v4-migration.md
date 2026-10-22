@@ -114,6 +114,10 @@ braces --all` resolves Tailwind 4.3.3 and contains no `braces` package.
   reimplement them (`docs/intents/frontend/visual-diff-harness.md`), so a later
   change to the palette or to the parity shims can be re-measured with
   `npm run visual:capture` and `npm run visual:compare`.
+- **The hover pin was dropped on 2026-10-23.** `hover:` and `group-hover:`
+  now follow v4's `@media (hover: hover)`, so a tap on a touch screen keeps no
+  hover style. The other parity shims stay
+  (`docs/intents/frontend/touch-hover-default.md`).
 
 ### Verification before merge (2026-10-22)
 
