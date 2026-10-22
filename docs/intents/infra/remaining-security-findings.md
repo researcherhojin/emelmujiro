@@ -275,3 +275,9 @@ only for YAML configuration. `@lhci/utils/src/lighthouserc.js` calls
 - `braces` has no fixed release, and removing it requires the Tailwind 4
   migration. The owner chose to plan that separately:
   `docs/intents/frontend/tailwind-v4-migration.md`.
+
+### Closure (2026-10-22)
+
+The last `braces` path was removed by the Tailwind 4 migration (`f1040650`,
+`docs/intents/frontend/tailwind-v4-migration.md`). `npm audit` on `main` now
+reports `found 0 vulnerabilities`, and `npm audit --omit=dev` reports 0.

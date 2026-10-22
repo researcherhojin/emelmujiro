@@ -1,11 +1,13 @@
 ---
-status: in-progress
+status: shipped
 module: frontend
 created: 2026-10-22
 updated: 2026-10-22
 ---
 
 # Tailwind CSS 4 replaces 3.4, removing the last development audit findings
+
+<!-- cspell:ignore Rmoc -->
 
 ## Intent
 
@@ -84,6 +86,23 @@ Out of scope: redesigns or class cleanup beyond what v4 requires.
 
 ## Outcome
 
+### Deployment verification (2026-10-22)
+
+- PR #628 merged as `f1040650122c02ec5dd6fef1552ce9f9560dab4c`.
+  Main CI/CD Pipeline run `39778421428` passed all five jobs.
+- At `2026-10-22T12:29:46Z`, production `/api/health/` reported `healthy`
+  and that exact merge commit.
+- Production HTML references `/assets/index-DRRmocQB.css`. Its SHA-256 is
+  `b48456aeb5052cb0a9ad207d69b569b9d28254d97dd944ebe18116a5059edee8`,
+  identical to the local build's 83,276-byte CSS file.
+- A fresh `npm audit --json` reports 0 vulnerabilities; `npm ls tailwindcss
+braces --all` resolves Tailwind 4.3.3 and contains no `braces` package.
+- The shipped change is recorded in `CHANGELOG.md` under
+  `Merged since [1.0.0]`, in the `deps-dev(tailwind)` entry.
+- Follow-up: the stored Dependabot 4.x ignore from #461 still needs its
+  `@dependabot unignore` command; no bot command was posted during this
+  deployment verification.
+
 ### Verification before merge (2026-10-22)
 
 Method: `build:e2e` builds of `origin/main` (separate worktree, port 4181) and
@@ -155,5 +174,22 @@ validate` passed (69 files, 1,284 tests, 0 lint warnings), and so did E2E on
   were kept.
 - `dependabot.yml` is unchanged on purpose. Any edit to it triggers every
   ecosystem (Gotcha #12). Its `tailwindcss` `semver-major` entry now holds back
-  v5. The 4.x ignore stored by the #461 command is lifted with
-  `@dependabot unignore` after merge.
+  v5.
+
+### Deployment (2026-10-22)
+
+- Squash-merged as `f1040650` ([#628](https://github.com/researcherhojin/emelmujiro/pull/628)).
+  The first PR run cancelled `Frontend Lint` (every step green, but the job
+  took 6 min 24 s against its 5-minute limit) and `E2E Tests` (10-minute limit)
+  on slow runners. A rerun passed in 17 s and 1 min 33 s, and the main
+  pipeline for `f1040650` succeeded.
+- `/api/health/` reports `f1040650`. The live `index-DRRmocQB.css` matches the
+  locally verified build byte for byte (SHA-256 `b48456aeb5052cb0…`, 83,276
+  bytes). `/`, `/en`, `/contact`, `/insights` and `/login` return 200, and an
+  unknown path returns 404.
+- `npm audit` reports `found 0 vulnerabilities` on `main`.
+- Not done: Dependabot ignored the `@dependabot unignore tailwindcss` comment
+  posted on #461 because that PR is closed. The 4.x ignore stored by #461's
+  `@dependabot ignore this major version` therefore still applies. Post the
+  same command on the next open Dependabot npm PR, then confirm with
+  `@dependabot show tailwindcss ignore conditions`.
