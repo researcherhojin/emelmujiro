@@ -243,11 +243,18 @@ if [ "$NGINX_CONF_CHANGED" = true ]; then
 else
   docker compose up -d frontend
 fi
+if [ "$ANALYTICS_IMAGE_MISSING" = true ]; then
+  # nginx resolves the static analytics upstream at startup/reload. A recreated
+  # container can have a new address even though its service name is unchanged.
+  docker exec emelmujiro-frontend nginx -t
+  docker exec emelmujiro-frontend nginx -s reload
+fi
 
 # Wait for services to be healthy (up to 60s)
 echo "$LOG_PREFIX Waiting for services to be healthy..."
 backend_ok=false
 frontend_ok=false
+analytics_ok=false
 elapsed=0
 while [ $elapsed -lt 60 ]; do
   if [ "$backend_ok" = false ] && curl -sf http://127.0.0.1:8000/api/health/ > /dev/null 2>&1; then
@@ -258,16 +265,21 @@ while [ $elapsed -lt 60 ]; do
     echo "$LOG_PREFIX Frontend health check passed after ${elapsed}s"
     frontend_ok=true
   fi
-  if [ "$backend_ok" = true ] && [ "$frontend_ok" = true ]; then
+  if [ "$analytics_ok" = false ] && curl -sf http://127.0.0.1:3001/api/heartbeat > /dev/null 2>&1; then
+    echo "$LOG_PREFIX Analytics health check passed after ${elapsed}s"
+    analytics_ok=true
+  fi
+  if [ "$backend_ok" = true ] && [ "$frontend_ok" = true ] && [ "$analytics_ok" = true ]; then
     break
   fi
   sleep 5
   elapsed=$((elapsed + 5))
 done
 
-if [ "$backend_ok" = false ] || [ "$frontend_ok" = false ]; then
+if [ "$backend_ok" = false ] || [ "$frontend_ok" = false ] || [ "$analytics_ok" = false ]; then
   [ "$backend_ok" = false ] && echo "$LOG_PREFIX ERROR: Backend health check did not pass within 60s"
   [ "$frontend_ok" = false ] && echo "$LOG_PREFIX ERROR: Frontend health check did not pass within 60s"
+  [ "$analytics_ok" = false ] && echo "$LOG_PREFIX ERROR: Analytics health check did not pass within 60s"
   echo "$LOG_PREFIX Deploy failed: service(s) not healthy"
   exit 1
 fi

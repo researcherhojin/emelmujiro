@@ -8,7 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
-- fix(deploy): Detect analytics containers whose exact image IDs became inaccessible after Docker Desktop rebuilt their tags. Recreate the application and database containers while retaining the database volume, then verify image accessibility.
+- fix(deploy): Detect analytics containers whose exact image IDs became inaccessible after Docker Desktop rebuilt their tags. Recreate the application and database containers while retaining the database volume, verify image accessibility, refresh nginx's upstream resolution and wait for the analytics heartbeat before declaring deployment complete.
 
 - fix(docker): Exclude the backend's local cache from its build context so host-installed security tools and runtime cache data are not copied into the production image.
 
