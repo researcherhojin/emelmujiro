@@ -50,3 +50,5 @@ Invariants only. Grep the code for everything else. Single app `api/`; `config/`
 ## Security
 
 - **File uploads**: Backend uses `uuid4` filenames (no user-supplied paths). Validated against extension whitelist + MIME type + 5 MB limit.
+- **Image endpoint**: `validate_uploaded_image()` additionally decodes JPEG, PNG and GIF; documents are rejected even when the generic upload settings permit them. Pillow's pixel ceiling is set once at module import, before decoder allocation, with decompression warnings treated as errors. Limits are 16,000,000 pixels per frame, 32,000,000 total pixels and 100 frames. Validate every animation frame and reset the stream before storage. Tests must use real encoded images, not headers followed by arbitrary bytes.
+- **Runtime image**: compiler tools and development headers stay in the Docker dependency stage. The runtime copies its virtual environment and uses uv; pip is removed from the base runtime. Verify changes with tests inside the built container, not just the host environment.

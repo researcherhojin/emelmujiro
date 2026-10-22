@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(security): Upgrade follow-redirects to 1.16.1 and certifi to 2026.10.19; validate actual image decoding with Pillow 13.0.0, including malformed GIF and allocation limits. Separate build tools from the backend runtime image, remove unused runtime pip, and update nginx to 1.31.8-alpine. Intent: `docs/intents/backend/dependency-upload-audit.md`
+
 - fix(seo): Abort sitemap generation on API failures or inconsistent pagination instead of silently omitting every article; preserve the existing sitemap on fetch failure. Add regression tests for inventory completeness and canonical language URLs. Intent: `docs/intents/seo/preserve-blog-sitemap.md`
 
 - chore(backend): Resolve editor diagnostics for optional types, shared view configuration, upload writes and settings defaults; retain public API error handling with traceback logging. Exclude generated Playwright artifacts, including the CLI's default directory, from spelling checks and Git tracking.

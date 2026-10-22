@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.12-slim AS dependencies
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.5 /uv /uvx /bin/
 
@@ -21,6 +21,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install Python dependencies (cached layer)
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
+
+# Keep compilers, headers and build utilities out of the runtime image.
+FROM python:3.12-slim
+COPY --from=ghcr.io/astral-sh/uv:0.12.5 /uv /uvx /bin/
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy
+WORKDIR /app
+COPY --from=dependencies /app/.venv /app/.venv
+# Dependency installation uses uv; pip from the base image is not needed here.
+RUN python -m pip uninstall --yes pip
 
 # Copy project
 COPY . .

@@ -336,10 +336,10 @@ class BlogImageUploadView(APIView):
         if not file:
             return Response({"error": "이미지 파일이 필요합니다."}, status=status.HTTP_400_BAD_REQUEST)
 
-        from .validators import validate_uploaded_file
+        from .validators import validate_uploaded_image
 
         try:
-            validate_uploaded_file(file)
+            validate_uploaded_image(file)
         except (ValidationError, DjangoValidationError) as e:
             return Response(
                 {"error": e.messages if hasattr(e, "messages") else str(e)}, status=status.HTTP_400_BAD_REQUEST

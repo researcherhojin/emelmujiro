@@ -54,7 +54,7 @@ services:
   # `auto-deploy.sh` applies a changed tag (compose pulls a missing image).
   frontend:
     logging: *bounded-logging
-    image: nginx:1.31.7-alpine
+    image: nginx:1.31.8-alpine
     container_name: emelmujiro-frontend
     restart: unless-stopped
     security_opt:

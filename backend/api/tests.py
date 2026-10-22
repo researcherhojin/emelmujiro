@@ -2740,7 +2740,13 @@ class BlogImageUploadTestCase(APITestCase):
         from django.core.files.uploadedfile import SimpleUploadedFile
 
         self.client.force_authenticate(user=self.admin)
-        f = SimpleUploadedFile("photo.png", b"\x89PNG\r\n\x1a\n" + b"x" * 100, content_type="image/png")
+        from io import BytesIO
+
+        from PIL import Image
+
+        image_data = BytesIO()
+        Image.new("RGB", (2, 2), "red").save(image_data, format="PNG")
+        f = SimpleUploadedFile("photo.png", image_data.getvalue(), content_type="image/png")
         with override_settings(MEDIA_ROOT=tempfile.mkdtemp()):
             response = self.client.post(self.url, {"image": f}, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
