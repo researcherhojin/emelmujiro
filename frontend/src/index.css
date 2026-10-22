@@ -14,9 +14,6 @@
 @source not "./setupTests.ts";
 @source not "./test-utils/**";
 
-/* v4 applies hover: only on devices that can hover; keep v3's plain :hover. */
-@custom-variant hover (&:hover);
-
 /*
  * v4 changed the default border color from gray-200 to currentColor; this
  * restores the v3 default so bare `border` utilities keep their color.
