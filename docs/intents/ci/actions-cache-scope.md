@@ -9,11 +9,12 @@ updated: 2026-10-22
 
 ## Intent
 
-- **Problem**: on 2026-10-22 the repository held 86 Actions caches totalling 11,066,677,423 bytes, over GitHub's 10 GB per-repository limit.
-  - All but 13 were scoped to closed pull requests (`refs/pull/N/merge`).
-  - `Linux-playwright-1.64.1` (279 MB) was stored 21 times and `cache-trivy-<date>` (91 MB) 20 times. Both are saved only by `pull_request` jobs (`E2E Tests` and `Security Scan`), because `main-ci-cd.yml` runs neither.
+- **Problem**: on 2026-10-22 the repository held 88 Actions caches totalling 11,066,677,423 bytes, over GitHub's 10 GB per-repository limit.
+  - The count comes from the `gh cache list` taken at 13:56:14Z. The `actions/cache/usage` API reported the same bytes but only 86 caches.
+  - All but 13 were scoped to the 21 closed pull requests (`refs/pull/N/merge`).
+  - `Linux-playwright-1.64.1` (279 MB) was stored 21 times. `cache-trivy-<date>` (91 MB) and `trivy-binary-v0.70.0-Linux-X64` (41 MB) were each stored 18 times. All three are saved only by `pull_request` jobs (`E2E Tests` and `Security Scan`), because `main-ci-cd.yml` runs neither.
   - A PR can restore only its own caches and its base branch's, so each PR downloaded and saved a fresh copy. Once the limit is passed, least-recently-used eviction can drop `main`'s caches too.
-  - The 86 stale caches were deleted by hand the same day, leaving `main`'s current `Linux-node-modules-d523128e…` and `setup-uv-…-066a13b`.
+  - 86 stale caches (10,981,695,089 bytes) were deleted by hand the same day, leaving `main`'s current `Linux-node-modules-d523128e…` and `setup-uv-…-066a13b`.
 - **A dead step was found along the way**: `Security Scan`'s `Cache Trivy DB` caches `~/.cache/trivy`, but the pinned `aquasecurity/trivy-action` (v0.36.0, `ed142fd0`) always sets `TRIVY_CACHE_DIR` to its `cache-dir` input (default `${{ github.workspace }}/.cache/trivy`). It caches that path itself under `cache-trivy-<date>`. No `Linux-trivy` cache ever appeared in the listing.
 - **Outcome wanted**: PR runs restore the Playwright browser and the Trivy DB from `main` and save neither. The cache total stays well under 10 GB as Dependabot PRs accumulate.
 - **Affected systems**: `.github/workflows/pr-checks.yml` (`e2e-tests`, `security-scan`), a new `.github/workflows/cache-warm.yml`, and `.claude/rules/ci.md`.
@@ -99,7 +100,8 @@ scope here.
 
 **Cache totals**: after the warm run for `e96f27c8` (`39798612636`), the
 repository holds 5 caches, all under `refs/heads/main`, totalling 517,603,982
-bytes. Before the cleanup it held 86 caches and 11,066,677,423 bytes.
+bytes. Before the cleanup it held 88 caches and 11,066,677,423 bytes. The
+closing commit `4e30eefb` says "86", which was the usage API's lagging count.
 
 **Trivy binary**: under `cache: "false"`, `setup-trivy` skips both restoring
 and saving the Trivy binary, so each PR run installs it with the upstream
