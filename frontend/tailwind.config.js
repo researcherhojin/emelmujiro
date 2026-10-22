@@ -160,8 +160,12 @@ module.exports = {
       },
       colors: {
         ...v3Colors,
-        // Simplified dark palette
+        // Simplified dark palette (zinc). 600 and 700 back the dark-mode borders
+        // and hover in Navbar, Footer, ServiceModal and DarkModeToggle, whose
+        // classes emitted no CSS until these keys existed.
         dark: {
+          600: '#52525b',
+          700: '#3f3f46',
           800: '#27272a',
           850: '#1f2022',
           900: '#18181b',
