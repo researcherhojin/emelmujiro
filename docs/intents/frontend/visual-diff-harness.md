@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: frontend
 created: 2026-10-23
 updated: 2026-10-23
@@ -68,4 +68,21 @@ updated: 2026-10-23
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #639 (`f7a6f825`, merged 2026-10-22T17:20:28Z). Production
+reported `f7a6f825` after main-ci-cd run `39821779122`.
+
+- **Noise floor**: two captures of one `build:e2e` build of `5ff20006`
+  differed in 3 of 44 images, at most 0.002451% (30 px). Every changed pixel
+  was off by 1/255 and inside the contact pages' Google Form iframe. Two
+  separate builds of that commit gave the same worst case.
+- **Detection**: changing the `index.css` placeholder color from `gray-400`
+  to `gray-500` flagged exactly the 4 `login-*` screenshots (2,071 px each,
+  max delta 49) with exit `1`. After the revert and a rebuild, the CSS file
+  carried production's hashed name again, and the comparison was back at the
+  noise floor.
+- **Static checks**, re-run on `18d68fb3`: `node --check` passes for both
+  files, ESLint with `--no-ignore` and the 13 runtime globals the scripts use
+  reports nothing, and prettier, cspell, `npm run knip` and
+  `npm run check:routes` exit `0`. PR run `39820714866` passed every check.
+- **In use**: #640 and #641 were each measured with it before merging, and
+  their PR descriptions carry the numbers.

@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: frontend
 created: 2026-10-23
 updated: 2026-10-23
@@ -53,4 +53,22 @@ updated: 2026-10-23
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #641 (`18d68fb3`, merged 2026-10-22T17:45:57Z). Production
+reports `18d68fb3`.
+
+- **Built CSS**: 63 of 64 `:hover` rules sit inside `@media (hover:hover)`,
+  up from 0 of 64. The remaining one is the hand-written carousel rule.
+- **Media query**: under Pixel 5 emulation, `matchMedia('(hover: hover)')`
+  was `false` in both builds. Under a mouse context at 390 px it was `true`.
+- **Mouse hover**: in both builds the mobile menu button rested with a
+  transparent background and turned `rgb(243, 244, 246)` under the mouse.
+- **Static captures**: with `VISUAL_DIFF_STATES=1`, 3 of 54 captures
+  differed. All were `en_contact-*`, 2 px at 1/255 inside the Google Form
+  iframe, which is the known noise.
+- **Not reproduced**: Chromium's touch emulation does not keep `:hover` after
+  `tap()`, so neither build showed the sticky state. The media gating above
+  is the evidence.
+- PR run `39822722496` passed. GitHub left its `Repo Checks (informational)`
+  check run at `in_progress`, but the job log shows every step succeeding by
+  17:27:05Z, including 36 guard-hook cases with 0 failures and 0 spelling
+  issues.
