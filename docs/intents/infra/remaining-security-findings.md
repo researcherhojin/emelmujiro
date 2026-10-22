@@ -61,6 +61,7 @@ Remaining upstream advisories:
 - [braces nested-pattern stack exhaustion](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)
 - [extract-zip symlink path traversal](https://github.com/advisories/GHSA-jmr9-qjv8-65gv)
   and [symlink archive writes](https://github.com/advisories/GHSA-7pqw-9j4j-h8q3)
+  (removed by the follow-up below)
 - [sprintf-js unbounded precision](https://github.com/advisories/GHSA-hp3w-g68c-fv3c)
 
 ### Analytics and repository verification
@@ -100,5 +101,53 @@ tracking endpoint is routed, and the analytics dashboard returns 404. The
 existing PostgreSQL 15 data volume was preserved.
 
 These results cover known vulnerabilities in the scanned inventory. The 14
-unfixed development findings remain visible and require upstream releases or
-separate tool migrations. See [CHANGELOG.md](../../../CHANGELOG.md).
+unfixed development findings remained visible at this point; the follow-up below
+reduced them to 10. See [CHANGELOG.md](../../../CHANGELOG.md).
+
+### Follow-up: extract-zip path removed (2026-10-22)
+
+Re-measured on `b1acc7d6`: `npm audit` reported 14 findings (11 high, 3
+moderate) along three paths, and the latest release of each root package was
+still inside its advisory range (`braces` 3.0.3, `extract-zip` 2.0.1,
+`sprintf-js` 1.1.3). The audit's offered fixes were a Tailwind 4 major and an
+`@lhci/cli` downgrade from 0.15.1 to 0.12.0, both excluded.
+
+- `extract-zip` came only through `lighthouse@12.6.1` → `puppeteer-core@24.43.1`
+  → `@puppeteer/browsers@2.13.2`. `@puppeteer/browsers` 3.x no longer depends
+  on it: zip extraction uses system tools or an optional `yauzl` peer.
+  `@puppeteer/browsers` was overridden to exactly 3.2.5, the release
+  `puppeteer-core@25` uses. All 13 symbols that `puppeteer-core` 24 reads from
+  it are still exported, and 3.x needs Node 22.12 or later, which Node 24
+  satisfies.
+- A plain `npm install` kept the locked 2.13.2 and `npm ls` printed `invalid`.
+  Deleting its lock entry by hand produced a corrupt tree, so that attempt was
+  reverted. `npm update @puppeteer/browsers` applied the override: 32 lock
+  entries were removed (`extract-zip`, `yauzl`, the `tar-fs` stack and nested
+  `yargs` 17) and `modern-tar@0.8.6` was added. npm also restored
+  `"dev": true` on `@types/react`, `@types/react-dom`, `csstype` and
+  `typescript`, the same marker drift recorded in CHANGELOG before. The
+  `@rolldown/binding-*` entries were unchanged, including
+  `binding-linux-x64-gnu`.
+- Verification: `npm ci` reproduced the tree with `@puppeteer/browsers@3.2.5`
+  marked `overridden` and no `invalid` entries. `react` and `react-dom` both stayed
+  at 19.3.1, with one `@tiptap/core` at 3.32.0. `require('puppeteer-core')`,
+  `import('lighthouse')` and LHCI's `puppeteer-manager` all loaded.
+  `npx @lhci/cli autorun` (the `Lighthouse CI` job's command) completed 3 runs
+  for each of 4 URLs and passed every error-level assertion. `npm run validate` passed, with all 1,284
+  frontend tests across 69 files.
+- Result: `npm audit` reports 10 findings (5 high, 5 moderate), all marked
+  `"dev": true`. `npm audit --omit=dev` reports 0. `@lhci/cli`,
+  `@lhci/utils`, `lighthouse`, `puppeteer-core`, `@puppeteer/browsers` and
+  `extract-zip` dropped out or fell to moderate.
+
+Still open, with blockers:
+
+- `braces` (5 high: `braces`, `chokidar`, `micromatch`, `fast-glob`,
+  `tailwindcss`). Tailwind 3 depends on chokidar 3 and micromatch 4, and no
+  braces release is outside the advisory range. Fixing it needs the Tailwind 4
+  migration, which is dependabot-ignored and out of scope.
+- `sprintf-js` (5 moderate: `sprintf-js`, `argparse`, `js-yaml`, `@lhci/utils`,
+  `@lhci/cli`). `@lhci/utils@0.15.1` needs `js-yaml@^3` for `safeLoad`, and
+  `js-yaml@3` uses `argparse@1` only in its own CLI. Overriding `argparse` to 2
+  would break that CLI rather than fix anything, so it was not done. This needs
+  an upstream LHCI release on `js-yaml` 4 or a fixed `sprintf-js`.
