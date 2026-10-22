@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: ci
 created: 2026-10-22
 updated: 2026-10-22
@@ -56,4 +56,52 @@ updated: 2026-10-22
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #631 (`553b92ba`, merged and deployed 2026-10-22). Done-when
+evidence:
+
+- **`actionlint` 1.7.12**: its own rules pass on `cache-warm.yml` and
+  `pr-checks.yml` as of `e96f27c8`. With the shellcheck 0.11.0 integration on,
+  it reports 5 findings in `pr-checks.yml`, none in lines #631 or #632 touched:
+  - 4 × SC2155 (`local x=$(…)` masks the exit status) in the step
+    `Check README badge versions match package-lock.json and uv.lock`
+    (`01a9a46e`, `19bd9c6e`)
+  - 1 × SC2086 (info) in `Check bundle size` (`f93baa5b`)
+- **Warm run**: both workflows ran green. The first warm run on `main`
+  (`39794157925`, 2026-10-22T14:15:44Z) saved under `refs/heads/main`:
+
+  | Key                              |       Bytes |
+  | -------------------------------- | ----------: |
+  | `Linux-playwright-1.64.1`        | 293,399,028 |
+  | `cache-trivy-2026-10-22`         |  95,471,439 |
+  | `trivy-binary-v0.70.0-Linux-X64` |  43,751,181 |
+
+- **PR runs saved nothing**:
+  - #631's own run (`39792803659`) found neither cache, since `main` held
+    neither yet. It saved none.
+  - The first PR run after the warm run, #632's `39795710174`:
+    - restored `Linux-playwright-1.64.1` in `E2E Tests` and
+      `cache-trivy-2026-10-22` in `Security Scan`
+    - printed no `Cache saved` line
+    - left nothing under `refs/pull/632/merge` (`gh cache list --ref` empty,
+      exit 0)
+
+**E2E setup time**: the time saved is small, so the gain is storage, not speed.
+The table shows single runs, using `E2E Tests` step durations from the jobs API.
+
+| Run                              | Playwright cache         | Playwright steps            | Job   |
+| -------------------------------- | ------------------------ | --------------------------- | ----- |
+| #630, first run (`39790166301`)  | PR-scope miss, then save | 22 s install + 5 s save     | 116 s |
+| #631 (`39792803659`)             | miss, restore-only       | 26 s install                | 103 s |
+| #632 (`39795710174`), after warm | hit from `main`          | 3 s restore + 17 s apt deps | 103 s |
+
+The 17 s of Playwright's apt system dependencies now dominates. They are out of
+scope here.
+
+**Cache totals**: after the warm run for `e96f27c8` (`39798612636`), the
+repository holds 5 caches, all under `refs/heads/main`, totalling 517,603,982
+bytes. Before the cleanup it held 86 caches and 11,066,677,423 bytes.
+
+**Trivy binary**: under `cache: "false"`, `setup-trivy` skips both restoring
+and saving the Trivy binary, so each PR run installs it with the upstream
+install script. The `trivy-binary-*` cache on `main` is used only by the warm
+job.
