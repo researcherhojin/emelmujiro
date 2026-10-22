@@ -63,7 +63,7 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({ content = '', onChange, pla
     editorProps: {
       attributes: {
         class:
-          'prose prose-lg prose-gray dark:prose-invert max-w-none min-h-[400px] px-4 py-3 focus:outline-none',
+          'prose prose-lg prose-gray dark:prose-invert max-w-none min-h-[400px] px-4 py-3 focus:outline-hidden',
       },
       handleDrop: (_view: EditorView, event: DragEvent, _slice: Slice, moved: boolean) => {
         if (moved) return false;

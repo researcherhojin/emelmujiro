@@ -14,7 +14,7 @@ const CTASection: React.FC = memo(() => {
       className="py-16 sm:py-32 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-12 md:p-20 text-center shadow-sm border border-gray-200 dark:border-gray-800">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-12 md:p-20 text-center shadow-xs border border-gray-200 dark:border-gray-800">
           <span className="text-xs sm:text-sm font-bold text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase mb-4 sm:mb-6 block">
             {t('cta.sectionLabel')}
           </span>

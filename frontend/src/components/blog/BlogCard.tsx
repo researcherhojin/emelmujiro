@@ -28,7 +28,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
       <article className="group opacity-0 animate-fade-up">
         <Link to={localizedPath(`/insights/${slug}`)} className="block">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
-            <div className="relative aspect-[16/10] lg:aspect-auto overflow-hidden">
+            <div className="relative aspect-16/10 lg:aspect-auto overflow-hidden">
               {image_url ? (
                 <img
                   src={image_url}
@@ -42,7 +42,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
                   onDragStart={preventImageAction}
                 />
               ) : (
-                <div className="w-full h-full min-h-[280px] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900" />
+                <div className="w-full h-full min-h-[280px] bg-linear-to-br/srgb from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900" />
               )}
             </div>
             <div className="flex flex-col justify-center p-8 lg:p-12">
@@ -64,7 +64,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
                   </time>
                 )}
               </div>
-              <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-white mb-4 leading-tight group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-300">
+              <h2 className="text-2xl lg:text-3xl lg:leading-9 font-semibold text-gray-900 dark:text-white mb-4 leading-tight group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-300">
                 {title}
               </h2>
               <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 mb-6">
@@ -89,7 +89,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
     <article className="group h-full opacity-0 animate-fade-up-sm">
       <Link to={localizedPath(`/insights/${slug}`)} className="block h-full">
         <div className="h-full bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 transition-all duration-500 ease-out hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700">
-          <div className="relative aspect-[16/10] overflow-hidden">
+          <div className="relative aspect-16/10 overflow-hidden">
             {image_url ? (
               <img
                 src={image_url}
@@ -103,11 +103,11 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
                 onDragStart={preventImageAction}
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900" />
+              <div className="w-full h-full bg-linear-to-br/srgb from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900" />
             )}
           </div>
 
-          <div className="p-6 lg:p-7 flex flex-col flex-grow">
+          <div className="p-6 lg:p-7 flex flex-col grow">
             <div className="flex items-center gap-3 mb-3">
               {category && (
                 <span className="text-[11px] font-medium tracking-widest uppercase text-gray-500 dark:text-gray-400">

@@ -5,12 +5,12 @@ import { PARTNER_COMPANIES, type PartnerCompany } from '../../constants';
 const LogoItem: React.FC<{ company: PartnerCompany }> = memo(({ company }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex-shrink-0 px-8">
+    <div className="shrink-0 px-8">
       <div className="flex items-center justify-center w-40 h-24">
         <img
           src={company.logo}
           alt={t('logos.logoAlt', { name: company.name })}
-          className="h-12 max-w-40 w-auto object-contain opacity-60 group-hover:opacity-40 hover:!opacity-100 transition-opacity duration-300"
+          className="h-12 max-w-40 w-auto object-contain opacity-60 group-hover:opacity-40 hover:opacity-100! transition-opacity duration-300"
           width={160}
           height={48}
           loading="lazy"
@@ -44,8 +44,8 @@ const ScrollRow: React.FC<ScrollRowProps> = memo(({ companies, direction = 'left
   return (
     <div className="relative overflow-hidden group">
       {/* Left/right fade masks */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-gray-50 dark:from-gray-950 to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-gray-50 dark:from-gray-950 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-linear-to-r/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-linear-to-l/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
 
       <div
         ref={scrollRef}

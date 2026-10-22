@@ -267,7 +267,7 @@ const BlogEditor: React.FC = () => {
 
         {showPreview ? (
           /* Preview Mode */
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xs border border-gray-200 dark:border-gray-700 p-8">
             {meta.image_url && (
               <img
                 src={meta.image_url}
@@ -306,7 +306,7 @@ const BlogEditor: React.FC = () => {
               value={meta.title}
               onChange={handleMetaChange}
               placeholder={t('blogEditor.enterTitle', 'Enter title...')}
-              className="w-full text-3xl font-bold bg-transparent border-none outline-none placeholder-gray-300 dark:placeholder-gray-600 dark:text-white"
+              className="w-full text-3xl font-bold bg-transparent border-none outline-hidden placeholder-gray-300 dark:placeholder-gray-600 dark:text-white"
             />
 
             {/* Metadata row */}
@@ -315,7 +315,7 @@ const BlogEditor: React.FC = () => {
                 name="category"
                 value={meta.category}
                 onChange={handleMetaChange}
-                className="px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               >
                 {apiCategories
                   ? apiCategories.map((cat) => (
@@ -335,7 +335,7 @@ const BlogEditor: React.FC = () => {
                 value={meta.tags}
                 onChange={handleMetaChange}
                 placeholder={t('blogEditor.tagsPlaceholder', 'Tags (comma-separated)')}
-                className="flex-1 min-w-[200px] px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 min-w-[200px] px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -349,7 +349,7 @@ const BlogEditor: React.FC = () => {
                 'Brief description (auto-generated if empty)'
               )}
               rows={2}
-              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-3 py-2 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none"
             />
 
             {/* Image URL */}
@@ -359,7 +359,7 @@ const BlogEditor: React.FC = () => {
               value={meta.image_url}
               onChange={handleMetaChange}
               placeholder={t('blogEditor.imageUrlPlaceholder', 'Cover image URL (optional)')}
-              className="w-full px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-1.5 rounded-lg text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-gray-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             />
 
             {/* TipTap Editor */}

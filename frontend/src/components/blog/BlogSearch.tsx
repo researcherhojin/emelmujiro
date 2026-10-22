@@ -146,7 +146,7 @@ const BlogSearch: React.FC<BlogSearchProps> = ({ onSearch }) => {
             }}
             placeholder={t('blog.searchPlaceholder')}
             aria-label={t('blog.searchPlaceholder')}
-            className="w-full pl-10 pr-10 py-3 border border-gray-200 dark:border-gray-700 rounded-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 focus:bg-white dark:focus:bg-gray-800 transition-all duration-300"
+            className="w-full pl-10 pr-10 py-3 border border-gray-200 dark:border-gray-700 rounded-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:border-gray-400 dark:focus:border-gray-500 focus:bg-white dark:focus:bg-gray-800 transition-all duration-300"
           />
           {searchTerm && (
             <button

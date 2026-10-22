@@ -262,7 +262,7 @@ const BlogDetailPage: React.FC = memo(() => {
             </div>
 
             {/* Title */}
-            <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-gray-900 dark:text-white tracking-tight leading-[1.15] mb-8">
+            <h1 className="text-3xl sm:text-4xl sm:leading-10 lg:text-[2.75rem] font-semibold text-gray-900 dark:text-white tracking-tight leading-[1.15] mb-8">
               {post?.title}
             </h1>
 
@@ -282,7 +282,7 @@ const BlogDetailPage: React.FC = memo(() => {
 
             {/* Cover Image */}
             {post?.image_url && (
-              <div className="relative aspect-[2/1] rounded-2xl overflow-hidden mb-12 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+              <div className="relative aspect-2/1 rounded-2xl overflow-hidden mb-12 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
                 <img
                   src={post.image_url}
                   alt={`${post.title} ${t('blogDetail.relatedImage')}`}

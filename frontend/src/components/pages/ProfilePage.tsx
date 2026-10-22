@@ -95,7 +95,7 @@ const ProfilePage: React.FC = memo(() => {
             <div className="mt-6 sm:mt-8">
               <button
                 onClick={handleBackClick}
-                className="inline-flex items-center px-6 py-3 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all focus:outline-none"
+                className="inline-flex items-center px-6 py-3 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all focus:outline-hidden"
               >
                 ← {t('profilePage.backToMain')}
               </button>
@@ -171,7 +171,7 @@ const ProfilePage: React.FC = memo(() => {
                           </p>
                         </div>
                         {item.upcoming && (
-                          <span className="flex-shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                          <span className="shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
                             {t('teachingHistory.upcoming')}
                           </span>
                         )}

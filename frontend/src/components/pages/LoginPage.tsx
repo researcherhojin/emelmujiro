@@ -97,7 +97,7 @@ const LoginPage: React.FC = () => {
                 placeholder={t('auth.emailPlaceholder')}
                 required
                 autoComplete="username"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-shadow"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-shadow"
               />
             </div>
 
@@ -116,7 +116,7 @@ const LoginPage: React.FC = () => {
                 placeholder={t('auth.passwordPlaceholder')}
                 required
                 autoComplete="current-password"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-shadow"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-gray-900 dark:focus:ring-white transition-shadow"
               />
             </div>
 
@@ -125,7 +125,7 @@ const LoginPage: React.FC = () => {
                 className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400"
                 role="alert"
               >
-                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span>{error}</span>
               </div>
             )}

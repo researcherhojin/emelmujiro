@@ -224,7 +224,7 @@ const BlogListPage: React.FC = memo(() => {
                   <h2 className="mt-4 text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-4">
                     {t('blog.comingSoon')}
                   </h2>
-                  <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-md mx-auto leading-relaxed break-keep">
+                  <p className="text-base sm:text-lg sm:leading-7 text-gray-600 dark:text-gray-400 max-w-md mx-auto leading-relaxed break-keep">
                     {t('blog.comingSoonDescription')}
                   </p>
                   <Construction

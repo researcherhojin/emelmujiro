@@ -39,7 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* KakaoTalk in-app browser banner */}
       {showKakaoBanner && (
-        <div className="fixed top-0 left-0 right-0 z-[60] bg-yellow-400 text-gray-900 text-sm text-center px-4 py-2 flex items-center justify-center gap-2">
+        <div className="fixed top-0 left-0 right-0 z-60 bg-yellow-400 text-gray-900 text-sm text-center px-4 py-2 flex items-center justify-center gap-2">
           <span>{t('common.kakaoBanner')}</span>
           <button
             onClick={handleOpenExternal}
@@ -70,7 +70,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       <main
         id="main-content"
-        className="flex-grow pt-20 focus:outline-none"
+        className="grow pt-20 focus:outline-hidden"
         tabIndex={-1}
         aria-label={t('accessibility.mainContent')}
       >

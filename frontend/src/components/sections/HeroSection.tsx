@@ -15,7 +15,7 @@ const HeroSection: React.FC = memo(() => {
     >
       <div className="relative z-10 max-w-5xl mx-auto px-5 sm:px-8 pt-32 pb-16 sm:py-24 text-center">
         {/* Main Headline */}
-        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black leading-[1.1] tracking-tight mb-6 sm:mb-8">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl sm:leading-none font-black leading-[1.1] tracking-tight mb-6 sm:mb-8">
           <span className="block text-gray-900 dark:text-white break-keep">
             {t('hero.titleLine1')}
           </span>
@@ -25,7 +25,7 @@ const HeroSection: React.FC = memo(() => {
         </h1>
 
         {/* Subheadline */}
-        <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 mb-8 sm:mb-12 leading-relaxed max-w-2xl mx-auto font-medium break-keep">
+        <p className="text-base sm:text-lg md:text-xl sm:leading-7 text-gray-500 dark:text-gray-400 mb-8 sm:mb-12 leading-relaxed max-w-2xl mx-auto font-medium break-keep">
           {t('hero.descriptionLine1')}
           <br className="hidden sm:block" />
           <span className="block sm:inline">{t('hero.descriptionLine2')}</span>

@@ -50,7 +50,7 @@ const ContactInfo: React.FC = memo(() => {
         value={t('contact.info.phone')}
       />
 
-      <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-xl">
+      <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
           {t('contact.info.businessHours')}
         </h3>

@@ -78,7 +78,7 @@ const Navbar: React.FC = memo(() => {
           {/* Logo */}
           <Link
             to={localizedPath('/')}
-            className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white hover:text-gray-800 dark:hover:text-gray-100 transition-colors tracking-tight select-none focus:outline-none border-none bg-transparent whitespace-nowrap"
+            className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white hover:text-gray-800 dark:hover:text-gray-100 transition-colors tracking-tight select-none focus:outline-hidden border-none bg-transparent whitespace-nowrap"
           >
             {t('common.companyName')}
           </Link>
@@ -89,7 +89,7 @@ const Navbar: React.FC = memo(() => {
               <button
                 key={item.path}
                 onClick={() => handleNavigation(item.path)}
-                className={`text-base font-semibold transition-colors duration-200 relative focus:outline-none border-none bg-transparent ${
+                className={`text-base font-semibold transition-colors duration-200 relative focus:outline-hidden border-none bg-transparent ${
                   isActive(item.path)
                     ? 'text-gray-900 dark:text-white'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
@@ -109,7 +109,7 @@ const Navbar: React.FC = memo(() => {
             {/* Language Switch */}
             <button
               onClick={handleLanguageSwitch}
-              className="flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-none border-none bg-transparent"
+              className="flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-hidden border-none bg-transparent"
               aria-label={t('common.switchLanguageTo', {
                 lang: currentLang === 'ko' ? 'EN' : 'KO',
               })}
@@ -137,7 +137,7 @@ const Navbar: React.FC = memo(() => {
           <div className="md:hidden flex items-center space-x-3">
             <button
               onClick={handleLanguageSwitch}
-              className="flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-none border-none bg-transparent"
+              className="flex items-center gap-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-hidden border-none bg-transparent"
               aria-label={t('common.switchLanguageTo', {
                 lang: currentLang === 'ko' ? 'EN' : 'KO',
               })}
@@ -173,7 +173,7 @@ const Navbar: React.FC = memo(() => {
                 key={item.path}
                 onClick={() => handleNavigation(item.path)}
                 className={`block w-full text-left px-4 py-3 text-base font-medium
-                                    transition-colors focus:outline-none ${
+                                    transition-colors focus:outline-hidden ${
                                       isActive(item.path)
                                         ? 'text-gray-900 dark:text-white bg-gray-50 dark:bg-dark-800'
                                         : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-dark-800'
