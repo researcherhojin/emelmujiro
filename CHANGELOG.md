@@ -8,6 +8,13 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- ci: Make five checks fail when what they check fails, found by a read-only audit of run logs. Intent: `docs/intents/ci/silent-check-failures.md`.
+  - `main-ci-cd`'s test steps pipe into `tee` under GitHub's default shell, which has no `pipefail`, so a failing suite stayed green (run `36376897291`). They now set `shell: bash`.
+  - The PR commit-message check read `git log -z` through command substitution, which drops NUL bytes, so it checked zero messages from `b1e6df2e` (2026-09-28) on. It now reads from a file and fails when it finds no message.
+  - The cron log check grepped `crontab.*>>`, and no `Makefile` line matched. It now matches either order and fails on zero matches.
+  - A PR that changed only the root `package-lock.json` (#608, #625, #627) skipped the frontend unit tests. Such PRs now run them.
+  - The Lighthouse ready pattern `Local:` never matched Vite's colored output, so every run waited the 10 s timeout. It is now `Local`.
+
 - docs: Correct stale references found by a read-only doc audit.
   - `CLAUDE.md`'s task index named a `ci.md` section that no longer exists ("Compose-only images", now "Runtime image recipes") and left out the manual security audit and shared cache rules.
   - Gotcha #16 said no Dockerfile pins Node, though `docker/umami/Dockerfile` builds on `node:22-alpine`.

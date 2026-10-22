@@ -198,19 +198,29 @@ jobs:
           # and with %B alone a blank line inside a body is indistinguishable
           # from a record boundary. NUL is the only separator a message cannot
           # contain. Read with `-d ''` to match.
-          # git log's exit code must be checked separately: a `while` reading
-          # from process substitution reports only the loop's status, so a bad
-          # range (force-push, missing base) would feed zero messages and pass
+          # The messages go through a file, never `$(...)`: command
+          # substitution drops NUL bytes, which left the loop with no record
+          # and zero messages checked from b1e6df2e (2026-09-28) until 2026-10-23.
+          # git log's exit code is checked separately, and an empty range
+          # fails too: a bad range (force-push, missing base) must not pass
           # green with nothing checked. Same trap as Gotcha #11.
-          if ! MESSAGES=$(git log -z --format="%B" "${BASE_SHA}..${HEAD_SHA}"); then
+          MESSAGES_FILE="$RUNNER_TEMP/commit-messages"
+          if ! git log -z --format="%B" "${BASE_SHA}..${HEAD_SHA}" > "$MESSAGES_FILE"; then
             echo "❌ Could not read commits in ${BASE_SHA}..${HEAD_SHA}"
             exit 1
           fi
           FAILED=0
-          while IFS= read -r -d '' msg; do
+          CHECKED=0
+          while IFS= read -r -d '' msg || [ -n "$msg" ]; do
             [ -z "${msg//[[:space:]]/}" ] && continue
+            CHECKED=$((CHECKED + 1))
             ./scripts/check-commit-msg.sh "$msg" || FAILED=1
-          done < <(printf '%s' "$MESSAGES")
+          done < "$MESSAGES_FILE"
+          if [ "$CHECKED" -eq 0 ]; then
+            echo "❌ No commit messages found in ${BASE_SHA}..${HEAD_SHA}"
+            exit 1
+          fi
+          echo "Checked $CHECKED commit message(s)"
           exit "$FAILED"
 
       - name: File size check
@@ -361,8 +371,19 @@ jobs:
         # (matches Django LOG_DIR, already gitignored, persists via logs_volume).
         # Drift to /tmp, ~/logs/, or /var/log/ breaks on reboot or leaves
         # emelmujiro logs outside the project tree. See .claude/rules/ci.md "Operational logs".
+        # The Makefile builds each entry as `echo "... >> log" | crontab -`,
+        # so `>>` comes before `crontab`; a `crontab.*>>` grep matched nothing
+        # and passed any target. Match both orders, and fail on zero matches
+        # so the check cannot go silent again.
         run: |
-          BAD_CRON_LOGS=$(grep -nE 'crontab.*>>' Makefile 2>/dev/null | grep -v 'backend/logs/' || true)
+          CRON_LOGS=$(grep -nE '>>.*crontab|crontab.*>>' Makefile || true)
+          if [ -z "$CRON_LOGS" ]; then
+            echo "❌ No cron redirect found in Makefile; update this check if the cron targets moved"
+            exit 1
+          fi
+          echo "Cron redirects found:"
+          echo "$CRON_LOGS"
+          BAD_CRON_LOGS=$(printf '%s\n' "$CRON_LOGS" | grep -v 'backend/logs/' || true)
           if [ -n "$BAD_CRON_LOGS" ]; then
             echo "❌ Cron log redirect must target backend/logs/ (not /tmp, ~/logs/, or /var/log/):"
             echo "$BAD_CRON_LOGS"
@@ -463,12 +484,14 @@ jobs:
         with:
           separator: ","
 
+      # Frontend dependencies resolve from the root package-lock.json, so a
+      # root-only lockfile change (#608, #625, #627) must run the suite too.
       - name: Setup Node.js with cache
-        if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/')
+        if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/') || contains(steps.changed-files.outputs.all_changed_files, 'package-lock.json')
         uses: ./.github/actions/setup-node
 
       - name: Test frontend changes
-        if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/')
+        if: contains(steps.changed-files.outputs.all_changed_files, 'frontend/') || contains(steps.changed-files.outputs.all_changed_files, 'package-lock.json')
         working-directory: ./frontend
         run: CI=true npm test -- --run
         timeout-minutes: 10
