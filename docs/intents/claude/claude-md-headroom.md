@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: claude
 created: 2026-10-23
 updated: 2026-10-23
@@ -62,4 +62,14 @@ updated: 2026-10-23
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #638 (`580e5ea1`, merged 2026-10-22T17:02:43Z). Production
+reports `580e5ea1`.
+
+- `wc -l CLAUDE.md` is 192, down from 199. No Gotcha moved, and no blank line
+  was deleted on its own.
+- Each moved rule appears exactly once, in its new file only. A phrase from
+  each one counts 0 in `CLAUDE.md` and 1 in its target file.
+- `git grep` finds no citation of the old location. The `settings.py` comment
+  now names `frontend-build.md`.
+- PR run `39818705437` passed every check, and prettier, cspell, black and
+  flake8 passed locally.
