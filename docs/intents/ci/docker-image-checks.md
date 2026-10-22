@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: ci
 created: 2026-10-23
 updated: 2026-10-23
@@ -61,4 +61,25 @@ updated: 2026-10-23
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #637 (`af5ef922`, merged 2026-10-22T16:56:44Z). Production
+reports `af5ef922`.
+
+- `actionlint` reported nothing new.
+- In the parsed graph, `Auto-Merge Dependabot` needs `affected-tests`,
+  `frontend-lint`, `backend-lint` and `docker-images`, and `docker-images`
+  needs nothing.
+- **With the temporary test commit**, run `39816191510` touched all four
+  inputs. The job ran from 16:42:34 to 16:45:43 (3 min 9 s):
+
+  | Step                                        | Result                                                                                                                                                                                            |
+  | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | Build backend image                         | built in 35 s                                                                                                                                                                                     |
+  | Build and verify PostgreSQL image           | 8 s; `verify.sh`: `PASS: initialization, postgres UID/GID 70, clean restart and persisted row`                                                                                                    |
+  | Build and verify Umami image                | 138 s; `verify.sh` printed both `PASS:` lines (Next, Prisma, geo, login, tracker, OpenAPI, website creation, ingestion and analytics; non-root startup, migration, event persistence and restart) |
+  | Check nginx config against the pinned image | `nginx:1.31.8-alpine`: `syntax is ok`, `test is successful`                                                                                                                                       |
+
+- **After the revert**, run `39817630022` had no image input changed:
+  - All four image steps were `skipped` and the job concluded `success`.
+  - The PR Summary showed `| Docker Images | ✅ |`.
+- The squash merge contains only the five feature files. The four image
+  inputs match the state before the PR.
