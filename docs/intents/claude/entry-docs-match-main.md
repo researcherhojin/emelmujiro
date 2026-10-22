@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: claude
 created: 2026-10-23
 updated: 2026-10-23
@@ -45,4 +45,21 @@ updated: 2026-10-23
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #642 (`49de4ef0`, merged 2026-10-22T18:12:50Z). Production
+reports `49de4ef0`.
+
+- **Checks**: prettier passed on the 8 files, `npm run spell` checked 254
+  files with 0 issues, and `wc -l CLAUDE.md` is 193. PR run `39828179020`
+  passed every check.
+- **Sources**: each new claim matched `main` before the PR opened. The
+  `Docker Images` job, its `^docker/umami/` flag and the `ci-check` tag are in
+  `pr-checks.yml`. The dispatch and the alarm are in `ci.md`. The `visual:*`
+  scripts are in `frontend/package.json`.
+- **Commands**: `npm run visual:compare` with no arguments printed its usage
+  and exited `2`.
+- **Correction during review**: the first draft implied an offline build. The
+  sitemap step reads `API_URL`, whose default is the production API, so the
+  third commit says the build still needs it.
+- **Side effect**: the `Docker Images` job took 2m38s on this docs-only PR,
+  because `^docker/umami/` also matches the Umami README. Excluding `*.md` is
+  an open follow-up, recorded in the journal.
