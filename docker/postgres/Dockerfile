@@ -14,5 +14,3 @@ RUN set -eux; \
     test "$(su-exec postgres id -u)" = 70; \
     test "$(su-exec postgres id -g)" = 70; \
     su-exec nobody true
-
-# ci-check: exercises the Docker Images job; reverted before merge

@@ -50,5 +50,3 @@ COPY --from=geolite /app/geo ./geo
 USER nextjs
 EXPOSE 3000
 CMD ["sh", "scripts/start-docker.sh"]
-
-# ci-check: exercises the Docker Images job; reverted before merge

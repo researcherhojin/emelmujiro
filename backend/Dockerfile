@@ -63,5 +63,3 @@ CMD ["sh", "-c", "uv run python manage.py migrate --noinput && exec uv run gunic
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
   CMD uv run python manage.py check || exit 1
-
-# ci-check: exercises the Docker Images job; reverted before merge
