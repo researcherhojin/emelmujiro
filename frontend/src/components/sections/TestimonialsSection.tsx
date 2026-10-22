@@ -33,7 +33,7 @@ const getTestimonials = (
 });
 
 const TestimonialCard: React.FC<{ testimonial: Testimonial }> = memo(({ testimonial }) => (
-  <div className="flex-shrink-0 w-72 h-48 mx-2 bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col">
+  <div className="flex-shrink-0 w-72 h-48 mx-2 bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-xs border border-gray-100 dark:border-gray-700 flex flex-col">
     <Quote
       className="w-5 h-5 text-gray-300 dark:text-gray-600 mb-2 flex-shrink-0"
       aria-hidden="true"
@@ -70,8 +70,8 @@ const ScrollRow: React.FC<ScrollRowProps> = memo(({ testimonials, direction = 'l
 
   return (
     <div className="relative overflow-hidden group">
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-gray-50 dark:from-gray-950 to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-gray-50 dark:from-gray-950 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-linear-to-r/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-linear-to-l/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
 
       <div
         ref={scrollRef}

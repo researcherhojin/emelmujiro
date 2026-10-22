@@ -9,7 +9,7 @@ import { useScrollToSection } from '../../hooks/useScrollToSection';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 
 const footerLinkStyle =
-  'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-base text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-none focus:outline-none border-none bg-transparent';
+  'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-base text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-hidden focus:outline-hidden border-none bg-transparent';
 
 const serviceLinks = [
   { key: 'ai-education', titleKey: 'services.education.title' },

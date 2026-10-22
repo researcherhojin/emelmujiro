@@ -98,8 +98,7 @@ describe('UnifiedLoading Component', () => {
       expect(fullscreenWrapper).toHaveClass(
         'fixed',
         'inset-0',
-        'bg-white',
-        'bg-opacity-90',
+        'bg-white/90',
         'z-50',
         'flex',
         'items-center',
@@ -345,8 +344,7 @@ describe('UnifiedLoading Component', () => {
       expect(fullscreenWrapper).toHaveClass(
         'fixed',
         'inset-0',
-        'bg-white',
-        'bg-opacity-90',
+        'bg-white/90',
         'z-50',
         'flex',
         'items-center',
@@ -691,8 +689,7 @@ describe('UnifiedLoading Component', () => {
       expect(fullscreenWrapper).toHaveClass(
         'fixed',
         'inset-0',
-        'bg-white',
-        'bg-opacity-90',
+        'bg-white/90',
         'z-50',
         'flex',
         'items-center',

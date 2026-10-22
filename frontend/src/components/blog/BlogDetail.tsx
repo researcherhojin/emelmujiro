@@ -262,7 +262,7 @@ const BlogDetailPage: React.FC = memo(() => {
             </div>
 
             {/* Title */}
-            <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-gray-900 dark:text-white tracking-tight leading-[1.15] mb-8">
+            <h1 className="text-3xl sm:text-4xl sm:leading-10 lg:text-[2.75rem] font-semibold text-gray-900 dark:text-white tracking-tight leading-[1.15] mb-8">
               {post?.title}
             </h1>
 

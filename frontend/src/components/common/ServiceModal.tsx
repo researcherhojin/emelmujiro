@@ -152,7 +152,7 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
       >
         <div className="flex items-center justify-center min-h-screen px-4 py-8">
           <div
-            className="fixed inset-0 bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-80 transition-opacity"
+            className="fixed inset-0 bg-gray-500/75 dark:bg-gray-900/80 transition-opacity"
             onClick={onClose}
             onKeyDown={(e) => {
               if (e.key === 'Escape') onClose();
@@ -196,7 +196,7 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
               <button
                 ref={closeButtonRef}
                 type="button"
-                className="bg-white dark:bg-dark-900 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none"
+                className="bg-white dark:bg-dark-900 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-hidden"
                 onClick={onClose}
                 aria-label={t('accessibility.closeModal')}
               >
@@ -255,14 +255,14 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
             <div className="sm:flex sm:flex-row-reverse">
               <button
                 type="button"
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-5 py-2.5 bg-gray-900 dark:bg-gray-100 text-base font-medium text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 focus:outline-none sm:ml-3 sm:w-auto"
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-xs px-5 py-2.5 bg-gray-900 dark:bg-gray-100 text-base font-medium text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 focus:outline-hidden sm:ml-3 sm:w-auto"
                 onClick={onContactClick}
               >
                 {t('common.contact')}
               </button>
               <button
                 type="button"
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-dark-600 shadow-sm px-5 py-2.5 bg-white dark:bg-dark-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 focus:outline-none sm:mt-0 sm:w-auto"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-dark-600 shadow-xs px-5 py-2.5 bg-white dark:bg-dark-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 focus:outline-hidden sm:mt-0 sm:w-auto"
                 onClick={onClose}
               >
                 {t('common.close')}

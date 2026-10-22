@@ -61,7 +61,7 @@ const NotificationItem: React.FC<NotificationItemProps> = memo(
     return (
       <button
         onClick={handleClick}
-        className={`w-full text-left px-4 py-3 border-l-4 transition-colors duration-150 focus:outline-none ${
+        className={`w-full text-left px-4 py-3 border-l-4 transition-colors duration-150 focus:outline-hidden ${
           levelBgClasses[notification.level] || levelBgClasses.info
         } ${
           notification.is_read ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'
@@ -156,7 +156,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = memo(({ onClose }) =
         {unreadCount > 0 && (
           <button
             onClick={markAllAsRead}
-            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium focus:outline-none"
+            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium focus:outline-hidden"
           >
             {t('notifications.markAllRead')}
           </button>
@@ -223,7 +223,7 @@ const NotificationBell: React.FC = memo(() => {
     <div ref={containerRef} className="relative">
       <button
         onClick={togglePanel}
-        className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-none"
+        className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-hidden"
         aria-label={
           unreadCount > 0
             ? t('notifications.bell', { count: unreadCount })

@@ -1,17 +1,53 @@
 /**
- * Tailwind CSS Directives
- * @tailwind, @layer, and @apply are PostCSS directives, not standard CSS
- * These are processed by PostCSS and Tailwind CSS at build time
+ * Tailwind CSS 4 entry. The theme, dark mode and typography plugin still live
+ * in tailwind.config.js, loaded through @config. Sources are listed explicitly
+ * (source(none)) so test files and e2e specs never emit utilities, as the v3
+ * `content` exclusions did.
  */
+@import "tailwindcss" source(none);
+@config "../tailwind.config.js";
+@source "../index.html";
+@source "./**/*.{js,jsx,ts,tsx}";
+@source not "./**/__tests__/**";
+@source not "./**/__mocks__/**";
+@source not "./**/*.test.{js,jsx,ts,tsx}";
+@source not "./setupTests.ts";
+@source not "./test-utils/**";
 
-/* stylelint-disable at-rule-no-unknown */
-/* postcss-lit-disable */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* v4 applies hover: only on devices that can hover; keep v3's plain :hover. */
+@custom-variant hover (&:hover);
 
-/* postcss-lit-enable */
-/* stylelint-enable at-rule-no-unknown */
+/*
+ * v4 changed the default border color from gray-200 to currentColor; this
+ * restores the v3 default so bare `border` utilities keep their color.
+ */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  /* v4 preflight zeroes all padding; v3 kept the browser's 1px on table cells. */
+  th,
+  td {
+    padding: 1px;
+  }
+
+  /* v4 preflight gives buttons the default cursor; v3 used pointer. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* v4 placeholders default to 50% of the text color; v3 used gray-400. */
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+}
 
 /* CSS Variables for consistent theming */
 :root {
@@ -129,8 +165,16 @@
   button {
     transition: all 200ms;
   }
+}
 
-  /* Focus states for form inputs — keyboard navigation only */
+/* Utility styles */
+@layer utilities {
+  /*
+   * Focus states for form inputs — keyboard navigation only. These sit in the
+   * utilities layer because v4 cascade layers let any utility beat the
+   * components layer; here specificity decides against focus:ring-* exactly
+   * as it did in v3 (no utility shares their specificity, so order never does).
+   */
   input:focus-visible,
   textarea:focus-visible {
     outline: none;
@@ -139,17 +183,13 @@
       0 0 0 4px white;
   }
 
-  /* Dark mode focus states */
   .dark input:focus-visible,
   .dark textarea:focus-visible {
     box-shadow:
       0 0 0 2px var(--color-gray-100),
       0 0 0 4px var(--color-dark-900);
   }
-}
 
-/* Utility styles */
-@layer utilities {
   /* Animation control — used by LogosSection hover */
   .group:hover .group-hover\:pause {
     animation-play-state: paused;

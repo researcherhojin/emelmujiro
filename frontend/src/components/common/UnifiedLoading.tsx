@@ -66,7 +66,7 @@ const UnifiedLoading: React.FC<UnifiedLoadingProps> = memo(
       if (fullScreen || variant === 'page') {
         return (
           <div
-            className="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center"
+            className="fixed inset-0 bg-white/90 z-50 flex items-center justify-center"
             data-testid="fullscreen-wrapper"
           >
             {children}

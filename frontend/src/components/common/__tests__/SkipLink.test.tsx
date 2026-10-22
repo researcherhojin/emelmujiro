@@ -126,7 +126,7 @@ describe('SkipLink Component', () => {
       const skipLinks = screen.getAllByText('accessibility.skipToContent');
       const skipLink = skipLinks[0];
       expect(skipLink).toHaveClass(
-        'focus:outline-none',
+        'focus:outline-hidden',
         'focus:ring-2',
         'focus:ring-blue-500',
         'focus:ring-offset-2'
@@ -340,7 +340,7 @@ describe('SkipLink Component', () => {
         'focus:ring-2',
         'focus:ring-blue-500',
         'focus:ring-offset-2',
-        'focus:outline-none'
+        'focus:outline-hidden'
       );
     });
   });

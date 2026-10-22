@@ -42,7 +42,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
                   onDragStart={preventImageAction}
                 />
               ) : (
-                <div className="w-full h-full min-h-[280px] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900" />
+                <div className="w-full h-full min-h-[280px] bg-linear-to-br/srgb from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900" />
               )}
             </div>
             <div className="flex flex-col justify-center p-8 lg:p-12">
@@ -64,7 +64,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
                   </time>
                 )}
               </div>
-              <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-white mb-4 leading-tight group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-300">
+              <h2 className="text-2xl lg:text-3xl lg:leading-9 font-semibold text-gray-900 dark:text-white mb-4 leading-tight group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-300">
                 {title}
               </h2>
               <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 mb-6">
@@ -103,7 +103,7 @@ const BlogCard: React.FC<BlogCardProps> = memo(({ post, featured = false, index 
                 onDragStart={preventImageAction}
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900" />
+              <div className="w-full h-full bg-linear-to-br/srgb from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900" />
             )}
           </div>
 
