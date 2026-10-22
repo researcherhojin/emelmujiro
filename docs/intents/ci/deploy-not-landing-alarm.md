@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: ci
 created: 2026-10-23
 updated: 2026-10-23
@@ -62,4 +62,21 @@ updated: 2026-10-23
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #635 (`ad533aa5`, merged 2026-10-22T16:51:06Z, deployed and
+verified by `/api/health/` commit).
+
+- **Before the PR**:
+  - `actionlint` and shellcheck were clean.
+  - The Markdown backticks in the issue body carry a scoped `SC2016`
+    disable.
+  - The step, extracted and run with a stubbed `gh`, passed all 12 cases.
+    Cases 6 and 7 were the only ones to exit 1.
+  - On the live repo, the jq age expression returned `39687663189 64740`.
+- **Manual `workflow_dispatch` run `39817827716`**, with production on main:
+  - It printed `✅ production is on ad533aa5… — nothing to deploy`.
+  - It wrote no annotations and dispatched no `Main CI/CD Pipeline` run.
+  - No "Deploy not landing" issue is open.
+- **Not yet observed live**: the dispatch path. Whether it writes the
+  `drift-target` notice, and how the next run judges it, has only been seen
+  in the stubbed cases. The first scheduled run that finds a mismatch will
+  show it.
