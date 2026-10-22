@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: infra
 created: 2026-10-22
 updated: 2026-10-22
@@ -20,7 +20,7 @@ behavior. No new scheduler, hosted monitoring or notification service is wanted.
   dependencies in the npm, Python and both analytics lock files.
 - Scan exact running image IDs. Missing containers, inaccessible images, scanner
   failures and container replacement during a scan fail explicitly.
-- Keep reports locally. Never automatically update dependencies, restart a
+- Keep reports locally. Audit commands never update dependencies, restart a
   container, install cron entries or publish findings.
 - Use native Node 24 TypeScript with strict checking, including unused code.
   Separate security, deployment and shared modules from command entry points.
@@ -45,26 +45,36 @@ behavior. No new scheduler, hosted monitoring or notification service is wanted.
 
 PR #629 was merged and deployed as `de04f5bb`. Post-deployment validation
 identified that the backend build context included the local scanner cache;
-`.cache/` is now excluded from the Docker context. Final image verification is
-in progress. Docker Desktop also retained analytics containers whose image IDs
+`.cache/` is now excluded from the Docker context. Follow-up fixes were deployed
+and verified at `a922e19f`. Docker Desktop also retained analytics containers whose image IDs
 became inaccessible after a rebuild; deployment now detects that condition,
 recreates the analytics pair without deleting its volume, and verifies the
-replacement image IDs.
+replacement image IDs. It reloads nginx to refresh the upstream address and
+waits for the analytics heartbeat before reporting completion. The deployment
+exercised this recovery path and passed all service checks.
 
 - Full npm audit and Trivy 0.76.1 scans of all four lock files report 0 findings,
   including development dependencies. Image scanning covers installed packages;
   the `--include-dev-deps` option belongs to the `fs` command only.
 - Independent review identified empty-inventory and scan-time replacement gaps;
   both were fixed and covered by regression tests.
-- A read-only host scan found 0 findings in backend and frontend images. The
-  analytics application and database image IDs could not be inspected by Docker,
-  so those scans failed. No running service was changed. Replacement candidates
-  passed isolated application and database verification, but were not deployed.
+- The final read-only host scan found 0 findings in each of the four running
+  images: backend, frontend, analytics application and analytics database.
+  The fresh-report validator also passed. The scanner binary is absent from
+  the backend image. All four containers are healthy.
+- Analytics replacement images passed isolated login, tracker, ingestion,
+  migration, persistence and restart checks before deployment. A database
+  backup was retained; website, event and completed-migration counts were
+  unchanged after production replacement.
+- The TypeScript webhook was restarted and handled the actual deployments.
+  Its health endpoint passed, and unauthenticated deployment requests returned 401. Full main CI passed; production health reported the deployed commit.
+  The ten static routes and login returned 200; an unknown route returned 404.
 - The deployment request limit now counts UTF-8 bytes, correcting the previous
   character-count implementation of the documented 4096-byte bound.
 - Existing `docker/umami/verify.mjs` remains necessary: `verify.sh` feeds it to
   the isolated container. Knip now records that external entry explicitly.
-- Strict TypeScript checks and 27 regression tests pass. A differential check
+- Strict TypeScript checks and 27 regression tests pass on both development
+  and deployment machines. A differential check
   against the original webhook at `f3820ff4` matches 13 deployment behaviors;
   the UTF-8 request-size correction is the intentional difference.
 - The actual dependency audit also passes in a copied checkout whose path
@@ -93,7 +103,8 @@ npm run check:scripts           # Strict types and operational regression tests
 ```
 
 The tool installer writes to `backend/.cache/security-tools/`, already ignored by
-Git. Detailed reports go to `backend/logs/security/`, also ignored. Dependency
+Git and excluded from the backend Docker context. Detailed reports go to
+`backend/logs/security/`, also ignored. Dependency
 reports are in its `dependencies/` directory; `summary.json` is the image report.
 Exit 0 means the requested scan completed with no findings; exit 1 means findings
 or an incomplete/failed check. A stored image report older than 36 hours is
@@ -105,9 +116,9 @@ From another directory, invoke an entry by its absolute path, such as
 spaces must be shell-quoted. An optional `TRIVY_BIN` selects an existing scanner;
 otherwise the local pinned installation is preferred, then `trivy` on PATH.
 
-The manual audits require no webhook restart. The TypeScript webhook refactor
-only takes effect when the existing service is deliberately restarted after a
-future deployment; its `scripts/deploy-webhook.js` entry path is unchanged.
+The manual audits require no webhook restart. Future changes to the running
+webhook require a deliberate service restart; its
+`scripts/deploy-webhook.js` entry path is unchanged.
 Host-specific service-manager instructions remain in `.private/operations.md`.
 
 ## Module boundaries
