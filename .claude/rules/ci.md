@@ -41,7 +41,11 @@ Never substitute an image tag for a running container's image ID.
 
 **CI job gating: no PR job waits on a precondition job, and every cosmetic or policy check lives in `Repo Checks (informational)`, which nothing depends on.**
 
-- The six substantive jobs (Frontend Lint, Backend Lint, Test Affected Code, Security Scan, Build for Analysis, E2E Tests) start at once. Only Lighthouse CI waits, because it needs Build for Analysis's artifact. `Auto-Merge Dependabot` needs `affected-tests`, `frontend-lint` and `backend-lint` directly.
+- The six substantive jobs (Frontend Lint, Backend Lint, Test Affected Code, Security Scan, Build for Analysis, E2E Tests) start at once. Only Lighthouse CI waits, because it needs Build for Analysis's artifact. `Auto-Merge Dependabot` needs `affected-tests`, `frontend-lint`, `backend-lint` and `docker-images` directly.
+- `Docker Images` always runs, uses no layer cache and pushes nothing (`docs/intents/ci/docker-image-checks.md`). It builds and checks only the images whose inputs a PR touches:
+  - the backend image, when its `Dockerfile`, `.dockerignore`, `pyproject.toml` or `uv.lock` changes
+  - `docker/postgres` and `docker/umami`, each followed by its `verify.sh`
+  - nginx, through `nginx -t` with `frontend/nginx.conf` on the Compose-pinned image, when `docker-compose.yml` or the config changes
 - `quick-checks`, a merge-conflict pre-check that gated those six jobs, was removed on 2026-10-23 (`docs/intents/ci/remove-quick-checks.md`). GitHub documents that "Workflows will not run on `pull_request` activity if the pull request has a merge conflict", so the check could never fail. Its `git merge-base HEAD main` also printed `fatal: Not a valid object name main` on every run.
 - `Repo Checks (informational)` holds commit-message format, file size, SEO files, i18n keys, the Claude Code guard-hook cases, README test counts and badges, route lists, the operational scripts' type-check and tests, sitemap generation, **spelling**, cron log paths, and the CHANGELOG check's cases and entry check.
 - **Do not gate the suite on a cosmetic or policy check**: when those checks sat in `quick-checks`, a stale badge or a non-conventional subject skipped `npm ci` and the whole suite — that is how the jest-dom 7 lockfile drift reached a deploy. `main` has no required status checks, so that gating never blocked a merge; it only destroyed test signal.
