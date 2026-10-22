@@ -8,6 +8,13 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(claude): Move four rules that apply only to particular files out of `CLAUDE.md` and into the path-scoped rule file for those files. `CLAUDE.md` goes from 199 to 192 lines, with room again under the 200-line target. No Gotcha moved, and no wording changed.
+  - Migrations run in the container: now in `backend.md` › Deployment.
+  - Production keys: now in `backend.md` › Security.
+  - Cloudflare owns the https upgrade: now in `frontend-build.md`.
+  - An `auto-deploy.sh` edit takes effect one deploy late: now in `ci.md`.
+  - The task index, the Deployment line, `AGENTS.md` and the `settings.py` comment point to the new places. Intent: `docs/intents/claude/claude-md-headroom.md`.
+
 - ci: Build and check Docker images in PRs. A new `Docker Images` job builds only the images whose inputs a PR touches:
   - backend: `Dockerfile`, `.dockerignore`, `pyproject.toml` or `uv.lock`
   - `docker/postgres` and `docker/umami`: each runs its `verify.sh` after the build

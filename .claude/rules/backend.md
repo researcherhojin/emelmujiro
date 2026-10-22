@@ -47,8 +47,13 @@ Invariants only. Grep the code for everything else. Single app `api/`; `config/`
 
 **Re-lock with the image's uv, not the local one**: `backend/Dockerfile` copies uv `0.12.24` and builds with `uv sync --frozen`, while a newer local uv (Homebrew `0.13.0` on 2026-10-18) rewrote `uv.lock`'s `revision = 3` to `5` on a one-package `--upgrade-package`. Use `uvx uv@<Dockerfile version> lock --upgrade-package <pkg>` and confirm the diff touches only that package.
 
+## Deployment
+
+**The backend container runs `migrate --noinput` before gunicorn** (`backend/Dockerfile` `CMD`); nothing in `auto-deploy.sh` migrates, and until 2026-10-16 every migration was a manual `make migrate`, during which endpoints on the changed table returned `500` while `/api/health/` stayed green. A failed migration stops the container rather than serving a mismatched schema. Keep migrations additive (nullable or defaulted fields): the frontend build in the same deploy runs against the old backend.
+
 ## Security
 
+- **Production keys**: a missing `SECRET_KEY` raises `ImproperlyConfigured` when `settings.py` loads; a missing `RECAPTCHA_PRIVATE_KEY` raises it inside `verify_recaptcha` (`api/views.py`) on the first contact submission, so the server starts and the first form post fails (DEBUG bypasses reCAPTCHA).
 - **File uploads**: Backend uses `uuid4` filenames (no user-supplied paths). Validated against extension whitelist + MIME type + 5 MB limit.
 - **Image endpoint**: `validate_uploaded_image()` additionally decodes JPEG, PNG and GIF; documents are rejected even when the generic upload settings permit them. Pillow's pixel ceiling is set once at module import, before decoder allocation, with decompression warnings treated as errors. Limits are 16,000,000 pixels per frame, 32,000,000 total pixels and 100 frames. Validate every animation frame and reset the stream before storage. Tests must use real encoded images, not headers followed by arbitrary bytes.
 - **Runtime image**: the Python 3.12 Alpine base is shared by both Docker stages; never copy a glibc virtual environment into musl. Compiler tools and development headers stay in the Docker dependency stage. The runtime copies its virtual environment and uses uv; pip is removed from the base runtime. Verify changes with tests inside the built container, not just the host environment.
