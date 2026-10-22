@@ -264,29 +264,45 @@ jobs:
           # pyproject.toml: pyproject mixes exact pins (gunicorn==26.0.0) with
           # floors (coverage>=7.15.4), and a floor is not the installed version.
           # The version pattern allows two components because PyPI ships them
-          # (Django's next minor is 6.1); a hardcoded X.Y.Z matches nothing there
-          # and would report clean while drifting.
+          # (Django's next minor is 6.1); a hardcoded X.Y.Z would match nothing
+          # there, which now fails as a missing badge instead of passing.
+          # Locals are declared before they are assigned, so a failing awk or
+          # node stops the step under bash -e instead of leaving an empty value.
+          # An empty value is an error, never a skip: until 2026-10-23 a deleted
+          # badge passed with "All README badges match".
           check_backend_badge() {
-            local name="$1" pkg="$2"
-            local lock_ver=$(awk -v pkg="$pkg" '
+            local name="$1" pkg="$2" lock_ver badge_ver
+            lock_ver=$(awk -v pkg="$pkg" '
               /^\[\[package\]\]/ { in_pkg = 0 }
               $0 == "name = \"" pkg "\"" { in_pkg = 1; next }
               in_pkg && /^version = / { gsub(/[",]/, "", $3); print $3; exit }
             ' backend/uv.lock)
-            local badge_ver=$(grep -oE "/badge/${name}-[0-9]+(\.[0-9]+){1,2}" README.md | head -1 | sed -E "s#/badge/${name}-##")
-            if [ -n "$lock_ver" ] && [ -n "$badge_ver" ] && [ "$lock_ver" != "$badge_ver" ]; then
+            badge_ver=$(grep -oE "/badge/${name}-[0-9]+(\.[0-9]+){1,2}" README.md | head -1 | sed -E "s#/badge/${name}-##")
+            if [ -z "$lock_ver" ]; then
+              echo "❌ $pkg not found in backend/uv.lock, so the $name badge cannot be checked"
+              ERRORS=$((ERRORS + 1))
+            elif [ -z "$badge_ver" ]; then
+              echo "❌ no /badge/${name}- badge in README.md"
+              ERRORS=$((ERRORS + 1))
+            elif [ "$lock_ver" != "$badge_ver" ]; then
               echo "❌ $name badge: $badge_ver ≠ uv.lock: $lock_ver"
               ERRORS=$((ERRORS + 1))
             fi
           }
           check_badge() {
-            local name="$1" pkg="$2"
+            local name="$1" pkg="$2" pkg_ver badge_ver
             # Installed version, not the package.json range floor; frontend/
             # node_modules first because a de-hoisted copy is what ships.
-            local pkg_ver=$(node -e "const l=require('./package-lock.json').packages; const n=process.argv[1]; const e=l['frontend/node_modules/'+n]||l['node_modules/'+n]; console.log(e&&e.version||'')" "$pkg")
+            pkg_ver=$(node -e "const l=require('./package-lock.json').packages; const n=process.argv[1]; const e=l['frontend/node_modules/'+n]||l['node_modules/'+n]; console.log(e&&e.version||'')" "$pkg")
             # Anchored on /badge/ so `i18next` cannot match `React_i18next`.
-            local badge_ver=$(grep -oE "/badge/${name}-[0-9]+\.[0-9]+\.[0-9]+" README.md | head -1 | sed -E "s#/badge/${name}-##")
-            if [ -n "$pkg_ver" ] && [ -n "$badge_ver" ] && [ "$pkg_ver" != "$badge_ver" ]; then
+            badge_ver=$(grep -oE "/badge/${name}-[0-9]+\.[0-9]+\.[0-9]+" README.md | head -1 | sed -E "s#/badge/${name}-##")
+            if [ -z "$pkg_ver" ]; then
+              echo "❌ $pkg not found in package-lock.json, so the $name badge cannot be checked"
+              ERRORS=$((ERRORS + 1))
+            elif [ -z "$badge_ver" ]; then
+              echo "❌ no /badge/${name}- badge in README.md"
+              ERRORS=$((ERRORS + 1))
+            elif [ "$pkg_ver" != "$badge_ver" ]; then
               echo "❌ $name badge: $badge_ver ≠ package-lock.json: $pkg_ver"
               ERRORS=$((ERRORS + 1))
             fi
@@ -314,8 +330,9 @@ jobs:
           check_backend_badge "SimpleJWT" "djangorestframework-simplejwt"
           check_backend_badge "Gunicorn" "gunicorn"
           if [ "$ERRORS" -gt 0 ]; then
-            echo "❌ $ERRORS README badge(s) out of sync with package-lock.json / uv.lock"
-            echo "Run: scripts/sync-readme-badges.sh (auto-heals on main via the readme-sync job)"
+            echo "❌ $ERRORS README badge(s) missing or out of sync with package-lock.json / uv.lock"
+            echo "A version mismatch: run scripts/sync-readme-badges.sh (auto-heals on main via the readme-sync job)."
+            echo "A missing badge or package: that script skips it, so restore it, or remove the badge, its line here and its entry in scripts/sync-readme-badges.sh together."
             exit 1
           fi
           echo "All README badges match package-lock.json and uv.lock"
@@ -560,7 +577,7 @@ jobs:
           du -sh frontend/build/
           BUILD_SIZE=$(du -sb frontend/build/ | cut -f1)
           MAX_SIZE=10485760  # 10MB in bytes
-          if [ $BUILD_SIZE -gt $MAX_SIZE ]; then
+          if [ "$BUILD_SIZE" -gt "$MAX_SIZE" ]; then
             echo "Build size exceeds 10MB limit!"
             echo "Current size: $(du -sh frontend/build/)"
             exit 1

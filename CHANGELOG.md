@@ -8,6 +8,14 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- ci: Make the README badge check fail on a badge it cannot read. `Check README badge versions match package-lock.json and uv.lock` compared a badge only when both versions were read. Run verbatim on copies of the repo files, `main`'s version printed `All README badges match` and exited `0` in four of six cases:
+  - the React badge deleted
+  - `axios` removed from `package-lock.json`
+  - `gunicorn` removed from `uv.lock`
+  - a `package-lock.json` that `node` could not parse, which skipped all 14 frontend badges
+
+  Each now fails and names what is missing; the real files still pass. Locals are declared before they are assigned, so a failing `awk` or `node` stops the step instead of leaving an empty value. That clears shellcheck's four SC2155 findings in the step. Quoting the operands in `Check bundle size` clears the fifth, which was cosmetic, because a missing build directory already fails at `du -sh`. `actionlint` now reports nothing for `pr-checks.yml`. Intent: `docs/intents/ci/badge-check-missing-fails.md`.
+
 - docs(ci): Correct `ci.md` › CI job gating: seven substantive PR jobs start at once, not six. #637 added `Docker Images` with no `needs` and left the count at six. In #643's run `39831084138`, all eight jobs without `needs`, `Repo Checks (informational)` included, started at 18:24:31Z. The `quick-checks` bullet now says it gated "the six that existed then". A staleness sweep of the living docs found nothing else. It checked:
   - every path, `npm run` script, `make` target and `rule.md` › section reference: none broken
   - every present-tense count, against its source: none wrong
