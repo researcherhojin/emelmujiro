@@ -73,7 +73,7 @@ cd backend && DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPI
 ## Dependencies — do not "clean up" these
 
 - **Never push to (or rebase) a `dependabot/*` branch** — GitHub silently closes the PR; comment `@dependabot rebase` instead. Claude Code's `.claude/hooks/guard-bash.sh` blocks this, `npm audit fix`, removing `frontend/build` itself and `git rm` of `.env.production`; other agents have no such hook, so the rules below are on you.
-- **Never run `npm audit fix` / `--force`** — it downgrades `@lhci/cli` to `0.1.0` and destroys Lighthouse CI (this is exactly what the advisory offers).
+- **Never run `npm audit fix` / `--force`** — it downgrades `@lhci/cli` and destroys Lighthouse CI (the advisory's offered target moves: `0.1.0`, `0.12.0`, `0.3.5`).
 - Keep the root `package.json` `overrides`: `minimatch >=10.2.1`, `@tiptap/core ^3.32.0`, `brace-expansion ^5.0.9`. npm reads `overrides` only from the root, so never add them to `frontend/package.json`. Sibling `@tiptap/*` deps must all share one `^3.x` pin (or `Node`/`MISSING_EXPORT` errors appear).
 - `main` has **no required status checks** — direct push to `main` is the intentional solo hotfix path; guardrails are the drift/watchdog workflows, not CI blocking.
 - Spelling: a **real word** goes in `cspell.json`'s `words`; a **deliberate non-word** goes in a file-scoped `# cspell:ignore` comment, not the dictionary.

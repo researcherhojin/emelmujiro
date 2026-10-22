@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(security): Override `@puppeteer/browsers` to 3.2.5, the release `puppeteer-core@25` uses. This removes `extract-zip` (GHSA-jmr9-qjv8-65gv, GHSA-7pqw-9j4j-h8q3) from Lighthouse CI's dependency tree, and `npm audit` drops from 14 findings (11 high, 3 moderate) to 10 (5 high, 5 moderate), all development-only. A real `@lhci/cli autorun` and all 1,284 frontend tests passed. The remaining `braces` (Tailwind 3) and `sprintf-js` (LHCI's `js-yaml@3`) paths have no fixed upstream release. Intent: `docs/intents/infra/remaining-security-findings.md`
+
 - fix(security): Move the backend to a tested Alpine runtime with uv 0.12.24; replace the PostgreSQL privilege-switch binary and rebuild Umami with patched dependencies. Add reproducible analytics image recipes and compatible development dependency overrides. Intent: `docs/intents/infra/remaining-security-findings.md`
 - docs(security): Reconcile the audit snapshots with final deployed image scans, document remaining development-only advisories and add image verification commands for contributors.
 
