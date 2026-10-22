@@ -598,6 +598,9 @@ jobs:
         with:
           name: lighthouse-results
           path: frontend/.lighthouseci/
+          # upload-artifact skips hidden paths by default, and `.lighthouseci`
+          # is one: the upload found "No files" on every run until this was set.
+          include-hidden-files: true
           retention-days: 7
           if-no-files-found: ignore
 
