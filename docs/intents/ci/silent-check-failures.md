@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: ci
 created: 2026-10-23
 updated: 2026-10-23
@@ -79,4 +79,36 @@ updated: 2026-10-23
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #634 (`5ff20006`, merged 2026-10-22T16:26:36Z). The Done-when
+evidence follows.
+
+- **Local checks**, before the PR:
+  - `actionlint` reported only the 5 findings that predate the change.
+  - The extracted commit loop passed a good range (`Checked 2`) and failed on a
+    bad subject, an empty range and an unknown base.
+  - The dry run over the 42 commits of the last 40 merged PRs (18 from
+    Dependabot) failed none.
+  - The extracted cron check passed the current `Makefile` and failed on a
+    `/tmp` redirect and on a copy with no cron line.
+- **PR run `39810738738`**:
+  - It printed `Checked 2 commit message(s)` (the PR commit and GitHub's
+    merge commit) and no `ignored null byte` warning.
+  - The cron step listed its redirects and ended `Cron log paths OK`.
+  - The Lighthouse log has no `Timed out waiting`.
+- **`main` run `39814117853`**:
+  - Both test steps logged
+    `shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}`.
+  - 427 backend and 1,284 frontend tests passed.
+  - Production `/api/health/` reports `5ff20006`.
+- **Not yet observed**: no run has exercised the root `package-lock.json`
+  condition. The next PR that changes only that file should show
+  `Test frontend changes` running, not skipped.
+
+The owner decided the out-of-scope items on 2026-10-23:
+
+- An alarm for a deploy that stays undeployed: do it.
+- Removing `quick-checks`: do it.
+- Building Docker images in CI: do it.
+- The efficiency findings: declined.
+
+Each item that is going ahead gets its own intent and PR.
