@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- ci: Remove `quick-checks` (`Quick Validation`), whose only step checked for merge conflicts. GitHub starts no `pull_request` run for a PR with a merge conflict, so the step could never fail. It also printed `fatal: Not a valid object name main` on every run, because a PR checkout has no local `main`. The six jobs that waited on it now start at once, and `ci.md` "CI job gating" describes the graph as it is. Intent: `docs/intents/ci/remove-quick-checks.md`.
+
 - ci: Make five checks fail when what they check fails, found by a read-only audit of run logs. Intent: `docs/intents/ci/silent-check-failures.md`.
   - `main-ci-cd`'s test steps pipe into `tee` under GitHub's default shell, which has no `pipefail`, so a failing suite stayed green (run `36376897291`). They now set `shell: bash`.
   - The PR commit-message check read `git log -z` through command substitution, which drops NUL bytes, so it checked zero messages from `b1e6df2e` (2026-09-28) on. It now reads from a file and fails when it finds no message.
