@@ -36,7 +36,7 @@ Commands are in [README — Useful Commands](README.md#useful-commands); single-
 - **Sitemap generation**: run `node --test frontend/scripts/test-generate-sitemap.cjs` from the root. API errors or incomplete pagination must abort generation without replacing the existing sitemap.
 - **Cookie authentication**: browser writes bootstrap a token from `GET /api/auth/csrf/` and send `X-CSRFToken`. Login and refresh also require CSRF; password changes revoke earlier tokens. Regression tests live in `backend/api/test_security.py` and `frontend/src/services/__tests__/api.csrf.test.ts`.
 - **Image uploads**: `backend/api/validators.py` decodes uploaded JPEG, PNG and GIF files and caps frame dimensions, total pixels and animation frames. Add real encoded fixtures for changes; upload API regression tests are in `backend/api/test_upload_security.py`.
-- **Container images**: PostgreSQL and Umami security recipes live under `docker/`. After changing one, run `sh docker/postgres/verify.sh`, or build Umami and run `sh docker/umami/verify.sh`; both use disposable databases and remove their test containers. PR CI's `Docker Images` job runs the same build and check for any PR that touches either directory.
+- **Container images**: PostgreSQL and Umami security recipes live under `docker/`. After changing one, run `sh docker/postgres/verify.sh`, or build Umami and run `sh docker/umami/verify.sh`; both use disposable databases and remove their test containers. PR CI's `Docker Images` job runs the same build and check for any PR that changes a file other than Markdown in either directory.
 - **Browser artifacts**: `.playwright-cli/` and `output/playwright/` are local generated output, excluded from Git and spelling checks.
 
 ## Questions

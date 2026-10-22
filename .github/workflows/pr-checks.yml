@@ -603,8 +603,12 @@ jobs:
             echo "❌ Could not diff ${BASE_SHA}..${HEAD_SHA}"
             exit 1
           fi
+          # Markdown is never a build input (docker/umami/.dockerignore keeps
+          # only the build files; docker/postgres copies nothing), so a
+          # docs-only change builds nothing. The filter stays inside the `if`:
+          # on an all-Markdown diff `grep -v` exits 1.
           flag() {
-            if printf '%s\n' "$FILES" | grep -qE "$2"; then
+            if printf '%s\n' "$FILES" | grep -vE '\.md$' | grep -qE "$2"; then
               echo "$1=true" >> "$GITHUB_OUTPUT"
               echo "$1: changed, will check"
             else

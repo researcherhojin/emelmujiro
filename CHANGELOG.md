@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- ci: Build no image for a PR whose changes under `docker/` are all Markdown. `Detect image changes` flagged Umami on any path under `docker/umami/`, so #642, a docs-only PR, spent 2m38s building and verifying Umami for a README edit; with nothing to build, the job takes 5 s. `.md` paths are now dropped before the four patterns match. No Markdown file is a build input, because Umami's `.dockerignore` keeps only the build files and the PostgreSQL Dockerfile copies nothing. `verify.sh`, `verify.mjs` and `.dockerignore` still trigger. The step's script, run verbatim under `bash -e` with a stubbed diff, passed 11 of 11 cases; on `main` it failed the 2 Markdown-only ones. Intent: `docs/intents/ci/image-checks-skip-markdown.md`.
+
 - docs: Bring the entry docs up to date with the changes of 2026-10-23.
   - `CONTRIBUTING.md`, `README.md` and `docker/umami/README.md` name the `Docker Images` PR job (#637), and `README.md` names the "Deploy not landing" alarm (#635).
   - `AGENTS.md` names the auto-merge job's own dispatch and the alarm, where it said only that drift "is caught nightly".
