@@ -2,7 +2,7 @@
 # cspell:ignore nextjs nodejs geolite npmrc libc yarnpkg
 # Keep upstream application code and migrations fixed; rebuild security patches.
 FROM ghcr.io/umami-software/umami:3.4.0@sha256:85909afc45bdcda1917394594a087421fdbb05610fded0fa9f6fb861abb2f367 AS geolite
-FROM node:22-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914 AS base
+FROM node:25-alpine@sha256:bdf2cca6fe3dabd014ea60163eca3f0f7015fbd5c7ee1b0e9ccb4ced6eb02ef4 AS base
 RUN apk upgrade --no-cache && apk add --no-cache curl libc6-compat
 
 FROM base AS tooling
