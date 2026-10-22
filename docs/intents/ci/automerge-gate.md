@@ -1,8 +1,8 @@
 ---
-status: in-progress
+status: shipped
 module: ci
 created: 2026-10-17
-updated: 2026-10-18
+updated: 2026-10-22
 ---
 
 # A dependabot patch that breaks lint or types is not auto-merged
@@ -38,4 +38,19 @@ updated: 2026-10-18
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #607 (`33a513c2`, merged 2026-10-17T19:10:47Z). Done-when evidence
+from GitHub job timestamps (UTC): every `semver-patch` Dependabot PR auto-merged
+after #607 started `Auto-Merge Dependabot` only after both lint jobs succeeded.
+
+| PR           | Frontend Lint done | Backend Lint done | Test Affected Code done | Auto-Merge started |
+| ------------ | ------------------ | ----------------- | ----------------------- | ------------------ |
+| #614 (10-19) | 00:11:05           | 00:10:40          | 00:11:14                | 00:11:22           |
+| #613 (10-19) | 00:13:32           | 00:13:35          | 00:14:05                | 00:14:11           |
+| #616 (10-19) | 00:13:59           | 00:14:16          | 00:14:13                | 00:14:18           |
+| #618 (10-19) | 00:20:00           | 00:20:37          | 00:20:41                | 00:21:27           |
+| #623 (10-22) | 09:15:28           | 09:14:52          | 09:15:37                | 09:15:39           |
+
+#615 (cspell 10.3.6 → 10.4.0, a minor) was merged by the owner, as the policy
+holds minors for review. A patch whose only failure is a lint job has not yet
+occurred, so the blocking half is verified by configuration (`needs` plus `if`),
+not by an observed held PR.
