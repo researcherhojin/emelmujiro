@@ -51,7 +51,7 @@ updated: 2026-10-23
   - Masking third-party iframes, a possible opt-in later.
   - Comparing Lighthouse scores or bundle sizes.
 - **Done when**:
-  - `node --check`, ESLint with `--no-ignore` (the repo config ignores `scripts/**`), `prettier --check`, `cspell`, `npm run knip` (no new finding) and `npm run check:routes` pass.
+  - These pass: `node --check`; ESLint from `frontend/` with `--no-ignore` and the browser and Node runtime globals passed through `--global` (the repo config ignores `scripts/**` and declares no globals for `.mjs` files); `prettier --check`; `cspell`; `npm run knip` with no new finding; `npm run check:routes`.
   - Two captures of one `build:e2e` build compare within the documented noise floor.
   - A one-line CSS change, rebuilt and captured, is reported on the affected screenshots with exit `1`; after a revert and rebuild, the comparison is back at the noise floor.
 
