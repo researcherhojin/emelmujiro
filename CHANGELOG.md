@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- ci(cache): Save the Playwright browser and the Trivy DB only in `main`'s cache scope, from a new `Warm Shared Caches` workflow (push to `main`, daily, manual). The PR jobs now restore them read-only. Each PR had been storing its own 279 MB browser and 91 MB DB, which on 2026-10-22 put the repository at 86 caches and 11.07 GB, over GitHub's 10 GB limit. The `Security Scan` cache step for `~/.cache/trivy`, which never stored anything because the action uses its own cache directory, is removed. Intent: `docs/intents/ci/actions-cache-scope.md`
+
 - fix(deploy): Build the analytics images without provenance or SBOM attestations, so an unchanged rebuild keeps its image ID and the deploy no longer restarts PostgreSQL and Umami every time (it did on 3 of 3 deploys on 2026-10-22). Reload nginx whenever the umami container actually changes, not only on the fallback recreate, and require the tracking route through nginx to reach umami (a 4xx for GET, which stores nothing) before declaring the deploy healthy. Intent: `docs/intents/infra/security-monitoring.md`
 
 - fix(deploy): Detect analytics containers whose exact image IDs became inaccessible after Docker Desktop rebuilt their tags. Recreate the application and database containers while retaining the database volume, verify image accessibility, refresh nginx's upstream resolution and wait for the analytics heartbeat before declaring deployment complete.

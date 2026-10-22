@@ -500,12 +500,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
-      - name: Cache Trivy DB
-        uses: actions/cache@v6
+      # Restore only, with the action's own key scheme. `Warm Shared Caches`
+      # saves it in `main`'s scope; `cache: "false"` below stops the action
+      # from saving a 91 MB copy per PR. The action always sets TRIVY_CACHE_DIR
+      # to its `cache-dir` input (default `${{ github.workspace }}/.cache/trivy`).
+      - name: Get current date
+        id: date
+        run: echo "date=$(date -u +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Trivy DB
+        uses: actions/cache/restore@v6
         with:
-          path: ~/.cache/trivy
-          key: ${{ runner.os }}-trivy
-          restore-keys: ${{ runner.os }}-trivy
+          path: ${{ github.workspace }}/.cache/trivy
+          key: cache-trivy-${{ steps.date.outputs.date }}
+          restore-keys: cache-trivy-
 
       - name: Run Trivy security scan
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
@@ -515,8 +523,7 @@ jobs:
           format: "table"
           exit-code: "1"
           severity: "CRITICAL,HIGH"
-        env:
-          TRIVY_CACHE_DIR: ~/.cache/trivy
+          cache: "false"
 
   # Shared build job for bundle-analysis and lighthouse
   build-for-analysis:
@@ -613,8 +620,10 @@ jobs:
         working-directory: ./frontend
         run: echo "version=$(npx playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v6
+      # Restore only: `Warm Shared Caches` saves this key in `main`'s scope.
+      # Saving here stored one 279 MB copy per PR (docs/intents/ci/actions-cache-scope.md).
+      - name: Restore Playwright browsers
+        uses: actions/cache/restore@v6
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
