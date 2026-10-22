@@ -137,14 +137,14 @@ graph LR
 - **Bilingual (i18n)** — URL-based routing: Korean default (`/contact`), English `/en/contact`
 - **Teaching History** — 46 entries across 5 years (2022–2026), org type filter (4 categories)
 - **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments, optional per-post English translation served at `/en/insights/:slug`
-- **Auth** — httpOnly cookie JWT with shared-promise refresh queue (prevents concurrent 401 cascade)
+- **Auth** — httpOnly cookie JWT with shared-promise refresh queue, CSRF-protected cookie writes and login/refresh, and password-change token revocation
 - **Testimonials** — Enterprise + 고용노동부 K-디지털 reviews, dual-row auto-scroll carousel
 - **Monitoring** — Umami analytics (self-hosted, zero external scripts) + Docker health check (`make health`; a 5-minute cron appends only failures, timestamped, to `backend/logs/health-check.log`). Sentry is wired behind a lazy-loaded shim but inactive: `VITE_SENTRY_DSN` is unset in production, so `initSentry()` returns early and no DSN ships in the bundle
-- **SEO** — Search Console, sitemap, hreflang (blog posts only when translated; untranslated `/en` posts canonicalize to Korean), JSON-LD structured data, SSG prerendering of 10 routes (the Insights list is baked in from the live API at build time; a failed API call fails the build)
+- **SEO** — Search Console, sitemap, hreflang (blog posts only when translated; untranslated `/en` posts canonicalize to Korean), JSON-LD structured data, SSG prerendering of 10 routes. The Insights list uses the live API at build time; failed API calls or incomplete sitemap inventories abort the build. Article detail pages render client-side.
 - **Performance** — Vendor chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
-- **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, rate limiting, IP blocking
+- **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads, trusted-client-IP throttling, draft comment access controls, production CORS restrictions, and Docker log rotation (10 MB × 3 files per container)
 - **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30
-- **Tests** — Vitest (1280 tests) + Django unittest (394 tests) + Playwright E2E (5 profiles)
+- **Tests** — Vitest (1284 tests) + Django unittest (411 tests) + Node sitemap regression tests (12 tests) + Playwright E2E (5 profiles)
 - **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Codecov, auto-deploy via webhook, plus self-healing guards that redeploy on production drift and alarm when a commit reaches `main` untested
 
 ## License

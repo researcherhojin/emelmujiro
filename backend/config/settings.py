@@ -1,11 +1,14 @@
-from pathlib import Path
 import atexit
 import os
 import shutil
 import sys
 import tempfile
-from dotenv import load_dotenv
+from datetime import timedelta
+from pathlib import Path
+from urllib.parse import urlsplit
+
 from django.core.exceptions import ImproperlyConfigured
+from dotenv import load_dotenv
 
 # Load .env file
 load_dotenv()
@@ -193,6 +196,12 @@ _default_cors = (
     "http://localhost:5173,http://127.0.0.1:5173,https://emelmujiro.com" if DEBUG else "https://emelmujiro.com"
 )
 CORS_ALLOWED_ORIGINS = [o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS", _default_cors).split(",")]
+if not DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        origin
+        for origin in CORS_ALLOWED_ORIGINS
+        if urlsplit(origin).scheme == "https" and urlsplit(origin).hostname not in {"localhost", "127.0.0.1", "::1"}
+    ]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -204,6 +213,11 @@ CSRF_TRUSTED_ORIGINS = [
         "https://emelmujiro.com,https://api.emelmujiro.com",
     ).split(",")
 ]
+if DEBUG:
+    # Vite changes the upstream Host, but the browser keeps its frontend Origin.
+    CSRF_TRUSTED_ORIGINS = list(
+        dict.fromkeys([*CSRF_TRUSTED_ORIGINS, "http://localhost:5173", "http://127.0.0.1:5173"])
+    )
 
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -250,9 +264,8 @@ JWT_ACCESS_COOKIE = "access_token"
 JWT_REFRESH_COOKIE = "refresh_token"
 
 # JWT settings
-from datetime import timedelta  # noqa: E402
-
 SIMPLE_JWT = {
+    "CHECK_REVOKE_TOKEN": True,
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
@@ -298,8 +311,8 @@ REST_FRAMEWORK = {
         []
         if DEBUG
         else [
-            "rest_framework.throttling.AnonRateThrottle",
-            "rest_framework.throttling.UserRateThrottle",
+            "api.throttling.ClientIPAnonRateThrottle",
+            "api.throttling.ClientIPUserRateThrottle",
         ]
     ),
     "DEFAULT_THROTTLE_RATES": {
@@ -334,7 +347,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # by decision because browsers cache it beyond our control. The defaults match
 # production; opting in takes an explicit env value.
 if not DEBUG:
-    SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", 0))
+    SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", "0"))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", "False").lower() == "true"
     SECURE_HSTS_PRELOAD = os.environ.get("SECURE_HSTS_PRELOAD", "False").lower() == "true"
     SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", "False").lower() == "true"

@@ -139,7 +139,7 @@ describe('API Service', () => {
           headers: {} as AxiosHeaders,
         } as InternalAxiosRequestConfig;
 
-        const result = requestInterceptor(mockConfig);
+        const result = await requestInterceptor(mockConfig);
         // Auth is handled via httpOnly cookies, not Authorization header
         expect(result.headers.Authorization).toBeUndefined();
       }
@@ -178,7 +178,7 @@ describe('API Service', () => {
           url: 'https://api.example.com/test',
         } as InternalAxiosRequestConfig;
 
-        const result = requestInterceptor(mockConfig);
+        const result = await requestInterceptor(mockConfig);
         expect(result).toBeDefined();
       }
     });
@@ -260,7 +260,7 @@ describe('API Service', () => {
           url: 'http://api.example.com/test',
         } as InternalAxiosRequestConfig;
 
-        const result = requestInterceptor(mockConfig);
+        const result = await requestInterceptor(mockConfig);
         expect(result.url).toBe('https://api.example.com/test');
       }
       mockEnv.IS_PRODUCTION = false;
@@ -277,7 +277,7 @@ describe('API Service', () => {
           baseURL: 'http://api.example.com',
         } as InternalAxiosRequestConfig;
 
-        const result = requestInterceptor(mockConfig);
+        const result = await requestInterceptor(mockConfig);
         expect(result.baseURL).toBe('https://api.example.com');
       }
       mockEnv.IS_PRODUCTION = false;

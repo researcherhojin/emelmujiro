@@ -1,77 +1,79 @@
-from rest_framework import viewsets, status, mixins
-from rest_framework.views import APIView
-from rest_framework.decorators import api_view, throttle_classes, action
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from rest_framework.throttling import AnonRateThrottle
-from django.core.mail import send_mail, BadHeaderError
-from django.conf import settings
-from django.db.models import Q, F, Count
-from django.utils import timezone
-from django.core.cache import cache
-from django.http import HttpRequest
-from django.core.validators import validate_email
-from django.core.exceptions import ImproperlyConfigured, ValidationError as DjangoValidationError
-from rest_framework.exceptions import ValidationError
-from datetime import timedelta
 import hashlib
 import logging
 import os
 import re
 import uuid as uuid_mod
+from datetime import timedelta
+from typing import ClassVar
+
+import requests
+from django.conf import settings
+from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.mail import BadHeaderError, send_mail
+from django.core.validators import validate_email
+from django.db.models import Count, F, Q
+from django.http import HttpRequest
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import action, api_view, throttle_classes
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .constants import (
-    ONE_DAY,
-    ONE_HOUR,
     CACHE_BLOG_CATEGORIES,
     CACHE_BLOG_POST_LIST,
     MAX_FAILED_CONTACT_ATTEMPTS,
+    ONE_DAY,
+    ONE_HOUR,
     is_spam,
 )
-from .utils import get_client_ip, sanitize_referer, toggle_like
-
-import requests
-
 from .models import (
-    BlogPost,
-    BlogLike,
     BlogComment,
+    BlogLike,
+    BlogPost,
     CommentLike,
     Contact,
     ContactAttempt,
+    NewsletterSubscription,
     Notification,
     NotificationPreference,
     SiteVisit,
-    NewsletterSubscription,
 )
 from .serializers import (
+    BlogCommentSerializer,
     BlogPostSerializer,
     BlogPostWriteSerializer,
-    BlogCommentSerializer,
     ContactSerializer,
+    NewsletterSubscriptionSerializer,
     NotificationPreferenceSerializer,
     NotificationSerializer,
-    NewsletterSubscriptionSerializer,
 )
+from .throttling import ClientIPAnonRateThrottle
+from .utils import get_client_ip, sanitize_referer, toggle_like
 
 logger = logging.getLogger(__name__)
 
 
-class ContactRateThrottle(AnonRateThrottle):
+class ContactRateThrottle(ClientIPAnonRateThrottle):
     """Contact form rate throttle"""
 
     scope = "contact"
     rate = "5/hour"
 
 
-class CommentRateThrottle(AnonRateThrottle):
+class CommentRateThrottle(ClientIPAnonRateThrottle):
     """Comment creation rate throttle"""
 
     scope = "comment"
     rate = "10/hour"
 
 
-class NewsletterRateThrottle(AnonRateThrottle):
+class NewsletterRateThrottle(ClientIPAnonRateThrottle):
     """Newsletter subscription rate throttle.
 
     No inline `rate` on purpose: the sibling classes here override the
@@ -82,7 +84,7 @@ class NewsletterRateThrottle(AnonRateThrottle):
     scope = "newsletter"
 
 
-def verify_recaptcha(recaptcha_response: str, request_ip: str = None) -> bool:
+def verify_recaptcha(recaptcha_response: str, request_ip: str | None = None) -> bool:
     """Verify reCAPTCHA response (security-hardened)"""
     if not settings.RECAPTCHA_PRIVATE_KEY:
         if not settings.DEBUG:
@@ -127,8 +129,8 @@ def verify_recaptcha(recaptcha_response: str, request_ip: str = None) -> bool:
     except ValueError as e:
         logger.error(f"reCAPTCHA JSON decode error: {e}")
         return False
-    except Exception as e:
-        logger.error(f"reCAPTCHA verification failed: {e}")
+    except Exception:
+        logger.exception("reCAPTCHA verification failed")
         return False
 
 
@@ -151,8 +153,8 @@ def log_site_visit(request: HttpRequest):
             page_path=page_path,
             session_id=session_id,
         )
-    except Exception as e:
-        logger.error(f"Failed to log site visit: {e}")
+    except Exception:
+        logger.exception("Failed to log site visit")
 
 
 class BlogPostViewSet(viewsets.ModelViewSet):
@@ -279,7 +281,7 @@ class BlogCommentViewSet(viewsets.ModelViewSet):
     """CRUD for blog comments. Anyone can create/read; only admin can delete."""
 
     serializer_class = BlogCommentSerializer
-    permission_classes = [AllowAny]
+    permission_classes: ClassVar[list[type]] = [AllowAny]
     pagination_class = None
 
     def get_throttles(self):
@@ -293,13 +295,24 @@ class BlogCommentViewSet(viewsets.ModelViewSet):
         return [AllowAny()]
 
     def get_queryset(self):
-        post_id = self.kwargs.get("post_pk")
-        return BlogComment.objects.filter(post_id=post_id, parent__isnull=True).prefetch_related(
+        post = self.get_post()
+        return BlogComment.objects.filter(post=post, parent__isnull=True).prefetch_related(
             "replies", "comment_likes", "replies__comment_likes"
         )
 
+    def get_post(self):
+        posts = BlogPost.objects.all()
+        if not self.request.user.is_staff:
+            posts = posts.filter(is_published=True)
+        return get_object_or_404(posts, pk=self.kwargs["post_pk"])
+
     def perform_create(self, serializer):
-        post_id = self.kwargs.get("post_pk")
+        post = self.get_post()
+        if serializer.validated_data["post"].pk != post.pk:
+            raise ValidationError({"post": "Post must match the requested URL."})
+        parent = serializer.validated_data.get("parent")
+        if parent and parent.post_id != post.pk:
+            raise ValidationError({"parent": "Reply must belong to the same post."})
         ip_address = get_client_ip(self.request)
 
         # Spam keyword check
@@ -307,7 +320,7 @@ class BlogCommentViewSet(viewsets.ModelViewSet):
         if is_spam(content):
             raise ValidationError({"content": "스팸으로 의심되는 내용이 포함되어 있습니다."})
 
-        serializer.save(post_id=post_id, ip_address=ip_address)
+        serializer.save(post=post, ip_address=ip_address)
 
     @action(detail=True, methods=["post"], url_path="like")
     def like(self, request, post_pk=None, pk=None):
@@ -316,7 +329,7 @@ class BlogCommentViewSet(viewsets.ModelViewSet):
 
 
 class BlogImageUploadView(APIView):
-    permission_classes = [IsAdminUser]
+    permission_classes: ClassVar[list[type]] = [IsAdminUser]
 
     def post(self, request):
         file = request.FILES.get("image")
@@ -342,15 +355,14 @@ class BlogImageUploadView(APIView):
         file_path = os.path.join(upload_dir, safe_name)
 
         with open(file_path, "wb+") as dest:
-            for chunk in file.chunks():
-                dest.write(chunk)
+            dest.writelines(file.chunks())
 
         relative_url = f"/media/blog/images/{now.year}/{now.month:02d}/{safe_name}"
         return Response({"url": relative_url}, status=status.HTTP_201_CREATED)
 
 
 class CategoryListView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes: ClassVar[list[type]] = [AllowAny]
 
     def get(self, request):
         log_site_visit(request)
@@ -385,8 +397,8 @@ class CategoryListView(APIView):
 
 
 class ContactView(APIView):
-    permission_classes = [AllowAny]
-    throttle_classes = [ContactRateThrottle]
+    permission_classes: ClassVar[list[type]] = [AllowAny]
+    throttle_classes: ClassVar[list[type]] = [ContactRateThrottle]
 
     def post(self, request) -> Response:
         log_site_visit(request)
@@ -451,9 +463,9 @@ class ContactView(APIView):
                 {"error": "잘못된 이메일 헤더입니다."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        except Exception as e:
+        except Exception:
             self._log_contact_attempt(ip_address, email, False)
-            logger.error(f"Contact form error: {str(e)}")
+            logger.exception("Contact form error")
             return Response(
                 {"error": "문의 접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -500,9 +512,9 @@ class ContactView(APIView):
                 return True
 
             return False
-        except Exception as e:
+        except Exception:
             # Fail closed: treat as spam when the check itself fails (e.g. DB error)
-            logger.error(f"Spam check failed (blocking request): {e}")
+            logger.exception("Spam check failed (blocking request)")
             return True
 
     def _is_valid_email(self, email: str) -> bool:
@@ -543,8 +555,8 @@ class ContactView(APIView):
                     updates["failure_count"] = F("failure_count") + 1
                 ContactAttempt.objects.filter(pk=attempt.pk).update(**updates)
 
-        except Exception as e:
-            logger.error(f"Failed to log contact attempt: {e}")
+        except Exception:
+            logger.exception("Failed to log contact attempt")
 
     def _create_email_message(self, contact: Contact) -> str:
         """Create email message body"""
@@ -577,8 +589,8 @@ class ContactView(APIView):
 
 
 class NewsletterView(APIView):
-    permission_classes = [AllowAny]
-    throttle_classes = [NewsletterRateThrottle]
+    permission_classes: ClassVar[list[type]] = [AllowAny]
+    throttle_classes: ClassVar[list[type]] = [NewsletterRateThrottle]
 
     def post(self, request):
         """Newsletter subscription"""
@@ -626,8 +638,8 @@ class NewsletterView(APIView):
                 status=status.HTTP_201_CREATED,
             )
 
-        except Exception as e:
-            logger.error(f"Newsletter subscription error: {e}")
+        except Exception:
+            logger.exception("Newsletter subscription error")
             return Response(
                 {"error": "구독 처리 중 오류가 발생했습니다."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -658,8 +670,8 @@ def send_test_email(request):
         return Response({"message": "테스트 이메일이 성공적으로 전송되었습니다."}, status=200)
     except BadHeaderError:
         return Response({"error": "잘못된 이메일 헤더입니다."}, status=400)
-    except Exception as e:
-        logger.error(f"Email send failure: {e}")
+    except Exception:
+        logger.exception("Email send failure")
         return Response({"error": "이메일 전송에 실패했습니다."}, status=500)
 
 
@@ -672,7 +684,7 @@ class NotificationViewSet(
     """Notification API — list, retrieve, mark read"""
 
     serializer_class = NotificationSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes: ClassVar[list[type]] = [IsAuthenticated]
 
     def get_queryset(self):
         return Notification.objects.filter(user=self.request.user)

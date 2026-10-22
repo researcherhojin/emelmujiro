@@ -60,38 +60,41 @@ const PAGE_SIZE = 100;
  * Fetch published blog posts from the backend so dynamic /insights/:slug
  * URLs can be included in the sitemap. Walks every page by number against
  * API_URL (rather than trusting `next`) and requires the total to equal the
- * API's `count`. Fails soft: if the backend is unreachable (build on a dev
- * machine, API down, etc.) or any page fails, logs a warning and returns []
- * so the sitemap generates with static routes only — never a truncated list.
+ * API's `count`. Fail the build on an unavailable or inconsistent inventory:
+ * publishing a static-only sitemap would silently withdraw every article URL.
  */
 async function fetchBlogPosts() {
-  try {
-    const all = [];
-    let count = Infinity;
-    for (let page = 1; all.length < count; page++) {
-      const res = await fetch(`${API_URL}/blog-posts/?page=${page}&page_size=${PAGE_SIZE}`, {
-        signal: AbortSignal.timeout(10000),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status} on page ${page}`);
-      const data = await res.json();
-      count = data.count;
-      const results = data.results || [];
-      if (!Number.isInteger(count)) throw new Error('response has no integer count');
-      if (results.length === 0 && all.length < count) {
-        throw new Error(`page ${page} empty with ${all.length}/${count} fetched`);
-      }
-      all.push(...results);
+  const all = [];
+  const slugs = new Set();
+  let count;
+  for (let page = 1; count === undefined || all.length < count; page++) {
+    const res = await fetch(`${API_URL}/blog-posts/?page=${page}&page_size=${PAGE_SIZE}`, {
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status} on page ${page}`);
+    const data = await res.json();
+    if (!Number.isInteger(data.count) || data.count < 0 || !Array.isArray(data.results)) {
+      throw new Error(`Invalid article inventory on page ${page}`);
     }
-    if (all.length !== count) throw new Error(`fetched ${all.length} posts, API count ${count}`);
-    const posts = all.filter((p) => p.is_published);
-    console.log(`   Fetched ${posts.length} published blog post(s) from ${API_URL}`);
-    return posts;
-  } catch (err) {
-    console.warn(
-      `⚠️  Blog post fetch failed (${err.message}) — sitemap will include static routes only`
-    );
-    return [];
+    if (count !== undefined && data.count !== count) {
+      throw new Error(`Article count changed during pagination: ${count} to ${data.count}`);
+    }
+    count = data.count;
+    if (data.results.length === 0 && all.length < count) {
+      throw new Error(`Page ${page} empty with ${all.length}/${count} fetched`);
+    }
+    for (const post of data.results) {
+      if (!post || typeof post.slug !== 'string' || !post.slug || slugs.has(post.slug)) {
+        throw new Error(`Missing or duplicate article slug on page ${page}`);
+      }
+      slugs.add(post.slug);
+      all.push(post);
+    }
   }
+  if (all.length !== count) throw new Error(`Fetched ${all.length} posts, API count ${count}`);
+  const posts = all.filter((p) => p.is_published);
+  console.log(`   Fetched ${posts.length} published blog post(s) from ${API_URL}`);
+  return posts;
 }
 
 /**

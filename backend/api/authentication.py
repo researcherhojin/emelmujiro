@@ -1,6 +1,12 @@
+from django.conf import settings
+from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
-from django.conf import settings
+
+
+def enforce_csrf(request):
+    """Apply Django's origin and token checks to ambient cookie credentials."""
+    SessionAuthentication().enforce_csrf(request)
 
 
 class CookieJWTAuthentication(JWTAuthentication):
@@ -13,7 +19,9 @@ class CookieJWTAuthentication(JWTAuthentication):
         if raw_token:
             try:
                 validated_token = self.get_validated_token(raw_token)
-                return self.get_user(validated_token), validated_token
+                user = self.get_user(validated_token)
+                enforce_csrf(request)
+                return user, validated_token
             except (InvalidToken, TokenError):
                 pass
 

@@ -29,10 +29,13 @@ Fork → clone → follow [README — Getting Started](README.md#getting-started
 
 ## Testing
 
-Commands are in [README — Useful Commands](README.md#useful-commands); single-test invocations are in CLAUDE.md `Commands`. Two things to know:
+Commands are in [README — Useful Commands](README.md#useful-commands); single-test invocations are in CLAUDE.md `Commands`.
 
 - **Coverage** aims for 100 %; [`codecov.yml`](codecov.yml) fails below 99 % per project and 87 % on the patch.
 - **Backend test output is noisy on purpose** — negative-path tests log errors. Trust `Ran N tests` + `OK` and exit code 0.
+- **Sitemap generation**: run `node --test frontend/scripts/test-generate-sitemap.cjs` from the root. API errors or incomplete pagination must abort generation without replacing the existing sitemap.
+- **Cookie authentication**: browser writes bootstrap a token from `GET /api/auth/csrf/` and send `X-CSRFToken`. Login and refresh also require CSRF; password changes revoke earlier tokens. Regression tests live in `backend/api/test_security.py` and `frontend/src/services/__tests__/api.csrf.test.ts`.
+- **Browser artifacts**: `.playwright-cli/` and `output/playwright/` are local generated output, excluded from Git and spelling checks.
 
 ## Questions
 

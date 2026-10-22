@@ -1,10 +1,13 @@
-from rest_framework import serializers
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User
-from .models import BlogPost, BlogComment, Contact, Notification, NotificationPreference, NewsletterSubscription
-from .constants import is_spam
 import re
+from typing import ClassVar
+
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from rest_framework import serializers
+
+from .constants import is_spam
+from .models import BlogComment, BlogPost, Contact, NewsletterSubscription, Notification, NotificationPreference
 
 
 def get_user_role(user):
@@ -23,8 +26,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "first_name", "last_name", "role"]
-        read_only_fields = ["id"]
+        fields: ClassVar[list[str]] = ["id", "username", "email", "first_name", "last_name", "role"]
+        read_only_fields: ClassVar[list[str]] = ["id"]
 
     def get_role(self, obj):
         return get_user_role(obj)
@@ -37,7 +40,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = [
+        fields: ClassVar[list[str]] = [
             "id",
             "username",
             "email",
@@ -50,7 +53,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
             "date_joined",
             "last_login",
         ]
-        read_only_fields = ["id", "username", "email", "date_joined", "last_login"]
+        read_only_fields: ClassVar[list[str]] = ["id", "username", "email", "date_joined", "last_login"]
 
     def get_role(self, obj):
         return get_user_role(obj)
@@ -65,7 +68,7 @@ class BlogPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlogPost
-        fields = [
+        fields: ClassVar[list[str]] = [
             "id",
             "title",
             "slug",
@@ -134,7 +137,7 @@ class BlogPostWriteSerializer(serializers.ModelSerializer):
     what withdraws a translation the edit made stale.
     """
 
-    EN_FIELDS = {"title_en", "description_en", "content_html_en", "tags_en"}
+    EN_FIELDS: ClassVar[set[str]] = {"title_en", "description_en", "content_html_en", "tags_en"}
 
     def create(self, validated_data):
         instance = super().create(validated_data)
@@ -153,7 +156,7 @@ class BlogPostWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlogPost
-        fields = [
+        fields: ClassVar[list[str]] = [
             "id",
             "title",
             "description",
@@ -170,8 +173,8 @@ class BlogPostWriteSerializer(serializers.ModelSerializer):
             "content_html_en",
             "tags_en",
         ]
-        read_only_fields = ["id"]
-        extra_kwargs = {
+        read_only_fields: ClassVar[list[str]] = ["id"]
+        extra_kwargs: ClassVar[dict[str, dict[str, object]]] = {
             "date": {"required": False},
             "description": {"required": True},
             "content": {"required": False, "default": ""},
@@ -194,9 +197,19 @@ class BlogCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlogComment
-        fields = ["id", "post", "parent", "author_name", "content", "likes", "created_at", "updated_at", "replies"]
-        read_only_fields = ["id", "likes", "created_at", "updated_at"]
-        extra_kwargs = {
+        fields: ClassVar[list[str]] = [
+            "id",
+            "post",
+            "parent",
+            "author_name",
+            "content",
+            "likes",
+            "created_at",
+            "updated_at",
+            "replies",
+        ]
+        read_only_fields: ClassVar[list[str]] = ["id", "likes", "created_at", "updated_at"]
+        extra_kwargs: ClassVar[dict[str, dict[str, object]]] = {
             "post": {"required": True},
             "parent": {"required": False},
         }
@@ -205,7 +218,7 @@ class BlogCommentSerializer(serializers.ModelSerializer):
         # Only include replies for top-level comments (avoid infinite recursion)
         if obj.parent is not None:
             return []
-        replies = obj.replies.all()
+        replies = [reply for reply in obj.replies.all() if reply.post_id == obj.post_id]
         return BlogCommentSerializer(replies, many=True).data
 
     def validate_author_name(self, value):
@@ -226,7 +239,7 @@ class NotificationPreferenceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NotificationPreference
-        fields = [
+        fields: ClassVar[list[str]] = [
             "system_enabled",
             "blog_enabled",
             "contact_enabled",
@@ -240,7 +253,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = [
+        fields: ClassVar[list[str]] = [
             "id",
             "title",
             "message",
@@ -251,7 +264,15 @@ class NotificationSerializer(serializers.ModelSerializer):
             "read_at",
             "created_at",
         ]
-        read_only_fields = ["id", "title", "message", "level", "notification_type", "url", "created_at"]
+        read_only_fields: ClassVar[list[str]] = [
+            "id",
+            "title",
+            "message",
+            "level",
+            "notification_type",
+            "url",
+            "created_at",
+        ]
 
 
 class ContactSerializer(serializers.ModelSerializer):
@@ -259,7 +280,7 @@ class ContactSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contact
-        fields = [
+        fields: ClassVar[list[str]] = [
             "name",
             "email",
             "company",
@@ -269,7 +290,7 @@ class ContactSerializer(serializers.ModelSerializer):
             "message",
             "recaptcha_token",
         ]
-        extra_kwargs = {
+        extra_kwargs: ClassVar[dict[str, dict[str, object]]] = {
             "ip_address": {"read_only": True},
             "user_agent": {"read_only": True},
         }
@@ -354,7 +375,7 @@ class NewsletterSubscriptionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NewsletterSubscription
-        fields = ["email", "name"]
+        fields: ClassVar[list[str]] = ["email", "name"]
 
     def validate_email(self, value):
         """Validate email address"""

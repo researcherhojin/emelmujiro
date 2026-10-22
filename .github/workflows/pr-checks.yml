@@ -340,6 +340,9 @@ jobs:
         with:
           save-cache: false
 
+      - name: Test sitemap generation
+        run: node --test frontend/scripts/test-generate-sitemap.cjs
+
       - name: Spell check
         # cspell was config-only until 2026-08-18: cspell.json existed and the
         # maintainer's editor surfaced findings, but nothing ran it, so typos

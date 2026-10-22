@@ -38,6 +38,9 @@ jobs:
         with:
           save-cache: "false"
 
+      - name: Test sitemap generation
+        run: node --test frontend/scripts/test-generate-sitemap.cjs
+
       - name: Run frontend tests with coverage
         working-directory: ./frontend
         env:

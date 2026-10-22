@@ -128,3 +128,7 @@ id_ed25519*
 *.temp
 .gstack/
 frontend/.lighthouseci/
+
+# Generated browser inspection artifacts
+.playwright-cli/
+output/playwright/

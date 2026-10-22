@@ -155,7 +155,7 @@ describe('API Service - Integration Tests', () => {
             headers: new AxiosHeaders(),
           } as InternalAxiosRequestConfig;
 
-          const result = requestHandler(config);
+          const result = await requestHandler(config);
           // In non-production mode, should pass through without HTTPS upgrade
           expect(result.url).toBe('/test-endpoint');
         }

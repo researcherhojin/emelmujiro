@@ -1,22 +1,22 @@
-from rest_framework.decorators import api_view, throttle_classes, permission_classes
-from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
-from rest_framework.throttling import UserRateThrottle
-from django.db.models import Q, Count
-from django.db.models.functions import TruncDate
-from django.utils import timezone
-from django.core.cache import cache
 from datetime import timedelta
 
+from django.contrib.auth.models import User
+from django.core.cache import cache
+from django.db.models import Count, Q
+from django.db.models.functions import TruncDate
+from django.utils import timezone
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+
 from .constants import CACHE_ADMIN_STATS
+from .models import BlogPost, Contact, SiteVisit
 from .pagination import StandardPagination
 from .serializers import AdminUserSerializer
-from .models import BlogPost, Contact, SiteVisit
-
-from django.contrib.auth.models import User
+from .throttling import ClientIPUserRateThrottle
 
 
-class AdminRateThrottle(UserRateThrottle):
+class AdminRateThrottle(ClientIPUserRateThrottle):
     """Admin endpoint rate throttle"""
 
     scope = "admin"

@@ -1,16 +1,24 @@
 import logging
 
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes, throttle_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.throttling import AnonRateThrottle
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.conf import settings
+from django.db import DatabaseError
+from django.middleware.csrf import get_token
+from django.utils.crypto import constant_time_compare
+from django.views.decorators.cache import never_cache
+from rest_framework import status
+from rest_framework.decorators import api_view, authentication_classes, permission_classes, throttle_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.settings import api_settings
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.utils import get_md5_hash_password
+
+from .authentication import enforce_csrf
 from .serializers import UserSerializer
+from .throttling import ClientIPAnonRateThrottle
 
 logger = logging.getLogger(__name__)
 
@@ -43,19 +51,31 @@ def _clear_jwt_cookies(response):
     response.delete_cookie(settings.JWT_REFRESH_COOKIE, path="/")
 
 
-class LoginRateThrottle(AnonRateThrottle):
+class LoginRateThrottle(ClientIPAnonRateThrottle):
     """Dedicated brute-force throttle for the login endpoint (per-IP)."""
 
     scope = "login"
 
 
+@never_cache
+@api_view(["GET"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+@throttle_classes([])
+def csrf_token(request):
+    """Return a masked token; the security middleware still limits requests."""
+    return Response({"csrfToken": get_token(request)})
+
+
 @api_view(["POST"])
+@authentication_classes([])
 @permission_classes([AllowAny])
 @throttle_classes([LoginRateThrottle])
 def login(request):
     """
     User login endpoint
     """
+    enforce_csrf(request)
     username = request.data.get("username")
     password = request.data.get("password")
 
@@ -101,9 +121,14 @@ def logout(request):
             return response
         else:
             return Response({"error": "Refresh token required"}, status=status.HTTP_400_BAD_REQUEST)
-    except Exception as e:
+    except (InvalidToken, TokenError) as e:
         logger.error(f"Logout error: {e}")
         response = Response({"error": "Logout failed"}, status=status.HTTP_400_BAD_REQUEST)
+        _clear_jwt_cookies(response)
+        return response
+    except DatabaseError:
+        logger.exception("Logout token revocation failed")
+        response = Response({"error": "Logout unavailable"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         _clear_jwt_cookies(response)
         return response
 
@@ -172,17 +197,28 @@ def change_password(request):
 
 
 @api_view(["POST"])
+@authentication_classes([])
 @permission_classes([AllowAny])
 def token_refresh(request):
     """
     Refresh JWT token - reads from cookie or request body.
     """
+    # Both input forms issue cookies, so a caller-supplied token must not bypass
+    # CSRF and sign a browser into an attacker-controlled account.
+    enforce_csrf(request)
     refresh_token = request.data.get("refresh") or request.COOKIES.get(settings.JWT_REFRESH_COOKIE)
     if not refresh_token:
         return Response({"error": "Refresh token required"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         old_refresh = RefreshToken(refresh_token)
+        user = User.objects.get(id=old_refresh[api_settings.USER_ID_CLAIM])
+        if not user.is_active:
+            raise TokenError("User is inactive")
+        if api_settings.CHECK_REVOKE_TOKEN and not constant_time_compare(
+            old_refresh.get(api_settings.REVOKE_TOKEN_CLAIM, ""), get_md5_hash_password(user.password)
+        ):
+            raise TokenError("Password has changed")
         # Get new access token
         access_token = old_refresh.access_token
 
@@ -190,7 +226,7 @@ def token_refresh(request):
         if settings.SIMPLE_JWT.get("ROTATE_REFRESH_TOKENS"):
             if settings.SIMPLE_JWT.get("BLACKLIST_AFTER_ROTATION"):
                 old_refresh.blacklist()
-            new_refresh = RefreshToken.for_user(User.objects.get(id=old_refresh["user_id"]))
+            new_refresh = RefreshToken.for_user(user)
             response = Response({"success": "Token refreshed"})
             _set_jwt_cookies(response, new_refresh.access_token, new_refresh)
         else:

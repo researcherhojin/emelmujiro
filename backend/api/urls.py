@@ -1,39 +1,41 @@
 from django.conf import settings
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
+
+from .admin_views import (
+    admin_analytics_pages,
+    admin_analytics_visits,
+    admin_content,
+    admin_message_detail,
+    admin_messages,
+    admin_stats,
+    admin_user_detail,
+    admin_users,
+)
+from .auth import (
+    change_password,
+    csrf_token,
+    get_user,
+    login,
+    logout,
+    token_refresh,
+    update_user,
+)
+from .swagger import schema_view
 from .views import (
-    BlogPostViewSet,
     BlogCommentViewSet,
     BlogImageUploadView,
+    BlogPostViewSet,
+    CategoryListView,
     ContactView,
     NewsletterView,
     NotificationViewSet,
     health_check,
-    CategoryListView,
     send_test_email,
 )
-from .admin_views import (
-    admin_stats,
-    admin_content,
-    admin_messages,
-    admin_message_detail,
-    admin_users,
-    admin_user_detail,
-    admin_analytics_visits,
-    admin_analytics_pages,
-)
-from .auth import (
-    login,
-    logout,
-    get_user,
-    update_user,
-    change_password,
-    token_refresh,
-)
-from .swagger import schema_view
 
 router = DefaultRouter()
 router.register(r"blog-posts", BlogPostViewSet, basename="blog")
@@ -70,6 +72,7 @@ urlpatterns = [
     path("admin/analytics/visits/", admin_analytics_visits, name="admin-analytics-visits"),
     path("admin/analytics/pages/", admin_analytics_pages, name="admin-analytics-pages"),
     # Authentication endpoints
+    path("auth/csrf/", csrf_token, name="csrf-token"),
     path("auth/login/", login, name="login"),
     path("auth/logout/", logout, name="logout"),
     path("auth/user/", get_user, name="get_user"),

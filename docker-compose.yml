@@ -1,5 +1,12 @@
+x-logging: &bounded-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   backend:
+    logging: *bounded-logging
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -46,6 +53,7 @@ services:
   # 2026-10-06. Dependabot's `docker-compose` ecosystem bumps these pins, and
   # `auto-deploy.sh` applies a changed tag (compose pulls a missing image).
   frontend:
+    logging: *bounded-logging
     image: nginx:1.31.7-alpine
     container_name: emelmujiro-frontend
     restart: unless-stopped
@@ -69,6 +77,7 @@ services:
 
   # Umami analytics — self-hosted, cookieless, zero external scripts
   umami-db:
+    logging: *bounded-logging
     image: postgres:15.19-alpine
     container_name: emelmujiro-umami-db
     restart: unless-stopped
@@ -90,6 +99,7 @@ services:
       retries: 5
 
   umami:
+    logging: *bounded-logging
     image: ghcr.io/umami-software/umami:3.4.0
     container_name: emelmujiro-umami
     restart: unless-stopped

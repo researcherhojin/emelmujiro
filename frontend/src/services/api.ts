@@ -75,10 +75,25 @@ interface RetryableRequestConfig extends InternalAxiosRequestConfig {
 
 // Token refresh queue — prevents concurrent refresh requests from blacklisting each other
 let refreshPromise: Promise<unknown> | null = null;
+let csrfPromise: Promise<string> | null = null;
+
+// Share concurrent bootstrap requests, but fetch again for the next write so
+// cookie expiry or a rotation in another tab cannot leave a stale token cached.
+function getCsrfToken(): Promise<string> {
+  if (!csrfPromise) {
+    csrfPromise = axiosInstance
+      .get<{ csrfToken: string }>('auth/csrf/')
+      .then(({ data }) => data.csrfToken)
+      .finally(() => {
+        csrfPromise = null;
+      });
+  }
+  return csrfPromise;
+}
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  async (config: InternalAxiosRequestConfig) => {
     // Security: Always use HTTPS in production
     if (env.IS_PRODUCTION && config.url && config.url.startsWith('http://')) {
       logger.warn('Insecure HTTP detected in production, upgrading to HTTPS');
@@ -87,6 +102,10 @@ axiosInstance.interceptors.request.use(
     if (env.IS_PRODUCTION && config.baseURL && config.baseURL.startsWith('http://')) {
       logger.warn('Insecure HTTP in baseURL detected in production, upgrading to HTTPS');
       config.baseURL = config.baseURL.replace('http://', 'https://');
+    }
+
+    if (!['get', 'head', 'options'].includes((config.method || 'get').toLowerCase())) {
+      config.headers.set('X-CSRFToken', await getCsrfToken());
     }
 
     return config;

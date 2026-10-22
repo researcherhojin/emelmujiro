@@ -8,6 +8,12 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(seo): Abort sitemap generation on API failures or inconsistent pagination instead of silently omitting every article; preserve the existing sitemap on fetch failure. Add regression tests for inventory completeness and canonical language URLs. Intent: `docs/intents/seo/preserve-blog-sitemap.md`
+
+- chore(backend): Resolve editor diagnostics for optional types, shared view configuration, upload writes and settings defaults; retain public API error handling with traceback logging. Exclude generated Playwright artifacts, including the CLI's default directory, from spelling checks and Git tracking.
+
+- fix(security): Require CSRF checks for cookie-authenticated writes, login and token refresh, with a frontend token bootstrap. Reject tokens issued before password changes and refreshes for inactive users; use trusted client IPs for throttling; enforce parent-post visibility and reply boundaries for comments. Filter development CORS origins in production and rotate Docker logs at 10 MB with 3 files per container. Existing sessions require signing in again after deployment. Intent: `docs/intents/backend/security-hardening.md`
+
 Everything below has been merged to `main` and, barring a failed deploy, is live at `https://emelmujiro.com`. It was headed `[Unreleased]` until 2026-09-28, which was false on both counts — there are no releases, and none of it is unshipped.
 
 ### Changed
