@@ -340,6 +340,9 @@ jobs:
         with:
           save-cache: false
 
+      - name: Type-check and test operational scripts
+        run: npm run check:scripts
+
       - name: Test sitemap generation
         run: node --test frontend/scripts/test-generate-sitemap.cjs
 

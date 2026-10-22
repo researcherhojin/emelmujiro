@@ -15,6 +15,18 @@ paths:
 
 # CI and repo-automation rules
 
+**Manual security audits include development dependencies and actual running images.**
+Use `npm run security:setup` to install the checksum-pinned scanner, then
+`npm run security:dependencies` or `npm run security:images`. These commands
+install no scheduler and contact no notification service. Reports stay under
+`backend/logs/security/`; scanner errors and missing inventories fail explicitly.
+Never substitute an image tag for a running container's image ID.
+
+- Operational TypeScript runs natively on Node 24. `npm run check:scripts`
+  type-checks and tests it in `Repo Checks (informational)`; the existing webhook
+  JavaScript path is a compatibility loader for service-manager configuration.
+- Modules and manual operation: `docs/intents/infra/security-monitoring.md`.
+
 **Runtime image recipes are versioned and must remain reproducible.** nginx uses an exact upstream Compose pin. Backend, PostgreSQL and Umami are built from their Dockerfile recipes; `auto-deploy.sh` rebuilds analytics images with Compose.
 
 - `docker/postgres/` keeps PostgreSQL 15 and replaces the bundled privilege-switch tool with Alpine's maintained equivalent. Preserve root entrypoint ownership setup; test initialization and persistence after restart with `docker/postgres/verify.sh`.

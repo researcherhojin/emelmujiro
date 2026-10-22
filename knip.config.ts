@@ -2,6 +2,16 @@ import type { KnipConfig } from 'knip';
 
 const config: KnipConfig = {
   workspaces: {
+    '.': {
+      // verify.sh sends this entry to an isolated container through stdin.
+      entry: ['docker/umami/verify.mjs'],
+      // Resolved inside that container, from docker/umami/runner/package.json.
+      ignoreDependencies: ['next'],
+    },
+    scripts: {
+      entry: ['deploy-webhook.js', '*.ts', 'tests/*.test.ts'],
+      project: ['**/*.ts'],
+    },
     frontend: {
       entry: ['src/App.tsx', 'scripts/*.{js,ts}'],
       project: ['src/**/*.{ts,tsx}'],
@@ -22,7 +32,7 @@ const config: KnipConfig = {
   ignoreBinaries: ['uv'],
   // .claude/ holds per-machine, gitignored skills next to the tracked ones;
   // their files are not part of either workspace.
-  ignore: ['scripts/deploy-webhook.js', '.claude/**'],
+  ignore: ['.claude/**'],
   rules: {
     duplicates: 'off', // env.ts intentionally has named + default export
   },
