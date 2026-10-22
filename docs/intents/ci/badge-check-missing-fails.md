@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: ci
 created: 2026-10-23
 updated: 2026-10-23
@@ -50,4 +50,16 @@ updated: 2026-10-23
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #646 (`921eb49b`, merged 2026-10-22T19:12:55Z). Production
+reports `921eb49b`.
+
+- **Cases**: the step's script, extracted verbatim and run under `bash -e`
+  on copies of the repo files, gave the expected result in 6 of 6 cases.
+  `main`'s version passed 4 of them silently: the deleted badge, `axios`
+  removed, `gunicorn` removed, and an unparsable `package-lock.json`. That
+  last one skipped all 14 frontend badges after a `SyntaxError`.
+- **Live**: in PR run `39837418073` the step passed on the real files, which
+  requires all 18 badges to resolve.
+- **actionlint**: nothing for `pr-checks.yml`, down from 5 findings.
+  Repo-wide, 6 findings went to 1: SC2016 (info) in `pipeline-watchdog.yml`,
+  whose backticks are intended Markdown.
