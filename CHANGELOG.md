@@ -8,6 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(security): Patch the Umami builder lock's development dependencies with override floors for `undici` 8.10.2, `vite` 8.1.6, `vitest` 4.1.12, `@modelcontextprotocol/client` 2.3.0, `postcss-selector-parser` 7.1.6 and `brace-expansion` 5.0.12. Trivy with `--include-dev-deps` drops from 23 findings (6 high, 12 medium, 5 low) to 0 for `docker/umami/pnpm-lock.yaml`. Upstream's 118 test files (882 tests) passed. The Next build output matched the previous lock's, apart from per-build random IDs. The runner lock is unchanged. Intent: `docs/intents/infra/remaining-security-findings.md`
 - fix(security): Override `@puppeteer/browsers` to 3.2.5, the release `puppeteer-core@25` uses. This removes `extract-zip` (GHSA-jmr9-qjv8-65gv, GHSA-7pqw-9j4j-h8q3) from Lighthouse CI's dependency tree, and `npm audit` drops from 14 findings (11 high, 3 moderate) to 10 (5 high, 5 moderate), all development-only. A real `@lhci/cli autorun` and all 1,284 frontend tests passed. The remaining `braces` (Tailwind 3) and `sprintf-js` (LHCI's `js-yaml@3`) paths have no fixed upstream release. Intent: `docs/intents/infra/remaining-security-findings.md`
 
 - fix(security): Move the backend to a tested Alpine runtime with uv 0.12.24; replace the PostgreSQL privilege-switch binary and rebuild Umami with patched dependencies. Add reproducible analytics image recipes and compatible development dependency overrides. Intent: `docs/intents/infra/remaining-security-findings.md`
