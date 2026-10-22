@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: ci
 created: 2026-10-23
 updated: 2026-10-23
@@ -46,4 +46,14 @@ updated: 2026-10-23
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #643 (`9c2ac545`, merged 2026-10-22T18:29:07Z). Production
+reports `9c2ac545`.
+
+- **Synthetic cases**: the step's script, extracted verbatim and run under
+  `bash -e` with a stubbed `git diff`, passed 11 of 11. `main`'s version
+  failed the two Markdown-only cases, flagging Umami for each.
+- **Live**: #643 itself changed `docker/umami/README.md`. Its `Docker Images`
+  job (run `39831084138`) skipped all four build steps and took 7 s, against
+  2m38s on #642.
+- `actionlint` with shellcheck reported the same 5 findings before and after,
+  all in other steps.
