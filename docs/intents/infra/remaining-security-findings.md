@@ -54,7 +54,7 @@ container and development-tool findings. The baseline is recorded in
 - Runtime npm audit remains 0. The remaining 14 findings (11 high, 3 moderate)
   are development-only dependency paths rooted in braces, extract-zip and
   sprintf-js. Their latest releases are still affected; ordinary updates cannot
-  fix them. A js-yaml major override breaks Lighthouse's safeLoad API. Keep these
+  fix them. A js-yaml major override breaks Lighthouse's safeLoad API (later found to affect only YAML rc files; see the js-yaml follow-up). Keep these
   findings visible until upstream fixes or a separately validated tool migration
   is available; do not downgrade Lighthouse or bypass security scans.
 
@@ -245,3 +245,33 @@ checksum-verified upstream archive.
   be inspected. Post-deploy checks must therefore compare the container's
   `.Image` with the tag's `.Id`, not scan the tag alone. `emelmujiro-umami-db`
   still runs `45e3666…`, the scanned image in the deployment table.
+
+### Follow-up: sprintf-js path removed (2026-10-22)
+
+The earlier note that a js-yaml major override breaks LHCI's `safeLoad` holds
+only for YAML configuration. `@lhci/utils/src/lighthouserc.js` calls
+`yaml.safeLoad` solely for `.yml`/`.yaml` rc files, and this repository uses
+`frontend/lighthouserc.js`.
+
+- The root `overrides` set `"@lhci/cli": { "js-yaml": "4.3.2" }`, the version the
+  Umami recipe already uses. js-yaml 4.3.2 keeps a CommonJS `require` entry and
+  depends on `argparse@2.0.1`, which has no `sprintf-js`. A plain install
+  printed `invalid` again, and `npm update js-yaml` applied the override. The
+  lockfile changed exactly three entries: `js-yaml` 3.15.2 → 4.3.2, `argparse`
+  1.0.10 → 2.0.1 (license `MIT` → `Python-2.0`, development only), and
+  `sprintf-js` 1.0.3 was removed. `esprima` stays for other consumers, and the
+  rolldown bindings are unchanged.
+- Verification: `npm ci` shows `js-yaml@4.3.2 overridden` and no `invalid`
+  entries. React and react-dom are still at 19.3.1, and `@tiptap/core` at
+  3.32.0. `loadRcFile` reads `lighthouserc.js` with all 4 URLs; a temporary YAML
+  rc failed with `Function yaml.safeLoad is removed in js-yaml 4`.
+  `npx @lhci/cli autorun` checked assertions over 4 URLs and 12 runs, with
+  warnings only, and exited 0. `npm run validate` passed (69 files, 1,284
+  tests). `.claude/rules/frontend-build.md` now requires the LHCI config to
+  stay JavaScript.
+- Result: `npm audit` reports 5 findings (5 high), all `braces` through
+  Tailwind 3 (`braces`, `chokidar`, `micromatch`, `fast-glob`, `tailwindcss`),
+  all marked `"dev": true`. `npm audit --omit=dev` reports 0.
+- `braces` has no fixed release, and removing it requires the Tailwind 4
+  migration. The owner chose to plan that separately:
+  `docs/intents/frontend/tailwind-v4-migration.md`.
