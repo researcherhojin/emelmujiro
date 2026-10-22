@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: ci
 created: 2026-10-23
 updated: 2026-10-23
@@ -43,4 +43,14 @@ updated: 2026-10-23
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #636 (`809dc9a3`, merged 2026-10-22T16:46:22Z).
+
+- `actionlint` reported nothing new. In the parsed job graph, every former
+  dependent has no `needs`. Only `lighthouse` (on `build-for-analysis`) and the
+  auto-merge and summary aggregators still have them.
+- **PR run `39815681217`**: there was no `Quick Validation` job. Frontend Lint,
+  Backend Lint, Test Affected Code, Security Scan, Build for Analysis, E2E Tests
+  and Repo Checks all started at 16:38:43. Every check passed, and the PR
+  Summary rendered.
+- **Before**: in #634's run `39810738738` the six jobs started at
+  16:04:25–26, after the 6-second pre-check.
