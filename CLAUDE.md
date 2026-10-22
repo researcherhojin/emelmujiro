@@ -11,10 +11,10 @@ This repo's owner runs a quant trading platform alongside this codebase, so the 
 This root file holds the always-loaded, cross-cutting rules. Each file in `.claude/rules/` auto-loads when Claude reads a file matching its `paths`; a situation is not a file read, so by task type, read the named rule file first:
 
 - **UI / page work** → `frontend.md` (Architecture, UI Conventions, Testing, Security incl. blog HTML sanitization — paths `frontend/**`) + `frontend-build.md` (SEO, KakaoTalk WebView, Tailwind 4.x — loads on any `frontend/src` read)
-- **Build / deploy / CI, or a red CI check** → `ci.md` (Manual security audits, Runtime image recipes, Operational logs, CI job gating, CHANGELOG entry, Runners pinned to ubuntu-24.04, Shared caches saved only on `main`, Auto-merged commits do not deploy, Spell check, README drift gates) + `frontend-build.md` (SSG prerender + nginx routing, E2E target, Lighthouse, CSP, Tailwind, Bundle size) + `Constraints` (Deployment, Branch protection) + `Gotchas` #17 (backend deploy: verify by commit, never a bare `200`)
+- **Build / deploy / CI, or a red CI check** → `ci.md` (Manual security audits, Runtime image recipes, Operational logs, CI job gating, CHANGELOG entry, Runners pinned to ubuntu-24.04, Shared caches saved only on `main`, Auto-merged commits do not deploy, `auto-deploy.sh` one deploy late, Spell check, README drift gates) + `frontend-build.md` (SSG prerender + nginx routing, Cloudflare owns https, E2E target, Lighthouse, CSP, Tailwind, Bundle size) + `backend.md` (Deployment: migrations run in the container) + `Constraints` (Deployment, Branch protection) + `Gotchas` #17 (backend deploy: verify by commit, never a bare `200`)
 - **Search Console report** → `frontend-build.md` (SEO, SSG prerender + nginx routing). Get the URL from the reason's drill-down page first, then check raw bytes (`curl`) and the rendered DOM separately: the 2026-09-24 canonical bug and the 2026-10-12 Soft 404 both lived only in the raw bytes
 - **Dependency bumps** → `Gotchas` #6, #8, #13, #14, #15, #16 + `ci.md` (Runtime image recipes: Postgres majors are dependabot-ignored) + `frontend-build.md` (Tailwind 4.x parity shims; the v5 major is dependabot-ignored)
-- **Backend changes** → `backend.md` (Architecture, Constants, Utilities, Testing, Tooling, Security incl. file-upload validation — paths `backend/**`) + `Constraints` (ENV files, Local dev vs Docker)
+- **Backend changes** → `backend.md` (Architecture, Constants, Utilities, Testing, Tooling, Deployment, Security incl. file-upload validation and production keys — paths `backend/**`) + `Constraints` (ENV files, Local dev vs Docker)
 - **All work** → `Code Conventions`, `Development Flow` invariants, `Gotchas` index
 
 ## Project Overview
@@ -67,12 +67,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 **ENV file structure**: Root `.env` = Docker Compose orchestration only (ports, tags, build flags, and the two Umami secrets `UMAMI_APP_SECRET` / `UMAMI_DB_PASSWORD` — no app secrets). Backend config splits into `backend/.env` (local dev, `load_dotenv()`) and `backend/.env.production` (Docker prod, via `env_file` in docker-compose.yml). Both gitignored. On new servers, generate `backend/.env.production` from `backend/.env.example`.
 
-**Deployment**: Never `rm -rf frontend/build` (breaks nginx volume mount) — use `rm -rf frontend/build/*`. Docker ports bind to `127.0.0.1` only. `SECRET_KEY` loaded via `env_file` — do NOT set in docker-compose `environment` section.
-
-- **The backend container runs `migrate --noinput` before gunicorn** (`backend/Dockerfile` `CMD`); nothing in `auto-deploy.sh` migrates, and until 2026-10-16 every migration was a manual `make migrate`, during which endpoints on the changed table returned `500` while `/api/health/` stayed green. A failed migration stops the container rather than serving a mismatched schema. Keep migrations additive (nullable or defaulted fields): the frontend build in the same deploy runs against the old backend.
-
-- **Cloudflare owns the http→https upgrade; nginx must never redirect by scheme.** "Always Use HTTPS" (SSL/TLS → Edge Certificates) is on since 2026-10-12, and behind the tunnel nginx sees `http` on every request, https ones included. An origin-side `return 301 https://…` therefore loops forever, and every `return 301` needs `absolute_redirect off` with a relative target, or nginx writes `http://` into `Location`. The `/blog` and `/share` redirects did exactly that until `aaa521be`. Verify a redirect with `curl -sI` against production, because `e2e-server.mjs` always emits relative locations.
-- **An edit to `auto-deploy.sh` takes effect one deploy late.** The script checks out the target commit while running, and bash keeps executing the copy it opened, so the deploy of `9587ac3e` ran without that commit's new `up -d umami-db umami` line. Verify a deploy-script change on the deploy after it.
+**Deployment**: Never `rm -rf frontend/build` (breaks nginx volume mount) — use `rm -rf frontend/build/*`. Docker ports bind to `127.0.0.1` only. `SECRET_KEY` loaded via `env_file` — do NOT set in docker-compose `environment` section. The deploy rules tied to one file live with it: migrations in the container (`backend.md`), the Cloudflare-owned https upgrade (`frontend-build.md`), `auto-deploy.sh` applying one deploy late (`ci.md`).
 
 **Branch protection**: `main` has `allow_force_pushes: false` + `allow_deletions: false` + `delete_branch_on_merge: true`, and **no** required status checks — direct push to main is the intentional solo-dev hotfix workflow. Rationale, the exact settings and the emergency-removal procedure live in `.private/operations.md`.
 
@@ -81,8 +76,6 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 **Two-device sync helpers**: two artifacts don't move via `git push` — `.private/` (via `./scripts/sync_private.sh push|pull|dry`, never `--delete`) and the deploy-host/production drift report (`./scripts/check_machine_sync.sh`). Run the second before any push if a session may have happened on the other machine; it caught a silent 16-commit production drift. Host details in `.private/operations.md`.
 
 **Umami analytics**: self-hosted behind nginx, not publicly exposed; the dashboard is not routed and only the tracking endpoint is proxied. Secrets live in the gitignored root `.env` and are required via `${VAR:?}`. Ports, the exact nginx location and the data-destroying password-reset procedure: `.private/operations.md`.
-
-**Production keys**: a missing `SECRET_KEY` raises `ImproperlyConfigured` when `settings.py` loads; a missing `RECAPTCHA_PRIVATE_KEY` raises it inside `verify_recaptcha` (`api/views.py`) on the first contact submission, so the server starts and the first form post fails (DEBUG bypasses reCAPTCHA).
 
 ## Code Conventions
 

@@ -343,7 +343,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # HTTPS settings (production)
 # Cloudflare terminates TLS and owns the http->https upgrade; behind the tunnel
 # nginx forwards X-Forwarded-Proto as "http" on every request, so an origin
-# SSL redirect loops (root CLAUDE.md, Constraints > Deployment). HSTS stays off
+# SSL redirect loops (.claude/rules/frontend-build.md, Cloudflare). HSTS stays off
 # by decision because browsers cache it beyond our control. The defaults match
 # production; opting in takes an explicit env value.
 if not DEBUG:
