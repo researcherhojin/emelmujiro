@@ -7,7 +7,7 @@ updated: 2026-10-22
 
 # Remediate remaining dependency and container findings
 
-<!-- cspell:ignore modelcontextprotocol emnapi -->
+<!-- cspell:ignore modelcontextprotocol emnapi tmpfs -->
 
 ## Intent
 
@@ -219,3 +219,18 @@ checksum-verified upstream archive.
   per-build random values (the build ID and the server-action encryption key):
   99 client static files, 3,255 server files and the standalone package set.
   None of the six patched packages ship in `.next/standalone`.
+- Candidate on the deploy host (commit `35093b05`): a Docker build, then
+  `verify.sh` against `emelmujiro/postgres:15.19-security-1` on a disposable
+  network with a tmpfs database (26 migrations, login, tracker, ingestion,
+  analytics, non-root startup and restart persistence), and a Trivy 0.76.1
+  image scan of 185 targets, 0 findings. Two builds of the same commit produced
+  different image IDs (`731b425f…` and `1207baa7…`), so the build is not
+  bit-reproducible. The deployed image is a rebuild from identical inputs, and
+  it was therefore verified again after deployment.
+- Deployed as `df86b6ff` ([#626](https://github.com/researcherhojin/emelmujiro/pull/626)).
+  All PR checks and [main run 39764382370](https://github.com/researcherhojin/emelmujiro/actions/runs/39764382370)
+  passed, and `/api/health/` reports `df86b6ff`. The running Umami container is
+  healthy, on image
+  `sha256:22b7ca85b621c789b141c05c1327c81819925509d50b612c1e0e5982a9385bfd`.
+  That image passed `verify.sh` in isolation, Trivy reported 0 findings, and
+  Prisma reports the production schema up to date.
