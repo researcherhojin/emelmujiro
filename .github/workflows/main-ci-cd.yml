@@ -49,6 +49,10 @@ jobs:
           # in escape sequences like "[2m      Tests [22m [1m[32m1189 passed[39m"
           # and the grep pattern fails to match.
           NO_COLOR: "1"
+        # An explicit `shell: bash` runs with `-o pipefail`; the default shell
+        # does not, so a failing suite piped into `tee` left this step green
+        # (run 36376897291). Same for the backend step below.
+        shell: bash
         run: CI=true npx vitest run --bail=1 --coverage 2>&1 | tee /tmp/vitest-output.txt
         timeout-minutes: 10
 
@@ -134,6 +138,9 @@ jobs:
           DATABASE_URL: ""
           SECRET_KEY: test-secret-key-that-is-at-least-fifty-bytes-long-for-hmac-sha256
           DEBUG: "True"
+        # pipefail (see the frontend test step): `coverage xml` succeeds after
+        # failing tests, so nothing later in this job would turn it red.
+        shell: bash
         run: |
           uv run coverage run --source=api manage.py test 2>&1 | tee /tmp/django-output.txt
           uv run coverage xml -o coverage.xml

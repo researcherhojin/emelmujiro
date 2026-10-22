@@ -2,7 +2,9 @@ module.exports = {
   ci: {
     collect: {
       startServerCommand: 'npx vite preview --port 4173',
-      startServerReadyPattern: 'Local:',
+      // Not 'Local:': Vite colors the word, so an ANSI reset sits between
+      // it and the colon, and LHCI timed out (10 s) on every run.
+      startServerReadyPattern: 'Local',
       url: [
         'http://localhost:4173/',
         'http://localhost:4173/contact',
