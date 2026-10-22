@@ -1,0 +1,76 @@
+name: Warm Shared Caches
+
+# PR jobs can restore caches from `main` but not from each other. Saving the
+# Playwright browser and the Trivy DB here, in `main`'s scope, lets every PR
+# restore them read-only instead of storing its own copy (21 copies of the
+# 279 MB browser pushed the repo past the 10 GB cache limit on 2026-10-22).
+# Intent: docs/intents/ci/actions-cache-scope.md
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Daily, so auto-merged commits (GITHUB_TOKEN pushes start no workflow)
+    # and the date-keyed Trivy cache are still covered.
+    - cron: "17 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cache-warm
+  cancel-in-progress: false
+
+jobs:
+  playwright:
+    name: Playwright browser
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js (read-only node_modules cache)
+        uses: ./.github/actions/setup-node
+        with:
+          save-cache: "false"
+
+      - name: Get Playwright version
+        id: playwright-version
+        working-directory: ./frontend
+        run: echo "version=$(npx playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      # Same path and key as `E2E Tests` in pr-checks.yml, which only restores.
+      - name: Cache Playwright browsers
+        uses: actions/cache@v6
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
+      - name: Download Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        working-directory: ./frontend
+        run: npx playwright install chromium
+
+  trivy:
+    name: Trivy DB
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      # Same action pin as `Security Scan` in pr-checks.yml. With `cache: true`
+      # the action saves its DB as `cache-trivy-<UTC date>` from
+      # `${{ github.workspace }}/.cache/trivy`, which the PR job restores.
+      # Findings are the PR check's job; this run only refreshes the DB.
+      - name: Refresh Trivy DB
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "table"
+          exit-code: "0"
+          severity: "CRITICAL,HIGH"
+          cache: "true"
