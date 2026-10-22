@@ -234,3 +234,14 @@ checksum-verified upstream archive.
   `sha256:22b7ca85b621c789b141c05c1327c81819925509d50b612c1e0e5982a9385bfd`.
   That image passed `verify.sh` in isolation, Trivy reported 0 findings, and
   Prisma reports the production schema up to date.
+- The docs-only deploy `7c70ffed` rebuilt the Umami tag as
+  `sha256:8aa3e2478893…`. Its layer list and creation time (`10:31:20Z`) are
+  identical to the verified candidate `1207baa7…`, so it is a cache rebuild of
+  the same content under a different index digest. That tag image passed
+  `verify.sh` and Trivy (0 findings) again. Compose did not recreate the
+  container: `emelmujiro-umami` still runs `22b7ca85…`, the image verified above
+  (started `10:38:23Z`, healthy). The deploy host uses the containerd image
+  store, so once the tag moves, the container's previous image ID can no longer
+  be inspected. Post-deploy checks must therefore compare the container's
+  `.Image` with the tag's `.Id`, not scan the tag alone. `emelmujiro-umami-db`
+  still runs `45e3666…`, the scanned image in the deployment table.
