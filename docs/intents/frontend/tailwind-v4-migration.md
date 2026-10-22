@@ -2,7 +2,7 @@
 status: shipped
 module: frontend
 created: 2026-10-22
-updated: 2026-10-22
+updated: 2026-10-23
 ---
 
 # Tailwind CSS 4 replaces 3.4, removing the last development audit findings
@@ -109,10 +109,11 @@ braces --all` resolves Tailwind 4.3.3 and contains no `braces` package.
   The built CSS uses `:is(.dark *)` (for example
   `.dark\:bg-dark-800:is(.dark *)`). It does not use the
   `@custom-variant dark (&:where(.dark, .dark *))` that the Spec table lists.
-- **The screenshot harness is not tracked.** It is the harness used below, and
-  `git grep` finds no copy of it. Any later change to the palette or to the
-  parity shims needs the harness committed first, or parity cannot be
-  re-measured.
+- **The screenshot harness now lives in `frontend/scripts/visual-diff/`.** The
+  scripts used below were never tracked. `capture.mjs` and `compare.mjs`
+  reimplement them (`docs/intents/frontend/visual-diff-harness.md`), so a later
+  change to the palette or to the parity shims can be re-measured with
+  `npm run visual:capture` and `npm run visual:compare`.
 
 ### Verification before merge (2026-10-22)
 
