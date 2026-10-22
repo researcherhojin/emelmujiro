@@ -81,16 +81,23 @@ Remaining upstream advisories:
 ### Deployment
 
 Final candidates passed verification. Trivy 0.76.1 reported 0 findings for
-backend, PostgreSQL and Umami; the previously verified nginx image also has 0.
-The final Umami image is
-`sha256:54ab64bf81dba3bf2f3fd0063d8e08b61d53064039323fdaa7d9ba902872252d`.
-Deployed commit `5dc8d822f54a0e36728cb6efd0a095ad93e22ffa` on 2026-10-22.
-[CI run 39753556403](https://github.com/researcherhojin/emelmujiro/actions/runs/39753556403)
-passed all five jobs. The public health endpoint returned that exact commit;
-all four services were healthy. Scans of the actual running image IDs confirmed
-0 findings in each image. The home page returned 200 and unauthenticated image
-upload access returned 401. An analytics database backup was taken before the
-change; the existing data volume and PostgreSQL major version were preserved.
+each deployed image. Image IDs after the final recreation and scan:
+
+| Service    | Deployed image ID                                                         | Findings |
+| ---------- | ------------------------------------------------------------------------- | -------: |
+| Backend    | `sha256:af4168789df31ed40d264cbb36374a078ffc2ca5697d5ad7782bceba6172b5e0` |        0 |
+| nginx      | `sha256:e2d97c2b8c016f12c2f1a27d095685063b2f281c4edf2babfde6001cf4fb77a8` |        0 |
+| PostgreSQL | `sha256:45e3666491a2879dc525fdd32aabdd8a7bc08ac89bd3df2cc60ef3bfb4b1e15a` |        0 |
+| Umami      | `sha256:c495764f01cb6b098adfe34f32afd73e7ac06e7ea67ef8945a19cbae30a47741` |        0 |
+
+Code commit `5dc8d822` and the subsequent Dependabot PostCSS patch
+`2348e25e729426ad34126e1c417f135bca5828be` are deployed. [CI run
+39754056072](https://github.com/researcherhojin/emelmujiro/actions/runs/39754056072)
+passed all five jobs. The public health endpoint reports the latest commit;
+all services are healthy, and Umami's database check reports no pending
+migrations. The homepage returns 200, anonymous image upload returns 401, the
+tracking endpoint is routed, and the analytics dashboard returns 404. The
+existing PostgreSQL 15 data volume was preserved.
 
 These results cover known vulnerabilities in the scanned inventory. The 14
 unfixed development findings remain visible and require upstream releases or

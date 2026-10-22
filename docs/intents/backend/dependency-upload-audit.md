@@ -53,32 +53,25 @@ validation checks filename and declared MIME type but does not decode content.
 - Runtime npm audit: 0 findings. Python audit: 0 findings across 31 dependencies.
   These results describe known advisories at scan time, not a security guarantee.
 
-### Container scan and remaining work
+### Initial deployment snapshot
 
-Trivy 0.76.1 counts below are package/advisory instances, not distinct exploitable
-vulnerabilities. Candidate images were scanned before deployment.
+These first candidate scans and the deployment below document the upload and
+runtime changes as they first shipped. Their unpatched Debian, PostgreSQL and
+Umami findings were subsequently addressed in
+[`remaining-security-findings.md`](../infra/remaining-security-findings.md).
+That follow-up contains the current image scans, latest deployed commit and the
+14 development-only npm findings that remain.
 
-| Image            | Before | After | Remaining scope                                                               |
-| ---------------- | -----: | ----: | ----------------------------------------------------------------------------- |
-| Backend          |  1,666 |   166 | 164 Debian package findings without listed fixes; 2 medium findings in uv/uvx |
-| nginx            |     10 |     0 | No known findings in the scanned image                                        |
-| PostgreSQL 15.19 |     64 |    61 | Bundled privilege-switch utility; refreshed OS packages have 0 findings       |
-| Umami 3.4.0      |     39 |    39 | Latest official image still contains affected OS and Node dependencies        |
+| Image            | Initial scan | Follow-up scan |
+| ---------------- | -----------: | -------------: |
+| Backend          |        1,666 |              0 |
+| nginx            |           10 |              0 |
+| PostgreSQL 15.19 |           64 |              0 |
+| Umami 3.4.0      |           39 |              0 |
 
-- The backend candidate has 0 critical, 44 high, 60 medium, 61 low and 1 unknown
-  findings. Removing build packages reduced inventory; it does not establish
-  that every removed finding was remotely exploitable.
-- Umami's dashboard is not publicly routed; only the tracking endpoint is
-  proxied. This limits exposure but does not prove its remaining dependencies
-  cannot be exploited. Recheck official image updates and rebuild when fixes ship.
-- PostgreSQL findings concern the bundled privilege-switch executable, not
-  evidence of a vulnerable PostgreSQL network handler. Recheck rebuilt images;
-  do not change database major versions as an audit shortcut.
-- Full npm audit retains 25 development/build findings (16 high, 7 moderate,
-  2 low). The offered Lighthouse downgrade and Tailwind major change are not
-  compatible fixes; handle those tool migrations separately.
-- Image validation preserves original bytes; it is not malware scanning or
-  metadata removal. Future dependency and container updates still need audits.
+The counts are Trivy package/advisory instances, not distinct exploitable
+vulnerabilities. Image validation stores original bytes; it does not scan for
+malware or remove metadata.
 
 ### Deployment
 
