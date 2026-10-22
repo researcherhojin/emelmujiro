@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(deploy): Build the analytics images without provenance or SBOM attestations, so an unchanged rebuild keeps its image ID and the deploy no longer restarts PostgreSQL and Umami every time (it did on 3 of 3 deploys on 2026-10-22). Reload nginx whenever the umami container actually changes, not only on the fallback recreate, and require the tracking route through nginx to reach umami (a 4xx for GET, which stores nothing) before declaring the deploy healthy. Intent: `docs/intents/infra/security-monitoring.md`
+
 - fix(deploy): Detect analytics containers whose exact image IDs became inaccessible after Docker Desktop rebuilt their tags. Recreate the application and database containers while retaining the database volume, verify image accessibility, refresh nginx's upstream resolution and wait for the analytics heartbeat before declaring deployment complete.
 
 - fix(docker): Exclude the backend's local cache from its build context so host-installed security tools and runtime cache data are not copied into the production image.
