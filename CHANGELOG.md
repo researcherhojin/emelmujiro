@@ -8,6 +8,13 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs: Bring the entry docs up to date with the changes of 2026-10-23.
+  - `CONTRIBUTING.md`, `README.md` and `docker/umami/README.md` name the `Docker Images` PR job (#637), and `README.md` names the "Deploy not landing" alarm (#635).
+  - `AGENTS.md` names the auto-merge job's own dispatch and the alarm, where it said only that drift "is caught nightly".
+  - `CLAUDE.md` › Commands and `AGENTS.md`'s Tailwind line point to the visual-diff harness (#639). `CLAUDE.md` goes from 192 to 193 lines.
+  - In `frontend-build.md` the harness rule is split into sub-bullets with no fact dropped. It no longer says to run the A/B "against the same local backend": the #640 and #641 A/Bs ran with none. It adds the `CSRF_TRUSTED_ORIGINS` value that signing in through the capture servers needs, without which `/api/auth/login/` answered `403`.
+  - Intent: `docs/intents/claude/entry-docs-match-main.md`.
+
 - fix(frontend): Stop hover styles from sticking after a tap on touch screens. `src/index.css` had pinned v3's plain `:hover` with `@custom-variant hover (&:hover)`, so `hover:` and `group-hover:` applied on phones too, where the last tapped element keeps `:hover`. Without the pin, Tailwind 4 wraps them in `@media (hover: hover)`: the built CSS moves 63 of its 64 hover rules inside that query. The one left outside is the hand-written carousel pause, which also has its own JS touch path. Under Pixel 5 emulation `(hover: hover)` is false, mouse hover yields the same color as before, and the visual-diff harness finds no static change beyond the known 1/255 iframe noise. Intent: `docs/intents/frontend/touch-hover-default.md`.
 
 - fix(frontend): Add `dark.600` (`#52525b`) and `dark.700` (`#3f3f46`, zinc like the rest of the dark palette) to the Tailwind config. `dark:border-dark-700` (Navbar mobile menu, Footer divider), `dark:border-dark-600` (ServiceModal close button) and `dark:hover:bg-dark-700` (DarkModeToggle) had never emitted CSS, so dark mode showed light-mode borders (`#e5e7eb`, `#d1d5db`) and the light hover background. The build gains exactly those three rules (+181 bytes). On the visual-diff harness, 25 of 54 captures changed, all dark and all at those elements: the Footer divider on every page, the mobile menu border and the modal button. The other 2 differences were the Google Form iframe's 1/255 noise, which also shows between two captures of the same build.

@@ -33,6 +33,10 @@ containers and network created by that invocation. It does not load `.env` or
 mount production volumes. `UMAMI_TEST_IMAGE` and `UMAMI_TEST_DB_IMAGE` can select
 other locally built candidates.
 
+PR CI's `Docker Images` job runs the same build and `verify.sh`, with
+`UMAMI_TEST_IMAGE=emelmujiro/umami:ci-check`, for every PR that changes
+`docker/umami/`. It pushes nothing and uses no layer cache.
+
 Scan the final image with Trivy and retain its JSON report. A successful build
 alone does not establish that all reported vulnerabilities have been removed.
 Alpine package upgrades resolve against the current stable repositories; record

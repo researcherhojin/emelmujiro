@@ -86,7 +86,7 @@ make update-test-counts    # Regenerate README test counts locally (CI auto-sync
 make health                # Docker health diagnostic (containers, resources, endpoints)
 
 # From frontend/: npm run validate (lint + type-check + coverage) and npm run test:e2e (Playwright, 5 profiles).
-# Single-test, serve:build, bundle-analysis and route-check commands are listed once, in CLAUDE.md → Commands.
+# Single-test, serve:build, bundle-analysis, route-check and visual-diff commands are listed once, in CLAUDE.md → Commands.
 ```
 
 ## Architecture
@@ -145,7 +145,7 @@ graph LR
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads with bounded image decoding, trusted-client-IP throttling, draft comment access controls, production CORS restrictions, and Docker log rotation (10 MB × 3 files per container)
 - **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30
 - **Tests** — Vitest (1284 tests) + Django unittest (427 tests) + Node sitemap regression tests (12 tests) + Playwright E2E (5 profiles)
-- **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Codecov, auto-deploy via webhook, plus self-healing guards that redeploy on production drift and alarm when a commit reaches `main` untested
+- **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Docker builds of the images a PR changes, Codecov, auto-deploy via webhook, plus self-healing guards that redeploy on production drift, open an issue when that redeploy does not land, and alarm when a commit reaches `main` untested
 
 ## License
 

@@ -17,7 +17,7 @@ Fork → clone → follow [README — Getting Started](README.md#getting-started
 3. **No CI-skip markers anywhere in the message**, body included — GitHub reads the whole message, so prose about the mechanism skips CI. Escape the brackets to write about one (`\[skip ci\]`). See CLAUDE.md Gotcha #10.
 4. **One issue per PR, ≤ 3 commits**, no mid-PR scope expansion. Defer follow-ups to a new issue.
 5. **Before pushing**: `make test` and `make lint` from the repo root. Pre-commit runs lint-staged (Prettier, ESLint, Black, Flake8); don't bypass it.
-6. **PR**: against `main`, with a short summary, a test plan and a `CHANGELOG.md` entry under `## Merged since [1.0.0]` (CI warns without one unless the PR changes only `docs/intents/`). PR CI runs lint, type-check, tests, Playwright E2E (Chromium), Trivy, bundle size, Lighthouse and `cspell`; Codecov uploads run on the `main` pipeline after merge.
+6. **PR**: against `main`, with a short summary, a test plan and a `CHANGELOG.md` entry under `## Merged since [1.0.0]` (CI warns without one unless the PR changes only `docs/intents/`). PR CI runs lint, type-check, tests, Playwright E2E (Chromium), Trivy, bundle size, Lighthouse, `cspell` and Docker builds of the images a PR changes; Codecov uploads run on the `main` pipeline after merge.
 
 ## Code rules (the short version)
 
@@ -36,7 +36,7 @@ Commands are in [README — Useful Commands](README.md#useful-commands); single-
 - **Sitemap generation**: run `node --test frontend/scripts/test-generate-sitemap.cjs` from the root. API errors or incomplete pagination must abort generation without replacing the existing sitemap.
 - **Cookie authentication**: browser writes bootstrap a token from `GET /api/auth/csrf/` and send `X-CSRFToken`. Login and refresh also require CSRF; password changes revoke earlier tokens. Regression tests live in `backend/api/test_security.py` and `frontend/src/services/__tests__/api.csrf.test.ts`.
 - **Image uploads**: `backend/api/validators.py` decodes uploaded JPEG, PNG and GIF files and caps frame dimensions, total pixels and animation frames. Add real encoded fixtures for changes; upload API regression tests are in `backend/api/test_upload_security.py`.
-- **Container images**: PostgreSQL and Umami security recipes live under `docker/`. After changing one, run `sh docker/postgres/verify.sh`, or build Umami and run `sh docker/umami/verify.sh`; both use disposable databases and remove their test containers.
+- **Container images**: PostgreSQL and Umami security recipes live under `docker/`. After changing one, run `sh docker/postgres/verify.sh`, or build Umami and run `sh docker/umami/verify.sh`; both use disposable databases and remove their test containers. PR CI's `Docker Images` job runs the same build and check for any PR that touches either directory.
 - **Browser artifacts**: `.playwright-cli/` and `output/playwright/` are local generated output, excluded from Git and spelling checks.
 
 ## Questions

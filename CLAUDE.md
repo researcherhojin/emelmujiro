@@ -47,6 +47,7 @@ npm run type-check         # tsc --noEmit AND tsc -p tsconfig.node.json (build c
 npm run analyze:bundle     # source-map-explorer (from frontend/, requires build first)
 npm run check:css          # detect CSS classes shipped in build but never referenced in src/ (from frontend/, requires build first)
 npm run check:routes       # cross-reference the 4 hardcoded route lists (from frontend/, no build or node_modules needed)
+npm run visual:capture     # screenshot a served build; visual:compare diffs two captures (from frontend/; frontend-build.md › Tailwind)
 
 npm run knip                                                                  # Dead code detection. Run from root
 npm run spell                                                                 # cspell over tracked files + .claude/{rules,hooks,skills/intent,agents} + .github. Run from root
