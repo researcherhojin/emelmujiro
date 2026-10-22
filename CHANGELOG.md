@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(security): Move the backend to a tested Alpine runtime with uv 0.12.24; replace the PostgreSQL privilege-switch binary and rebuild Umami with patched dependencies. Add reproducible analytics image recipes and compatible development dependency overrides. Intent: `docs/intents/infra/remaining-security-findings.md`
+
 - fix(security): Upgrade follow-redirects to 1.16.1 and certifi to 2026.10.19; validate actual image decoding with Pillow 13.0.0, including malformed GIF and allocation limits. Separate build tools from the backend runtime image, remove unused runtime pip, and update nginx to 1.31.8-alpine. Intent: `docs/intents/backend/dependency-upload-audit.md`
 
 - fix(seo): Abort sitemap generation on API failures or inconsistent pagination instead of silently omitting every article; preserve the existing sitemap on fetch failure. Add regression tests for inventory completeness and canonical language URLs. Intent: `docs/intents/seo/preserve-blog-sitemap.md`

@@ -1,0 +1,9 @@
+*
+!Dockerfile
+!package.json
+!pnpm-workspace.yaml
+!pnpm-lock.yaml
+!runner/
+!runner/package.json
+!runner/pnpm-workspace.yaml
+!runner/pnpm-lock.yaml

@@ -4,6 +4,9 @@
   "ignoreRegExpList": ["/GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}/g"],
   "ignorePaths": [
     "backend/uv.lock",
+    "docker/umami/**/package.json",
+    "docker/umami/**/pnpm-workspace.yaml",
+    "docker/umami/**/pnpm-lock.yaml",
     "backend/api/tests.py",
     "backend/api/migrations/**",
     "CHANGELOG.md",

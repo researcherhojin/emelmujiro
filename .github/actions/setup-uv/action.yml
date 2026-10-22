@@ -9,7 +9,7 @@ runs:
       with:
         # Must match the `ghcr.io/astral-sh/uv:<version>` image in backend/Dockerfile,
         # so CI resolves and syncs with the same uv the production image runs.
-        version: "0.12.5"
+        version: "0.12.24"
         enable-cache: true
         cache-dependency-glob: "backend/uv.lock"
 

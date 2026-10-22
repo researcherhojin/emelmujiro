@@ -15,10 +15,11 @@ paths:
 
 # CI and repo-automation rules
 
-**Compose-only images (`nginx`, `umami`, `postgres`) are pinned to exact versions in `docker-compose.yml` — never revert to a floating tag.** Nothing re-pulls a floating tag (`auto-deploy.sh` only builds the backend), which left all three 6–9 months stale until 2026-10-06.
+**Runtime image recipes are versioned and must remain reproducible.** nginx uses an exact upstream Compose pin. Backend, PostgreSQL and Umami are built from their Dockerfile recipes; `auto-deploy.sh` rebuilds analytics images with Compose.
 
-- Dependabot's `docker-compose` ecosystem bumps the pins, and `auto-deploy.sh` applies them: `up -d umami-db umami` and the frontend's `up -d` pull a changed tag. Patch bumps auto-merge (Gotcha #12), so an Umami patch runs its DB migrations without review.
-- **Postgres majors are dependabot-ignored**: a new major cannot read the `umami_db` volume. Upgrade by `pg_dump` → new volume → restore, as its own change.
+- `docker/postgres/` keeps PostgreSQL 15 and replaces the bundled privilege-switch tool with Alpine's maintained equivalent. Preserve root entrypoint ownership setup; test initialization and persistence after restart with `docker/postgres/verify.sh`.
+- `docker/umami/` rebuilds the pinned application source with patched dependencies. Keep builder and runner dependency locks together, rebuild Next output, and verify tracking and database migrations in isolation.
+- Dependabot watches all three Dockerfile directories. Local Compose image tags are not registry dependencies. PostgreSQL major upgrades remain excluded and require dump, new volume and restore as a separate change.
 
 **Operational logs: cron jobs must redirect output to `$(CURDIR)/backend/logs/<name>.log`.** That matches Django `LOG_DIR` (`backend/config/settings.py`), is already gitignored, and persists via the Docker logs volume. Never `/tmp`, `~/logs/` or `/var/log/`. Enforced by a `pr-checks.yml` grep: any `crontab` line with `>>` not targeting `backend/logs/` fails CI.
 

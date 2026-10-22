@@ -47,11 +47,8 @@ services:
       retries: 3
       start_period: 40s
 
-  # Images nothing builds are pinned to exact versions: a floating tag
-  # (`nginx:alpine`, `postgres:15-alpine`, `umami:postgresql-latest`) is never
-  # re-pulled by `auto-deploy.sh`, and all three sat 6-9 months stale until
-  # 2026-10-06. Dependabot's `docker-compose` ecosystem bumps these pins, and
-  # `auto-deploy.sh` applies a changed tag (compose pulls a missing image).
+  # nginx uses an exact upstream version. Analytics images are built from
+  # reviewed recipes under docker/ so dependency fixes are reproducible.
   frontend:
     logging: *bounded-logging
     image: nginx:1.31.8-alpine
@@ -78,7 +75,8 @@ services:
   # Umami analytics — self-hosted, cookieless, zero external scripts
   umami-db:
     logging: *bounded-logging
-    image: postgres:15.19-alpine
+    build: ./docker/postgres
+    image: emelmujiro/postgres:15.19-security-1
     container_name: emelmujiro-umami-db
     restart: unless-stopped
     stop_grace_period: 30s
@@ -100,7 +98,8 @@ services:
 
   umami:
     logging: *bounded-logging
-    image: ghcr.io/umami-software/umami:3.4.0
+    build: ./docker/umami
+    image: emelmujiro/umami:3.4.0-security-1
     container_name: emelmujiro-umami
     restart: unless-stopped
     security_opt:

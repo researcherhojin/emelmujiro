@@ -1,6 +1,6 @@
-FROM python:3.12-slim AS dependencies
+FROM python:3.12-alpine3.24 AS dependencies
 
-COPY --from=ghcr.io/astral-sh/uv:0.12.5 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.24 /uv /uvx /bin/
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -11,20 +11,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies (--no-install-recommends keeps the image lean)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    gettext \
-    && rm -rf /var/lib/apt/lists/*
+# Install build dependencies only in the dependency stage.
+RUN apk add --no-cache build-base postgresql-dev gettext
 
 # Install Python dependencies (cached layer)
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
 # Keep compilers, headers and build utilities out of the runtime image.
-FROM python:3.12-slim
-COPY --from=ghcr.io/astral-sh/uv:0.12.5 /uv /uvx /bin/
+FROM python:3.12-alpine3.24
+COPY --from=ghcr.io/astral-sh/uv:0.12.24 /uv /uvx /bin/
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     UV_COMPILE_BYTECODE=1 \
@@ -45,7 +41,7 @@ ARG GIT_COMMIT=unknown
 ENV GIT_COMMIT=$GIT_COMMIT
 
 # Create non-root user and data directory for SQLite
-RUN adduser --disabled-password --gecos '' appuser && \
+RUN adduser -D appuser && \
     mkdir -p /app/data /app/logs && \
     chown -R appuser:appuser /app
 

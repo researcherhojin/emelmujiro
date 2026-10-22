@@ -45,10 +45,10 @@ Invariants only. Grep the code for everything else. Single app `api/`; `config/`
 
 `black` + `flake8` (line length 120) are the only Python lint gates. `[tool.ruff]` in `pyproject.toml` exists so the VS Code Ruff extension agrees with them (line length, `py312`, `api`/`config` first-party). Without it the extension ran Ruff's 413 default rules at line length 88. It is not run in CI, and the rest of `backend/` still carries 78 findings under it, measured 2026-10-04.
 
-**Re-lock with the image's uv, not the local one**: `backend/Dockerfile` copies uv `0.12.5` and builds with `uv sync --frozen`, while a newer local uv (Homebrew `0.13.0` on 2026-10-18) rewrote `uv.lock`'s `revision = 3` to `5` on a one-package `--upgrade-package`. Use `uvx uv@<Dockerfile version> lock --upgrade-package <pkg>` and confirm the diff touches only that package.
+**Re-lock with the image's uv, not the local one**: `backend/Dockerfile` copies uv `0.12.24` and builds with `uv sync --frozen`, while a newer local uv (Homebrew `0.13.0` on 2026-10-18) rewrote `uv.lock`'s `revision = 3` to `5` on a one-package `--upgrade-package`. Use `uvx uv@<Dockerfile version> lock --upgrade-package <pkg>` and confirm the diff touches only that package.
 
 ## Security
 
 - **File uploads**: Backend uses `uuid4` filenames (no user-supplied paths). Validated against extension whitelist + MIME type + 5 MB limit.
 - **Image endpoint**: `validate_uploaded_image()` additionally decodes JPEG, PNG and GIF; documents are rejected even when the generic upload settings permit them. Pillow's pixel ceiling is set once at module import, before decoder allocation, with decompression warnings treated as errors. Limits are 16,000,000 pixels per frame, 32,000,000 total pixels and 100 frames. Validate every animation frame and reset the stream before storage. Tests must use real encoded images, not headers followed by arbitrary bytes.
-- **Runtime image**: compiler tools and development headers stay in the Docker dependency stage. The runtime copies its virtual environment and uses uv; pip is removed from the base runtime. Verify changes with tests inside the built container, not just the host environment.
+- **Runtime image**: the Python 3.12 Alpine base is shared by both Docker stages; never copy a glibc virtual environment into musl. Compiler tools and development headers stay in the Docker dependency stage. The runtime copies its virtual environment and uses uv; pip is removed from the base runtime. Verify changes with tests inside the built container, not just the host environment.

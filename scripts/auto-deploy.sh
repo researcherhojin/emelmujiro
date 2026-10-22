@@ -22,7 +22,7 @@ fi
 # Even with the helper on PATH, `credsStore: desktop` makes docker-credential-desktop
 # HANG under the non-interactive launchd session (it can't reach Docker Desktop's
 # credential backend), so BuildKit's metadata resolution for the public base images
-# (python:3.12-slim, ghcr.io/astral-sh/uv) times out with `DeadlineExceeded` and the
+# (python:3.12-alpine3.24, ghcr.io/astral-sh/uv) times out with `DeadlineExceeded` and the
 # backend image never rebuilds. Build under a scoped Docker config that drops
 # credsStore (public images then resolve anonymously) while preserving cli-plugins
 # (so `docker compose` exists), contexts (so the desktop-linux daemon connection
@@ -197,9 +197,9 @@ cd "$REPO_DIR"
 GIT_COMMIT=$(git rev-parse HEAD)
 export GIT_COMMIT
 docker compose up -d --build backend
-# Apply a bumped image pin (docker-compose.yml) for Umami. A no-op when the pin
-# is unchanged; the frontend's pin is applied by its own `up -d` below.
-docker compose up -d umami-db umami
+# Build the reviewed analytics recipes; cached layers keep unchanged builds cheap.
+# The frontend upstream pin is applied by its own `up -d` below.
+docker compose up -d --build umami-db umami
 if [ "$NGINX_CONF_CHANGED" = true ]; then
   # Validate the new nginx.conf before applying it, so a syntax error aborts the
   # deploy WITHOUT killing the running frontend. Test INSIDE the running
