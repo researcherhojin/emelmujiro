@@ -200,6 +200,26 @@ docker compose up -d --build backend
 # Build the reviewed analytics recipes; cached layers keep unchanged builds cheap.
 # The frontend upstream pin is applied by its own `up -d` below.
 docker compose up -d --build umami-db umami
+# Docker Desktop can replace an image manifest while Compose retains the
+# existing container because its configuration is unchanged. The container
+# keeps running, but its exact image ID becomes unavailable to inspection.
+# Recreate the analytics pair only when that condition is observed; retain
+# the database volume and verify that the replacement image IDs are readable.
+ANALYTICS_IMAGE_MISSING=false
+for service in umami-db umami; do
+  IMAGE_ID=$(docker container inspect --format '{{.Image}}' "emelmujiro-$service")
+  if ! docker image inspect "$IMAGE_ID" >/dev/null 2>&1; then
+    ANALYTICS_IMAGE_MISSING=true
+  fi
+done
+if [ "$ANALYTICS_IMAGE_MISSING" = true ]; then
+  echo "$LOG_PREFIX Analytics image identity unavailable — recreating containers with current images"
+  docker compose up -d --force-recreate umami-db umami
+  for service in umami-db umami; do
+    IMAGE_ID=$(docker container inspect --format '{{.Image}}' "emelmujiro-$service")
+    docker image inspect "$IMAGE_ID" >/dev/null
+  done
+fi
 if [ "$NGINX_CONF_CHANGED" = true ]; then
   # Validate the new nginx.conf before applying it, so a syntax error aborts the
   # deploy WITHOUT killing the running frontend. Test INSIDE the running

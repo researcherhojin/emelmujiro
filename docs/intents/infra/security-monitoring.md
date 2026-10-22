@@ -46,7 +46,10 @@ behavior. No new scheduler, hosted monitoring or notification service is wanted.
 PR #629 was merged and deployed as `de04f5bb`. Post-deployment validation
 identified that the backend build context included the local scanner cache;
 `.cache/` is now excluded from the Docker context. Final image verification is
-in progress.
+in progress. Docker Desktop also retained analytics containers whose image IDs
+became inaccessible after a rebuild; deployment now detects that condition,
+recreates the analytics pair without deleting its volume, and verifies the
+replacement image IDs.
 
 - Full npm audit and Trivy 0.76.1 scans of all four lock files report 0 findings,
   including development dependencies. Image scanning covers installed packages;

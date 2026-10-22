@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(deploy): Detect analytics containers whose exact image IDs became inaccessible after Docker Desktop rebuilt their tags. Recreate the application and database containers while retaining the database volume, then verify image accessibility.
+
 - fix(docker): Exclude the backend's local cache from its build context so host-installed security tools and runtime cache data are not copied into the production image.
 
 - ci(security): Add local manual dependency and running-image audits, including development dependencies and all severities. Reject missing inventories, scanner errors and containers replaced during scans. Split operational TypeScript into security, deployment and shared modules; preserve the webhook's JavaScript entry path and verify its deployment contract. Enforce the existing 4096-byte request limit by UTF-8 byte count. Add strict type checking and regression tests to existing CI. No scheduler or external notification service is added. Intent: `docs/intents/infra/security-monitoring.md`.
