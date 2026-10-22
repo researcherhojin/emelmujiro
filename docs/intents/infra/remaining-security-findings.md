@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: infra
 created: 2026-10-22
 updated: 2026-10-22
@@ -84,4 +84,14 @@ Final candidates passed verification. Trivy 0.76.1 reported 0 findings for
 backend, PostgreSQL and Umami; the previously verified nginx image also has 0.
 The final Umami image is
 `sha256:54ab64bf81dba3bf2f3fd0063d8e08b61d53064039323fdaa7d9ba902872252d`.
-Commit, CI and live deployment verification are pending.
+Deployed commit `5dc8d822f54a0e36728cb6efd0a095ad93e22ffa` on 2026-10-22.
+[CI run 39753556403](https://github.com/researcherhojin/emelmujiro/actions/runs/39753556403)
+passed all five jobs. The public health endpoint returned that exact commit;
+all four services were healthy. Scans of the actual running image IDs confirmed
+0 findings in each image. The home page returned 200 and unauthenticated image
+upload access returned 401. An analytics database backup was taken before the
+change; the existing data volume and PostgreSQL major version were preserved.
+
+These results cover known vulnerabilities in the scanned inventory. The 14
+unfixed development findings remain visible and require upstream releases or
+separate tool migrations. See [CHANGELOG.md](../../../CHANGELOG.md).
