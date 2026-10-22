@@ -4,6 +4,8 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "erasableSyntaxOnly": true,
@@ -11,5 +13,5 @@
     "types": ["node"],
     "skipLibCheck": true
   },
-  "include": ["*.ts"]
+  "include": ["**/*.ts"]
 }

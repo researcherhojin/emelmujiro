@@ -59,8 +59,8 @@ These first candidate scans and the deployment below document the upload and
 runtime changes as they first shipped. Their unpatched Debian, PostgreSQL and
 Umami findings were subsequently addressed in
 [`remaining-security-findings.md`](../infra/remaining-security-findings.md).
-That follow-up contains the current image scans, latest deployed commit and the
-14 development-only npm findings that remain.
+That follow-up records subsequent image scans, deployments and dependency
+remediation through the final audit closure. The counts below are historical.
 
 | Image            | Initial scan | Follow-up scan |
 | ---------------- | -----------: | -------------: |

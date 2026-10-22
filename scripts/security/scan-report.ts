@@ -1,5 +1,4 @@
-import fs from 'node:fs';
-import { errorMessage, isMain, isRecord } from './security-runtime.ts';
+import { isRecord } from '../shared/runtime.ts';
 
 export function validateScan(report: unknown, expectedType?: string): number {
   if (
@@ -37,14 +36,4 @@ export function validateScan(report: unknown, expectedType?: string): number {
   }
   if (!packages || !expectedFound) throw new Error('Expected package inventory is missing');
   return findings;
-}
-if (isMain(import.meta.url)) {
-  try {
-    if (validateScan(JSON.parse(fs.readFileSync(process.argv[2], 'utf8')), process.argv[3])) {
-      throw new Error('Vulnerabilities found');
-    }
-  } catch (error) {
-    console.error(errorMessage(error));
-    process.exitCode = 1;
-  }
 }

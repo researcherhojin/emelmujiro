@@ -1,4 +1,4 @@
-.PHONY: help install setup-dev-machine verify-setup dev dev-local dev-clean ports kill-ports build test test-ci lint lint-fix clean logs logs-security logs-debug health ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron setup-health-cron setup-security-cron remove-cron
+.PHONY: help install setup-dev-machine verify-setup dev dev-local dev-clean ports kill-ports build test test-ci lint lint-fix clean logs logs-security logs-debug health ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron setup-health-cron remove-cron
 
 help:
 	@echo "Available commands:"
@@ -159,8 +159,5 @@ setup-health-cron: ## Install health check cron (every 5 min, logs failures only
 
 remove-cron:
 	@echo "Removing cron jobs..."
-	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits | grep -v health-check | grep -v scan-running-images) | crontab -
+	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits | grep -v health-check) | crontab -
 	@echo "Cron jobs removed."
-
-setup-security-cron: ## Install the pinned scanner and daily running-image audit
-	@bash scripts/setup-security-cron.sh

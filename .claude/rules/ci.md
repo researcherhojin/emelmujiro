@@ -15,18 +15,17 @@ paths:
 
 # CI and repo-automation rules
 
-**Security monitoring covers development dependencies and running images.**
-`security-monitoring.yml` runs full npm and Trivy lock-file audits daily and
-checks the authenticated production scan summary. All severities count; missing
-inventory, scan errors and results older than 36 hours fail the check. Detailed
-host reports stay under `backend/logs/security/`; public issues carry only job
-statuses and a run link. `make setup-security-cron` installs the checksum-pinned
-scanner. Never substitute an image tag for a running container's image ID.
+**Manual security audits include development dependencies and actual running images.**
+Use `npm run security:setup` to install the checksum-pinned scanner, then
+`npm run security:dependencies` or `npm run security:images`. These commands
+install no scheduler and contact no notification service. Reports stay under
+`backend/logs/security/`; scanner errors and missing inventories fail explicitly.
+Never substitute an image tag for a running container's image ID.
 
 - Operational TypeScript runs natively on Node 24. `npm run check:scripts`
   type-checks and tests it in `Repo Checks (informational)`; the existing webhook
   JavaScript path is a compatibility loader for service-manager configuration.
-- Activation and recovery steps: `docs/intents/infra/security-monitoring.md`.
+- Modules and manual operation: `docs/intents/infra/security-monitoring.md`.
 
 **Runtime image recipes are versioned and must remain reproducible.** nginx uses an exact upstream Compose pin. Backend, PostgreSQL and Umami are built from their Dockerfile recipes; `auto-deploy.sh` rebuilds analytics images with Compose.
 

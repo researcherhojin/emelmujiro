@@ -1,16 +1,14 @@
 import type { TestContext } from 'node:test';
-import type { SecurityReport } from './security-report.ts';
-import type { Command } from './security-runtime.ts';
+import type { SecurityReport } from '../security/report.ts';
+import type { Command } from '../shared/runtime.ts';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { spawn } from 'node:child_process';
-import { scan } from './scan-running-images.ts';
-import { SERVICES, validateReport, assertCleanSummary, readSummary } from './security-report.ts';
-import { reconcile, TITLE, MARKER } from './security-monitor-issue.ts';
-import { validateScan } from './validate-security-scan.ts';
+import { scan } from '../security/images.ts';
+import { SERVICES, validateReport, assertCleanSummary, readSummary } from '../security/report.ts';
+import { validateScan } from '../security/scan-report.ts';
 
 const imageId = `sha256:${'a'.repeat(64)}`;
 function report(): SecurityReport {
@@ -199,103 +197,4 @@ test('container replacement during scan invalidates the result', (t) => {
 test('findings remain visible without stopping other image scans', (t) => {
   const result = scan({ directory: temporary(t), run: fakeRun({ findings: 2 }) });
   assert.ok(result.services.every((entry) => entry.status === 'findings' && entry.findings === 2));
-});
-
-const issueCases: [
-  string,
-  { number: number; title: string; body: string }[],
-  string,
-  string,
-  string | undefined,
-][] = [
-  ['create', [], 'failure', 'success', 'create'],
-  ['repeat', [{ number: 10, title: TITLE, body: MARKER }], 'success', 'failure', 'comment'],
-  ['recovery', [{ number: 10, title: TITLE, body: MARKER }], 'success', 'success', 'close'],
-  ['healthy', [], 'success', 'success', undefined],
-  ['cancelled', [], 'cancelled', 'success', 'create'],
-  [
-    'unrelated issue',
-    [{ number: 11, title: TITLE, body: 'human report' }],
-    'failure',
-    'success',
-    'create',
-  ],
-];
-for (const [name, existing, dependencies, production, expected] of issueCases) {
-  test(`issue reconciliation: ${name}`, () => {
-    const calls: { args: string[]; input?: string }[] = [];
-    reconcile({
-      run: (args, input) => {
-        calls.push({ args, input });
-        return JSON.stringify(existing);
-      },
-      repository: 'example/repo',
-      runUrl: 'https://example.com/run',
-      dependencies,
-      production,
-    });
-    assert.equal(calls[1]?.args[1], expected);
-    if (calls[1]?.input) assert.ok(calls[1].input.includes('https://example.com/run'));
-  });
-}
-
-test('HTTP summary requires authentication and rejects stale or absent reports', async (t) => {
-  const root = temporary(t);
-  fs.mkdirSync(path.join(root, 'scripts'));
-  fs.mkdirSync(path.join(root, 'backend/logs/security'), { recursive: true });
-  for (const file of [
-    'package.json',
-    'deploy-webhook.js',
-    'deploy-webhook.ts',
-    'security-report.ts',
-    'security-runtime.ts',
-  ]) {
-    fs.copyFileSync(path.join(import.meta.dirname, file), path.join(root, 'scripts', file));
-  }
-  const child = spawn(process.execPath, [path.join(root, 'scripts/deploy-webhook.js')], {
-    env: { ...process.env, DEPLOY_PORT: '0', DEPLOY_SECRET: 'test-only-secret' },
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
-  t.after(() => child.kill('SIGKILL'));
-  const port = await new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('Webhook did not start')), 5000);
-    child.once('error', reject);
-    child.stdout.on('data', (data) => {
-      const match = String(data).match(/listening on 127\.0\.0\.1:(\d+)/);
-      if (match) {
-        clearTimeout(timer);
-        resolve(match[1]);
-      }
-    });
-  });
-  const url = `http://127.0.0.1:${port}/security-status`;
-  assert.equal((await fetch(url)).status, 401);
-  assert.equal((await fetch(url, { headers: { 'X-Deploy-Secret': 'wrong' } })).status, 401);
-  const options = { headers: { 'X-Deploy-Secret': 'test-only-secret' } };
-  assert.equal((await fetch(url, options)).status, 503);
-  const file = path.join(root, 'backend/logs/security/summary.json');
-  const input = report();
-  fs.writeFileSync(file, JSON.stringify(input));
-  const response = await fetch(url, options);
-  assert.equal(response.status, 200);
-  assert.equal(response.headers.get('cache-control'), 'no-store');
-  const summary = await response.json();
-  assertCleanSummary(summary);
-  assert.equal(JSON.stringify(summary).includes(imageId), false);
-  input.completedAt = '2000-01-01T00:00:00Z';
-  fs.writeFileSync(file, JSON.stringify(input));
-  assert.equal((await fetch(url, options)).status, 503);
-  assert.equal((await fetch(url, { ...options, method: 'POST' })).status, 404);
-  const deployUrl = `http://127.0.0.1:${port}/deploy`;
-  assert.equal((await fetch(deployUrl, { method: 'POST' })).status, 401);
-  assert.equal(
-    (
-      await fetch(deployUrl, {
-        ...options,
-        method: 'POST',
-        body: JSON.stringify({ sha: 'invalid' }),
-      })
-    ).status,
-    400
-  );
 });
