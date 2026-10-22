@@ -84,9 +84,43 @@ exercised this recovery path and passed all service checks.
   executable. It writes error results, not a false clean report. Host image
   results are recorded separately above; installing Docker was not requested.
 - Documentation review corrected the stale current-tense dependency count in
-  `backend/dependency-upload-audit.md`. The separate `ci/automerge-gate.md`
-  remains in progress because its requested production timing evidence is not
-  recorded; this audit does not declare that unrelated work complete.
+  `backend/dependency-upload-audit.md`. (`ci/automerge-gate.md` was later closed
+  with its timing evidence; see that file.)
+
+### Follow-up: stable analytics image IDs (2026-10-22)
+
+Re-measured after the session above ended:
+
+- The scan claim above ("0 findings in each of the four running images") was
+  made at `a922e19f`. The next deploy, `72f5b644`, rebuilt the images again.
+  For umami and umami-db the platform manifests were unchanged
+  (`fa3e2f44…`, `d6133fa1…`); backend was rebuilt because `GIT_COMMIT` changed.
+- The recovery branch added in `ae800eaf` fired on all three deploys after it
+  (`ae800eaf`, `a922e19f`, `72f5b644`). Each time it recreated PostgreSQL and
+  Umami and reloaded nginx, docs-only deploys included. The cause: every
+  rebuild with provenance attestations produced a new OCI index digest around
+  an unchanged platform manifest. Compose kept the containers, and
+  `docker image inspect` could no longer read their `.Image`. A host probe
+  showed that two builds without attestations keep one ID (`90f566ae…`, an OCI
+  manifest that can be inspected by full ID, including through a container's
+  `.Image`), while default builds changed ID every time.
+- `ab121c7e` (#630) builds both analytics images with `provenance: false` and
+  `sbom: false`. It reloads nginx whenever the umami container changes; before,
+  the reload ran only in the fallback, so a real image change could leave nginx
+  on a stale upstream. The health gate now also requires a 4xx from
+  `/umami/api/send` through nginx. A stubbed harness covered six branch cases.
+- Rollout: `ab121c7e` deployed with the previous script (`auto-deploy.sh` edits
+  apply one deploy late). Its fallback recreated the pair once and reloaded
+  nginx. During umami startup nginx logged two refused connections, at
+  22:55:11 and 22:55:20 KST. The route then answered 405 at 13:55:34Z. The image
+  IDs now equal the platform manifest digests (`fa3e2f44…`, `d6133fa1…`, media
+  type `oci.image.manifest.v1`). Database counts before and after:
+  website 1, `website_event` 3,236, session 315, completed migrations 26.
+- No `/umami/api/send` request reached nginx between 08:50Z and 13:38Z, so
+  neither a 502 nor a stored event occurred. The four page requests that looked
+  human in that window were HTML-only scanner-like fetches. `website_event` has
+  no rows dated 2026-10-22. Whether real visits before 08:50Z were lost cannot
+  be determined, because the frontend container log starts at 08:50Z.
 
 ## Manual operation
 
