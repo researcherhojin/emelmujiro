@@ -9,7 +9,7 @@ import { useScrollToSection } from '../../hooks/useScrollToSection';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 
 const footerLinkStyle =
-  'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-base text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-hidden focus:outline-hidden border-none bg-transparent';
+  'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-base text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-px after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-hidden focus:outline-hidden border-none bg-transparent';
 
 const serviceLinks = [
   { key: 'ai-education', titleKey: 'services.education.title' },
@@ -114,11 +114,11 @@ const Footer: React.FC = memo(() => {
               </h3>
               <div className="space-y-3">
                 <div className="flex items-start text-base text-gray-700 dark:text-gray-300">
-                  <Mail className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                  <Mail className="w-4 h-4 mr-2 mt-0.5 shrink-0" aria-hidden="true" />
                   <span className="break-all">{CONTACT_EMAIL}</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                  <Phone className="w-4 h-4 mr-2 flex-shrink-0" aria-hidden="true" />
+                  <Phone className="w-4 h-4 mr-2 shrink-0" aria-hidden="true" />
                   <span>{t('contact.info.phone')}</span>
                 </div>
               </div>
@@ -137,7 +137,7 @@ const Footer: React.FC = memo(() => {
                 className="inline-flex items-center px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-base font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {t('common.contact')}
-                <ExternalLink className="ml-2 w-3 h-3 flex-shrink-0" aria-hidden="true" />
+                <ExternalLink className="ml-2 w-3 h-3 shrink-0" aria-hidden="true" />
               </Link>
             </div>
           </div>

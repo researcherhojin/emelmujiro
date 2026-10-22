@@ -5,12 +5,12 @@ import { PARTNER_COMPANIES, type PartnerCompany } from '../../constants';
 const LogoItem: React.FC<{ company: PartnerCompany }> = memo(({ company }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex-shrink-0 px-8">
+    <div className="shrink-0 px-8">
       <div className="flex items-center justify-center w-40 h-24">
         <img
           src={company.logo}
           alt={t('logos.logoAlt', { name: company.name })}
-          className="h-12 max-w-40 w-auto object-contain opacity-60 group-hover:opacity-40 hover:!opacity-100 transition-opacity duration-300"
+          className="h-12 max-w-40 w-auto object-contain opacity-60 group-hover:opacity-40 hover:opacity-100! transition-opacity duration-300"
           width={160}
           height={48}
           loading="lazy"

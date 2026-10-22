@@ -171,7 +171,7 @@ const ProfilePage: React.FC = memo(() => {
                           </p>
                         </div>
                         {item.upcoming && (
-                          <span className="flex-shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                          <span className="shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
                             {t('teachingHistory.upcoming')}
                           </span>
                         )}

@@ -282,7 +282,7 @@ const BlogDetailPage: React.FC = memo(() => {
 
             {/* Cover Image */}
             {post?.image_url && (
-              <div className="relative aspect-[2/1] rounded-2xl overflow-hidden mb-12 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+              <div className="relative aspect-2/1 rounded-2xl overflow-hidden mb-12 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
                 <img
                   src={post.image_url}
                   alt={`${post.title} ${t('blogDetail.relatedImage')}`}

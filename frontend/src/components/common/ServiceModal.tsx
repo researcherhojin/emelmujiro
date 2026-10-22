@@ -206,7 +206,7 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
 
             {/* Header: icon + title + description */}
             <div className="text-center sm:text-left sm:flex sm:items-start">
-              <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 dark:bg-dark-800 sm:mx-0 sm:h-10 sm:w-10">
+              <div className="mx-auto shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 dark:bg-dark-800 sm:mx-0 sm:h-10 sm:w-10">
                 <IconComponent className="h-6 w-6 text-gray-700 dark:text-gray-300" />
               </div>
               <div className="mt-3 sm:mt-0 sm:ml-4 flex-1">
@@ -225,7 +225,7 @@ const ServiceModal: React.FC<ServiceModalProps> = memo(
               <ul className="space-y-3 pl-8 sm:pl-0">
                 {service.details.map((detail, index) => (
                   <li key={`detail-${index}`} className="flex items-baseline gap-3">
-                    <span className="text-sm font-bold text-gray-400 dark:text-gray-500 flex-shrink-0 tabular-nums">
+                    <span className="text-sm font-bold text-gray-400 dark:text-gray-500 shrink-0 tabular-nums">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     <span className="text-base font-medium text-gray-700 dark:text-gray-300">

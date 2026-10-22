@@ -141,6 +141,18 @@ validate` passed (69 files, 1,284 tests, 0 lint warnings), and so did E2E on
   the growth, 4,476 bytes are 71 `@property` rules, 1,925 bytes are 63 theme
   variables, and the rest is 13 `@supports` fallbacks. The build total went
   from 3,044 KB to 3,104 KB, under the 10 MB gate.
+- Canonical class names (follow-up commit): Tailwind's own
+  `canonicalizeCandidates` (the IntelliSense hint source) found 14 suggestions
+  across 679 class tokens in `src`. Seven produce identical declarations and
+  were applied at 22 sites: `flex-shrink-0` became `shrink-0`, `flex-grow`
+  became `grow`, plus `aspect-16/10`, `aspect-2/1`, `after:h-px`, `z-60` and
+  `hover:opacity-100!`. Main CSS went from 83,303 to 83,276 bytes. A
+  same-property check on every changed class string found no ordering conflict.
+  The other seven (`min-h-[280px]`, `min-h-[400px]`, `min-h-[136px]`,
+  `min-w-[200px]`, `h-[2px]`, `min-w-[18px]`, `h-[18px]`) are only suggested
+  with `rem: 16` and would turn fixed px into `calc(var(--spacing) * N)` rem
+  values. Those scale with the reader's browser font size, so the px values
+  were kept.
 - `dependabot.yml` is unchanged on purpose. Any edit to it triggers every
   ecosystem (Gotcha #12). Its `tailwindcss` `semver-major` entry now holds back
   v5. The 4.x ignore stored by the #461 command is lifted with

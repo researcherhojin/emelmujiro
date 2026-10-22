@@ -231,7 +231,7 @@ const SlashCommandMenu: React.FC<SlashCommandMenuProps> = ({ editor, onImageUplo
             onClick={() => executeCommand(item)}
             onMouseEnter={() => setSelectedIndex(index)}
           >
-            <span className="flex-shrink-0 text-gray-400 dark:text-gray-500">{item.icon}</span>
+            <span className="shrink-0 text-gray-400 dark:text-gray-500">{item.icon}</span>
             <div>
               <div className="text-sm font-medium">{item.title}</div>
               <div className="text-xs text-gray-500 dark:text-gray-400">{item.description}</div>

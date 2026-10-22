@@ -72,7 +72,7 @@ const NotificationItem: React.FC<NotificationItemProps> = memo(
             const TypeIcon = typeIcons[notification.notification_type] || typeIcons.system;
             return (
               <TypeIcon
-                className={`mt-0.5 w-4 h-4 flex-shrink-0 ${
+                className={`mt-0.5 w-4 h-4 shrink-0 ${
                   typeIconColors[notification.notification_type] || typeIconColors.system
                 }`}
               />
@@ -91,7 +91,7 @@ const NotificationItem: React.FC<NotificationItemProps> = memo(
               </p>
               {!notification.is_read && (
                 <span
-                  className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                  className={`w-2 h-2 rounded-full shrink-0 ${
                     levelColorClasses[notification.level] || levelColorClasses.info
                   }`}
                 />

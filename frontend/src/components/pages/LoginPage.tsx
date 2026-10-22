@@ -125,7 +125,7 @@ const LoginPage: React.FC = () => {
                 className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400"
                 role="alert"
               >
-                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span>{error}</span>
               </div>
             )}
