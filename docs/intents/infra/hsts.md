@@ -43,3 +43,10 @@ updated: 2026-10-23
 - **Changes**: the five files above and this intent.
 - **Risks**: an https outage at Cloudflare would lock visitors out for up to a day, which is why `max-age` is short.
 - **Verification**: the Done-when checks. Review is the advisor; the owner excluded review tools this session.
+
+## Outcome
+
+Merged in #648 (`437f2390`), and production reports `437f2390`. Status stays `in-progress` until `api.` sends the header.
+
+- **`emelmujiro.com`, done.** Every path checked after the deploy returned exactly one `strict-transport-security: max-age=86400`: `/`, `/en/insights/x`, `/app.html`, a hashed `/assets/*.js`, `/contact`, `/api/health/` and `/.well-known/security.txt`.
+- **`api.emelmujiro.com`, not yet.** `/api/health/` and `/api/blog-posts/` sent none. That host's requests are `is_secure()`, so the host's `backend/.env.production` most likely pins `SECURE_HSTS_SECONDS=0`, the value the old `.env.example` called "match production". The owner changes that line to `86400` and redeploys, then re-runs the `api.` curl from `Done when`.
