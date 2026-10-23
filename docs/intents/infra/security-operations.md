@@ -17,8 +17,8 @@ Earlier manual-only scheduling preferences are superseded by this request.
 
 - Serialize the existing login throttle's cache read/write across workers and
   threads; preserve its configured rate and trusted client identity. Fail closed
-  if the lock cannot be acquired. Edge controls remain unverified when browser
-  access is unavailable; application throttles are not a DDoS boundary.
+  if the lock cannot be acquired. Record dashboard configuration evidence
+  separately from live enforcement tests; application throttles are not a DDoS boundary.
 - Snapshot SQLite with its online backup API, archive uploaded files, and dump
   analytics PostgreSQL. Verify SQLite integrity and restore PostgreSQL into an
   isolated disposable container without writing production databases.
@@ -79,9 +79,14 @@ endpoint returned that commit after all five main CI jobs passed in
 - Independent review found plaintext cleanup failure paths; those were fixed,
   regression-tested and reviewed again before deployment.
 
-Limits: Cloudflare configuration inspection is still blocked by the browser
-access policy. Login locking is single-host and does not prevent cache eviction
+- On 2026-10-23, the owner deployed the Cloudflare login rate limiting rule
+  through the dashboard. Shared screenshots confirmed the configured rule and
+  its presence in the rule list after deployment. No live blocking test was run;
+  the dashboard settings and remaining account tasks are recorded privately.
+
+Limits: Login locking is single-host and does not prevent cache eviction
 or restart from resetting counters. Independent copies require connectivity;
 receipts or original snapshots older than 36 hours trigger the watchdog.
-Archives have no automatic pruning yet. Restore-key custody and exact host
+Archives have no automatic pruning yet, and a separate secure copy of the
+restore key remains pending. Restore-key custody and exact host
 paths are documented privately in `.private/operations.md`.

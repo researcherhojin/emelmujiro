@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(security): Record dashboard-confirmed deployment of the Cloudflare login rate limiting rule, distinguish configuration evidence from an unperformed live blocking test, and retain pending backup key custody and retention tasks.
+
 - docs(security): Record production backup restoration, encrypted independent-copy verification, and a successful failure/recovery notification exercise. Remove an unused internal export from the scheduled-operation runner.
 
 - fix(security): Serialize login throttle updates across workers, add encrypted database/media backups with isolated restore and independent-copy verification, and schedule full dependency/running-image audits with authenticated freshness checks and deduplicated GitHub failure/recovery notifications. Detailed reports and backup contents remain private.
