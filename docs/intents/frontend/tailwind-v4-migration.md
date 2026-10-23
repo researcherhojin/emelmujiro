@@ -219,3 +219,7 @@ validate` passed (69 files, 1,284 tests, 0 lint warnings), and so did E2E on
   can settle it, since the installed 4.3.3 is also the latest stable release.
   Post `show`, not `unignore`, on the next Dependabot PR: GitHub's command
   reference says `unignore` "Closes the current pull request".
+- Confirmed 2026-10-23: `@dependabot show tailwindcss ignore conditions` on #461
+  (comment `6356115401`, 02:43:08Z) got the table `| tailwindcss | [] |`
+  three seconds later (`6356115926`). No stored ignore is left; only
+  `dependabot.yml`'s `semver-major` entry holds back v5.
