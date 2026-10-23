@@ -10,7 +10,7 @@
 #   ./scripts/sync_private.sh pull   # Mac mini → MBP
 #   ./scripts/sync_private.sh dry    # show what push would change, no transfer
 #
-# Override host via env: MACMINI_HOST=other-host.local ./scripts/sync_private.sh
+# Host: MACMINI_HOST=<host> ./scripts/sync_private.sh, or .private/sync-host
 #
 # Safety:
 #   - Never uses --delete. Files unique to either side are preserved.
@@ -18,7 +18,14 @@
 
 set -euo pipefail
 
-REMOTE="${MACMINI_HOST:-Ehbebeui-Macmini.local}"
+# The host name is not in the public repo: MACMINI_HOST wins, else the
+# first line of .private/sync-host (gitignored; host details live in .private).
+HOST_FILE="$(git rev-parse --show-toplevel 2>/dev/null || pwd)/.private/sync-host"
+REMOTE="${MACMINI_HOST:-$(head -n1 "$HOST_FILE" 2>/dev/null || true)}"
+if [ -z "$REMOTE" ]; then
+  echo "ERROR: set MACMINI_HOST or write the host name to .private/sync-host" >&2
+  exit 1
+fi
 REMOTE_PATH="workspace/emelmujiro/.private/"
 DIRECTION="${1:-push}"
 
