@@ -11,7 +11,7 @@ updated: 2026-10-23
 
 - **Problem**: `quick-checks` (`Quick Validation`) has one step, `Check for merge conflicts`. Six jobs needed it: Frontend Lint, Backend Lint, Test Affected Code, Security Scan, Build for Analysis and E2E Tests.
   - **The step can never fail.** GitHub's `pull_request` event documentation says: "Workflows will not run on `pull_request` activity if the pull request has a merge conflict. The merge conflict must be resolved first." So no run ever sees a conflict.
-  - **It is also broken.** It runs `git merge-base HEAD "$BASE_REF"` with `BASE_REF=main`, but a PR checkout has no local `main`. All 40 sampled runs printed `fatal: Not a valid object name main` and exited 0 (the 2026-10-22 audit, `docs/intents/ci/silent-check-failures.md`).
+  - **It is also broken.** It runs `git merge-base HEAD "$BASE_REF"` with `BASE_REF=main`, but a PR checkout has no local `main`. All 40 sampled runs printed `fatal: Not a valid object name main` and exited 0 (the 2026-10-22 audit, `docs/intents/ci/silent-check-failures.md`, deleted after it shipped; git history keeps it).
   - **It costs a little time.** In #634's run `39810738738` the job took 6 s (16:04:17–16:04:23), and the six jobs started at 16:04:25–26. Every PR pays that delay plus one extra runner job.
   - **The docs describe it wrongly.** `ci.md` "CI job gating" says it gates on merge conflicts, "the one condition that makes running the rest pointless".
   - On 2026-10-23 the owner chose to remove it.

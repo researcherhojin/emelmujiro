@@ -8,6 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(intents): Delete the 13 shipped intents that no living doc cites, and make that the rule. `docs/intents/README.md` now says a shipped intent is deleted once its deploy is verified unless `CLAUDE.md`, `AGENTS.md`, a rule, a workflow or a script cites it, and `/intent`'s close-out step does the deletion. `CHANGELOG.md` stays the shipped record and git history keeps the files. Ten shipped intents that rules or workflows cite stay, and so do the 5 drafts and the 1 dropped intent. Five kept intents that pointed at a deleted one now say so.
 - ci: Make the README badge check fail on a badge it cannot read. `Check README badge versions match package-lock.json and uv.lock` compared a badge only when both versions were read. Run verbatim on copies of the repo files, `main`'s version printed `All README badges match` and exited `0` in four of six cases:
   - the React badge deleted
   - `axios` removed from `package-lock.json`

@@ -13,7 +13,7 @@ updated: 2026-10-22
 
 Continue the dependency audit with compatible fixes for remaining production
 container and development-tool findings. The baseline is recorded in
-`docs/intents/backend/dependency-upload-audit.md`.
+`docs/intents/backend/dependency-upload-audit.md` (deleted after it shipped; git history keeps it).
 
 ## Spec
 

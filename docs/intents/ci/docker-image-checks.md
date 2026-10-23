@@ -11,7 +11,7 @@ updated: 2026-10-23
 
 - **Problem**: no workflow builds or starts a Docker image. The images are built only on the deploy host, by `auto-deploy.sh`. So a broken base-image bump surfaces first as a failed deploy, which stays green (Gotcha #17).
   - Dependabot proposes these bumps through two ecosystems: `docker` for `/backend`, `/docker/postgres` and `/docker/umami`, and `docker-compose` for `/`, which covers the nginx pin.
-  - Patch bumps auto-merge once tests and lint pass. The nginx 1.31.7 bump (#618) merged that way with zero tests (the 2026-10-22 audit, `docs/intents/ci/silent-check-failures.md`).
+  - Patch bumps auto-merge once tests and lint pass. The nginx 1.31.7 bump (#618) merged that way with zero tests (the 2026-10-22 audit, `docs/intents/ci/silent-check-failures.md`, deleted after it shipped; git history keeps it).
   - On 2026-10-23 the owner chose to build images in CI.
 - **Outcome wanted**: a PR that touches an image's inputs builds and checks that image, and Dependabot auto-merge requires the result.
 - **Affected systems**:

@@ -45,6 +45,7 @@ grep -H "^status:" docs/intents/*/*.md
 
 1. Confirm the merge, and for deployed files confirm production reports the merge commit (`CLAUDE.md` Gotcha #17).
 2. Set `status: shipped`, fill `Outcome` (PR, commit, measured result, departures from the Plan, one lesson for the next intent), and commit it to `main` as `docs(intents): …`.
+3. If no living doc (`CLAUDE.md`, `AGENTS.md`, a `.claude/rules/` file, a workflow or script) cites the file, delete it in that same commit instead: the PR body and `CHANGELOG.md` hold the evidence, and git history keeps the file.
 
 **`shipped` or `dropped`:** report the status and the `Outcome`, and stop.
 
