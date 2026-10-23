@@ -78,7 +78,6 @@ endpoint returned that commit after all five main CI jobs passed in
   passed against the real summary and automatically closed the issue.
 - Independent review found plaintext cleanup failure paths; those were fixed,
   regression-tested and reviewed again before deployment.
-
 - On 2026-10-23, the owner deployed the Cloudflare login rate limiting rule
   through the dashboard. Shared screenshots confirmed the configured rule and
   its presence in the rule list after deployment. No live blocking test was run;

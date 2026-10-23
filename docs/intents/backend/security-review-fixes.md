@@ -59,8 +59,9 @@ suite and lint pass, and image scan results or an explicit blocker are reported.
   `backend/logs/security/`; host details stay in `.private/operations.md`.
 - Daily expired-token cleanup was installed idempotently and existing cron
   entries were preserved. The cleanup command was exercised in the container.
-- Cloudflare dashboard inspection is blocked: Computer Use denied access to
-  Brave Browser. No edge rule changes are claimed.
+- At the initial review, Cloudflare dashboard inspection was blocked because
+  Computer Use denied access to Brave Browser. Subsequent owner-guided
+  configuration verification is recorded in the Outcome below.
 
 ## Outcome
 
@@ -72,5 +73,7 @@ database, and all four running-image scans reported zero findings.
 
 The additional authentication defects and the earlier account/password/contact
 findings are fixed. Daily expired-token cleanup is installed and verified.
-Cloudflare edge-rate-limit inspection remains unverified because Computer Use
-refused browser access; no edge configuration was changed.
+Later on 2026-10-23, owner-shared dashboard screenshots confirmed deployment
+of the login rate limiting rule. This supersedes the initial inspection blocker;
+no live blocking test was run. Follow-up evidence and remaining limits are in
+[security operations](../infra/security-operations.md#outcome).
