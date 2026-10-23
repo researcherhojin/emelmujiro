@@ -99,9 +99,9 @@ Out of scope: redesigns or class cleanup beyond what v4 requires.
 braces --all` resolves Tailwind 4.3.3 and contains no `braces` package.
 - The shipped change is recorded in `CHANGELOG.md` under
   `Merged since [1.0.0]`, in the `deps-dev(tailwind)` entry.
-- Follow-up: the stored Dependabot 4.x ignore from #461 still needs its
-  `@dependabot unignore` command; no bot command was posted during this
-  deployment verification.
+- Follow-up: the stored Dependabot 4.x ignore from #461 needed lifting. The
+  `@dependabot unignore` comment and Dependabot's two replies are under
+  `Deployment (2026-10-22)` below.
 
 ### Facts added after shipping (2026-10-23, read-only shim inventory)
 
@@ -204,8 +204,17 @@ validate` passed (69 files, 1,284 tests, 0 lint warnings), and so did E2E on
   bytes). `/`, `/en`, `/contact`, `/insights` and `/login` return 200, and an
   unknown path returns 404.
 - `npm audit` reports `found 0 vulnerabilities` on `main`.
-- Not done: Dependabot ignored the `@dependabot unignore tailwindcss` comment
-  posted on #461 because that PR is closed. The 4.x ignore stored by #461's
-  `@dependabot ignore this major version` therefore still applies. Post the
-  same command on the next open Dependabot npm PR, then confirm with
-  `@dependabot show tailwindcss ignore conditions`.
+- Dependabot answered the `@dependabot unignore tailwindcss` comment posted
+  on #461 (comment `6340762805`, 12:29:31Z) twice, though that PR is closed:
+  - 12:29:34Z, `6340763765`: "OK, I will stop ignoring the tailwindcss
+    dependency."
+  - 12:29:35Z, `6340764056`: "Looks like this PR is closed. If the branch
+    still exists, you can re-open the PR and then use `@dependabot rebase` or
+    `@dependabot recreate`. …"
+- Corrected 2026-10-23: this entry first said the comment was ignored and the
+  4.x ignore still applied, because the poll printed only the last bot reply.
+  Whether the stored ignore is gone stays unconfirmed until
+  `@dependabot show tailwindcss ignore conditions` answers. No tailwindcss PR
+  can settle it, since the installed 4.3.3 is also the latest stable release.
+  Post `show`, not `unignore`, on the next Dependabot PR: GitHub's command
+  reference says `unignore` "Closes the current pull request".
