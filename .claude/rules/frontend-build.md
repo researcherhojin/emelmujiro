@@ -43,6 +43,8 @@ paths:
 
 **Cloudflare owns the http→https upgrade; nginx must never redirect by scheme.** "Always Use HTTPS" (SSL/TLS → Edge Certificates) is on since 2026-10-12, and behind the tunnel nginx sees `http` on every request, https ones included. An origin-side `return 301 https://…` therefore loops forever, and every `return 301` needs `absolute_redirect off` with a relative target, or nginx writes `http://` into `Location`. The `/blog` and `/share` redirects did exactly that until `aaa521be`. Verify a redirect with `curl -sI` against production, because `e2e-server.mjs` always emits relative locations.
 
+- **HSTS is `max-age=86400`, with no `includeSubDomains` or `preload` (since 2026-10-23).** nginx adds it for `emelmujiro.com` in every header block, and Django's `SecurityMiddleware` adds it for `api.emelmujiro.com`, the only host where `is_secure()` is true. A cached policy cannot be withdrawn early, so raise `max-age` in steps (`docs/intents/infra/hsts.md`).
+
 **E2E target: the Playwright suite serves the production build, not the dev server.** `playwright.config.ts` `webServer` runs `npm run build:e2e && npm run serve:build`, and `frontend/scripts/e2e-server.mjs` mirrors `nginx.conf` (try_files, the dynamic-route SPA fallback, trailing-slash / `/blog` / `/share` 301s, `error_page 404 /app.html`, `/api` proxy).
 
 - `vite preview` is **not** a substitute — its SPA fallback answers `/contact` with `build/index.html`, so every prerendered route silently serves the homepage snapshot.
