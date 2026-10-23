@@ -223,6 +223,9 @@ def admin_user_detail(request, pk):
         serializer = AdminUserSerializer(user)
         return Response(serializer.data)
 
+    if user.is_superuser and not request.user.is_superuser:
+        return Response({"error": "Only superusers can modify superuser accounts"}, status=403)
+
     if request.method == "PATCH":
         # Prevent self-demotion from admin
         if user == request.user and "is_superuser" in request.data and not request.data["is_superuser"]:

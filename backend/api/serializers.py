@@ -33,6 +33,44 @@ class UserSerializer(serializers.ModelSerializer):
         return get_user_role(obj)
 
 
+class StrictCharField(serializers.CharField):
+    """Reject JSON numbers instead of coercing authentication input to text."""
+
+    def to_internal_value(self, data):
+        if not isinstance(data, str):
+            self.fail("invalid")
+        return super().to_internal_value(data)
+
+
+class LoginSerializer(serializers.Serializer):
+    username = StrictCharField(max_length=254, trim_whitespace=False)
+    password = StrictCharField(max_length=4096, trim_whitespace=False, write_only=True)
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = StrictCharField(max_length=4096, trim_whitespace=False, write_only=True)
+    new_password = StrictCharField(max_length=4096, trim_whitespace=False, write_only=True)
+
+
+class RefreshInputSerializer(serializers.Serializer):
+    refresh = StrictCharField(max_length=4096, required=False, allow_blank=True, trim_whitespace=False)
+
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    first_name = StrictCharField(max_length=150, required=False, allow_blank=True)
+    last_name = StrictCharField(max_length=150, required=False, allow_blank=True)
+    email = serializers.EmailField(max_length=254, required=False)
+
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "email"]
+
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exclude(pk=self.instance.pk).exists():
+            raise serializers.ValidationError("Email already in use")
+        return value
+
+
 class AdminUserSerializer(serializers.ModelSerializer):
     """User serializer for admin user management"""
 
@@ -277,6 +315,10 @@ class NotificationSerializer(serializers.ModelSerializer):
 
 class ContactSerializer(serializers.ModelSerializer):
     recaptcha_token = serializers.CharField(write_only=True, required=False)
+
+    def create(self, validated_data):
+        validated_data.pop("recaptcha_token", None)
+        return super().create(validated_data)
 
     class Meta:
         model = Contact

@@ -1,4 +1,5 @@
-.PHONY: help install setup-dev-machine verify-setup dev dev-local dev-clean ports kill-ports build test test-ci lint lint-fix clean logs logs-security logs-debug health ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron setup-health-cron remove-cron
+# cspell:ignore flushexpiredtokens
+.PHONY: help install setup-dev-machine verify-setup dev dev-local dev-clean ports kill-ports build test test-ci lint lint-fix clean logs logs-security logs-debug health ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron setup-token-cron setup-health-cron remove-cron
 
 help:
 	@echo "Available commands:"
@@ -16,6 +17,7 @@ help:
 	@echo "  make clean             - Clean build artifacts"
 	@echo "  make ports             - Check port status"
 	@echo "  make kill-ports        - Kill all dev ports"
+	@echo "  make setup-token-cron  - Schedule daily expired JWT token cleanup"
 
 setup-dev-machine:
 	./scripts/setup-dev-machine.sh
@@ -149,6 +151,22 @@ setup-cron:
 	 echo "0 3 * * * cd '$(CURDIR)' && $$DOCKER_BIN compose exec -T backend uv run python manage.py cleanup_sitevisits --days 90 >> '$(CURDIR)/backend/logs/sitevisit-cleanup.log' 2>&1") | crontab -; \
 	echo "Cron job added. Verify with: crontab -l"
 
+setup-token-cron: ## Remove expired JWT records daily without invalidating active tokens
+	@mkdir -p $(CURDIR)/backend/logs
+	@DOCKER_BIN="$$(command -v docker)"; \
+	if [ -z "$$DOCKER_BIN" ]; then \
+		echo "Error: docker not found in PATH."; exit 1; \
+	fi; \
+	CRON_COPY="$$(mktemp)" || exit 1; \
+	trap 'rm -f "$$CRON_COPY" "$$CRON_COPY.err"' EXIT HUP INT TERM; \
+	if ! LC_ALL=C crontab -l > "$$CRON_COPY" 2> "$$CRON_COPY.err"; then \
+		if ! grep -q 'no crontab for' "$$CRON_COPY.err"; then \
+			cat "$$CRON_COPY.err" >&2; exit 1; \
+		fi; \
+	fi; \
+	(grep -v 'manage.py flushexpiredtokens' "$$CRON_COPY"; \
+	 echo "15 3 * * * cd '$(CURDIR)' && $$DOCKER_BIN compose exec -T backend uv run python manage.py flushexpiredtokens >> '$(CURDIR)/backend/logs/token-cleanup.log' 2>&1") | crontab -
+
 setup-health-cron: ## Install health check cron (every 5 min, logs failures only)
 	@mkdir -p $(CURDIR)/backend/logs
 	@echo "Adding health check cron job (every 5 min)..."
@@ -159,5 +177,5 @@ setup-health-cron: ## Install health check cron (every 5 min, logs failures only
 
 remove-cron:
 	@echo "Removing cron jobs..."
-	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits | grep -v health-check) | crontab -
+	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits | grep -v health-check | grep -v flushexpiredtokens) | crontab -
 	@echo "Cron jobs removed."

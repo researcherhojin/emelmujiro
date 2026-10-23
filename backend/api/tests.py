@@ -1075,14 +1075,14 @@ class AuthenticationAPITestCase(APITestCase):
         url = reverse("logout")
         data = {}
         response: Response = self.client.post(url, data, format="json")  # type: ignore
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_logout_unauthenticated(self):
         """Test logout when not authenticated"""
         url = reverse("logout")
         data = {"refresh": "fake-token"}
         response: Response = self.client.post(url, data, format="json")  # type: ignore
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryListAPITestCase(APITestCase):

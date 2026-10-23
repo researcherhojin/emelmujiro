@@ -2,7 +2,9 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import DatabaseError
 from django.middleware.csrf import get_token
 from django.utils.crypto import constant_time_compare
@@ -17,7 +19,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.utils import get_md5_hash_password
 
 from .authentication import enforce_csrf
-from .serializers import UserSerializer
+from .serializers import (
+    LoginSerializer,
+    PasswordChangeSerializer,
+    ProfileUpdateSerializer,
+    RefreshInputSerializer,
+    UserSerializer,
+)
 from .throttling import ClientIPAnonRateThrottle
 
 logger = logging.getLogger(__name__)
@@ -76,11 +84,10 @@ def login(request):
     User login endpoint
     """
     enforce_csrf(request)
-    username = request.data.get("username")
-    password = request.data.get("password")
-
-    if not username or not password:
-        return Response({"error": "Username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
+    serializer = LoginSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    username = serializer.validated_data["username"]
+    password = serializer.validated_data["password"]
 
     # Try to authenticate with username or email
     user = None
@@ -88,7 +95,8 @@ def login(request):
         try:
             user_obj = User.objects.get(email=username)
             user = authenticate(username=user_obj.username, password=password)
-        except User.DoesNotExist:
+        except (User.DoesNotExist, User.MultipleObjectsReturned):
+            # Ambiguous email addresses must never select an arbitrary account.
             pass
     else:
         user = authenticate(username=username, password=password)
@@ -105,14 +113,18 @@ def login(request):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
+@authentication_classes([])
+@permission_classes([AllowAny])
 def logout(request):
     """
     User logout endpoint (blacklist refresh token)
     """
+    enforce_csrf(request)
+    serializer = RefreshInputSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
     try:
-        # Try refresh token from request body first, then cookie
-        refresh_token = request.data.get("refresh") or request.COOKIES.get(settings.JWT_REFRESH_COOKIE)
+        # Revoke the browser cookie first, even when a body token is supplied.
+        refresh_token = request.COOKIES.get(settings.JWT_REFRESH_COOKIE) or serializer.validated_data.get("refresh")
         if refresh_token:
             token = RefreshToken(refresh_token)
             token.blacklist()
@@ -120,7 +132,9 @@ def logout(request):
             _clear_jwt_cookies(response)
             return response
         else:
-            return Response({"error": "Refresh token required"}, status=status.HTTP_400_BAD_REQUEST)
+            response = Response({"success": "Logged out successfully"})
+            _clear_jwt_cookies(response)
+            return response
     except (InvalidToken, TokenError) as e:
         logger.error(f"Logout error: {e}")
         response = Response({"error": "Logout failed"}, status=status.HTTP_400_BAD_REQUEST)
@@ -150,18 +164,9 @@ def update_user(request):
     """
     user = request.user
 
-    # Update allowed fields
-    if "first_name" in request.data:
-        user.first_name = request.data["first_name"]
-    if "last_name" in request.data:
-        user.last_name = request.data["last_name"]
-    if "email" in request.data:
-        # Check if email is already taken
-        if User.objects.filter(email=request.data["email"]).exclude(id=user.id).exists():
-            return Response({"error": "Email already in use"}, status=status.HTTP_400_BAD_REQUEST)
-        user.email = request.data["email"]
-
-    user.save()
+    serializer = ProfileUpdateSerializer(user, data=request.data, partial=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
 
     return Response(UserSerializer(user).data)
 
@@ -173,17 +178,21 @@ def change_password(request):
     Change user password
     """
     user = request.user
-    old_password = request.data.get("old_password")
-    new_password = request.data.get("new_password")
-
-    if not old_password or not new_password:
-        return Response({"error": "Both old and new passwords are required"}, status=status.HTTP_400_BAD_REQUEST)
+    serializer = PasswordChangeSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    old_password = serializer.validated_data["old_password"]
+    new_password = serializer.validated_data["new_password"]
 
     if not user.check_password(old_password):
         return Response({"error": "Invalid old password"}, status=status.HTTP_400_BAD_REQUEST)
 
     if len(new_password) < 12:
         return Response({"error": "Password must be at least 12 characters"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        validate_password(new_password, user=user)
+    except ValidationError as exc:
+        return Response({"error": " ".join(exc.messages)}, status=status.HTTP_400_BAD_REQUEST)
 
     user.set_password(new_password)
     user.save()
@@ -206,7 +215,9 @@ def token_refresh(request):
     # Both input forms issue cookies, so a caller-supplied token must not bypass
     # CSRF and sign a browser into an attacker-controlled account.
     enforce_csrf(request)
-    refresh_token = request.data.get("refresh") or request.COOKIES.get(settings.JWT_REFRESH_COOKIE)
+    serializer = RefreshInputSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    refresh_token = serializer.validated_data.get("refresh") or request.COOKIES.get(settings.JWT_REFRESH_COOKIE)
     if not refresh_token:
         return Response({"error": "Refresh token required"}, status=status.HTTP_400_BAD_REQUEST)
 
