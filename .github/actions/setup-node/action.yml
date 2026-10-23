@@ -3,7 +3,7 @@ description: "Setup Node.js, cache and install node_modules"
 
 inputs:
   save-cache:
-    description: "Save cache after install (disable in parallel jobs to avoid race conditions)"
+    description: "Save cache after install, on main only (disable in parallel jobs to avoid race conditions)"
     required: false
     default: "true"
 
@@ -15,8 +15,11 @@ runs:
       with:
         node-version: "24"
 
+    # Only `main` saves: a PR-scoped copy can be restored by no other PR, and
+    # five PR jobs leave save-cache at its default (#653 stored 85 MB that way).
+    # docs/intents/ci/apt-and-node-cache-scope.md
     - name: Restore node_modules (read-only)
-      if: inputs.save-cache != 'true'
+      if: inputs.save-cache != 'true' || github.ref != 'refs/heads/main'
       uses: actions/cache/restore@v6
       id: node-cache-restore
       with:
@@ -27,7 +30,7 @@ runs:
         restore-keys: ${{ runner.os }}-node-modules-
 
     - name: Cache node_modules (restore + save)
-      if: inputs.save-cache == 'true'
+      if: inputs.save-cache == 'true' && github.ref == 'refs/heads/main'
       uses: actions/cache@v6
       id: node-cache
       with:
