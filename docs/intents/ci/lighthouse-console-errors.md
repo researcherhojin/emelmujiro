@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: ci
 created: 2026-10-23
 updated: 2026-10-23
@@ -29,3 +29,9 @@ updated: 2026-10-23
   - This PR's `lighthouse-results` show `errors-in-console` passing (no items) on `/`, `/profile` and `/insights`.
   - `/contact` shows only Google-origin items.
   - Then decide whether to raise the assertion to `error` for every page except `/contact`.
+
+## Outcome
+
+PR #657. Its first run, `39899543778`, scored `errors-in-console` at 1 on all four pages in all three runs each. That includes `/contact`, because Lighthouse does not count the Google Form iframe's own console. `best-practices` went to 1 on `/`, `/insights` and `/profile`; `/contact` stays at 0.78, from Google's third-party cookies (out of scope).
+
+The assertion is now `error`, because the check can fail only on a real browser error.
