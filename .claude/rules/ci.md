@@ -60,6 +60,11 @@ Never substitute an image tag for a running container's image ID.
 
 **Large shared caches are saved only in `main`'s scope; PR jobs restore them read-only.** A PR can restore caches from its base branch but not from other PRs, so a PR job that saves stores a private copy: 21 copies of the 279 MB Playwright browser and 18 of the 91 MB Trivy DB pushed the repo past GitHub's 10 GB cache limit on 2026-10-22. `Warm Shared Caches` (`cache-warm.yml`: push to `main`, daily, dispatch) saves them. `E2E Tests` uses `actions/cache/restore`, and `Security Scan` restores `cache-trivy-<UTC date>` and runs the trivy-action with `cache: "false"`. That action always sets `TRIVY_CACHE_DIR` to its `cache-dir` input, so a cache step for any other path stores nothing. Keep keys and paths identical in both workflows. Intent: `docs/intents/ci/actions-cache-scope.md`.
 
+- **The same holds for the Playwright `.deb` packages and for `node_modules` (since 2026-10-23).**
+  - Both workflows point apt's archive at `~/apt-archives` through `/etc/apt/apt.conf.d/99-playwright-archives`. `cache-warm.yml` saves `~/apt-archives/*.deb` as `Linux-playwright-apt-<version>-<ImageVersion>`, and `E2E Tests` restores it. Before that, a mirror at 79.3 kB/s made `install-deps` take 348 s and 584 s, and the second hit the 10-minute job limit.
+  - `.github/actions/setup-node` saves only on `refs/heads/main`. On PRs it restores read-only.
+  - Intent: `docs/intents/ci/apt-and-node-cache-scope.md`.
+
 **Auto-merged commits do not deploy.** A push made with `GITHUB_TOKEN` creates no workflow run, and `Auto-Merge Dependabot` merges with that token, so its merge commit runs neither `deploy-mac-mini` nor `Sync README Badges`. Three mechanisms close it, each asserted by outcome:
 
 - The auto-merge job dispatches the pipeline itself after its merge lands.

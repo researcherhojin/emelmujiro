@@ -739,6 +739,26 @@ jobs:
         working-directory: ./frontend
         run: npx playwright install --with-deps chromium
 
+      # Restore-only copy of the Ubuntu packages that `Warm Shared Caches` saves
+      # on main; apt then downloads only what the cache lacks. A slow mirror
+      # once made this step take 584 s and cancel the tests (#651).
+      - name: Point apt's package archive at a cacheable directory
+        id: apt
+        run: |
+          mkdir -p "$HOME/apt-archives/partial"
+          printf 'Dir::Cache::Archives "%s/apt-archives/";\nBinary::apt::APT::Keep-Downloaded-Packages "true";\n' "$HOME" \
+            | sudo tee /etc/apt/apt.conf.d/99-playwright-archives > /dev/null
+          echo "image=$ImageVersion" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Playwright system packages
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/apt-archives/*.deb
+          key: ${{ runner.os }}-playwright-apt-${{ steps.playwright-version.outputs.version }}-${{ steps.apt.outputs.image }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-apt-${{ steps.playwright-version.outputs.version }}-
+            ${{ runner.os }}-playwright-apt-
+
       - name: Install Playwright system deps (cache hit)
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         working-directory: ./frontend

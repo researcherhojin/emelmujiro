@@ -53,6 +53,31 @@ jobs:
         working-directory: ./frontend
         run: npx playwright install chromium
 
+      # The Ubuntu packages the browser needs. A slow mirror once took 5 min
+      # 27 s for their 25.9 MB (run 39894065554), so they are cached too.
+      # Same directory and key as `E2E Tests`, which only restores.
+      # docs/intents/ci/apt-and-node-cache-scope.md
+      - name: Point apt's package archive at a cacheable directory
+        id: apt
+        run: |
+          mkdir -p "$HOME/apt-archives/partial"
+          printf 'Dir::Cache::Archives "%s/apt-archives/";\nBinary::apt::APT::Keep-Downloaded-Packages "true";\n' "$HOME" \
+            | sudo tee /etc/apt/apt.conf.d/99-playwright-archives > /dev/null
+          echo "image=$ImageVersion" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright system packages
+        uses: actions/cache@v6
+        with:
+          path: ~/apt-archives/*.deb
+          key: ${{ runner.os }}-playwright-apt-${{ steps.playwright-version.outputs.version }}-${{ steps.apt.outputs.image }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-apt-${{ steps.playwright-version.outputs.version }}-
+            ${{ runner.os }}-playwright-apt-
+
+      - name: Download Playwright system packages
+        working-directory: ./frontend
+        run: npx playwright install-deps chromium
+
   trivy:
     name: Trivy DB
     runs-on: ubuntu-24.04
