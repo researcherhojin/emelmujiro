@@ -26,7 +26,7 @@ from .serializers import (
     RefreshInputSerializer,
     UserSerializer,
 )
-from .throttling import ClientIPAnonRateThrottle
+from .login_throttle import LoginRateThrottle
 
 logger = logging.getLogger(__name__)
 
@@ -57,12 +57,6 @@ def _clear_jwt_cookies(response):
     """Clear JWT cookies from the response."""
     response.delete_cookie(settings.JWT_ACCESS_COOKIE, path="/")
     response.delete_cookie(settings.JWT_REFRESH_COOKIE, path="/")
-
-
-class LoginRateThrottle(ClientIPAnonRateThrottle):
-    """Dedicated brute-force throttle for the login endpoint (per-IP)."""
-
-    scope = "login"
 
 
 @never_cache

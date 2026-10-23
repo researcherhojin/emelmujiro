@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(security): Serialize login throttle updates across workers, add encrypted database/media backups with isolated restore and independent-copy verification, and schedule full dependency/running-image audits with authenticated freshness checks and deduplicated GitHub failure/recovery notifications. Detailed reports and backup contents remain private.
+
 - docs(security): Record verified deployment of the authentication fixes in `0960ed63`, with 446 backend tests, 52 security tests in the deployed container, and zero findings across four running-image scans. Preserve the regression contract in `docs/intents/backend/security-review-fixes.md`.
 
 - **Backend security review**: Block non-superuser staff from modifying or deleting superuser accounts, enforce configured password validators on password changes, and exclude reCAPTCHA tokens from contact model creation. Allow CSRF-protected logout after access expiry, validate authentication and profile inputs, reject ambiguous email logins, and provide daily expired-token cleanup scheduling. Add regression coverage for rejected and successful requests.

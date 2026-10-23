@@ -1,6 +1,9 @@
 import http from 'node:http';
 import type { IncomingMessage } from 'node:http';
 import crypto from 'node:crypto';
+import path from 'node:path';
+import { readOperations } from '../security/operations.ts';
+import { SECURITY_REPORT_ROOT } from '../shared/paths.ts';
 import { createDeploymentManager } from './manager.ts';
 import { isRecord } from '../shared/runtime.ts';
 
@@ -13,10 +16,12 @@ export function createWebhookServer({
   secret,
   script,
   lockFile,
+  operationsFile = path.join(SECURITY_REPORT_ROOT, 'operations.json'),
 }: {
   secret: string;
   script: string;
   lockFile: string;
+  operationsFile?: string;
 }) {
   if (!secret) throw new Error('DEPLOY_SECRET environment variable is required');
   const manager = createDeploymentManager({ script, lockFile });
@@ -33,6 +38,26 @@ export function createWebhookServer({
     if (req.method === 'GET' && req.url === '/health') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ status: 'ok', deploying: manager.isDeploying() }));
+      return;
+    }
+
+    // Only a bounded allow-list of statuses leaves the host, behind the
+    // existing deployment secret. Raw scanner output and backups stay private.
+    if (req.method === 'GET' && req.url === '/security-report') {
+      res.setHeader('Cache-Control', 'no-store');
+      if (!isAuthorized(req)) {
+        res.writeHead(401);
+        res.end();
+        return;
+      }
+      try {
+        const report = readOperations(operationsFile);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(report));
+      } catch {
+        res.writeHead(503, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Security operations report unavailable' }));
+      }
       return;
     }
 

@@ -1,0 +1,81 @@
+# cspell:ignore fromisoformat
+name: Security Operations Watchdog
+
+on:
+  schedule:
+    - cron: "0 21 * * *"
+  workflow_dispatch:
+    inputs:
+      exercise_alert:
+        description: "Exercise the failure notification with a generic test incident"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-operations-watchdog
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify fresh security and backup results
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Verify private operations summary
+        id: verify
+        continue-on-error: true
+        env:
+          DEPLOY_SECRET: ${{ secrets.MAC_MINI_DEPLOY_SECRET }}
+          EXERCISE_ALERT: ${{ inputs.exercise_alert }}
+        run: |
+          test "$EXERCISE_ALERT" != true
+          test -n "$DEPLOY_SECRET"
+          curl --fail --silent --show-error --retry 2 --max-time 30 \
+            -H "X-Deploy-Secret: $DEPLOY_SECRET" \
+            https://deploy.emelmujiro.com/security-report > /tmp/operations.json
+          python3 - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          with open('/tmp/operations.json') as source:
+              report = json.load(source)
+          assert report['version'] == 1
+          completed = datetime.fromisoformat(report['completedAt'].replace('Z', '+00:00'))
+          age = (datetime.now(timezone.utc) - completed).total_seconds()
+          assert -300 <= age <= 36 * 3600, 'Stale operations report'
+          assert all(report[key] is True for key in ('dependencies', 'images', 'backup', 'offsite')), 'Operations need attention'
+          print('Fresh dependency, running-image, backup-restore and independent-copy checks passed')
+          PY
+      - name: Notify failure or recovery without publishing diagnostics
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RESULT: ${{ steps.verify.outcome }}
+          EXERCISE_ALERT: ${{ inputs.exercise_alert }}
+        run: |
+          TITLE="Security operations require attention"
+          OPEN=$(gh issue list --repo "$REPO" --state open --search "\"$TITLE\" in:title" --json number,title --jq '.[] | select(.title == "Security operations require attention") | .number')
+          if [ "$RESULT" != success ]; then
+            printf 'A scheduled security or backup verification failed, reported findings, or did not produce a fresh result. Inspect the private operational logs. No detailed diagnostics are published here.\n\nRun: %s\n' "$RUN_URL" > /tmp/notice.md
+            if [ "$EXERCISE_ALERT" = true ]; then
+              printf 'This is a deliberate end-to-end notification test, not a detected vulnerability.\n\nRun: %s\n' "$RUN_URL" > /tmp/notice.md
+            fi
+            if [ -z "$OPEN" ]; then
+              gh issue create --repo "$REPO" --title "$TITLE" --body-file /tmp/notice.md
+            else
+              for number in $OPEN; do
+                gh issue comment "$number" --repo "$REPO" --body-file /tmp/notice.md
+              done
+            fi
+            exit 1
+          fi
+          for number in $OPEN; do
+            gh issue close "$number" --repo "$REPO" --comment "Fresh checks passed again. $RUN_URL"
+          done

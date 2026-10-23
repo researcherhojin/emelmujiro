@@ -89,3 +89,14 @@ Never substitute an image tag for a running container's image ID.
    - `scripts/sync-readme-badges.sh` anchors every replacement on the `/badge/<Name>-` prefix, because label `i18next` is a substring of `React_i18next`.
    - It ends with `git add README.md`, so the job's commit gate must be `git diff --quiet HEAD -- README.md`: a bare `git diff README.md` sees the staged fix as clean and skips the commit, which silently dropped badge-only drift between `01f748d8` and `55e8e57e`. Treat a green `readme-sync` as proof of nothing — confirm the badge moved on `main`.
 2. **Test counts** — the same job sed-replaces counts from the `frontend-test`/`backend-test` job outputs; `make update-test-counts` is the local equivalent and exits non-zero if the README pattern is missing. The format `Vitest (N tests) + Django unittest (N tests)` in the `**Tests** —` bullet is matched in three places — `scripts/update-test-counts.sh` (the `sedi` lines under `# 1.` and `# 2.`), `main-ci-cd.yml`'s `Sync README Badges` job (two `sed -i -E` lines) and `pr-checks.yml`'s `Check README test counts exist` step (two `grep -oE`) — so change all three together; the workflow's `sed` is the one copy that changes nothing, silently, when the pattern is missing. **Do NOT grep test files for Vitest counts** — `it.each([...])` rows expand at runtime, so grep undercounts.
+
+**Scheduled security operations** (`docs/intents/infra/security-operations.md`):
+`make setup-security-cron` installs a daily 02:00 host job running backups,
+isolated restore verification, and full dependency/image audits. The existing
+manual commands remain scheduler-free. `/security-report` on the deployment
+webhook requires its existing secret and returns only fresh boolean outcomes.
+The Security Operations Watchdog rejects reports or independent backup receipts
+older than 36 hours and files a generic GitHub issue; it closes that issue on
+recovery. Package inventories, host details, backup contents, and keys must
+never appear in issue bodies or workflow logs. Webhook code changes require the
+service restart described in `.private/operations.md`.

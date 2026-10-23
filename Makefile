@@ -1,5 +1,5 @@
 # cspell:ignore flushexpiredtokens
-.PHONY: help install setup-dev-machine verify-setup dev dev-local dev-clean ports kill-ports build test test-ci lint lint-fix clean logs logs-security logs-debug health ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron setup-token-cron setup-health-cron remove-cron
+.PHONY: help install setup-dev-machine verify-setup dev dev-local dev-clean ports kill-ports build test test-ci lint lint-fix clean logs logs-security logs-debug health ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron setup-token-cron setup-security-cron setup-health-cron remove-cron
 
 help:
 	@echo "Available commands:"
@@ -17,6 +17,7 @@ help:
 	@echo "  make clean             - Clean build artifacts"
 	@echo "  make ports             - Check port status"
 	@echo "  make kill-ports        - Kill all dev ports"
+	@echo "  make setup-security-cron - Schedule daily security and backup verification"
 	@echo "  make setup-token-cron  - Schedule daily expired JWT token cleanup"
 
 setup-dev-machine:
@@ -167,6 +168,18 @@ setup-token-cron: ## Remove expired JWT records daily without invalidating activ
 	(grep -v 'manage.py flushexpiredtokens' "$$CRON_COPY"; \
 	 echo "15 3 * * * cd '$(CURDIR)' && $$DOCKER_BIN compose exec -T backend uv run python manage.py flushexpiredtokens >> '$(CURDIR)/backend/logs/token-cleanup.log' 2>&1") | crontab -
 
+setup-security-cron: ## Schedule private backups, restore checks, and full security scans
+	@mkdir -p $(CURDIR)/backend/logs
+	@NODE_BIN="$$(command -v node)"; \
+	if [ -z "$$NODE_BIN" ]; then echo "Error: node not found."; exit 1; fi; \
+	CRON_COPY="$$(mktemp)" || exit 1; \
+	trap 'rm -f "$$CRON_COPY" "$$CRON_COPY.err"' EXIT HUP INT TERM; \
+	if ! LC_ALL=C crontab -l > "$$CRON_COPY" 2> "$$CRON_COPY.err"; then \
+		if ! grep -q 'no crontab for' "$$CRON_COPY.err"; then cat "$$CRON_COPY.err" >&2; exit 1; fi; \
+	fi; \
+	(grep -v 'scripts/scheduled-security.ts' "$$CRON_COPY"; \
+	 echo "0 2 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/scheduled-security.ts >> '$(CURDIR)/backend/logs/security-schedule.log' 2>&1") | crontab -
+
 setup-health-cron: ## Install health check cron (every 5 min, logs failures only)
 	@mkdir -p $(CURDIR)/backend/logs
 	@echo "Adding health check cron job (every 5 min)..."
@@ -177,5 +190,5 @@ setup-health-cron: ## Install health check cron (every 5 min, logs failures only
 
 remove-cron:
 	@echo "Removing cron jobs..."
-	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits | grep -v health-check | grep -v flushexpiredtokens) | crontab -
+	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits | grep -v health-check | grep -v flushexpiredtokens | grep -v scheduled-security) | crontab -
 	@echo "Cron jobs removed."
