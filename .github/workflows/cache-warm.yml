@@ -25,7 +25,10 @@ jobs:
   playwright:
     name: Playwright browser
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    # Not on any PR's path, so it can wait out a slow mirror: filling the apt
+    # cache downloaded 25.9 MB in 9 min 3 s (run 39896636044), close to the old
+    # 10-minute limit, and a cancelled job saves no cache.
+    timeout-minutes: 30
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
