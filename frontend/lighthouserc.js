@@ -43,7 +43,7 @@ module.exports = {
         'robots-txt': 'off',
         // CI-specific relaxations — these fail in CI but pass in production
         canonical: 'off', // No backend serving canonical in CI preview
-        'errors-in-console': 'warn', // Console errors from missing API in CI
+        'errors-in-console': 'error', // CI runs a backend and no analytics, so all 4 pages score 1 (run 39899543778); an error now is a real one
         'inspector-issues': 'warn',
         'legacy-javascript': 'error',
         'uses-text-compression': 'off', // vite preview has no gzip; production nginx compresses
