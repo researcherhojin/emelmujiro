@@ -745,8 +745,10 @@ jobs:
       - name: Point apt's package archive at a cacheable directory
         id: apt
         run: |
+          # `_apt` cannot enter the runner's home, so apt downloads as root
+          # there; saying so keeps it from warning on every run.
           mkdir -p "$HOME/apt-archives/partial"
-          printf 'Dir::Cache::Archives "%s/apt-archives/";\nBinary::apt::APT::Keep-Downloaded-Packages "true";\n' "$HOME" \
+          printf 'Dir::Cache::Archives "%s/apt-archives/";\nBinary::apt::APT::Keep-Downloaded-Packages "true";\nAPT::Sandbox::User "root";\n' "$HOME" \
             | sudo tee /etc/apt/apt.conf.d/99-playwright-archives > /dev/null
           echo "image=$ImageVersion" >> "$GITHUB_OUTPUT"
 
