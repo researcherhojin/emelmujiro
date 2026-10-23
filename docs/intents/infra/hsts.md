@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: infra
 created: 2026-10-23
 updated: 2026-10-23
@@ -46,7 +46,8 @@ updated: 2026-10-23
 
 ## Outcome
 
-Merged in #648 (`437f2390`), and production reports `437f2390`. Status stays `in-progress` until `api.` sends the header.
+Merged in #648 (`437f2390`).
 
-- **`emelmujiro.com`, done.** Every path checked after the deploy returned exactly one `strict-transport-security: max-age=86400`: `/`, `/en/insights/x`, `/app.html`, a hashed `/assets/*.js`, `/contact`, `/api/health/` and `/.well-known/security.txt`.
-- **`api.emelmujiro.com`, not yet.** `/api/health/` and `/api/blog-posts/` sent none. That host's requests are `is_secure()`, so the host's `backend/.env.production` most likely pins `SECURE_HSTS_SECONDS=0`, the value the old `.env.example` called "match production". The owner changes that line to `86400` and redeploys, then re-runs the `api.` curl from `Done when`.
+- **`emelmujiro.com`**: every path checked after that deploy returned exactly one `strict-transport-security: max-age=86400`. The paths were `/`, `/en/insights/x`, `/app.html`, a hashed `/assets/*.js`, `/contact`, `/api/health/` and `/.well-known/security.txt`.
+- **`api.emelmujiro.com`**: at first it sent none. As the Plan expected, the host's `backend/.env.production` pinned `SECURE_HSTS_SECONDS=0`. The owner set it to `86400`, and a dispatched Main CI/CD run (`39893286381`, all 5 jobs green) recreated the backend. Afterwards `/api/health/` and `/api/blog-posts/` each returned exactly one `max-age=86400`, and production still reported `cfe3b05f`.
+- **Next**: after a week with no https trouble, raise `max-age` in `frontend/nginx.conf` `$hsts`, in the Django default and in the host env together.
