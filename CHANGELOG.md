@@ -8,6 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(security): Bump `ip-address` 10.7.2 → 10.7.4 in `package-lock.json` (GHSA-rxp7-6hxx-x8q5, moderate). It is dev-only: `@lhci/cli` → `proxy-agent` → `socks`, marked `"dev": true`, absent from `npm ls --omit=dev`. `npm update ip-address --package-lock-only` changed 3 lines and kept the 15 `@rolldown/binding-*` entries. `npm audit` is back to `found 0 vulnerabilities`, and Gotcha #6's measured date moves to 2026-10-23.
 - docs: State #647's intent rule in the entry docs too. `CLAUDE.md` (Development Flow invariants) and `AGENTS.md` now say that a shipped intent is deleted unless a living doc cites it. That matches `docs/intents/README.md`.
 - fix(i18n): Shorten the Gwangju root-industry course title in the teaching history to "광주지역 뿌리기업 생성형 AI 실무교육" (en: "Generative AI Hands-on Training for Gwangju PPuri Companies"), dropping the "기초 활용 & 현장업무 활용" suffix at the owner's request.
 - fix(scripts): Take the deploy host's name out of the public repo. `scripts/sync_private.sh` and `scripts/check_machine_sync.sh` defaulted `MACMINI_HOST` to the machine's mDNS name, which also carries the local user name. They now read it from `.private/sync-host` (gitignored), and without it they stop with an error instead of guessing. They find that file from their own path (a follow-up: `git rev-parse --show-toplevel` failed the spell check). The cspell entry for that name goes too.
