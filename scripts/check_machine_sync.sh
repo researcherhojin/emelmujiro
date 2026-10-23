@@ -9,11 +9,18 @@
 # weren't on origin, would have been clobbered by a force-push). See
 # .private/journal.md → Session History 2026-04-16.
 #
-# Override via env: MACMINI_HOST, MACMINI_REPO, PROD_URL.
+# Override via env: MACMINI_HOST (else .private/sync-host), MACMINI_REPO, PROD_URL.
 
 set -euo pipefail
 
-REMOTE="${MACMINI_HOST:-Ehbebeui-Macmini.local}"
+# The host name is not in the public repo: MACMINI_HOST wins, else the
+# first line of .private/sync-host (gitignored; host details live in .private).
+HOST_FILE="$(git rev-parse --show-toplevel 2>/dev/null || pwd)/.private/sync-host"
+REMOTE="${MACMINI_HOST:-$(head -n1 "$HOST_FILE" 2>/dev/null || true)}"
+if [ -z "$REMOTE" ]; then
+  echo "ERROR: set MACMINI_HOST or write the host name to .private/sync-host" >&2
+  exit 1
+fi
 REPO_PATH="${MACMINI_REPO:-workspace/emelmujiro}"
 PROD_URL="${PROD_URL:-https://emelmujiro.com}"
 
