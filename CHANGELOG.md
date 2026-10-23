@@ -8,6 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs: State #647's intent rule in the entry docs too. `CLAUDE.md` (Development Flow invariants) and `AGENTS.md` now say that a shipped intent is deleted unless a living doc cites it. That matches `docs/intents/README.md`.
 - fix(i18n): Shorten the Gwangju root-industry course title in the teaching history to "광주지역 뿌리기업 생성형 AI 실무교육" (en: "Generative AI Hands-on Training for Gwangju PPuri Companies"), dropping the "기초 활용 & 현장업무 활용" suffix at the owner's request.
 - fix(scripts): Take the deploy host's name out of the public repo. `scripts/sync_private.sh` and `scripts/check_machine_sync.sh` defaulted `MACMINI_HOST` to the machine's mDNS name, which also carries the local user name. They now read it from `.private/sync-host` (gitignored), and without it they stop with an error instead of guessing. They find that file from their own path (a follow-up: `git rev-parse --show-toplevel` failed the spell check). The cspell entry for that name goes too.
 - fix(security): Send `Strict-Transport-Security: max-age=86400` from both hosts; until now neither sent HSTS. nginx adds it for `emelmujiro.com` in all five header blocks. For `api.emelmujiro.com`, Django's `SECURE_HSTS_SECONDS` default goes from `0` to `86400`; `SecurityMiddleware` sends it only where `is_secure()` is true, which keeps it to one header per host. There is no `includeSubDomains` or `preload`, and `max-age` will rise in steps. Intent: `docs/intents/infra/hsts.md`.

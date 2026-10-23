@@ -10,7 +10,7 @@ Full-stack monorepo (**React 19 + Vite** frontend, **Django 6 + DRF** backend), 
 - Backend / API / migrations → `.claude/rules/backend.md`
 - Build, deploy, CI, or a red check → `.claude/rules/ci.md` + `.claude/rules/frontend-build.md` + `.claude/rules/backend.md` (migrations) + `CLAUDE.md` → `Constraints`.
 - Dependency bumps → `CLAUDE.md` → `Gotchas` (numbered; the numbers are cited from commits and never change).
-- Planned work → `docs/intents/<module>/<slug>.md` (workflow and statuses in `docs/intents/README.md`): Intent → Spec → Plan → implement → `shipped` with an `Outcome`. Read the file's `status` before starting.
+- Planned work → `docs/intents/<module>/<slug>.md` (workflow and statuses in `docs/intents/README.md`): Intent → Spec → Plan → implement → `shipped` with an `Outcome`, then deleted unless a living doc cites it. Read the file's `status` before starting.
 - `main-ci-cd.yml`, `pr-checks.yml` are the CI source of truth; cite job/step **by name, not line number** (they move often).
 
 ## Setup & environment
