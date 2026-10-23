@@ -8,6 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(readme): List HSTS in README's Security line; both hosts have sent it since #648.
 - ci(cache): Give `Warm Shared Caches`' Playwright job 30 minutes instead of 10. Filling the apt cache on `main` downloaded 25.9 MB in 9 min 3 s (47.7 kB/s, run `39896636044`), close to the old limit, and a cancelled job saves no cache. The job is on no PR's path.
 - ci(cache): Cache the Ubuntu packages Playwright needs, and stop PRs saving `node_modules`. `Install Playwright system deps` downloaded its 25.9 MB of `.deb` files on every run, and a slow mirror made it take 348 s and 584 s; the 584 s run cancelled E2E at the 10-minute limit. `Warm Shared Caches` now saves them on `main` (`Linux-playwright-apt-<version>-<ImageVersion>`), and `E2E Tests` restores them, so apt fetches only what is missing. `.github/actions/setup-node` now saves only on `main`: five PR jobs saved by default, and #653 stored an 85 MB copy no other PR could use. Intent: `docs/intents/ci/apt-and-node-cache-scope.md`.
 - fix(security): Bump `ip-address` 10.7.2 → 10.7.4 in `package-lock.json` (GHSA-rxp7-6hxx-x8q5, moderate). It is dev-only: `@lhci/cli` → `proxy-agent` → `socks`, marked `"dev": true`, absent from `npm ls --omit=dev`. `npm update ip-address --package-lock-only` changed 3 lines and kept the 15 `@rolldown/binding-*` entries. `npm audit` is back to `found 0 vulnerabilities`, and Gotcha #6's measured date moves to 2026-10-23.
