@@ -8,6 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(claude): Load the Gotchas' evidence and fix steps only when they are needed. The sub-bullets of Gotchas #6, #7, #8, #9, #10, #12, #13, #14, #17, #18 and #19 (34 lines) move verbatim into a new `gotchas` skill (`.claude/skills/gotchas/SKILL.md`), under their numbers. All 19 numbered bold rules stay in `CLAUDE.md`, so no ID moves. `CLAUDE.md` goes from 32,699 to 23,710 characters (est. 8.2k → 5.9k tokens a request). `.gitignore` tracks the skill, and `AGENTS.md` points other agents at it.
 - ci(lighthouse): Stop CI gaps from filling `errors-in-console`. It scored 0 on every audited page because of a `404` for `/umami/api/send`: the analysis build kept analytics on. `/insights` added two `502`s for `/api`, because no backend ran behind `vite preview`'s proxy. `Build for Analysis` now sets `VITE_ENABLE_ANALYTICS=false`, and the Lighthouse job starts Django on an empty SQLite database. Production loads cleanly; only `/contact`'s Google Form logs an error. All four pages now score 1, so the assertion is `error`. Intent: `docs/intents/ci/lighthouse-console-errors.md`.
 - docs(readme): List HSTS in README's Security line; both hosts have sent it since #648.
 - ci(cache): Give `Warm Shared Caches`' Playwright job 30 minutes instead of 10. Filling the apt cache on `main` downloaded 25.9 MB in 9 min 3 s (47.7 kB/s, run `39896636044`), close to the old limit, and a cancelled job saves no cache. The job is on no PR's path.
