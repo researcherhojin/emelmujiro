@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(security): Record verified deployment of the authentication fixes in `0960ed63`, with 446 backend tests, 52 security tests in the deployed container, and zero findings across four running-image scans. Preserve the regression contract in `docs/intents/backend/security-review-fixes.md`.
+
 - **Backend security review**: Block non-superuser staff from modifying or deleting superuser accounts, enforce configured password validators on password changes, and exclude reCAPTCHA tokens from contact model creation. Allow CSRF-protected logout after access expiry, validate authentication and profile inputs, reject ambiguous email logins, and provide daily expired-token cleanup scheduling. Add regression coverage for rejected and successful requests.
 
 - docs(claude): Load the Gotchas' evidence and fix steps only when they are needed. The sub-bullets of Gotchas #6, #7, #8, #9, #10, #12, #13, #14, #17, #18 and #19 (34 lines) move verbatim into a new `gotchas` skill (`.claude/skills/gotchas/SKILL.md`), under their numbers. All 19 numbered bold rules stay in `CLAUDE.md`, so no ID moves. `CLAUDE.md` goes from 32,699 to 23,710 characters (est. 8.2k → 5.9k tokens a request). `.gitignore` tracks the skill, and `AGENTS.md` points other agents at it.
