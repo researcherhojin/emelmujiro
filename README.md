@@ -144,7 +144,7 @@ graph LR
 - **Performance** — Vendor chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
 - **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads with bounded image decoding, trusted-client-IP throttling, draft comment access controls, production CORS restrictions, HSTS on both hosts, and Docker log rotation (10 MB × 3 files per container)
 - **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30
-- **Tests** — Vitest (1284 tests) + Django unittest (446 tests) + Node sitemap regression tests (12 tests) + Playwright E2E (5 profiles)
+- **Tests** — Vitest (1284 tests) + Django unittest (..450 tests) + Node sitemap regression tests (12 tests) + Playwright E2E (5 profiles)
 - **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Docker builds of the images a PR changes, Codecov, auto-deploy via webhook, plus self-healing guards that redeploy on production drift, open an issue when that redeploy does not land, and alarm when a commit reaches `main` untested
 
 ## License
