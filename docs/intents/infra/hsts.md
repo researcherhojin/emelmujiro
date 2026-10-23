@@ -1,0 +1,45 @@
+---
+status: in-progress
+module: infra
+created: 2026-10-23
+updated: 2026-10-23
+---
+
+# Both hosts send HSTS
+
+## Intent
+
+- **Problem**: neither `https://emelmujiro.com/` nor `https://api.emelmujiro.com/api/health/` sends `Strict-Transport-Security` (measured 2026-10-23 with `curl -D -`).
+  - "Always Use HTTPS" answers `http://` with a 301, but a browser's first plain-http request can still be intercepted before that redirect arrives. HSTS makes the browser skip http for this host on later visits.
+  - HSTS was off by decision ("browsers cache it beyond our control", `backend/config/settings.py`). On 2026-10-23 the owner asked for it, after an exposure check listed it.
+- **Outcome wanted**: both hosts send `Strict-Transport-Security: max-age=86400` on every https response, with no `includeSubDomains` and no `preload`.
+- **Affected systems**: `frontend/nginx.conf` (the `emelmujiro.com` site, which serves `/api` through nginx too); Django's `SecurityMiddleware` (`api.emelmujiro.com`, whose tunnel route goes straight to gunicorn); `.claude/rules/frontend-build.md`, which says Cloudflare owns https.
+- **Constraints**:
+  - nginx never redirects by scheme (`frontend-build.md`).
+  - Behind nginx, Django sees every request as `http`, so `is_secure()` is false and Django sends no HSTS there. On `api.` it sees `https`: its `/api/` lists `https://api.emelmujiro.com/...` URLs, while the same view through nginx lists `http://emelmujiro.com/...`.
+  - A cached HSTS policy cannot be withdrawn early. Start short and leave subdomains out.
+- **Open questions**: none. The owner approved this on 2026-10-23.
+
+## Spec
+
+- **Approach**:
+  - nginx sets `$hsts` once, at server level, and every block that carries the security headers adds it.
+  - Django's `SECURE_HSTS_SECONDS` default goes from `0` to `86400`, so `SecurityMiddleware` sends HSTS on `api.`.
+  - Through nginx, Django sends none, because `is_secure()` is false there. So each host gets exactly one header.
+  - Browsers ignore HSTS on plain-http responses, so local `http://localhost` serving is unaffected.
+  - Rejected: Cloudflare's dashboard HSTS toggle. It works without code, but it would live outside the repo and its review.
+- **Files and interfaces**: `frontend/nginx.conf`, `backend/config/settings.py`, `backend/.env.example`, `.claude/rules/frontend-build.md`, `CHANGELOG.md`.
+- **Out of scope**:
+  - raising `max-age` (a later step, once a week passes without trouble)
+  - `includeSubDomains` and `preload`
+  - Cloudflare settings
+- **Done when**:
+  - The PR's `Check nginx config against the pinned image` passes.
+  - After deploy, `curl -sD - https://emelmujiro.com/` and `curl -sD - https://emelmujiro.com/api/health/` each show one `strict-transport-security: max-age=86400`.
+  - After deploy, `curl -sD - https://api.emelmujiro.com/api/health/` shows one too. If it shows none, the host's `backend/.env.production` pins `SECURE_HSTS_SECONDS=0`, and the owner removes that line.
+
+## Plan
+
+- **Changes**: the five files above and this intent.
+- **Risks**: an https outage at Cloudflare would lock visitors out for up to a day, which is why `max-age` is short.
+- **Verification**: the Done-when checks. Review is the advisor; the owner excluded review tools this session.
