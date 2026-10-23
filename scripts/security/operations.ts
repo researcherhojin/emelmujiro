@@ -67,7 +67,7 @@ export function readOperations(file: string): OperationsReport {
 }
 
 export type Runner = (binary: string, args: string[], log: string) => boolean;
-export const runOperation: Runner = (binary, args, log) => {
+const runOperation: Runner = (binary, args, log) => {
   const fd = fs.openSync(log, 'w', 0o600);
   try {
     const result = spawnSync(binary, args, { stdio: ['ignore', fd, fd], timeout: 60 * 60 * 1000 });

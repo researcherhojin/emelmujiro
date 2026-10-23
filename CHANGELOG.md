@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(security): Record production backup restoration, encrypted independent-copy verification, and a successful failure/recovery notification exercise. Remove an unused internal export from the scheduled-operation runner.
+
 - fix(security): Serialize login throttle updates across workers, add encrypted database/media backups with isolated restore and independent-copy verification, and schedule full dependency/running-image audits with authenticated freshness checks and deduplicated GitHub failure/recovery notifications. Detailed reports and backup contents remain private.
 
 - docs(security): Record verified deployment of the authentication fixes in `0960ed63`, with 446 backend tests, 52 security tests in the deployed container, and zero findings across four running-image scans. Preserve the regression contract in `docs/intents/backend/security-review-fixes.md`.

@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: infra
 created: 2026-10-23
 updated: 2026-10-23
@@ -50,3 +50,38 @@ Concurrent login attempts observe the configured limit, a production snapshot
 restores successfully in isolation, daily audit scheduling is installed and its
 error/recovery behavior is tested. Independent backup destination is verified or
 explicitly remains pending the owner's decision.
+
+## Outcome
+
+Deployed `05a0fcb921a0af13ae793db14e11094aabe5d5de`; the public health
+endpoint returned that commit after all five main CI jobs passed in
+[run 39908886089](https://github.com/researcherhojin/emelmujiro/actions/runs/39908886089).
+
+- Backend: 450 tests passed. Both thread and process contention tests accepted
+  exactly 10 of 30 concurrent attempts for the configured login bucket.
+- Operational TypeScript: 31 tests and strict type checking passed. Four Python
+  backup tests cover restoration, unsafe paths, corruption, and cleanup errors.
+- The deployed backend passed 40 targeted authentication and concurrency tests.
+- SQLite, uploaded files and analytics PostgreSQL were backed up; PostgreSQL
+  restoration used a temporary network-isolated container, not production.
+- The encrypted copy was decrypted on the independent machine; all manifest
+  hashes and SQLite integrity were verified. The private key stays outside the
+  repository and private-file synchronization. The copy job runs hourly.
+- The 02:00 host schedule was installed twice with one resulting entry; existing
+  jobs were preserved. The actual scheduled command reported clean dependencies,
+  clean running images, verified backup restoration, and a fresh independent copy.
+- Unauthenticated requests to the summary endpoint returned 401. Restarting the
+  existing webhook loaded the new authenticated read-only route.
+- [Alert exercise](https://github.com/researcherhojin/emelmujiro/actions/runs/39909193880)
+  deliberately failed and opened [test issue 659](https://github.com/researcherhojin/emelmujiro/issues/659).
+  [Recovery verification](https://github.com/researcherhojin/emelmujiro/actions/runs/39909221906)
+  passed against the real summary and automatically closed the issue.
+- Independent review found plaintext cleanup failure paths; those were fixed,
+  regression-tested and reviewed again before deployment.
+
+Limits: Cloudflare configuration inspection is still blocked by the browser
+access policy. Login locking is single-host and does not prevent cache eviction
+or restart from resetting counters. Independent copies require connectivity;
+receipts or original snapshots older than 36 hours trigger the watchdog.
+Archives have no automatic pruning yet. Restore-key custody and exact host
+paths are documented privately in `.private/operations.md`.
