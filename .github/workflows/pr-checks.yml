@@ -569,6 +569,9 @@ jobs:
           # Use relative API URL so Lighthouse preview doesn't trigger CORS
           # errors against the production API (errors-in-console audit).
           VITE_API_URL: /api
+          # No Umami in CI: with analytics on, every page logged a 404 for
+          # /umami/api/send, which zeroed errors-in-console on all of them.
+          VITE_ENABLE_ANALYTICS: "false"
         run: CI=false npm run build:no-prerender
 
       - name: Check bundle size
@@ -690,6 +693,32 @@ jobs:
         with:
           name: pr-build
           path: frontend/build/
+
+      # vite preview proxies /api to 127.0.0.1:8000. Without a backend there,
+      # /insights logged two 502s in errors-in-console. An empty SQLite
+      # database is enough: the list renders empty, with no error.
+      - name: Setup uv with cache
+        uses: ./.github/actions/setup-uv
+
+      - name: Start the backend for /api
+        working-directory: ./backend
+        env:
+          DATABASE_URL: ""
+          SECRET_KEY: lighthouse-only-secret-key-that-is-at-least-fifty-bytes-long
+          DEBUG: "True"
+        run: |
+          uv run python manage.py migrate --noinput > /dev/null
+          uv run python manage.py runserver 127.0.0.1:8000 > "$RUNNER_TEMP/backend.log" 2>&1 &
+          for _ in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8000/api/health/ > /dev/null; then
+              echo "backend up"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "❌ backend did not answer /api/health/ within 30 s"
+          cat "$RUNNER_TEMP/backend.log"
+          exit 1
 
       - name: Run Lighthouse CI
         working-directory: ./frontend
