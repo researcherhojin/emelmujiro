@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: backend
 created: 2026-10-23
 updated: 2026-10-23
@@ -61,4 +61,16 @@ suite and lint pass, and image scan results or an explicit blocker are reported.
   entries were preserved. The cleanup command was exercised in the container.
 - Cloudflare dashboard inspection is blocked: Computer Use denied access to
   Brave Browser. No edge rule changes are claimed.
-- Status remains `in-progress` until shipping is verified.
+
+## Outcome
+
+Shipped in `0960ed63d797795e70881fa0d2ad8568e5604c9b` on 2026-10-23.
+[Main CI/CD run](https://github.com/researcherhojin/emelmujiro/actions/runs/39906738779)
+passed all five jobs. The public health endpoint returned that exact commit.
+The deployed container passed 52 targeted security tests in an isolated test
+database, and all four running-image scans reported zero findings.
+
+The additional authentication defects and the earlier account/password/contact
+findings are fixed. Daily expired-token cleanup is installed and verified.
+Cloudflare edge-rate-limit inspection remains unverified because Computer Use
+refused browser access; no edge configuration was changed.
