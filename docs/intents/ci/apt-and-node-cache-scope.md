@@ -57,6 +57,6 @@ Shipped in #654 (`e4c1933a`). #655 followed, raising the warm job's limit to 30 
 
 - **apt cache**: the first `Warm Shared Caches` run on `main` (`39896636044`) fetched `25.9 MB in 9min 3s (47.7 kB/s)` and saved `Linux-playwright-apt-1.64.1-20261012.334.1` (25,920,232 B). That run came close to the old 10-minute limit, hence #655.
   - #655's `E2E Tests` (run `39897640367`) restored it and logged `Need to get 0 B/25.9 MB of archives.` `Install Playwright system deps` took 11 s; earlier runs that day took 225, 348 and 584 s.
-- **apt warning**: `_apt` cannot enter the runner's home, so apt printed `W: Download is performed unsandboxed as root`. `APT::Sandbox::User "root"` removed the warning.
+- **apt warning**: `_apt` cannot enter the runner's home, so apt printed a `W:` line saying it downloaded as root, outside its sandbox. `APT::Sandbox::User "root"` removed the warning.
 - **node_modules**: no `refs/pull/*` cache appeared after #654 or #655. Before #654, three superseded caches (264,187,140 B) were deleted: the old lockfile's `node-modules`, the 2026-10-22 Trivy DB, and #653's PR copy.
 - **actionlint** reports nothing new; the one finding is the existing SC2016 info in `pipeline-watchdog.yml`.
