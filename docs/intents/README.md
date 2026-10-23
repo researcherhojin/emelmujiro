@@ -47,6 +47,8 @@ Modules are folders, created when the first intent needs one: `blog`, `seo`, `co
 
 A `dropped` intent stays in the tree. The reasoning for not doing something is as reusable as the reasoning for doing it.
 
+A `shipped` intent is deleted once its deploy is verified, unless a living doc (`CLAUDE.md`, `AGENTS.md`, a `.claude/rules/` file, a workflow or script) cites it as the source of a fact. `CHANGELOG.md` is the shipped record, and git history keeps the file (`git log --diff-filter=D --name-only -- docs/intents`). Thirteen shipped intents that nothing cited were deleted this way on 2026-10-23.
+
 ## Rules
 
 - **The repo is public.** Host topology, credentials, deploy forensics and anything else that lives in `.private/operations.md` stay there. Link to it by name; never copy it in.

@@ -13,7 +13,7 @@ updated: 2026-10-23
   - `deploy-mac-mini` is `continue-on-error` and goes green as soon as the webhook accepts the trigger (Gotcha #17). It also exits 0 when its secret is missing, and it accepts any 3xx response.
   - `deploy-drift-check.yml` is the nightly backstop. On a commit mismatch it only writes `::warning::`, dispatches `Main CI/CD Pipeline` and exits 0. It files an issue only when `/api/health/` is unreachable.
   - So when a deploy keeps failing, every run stays green and production stays on an old commit.
-  - The 2026-10-22 silent-failure audit found this (`docs/intents/ci/silent-check-failures.md`, out of scope there). On 2026-10-23 the owner chose: file an issue when the mismatch persists.
+  - The 2026-10-22 silent-failure audit found this (`docs/intents/ci/silent-check-failures.md`, out of scope there; that intent was deleted after it shipped, and git history keeps it). On 2026-10-23 the owner chose: file an issue when the mismatch persists.
 - **Outcome wanted**: the drift check files an issue when production has not reached the commit that the previous drift check dispatched a deploy for, and closes the issue once deploys land again.
 - **Why not literally "two mismatches in a row"**: `main` gets a new commit most days. Two consecutive mismatches can therefore mean two successful deploys, each followed by a newer commit, which would be a false alarm. The thing to track is one dispatched commit that is still undeployed at the next check.
 - **Affected systems**: `.github/workflows/deploy-drift-check.yml` and `.claude/rules/ci.md` (the scheduled-alarm bullet).

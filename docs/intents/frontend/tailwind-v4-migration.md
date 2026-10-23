@@ -111,7 +111,8 @@ braces --all` resolves Tailwind 4.3.3 and contains no `braces` package.
   `@custom-variant dark (&:where(.dark, .dark *))` that the Spec table lists.
 - **The screenshot harness now lives in `frontend/scripts/visual-diff/`.** The
   scripts used below were never tracked. `capture.mjs` and `compare.mjs`
-  reimplement them (`docs/intents/frontend/visual-diff-harness.md`), so a later
+  reimplement them (`docs/intents/frontend/visual-diff-harness.md`, deleted after it shipped;
+  git history keeps it), so a later
   change to the palette or to the parity shims can be re-measured with
   `npm run visual:capture` and `npm run visual:compare`.
 - **The hover pin was dropped on 2026-10-23.** `hover:` and `group-hover:`

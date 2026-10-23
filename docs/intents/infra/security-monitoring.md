@@ -85,7 +85,8 @@ exercised this recovery path and passed all service checks.
   results are recorded separately above; installing Docker was not requested.
 - Documentation review corrected the stale current-tense dependency count in
   `backend/dependency-upload-audit.md`. (`ci/automerge-gate.md` was later closed
-  with its timing evidence; see that file.)
+  with its timing evidence. Both intents were deleted after they shipped; git
+  history keeps them.)
 
 ### Follow-up: stable analytics image IDs (2026-10-22)
 
