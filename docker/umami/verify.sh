@@ -3,7 +3,7 @@
 # Disposable database and network only; never reads the deployment environment.
 set -eu
 cd "$(dirname "$0")"
-image=${UMAMI_TEST_IMAGE:-emelmujiro/umami:3.4.0-security-1}
+image=${UMAMI_TEST_IMAGE:-emelmujiro/umami:3.4.0-security-2}
 database_image=${UMAMI_TEST_DB_IMAGE:-postgres:15.19-alpine}
 name="umami-security-test-$$"
 app="$name-app"

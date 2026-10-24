@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(security): Rebuild the self-hosted Umami image on Next 16.4.2 (from 16.3.8), closing GHSA-673q-mjm6-r5xr and GHSA-2464-fhr4-w9xw (critical, unauthenticated RCE) and GHSA-p3m5-59mp-jv5r (high, Server Actions DoS), all fixed in 16.4.1, and Dependabot alerts #1 to #6. The builder lockfile moves only `next` and its nine `@next/*` packages; the image tag becomes `3.4.0-security-2`. 16.4.2 rather than 16.4.3, because 16.4.3 was under pnpm's minimum release age and would have added 10 `minimumReleaseAgeExclude` entries.
+
 - docs(security): Reconcile the earlier security review with the subsequent Cloudflare dashboard deployment, retaining the distinction between historical access restrictions and untested live blocking.
 
 - docs(security): Record dashboard-confirmed deployment of the Cloudflare login rate limiting rule, distinguish configuration evidence from an unperformed live blocking test, and retain pending backup key custody and retention tasks.
