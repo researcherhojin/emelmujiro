@@ -12,23 +12,35 @@
  * serves app.html (not index.html) as the SPA-fallback and 404 document — see
  * `location = /app.html` in nginx.conf for why the snapshot must not be it.
  *
- * Usage: node scripts/prerender.cjs
+ * Usage: node scripts/prerender.ts
  */
 
-const { chromium } = require('playwright');
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import { chromium, type Browser, type Page } from 'playwright';
+import http from 'node:http';
+import type { AddressInfo } from 'node:net';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Import shared constants from sitemap generator (single source of truth)
+import { staticRoutes, LANGUAGES, DEFAULT_LANG } from './generate-sitemap.ts';
+
+declare global {
+  interface Window {
+    __appLoaded?: boolean;
+  }
+}
+
+interface RouteTarget {
+  path: string;
+  lang: string;
+}
 
 // Must match vite.config.ts `build.outDir` — the deploy sets BUILD_OUT_DIR to a
 // staging dir so it never builds into the directory nginx is serving (#391).
-const BUILD_DIR = path.resolve(__dirname, '..', process.env.BUILD_OUT_DIR || 'build');
+const BUILD_DIR = path.resolve(import.meta.dirname, '..', process.env.BUILD_OUT_DIR || 'build');
 // Pristine Vite shell, copied from index.html by the `build` script before this
 // runs. Also what nginx.conf serves for SPA-fallback routes and 404s.
 const SHELL_FILE = 'app.html';
-
-// Import shared constants from sitemap generator (single source of truth)
-const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('./generate-sitemap.ts');
 
 /**
  * Start a simple static file server for the build directory.
@@ -36,10 +48,10 @@ const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('./generate-sitemap.ts
  * the pristine shell — never index.html, which becomes the '/' snapshot as soon
  * as that route is written and would leak its head tags into later routes.
  */
-function startServer() {
+function startServer(): Promise<{ server: http.Server; port: number }> {
   return new Promise((resolve) => {
     const server = http.createServer((req, res) => {
-      const requestedPath = req.url === '/' ? SHELL_FILE : req.url;
+      const requestedPath = req.url === '/' ? SHELL_FILE : (req.url ?? '/');
       let filePath = path.join(BUILD_DIR, requestedPath);
 
       // Reject path-traversal attempts. path.join normalizes `..` segments, so
@@ -69,7 +81,7 @@ function startServer() {
       }
 
       const ext = path.extname(filePath).toLowerCase();
-      const mimeTypes = {
+      const mimeTypes: Record<string, string> = {
         '.html': 'text/html',
         '.js': 'application/javascript',
         '.css': 'text/css',
@@ -91,7 +103,7 @@ function startServer() {
 
     // Use port 0 to get a random available port
     server.listen(0, '127.0.0.1', () => {
-      const port = server.address().port;
+      const port = (server.address() as AddressInfo).port;
       resolve({ server, port });
     });
   });
@@ -101,16 +113,16 @@ function startServer() {
  * Build the URL path for a route in a given language.
  * Korean (default): /contact. English: /en/contact.
  */
-function buildRoutePath(routeUrl, lang) {
+function buildRoutePath(routeUrl: string, lang: string): string {
   const prefix = lang === DEFAULT_LANG ? '' : `/${lang}`;
-  return routeUrl === '/' ? (prefix || '/') : `${prefix}${routeUrl}`;
+  return routeUrl === '/' ? prefix || '/' : `${prefix}${routeUrl}`;
 }
 
 /**
  * Prerender a single route.
  * Returns the captured HTML string.
  */
-async function prerenderRoute(page, baseUrl, route) {
+async function prerenderRoute(page: Page, baseUrl: string, route: string): Promise<string> {
   const url = `${baseUrl}${route}`;
 
   // Cross-origin API calls (VITE_API_URL=https://api.emelmujiro.com/api/) are
@@ -122,7 +134,7 @@ async function prerenderRoute(page, baseUrl, route) {
   // is left alone. Any API failure fails the route: an error state must never
   // be baked into a document, and a failed prerender keeps the previous build
   // live (auto-deploy.sh refuses to publish an incomplete staging dir).
-  const apiFailures = [];
+  const apiFailures: string[] = [];
   await page.route(
     (u) => u.origin !== baseUrl && u.pathname.startsWith('/api/'),
     async (apiRoute) => {
@@ -139,7 +151,7 @@ async function prerenderRoute(page, baseUrl, route) {
           },
         });
       } catch (err) {
-        apiFailures.push(`${err.message} ${apiUrl}`);
+        apiFailures.push(`${(err as Error).message} ${apiUrl}`);
         await apiRoute.abort();
       }
     }
@@ -172,10 +184,10 @@ async function prerenderRoute(page, baseUrl, route) {
       for (let i = 1; i < titles.length; i++) titles[i].remove();
     }
     // Deduplicate meta tags by name/property (keep last = Helmet version)
-    const seen = new Map();
+    const seen = new Map<string | null, Element>();
     document.querySelectorAll('meta[name], meta[property]').forEach((el) => {
       const key = el.getAttribute('name') || el.getAttribute('property');
-      if (seen.has(key)) seen.get(key).remove();
+      if (seen.has(key)) seen.get(key)?.remove();
       seen.set(key, el);
     });
     // Deduplicate canonical links (keep last)
@@ -246,7 +258,7 @@ async function prerenderRoute(page, baseUrl, route) {
     throw new Error(
       `Prerender ${route}: expected to restore exactly 1 Pretendard <link> to rel="preload" ` +
         `but found none matching link[href*="pretendardvariable"]. Did the CDN URL change in index.html? ` +
-        `If so, update the selector in scripts/prerender.cjs to match.`
+        `If so, update the selector in scripts/prerender.ts to match.`
     );
   }
 
@@ -269,12 +281,14 @@ async function prerenderRoute(page, baseUrl, route) {
   // output for the origin instead cannot false-positive, and fails exactly when
   // the bug is present.
   if (html.includes(baseUrl)) {
-    const sample = html.match(new RegExp(`[^"']*${baseUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^"']*`))?.[0];
+    const sample = html.match(
+      new RegExp(`[^"']*${baseUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^"']*`)
+    )?.[0];
     throw new Error(
       `Prerender ${route}: the captured HTML still references the prerender server ${baseUrl} ` +
         `(e.g. ${sample}). That URL is dead the moment this build finishes, and it is http:// on an ` +
         `https:// page, so CSP blocks it for every visitor. Extend the rewrite in the cleanup ` +
-        `page.evaluate() in scripts/prerender.cjs to cover the attribute that carries it.`
+        `page.evaluate() in scripts/prerender.ts to cover the attribute that carries it.`
     );
   }
 
@@ -288,8 +302,8 @@ async function prerenderRoute(page, baseUrl, route) {
  * For '/en', writes to build/en/index.html.
  * For '/en/contact', writes to build/en/contact/index.html.
  */
-function writePrerenderedHtml(route, html) {
-  let outputPath;
+function writePrerenderedHtml(route: string, html: string): string {
+  let outputPath: string;
   if (route === '/') {
     outputPath = path.join(BUILD_DIR, 'index.html');
   } else {
@@ -305,11 +319,16 @@ function writePrerenderedHtml(route, html) {
  * Prerender a batch of routes concurrently using a shared browser context.
  * Groups routes by language to share context (same locale/userAgent).
  */
-async function prerenderBatch(browser, baseUrl, routes, concurrency = 4) {
+async function prerenderBatch(
+  browser: Browser,
+  baseUrl: string,
+  routes: RouteTarget[],
+  concurrency = 4
+): Promise<{ successCount: number }> {
   let successCount = 0;
 
   // Group routes by language so each group shares a browser context
-  const byLang = {};
+  const byLang: Record<string, RouteTarget[]> = {};
   for (const route of routes) {
     (byLang[route.lang] ||= []).push(route);
   }
@@ -341,12 +360,13 @@ async function prerenderBatch(browser, baseUrl, routes, concurrency = 4) {
       );
 
       for (let j = 0; j < results.length; j++) {
-        if (results[j].status === 'fulfilled') {
+        const result = results[j];
+        if (result.status === 'fulfilled') {
           successCount++;
         } else {
           const route = chunk[j];
           console.error(
-            `   ❌ [${route.lang}] ${route.path.padEnd(16)} → Failed: ${results[j].reason.message}`
+            `   ❌ [${route.lang}] ${route.path.padEnd(16)} → Failed: ${(result.reason as Error).message}`
           );
         }
       }
@@ -358,7 +378,7 @@ async function prerenderBatch(browser, baseUrl, routes, concurrency = 4) {
   return { successCount };
 }
 
-async function main() {
+async function main(): Promise<void> {
   // Check that build directory exists
   if (!fs.existsSync(BUILD_DIR)) {
     console.error('❌ Build directory not found. Run `npm run build` first.');
@@ -373,7 +393,7 @@ async function main() {
   }
 
   // Build the full list of routes to prerender (all languages × all routes)
-  const allRoutes = [];
+  const allRoutes: RouteTarget[] = [];
   for (const lang of LANGUAGES) {
     for (const route of staticRoutes) {
       allRoutes.push({

@@ -74,7 +74,7 @@ export default defineConfig({
    * default and local `retries` back to 0.
    *
    * It also means the suite exercises what users actually get, including the 10
-   * SSG prerendered documents. `scripts/e2e-server.mjs` mirrors `nginx.conf`
+   * SSG prerendered documents. `scripts/e2e-server.ts` mirrors `nginx.conf`
    * (try_files, the dynamic-route SPA fallback, trailing-slash and /blog 301s,
    * `error_page 404 /index.html`) — `vite preview` cannot stand in for it,
    * because its SPA fallback answers /contact with the homepage snapshot.
@@ -93,7 +93,7 @@ export default defineConfig({
     // it was caught). build:e2e pins the API to the relative /api and turns
     // analytics off.
     command: 'npm run build:e2e && npm run serve:build',
-    // 4180 is e2e-server.mjs's own port. It used to be 5173, which the Vite dev
+    // 4180 is e2e-server.ts's own port. It used to be 5173, which the Vite dev
     // server also binds — with `reuseExistingServer` on, a running `npm run dev`
     // was silently reused and the suite never built or served `build/` at all.
     url: 'http://localhost:4180',

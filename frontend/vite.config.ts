@@ -43,7 +43,7 @@ export default defineConfig({
     // `build` unless BUILD_OUT_DIR overrides it. The deploy builds into a
     // staging dir instead, because Vite empties outDir before writing and
     // nginx serves `build/` live — an in-place build 404s every prerendered
-    // route for the duration (measured ~3s, issue #391). `prerender.cjs` and
+    // route for the duration (measured ~3s, issue #391). `prerender.ts` and
     // the app.html / 404.html copies in the `build` script read the same variable.
     outDir: process.env.BUILD_OUT_DIR || 'build',
     sourcemap: process.env.NODE_ENV !== 'production',

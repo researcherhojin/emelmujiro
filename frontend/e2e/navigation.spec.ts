@@ -62,7 +62,7 @@ test.describe('Navigation', () => {
     await expect(page).toHaveURL(/\/profile/);
   });
 
-  // Testable now that the suite runs against scripts/e2e-server.mjs, which
+  // Testable now that the suite runs against scripts/e2e-server.ts, which
   // mirrors nginx's redirect rules. Previously skipped as dev-server-only.
   test('legacy /blog paths redirect to /insights', async ({ page }) => {
     await page.goto('/blog');

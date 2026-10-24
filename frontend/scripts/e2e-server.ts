@@ -15,12 +15,11 @@
  * Mirrors `nginx.conf`. Keep the two in sync — each rule below cites its
  * counterpart.
  */
-import { createServer } from 'node:http';
+import { createServer, request, type IncomingMessage, type ServerResponse } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { join, extname, normalize } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const BUILD_DIR = join(fileURLToPath(new URL('.', import.meta.url)), '..', 'build');
+const BUILD_DIR = join(import.meta.dirname, '..', 'build');
 // 4180, not 5173 — the Vite dev server owns 5173, and playwright.config.ts sets
 // `reuseExistingServer` locally, so sharing the port made `playwright test`
 // silently attach to a running `npm run dev` and skip building at all. The dev
@@ -31,7 +30,7 @@ const BUILD_DIR = join(fileURLToPath(new URL('.', import.meta.url)), '..', 'buil
 const PORT = Number(process.env.E2E_PORT || 4180);
 const API_TARGET = process.env.E2E_API_TARGET || 'http://127.0.0.1:8000';
 
-const MIME = {
+const MIME: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
   '.mjs': 'text/javascript; charset=utf-8',
@@ -69,7 +68,7 @@ const TRAILING_SLASH = /^\/(?!api\/|umami\/)(.+)\/$/;
  */
 const SHELL = '/app.html';
 
-const resolveFile = async (urlPath) => {
+const resolveFile = async (urlPath: string): Promise<string | null> => {
   // Reject traversal before touching the filesystem.
   const safe = normalize(urlPath).replace(/^(\.\.[/\\])+/, '');
   const candidate = join(BUILD_DIR, safe);
@@ -81,7 +80,7 @@ const resolveFile = async (urlPath) => {
   }
 };
 
-const send = async (res, status, file) => {
+const send = async (res: ServerResponse, status: number, file: string) => {
   const body = await readFile(file);
   res.writeHead(status, {
     'content-type': MIME[extname(file)] || 'application/octet-stream',
@@ -90,8 +89,8 @@ const send = async (res, status, file) => {
   res.end(body);
 };
 
-const proxyApi = (req, res) => {
-  const target = new URL(req.url, API_TARGET);
+const proxyApi = (req: IncomingMessage, res: ServerResponse) => {
+  const target = new URL(req.url ?? '/', API_TARGET);
   const upstream = new URL(API_TARGET);
   const proxied = {
     hostname: upstream.hostname,
@@ -100,22 +99,20 @@ const proxyApi = (req, res) => {
     method: req.method,
     headers: { ...req.headers, host: upstream.host },
   };
-  import('node:http').then(({ request }) => {
-    const proxyReq = request(proxied, (proxyRes) => {
-      res.writeHead(proxyRes.statusCode || 502, proxyRes.headers);
-      proxyRes.pipe(res);
-    });
-    // The backend is optional for E2E; the app renders its own error states.
-    proxyReq.on('error', () => {
-      res.writeHead(502, { 'content-type': 'application/json' });
-      res.end('{"detail":"backend not running"}');
-    });
-    req.pipe(proxyReq);
+  const proxyReq = request(proxied, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode || 502, proxyRes.headers);
+    proxyRes.pipe(res);
   });
+  // The backend is optional for E2E; the app renders its own error states.
+  proxyReq.on('error', () => {
+    res.writeHead(502, { 'content-type': 'application/json' });
+    res.end('{"detail":"backend not running"}');
+  });
+  req.pipe(proxyReq);
 };
 
 createServer(async (req, res) => {
-  const [rawPath, query] = req.url.split('?');
+  const [rawPath, query] = (req.url ?? '/').split('?');
   const urlPath = decodeURIComponent(rawPath);
   const search = query ? `?${query}` : '';
 

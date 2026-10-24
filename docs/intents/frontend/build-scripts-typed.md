@@ -113,6 +113,10 @@ updated: 2026-10-24
   1. `prerender.cjs` → `prerender.ts`, typed against `playwright`'s `Browser` and `Page`. `BUILD_OUT_DIR` handling and the API relay stay as they are.
   2. `e2e-server.mjs` → `e2e-server.ts`. `SPA_FALLBACK` stays a single-line `const SPA_FALLBACK = /…/;` so `check-route-lists`' text match keeps working, and that script now reads the `.ts` path.
   3. Callers: `build`, `serve:build`, the `playwright.config.ts` comments, and the remaining name references. Then the `CHANGELOG.md` entry.
+- **Departures from the Plan**, PR 2:
+  - `e2e-server.ts` imports `request` from `node:http` statically instead of through `import('node:http').then(...)` inside `proxyApi`. Reason: the dynamic import only deferred a builtin already loaded by `createServer`, and the typed form needs the static import for `request`'s signature. The proxied request, headers and error path are unchanged.
+  - `e2e-server.ts` and `prerender.ts` keep running their work at load with no `isMain` guard, as the originals did, because nothing imports either of them. `import.meta.dirname` replaces `__dirname` and `fileURLToPath(new URL('.', import.meta.url))`.
+  - `prerender.ts` was run through `prettier --write` (the `.cjs` was flagged on `167d8c04` too), since the conversion rewrites most of its signatures anyway.
 - **Risks**:
   - `generate-sitemap` exiting on load when `SITE_URL` and `homepage` are both empty now happens during `import`. This is unchanged for `prerender` and `check-route-lists`, which `require` it today, but a reordered import could run it earlier. It would show as `check:routes` exiting `1` with the sitemap message. Done when #3 covers it.
   - CI's Node and the deploy host's Node must both strip types. `Setup Node.js` pins `24`, and the host already runs `scheduled-security.ts`. If the route check step were left above setup, it would fail with a syntax error on the runner's own Node.

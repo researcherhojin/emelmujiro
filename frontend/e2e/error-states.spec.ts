@@ -31,7 +31,7 @@ test.describe('Error States', () => {
     //
     // This previously asserted 200, encoding the Vite dev server's SPA
     // fallback, i.e. the exact behavior production was fixed to avoid. The
-    // suite now runs against scripts/e2e-server.mjs, so it can assert the real
+    // suite now runs against scripts/e2e-server.ts, so it can assert the real
     // contract.
     const response = await page.goto('/this-page-does-not-exist', {
       waitUntil: 'domcontentloaded',

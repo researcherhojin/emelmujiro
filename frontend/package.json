@@ -68,11 +68,11 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "npx concurrently -n sitemap,tsc \"npm run generate:sitemap\" \"tsc -p tsconfig.build.json\" && vite build && cp \"${BUILD_OUT_DIR:-build}/index.html\" \"${BUILD_OUT_DIR:-build}/app.html\" && node scripts/prerender.cjs && cp \"${BUILD_OUT_DIR:-build}/app.html\" \"${BUILD_OUT_DIR:-build}/404.html\"",
+    "build": "npx concurrently -n sitemap,tsc \"npm run generate:sitemap\" \"tsc -p tsconfig.build.json\" && vite build && cp \"${BUILD_OUT_DIR:-build}/index.html\" \"${BUILD_OUT_DIR:-build}/app.html\" && node scripts/prerender.ts && cp \"${BUILD_OUT_DIR:-build}/app.html\" \"${BUILD_OUT_DIR:-build}/404.html\"",
     "build:no-prerender": "npx concurrently -n sitemap,tsc \"npm run generate:sitemap\" \"tsc -p tsconfig.build.json\" && vite build && cp \"${BUILD_OUT_DIR:-build}/index.html\" \"${BUILD_OUT_DIR:-build}/app.html\" && cp \"${BUILD_OUT_DIR:-build}/app.html\" \"${BUILD_OUT_DIR:-build}/404.html\"",
     "build:e2e": "VITE_API_URL=/api VITE_ENABLE_ANALYTICS=false npm run build",
     "preview": "vite preview",
-    "serve:build": "node scripts/e2e-server.mjs",
+    "serve:build": "node scripts/e2e-server.ts",
     "test": "vitest",
     "test:ci": "vitest run --bail=1 --no-coverage",
     "test:run": "vitest run",
