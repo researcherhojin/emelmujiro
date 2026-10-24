@@ -99,5 +99,10 @@ export default defineConfig({
     url: 'http://localhost:4180',
     reuseExistingServer: !process.env.CI,
     timeout: 300 * 1000,
+    // Playwright drops webServer stdout by default, and concurrently relays its
+    // children (sitemap, tsc) to stdout, so a failed build:e2e showed only
+    // `exit 1` with no failing step (PR #670, 2026-10-24). The build prints a
+    // bounded log and e2e-server.ts logs one line, not one per request.
+    stdout: 'pipe',
   },
 });
