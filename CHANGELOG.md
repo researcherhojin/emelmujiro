@@ -8,7 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
-- fix(security): Rebuild the self-hosted Umami image on Next 16.4.2 (from 16.3.8), closing GHSA-673q-mjm6-r5xr and GHSA-2464-fhr4-w9xw (critical, unauthenticated RCE) and GHSA-p3m5-59mp-jv5r (high, Server Actions DoS), all fixed in 16.4.1, and Dependabot alerts #1 to #6. The builder lockfile moves only `next` and its nine `@next/*` packages; the image tag becomes `3.4.0-security-2`. 16.4.2 rather than 16.4.3, because 16.4.3 was under pnpm's minimum release age and would have added 10 `minimumReleaseAgeExclude` entries.
+- fix(security): Rebuild the self-hosted Umami image on Next 16.4.2 (from 16.3.8), closing GHSA-673q-mjm6-r5xr and GHSA-2464-fhr4-w9xw (critical, unauthenticated RCE) and GHSA-p3m5-59mp-jv5r (high, Server Actions DoS), all fixed in 16.4.1, and Dependabot alerts #1 to #6. The same rebuild raises the builder's override floors for `undici` 8.12.2 (GHSA-xjj6-f33q-929c, GHSA-4qv8-2p9j-2685, GHSA-f72v-6w45-q472), `fast-uri` 3.1.9 (four advisories), `zod` 4.6.7 (GHSA-mrhx-c7xc-m3w5) and `serialize-javascript` 7.1.3 (GHSA-m5mm-p8h7-m29v), which `pnpm audit` and the watchdog's lockfile scan also flag; `pnpm audit` on the builder then reports none, and the runner lockfile already reported none. The image tag becomes `3.4.0-security-2`. 16.4.2 rather than 16.4.3, because 16.4.3 was under pnpm's minimum release age and would have added 10 `minimumReleaseAgeExclude` entries.
 
 - docs(security): Reconcile the earlier security review with the subsequent Cloudflare dashboard deployment, retaining the distinction between historical access restrictions and untested live blocking.
 
