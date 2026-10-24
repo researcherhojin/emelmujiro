@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs: Point the always-loaded indexes at the scheduled security operations. `CLAUDE.md`'s CI orientation now lists `ci.md` › Scheduled security operations and gains a `Security operations require attention` entry; `AGENTS.md` gets the matching one-line pointer. README's Security bullet now names the nightly encrypted backups with restore verification and the watchdog-checked dependency and running-image audits shipped on 2026-10-23.
+
 - docs(security): Record the first live Security Operations Watchdog alarm (#660, 2026-10-24) in `docs/intents/infra/security-operations.md`: the findings behind it, fixes #661 to #663, the manual host rerun and dispatched recovery run that closed it, and the Dependabot alerts left open by GitHub-side lag. `.claude/rules/ci.md` now says a dispatched watchdog re-reads the 02:00 report until the host job is rerun, and why the backend test count must be read from the first `Found N test` match.
 
 - fix(deps): Clear the 7 high `npm audit` findings behind the 2026-10-24 Security Operations Watchdog failure, all development-only. `body-parser` 1.20.8 → 1.20.9 (GHSA-27r3-jxmh-p828) inside `express@4.22.3`'s range; root `zod` 4.6.5 → 4.6.7 (GHSA-mrhx-c7xc-m3w5); and a scoped override `"chromium-bidi": { "zod": "4.6.7" }` replaces the unfixable `zod@3.25.76` under `puppeteer-core`'s `chromium-bidi@14.0.0`. The one API divergence (invalid WebDriver BiDi input throws `TypeError`, not `InvalidArgumentException`) is off Lighthouse's CDP path and recorded in `docs/intents/infra/remaining-security-findings.md`.
