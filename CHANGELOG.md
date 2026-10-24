@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs: Trim the always-loaded `CLAUDE.md` by an estimated 474 tokens (24,334 → 22,438 chars, 160 → 147 lines). The 13-line Development Flow table becomes one paragraph that keeps every phase and its artifacts, and the guard-hook mechanics (matching limits, deny-rule coverage, how to add a guard) move verbatim to the new path-scoped `.claude/rules/claude-config.md`, which loads on `.claude/hooks/**` and `.claude/settings.json`; the rule itself stays in `CLAUDE.md` › Security. `AGENTS.md` lists the new rule file.
+
 - docs: Point the always-loaded indexes at the scheduled security operations. `CLAUDE.md`'s CI orientation now lists `ci.md` › Scheduled security operations and gains a `Security operations require attention` entry; `AGENTS.md` gets the matching one-line pointer. README's Security bullet now names the nightly encrypted backups with restore verification and the watchdog-checked dependency and running-image audits shipped on 2026-10-23.
 
 - docs(security): Record the first live Security Operations Watchdog alarm (#660, 2026-10-24) in `docs/intents/infra/security-operations.md`: the findings behind it, fixes #661 to #663, the manual host rerun and dispatched recovery run that closed it, and the Dependabot alerts left open by GitHub-side lag. `.claude/rules/ci.md` now says a dispatched watchdog re-reads the 02:00 report until the host job is rerun, and why the backend test count must be read from the first `Found N test` match.

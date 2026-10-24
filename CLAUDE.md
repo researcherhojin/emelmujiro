@@ -95,17 +95,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 ## Development Flow
 
-7-phase cycle adapted from [gstack](https://github.com/garrytan/gstack). Skip phases when scope doesn't warrant (typo fix ≠ full cycle).
-
-| Phase       | Purpose                                    | Repo tools                                                                                 |
-| ----------- | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| **Think**   | Understand problem, constraints, prior art | `git log`, Grep, `CLAUDE.md`, `.private/journal.md`, `docs/intents/`                       |
-| **Plan**    | Concrete change scope and tradeoffs        | `Spec` + `Plan` of the intent file in `docs/intents/`; else `~/.claude/plans/` or inline   |
-| **Build**   | Implement                                  | editor, `npm run dev`, `make dev-local`                                                    |
-| **Review**  | Independent 2nd opinion                    | `make lint`, `npm run type-check` (from `frontend/`), `/code-review`, GitHub PR review     |
-| **Test**    | Verify behavior                            | `make test`, `make test-ci`, Playwright E2E, Lighthouse CI                                 |
-| **Ship**    | Land + deploy                              | `CHANGELOG.md` entry, conventional commit, PR, merge, `scripts/auto-deploy.sh` via webhook |
-| **Reflect** | Capture surprises                          | `.private/journal.md` session log                                                          |
+7-phase cycle adapted from [gstack](https://github.com/garrytan/gstack): **Think** (`.private/journal.md`, `docs/intents/`) → **Plan** (`Spec` + `Plan` of the intent file; else `~/.claude/plans/` or inline) → **Build** → **Review** (`make lint`, `type-check`, `/code-review`) → **Test** → **Ship** (`CHANGELOG.md` entry, conventional commit, PR, merge, webhook deploy) → **Reflect** (`.private/journal.md` session log). Skip phases when scope doesn't warrant (typo fix ≠ full cycle).
 
 ### Invariants
 
@@ -128,10 +118,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 - **CI workflows**: Never use `${{ }}` directly inside `run:` blocks — bind to `env:` first, reference as `"$VAR"`. Prevents script injection via branch names. Composite actions `.github/actions/setup-node` and `.github/actions/setup-uv` replace inline setup.
 - **Shell scripts**: No `eval` with variables, no `source` of untrusted files (use `read` loop parsing), validate Make variables that reach shell commands.
-- **Claude Code guard hooks: `.claude/settings.json` (tracked) runs `.claude/hooks/guard-bash.sh` before every Bash call, and it exits `2` on the commands this file forbids** — `npm audit fix` (#6), removing `frontend/build` itself (Deployment), any push to `dependabot/*` (#15), `git rm` of `.env.production` (#7). The same file denies Read/Edit of `.env`, `backend/.env` and `backend/.env.production`.
-  - It matches after removing heredoc bodies and multi-word quoted strings (a quoted single word such as `"frontend/build"` keeps its contents), so a commit message naming a command passes. So do `bash -c "…"` and a heredoc piped to `bash`: a backstop for habit, not a sandbox. It fails open without `jq`.
-  - The deny rules cover Claude's file tools and the Bash file commands Claude Code recognizes (`cat`, `head`, `tail`, `sed`, `tee`, and `>`/`<` redirection targets), but not `grep -r` from the directory holding the file or a script that opens it ([permissions](https://code.claude.com/docs/en/permissions)); OS-level blocking needs the sandbox. Patterns must start with `/` (anchored at the project root), not `./` (resolved against the session's current directory).
-  - A new "never run X" rule gets a guard plus a block and an adjacent allow case in `.claude/hooks/test-guard-bash.sh`, which `Repo Checks (informational)` runs. `settings.local.json` stays per-machine and gitignored.
+- **Claude Code guard hooks: `.claude/settings.json` (tracked) runs `.claude/hooks/guard-bash.sh` before every Bash call, and it exits `2` on the commands this file forbids** — `npm audit fix` (#6), removing `frontend/build` itself (Deployment), any push to `dependabot/*` (#15), `git rm` of `.env.production` (#7). The same file denies Read/Edit of `.env`, `backend/.env` and `backend/.env.production`. It is a backstop for habit, not a sandbox; its matching limits and how to add a guard are in `.claude/rules/claude-config.md`.
 
 ## Gotchas
 
