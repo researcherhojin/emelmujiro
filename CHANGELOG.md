@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs: `docs/intents/infra/security-operations.md` records that Dependabot alerts #1 to #6 turned `fixed` without a dismissal at 07:52Z on 2026-10-24, about 3 hours after the #661 deploy. `.claude/rules/frontend-build.md` › E2E target now says why `webServer.stdout` stays `'pipe'` (#671).
+
 - test(e2e): `playwright.config.ts` `webServer` now sets `stdout: 'pipe'`. Playwright drops webServer stdout by default and `concurrently` relays the sitemap and tsc steps to stdout, so when `build:e2e` failed once on PR #670 the log showed only `exit 1`, with no failing step. A local chromium run of `e2e/seo.spec.ts` now prints the `[WebServer]` build lines and still passes 28 of 28.
 
 - docs: `CLAUDE.md` › Commands and `AGENTS.md` now say `npm run type-check` runs three `tsc` passes. The third, `tsc -p scripts/tsconfig.json`, type-checks the native-TypeScript `frontend/scripts/` and was added in #667. Before this, both lines listed only the first two.

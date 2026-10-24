@@ -108,5 +108,7 @@ real upstream advisories, and no diagnostics reached GitHub.
   02:00, and all four checks were true. A dispatched watchdog (run 40065154092) passed and closed #660 with its recovery comment.
 - The six Dependabot alerts for the same `next` advisories stayed open after
   the fix, although the dependency-graph compare for `fc9e1704...84c1e765`
-  showed 16.3.8 removed and 16.4.2 added with no vulnerabilities. The cause is
-  a GitHub-side re-evaluation lag. The alerts were not dismissed.
+  showed 16.3.8 removed and 16.4.2 added with no vulnerabilities. The cause was
+  a GitHub-side re-evaluation lag. The alerts were not dismissed, and all six
+  turned `fixed` on their own at 07:52Z, about 3 hours after the deploy. A
+  dismissed alert never turns `fixed`, so wait out the lag instead.
