@@ -44,7 +44,7 @@ npm run validate           # lint + type-check + test:coverage (from frontend/)
 CI=true npm test -- --run src/components/common/__tests__/Navbar.test.tsx  # Single test
 npm run test:e2e           # Playwright E2E (from frontend/). Builds via build:e2e + serves build/. Also: test:e2e:ui, test:e2e:debug
 npm run serve:build        # nginx-equivalent static server for build/ (from frontend/). Leave running to skip E2E rebuilds
-npm run type-check         # tsc --noEmit AND tsc -p tsconfig.node.json (build configs). From frontend/
+npm run type-check         # tsc --noEmit, tsc -p tsconfig.node.json (build configs) AND tsc -p scripts/tsconfig.json (frontend/scripts, native TS). From frontend/
 npm run analyze:bundle     # source-map-explorer (from frontend/, requires build first)
 npm run check:css          # detect CSS classes shipped in build but never referenced in src/ (from frontend/, requires build first)
 npm run check:routes       # cross-reference the 4 hardcoded route lists (from frontend/, no build or node_modules needed)
