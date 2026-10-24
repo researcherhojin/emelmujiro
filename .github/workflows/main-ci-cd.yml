@@ -170,7 +170,9 @@ jobs:
         id: count
         if: always()
         run: |
-          COUNT=$(grep -E 'Found [0-9]+ test' /tmp/django-output.txt | sed -E 's/Found ([0-9]+) test.*/\1/')
+          # stdout is block-buffered behind stderr's progress dots, so the line can
+          # start with dots; match the phrase anywhere on the first matching line.
+          COUNT=$(grep -m1 -oE 'Found [0-9]+ test' /tmp/django-output.txt | grep -oE '[0-9]+')
           echo "count=${COUNT:-0}" >> "$GITHUB_OUTPUT"
           echo "Backend test count: ${COUNT:-0}"
 

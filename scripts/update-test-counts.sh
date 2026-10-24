@@ -43,7 +43,7 @@ if ! BACKEND_OUTPUT=$(cd backend && DATABASE_URL="" uv run python manage.py test
   echo "$BACKEND_OUTPUT" | tail -20
   exit 1
 fi
-BACKEND_COUNT=$(echo "$BACKEND_OUTPUT" | grep -E 'Found [0-9]+ test' | sed -E 's/Found ([0-9]+) test.*/\1/')
+BACKEND_COUNT=$(echo "$BACKEND_OUTPUT" | grep -m1 -oE 'Found [0-9]+ test' | grep -oE '[0-9]+')
 
 if [ -z "$BACKEND_COUNT" ]; then
   echo "❌ Failed to count backend tests"
