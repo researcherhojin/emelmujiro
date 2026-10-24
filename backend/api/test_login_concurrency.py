@@ -28,7 +28,7 @@ class LoginConcurrencyTests(SimpleTestCase):
         import multiprocessing
         import sys
 
-        # Forked workers inherit unflushed stdio buffers and re-emit them, which
+        # Forked workers inherit pending stdio buffers and re-emit them, which
         # repeated the runner's "Found N test(s)." line mid-run in piped CI logs.
         sys.stdout.flush()
         sys.stderr.flush()
