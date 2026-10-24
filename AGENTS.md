@@ -55,10 +55,10 @@ cd backend && DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPI
 ## Build & deploy gotchas (load-bearing)
 
 - Build output is **`build/`** (not `dist/`). **Never `rm -rf frontend/build`** — use `rm -rf frontend/build/*` (a bare `rm -rf frontend/build` breaks the nginx volume mount).
-- `npm run build` pipeline is ordered and load-bearing: `generate:sitemap ∥ tsc -p tsconfig.build.json` → `vite build` → `cp index.html app.html` → `node scripts/prerender.cjs` → `cp app.html 404.html`.
-- **Chromium is a build dependency, not E2E-only** — `prerender.cjs` calls `chromium.launch()`, so `vite build` can look green while prerender dies. `npx playwright install chromium` if it vanishes.
+- `npm run build` pipeline is ordered and load-bearing: `generate:sitemap ∥ tsc -p tsconfig.build.json` → `vite build` → `cp index.html app.html` → `node scripts/prerender.ts` → `cp app.html 404.html`.
+- **Chromium is a build dependency, not E2E-only** — `prerender.ts` calls `chromium.launch()`, so `vite build` can look green while prerender dies. `npx playwright install chromium` if it vanishes.
 - **E2E serves the production build via `build:e2e` + `npm run serve:build`** — NOT `vite preview` (it answers every route with the homepage snapshot) and NOT plain `build` (it inlines `VITE_API_URL` and calls the **live** API).
-- **Adding a new dynamic route**: update the SPA-fallback regex in **both** `frontend/nginx.conf` and `frontend/scripts/e2e-server.mjs`. **Adding a static page**: add it to `staticRoutes` in `frontend/scripts/generate-sitemap.ts` or it ships a hard 404. Either omission fails `check:routes` in CI.
+- **Adding a new dynamic route**: update the SPA-fallback regex in **both** `frontend/nginx.conf` and `frontend/scripts/e2e-server.ts`. **Adding a static page**: add it to `staticRoutes` in `frontend/scripts/generate-sitemap.ts` or it ships a hard 404. Either omission fails `check:routes` in CI.
 - **Verify a backend deploy by commit, not by a `200`**: `curl https://emelmujiro.com/api/health/` returns the baked `commit`; match it to the deployed SHA. A `200` passes even against a stale container. Migrations run in-container before gunicorn — keep them additive.
 - Auto-merged Dependabot commits **create no push run** (`GITHUB_TOKEN`), so the auto-merge job dispatches the pipeline itself and the nightly drift check redeploys anything missed, filing an issue when that redeploy does not land. A green pipeline is **not** deploy evidence.
 

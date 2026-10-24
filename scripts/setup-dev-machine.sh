@@ -27,7 +27,7 @@
 # OPTIONAL FLAGS:
 #   --with-playwright   Also install Playwright Chromium (~150 MB).
 #                       NOT just for E2E: `npm run build` runs
-#                       frontend/scripts/prerender.cjs, which calls
+#                       frontend/scripts/prerender.ts, which calls
 #                       chromium.launch() to render the 10 SSG routes,
 #                       so a machine without it fails the production
 #                       build -- vite build succeeds, prerender dies.

@@ -53,7 +53,7 @@ function headTagKey(el: Element): string {
  * constraint), so React 19 cannot claim the prerendered `<head>` tags as its
  * own hoistables — it mounts fresh ones alongside them. Without this the live
  * DOM carries two of every SEO tag on all 10 prerendered routes: measured
- * `title 2, description 2, og:title 2, og:url 2, canonical 2`. `prerender.cjs`
+ * `title 2, description 2, og:title 2, og:url 2, canonical 2`. `prerender.ts`
  * dedupes only inside the snapshot, which is why `curl` looks correct while a
  * real browser does not.
  *

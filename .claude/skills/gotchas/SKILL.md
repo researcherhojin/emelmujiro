@@ -73,7 +73,7 @@ Each section holds the sub-bullets of the CLAUDE.md Gotcha with the same number,
 
 ## #18
 
-18. **Building the E2E bundle with `npm run build` sends test traffic to the LIVE backend** — a production build inlines `VITE_API_URL=https://api.emelmujiro.com/api/` from `frontend/.env.production` (tracked, Gotcha #7), so the app makes absolute API calls and bypasses `e2e-server.mjs`'s `/api` proxy.
+18. **Building the E2E bundle with `npm run build` sends test traffic to the LIVE backend** — a production build inlines `VITE_API_URL=https://api.emelmujiro.com/api/` from `frontend/.env.production` (tracked, Gotcha #7), so the app makes absolute API calls and bypasses `e2e-server.ts`'s `/api` proxy.
     - It showed up as 7 × `Not Found: /api/blog-posts/nonexistent-post-id-99999/` in the backend log, the fixture in `e2e/error-states.spec.ts`. It never reaches the frontend nginx log, because `api.emelmujiro.com` is a separate tunnel route straight to the backend.
     - **Fix**: `webServer` runs `npm run build:e2e` (`VITE_API_URL=/api VITE_ENABLE_ANALYTICS=false npm run build`); the deploy build stays plain `npm run build`.
     - **Verify by observing requests, not by grepping the bundle** — `api.emelmujiro.com` stays in the output as the default argument of `getEnvVar('REACT_APP_API_URL', …)` in `config/env.ts`. See `971b5b4c`.

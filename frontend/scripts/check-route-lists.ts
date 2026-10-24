@@ -18,7 +18,7 @@
  *
  * The fifth and sixth copies of route knowledge are the SPA-fallback regex
  * `^/(en/)?(insights/.+|login)$`, written once in frontend/nginx.conf and
- * mirrored in frontend/scripts/e2e-server.mjs. This script does NOT attempt
+ * mirrored in frontend/scripts/e2e-server.ts. This script does NOT attempt
  * regex equivalence against App.tsx's parameterized patterns. It checks the
  * two files carry the byte-identical pattern, then runs that pattern against
  * one concrete URL per route: every route without a prerendered document
@@ -100,7 +100,7 @@ function seoSpecRoutes(): string[] {
 
 /**
  * The SPA-fallback regex from nginx.conf (the `location ~` whose block falls
- * back to /app.html) and its e2e-server.mjs mirror (`const SPA_FALLBACK`),
+ * back to /app.html) and its e2e-server.ts mirror (`const SPA_FALLBACK`),
  * both as plain pattern source with no JS `\/` escaping.
  */
 function fallbackPatterns(): { nginx: string; mirror: string } {
@@ -113,9 +113,9 @@ function fallbackPatterns(): { nginx: string; mirror: string } {
         `found ${fallback.length}`
     );
   }
-  const mirrorSrc = read('scripts/e2e-server.mjs');
+  const mirrorSrc = read('scripts/e2e-server.ts');
   const m = mirrorSrc.match(/^const SPA_FALLBACK = \/(.+)\/;$/m);
-  if (!m) throw new Error('e2e-server.mjs: could not find `const SPA_FALLBACK = /…/;`');
+  if (!m) throw new Error('e2e-server.ts: could not find `const SPA_FALLBACK = /…/;`');
   return { nginx: fallback[0][1], mirror: m[1].replace(/\\\//g, '/') };
 }
 
@@ -197,7 +197,7 @@ function main() {
   }
   const unaudited = prerendered.filter((r) => !lighthouse.includes(r));
 
-  // 6. The SPA-fallback regex: nginx.conf and its e2e-server.mjs mirror carry
+  // 6. The SPA-fallback regex: nginx.conf and its e2e-server.ts mirror carry
   //    the same pattern, and that pattern admits exactly the routes that have
   //    no prerendered document. One concrete URL per route, ko and en; ':id'
   //    style params become a literal segment, the '*' catch-all is skipped.
@@ -205,7 +205,7 @@ function main() {
   if (fallback.nginx !== fallback.mirror) {
     errors.push(
       `SPA-fallback regex differs: nginx.conf has ${fallback.nginx}, ` +
-        `e2e-server.mjs SPA_FALLBACK has ${fallback.mirror}. Keep the two identical — ` +
+        `e2e-server.ts SPA_FALLBACK has ${fallback.mirror}. Keep the two identical — ` +
         `the E2E suite only proves what the mirror does.`
     );
   }
@@ -222,7 +222,7 @@ function main() {
         errors.push(
           `App.tsx route ${route} has no prerendered document and ${url} does not match the ` +
             `SPA-fallback regex ${fallback.nginx} — nginx \`try_files … =404\` hard-404s it. ` +
-            `Extend the regex in BOTH frontend/nginx.conf and frontend/scripts/e2e-server.mjs.`
+            `Extend the regex in BOTH frontend/nginx.conf and frontend/scripts/e2e-server.ts.`
         );
       }
     }
@@ -245,7 +245,7 @@ function main() {
   console.log(`lighthouserc.js       (${lighthouse.length}): ${lighthouse.join(' ')}`);
   console.log(
     `SPA-fallback regex    : ${fallback.nginx} (nginx.conf${
-      fallback.nginx === fallback.mirror ? ' == e2e-server.mjs' : ' != e2e-server.mjs'
+      fallback.nginx === fallback.mirror ? ' == e2e-server.ts' : ' != e2e-server.ts'
     }); SPA-only routes: ${spaOnly.join(' ')}`
   );
   if (unaudited.length) {
