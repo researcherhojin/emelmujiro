@@ -33,7 +33,7 @@ WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 HOSTNAME=0.0.0.0 PORT=3000
 LABEL org.opencontainers.image.source="https://github.com/umami-software/umami" \
     org.opencontainers.image.revision="ec0ff50388c264ed8ce46f00967e92f7e71476ae" \
-    org.opencontainers.image.version="3.4.0-security-1"
+    org.opencontainers.image.version="3.4.0-security-2"
 RUN addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nextjs \
     && rm -rf /usr/local/lib/node_modules/npm /opt/yarn-* \

@@ -16,7 +16,7 @@ async function request(path, body, token) {
 }
 assert.equal(process.getuid(), 1001);
 assert.equal(require('./package.json').version, '3.4.0');
-assert.equal(require('next/package.json').version, '16.3.8');
+assert.equal(require('next/package.json').version, '16.4.2');
 assert.ok(existsSync('node_modules/.bin/prisma'));
 assert.ok(!existsSync('/usr/local/lib/node_modules/pnpm'));
 assert.ok(!existsSync('/usr/local/lib/node_modules/npm'));

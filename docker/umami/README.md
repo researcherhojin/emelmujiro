@@ -6,10 +6,11 @@ archive checksum and pins the Node base and official geography-data image by
 digest. Only `geo/` is copied from the official Umami image. Its application and
 dependencies are rebuilt from source.
 
-The builder uses Next 16.3.8, sharp 0.35.5 and shell-quote 1.11.0.
+The builder uses Next 16.4.2, sharp 0.35.5 and shell-quote 1.11.0.
 Build dependency fixes also cover MCP server and client 2.3.0, brace-expansion
-1.1.21, 2.1.7 and 5.0.12, fast-uri 3.1.8, source-map-js 1.2.2,
-postcss-selector-parser 7.1.6, undici 8.10.2, vite 8.1.6 and vitest 4.1.12. Both dependency
+1.1.21, 2.1.7 and 5.0.12, fast-uri 3.1.9, source-map-js 1.2.2,
+postcss-selector-parser 7.1.6, undici 8.12.2, serialize-javascript 7.1.3,
+zod 4.6.7, vite 8.1.6 and vitest 4.1.12. Both dependency
 graphs retain upstream's deepmerge-ts 8.0.2 and mysql2 3.23.1 security overrides.
 The upstream Dockerfile's separate runtime install omitted those overrides; this
 recipe gives that install its own frozen lockfile. Runtime contains no global
@@ -21,7 +22,7 @@ CLI, so migrations still execute before the server starts as UID 1001.
 From the repository root:
 
 ```sh
-docker build -t emelmujiro/umami:3.4.0-security-1 docker/umami
+docker build -t emelmujiro/umami:3.4.0-security-2 docker/umami
 sh docker/umami/verify.sh
 ```
 
