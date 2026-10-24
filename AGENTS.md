@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Full-stack monorepo (**React 19 + Vite** frontend, **Django 6 + DRF** backend), self-hosted via Docker behind a Cloudflare Tunnel. This file is the fast-ramp-up / mistake-avoidance index. The **deep, authoritative rules live in `CLAUDE.md` and the path-scoped `.claude/rules/{frontend,frontend-build,backend,ci}.md`** — read the matching one for the task; do not duplicate them here.
+Full-stack monorepo (**React 19 + Vite** frontend, **Django 6 + DRF** backend), self-hosted via Docker behind a Cloudflare Tunnel. This file is the fast-ramp-up / mistake-avoidance index. The **deep, authoritative rules live in `CLAUDE.md` and the path-scoped `.claude/rules/{frontend,frontend-build,backend,ci,claude-config}.md`** — read the matching one for the task; do not duplicate them here.
 
 **Operating principle (from `CLAUDE.md`):** counts and claims _about the codebase_ are exact and verifiable — no `+` / `≥` / round-figure handwaves in this doc, `README.md`, `CHANGELOG.md`, or commit messages. Marketing copy in the UI itself is the only exemption.
 
