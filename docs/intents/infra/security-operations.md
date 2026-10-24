@@ -2,7 +2,7 @@
 status: shipped
 module: infra
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-10-24
 ---
 
 # Verify and automate security operations
@@ -89,3 +89,24 @@ receipts or original snapshots older than 36 hours trigger the watchdog.
 Archives have no automatic pruning yet, and a separate secure copy of the
 restore key remains pending. Restore-key custody and exact host
 paths are documented privately in `.private/operations.md`.
+
+## First live alarm (2026-10-24)
+
+The first scheduled watchdog run after deployment (run 40041667665) failed and
+filed #660. The host report had `dependencies` and `images` false and
+`backup` and `offsite` true. The running-image scan found 3 findings, all in
+`umami`: the Next 16.3.8 advisories published 2026-10-22. The lockfile scans
+also flagged `body-parser`, `zod`, `undici`, `fast-uri` and
+`serialize-javascript`. The mechanism worked as designed: the alarm fired on
+real upstream advisories, and no diagnostics reached GitHub.
+
+- Fixes: #661 (Umami on Next 16.4.2 with raised builder override floors),
+  #662 (root `body-parser` and `zod`) and #663 (inherited CI failures).
+  Production reached `84c1e765`, and the Umami container was recreated on
+  `3.4.0-security-2`.
+- Recovery: the host job was rerun by hand at 05:09Z instead of waiting for
+  02:00, and all four checks were true. A dispatched watchdog (run 40065154092) passed and closed #660 with its recovery comment.
+- The six Dependabot alerts for the same `next` advisories stayed open after
+  the fix, although the dependency-graph compare for `fc9e1704...84c1e765`
+  showed 16.3.8 removed and 16.4.2 added with no vulnerabilities. The cause is
+  a GitHub-side re-evaluation lag. The alerts were not dismissed.
