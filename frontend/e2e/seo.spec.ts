@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-// Must stay in sync with `staticRoutes` in scripts/generate-sitemap.js — the
+// Must stay in sync with `staticRoutes` in scripts/generate-sitemap.ts — the
 // array that feeds both sitemap.xml and the prerender pass. `/privacy` was
 // prerendered but absent here until 2026-08-18, so one of the five prerendered
 // documents went unchecked for title / description / canonical / duplicate head
-// tags. `npm run check:routes` (scripts/check-route-lists.js) now compares this
+// tags. `npm run check:routes` (scripts/check-route-lists.ts) now compares this
 // array against staticRoutes, App.tsx and lighthouserc.js in CI, so a route
 // added to one list and not this one fails rather than going unchecked.
 const routes = ['/', '/contact', '/profile', '/insights', '/privacy'];

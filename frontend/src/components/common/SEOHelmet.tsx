@@ -53,7 +53,7 @@ function headTagKey(el: Element): string {
  * constraint), so React 19 cannot claim the prerendered `<head>` tags as its
  * own hoistables — it mounts fresh ones alongside them. Without this the live
  * DOM carries two of every SEO tag on all 10 prerendered routes: measured
- * `title 2, description 2, og:title 2, og:url 2, canonical 2`. `prerender.js`
+ * `title 2, description 2, og:title 2, og:url 2, canonical 2`. `prerender.cjs`
  * dedupes only inside the snapshot, which is why `curl` looks correct while a
  * real browser does not.
  *
@@ -134,7 +134,7 @@ interface SEOHelmetProps {
    * `false` when the content exists in Korean only, so `/en/...` renders the
    * same Korean body: canonical points at the Korean URL on both paths and no
    * hreflang alternates are emitted. Every blog post sets it today; flip it
-   * per post together with its en sitemap entry (generate-sitemap.js) once a
+   * per post together with its en sitemap entry (generate-sitemap.ts) once a
    * real translation exists.
    */
   translated?: boolean;

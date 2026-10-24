@@ -13,7 +13,7 @@ const config: KnipConfig = {
       project: ['**/*.ts'],
     },
     frontend: {
-      entry: ['src/App.tsx', 'scripts/*.{js,ts}'],
+      entry: ['src/App.tsx', 'scripts/*.{ts,cjs}'],
       project: ['src/**/*.{ts,tsx}'],
       ignore: [
         // Test helpers (renderWithProviders, etc.) — imported from test files only

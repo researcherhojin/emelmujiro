@@ -200,7 +200,7 @@ const BlogDetailPage: React.FC = memo(() => {
               // Untranslated: /en/insights/:slug shows the Korean body, so it
               // canonicalizes to the Korean URL with no hreflang. Translated:
               // both URLs are real language versions. Same rule as the
-              // sitemap in generate-sitemap.js, both driven by is_translated.
+              // sitemap in generate-sitemap.ts, both driven by is_translated.
               translated={translated}
               lang={showsEnglish ? 'en' : 'ko'}
               article={{
