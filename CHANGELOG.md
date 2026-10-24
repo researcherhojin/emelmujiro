@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- test(e2e): `playwright.config.ts` `webServer` now sets `stdout: 'pipe'`. Playwright drops webServer stdout by default and `concurrently` relays the sitemap and tsc steps to stdout, so when `build:e2e` failed once on PR #670 the log showed only `exit 1`, with no failing step. A local chromium run of `e2e/seo.spec.ts` now prints the `[WebServer]` build lines and still passes 28 of 28.
+
 - docs: `CLAUDE.md` › Commands and `AGENTS.md` now say `npm run type-check` runs three `tsc` passes. The third, `tsc -p scripts/tsconfig.json`, type-checks the native-TypeScript `frontend/scripts/` and was added in #667. Before this, both lines listed only the first two.
 
 - test(scripts): Fix a race in `scripts/tests/deploy.test.ts` that failed `Repo Checks (informational)` once on PR #668 (`actual: ''` at line 54). The fake deploy script wrote its SHA marker with a bare `>`, which creates the file empty before `printf` fills it, and the test's existence poll could read it in that window. The fixture now writes a `.tmp` file and renames it.
