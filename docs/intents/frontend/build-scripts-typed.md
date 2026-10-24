@@ -124,3 +124,8 @@ updated: 2026-10-24
 ## Outcome
 
 <!-- Filled when status becomes shipped or dropped. -->
+
+- **PR 1** (#667, `ff698f51`, 2026-10-24): production `/api/health/` reported `ff698f51` about 120 s after the merge.
+  - Done when #8: `sitemap.xml` and `robots.txt` are byte-identical to the pre-deploy snapshot taken on `167d8c04`.
+  - `/profile` and `/en/profile` differ in one token each, the `data-cfemail` of Cloudflare's email obfuscation. Cloudflare re-keys that token per response, and all four tokens decode to `contact@emelmujiro.com`, so a page comparison has to decode it or mask it first.
+  - PR 2 is next.
