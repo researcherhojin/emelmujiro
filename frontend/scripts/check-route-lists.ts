@@ -6,7 +6,7 @@
  * their own copy of that list and none of them consults any other:
  *
  *   1. frontend/src/App.tsx                  — pageRoutes + standaloneRoutes
- *   2. frontend/scripts/generate-sitemap.js  — staticRoutes (sitemap + prerender)
+ *   2. frontend/scripts/generate-sitemap.ts  — staticRoutes (sitemap + prerender)
  *   3. frontend/e2e/seo.spec.ts              — routes (SEO assertions)
  *   4. frontend/lighthouserc.js              — ci.collect.url
  *
@@ -29,13 +29,16 @@
  * the right routes", not "nginx is tested".
  *
  * Run: npm run check:routes (from frontend/) — node builtins only, no build,
- * no node_modules, so CI can run it before `npm ci`.
+ * no node_modules. Node strips the types natively, so it needs no `npm ci`.
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { staticRoutes } from './generate-sitemap.ts';
 
-const FRONTEND = path.resolve(__dirname, '..');
+const require = createRequire(import.meta.url);
+const FRONTEND = path.resolve(import.meta.dirname, '..');
 
 // Routes that exist in App.tsx and are deliberately NOT prerendered. Each is
 // served by nginx's SPA-fallback regex instead, so it has no build/<path>/
@@ -43,17 +46,17 @@ const FRONTEND = path.resolve(__dirname, '..');
 // pattern-matched: "is this page for crawlers" is a judgment, not a shape.
 // Entries are verified to still exist in App.tsx, so deleting a route here
 // fails rather than silently rotting.
-const NOT_PRERENDERED = {
+const NOT_PRERENDERED: Record<string, string> = {
   'insights/new': 'admin-only blog editor, behind auth',
   login: 'standalone auth page, no crawler value',
 };
 
-function read(rel) {
+function read(rel: string): string {
   return fs.readFileSync(path.join(FRONTEND, rel), 'utf8');
 }
 
 /** Pull an array literal's body out of `const <name> = [ … ];`. */
-function arrayBody(source, name, file) {
+function arrayBody(source: string, name: string, file: string): string {
   const start = source.indexOf(`const ${name} = [`);
   if (start === -1) {
     throw new Error(`could not find "const ${name} = [" in ${file}`);
@@ -71,14 +74,14 @@ function arrayBody(source, name, file) {
 }
 
 /** Normalize 'contact' | '/contact' | '' -> '/contact' | '/'. */
-function normalize(p) {
+function normalize(p: string): string {
   if (p === '' || p === '/') return '/';
   return p.startsWith('/') ? p : `/${p}`;
 }
 
-function appRoutes() {
+function appRoutes(): string[] {
   const src = read('src/App.tsx');
-  const routes = [];
+  const routes: string[] = [];
   for (const name of ['pageRoutes', 'standaloneRoutes']) {
     const body = arrayBody(src, name, 'src/App.tsx');
     if (/index:\s*true/.test(body)) routes.push('/');
@@ -89,7 +92,7 @@ function appRoutes() {
   return routes;
 }
 
-function seoSpecRoutes() {
+function seoSpecRoutes(): string[] {
   const src = read('e2e/seo.spec.ts');
   const body = arrayBody(src, 'routes', 'e2e/seo.spec.ts');
   return [...body.matchAll(/'([^']*)'/g)].map((m) => normalize(m[1]));
@@ -100,7 +103,7 @@ function seoSpecRoutes() {
  * back to /app.html) and its e2e-server.mjs mirror (`const SPA_FALLBACK`),
  * both as plain pattern source with no JS `\/` escaping.
  */
-function fallbackPatterns() {
+function fallbackPatterns(): { nginx: string; mirror: string } {
   const nginx = read('nginx.conf');
   const blocks = [...nginx.matchAll(/^\s*location ~ (\S+) \{\n([\s\S]*?)^\s*\}/gm)];
   const fallback = blocks.filter(([, , body]) => /try_files \$uri \/app\.html;/.test(body));
@@ -116,21 +119,20 @@ function fallbackPatterns() {
   return { nginx: fallback[0][1], mirror: m[1].replace(/\\\//g, '/') };
 }
 
-function lighthouseRoutes() {
+function lighthouseRoutes(): string[] {
   const config = require(path.join(FRONTEND, 'lighthouserc.js'));
   const urls = config?.ci?.collect?.url;
   if (!Array.isArray(urls)) throw new Error('lighthouserc.js: ci.collect.url is not an array');
-  return urls.map((u) => normalize(new URL(u).pathname.replace(/\/$/, '')));
+  return (urls as string[]).map((u) => normalize(new URL(u).pathname.replace(/\/$/, '')));
 }
 
 function main() {
-  const { staticRoutes } = require(path.join(FRONTEND, 'scripts/generate-sitemap.js'));
   const prerendered = staticRoutes.map((r) => normalize(r.url));
   const app = appRoutes();
   const seo = seoSpecRoutes();
   const lighthouse = lighthouseRoutes();
 
-  const errors = [];
+  const errors: string[] = [];
 
   // 1. Every prerenderable App.tsx route is in staticRoutes.
   //    Dynamic (':') and catch-all ('*') routes can never be prerendered.
@@ -142,7 +144,7 @@ function main() {
       errors.push(
         `App.tsx declares ${route} but staticRoutes does not — it will ship a hard 404 ` +
           `(no build${route}/index.html, no sitemap entry). Add it to staticRoutes in ` +
-          `scripts/generate-sitemap.js, or to NOT_PRERENDERED in this script if it is ` +
+          `scripts/generate-sitemap.ts, or to NOT_PRERENDERED in this script if it is ` +
           `deliberately SPA-only.`
       );
     }
@@ -164,7 +166,7 @@ function main() {
     if (!app.includes(normalize(key))) {
       errors.push(
         `NOT_PRERENDERED lists ${normalize(key)} but App.tsx no longer declares it — ` +
-          `drop the entry from ${path.relative(FRONTEND, __filename)}.`
+          `drop the entry from ${path.relative(FRONTEND, import.meta.filename)}.`
       );
     }
   }
@@ -208,8 +210,8 @@ function main() {
     );
   }
   const fallbackRe = new RegExp(fallback.nginx);
-  const concrete = (route) => route.replace(/:[A-Za-z_]+/g, 'sample');
-  const urlsFor = (route) =>
+  const concrete = (route: string) => route.replace(/:[A-Za-z_]+/g, 'sample');
+  const urlsFor = (route: string) =>
     ['', '/en'].map((p) => `${p}${route === '/' ? '' : concrete(route)}` || '/');
   const spaOnly = app.filter(
     (r) => !r.includes('*') && (r.includes(':') || (r !== '/' && r.slice(1) in NOT_PRERENDERED))

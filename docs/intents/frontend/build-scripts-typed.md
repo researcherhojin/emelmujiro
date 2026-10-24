@@ -1,5 +1,5 @@
 ---
-status: approved
+status: in-progress
 module: frontend
 created: 2026-10-24
 updated: 2026-10-24
@@ -104,6 +104,11 @@ updated: 2026-10-24
      - `pr-checks.yml`: move `Check route lists agree` below `Setup Node.js`, rewrite its comment, and update the `test-generate-sitemap` path.
      - `main-ci-cd.yml` line 42.
   9. Name references: every line from the 39-line census that names a PR 1 file. That includes `CLAUDE.md`, `AGENTS.md`, `frontend-build.md` (line 35's "before `Setup Node.js`" too), `CONTRIBUTING.md`, `Makefile`, `auto-deploy.sh`, `setup-dev-machine.sh` and source comments. Then the `CHANGELOG.md` entry.
+- **Departures from the Plan**, PR 1:
+  - `generate-sitemap.ts` compares `import.meta.url` with `pathToFileURL` of `process.argv[1]` after resolving symlinks through `fs`, not the bare `pathToFileURL(process.argv[1])` of `scripts/shared/runtime.ts`. Reason: `import.meta.url` is the resolved path and `argv[1]` is not, so under a symlinked directory (macOS `os.tmpdir()` is `/var` → `/private/var`) the plain comparison is false, `main()` never runs and the CLI exits `0`. The CLI test in `test-generate-sitemap.ts` failed with `0 !== 1` until this was added.
+  - `test-generate-sitemap.ts` loads `generate-sitemap.ts` with a top-level `await import()` after setting `SITE_URL` and `API_URL`, not a static `import`. Reason: the module reads both at load, and a static import is hoisted above the assignments.
+  - `frontend/scripts/tsconfig.json` includes `*.ts` (the folder's files only) rather than `**/*.ts`, because no subfolder holds a `.ts` file.
+  - The three files that `prettier --check` flags (`check-css.cjs`, `prerender.cjs`, and `vite.config.ts`) were flagged on `167d8c04` too and are left unformatted, since reformatting would put unrelated hunks in a rename.
 - **Changes**, PR 2 (after PR 1 is deployed and verified):
   1. `prerender.cjs` → `prerender.ts`, typed against `playwright`'s `Browser` and `Page`. `BUILD_OUT_DIR` handling and the API relay stay as they are.
   2. `e2e-server.mjs` → `e2e-server.ts`. `SPA_FALLBACK` stays a single-line `const SPA_FALLBACK = /…/;` so `check-route-lists`' text match keeps working, and that script now reads the `.ts` path.

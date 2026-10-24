@@ -1,22 +1,24 @@
-const { test, afterEach, mock } = require('node:test');
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const os = require('node:os');
-const path = require('node:path');
-const { spawnSync } = require('node:child_process');
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { afterEach, mock, test } from 'node:test';
 
 process.env.SITE_URL = 'https://example.test';
 process.env.API_URL = 'https://api.example.test/api';
-const { generateSitemap } = require('./generate-sitemap');
+// Loaded after the env above is set: generate-sitemap reads SITE_URL and API_URL
+// when it is imported, and a static import would run first.
+const { generateSitemap } = await import('./generate-sitemap.ts');
 afterEach(() => mock.restoreAll());
 
-const post = (slug, translated = false) => ({
+const post = (slug: string, translated = false) => ({
   slug,
   is_published: true,
   is_translated: translated,
   updated_at: '2026-10-22T00:00:00Z',
 });
-function pages(...values) {
+function pages(...values: unknown[]) {
   let index = 0;
   return mock.method(globalThis, 'fetch', async () => ({
     ok: true,
@@ -48,7 +50,7 @@ test('fetches subsequent pages from the configured API', async () => {
     { count: 2, results: [post('second')] }
   );
   assert.equal((await generateSitemap()).postCount, 2);
-  assert.match(fetchMock.mock.calls[1].arguments[0], /page=2&page_size=100$/);
+  assert.match(String(fetchMock.mock.calls[1].arguments[0]), /page=2&page_size=100$/);
 });
 
 test('network failure rejects generation', async () => {
@@ -112,10 +114,12 @@ test('CLI exits unsuccessfully without overwriting existing sitemap on failure',
     fs.mkdirSync(path.join(root, 'scripts'));
     fs.mkdirSync(path.join(root, 'public'));
     fs.copyFileSync(
-      __dirname + '/generate-sitemap.js',
-      path.join(root, 'scripts/generate-sitemap.js')
+      import.meta.dirname + '/generate-sitemap.ts',
+      path.join(root, 'scripts/generate-sitemap.ts')
     );
     fs.writeFileSync(path.join(root, 'package.json'), '{}');
+    // Without this, node reads the copied .ts as typeless and warns.
+    fs.writeFileSync(path.join(root, 'scripts/package.json'), '{"type": "module"}');
     const output = path.join(root, 'public/sitemap.xml');
     fs.writeFileSync(output, 'existing sitemap');
     const preload = path.join(root, 'offline.cjs');
@@ -123,7 +127,7 @@ test('CLI exits unsuccessfully without overwriting existing sitemap on failure',
     const result = spawnSync(process.execPath, [
       '--require',
       preload,
-      path.join(root, 'scripts/generate-sitemap.js'),
+      path.join(root, 'scripts/generate-sitemap.ts'),
     ]);
     assert.equal(result.status, 1);
     assert.equal(fs.readFileSync(output, 'utf8'), 'existing sitemap');

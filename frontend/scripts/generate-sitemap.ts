@@ -1,17 +1,20 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 // SITE_URL: env override > package.json "homepage". The old hardcoded
 // "https://emelmujiro.com" fallback duplicated the homepage field and
 // silently drifted if either changed. Trailing slash is stripped so
 // `${SITE_URL}${prefix}${urlPath}` below can't accidentally produce
 // `https://emelmujiro.com//en/profile`.
-const pkg = require('../package.json');
+const pkg: { homepage?: string } = JSON.parse(
+  fs.readFileSync(path.join(import.meta.dirname, '../package.json'), 'utf8')
+);
 const SITE_URL = (process.env.SITE_URL || pkg.homepage || '').replace(/\/+$/, '');
 const API_URL = process.env.API_URL || 'https://api.emelmujiro.com/api';
 const LANGUAGES = ['ko', 'en'];
 const DEFAULT_LANG = 'ko';
-const OUTPUT_DIR = path.join(__dirname, '../public');
+const OUTPUT_DIR = path.join(import.meta.dirname, '../public');
 
 if (!SITE_URL) {
   console.error('❌ SITE_URL missing: set SITE_URL env var or package.json "homepage" field');
@@ -19,7 +22,26 @@ if (!SITE_URL) {
 }
 
 // Static routes — must match pageRoutes in App.tsx (excluding dynamic/auth routes)
-const staticRoutes = [
+interface StaticRoute {
+  url: string;
+  changefreq: string;
+  priority: number;
+}
+
+interface BlogPost {
+  slug: string;
+  is_published?: boolean;
+  is_translated?: boolean;
+  updated_at?: string;
+  date?: string;
+}
+
+interface BlogPage {
+  count: number;
+  results: BlogPost[];
+}
+
+const staticRoutes: StaticRoute[] = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
   { url: '/insights', changefreq: 'daily', priority: 0.8 },
   { url: '/contact', changefreq: 'weekly', priority: 0.7 },
@@ -31,7 +53,7 @@ const staticRoutes = [
  * Build the full URL for a route in a given language.
  * Korean (default): no prefix. English: /en prefix.
  */
-function buildLangUrl(routeUrl, lang) {
+function buildLangUrl(routeUrl: string, lang: string): string {
   const prefix = lang === DEFAULT_LANG ? '' : `/${lang}`;
   const urlPath = routeUrl === '/' ? '' : routeUrl;
   return `${SITE_URL}${prefix}${urlPath}`;
@@ -40,7 +62,7 @@ function buildLangUrl(routeUrl, lang) {
 /**
  * Generate xhtml:link hreflang alternates for a route.
  */
-function generateHreflangLinks(routeUrl) {
+function generateHreflangLinks(routeUrl: string): string {
   const links = LANGUAGES.map(
     (lang) =>
       `    <xhtml:link rel="alternate" hreflang="${lang}" href="${buildLangUrl(routeUrl, lang)}" />`
@@ -63,16 +85,16 @@ const PAGE_SIZE = 100;
  * API's `count`. Fail the build on an unavailable or inconsistent inventory:
  * publishing a static-only sitemap would silently withdraw every article URL.
  */
-async function fetchBlogPosts() {
-  const all = [];
-  const slugs = new Set();
-  let count;
+async function fetchBlogPosts(): Promise<BlogPost[]> {
+  const all: BlogPost[] = [];
+  const slugs = new Set<string>();
+  let count: number | undefined;
   for (let page = 1; count === undefined || all.length < count; page++) {
     const res = await fetch(`${API_URL}/blog-posts/?page=${page}&page_size=${PAGE_SIZE}`, {
       signal: AbortSignal.timeout(10000),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status} on page ${page}`);
-    const data = await res.json();
+    const data = (await res.json()) as BlogPage;
     if (!Number.isInteger(data.count) || data.count < 0 || !Array.isArray(data.results)) {
       throw new Error(`Invalid article inventory on page ${page}`);
     }
@@ -102,7 +124,7 @@ async function fetchBlogPosts() {
  * /insights/:slug entries fetched from the backend.
  */
 const generateSitemap = async () => {
-  const urlEntries = [];
+  const urlEntries: string[] = [];
 
   // Static routes
   for (const route of staticRoutes) {
@@ -218,8 +240,11 @@ const main = async () => {
   }
 };
 
-if (require.main === module) {
+// Resolve symlinks: import.meta.url is the resolved path, while argv[1] is not. Under a
+// symlinked directory (macOS os.tmpdir() is /var -> /private/var) the plain
+// comparison is false and the CLI would silently do nothing.
+if (process.argv[1] && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href) {
   main();
 }
 
-module.exports = { generateSitemap, generateRobotsTxt, staticRoutes, LANGUAGES, DEFAULT_LANG };
+export { generateSitemap, generateRobotsTxt, staticRoutes, LANGUAGES, DEFAULT_LANG };

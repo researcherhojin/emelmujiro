@@ -12,7 +12,7 @@
  * serves app.html (not index.html) as the SPA-fallback and 404 document — see
  * `location = /app.html` in nginx.conf for why the snapshot must not be it.
  *
- * Usage: node scripts/prerender.js
+ * Usage: node scripts/prerender.cjs
  */
 
 const { chromium } = require('playwright');
@@ -28,7 +28,7 @@ const BUILD_DIR = path.resolve(__dirname, '..', process.env.BUILD_OUT_DIR || 'bu
 const SHELL_FILE = 'app.html';
 
 // Import shared constants from sitemap generator (single source of truth)
-const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('./generate-sitemap');
+const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('./generate-sitemap.ts');
 
 /**
  * Start a simple static file server for the build directory.
@@ -246,7 +246,7 @@ async function prerenderRoute(page, baseUrl, route) {
     throw new Error(
       `Prerender ${route}: expected to restore exactly 1 Pretendard <link> to rel="preload" ` +
         `but found none matching link[href*="pretendardvariable"]. Did the CDN URL change in index.html? ` +
-        `If so, update the selector in scripts/prerender.js to match.`
+        `If so, update the selector in scripts/prerender.cjs to match.`
     );
   }
 
@@ -274,7 +274,7 @@ async function prerenderRoute(page, baseUrl, route) {
       `Prerender ${route}: the captured HTML still references the prerender server ${baseUrl} ` +
         `(e.g. ${sample}). That URL is dead the moment this build finishes, and it is http:// on an ` +
         `https:// page, so CSP blocks it for every visitor. Extend the rewrite in the cleanup ` +
-        `page.evaluate() in scripts/prerender.js to cover the attribute that carries it.`
+        `page.evaluate() in scripts/prerender.cjs to cover the attribute that carries it.`
     );
   }
 

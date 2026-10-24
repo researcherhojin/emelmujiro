@@ -26,7 +26,7 @@ import { chromium } from 'playwright';
 // The list prerender and the sitemap use, so this harness never becomes a fifth
 // hardcoded route list next to the four `check:routes` cross-checks.
 const require = createRequire(import.meta.url);
-const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('../generate-sitemap');
+const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('../generate-sitemap.ts');
 
 const THEMES = ['light', 'dark'];
 const WIDTHS = [390, 1440];
@@ -130,7 +130,7 @@ const capture = async (page, shot, file) => {
   const response = await page.goto(baseUrl + shot.path, { waitUntil: 'networkidle' });
   const status = response?.status();
   if (shot.status ? status !== shot.status : !response?.ok()) throw new Error(`HTTP ${status}`);
-  // Set by AppLayout and LoginPage once React has rendered, as prerender.js waits.
+  // Set by AppLayout and LoginPage once React has rendered, as prerender.cjs waits.
   await page.waitForFunction(() => window.__appLoaded === true, undefined, { timeout: 15_000 });
   if (shot.click) {
     await page.locator(shot.click).first().click();

@@ -45,7 +45,7 @@ verify-setup:
 	@cd frontend && CI=true npx vitest run --reporter=dot --no-coverage src/utils/__tests__/dateFormat.test.ts >/dev/null 2>&1 && echo "✓ vitest smoke test passes" || (echo "✗ vitest smoke test failed"; exit 1)
 	@cd backend && DATABASE_URL='' uv run python manage.py check >/dev/null 2>&1 && echo "✓ django check passes" || (echo "✗ django check failed"; exit 1)
 # Chromium is a BUILD dependency, not E2E-only: `npm run build` runs
-# frontend/scripts/prerender.js, which calls chromium.launch(). A machine
+# frontend/scripts/prerender.cjs, which calls chromium.launch(). A machine
 # without it gets a green `vite build` and a dead prerender.
 # Launches the browser rather than asking Playwright whether it is
 # installed: `playwright install --dry-run` exits 0 even when the binary is

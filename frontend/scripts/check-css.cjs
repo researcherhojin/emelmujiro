@@ -7,8 +7,8 @@
  * references. knip catches dead modules; this catches dead CSS.
  *
  * Usage (run from frontend/):
- *   node scripts/check-css.js
- *   node scripts/check-css.js --json
+ *   node scripts/check-css.cjs
+ *   node scripts/check-css.cjs --json
  *
  * Exit codes:
  *   0 — no unused classes
@@ -121,7 +121,7 @@ function main() {
       console.log(`❌ ${unused.length} unused:`);
       for (const c of unused) console.log(`   ${c}`);
       console.log(
-        '\nFalse positives? Add to the ALLOWLIST in scripts/check-css.js with a one-line reason.'
+        '\nFalse positives? Add to the ALLOWLIST in scripts/check-css.cjs with a one-line reason.'
       );
     }
   }
