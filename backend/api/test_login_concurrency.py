@@ -9,9 +9,7 @@ from .login_throttle import LoginRateThrottle
 
 
 def attempt(_):
-    request = Request(
-        RequestFactory().post("/api/auth/login/", REMOTE_ADDR="203.0.113.71")
-    )
+    request = Request(RequestFactory().post("/api/auth/login/", REMOTE_ADDR="203.0.113.71"))
     return LoginRateThrottle().allow_request(request, None)
 
 
@@ -28,10 +26,13 @@ class LoginConcurrencyTests(SimpleTestCase):
 
     def test_processes_share_exact_limit(self):
         import multiprocessing
+        import sys
 
-        with ProcessPoolExecutor(
-            max_workers=6, mp_context=multiprocessing.get_context("fork")
-        ) as pool:
+        # Forked workers inherit unflushed stdio buffers and re-emit them, which
+        # repeated the runner's "Found N test(s)." line mid-run in piped CI logs.
+        sys.stdout.flush()
+        sys.stderr.flush()
+        with ProcessPoolExecutor(max_workers=6, mp_context=multiprocessing.get_context("fork")) as pool:
             self.assertEqual(sum(pool.map(attempt, range(30))), 10)
 
     def test_lock_failure_fails_closed(self):

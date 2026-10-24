@@ -25,9 +25,7 @@ class LoginRateThrottle(ClientIPAnonRateThrottle):
         self.lock_failed = False
         try:
             directory.mkdir(parents=True, exist_ok=True)
-            fd = os.open(
-                directory / "login-throttle.lock", os.O_CREAT | os.O_RDWR, 0o600
-            )
+            fd = os.open(directory / "login-throttle.lock", os.O_CREAT | os.O_RDWR, 0o600)
             with os.fdopen(fd, "a") as lock:
                 while True:
                     try:
