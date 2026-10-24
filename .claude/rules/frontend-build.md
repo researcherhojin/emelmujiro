@@ -50,6 +50,7 @@ paths:
 - `vite preview` is **not** a substitute — its SPA fallback answers `/contact` with `build/index.html`, so every prerendered route silently serves the homepage snapshot.
 - The build must be `build:e2e`, not `build`, because a plain production build inlines `VITE_API_URL=https://api.emelmujiro.com/api/` and calls the live backend (Gotcha #18).
 - `reuseExistingServer` keeps the rebuild off the iteration loop — leave `npm run serve:build` running in another shell.
+- `webServer.stdout` stays `'pipe'`: Playwright drops webServer stdout by default, and `concurrently` relays the sitemap and tsc steps there, so a failed `build:e2e` showed only `exit 1` (PR #670) until #671.
 
 **Lighthouse never audits a prerendered document.** `frontend/lighthouserc.js` collects via `startServerCommand: npx vite preview --port 4173` — the substitute the E2E rule above rejects — so all four configured URLs receive the homepage document, and every per-route score describes the **hydrated SPA reached from it**, not what a crawler gets.
 
