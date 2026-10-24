@@ -13,7 +13,12 @@ test('deployment contract: authentication, SHA, body limit, env forwarding and b
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'deploy fixture '));
   const marker = path.join(directory, 'sha.txt');
   const script = path.join(directory, 'fake deploy.sh');
-  fs.writeFileSync(script, `printf '%s' "$DEPLOY_SHA" > '${marker}'\nsleep 1\n`);
+  // Write then rename: a bare `>` creates the marker empty before printf
+  // fills it, and the poll below can read it in that window (CI, 2026-10-24).
+  fs.writeFileSync(
+    script,
+    `printf '%s' "$DEPLOY_SHA" > '${marker}.tmp' && mv '${marker}.tmp' '${marker}'\nsleep 1\n`
+  );
   const lockFile = path.join(directory, 'deploy.lock');
   const { server, shutdown } = createWebhookServer({ secret: 'fixture-secret', script, lockFile });
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
