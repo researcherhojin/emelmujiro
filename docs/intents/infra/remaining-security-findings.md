@@ -7,7 +7,7 @@ updated: 2026-10-22
 
 # Remediate remaining dependency and container findings
 
-<!-- cspell:ignore modelcontextprotocol emnapi tmpfs -->
+<!-- cspell:ignore modelcontextprotocol emnapi tmpfs bidi Bidi -->
 
 ## Intent
 
@@ -281,3 +281,38 @@ only for YAML configuration. `@lhci/utils/src/lighthouserc.js` calls
 The last `braces` path was removed by the Tailwind 4 migration (`f1040650`,
 `docs/intents/frontend/tailwind-v4-migration.md`). `npm audit` on `main` now
 reports `found 0 vulnerabilities`, and `npm audit --omit=dev` reports 0.
+
+### Follow-up: zod and body-parser (2026-10-24)
+
+The 2026-10-24 Security Operations Watchdog failure (#660) found `npm audit`
+at 7 high findings again, all marked `"dev": true`. Two advisories had arrived
+upstream: GHSA-mrhx-c7xc-m3w5 (`zod` < 4.6.6, no lower bound) and
+GHSA-27r3-jxmh-p828 (`body-parser` < 1.20.9, published 2026-10-23). The other
+five were `chromium-bidi`, `puppeteer-core`, `lighthouse`, `@lhci/utils` and
+`@lhci/cli`, reached only through `zod`. The audit's offered fix was again the
+`@lhci/cli` 0.13.0 downgrade, which is excluded (Gotcha #6).
+
+- `body-parser` 1.20.8 came through `@lhci/cli` → `express@4.22.3`, already the
+  newest 4.x, whose `~1.20.5` range admits 1.20.9. `npm update body-parser`
+  moved it without an override.
+- Root `zod` 4.6.5 (`eslint-plugin-react-hooks`, `knip`): `npm update zod` → 4.6.7.
+- `chromium-bidi@14.0.0` (pinned exactly by `puppeteer-core@24.43.1`) declares
+  `zod ^3.24.1`, and no 3.x release is fixed. The narrowest change is the
+  scoped override `"chromium-bidi": { "zod": "4.6.7" }`. Swapping
+  `chromium-bidi` to the 157.x line that `puppeteer-core@25` uses would cross
+  143 major versions of the mapper itself. `chromium-bidi` reaches zod only
+  through `protocol-parser`, at runtime with `lazy`, `object`, `literal`,
+  `string`, `union`, `array`, `number`, `boolean`, `null`, `enum`, `tuple`,
+  two-argument `record`, `any`, `default`, `optional`, `passthrough` and
+  `safeParse`, all present in zod 4. A valid `parseNavigateParams` call parses.
+- **Known divergence**: `parseObject` reads `parseResult.error.errors`, which
+  zod 4 removed, so invalid BiDi input throws `TypeError: Cannot read
+properties of undefined (reading 'map')` instead of
+  `InvalidArgumentException`. That path runs only when Puppeteer speaks
+  WebDriver BiDi through `BidiOverCdp`; Lighthouse drives Chrome over CDP.
+- Verification: `npm ci` reproduced the tree with no `invalid` entries and no
+  nested `chromium-bidi/node_modules/zod`. `zod`, `body-parser`,
+  `chromium-bidi` and `@lhci/cli` keep `"dev": true`, and
+  `@rolldown/binding-linux-x64-gnu` is still locked. `require('puppeteer-core')`,
+  the `BidiMapper` module and `import('lighthouse')` load. `frontend` lint and
+  `knip` pass. `npm audit` reports `found 0 vulnerabilities`.
