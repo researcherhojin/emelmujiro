@@ -47,11 +47,14 @@ services:
       retries: 3
       start_period: 40s
 
-  # nginx uses an exact upstream version. Analytics images are built from
-  # reviewed recipes under docker/ so dependency fixes are reproducible.
+  # nginx uses an exact upstream version, in the -slim variant: it leaves out
+  # libcurl, the image-filter font libraries and the njs/acme modules, none of
+  # which nginx.conf loads, so their CVEs (brotli-libs, #673) never reach this
+  # image. Analytics images are built from reviewed recipes under docker/ so
+  # dependency fixes are reproducible.
   frontend:
     logging: *bounded-logging
-    image: nginx:1.31.8-alpine
+    image: nginx:1.31.8-alpine-slim
     container_name: emelmujiro-frontend
     restart: unless-stopped
     security_opt:

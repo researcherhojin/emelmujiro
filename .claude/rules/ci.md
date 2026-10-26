@@ -27,7 +27,7 @@ Never substitute an image tag for a running container's image ID.
   JavaScript path is a compatibility loader for service-manager configuration.
 - Modules and manual operation: `docs/intents/infra/security-monitoring.md`.
 
-**Runtime image recipes are versioned and must remain reproducible.** nginx uses an exact upstream Compose pin. Backend, PostgreSQL and Umami are built from their Dockerfile recipes; `auto-deploy.sh` rebuilds analytics images with Compose.
+**Runtime image recipes are versioned and must remain reproducible.** nginx uses an exact upstream Compose pin, on the `-alpine-slim` variant since #673: the full variant adds libcurl, the image-filter font libraries and the njs/acme modules that `nginx.conf` never loads, and its `brotli-libs` kept the image scan red with no upstream fix. Backend, PostgreSQL and Umami are built from their Dockerfile recipes; `auto-deploy.sh` rebuilds analytics images with Compose.
 
 - `docker/postgres/` keeps PostgreSQL 15 and replaces the bundled privilege-switch tool with Alpine's maintained equivalent. Preserve root entrypoint ownership setup; test initialization and persistence after restart with `docker/postgres/verify.sh`.
 - `docker/umami/` rebuilds the pinned application source with patched dependencies. Keep builder and runner dependency locks together, rebuild Next output, and verify tracking and database migrations in isolation.
