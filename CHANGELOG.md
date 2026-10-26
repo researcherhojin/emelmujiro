@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs: `docs/intents/infra/security-operations.md` records the second watchdog alarm (#673) and its recovery. `.claude/rules/ci.md` names the Dependabot-stored ignores for `python:3.15-alpine3.x` (#685) and `node:26-alpine` (#683). `docs/intents/blog/prerender-posts.md` records the 2026-10-26 Search Console check of the 4 post URLs.
+
 - fix(docker): The frontend now runs `nginx:1.31.8-alpine-slim` instead of `nginx:1.31.8-alpine`. The nightly image scan reported `brotli-libs 1.2.0-r1` (CVE-2026-111497, HIGH, fixed in Alpine `1.2.1-r0`) in the full image, and upstream's current `1.31.8-alpine` and `1.31-alpine` both still ship it. The slim variant carries the same nginx 1.31.8 and busybox `wget` for the healthcheck, but no libcurl, image-filter font libraries or njs/acme modules, so it has no `brotli-libs` at all (#673).
 
 - docs: `docs/intents/infra/security-operations.md` records that Dependabot alerts #1 to #6 turned `fixed` without a dismissal at 07:52Z on 2026-10-24, about 3 hours after the #661 deploy. `.claude/rules/frontend-build.md` › E2E target now says why `webServer.stdout` stays `'pipe'` (#671).
