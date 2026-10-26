@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(docker): The frontend now runs `nginx:1.31.8-alpine-slim` instead of `nginx:1.31.8-alpine`. The nightly image scan reported `brotli-libs 1.2.0-r1` (CVE-2026-111497, HIGH, fixed in Alpine `1.2.1-r0`) in the full image, and upstream's current `1.31.8-alpine` and `1.31-alpine` both still ship it. The slim variant carries the same nginx 1.31.8 and busybox `wget` for the healthcheck, but no libcurl, image-filter font libraries or njs/acme modules, so it has no `brotli-libs` at all (#673).
+
 - docs: `docs/intents/infra/security-operations.md` records that Dependabot alerts #1 to #6 turned `fixed` without a dismissal at 07:52Z on 2026-10-24, about 3 hours after the #661 deploy. `.claude/rules/frontend-build.md` › E2E target now says why `webServer.stdout` stays `'pipe'` (#671).
 
 - test(e2e): `playwright.config.ts` `webServer` now sets `stdout: 'pipe'`. Playwright drops webServer stdout by default and `concurrently` relays the sitemap and tsc steps to stdout, so when `build:e2e` failed once on PR #670 the log showed only `exit 1`, with no failing step. A local chromium run of `e2e/seo.spec.ts` now prints the `[WebServer]` build lines and still passes 28 of 28.
