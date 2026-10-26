@@ -1,4 +1,4 @@
-FROM python:3.12-alpine3.24 AS dependencies
+FROM python:3.15-alpine3.24 AS dependencies
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.24 /uv /uvx /bin/
 
@@ -19,7 +19,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
 # Keep compilers, headers and build utilities out of the runtime image.
-FROM python:3.12-alpine3.24
+FROM python:3.15-alpine3.24
 COPY --from=ghcr.io/astral-sh/uv:0.12.24 /uv /uvx /bin/
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
