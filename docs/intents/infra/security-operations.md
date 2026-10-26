@@ -112,3 +112,20 @@ real upstream advisories, and no diagnostics reached GitHub.
   a GitHub-side re-evaluation lag. The alerts were not dismissed, and all six
   turned `fixed` on their own at 07:52Z, about 3 hours after the deploy. A
   dismissed alert never turns `fixed`, so wait out the lag instead.
+
+## Second alarm (2026-10-26)
+
+The 2026-10-25 scheduled run filed #673. The host report had only `images`
+false: the running-image scan found 1 finding, in `frontend`, a HIGH in
+`brotli-libs 1.2.0-r1` (fixed in Alpine `1.2.1-r0`, published 2026-10-22).
+
+- A re-pull could not fix it. Layer inspection showed upstream's current
+  `nginx:1.31.8-alpine` (`sha256:1ef7ca94…`) and `1.31-alpine` still shipping
+  `1.2.0-r1`, and no `1.31.9-alpine` existed.
+- `1.31.8-alpine-slim` (rebuilt 2026-10-24) carries the same nginx 1.31.8 and
+  busybox `wget`, but no libcurl, image-filter font libraries or njs/acme
+  modules, so no `brotli-libs`. `frontend/nginx.conf` loads no module.
+- Fix: #686 (`ccc7c411`) moved the Compose pin. CI's `nginx -t` passed on the
+  slim image, and production reported `ccc7c411` with the container `healthy`.
+- Recovery: the host job was rerun by hand at 00:54Z, and all four checks were
+  true with 0 findings on every service. A dispatched watchdog (run 40251602783) passed and closed #673.

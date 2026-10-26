@@ -19,6 +19,7 @@ updated: 2026-10-17
   - (c) Leave it, if Search Console shows the posts indexed with the right canonical.
 - **Open questions**:
   - Are the "Discovered – currently not indexed" (2) and "Crawled – currently not indexed" (1) URLs in Search Console on 2026-10-12 the post URLs? Answered by inspecting each URL in Search Console.
+    - **2026-10-26 (report data as of 10-19)**: "Discovered" held 4 URLs, the TurboQuant and H100 posts in ko and en, all never crawled; "Crawled" held only `https://api.emelmujiro.com/api`, which should stay out of the index. All 4 post URLs answered `200` with the `app.html` shell, and a Googlebot-UA Chromium render showed each one's own title, self canonical, ko/en/x-default hreflang and `index, follow`. URL Inspection read "Google에는 아직 알려지지 않은 URL", and the owner requested indexing for all 4. The sitemap read `성공` with 16 of 16 URLs, and its view counted 12 indexed and those 4 not. Re-inspect one post around 2026-11-02: indexed points to option (c); still unknown keeps (a) open.
   - Is the open-source-LLM post indexed? On 2026-10-12 it was absent from every not-indexed row, and Googlebot fetched it 4 times on 2026-10-10 and 2026-10-11. Answered by inspecting the URL.
   - On 2026-10-12, the TurboQuant post (ko+en) appeared only as "Discovered", never crawled. Prerendering cannot help a URL Google has not fetched; for that, the lever is the `/insights` document that links to both posts (since #552).
 
