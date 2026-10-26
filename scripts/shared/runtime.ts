@@ -1,9 +1,18 @@
 import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
 export type Command = (binary: string, args: string[]) => string;
+// Node resolves symlinks for import.meta.url but not for argv[1], so a script
+// started through a symlinked directory (macOS os.tmpdir() is /var -> /private/var)
+// would never see itself as main without the realpath.
 export function isMain(url: string): boolean {
-  return Boolean(process.argv[1] && url === pathToFileURL(process.argv[1]).href);
+  if (!process.argv[1]) return false;
+  try {
+    return url === pathToFileURL(fs.realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
 }
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
