@@ -132,31 +132,36 @@ false: the running-image scan found 1 finding, in `frontend`, a HIGH in
 
 ## Third alarm (2026-10-27)
 
-The 2026-10-26 scheduled run filed #689 (run 40425595419), and the 2026-10-27
-run reported the same. Both host reports had only `images` false: the
-running-image scan found 48 findings, all in `umami`, Alpine `curl` and
-`libcurl` `8.22.0-r0` (CVE-2026-92392 HIGH plus MEDIUM and LOW; fixed in
-`8.23.0-r0`).
+Watchdog run 40425595419 (2026-10-27T00:18Z) filed #689 from the host report
+completed at 2026-10-26T17:00:23Z. The next report, 2026-10-27T17:00:19Z, was
+the same. Both had only `images` false (`backend/logs/security-schedule.log`).
+The per-service result of the second run, the only one still on disk when read,
+was 48 findings, all in `umami`: 24 CVEs, each reported for both Alpine
+`curl` and `libcurl` `8.22.0-r0` and fixed in `8.23.0-r0`. Of the 24, 1 is
+HIGH (CVE-2026-92392), 1 MEDIUM and 22 LOW. The other three services had 0.
 
-- Nothing at runtime called curl: the Compose healthcheck uses BusyBox `wget`,
-  the running container's `/app/scripts` had no curl reference, and
-  `verify.sh` runs its curl on the host.
-- Correction, measured after the fix: whether a deploy picks up Alpine patches
-  depends on the host's build cache, not on the recipe. In the deploy log,
-  `[umami base 2/2] RUN apk upgrade` was `CACHED` on the 2026-10-26 deploys,
-  but ran fresh on the #690 deploy (2026-10-27T17:49Z), and that
-  `3.4.0-security-2` rebuild already carried curl `8.23.0-r0`. The scan
-  stayed red only because no deploy happened between the Alpine fix and the
-  02:00 run. Follow-up: `docs/intents/infra/periodic-image-rebuild.md`.
+- Nothing found at runtime called curl. The Compose healthcheck uses BusyBox
+  `wget`, a grep of the running container's `/app/scripts` and
+  `/app/server.js` found no `curl`, and `verify.sh` runs its curl on the
+  host. After #691 the container passed its healthcheck and
+  `auto-deploy.sh`'s `/umami/api/send` check without curl.
+- Correction, measured after the fix: a deploy picks up Alpine patches only
+  when the host's build cache misses the `apk` layer. In the deploy log,
+  `[umami base 2/2] RUN apk upgrade` was `CACHED` on all five 2026-10-26
+  deploys (KST 09:28, 09:43, 09:52, 10:46, 18:10). It ran fresh on the #690
+  deploy (KST 2026-10-28 02:49), and that rebuild of the unchanged
+  `3.4.0-security-2` recipe already carried curl `8.23.0-r0`. The next
+  deploy (KST 03:19) was `CACHED` again. When Alpine published `8.23.0-r0`
+  was not measured. Follow-up: `docs/intents/infra/periodic-image-rebuild.md`.
 - Fix: #691 (`bb5648d2`) removed curl from the base stage and moved the tag to
   `3.4.0-security-3`; `verify.sh` now fails if the image ships curl.
 - Found on the way: `qs` 6.16.0 (GHSA-6pq8-jhm2-2vcw, published
   2026-10-27T16:10Z, dev-only through `@lhci/cli`) failed a local
-  `security:dependencies` run. The host's 17:00Z run still reported
+  `security:dependencies` run. The host's 2026-10-27T17:00:19Z run still reported
   `dependencies` true, so it was not this alarm's cause. #690 (`32885898`)
   moved it to 6.16.1.
 - Production reported `bb5648d2` before the umami step had finished:
   `/api/health/` reflects the backend, which `auto-deploy.sh` rebuilds first.
   Wait for the umami container on the new tag before rerunning the host job.
-- Recovery: the host job was rerun by hand at 17:59Z, and all four checks were
+- Recovery: the host job was rerun by hand and completed at 2026-10-27T17:59:37Z; all four checks were
   true with 0 findings on every service. A dispatched watchdog (run 40555781773) passed and closed #689.
