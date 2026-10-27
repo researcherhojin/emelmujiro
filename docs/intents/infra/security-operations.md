@@ -129,3 +129,28 @@ false: the running-image scan found 1 finding, in `frontend`, a HIGH in
   slim image, and production reported `ccc7c411` with the container `healthy`.
 - Recovery: the host job was rerun by hand at 00:54Z, and all four checks were
   true with 0 findings on every service. A dispatched watchdog (run 40251602783) passed and closed #673.
+
+## Third alarm (2026-10-27)
+
+The 2026-10-26 scheduled run filed #689 (run 40425595419), and the 2026-10-27
+run reported the same. Both host reports had only `images` false: the
+running-image scan found 48 findings, all in `umami`, Alpine `curl` and
+`libcurl` `8.22.0-r0` (CVE-2026-92392 HIGH plus MEDIUM and LOW; fixed in
+`8.23.0-r0`).
+
+- Nothing at runtime called curl: the Compose healthcheck uses BusyBox `wget`,
+  the running container's `/app/scripts` had no curl reference, and
+  `verify.sh` runs its curl on the host. A rebuild alone would also have
+  reused the cached `apk upgrade` layer.
+- Fix: #691 (`bb5648d2`) removed curl from the base stage and moved the tag to
+  `3.4.0-security-3`; `verify.sh` now fails if the image ships curl.
+- Found on the way: `qs` 6.16.0 (GHSA-6pq8-jhm2-2vcw, published
+  2026-10-27T16:10Z, dev-only through `@lhci/cli`) failed a local
+  `security:dependencies` run. The host's 17:00Z run still reported
+  `dependencies` true, so it was not this alarm's cause. #690 (`32885898`)
+  moved it to 6.16.1.
+- Production reported `bb5648d2` before the umami step had finished:
+  `/api/health/` reflects the backend, which `auto-deploy.sh` rebuilds first.
+  Wait for the umami container on the new tag before rerunning the host job.
+- Recovery: the host job was rerun by hand at 17:59Z, and all four checks were
+  true with 0 findings on every service. A dispatched watchdog (run 40555781773) passed and closed #689.
