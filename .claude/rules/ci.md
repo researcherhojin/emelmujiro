@@ -105,4 +105,5 @@ The report is regenerated only at 02:00, so a dispatched watchdog re-reads the
 old result: to confirm a fix sooner, rerun `scripts/scheduled-security.ts` on
 the host (the cron line's command) and then `gh workflow run
 security-operations.yml`. First live alarm: #660, 2026-10-24; second: #673,
-2026-10-26 (`images` only, closed by the nginx `-alpine-slim` pin).
+2026-10-26 (`images` only, closed by the nginx `-alpine-slim` pin); third: #689,
+2026-10-27 (`images` only, closed by dropping curl from the Umami image).

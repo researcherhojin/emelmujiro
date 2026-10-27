@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs: `docs/intents/infra/security-operations.md` records the third watchdog alarm (#689), its `umami` curl cause and recovery, and that `/api/health/` reports the new commit before the Umami step finishes. `.claude/rules/ci.md` lists #689 with the earlier alarms.
+
 - fix(docker): The Umami image no longer installs `curl` (`3.4.0-security-3`). The nightly image scan reported 48 findings in `umami`, all Alpine `curl` / `libcurl` `8.22.0-r0` (one HIGH, CVE-2026-92392; fixed in `8.23.0-r0`), and a rebuild alone would reuse the cached `apk` layer. Nothing at runtime calls curl: the Compose healthcheck uses BusyBox `wget`, `scripts/` has no curl call, and `verify.sh` runs its curl on the host. `verify.sh` now fails if the image ships curl (#689).
 
 - fix(deps): `qs` 6.16.0 -> 6.16.1 in the root `package-lock.json`, clearing GHSA-6pq8-jhm2-2vcw (moderate, `stringify` with `arrayFormat: 'comma'` throws on an element with a non-callable own `toString`; published 2026-10-27T16:10Z). It is dev-only, reached through `@lhci/cli` -> `express` / `body-parser`, whose `~6.16.0` range admits the patch. Only the `qs` entry was edited: `npm update qs` also deleted `@oxc-project/types` and moved four dev markers, so that rewrite was discarded. `npm audit --include=dev` and `npm run security:dependencies` report 0 findings (#689).
