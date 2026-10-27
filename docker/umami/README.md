@@ -15,7 +15,7 @@ graphs retain upstream's deepmerge-ts 8.0.2 and mysql2 3.23.1 security overrides
 The upstream Dockerfile's separate runtime install omitted those overrides; this
 recipe gives that install its own frozen lockfile. Runtime contains no global
 npm, pnpm or Yarn installation, and no curl: the Compose healthcheck uses BusyBox
-`wget`, and nothing under `scripts/` calls curl. Upstream startup uses Node and the local Prisma
+`wget`, and a grep of the running container's `/app/scripts` found no curl. Upstream startup uses Node and the local Prisma
 CLI, so migrations still execute before the server starts as UID 1001.
 
 ## Build and verify

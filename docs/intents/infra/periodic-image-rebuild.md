@@ -10,9 +10,10 @@ updated: 2026-10-28
 ## Intent
 
 - **Problem**: the locally built images (`backend`, `umami`, `umami-db`) get Alpine package fixes only when a deploy rebuilds them, and only if the host's build cache misses the `apk` layer.
-  - #689: the 2026-10-26 and 2026-10-27 02:00 runs reported 48 findings in `umami`, all Alpine `curl` / `libcurl` `8.22.0-r0`, fixed in `8.23.0-r0`. Alpine's `v3.24/main` served `8.23.0-r0` when checked on 2026-10-27.
-  - In the host deploy log, `[umami base 2/2] RUN apk upgrade` was `CACHED` on the 2026-10-26 deploys, and ran fresh on the #690 deploy (2026-10-27T17:49Z). That rebuild of the unchanged `3.4.0-security-2` recipe already carried `8.23.0-r0`. The alarm lasted because no deploy happened between the Alpine fix and the 02:00 run, not because the recipe was wrong.
-  - Why the cache missed on 2026-10-27 is unmeasured. `docker buildx du` on the host reported 10.55 GB reclaimable on 2026-10-28, which points to builder garbage collection, but nothing confirms it.
+  - #689: the host reports of 2026-10-26T17:00Z and 2026-10-27T17:00Z had `images` false. The second, the only one whose per-service result was read, had 48 findings in `umami`, all Alpine `curl` / `libcurl` `8.22.0-r0`, fixed in `8.23.0-r0`. Alpine's `v3.24/main` served `8.23.0-r0` when checked at about 2026-10-27T17:55Z; when it was published was not measured.
+  - In the host deploy log, `[umami base 2/2] RUN apk upgrade` was `CACHED` on all five 2026-10-26 deploys (KST 09:28, 09:43, 09:52, 10:46, 18:10), ran fresh on the #690 deploy (KST 2026-10-28 02:49), and was `CACHED` again on the deploy after (KST 03:19). The fresh rebuild of the unchanged `3.4.0-security-2` recipe already carried `8.23.0-r0`.
+  - Why the cache missed on the #690 deploy is unmeasured. Around 2026-10-27T17:45Z, `docker buildx du` on the host reported 10.55 GB reclaimable of 10.55 GB, while `docker system df` reported 3.167 GB reclaimable of 10.74 GB; neither confirms builder garbage collection.
+  - On 2026-10-28 the owner pruned the host build cache (10.1 GB freed; 636.5 MB left), so the next deploy rebuilds most layers and will look like a cache miss.
   - The frontend is out of this: it runs the upstream `nginx:1.31.8-alpine-slim` pin, and #673 showed that a re-pull cannot fix a package upstream has not rebuilt.
 - **Outcome wanted**: a fix published in the image's Alpine branch reaches the running `backend`, `umami` and `umami-db` containers within a set time, with no code change and no deploy.
 - **Affected systems**: `scripts/auto-deploy.sh` (build steps), `Makefile` (`setup-security-cron` or a new cron target), `docker-compose.yml`, `.claude/rules/ci.md` › Runtime image recipes and Operational logs.
