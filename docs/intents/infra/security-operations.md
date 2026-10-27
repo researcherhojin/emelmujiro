@@ -2,7 +2,7 @@
 status: shipped
 module: infra
 created: 2026-10-23
-updated: 2026-10-24
+updated: 2026-10-28
 ---
 
 # Verify and automate security operations
@@ -140,8 +140,14 @@ running-image scan found 48 findings, all in `umami`, Alpine `curl` and
 
 - Nothing at runtime called curl: the Compose healthcheck uses BusyBox `wget`,
   the running container's `/app/scripts` had no curl reference, and
-  `verify.sh` runs its curl on the host. A rebuild alone would also have
-  reused the cached `apk upgrade` layer.
+  `verify.sh` runs its curl on the host.
+- Correction, measured after the fix: whether a deploy picks up Alpine patches
+  depends on the host's build cache, not on the recipe. In the deploy log,
+  `[umami base 2/2] RUN apk upgrade` was `CACHED` on the 2026-10-26 deploys,
+  but ran fresh on the #690 deploy (2026-10-27T17:49Z), and that
+  `3.4.0-security-2` rebuild already carried curl `8.23.0-r0`. The scan
+  stayed red only because no deploy happened between the Alpine fix and the
+  02:00 run. Follow-up: `docs/intents/infra/periodic-image-rebuild.md`.
 - Fix: #691 (`bb5648d2`) removed curl from the base stage and moved the tag to
   `3.4.0-security-3`; `verify.sh` now fails if the image ships curl.
 - Found on the way: `qs` 6.16.0 (GHSA-6pq8-jhm2-2vcw, published

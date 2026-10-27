@@ -30,7 +30,7 @@ Never substitute an image tag for a running container's image ID.
 **Runtime image recipes are versioned and must remain reproducible.** nginx uses an exact upstream Compose pin, on the `-alpine-slim` variant since #673: the full variant adds libcurl, the image-filter font libraries and the njs/acme modules that `nginx.conf` never loads, and its `brotli-libs` kept the image scan red with no upstream fix. Backend, PostgreSQL and Umami are built from their Dockerfile recipes; `auto-deploy.sh` rebuilds analytics images with Compose.
 
 - `docker/postgres/` keeps PostgreSQL 15 and replaces the bundled privilege-switch tool with Alpine's maintained equivalent. Preserve root entrypoint ownership setup; test initialization and persistence after restart with `docker/postgres/verify.sh`.
-- `docker/umami/` rebuilds the pinned application source with patched dependencies. Keep builder and runner dependency locks together, rebuild Next output, and verify tracking and database migrations in isolation.
+- `docker/umami/` rebuilds the pinned application source with patched dependencies, and ships no curl since #689 (the healthcheck uses BusyBox `wget`; `verify.sh` fails if curl returns). Keep builder and runner dependency locks together, rebuild Next output, and verify tracking and database migrations in isolation.
 - **Analytics builds set `provenance: false` and `sbom: false` (`docker-compose.yml`).** With attestations, every rebuild produced a new OCI index digest around an unchanged platform manifest, so Compose kept the container while `docker image inspect` could no longer read its exact `.Image`; `auto-deploy.sh` then force-recreated PostgreSQL and Umami on every deploy (3 of 3 on 2026-10-22). A single manifest keeps the ID stable. The script keeps that recreate as a fallback, reloads nginx whenever the umami container changes (nginx resolves the upstream only at start or reload), and requires a 4xx from `/umami/api/send` through nginx before reporting success.
 - Dependabot watches all three Dockerfile directories. Local Compose image tags are not registry dependencies. PostgreSQL major upgrades remain excluded and require dump, new volume and restore as a separate change.
 - Two base-image ignores live in Dependabot's stored state, not in `dependabot.yml`: `python:3.15-alpine3.x` for `backend/` (`@dependabot ignore this minor version` on #685; the runtime stays on 3.12, like CI and dev) and `node:26-alpine` for `docker/umami/` (`ignore this major version` on #683; Umami's own build base, Gotcha #16). Check them with `@dependabot show <dependency> ignore conditions`, and move to a new Python deliberately, in its own change.
@@ -104,6 +104,8 @@ service restart described in `.private/operations.md`.
 The report is regenerated only at 02:00, so a dispatched watchdog re-reads the
 old result: to confirm a fix sooner, rerun `scripts/scheduled-security.ts` on
 the host (the cron line's command) and then `gh workflow run
-security-operations.yml`. First live alarm: #660, 2026-10-24; second: #673,
+security-operations.yml`. After an image fix, wait for the container on the new
+image first: `/api/health/` reports the new commit once the backend is up, before
+`auto-deploy.sh` reaches the analytics rebuild (#689). First live alarm: #660, 2026-10-24; second: #673,
 2026-10-26 (`images` only, closed by the nginx `-alpine-slim` pin); third: #689,
 2026-10-27 (`images` only, closed by dropping curl from the Umami image).
