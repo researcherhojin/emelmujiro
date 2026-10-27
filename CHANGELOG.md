@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(deps): `qs` 6.16.0 -> 6.16.1 in the root `package-lock.json`, clearing GHSA-6pq8-jhm2-2vcw (moderate, `stringify` with `arrayFormat: 'comma'` throws on an element with a non-callable own `toString`; published 2026-10-27T16:10Z). It is dev-only, reached through `@lhci/cli` -> `express` / `body-parser`, whose `~6.16.0` range admits the patch. Only the `qs` entry was edited: `npm update qs` also deleted `@oxc-project/types` and moved four dev markers, so that rewrite was discarded. `npm audit --include=dev` and `npm run security:dependencies` report 0 findings (#689).
+
 - fix(scripts): `isMain()` in `scripts/shared/runtime.ts` now compares `import.meta.url` with the realpath of `process.argv[1]`. Node resolves symlinks for the module URL but not for argv, so `scan-running-images.ts` and `security-report.ts` started through a symlinked directory (macOS `os.tmpdir()` is `/var` -> `/private/var`) exited `0` without running. `generate-sitemap.ts` already used the realpath since #667. `scripts/tests/runtime.test.ts` covers the symlinked case.
 
 - docs: `docs/intents/infra/security-operations.md` records the second watchdog alarm (#673) and its recovery. `.claude/rules/ci.md` names the Dependabot-stored ignores for `python:3.15-alpine3.x` (#685) and `node:26-alpine` (#683). `docs/intents/blog/prerender-posts.md` records the 2026-10-26 Search Console check of the 4 post URLs.
