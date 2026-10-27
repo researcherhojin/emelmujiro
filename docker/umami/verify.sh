@@ -3,7 +3,7 @@
 # Disposable database and network only; never reads the deployment environment.
 set -eu
 cd "$(dirname "$0")"
-image=${UMAMI_TEST_IMAGE:-emelmujiro/umami:3.4.0-security-2}
+image=${UMAMI_TEST_IMAGE:-emelmujiro/umami:3.4.0-security-3}
 database_image=${UMAMI_TEST_DB_IMAGE:-postgres:15.19-alpine}
 name="umami-security-test-$$"
 app="$name-app"
@@ -34,6 +34,7 @@ docker run -d --name "$app" --network "$name" -p 127.0.0.1::3000 \
     -e DISABLE_BOT_CHECK=1 -e DISABLE_TELEMETRY=1 -e DISABLE_UPDATES=1 \
     "$image" >/dev/null
 [ "$(docker exec "$app" id -u)" = 1001 ]
+if docker exec "$app" sh -c "command -v curl" >/dev/null; then echo "curl must not ship"; exit 1; fi
 port=$(docker port "$app" 3000/tcp)
 case "$port" in 127.0.0.1:*) ;; *) echo "Expected loopback port, got $port"; exit 1;; esac
 wait_for_app() {
