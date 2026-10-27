@@ -14,7 +14,8 @@ zod 4.6.7, vite 8.1.6 and vitest 4.1.12. Both dependency
 graphs retain upstream's deepmerge-ts 8.0.2 and mysql2 3.23.1 security overrides.
 The upstream Dockerfile's separate runtime install omitted those overrides; this
 recipe gives that install its own frozen lockfile. Runtime contains no global
-npm, pnpm or Yarn installation. Upstream startup uses Node and the local Prisma
+npm, pnpm or Yarn installation, and no curl: the Compose healthcheck uses BusyBox
+`wget`, and nothing under `scripts/` calls curl. Upstream startup uses Node and the local Prisma
 CLI, so migrations still execute before the server starts as UID 1001.
 
 ## Build and verify
@@ -22,7 +23,7 @@ CLI, so migrations still execute before the server starts as UID 1001.
 From the repository root:
 
 ```sh
-docker build -t emelmujiro/umami:3.4.0-security-2 docker/umami
+docker build -t emelmujiro/umami:3.4.0-security-3 docker/umami
 sh docker/umami/verify.sh
 ```
 
