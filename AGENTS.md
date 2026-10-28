@@ -9,7 +9,7 @@ Full-stack monorepo (**React 19 + Vite** frontend, **Django 6 + DRF** backend), 
 - UI / page work → `.claude/rules/frontend.md`
 - Backend / API / migrations → `.claude/rules/backend.md`
 - Build, deploy, CI, or a red check → `.claude/rules/ci.md` + `.claude/rules/frontend-build.md` + `.claude/rules/backend.md` (migrations) + `CLAUDE.md` → `Constraints`.
-- A `Security operations require attention` issue → `.claude/rules/ci.md` → Scheduled security operations, then `docs/intents/infra/security-operations.md`.
+- A `Security operations require attention` issue → `.claude/rules/ci.md` → Scheduled security operations and Nightly image refresh, then `docs/intents/infra/security-operations.md` (one section per past alarm).
 - Dependency bumps → `CLAUDE.md` → `Gotchas` (numbered; the numbers are cited from commits and never change). Each rule's fix steps and evidence are in `.claude/skills/gotchas/SKILL.md` under the same number.
 - Planned work → `docs/intents/<module>/<slug>.md` (workflow and statuses in `docs/intents/README.md`): Intent → Spec → Plan → implement → `shipped` with an `Outcome`, then deleted unless a living doc cites it. Read the file's `status` before starting.
 - `main-ci-cd.yml`, `pr-checks.yml` are the CI source of truth; cite job/step **by name, not line number** (they move often).

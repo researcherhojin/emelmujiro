@@ -180,7 +180,7 @@ setup-security-cron: ## Schedule private backups, restore checks, and full secur
 	(grep -v 'scripts/scheduled-security.ts' "$$CRON_COPY"; \
 	 echo "0 2 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/scheduled-security.ts >> '$(CURDIR)/backend/logs/security-schedule.log' 2>&1") | crontab -
 
-setup-health-cron: ## Install health check cron (every 5 min, logs failures only)
+setup-health-cron: ## Install health check cron (every 5 min, logs failures and warnings only)
 	@mkdir -p $(CURDIR)/backend/logs
 	@echo "Adding health check cron job (every 5 min)..."
 	@(crontab -l 2>/dev/null | grep -v health-check; \
