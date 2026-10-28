@@ -1,25 +1,29 @@
-import React, { memo, useMemo, useRef, useCallback } from 'react';
+import React, { memo, useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PARTNER_COMPANIES, type PartnerCompany } from '../../constants';
+import CarouselPauseButton from '../common/CarouselPauseButton';
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 
-const LogoItem: React.FC<{ company: PartnerCompany }> = memo(({ company }) => {
-  const { t } = useTranslation();
-  return (
-    <div className="shrink-0 px-8">
-      <div className="flex items-center justify-center w-40 h-24">
-        <img
-          src={company.logo}
-          alt={t('logos.logoAlt', { name: company.name })}
-          className="h-12 max-w-40 w-auto object-contain opacity-60 group-hover:opacity-40 hover:opacity-100! transition-opacity duration-300"
-          width={160}
-          height={48}
-          loading="lazy"
-          decoding="async"
-        />
+const LogoItem: React.FC<{ company: PartnerCompany; duplicate?: boolean }> = memo(
+  ({ company, duplicate = false }) => {
+    const { t } = useTranslation();
+    return (
+      <div className="shrink-0 px-8" aria-hidden={duplicate ? true : undefined}>
+        <div className="flex items-center justify-center w-40 h-24">
+          <img
+            src={company.logo}
+            alt={duplicate ? '' : t('logos.logoAlt', { name: company.name })}
+            className="h-12 max-w-40 w-auto object-contain opacity-60 group-hover:opacity-40 hover:opacity-100! transition-opacity duration-300"
+            width={160}
+            height={48}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 LogoItem.displayName = 'LogoItem';
 
@@ -27,48 +31,57 @@ interface ScrollRowProps {
   companies: PartnerCompany[];
   direction?: 'left' | 'right';
   rowKey: string;
+  playing: boolean;
 }
 
-const ScrollRow: React.FC<ScrollRowProps> = memo(({ companies, direction = 'left', rowKey }) => {
-  const animationClass = direction === 'left' ? 'animate-scroll' : 'animate-scroll-reverse';
-  const scrollRef = useRef<HTMLDivElement>(null);
+const ScrollRow: React.FC<ScrollRowProps> = memo(
+  ({ companies, direction = 'left', rowKey, playing }) => {
+    const animationClass = direction === 'left' ? 'animate-scroll' : 'animate-scroll-reverse';
+    const [touching, setTouching] = useState(false);
 
-  const handleTouchStart = useCallback(() => {
-    scrollRef.current?.style.setProperty('animation-play-state', 'paused');
-  }, []);
+    // Touch handlers only set a flag: they must never call preventDefault, or the
+    // KakaoTalk WebView stops scrolling vertically over a row.
+    const handleTouchStart = useCallback(() => setTouching(true), []);
+    const handleTouchEnd = useCallback(() => setTouching(false), []);
 
-  const handleTouchEnd = useCallback(() => {
-    scrollRef.current?.style.setProperty('animation-play-state', 'running');
-  }, []);
+    return (
+      <div className="relative overflow-hidden group">
+        {/* Left/right fade masks */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-linear-to-r/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-linear-to-l/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
 
-  return (
-    <div className="relative overflow-hidden group">
-      {/* Left/right fade masks */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-linear-to-r/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-linear-to-l/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
-
-      <div
-        ref={scrollRef}
-        className={`flex w-max ${animationClass} group-hover:pause`}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Render 2 copies for seamless looping (was 3x; reduced to drop
+        <div
+          data-playing={String(playing)}
+          style={!playing || touching ? { animationPlayState: 'paused' } : undefined}
+          className={`flex w-max ${animationClass} group-hover:pause`}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* Render 2 copies for seamless looping (was 3x; reduced to drop
             homepage dom-size below Lighthouse 800-node threshold). */}
-        {[0, 1].map((copy) =>
-          companies.map((company, index) => (
-            <LogoItem key={`${rowKey}-${copy}-${index}`} company={company} />
-          ))
-        )}
+          {[0, 1].map((copy) =>
+            companies.map((company, index) => (
+              <LogoItem
+                key={`${rowKey}-${copy}-${index}`}
+                company={company}
+                duplicate={copy === 1}
+              />
+            ))
+          )}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 ScrollRow.displayName = 'ScrollRow';
 
 const LogosSection: React.FC = memo(() => {
   const { t } = useTranslation();
+  const reducedMotion = usePrefersReducedMotion();
+  const [userChoice, setUserChoice] = useState<'paused' | 'running' | null>(null);
+  const playing = userChoice === 'running' || (userChoice === null && !reducedMotion);
+  const handleToggle = useCallback(() => setUserChoice(playing ? 'paused' : 'running'), [playing]);
 
   const { firstRow, secondRow } = useMemo(() => {
     const half = Math.ceil(PARTNER_COMPANIES.length / 2);
@@ -91,12 +104,18 @@ const LogosSection: React.FC = memo(() => {
           <h2 className="text-2xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6">
             {t('logos.title')}
           </h2>
+          <CarouselPauseButton
+            playing={playing}
+            onToggle={handleToggle}
+            labelPause={t('carousel.pauseLogos')}
+            labelPlay={t('carousel.playLogos')}
+          />
         </div>
       </div>
 
       <div className="space-y-8">
-        <ScrollRow companies={firstRow} direction="left" rowKey="row1" />
-        <ScrollRow companies={secondRow} direction="right" rowKey="row2" />
+        <ScrollRow companies={firstRow} direction="left" rowKey="row1" playing={playing} />
+        <ScrollRow companies={secondRow} direction="right" rowKey="row2" playing={playing} />
       </div>
     </section>
   );

@@ -230,7 +230,8 @@
     transition-duration: 0.01ms !important;
   }
 
-  /* Scroll carousels: keep original speed (reduce ≠ eliminate) */
+  /* Scroll carousels: start paused (the prerendered page never moves before JS),
+     keep the original speed once the pause button starts them. */
   .animate-scroll,
   .animate-scroll-reverse {
     animation-duration: 32s !important;
@@ -242,5 +243,21 @@
 
   .animate-scroll-testimonial-reverse {
     animation-duration: 32s !important;
+  }
+
+  .animate-scroll,
+  .animate-scroll-reverse,
+  .animate-scroll-testimonial,
+  .animate-scroll-testimonial-reverse {
+    animation-play-state: paused;
+  }
+
+  /* Outside any cascade layer, so these beat the layered hover rule; restate hover-pause here. */
+  [data-playing="true"] {
+    animation-play-state: running;
+  }
+
+  .group:hover [data-playing="true"] {
+    animation-play-state: paused;
   }
 }

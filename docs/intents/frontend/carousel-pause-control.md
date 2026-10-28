@@ -1,5 +1,5 @@
 ---
-status: approved
+status: in-progress
 module: frontend
 created: 2026-10-29
 updated: 2026-10-29
@@ -87,6 +87,11 @@ updated: 2026-10-29
   7. Tests: unit tests for the hook, the button and both sections; a Playwright spec `e2e/carousel-pause.spec.ts`.
   8. `.claude/rules/frontend.md` › Scroll carousels: the new pause, touch and reduced-motion contract, and the remeasured DOM count.
   9. `CHANGELOG.md`.
+- **Departures**:
+  - `usePrefersReducedMotion` guards a `matchMedia()` that returns `undefined` (`?.matches`), because some existing tests reset the global `matchMedia` mock and crashed otherwise.
+  - The E2E Tab test runs on `Mobile Chrome` too (Tab traversal works in its emulation), not desktop only.
+  - The reduced-motion CSS also restates the hover pause for `[data-playing='true']`: that block is outside any cascade layer, so `[data-playing='true']` would otherwise beat the layered `.group-hover:pause` rule.
+  - Whole-document count rose by 9 (698 to 707) against 8 in `<body>` (627 to 635); the extra element is outside `<body>` and was not investigated.
 - **Risks**:
   - A hydration-time flash, where JS sets `running` before reading the media query. This shows in the reduced-motion E2E as a row with `running` at load.
   - The DOM count rising: each button adds itself, its `<svg>` and the icon's shapes. The count in `build/index.html` must stay under 800.
