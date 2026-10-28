@@ -170,6 +170,8 @@ export function refreshImages({
       path.join(source, 'scripts/verify-backend-image.sh'),
       candidateTags.backend,
       result.source,
+      result.old.backend!,
+      result.source,
     ]);
     run(trivy, ['image', '--download-db-only', '--no-progress']);
     for (const service of REFRESH_SERVICES) {
