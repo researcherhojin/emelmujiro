@@ -8,7 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
-- fix(analytics): Track language switches only from navbar clicks with from/to values; rename hero/CTA contact navigation to `click_contact`; record service opens and profile clicks with their locations; suppress analytics during prerendering. Deployed as `6d236782` (#695) on 2026-10-28 at 14:17:21 KST; this is the measurement boundary, and historical language events include automatic normalization.
+- fix(analytics): Track language switches only from navbar clicks with from/to values; rename hero/CTA contact navigation to `click_contact`; record service opens and profile clicks with their locations; suppress analytics during prerendering. Deployed as `6d236782` (#695) on 2026-10-28 at 14:17:21 KST; this is the host deployment completion time, not an atomic analytics cutoff: already-open tabs may continue emitting the old schema. Historical language events include automatic normalization; distinguish new events by name and the from/to payload rather than timestamp alone.
 
 - docs: `docs/intents/infra/security-operations.md`, `docs/intents/infra/periodic-image-rebuild.md`, `.claude/rules/ci.md` and the #691 and #693 entries below now state the #689 record exactly: the report timestamps, 24 CVEs on 2 packages (1 HIGH, 1 MEDIUM, 22 LOW) read only from the second report, `CACHED` on all five 2026-10-26 deploys and again after the #690 deploy, and the 10.1 GB host build-cache prune. The sentence claiming the alarm lasted only for want of a deploy is removed: the 2026-10-26 deploys reused the cached layer.
 
