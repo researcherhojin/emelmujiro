@@ -1,5 +1,5 @@
 ---
-status: approved
+status: in-progress
 module: claude
 created: 2026-10-28
 updated: 2026-10-28
@@ -39,6 +39,9 @@ updated: 2026-10-28
   - A pointer names a commit that only moved the text, not the one that wrote it (#572 moved the `Constraints` paragraphs into `.claude/rules/` byte-identical on 2026-10-17). Use `git log -S` with `--diff-filter` past the move, or `git log --follow` on `CLAUDE.md`, and confirm with `git show` that the commit adds the sentence's evidence.
   - A bold lead cited by a script or workflow changes. The fact-diff's bold-lead check flags it.
 - **Verification**: the `Done when` commands. The resolver script: for each token the fact-diff reports missing from a file, check that it appears in `git show <sha>` or `gh pr view <N> --json body,title` for a pointer in the same rule; print each unresolved token and the total.
+- **Departures** (2026-10-28):
+  - The 15% floor was not met: `ci.md` 20,166 → 19,258 B (−4.5%), `frontend-build.md` 16,404 → 15,466 B (−5.7%); `backend.md` 13,824 → 13,584 B (−1.7%), `frontend.md` 11,572 → 11,494 B (−0.7%). Most sentences the heuristic flagged were current-state rules or failure signatures written in the past tense, so the true evidence share was about 5% per file. The owner chose to ship and record the miss rather than lower the floor.
+  - Where a PR body did not contain a token, the pointer is the introducing commit's SHA. The `#660`, `#673` and `#689` alarm dates stay inline.
 
 ## Outcome
 
