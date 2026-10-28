@@ -2,24 +2,27 @@ import React, { memo, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PARTNER_COMPANIES, type PartnerCompany } from '../../constants';
 
-const LogoItem: React.FC<{ company: PartnerCompany }> = memo(({ company }) => {
-  const { t } = useTranslation();
-  return (
-    <div className="shrink-0 px-8">
-      <div className="flex items-center justify-center w-40 h-24">
-        <img
-          src={company.logo}
-          alt={t('logos.logoAlt', { name: company.name })}
-          className="h-12 max-w-40 w-auto object-contain opacity-60 group-hover:opacity-40 hover:opacity-100! transition-opacity duration-300"
-          width={160}
-          height={48}
-          loading="lazy"
-          decoding="async"
-        />
+// `duplicate` marks the loop's second copy, hidden from assistive tech so each logo is read once.
+const LogoItem: React.FC<{ company: PartnerCompany; duplicate: boolean }> = memo(
+  ({ company, duplicate }) => {
+    const { t } = useTranslation();
+    return (
+      <div className="shrink-0 px-8" aria-hidden={duplicate || undefined}>
+        <div className="flex items-center justify-center w-40 h-24">
+          <img
+            src={company.logo}
+            alt={duplicate ? '' : t('logos.logoAlt', { name: company.name })}
+            className="h-12 max-w-40 w-auto object-contain opacity-60 group-hover:opacity-40 hover:opacity-100! transition-opacity duration-300"
+            width={160}
+            height={48}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 LogoItem.displayName = 'LogoItem';
 
@@ -57,7 +60,7 @@ const ScrollRow: React.FC<ScrollRowProps> = memo(({ companies, direction = 'left
             homepage dom-size below Lighthouse 800-node threshold). */}
         {[0, 1].map((copy) =>
           companies.map((company, index) => (
-            <LogoItem key={`${rowKey}-${copy}-${index}`} company={company} />
+            <LogoItem key={`${rowKey}-${copy}-${index}`} company={company} duplicate={copy === 1} />
           ))
         )}
       </div>

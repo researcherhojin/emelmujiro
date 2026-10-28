@@ -2,6 +2,7 @@
   "version": "0.2",
   "language": "en",
   "dictionaries": ["npm", "softwareTerms", "software-tools"],
+  "languageSettings": [{ "languageId": "tailwindcss", "dictionaries": ["fonts", "css"] }],
   "ignoreRegExpList": ["/GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}/g"],
   "ignorePaths": [
     "backend/logs/security/**",
@@ -241,6 +242,7 @@
     "venv",
     "viewports",
     "viewsets",
+    "WCAG",
     "whitenoise",
     "wimax",
     "wordprocessingml",

@@ -77,12 +77,20 @@ describe('LogosSection', () => {
   });
 
   it('duplicates logos for seamless infinite scrolling', () => {
-    render(<LogosSection />);
+    const { container } = render(<LogosSection />);
 
-    const images = screen.getAllByRole('img');
     // 4 companies split into 2 rows: first row has ceil(4/2)=2, second row has 2
     // Each row renders 2 copies (was 3x; reduced for dom-size): (2*2) + (2*2) = 8 total images
-    expect(images).toHaveLength(8);
+    expect(container.querySelectorAll('img')).toHaveLength(8);
+  });
+
+  it('hides the duplicate copy from assistive tech so each logo is read once', () => {
+    const { container } = render(<LogosSection />);
+
+    const hidden = container.querySelectorAll('[aria-hidden="true"] img');
+    expect(hidden).toHaveLength(4);
+    hidden.forEach((img) => expect(img.getAttribute('alt')).toBe(''));
+    expect(screen.getAllByRole('img')).toHaveLength(4);
   });
 
   it('renders images with lazy loading (logos are below the fold)', () => {

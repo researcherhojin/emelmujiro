@@ -66,6 +66,21 @@ describe('TestimonialsSection', () => {
     });
   });
 
+  it('hides the duplicate copy from assistive tech so each card is read once', () => {
+    const { container } = render(<TestimonialsSection />);
+
+    const rows = container.querySelectorAll('[class*="animate-scroll"]');
+    expect(rows).toHaveLength(2);
+    rows.forEach((row) => {
+      const cards = row.children;
+      const hidden = row.querySelectorAll(':scope > [aria-hidden="true"]');
+      expect(hidden).toHaveLength(cards.length / 2);
+      // The hidden half is the second copy
+      expect(cards[cards.length - 1].getAttribute('aria-hidden')).toBe('true');
+      expect(cards[0].hasAttribute('aria-hidden')).toBe(false);
+    });
+  });
+
   it('renders testimonial cards with quote icon and program text', () => {
     render(<TestimonialsSection />);
     // Government row has cvProgram and startupProgram

@@ -32,17 +32,26 @@ const getTestimonials = (
   ],
 });
 
-const TestimonialCard: React.FC<{ testimonial: Testimonial }> = memo(({ testimonial }) => (
-  <div className="shrink-0 w-72 h-48 mx-2 bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-xs border border-gray-100 dark:border-gray-700 flex flex-col">
-    <Quote className="w-5 h-5 text-gray-300 dark:text-gray-600 mb-2 shrink-0" aria-hidden="true" />
-    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed flex-1 line-clamp-4">
-      {testimonial.text}
-    </p>
-    <span className="text-xs text-gray-600 dark:text-gray-300 mt-3 shrink-0">
-      {testimonial.program}
-    </span>
-  </div>
-));
+// `duplicate` marks the loop's second copy, hidden from assistive tech so each card is read once.
+const TestimonialCard: React.FC<{ testimonial: Testimonial; duplicate: boolean }> = memo(
+  ({ testimonial, duplicate }) => (
+    <div
+      className="shrink-0 w-72 h-48 mx-2 bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-xs border border-gray-100 dark:border-gray-700 flex flex-col"
+      aria-hidden={duplicate || undefined}
+    >
+      <Quote
+        className="w-5 h-5 text-gray-300 dark:text-gray-600 mb-2 shrink-0"
+        aria-hidden="true"
+      />
+      <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed flex-1 line-clamp-4">
+        {testimonial.text}
+      </p>
+      <span className="text-xs text-gray-600 dark:text-gray-300 mt-3 shrink-0">
+        {testimonial.program}
+      </span>
+    </div>
+  )
+);
 
 TestimonialCard.displayName = 'TestimonialCard';
 
@@ -78,7 +87,11 @@ const ScrollRow: React.FC<ScrollRowProps> = memo(({ testimonials, direction = 'l
       >
         {[0, 1].map((copy) =>
           testimonials.map((testimonial, index) => (
-            <TestimonialCard key={`${rowKey}-${copy}-${index}`} testimonial={testimonial} />
+            <TestimonialCard
+              key={`${rowKey}-${copy}-${index}`}
+              testimonial={testimonial}
+              duplicate={copy === 1}
+            />
           ))
         )}
       </div>
