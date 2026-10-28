@@ -212,6 +212,13 @@ cd "$REPO_DIR"
 GIT_COMMIT=$(git rev-parse HEAD)
 export GIT_COMMIT
 docker compose up -d --build backend
+BACKEND_IMAGE_ID=$(docker container inspect --format '{{.Image}}' emelmujiro-backend)
+if ! docker image inspect "$BACKEND_IMAGE_ID" >/dev/null 2>&1; then
+  echo "$LOG_PREFIX Backend image identity unavailable — recreating with current image"
+  docker compose up -d --no-build --force-recreate backend
+  BACKEND_IMAGE_ID=$(docker container inspect --format '{{.Image}}' emelmujiro-backend)
+  docker image inspect "$BACKEND_IMAGE_ID" >/dev/null
+fi
 # Build the reviewed analytics recipes; cached layers keep unchanged builds cheap.
 # The frontend upstream pin is applied by its own `up -d` below.
 UMAMI_CONTAINER_BEFORE=$(docker container inspect --format '{{.Id}}' emelmujiro-umami 2>/dev/null || true)

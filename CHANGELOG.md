@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(infra): Disable backend image attestations, matching analytics, and recreate the backend during deployment if its running image ID cannot be inspected. The first supervised image refresh stopped before replacement because the backend image identity was unavailable; the scheduler remained disabled.
+
 - feat(infra): Add an explicitly enabled nightly image refresh that builds from the deployed commit, verifies isolated candidates and backups, applies images, and checks runtime identities with image rollback on failure. Serialize refresh, deployment and scheduled security operations through a maintenance lock; monitor refresh freshness and retain two owned image generations. Add Alpine package upgrades to backend and PostgreSQL recipes and disposable backend verification in Docker Images CI.
 
 - fix(analytics): Track language switches only from navbar clicks with from/to values; rename hero/CTA contact navigation to `click_contact`; record service opens and profile clicks with their locations; suppress analytics during prerendering. Deployed as `6d236782` (#695) on 2026-10-28 at 14:17:21 KST; this is the host deployment completion time, not an atomic analytics cutoff: already-open tabs may continue emitting the old schema. Historical language events include automatic normalization; distinguish new events by name and the from/to payload rather than timestamp alone.
