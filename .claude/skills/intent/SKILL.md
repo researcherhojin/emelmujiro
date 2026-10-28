@@ -1,8 +1,7 @@
 ---
 name: intent
-description: Start or advance a docs/intents/ file through Intent, Spec, Plan, implementation, review and shipping, as docs/intents/README.md defines.
+description: Start or advance a docs/intents/ file through Intent, Spec, Plan, implementation, review and shipping, as docs/intents/README.md defines. Use it whenever a request needs an intent under CLAUDE.md's Skip rules (a refactor touching 3 or more files or any Constraints section, or work the owner asks to plan), or names an existing intent, even when the request is plain language and no /intent command is typed.
 argument-hint: <module>/<slug> | docs/intents/<module>/<slug>.md
-disable-model-invocation: true
 ---
 
 # Intent workflow
