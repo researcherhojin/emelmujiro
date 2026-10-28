@@ -14,6 +14,7 @@ interface ImportMeta {
 
 // Window object extension
 interface Window {
+  __isPrerendering?: boolean;
   __isKakaoInApp?: boolean;
   __isKakaoAndroid?: boolean;
   __appLoaded?: boolean;

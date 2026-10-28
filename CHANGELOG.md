@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(analytics): Track language switches only from navbar clicks with from/to values; rename hero/CTA contact navigation to `click_contact`; record service opens and profile clicks with their locations; suppress analytics during prerendering. Implemented 2026-10-28; the measurement boundary begins at deployment, and historical language events include automatic normalization.
+
 - docs: `docs/intents/infra/security-operations.md`, `docs/intents/infra/periodic-image-rebuild.md`, `.claude/rules/ci.md` and the #691 and #693 entries below now state the #689 record exactly: the report timestamps, 24 CVEs on 2 packages (1 HIGH, 1 MEDIUM, 22 LOW) read only from the second report, `CACHED` on all five 2026-10-26 deploys and again after the #690 deploy, and the 10.1 GB host build-cache prune. The sentence claiming the alarm lasted only for want of a deploy is removed: the 2026-10-26 deploys reused the cached layer.
 
 - docs: `docs/intents/infra/security-operations.md` corrects the #689 record: the `apk upgrade` layer was `CACHED` on all five 2026-10-26 deploys but ran fresh on the #690 deploy, whose unchanged-recipe rebuild already carried curl `8.23.0-r0`. New draft intent `docs/intents/infra/periodic-image-rebuild.md` asks how running images should pick up Alpine fixes without a deploy. `.claude/rules/ci.md` notes that the Umami image ships no curl.

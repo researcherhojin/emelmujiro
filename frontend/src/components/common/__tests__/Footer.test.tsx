@@ -1,3 +1,6 @@
+const analytics = vi.hoisted(() => ({ trackServiceOpen: vi.fn(), trackProfileClick: vi.fn() }));
+vi.mock('../../../utils/analytics', () => analytics);
+
 /**
  * Comprehensive tests for Footer component
  * Testing rendering, navigation, modal interactions, and service details
@@ -177,6 +180,7 @@ describe('Footer Component', () => {
 
   describe('Navigation Functionality', () => {
     test('navigates to profile page when profile link is clicked', () => {
+      analytics.trackProfileClick.mockClear();
       const { container } = renderWithRouter(<Footer />);
 
       const profileButtons = container.querySelectorAll('button');
@@ -187,6 +191,7 @@ describe('Footer Component', () => {
       fireEvent.click(profileButton!);
 
       expect(mockNavigate).toHaveBeenCalledWith('/profile');
+      expect(analytics.trackProfileClick).toHaveBeenCalledExactlyOnceWith('footer');
     });
 
     test('renders contact link to contact page in navigation', () => {
@@ -283,7 +288,9 @@ describe('Footer Component', () => {
           (btn) => btn.textContent === 'services.llmGenai.title'
         );
         expect(llmButton).toBeTruthy();
+        analytics.trackServiceOpen.mockClear();
         fireEvent.click(llmButton!);
+        expect(analytics.trackServiceOpen).toHaveBeenCalledExactlyOnceWith('llm-genai', 'footer');
 
         await waitFor(
           () => {

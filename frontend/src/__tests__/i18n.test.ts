@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import i18n from '../i18n';
+import { trackLanguageSwitch } from '../utils/analytics';
+
+vi.mock('../utils/analytics', () => ({ trackLanguageSwitch: vi.fn() }));
 
 describe('i18n configuration', () => {
   describe('instance validity', () => {
@@ -148,6 +151,12 @@ describe('i18n configuration', () => {
   });
 
   describe('language change', () => {
+    it('does not record automatic language normalization as a user switch', async () => {
+      vi.mocked(trackLanguageSwitch).mockClear();
+      await i18n.changeLanguage('ko-KR');
+      await i18n.changeLanguage('ko');
+      expect(trackLanguageSwitch).not.toHaveBeenCalled();
+    });
     it('should successfully change language to en', async () => {
       await i18n.changeLanguage('en');
       expect(i18n.language).toBe('en');
