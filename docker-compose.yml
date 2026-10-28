@@ -10,6 +10,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      # Keep the running image ID readable across unchanged rebuilds.
+      provenance: false
+      sbom: false
       cache_from:
         - emelmujiro/backend:latest
       args:

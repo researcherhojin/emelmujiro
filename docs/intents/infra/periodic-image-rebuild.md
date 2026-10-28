@@ -80,3 +80,9 @@ Pre-implementation baseline (2026-10-28): `npm run check:scripts` passed TypeScr
 ## Outcome
 
 Implementation in progress. Local validation passes TypeScript, 55 Node tests and 4 Python tests, shell syntax and spelling. Independent review identified cron error handling, owned artifact retention and asynchronous nginx readiness; all three were addressed. CI, real candidate containers, supervised refresh and schedule activation remain pending. An interrupted maintenance lock deliberately requires manual process inspection; it is never automatically stolen.
+
+### First supervised run (2026-10-28)
+
+PR #696 passed CI and deployed as `e16a1e60`; a second deployment through the shared maintenance wrapper completed and released its lock. The restarted webhook passed Security Operations Watchdog run `40642872946` with the new refresh field while scheduling remained disabled.
+
+The first refresh stopped in preflight: the running backend image ID could not be inspected. No Compose replacement was called. Backend still allowed an attestation index, unlike the analytics images. The corrective change applies provenance/SBOM settings to backend and adds a verified backend-recreate fallback to deployment. A successful rerun is required before scheduler activation.
