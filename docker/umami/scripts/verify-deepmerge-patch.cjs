@@ -1,5 +1,12 @@
 const assert = require('node:assert/strict');
-const merge = require('deepmerge');
+const fs = require('node:fs');
+const path = require('node:path');
+const pnpmStore = path.resolve('node_modules/.pnpm');
+const packageDirectory = fs.readdirSync(pnpmStore).find(name => name.startsWith('deepmerge@4.3.1'));
+
+assert.ok(packageDirectory, 'patched deepmerge must be installed');
+
+const merge = require(path.join(pnpmStore, packageDirectory, 'node_modules/deepmerge'));
 
 const source = JSON.parse('{"session":{"__proto__":{"admin":true}}}');
 const merged = merge({ session: null }, source);
