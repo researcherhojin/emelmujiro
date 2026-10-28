@@ -46,7 +46,10 @@ test('all operations run after failure and atomically publish failure', (t) => {
   assert.equal(report.backup, false);
   assert.equal(report.dependencies, false);
   assert.equal(report.images, true);
-  assert.deepEqual(readOperations(path.join(directory, 'operations.json')), report);
+  assert.deepEqual(readOperations(path.join(directory, 'operations.json')), {
+    ...report,
+    refresh: true,
+  });
 });
 
 test('report endpoint requires authentication and cannot leak diagnostics', async (t) => {
@@ -81,7 +84,7 @@ test('report endpoint requires authentication and cannot leak diagnostics', asyn
   fs.writeFileSync(file, JSON.stringify({ ...report, diagnostics: 'sensitive' }));
   const response = await fetch(url, options);
   assert.equal(response.headers.get('cache-control'), 'no-store');
-  assert.deepEqual(await response.json(), report);
+  assert.deepEqual(await response.json(), { ...report, refresh: true });
   fs.writeFileSync(file, 'x'.repeat(4097));
   assert.equal((await fetch(url, options)).status, 503);
 });

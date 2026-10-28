@@ -109,3 +109,8 @@ image first: `/api/health/` reports the new commit once the backend is up, befor
 `auto-deploy.sh` reaches the analytics rebuild (#689). First live alarm: #660, 2026-10-24; second: #673,
 2026-10-26 (`images` only, closed by the nginx `-alpine-slim` pin); third: #689,
 2026-10-27 (`images` only, closed by dropping curl from the Umami image).
+
+**Nightly image refresh is separate from auditing and shares a maintenance lock with deployment and scheduled security operations.** `scripts/refresh-images.ts` builds from the deployed SHA, verifies disposable candidates and fresh backups, then applies and checks actual running image IDs. It retains two generations of owned candidate/rollback tags without broad cache pruning. `make setup-image-refresh-cron` explicitly enables 00:30 local-time execution and arms the refresh freshness check; deployment alone never enables it. `refresh` in the authenticated security report becomes false for a failed, pending or stale refresh. Restart the webhook before enabling this report contract.
+
+- `backend/logs/maintenance.lock` is never stolen by age or PID. After an interrupted operation, inspect the owner and its descendant processes before manually removing the lock. A surviving Docker operation may outlive its original caller; fail closed instead of overlapping it with another deploy or backup.
+- A successful image rollback does not restore database contents; failed recovery remains a failure. Candidate findings or scanner failures prevent replacement. Daily scheduling is not a guarantee that upstream patches exist or pass validation.

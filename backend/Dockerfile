@@ -28,7 +28,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 COPY --from=dependencies /app/.venv /app/.venv
 # Dependency installation uses uv; pip from the base image is not needed here.
-RUN python -m pip uninstall --yes pip
+RUN apk upgrade --no-cache && python -m pip uninstall --yes pip
 
 # Copy project
 COPY . .

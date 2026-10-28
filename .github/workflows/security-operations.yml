@@ -48,7 +48,7 @@ jobs:
           completed = datetime.fromisoformat(report['completedAt'].replace('Z', '+00:00'))
           age = (datetime.now(timezone.utc) - completed).total_seconds()
           assert -300 <= age <= 36 * 3600, 'Stale operations report'
-          assert all(report[key] is True for key in ('dependencies', 'images', 'backup', 'offsite')), 'Operations need attention'
+          assert all(report[key] is True for key in ('dependencies', 'images', 'backup', 'offsite', 'refresh')), 'Operations need attention'
           print('Fresh dependency, running-image, backup-restore and independent-copy checks passed')
           PY
       - name: Notify failure or recovery without publishing diagnostics

@@ -637,14 +637,18 @@ jobs:
               echo "$1=false" >> "$GITHUB_OUTPUT"
             fi
           }
-          flag backend '^backend/(Dockerfile|\.dockerignore|pyproject\.toml|uv\.lock)$'
+          flag backend '^(backend/(Dockerfile|\.dockerignore|pyproject\.toml|uv\.lock)|scripts/verify-backend-image\.sh)$'
           flag postgres '^docker/postgres/'
           flag umami '^docker/umami/'
           flag nginx '^(docker-compose\.yml|frontend/nginx\.conf)$'
 
-      - name: Build backend image
+      - name: Build and verify backend image
         if: steps.changed.outputs.backend == 'true'
-        run: docker build --build-arg GIT_COMMIT=ci-check -t emelmujiro/backend:ci-check ./backend
+        env:
+          IMAGE_COMMIT: ${{ github.sha }}
+        run: |
+          docker build --build-arg "GIT_COMMIT=$IMAGE_COMMIT" -t emelmujiro/backend:ci-check ./backend
+          sh scripts/verify-backend-image.sh emelmujiro/backend:ci-check "$IMAGE_COMMIT"
 
       - name: Build and verify PostgreSQL image
         if: steps.changed.outputs.postgres == 'true'

@@ -1,5 +1,5 @@
 # cspell:ignore flushexpiredtokens
-.PHONY: help install setup-dev-machine verify-setup dev dev-local dev-clean ports kill-ports build test test-ci lint lint-fix clean logs logs-security logs-debug health ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron setup-token-cron setup-security-cron setup-health-cron remove-cron
+.PHONY: setup-image-refresh-cron help install setup-dev-machine verify-setup dev dev-local dev-clean ports kill-ports build test test-ci lint lint-fix clean logs logs-security logs-debug health ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron setup-token-cron setup-security-cron setup-health-cron remove-cron
 
 help:
 	@echo "Available commands:"
@@ -190,5 +190,19 @@ setup-health-cron: ## Install health check cron (every 5 min, logs failures only
 
 remove-cron:
 	@echo "Removing cron jobs..."
-	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits | grep -v health-check | grep -v flushexpiredtokens | grep -v scheduled-security) | crontab -
+	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits | grep -v health-check | grep -v flushexpiredtokens | grep -v scheduled-security | grep -v refresh-images) | crontab -
 	@echo "Cron jobs removed."
+
+
+setup-image-refresh-cron: ## Schedule verified image builds and automatic replacement nightly
+	@mkdir -p '$(CURDIR)/backend/logs/security'
+	@NODE_BIN="$$(command -v node)"; \
+	if [ -z "$$NODE_BIN" ]; then echo "Error: node not found."; exit 1; fi; \
+	CRON_COPY="$$(mktemp)" || exit 1; \
+	trap 'rm -f "$$CRON_COPY" "$$CRON_COPY.err"' EXIT HUP INT TERM; \
+	if ! LC_ALL=C crontab -l > "$$CRON_COPY" 2> "$$CRON_COPY.err"; then \
+		if ! grep -q 'no crontab for' "$$CRON_COPY.err"; then cat "$$CRON_COPY.err" >&2; exit 1; fi; \
+	fi; \
+	if ! (grep -v 'scripts/refresh-images.ts' "$$CRON_COPY"; \
+	 echo "30 0 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/refresh-images.ts >> '$(CURDIR)/backend/logs/image-refresh.log' 2>&1") | crontab -; then exit 1; fi; \
+	touch '$(CURDIR)/backend/logs/security/refresh-enabled'
