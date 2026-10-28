@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# cspell:ignore nextjs nodejs geolite npmrc libc yarnpkg
+# cspell:ignore nextjs nodejs geolite npmrc libc yarnpkg deepmerge
 # Keep upstream application code and migrations fixed; rebuild security patches.
 FROM ghcr.io/umami-software/umami:3.4.1@sha256:e69d1a7932e9dab0fc523edc7be1f3a53f3c261f57856fc2167ae74a8fc022e8 AS geolite
 FROM node:22-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914 AS base
@@ -13,7 +13,10 @@ WORKDIR /app
 ADD --checksum=sha256:9d4d765e4d5b303af1cc0491da7e1592eb5ad8ced6c35780dce2bb2c274182f2 https://api.github.com/repos/umami-software/umami/tarball/ec0ff50388c264ed8ce46f00967e92f7e71476ae /tmp/umami.tar.gz
 RUN tar -xzf /tmp/umami.tar.gz --strip-components=1 -C /app && rm /tmp/umami.tar.gz
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY patches/deepmerge@4.3.1.patch ./patches/deepmerge@4.3.1.patch
 RUN pnpm install --frozen-lockfile
+COPY scripts/verify-deepmerge-patch.cjs ./scripts/verify-deepmerge-patch.cjs
+RUN node scripts/verify-deepmerge-patch.cjs
 
 FROM source AS builder
 COPY --from=geolite /app/geo ./geo
@@ -33,7 +36,7 @@ WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 HOSTNAME=0.0.0.0 PORT=3000
 LABEL org.opencontainers.image.source="https://github.com/umami-software/umami" \
     org.opencontainers.image.revision="ec0ff50388c264ed8ce46f00967e92f7e71476ae" \
-    org.opencontainers.image.version="3.4.0-security-3"
+    org.opencontainers.image.version="3.4.0-security-4"
 RUN addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nextjs \
     && rm -rf /usr/local/lib/node_modules/npm /opt/yarn-* \

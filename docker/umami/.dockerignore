@@ -7,3 +7,7 @@
 !runner/package.json
 !runner/pnpm-workspace.yaml
 !runner/pnpm-lock.yaml
+!patches/
+!patches/deepmerge@4.3.1.patch
+!scripts/
+!scripts/verify-deepmerge-patch.cjs

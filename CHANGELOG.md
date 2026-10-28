@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(security): Backport the deepmerge `__proto__` rejection from upstream PR #274 into the Umami builder lock and verify both reported exploit shapes during the image build. Move the build-only `@svgr/cli` dependency to `devDependencies`; the separate production runner lock has no `deepmerge`. No upstream npm release fixes CVE-2026-93753 yet.
+
 - fix(infra): Disable backend image attestations, matching analytics, and recreate the backend during deployment if its running image ID cannot be inspected. The first supervised image refresh stopped before replacement because the backend image identity was unavailable; the scheduler remained disabled.
 
 - feat(infra): Add an explicitly enabled nightly image refresh that builds from the deployed commit, verifies isolated candidates and backups, applies images, and checks runtime identities with image rollback on failure. Serialize refresh, deployment and scheduled security operations through a maintenance lock; monitor refresh freshness and retain two owned image generations. Add Alpine package upgrades to backend and PostgreSQL recipes and disposable backend verification in Docker Images CI.
