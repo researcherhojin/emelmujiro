@@ -43,7 +43,7 @@ paths:
 
 **Cloudflare owns the http→https upgrade; nginx must never redirect by scheme.** "Always Use HTTPS" (SSL/TLS → Edge Certificates) is on (696dc26c), and behind the tunnel nginx sees `http` on every request, https ones included. An origin-side `return 301 https://…` loops forever, and every `return 301` needs `absolute_redirect off` with a relative target, or nginx writes `http://` into `Location` (`aaa521be`). Verify with `curl -sI` against production; `e2e-server.ts` always emits relative locations.
 
-- **HSTS is `max-age=86400`, with no `includeSubDomains` or `preload` (since 2026-10-23).** nginx adds it for `emelmujiro.com` in every header block, and Django's `SecurityMiddleware` adds it for `api.emelmujiro.com`, the only host where `is_secure()` is true. A cached policy cannot be withdrawn early, so raise `max-age` in steps (`docs/intents/infra/hsts.md`).
+- **HSTS is `max-age=604800`, with no `includeSubDomains` or `preload` (one day from 2026-10-23, one week from 2026-10-29).** nginx adds it for `emelmujiro.com` in every header block, and Django's `SecurityMiddleware` adds it for `api.emelmujiro.com`, the only host where `is_secure()` is true. A cached policy cannot be withdrawn early, so raise `max-age` in steps (`docs/intents/infra/hsts.md`).
 
 **E2E target: the Playwright suite serves the production build, not the dev server.** `playwright.config.ts` `webServer` runs `npm run build:e2e && npm run serve:build`; `frontend/scripts/e2e-server.ts` mirrors `nginx.conf` (try_files, the dynamic-route SPA fallback, trailing-slash / `/blog` / `/share` 301s, `error_page 404 /app.html`, `/api` proxy).
 

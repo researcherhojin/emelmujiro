@@ -50,4 +50,5 @@ Merged in #648 (`437f2390`).
 
 - **`emelmujiro.com`**: every path checked after that deploy returned exactly one `strict-transport-security: max-age=86400`. The paths were `/`, `/en/insights/x`, `/app.html`, a hashed `/assets/*.js`, `/contact`, `/api/health/` and `/.well-known/security.txt`.
 - **`api.emelmujiro.com`**: at first it sent none. As the Plan expected, the host's `backend/.env.production` pinned `SECURE_HSTS_SECONDS=0`. The owner set it to `86400`, and a dispatched Main CI/CD run (`39893286381`, all 5 jobs green) recreated the backend. Afterwards `/api/health/` and `/api/blog-posts/` each returned exactly one `max-age=86400`, and production still reported `cfe3b05f`.
-- **Next**: after a week with no https trouble, raise `max-age` in `frontend/nginx.conf` `$hsts`, in the Django default and in the host env together.
+- **2026-10-29**: after 6 days with no https trouble (both hosts sent one `max-age=86400`, `http://` answered `301` to `https://`, the certificate runs to 2027-01-24), the owner asked to raise it a day early. `$hsts`, the Django default and `.env.example` moved to `604800`; the host env follows.
+- **Next**: after a month at `604800` with no https trouble, raise all three to `31536000`.
