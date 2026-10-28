@@ -6,7 +6,7 @@ FROM node:22-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf
 RUN apk upgrade --no-cache && apk add --no-cache libc6-compat
 
 FROM base AS tooling
-RUN npm install --global pnpm@12.3.4
+RUN apk add --no-cache patch && npm install --global pnpm@12.3.4
 
 FROM tooling AS source
 WORKDIR /app
