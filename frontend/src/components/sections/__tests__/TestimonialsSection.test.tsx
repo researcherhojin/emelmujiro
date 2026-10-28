@@ -1,5 +1,5 @@
 import React from 'react';
-import { vi, describe, it, expect, afterEach } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import TestimonialsSection from '../TestimonialsSection';
 
@@ -12,28 +12,7 @@ vi.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-const rowsOf = (container: HTMLElement) =>
-  Array.from(
-    container.querySelectorAll<HTMLElement>(
-      '.animate-scroll-testimonial, .animate-scroll-testimonial-reverse'
-    )
-  );
-
-const mockReducedMotion = (matches: boolean) => {
-  vi.mocked(window.matchMedia).mockImplementation(
-    (query: string) =>
-      ({
-        matches: query.includes('prefers-reduced-motion') ? matches : false,
-        media: query,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      }) as unknown as MediaQueryList
-  );
-};
-
 describe('TestimonialsSection', () => {
-  afterEach(() => mockReducedMotion(false));
-
   it('renders section title and subtitle', () => {
     render(<TestimonialsSection />);
     expect(screen.getByText('testimonials.title')).toBeInTheDocument();
@@ -67,66 +46,38 @@ describe('TestimonialsSection', () => {
     expect(TestimonialsSection.displayName).toBe('TestimonialsSection');
   });
 
-  it('pauses on touch start and resumes on touch end', () => {
+  it('pauses animation on touch start and resumes on touch end', () => {
     const { container } = render(<TestimonialsSection />);
-    const rows = rowsOf(container);
+
+    const scrollContainers = container.querySelectorAll(
+      '.animate-scroll-testimonial, .animate-scroll-testimonial-reverse'
+    );
+    expect(scrollContainers.length).toBe(2);
+
+    // Test both rows
+    scrollContainers.forEach((el) => {
+      const htmlEl = el as HTMLElement;
+
+      fireEvent.touchStart(htmlEl);
+      expect(htmlEl.style.animationPlayState).toBe('paused');
+
+      fireEvent.touchEnd(htmlEl);
+      expect(htmlEl.style.animationPlayState).toBe('running');
+    });
+  });
+
+  it('hides the duplicate copy from assistive tech so each card is read once', () => {
+    const { container } = render(<TestimonialsSection />);
+
+    const rows = container.querySelectorAll('[class*="animate-scroll"]');
     expect(rows).toHaveLength(2);
-
     rows.forEach((row) => {
-      fireEvent.touchStart(row);
-      expect(row.style.animationPlayState).toBe('paused');
-      fireEvent.touchEnd(row);
-      expect(row.style.animationPlayState).toBe('');
-    });
-  });
-
-  it('button toggles both rows of the section', () => {
-    const { container } = render(<TestimonialsSection />);
-    const rows = rowsOf(container);
-
-    fireEvent.click(screen.getByRole('button', { name: 'carousel.pauseTestimonials' }));
-    rows.forEach((row) => {
-      expect(row.style.animationPlayState).toBe('paused');
-      expect(row).toHaveAttribute('data-playing', 'false');
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: 'carousel.playTestimonials' }));
-    rows.forEach((row) => {
-      expect(row.style.animationPlayState).toBe('');
-      expect(row).toHaveAttribute('data-playing', 'true');
-    });
-  });
-
-  it('touchend after a pause leaves the row paused', () => {
-    const { container } = render(<TestimonialsSection />);
-    const row = rowsOf(container)[0];
-
-    fireEvent.click(screen.getByRole('button', { name: 'carousel.pauseTestimonials' }));
-    fireEvent.touchStart(row);
-    fireEvent.touchEnd(row);
-    expect(row.style.animationPlayState).toBe('paused');
-  });
-
-  it('starts paused under reduced motion and the button offers play', () => {
-    mockReducedMotion(true);
-    const { container } = render(<TestimonialsSection />);
-    rowsOf(container).forEach((row) => {
-      expect(row.style.animationPlayState).toBe('paused');
-      expect(row).toHaveAttribute('data-playing', 'false');
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: 'carousel.playTestimonials' }));
-    rowsOf(container).forEach((row) => {
-      expect(row).toHaveAttribute('data-playing', 'true');
-      expect(row.style.animationPlayState).toBe('');
-    });
-  });
-
-  it('hides exactly half of each row from assistive tech', () => {
-    const { container } = render(<TestimonialsSection />);
-    rowsOf(container).forEach((row) => {
-      expect(row.children).toHaveLength(16);
-      expect(row.querySelectorAll(':scope > [aria-hidden="true"]')).toHaveLength(8);
+      const cards = row.children;
+      const hidden = row.querySelectorAll(':scope > [aria-hidden="true"]');
+      expect(hidden).toHaveLength(cards.length / 2);
+      // The hidden half is the second copy
+      expect(cards[cards.length - 1].getAttribute('aria-hidden')).toBe('true');
+      expect(cards[0].hasAttribute('aria-hidden')).toBe(false);
     });
   });
 

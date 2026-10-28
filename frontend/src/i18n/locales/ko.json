@@ -175,12 +175,6 @@
     "blogKeywords": "에멜무지로, 인사이트",
     "relatedImage": "관련 이미지"
   },
-  "carousel": {
-    "pauseLogos": "로고 롤링 일시정지",
-    "playLogos": "로고 롤링 재생",
-    "pauseTestimonials": "후기 롤링 일시정지",
-    "playTestimonials": "후기 롤링 재생"
-  },
   "logos": {
     "sectionLabel": "TRUSTED BY",
     "title": "함께한 기업 및 기관",

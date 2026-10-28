@@ -1,5 +1,5 @@
 import React from 'react';
-import { vi, describe, it, expect, afterEach } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import LogosSection from '../LogosSection';
 
@@ -50,24 +50,7 @@ vi.mock('../../../constants', () => ({
   ],
 }));
 
-const rowsOf = (container: HTMLElement) =>
-  Array.from(container.querySelectorAll<HTMLElement>('.animate-scroll, .animate-scroll-reverse'));
-
-const mockReducedMotion = (matches: boolean) => {
-  vi.mocked(window.matchMedia).mockImplementation(
-    (query: string) =>
-      ({
-        matches: query.includes('prefers-reduced-motion') ? matches : false,
-        media: query,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      }) as unknown as MediaQueryList
-  );
-};
-
 describe('LogosSection', () => {
-  afterEach(() => mockReducedMotion(false));
-
   it('renders the section label', () => {
     render(<LogosSection />);
     expect(screen.getByText('logos.sectionLabel')).toBeInTheDocument();
@@ -96,9 +79,17 @@ describe('LogosSection', () => {
   it('duplicates logos for seamless infinite scrolling', () => {
     const { container } = render(<LogosSection />);
 
-    // 4 companies split into 2 rows of 2; each row renders 2 copies (dom-size): 8 images in the DOM.
+    // 4 companies split into 2 rows: first row has ceil(4/2)=2, second row has 2
+    // Each row renders 2 copies (was 3x; reduced for dom-size): (2*2) + (2*2) = 8 total images
     expect(container.querySelectorAll('img')).toHaveLength(8);
-    // The second copy is aria-hidden, so only the first copy (4 images) is exposed to assistive tech.
+  });
+
+  it('hides the duplicate copy from assistive tech so each logo is read once', () => {
+    const { container } = render(<LogosSection />);
+
+    const hidden = container.querySelectorAll('[aria-hidden="true"] img');
+    expect(hidden).toHaveLength(4);
+    hidden.forEach((img) => expect(img.getAttribute('alt')).toBe(''));
     expect(screen.getAllByRole('img')).toHaveLength(4);
   });
 
@@ -108,9 +99,9 @@ describe('LogosSection', () => {
     // defers the fetch until the browser decides they're close to entering
     // the viewport, which dropped wasted bytes on partner logos from ~55 kB
     // to ~0 kB in Lighthouse uses-responsive-images.
-    const { container } = render(<LogosSection />);
+    render(<LogosSection />);
 
-    const images = container.querySelectorAll('img');
+    const images = screen.getAllByRole('img');
     images.forEach((img) => {
       expect(img).toHaveAttribute('loading', 'lazy');
       expect(img).toHaveAttribute('decoding', 'async');
@@ -138,70 +129,18 @@ describe('LogosSection', () => {
     expect(h2.tagName).toBe('H2');
   });
 
-  it('pauses on touch start and resumes on touch end', () => {
+  it('pauses animation on touch start and resumes on touch end', () => {
     const { container } = render(<LogosSection />);
-    const rows = rowsOf(container);
-    expect(rows).toHaveLength(2);
-    const scrollEl = rows[0];
 
-    expect(scrollEl.style.animationPlayState).toBe('');
+    const scrollContainers = container.querySelectorAll('.animate-scroll, .animate-scroll-reverse');
+    expect(scrollContainers.length).toBeGreaterThan(0);
+
+    const scrollEl = scrollContainers[0] as HTMLElement;
+
     fireEvent.touchStart(scrollEl);
     expect(scrollEl.style.animationPlayState).toBe('paused');
+
     fireEvent.touchEnd(scrollEl);
-    expect(scrollEl.style.animationPlayState).toBe('');
-  });
-
-  it('button toggles both rows of the section', () => {
-    const { container } = render(<LogosSection />);
-    const rows = rowsOf(container);
-    const button = screen.getByRole('button', { name: 'carousel.pauseLogos' });
-
-    fireEvent.click(button);
-    rows.forEach((row) => {
-      expect(row.style.animationPlayState).toBe('paused');
-      expect(row).toHaveAttribute('data-playing', 'false');
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: 'carousel.playLogos' }));
-    rows.forEach((row) => {
-      expect(row.style.animationPlayState).toBe('');
-      expect(row).toHaveAttribute('data-playing', 'true');
-    });
-  });
-
-  it('touchend after a pause leaves the row paused', () => {
-    const { container } = render(<LogosSection />);
-    const row = rowsOf(container)[0];
-
-    fireEvent.click(screen.getByRole('button', { name: 'carousel.pauseLogos' }));
-    fireEvent.touchStart(row);
-    fireEvent.touchEnd(row);
-    expect(row.style.animationPlayState).toBe('paused');
-  });
-
-  it('starts paused under reduced motion and the button offers play', () => {
-    mockReducedMotion(true);
-    const { container } = render(<LogosSection />);
-    rowsOf(container).forEach((row) => {
-      expect(row.style.animationPlayState).toBe('paused');
-      expect(row).toHaveAttribute('data-playing', 'false');
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: 'carousel.playLogos' }));
-    rowsOf(container).forEach((row) => {
-      expect(row).toHaveAttribute('data-playing', 'true');
-      expect(row.style.animationPlayState).toBe('');
-    });
-  });
-
-  it('hides exactly half of each row from assistive tech', () => {
-    const { container } = render(<LogosSection />);
-    rowsOf(container).forEach((row) => {
-      expect(row.children).toHaveLength(4);
-      expect(row.querySelectorAll(':scope > [aria-hidden="true"]')).toHaveLength(2);
-      row.querySelectorAll(':scope > [aria-hidden="true"] img').forEach((img) => {
-        expect(img).toHaveAttribute('alt', '');
-      });
-    });
+    expect(scrollEl.style.animationPlayState).toBe('running');
   });
 });

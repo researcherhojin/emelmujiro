@@ -1,8 +1,6 @@
-import React, { memo, useMemo, useState, useCallback } from 'react';
+import React, { memo, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Quote, ExternalLink } from 'lucide-react';
-import CarouselPauseButton from '../common/CarouselPauseButton';
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
 
 interface Testimonial {
   text: string;
@@ -34,11 +32,12 @@ const getTestimonials = (
   ],
 });
 
-const TestimonialCard: React.FC<{ testimonial: Testimonial; duplicate?: boolean }> = memo(
-  ({ testimonial, duplicate = false }) => (
+// `duplicate` marks the loop's second copy, hidden from assistive tech so each card is read once.
+const TestimonialCard: React.FC<{ testimonial: Testimonial; duplicate: boolean }> = memo(
+  ({ testimonial, duplicate }) => (
     <div
-      aria-hidden={duplicate ? true : undefined}
       className="shrink-0 w-72 h-48 mx-2 bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-xs border border-gray-100 dark:border-gray-700 flex flex-col"
+      aria-hidden={duplicate || undefined}
     >
       <Quote
         className="w-5 h-5 text-gray-300 dark:text-gray-600 mb-2 shrink-0"
@@ -60,56 +59,51 @@ interface ScrollRowProps {
   testimonials: Testimonial[];
   direction?: 'left' | 'right';
   rowKey: string;
-  playing: boolean;
 }
 
-const ScrollRow: React.FC<ScrollRowProps> = memo(
-  ({ testimonials, direction = 'left', rowKey, playing }) => {
-    const animationClass =
-      direction === 'left' ? 'animate-scroll-testimonial' : 'animate-scroll-testimonial-reverse';
-    const [touching, setTouching] = useState(false);
+const ScrollRow: React.FC<ScrollRowProps> = memo(({ testimonials, direction = 'left', rowKey }) => {
+  const animationClass =
+    direction === 'left' ? 'animate-scroll-testimonial' : 'animate-scroll-testimonial-reverse';
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Touch handlers only set a flag: they must never call preventDefault, or the
-    // KakaoTalk WebView stops scrolling vertically over a row.
-    const handleTouchStart = useCallback(() => setTouching(true), []);
-    const handleTouchEnd = useCallback(() => setTouching(false), []);
+  const handleTouchStart = useCallback(() => {
+    scrollRef.current?.style.setProperty('animation-play-state', 'paused');
+  }, []);
 
-    return (
-      <div className="relative overflow-hidden group">
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-linear-to-r/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-linear-to-l/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
+  const handleTouchEnd = useCallback(() => {
+    scrollRef.current?.style.setProperty('animation-play-state', 'running');
+  }, []);
 
-        <div
-          data-playing={String(playing)}
-          style={!playing || touching ? { animationPlayState: 'paused' } : undefined}
-          className={`flex w-max ${animationClass} group-hover:pause`}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          {[0, 1].map((copy) =>
-            testimonials.map((testimonial, index) => (
-              <TestimonialCard
-                key={`${rowKey}-${copy}-${index}`}
-                testimonial={testimonial}
-                duplicate={copy === 1}
-              />
-            ))
-          )}
-        </div>
+  return (
+    <div className="relative overflow-hidden group">
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-linear-to-r/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-linear-to-l/srgb from-gray-50 dark:from-gray-950 to-transparent z-10" />
+
+      <div
+        ref={scrollRef}
+        className={`flex w-max ${animationClass} group-hover:pause`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {[0, 1].map((copy) =>
+          testimonials.map((testimonial, index) => (
+            <TestimonialCard
+              key={`${rowKey}-${copy}-${index}`}
+              testimonial={testimonial}
+              duplicate={copy === 1}
+            />
+          ))
+        )}
       </div>
-    );
-  }
-);
+    </div>
+  );
+});
 
 ScrollRow.displayName = 'ScrollRow';
 
 const TestimonialsSection: React.FC = memo(() => {
   const { t } = useTranslation();
   const { enterprise, government } = useMemo(() => getTestimonials(t), [t]);
-  const reducedMotion = usePrefersReducedMotion();
-  const [userChoice, setUserChoice] = useState<'paused' | 'running' | null>(null);
-  const playing = userChoice === 'running' || (userChoice === null && !reducedMotion);
-  const handleToggle = useCallback(() => setUserChoice(playing ? 'paused' : 'running'), [playing]);
 
   return (
     <section
@@ -124,28 +118,12 @@ const TestimonialsSection: React.FC = memo(() => {
           <h2 className="text-2xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white">
             {t('testimonials.title')}
           </h2>
-          <CarouselPauseButton
-            playing={playing}
-            onToggle={handleToggle}
-            labelPause={t('carousel.pauseTestimonials')}
-            labelPlay={t('carousel.playTestimonials')}
-          />
         </div>
       </div>
 
       <div className="space-y-4">
-        <ScrollRow
-          testimonials={enterprise}
-          direction="left"
-          rowKey="enterprise"
-          playing={playing}
-        />
-        <ScrollRow
-          testimonials={government}
-          direction="right"
-          rowKey="government"
-          playing={playing}
-        />
+        <ScrollRow testimonials={enterprise} direction="left" rowKey="enterprise" />
+        <ScrollRow testimonials={government} direction="right" rowKey="government" />
       </div>
 
       <div className="text-center mt-8 space-x-4">
