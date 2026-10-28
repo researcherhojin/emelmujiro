@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(claude): The four path-scoped rules keep each rule, its reason, its failure signature and its current-state facts, and replace measurement narrative with one `#PR` or commit pointer where the evidence is recoverable (`docs/intents/claude/rule-evidence-to-history.md`). `ci.md` 20,166 → 19,258 bytes, `frontend-build.md` 16,404 → 15,552, `backend.md` 13,824 → 13,639, `frontend.md` 11,572 → 11,494. Each of the 40 removed tokens appears in a pointer cited by the same rule. The intent's 15% floor was missed: the heuristic counted past-tense rules and failure signatures as evidence, so the cuts were 4.5% and 5.2% on the two files it targeted.
+
 - feat(claude): The `intent` skill no longer sets `disable-model-invocation: true`, so Claude starts or advances an intent from a plain-language request, not only from a typed `/intent`. #574 had set it to keep the description out of context and leave timing to the owner; the skill's owner interview, Spec approval and fresh-context implementation stops still gate every side effect. Its description now names the triggers from `CLAUDE.md` › Skip rules.
 
 - docs: Check every living doc against the code (`docs/intents/claude/docs-currency-and-weight.md`). Route the Nightly image refresh rules from `CLAUDE.md` and `AGENTS.md`, delete the shipped `periodic-image-rebuild` intent, spell-check the tracked `gotchas` skill (its glob was missing from `npm run spell`), record that the health-check cron logs warnings as well as failures, and list the 7 kept px values exactly. Reword `ci.md` (20,506 → 20,166 bytes) and `frontend-build.md` (16,861 → 16,404 bytes) with no SHA, number, version or bold lead lost.
