@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: infra
 created: 2026-10-28
 updated: 2026-10-28
@@ -73,16 +73,20 @@ Implementation sequence for the approved automatic build, verify and apply mode.
 4. Implement the selected promotion behavior, private reports and recovery checks. Inject failures before and after every replacement boundary, including failed rollback. Add freshness and failed-run watchdog cases without weakening backup/offsite checks.
 5. Run operational TypeScript checks, shell syntax checks, Docker Images CI and disposable container verification. Use a fresh reviewer for the spec and correctness review.
 6. Merge and verify the deployed SHA; restart the webhook if needed. Deploy-script changes must also be verified on the following deploy. Rehearse one failed candidate and recovery, then one supervised successful run. Only then install the selected schedule.
-7. Record the first scheduled result by source SHA and image IDs, fill Outcome and retire the intent unless a living document needs it.
+7. Record the first supervised result by source SHA and image IDs, fill Outcome and retire the intent unless a living document needs it.
 
 Pre-implementation baseline (2026-10-28): `npm run check:scripts` passed TypeScript checks, 33 Node tests and 4 Python tests. The initial sandbox attempt could not bind the local test server; the allowed rerun passed. No refresh implementation or runtime validation is claimed by this baseline.
 
 ## Outcome
 
-Implementation in progress. Local validation passes TypeScript, 55 Node tests and 4 Python tests, shell syntax and spelling. Independent review identified cron error handling, owned artifact retention and asynchronous nginx readiness; all three were addressed. CI, real candidate containers, supervised refresh and schedule activation remain pending. An interrupted maintenance lock deliberately requires manual process inspection; it is never automatically stolen.
+Shipped in PRs #696 and #697. PR #697 merged as `440bf40785d34785e96455b5a5060ef991befba6`; the main deployment workflow `40645656297` passed, and `/api/health/` reported that exact SHA. CI passed the repository, backend, frontend, Docker Images, E2E, Lighthouse and security checks. The intent remains because `docs/intents/infra/security-operations.md` cites it as follow-up context.
 
 ### First supervised run (2026-10-28)
 
 PR #696 passed CI and deployed as `e16a1e60`; a second deployment through the shared maintenance wrapper completed and released its lock. The restarted webhook passed Security Operations Watchdog run `40642872946` with the new refresh field while scheduling remained disabled.
 
-The first refresh stopped in preflight: the running backend image ID could not be inspected. No Compose replacement was called. Backend still allowed an attestation index, unlike the analytics images. The corrective change applies provenance/SBOM settings to backend and adds a verified backend-recreate fallback to deployment. A successful rerun is required before scheduler activation.
+The first refresh stopped in preflight because the running backend image ID could not be inspected; no Compose replacement was called. PR #697 disabled backend provenance and SBOM generation and added a verified backend recreation fallback to deployment.
+
+The supervised rerun on `440bf40785d34785e96455b5a5060ef991befba6` completed successfully from `2026-10-28T06:46:43Z` to `2026-10-28T06:49:45Z`. Its report has `phase: complete`, `recovery: not-needed`, and `success: true`. All three candidate IDs matched the running containers: backend `sha256:ba440f98d54671d79903345084b89db4b6e9d7137eb460a0f616d039659815d1`, Umami `sha256:8978fa5b090ef75af28602574c3a5eb3f46727ee37751a71a41ecf0f720bb0c8`, and Umami DB `sha256:d07035ef377492965ff4a3e3c5a3cf33813b2059f7fc455b4a40069683a97cd0`. The API health endpoint returned healthy with the same source SHA after replacement.
+
+After that successful run, the host cron was enabled for 00:30 local time daily. The Security Operations Watchdog run `40646319288` passed with scheduling enabled. Failed candidate checks and rollback incidents remain visible to the watchdog; an interrupted maintenance lock still requires manual process inspection and is never automatically stolen.
