@@ -43,7 +43,7 @@ Invariants only. Grep the code for everything else. Single app `api/`; `config/`
 
 **Inside the backend container, run Django through `uv run`**: `docker exec emelmujiro-backend python manage.py …` fails with `No module named 'django'`, because the image's virtual environment is uv-managed (`uv sync` in `backend/Dockerfile`). Use `docker exec -i emelmujiro-backend uv run python manage.py shell < script.py` for one-off data scripts.
 
-`black` + `flake8` (line length 120) are the only Python lint gates. `[tool.ruff]` in `pyproject.toml` exists so the VS Code Ruff extension agrees with them (line length, `py312`, `api`/`config` first-party). It is not run in CI (d25bad1f).
+`black` + `flake8` (line length 120) are the only Python lint gates. `[tool.ruff]` in `pyproject.toml` exists so the VS Code Ruff extension agrees with them (line length, `py312`, `api`/`config` first-party). It is not run in CI, so its editor findings in `backend/` are not failures (d25bad1f).
 
 **Re-lock with the image's uv, not the local one**: `backend/Dockerfile` copies uv `0.12.24` and builds with `uv sync --frozen`, while a newer local uv rewrote `uv.lock`'s `revision = 3` to `5` on a one-package `--upgrade-package` (030ddeb5); the committed lock is at `revision = 5` since #682 (`44bfb339`). Use `uvx uv@<Dockerfile version> lock --upgrade-package <pkg>` and confirm the diff touches only that package.
 
