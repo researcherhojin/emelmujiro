@@ -1,4 +1,5 @@
 #!/bin/sh
+# cspell:ignore fetchone
 # Disposable SQLite volume and loopback port only; never reads deployment secrets.
 set -eu
 image=$1

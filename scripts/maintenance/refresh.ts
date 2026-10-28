@@ -221,6 +221,7 @@ export function refreshImages({
       replace(service);
       if (inspect(service).image !== result.candidates[service])
         throw new Error('Replacement identity mismatch');
+      if (service === 'umami') health(true);
     }
     health(true);
     result.phase = 'audit';
@@ -265,6 +266,7 @@ export function refreshImages({
     fs.writeFileSync(temporary, JSON.stringify(result), { mode: 0o600 });
     fs.renameSync(temporary, path.join(directory, 'latest.json'));
     fs.rmSync(path.join(work, 'source'), { recursive: true, force: true });
+    fs.rmSync(path.join(work, 'source.tar'), { force: true });
     // Keep two owned generations, including rollback tags, without broad image/cache pruning.
     const generations = fs
       .readdirSync(directory)
