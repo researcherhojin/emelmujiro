@@ -53,6 +53,7 @@ A `shipped` intent is deleted once its deploy is verified, unless a living doc (
 
 - **The repo is public.** Host topology, credentials, deploy forensics and anything else that lives in `.private/operations.md` stay there. Link to it by name; never copy it in.
 - **Evidence is exact**, as everywhere in this repo: a measured number with its date or commit, never a round figure.
+- **One home per fact.** Evidence lives in the file that first recorded it; another file points to it (`file.md` › Section) instead of restating it. Keep entries short: the run ID, SHA and count, not the narrative around them.
 - **One intent per PR.** The PR body links the intent file; the merge updates `status` and `Outcome` in the same PR or the next commit. `CHANGELOG.md` remains the shipped record, and the intent links to its entry rather than repeating it.
 - **Plan mode output goes in `Plan`**, not only in `~/.claude/plans/`, so the plan is reviewed with the code and survives the session, including the fresh one that implements it.
 - **Commit type** for intent-only changes is `docs(intents):`.

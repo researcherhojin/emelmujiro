@@ -25,7 +25,7 @@ Fork → clone → follow [README — Getting Started](README.md#getting-started
 - **English comments only** in source.
 - **No `window.alert/prompt`** — use a toast or inline UI.
 - **Logger**: `import logger from '../utils/logger'` (default export); `env.IS_DEVELOPMENT` for environment checks.
-- **Spelling**: `npm run spell`. A real word goes in `cspell.json`'s `words`; a deliberate non-word goes in a file-scoped `cspell:ignore` comment, so the dictionary never accepts typo-shaped tokens.
+- **Spelling**: `npm run spell`. Run `npx cspell trace <word>` first — the `npm`, `softwareTerms` and `software-tools` dictionaries are on, so package names usually need nothing. A real word they miss goes in `cspell.json`'s `words`; a deliberate non-word goes in a file-scoped `cspell:ignore` comment, so the dictionary never accepts typo-shaped tokens.
 
 ## Testing
 

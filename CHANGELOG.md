@@ -8,7 +8,9 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
-- fix(security): Backport the deepmerge `__proto__` rejection from upstream PR #274 into the Umami builder lock and verify both reported exploit shapes during the image build. Move the build-only `@svgr/cli` dependency to `devDependencies`; the separate production runner lock has no `deepmerge`. No upstream npm release fixes CVE-2026-93753 yet.
+- docs: Lighten the Markdown docs without dropping facts. Delete five shipped intents (`tailwind-v4-migration`, `touch-hover-default`, `remove-quick-checks`, `image-checks-skip-markdown`, `badge-check-missing-fails`) whose rules already live in `.claude/rules/`, moving their three unique facts into `frontend-build.md`; drop the Gotcha rule lines the `gotchas` skill repeated from `CLAUDE.md`; compress the `remaining-security-findings` Outcome; add a one-home-per-fact rule to `docs/intents/README.md`. cspell now enables the `npm`, `softwareTerms` and `software-tools` dictionaries for every file, so the editor and CLI agree, and 19 `words` they cover were removed. `npm run check:scripts` is listed in `CLAUDE.md` and `AGENTS.md`.
+
+- fix(security): Backport the deepmerge `__proto__` rejection from deepmerge PR #274 into the Umami builder lock and verify both reported exploit shapes during the image build. Move the build-only `@svgr/cli` dependency to `devDependencies`; the separate production runner lock has no `deepmerge`. No upstream npm release fixes CVE-2026-93753 yet. Deployed as `e09ca677`; Dependabot alerts #7 and #8 dismissed as `tolerable_risk` after production verification.
 
 - fix(infra): Disable backend image attestations, matching analytics, and recreate the backend during deployment if its running image ID cannot be inspected. The first supervised image refresh stopped before replacement because the backend image identity was unavailable; the scheduler remained disabled.
 

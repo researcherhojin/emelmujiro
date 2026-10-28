@@ -12,7 +12,7 @@ Build dependency fixes also cover MCP server and client 2.3.0, brace-expansion
 postcss-selector-parser 7.1.6, undici 8.12.2, serialize-javascript 7.1.3,
 zod 4.6.7, vite 8.1.6 and vitest 4.1.12. Both dependency
 graphs retain upstream's deepmerge-ts 8.0.2 and mysql2 3.23.1 security overrides.
-The builder lock backports upstream PR #274's `__proto__` rejection for
+The builder lock backports deepmerge PR #274's `__proto__` rejection for
 deepmerge 4.3.1 because npm has no patched release; a build-time regression
 check covers the vulnerable null-target and null-prototype cases. The runtime
 lock contains no deepmerge package.

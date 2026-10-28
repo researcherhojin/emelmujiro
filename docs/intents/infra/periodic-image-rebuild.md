@@ -10,8 +10,7 @@ updated: 2026-10-28
 ## Intent
 
 - **Problem**: the locally built images (`backend`, `umami`, `umami-db`) get Alpine package fixes only when a deploy rebuilds them, and only if the host's build cache misses the `apk` layer.
-  - #689: the host reports of 2026-10-26T17:00Z and 2026-10-27T17:00Z had `images` false. The second, the only one whose per-service result was read, had 48 findings in `umami`, all Alpine `curl` / `libcurl` `8.22.0-r0`, fixed in `8.23.0-r0`. Alpine's `v3.24/main` served `8.23.0-r0` when checked at about 2026-10-27T17:55Z; when it was published was not measured.
-  - In the host deploy log, `[umami base 2/2] RUN apk upgrade` was `CACHED` on all five 2026-10-26 deploys (KST 09:28, 09:43, 09:52, 10:46, 18:10), ran fresh on the #690 deploy (KST 2026-10-28 02:49), and was `CACHED` again on the deploy after (KST 03:19). The fresh rebuild of the unchanged `3.4.0-security-2` recipe already carried `8.23.0-r0`.
+  - Evidence (#689: 48 `umami` findings from Alpine `curl` / `libcurl` `8.22.0-r0`; `apk upgrade` `CACHED` on all five 2026-10-26 deploys) is in `security-operations.md` › Third alarm. Alpine's `v3.24/main` already served `8.23.0-r0` at about 2026-10-27T17:55Z; its publish time was not measured.
   - Why the cache missed on the #690 deploy is unmeasured. Around 2026-10-27T17:45Z, `docker buildx du` on the host reported 10.55 GB reclaimable of 10.55 GB, while `docker system df` reported 3.167 GB reclaimable of 10.74 GB; neither confirms builder garbage collection.
   - On 2026-10-28 the owner pruned the host build cache (10.1 GB freed; 636.5 MB left), so the next deploy rebuilds most layers and will look like a cache miss.
   - The frontend is out of this: it runs the upstream `nginx:1.31.8-alpine-slim` pin, and #673 showed that a re-pull cannot fix a package upstream has not rebuilt.
@@ -90,3 +89,7 @@ The first refresh stopped in preflight because the running backend image ID coul
 The supervised rerun on `440bf40785d34785e96455b5a5060ef991befba6` completed successfully from `2026-10-28T06:46:43Z` to `2026-10-28T06:49:45Z`. Its report has `phase: complete`, `recovery: not-needed`, and `success: true`. All three candidate IDs matched the running containers: backend `sha256:ba440f98d54671d79903345084b89db4b6e9d7137eb460a0f616d039659815d1`, Umami `sha256:8978fa5b090ef75af28602574c3a5eb3f46727ee37751a71a41ecf0f720bb0c8`, and Umami DB `sha256:d07035ef377492965ff4a3e3c5a3cf33813b2059f7fc455b4a40069683a97cd0`. The API health endpoint returned healthy with the same source SHA after replacement.
 
 After that successful run, the host cron was enabled for 00:30 local time daily. The Security Operations Watchdog run `40646319288` passed with scheduling enabled. Failed candidate checks and rollback incidents remain visible to the watchdog; an interrupted maintenance lock still requires manual process inspection and is never automatically stolen.
+
+### Subsequent Umami security rebuild (2026-10-28)
+
+PR #699 moved the Umami recipe to `3.4.0-security-4`, backporting the `__proto__` rejection for `deepmerge@4.3.1` with build-time regression checks. PR checks ([run 40653616066](https://github.com/researcherhojin/emelmujiro/actions/runs/40653616066)) and main CI/CD ([run 40654083076](https://github.com/researcherhojin/emelmujiro/actions/runs/40654083076)) passed; `/api/health/` confirmed `e09ca677`. Alert handling is in `security-operations.md`.

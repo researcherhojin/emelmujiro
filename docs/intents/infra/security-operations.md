@@ -18,7 +18,8 @@ Earlier manual-only scheduling preferences are superseded by this request.
 - Serialize the existing login throttle's cache read/write across workers and
   threads; preserve its configured rate and trusted client identity. Fail closed
   if the lock cannot be acquired. Record dashboard configuration evidence
-  separately from live enforcement tests; application throttles are not a DDoS boundary.
+  separately from live enforcement tests; application throttles are not a
+  DDoS boundary.
 - Snapshot SQLite with its online backup API, archive uploaded files, and dump
   analytics PostgreSQL. Verify SQLite integrity and restore PostgreSQL into an
   isolated disposable container without writing production databases.
@@ -105,13 +106,16 @@ real upstream advisories, and no diagnostics reached GitHub.
   Production reached `84c1e765`, and the Umami container was recreated on
   `3.4.0-security-2`.
 - Recovery: the host job was rerun by hand at 05:09Z instead of waiting for
-  02:00, and all four checks were true. A dispatched watchdog (run 40065154092) passed and closed #660 with its recovery comment.
+  02:00, and all four checks were true. A dispatched watchdog
+  (run 40065154092) passed and closed #660 with its recovery comment.
 - The six Dependabot alerts for the same `next` advisories stayed open after
   the fix, although the dependency-graph compare for `fc9e1704...84c1e765`
   showed 16.3.8 removed and 16.4.2 added with no vulnerabilities. The cause was
   a GitHub-side re-evaluation lag. The alerts were not dismissed, and all six
   turned `fixed` on their own at 07:52Z, about 3 hours after the deploy. A
-  dismissed alert never turns `fixed`, so wait out the lag instead.
+  dismissed alert never turns `fixed`, so wait out the lag once the vulnerable
+  version has left the dependency graph. A locally patched version that stays
+  in the graph is the exception below.
 
 ## Second alarm (2026-10-26)
 
@@ -128,7 +132,8 @@ false: the running-image scan found 1 finding, in `frontend`, a HIGH in
 - Fix: #686 (`ccc7c411`) moved the Compose pin. CI's `nginx -t` passed on the
   slim image, and production reported `ccc7c411` with the container `healthy`.
 - Recovery: the host job was rerun by hand at 00:54Z, and all four checks were
-  true with 0 findings on every service. A dispatched watchdog (run 40251602783) passed and closed #673.
+  true with 0 findings on every service. A dispatched watchdog
+  (run 40251602783) passed and closed #673.
 
 ## Third alarm (2026-10-27)
 
@@ -163,5 +168,22 @@ HIGH (CVE-2026-92392), 1 MEDIUM and 22 LOW. The other three services had 0.
 - Production reported `bb5648d2` before the umami step had finished:
   `/api/health/` reflects the backend, which `auto-deploy.sh` rebuilds first.
   Wait for the umami container on the new tag before rerunning the host job.
-- Recovery: the host job was rerun by hand and completed at 2026-10-27T17:59:37Z; all four checks were
-  true with 0 findings on every service. A dispatched watchdog (run 40555781773) passed and closed #689.
+- Recovery: the host job was rerun by hand and completed at
+  2026-10-27T17:59:37Z; all four checks were true with 0 findings on every
+  service. A dispatched watchdog (run 40555781773) passed and closed #689.
+
+## Umami build-time dependency advisory (2026-10-28)
+
+Dependabot alerts #7 (`docker/umami/pnpm-lock.yaml`) and #8
+(`docker/umami/package.json`) reported low-severity CVE-2026-93753 in
+development-scope `deepmerge@4.3.1`; npm had no patched release.
+
+- [PR #699](https://github.com/researcherhojin/emelmujiro/pull/699) backported
+  the `__proto__` rejection from the unmerged
+  [deepmerge PR #274](https://github.com/TehShrike/deepmerge/pull/274) and
+  checks both exploit shapes during the image build. The production runner
+  lock contains no `deepmerge`.
+- PR checks and main CI/CD passed (runs 40653616066 and 40654083076);
+  `/api/health/` reported `e09ca677` at 2026-10-28T08:05:26Z.
+- Both alerts were then dismissed as `tolerable_risk`, citing the backport and
+  runtime exclusion. Replace the patch once npm publishes a fixed release.

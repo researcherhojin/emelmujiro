@@ -59,6 +59,7 @@ uv run black . && uv run flake8 .                                             # 
 
 make verify-setup                                                             # 10-check dev-machine health pass; `make help` lists the main targets. Run from root
 ./scripts/check-changelog.sh origin/main HEAD                                 # Repo checks CI runs, from root; cases: scripts/test-check-changelog.sh, .claude/hooks/test-guard-bash.sh
+npm run check:scripts                                                         # Type-check + test root scripts/ (node --test, backup verify). Run from root
 ```
 
 ## Constraints

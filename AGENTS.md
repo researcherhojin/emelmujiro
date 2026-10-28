@@ -49,7 +49,7 @@ cd backend && DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPI
 ```
 
 - `make help` lists the main make targets (the `Makefile`'s `.PHONY` line has the full set); there is no `make type-check` — use `cd frontend && npm run type-check`.
-- Repo checks CI runs, from root: `./scripts/check-changelog.sh origin/main HEAD`, `./scripts/test-check-changelog.sh`, `./.claude/hooks/test-guard-bash.sh`.
+- Repo checks CI runs, from root: `./scripts/check-changelog.sh origin/main HEAD`, `./scripts/test-check-changelog.sh`, `./.claude/hooks/test-guard-bash.sh`, `npm run check:scripts` (type-checks and tests root `scripts/`).
 - Inside the **backend container, run Django via `uv run`** (`docker exec -i emelmujiro-backend uv run python manage.py …`); bare `python manage.py` fails with `No module named 'django'` (uv-managed venv).
 
 ## Build & deploy gotchas (load-bearing)
@@ -77,7 +77,7 @@ cd backend && DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPI
 - **Never run `npm audit fix` / `--force`** — it downgrades `@lhci/cli` and destroys Lighthouse CI (the advisory's offered target moves: `0.1.0`, `0.12.0`, `0.3.5`).
 - Keep every root `package.json` `overrides` entry; each one is tested against its consumers (Gotchas #3, #6, #14). npm reads `overrides` only from the root, so never add them to `frontend/package.json`. Sibling `@tiptap/*` deps must all share one `^3.x` pin (or `Node`/`MISSING_EXPORT` errors appear).
 - `main` has **no required status checks** — direct push to `main` is the intentional solo hotfix path; guardrails are the drift/watchdog workflows, not CI blocking.
-- Spelling: a **real word** goes in `cspell.json`'s `words`; a **deliberate non-word** goes in a file-scoped `# cspell:ignore` comment, not the dictionary.
+- Spelling: run `npx cspell trace <word>` first — the `npm`, `softwareTerms` and `software-tools` dictionaries are on, so package names usually need nothing. A **real word** they miss goes in `cspell.json`'s `words`; a **deliberate non-word** goes in a file-scoped `# cspell:ignore` comment, not the dictionary.
 
 ## Testing quirks
 
