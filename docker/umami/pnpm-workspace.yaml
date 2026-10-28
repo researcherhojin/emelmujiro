@@ -10,6 +10,8 @@ allowBuilds:
   msw: false
   prisma: true
   sharp: false
+patchedDependencies:
+  deepmerge@4.3.1: patches/deepmerge@4.3.1.patch
 minimumReleaseAgeExclude:
   - "@umami/react-zen"
   - cn@0.2.6
