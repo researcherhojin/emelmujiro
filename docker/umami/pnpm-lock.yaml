@@ -272,6 +272,9 @@ importers:
       babel-plugin-react-compiler:
         specifier: 19.1.0-rc.2
         version: 19.1.0-rc.2
+      deepmerge:
+        specifier: 4.3.1
+        version: 4.3.1(patch_hash=cc7a1f756eedb47c13aba3137e4a68be147d58ade4850b615e8bf27504747db3)
       dotenv-cli:
         specifier: ^11.0.0
         version: 11.0.0

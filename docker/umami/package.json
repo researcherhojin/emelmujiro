@@ -151,6 +151,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
+    "deepmerge": "4.3.1",
     "dotenv-cli": "^11.0.0",
     "jsdom": "^30.0.1",
     "msw": "^2.15.0",
