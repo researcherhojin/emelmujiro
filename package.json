@@ -20,7 +20,7 @@
     "build": "npm run build --workspace=frontend",
     "knip": "knip",
     "prepare": "husky",
-    "spell": "cspell --no-progress \"**\" \".claude/rules/**\" \".claude/hooks/**\" \".claude/skills/intent/**\" \".claude/agents/**\" \".github/**\""
+    "spell": "cspell --no-progress \"**\" \".claude/rules/**\" \".claude/hooks/**\" \".claude/skills/intent/**\" \".claude/skills/gotchas/**\" \".claude/agents/**\" \".github/**\""
   },
   "devDependencies": {
     "concurrently": "^10.0.6",

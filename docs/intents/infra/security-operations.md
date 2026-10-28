@@ -157,7 +157,8 @@ HIGH (CVE-2026-92392), 1 MEDIUM and 22 LOW. The other three services had 0.
   deploy (KST 2026-10-28 02:49), and that rebuild of the unchanged
   `3.4.0-security-2` recipe already carried curl `8.23.0-r0`. The next
   deploy (KST 03:19) was `CACHED` again. When Alpine published `8.23.0-r0`
-  was not measured. Follow-up: `docs/intents/infra/periodic-image-rebuild.md`.
+  was not measured. Follow-up: the nightly image refresh
+  (`.claude/rules/ci.md` › Nightly image refresh).
 - Fix: #691 (`bb5648d2`) removed curl from the base stage and moved the tag to
   `3.4.0-security-3`; `verify.sh` now fails if the image ships curl.
 - Found on the way: `qs` 6.16.0 (GHSA-6pq8-jhm2-2vcw, published
