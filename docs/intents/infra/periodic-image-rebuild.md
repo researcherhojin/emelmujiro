@@ -1,5 +1,5 @@
 ---
-status: draft
+status: in-progress
 module: infra
 created: 2026-10-28
 updated: 2026-10-28
@@ -22,20 +22,61 @@ updated: 2026-10-28
   - A recreated umami container needs the nginx reload and the `/umami/api/send` 4xx check that `auto-deploy.sh` already runs.
   - The backend image bakes `GIT_COMMIT`, and `/api/health/` must keep reporting the deployed SHA (Gotcha #17).
   - Cron output goes to `backend/logs/<name>.log`, and cron's `PATH` has no `docker` (`ci.md`).
-- **Open questions**:
-  - Cadence: daily before the 02:00 scan, or weekly? The owner's tolerance for an alarm that a rebuild would clear decides it.
-  - Mechanism: a separate cron job (`docker compose build --pull --no-cache` and then `up -d`), or a step inside `scripts/scheduled-security.ts` before the image scan. The second keeps one job but makes the scan change what it measures.
-  - Is an unattended recreate of `backend` acceptable? It reuses `auto-deploy.sh`'s checks only if that logic moves into a shared script.
-  - Is the cache miss builder GC? Reading the Docker Desktop builder GC settings on the host answers it.
+- **Decisions (2026-10-28)**: the owner confirmed build/verification and automatic application are both required. Use a separate nightly refresh with serialized maintenance, fresh backup verification, failure recovery and explicit scheduler activation. Current GC policy was inspected; the historical cache miss remains unproven.
 
 ## Spec
 
-<!-- Filled when status becomes approved. -->
+### Approved direction on 2026-10-28
+
+The owner confirmed that candidate build/verification and automatic application are sequential parts of the same task. Implement nightly automatic replacement after successful verification and backup; enable the schedule only after a supervised run.
+
+### Pre-implementation findings (2026-10-28)
+
+- `backend/Dockerfile` has no `apk upgrade` in its runtime stage; `docker/postgres/Dockerfile` installs a pinned privilege-switch package without upgrading existing packages. Repeating those recipes cannot promise all Alpine fixes. `docker/umami/Dockerfile` already upgrades its base stage.
+- `scripts/deploy/manager.ts` and `scripts/scheduled-security.ts` use separate locks. The deployment lock expires by age even if its PID remains alive; neither lock excludes the proposed refresh. Checking a lock once before building is insufficient.
+- The existing image scanner verifies actual container and image IDs before and after scanning; retain that contract.
+- `docker/postgres/verify.sh` tests a disposable volume; `docker/umami/verify.sh` tests a disposable database, migration, tracking, persistence and restart. Neither requires production data.
+- The host builder exposes an active GC policy. Its current settings do not establish why the historical layer missed cache. Host measurements remain in `.private/journal.md`.
+
+### Required behavior
+
+1. Keep security auditing observational. Run a separate refresh command nightly at 00:30 host local time, before the existing 02:00 audit. These are proposed slots, not a guarantee of completion: lock contention, build duration or upstream failures must be visible. Do not install either schedule implicitly during deployment.
+2. Coordinate deploy, refresh and scheduled backup/scan operations with one exclusive maintenance lock. Acquisition must be atomic; release must require ownership; a live owner must never be evicted merely by age. Invalid ownership or uncertain liveness fails closed. Direct deploy-script invocation must participate too. A busy refresh records a retryable result; it must not claim a successful refresh.
+3. Freeze the source at the verified deployed backend SHA. Require a clean tracked checkout and agreement between the checkout and `/api/health/`; otherwise stop. Do not fetch, pull, migrate application versions or use an unverified newer main commit during refresh. Build from an isolated archive of that SHA, and pass it as `GIT_COMMIT`.
+4. Add explicit Alpine upgrades to backend runtime and PostgreSQL recipes, preserving the base Alpine branch, PostgreSQL major, application source pins and lock files. Use `--pull --no-cache` for refresh builds; digest pins remain pinned. A pull does not override a digest pin, and package refresh does not patch bundled application/runtime binaries outside Alpine packages.
+5. Build unique candidate tags; never overwrite the tags used by ordinary deployment before verification. Keep `provenance: false` and `sbom: false`, verify Docker can inspect each candidate image ID, and use a private per-run Docker client configuration so a concurrent process cannot remove a shared configuration directory.
+6. Verify candidates before any production mutation: disposable backend startup/migration/health with temporary SQLite, followed by rollback to the current image and reapplication with a persisted sentinel row; PostgreSQL initialization/restart/persistence; Umami against the candidate PostgreSQL image; full candidate vulnerability scan with a refreshed database. Scanner errors or findings stop automatic promotion; retain details privately. Do not mistake a candidate tag scan for verification of a running image.
+7. **Automatic application:** obtain a fresh successful backup/restore verification before replacement, preserve old image IDs under rollback tags, then replace database, analytics and backend in dependency order without rebuilding or pulling at promotion. Keep volumes. Check each replacement before proceeding. Reload nginx after analytics replacement and verify its tracking route. Verify backend commit, application health and actual running image IDs; then run the ordinary running-image audit.
+8. Preserve two generations of task-owned candidate and rollback tags. Remove older tags without force, never prune unrelated images or volumes, and remove extracted source trees. Preserve compact result/error records; retain full candidate scan inventories for the two generations.
+9. Failure after replacement triggers an attempt to restore the previous images using the unchanged application version and existing volumes, followed by the same health/identity checks. This is image rollback, not a database restore. Never overwrite live data automatically; report a failed recovery if the previous images cannot serve it. Test partial replacement failures and failed recovery before enabling automation.
+10. Publish an atomic private result containing source SHA, old/candidate/running image IDs, start/end times, mode, phase, outcome and recovery outcome. Public watchdog output remains boolean/generic. Extend watchdog validation to detect refresh failure and stale/missing results: a vulnerability-free running-image scan alone cannot prove the scheduled refresh ran. Extend the existing version-1 response with an explicit refresh boolean (true while disabled); restart the webhook and verify that field before enabling the scheduler.
+
+### Scope and acceptance
+
+- Expected files: runtime Docker recipes; a dedicated refresh entry/module; shared locking and runtime-check helpers; `auto-deploy.sh`; deployment entry wrapper; scheduled-security entry; operations report/validation and tests; `Makefile`; security watchdog; `.claude/rules/ci.md`. Compose changes only if explicit candidate/rollback overrides require them.
+- Out of scope: nginx upstream patch production, PostgreSQL major changes, application dependency upgrades, automatic build-cache pruning, deleting backups/volumes, zero-downtime claims, exposing private inventory in GitHub.
+- First live activation requires measured build duration, disposable candidate tests, an injected failed candidate and a recovery rehearsal, followed by one supervised successful host run. The scheduler is enabled only for the selected mode.
+- Daily execution is a target cadence, not a hard promise that every advisory will be patched within 24 hours. Missing upstream patches, validation failures and recovery incidents remain actionable alarms.
+
+### Evidence
+
+- Docker documents that a cached RUN does not inspect the result of package-manager commands: [Build cache invalidation](https://docs.docker.com/build/cache/invalidation/).
+- Compose documents that changed images recreate containers while preserving mounted volumes, and distinguishes no-build, no-deps and wait options: [docker compose up](https://docs.docker.com/reference/cli/docker/compose/up/). These options do not provide application rollback or a zero-downtime guarantee.
 
 ## Plan
 
-<!-- Filled before the first edit. Plan mode output goes here. -->
+Implementation sequence for the approved automatic build, verify and apply mode.
+
+1. Selected: nightly automatic build, verify and apply at 00:30 host local time. The owner approved the sequential flow.
+2. Implement the common maintenance lock. Test atomic acquisition with competing processes, live old owners, malformed ownership, killed owners, owner-only release and cleanup on signals. Include direct deploy invocation and webhook lifecycle handling.
+3. Add recipe upgrades and isolated candidate builds with injectable command runners. Test source-SHA preservation, image identity and the absence of production mutation after each candidate failure.
+4. Implement the selected promotion behavior, private reports and recovery checks. Inject failures before and after every replacement boundary, including failed rollback. Add freshness and failed-run watchdog cases without weakening backup/offsite checks.
+5. Run operational TypeScript checks, shell syntax checks, Docker Images CI and disposable container verification. Use a fresh reviewer for the spec and correctness review.
+6. Merge and verify the deployed SHA; restart the webhook if needed. Deploy-script changes must also be verified on the following deploy. Rehearse one failed candidate and recovery, then one supervised successful run. Only then install the selected schedule.
+7. Record the first scheduled result by source SHA and image IDs, fill Outcome and retire the intent unless a living document needs it.
+
+Pre-implementation baseline (2026-10-28): `npm run check:scripts` passed TypeScript checks, 33 Node tests and 4 Python tests. The initial sandbox attempt could not bind the local test server; the allowed rerun passed. No refresh implementation or runtime validation is claimed by this baseline.
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Implementation in progress. Local validation passes TypeScript, 55 Node tests and 4 Python tests, shell syntax and spelling. Independent review identified cron error handling, owned artifact retention and asynchronous nginx readiness; all three were addressed. CI, real candidate containers, supervised refresh and schedule activation remain pending. An interrupted maintenance lock deliberately requires manual process inspection; it is never automatically stolen.

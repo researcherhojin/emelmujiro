@@ -1,8 +1,17 @@
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { REPO_ROOT, SECURITY_REPORT_ROOT } from './shared/paths.ts';
 import { runOperations } from './security/operations.ts';
 import { isRecord } from './shared/runtime.ts';
+
+const maintenance = path.join(REPO_ROOT, 'scripts/maintenance.ts');
+if (!process.env.MAINTENANCE_TOKEN) {
+  const result = spawnSync(process.execPath, [maintenance, 'security'], { stdio: 'inherit' });
+  process.exit(result.status ?? 1);
+}
+const ownership = spawnSync(process.execPath, [maintenance, 'check'], { stdio: 'inherit' });
+if (ownership.status !== 0) process.exit(1);
 
 process.env.PATH = `/opt/homebrew/opt/openssl@3/bin:/Applications/Docker.app/Contents/Resources/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${process.env.PATH}`;
 fs.mkdirSync(SECURITY_REPORT_ROOT, { recursive: true, mode: 0o700 });

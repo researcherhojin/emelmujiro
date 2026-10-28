@@ -1,10 +1,25 @@
 #!/bin/bash
 set -euo pipefail
 
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+SCRIPT_REPO_DIR="$(cd "$(dirname "$0")/.." && pwd -P)"
+REPO_DIR="${DEPLOY_REPO_DIR:-$SCRIPT_REPO_DIR}"
+if [ "$(cd "$REPO_DIR" && pwd -P)" != "$SCRIPT_REPO_DIR" ]; then
+  echo "Deployment target must match the checkout that owns the maintenance lock" >&2
+  exit 1
+fi
+
+# All entry paths, including manual invocation, share the maintenance lock.
+MAINTENANCE_ENTRY="$(cd "$(dirname "$0")" && pwd)/maintenance.ts"
+if [ -z "${MAINTENANCE_TOKEN:-}" ]; then
+  exec node "$MAINTENANCE_ENTRY" deploy
+fi
+node "$MAINTENANCE_ENTRY" check
+
 # Auto-deploy script for Mac Mini
 # Called by deploy-webhook.js after GitHub Actions CI passes.
 
-REPO_DIR="${DEPLOY_REPO_DIR:-$HOME/workspace/emelmujiro}"
 LOG_PREFIX="[auto-deploy]"
 
 # Docker Desktop ships its credential helper (docker-credential-desktop) inside
@@ -257,57 +272,8 @@ if [ "$ANALYTICS_RECREATED" = true ]; then
   docker exec emelmujiro-frontend nginx -s reload
 fi
 
-# Wait for services to be healthy (up to 60s)
-echo "$LOG_PREFIX Waiting for services to be healthy..."
-backend_ok=false
-frontend_ok=false
-analytics_ok=false
-elapsed=0
-while [ $elapsed -lt 60 ]; do
-  if [ "$backend_ok" = false ] && curl -sf http://127.0.0.1:8000/api/health/ > /dev/null 2>&1; then
-    echo "$LOG_PREFIX Backend health check passed after ${elapsed}s"
-    backend_ok=true
-  fi
-  if [ "$frontend_ok" = false ] && curl -sf http://127.0.0.1:8080/ > /dev/null 2>&1; then
-    echo "$LOG_PREFIX Frontend health check passed after ${elapsed}s"
-    frontend_ok=true
-  fi
-  # The tracking route through nginx must reach umami: a GET is rejected by
-  # umami with a 4xx and stores nothing, while a stale upstream gives a 5xx.
-  ANALYTICS_ROUTE=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/umami/api/send 2>/dev/null || true)
-  if [ "$analytics_ok" = false ] && curl -sf http://127.0.0.1:3001/api/heartbeat > /dev/null 2>&1 \
-    && case "$ANALYTICS_ROUTE" in 4??) true ;; *) false ;; esac; then
-    echo "$LOG_PREFIX Analytics health check passed after ${elapsed}s"
-    analytics_ok=true
-  fi
-  if [ "$backend_ok" = true ] && [ "$frontend_ok" = true ] && [ "$analytics_ok" = true ]; then
-    break
-  fi
-  sleep 5
-  elapsed=$((elapsed + 5))
-done
-
-if [ "$backend_ok" = false ] || [ "$frontend_ok" = false ] || [ "$analytics_ok" = false ]; then
-  [ "$backend_ok" = false ] && echo "$LOG_PREFIX ERROR: Backend health check did not pass within 60s"
-  [ "$frontend_ok" = false ] && echo "$LOG_PREFIX ERROR: Frontend health check did not pass within 60s"
-  [ "$analytics_ok" = false ] && echo "$LOG_PREFIX ERROR: Analytics health check did not pass within 60s"
-  echo "$LOG_PREFIX Deploy failed: service(s) not healthy"
-  exit 1
-fi
-
-# A 200 from /api/health/ only proves *a* backend is up — it passes against a
-# stale container too (exactly what masked the silent backend-deploy failure).
-# Assert the live backend reports the commit we just deployed.
-LIVE_COMMIT=$(curl -sf http://127.0.0.1:8000/api/health/ 2>/dev/null | sed -n 's/.*"commit"[ ]*:[ ]*"\([^"]*\)".*/\1/p')
-if [ "$LIVE_COMMIT" = "unknown" ] || [ -z "$LIVE_COMMIT" ]; then
-  echo "$LOG_PREFIX WARNING: backend reports commit='$LIVE_COMMIT' (image built without GIT_COMMIT?) — cannot verify deployed code"
-elif [ "$LIVE_COMMIT" != "$GIT_COMMIT" ]; then
-  echo "$LOG_PREFIX ERROR: backend is running commit $LIVE_COMMIT but HEAD is $GIT_COMMIT — backend image did NOT rebuild"
-  echo "$LOG_PREFIX Deploy failed: stale backend"
-  exit 1
-else
-  echo "$LOG_PREFIX Backend verified running deployed commit ${GIT_COMMIT:0:8}"
-fi
+# Shared bounded readiness checks: deployment and refresh enforce the same contract.
+node "$REPO_DIR/scripts/verify-runtime.ts" "$GIT_COMMIT"
 
 echo "$LOG_PREFIX Deploy completed at $(date)"
 
