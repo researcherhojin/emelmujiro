@@ -5,6 +5,8 @@ import { GraduationCap, Lightbulb, Bot, Eye } from 'lucide-react';
 import { getServices } from '../../data/footerData';
 import ServiceModal from '../common/ServiceModal';
 
+import { trackServiceOpen } from '../../utils/analytics';
+
 interface Service {
   number: string;
   titleKey: string;
@@ -92,6 +94,7 @@ const ServicesSection: React.FC = memo(() => {
   const serviceList = useMemo(() => SERVICE_KEYS.map((key) => serviceData[key]), [serviceData]);
 
   const handleCardClick = useCallback((index: number) => {
+    trackServiceOpen(SERVICE_KEYS[index], 'services');
     setModalIndex(index);
     setIsModalOpen(true);
   }, []);

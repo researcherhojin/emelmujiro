@@ -1,7 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { trackLanguageSwitch } from './utils/analytics';
 import { urlPrefixLookup } from './utils/urlPrefixLookup';
 
 import koTranslation from './i18n/locales/ko.json';
@@ -61,9 +60,5 @@ i18n
       useSuspense: false,
     },
   });
-
-i18n.on('languageChanged', (lng: string) => {
-  trackLanguageSwitch(lng);
-});
 
 export default i18n;

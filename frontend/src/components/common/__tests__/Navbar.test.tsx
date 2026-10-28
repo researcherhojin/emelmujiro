@@ -3,6 +3,13 @@ import { screen, fireEvent, act } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils/renderWithProviders';
 import Navbar from '../Navbar';
 
+const analytics = vi.hoisted(() => ({
+  trackLanguageSwitch: vi.fn(),
+  trackProfileClick: vi.fn(),
+  trackDarkModeToggle: vi.fn(),
+}));
+vi.mock('../../../utils/analytics', () => analytics);
+
 // Mock useNavigate
 const mockNavigate = vi.fn();
 const mockLocation = { pathname: '/', hash: '', search: '', state: null, key: 'default' };
@@ -39,11 +46,21 @@ vi.mock('../../../contexts/AuthContext', () => ({
 describe('Navbar Component', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
+    vi.clearAllMocks();
     mockLocation.pathname = '/';
     mockLocation.hash = '';
     mockIsAuthenticated.value = false;
     // Reset scrollY
     Object.defineProperty(window, 'scrollY', { value: 0, writable: true });
+  });
+
+  test('records profile navigation only after a click', () => {
+    renderWithProviders(<Navbar />);
+    expect(analytics.trackProfileClick).not.toHaveBeenCalled();
+    expect(analytics.trackLanguageSwitch).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'common.profile' }));
+    expect(analytics.trackProfileClick).toHaveBeenCalledExactlyOnceWith('navbar');
+    expect(mockNavigate).toHaveBeenCalledWith('/profile');
   });
 
   test('renders logo', () => {
@@ -188,6 +205,7 @@ describe('Navbar Component', () => {
 
     // Should navigate to the English version of the current path
     expect(mockNavigate).toHaveBeenCalledWith('/en');
+    expect(analytics.trackLanguageSwitch).toHaveBeenCalledExactlyOnceWith('ko', 'en');
   });
 
   it('closes mobile menu when a mobile nav item is clicked', () => {
@@ -289,6 +307,7 @@ describe('Navbar Component', () => {
     // Click should navigate to Korean path (targetLang = 'ko' since currentLang is 'en')
     fireEvent.click(langButtons[0]);
     expect(mockNavigate).toHaveBeenCalledWith('/insights');
+    expect(analytics.trackLanguageSwitch).toHaveBeenCalledExactlyOnceWith('en', 'ko');
 
     spy.mockRestore();
   });

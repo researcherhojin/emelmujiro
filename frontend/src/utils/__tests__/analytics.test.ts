@@ -21,6 +21,7 @@ describe('analytics', () => {
 
   beforeEach(() => {
     vi.resetModules();
+    delete window.__isPrerendering;
     // Reset env defaults
     mockEnv.UMAMI_HOST = 'https://analytics.emelmujiro.com';
     mockEnv.UMAMI_WEBSITE_ID = 'test-website-id';
@@ -94,14 +95,14 @@ describe('analytics', () => {
   });
 
   describe('trackCtaClick', () => {
-    it('sends click_cta_email event with location', async () => {
+    it('sends click_contact event with location', async () => {
       const { trackCtaClick } = await import('../analytics');
 
       trackCtaClick('hero');
 
       expect(sendBeaconSpy).toHaveBeenCalledTimes(1);
       const body = JSON.parse(await (sendBeaconSpy.mock.calls[0][1] as Blob).text());
-      expect(body.payload.name).toBe('click_cta_email');
+      expect(body.payload.name).toBe('click_contact');
       expect(body.payload.data).toEqual({ location: 'hero' });
     });
 
@@ -180,18 +181,18 @@ describe('analytics', () => {
     it('sends switch_language event', async () => {
       const { trackLanguageSwitch } = await import('../analytics');
 
-      trackLanguageSwitch('en');
+      trackLanguageSwitch('ko', 'en');
 
       const body = JSON.parse(await (sendBeaconSpy.mock.calls[0][1] as Blob).text());
       expect(body.payload.name).toBe('switch_language');
-      expect(body.payload.data).toEqual({ language: 'en' });
+      expect(body.payload.data).toEqual({ from: 'ko', to: 'en' });
     });
 
     it('does nothing when disabled', async () => {
       mockEnv.ENABLE_ANALYTICS = false;
       const { trackLanguageSwitch } = await import('../analytics');
 
-      trackLanguageSwitch('ko');
+      trackLanguageSwitch('en', 'ko');
 
       expect(sendBeaconSpy).not.toHaveBeenCalled();
     });
@@ -211,6 +212,41 @@ describe('analytics', () => {
         metric_rating: 'good',
       });
     });
+  });
+
+  it('records stable service IDs and profile click locations', async () => {
+    const { trackServiceOpen, trackProfileClick } = await import('../analytics');
+    trackServiceOpen('ai-education', 'services');
+    trackProfileClick('footer');
+    const payloads = await Promise.all(
+      sendBeaconSpy.mock.calls.map(
+        async ([, blob]) => JSON.parse(await (blob as Blob).text()).payload
+      )
+    );
+    expect(payloads[0]).toMatchObject({
+      name: 'open_service',
+      data: { service_id: 'ai-education', location: 'services' },
+    });
+    expect(payloads[1]).toMatchObject({ name: 'click_profile', data: { location: 'footer' } });
+  });
+
+  it('suppresses page views and events during prerendering with either transport', async () => {
+    const analytics = await import('../analytics');
+    window.__isPrerendering = true;
+    const sendAll = () => {
+      analytics.trackPageView('/');
+      analytics.trackCtaClick('hero');
+      analytics.trackLanguageSwitch('ko', 'en');
+      analytics.trackServiceOpen('ai-education', 'services');
+      analytics.trackProfileClick('navbar');
+      analytics.trackWebVital('LCP', 100, 'good');
+    };
+    sendAll();
+    Object.defineProperty(navigator, 'sendBeacon', { value: undefined, configurable: true });
+    sendAll();
+    expect(sendBeaconSpy).not.toHaveBeenCalled();
+    expect(fetchSpy).not.toHaveBeenCalled();
+    delete window.__isPrerendering;
   });
 
   describe('fetch fallback', () => {

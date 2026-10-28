@@ -8,6 +8,8 @@ import ServiceModal from './ServiceModal';
 import { useScrollToSection } from '../../hooks/useScrollToSection';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 
+import { trackServiceOpen, trackProfileClick } from '../../utils/analytics';
+
 const footerLinkStyle =
   'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-base text-left inline-block relative hover:after:w-full after:absolute after:bottom-0 after:left-0 after:h-px after:bg-gray-900 dark:after:bg-white after:w-0 after:transition-all outline-hidden focus:outline-hidden border-none bg-transparent';
 
@@ -34,6 +36,7 @@ const Footer: React.FC = memo(() => {
 
   const handleServiceClick = useCallback(
     (serviceKey: string) => {
+      trackServiceOpen(serviceKey, 'footer');
       const index = serviceKeys.indexOf(serviceKey);
       /* v8 ignore next -- defensive: indexOf always >= 0 for valid serviceKeys */
       setSelectedServiceIndex(index >= 0 ? index : 0);
@@ -56,7 +59,10 @@ const Footer: React.FC = memo(() => {
     { label: t('common.services'), onClick: () => scrollToSection('services') },
     {
       label: t('common.representativeProfile'),
-      onClick: () => navigate(localizedPath('/profile')),
+      onClick: () => {
+        trackProfileClick('footer');
+        navigate(localizedPath('/profile'));
+      },
     },
   ];
 

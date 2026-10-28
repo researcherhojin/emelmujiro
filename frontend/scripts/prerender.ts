@@ -339,6 +339,10 @@ async function prerenderBatch(
       locale: lang === 'en' ? 'en-US' : 'ko-KR',
     });
 
+    await context.addInitScript(() => {
+      (window as Window & { __isPrerendering?: boolean }).__isPrerendering = true;
+    });
+
     // Process routes in chunks of `concurrency`
     for (let i = 0; i < langRoutes.length; i += concurrency) {
       const chunk = langRoutes.slice(i, i + concurrency);

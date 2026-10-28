@@ -7,6 +7,8 @@ import NotificationBell from './NotificationBell';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
 import { useAuth } from '../../contexts/AuthContext';
 
+import { trackLanguageSwitch, trackProfileClick } from '../../utils/analytics';
+
 interface NavItem {
   label: string;
   path: string;
@@ -38,9 +40,10 @@ const Navbar: React.FC = memo(() => {
   const handleNavigation = useCallback(
     (path: string) => {
       setIsOpen(false);
+      if (path === localizedPath('/profile')) trackProfileClick('navbar');
       navigate(path);
     },
-    [navigate]
+    [navigate, localizedPath]
   );
 
   const isActive = useCallback(
@@ -57,6 +60,7 @@ const Navbar: React.FC = memo(() => {
 
   const handleLanguageSwitch = useCallback(() => {
     const targetLang = currentLang === 'ko' ? 'en' : 'ko';
+    trackLanguageSwitch(currentLang, targetLang);
     navigate(switchLanguagePath(targetLang));
   }, [currentLang, navigate, switchLanguagePath]);
 

@@ -1,6 +1,5 @@
 // Umami analytics — zero external scripts (gtag.js was 156 kB, 86 kB wasted).
 // Events are sent directly to the Umami collect API via sendBeacon/fetch.
-// Public track* API is unchanged from the GA implementation — callers don't move.
 import env from '../config/env';
 
 const UMAMI_HOST = env.UMAMI_HOST;
@@ -8,7 +7,7 @@ const WEBSITE_ID = env.UMAMI_WEBSITE_ID;
 const isEnabled = env.ENABLE_ANALYTICS && !!UMAMI_HOST && !!WEBSITE_ID;
 
 function send(url: string, name?: string, data?: Record<string, unknown>): void {
-  if (!isEnabled) return;
+  if (!isEnabled || window.__isPrerendering) return;
 
   const payload: Record<string, unknown> = {
     hostname: window.location.hostname,
@@ -50,7 +49,7 @@ export function trackPageView(path: string): void {
 
 // Track CTA clicks
 export function trackCtaClick(location: string): void {
-  send(window.location.pathname, 'click_cta_email', { location });
+  send(window.location.pathname, 'click_contact', { location });
 }
 
 // Track blog post views
@@ -64,8 +63,8 @@ export function trackDarkModeToggle(isDark: boolean): void {
 }
 
 // Track language switch
-export function trackLanguageSwitch(language: string): void {
-  send(window.location.pathname, 'switch_language', { language });
+export function trackLanguageSwitch(from: string, to: string): void {
+  send(window.location.pathname, 'switch_language', { from, to });
 }
 
 // Track web vitals (called by WebVitalsDashboard)
@@ -75,4 +74,13 @@ export function trackWebVital(name: string, value: number, rating: string): void
     metric_value: value,
     metric_rating: rating,
   });
+}
+
+// Track deliberate opens, excluding navigation within an already open modal.
+export function trackServiceOpen(serviceId: string, location: 'services' | 'footer'): void {
+  send(window.location.pathname, 'open_service', { service_id: serviceId, location });
+}
+
+export function trackProfileClick(location: 'navbar' | 'footer'): void {
+  send(window.location.pathname, 'click_profile', { location });
 }

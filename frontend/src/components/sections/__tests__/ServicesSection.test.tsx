@@ -1,3 +1,6 @@
+const analytics = vi.hoisted(() => ({ trackServiceOpen: vi.fn(), trackProfileClick: vi.fn() }));
+vi.mock('../../../utils/analytics', () => analytics);
+
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router';
@@ -57,6 +60,16 @@ describe('ServicesSection Component', () => {
 
   beforeEach(() => {
     mockNavigate.mockClear();
+    analytics.trackServiceOpen.mockClear();
+  });
+
+  test.each(['click', 'Enter', ' '])('records one service open for %s', (action) => {
+    renderSection();
+    const card = screen.getByText('services.education.title').closest('[role=button]')!;
+    expect(analytics.trackServiceOpen).not.toHaveBeenCalled();
+    if (action === 'click') fireEvent.click(card);
+    else fireEvent.keyDown(card, { key: action });
+    expect(analytics.trackServiceOpen).toHaveBeenCalledExactlyOnceWith('ai-education', 'services');
   });
 
   test('renders section title and subtitle', () => {
