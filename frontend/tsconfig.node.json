@@ -15,5 +15,12 @@
     "allowSyntheticDefaultImports": true,
     "strict": true
   },
-  "include": ["vite.config.ts", "vitest.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "vitest.config.ts",
+    "eslint.config.ts",
+    "tailwind.config.ts",
+    "postcss.config.ts",
+    "types/*.d.ts"
+  ]
 }

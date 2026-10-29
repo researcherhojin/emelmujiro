@@ -3,17 +3,18 @@ import type { KnipConfig } from 'knip';
 const config: KnipConfig = {
   workspaces: {
     '.': {
-      // verify.sh sends this entry to an isolated container through stdin.
-      entry: ['docker/umami/verify.mjs'],
+      // verify.sh sends verify.ts to an isolated container through stdin, and the
+      // Umami Dockerfile runs the deepmerge check during the image build.
+      entry: ['docker/umami/verify.ts', 'docker/umami/scripts/verify-deepmerge-patch.cts'],
       // Resolved inside that container, from docker/umami/runner/package.json.
       ignoreDependencies: ['next'],
     },
     scripts: {
-      entry: ['deploy-webhook.js', '*.ts', 'tests/*.test.ts'],
+      entry: ['*.ts', 'tests/*.test.ts'],
       project: ['**/*.ts'],
     },
     frontend: {
-      entry: ['src/App.tsx', 'scripts/*.{ts,cjs}'],
+      entry: ['src/App.tsx', 'scripts/*.ts', 'scripts/visual-diff/*.ts'],
       project: ['src/**/*.{ts,tsx}'],
       ignore: [
         // Test helpers (renderWithProviders, etc.) — imported from test files only

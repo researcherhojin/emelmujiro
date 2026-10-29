@@ -1,11 +1,11 @@
-const path = require('path');
+import path from 'node:path';
 
-module.exports = {
+export default {
   // Frontend linting
-  'frontend/src/**/*.{js,jsx,ts,tsx}': (filenames) => {
+  'frontend/src/**/*.{js,jsx,ts,tsx}': (filenames: string[]) => {
     // Convert absolute paths to paths relative to frontend/
     const relFiles = filenames
-      .map((f) => path.relative(path.join(__dirname, 'frontend'), f))
+      .map((f) => path.relative(path.join(import.meta.dirname, 'frontend'), f))
       .join(' ');
     return [
       `cd frontend && npx eslint --fix ${relFiles}`,
@@ -15,10 +15,10 @@ module.exports = {
   'frontend/src/**/*.{css,scss}': ['prettier --write'],
 
   // Backend linting (paths are relative to repo root, run from backend dir)
-  'backend/**/*.py': (filenames) => {
+  'backend/**/*.py': (filenames: string[]) => {
     // Convert absolute paths to paths relative to backend/
     const relFiles = filenames
-      .map((f) => path.relative(path.join(__dirname, 'backend'), f))
+      .map((f) => path.relative(path.join(import.meta.dirname, 'backend'), f))
       .join(' ');
     return [
       `cd backend && uv run black ${relFiles}`,

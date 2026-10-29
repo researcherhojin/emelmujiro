@@ -88,7 +88,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
   - Exempt: merge commits, `fixup!`/`squash!`/`amend!` (autosquash rewrites them away), `Revert "…"`, and dependabot's formats.
   - English-only is machine-enforced as ASCII on the **subject line only** — the body is not inspected — so `git commit --no-verify` is the escape for a subject that genuinely needs a non-ASCII proper noun.
 - **Branch naming**: `feature/name` or `fix/description`.
-- **ESLint flat config** (`eslint.config.mjs`, NOT `.eslintrc`). Zero-warnings is the **target**, not yet a hard gate (`lint` script lacks `--max-warnings=0`).
+- **ESLint flat config** (`eslint.config.ts`, loaded through `jiti`, NOT `.eslintrc`). Zero-warnings is the **target**, not yet a hard gate (`lint` script lacks `--max-warnings=0`).
 - **English comments only**.
 - **All UI strings via i18n** — `useTranslation()` in components, `i18n.t()` in data files. No hardcoded user-facing text.
 - **No `window.alert()` / `window.prompt()`** — toast or inline UI.

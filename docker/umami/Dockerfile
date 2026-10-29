@@ -15,12 +15,12 @@ RUN tar -xzf /tmp/umami.tar.gz --strip-components=1 -C /app && rm /tmp/umami.tar
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY patches/deepmerge@4.3.1.patch ./patches/deepmerge@4.3.1.patch
 RUN pnpm install --frozen-lockfile
-COPY scripts/verify-deepmerge-patch.cjs ./scripts/verify-deepmerge-patch.cjs
+COPY scripts/verify-deepmerge-patch.cts ./scripts/verify-deepmerge-patch.cts
 RUN mkdir -p /tmp/deepmerge-patch-test \
     && npm pack deepmerge@4.3.1 --pack-destination /tmp/deepmerge-patch-test \
     && tar -xzf /tmp/deepmerge-patch-test/deepmerge-4.3.1.tgz --strip-components=1 -C /tmp/deepmerge-patch-test \
     && patch -p1 -d /tmp/deepmerge-patch-test < patches/deepmerge@4.3.1.patch \
-    && node scripts/verify-deepmerge-patch.cjs /tmp/deepmerge-patch-test \
+    && node scripts/verify-deepmerge-patch.cts /tmp/deepmerge-patch-test \
     && rm -rf node_modules/deepmerge \
     && ln -s /tmp/deepmerge-patch-test node_modules/deepmerge
 

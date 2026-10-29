@@ -45,7 +45,7 @@ wait_for_app() {
     return 1
 }
 wait_for_app
-docker exec -i "$app" node --input-type=module < verify.mjs
+docker exec -i "$app" node --input-type=module-typescript < verify.ts
 # A second start must accept the already-migrated schema and retain the event.
 docker restart "$app" >/dev/null
 port=$(docker port "$app" 3000/tcp)
