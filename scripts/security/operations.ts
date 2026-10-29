@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { ensurePrivateDir, writePrivateAtomic } from '../shared/private-fs.ts';
 import { isRecord } from '../shared/runtime.ts';
 
 export type OperationsReport = {
@@ -84,7 +85,7 @@ export function runOperations(
   directory: string,
   run: Runner = runOperation
 ): OperationsReport {
-  fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+  ensurePrivateDir(directory);
   const check = (name: string, binary: string, args: string[]) => {
     try {
       return run(binary, args, path.join(directory, `${name}-scheduled.log`));
@@ -107,9 +108,11 @@ export function runOperations(
     backup,
     offsite: offsiteFresh(directory),
   };
-  const temporary = path.join(directory, `operations-${process.pid}.tmp`);
-  fs.writeFileSync(temporary, JSON.stringify(report) + '\n', { mode: 0o600 });
-  fs.renameSync(temporary, path.join(directory, 'operations.json'));
+  writePrivateAtomic(
+    path.join(directory, 'operations.json'),
+    path.join(directory, `operations-${process.pid}.tmp`),
+    JSON.stringify(report) + '\n'
+  );
   return report;
 }
 

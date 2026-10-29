@@ -43,7 +43,12 @@ test('maintenance wrapper releases on a clean child exit and checks inherited ow
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   fs.mkdirSync(path.join(directory, 'scripts/maintenance'), { recursive: true });
   fs.mkdirSync(path.join(directory, 'scripts/shared'));
-  for (const name of ['maintenance.ts', 'maintenance/lock.ts', 'shared/paths.ts']) {
+  for (const name of [
+    'maintenance.ts',
+    'maintenance/lock.ts',
+    'shared/paths.ts',
+    'shared/private-fs.ts',
+  ]) {
     fs.copyFileSync(new URL('../' + name, import.meta.url), path.join(directory, 'scripts', name));
   }
   fs.writeFileSync(
