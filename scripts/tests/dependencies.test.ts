@@ -1,9 +1,10 @@
+// cspell:ignore ignorefile
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { LOCK_TARGETS, scanDependencies } from '../security/dependencies.ts';
+import { IGNORE_FILES, LOCK_TARGETS, scanDependencies } from '../security/dependencies.ts';
 
 for (const failure of ['none', 'npm', 'trivy', 'empty', 'missing']) {
   test(`dependency audit handles ${failure} with paths containing spaces`, (t) => {
@@ -33,7 +34,12 @@ for (const failure of ['none', 'npm', 'trivy', 'empty', 'missing']) {
         const target = args.at(-1)!;
         assert.ok(path.isAbsolute(target));
         assert.ok(target.startsWith(root));
-        const type = LOCK_TARGETS.find(([file]) => path.join(root, file) === target)![1];
+        const [file, type] = LOCK_TARGETS.find(([file]) => path.join(root, file) === target)!;
+        const ignore = IGNORE_FILES[file];
+        assert.equal(
+          args[args.indexOf('--ignorefile') + 1],
+          ignore ? path.join(root, ignore) : '/dev/null'
+        );
         if (failure === 'trivy') throw new Error('Scanner unavailable');
         return {
           status: 0,
