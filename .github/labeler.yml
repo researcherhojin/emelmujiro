@@ -36,7 +36,7 @@ config:
       - any-glob-to-any-file:
           - "docker-compose*.yml"
           - "frontend/vite.config.ts"
-          - "frontend/tailwind.config.ts"
+          - "frontend/tailwind.config.mts"
           - "frontend/tsconfig*.json"
           - "backend/config/**"
           - ".env*"
