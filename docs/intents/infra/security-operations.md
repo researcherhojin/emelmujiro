@@ -91,132 +91,38 @@ Archives have no automatic pruning yet, and a separate secure copy of the
 restore key remains pending. Restore-key custody and exact host
 paths are documented privately in `.private/operations.md`.
 
-## First live alarm (2026-10-24)
-
-The first scheduled watchdog run after deployment (run 40041667665) failed and
-filed #660. The host report had `dependencies` and `images` false and
-`backup` and `offsite` true. The running-image scan found 3 findings, all in
-`umami`: the Next 16.3.8 advisories published 2026-10-22. The lockfile scans
-also flagged `body-parser`, `zod`, `undici`, `fast-uri` and
-`serialize-javascript`. The mechanism worked as designed: the alarm fired on
-real upstream advisories, and no diagnostics reached GitHub.
-
-- Fixes: #661 (Umami on Next 16.4.2 with raised builder override floors),
-  #662 (root `body-parser` and `zod`) and #663 (inherited CI failures).
-  Production reached `84c1e765`, and the Umami container was recreated on
-  `3.4.0-security-2`.
-- Recovery: the host job was rerun by hand at 05:09Z instead of waiting for
-  02:00, and all four checks were true. A dispatched watchdog
-  (run 40065154092) passed and closed #660 with its recovery comment.
-- The six Dependabot alerts for the same `next` advisories stayed open after
-  the fix, although the dependency-graph compare for `fc9e1704...84c1e765`
-  showed 16.3.8 removed and 16.4.2 added with no vulnerabilities. The cause was
-  a GitHub-side re-evaluation lag. The alerts were not dismissed, and all six
-  turned `fixed` on their own at 07:52Z, about 3 hours after the deploy. A
-  dismissed alert never turns `fixed`, so wait out the lag once the vulnerable
-  version has left the dependency graph. A locally patched version that stays
-  in the graph is the exception below.
-
-## Second alarm (2026-10-26)
-
-The 2026-10-25 scheduled run filed #673. The host report had only `images`
-false: the running-image scan found 1 finding, in `frontend`, a HIGH in
-`brotli-libs 1.2.0-r1` (fixed in Alpine `1.2.1-r0`, published 2026-10-22).
-
-- A re-pull could not fix it. Layer inspection showed upstream's current
-  `nginx:1.31.8-alpine` (`sha256:1ef7ca94…`) and `1.31-alpine` still shipping
-  `1.2.0-r1`, and no `1.31.9-alpine` existed.
-- `1.31.8-alpine-slim` (rebuilt 2026-10-24) carries the same nginx 1.31.8 and
-  busybox `wget`, but no libcurl, image-filter font libraries or njs/acme
-  modules, so no `brotli-libs`. `frontend/nginx.conf` loads no module.
-- Fix: #686 (`ccc7c411`) moved the Compose pin. CI's `nginx -t` passed on the
-  slim image, and production reported `ccc7c411` with the container `healthy`.
-- Recovery: the host job was rerun by hand at 00:54Z, and all four checks were
-  true with 0 findings on every service. A dispatched watchdog
-  (run 40251602783) passed and closed #673.
-
-## Third alarm (2026-10-27)
-
-Watchdog run 40425595419 (2026-10-27T00:18Z) filed #689 from the host report
-completed at 2026-10-26T17:00:23Z. The next report, 2026-10-27T17:00:19Z, was
-the same. Both had only `images` false (`backend/logs/security-schedule.log`).
-The per-service result of the second run, the only one still on disk when read,
-was 48 findings, all in `umami`: 24 CVEs, each reported for both Alpine
-`curl` and `libcurl` `8.22.0-r0` and fixed in `8.23.0-r0`. Of the 24, 1 is
-HIGH (CVE-2026-92392), 1 MEDIUM and 22 LOW. The other three services had 0.
-
-- Nothing found at runtime called curl. The Compose healthcheck uses BusyBox
-  `wget`, a grep of the running container's `/app/scripts` and
-  `/app/server.js` found no `curl`, and `verify.sh` runs its curl on the
-  host. After #691 the container passed its healthcheck and
-  `auto-deploy.sh`'s `/umami/api/send` check without curl.
-- Correction, measured after the fix: a deploy picks up Alpine patches only
-  when the host's build cache misses the `apk` layer. In the deploy log,
-  `[umami base 2/2] RUN apk upgrade` was `CACHED` on all five 2026-10-26
-  deploys (KST 09:28, 09:43, 09:52, 10:46, 18:10). It ran fresh on the #690
-  deploy (KST 2026-10-28 02:49), and that rebuild of the unchanged
-  `3.4.0-security-2` recipe already carried curl `8.23.0-r0`. The next
-  deploy (KST 03:19) was `CACHED` again. When Alpine published `8.23.0-r0`
-  was not measured. Follow-up: the nightly image refresh
-  (`.claude/rules/ci.md` › Nightly image refresh).
-- Fix: #691 (`bb5648d2`) removed curl from the base stage and moved the tag to
-  `3.4.0-security-3`; `verify.sh` now fails if the image ships curl.
-- Found on the way: `qs` 6.16.0 (GHSA-6pq8-jhm2-2vcw, published
-  2026-10-27T16:10Z, dev-only through `@lhci/cli`) failed a local
-  `security:dependencies` run. The host's 2026-10-27T17:00:19Z run still reported
-  `dependencies` true, so it was not this alarm's cause. #690 (`32885898`)
-  moved it to 6.16.1.
-- Production reported `bb5648d2` before the umami step had finished:
-  `/api/health/` reflects the backend, which `auto-deploy.sh` rebuilds first.
-  Wait for the umami container on the new tag before rerunning the host job.
-- Recovery: the host job was rerun by hand and completed at
-  2026-10-27T17:59:37Z; all four checks were true with 0 findings on every
-  service. A dispatched watchdog (run 40555781773) passed and closed #689.
-
-## Umami build-time dependency advisory (2026-10-28)
-
-Dependabot alerts #7 (`docker/umami/pnpm-lock.yaml`) and #8
-(`docker/umami/package.json`) reported low-severity CVE-2026-93753 in
-development-scope `deepmerge@4.3.1`; npm had no patched release.
-
-- [PR #699](https://github.com/researcherhojin/emelmujiro/pull/699) backported
-  the `__proto__` rejection from the unmerged
-  [deepmerge PR #274](https://github.com/TehShrike/deepmerge/pull/274) and
-  checks both exploit shapes during the image build. The production runner
-  lock contains no `deepmerge`.
-- PR checks and main CI/CD passed (runs 40653616066 and 40654083076);
-  `/api/health/` reported `e09ca677` at 2026-10-28T08:05:26Z.
-- Both alerts were then dismissed as `tolerable_risk`, citing the backport and
-  runtime exclusion. Replace the patch once npm publishes a fixed release.
-
-## Fourth alarm (2026-10-29)
+## Alarm history
 
 <!-- cspell:ignore rustls -->
 
-Watchdog run 40795848396 filed #705 from the host report completed at
-2026-10-28T17:00:16Z: `dependencies`, `images` and `refresh` false, `backup`
-and `offsite` true.
+Each alarm filed a generic issue. The cause was in the host report (`.private/operations.md`). Every recovery ran the same way: fix and deploy, rerun the host job by hand, then dispatch the watchdog, which closed the issue. No diagnostics reached GitHub.
 
-- `dependencies`: 1 finding, CVE-2026-93753 in `deepmerge@4.3.1` in
-  `docker/umami/pnpm-lock.yaml`, the advisory #699 had already backported.
-  The 2026-10-27T17:59:37Z run was clean, so Trivy's DB began matching it in
-  between. Fix: a scoped, expiring accepted risk in
-  `docker/umami/trivyignore.yaml`, passed only for that lock file. A local run
-  went from 1 finding to 0 with the same 1163 packages, and the runner lock
-  stayed at 157 packages and 0 findings.
-- `images`: 8 findings, all in `backend`: 4 rustls advisories
-  (GHSA-c8m5-c952-6cm4 MEDIUM; GHSA-h2v8-394m-p7vv, GHSA-vp88-798v-h67f,
-  GHSA-w44r-93j7-qv28 LOW; published 2026-10-27), each in both `bin/uv` and
-  `bin/uvx`. The fix is rustls 0.23.46. uv `0.12.24` (pinned) and the newest
-  release `0.13.6` both lock 0.23.45; only uv `main` has 0.23.46.
-- `refresh`: the 00:30 KST refresh stopped in `verify` with "Candidate scan
-  has findings". The backend candidate had the same 8 findings, and the umami
-  and umami-db candidates had 0.
-- Fix: #707 (`bf7a3be3`) removed uv from the backend runtime stage
-  instead of waiting for a uv release. The venv runs directly, and
-  `verify-backend-image.sh` fails if uv returns. The host's two `manage.py`
-  cron lines were reinstalled and each ran once with exit 0.
-- Recovery: a manual refresh completed at 2026-10-29T01:39:31Z and replaced
-  all three built images. The rerun host job (01:39:47Z) had all four checks
-  true and 0 findings on every service. Watchdog run 40801768627 passed and
-  closed #705.
+- **#660** (run 40041667665, 2026-10-24; `dependencies`, `images`)
+  - Cause: 3 `umami` findings, the Next 16.3.8 advisories published 2026-10-22. The lock-file scans also flagged `body-parser`, `zod`, `undici`, `fast-uri` and `serialize-javascript`.
+  - Fix: #661 (Next 16.4.2, raised builder override floors), #662 (`body-parser`, `zod`), #663 (CI). Production `84c1e765`, Umami `3.4.0-security-2`.
+  - Recovery: host job at 05:09Z, then run 40065154092.
+- **#673** (2026-10-25 run; `images`)
+  - Cause: 1 HIGH in `frontend`, `brotli-libs 1.2.0-r1` (fixed in `1.2.1-r0`, published 2026-10-22).
+  - Fix: #686 (`ccc7c411`) moved the Compose pin to `nginx:1.31.8-alpine-slim`.
+  - Recovery: host job at 00:54Z, then run 40251602783.
+- **#689** (run 40425595419, 2026-10-27T00:18Z, from the reports of 2026-10-26T17:00:23Z and 2026-10-27T17:00:19Z; `images`)
+  - Cause: 48 `umami` findings. 24 CVEs (1 HIGH CVE-2026-92392, 1 MEDIUM, 22 LOW) were each reported in both Alpine `curl` and `libcurl` `8.22.0-r0` (fixed in `8.23.0-r0`). The other services had 0.
+  - Fix: #691 (`bb5648d2`) removed curl and moved the tag to `3.4.0-security-3`. `verify.sh` now fails if curl returns.
+  - Recovery: host job at 2026-10-27T17:59:37Z, then run 40555781773.
+- **#705** (run 40795848396, from the report of 2026-10-28T17:00:16Z; `dependencies`, `images`, `refresh`)
+  - Cause, part 1: Trivy began matching CVE-2026-93753 in the already-patched `deepmerge@4.3.1`. The 2026-10-27T17:59:37Z run had been clean.
+  - Cause, part 2: 8 `backend` findings, 4 rustls 0.23.45 advisories (GHSA-c8m5-c952-6cm4 MEDIUM; GHSA-h2v8-394m-p7vv, GHSA-vp88-798v-h67f, GHSA-w44r-93j7-qv28 LOW) each in `bin/uv` and `bin/uvx`. The fix is rustls 0.23.46, which only uv `main` had. The 00:30 refresh rejected its backend candidate for the same 8.
+  - Fix: #706 (`f78abaca`) added an expiring ignore in `docker/umami/trivyignore.yaml` for that lock file only. Its findings went from 1 to 0, with 1163 packages unchanged. #707 (`bf7a3be3`) removed uv from the runtime stage, and the host's `manage.py` cron lines were reinstalled.
+  - Recovery: refresh at 2026-10-29T01:39:31Z, host job at 01:39:47Z, then run 40801768627.
+
+Lessons, each measured in one of these alarms:
+
+- **A Dependabot alert lags its fix by hours, so never dismiss one to clear it.** The six `next` alerts for #660 turned `fixed` on their own at 07:52Z, about 3 h after the deploy (compare `fc9e1704...84c1e765`). A dismissed alert never turns `fixed`.
+- **The exception is a locally patched version that stays in the graph.** deepmerge has no npm fix. #699 (`e09ca677`, runs 40653616066 and 40654083076, deployed 2026-10-28T08:05:26Z) backported deepmerge PR #274 and checks both exploit shapes in the image build. Alerts #7 and #8 were then dismissed as `tolerable_risk`. Replace the patch once npm ships a fix.
+- **A re-pull fixes nothing until upstream rebuilds.** `nginx:1.31.8-alpine` (`sha256:1ef7ca94…`) and `1.31-alpine` still shipped `brotli-libs 1.2.0-r1`, and no `1.31.9-alpine` existed. The slim variant has no `brotli-libs`, and `nginx.conf` loads no module.
+- **A deploy picks up Alpine patches only when the `apk upgrade` layer misses the build cache.** It was `CACHED` on all five 2026-10-26 deploys. It ran fresh on #690's deploy (KST 2026-10-28 02:49), which already carried curl `8.23.0-r0`. The nightly image refresh closes this gap.
+- **Drop a component the runtime does not use instead of waiting for its fix.**
+  - Umami: nothing called curl at runtime. The healthcheck uses BusyBox `wget`, there is no `curl` in `/app/scripts` or `/app/server.js`, and `verify.sh` curls from the host.
+  - backend: uv only launched the venv. Every uv from `0.12.24` to `0.13.6` locks rustls 0.23.45 (checked 2026-10-29T01:13Z).
+- **`/api/health/` reports the new commit before `auto-deploy.sh` reaches the Umami rebuild.** Wait for the umami container before rerunning the host job.
+- **A local scan can find what the host has not reported yet.** `qs` 6.16.0 (GHSA-6pq8-jhm2-2vcw, 2026-10-27T16:10Z, dev-only through `@lhci/cli`) failed a local run while the host still reported `dependencies` true. #690 (`32885898`) moved it to 6.16.1.

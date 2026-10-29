@@ -170,7 +170,7 @@ Still open, with blockers:
   binary ran. The optional `yauzl` fallback validates symlink targets.
 - Reachability of the 10 remaining findings: `sprintf-js` only via `argparse`,
   which `js-yaml@3` requires only in its own CLI, never run here. `braces`
-  expands developer-written Tailwind globs (`frontend/tailwind.config.js`), not
+  expands developer-written Tailwind globs (`frontend/tailwind.config.js`, now `.mts`), not
   external input.
 - Not done: Trivy scans of the running production images (SSH export from the
   deploy host was refused by the permission policy). The image-ID table above
