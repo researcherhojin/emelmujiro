@@ -19,8 +19,8 @@
     "vite.config.ts",
     "vitest.config.ts",
     "eslint.config.ts",
-    "tailwind.config.ts",
-    "postcss.config.ts",
+    "tailwind.config.mts",
+    "postcss.config.mts",
     "types/*.d.ts"
   ]
 }

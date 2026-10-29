@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(frontend): Rename `postcss.config.ts` and `tailwind.config.ts` to `.mts`. `frontend/package.json` has no `"type"`, so Node loaded each `.ts` file as CommonJS, failed, and reparsed it as ESM with a `MODULE_TYPELESS_PACKAGE_JSON` warning on every Vite dev and build start (found by a local `vite` run after #708). Adding `"type": "module"` would break `lighthouserc.js`'s `module.exports`. The warning count dropped from 1 to 0 in dev, build, ESLint and Vitest. Dev and build CSS are byte-identical to the pre-#708 output.
+
 - refactor: Convert 10 of the 11 tracked JavaScript files to TypeScript, run natively by Node (#708).
   - `frontend/scripts`: `check-css`, `visual-diff/capture` and `visual-diff/compare`. `npm run type-check` now covers them.
   - Configs: `.lintstagedrc.mts`, `eslint.config.ts` (through `jiti`, now a declared dev dependency), `tailwind.config.ts`, `postcss.config.ts`. These are type-checked by `tsconfig.node.json` and the root `scripts/tsconfig.json`. Build CSS bytes, `check:css` output and ESLint's resolved config are identical to before.
