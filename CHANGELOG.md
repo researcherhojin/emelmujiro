@@ -8,7 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
-- refactor: Convert 10 of the 11 tracked JavaScript files to TypeScript, run natively by Node (`docs/intents/frontend/scripts-typescript.md`).
+- refactor: Convert 10 of the 11 tracked JavaScript files to TypeScript, run natively by Node (#708).
   - `frontend/scripts`: `check-css`, `visual-diff/capture` and `visual-diff/compare`. `npm run type-check` now covers them.
   - Configs: `.lintstagedrc.mts`, `eslint.config.ts` (through `jiti`, now a declared dev dependency), `tailwind.config.ts`, `postcss.config.ts`. These are type-checked by `tsconfig.node.json` and the root `scripts/tsconfig.json`. Build CSS bytes, `check:css` output and ESLint's resolved config are identical to before.
   - Umami: `verify.ts` (piped with `--input-type=module-typescript`) and `scripts/verify-deepmerge-patch.cts`.
