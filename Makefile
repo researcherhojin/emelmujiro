@@ -122,13 +122,13 @@ restart:
 	docker compose restart
 
 migrate:
-	docker compose exec backend uv run python manage.py migrate
+	docker compose exec backend /app/.venv/bin/python manage.py migrate
 
 shell:
-	docker compose exec backend uv run python manage.py shell
+	docker compose exec backend /app/.venv/bin/python manage.py shell
 
 createsuperuser:
-	docker compose exec backend uv run python manage.py createsuperuser
+	docker compose exec backend /app/.venv/bin/python manage.py createsuperuser
 
 update-test-counts:
 	./scripts/update-test-counts.sh
@@ -138,7 +138,7 @@ cleanup-visits:
 	if ! echo "$$SAFE_DAYS" | grep -qE '^[0-9]+$$'; then \
 		echo "Error: DAYS must be a number"; exit 1; \
 	fi; \
-	docker compose exec backend uv run python manage.py cleanup_sitevisits --days "$$SAFE_DAYS"
+	docker compose exec backend /app/.venv/bin/python manage.py cleanup_sitevisits --days "$$SAFE_DAYS"
 
 setup-cron:
 	@mkdir -p $(CURDIR)/backend/logs
@@ -149,7 +149,7 @@ setup-cron:
 	echo "Adding daily SiteVisit cleanup cron job (3 AM)..."; \
 	echo "Using docker binary: $$DOCKER_BIN"; \
 	(crontab -l 2>/dev/null | grep -v cleanup_sitevisits; \
-	 echo "0 3 * * * cd '$(CURDIR)' && $$DOCKER_BIN compose exec -T backend uv run python manage.py cleanup_sitevisits --days 90 >> '$(CURDIR)/backend/logs/sitevisit-cleanup.log' 2>&1") | crontab -; \
+	 echo "0 3 * * * cd '$(CURDIR)' && $$DOCKER_BIN compose exec -T backend /app/.venv/bin/python manage.py cleanup_sitevisits --days 90 >> '$(CURDIR)/backend/logs/sitevisit-cleanup.log' 2>&1") | crontab -; \
 	echo "Cron job added. Verify with: crontab -l"
 
 setup-token-cron: ## Remove expired JWT records daily without invalidating active tokens
@@ -166,7 +166,7 @@ setup-token-cron: ## Remove expired JWT records daily without invalidating activ
 		fi; \
 	fi; \
 	(grep -v 'manage.py flushexpiredtokens' "$$CRON_COPY"; \
-	 echo "15 3 * * * cd '$(CURDIR)' && $$DOCKER_BIN compose exec -T backend uv run python manage.py flushexpiredtokens >> '$(CURDIR)/backend/logs/token-cleanup.log' 2>&1") | crontab -
+	 echo "15 3 * * * cd '$(CURDIR)' && $$DOCKER_BIN compose exec -T backend /app/.venv/bin/python manage.py flushexpiredtokens >> '$(CURDIR)/backend/logs/token-cleanup.log' 2>&1") | crontab -
 
 setup-security-cron: ## Schedule private backups, restore checks, and full security scans
 	@mkdir -p $(CURDIR)/backend/logs

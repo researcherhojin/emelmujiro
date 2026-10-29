@@ -50,7 +50,7 @@ cd backend && DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPI
 
 - `make help` lists the main make targets (the `Makefile`'s `.PHONY` line has the full set); there is no `make type-check` — use `cd frontend && npm run type-check`.
 - Repo checks CI runs, from root: `./scripts/check-changelog.sh origin/main HEAD`, `./scripts/test-check-changelog.sh`, `./.claude/hooks/test-guard-bash.sh`, `npm run check:scripts` (type-checks and tests root `scripts/`).
-- Inside the **backend container, run Django via `uv run`** (`docker exec -i emelmujiro-backend uv run python manage.py …`); bare `python manage.py` fails with `No module named 'django'` (uv-managed venv).
+- Inside the **backend container, run Django via `/app/.venv/bin/python`** (`docker exec -i emelmujiro-backend /app/.venv/bin/python manage.py …`); the runtime image ships no uv, and an older image's bare `python` fails with `No module named 'django'`.
 
 ## Build & deploy gotchas (load-bearing)
 

@@ -14,6 +14,14 @@ cleanup() {
 }
 trap cleanup EXIT
 trap 'exit 130' HUP INT TERM
+# The runtime runs the venv directly; uv's bundled crates kept the image scan red (#705).
+if ! found=$(docker run --rm --entrypoint sh "$image" -c 'command -v uv; command -v uvx; true'); then
+  exit 1
+fi
+if [ -n "$found" ]; then
+  echo "uv must not ship in the runtime image: $found" >&2
+  exit 1
+fi
 docker volume create "$volume" >/dev/null
 start_and_verify() {
   target=$1
@@ -27,7 +35,7 @@ start_and_verify() {
   for attempt in $(seq 1 90); do
     if body=$(curl -fsS --max-time 2 "http://$port/api/health/"); then
       printf '%s' "$body" | python3 -c 'import json,sys; r=json.load(sys.stdin); assert r["status"] == "healthy" and r["commit"] == sys.argv[1]' "$expected"
-      docker exec "$name" uv run python manage.py migrate --check
+      docker exec "$name" /app/.venv/bin/python manage.py migrate --check
       return 0
     fi
     sleep 2

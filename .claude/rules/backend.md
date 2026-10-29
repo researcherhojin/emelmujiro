@@ -41,7 +41,7 @@ Invariants only. Grep the code for everything else. Single app `api/`; `config/`
 
 ## Tooling
 
-**Inside the backend container, run Django through `uv run`**: `docker exec emelmujiro-backend python manage.py …` fails with `No module named 'django'`, because the image's virtual environment is uv-managed (`uv sync` in `backend/Dockerfile`). Use `docker exec -i emelmujiro-backend uv run python manage.py shell < script.py` for one-off data scripts.
+**Inside the backend container, run Django through `/app/.venv/bin/python`**: the runtime image ships no uv since #705 (its bundled TLS crate kept the image scan red), and the venv is first on `PATH`. Callers use the absolute path anyway: the refresh rollback rehearsal and the host cron lines may hit an older image, where bare `python` is the system interpreter and fails with `No module named 'django'`. Use `docker exec -i emelmujiro-backend /app/.venv/bin/python manage.py shell < script.py` for one-off data scripts.
 
 `black` + `flake8` (line length 120) are the only Python lint gates. `[tool.ruff]` in `pyproject.toml` exists so the VS Code Ruff extension agrees with them (line length, `py312`, `api`/`config` first-party). It is not run in CI, so its editor findings in `backend/` are not failures (d25bad1f).
 
