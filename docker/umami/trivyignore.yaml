@@ -1,0 +1,12 @@
+# Accepted dependency-scan risks for docker/umami/pnpm-lock.yaml only
+# (scripts/security/dependencies.ts). Every entry expires, so the scheduled
+# scan fails again and forces a re-review instead of hiding a finding forever.
+vulnerabilities:
+  - id: CVE-2026-93753
+    purls:
+      - pkg:npm/deepmerge@4.3.1
+    expired_at: 2027-01-27
+    statement: >-
+      No patched npm release. patches/deepmerge@4.3.1.patch backports the
+      upstream __proto__ rejection, the image build verifies it, and the
+      production runner lock has no deepmerge (#699).

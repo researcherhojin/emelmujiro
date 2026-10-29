@@ -26,6 +26,12 @@ export const LOCK_TARGETS = [
   ['docker/umami/runner/pnpm-lock.yaml', 'pnpm'],
 ] as const;
 
+// Accepted risks are scoped per lock file and expire; every other target
+// keeps an empty ignore file, so no exception can hide its findings.
+export const IGNORE_FILES: Partial<Record<(typeof LOCK_TARGETS)[number][0], string>> = {
+  'docker/umami/pnpm-lock.yaml': 'docker/umami/trivyignore.yaml',
+};
+
 export function scanDependencies({
   root,
   directory,
@@ -88,7 +94,7 @@ export function scanDependencies({
         'vuln',
         '--include-dev-deps',
         '--ignorefile',
-        '/dev/null',
+        IGNORE_FILES[target] ? path.join(root, IGNORE_FILES[target]) : '/dev/null',
         '--ignore-unfixed=false',
         '--severity',
         'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL',

@@ -188,3 +188,31 @@ development-scope `deepmerge@4.3.1`; npm had no patched release.
   `/api/health/` reported `e09ca677` at 2026-10-28T08:05:26Z.
 - Both alerts were then dismissed as `tolerable_risk`, citing the backport and
   runtime exclusion. Replace the patch once npm publishes a fixed release.
+
+## Fourth alarm (2026-10-29)
+
+<!-- cspell:ignore rustls -->
+
+Watchdog run 40795848396 filed #705 from the host report completed at
+2026-10-28T17:00:16Z: `dependencies`, `images` and `refresh` false, `backup`
+and `offsite` true.
+
+- `dependencies`: 1 finding, CVE-2026-93753 in `deepmerge@4.3.1` in
+  `docker/umami/pnpm-lock.yaml`, the advisory #699 had already backported.
+  The 2026-10-27T17:59:37Z run was clean, so Trivy's DB began matching it in
+  between. Fix: a scoped, expiring accepted risk in
+  `docker/umami/trivyignore.yaml`, passed only for that lock file. A local run
+  went from 1 finding to 0 with the same 1163 packages, and the runner lock
+  stayed at 157 packages and 0 findings.
+- `images`: 8 findings, all in `backend`: 4 rustls advisories
+  (GHSA-c8m5-c952-6cm4 MEDIUM; GHSA-h2v8-394m-p7vv, GHSA-vp88-798v-h67f,
+  GHSA-w44r-93j7-qv28 LOW; published 2026-10-27), each in both `bin/uv` and
+  `bin/uvx`. The fix is rustls 0.23.46. uv `0.12.24` (pinned) and the newest
+  release `0.13.6` both lock 0.23.45; only uv `main` has 0.23.46.
+- `refresh`: the 00:30 KST refresh stopped in `verify` with "Candidate scan
+  has findings". The backend candidate had the same 8 findings, and the umami
+  and umami-db candidates had 0.
+- Open: once a uv release ships rustls 0.23.46, bump `backend/Dockerfile`
+  (both stages) and `.github/actions/setup-uv/action.yml` together. #705 stays
+  open until then. The owner chose this over an image-scan ignore or dropping
+  uv from the runtime stage.
