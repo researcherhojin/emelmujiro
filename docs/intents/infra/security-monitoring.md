@@ -71,8 +71,8 @@ exercised this recovery path and passed all service checks.
   The ten static routes and login returned 200; an unknown route returned 404.
 - The deployment request limit now counts UTF-8 bytes, correcting the previous
   character-count implementation of the documented 4096-byte bound.
-- Existing `docker/umami/verify.mjs` remains necessary: `verify.sh` feeds it to
-  the isolated container. Knip now records that external entry explicitly.
+- Existing `docker/umami/verify.mjs` (`verify.ts` since #708) remains necessary:
+  `verify.sh` feeds it to the isolated container. Knip now records that external entry explicitly.
 - Strict TypeScript checks and 27 regression tests pass on both development
   and deployment machines. A differential check
   against the original webhook at `f3820ff4` matches 13 deployment behaviors;
@@ -152,8 +152,8 @@ spaces must be shell-quoted. An optional `TRIVY_BIN` selects an existing scanner
 otherwise the local pinned installation is preferred, then `trivy` on PATH.
 
 The manual audits require no webhook restart. Future changes to the running
-webhook require a deliberate service restart; its
-`scripts/deploy-webhook.js` entry path is unchanged.
+webhook require a deliberate service restart. Since #708 the launchd agent runs
+`scripts/deploy-webhook.ts` directly; the `.js` entry was removed.
 Host-specific service-manager instructions remain in `.private/operations.md`.
 
 ## Module boundaries
