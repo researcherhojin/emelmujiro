@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Detect CSS classes shipped in build/assets/*.css that have no literal
  * match in source. Tailwind's content scanner is usually accurate, but
@@ -7,20 +6,20 @@
  * references. knip catches dead modules; this catches dead CSS.
  *
  * Usage (run from frontend/):
- *   node scripts/check-css.cjs
- *   node scripts/check-css.cjs --json
+ *   node scripts/check-css.ts
+ *   node scripts/check-css.ts --json
  *
  * Exit codes:
  *   0 — no unused classes
  *   1 — unused classes detected (or build missing)
  */
 
-const fs = require('fs');
-const path = require('path');
-const postcss = require('postcss');
-const selectorParser = require('postcss-selector-parser');
+import fs from 'node:fs';
+import path from 'node:path';
+import postcss from 'postcss';
+import selectorParser from 'postcss-selector-parser';
 
-const FRONTEND = path.resolve(__dirname, '..');
+const FRONTEND = path.resolve(import.meta.dirname, '..');
 const CSS_DIR = path.join(FRONTEND, 'build/assets');
 
 // Files where classes may be referenced. index.html has classNames in the
@@ -36,11 +35,11 @@ const SKIP_DIRS = new Set(['node_modules', '__tests__', '__mocks__']);
 // never reaches the unused list. Leave the hook here for future classes
 // that are (a) imperatively applied via classList.add and (b) have no
 // substring hit anywhere else in source.
-const ALLOWLIST = new Set([]);
+const ALLOWLIST = new Set<string>([]);
 
-function extractClassesFromCss(cssPath) {
+function extractClassesFromCss(cssPath: string): Set<string> {
   const root = postcss.parse(fs.readFileSync(cssPath, 'utf8'));
-  const classes = new Set();
+  const classes = new Set<string>();
   root.walkRules((rule) => {
     try {
       selectorParser((selectors) => {
@@ -55,9 +54,9 @@ function extractClassesFromCss(cssPath) {
   return classes;
 }
 
-function collectSourceText() {
+function collectSourceText(): string {
   let text = '';
-  const walk = (dir) => {
+  const walk = (dir: string) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       if (entry.isDirectory()) {
         if (SKIP_DIRS.has(entry.name)) continue;
@@ -92,13 +91,13 @@ function main() {
     process.exit(1);
   }
 
-  const allClasses = new Set();
+  const allClasses = new Set<string>();
   for (const f of cssFiles) {
     for (const c of extractClassesFromCss(f)) allClasses.add(c);
   }
 
   const source = collectSourceText();
-  const unused = [];
+  const unused: string[] = [];
   for (const cls of allClasses) {
     if (ALLOWLIST.has(cls)) continue;
     if (!source.includes(cls)) unused.push(cls);
@@ -121,7 +120,7 @@ function main() {
       console.log(`❌ ${unused.length} unused:`);
       for (const c of unused) console.log(`   ${c}`);
       console.log(
-        '\nFalse positives? Add to the ALLOWLIST in scripts/check-css.cjs with a one-line reason.'
+        '\nFalse positives? Add to the ALLOWLIST in scripts/check-css.ts with a one-line reason.'
       );
     }
   }

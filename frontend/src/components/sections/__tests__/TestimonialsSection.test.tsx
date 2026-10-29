@@ -22,7 +22,7 @@ describe('TestimonialsSection', () => {
   it('renders enterprise and government testimonials', () => {
     render(<TestimonialsSection />);
     // Enterprise row (8 items x 2 copies = 16) + Government row (8 items x 2 copies = 16) = 32 cards
-    // Reduced from 5x copies to 2x for dom-size optimization (see tailwind.config.js).
+    // Reduced from 5x copies to 2x for dom-size optimization (see tailwind.config.ts).
     const cards = screen.getAllByText('testimonials.enterprise1');
     expect(cards.length).toBe(2); // 2 copies of the first enterprise testimonial
   });

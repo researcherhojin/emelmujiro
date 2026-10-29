@@ -1,11 +1,11 @@
 /**
  * Tailwind CSS 4 entry. The theme, dark mode and typography plugin still live
- * in tailwind.config.js, loaded through @config. Sources are listed explicitly
+ * in tailwind.config.ts, loaded through @config. Sources are listed explicitly
  * (source(none)) so test files and e2e specs never emit utilities, as the v3
  * `content` exclusions did.
  */
 @import "tailwindcss" source(none);
-@config "../tailwind.config.js";
+@config "../tailwind.config.ts";
 @source "../index.html";
 @source "./**/*.{js,jsx,ts,tsx}";
 @source not "./**/__tests__/**";

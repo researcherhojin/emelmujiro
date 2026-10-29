@@ -4,7 +4,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const base = 'http://127.0.0.1:3000';
-async function request(path, body, token) {
+async function request(path: string, body?: object, token?: string) {
   const response = await fetch(base + path, {
     method: body ? 'POST' : 'GET',
     headers: { 'content-type': 'application/json', ...(token ? { authorization: `Bearer ${token}` } : {}) },
@@ -14,7 +14,7 @@ async function request(path, body, token) {
   assert.equal(response.status, 200, `${path}: ${text}`);
   return text;
 }
-assert.equal(process.getuid(), 1001);
+assert.equal(process.getuid?.(), 1001);
 assert.equal(require('./package.json').version, '3.4.0');
 assert.equal(require('next/package.json').version, '16.4.2');
 assert.ok(existsSync('node_modules/.bin/prisma'));

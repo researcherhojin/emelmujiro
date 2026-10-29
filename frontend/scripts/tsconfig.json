@@ -13,5 +13,5 @@
     "types": ["node"],
     "skipLibCheck": true
   },
-  "include": ["*.ts"]
+  "include": ["*.ts", "visual-diff/*.ts"]
 }

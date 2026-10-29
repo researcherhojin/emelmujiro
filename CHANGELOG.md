@@ -8,6 +8,13 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- refactor: Convert 10 of the 11 tracked JavaScript files to TypeScript, run natively by Node (`docs/intents/frontend/scripts-typescript.md`).
+  - `frontend/scripts`: `check-css`, `visual-diff/capture` and `visual-diff/compare`. `npm run type-check` now covers them.
+  - Configs: `.lintstagedrc.mts`, `eslint.config.ts` (through `jiti`, now a declared dev dependency), `tailwind.config.ts`, `postcss.config.ts`. These are type-checked by `tsconfig.node.json` and the root `scripts/tsconfig.json`. Build CSS bytes, `check:css` output and ESLint's resolved config are identical to before.
+  - Umami: `verify.ts` (piped with `--input-type=module-typescript`) and `scripts/verify-deepmerge-patch.cts`.
+  - The deploy webhook's `.js` loader is gone. The host's launchd plist now runs `deploy-webhook.ts` directly, switched and verified before the merge.
+  - `frontend/lighthouserc.js` stays JavaScript: `@lhci/utils` loads no TypeScript, and YAML fails under the `js-yaml` 4 override (#627).
+
 - fix(security): The backend runtime image no longer ships `uv`/`uvx`. Their bundled rustls 0.23.45 produced all 8 backend image findings behind #705, and no uv release ships 0.23.46 yet. The runtime runs the venv directly. `CMD`, `HEALTHCHECK` and `collectstatic` call `/app/.venv/bin/*`, and the venv is first on `PATH`. Every in-container caller (`Makefile` targets and cron lines, `verify-backend-image.sh`) uses `/app/.venv/bin/python`, which older images also have, so rollbacks keep working. `verify-backend-image.sh` now fails if uv returns. The host's two cron lines must be reinstalled with `make setup-cron` and `make setup-token-cron` (`docs/intents/infra/security-operations.md` › Fourth alarm).
 
 - fix(security): The scheduled dependency scan accepts CVE-2026-93753 (`pkg:npm/deepmerge@4.3.1`) for `docker/umami/pnpm-lock.yaml` only, through the tracked `docker/umami/trivyignore.yaml`, which expires on 2027-01-27 and then fails the scan again. Every other lock file still scans with `/dev/null`. Trivy's DB began matching the advisory after #699 had backported the fix, and that turned `dependencies` false in the 2026-10-28T17:00Z host report (#705). The same report's `images` and `refresh` were red because the backend image's `uv` binaries bundle rustls 0.23.45. No uv release ships 0.23.46 yet, so they stay red until a uv bump.

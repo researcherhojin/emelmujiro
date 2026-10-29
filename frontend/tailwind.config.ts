@@ -1,3 +1,6 @@
+import typography from '@tailwindcss/typography';
+import type { Config } from 'tailwindcss';
+
 // Tailwind 3.4.19 palette for the families this site uses. Tailwind 4 ships
 // an OKLCH palette whose values differ slightly; pinning these keeps colors
 // identical to the v3 site (including @tailwindcss/typography's prose-gray).
@@ -136,8 +139,7 @@ const v3ProseColors = {
   '--tw-prose-invert-td-borders': '#374151',
 };
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
     './src/**/*.{js,jsx,ts,tsx}',
     './index.html',
@@ -247,5 +249,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require('@tailwindcss/typography')],
-};
+  plugins: [typography],
+} satisfies Config;

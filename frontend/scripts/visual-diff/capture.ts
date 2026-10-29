@@ -1,10 +1,10 @@
 /**
  * Captures full-page Chromium screenshots of a served build, so that two builds
- * can be compared pixel by pixel with `compare.mjs`. The A/B method and the
+ * can be compared pixel by pixel with `compare.ts`. The A/B method and the
  * measured noise floor are in the Tailwind section of
  * `.claude/rules/frontend-build.md`.
  *
- * Usage: node scripts/visual-diff/capture.mjs <outDir> <baseUrl>
+ * Usage: node scripts/visual-diff/capture.ts <outDir> <baseUrl>
  *
  * Every `staticRoutes` route in every language, plus /login, is captured in
  * light and dark at 390 and 1440 px as `<route>-<theme>-<width>.png` (`home`
@@ -18,17 +18,31 @@
  *   VISUAL_DIFF_PASSWORD          editor at /insights/new, plus
  *                                 /insights/edit/<id> if VISUAL_DIFF_EDIT_ID is set
  */
-import { createRequire } from 'node:module';
 import { existsSync, mkdirSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { chromium } from 'playwright';
-
+import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 // The list prerender and the sitemap use, so this harness never becomes a fifth
 // hardcoded route list next to the four `check:routes` cross-checks.
-const require = createRequire(import.meta.url);
-const { staticRoutes, LANGUAGES, DEFAULT_LANG } = require('../generate-sitemap.ts');
+import { staticRoutes, LANGUAGES, DEFAULT_LANG } from '../generate-sitemap.ts';
 
-const THEMES = ['light', 'dark'];
+declare global {
+  interface Window {
+    __appLoaded?: boolean;
+  }
+}
+
+interface Shot {
+  name: string;
+  path: string;
+  status?: number;
+  click?: string;
+  until?: string;
+  widths?: number[];
+  auth?: boolean;
+}
+type StorageState = Awaited<ReturnType<BrowserContext['storageState']>>;
+
+const THEMES = ['light', 'dark'] as const;
 const WIDTHS = [390, 1440];
 // The noise floor in frontend-build.md was measured with this settle time.
 const SETTLE_MS = 800;
@@ -37,12 +51,12 @@ const { VISUAL_DIFF_USERNAME: username, VISUAL_DIFF_PASSWORD: password } = env;
 
 const [outArg, baseArg] = process.argv.slice(2);
 if (!outArg || !URL.canParse(baseArg ?? '') || Boolean(username) !== Boolean(password)) {
-  console.error('Usage: node scripts/visual-diff/capture.mjs <outDir> <baseUrl>');
+  console.error('Usage: node scripts/visual-diff/capture.ts <outDir> <baseUrl>');
   console.error('Sign-in needs both VISUAL_DIFF_USERNAME and VISUAL_DIFF_PASSWORD.');
   process.exit(2);
 }
 const outDir = resolve(outArg);
-const baseUrl = new URL(baseArg).origin;
+const baseUrl = new URL(baseArg!).origin;
 // Stale files would be compared as if this run had produced them.
 if (existsSync(outDir) && readdirSync(outDir).some((file) => file.endsWith('.png'))) {
   console.error(`${outDir} already holds PNGs; capture into a new or empty directory.`);
@@ -50,11 +64,11 @@ if (existsSync(outDir) && readdirSync(outDir).some((file) => file.endsWith('.png
 }
 mkdirSync(outDir, { recursive: true });
 
-const localize = (url, lang) => {
+const localize = (url: string, lang: string) => {
   const prefix = lang === DEFAULT_LANG ? '' : `/${lang}`;
   return url === '/' ? prefix || '/' : `${prefix}${url}`;
 };
-const shots = LANGUAGES.flatMap((lang) => staticRoutes.map(({ url }) => localize(url, lang)))
+const shots: Shot[] = LANGUAGES.flatMap((lang) => staticRoutes.map(({ url }) => localize(url, lang)))
   .concat('/login')
   .map((path) => ({ name: path === '/' ? 'home' : path.slice(1).replaceAll('/', '_'), path }));
 if (env.VISUAL_DIFF_BLOG_SLUG) {
@@ -86,7 +100,12 @@ if (username) {
   }
 }
 
-const newContext = async (browser, theme, width, storageState) => {
+const newContext = async (
+  browser: Browser,
+  theme: (typeof THEMES)[number],
+  width: number,
+  storageState?: StorageState
+) => {
   const context = await browser.newContext({
     viewport: { width, height: 900 },
     deviceScaleFactor: 1,
@@ -109,12 +128,12 @@ const newContext = async (browser, theme, width, storageState) => {
 };
 
 /** Signs in once through the real form; the session cookies are reused per context. */
-const signIn = async (browser) => {
+const signIn = async (browser: Browser) => {
   const context = await browser.newContext();
   const page = await context.newPage();
   await page.goto(`${baseUrl}/login`, { waitUntil: 'networkidle' });
-  await page.locator('#email').fill(username);
-  await page.locator('#password').fill(password);
+  await page.locator('#email').fill(username!);
+  await page.locator('#password').fill(password!);
   await page.locator('button[type="submit"]').click();
   await page
     .waitForURL((url) => url.pathname !== '/login', { timeout: 15_000 })
@@ -126,7 +145,7 @@ const signIn = async (browser) => {
   return state;
 };
 
-const capture = async (page, shot, file) => {
+const capture = async (page: Page, shot: Shot, file: string) => {
   const response = await page.goto(baseUrl + shot.path, { waitUntil: 'networkidle' });
   const status = response?.status();
   if (shot.status ? status !== shot.status : !response?.ok()) throw new Error(`HTTP ${status}`);
@@ -134,7 +153,7 @@ const capture = async (page, shot, file) => {
   await page.waitForFunction(() => window.__appLoaded === true, undefined, { timeout: 15_000 });
   if (shot.click) {
     await page.locator(shot.click).first().click();
-    await page.locator(shot.until).waitFor();
+    await page.locator(shot.until!).waitFor();
   }
   await page.evaluate(async () => {
     await document.fonts.ready;
@@ -152,7 +171,7 @@ const capture = async (page, shot, file) => {
 };
 
 const browser = await chromium.launch();
-const failures = [];
+const failures: string[] = [];
 let captured = 0;
 try {
   const storageState = username ? await signIn(browser) : undefined;
@@ -163,12 +182,12 @@ try {
       const group = shots.filter((shot) => !shot.widths || shot.widths.includes(width));
       for (const shot of group) {
         const file = `${shot.name}-${theme}-${width}.png`;
-        const page = await (shot.auth ? signedIn : plain).newPage();
+        const page = await (shot.auth && signedIn ? signedIn : plain).newPage();
         try {
           await capture(page, shot, join(outDir, file));
           captured++;
         } catch (err) {
-          failures.push(`${file}: ${err.message.split('\n')[0]}`);
+          failures.push(`${file}: ${(err as Error).message.split('\n')[0]}`);
         } finally {
           await page.close();
         }

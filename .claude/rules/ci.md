@@ -23,8 +23,9 @@ scheduler and contact no notification service. Reports stay under
 Never substitute an image tag for a running container's image ID.
 
 - Operational TypeScript runs natively on Node 24. `npm run check:scripts`
-  type-checks and tests it in `Repo Checks (informational)`; the webhook
-  JavaScript path is a compatibility loader for service-manager configuration.
+  type-checks and tests it in `Repo Checks (informational)`. The host's launchd
+  agent runs `scripts/deploy-webhook.ts` directly; the JavaScript loader was
+  removed after the plist switch (`.private/operations.md` › Deploy webhook service).
 - Modules and manual operation: `docs/intents/infra/security-monitoring.md`.
 
 **Runtime image recipes are versioned and must remain reproducible.** nginx uses an exact upstream Compose pin, on the `-alpine-slim` variant (#673, #686): the full variant adds modules `nginx.conf` never loads, and its `brotli-libs` kept the image scan red. Backend, PostgreSQL and Umami are built from their Dockerfile recipes; the backend runtime stage ships no uv (`verify-backend-image.sh` fails if it returns, #705); `auto-deploy.sh` rebuilds analytics images with Compose.

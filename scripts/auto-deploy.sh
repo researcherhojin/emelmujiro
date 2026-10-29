@@ -18,7 +18,7 @@ fi
 node "$MAINTENANCE_ENTRY" check
 
 # Auto-deploy script for Mac Mini
-# Called by deploy-webhook.js after GitHub Actions CI passes.
+# Called by deploy-webhook.ts after GitHub Actions CI passes.
 
 LOG_PREFIX="[auto-deploy]"
 
@@ -79,7 +79,7 @@ if ! git fetch origin main; then
   exit 1
 fi
 
-# DEPLOY_SHA comes from the CI payload via deploy-webhook.js, which validates it
+# DEPLOY_SHA comes from the CI payload via deploy-webhook.ts, which validates it
 # as exactly 40 hex chars before it reaches this script. Absent (a manual run,
 # or an older webhook) — fall back to origin/main so this stays runnable by hand.
 TARGET_SHA="${DEPLOY_SHA:-}"

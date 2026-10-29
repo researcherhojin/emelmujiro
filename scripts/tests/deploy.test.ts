@@ -70,14 +70,14 @@ test('webhook refuses an absent authentication secret', () => {
   assert.throws(() => createWebhookServer({ secret: '', script: '/unused', lockFile: '/unused' }));
 });
 
-test('legacy entry works from another cwd and a checkout path containing spaces', async (t) => {
+test('webhook entry works from another cwd and a checkout path containing spaces', async (t) => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'entry fixture '));
   const scripts = path.join(directory, 'scripts');
   fs.cpSync(SCRIPTS_ROOT, scripts, {
     recursive: true,
     filter: (source) => fs.statSync(source).isDirectory() || /\.(ts|js|json)$/.test(source),
   });
-  const entry = path.join(scripts, 'deploy-webhook.js');
+  const entry = path.join(scripts, 'deploy-webhook.ts');
   const missing = spawnSync(process.execPath, [entry], {
     cwd: os.tmpdir(),
     env: { ...process.env, DEPLOY_SECRET: '' },
