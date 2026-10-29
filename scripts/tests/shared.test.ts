@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { enterMaintenance } from '../shared/maintenance-entry.ts';
+import { SCRIPTS_ROOT } from '../shared/paths.ts';
 import { withPidLock } from '../shared/pid-lock.ts';
 import { ensurePrivateDir, writePrivate, writePrivateAtomic } from '../shared/private-fs.ts';
 
@@ -93,7 +94,9 @@ test('enterMaintenance re-executes under maintenance.ts without a token', () => 
   };
   assert.throws(() => enterMaintenance('refresh', { env: {}, spawn, exit }), { code: 3 });
   assert.equal(calls.length, 1);
-  assert.ok(calls[0]![0]!.endsWith(path.join('scripts', 'maintenance.ts')));
+  const entry = calls[0]![0]!;
+  assert.equal(entry, path.join(SCRIPTS_ROOT, 'maintenance/maintenance.ts'));
+  assert.ok(fs.existsSync(entry));
   assert.equal(calls[0]![1], 'refresh');
   assert.throws(
     () => enterMaintenance('security', { env: {}, spawn: () => ({ status: null }), exit }),

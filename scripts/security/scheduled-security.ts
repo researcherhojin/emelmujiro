@@ -1,9 +1,9 @@
 import path from 'node:path';
-import { REPO_ROOT, SECURITY_REPORT_ROOT } from './shared/paths.ts';
-import { runOperations } from './security/operations.ts';
-import { enterMaintenance } from './shared/maintenance-entry.ts';
-import { withPidLock } from './shared/pid-lock.ts';
-import { ensurePrivateDir } from './shared/private-fs.ts';
+import { REPO_ROOT, SECURITY_REPORT_ROOT } from '../shared/paths.ts';
+import { runOperations } from './operations.ts';
+import { enterMaintenance } from '../shared/maintenance-entry.ts';
+import { withPidLock } from '../shared/pid-lock.ts';
+import { ensurePrivateDir } from '../shared/private-fs.ts';
 
 enterMaintenance('security');
 

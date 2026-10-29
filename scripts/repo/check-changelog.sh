@@ -1,6 +1,6 @@
 #!/bin/bash
 # Warn when a range of commits ships changes without a CHANGELOG.md entry.
-# Usage: ./scripts/check-changelog.sh <base> <head>
+# Usage: ./scripts/repo/check-changelog.sh <base> <head>
 #   - Compares <base>...<head> (three dots: from the merge base, so commits
 #     that landed on <base> after the branch was cut are not counted).
 #   - Exits 0 if the range changes CHANGELOG.md, is empty, or changes only

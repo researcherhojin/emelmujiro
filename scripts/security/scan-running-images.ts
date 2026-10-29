@@ -1,9 +1,9 @@
 import path from 'node:path';
-import { scan } from './security/images.ts';
-import { SECURITY_REPORT_ROOT, trivyBinary } from './shared/paths.ts';
-import { withPidLock } from './shared/pid-lock.ts';
-import { ensurePrivateDir } from './shared/private-fs.ts';
-import { errorMessage, isMain } from './shared/runtime.ts';
+import { scan } from './images.ts';
+import { SECURITY_REPORT_ROOT, trivyBinary } from '../shared/paths.ts';
+import { withPidLock } from '../shared/pid-lock.ts';
+import { ensurePrivateDir } from '../shared/private-fs.ts';
+import { errorMessage, isMain } from '../shared/runtime.ts';
 
 if (isMain(import.meta.url)) {
   process.env.PATH = `/Applications/Docker.app/Contents/Resources/bin:/opt/homebrew/bin:/usr/local/bin:${process.env.PATH}`;

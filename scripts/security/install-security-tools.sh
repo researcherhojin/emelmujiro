@@ -2,7 +2,7 @@
 set -euo pipefail
 export LC_ALL=C
 export PATH="/opt/homebrew/bin:/usr/local/bin:/Applications/Docker.app/Contents/Resources/bin:$PATH"
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 NODE_BIN="$(command -v node)"
 "$NODE_BIN" -e 'if (Number(process.versions.node.split(".")[0]) < 24) { console.error("Node 24 or newer is required"); process.exit(1); }'
 TOOLS="$ROOT/backend/.cache/security-tools"

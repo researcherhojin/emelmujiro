@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# scripts/health-check.sh
+# scripts/deploy/health-check.sh
 #
 # Docker service health diagnostic. Checks container status, resource usage,
 # disk space, and application endpoints. Exits non-zero if any critical check
 # fails — suitable for cron alerting.
 #
 # Usage:
-#   ./scripts/health-check.sh           # Full report (interactive)
-#   ./scripts/health-check.sh --quiet   # Only print failures (cron mode)
+#   ./scripts/deploy/health-check.sh           # Full report (interactive)
+#   ./scripts/deploy/health-check.sh --quiet   # Only print failures (cron mode)
 
 set -euo pipefail
 
@@ -20,7 +20,7 @@ if ! command -v docker >/dev/null 2>&1; then
   exit 1
 fi
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 QUIET=false

@@ -13,7 +13,7 @@ Fork → clone → follow [README — Getting Started](README.md#getting-started
 ## Workflow checklist
 
 1. **Branch**: `feature/<name>` or `fix/<description>`, targeting `main`.
-2. **Commit messages**: Conventional Commits in English — `type(scope): description`, types `feat fix docs style refactor test chore perf deps-dev deps ci`. Enforced by `scripts/check-commit-msg.sh`, which both the `commit-msg` hook and CI call; change accepted types there only. ASCII is required on the subject line; `git commit --no-verify` is the escape for a non-ASCII proper noun.
+2. **Commit messages**: Conventional Commits in English — `type(scope): description`, types `feat fix docs style refactor test chore perf deps-dev deps ci`. Enforced by `scripts/repo/check-commit-msg.sh`, which both the `commit-msg` hook and CI call; change accepted types there only. ASCII is required on the subject line; `git commit --no-verify` is the escape for a non-ASCII proper noun.
 3. **No CI-skip markers anywhere in the message**, body included — GitHub reads the whole message, so prose about the mechanism skips CI. Escape the brackets to write about one (`\[skip ci\]`). See CLAUDE.md Gotcha #10.
 4. **One issue per PR, ≤ 3 commits**, no mid-PR scope expansion. Defer follow-ups to a new issue.
 5. **Before pushing**: `make test` and `make lint` from the repo root. Pre-commit runs lint-staged (Prettier, ESLint, Black, Flake8); don't bypass it.

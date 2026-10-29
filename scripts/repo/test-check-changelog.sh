@@ -1,6 +1,6 @@
 #!/bin/bash
 # Pass/warn cases for check-changelog.sh. Exits 1 if any case returns the wrong code.
-# Usage: ./scripts/test-check-changelog.sh   (from any directory; needs git)
+# Usage: ./scripts/repo/test-check-changelog.sh   (from any directory; needs git)
 #
 # Builds a throwaway repo in a temp dir, so the cases do not depend on this
 # repo's history or on which branch is checked out.

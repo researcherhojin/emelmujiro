@@ -2,8 +2,8 @@
 # Detect unused i18n keys in the codebase.
 #
 # Usage:
-#   ./scripts/check-i18n-keys.sh            # informational (exit 0 even on unused)
-#   ./scripts/check-i18n-keys.sh --strict   # CI mode (exit 1 on unused)
+#   ./scripts/repo/check-i18n-keys.sh            # informational (exit 0 even on unused)
+#   ./scripts/repo/check-i18n-keys.sh --strict   # CI mode (exit 1 on unused)
 #
 # Dynamic-key handling:
 #   Keys accessed via template literals (e.g. `privacy.${section}.title`) are
@@ -16,7 +16,7 @@ set -e
 STRICT=0
 [[ "${1:-}" == "--strict" ]] && STRICT=1
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 LOCALE_FILE="frontend/src/i18n/locales/ko.json"

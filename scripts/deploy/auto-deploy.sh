@@ -3,7 +3,7 @@ set -euo pipefail
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
-SCRIPT_REPO_DIR="$(cd "$(dirname "$0")/.." && pwd -P)"
+SCRIPT_REPO_DIR="$(cd "$(dirname "$0")/../.." && pwd -P)"
 REPO_DIR="${DEPLOY_REPO_DIR:-$SCRIPT_REPO_DIR}"
 if [ "$(cd "$REPO_DIR" && pwd -P)" != "$SCRIPT_REPO_DIR" ]; then
   echo "Deployment target must match the checkout that owns the maintenance lock" >&2
@@ -11,7 +11,7 @@ if [ "$(cd "$REPO_DIR" && pwd -P)" != "$SCRIPT_REPO_DIR" ]; then
 fi
 
 # All entry paths, including manual invocation, share the maintenance lock.
-MAINTENANCE_ENTRY="$(cd "$(dirname "$0")" && pwd)/maintenance.ts"
+MAINTENANCE_ENTRY="$(cd "$(dirname "$0")/../maintenance" && pwd)/maintenance.ts"
 if [ -z "${MAINTENANCE_TOKEN:-}" ]; then
   exec node "$MAINTENANCE_ENTRY" deploy
 fi
@@ -280,7 +280,7 @@ if [ "$ANALYTICS_RECREATED" = true ]; then
 fi
 
 # Shared bounded readiness checks: deployment and refresh enforce the same contract.
-node "$REPO_DIR/scripts/verify-runtime.ts" "$GIT_COMMIT"
+node "$REPO_DIR/scripts/deploy/verify-runtime.ts" "$GIT_COMMIT"
 
 echo "$LOG_PREFIX Deploy completed at $(date)"
 

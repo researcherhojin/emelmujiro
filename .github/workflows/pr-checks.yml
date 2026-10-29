@@ -177,7 +177,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.sha }}
         run: |
-          # scripts/check-commit-msg.sh is the single source of truth for the
+          # scripts/repo/check-commit-msg.sh is the single source of truth for the
           # accepted types and the merge/autosquash/revert/dependabot exemptions.
           # The .husky/commit-msg hook calls the same script, so this job and the
           # local hook cannot drift apart. Do not re-inline the regex here.
@@ -203,7 +203,7 @@ jobs:
           while IFS= read -r -d '' msg || [ -n "$msg" ]; do
             [ -z "${msg//[[:space:]]/}" ] && continue
             CHECKED=$((CHECKED + 1))
-            ./scripts/check-commit-msg.sh "$msg" || FAILED=1
+            ./scripts/repo/check-commit-msg.sh "$msg" || FAILED=1
           done < "$MESSAGES_FILE"
           if [ "$CHECKED" -eq 0 ]; then
             echo "❌ No commit messages found in ${BASE_SHA}..${HEAD_SHA}"
@@ -236,7 +236,7 @@ jobs:
       - name: Check i18n unused keys
         # Single source of truth: scripts/check-i18n-keys.sh.
         # --strict exits 1 on unused keys; default mode is informational (local use).
-        run: ./scripts/check-i18n-keys.sh --strict
+        run: ./scripts/repo/check-i18n-keys.sh --strict
 
       - name: Test Claude Code guard hooks
         # Block/allow cases for the PreToolUse Bash hook in .claude/settings.json.
@@ -331,8 +331,8 @@ jobs:
           check_backend_badge "Gunicorn" "gunicorn"
           if [ "$ERRORS" -gt 0 ]; then
             echo "❌ $ERRORS README badge(s) missing or out of sync with package-lock.json / uv.lock"
-            echo "A version mismatch: run scripts/sync-readme-badges.sh (auto-heals on main via the readme-sync job)."
-            echo "A missing badge or package: that script skips it, so restore it, or remove the badge, its line here and its entry in scripts/sync-readme-badges.sh together."
+            echo "A version mismatch: run scripts/repo/sync-readme-badges.sh (auto-heals on main via the readme-sync job)."
+            echo "A missing badge or package: that script skips it, so restore it, or remove the badge, its line here and its entry in scripts/repo/sync-readme-badges.sh together."
             exit 1
           fi
           echo "All README badges match package-lock.json and uv.lock"
@@ -403,11 +403,11 @@ jobs:
       # later step in the job, so placed earlier a missing entry would hide
       # the results of every check above.
       - name: Test CHANGELOG check
-        # Pass/warn cases for scripts/check-changelog.sh in a throwaway repo.
-        run: ./scripts/test-check-changelog.sh
+        # Pass/warn cases for scripts/repo/check-changelog.sh in a throwaway repo.
+        run: ./scripts/repo/test-check-changelog.sh
 
       - name: Check CHANGELOG entry
-        # scripts/check-changelog.sh is the single source of truth for the
+        # scripts/repo/check-changelog.sh is the single source of truth for the
         # exempt paths; .husky/pre-push calls it for direct pushes to main.
         # Dependabot PRs deliberately carry no entry, and patch ones merge with
         # no human in the loop, so a check that reddened them would be ignored.
@@ -417,7 +417,7 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: ./scripts/check-changelog.sh "$BASE_SHA" "$HEAD_SHA"
+        run: ./scripts/repo/check-changelog.sh "$BASE_SHA" "$HEAD_SHA"
 
   # Frontend linting (parallel with backend-lint)
 
@@ -648,7 +648,7 @@ jobs:
           IMAGE_COMMIT: ${{ github.sha }}
         run: |
           docker build --build-arg "GIT_COMMIT=$IMAGE_COMMIT" -t emelmujiro/backend:ci-check ./backend
-          sh scripts/verify-backend-image.sh emelmujiro/backend:ci-check "$IMAGE_COMMIT"
+          sh scripts/deploy/verify-backend-image.sh emelmujiro/backend:ci-check "$IMAGE_COMMIT"
 
       - name: Build and verify PostgreSQL image
         if: steps.changed.outputs.postgres == 'true'

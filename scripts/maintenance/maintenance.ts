@@ -1,16 +1,16 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { acquireLock } from './maintenance/lock.ts';
-import { REPO_ROOT } from './shared/paths.ts';
-import { ensurePrivateDir, writePrivate } from './shared/private-fs.ts';
+import { acquireLock } from './lock.ts';
+import { REPO_ROOT } from '../shared/paths.ts';
+import { ensurePrivateDir, writePrivate } from '../shared/private-fs.ts';
 
 process.env.PATH = `/opt/homebrew/opt/openssl@3/bin:/Applications/Docker.app/Contents/Resources/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${process.env.PATH}`;
 const operation = process.argv[2];
 const commands: Record<string, [string, string[]]> = {
-  deploy: ['bash', [path.join(REPO_ROOT, 'scripts/auto-deploy.sh')]],
-  security: [process.execPath, [path.join(REPO_ROOT, 'scripts/scheduled-security.ts')]],
-  refresh: [process.execPath, [path.join(REPO_ROOT, 'scripts/refresh-images.ts')]],
+  deploy: ['bash', [path.join(REPO_ROOT, 'scripts/deploy/auto-deploy.sh')]],
+  security: [process.execPath, [path.join(REPO_ROOT, 'scripts/security/scheduled-security.ts')]],
+  refresh: [process.execPath, [path.join(REPO_ROOT, 'scripts/maintenance/refresh-images.ts')]],
 };
 const lock = path.join(REPO_ROOT, 'backend/logs/maintenance.lock');
 if (operation === 'check') {

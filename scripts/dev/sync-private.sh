@@ -6,11 +6,11 @@
 # carry them. See CLAUDE.md "Project Overview" and "Constraints" → Two-device sync helpers.
 #
 # Usage:
-#   ./scripts/sync_private.sh push   # MBP → Mac mini (default)
-#   ./scripts/sync_private.sh pull   # Mac mini → MBP
-#   ./scripts/sync_private.sh dry    # show what push would change, no transfer
+#   ./scripts/dev/sync-private.sh push   # MBP → Mac mini (default)
+#   ./scripts/dev/sync-private.sh pull   # Mac mini → MBP
+#   ./scripts/dev/sync-private.sh dry    # show what push would change, no transfer
 #
-# Host: MACMINI_HOST=<host> ./scripts/sync_private.sh, or .private/sync-host
+# Host: MACMINI_HOST=<host> ./scripts/dev/sync-private.sh, or .private/sync-host
 #
 # Safety:
 #   - Never uses --delete. Files unique to either side are preserved.
@@ -20,7 +20,7 @@ set -euo pipefail
 
 # The host name is not in the public repo: MACMINI_HOST wins, else the
 # first line of .private/sync-host (gitignored; host details live in .private).
-HOST_FILE="$(cd "$(dirname "$0")/.." && pwd)/.private/sync-host"
+HOST_FILE="$(cd "$(dirname "$0")/../.." && pwd)/.private/sync-host"
 REMOTE="${MACMINI_HOST:-$(head -n1 "$HOST_FILE" 2>/dev/null || true)}"
 if [ -z "$REMOTE" ]; then
   echo "ERROR: set MACMINI_HOST or write the host name to .private/sync-host" >&2
@@ -37,15 +37,15 @@ fi
 
 case "$DIRECTION" in
   push)
-    echo "[sync_private] MBP → $REMOTE (no --delete; unique remote files preserved)"
+    echo "[sync-private] MBP → $REMOTE (no --delete; unique remote files preserved)"
     rsync -avz .private/ "$REMOTE:$REMOTE_PATH"
     ;;
   pull)
-    echo "[sync_private] $REMOTE → MBP (no --delete; unique local files preserved)"
+    echo "[sync-private] $REMOTE → MBP (no --delete; unique local files preserved)"
     rsync -avz "$REMOTE:$REMOTE_PATH" .private/
     ;;
   dry)
-    echo "[sync_private] DRY RUN — MBP → $REMOTE (no actual transfer)"
+    echo "[sync-private] DRY RUN — MBP → $REMOTE (no actual transfer)"
     rsync -avz --dry-run .private/ "$REMOTE:$REMOTE_PATH"
     ;;
   *)
@@ -54,4 +54,4 @@ case "$DIRECTION" in
     ;;
 esac
 
-echo "[sync_private] done"
+echo "[sync-private] done"
