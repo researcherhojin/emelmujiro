@@ -9,9 +9,9 @@ updated: 2026-10-18
 
 ## Intent
 
-- **Problem**: `make setup-cron` runs `scripts/health-check.sh --quiet` every 5 minutes on the deploy host and appends failures to `backend/logs/health-check.log`, which nobody reads unprompted. It has run correctly since #553, but a failure notifies no one — the same "a red scheduled run notifies nobody" gap that made `deploy-drift-check.yml` and `pipeline-watchdog.yml` file GitHub issues.
+- **Problem**: `make setup-cron` runs `scripts/deploy/health-check.sh --quiet` every 5 minutes on the deploy host and appends failures to `backend/logs/health-check.log`, which nobody reads unprompted. It has run correctly since #553, but a failure notifies no one — the same "a red scheduled run notifies nobody" gap that made `deploy-drift-check.yml` and `pipeline-watchdog.yml` file GitHub issues.
 - **Outcome wanted**: a failing check is seen within hours, without opening the log.
-- **Affected systems**: `scripts/health-check.sh`, the `setup-cron` target in `Makefile`, `.claude/rules/ci.md` `Operational logs`.
+- **Affected systems**: `scripts/deploy/health-check.sh`, the `setup-cron` target in `Makefile`, `.claude/rules/ci.md` `Operational logs`.
 - **Constraints**: cron's `PATH` is `/usr/bin:/bin` (`.claude/rules/ci.md` `Operational logs`), so `gh` would need an absolute path; `gh` auth under cron is unverified; at 288 runs a day, any notifier needs dedup (bump one open issue, as `deploy-drift-check.yml` does) or it floods.
 - **Open questions**: does a host-local check catch anything the existing external check misses? (Answered below.)
 

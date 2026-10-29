@@ -146,14 +146,14 @@ or an incomplete/failed check. A stored image report older than 36 hours is
 rejected by `security:report`; rerun the manual image scan to refresh it.
 
 From another directory, invoke an entry by its absolute path, such as
-`node /path/to/repository/scripts/scan-dependencies.ts`, or use
+`node /path/to/repository/scripts/security/scan-dependencies.ts`, or use
 `npm --prefix /path/to/repository run security:dependencies`. Paths containing
 spaces must be shell-quoted. An optional `TRIVY_BIN` selects an existing scanner;
 otherwise the local pinned installation is preferred, then `trivy` on PATH.
 
 The manual audits require no webhook restart. Future changes to the running
 webhook require a deliberate service restart. Since #708 the launchd agent runs
-`scripts/deploy-webhook.ts` directly; the `.js` entry was removed.
+`scripts/deploy/deploy-webhook.ts` directly; the `.js` entry was removed.
 Host-specific service-manager instructions remain in `.private/operations.md`.
 
 ## Module boundaries

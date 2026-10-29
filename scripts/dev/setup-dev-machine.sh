@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/setup-dev-machine.sh
+# scripts/dev/setup-dev-machine.sh
 #
 # One-shot bootstrap for a fresh macOS dev machine.
 # Idempotent — safe to re-run on a fully-set-up machine.
@@ -74,7 +74,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 # ----------------------------------------------------------------------

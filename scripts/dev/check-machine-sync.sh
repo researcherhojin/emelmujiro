@@ -15,7 +15,7 @@ set -euo pipefail
 
 # The host name is not in the public repo: MACMINI_HOST wins, else the
 # first line of .private/sync-host (gitignored; host details live in .private).
-HOST_FILE="$(cd "$(dirname "$0")/.." && pwd)/.private/sync-host"
+HOST_FILE="$(cd "$(dirname "$0")/../.." && pwd)/.private/sync-host"
 REMOTE="${MACMINI_HOST:-$(head -n1 "$HOST_FILE" 2>/dev/null || true)}"
 if [ -z "$REMOTE" ]; then
   echo "ERROR: set MACMINI_HOST or write the host name to .private/sync-host" >&2

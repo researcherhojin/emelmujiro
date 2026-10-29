@@ -167,7 +167,7 @@ export function refreshImages({
       path.join(source, 'docker/umami/verify.sh'),
     ]);
     run('bash', [
-      path.join(source, 'scripts/verify-backend-image.sh'),
+      path.join(source, 'scripts/deploy/verify-backend-image.sh'),
       candidateTags.backend,
       result.source,
       result.old.backend!,
@@ -202,7 +202,7 @@ export function refreshImages({
         throw new Error('Candidate scan has findings');
     }
     result.phase = 'backup';
-    run('python3', [path.join(root, 'scripts/backup-verify.py')]);
+    run('python3', [path.join(root, 'scripts/backup/backup-verify.py')]);
     // Revalidate all preconditions at the mutation boundary, even while locked.
     if (
       run('git', ['-C', root, 'rev-parse', 'HEAD']).trim() !== result.source ||
@@ -225,7 +225,7 @@ export function refreshImages({
     }
     health(true);
     result.phase = 'audit';
-    run(process.execPath, [path.join(root, 'scripts/scan-running-images.ts')]);
+    run(process.execPath, [path.join(root, 'scripts/security/scan-running-images.ts')]);
     const summary = validateReport(
       JSON.parse(fs.readFileSync(path.join(directory, '..', 'summary.json'), 'utf8'))
     );

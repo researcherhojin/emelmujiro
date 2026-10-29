@@ -1,6 +1,6 @@
 import path from 'node:path';
-import { scanDependencies } from './security/dependencies.ts';
-import { REPO_ROOT, SECURITY_REPORT_ROOT, trivyBinary } from './shared/paths.ts';
+import { scanDependencies } from './dependencies.ts';
+import { REPO_ROOT, SECURITY_REPORT_ROOT, trivyBinary } from '../shared/paths.ts';
 
 const clean = scanDependencies({
   root: REPO_ROOT,

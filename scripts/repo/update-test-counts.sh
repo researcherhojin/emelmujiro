@@ -1,13 +1,13 @@
 #!/bin/bash
 # Update hardcoded test counts in README.md
-# Usage: ./scripts/update-test-counts.sh (or: make update-test-counts)
+# Usage: ./scripts/repo/update-test-counts.sh (or: make update-test-counts)
 #   - Run from repo root
 #   - Counts frontend (Vitest) and backend (Django) tests, updates README.md
 #   - Stages the changed file for commit
 
 set -e
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 # Cross-platform sed -i (macOS requires '' suffix, Linux does not)

@@ -2,10 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { execFileSync } from 'node:child_process';
-import { REPO_ROOT, SECURITY_REPORT_ROOT, trivyBinary } from './shared/paths.ts';
-import { refreshImages } from './maintenance/refresh.ts';
-import { enterMaintenance } from './shared/maintenance-entry.ts';
-import { ensurePrivateDir, writePrivate } from './shared/private-fs.ts';
+import { REPO_ROOT, SECURITY_REPORT_ROOT, trivyBinary } from '../shared/paths.ts';
+import { refreshImages } from './refresh.ts';
+import { enterMaintenance } from '../shared/maintenance-entry.ts';
+import { ensurePrivateDir, writePrivate } from '../shared/private-fs.ts';
 
 enterMaintenance('refresh');
 process.umask(0o077);

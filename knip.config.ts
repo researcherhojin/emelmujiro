@@ -10,7 +10,13 @@ const config: KnipConfig = {
       ignoreDependencies: ['next'],
     },
     scripts: {
-      entry: ['*.ts', 'tests/*.test.ts'],
+      // Entry points run by cron, launchd, npm scripts or another script.
+      entry: [
+        'deploy/{deploy-webhook,verify-runtime}.ts',
+        'security/{scan-dependencies,scan-running-images,scheduled-security,security-report}.ts',
+        'maintenance/{maintenance,refresh-images}.ts',
+        'tests/*.test.ts',
+      ],
       project: ['**/*.ts'],
     },
     frontend: {

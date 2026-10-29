@@ -3,8 +3,8 @@ set -e
 
 # Unified port management script
 # Usage:
-#   ./scripts/ports.sh          # Check port status (interactive)
-#   ./scripts/ports.sh --kill   # Kill dev ports non-interactively
+#   ./scripts/dev/ports.sh          # Check port status (interactive)
+#   ./scripts/dev/ports.sh --kill   # Kill dev ports non-interactively
 
 PORTS_DEV=(5173 8000)
 LABELS=([5173]="Frontend" [8000]="Backend")

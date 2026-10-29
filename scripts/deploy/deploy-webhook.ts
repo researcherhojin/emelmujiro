@@ -1,7 +1,7 @@
 import path from 'node:path';
 import type { AddressInfo } from 'node:net';
-import { createWebhookServer } from './deploy/server.ts';
-import { SCRIPTS_ROOT } from './shared/paths.ts';
+import { createWebhookServer } from './server.ts';
+import { SCRIPTS_ROOT } from '../shared/paths.ts';
 
 const secret = process.env.DEPLOY_SECRET;
 if (!secret) {
@@ -10,7 +10,7 @@ if (!secret) {
 }
 const { server, shutdown } = createWebhookServer({
   secret,
-  script: path.join(SCRIPTS_ROOT, 'auto-deploy.sh'),
+  script: path.join(SCRIPTS_ROOT, 'deploy/auto-deploy.sh'),
   lockFile: '/tmp/emelmujiro-deploy.lock',
 });
 for (const signal of ['SIGTERM', 'SIGINT'] as const) {

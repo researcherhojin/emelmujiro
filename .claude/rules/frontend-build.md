@@ -11,7 +11,7 @@ paths:
   - 'frontend/playwright.config.ts'
   - 'frontend/lighthouserc.js'
   - 'frontend/src/**'
-  - 'scripts/auto-deploy.sh'
+  - 'scripts/deploy/auto-deploy.sh'
 ---
 
 <!-- Path-scoped rule: loads on reading the frontend build, prerender, nginx, E2E, CSP config files above, or any frontend source file (SEO, KakaoTalk and Tailwind rules apply across `frontend/src`). Moved verbatim from the root CLAUDE.md `Constraints` section on 2026-10-17; Gotcha numbers cited here are root CLAUDE.md's. -->
@@ -22,7 +22,7 @@ paths:
 
 **KakaoTalk WebView**: `window.__appLoaded` must be set in `AppLayout` (router layout), NOT at provider level. iOS uses `kakaotalk://web/openExternal`; Android uses `intent://...#Intent;scheme=kakaotalk;end`. Android WebView is Chrome-based, so the banner is hidden; only error fallback uses the intent scheme.
 
-**SSG prerender + nginx routing**: `scripts/auto-deploy.sh` runs `npm run build`, which invokes `frontend/scripts/prerender.ts` (`scripts/prerender.ts` in the build script, run from `frontend/`) to generate `build/<path>/index.html` for **10 routes** (5 static × ko/en). Five non-obvious couplings:
+**SSG prerender + nginx routing**: `scripts/deploy/auto-deploy.sh` runs `npm run build`, which invokes `frontend/scripts/prerender.ts` (`scripts/prerender.ts` in the build script, run from `frontend/`) to generate `build/<path>/index.html` for **10 routes** (5 static × ko/en). Five non-obvious couplings:
 
 - **`location /` in `frontend/nginx.conf` is `try_files $uri $uri/index.html =404`.** Explicit `$uri/index.html`, NOT `$uri/`: directory lookup triggers nginx's auto-301 trailing-slash append, which downgrades `https://` to `http://` via `absolute_redirect`. `=404` (not an `/index.html` fallback) prevents soft-200s for unknown URLs.
 - **Routes prerender does not cover fall back to `/app.html`, never `/index.html`.** The dynamic blog posts `/insights/:slug`, admin `/insights/new` and `/insights/edit/:id`, and standalone `/login` match the regex `location ~ ^/(en/)?(insights/.+|login)$`.
@@ -38,7 +38,7 @@ paths:
   - Sitemap generation also fails on API errors, missing pages, duplicate slugs or changing totals, and never replaces the article inventory with static routes alone. Test: `node --test frontend/scripts/test-generate-sitemap.ts` from the root (also the `Test sitemap generation` PR step).
   - `prerenderRoute` relays cross-origin `/api/` requests through `route.fetch()` with CORS headers for its own origin and throws on any `>= 400` or network error; same-origin `/api` (`build:e2e`) is not intercepted.
   - A deploy while the API is down aborts and keeps the previous build live; the client re-fetches the post list on load.
-- **Chromium is a build dependency, not an E2E-only one.** `prerender.ts` calls `chromium.launch()`: without the browser `vite build` succeeds and prerender dies, which reads like a build bug. `scripts/auto-deploy.sh` runs `npx playwright install chromium` before build (idempotent), so a Playwright dependabot bump cannot break the next deploy.
+- **Chromium is a build dependency, not an E2E-only one.** `prerender.ts` calls `chromium.launch()`: without the browser `vite build` succeeds and prerender dies, which reads like a build bug. `scripts/deploy/auto-deploy.sh` runs `npx playwright install chromium` before build (idempotent), so a Playwright dependabot bump cannot break the next deploy.
   - The error also misdirects: `~/Library/Caches/ms-playwright` is **machine-global, shared across projects**, so another project's newer Playwright can leave a revision this pin rejects, and Playwright blames the package ("Looks like Playwright was just installed or updated"). `npx playwright install chromium` fixes it without removing the other revision (6735d23f).
 
 **Cloudflare owns the http→https upgrade; nginx must never redirect by scheme.** "Always Use HTTPS" (SSL/TLS → Edge Certificates) is on (696dc26c), and behind the tunnel nginx sees `http` on every request, https ones included. An origin-side `return 301 https://…` loops forever, and every `return 301` needs `absolute_redirect off` with a relative target, or nginx writes `http://` into `Location` (`aaa521be`). Verify with `curl -sI` against production; `e2e-server.ts` always emits relative locations.

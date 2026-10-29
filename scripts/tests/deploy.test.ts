@@ -77,7 +77,7 @@ test('webhook entry works from another cwd and a checkout path containing spaces
     recursive: true,
     filter: (source) => fs.statSync(source).isDirectory() || /\.(ts|js|json)$/.test(source),
   });
-  const entry = path.join(scripts, 'deploy-webhook.ts');
+  const entry = path.join(scripts, 'deploy/deploy-webhook.ts');
   const missing = spawnSync(process.execPath, [entry], {
     cwd: os.tmpdir(),
     env: { ...process.env, DEPLOY_SECRET: '' },
@@ -115,5 +115,5 @@ test('webhook entry works from another cwd and a checkout path containing spaces
     body: '{"sha":"invalid"}',
   });
   assert.equal(response.status, 400);
-  assert.equal(fs.existsSync(path.join(scripts, 'auto-deploy.sh')), false);
+  assert.equal(fs.existsSync(path.join(scripts, 'deploy/auto-deploy.sh')), false);
 });

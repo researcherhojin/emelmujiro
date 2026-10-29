@@ -1,7 +1,7 @@
 #!/bin/bash
 # Sync README shields.io version badges to the versions actually installed:
 # package-lock.json (frontend) and backend/uv.lock (backend).
-# Usage: ./scripts/sync-readme-badges.sh
+# Usage: ./scripts/repo/sync-readme-badges.sh
 #   - Run from repo root (or anywhere; resolves its own path)
 #   - Write-counterpart to the read-only badge check in pr-checks.yml
 #   - Idempotent: a no-op when badges already match. Never runs tests.
@@ -19,7 +19,7 @@
 
 set -e
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 # Cross-platform sed -i (macOS requires '' suffix, Linux does not)

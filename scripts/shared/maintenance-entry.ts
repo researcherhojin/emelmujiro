@@ -16,7 +16,7 @@ export function enterMaintenance(
     exit = (code: number): never => process.exit(code),
   }: { env?: NodeJS.ProcessEnv; spawn?: Spawn; exit?: (code: number) => never } = {}
 ): void {
-  const maintenance = path.join(SCRIPTS_ROOT, 'maintenance.ts');
+  const maintenance = path.join(SCRIPTS_ROOT, 'maintenance/maintenance.ts');
   if (!env.MAINTENANCE_TOKEN) exit(spawn(process.execPath, [maintenance, operation]).status ?? 1);
   if (spawn(process.execPath, [maintenance, 'check']).status !== 0) exit(1);
 }

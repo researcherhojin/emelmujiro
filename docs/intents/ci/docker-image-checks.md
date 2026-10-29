@@ -42,7 +42,7 @@ updated: 2026-10-23
     - The PR Summary gains a row.
 - **Files and interfaces**: `pr-checks.yml`, the `ci.md` CI job gating bullet, Gotcha #12.
 - **Out of scope**:
-  - Image vulnerability scanning in CI (`scripts/scan-running-images.ts` covers running images).
+  - Image vulnerability scanning in CI (`scripts/security/scan-running-images.ts` covers running images).
   - Caching layers.
   - Building images on `main`.
 - **Done when**:

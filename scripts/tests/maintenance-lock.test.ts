@@ -43,8 +43,9 @@ test('maintenance wrapper releases on a clean child exit and checks inherited ow
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   fs.mkdirSync(path.join(directory, 'scripts/maintenance'), { recursive: true });
   fs.mkdirSync(path.join(directory, 'scripts/shared'));
+  fs.mkdirSync(path.join(directory, 'scripts/deploy'));
   for (const name of [
-    'maintenance.ts',
+    'maintenance/maintenance.ts',
     'maintenance/lock.ts',
     'shared/paths.ts',
     'shared/private-fs.ts',
@@ -52,12 +53,12 @@ test('maintenance wrapper releases on a clean child exit and checks inherited ow
     fs.copyFileSync(new URL('../' + name, import.meta.url), path.join(directory, 'scripts', name));
   }
   fs.writeFileSync(
-    path.join(directory, 'scripts/auto-deploy.sh'),
-    `"${process.execPath}" "${directory}/scripts/maintenance.ts" check\n`
+    path.join(directory, 'scripts/deploy/auto-deploy.sh'),
+    `"${process.execPath}" "${directory}/scripts/maintenance/maintenance.ts" check\n`
   );
   const result = spawnSync(
     process.execPath,
-    [path.join(directory, 'scripts/maintenance.ts'), 'deploy'],
+    [path.join(directory, 'scripts/maintenance/maintenance.ts'), 'deploy'],
     { encoding: 'utf8' }
   );
   assert.equal(result.status, 0, result.stderr);

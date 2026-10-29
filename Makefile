@@ -21,7 +21,7 @@ help:
 	@echo "  make setup-token-cron  - Schedule daily expired JWT token cleanup"
 
 setup-dev-machine:
-	./scripts/setup-dev-machine.sh
+	./scripts/dev/setup-dev-machine.sh
 
 # verify-setup: standalone setup health check. Used by setup-dev-machine.sh
 # Phase 9 AND can be run independently after manual setup or as a sanity
@@ -69,14 +69,14 @@ dev-local:
 	npm run dev
 
 dev-clean:
-	./scripts/ports.sh --kill
+	./scripts/dev/ports.sh --kill
 	npm run dev
 
 ports:
-	./scripts/ports.sh
+	./scripts/dev/ports.sh
 
 kill-ports:
-	./scripts/ports.sh --kill
+	./scripts/dev/ports.sh --kill
 
 build:
 	docker compose build
@@ -110,7 +110,7 @@ logs-debug:
 	docker compose exec backend tail -100 /app/logs/debug.log 2>/dev/null || echo "No debug log yet"
 
 health: ## Docker health diagnostic (containers, resources, endpoints, errors)
-	./scripts/health-check.sh
+	./scripts/deploy/health-check.sh
 
 ps:
 	docker compose ps
@@ -131,7 +131,7 @@ createsuperuser:
 	docker compose exec backend /app/.venv/bin/python manage.py createsuperuser
 
 update-test-counts:
-	./scripts/update-test-counts.sh
+	./scripts/repo/update-test-counts.sh
 
 cleanup-visits:
 	@SAFE_DAYS="$(if $(DAYS),$(DAYS),90)"; \
@@ -177,14 +177,14 @@ setup-security-cron: ## Schedule private backups, restore checks, and full secur
 	if ! LC_ALL=C crontab -l > "$$CRON_COPY" 2> "$$CRON_COPY.err"; then \
 		if ! grep -q 'no crontab for' "$$CRON_COPY.err"; then cat "$$CRON_COPY.err" >&2; exit 1; fi; \
 	fi; \
-	(grep -v 'scripts/scheduled-security.ts' "$$CRON_COPY"; \
-	 echo "0 2 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/scheduled-security.ts >> '$(CURDIR)/backend/logs/security-schedule.log' 2>&1") | crontab -
+	(grep -v 'scripts/security/scheduled-security.ts' "$$CRON_COPY"; \
+	 echo "0 2 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/security/scheduled-security.ts >> '$(CURDIR)/backend/logs/security-schedule.log' 2>&1") | crontab -
 
 setup-health-cron: ## Install health check cron (every 5 min, logs failures and warnings only)
 	@mkdir -p $(CURDIR)/backend/logs
 	@echo "Adding health check cron job (every 5 min)..."
 	@(crontab -l 2>/dev/null | grep -v health-check; \
-	 echo "*/5 * * * * cd '$(CURDIR)' && ./scripts/health-check.sh --quiet >> '$(CURDIR)/backend/logs/health-check.log' 2>&1") | crontab -
+	 echo "*/5 * * * * cd '$(CURDIR)' && ./scripts/deploy/health-check.sh --quiet >> '$(CURDIR)/backend/logs/health-check.log' 2>&1") | crontab -
 	@echo "Cron job added. Verify with: crontab -l"
 	@echo "Failures will be logged to: backend/logs/health-check.log"
 
@@ -203,6 +203,6 @@ setup-image-refresh-cron: ## Schedule verified image builds and automatic replac
 	if ! LC_ALL=C crontab -l > "$$CRON_COPY" 2> "$$CRON_COPY.err"; then \
 		if ! grep -q 'no crontab for' "$$CRON_COPY.err"; then cat "$$CRON_COPY.err" >&2; exit 1; fi; \
 	fi; \
-	if ! (grep -v 'scripts/refresh-images.ts' "$$CRON_COPY"; \
-	 echo "30 0 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/refresh-images.ts >> '$(CURDIR)/backend/logs/image-refresh.log' 2>&1") | crontab -; then exit 1; fi; \
+	if ! (grep -v 'scripts/maintenance/refresh-images.ts' "$$CRON_COPY"; \
+	 echo "30 0 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/maintenance/refresh-images.ts >> '$(CURDIR)/backend/logs/image-refresh.log' 2>&1") | crontab -; then exit 1; fi; \
 	touch '$(CURDIR)/backend/logs/security/refresh-enabled'

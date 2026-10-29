@@ -49,7 +49,7 @@ cd backend && DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPI
 ```
 
 - `make help` lists the main make targets (the `Makefile`'s `.PHONY` line has the full set); there is no `make type-check` — use `cd frontend && npm run type-check`.
-- Repo checks CI runs, from root: `./scripts/check-changelog.sh origin/main HEAD`, `./scripts/test-check-changelog.sh`, `./.claude/hooks/test-guard-bash.sh`, `npm run check:scripts` (type-checks and tests root `scripts/`).
+- Repo checks CI runs, from root: `./scripts/repo/check-changelog.sh origin/main HEAD`, `./scripts/repo/test-check-changelog.sh`, `./.claude/hooks/test-guard-bash.sh`, `npm run check:scripts` (type-checks and tests root `scripts/`).
 - Inside the **backend container, run Django via `/app/.venv/bin/python`** (`docker exec -i emelmujiro-backend /app/.venv/bin/python manage.py …`); the runtime image ships no uv, and an older image's bare `python` fails with `No module named 'django'`.
 
 ## Build & deploy gotchas (load-bearing)
@@ -64,8 +64,8 @@ cd backend && DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPI
 
 ## Conventions that differ from defaults
 
-- **Conventional Commits, English-only subject:** `type(scope): description` — `feat fix docs style refactor test chore perf deps-dev deps ci`. **No CI-skip markers anywhere in the message** (subject _or_ body — GHA scans the whole thing); escape brackets to write about one (`\[skip ci\]`). `scripts/check-commit-msg.sh` is the source of truth; edit the accepted types there, never inline. Branches `feature/*` | `fix/*`; one issue per PR, ≤ 3 commits.
-- **Every shipped change gets a `CHANGELOG.md` entry** under `## Merged since [1.0.0]` (newest first). `scripts/check-changelog.sh` warns, never blocks, when a change outside `docs/intents/` has none — in PR CI and in the husky `pre-push` hook for direct pushes to `main`. Husky also runs lint-staged on `pre-commit` and `check-commit-msg.sh` on `commit-msg`; don't bypass them.
+- **Conventional Commits, English-only subject:** `type(scope): description` — `feat fix docs style refactor test chore perf deps-dev deps ci`. **No CI-skip markers anywhere in the message** (subject _or_ body — GHA scans the whole thing); escape brackets to write about one (`\[skip ci\]`). `scripts/repo/check-commit-msg.sh` is the source of truth; edit the accepted types there, never inline. Branches `feature/*` | `fix/*`; one issue per PR, ≤ 3 commits.
+- **Every shipped change gets a `CHANGELOG.md` entry** under `## Merged since [1.0.0]` (newest first). `scripts/repo/check-changelog.sh` warns, never blocks, when a change outside `docs/intents/` has none — in PR CI and in the husky `pre-push` hook for direct pushes to `main`. Husky also runs lint-staged on `pre-commit` and `check-commit-msg.sh` on `commit-msg`; don't bypass them.
 - **i18n is mandatory** — `useTranslation()` in components, `i18n.t()` in data files; no hardcoded user-facing text. **English comments only.** No `window.alert/prompt` (use toast/inline).
 - **Tailwind is 4.x with v3-parity shims** (`@config` JS theme, pinned v3 palette and prose colors, compat rules in `src/index.css`; details in `.claude/rules/frontend-build.md`); PostCSS uses `@tailwindcss/postcss`; no dynamic class interpolation. Measure a palette, shim or shared-style change with `npm run visual:capture` / `visual:compare`, never by eye. The v5 major is dependabot-ignored.
 - **Env var prefix is `VITE_`** (legacy `REACT_APP_` still resolves via a shim). `frontend/.env.production` is **tracked in git on purpose** — do not `git rm` it.

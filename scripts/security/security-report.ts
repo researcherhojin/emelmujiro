@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { assertCleanSummary } from './security/report.ts';
-import { errorMessage, isMain } from './shared/runtime.ts';
-import { SECURITY_REPORT_ROOT } from './shared/paths.ts';
+import { assertCleanSummary } from './report.ts';
+import { errorMessage, isMain } from '../shared/runtime.ts';
+import { SECURITY_REPORT_ROOT } from '../shared/paths.ts';
 
 if (isMain(import.meta.url)) {
   try {

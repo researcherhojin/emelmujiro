@@ -7,7 +7,10 @@ import tempfile
 import unittest
 from unittest.mock import patch
 from types import SimpleNamespace
+import sys
 
+# Loading backup-verify.py by path would otherwise leave a __pycache__ in scripts/.
+sys.dont_write_bytecode = True
 spec = importlib.util.spec_from_file_location(
     "backup_verify", Path(__file__).with_name("backup-verify.py")
 )

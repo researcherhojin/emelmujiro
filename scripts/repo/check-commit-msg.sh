@@ -1,6 +1,6 @@
 #!/bin/bash
 # Validate one commit subject against the project's Conventional Commits rules.
-# Usage: ./scripts/check-commit-msg.sh <subject-or-message-file>
+# Usage: ./scripts/repo/check-commit-msg.sh <subject-or-message-file>
 #   - Argument is a literal subject line, or a path to a message file
 #     (.git/COMMIT_EDITMSG), in which case the first non-comment line is used.
 #   - Exits 0 if the subject is valid or exempt, 1 otherwise.

@@ -93,12 +93,12 @@ export function runOperations(
       return false;
     }
   };
-  const backup = check('backup', 'python3', [path.join(root, 'scripts/backup-verify.py')]);
+  const backup = check('backup', 'python3', [path.join(root, 'scripts/backup/backup-verify.py')]);
   const dependencies = check('dependencies', process.execPath, [
-    path.join(root, 'scripts/scan-dependencies.ts'),
+    path.join(root, 'scripts/security/scan-dependencies.ts'),
   ]);
   const images = check('images', process.execPath, [
-    path.join(root, 'scripts/scan-running-images.ts'),
+    path.join(root, 'scripts/security/scan-running-images.ts'),
   ]);
   const report: OperationsReport = {
     version: 1,
