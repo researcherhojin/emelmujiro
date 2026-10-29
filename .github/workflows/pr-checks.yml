@@ -234,7 +234,7 @@ jobs:
           echo "All SEO files present"
 
       - name: Check i18n unused keys
-        # Single source of truth: scripts/check-i18n-keys.sh.
+        # Single source of truth: scripts/repo/check-i18n-keys.sh.
         # --strict exits 1 on unused keys; default mode is informational (local use).
         run: ./scripts/repo/check-i18n-keys.sh --strict
 
@@ -637,7 +637,7 @@ jobs:
               echo "$1=false" >> "$GITHUB_OUTPUT"
             fi
           }
-          flag backend '^(backend/(Dockerfile|\.dockerignore|pyproject\.toml|uv\.lock)|scripts/verify-backend-image\.sh)$'
+          flag backend '^(backend/(Dockerfile|\.dockerignore|pyproject\.toml|uv\.lock)|scripts/deploy/verify-backend-image\.sh)$'
           flag postgres '^docker/postgres/'
           flag umami '^docker/umami/'
           flag nginx '^(docker-compose\.yml|frontend/nginx\.conf)$'
