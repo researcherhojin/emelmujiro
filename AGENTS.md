@@ -49,6 +49,7 @@ cd backend && DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPI
 ```
 
 - `make help` lists the main make targets (the `Makefile`'s `.PHONY` line has the full set); there is no `make type-check` — use `cd frontend && npm run type-check`.
+- **`scripts/` holds folders only** (`deploy/`, `security/`, `maintenance/`, `backup/`, `repo/`, `dev/`, `shared/`, `tests/`); put a new script in one. Host cron, launchd and LaunchAgent entries name these paths, so a move must switch them in the same change (`CLAUDE.md` › Project Overview, #712).
 - Repo checks CI runs, from root: `./scripts/repo/check-changelog.sh origin/main HEAD`, `./scripts/repo/test-check-changelog.sh`, `./.claude/hooks/test-guard-bash.sh`, `npm run check:scripts` (type-checks and tests root `scripts/`).
 - Inside the **backend container, run Django via `/app/.venv/bin/python`** (`docker exec -i emelmujiro-backend /app/.venv/bin/python manage.py …`); the runtime image ships no uv, and an older image's bare `python` fails with `No module named 'django'`.
 
