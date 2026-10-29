@@ -212,7 +212,11 @@ and `offsite` true.
 - `refresh`: the 00:30 KST refresh stopped in `verify` with "Candidate scan
   has findings". The backend candidate had the same 8 findings, and the umami
   and umami-db candidates had 0.
-- Open: once a uv release ships rustls 0.23.46, bump `backend/Dockerfile`
-  (both stages) and `.github/actions/setup-uv/action.yml` together. #705 stays
-  open until then. The owner chose this over an image-scan ignore or dropping
-  uv from the runtime stage.
+- Fix: #707 (`bf7a3be3`) removed uv from the backend runtime stage
+  instead of waiting for a uv release. The venv runs directly, and
+  `verify-backend-image.sh` fails if uv returns. The host's two `manage.py`
+  cron lines were reinstalled and each ran once with exit 0.
+- Recovery: a manual refresh completed at 2026-10-29T01:39:31Z and replaced
+  all three built images. The rerun host job (01:39:47Z) had all four checks
+  true and 0 findings on every service. Watchdog run 40801768627 passed and
+  closed #705.
