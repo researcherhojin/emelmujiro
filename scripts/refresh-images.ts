@@ -1,20 +1,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { spawnSync, execFileSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { REPO_ROOT, SECURITY_REPORT_ROOT, trivyBinary } from './shared/paths.ts';
 import { refreshImages } from './maintenance/refresh.ts';
+import { enterMaintenance } from './shared/maintenance-entry.ts';
+import { ensurePrivateDir, writePrivate } from './shared/private-fs.ts';
 
-const maintenance = path.join(REPO_ROOT, 'scripts/maintenance.ts');
-if (!process.env.MAINTENANCE_TOKEN) {
-  const result = spawnSync(process.execPath, [maintenance, 'refresh'], { stdio: 'inherit' });
-  process.exit(result.status ?? 1);
-}
-if (spawnSync(process.execPath, [maintenance, 'check'], { stdio: 'inherit' }).status !== 0)
-  process.exit(1);
+enterMaintenance('refresh');
 process.umask(0o077);
 const directory = path.join(SECURITY_REPORT_ROOT, 'refresh');
-fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+ensurePrivateDir(directory);
 const config = fs.mkdtempSync(path.join(directory, 'docker-config-'));
 try {
   const original = path.join(os.homedir(), '.docker');
@@ -22,7 +18,7 @@ try {
   delete settings.credsStore;
   delete settings.credHelpers;
   settings.auths = {};
-  fs.writeFileSync(path.join(config, 'config.json'), JSON.stringify(settings), { mode: 0o600 });
+  writePrivate(path.join(config, 'config.json'), JSON.stringify(settings));
   for (const name of ['contexts', 'buildx', 'cli-plugins']) {
     const source = path.join(original, name);
     if (fs.existsSync(source)) fs.cpSync(source, path.join(config, name), { recursive: true });

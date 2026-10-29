@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { ensurePrivateDir, writePrivate, writePrivateAtomic } from '../shared/private-fs.ts';
 import type { Command } from '../shared/runtime.ts';
 import { validateScan } from '../security/scan-report.ts';
 import { validateReport } from '../security/report.ts';
@@ -35,7 +36,7 @@ export function refreshImages({
   trivy: string;
   run: Command;
 }): RefreshResult {
-  fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+  ensurePrivateDir(directory);
   const id = crypto.randomUUID();
   const work = path.join(directory, id);
   fs.mkdirSync(work, { mode: 0o700 });
@@ -114,14 +115,13 @@ export function refreshImages({
       candidateTags[service] = `emelmujiro/refresh-${service}:${id}`;
       run('docker', ['tag', current.image, `emelmujiro/rollback-${service}:${id}`]);
     }
-    fs.writeFileSync(
+    writePrivate(
       override,
       JSON.stringify({
         services: Object.fromEntries(
           REFRESH_SERVICES.map((service) => [service, { image: references[service] }])
         ),
-      }),
-      { mode: 0o600 }
+      })
     );
     const source = path.join(work, 'source');
     fs.mkdirSync(source);
@@ -197,7 +197,7 @@ export function refreshImages({
         '--no-progress',
         result.candidates[service]!,
       ]);
-      fs.writeFileSync(path.join(work, `${service}-scan.json`), raw, { mode: 0o600 });
+      writePrivate(path.join(work, `${service}-scan.json`), raw);
       if (validateScan(JSON.parse(raw), 'alpine') !== 0)
         throw new Error('Candidate scan has findings');
     }
@@ -239,7 +239,7 @@ export function refreshImages({
     result.phase = 'complete';
     result.success = true;
   } catch (error) {
-    fs.writeFileSync(path.join(work, 'error.log'), String(error), { mode: 0o600 });
+    writePrivate(path.join(work, 'error.log'), String(error));
     if (mutated.length) {
       result.recovery = 'failed';
       try {
@@ -256,15 +256,17 @@ export function refreshImages({
         }
         result.recovery = 'passed';
       } catch (recovery) {
-        fs.writeFileSync(path.join(work, 'recovery-error.log'), String(recovery), { mode: 0o600 });
+        writePrivate(path.join(work, 'recovery-error.log'), String(recovery));
       }
     }
   } finally {
     result.completedAt = new Date().toISOString();
-    fs.writeFileSync(path.join(work, 'result.json'), JSON.stringify(result), { mode: 0o600 });
-    const temporary = path.join(directory, `${id}.tmp`);
-    fs.writeFileSync(temporary, JSON.stringify(result), { mode: 0o600 });
-    fs.renameSync(temporary, path.join(directory, 'latest.json'));
+    writePrivate(path.join(work, 'result.json'), JSON.stringify(result));
+    writePrivateAtomic(
+      path.join(directory, 'latest.json'),
+      path.join(directory, `${id}.tmp`),
+      JSON.stringify(result)
+    );
     fs.rmSync(path.join(work, 'source'), { recursive: true, force: true });
     fs.rmSync(path.join(work, 'source.tar'), { force: true });
     // Keep two owned generations, including rollback tags, without broad image/cache pruning.

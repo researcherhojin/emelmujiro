@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { ensurePrivateDir, writePrivate } from '../shared/private-fs.ts';
 import { isRecord } from '../shared/runtime.ts';
 import { validateScan } from './scan-report.ts';
 
@@ -43,7 +44,7 @@ export function scanDependencies({
   trivy: string;
   run?: Runner;
 }): boolean {
-  fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+  ensurePrivateDir(directory);
   let clean = true;
   const check = (
     name: string,
@@ -53,14 +54,14 @@ export function scanDependencies({
   ) => {
     try {
       const result = run(binary, args, root);
-      fs.writeFileSync(path.join(directory, `${name}.json`), result.stdout, { mode: 0o600 });
-      fs.writeFileSync(path.join(directory, `${name}.log`), result.stderr, { mode: 0o600 });
+      writePrivate(path.join(directory, `${name}.json`), result.stdout);
+      writePrivate(path.join(directory, `${name}.log`), result.stderr);
       const findings = validate(JSON.parse(result.stdout));
       if (result.status !== 0 || findings !== 0) clean = false;
       console.log(`${name}: ${findings} findings, scanner exit ${result.status}`);
     } catch (error) {
       clean = false;
-      fs.writeFileSync(path.join(directory, `${name}.log`), String(error), { mode: 0o600 });
+      writePrivate(path.join(directory, `${name}.log`), String(error));
       console.error(`${name}: scan failed; see the local report`);
     }
   };

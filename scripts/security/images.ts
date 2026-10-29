@@ -4,6 +4,7 @@ import path from 'node:path';
 import { SERVICES } from './report.ts';
 import type { Service, SecurityReport, ScanResult } from './report.ts';
 import { validateScan } from './scan-report.ts';
+import { ensurePrivateDir, writePrivate, writePrivateAtomic } from '../shared/private-fs.ts';
 import { command } from '../shared/runtime.ts';
 import type { Command } from '../shared/runtime.ts';
 
@@ -38,14 +39,14 @@ export function scan({
   directory: string;
   trivy?: string;
 }): SecurityReport {
-  fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+  ensurePrivateDir(directory);
   let databaseReady = true;
   try {
     run(trivy, ['image', '--download-db-only', '--no-progress']);
     fs.rmSync(path.join(directory, 'database-error.log'), { force: true });
   } catch (error) {
     databaseReady = false;
-    fs.writeFileSync(path.join(directory, 'database-error.log'), String(error), { mode: 0o600 });
+    writePrivate(path.join(directory, 'database-error.log'), String(error));
   }
   const services = SERVICES.map((name): ScanResult => {
     try {
@@ -81,11 +82,11 @@ export function scan({
       if (before.containerId !== after.containerId || before.imageId !== after.imageId) {
         throw new Error('Container changed during scan');
       }
-      fs.writeFileSync(path.join(directory, `${name}.json`), raw, { mode: 0o600 });
+      writePrivate(path.join(directory, `${name}.json`), raw);
       fs.rmSync(path.join(directory, `${name}-error.log`), { force: true });
       return { name, ...before, status: findings ? 'findings' : 'clean', findings };
     } catch (error) {
-      fs.writeFileSync(path.join(directory, `${name}-error.log`), String(error), { mode: 0o600 });
+      writePrivate(path.join(directory, `${name}-error.log`), String(error));
       return { name, status: 'error', findings: null };
     }
   });
@@ -100,14 +101,14 @@ export function scan({
     } catch (error) {
       entry.status = 'error';
       entry.findings = null;
-      fs.writeFileSync(path.join(directory, `${entry.name}-error.log`), String(error), {
-        mode: 0o600,
-      });
+      writePrivate(path.join(directory, `${entry.name}-error.log`), String(error));
     }
   }
   const report: SecurityReport = { version: 1, completedAt: new Date().toISOString(), services };
-  const temporary = path.join(directory, `summary-${process.pid}.tmp`);
-  fs.writeFileSync(temporary, JSON.stringify(report, null, 2) + '\n', { mode: 0o600 });
-  fs.renameSync(temporary, path.join(directory, 'summary.json'));
+  writePrivateAtomic(
+    path.join(directory, 'summary.json'),
+    path.join(directory, `summary-${process.pid}.tmp`),
+    JSON.stringify(report, null, 2) + '\n'
+  );
   return report;
 }

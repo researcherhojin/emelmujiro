@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { acquireLock } from './maintenance/lock.ts';
 import { REPO_ROOT } from './shared/paths.ts';
+import { ensurePrivateDir, writePrivate } from './shared/private-fs.ts';
 
 process.env.PATH = `/opt/homebrew/opt/openssl@3/bin:/Applications/Docker.app/Contents/Resources/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:${process.env.PATH}`;
 const operation = process.argv[2];
@@ -25,11 +26,10 @@ if (operation === 'check') {
   if (!Object.hasOwn(commands, operation)) throw new Error('Unknown maintenance operation');
   if (operation === 'refresh') {
     const directory = path.join(REPO_ROOT, 'backend/logs/security/refresh');
-    fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
-    fs.writeFileSync(
+    ensurePrivateDir(directory);
+    writePrivate(
       path.join(directory, 'attempt.json'),
-      JSON.stringify({ startedAt: new Date().toISOString() }),
-      { mode: 0o600 }
+      JSON.stringify({ startedAt: new Date().toISOString() })
     );
   }
   const release = acquireLock(lock, operation);
