@@ -117,7 +117,8 @@ Each alarm filed a generic issue. The cause was in the host report (`.private/op
 - **#713** (run 41254737901, from the report of 2026-10-31T17:00:52Z; `dependencies`)
   - Cause: two advisories published 2026-10-30. GHSA-g3hv-75wg-m249 (minimatch `<11.0.1`, MEDIUM) hit root `minimatch@10.2.6` and Umami's builder `3.1.4`, `5.1.8`, `5.1.9` and `9.0.7`. GHSA-mrwp-f3q8-3g9p (follow-redirects `1.16.0`–`1.16.1`, HIGH) hit root `1.16.1`. GHSA-3g3m-2fjr-6pw4 (glob `9.0.0`–`14.0.1`) hit Umami's builder `glob@10.5.0`. npm audit counted 22, of which 20 were transitive parents.
   - Fix: root override `minimatch>=11.0.1` (11.0.3) and follow-redirects 1.16.2. Expiring ignores for the Umami builder lock only: minimatch 11 drops the API glob up to 14.0.1 uses, and the runner lock has neither package.
-  - Recovery: pending deploy, host job rerun and watchdog dispatch.
+  - Fix commit: #714 (`77ffad61`).
+  - Recovery: host job at 2026-11-01T11:30:20Z, then run 41302177201.
 
 Lessons, each measured in one of these alarms:
 
