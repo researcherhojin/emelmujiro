@@ -1,0 +1,4 @@
+#!/bin/sh
+# Same check as .husky/commit-msg, run from this checkout rather than the
+# triage clone, so nothing the agent edited takes part in the commit.
+exec "$(dirname "$0")/../../repo/check-commit-msg.sh" "$1"

@@ -8,6 +8,19 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- feat(security): A failed `dependencies` or `images` result in the 02:00 host report is now triaged at 02:40 (`scripts/security/triage-alarm.ts`, `make setup-triage-cron`). Intent: `docs/intents/infra/security-alarm-triage.md`.
+  - **What runs:** headless Claude Code in a dedicated clone, with a Bash allowlist.
+    - Its Bash runs in the OS sandbox. It cannot read secrets or the production checkout's logs, and its network reaches only the npm registry and the Trivy mirror.
+    - Its `.git` is read-only. It holds no GitHub credential.
+  - **What the agent produces:** working-tree changes, `pr.md` and a private diagnosis. Nothing more.
+  - **How the PR opens:** a separate `publish()` step commits only if all of these hold: every changed path is a manifest, lock file, Dockerfile, `docker-compose.yml`, Umami patch or `CHANGELOG.md`; no `package.json` `scripts` block changed; `HEAD` is unmoved; and `pr.md` names no host details. It then pushes through hooks that allow only `triage/*` and opens a draft PR.
+  - **When it is skipped:** for a clean, stale (> 6 h) or already-triaged report, and while maintenance holds the lock.
+  - **Verified on the host:**
+    - Boundary probes: all 7 escape attempts were refused.
+    - Sandboxed writes to `.git` and to the clone's `.claude` hooks failed with `EPERM`.
+    - The last fixture run: 0 refusals, 55 s.
+    - Draft PRs #715, #716 and #717 were opened through the real token and hooks, then closed.
+
 - fix(deps): Clear the `dependencies` alarm #713. The root `minimatch` override moves from `>=10.2.1` to `>=11.0.1` (installs 11.0.3, GHSA-g3hv-75wg-m249), and `follow-redirects` moves from 1.16.1 to 1.16.2 (GHSA-mrwp-f3q8-3g9p). npm audit drops from 22 findings to 0. Under minimatch 11, `glob@7` crashes on magic patterns, so `analyze:bundle` now lets the shell expand `build/assets/*.js`. ESLint's resolved config for 3 sample files and its result on 141 files match `main`. `docker/umami/trivyignore.yaml` gains expiring (2027-01-31) entries for the builder's minimatch 3.1.4/5.1.8/5.1.9/9.0.7 and glob 10.5.0, whose fixes need majors their consumers cannot take; the runner lock has neither package. The dependency scanner reports 0 findings on all 5 targets.
 
 - docs: `frontend-build.md` no longer says Tailwind loads `tailwind.config.mts` with `jiti`. `@tailwindcss/node` tries a native `import()` first and falls back to `jiti` only if it throws, which is why Node's `MODULE_TYPELESS_PACKAGE_JSON` warning appeared before #709. `AGENTS.md` gains the one-line `scripts/` layout rule that `CLAUDE.md` received in #712.
