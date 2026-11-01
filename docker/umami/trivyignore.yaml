@@ -10,3 +10,23 @@ vulnerabilities:
       No patched npm release. patches/deepmerge@4.3.1.patch backports the
       upstream __proto__ rejection, the image build verifies it, and the
       production runner lock has no deepmerge (#699).
+  - id: CVE-2026-118764
+    purls:
+      - pkg:npm/minimatch@3.1.4
+      - pkg:npm/minimatch@5.1.8
+      - pkg:npm/minimatch@5.1.9
+      - pkg:npm/minimatch@9.0.7
+    expired_at: 2027-01-31
+    statement: >-
+      Build stage only; the production runner lock has no minimatch. The fix
+      exists only in minimatch 11, which drops the API that glob up to 14.0.1
+      uses. 3.1.4 and 5.1.x lack firstPhasePreProcess and optimizationLevel,
+      and every pattern comes from Umami's own build configuration (#713).
+  - id: CVE-2026-118773
+    purls:
+      - pkg:npm/glob@10.5.0
+    expired_at: 2027-01-31
+    statement: >-
+      Build stage only, through sucrase, whose CLI alone calls glob and passes
+      no AbortSignal; the bypass needs one. The production runner lock has no
+      glob, and the fix is only in glob 14.0.2 (#713).

@@ -80,7 +80,7 @@
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
     "generate:sitemap": "node scripts/generate-sitemap.ts",
-    "analyze:bundle": "source-map-explorer 'build/assets/*.js'",
+    "analyze:bundle": "source-map-explorer build/assets/*.js",
     "check:css": "node scripts/check-css.ts",
     "check:routes": "node scripts/check-route-lists.ts",
     "visual:capture": "node scripts/visual-diff/capture.ts",

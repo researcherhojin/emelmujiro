@@ -42,7 +42,7 @@
     "chromium-bidi": {
       "zod": "4.6.7"
     },
-    "minimatch": ">=10.2.1",
+    "minimatch": ">=11.0.1",
     "tmp": "0.2.7",
     "@lhci/cli": {
       "js-yaml": "4.3.2",
