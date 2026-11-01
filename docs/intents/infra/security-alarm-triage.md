@@ -5,7 +5,7 @@ created: 2026-11-01
 updated: 2026-11-01
 ---
 
-<!-- cspell:ignore unsandboxed sandboxed npmjs EPERM Dockerfiles fsmonitor -->
+<!-- cspell:ignore unsandboxed sandboxed npmjs EPERM Dockerfiles fsmonitor netrc -->
 
 # A failed dependency or image scan arrives with a draft fix PR
 

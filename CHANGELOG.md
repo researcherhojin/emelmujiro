@@ -13,10 +13,11 @@ Retiring the release number is not a statement about API compatibility. `backend
     - Its Bash runs in the OS sandbox. It cannot read secrets or the production checkout's logs, and its network reaches only the npm registry and the Trivy mirror.
     - Its `.git` is read-only. It holds no GitHub credential.
   - **What the agent produces:** working-tree changes, `pr.md` and a private diagnosis. Nothing more.
-  - **How the PR opens:** a separate `publish()` step commits only if every changed path is a manifest, lock file, Dockerfile, `docker-compose.yml`, Umami patch or `CHANGELOG.md`, and only if `HEAD` is unmoved. It then pushes through hooks that allow only `triage/*` and opens a draft PR.
+  - **How the PR opens:** a separate `publish()` step commits only if all of these hold: every changed path is a manifest, lock file, Dockerfile, `docker-compose.yml`, Umami patch or `CHANGELOG.md`; no `package.json` `scripts` block changed; `HEAD` is unmoved; and `pr.md` names no host details. It then pushes through hooks that allow only `triage/*` and opens a draft PR.
   - **When it is skipped:** for a clean, stale (> 6 h) or already-triaged report, and while maintenance holds the lock.
   - **Verified on the host:**
-    - A boundary probe: 7 of 7 escape attempts were refused.
+    - Boundary probes: all 7 escape attempts were refused.
+    - Sandboxed writes to `.git` and to the clone's `.claude` hooks failed with `EPERM`.
     - The last fixture run: 0 refusals, 55 s.
     - Draft PRs #715, #716 and #717 were opened through the real token and hooks, then closed.
 
