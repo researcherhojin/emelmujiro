@@ -120,6 +120,8 @@ test('settings scope file tools to the clone and run, and sandbox Bash away from
   assert.equal(sandbox.allowUnsandboxedCommands, false);
   assert.equal(sandbox.autoAllowBashIfSandboxed, false);
   assert.ok(sandbox.filesystem.denyRead.includes('/home/u/.config/emelmujiro-triage'));
+  assert.deepEqual(sandbox.filesystem.denyWrite, ['/c/.git', '/c/.claude']);
+  assert.ok(settings.permissions.deny.includes('Edit(//c/.claude/**)'));
   assert.deepEqual(sandbox.network.allowedDomains, ['registry.npmjs.org', 'mirror.gcr.io']);
   assert.equal(sandbox.network.strictAllowlist, true);
   assert.deepEqual(sandbox.filesystem.allowWrite.slice(0, 2), ['/c', '/t']);
@@ -263,6 +265,17 @@ test('publish refuses ignore files, scanner code, renames out of CI, scratch fil
     write(r.clone, 'package-lock.json', '{"v":2}\n');
     r.git(r.clone, 'commit', '--quiet', '-am', 'agent commit');
   }, 'HEAD moved off the recorded base');
+  refuse(
+    (r) => write(r.clone, 'package.json', '{"scripts":{"security:dependencies":"true"}}\n'),
+    'package.json scripts changed: package.json'
+  );
+  refuse((r) => {
+    write(r.clone, 'package-lock.json', '{"v":2}\n');
+    fs.writeFileSync(
+      path.join(r.run, 'pr.md'),
+      'fix(deps): x\n\nSeen in /Users/someone/workspace/report.json'
+    );
+  }, 'pr.md names host details');
 });
 
 test('allowlist covers what a dependency or image fix needs', () => {
@@ -278,5 +291,10 @@ test('allowlist covers what a dependency or image fix needs', () => {
     'CHANGELOG.md',
   ])
     assert.equal(checkChanges([file], 'a', 'a', 'title'), null, file);
+  // Overrides and versions may move; only the scripts block is frozen.
+  assert.equal(
+    checkChanges(['package.json'], 'a', 'a', 'title', () => false),
+    null
+  );
   assert.equal(branchName('fix(deps)!: Bump X/Y to 2.0', now), 'triage/2026-11-02-bump-x-y-to-2-0');
 });

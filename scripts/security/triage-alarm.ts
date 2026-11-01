@@ -113,6 +113,9 @@ export function triageSettings(
       deny: [
         // .git stays read-only even to sandboxed node; publish() commits.
         rule('Edit', path.join(paths.clone, '.git')),
+        // The clone's .claude/settings.json runs .claude/hooks/guard-bash.sh
+        // outside the sandbox before every Bash call; it must stay as checked out.
+        rule('Edit', path.join(paths.clone, '.claude')),
         rule('Edit', path.join(paths.run, 'input')),
         ...secrets.map((secret) => rule('Read', secret)),
       ],
@@ -130,6 +133,7 @@ export function triageSettings(
           path.join(home, 'Library/Caches/trivy'),
         ],
         denyRead: secrets,
+        denyWrite: [path.join(paths.clone, '.git'), path.join(paths.clone, '.claude')],
       },
       // check:scripts starts its webhook tests on 127.0.0.1.
       network: {
@@ -233,7 +237,7 @@ function prepareClone(clone: string, hooks: string): void {
   git(clone, ['fetch', '--quiet', '--prune', 'origin']);
   git(clone, ['switch', '--quiet', '--detach', 'origin/main']);
   git(clone, ['reset', '--quiet', '--hard', 'origin/main']);
-  git(clone, ['clean', '-fdq']);
+  git(clone, ['clean', '-ffd', '--quiet']);
   for (const branch of git(clone, [
     'for-each-ref',
     '--format=%(refname:short)',
@@ -257,13 +261,42 @@ const PUBLISHABLE = [
 
 export type Publication = { publish: true; branch: string } | { publish: false; reason: string };
 
-export function checkChanges(changed: string[], head: string, base: string, pr: string | null) {
+// Host details the public PR text must not carry.
+const PRIVATE_TEXT = [
+  /\/Users\//,
+  /\/private\/(tmp|var)\//,
+  /Macmini/i,
+  /\.local\b/,
+  /sha256:[0-9a-f]{12}/,
+];
+
+export function checkChanges(
+  changed: string[],
+  head: string,
+  base: string,
+  pr: string | null,
+  scriptsChanged: (file: string) => boolean = () => false
+) {
   if (head !== base) return 'HEAD moved off the recorded base';
   if (changed.length === 0) return 'no changes';
   const refused = changed.filter((file) => !PUBLISHABLE.some((pattern) => pattern.test(file)));
   if (refused.length > 0) return `paths outside the allowlist: ${refused.join(', ')}`;
+  // A manifest's scripts define the scans and CI steps; a fix never needs them.
+  const scripts = changed.filter((file) => file.endsWith('package.json') && scriptsChanged(file));
+  if (scripts.length > 0) return `package.json scripts changed: ${scripts.join(', ')}`;
   if (!pr || !pr.split('\n')[0].trim()) return 'missing pr.md title';
+  if (PRIVATE_TEXT.some((pattern) => pattern.test(pr))) return 'pr.md names host details';
   return null;
+}
+
+function manifestScripts(text: string | null): string {
+  if (text === null) return 'missing';
+  try {
+    const value: unknown = JSON.parse(text);
+    return JSON.stringify(isRecord(value) ? (value.scripts ?? null) : 'invalid');
+  } catch {
+    return 'invalid';
+  }
 }
 
 export function branchName(title: string, now: Date): string {
@@ -310,7 +343,19 @@ export function publish(options: {
     .map((entry) => entry.slice(3));
   const prFile = path.join(run, 'pr.md');
   const pr = fs.existsSync(prFile) ? fs.readFileSync(prFile, 'utf8') : null;
-  const refused = checkChanges(changed, read(['rev-parse', 'HEAD']).trim(), base, pr);
+  const atBase = (file: string) => {
+    const result = spawnSync('git', [...forced, 'show', `${base}:${file}`], { encoding: 'utf8' });
+    return result.status === 0 ? result.stdout : null;
+  };
+  const inTree = (file: string) =>
+    fs.existsSync(path.join(clone, file)) ? fs.readFileSync(path.join(clone, file), 'utf8') : null;
+  const refused = checkChanges(
+    changed,
+    read(['rev-parse', 'HEAD']).trim(),
+    base,
+    pr,
+    (file) => manifestScripts(atBase(file)) !== manifestScripts(inTree(file))
+  );
   if (refused || !pr) return { publish: false, reason: refused ?? 'missing pr.md title' };
 
   const [title, ...body] = pr.split('\n');
