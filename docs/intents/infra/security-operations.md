@@ -93,7 +93,7 @@ paths are documented privately in `.private/operations.md`.
 
 ## Alarm history
 
-<!-- cspell:ignore rustls -->
+<!-- cspell:ignore rustls redocly -->
 
 Each alarm filed a generic issue. The cause was in the host report (`.private/operations.md`). Every recovery ran the same way: fix and deploy, rerun the host job by hand, then dispatch the watchdog, which closed the issue. No diagnostics reached GitHub.
 
