@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: infra
 created: 2026-11-01
 updated: 2026-11-01
@@ -148,4 +148,18 @@ updated: 2026-11-01
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in #719 (`a9b965c6`). The plan commit was `05caca91`. #718 was superseded to keep the PR at 2 commits.
+
+- **Deploy.** The production `/api/health/` reported `a9b965c6e6ecc580ccfcb55b8d7907d45ebeeec2`, and the host checkout is on the same commit.
+- **Done when 2.** `make setup-triage-cron` took the crontab from 5 to 6 lines. The diff is exactly one added `40 2 * * *` `triage-alarm.ts` line, logging to `backend/logs/security-triage.log`.
+- **Done when 3.** The cron command, run by hand in the production checkout under `env -i PATH=/usr/bin:/bin`, printed `Triage skipped: scans clean` and exited 0.
+- **Done when 1, 4 and 5, and the boundary probes.** See Plan › Departures 5, 6 and 8 and the PR body.
+- **Departures.** Plan › Departures 1–8. Two independent reviews and one advisor pass turned a prompt-level boundary into a mechanical one:
+  - no credential in the agent;
+  - sandboxed Bash;
+  - read-only `.git` and `.claude`;
+  - a path and content allowlist in `publish()`.
+- **Lesson.** A headless agent's boundary has to be proven by probes run with the real argv, env and settings, not argued from flags. Three of the gaps found here were ones no flag-level reading would show:
+  - the agent's own clone runs a project hook outside the sandbox;
+  - an Edit deny on `.git` also becomes a sandbox `denyWrite`, which stops the agent from committing;
+  - a run directory under `backend/logs` is unreadable to the agent.
