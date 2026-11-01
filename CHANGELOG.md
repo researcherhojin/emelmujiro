@@ -8,6 +8,9 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(rules): `ci.md` › Runtime image recipes now records #720's Umami builder overrides (minimatch 11.0.3, glob 14.0.3) and the redocly patch.
+  - It also records a trap: the Dockerfile copies each patch by name and `.dockerignore` lists each one, so a new patch needs both, or `pnpm install --frozen-lockfile` fails in the build.
+
 - ci: `Warm Shared Caches` gains a `prune` job.
   - **What it does:** once the Playwright and Trivy saves succeed, it keeps only the newest `main` cache per key family (`cache-trivy-`, `*-node-modules-`, `*-playwright-apt-`, `*-playwright-<version>`, `setup-uv-`, `trivy-binary-`) and deletes the rest. It runs with job-scoped `actions: write`.
   - **Why:** GitHub evicts a cache only after 7 days unused, so superseded keys lingered. On 2026-11-02 they were 12 of 17 caches, about 820 MB of 1.34 GB: 6 older Trivy dates, 3 older lockfile hashes, an apt image and a uv key.
