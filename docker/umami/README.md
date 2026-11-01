@@ -1,5 +1,7 @@
 # Umami security build
 
+<!-- cspell:ignore redocly -->
+
 This rebuild keeps Umami 3.4.0 application code and migrations at upstream commit
 `ec0ff50388c264ed8ce46f00967e92f7e71476ae`. The Dockerfile verifies the source
 archive checksum and pins the Node base and official geography-data image by
@@ -10,7 +12,9 @@ The builder uses Next 16.4.2, sharp 0.35.5 and shell-quote 1.11.0.
 Build dependency fixes also cover MCP server and client 2.3.0, brace-expansion
 1.1.21, 2.1.7 and 5.0.12, fast-uri 3.1.9, source-map-js 1.2.2,
 postcss-selector-parser 7.1.6, undici 8.12.2, serialize-javascript 7.1.3,
-zod 4.6.7, vite 8.1.6 and vitest 4.1.12. Both dependency
+zod 4.6.7, vite 8.1.6, vitest 4.1.12, minimatch 11.0.3 and glob 14.0.3
+(GHSA-g3hv-75wg-m249, GHSA-3g3m-2fjr-6pw4). `@redocly/openapi-core` 1.34.19 is
+patched to import minimatch 11's named export. Both dependency
 graphs retain upstream's deepmerge-ts 8.0.2 and mysql2 3.23.1 security overrides.
 The builder lock backports deepmerge PR #274's `__proto__` rejection for
 deepmerge 4.3.1 because npm has no patched release; a build-time regression
@@ -27,7 +31,7 @@ CLI, so migrations still execute before the server starts as UID 1001.
 From the repository root:
 
 ```sh
-docker build -t emelmujiro/umami:3.4.0-security-4 docker/umami
+docker build -t emelmujiro/umami:3.4.0-security-5 docker/umami
 sh docker/umami/verify.sh
 ```
 

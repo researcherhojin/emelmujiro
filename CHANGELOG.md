@@ -8,6 +8,13 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(umami): Clear Dependabot alert #10 (GHSA-g3hv-75wg-m249) and GHSA-3g3m-2fjr-6pw4 in the Umami builder lock by fixing them instead of ignoring them.
+  - Overrides now set `minimatch@<11.0.1` to 11.0.3 and `glob@>=8.0.0 <14.0.2` to 14.0.3. They replace minimatch 3.1.4, 5.1.8, 5.1.9 and 9.0.7 and glob 8.1.0 and 10.5.0, plus 20 packages only those versions used. No other version moved.
+  - `patches/@redocly__openapi-core@1.34.19.patch` changes `require("minimatch")` to its named export, because minimatch 11's module is not callable.
+  - Callers were checked against minimatch 11 and glob 14: `npm-run-all`'s `Minimatch`, svgr's `glob.glob.sync` and sucrase's `glob`.
+  - The two expiring entries #714 added to `trivyignore.yaml` are removed, and the dependency scan still reports 0 findings on all 5 targets.
+  - The image tag moves to `3.4.0-security-5`.
+
 - feat(security): A failed `dependencies` or `images` result in the 02:00 host report is now triaged at 02:40 (`scripts/security/triage-alarm.ts`, `make setup-triage-cron`). Intent: `docs/intents/infra/security-alarm-triage.md`.
   - **What runs:** headless Claude Code in a dedicated clone, with a Bash allowlist.
     - Its Bash runs in the OS sandbox. It cannot read secrets or the production checkout's logs, and its network reaches only the npm registry and the Trivy mirror.
