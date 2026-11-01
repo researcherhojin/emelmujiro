@@ -8,6 +8,11 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- ci: `Warm Shared Caches` gains a `prune` job.
+  - **What it does:** once the Playwright and Trivy saves succeed, it keeps only the newest `main` cache per key family (`cache-trivy-`, `*-node-modules-`, `*-playwright-apt-`, `*-playwright-<version>`, `setup-uv-`, `trivy-binary-`) and deletes the rest. It runs with job-scoped `actions: write`.
+  - **Why:** GitHub evicts a cache only after 7 days unused, so superseded keys lingered. On 2026-11-02 they were 12 of 17 caches, about 820 MB of 1.34 GB: 6 older Trivy dates, 3 older lockfile hashes, an apt image and a uv key.
+  - **Check:** a dry run of the same `jq` against the live list kept exactly the 5 current keys.
+
 - fix(frontend): A tab opened before a deploy no longer goes blank when it navigates to a page whose lazy chunk the deploy removed. nginx logged one such 404 for an old `/assets/index-*.js` on 2026-11-01.
   - `utils/chunkReload.ts` handles Vite's cancelable `vite:preloadError`, which the built preload helper dispatches for a rejected dynamic import. It reloads once to fetch the new `index.html`.
   - A second failure within 10 s (`sessionStorage` `chunk-reload-at`) is left to the ErrorBoundary, so it cannot loop. Without `sessionStorage`, as in some in-app browsers, it still reloads once.
