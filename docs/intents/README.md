@@ -57,3 +57,4 @@ A `shipped` intent is deleted once its deploy is verified, unless a living doc (
 - **One intent per PR.** The PR body links the intent file; the merge updates `status` and `Outcome` in the same PR or the next commit. `CHANGELOG.md` remains the shipped record, and the intent links to its entry rather than repeating it.
 - **Plan mode output goes in `Plan`**, not only in `~/.claude/plans/`, so the plan is reviewed with the code and survives the session, including the fresh one that implements it.
 - **Commit type** for intent-only changes is `docs(intents):`.
+
