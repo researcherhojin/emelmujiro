@@ -7,12 +7,17 @@ import logger from './utils/logger';
 import { initSentry } from './utils/sentry';
 import { initAnalytics } from './utils/analytics';
 import { initPerformanceMonitoring, checkPerformanceBudget } from './utils/webVitals';
+import { registerChunkReload } from './utils/chunkReload';
 
 // Initialize Sentry error tracking (no-op unless VITE_ENABLE_SENTRY=true and VITE_SENTRY_DSN is set)
 initSentry();
 
 // Initialize analytics (no-op until Umami is provisioned)
 initAnalytics();
+
+// Before the first render, so a lazy chunk removed by a deploy reloads the tab
+// instead of leaving it blank.
+registerChunkReload();
 
 const rootElement = document.getElementById('root');
 

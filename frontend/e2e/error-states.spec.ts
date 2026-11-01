@@ -73,6 +73,29 @@ test.describe('Error States', () => {
     });
   });
 
+  test('a lazy chunk removed by a deploy reloads the tab once', async ({ page }) => {
+    // A tab opened before a deploy asks for the old chunk hash, which nginx
+    // 404s. utils/chunkReload.ts reloads on vite:preloadError so the new
+    // index.html is fetched; the second request here succeeds, as it would
+    // against the new build.
+    let failed = 0;
+    await page.route('**/assets/PrivacyPolicyPage-*.js', (route) => {
+      if (failed++ === 0) return route.fulfill({ status: 404, body: '' });
+      return route.continue();
+    });
+    await page.goto('/');
+    await expect(page.locator('footer a[href="/privacy"]')).toBeAttached();
+
+    const reloaded = page.waitForEvent('load');
+    await page.locator('footer a[href="/privacy"]').click();
+    await reloaded;
+
+    await expect(page).toHaveURL(/\/privacy$/);
+    expect(failed).toBe(2);
+    expect(await page.evaluate(() => sessionStorage.getItem('chunk-reload-at'))).not.toBeNull();
+    await expect(page.locator('footer a[href="/privacy"]')).toBeAttached();
+  });
+
   test('no console errors on homepage', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (error) => {
