@@ -1,5 +1,5 @@
 # cspell:ignore flushexpiredtokens
-.PHONY: setup-image-refresh-cron help install setup-dev-machine verify-setup dev dev-local dev-clean ports kill-ports build test test-ci lint lint-fix clean logs logs-security logs-debug health ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron setup-token-cron setup-security-cron setup-health-cron remove-cron
+.PHONY: setup-image-refresh-cron help install setup-dev-machine verify-setup dev dev-local dev-clean ports kill-ports build test test-ci lint lint-fix clean logs logs-security logs-debug health ps down restart migrate shell createsuperuser update-test-counts cleanup-visits setup-cron setup-token-cron setup-security-cron setup-triage-cron setup-health-cron remove-cron
 
 help:
 	@echo "Available commands:"
@@ -18,6 +18,7 @@ help:
 	@echo "  make ports             - Check port status"
 	@echo "  make kill-ports        - Kill all dev ports"
 	@echo "  make setup-security-cron - Schedule daily security and backup verification"
+	@echo "  make setup-triage-cron   - Draft-PR triage of failed dependency or image scans (02:40)"
 	@echo "  make setup-token-cron  - Schedule daily expired JWT token cleanup"
 
 setup-dev-machine:
@@ -179,6 +180,18 @@ setup-security-cron: ## Schedule private backups, restore checks, and full secur
 	fi; \
 	(grep -v 'scripts/security/scheduled-security.ts' "$$CRON_COPY"; \
 	 echo "0 2 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/security/scheduled-security.ts >> '$(CURDIR)/backend/logs/security-schedule.log' 2>&1") | crontab -
+
+setup-triage-cron: ## Triage failed dependency or image scans into a draft PR at 02:40
+	@mkdir -p $(CURDIR)/backend/logs
+	@NODE_BIN="$$(command -v node)"; \
+	if [ -z "$$NODE_BIN" ]; then echo "Error: node not found."; exit 1; fi; \
+	CRON_COPY="$$(mktemp)" || exit 1; \
+	trap 'rm -f "$$CRON_COPY" "$$CRON_COPY.err"' EXIT HUP INT TERM; \
+	if ! LC_ALL=C crontab -l > "$$CRON_COPY" 2> "$$CRON_COPY.err"; then \
+		if ! grep -q 'no crontab for' "$$CRON_COPY.err"; then cat "$$CRON_COPY.err" >&2; exit 1; fi; \
+	fi; \
+	(grep -v 'scripts/security/triage-alarm.ts' "$$CRON_COPY"; \
+	 echo "40 2 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/security/triage-alarm.ts >> '$(CURDIR)/backend/logs/security-triage.log' 2>&1") | crontab -
 
 setup-health-cron: ## Install health check cron (every 5 min, logs failures and warnings only)
 	@mkdir -p $(CURDIR)/backend/logs
