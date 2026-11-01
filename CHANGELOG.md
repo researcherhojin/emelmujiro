@@ -14,6 +14,10 @@ Retiring the release number is not a statement about API compatibility. `backend
   - Callers were checked against minimatch 11 and glob 14: `npm-run-all`'s `Minimatch`, svgr's `glob.glob.sync` and sucrase's `glob`.
   - The two expiring entries #714 added to `trivyignore.yaml` are removed, and the dependency scan still reports 0 findings on all 5 targets.
   - The image tag moves to `3.4.0-security-5`.
+- docs: Bring the Markdown up to date after #713–#719.
+  - `CLAUDE.md` and `AGENTS.md` point a security alarm at the 02:40 triage's draft PR.
+  - `analyze:bundle` is now described as it behaves: it needs source maps, which the production build omits, and the dev maps were rejected on 2026-11-01.
+  - `.lintstagedrc.mts` gains a `/// <reference types="node" />` line. Editors find no root `tsconfig.json` for it and reported `node:path` and `import.meta.dirname` as unknown, while CI type-checks it through `scripts/tsconfig.json`. Reproduced with `types: []` (3 errors), and cleared by the directive.
 
 - feat(security): A failed `dependencies` or `images` result in the 02:00 host report is now triaged at 02:40 (`scripts/security/triage-alarm.ts`, `make setup-triage-cron`). Intent: `docs/intents/infra/security-alarm-triage.md`.
   - **What runs:** headless Claude Code in a dedicated clone, with a Bash allowlist.

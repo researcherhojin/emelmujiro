@@ -1,3 +1,5 @@
+/// <reference types="node" />
+// Typed by scripts/tsconfig.json in CI; the directive is for editors, which find no root tsconfig.
 import path from 'node:path';
 
 export default {

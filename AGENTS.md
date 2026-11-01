@@ -9,7 +9,7 @@ Full-stack monorepo (**React 19 + Vite** frontend, **Django 6 + DRF** backend), 
 - UI / page work → `.claude/rules/frontend.md`
 - Backend / API / migrations → `.claude/rules/backend.md`
 - Build, deploy, CI, or a red check → `.claude/rules/ci.md` + `.claude/rules/frontend-build.md` + `.claude/rules/backend.md` (migrations) + `CLAUDE.md` → `Constraints`.
-- A `Security operations require attention` issue → `.claude/rules/ci.md` → Scheduled security operations and Nightly image refresh, then `docs/intents/infra/security-operations.md` (one section per past alarm).
+- A `Security operations require attention` issue → `.claude/rules/ci.md` → Scheduled security operations and Nightly image refresh, then `docs/intents/infra/security-operations.md` (one section per past alarm). For `dependencies` or `images`, check for a draft `triage/*` PR from the 02:40 triage (`docs/intents/infra/security-alarm-triage.md`).
 - Dependency bumps → `CLAUDE.md` → `Gotchas` (numbered; the numbers are cited from commits and never change). Each rule's fix steps and evidence are in `.claude/skills/gotchas/SKILL.md` under the same number.
 - Planned work → `docs/intents/<module>/<slug>.md` (workflow and statuses in `docs/intents/README.md`): Intent → Spec → Plan → implement → `shipped` with an `Outcome`, then deleted unless a living doc cites it. Read the file's `status` before starting.
 - `main-ci-cd.yml`, `pr-checks.yml` are the CI source of truth; cite job/step **by name, not line number** (they move often).
@@ -36,7 +36,7 @@ cd frontend && npm run validate      # lint + type-check + test:coverage (local 
 cd frontend && npm run type-check    # tsc --noEmit, tsc -p tsconfig.node.json AND tsc -p scripts/tsconfig.json
 cd frontend && npm run test:e2e      # Playwright, production build (see gotchas)
 cd frontend && npm run check:routes  # cross-references the 4 hardcoded route lists; fails CI on drift
-cd frontend && npm run analyze:bundle   # needs a build first
+cd frontend && npm run analyze:bundle   # needs source maps; the production build emits none
 npm run knip | npm run spell         # dead code / cspell, from root
 ```
 
