@@ -8,6 +8,10 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs: Record the 2026-11-02 credential clean-up.
+  - `frontend.md` › Privacy policy and README › Monitoring note that the only Sentry project, the one behind the DSN `bbd049c6` left in public history, was deleted with no tokens left, so enabling Sentry needs a new project and DSN.
+  - `claude-config.md` adds a rule: never run a command carrying a literal secret, because an approved command can be saved verbatim as an allow rule. A Mac mini `settings.local.json` rule had held the live deploy secret, which was then rotated.
+
 - fix(frontend): `npm run analyze:bundle` produces a report again.
   - **Before:** it read `build/assets/*.js`, but production builds emit no source maps, and the dev build's rolldown maps were rejected for `column Infinity`. So it reported nothing on 2026-11-01.
   - **Now:** it builds with `--sourcemap` into a gitignored `build-analyze/`, so nginx's `build/` never gets maps, and runs source-map-explorer with `--no-border-checks`.
