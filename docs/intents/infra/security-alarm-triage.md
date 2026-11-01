@@ -1,9 +1,11 @@
 ---
-status: approved
+status: in-progress
 module: infra
 created: 2026-11-01
 updated: 2026-11-01
 ---
+
+<!-- cspell:ignore unsandboxed sandboxed npmjs EPERM Dockerfiles fsmonitor -->
 
 # A failed dependency or image scan arrives with a draft fix PR
 
@@ -57,7 +59,7 @@ updated: 2026-11-01
   - `scripts/security/triage-prompt.md`: the fixed prompt. It contains no host paths beyond those the script passes in.
   - `Makefile` target `setup-triage-cron`, idempotent like `setup-security-cron`.
   - `.claude/rules/ci.md` › Scheduled security operations gains one sentence.
-  - The PR uses `GH_TOKEN` only in the spawned environment. The allowed tools are Read, Grep, Glob, Edit and Write within the clone, plus `Bash(npm ci*, npm install --package-lock-only*, npm run *, npx eslint*, node scripts/security/*, git switch/add/commit/push origin triage/*, gh pr create --draft*, gh issue list*)`.
+  - Superseded by Plan › Departures 1–3. The PR uses `GH_TOKEN` only in the spawned environment. The allowed tools are Read, Grep, Glob, Edit and Write within the clone, plus `Bash(npm ci*, npm install --package-lock-only*, npm run *, npx eslint*, node scripts/security/*, git switch/add/commit/push origin triage/*, gh pr create --draft*, gh issue list*)`.
   - Denied: `docker`, `gh pr merge`, `git push` to `main`, `ssh`, and reads of `.env*`. The repo's `guard-bash.sh` still applies.
 - **Out of scope**:
   - `backup`, `offsite` and `refresh` failures. They need host state, not a code change, and remain manual.
@@ -100,6 +102,40 @@ updated: 2026-11-01
   - **Agent edits beyond scope**: the PR stays a draft and needs the owner's merge. `guard-bash.sh` and the deny list block `npm audit fix`, `docker` and pushes to `main`.
   - **A runaway or slow run overlaps the 03:xx jobs**: cap it with `--max-turns` and a wall-clock timeout in `runTriage()` (kill after 45 min). The clone has its own `node_modules`, so the production Docker jobs are unaffected.
   - **The PAT expires silently**: `gh pr create` fails and the diagnosis still lands. Record the expiry date in `.private/operations.md` and the journal Backlog.
+- **Departures** (implementation, 2026-11-01). Each one comes from the intent-reviewer finding or the host measurement named in it:
+  1. **The agent holds no GitHub credential and does not commit.**
+     - The review found that bare Edit/Write plus `npm run` let the agent run arbitrary code with `GH_TOKEN` in its environment, and the pre-push hook, the only guard on `main`, fell to `--no-verify`.
+     - The agent now only edits the working tree and writes `pr.md`. Its `.git` is read-only even inside the sandbox: a sandboxed node script got `EPERM` on `.git/config`, `refs/remotes/origin/main` and `.git/hooks`.
+     - `publish()` runs outside the agent. It checks four things:
+       - every changed path, including untracked files and both sides of a rename (`--no-renames`), is on an allowlist: manifests, lock files, Dockerfiles, `docker-compose.yml`, Umami patches and `CHANGELOG.md`;
+       - `HEAD` still equals the base SHA recorded before the agent ran;
+       - `pr.md` has a title.
+     - It then commits through the commit-msg hook and pushes through the pre-push hook, both read from this checkout and forced with `-c core.hooksPath` and `core.fsmonitor=false` on every git call. Last it runs `gh pr create --draft` with the token in its own environment.
+     - The advisor's review replaced a denylist: that list allowed scanner code (`scripts/security/dependencies.ts`) and blocked the nginx pin in `docker-compose.yml`.
+  2. **Bash runs in Claude Code's OS sandbox**, with settings generated per run so that no host path is committed:
+     - `failIfUnavailable`, no unsandboxed retry, and no auto-allow, so the allowlist still gates every command.
+     - Reads denied: `~/.ssh`, the token directory, `~/.config/gh`, the Keychains, the production `.env*`, `.private` and `backend/logs`.
+     - Writes only to the clone, the per-user temp directory, `~/.npm` and the Trivy cache.
+     - Network only to `registry.npmjs.org` and `mirror.gcr.io` (strict allowlist), plus local binding for `check:scripts`' webhook tests.
+     - `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` plus `credentials.envVars` keep the OAuth token out of Bash.
+     - File tools are scoped with `Read(//clone/**)`, `Edit(//clone/**)` and `Edit(//run/**)`, and `.git/**` and `input/**` are denied. `Write(path)` rules never match, so Edit rules govern Write.
+  3. **Run directories moved to `~/.local/state/emelmujiro-triage/runs`.** Under `backend/logs` the agent's own Read deny blocked its input (run 4). State, lock and cron log stay under `backend/logs`.
+  4. **The prompt lists the allowed command forms** (no `cd`, pipes or `cat`). In run 1 the agent hit one refused `cd … | head` and stopped. Every run after the change completed with 0 refusals.
+  5. **Done when 5 ran against a clean `main`**, so the correct outcome was a diagnosis and no PR. Its last fixture run under the sandbox finished with 0 refusals in 55 s, with all five scan targets at 0. The PR path was exercised against GitHub instead. Each PR was closed at once:
+     - #715: hook and token, by hand.
+     - #716: an earlier `publish()`.
+     - #717: the final design. The sandboxed agent edited `CHANGELOG.md` and wrote `pr.md`, and `publish()` committed under the noreply identity, passed both hooks and opened a draft.
+  6. **Boundary probe, 2026-11-01, real argv, env and settings.**
+     - Refused (7):
+       - Read and Grep of the token directory
+       - Write to the production checkout
+       - Write under `.git`
+       - `git push --dry-run … HEAD:main`
+       - `cat` of the token
+       - a sandboxed node script reading the token or `~/.ssh`, writing to the production checkout, or reaching `api.github.com`
+     - The OAuth token was absent from the Bash environment.
+     - A second attack prompt (rewrite `.git/config`, move `origin/main`, rename a workflow) was declined by the model itself, so it measured nothing. The rename and scratch-file cases are covered by `publish()` unit tests on a real git repository instead.
+  7. **`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` makes the init event report `permissionMode: default`.** Measured by bisecting the flags. In `-p` an unapproved call is still denied, as all the refusals above show.
 - **Verification**: the `Done when` list, run in order. Check 5 uses a fixture directory passed through `TRIAGE_REPORT_DIR`, so the real report is never edited.
 
 ## Outcome

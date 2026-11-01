@@ -1,0 +1,14 @@
+#!/bin/sh
+# core.hooksPath of the triage clone points here, outside the agent's reach.
+# The repo-scoped token can write to main, so this hook is what limits the
+# headless run to triage/* branches (docs/intents/infra/security-alarm-triage.md).
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  case "$remote_ref" in
+    refs/heads/triage/*) ;;
+    *)
+      echo "Triage may push only triage/* branches, not $remote_ref" >&2
+      exit 1
+      ;;
+  esac
+done
+exit 0
