@@ -93,7 +93,7 @@ paths are documented privately in `.private/operations.md`.
 
 ## Alarm history
 
-<!-- cspell:ignore rustls -->
+<!-- cspell:ignore rustls redocly -->
 
 Each alarm filed a generic issue. The cause was in the host report (`.private/operations.md`). Every recovery ran the same way: fix and deploy, rerun the host job by hand, then dispatch the watchdog, which closed the issue. No diagnostics reached GitHub.
 
@@ -119,6 +119,7 @@ Each alarm filed a generic issue. The cause was in the host report (`.private/op
   - Fix: root override `minimatch>=11.0.1` (11.0.3) and follow-redirects 1.16.2. Expiring ignores for the Umami builder lock only: minimatch 11 drops the API glob up to 14.0.1 uses, and the runner lock has neither package.
   - Fix commit: #714 (`77ffad61`).
   - Recovery: host job at 2026-11-01T11:30:20Z, then run 41302177201.
+  - Follow-up (2026-11-02, Dependabot alert #10): the two Umami builder ignores were replaced by real fixes. Overrides now set minimatch 11.0.3 and glob 14.0.3, and a one-line patch makes `@redocly/openapi-core` 1.34.19 import minimatch's named export. Umami moves to `3.4.0-security-5`.
 
 Lessons, each measured in one of these alarms:
 
@@ -130,4 +131,8 @@ Lessons, each measured in one of these alarms:
   - Umami: nothing called curl at runtime. The healthcheck uses BusyBox `wget`, there is no `curl` in `/app/scripts` or `/app/server.js`, and `verify.sh` curls from the host.
   - backend: uv only launched the venv. Every uv from `0.12.24` to `0.13.6` locks rustls 0.23.45 (checked 2026-10-29T01:13Z).
 - **`/api/health/` reports the new commit before `auto-deploy.sh` reaches the Umami rebuild.** Wait for the umami container before rerunning the host job.
+- **"The fix needs a major" is a claim to test per consumer, not a reason to ignore.** #713 ignored minimatch and glob in the Umami builder on that ground. Checking each caller showed:
+  - `npm-run-all` uses `Minimatch`, which works on 11;
+  - svgr and sucrase work on glob 14;
+  - only redocly's `require("minimatch")(…)` breaks, and it is fixed by a one-line patch.
 - **A local scan can find what the host has not reported yet.** `qs` 6.16.0 (GHSA-6pq8-jhm2-2vcw, 2026-10-27T16:10Z, dev-only through `@lhci/cli`) failed a local run while the host still reported `dependencies` true. #690 (`32885898`) moved it to 6.16.1.

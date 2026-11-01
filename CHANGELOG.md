@@ -8,6 +8,12 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(umami): Clear Dependabot alert #10 (GHSA-g3hv-75wg-m249) and GHSA-3g3m-2fjr-6pw4 in the Umami builder lock by fixing them instead of ignoring them.
+  - Overrides now set `minimatch@<11.0.1` to 11.0.3 and `glob@>=8.0.0 <14.0.2` to 14.0.3. They replace minimatch 3.1.4, 5.1.8, 5.1.9 and 9.0.7 and glob 8.1.0 and 10.5.0, plus 20 packages only those versions used. No other version moved.
+  - `patches/@redocly__openapi-core@1.34.19.patch` changes `require("minimatch")` to its named export, because minimatch 11's module is not callable.
+  - Callers were checked against minimatch 11 and glob 14: `npm-run-all`'s `Minimatch`, svgr's `glob.glob.sync` and sucrase's `glob`.
+  - The two expiring entries #714 added to `trivyignore.yaml` are removed, and the dependency scan still reports 0 findings on all 5 targets.
+  - The image tag moves to `3.4.0-security-5`.
 - docs: Bring the Markdown up to date after #713–#719.
   - `CLAUDE.md` and `AGENTS.md` point a security alarm at the 02:40 triage's draft PR.
   - `analyze:bundle` is now described as it behaves: it needs source maps, which the production build omits, and the dev maps were rejected on 2026-11-01.

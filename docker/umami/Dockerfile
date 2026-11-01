@@ -14,6 +14,7 @@ ADD --checksum=sha256:9d4d765e4d5b303af1cc0491da7e1592eb5ad8ced6c35780dce2bb2c27
 RUN tar -xzf /tmp/umami.tar.gz --strip-components=1 -C /app && rm /tmp/umami.tar.gz
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY patches/deepmerge@4.3.1.patch ./patches/deepmerge@4.3.1.patch
+COPY ["patches/@redocly__openapi-core@1.34.19.patch", "./patches/@redocly__openapi-core@1.34.19.patch"]
 RUN pnpm install --frozen-lockfile
 COPY scripts/verify-deepmerge-patch.cts ./scripts/verify-deepmerge-patch.cts
 RUN mkdir -p /tmp/deepmerge-patch-test \
@@ -42,7 +43,7 @@ WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 HOSTNAME=0.0.0.0 PORT=3000
 LABEL org.opencontainers.image.source="https://github.com/umami-software/umami" \
     org.opencontainers.image.revision="ec0ff50388c264ed8ce46f00967e92f7e71476ae" \
-    org.opencontainers.image.version="3.4.0-security-4"
+    org.opencontainers.image.version="3.4.0-security-5"
 RUN addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nextjs \
     && rm -rf /usr/local/lib/node_modules/npm /opt/yarn-* \

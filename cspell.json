@@ -10,6 +10,7 @@
     "docker/umami/**/package.json",
     "docker/umami/**/pnpm-workspace.yaml",
     "docker/umami/**/pnpm-lock.yaml",
+    "docker/umami/patches/**",
     "backend/api/tests.py",
     "backend/api/migrations/**",
     "CHANGELOG.md",
