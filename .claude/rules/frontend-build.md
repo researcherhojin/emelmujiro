@@ -77,4 +77,8 @@ paths:
   - **A local backend is optional**: without one, `build:e2e` still prerenders all 10 routes and each API-driven view renders the same error state on both sides. The sitemap step still reads the production API (`API_URL` defaults to `https://api.emelmujiro.com/api`) and aborts on failure. Signing in needs a backend behind both servers with `CSRF_TRUSTED_ORIGINS="http://127.0.0.1:4180,http://127.0.0.1:4181"` (`DEBUG` adds only Vite's `:5173`), else `/api/auth/login/` answers `403` (#642).
   - **Noise floor**: two captures of one build differed in 3 of 44 screenshots by at most 0.002451% of pixels, each by 1/255, inside the contact pages' Google Form iframe (#639). Capture the base twice and treat as real only what that pair does not show, or pass `--max-ratio 0.00005`, which also passes a real change under 0.005% of the image (316 px on the 1440 × 4394 home page).
 
-**Bundle size**: Build output must be < 10MB (enforced in `pr-checks.yml`). `npm run analyze:bundle` needs source maps, and `vite.config.ts` emits them only outside production. A production build gives it nothing to read, and the dev build's maps were rejected for `column Infinity` on 2026-11-01. Until that is fixed, read chunk sizes from `build/assets`.
+**Bundle size**: Build output must be < 10MB (enforced in `pr-checks.yml`). `npm run analyze:bundle` writes `frontend/build-analyze/bundle-report.html`.
+
+- It runs `vite build --sourcemap` into the gitignored `build-analyze/`, because `vite.config.ts` emits no maps for production and `build/` is what nginx serves.
+- It passes `--no-border-checks`, because rolldown's maps end lines at column `Infinity`, which source-map-explorer otherwise rejects.
+- The `rolldown-runtime` and `sentry-impl` stubs (under 1 KB) have no maps and are skipped with a warning.

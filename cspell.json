@@ -19,6 +19,7 @@
     "frontend/src/**/*.test.tsx",
     "package-lock.json",
     "frontend/build/**",
+    "frontend/build-analyze/**",
     "**/node_modules/**",
     "**/.venv/**",
     "**/__pycache__/**",
