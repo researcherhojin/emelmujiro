@@ -573,3 +573,4 @@ First documented release. Represents the current production state deployed at ht
 
 [Unreleased]: https://github.com/researcherhojin/emelmujiro/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/researcherhojin/emelmujiro/releases/tag/v1.0.0
+
