@@ -106,7 +106,7 @@ updated: 2026-11-01
   1. **The agent holds no GitHub credential and does not commit.**
      - The review found that bare Edit/Write plus `npm run` let the agent run arbitrary code with `GH_TOKEN` in its environment, and the pre-push hook, the only guard on `main`, fell to `--no-verify`.
      - The agent now only edits the working tree and writes `pr.md`. Its `.git` is read-only even inside the sandbox: a sandboxed node script got `EPERM` on `.git/config`, `refs/remotes/origin/main` and `.git/hooks`.
-     - `publish()` runs outside the agent. It checks four things:
+     - `publish()` runs outside the agent. It checks the following:
        - every changed path, including untracked files and both sides of a rename (`--no-renames`), is on an allowlist: manifests, lock files, Dockerfiles, `docker-compose.yml`, Umami patches and `CHANGELOG.md`;
        - `HEAD` still equals the base SHA recorded before the agent ran;
        - `pr.md` has a title.
@@ -136,6 +136,14 @@ updated: 2026-11-01
      - The OAuth token was absent from the Bash environment.
      - A second attack prompt (rewrite `.git/config`, move `origin/main`, rename a workflow) was declined by the model itself, so it measured nothing. The rename and scratch-file cases are covered by `publish()` unit tests on a real git repository instead.
   7. **`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` makes the init event report `permissionMode: default`.** Measured by bisecting the flags. In `-p` an unapproved call is still denied, as all the refusals above show.
+  8. **A second review (2026-11-01) closed three more paths.**
+     - **The clone's own Claude Code hook.** `.claude/settings.json` runs `.claude/hooks/guard-bash.sh` outside the sandbox before every Bash call, so an edited hook would have run as the host user.
+       - `Edit(//clone/.claude/**)` is denied, and both `.claude` and `.git` are in the sandbox `denyWrite`.
+       - Probe results: the Write tool on `.claude/hooks` was refused. Sandboxed node got `EPERM` on `.claude/hooks`, `.git`, `.git/objects` and `.git/info`, and the `guard-bash.sh` hash was unchanged.
+     - **Manifest content.** `publish()` refuses a change to any `package.json` `scripts` block, because those scripts define the scans and CI steps.
+     - **PR text.** `publish()` refuses a `pr.md` naming host paths, the host name or an image digest.
+     - The sandbox `denyRead` also covers `~/.docker`, `~/.claude`, `~/.claude.json`, `~/.npmrc`, `~/.netrc` and `~/.git-credentials`.
+     - Residual: Dockerfiles, `docker-compose.yml` and Umami patches stay publishable because image fixes need them. A draft PR from the PAT still runs this repo's `pull_request` CI on that content, so the owner's review of the draft is the control there.
 - **Verification**: the `Done when` list, run in order. Check 5 uses a fixture directory passed through `TRIAGE_REPORT_DIR`, so the real report is never edited.
 
 ## Outcome
