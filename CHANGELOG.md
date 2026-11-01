@@ -8,6 +8,11 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(frontend): `npm run analyze:bundle` produces a report again.
+  - **Before:** it read `build/assets/*.js`, but production builds emit no source maps, and the dev build's rolldown maps were rejected for `column Infinity`. So it reported nothing on 2026-11-01.
+  - **Now:** it builds with `--sourcemap` into a gitignored `build-analyze/`, so nginx's `build/` never gets maps, and runs source-map-explorer with `--no-border-checks`.
+  - **Output:** `frontend/build-analyze/bundle-report.html`, with all 30 mapped chunks. The two sub-1 KB stubs have no maps.
+
 - docs(rules): `ci.md` › Runtime image recipes now records #720's Umami builder overrides (minimatch 11.0.3, glob 14.0.3) and the redocly patch.
   - It also records a trap: the Dockerfile copies each patch by name and `.dockerignore` lists each one, so a new patch needs both, or `pnpm install --frozen-lockfile` fails in the build.
 

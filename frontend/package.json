@@ -80,7 +80,7 @@
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
     "generate:sitemap": "node scripts/generate-sitemap.ts",
-    "analyze:bundle": "source-map-explorer build/assets/*.js",
+    "analyze:bundle": "vite build --sourcemap --outDir build-analyze --emptyOutDir && source-map-explorer build-analyze/assets/*.js --no-border-checks --html build-analyze/bundle-report.html && echo Report: frontend/build-analyze/bundle-report.html",
     "check:css": "node scripts/check-css.ts",
     "check:routes": "node scripts/check-route-lists.ts",
     "visual:capture": "node scripts/visual-diff/capture.ts",
