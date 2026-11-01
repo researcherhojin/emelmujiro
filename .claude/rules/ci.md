@@ -11,6 +11,8 @@ paths:
   - 'backend/config/settings.py'
 ---
 
+<!-- cspell:ignore redocly -->
+
 <!-- Path-scoped rule: loads when Claude reads CI workflows, repo scripts, husky hooks, the Makefile, docker-compose.yml, cspell.json, the root package.json, README, or `backend/config/settings.py` (whose `LOG_DIR` the cron log paths must match). Moved verbatim from the root CLAUDE.md `Constraints` section on 2026-10-17 (`CHANGELOG entry` was written here directly in #575, the runner pin in #599); Gotcha numbers cited here are root CLAUDE.md's. -->
 
 # CI and repo-automation rules
@@ -33,6 +35,10 @@ Never substitute an image tag for a running container's image ID.
 - `docker/postgres/` keeps PostgreSQL 15 and replaces the bundled privilege-switch tool with Alpine's maintained equivalent. Preserve root entrypoint ownership setup; test initialization and persistence across restart with `docker/postgres/verify.sh`.
 - `docker/umami/` rebuilds the pinned application source with patched dependencies and ships no curl since #691 (#689; the healthcheck uses BusyBox `wget`; `verify.sh` fails if curl returns). Keep builder and runner locks together, rebuild Next output, and verify tracking and database migrations in isolation.
 - The Umami builder's `deepmerge@4.3.1` is patched locally from deepmerge PR #274 (unmerged) because npm has no fixed release for CVE-2026-93753; the Docker build runs its prototype-poisoning regression cases. `@svgr/cli` is build-only and belongs in `devDependencies`; the separate runner lock excludes `deepmerge`. The scheduled scan accepts that one CVE for that lock only, via `docker/umami/trivyignore.yaml` (expires 2027-01-27); every other target keeps `/dev/null` as its ignore file, and image scans take no ignore file (#705).
+- The Umami builder overrides `minimatch@<11.0.1` to 11.0.3 and `glob@>=8.0.0 <14.0.2` to 14.0.3 (#720, Dependabot alert #10). The advisories are fixed only in those majors.
+  - Each caller was checked: `npm-run-all`'s `Minimatch` and svgr's and sucrase's glob work unchanged.
+  - `@redocly/openapi-core@1.34.19` (the OpenAPI bundler) calls the minimatch module as a function, so `patches/@redocly__openapi-core@1.34.19.patch` switches it to the named export.
+  - **The Dockerfile copies each patch by name, and `.dockerignore` lists each one, so a new patch must be added to both** or `pnpm install --frozen-lockfile` fails in the build.
 - **All locally built services set `provenance: false` and `sbom: false` (`docker-compose.yml`).** With attestations each rebuild changes the OCI index digest, so `docker image inspect` could not read the container's exact `.Image` and `auto-deploy.sh` force-recreated PostgreSQL and Umami on every deploy (#630). A single manifest keeps the ID stable. The script keeps that recreate as a fallback for analytics and backend, reloads nginx whenever the umami container changes (nginx resolves the upstream only at start or reload), and requires a 4xx from `/umami/api/send` through nginx before reporting success.
 - Dependabot watches all three Dockerfile directories. Local Compose image tags are not registry dependencies. PostgreSQL major upgrades stay excluded; they need dump, new volume and restore as a separate change.
 - Two base-image ignores live in Dependabot's stored state, not in `dependabot.yml`: `python:3.15-alpine3.x` for `backend/` (`@dependabot ignore this minor version` on #685; the runtime stays on 3.12, like CI and dev) and `node:26-alpine` for `docker/umami/` (`ignore this major version` on #683; Umami's own build base, Gotcha #16). Check them with `@dependabot show <dependency> ignore conditions`; move to a new Python deliberately, in its own change.
