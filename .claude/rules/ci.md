@@ -108,7 +108,7 @@ old result: to confirm sooner, rerun `scripts/security/scheduled-security.ts` on
 the host (the cron line's command) and then `gh workflow run
 security-operations.yml`. After an image fix, wait for the container on the new
 image first: `/api/health/` reports the new commit once the backend is up,
-before `auto-deploy.sh` reaches the analytics rebuild (#689). Alarm history: #660 (2026-10-24), #673 (2026-10-26), #689 (2026-10-27), #705 (2026-10-29) (`docs/intents/infra/security-operations.md`, 506187fc).
+before `auto-deploy.sh` reaches the analytics rebuild (#689). Alarm history: #660 (2026-10-24), #673 (2026-10-26), #689 (2026-10-27), #705 (2026-10-29), #713 (2026-11-01) (`docs/intents/infra/security-operations.md`, 506187fc).
 
 **Nightly image refresh is separate from auditing and shares a maintenance lock with deployment and scheduled security operations.** `scripts/maintenance/refresh-images.ts` builds from the deployed SHA, verifies disposable candidates and fresh backups, then applies and checks actual running image IDs. It retains two generations of owned candidate/rollback tags, with no broad cache pruning. `make setup-image-refresh-cron` enables 00:30 local-time execution and arms the refresh freshness check; deployment alone never enables it. `refresh` in the authenticated security report becomes false for a failed, pending or stale refresh. Restart the webhook before enabling this report contract.
 

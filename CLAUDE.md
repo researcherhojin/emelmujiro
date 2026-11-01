@@ -130,7 +130,7 @@ Quick code-level traps that cost time when missed. Each entry is its bold rule. 
 
 1. **`VITE_` prefix** for env vars (legacy `REACT_APP_` works via `config/env.ts` shim). Umami uses `VITE_UMAMI_HOST` + `VITE_UMAMI_WEBSITE_ID` (collect API, no external script).
 2. **`useRef<T>(null)`** — React 19 requires initial value.
-3. **`minimatch>=10.2.1`** override in `package.json` — don't remove.
+3. **`minimatch>=11.0.1`** override in `package.json` — don't remove. Under it `glob@7` (`source-map-explorer`, `rimraf` 2/3) crashes on any magic pattern, so `analyze:bundle` leaves `build/assets/*.js` unquoted for the shell to expand (#713).
 4. **`tsconfig.build.json`** excludes test types — don't add `@testing-library/jest-dom`.
 5. **`DATABASE_URL=""`** for backend tests — a non-empty `DATABASE_URL` in the shell or `backend/.env` points them at PostgreSQL, not SQLite.
 6. **Never run `npm audit fix` (or `--force`)** — `--force` downgrades `@lhci/cli` (from `0.15.1`) and destroys Lighthouse CI; the offered `fixAvailable` target moves with the advisory set (`0.1.0`, then `0.12.0`, then `0.3.5` on 2026-10-22).

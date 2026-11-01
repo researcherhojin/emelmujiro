@@ -114,6 +114,10 @@ Each alarm filed a generic issue. The cause was in the host report (`.private/op
   - Cause, part 2: 8 `backend` findings, 4 rustls 0.23.45 advisories (GHSA-c8m5-c952-6cm4 MEDIUM; GHSA-h2v8-394m-p7vv, GHSA-vp88-798v-h67f, GHSA-w44r-93j7-qv28 LOW) each in `bin/uv` and `bin/uvx`. The fix is rustls 0.23.46, which only uv `main` had. The 00:30 refresh rejected its backend candidate for the same 8.
   - Fix: #706 (`f78abaca`) added an expiring ignore in `docker/umami/trivyignore.yaml` for that lock file only. Its findings went from 1 to 0, with 1163 packages unchanged. #707 (`bf7a3be3`) removed uv from the runtime stage, and the host's `manage.py` cron lines were reinstalled.
   - Recovery: refresh at 2026-10-29T01:39:31Z, host job at 01:39:47Z, then run 40801768627.
+- **#713** (run 41254737901, from the report of 2026-10-31T17:00:52Z; `dependencies`)
+  - Cause: two advisories published 2026-10-30. GHSA-g3hv-75wg-m249 (minimatch `<11.0.1`, MEDIUM) hit root `minimatch@10.2.6` and Umami's builder `3.1.4`, `5.1.8`, `5.1.9` and `9.0.7`. GHSA-mrwp-f3q8-3g9p (follow-redirects `1.16.0`–`1.16.1`, HIGH) hit root `1.16.1`. GHSA-3g3m-2fjr-6pw4 (glob `9.0.0`–`14.0.1`) hit Umami's builder `glob@10.5.0`. npm audit counted 22, of which 20 were transitive parents.
+  - Fix: root override `minimatch>=11.0.1` (11.0.3) and follow-redirects 1.16.2. Expiring ignores for the Umami builder lock only: minimatch 11 drops the API glob up to 14.0.1 uses, and the runner lock has neither package.
+  - Recovery: pending deploy, host job rerun and watchdog dispatch.
 
 Lessons, each measured in one of these alarms:
 
