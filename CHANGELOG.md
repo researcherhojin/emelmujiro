@@ -8,6 +8,13 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(frontend): A tab opened before a deploy no longer goes blank when it navigates to a page whose lazy chunk the deploy removed. nginx logged one such 404 for an old `/assets/index-*.js` on 2026-11-01.
+  - `utils/chunkReload.ts` handles Vite's cancelable `vite:preloadError`, which the built preload helper dispatches for a rejected dynamic import. It reloads once to fetch the new `index.html`.
+  - A second failure within 10 s (`sessionStorage` `chunk-reload-at`) is left to the ErrorBoundary, so it cannot loop. Without `sessionStorage`, as in some in-app browsers, it still reloads once.
+  - Tests: 7 unit tests (100 % of the module) and one E2E test.
+    - The E2E test 404s `PrivacyPolicyPage-*.js` once and asserts a single reload onto `/privacy`. With the registration removed it times out waiting for that reload.
+    - Results: Vitest 1300/1300; `error-states.spec.ts` 14/14 on chromium and Mobile Chrome.
+
 - fix(umami): Clear Dependabot alert #10 (GHSA-g3hv-75wg-m249) and GHSA-3g3m-2fjr-6pw4 in the Umami builder lock by fixing them instead of ignoring them.
   - Overrides now set `minimatch@<11.0.1` to 11.0.3 and `glob@>=8.0.0 <14.0.2` to 14.0.3. They replace minimatch 3.1.4, 5.1.8, 5.1.9 and 9.0.7 and glob 8.1.0 and 10.5.0, plus 20 packages only those versions used. No other version moved.
   - `patches/@redocly__openapi-core@1.34.19.patch` changes `require("minimatch")` to its named export, because minimatch 11's module is not callable.
