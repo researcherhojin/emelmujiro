@@ -8,6 +8,10 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(deps): realign every `@tiptap/*` dependency and the root `@tiptap/core` override on `^3.32.2` (Gotcha #14).
+  - **Before:** patch auto-merges of #725, #728, #733, #735 and #732 moved five packages to `3.32.1` while the rest stayed on `3.32.0`. `main` then failed `tsc` with `Property 'toggleBold' does not exist on type 'ChainedCommands'`, and so did every PR cut from it.
+  - **Now:** the 34 `@tiptap/*` lockfile entries all resolve to `3.32.2`, with no nested copies. This replaces #727, #730, #731 and #734.
+
 - docs: Record the 2026-11-02 credential clean-up.
   - `frontend.md` › Privacy policy and README › Monitoring note that the only Sentry project, the one behind the DSN `bbd049c6` left in public history, was deleted with no tokens left, so enabling Sentry needs a new project and DSN.
   - `claude-config.md` adds a rule: never run a command carrying a literal secret, because an approved command can be saved verbatim as an allow rule. A Mac mini `settings.local.json` rule had held the live deploy secret, which was then rotated.
