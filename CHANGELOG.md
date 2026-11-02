@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(gotchas): #14 records the 2026-11-02 split. Patch auto-merges of five `@tiptap/*` siblings each passed against a stale base and broke `tsc` on `main` with `ChainedCommands` errors. The section also notes that a `groups:` entry is not the fix.
+
 - docs(rules): `ci.md` records the second backend base-image ignore, `python:3.14-alpine3.x` from #738, because the runtime stays on 3.12 like CI and dev.
 
 - fix(deps): realign every `@tiptap/*` dependency and the root `@tiptap/core` override on `^3.32.2` (Gotcha #14).
