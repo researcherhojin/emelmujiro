@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(rules): `ci.md` records the second backend base-image ignore, `python:3.14-alpine3.x` from #738, because the runtime stays on 3.12 like CI and dev.
+
 - fix(deps): realign every `@tiptap/*` dependency and the root `@tiptap/core` override on `^3.32.2` (Gotcha #14).
   - **Before:** patch auto-merges of #725, #728, #733, #735 and #732 moved five packages to `3.32.1` while the rest stayed on `3.32.0`. `main` then failed `tsc` with `Property 'toggleBold' does not exist on type 'ChainedCommands'`, and so did every PR cut from it.
   - **Now:** the 34 `@tiptap/*` lockfile entries all resolve to `3.32.2`, with no nested copies. This replaces #727, #730, #731 and #734.
