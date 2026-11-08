@@ -23,9 +23,12 @@ const inventory = {
   ],
 };
 
+type Audit = { status?: Record<string, string>; completedAt?: string; exit?: boolean };
+
 function fixture(
   t: TestContext,
-  fail?: (binary: string, args: string[], state: { applied: number }) => boolean
+  fail?: (binary: string, args: string[], state: { applied: number }) => boolean,
+  audit: Audit = {}
 ) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'refresh test '));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
@@ -63,15 +66,19 @@ function fixture(
         path.join(directory, '../summary.json'),
         JSON.stringify({
           version: 1,
-          completedAt: new Date().toISOString(),
-          services: [...REFRESH_SERVICES, 'frontend'].map((name) => ({
-            name,
-            status: 'clean',
-            findings: 0,
-            imageId: candidate,
-          })),
+          completedAt: audit.completedAt ?? new Date().toISOString(),
+          services: [...REFRESH_SERVICES, 'frontend'].map((name) => {
+            const status = audit.status?.[name] ?? 'clean';
+            return {
+              name,
+              status,
+              findings: status === 'clean' ? 0 : status === 'findings' ? 1 : null,
+              imageId: candidate,
+            };
+          }),
         })
       );
+      if (audit.exit) throw new Error('scanner exit 1');
     }
     return '';
   };
@@ -256,4 +263,29 @@ test('post-apply audit failure rolls back all three services', (t) => {
   assert.equal(result.recovery, 'passed');
   assert.equal(f.state.applied, 6);
   assert.deepEqual(result.running, result.old);
+});
+
+test('frontend findings alone do not roll back clean replaced services (#739)', (t) => {
+  const f = fixture(t, undefined, { status: { frontend: 'findings' }, exit: true });
+  const result = refreshImages({ ...f, trivy: 'trivy' });
+  assert.equal(result.success, true);
+  assert.equal(f.state.applied, 3);
+  assert.deepEqual(result.running, result.candidates);
+});
+
+test('audit rolls back on a replaced service finding, any scan error or a stale summary', (t) => {
+  const audits: Audit[] = [
+    { status: { backend: 'findings' }, exit: true },
+    { status: { frontend: 'error' }, exit: true },
+    { completedAt: new Date(Date.now() - 60000).toISOString(), exit: true },
+  ];
+  for (const audit of audits) {
+    const f = fixture(t, undefined, audit);
+    const result = refreshImages({ ...f, trivy: 'trivy' });
+    assert.equal(result.success, false);
+    assert.equal(result.phase, 'audit');
+    assert.equal(result.recovery, 'passed');
+    assert.equal(f.state.applied, 6);
+    assert.deepEqual(result.running, result.old);
+  }
 });

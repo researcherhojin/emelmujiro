@@ -225,11 +225,27 @@ export function refreshImages({
     }
     health(true);
     result.phase = 'audit';
-    run(process.execPath, [path.join(root, 'scripts/security/scan-running-images.ts')]);
+    const auditStarted = Date.now();
+    try {
+      run(process.execPath, [path.join(root, 'scripts/security/scan-running-images.ts')]);
+    } catch {
+      // The scanner exits 1 on any finding; the fresh summary below decides.
+    }
     const summary = validateReport(
       JSON.parse(fs.readFileSync(path.join(directory, '..', 'summary.json'), 'utf8'))
     );
-    if (summary.services.some((service) => service.status !== 'clean'))
+    if (Date.parse(summary.completedAt) < auditStarted)
+      throw new Error('Running image audit did not complete');
+    // Only replaced services must be clean: frontend's upstream image is never rebuilt here,
+    // so its findings must not roll back fixed candidates (#739). A scan error still fails.
+    const refreshed: readonly string[] = REFRESH_SERVICES;
+    if (
+      summary.services.some(
+        (service) =>
+          service.status === 'error' ||
+          (refreshed.includes(service.name) && service.status !== 'clean')
+      )
+    )
       throw new Error('Running image audit failed');
     for (const service of REFRESH_SERVICES) {
       result.running[service] = inspect(service).image;
