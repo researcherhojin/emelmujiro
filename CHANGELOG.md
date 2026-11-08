@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(refresh): the nightly image refresh's post-apply audit now judges only the services it replaced (`umami-db`, `umami`, `backend`). On 2026-11-07 (#739) its candidates carried zlib `1.4-r0` (CVE-2026-4738), but the audit also scanned the upstream nginx image, which refresh never rebuilds and which still ships `1.3.2-r1`, so the fixed candidates were rolled back. A scan error on any service, or a summary older than the audit, still fails and rolls back. The scanner's exit 1 on findings no longer aborts the audit before the summary is read.
+
 - docs(rules): `frontend.md` records how to add a teaching-history entry: key placement, `visibleAfter`, the two lockstep counts (README, `ProfilePage.tsx` memo comment), and the `org`/`orgType`/English-name conventions. Until now they lived only in the `e9d76124` and `703eb0e4` commit messages.
 
 - New teaching history entry — 한국마케팅진흥원 「2026 소상공인 플랫폼 협업(큐텐재팬) — 생성형 AI의 이해와 실무 활용 특강」 (2026-11-05, 3-hour YouTube live lecture; held, no `visibleAfter` gate). KOMPA is the overseas-segment implementing agency of the 2026 플랫폼 협업교육, part of the 온라인판로 지원사업 run by 중소벤처기업부 and 소상공인시장진흥공단 (marketing.or.kr/news/2), hence `orgType: public`. The English org is `KOMPA`, the only English form marketing.or.kr uses. New i18n key 48, placed at the head of the 2026 block. Entry count 46 → 47; README Key Features count and the ProfilePage memo comment (`i18n.t()` call count 92 → 94) updated in lockstep. `orgType` distribution is now enterprise 14 / moel 11 / public 12 / academic 10
