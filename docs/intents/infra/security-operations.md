@@ -120,6 +120,13 @@ Each alarm filed a generic issue. The cause was in the host report (`.private/op
   - Fix commit: #714 (`77ffad61`).
   - Recovery: host job at 2026-11-01T11:30:20Z, then run 41302177201.
   - Follow-up (2026-11-02, Dependabot alert #10): the two Umami builder ignores were replaced by real fixes. Overrides now set minimatch 11.0.3 and glob 14.0.3, and a one-line patch makes `@redocly/openapi-core` 1.34.19 import minimatch's named export. Umami moves to `3.4.0-security-5`.
+- **#739** (run 42429236282, from the report of 2026-11-07T17:00:09Z; `images`; open as of 2026-11-08)
+  - Cause: CVE-2026-4738 (MEDIUM), with 1 finding in each of `backend`, `frontend`, `umami` and `umami-db`: Alpine zlib `1.3.2-r1`, fixed in `1.4-r0`. Alpine v3.24 built `1.4-r0` at 2026-11-06T18:22Z. Every nginx `*-alpine-slim` tag was last pushed 2026-11-05, and the newest nginx push of any tag was 2026-11-06T16:52Z (checked 2026-11-08).
+  - Why the refresh did not fix it: the 2026-11-07T15:30Z refresh built all three candidates with zlib `1.4-r0`. Its post-apply audit also scanned `frontend`, which refresh never rebuilds, and so rolled them back (`phase: audit`, `recovery: passed`).
+  - Fix: #740 (`3d7525f4`) audits only the replaced services. A manual refresh on 2026-11-08 succeeded (`phase: complete`), and running `backend`, `umami` and `umami-db` report zlib `1.4-r0`.
+  - `frontend` stays on `1.3.2-r1` until upstream rebuilds; the owner chose to wait rather than add a local nginx recipe.
+  - `offsite` was also false from about 05:00Z to 13:05Z on 2026-11-08, because the MacBook was off the host's LAN (`docs/intents/infra/offsite-remote-path.md`).
+  - Recovery: pending. Pull and recreate `frontend` once upstream ships zlib `1.4-r0`, rerun the host job, then dispatch the watchdog.
 
 Lessons, each measured in one of these alarms:
 
@@ -135,4 +142,6 @@ Lessons, each measured in one of these alarms:
   - `npm-run-all` uses `Minimatch`, which works on 11;
   - svgr and sucrase work on glob 14;
   - only redocly's `require("minimatch")(…)` breaks, and it is fixed by a one-line patch.
+- **A same-tag upstream rebuild never reaches production on its own.** `auto-deploy.sh` and the nightly refresh never pull the nginx image, and Dependabot opens no PR when a tag keeps its name. Once upstream rebuilds, run `docker compose pull frontend` and recreate the container by hand (#739).
+- **An audit must judge only what its job changed.** The refresh's post-apply audit failed on `frontend`, which it never rebuilds, and rolled back three candidates that were fixed (#739, #740).
 - **A local scan can find what the host has not reported yet.** `qs` 6.16.0 (GHSA-6pq8-jhm2-2vcw, 2026-10-27T16:10Z, dev-only through `@lhci/cli`) failed a local run while the host still reported `dependencies` true. #690 (`32885898`) moved it to 6.16.1.

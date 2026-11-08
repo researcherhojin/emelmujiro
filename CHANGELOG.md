@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(security): `security-operations.md` adds the #739 alarm entry (zlib CVE-2026-4738 in all four running images; `backend`, `umami`, `umami-db` fixed by #740 and a manual refresh; `frontend` awaits an upstream nginx rebuild, recovery pending). It also adds two lessons: a same-tag upstream rebuild never reaches production on its own, and an audit must judge only what its job changed. `ci.md`'s alarm list gains #739.
+
 - fix(refresh): the nightly image refresh's post-apply audit now judges only the services it replaced (`umami-db`, `umami`, `backend`). On 2026-11-07 (#739) its candidates carried zlib `1.4-r0` (CVE-2026-4738), but the audit also scanned the upstream nginx image, which refresh never rebuilds and which still ships `1.3.2-r1`, so the fixed candidates were rolled back. A scan error on any service, or a summary older than the audit, still fails and rolls back. The scanner's exit 1 on findings no longer aborts the audit before the summary is read.
 
 - docs(rules): `frontend.md` records how to add a teaching-history entry: key placement, `visibleAfter`, the two lockstep counts (README, `ProfilePage.tsx` memo comment), and the `org`/`orgType`/English-name conventions. Until now they lived only in the `e9d76124` and `703eb0e4` commit messages.
