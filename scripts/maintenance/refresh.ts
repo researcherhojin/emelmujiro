@@ -8,7 +8,7 @@ import { validateScan } from '../security/scan-report.ts';
 import { validateReport } from '../security/report.ts';
 import { verifyRuntime } from './health.ts';
 
-export const REFRESH_SERVICES = ['umami-db', 'umami', 'backend'] as const;
+export const REFRESH_SERVICES = ['umami-db', 'umami', 'backend', 'frontend'] as const;
 type Service = (typeof REFRESH_SERVICES)[number];
 type Images = Record<Service, string>;
 const imagePattern = /^sha256:[a-f0-9]{64}$/;
@@ -134,6 +134,7 @@ export function refreshImages({
       'umami-db': 'docker/postgres',
       umami: 'docker/umami',
       backend: 'backend',
+      frontend: 'docker/nginx',
     };
     for (const service of REFRESH_SERVICES) {
       run('docker', [
@@ -172,6 +173,11 @@ export function refreshImages({
       result.source,
       result.old.backend!,
       result.source,
+    ]);
+    run('sh', [
+      path.join(source, 'docker/nginx/verify.sh'),
+      candidateTags.frontend,
+      path.join(source, 'frontend/nginx.conf'),
     ]);
     run(trivy, ['image', '--download-db-only', '--no-progress']);
     for (const service of REFRESH_SERVICES) {
@@ -236,8 +242,7 @@ export function refreshImages({
     );
     if (Date.parse(summary.completedAt) < auditStarted)
       throw new Error('Running image audit did not complete');
-    // Only replaced services must be clean: frontend's upstream image is never rebuilt here,
-    // so its findings must not roll back fixed candidates (#739). A scan error still fails.
+    // Every replaced service must be clean, and a scan error on any service fails.
     const refreshed: readonly string[] = REFRESH_SERVICES;
     if (
       summary.services.some(

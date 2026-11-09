@@ -131,6 +131,12 @@ if ! git diff --quiet "$PREV_HEAD" HEAD -- docker/umami docker/postgres docker-c
   ANALYTICS_INPUTS_CHANGED=true
   echo "$LOG_PREFIX Analytics build inputs changed — umami-db and umami will be rebuilt"
 fi
+# Same rule for the frontend nginx recipe, which the nightly refresh also replaces.
+FRONTEND_INPUTS_CHANGED=false
+if ! git diff --quiet "$PREV_HEAD" HEAD -- docker/nginx docker-compose.yml; then
+  FRONTEND_INPUTS_CHANGED=true
+  echo "$LOG_PREFIX Frontend image inputs changed — frontend will be rebuilt"
+fi
 
 # Install dependencies (handles package-lock.json changes after git pull)
 echo "$LOG_PREFIX Installing dependencies..."
@@ -232,7 +238,7 @@ fi
 # Build the reviewed analytics recipes only when their inputs changed or an image
 # is missing locally (a fresh host); otherwise start what the tags point to, which
 # after a nightly refresh is the verified candidate. A cached rebuild would bring
-# back an older image. The frontend upstream pin is applied by its own `up -d` below.
+# back an older image. The frontend recipe follows the same rule in its own step below.
 UMAMI_CONTAINER_BEFORE=$(docker container inspect --format '{{.Id}}' emelmujiro-umami 2>/dev/null || true)
 if ! ANALYTICS_IMAGES=$(docker compose config --images umami-db umami); then
   echo "$LOG_PREFIX Could not resolve the analytics image names"
@@ -276,6 +282,19 @@ ANALYTICS_RECREATED=false
 if [ "$UMAMI_CONTAINER_BEFORE" != "$UMAMI_CONTAINER_AFTER" ]; then
   ANALYTICS_RECREATED=true
 fi
+# The frontend recipe follows the analytics rule: build only when its inputs
+# changed or its image is missing, else keep what the tag points to.
+if ! FRONTEND_IMAGE=$(docker compose config --images frontend); then
+  echo "$LOG_PREFIX Could not resolve the frontend image name"
+  exit 1
+fi
+FRONTEND_BUILD_FLAG=--no-build
+if [ "$FRONTEND_INPUTS_CHANGED" = true ] || ! docker image inspect "$FRONTEND_IMAGE" >/dev/null 2>&1; then
+  FRONTEND_BUILD_FLAG=--build
+  echo "$LOG_PREFIX Building the frontend image"
+else
+  echo "$LOG_PREFIX Frontend inputs unchanged — keeping the current frontend image"
+fi
 if [ "$NGINX_CONF_CHANGED" = true ]; then
   # Validate the new nginx.conf before applying it, so a syntax error aborts the
   # deploy WITHOUT killing the running frontend. Test INSIDE the running
@@ -295,9 +314,9 @@ if [ "$NGINX_CONF_CHANGED" = true ]; then
   else
     echo "$LOG_PREFIX frontend container not running — skipping pre-validation"
   fi
-  docker compose up -d --force-recreate frontend
+  docker compose up -d "$FRONTEND_BUILD_FLAG" --force-recreate frontend
 else
-  docker compose up -d frontend
+  docker compose up -d "$FRONTEND_BUILD_FLAG" frontend
 fi
 if [ "$ANALYTICS_RECREATED" = true ]; then
   # nginx resolves the static analytics upstream at startup/reload. Any umami
