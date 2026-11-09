@@ -31,6 +31,7 @@ updated: 2026-11-09
   - `scripts/deploy/auto-deploy.sh`: the analytics step only. Its log line, the #630 fallback, `ANALYTICS_RECREATED` and the nginx reload are unchanged.
   - `.claude/rules/ci.md`: one sentence each under Runtime image recipes and Nightly image refresh.
   - `CHANGELOG.md`: one entry.
+  - `docs/intents/infra/security-operations.md`: the #739 regression bullet and one lesson.
 - **Out of scope**:
   - Backend: its build arg already busts the cache on every deploy.
   - nginx: an upstream pin that refresh does not touch (#739).
