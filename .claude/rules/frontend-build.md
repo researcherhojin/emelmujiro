@@ -3,7 +3,7 @@ paths:
   - 'frontend/nginx.conf'
   - 'frontend/index.html'
   - 'frontend/package.json'
-  - 'frontend/vite.config.ts'
+  - 'frontend/vite.config.mts'
   - 'frontend/tailwind.config.*'
   - 'frontend/postcss.config.*'
   - 'frontend/scripts/**'
@@ -80,6 +80,6 @@ paths:
 
 **Bundle size**: Build output must be < 10MB (enforced in `pr-checks.yml`). `npm run analyze:bundle` writes `frontend/build-analyze/bundle-report.html`.
 
-- It runs `vite build --sourcemap` into the gitignored `build-analyze/`, because `vite.config.ts` emits no maps for production and `build/` is what nginx serves.
+- It runs `vite build --sourcemap` into the gitignored `build-analyze/`, because `vite.config.mts` emits no maps for production and `build/` is what nginx serves.
 - It passes `--no-border-checks`, because rolldown's maps end lines at column `Infinity`, which source-map-explorer otherwise rejects.
 - The `rolldown-runtime` and `sentry-impl` stubs (under 1 KB) have no maps and are skipped with a warning.

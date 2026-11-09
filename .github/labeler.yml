@@ -35,7 +35,7 @@ config:
   - changed-files:
       - any-glob-to-any-file:
           - "docker-compose*.yml"
-          - "frontend/vite.config.ts"
+          - "frontend/vite.config.mts"
           - "frontend/tailwind.config.mts"
           - "frontend/tsconfig*.json"
           - "backend/config/**"

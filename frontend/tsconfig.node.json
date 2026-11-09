@@ -1,5 +1,5 @@
 // Type-checks the build configs, which `tsconfig.json` does not see:
-// it includes only `src` and additionally excludes `vite.config.ts`.
+// it includes only `src` and additionally excludes `vite.config.mts`.
 // Wired into the `type-check` script, so `Frontend Lint` runs it on every PR.
 //
 // `composite: true` was removed on 2026-09-28. It makes tsc write
@@ -16,8 +16,8 @@
     "strict": true
   },
   "include": [
-    "vite.config.ts",
-    "vitest.config.ts",
+    "vite.config.mts",
+    "vitest.config.mts",
     "eslint.config.ts",
     "tailwind.config.mts",
     "postcss.config.mts",

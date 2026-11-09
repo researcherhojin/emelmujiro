@@ -225,7 +225,7 @@ fi
 ok "backend/.env.production intentionally absent (production-only file)"
 
 # (4) frontend/.env.production — same. Local dev uses defaults from
-# Vite + the dev proxy in vite.config.ts. Production builds run on
+# Vite + the dev proxy in vite.config.mts. Production builds run on
 # Mac mini (auto-deploy.sh) and CI, both of which have the file.
 ok "frontend/.env.production intentionally absent (production-only file)"
 
