@@ -626,7 +626,7 @@ jobs:
             exit 1
           fi
           # Markdown is never a build input (docker/umami/.dockerignore keeps
-          # only the build files; docker/postgres copies nothing), so a
+          # only the build files; docker/postgres and docker/nginx copy nothing), so a
           # docs-only change builds nothing. The filter stays inside the `if`:
           # on an all-Markdown diff `grep -v` exits 1.
           flag() {
@@ -640,7 +640,7 @@ jobs:
           flag backend '^(backend/(Dockerfile|\.dockerignore|pyproject\.toml|uv\.lock)|scripts/deploy/verify-backend-image\.sh)$'
           flag postgres '^docker/postgres/'
           flag umami '^docker/umami/'
-          flag nginx '^(docker-compose\.yml|frontend/nginx\.conf)$'
+          flag nginx '^(docker-compose\.yml|frontend/nginx\.conf|docker/nginx/.+)$'
 
       - name: Build and verify backend image
         if: steps.changed.outputs.backend == 'true'
@@ -664,20 +664,14 @@ jobs:
           docker build -t "$UMAMI_TEST_IMAGE" ./docker/umami
           sh docker/umami/verify.sh
 
-      # The pinned upstream image is not built here; this proves it starts
-      # with the repo's config, mounted where Compose mounts it. `nginx -t`
-      # resolves proxy_pass hosts, so the two upstreams get loopback entries.
-      - name: Check nginx config against the pinned image
+      # Builds the frontend recipe and proves it starts and serves with the
+      # repo's config, mounted where Compose mounts it (verify.sh: `nginx -t`
+      # with loopback upstreams, then a request through BusyBox wget).
+      - name: Build and verify nginx image
         if: steps.changed.outputs.nginx == 'true'
         run: |
-          IMAGE=$(grep -m1 -oE 'image: nginx:[^[:space:]]+' docker-compose.yml | cut -d' ' -f2)
-          if [ -z "$IMAGE" ]; then
-            echo "❌ No nginx image pin found in docker-compose.yml"
-            exit 1
-          fi
-          echo "Checking frontend/nginx.conf with $IMAGE"
-          docker run --rm --add-host backend:127.0.0.1 --add-host umami:127.0.0.1 \
-            -v "$PWD/frontend/nginx.conf:/etc/nginx/nginx.conf:ro" "$IMAGE" nginx -t
+          docker build -t emelmujiro/nginx:ci-check ./docker/nginx
+          sh docker/nginx/verify.sh emelmujiro/nginx:ci-check frontend/nginx.conf
 
   # Lighthouse CI performance audit (uses shared build + bundle check)
   lighthouse:

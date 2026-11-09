@@ -53,11 +53,17 @@ services:
   # nginx uses an exact upstream version, in the -slim variant: it leaves out
   # libcurl, the image-filter font libraries and the njs/acme modules, none of
   # which nginx.conf loads, so their CVEs (brotli-libs, #673) never reach this
-  # image. Analytics images are built from reviewed recipes under docker/ so
-  # dependency fixes are reproducible.
+  # image. docker/nginx adds `apk upgrade` on top of that exact version, so Alpine
+  # fixes do not wait for an upstream rebuild (#739). Analytics images are built
+  # from reviewed recipes under docker/ too, so dependency fixes are reproducible.
   frontend:
     logging: *bounded-logging
-    image: nginx:1.31.8-alpine-slim
+    build:
+      context: ./docker/nginx
+      # Same reason as umami-db (below): keep the image ID stable across rebuilds.
+      provenance: false
+      sbom: false
+    image: emelmujiro/nginx:1.31.8-security-1
     container_name: emelmujiro-frontend
     restart: unless-stopped
     security_opt:

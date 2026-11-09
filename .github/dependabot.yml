@@ -34,9 +34,9 @@ updates:
     # Majors that need a migration rather than a merge. These lived on the
     # deleted `/frontend` entry, where they only ever filtered the three broken
     # PRs above -- this is the first time they apply to the PRs actually filed.
-    # The `tailwindcss` ignore is unaffected by the deletion either way: it is
-    # also stored against THIS entry, set by `@dependabot ignore this major
-    # version` on #461, which carries the `root` label.
+    # `@dependabot show tailwindcss ignore conditions` returned `[]` on
+    # 2026-10-23, so no #461 ignore is stored; the `tailwindcss` entry below
+    # is the only one.
     ignore:
       - dependency-name: "framer-motion"
         update-types: ["version-update:semver-major"]
@@ -90,6 +90,7 @@ updates:
   - package-ecosystem: "docker"
     directories:
       - "/backend"
+      - "/docker/nginx"
       - "/docker/postgres"
       - "/docker/umami"
     ignore:
@@ -107,11 +108,13 @@ updates:
     commit-message:
       prefix: "deps"
       include: "scope"
-  # Images pulled straight from docker-compose.yml (nginx).
-  # The `docker` entry above watches only a `Dockerfile`, so these drifted 6-9
-  # months until 2026-10-06. Postgres majors are ignored: a new major cannot
-  # read the existing `umami_db` volume, so that upgrade is a dump-and-restore
-  # project, not a tag bump.
+  # Images pulled straight from docker-compose.yml. The `docker` entry above
+  # watches only a `Dockerfile`, so these drifted 6-9 months until 2026-10-06.
+  # Since nginx moved to docker/nginx (#739), every Compose image is a local
+  # recipe tag and the `docker` entry watches its base; this entry stays so a
+  # future upstream pin is watched. Postgres majors are ignored there: a new
+  # major cannot read the existing `umami_db` volume, so that upgrade is a
+  # dump-and-restore project, not a tag bump.
   - package-ecosystem: "docker-compose"
     directory: "/"
     schedule:
@@ -120,6 +123,7 @@ updates:
       time: "09:00"
       timezone: "Asia/Seoul"
     ignore:
+      - dependency-name: "emelmujiro/nginx"
       - dependency-name: "emelmujiro/postgres"
       - dependency-name: "emelmujiro/umami"
     labels:

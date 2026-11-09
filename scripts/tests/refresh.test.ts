@@ -67,7 +67,7 @@ function fixture(
         JSON.stringify({
           version: 1,
           completedAt: audit.completedAt ?? new Date().toISOString(),
-          services: [...REFRESH_SERVICES, 'frontend'].map((name) => {
+          services: REFRESH_SERVICES.map((name) => {
             const status = audit.status?.[name] ?? 'clean';
             return {
               name,
@@ -90,8 +90,17 @@ test('refresh verifies candidates and backup before replacement, preserves SHA a
   const result = refreshImages({ ...f, trivy: 'trivy' });
   assert.equal(result.success, true);
   assert.equal(result.source, sha);
-  assert.equal(f.state.applied, 3);
+  assert.equal(f.state.applied, 4);
   assert.deepEqual(result.running, result.candidates);
+  const applied = f.calls
+    .filter(([bin, args]) => bin === 'docker' && args[0] === 'compose')
+    .map(([, args]) => args.at(-1));
+  assert.deepEqual(applied, ['umami-db', 'umami', 'backend', 'frontend']);
+  const nginx = f.calls.find(([bin, args]) => bin === 'sh' && args[0].endsWith('nginx/verify.sh'));
+  assert.ok(nginx);
+  // The candidate is checked with the deployed source tree's config, not the live checkout's.
+  assert.match(nginx[1][1], /^emelmujiro\/refresh-frontend:/);
+  assert.equal(nginx[1][2], path.join(nginx[1][0], '../../../frontend/nginx.conf'));
   const firstApply = f.calls.findIndex(([bin, args]) => bin === 'docker' && args[0] === 'compose');
   assert.ok(
     f.calls.findIndex(([bin, args]) => bin === 'python3' && args[0].endsWith('backup-verify.py')) <
@@ -99,7 +108,7 @@ test('refresh verifies candidates and backup before replacement, preserves SHA a
   );
   assert.equal(
     f.calls.filter(([bin, args]) => bin === 'trivy' && args.includes('--format')).length,
-    3
+    4
   );
   assert.equal(
     f.calls.filter(
@@ -110,7 +119,7 @@ test('refresh verifies candidates and backup before replacement, preserves SHA a
         args.includes('--no-cache') &&
         args.includes(`GIT_COMMIT=${sha}`)
     ).length,
-    3
+    4
   );
   assert.equal(
     JSON.parse(fs.readFileSync(path.join(f.directory, 'latest.json'), 'utf8')).success,
@@ -118,7 +127,16 @@ test('refresh verifies candidates and backup before replacement, preserves SHA a
   );
 });
 
-for (const phase of ['build', 'postgres', 'umami', 'backend', 'scan', 'backup', 'source']) {
+for (const phase of [
+  'build',
+  'postgres',
+  'umami',
+  'backend',
+  'nginx',
+  'scan',
+  'backup',
+  'source',
+]) {
   test(`failure before apply (${phase}) leaves running images untouched`, (t) => {
     let sourceReads = 0;
     const f = fixture(t, (bin, args) => {
@@ -132,11 +150,13 @@ for (const phase of ['build', 'postgres', 'umami', 'backend', 'scan', 'backup', 
             ? bin === 'env'
             : phase === 'backend'
               ? bin === 'bash' && args[0].endsWith('verify-backend-image.sh')
-              : phase === 'scan'
-                ? bin === 'trivy' && args.includes('--format')
-                : phase === 'backup'
-                  ? bin === 'python3'
-                  : false;
+              : phase === 'nginx'
+                ? bin === 'sh' && args[0].endsWith('nginx/verify.sh')
+                : phase === 'scan'
+                  ? bin === 'trivy' && args.includes('--format')
+                  : phase === 'backup'
+                    ? bin === 'python3'
+                    : false;
     });
     const result = refreshImages({ ...f, trivy: 'trivy' });
     assert.equal(result.success, false);
@@ -146,7 +166,7 @@ for (const phase of ['build', 'postgres', 'umami', 'backend', 'scan', 'backup', 
   });
 }
 
-for (const failAt of [0, 1, 2]) {
+for (const failAt of [0, 1, 2, 3]) {
   test(`partial replacement failure ${failAt} restores previous images`, (t) => {
     let failed = false;
     const f = fixture(t, (bin, args, state) => {
@@ -256,21 +276,23 @@ test('Compose can replace a container and then fail; rollback still restores it'
   assert.deepEqual(result.running, result.old);
 });
 
-test('post-apply audit failure rolls back all three services', (t) => {
+test('post-apply audit failure rolls back all four services', (t) => {
   const f = fixture(t, (_bin, args) => args[0]?.endsWith('scan-running-images.ts') === true);
   const result = refreshImages({ ...f, trivy: 'trivy' });
   assert.equal(result.success, false);
   assert.equal(result.recovery, 'passed');
-  assert.equal(f.state.applied, 6);
+  assert.equal(f.state.applied, 8);
   assert.deepEqual(result.running, result.old);
 });
 
-test('frontend findings alone do not roll back clean replaced services (#739)', (t) => {
+test('frontend is refreshed now, so its findings roll back like any replaced service (#739)', (t) => {
   const f = fixture(t, undefined, { status: { frontend: 'findings' }, exit: true });
   const result = refreshImages({ ...f, trivy: 'trivy' });
-  assert.equal(result.success, true);
-  assert.equal(f.state.applied, 3);
-  assert.deepEqual(result.running, result.candidates);
+  assert.equal(result.success, false);
+  assert.equal(result.phase, 'audit');
+  assert.equal(result.recovery, 'passed');
+  assert.equal(f.state.applied, 8);
+  assert.deepEqual(result.running, result.old);
 });
 
 test('audit rolls back on a replaced service finding, any scan error or a stale summary', (t) => {
@@ -285,7 +307,7 @@ test('audit rolls back on a replaced service finding, any scan error or a stale 
     assert.equal(result.success, false);
     assert.equal(result.phase, 'audit');
     assert.equal(result.recovery, 'passed');
-    assert.equal(f.state.applied, 6);
+    assert.equal(f.state.applied, 8);
     assert.deepEqual(result.running, result.old);
   }
 });
