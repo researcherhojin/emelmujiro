@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://emelmujiro.com",
   "dependencies": {
-    "@sentry/react": "^11.7.0",
+    "@sentry/react": "^11.11.0",
     "@tiptap/core": "^3.33.0",
     "@tiptap/extension-code-block-lowlight": "^3.33.0",
     "@tiptap/extension-image": "^3.33.0",
