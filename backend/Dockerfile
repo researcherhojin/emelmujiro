@@ -1,4 +1,4 @@
-FROM python:3.12-alpine3.24 AS dependencies
+FROM python:3.13-alpine3.24 AS dependencies
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.24 /uv /uvx /bin/
 
@@ -21,7 +21,7 @@ RUN uv sync --frozen --no-dev
 # Keep compilers, headers and build utilities out of the runtime image.
 # uv stays in the dependency stage: the runtime runs the venv directly, so the
 # image ships no uv/uvx binaries and none of their bundled crates (#705).
-FROM python:3.12-alpine3.24
+FROM python:3.13-alpine3.24
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     VIRTUAL_ENV=/app/.venv \
