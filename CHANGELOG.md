@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- deps-dev: `@lhci/cli` `^0.16.0` (Lighthouse 12.6.1 → 13.6.0), which #766 proposed and was held because Lighthouse 13 failed `unused-css-rules` (found 1, max 0). The flagged file is the single shared stylesheet (`index-*.css`, 13,924 B, 77–79% unused on `/contact`, `/profile` and `/insights`), so `lighthouserc.js` now sets that audit to `warn`, as it already does for `unused-javascript`. Category medians across the four URLs moved by at most 0.01 against Lighthouse 12 (runs 42698544280 and 42696830473). `frontend-build.md` records it.
+
 - fix(frontend): `vite.config.ts` and `vitest.config.ts` become `.mts`, like the PostCSS and Tailwind configs in #709. `frontend/package.json` has no `"type"`, so Vite 8.3.6 warned on every build and test run that the configs use `ESM syntax in a file loaded as CommonJS`, which the planned `configLoader: 'native'` default will not support. `__dirname` becomes `fileURLToPath(new URL('./src', import.meta.url))`. The `vite build` JS and CSS output is byte-identical to `main`, and the only `index.html` change is the renamed comment. tsc, lint and 70 files / 1300 tests pass, and the warning count is 0. The references move too: tsconfig.node/build/json, `labeler.yml`, `frontend-build.md` `paths`, and the comments.
 
 - ci: `cache-warm.yml` and `pipeline-watchdog.yml` set `init.defaultBranch=main` through `GIT_CONFIG_*`, as `main-ci-cd.yml` and `pr-checks.yml` already do. The `Trivy DB` and `Playwright browser` checkouts in run 42699371306 printed the `Using 'master' as the name for the initial branch` hint, and these two were the only workflows with `actions/checkout` and no such env.

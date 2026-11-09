@@ -53,6 +53,9 @@ module.exports = {
         // Bundle size insights — warn only, not block
         'total-byte-weight': 'warn',
         'unused-javascript': 'warn',
+        // Lighthouse 13 flags the one shared Tailwind stylesheet on every route but `/`
+        // (13,924 B, ~77% unused per page on #766's run); one cached sheet is the design.
+        'unused-css-rules': 'warn',
         'network-dependency-tree-insight': 'off',
         'render-blocking-insight': 'off',
         'render-blocking-resources': 'warn',
