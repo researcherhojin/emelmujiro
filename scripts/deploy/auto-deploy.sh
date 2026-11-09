@@ -283,15 +283,17 @@ if [ "$UMAMI_CONTAINER_BEFORE" != "$UMAMI_CONTAINER_AFTER" ]; then
   ANALYTICS_RECREATED=true
 fi
 # The frontend recipe follows the analytics rule: build only when its inputs
-# changed or its image is missing, else keep what the tag points to.
+# changed or its image is missing, else keep what the tag points to. When it
+# does build, skip the layer cache: a cached `apk upgrade` layer is older than
+# the one the nightly refresh applied, which is how umami regressed on #758's
+# deploy. The nginx recipe is two layers, so an uncached build costs seconds.
 if ! FRONTEND_IMAGE=$(docker compose config --images frontend); then
   echo "$LOG_PREFIX Could not resolve the frontend image name"
   exit 1
 fi
-FRONTEND_BUILD_FLAG=--no-build
 if [ "$FRONTEND_INPUTS_CHANGED" = true ] || ! docker image inspect "$FRONTEND_IMAGE" >/dev/null 2>&1; then
-  FRONTEND_BUILD_FLAG=--build
-  echo "$LOG_PREFIX Building the frontend image"
+  echo "$LOG_PREFIX Building the frontend image (pull, no cache)"
+  docker compose build --pull --no-cache frontend
 else
   echo "$LOG_PREFIX Frontend inputs unchanged — keeping the current frontend image"
 fi
@@ -314,9 +316,9 @@ if [ "$NGINX_CONF_CHANGED" = true ]; then
   else
     echo "$LOG_PREFIX frontend container not running — skipping pre-validation"
   fi
-  docker compose up -d "$FRONTEND_BUILD_FLAG" --force-recreate frontend
+  docker compose up -d --no-build --force-recreate frontend
 else
-  docker compose up -d "$FRONTEND_BUILD_FLAG" frontend
+  docker compose up -d --no-build frontend
 fi
 if [ "$ANALYTICS_RECREATED" = true ]; then
   # nginx resolves the static analytics upstream at startup/reload. Any umami
