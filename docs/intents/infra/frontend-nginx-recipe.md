@@ -95,3 +95,14 @@ updated: 2026-11-10
 ## Outcome
 
 <!-- Filled when status becomes shipped or dropped. -->
+
+Progress (2026-11-10), before shipped:
+
+- Done when 1–2 passed locally (`check:scripts` 73/73; 8 of 20 refresh tests fail on the old `refresh.ts`; spell 0; shellcheck clean).
+- Done when 3: PR #758's `Docker Images` printed `Upgrading zlib (1.3.2-r1 -> 1.4-r0)`, `syntax is ok`, `zlib-1.4-r0` and `PASS`.
+- Done when 4 so far, after merge `6b34ce34`:
+  - `emelmujiro-frontend` runs `emelmujiro/nginx:1.31.8-security-1` (zlib `1.4-r0`, healthy), and `/` answers `200`.
+  - The first-deploy risk in the Plan happened: `umami` went back to `ab24adc6…` (`1.3.2-r1`).
+  - A manual refresh run (the cron command) ended `success: true, phase: complete` with a `frontend` candidate, and all four running images report `1.4-r0`.
+  - Pending: a host job rerun reporting `images: true`, and the watchdog closing #739.
+- Departure: implemented in the same session rather than a fresh one, at the owner's request.
