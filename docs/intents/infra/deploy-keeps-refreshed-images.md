@@ -1,8 +1,8 @@
 ---
-status: in-progress
+status: shipped
 module: infra
 created: 2026-11-09
-updated: 2026-11-09
+updated: 2026-11-10
 ---
 
 # A deploy keeps the analytics images the nightly refresh verified
@@ -58,4 +58,10 @@ updated: 2026-11-09
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Shipped in PR #757 (`69c2861e`); the `CHANGELOG.md` entry is under `## Merged since [1.0.0]`. Done when 1–2 passed in the PR and in CI. Done when 3 was verified on the host with read-only commands:
+
+- The second deploy (run 42543784607, 2026-11-09T01:07Z) logged `Analytics inputs unchanged — keeping the current umami-db and umami images`.
+- The 2026-11-10 00:30 KST refresh then replaced both containers (StartedAt 2026-11-09T15:33Z): `emelmujiro-umami` `sha256:ff5aeda6…`, `emelmujiro-umami-db` `sha256:dd650255…`, both zlib `1.4-r0`.
+- The next deploy (run 42679114655, 2026-11-09T19:01Z, `/api/health/` commit `69c2861e`) logged the same line. Both image IDs and both StartedAt values were unchanged, and both containers still reported zlib `1.4-r0`.
+
+The file stays because `security-operations.md` cites it for the #739 regression.
