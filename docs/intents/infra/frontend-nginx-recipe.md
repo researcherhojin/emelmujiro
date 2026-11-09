@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: shipped
 module: infra
 created: 2026-11-10
 updated: 2026-11-10
@@ -96,13 +96,16 @@ updated: 2026-11-10
 
 <!-- Filled when status becomes shipped or dropped. -->
 
-Progress (2026-11-10), before shipped:
+Shipped in PR #758 (`6b34ce34`); the `CHANGELOG.md` entry is under `## Merged since [1.0.0]`.
 
 - Done when 1–2 passed locally (`check:scripts` 73/73; 8 of 20 refresh tests fail on the old `refresh.ts`; spell 0; shellcheck clean).
 - Done when 3: PR #758's `Docker Images` printed `Upgrading zlib (1.3.2-r1 -> 1.4-r0)`, `syntax is ok`, `zlib-1.4-r0` and `PASS`.
-- Done when 4 so far, after merge `6b34ce34`:
-  - `emelmujiro-frontend` runs `emelmujiro/nginx:1.31.8-security-1` (zlib `1.4-r0`, healthy), and `/` answers `200`.
-  - The first-deploy risk in the Plan happened: `umami` went back to `ab24adc6…` (`1.3.2-r1`).
-  - A manual refresh run (the cron command) ended `success: true, phase: complete` with a `frontend` candidate, and all four running images report `1.4-r0`.
-  - Pending: a host job rerun reporting `images: true`, and the watchdog closing #739.
-- Departure: implemented in the same session rather than a fresh one, at the owner's request.
+- Done when 4:
+  - After the merge deploy, `emelmujiro-frontend` runs `emelmujiro/nginx:1.31.8-security-1` (zlib `1.4-r0`, healthy), and `/` answers `200`.
+  - A manual run of the refresh cron command ended `success: true, phase: complete` with a `frontend` candidate. This was its first live run with four services.
+  - The host job at 2026-11-09T21:20:14Z reported `images: true` with all four services `clean`, and watchdog run 42701539583 succeeded.
+  - #739 had been closed at the merge (20:44:44Z), before this verification.
+- Departures:
+  - Implemented in the same session rather than a fresh one, at the owner's request.
+  - The refresh check used a manual run of the cron command, not the 00:30 slot.
+- Lesson: the Plan's first-deploy risk happened as written. `umami` went back to `ab24adc6…` (`1.3.2-r1`) because the old script saw the `docker-compose.yml` change and rebuilt from cache. Any change that touches `docker-compose.yml` will do this once until the next refresh, so plan a manual refresh after such a merge.
