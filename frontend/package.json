@@ -37,7 +37,7 @@
     "@eslint/js": "^10.0.1",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.65.0",
-    "@tailwindcss/postcss": "^4.3.3",
+    "@tailwindcss/postcss": "^4.3.5",
     "@tailwindcss/typography": "^0.5.19",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^7.0.1",
