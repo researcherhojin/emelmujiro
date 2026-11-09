@@ -31,7 +31,8 @@ Run frontend commands from `frontend/`; root `npm run` drives both servers.
 
 ```bash
 make test | make test-ci             # all tests (frontend vitest + backend)
-make lint | make lint-fix            # eslint(frontend) + black/flake8(backend)
+make lint                            # eslint(frontend) + black --check/flake8(backend)
+make lint-fix                        # eslint --fix + black (no flake8)
 cd frontend && npm run validate      # lint + type-check + test:coverage (local "before push")
 cd frontend && npm run type-check    # tsc --noEmit, tsc -p tsconfig.node.json AND tsc -p scripts/tsconfig.json
 cd frontend && npm run test:e2e      # Playwright, production build (see gotchas)

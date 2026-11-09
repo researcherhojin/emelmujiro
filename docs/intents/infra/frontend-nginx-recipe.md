@@ -94,8 +94,6 @@ updated: 2026-11-10
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
-
 Shipped in PR #758 (`6b34ce34`); the `CHANGELOG.md` entry is under `## Merged since [1.0.0]`.
 
 - Done when 1–2 passed locally (`check:scripts` 73/73; 8 of 20 refresh tests fail on the old `refresh.ts`; spell 0; shellcheck clean).
