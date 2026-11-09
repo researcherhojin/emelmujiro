@@ -35,7 +35,7 @@ interface RouteTarget {
   lang: string;
 }
 
-// Must match vite.config.ts `build.outDir` — the deploy sets BUILD_OUT_DIR to a
+// Must match vite.config.mts `build.outDir` — the deploy sets BUILD_OUT_DIR to a
 // staging dir so it never builds into the directory nginx is serving (#391).
 const BUILD_DIR = path.resolve(import.meta.dirname, '..', process.env.BUILD_OUT_DIR || 'build');
 // Pristine Vite shell, copied from index.html by the `build` script before this

@@ -181,7 +181,7 @@ npx playwright install chromium
 # returning a hard 404 for the duration — measured at 3s and 2s across two real
 # deploys (issue #391). `=404` is deliberate (it replaced a soft-404 that got
 # junk URLs indexed), so that window costs a 404 on a canonical page rather than
-# a retryable error. BUILD_OUT_DIR is honoured by vite.config.ts, prerender.ts
+# a retryable error. BUILD_OUT_DIR is honoured by vite.config.mts, prerender.ts
 # and the app.html / 404.html copies in the `build` script.
 STAGING_DIR="$REPO_DIR/frontend/build.new"
 rm -rf "$STAGING_DIR"
