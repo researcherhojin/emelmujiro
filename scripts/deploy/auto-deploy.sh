@@ -122,6 +122,16 @@ if ! git diff --quiet "$PREV_HEAD" HEAD -- frontend/nginx.conf; then
   echo "$LOG_PREFIX nginx.conf changed — frontend will be force-recreated"
 fi
 
+# Detect whether this pull changed an analytics build input. The nightly refresh
+# (scripts/maintenance/refresh-images.ts) re-points the umami-db and umami tags at
+# verified candidates, and a cached rebuild would bring back an older image than
+# the one it applied. Rebuild only when a recipe or the Compose file changed.
+ANALYTICS_INPUTS_CHANGED=false
+if ! git diff --quiet "$PREV_HEAD" HEAD -- docker/umami docker/postgres docker-compose.yml; then
+  ANALYTICS_INPUTS_CHANGED=true
+  echo "$LOG_PREFIX Analytics build inputs changed — umami-db and umami will be rebuilt"
+fi
+
 # Install dependencies (handles package-lock.json changes after git pull)
 echo "$LOG_PREFIX Installing dependencies..."
 npm ci --prefer-offline --no-audit
@@ -219,10 +229,28 @@ if ! docker image inspect "$BACKEND_IMAGE_ID" >/dev/null 2>&1; then
   BACKEND_IMAGE_ID=$(docker container inspect --format '{{.Image}}' emelmujiro-backend)
   docker image inspect "$BACKEND_IMAGE_ID" >/dev/null
 fi
-# Build the reviewed analytics recipes; cached layers keep unchanged builds cheap.
-# The frontend upstream pin is applied by its own `up -d` below.
+# Build the reviewed analytics recipes only when their inputs changed or an image
+# is missing locally (a fresh host); otherwise start what the tags point to, which
+# after a nightly refresh is the verified candidate. A cached rebuild would bring
+# back an older image. The frontend upstream pin is applied by its own `up -d` below.
 UMAMI_CONTAINER_BEFORE=$(docker container inspect --format '{{.Id}}' emelmujiro-umami 2>/dev/null || true)
-docker compose up -d --build umami-db umami
+if ! ANALYTICS_IMAGES=$(docker compose config --images umami-db umami); then
+  echo "$LOG_PREFIX Could not resolve the analytics image names"
+  exit 1
+fi
+ANALYTICS_BUILD=$ANALYTICS_INPUTS_CHANGED
+while IFS= read -r image; do
+  if [ -n "$image" ] && ! docker image inspect "$image" >/dev/null 2>&1; then
+    ANALYTICS_BUILD=true
+  fi
+done <<< "$ANALYTICS_IMAGES"
+if [ "$ANALYTICS_BUILD" = true ]; then
+  echo "$LOG_PREFIX Building analytics images"
+  docker compose up -d --build umami-db umami
+else
+  echo "$LOG_PREFIX Analytics inputs unchanged — keeping the current umami-db and umami images"
+  docker compose up -d --no-build umami-db umami
+fi
 # Fallback: a rebuild that only moved the tag to a new image index (the platform
 # manifest is unchanged, so Compose keeps the container) leaves the container's
 # exact image ID unreadable by `docker image inspect`. The analytics builds set
