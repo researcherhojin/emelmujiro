@@ -12,7 +12,7 @@ updated: 2026-11-10
 - **Problem**: every deploy runs `docker compose up -d --build umami-db umami` (`scripts/deploy/auto-deploy.sh`, "Build the reviewed analytics recipes"). That build uses the layer cache, so it can bring back an older image than the one the nightly refresh just verified and applied.
   - The 2026-11-09 00:30 KST refresh replaced all three services with zlib `1.4-r0` candidates (CVE-2026-4738, #739).
   - At 2026-11-09T00:15:27Z (09:15 KST), the deploy of #753/#754 recreated `emelmujiro-umami` from `sha256:ab24adc6…`. That image was created 2026-11-01T16:21:28Z, and its `apk upgrade` layer dates from 2026-11-02 01:20 KST, so it carries zlib `1.3.2-r1`. Neither refresh candidate (`6637720a…`, `43155ed0…`) was used.
-  - In the same deploys `umami-db` stayed on a `1.4-r0` image. Backend rebuilt its `apk upgrade` layer at 09:34 KST, because `GIT_COMMIT` changes on every deploy.
+  - In the same deploys `umami-db` stayed on a `1.4-r0` image. Backend rebuilt its `apk upgrade` layer at 09:34 KST, because #755 changed `backend/uv.lock` and so the `dependencies` stage; `GIT_COMMIT` sat below that layer until #776 and did not invalidate it.
   - Measured with read-only host commands on 2026-11-09 (`.private/journal.md`, 2026-11-09 entry).
 - **Outcome wanted**: a deploy whose commit range does not touch the analytics build inputs leaves the running `umami` and `umami-db` images as they are. A deploy that does touch them still rebuilds, as it does today.
 - **Affected systems**: `scripts/deploy/auto-deploy.sh`; `.claude/rules/ci.md` › Runtime image recipes and Nightly image refresh; `CLAUDE.md` › Deployment (constraint pointer only).
@@ -33,7 +33,7 @@ updated: 2026-11-10
   - `CHANGELOG.md`: one entry.
   - `docs/intents/infra/security-operations.md`: the #739 regression bullet and one lesson.
 - **Out of scope**:
-  - Backend: its build arg already busts the cache on every deploy.
+  - Backend. The reason given here, that its build arg busts the cache on every deploy, was false: `ARG GIT_COMMIT` came after `RUN apk upgrade`. The 2026-11-14 deploy of `fd17f997` regressed it (#776), and `backend/Dockerfile` now declares the arg before the upgrade.
   - nginx: an upstream pin that refresh does not touch (#739).
   - Whether refresh should also cover `frontend`.
 - **Done when**:

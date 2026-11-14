@@ -28,18 +28,22 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PATH=/app/.venv/bin:$PATH
 WORKDIR /app
 COPY --from=dependencies /app/.venv /app/.venv
+
+# Bake the deployed git commit into the image so /api/health/ can report exactly
+# which code is running. Lets auto-deploy.sh assert the live backend matches the
+# pulled HEAD instead of trusting a bare 200 from a stale container. Placed before
+# `apk upgrade` so every deploy re-runs it: a cached upgrade layer is older than
+# the one the nightly refresh applied, and the 2026-11-14 deploy put krb5-libs
+# back from 1.22.3-r0 to 1.22.2-r1 that way (#776). The dependency install is in
+# the other stage, so it stays cached.
+ARG GIT_COMMIT=unknown
+ENV GIT_COMMIT=$GIT_COMMIT
+
 # Dependencies come from the uv-built venv; pip from the base image is not needed here.
 RUN apk upgrade --no-cache && /usr/local/bin/python -m pip uninstall --yes pip
 
 # Copy project
 COPY . .
-
-# Bake the deployed git commit into the image so /api/health/ can report exactly
-# which code is running. Placed after COPY . . so it only invalidates this final
-# cheap layer (not the dep install). Lets auto-deploy.sh assert the live backend
-# matches the pulled HEAD instead of trusting a bare 200 from a stale container.
-ARG GIT_COMMIT=unknown
-ENV GIT_COMMIT=$GIT_COMMIT
 
 # Create non-root user and data directory for SQLite
 RUN adduser -D appuser && \
