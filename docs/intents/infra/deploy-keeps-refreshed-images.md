@@ -65,4 +65,4 @@ Shipped in PR #757 (`69c2861e`); the `CHANGELOG.md` entry is under `## Merged si
 - The 2026-11-10 00:30 KST refresh then replaced both containers (StartedAt 2026-11-09T15:33Z): `emelmujiro-umami` `sha256:ff5aeda6…`, `emelmujiro-umami-db` `sha256:dd650255…`, both zlib `1.4-r0`.
 - The next deploy (run 42679114655, 2026-11-09T19:01Z, `/api/health/` commit `69c2861e`) logged the same line. Both image IDs and both StartedAt values were unchanged, and both containers still reported zlib `1.4-r0`.
 
-The file stays because `security-operations.md` cites it for the #739 regression.
+The file stays because `.claude/rules/ci.md` › Runtime image recipes cites it (since 2026-11-14; before that only `security-operations.md`, an intent, cited it, which `docs/intents/README.md` does not count).
