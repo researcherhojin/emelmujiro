@@ -128,6 +128,10 @@ Each alarm filed a generic issue. The cause was in the host report (`.private/op
   - On 2026-11-08 the owner chose to wait for an upstream nginx rebuild rather than add a local recipe, so `frontend` stayed on `1.3.2-r1`. On 2026-11-10 the owner reversed that, and #758 superseded it (Recovery below).
   - `offsite` was also false from about 05:00Z to 13:05Z on 2026-11-08, because the MacBook was off the host's LAN (`docs/intents/infra/offsite-remote-path.md`).
   - Recovery: upstream still had not rebuilt `1.31.8-alpine-slim` on 2026-11-10, so `frontend` moved to a local recipe (`docs/intents/infra/frontend-nginx-recipe.md`, #758, `6b34ce34`). The old deploy script's cached analytics rebuild put `umami` back on `1.3.2-r1`, as that intent's Plan expected. A manual refresh at about 2026-11-09T21:00Z, its first run with `frontend` included, ended `success: true, phase: complete`. The host job at 2026-11-09T21:20:14Z reported `images: true`, all four services `clean`, then run 42701539583 succeeded. The issue had already been closed at 2026-11-09T20:44:44Z, at the #758 merge, before this verification.
+- **#776** (run 43540171358, from the report of 2026-11-13T17:00:10Z; `dependencies`, then `images`)
+  - Cause, part 1: GHSA-5pm8-86m8-9m6r (`basic-ftp` `<= 6.2.3`, MEDIUM, published 2026-11-12) in the root lock file, held at `6.2.3` by the `get-uri` override. The 02:40 triage opened #775, merged as `fd17f997`.
+  - Cause, part 2: the host job rerun after that deploy (2026-11-14T02:13:13Z) reported `dependencies: true` and `images: false`, with 21 `backend` findings: Alpine `krb5-libs` `1.22.2-r1`, fixed in `1.22.3-r0` (16 HIGH, 5 MEDIUM). The 00:31 KST refresh candidate (`3458cf90…`) already had `1.22.3-r0`. The 11:07 KST deploy of `fd17f997` rebuilt the backend as `997fb77c…`, reusing an `apk upgrade` layer from 2026-11-09 09:34 KST, because `ARG GIT_COMMIT` sat below that layer.
+  - Fix: `backend/Dockerfile` declares `GIT_COMMIT` before `apk upgrade`.
 
 Lessons, each measured in one of these alarms:
 
