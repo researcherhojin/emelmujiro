@@ -30,6 +30,7 @@ updated: 2026-10-22
   - For Trivy, the PR job sets the action input `cache: false`, which stops its internal restore-and-save. A separate restore step uses the action's own key scheme: `cache-trivy-<UTC date>` with restore-key `cache-trivy-`.
   - Rejected: adding the warm-up to `main-ci-cd.yml`. It would add work to the deploy pipeline, and `pipeline-watchdog` judges that workflow's runs.
   - Rejected: deleting PR caches on PR close. That needs a `pull_request: closed` workflow with `actions: write`, and it still downloads everything once per PR.
+- **Amended 2026-11-02 (#722)**: `cache-warm.yml` gained a third job, `prune`, which deletes all but the newest `main` cache per key family once both saves succeed, so superseded date-keyed Trivy caches no longer wait for GitHub's 7-day eviction.
 - **Files and interfaces**:
   - `cache-warm.yml` with two jobs. `playwright` uses the setup-node composite, `npx playwright --version` and `actions/cache` keyed `${{ runner.os }}-playwright-<version>`, then `npx playwright install chromium` on a miss. `trivy` runs the pinned trivy-action with `cache: true` and `exit-code: 0`.
   - `pr-checks.yml`: `Cache Playwright browsers` becomes `actions/cache/restore`. In `security-scan`, the dead `Cache Trivy DB` step is removed, a date step and `actions/cache/restore` for `${{ github.workspace }}/.cache/trivy` are added, and the action gets `cache: "false"`.
