@@ -251,8 +251,12 @@ while IFS= read -r image; do
   fi
 done <<< "$ANALYTICS_IMAGES"
 if [ "$ANALYTICS_BUILD" = true ]; then
-  echo "$LOG_PREFIX Building analytics images"
-  docker compose up -d --build umami-db umami
+  # Skip the layer cache, as the frontend step below does: both recipes run
+  # `apk upgrade` right after a pinned FROM, so a cached build reuses an upgrade
+  # layer older than the one the nightly refresh applied (#776 hit the backend).
+  echo "$LOG_PREFIX Building analytics images (pull, no cache)"
+  docker compose build --pull --no-cache umami-db umami
+  docker compose up -d --no-build umami-db umami
 else
   echo "$LOG_PREFIX Analytics inputs unchanged — keeping the current umami-db and umami images"
   docker compose up -d --no-build umami-db umami
