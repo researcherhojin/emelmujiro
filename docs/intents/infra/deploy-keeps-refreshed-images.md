@@ -26,6 +26,7 @@ updated: 2026-11-10
 
 - **Approach**: before the analytics step, compute `ANALYTICS_INPUTS_CHANGED` from `git diff --quiet "$PREV_HEAD" HEAD -- docker/umami docker/postgres docker-compose.yml`, the same pattern as `NGINX_CONF_CHANGED`. Build (`up -d --build`) when the inputs changed, or when either configured analytics image is missing locally (a fresh host). Otherwise run `docker compose up -d --no-build umami-db umami`, which starts whatever the tag points to; after a refresh, that is the verified candidate. Log which branch ran.
   - Rejected: `--pull --no-cache` on every deploy. It is slow, and it replaces images without candidate scans or backups.
+  - Amended 2026-11-14: the build that does run (inputs changed, or an image missing) is now `--pull --no-cache`, as the frontend's is. A cached build there still reused the old `apk upgrade` layer, the failure #776 measured on the backend.
   - Rejected: pinning refresh images by digest in Compose. The refresh already re-points the Compose tag, so that would add a second source of truth.
 - **Files and interfaces**:
   - `scripts/deploy/auto-deploy.sh`: the analytics step only. Its log line, the #630 fallback, `ANALYTICS_RECREATED` and the nginx reload are unchanged.
