@@ -39,6 +39,7 @@ updated: 2026-11-10
     - Recipe without refresh. Every later Alpine fix would need a recipe-tag bump by hand or by triage.
     - Pinning the upstream by digest. It changes nothing while upstream has not rebuilt.
     - A Trivy ignore. The finding remains, and image scans take no ignore file (#705).
+- **Amended 2026-11-10 (#774)**: when the frontend inputs changed, `auto-deploy.sh` now runs `docker compose build --pull --no-cache frontend` and starts both frontend `up -d` calls with `--no-build`, instead of `--build` on the `up -d`.
 - **Files and interfaces**:
   - `docker/nginx/Dockerfile` (new).
   - `docker/nginx/verify.sh <image> <nginx.conf>` (new). It must:

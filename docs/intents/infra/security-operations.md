@@ -148,7 +148,7 @@ Lessons, each measured in one of these alarms:
   - `npm-run-all` uses `Minimatch`, which works on 11;
   - svgr and sucrase work on glob 14;
   - only redocly's `require("minimatch")(…)` breaks, and it is fixed by a one-line patch.
-- **A same-tag upstream rebuild never reaches production on its own.** `auto-deploy.sh` and the nightly refresh never pull the nginx image, and Dependabot opens no PR when a tag keeps its name. Once upstream rebuilds, run `docker compose pull frontend` and recreate the container by hand (#739).
+- **Until #758, a same-tag upstream rebuild never reached production on its own.** `auto-deploy.sh` and the nightly refresh never pulled the nginx image, and Dependabot opens no PR when a tag keeps its name, so a rebuild needed `docker compose pull frontend` and a recreate by hand (#739). Since #758 `frontend` is the local `docker/nginx` recipe: the nightly refresh and a deploy that changes its inputs build it with `--pull --no-cache`, so `compose pull frontend` no longer applies.
 - **An audit must judge only what its job changed.** The refresh's post-apply audit failed on `frontend`, which it never rebuilds, and rolled back three candidates that were fixed (#739, #740).
 - **A cached deploy build can undo a verified refresh.** Every deploy rebuilt the analytics images from the layer cache. On 2026-11-09 that cache returned an umami image built 2026-11-01, which replaced the refreshed one 8 h 45 min after the refresh applied it (00:30 → 09:15 KST, #739).
 - **A local scan can find what the host has not reported yet.** `qs` 6.16.0 (GHSA-6pq8-jhm2-2vcw, 2026-10-27T16:10Z, dev-only through `@lhci/cli`) failed a local run while the host still reported `dependencies` true. #690 (`32885898`) moved it to 6.16.1.

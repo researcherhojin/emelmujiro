@@ -162,4 +162,3 @@ Host-specific service-manager instructions remain in `.private/operations.md`.
 - `scripts/deploy/`: deployment process/lock control and authenticated HTTP routes.
 - `scripts/shared/`: process execution, error handling and repository paths.
 - `scripts/tests/`: isolated regression tests; no production deployment runs.
-- Top-level scripts: command entries and the compatible webhook loader.

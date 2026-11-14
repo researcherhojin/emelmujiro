@@ -40,6 +40,7 @@ updated: 2026-10-23
   - **The gate and the summary**:
     - `Auto-Merge Dependabot` needs `docker-images` and requires `success`.
     - The PR Summary gains a row.
+- **Amended since shipping**: the backend flag also matches `scripts/deploy/verify-backend-image.sh`, which the backend step now runs (#696). Since #758 the nginx flag also matches `docker/nginx/`, and the step `Build and verify nginx image` builds that recipe and runs `docker/nginx/verify.sh` instead of `nginx -t` on the pinned upstream image; Dependabot's `docker` ecosystem covers `/docker/nginx` too. The current flag list is `.claude/rules/ci.md` › CI job gating.
 - **Files and interfaces**: `pr-checks.yml`, the `ci.md` CI job gating bullet, Gotcha #12.
 - **Out of scope**:
   - Image vulnerability scanning in CI (`scripts/security/scan-running-images.ts` covers running images).
