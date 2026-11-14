@@ -131,7 +131,8 @@ Each alarm filed a generic issue. The cause was in the host report (`.private/op
 - **#776** (run 43540171358, from the report of 2026-11-13T17:00:10Z; `dependencies`, then `images`)
   - Cause, part 1: GHSA-5pm8-86m8-9m6r (`basic-ftp` `<= 6.2.3`, MEDIUM, published 2026-11-12) in the root lock file, held at `6.2.3` by the `get-uri` override. The 02:40 triage opened #775, merged as `fd17f997`.
   - Cause, part 2: the host job rerun after that deploy (2026-11-14T02:13:13Z) reported `dependencies: true` and `images: false`, with 21 `backend` findings: Alpine `krb5-libs` `1.22.2-r1`, fixed in `1.22.3-r0` (16 HIGH, 5 MEDIUM). The 00:31 KST refresh candidate (`3458cf90…`) already had `1.22.3-r0`. The 11:07 KST deploy of `fd17f997` rebuilt the backend as `997fb77c…`, reusing an `apk upgrade` layer from 2026-11-09 09:34 KST, because `ARG GIT_COMMIT` sat below that layer.
-  - Fix: `backend/Dockerfile` declares `GIT_COMMIT` before `apk upgrade`.
+  - Fix: #777 (`76dc4218`) declares `GIT_COMMIT` before `apk upgrade` in `backend/Dockerfile`. Its own deploy ran the upgrade uncached (`krb5-libs (1.22.2-r1 -> 1.22.3-r0)`) and completed at 02:24:13Z.
+  - Recovery: host job at 2026-11-14T02:24:54Z (all four services `clean`), then run 43546168012, which closed the issue at 02:25:09Z. Dependabot alert #11 turned `fixed` at 02:11:25Z, about 6 min after #775 merged.
 
 Lessons, each measured in one of these alarms:
 
