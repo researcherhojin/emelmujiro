@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { Bell, FileText, Mail, ShieldAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { useNavigate } from 'react-router';
 import { useNotification } from '../../contexts/NotificationContext';
 import { useLocalizedPath } from '../../hooks/useLocalizedPath';
@@ -43,7 +44,7 @@ interface NotificationItemProps {
   notification: Notification;
   onRead: (id: number) => void;
   onNavigate: (url: string) => void;
-  t: (key: string, opts?: Record<string, unknown>) => string;
+  t: TFunction;
   lang: string;
 }
 
