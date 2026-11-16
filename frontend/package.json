@@ -59,7 +59,7 @@
     "jsdom": "^31.0.0",
     "postcss": "^8.5.32",
     "postcss-selector-parser": "^7.2.1",
-    "prettier": "^3.9.10",
+    "prettier": "^3.10.1",
     "source-map-explorer": "^2.5.3",
     "tailwindcss": "^4.3.5",
     "typescript": "^6.0.3",
