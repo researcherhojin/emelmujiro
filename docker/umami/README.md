@@ -6,7 +6,9 @@ This rebuild keeps Umami 3.4.0 application code and migrations at upstream commi
 `ec0ff50388c264ed8ce46f00967e92f7e71476ae`. The Dockerfile verifies the source
 archive checksum and pins the Node base and official geography-data image by
 digest. Only `geo/` is copied from the official Umami image. Its application and
-dependencies are rebuilt from source.
+dependencies are rebuilt from source. Dependabot bumps that image's tag on its
+own, so it can run ahead of the application (3.5.0 for `geo/` since #796); the
+application version moves only through the steps under Updating the recipe.
 
 The builder uses Next 16.4.2, sharp 0.35.5 and shell-quote 1.11.0.
 Build dependency fixes also cover MCP server and client 2.3.0, brace-expansion
