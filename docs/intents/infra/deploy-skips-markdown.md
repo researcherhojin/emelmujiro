@@ -1,5 +1,5 @@
 ---
-status: approved
+status: in-progress
 module: infra
 created: 2026-11-16
 updated: 2026-11-16
@@ -7,9 +7,11 @@ updated: 2026-11-16
 
 # A deploy whose image-recipe changes are only Markdown rebuilds no image
 
+<!-- cspell:ignore pathspec pathspecs -->
+
 ## Intent
 
-- **Problem**: `scripts/deploy/auto-deploy.sh` decides whether to rebuild the analytics and frontend images with `git diff --quiet "$PREV_HEAD" HEAD -- docker/umami docker/postgres docker-compose.yml` and `-- docker/nginx docker-compose.yml`. Those pathspecs count Markdown, which is never a build input: `docker/umami/.dockerignore` keeps only the build files, and the `docker/postgres` and `docker/nginx` Dockerfiles copy nothing. PR CI's `Docker Images` job already filters Markdown out (`pr-checks.yml` › `Detect image changes`).
+- **Problem**: `scripts/deploy/auto-deploy.sh` decides whether to rebuild the analytics and frontend images with `git diff --quiet "$PREV_HEAD" HEAD -- docker/umami docker/postgres docker-compose.yml` and `-- docker/nginx docker-compose.yml`. Those pathspecs count Markdown, which is never a build input: `docker/umami/.dockerignore` keeps only the build files, and neither the `docker/postgres` nor the `docker/nginx` `Dockerfile` copies anything. PR CI's `Docker Images` job already filters Markdown out (`pr-checks.yml` › `Detect image changes`).
   - On 2026-11-16 the deploy of `444d9d48`, whose only image-recipe change was `docker/umami/README.md`, logged `Building analytics images (pull, no cache)` and rebuilt `umami-db` and `umami` from scratch (host deploy log, 00:58–01:00Z; `.private/journal.md`, 2026-11-16 entry).
   - Replayed on the real ranges: `git diff --quiet 3505e952 444d9d48 -- docker/umami docker/postgres docker-compose.yml` exits `1` today and `0` with `':(exclude)*.md'` added; `bbb52245..055caa8e` (#796's Dockerfile change) exits `1` both ways.
 - **Outcome wanted**: a deploy range whose only changes under those paths are `.md` files rebuilds neither image group; any other change under them still rebuilds, as today.

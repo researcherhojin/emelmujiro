@@ -126,14 +126,16 @@ fi
 # (scripts/maintenance/refresh-images.ts) re-points the umami-db and umami tags at
 # verified candidates, and a cached rebuild would bring back an older image than
 # the one it applied. Rebuild only when a recipe or the Compose file changed.
+# Markdown is excluded because no recipe copies it, as pr-checks.yml does in
+# Detect image changes.
 ANALYTICS_INPUTS_CHANGED=false
-if ! git diff --quiet "$PREV_HEAD" HEAD -- docker/umami docker/postgres docker-compose.yml; then
+if ! git diff --quiet "$PREV_HEAD" HEAD -- docker/umami docker/postgres docker-compose.yml ':(exclude)*.md'; then
   ANALYTICS_INPUTS_CHANGED=true
   echo "$LOG_PREFIX Analytics build inputs changed — umami-db and umami will be rebuilt"
 fi
 # Same rule for the frontend nginx recipe, which the nightly refresh also replaces.
 FRONTEND_INPUTS_CHANGED=false
-if ! git diff --quiet "$PREV_HEAD" HEAD -- docker/nginx docker-compose.yml; then
+if ! git diff --quiet "$PREV_HEAD" HEAD -- docker/nginx docker-compose.yml ':(exclude)*.md'; then
   FRONTEND_INPUTS_CHANGED=true
   echo "$LOG_PREFIX Frontend image inputs changed — frontend will be rebuilt"
 fi
