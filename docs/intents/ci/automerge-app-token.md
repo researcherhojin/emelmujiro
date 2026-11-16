@@ -1,8 +1,8 @@
 ---
-status: draft
+status: dropped
 module: ci
 created: 2026-10-17
-updated: 2026-10-17
+updated: 2026-11-16
 ---
 
 # Auto-merged dependabot commits start their own workflow runs
@@ -29,4 +29,9 @@ updated: 2026-10-17
 
 ## Outcome
 
-<!-- Filled when status becomes shipped or dropped. -->
+Dropped on 2026-11-16 (owner delegated the decision). The gap this would close is closed by outcome, without a GitHub App:
+
+- The dispatch step gives each auto-merge its own run. Its first live exercise (2026-09-28, #517/#521/#522/#524) dispatched 2–3 s after each merge, every run on that PR's own merge commit, including two merges 11 s apart; the SHA drift in Problem did not occur. The concurrency group cancelling all but the newest run is intended: the survivor tests the newest `main`. On 2026-11-16, #800's merge `cfb23d43` got its own `workflow_dispatch` run, which succeeded.
+- `deploy-drift-check.yml` and `pipeline-watchdog.yml` alarm if both paths fail (`.claude/rules/ci.md` › Auto-merged commits do not deploy).
+
+The App would add two repository secrets and a failure mode that stops every auto-merge when the token mint fails, which is worse than the gap. Re-raise if a dispatched run is measured on a SHA other than its merge commit, or the watchdog fires on an auto-merge.
