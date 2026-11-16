@@ -1,6 +1,7 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
 import { MessageCircle, Send, User, Calendar, ThumbsUp, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { BlogComment } from '../../types';
 import { api } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
@@ -16,7 +17,7 @@ interface ReplyItemProps {
   postId: string | number;
   formatCommentDate: (dateString: string) => string;
   onLike: (commentId: number) => void;
-  t: (key: string, options?: Record<string, string>) => string;
+  t: TFunction;
 }
 
 const ReplyItem: React.FC<ReplyItemProps> = memo(({ reply, formatCommentDate, onLike, t }) => (
@@ -56,7 +57,7 @@ interface CommentItemProps {
   setReplyTo: (id: number | null) => void;
   setReplyContent: (content: string) => void;
   onSubmitReply: (commentId: number) => void;
-  t: (key: string, options?: Record<string, string>) => string;
+  t: TFunction;
 }
 
 const CommentItem: React.FC<CommentItemProps> = memo(

@@ -1,3 +1,5 @@
+import type { TFunction } from 'i18next';
+
 /**
  * Format a date string as a long calendar date in the route language:
  * `en-US` ("October 18, 2026") when `lang` starts with `en`, otherwise
@@ -22,7 +24,7 @@ export const formatDate = (dateString: string, lang?: string): string => {
 export const formatRelativeTime = (
   dateString: string,
   lang: string,
-  t: (key: string, options?: Record<string, unknown>) => string,
+  t: TFunction,
   keyPrefix: 'blog' | 'notifications' = 'blog'
 ): string => {
   const date = new Date(dateString);
