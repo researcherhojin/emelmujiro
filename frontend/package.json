@@ -58,7 +58,7 @@
     "jiti": "^2.7.0",
     "jsdom": "^31.0.0",
     "postcss": "^8.5.32",
-    "postcss-selector-parser": "^7.1.6",
+    "postcss-selector-parser": "^7.2.1",
     "prettier": "^3.9.10",
     "source-map-explorer": "^2.5.3",
     "tailwindcss": "^4.3.5",
