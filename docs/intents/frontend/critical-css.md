@@ -22,6 +22,6 @@ updated: 2026-11-16
 
 Dropped on 2026-11-16 (owner delegated the decision): there is still no problem to solve, and the 2026-04-15 experiment showed the cost (CLS, 20–50 KB per document).
 
-The re-raise trigger this file named cannot fire as configured. Lighthouse 13 (`@lhci/cli` `^0.16.0`, first proposed in #766) replaced `render-blocking-resources` with `render-blocking-insight`; `frontend/lighthouserc.js` still asserts the old name as `warn` (line 61), which LHCI reports as replaced on every run (job 133034358468, PR #799), and sets the new one `off` (line 60). Until that assertion moves to `render-blocking-insight`, a render-blocking regression shows in no CI result; the fix is tracked in `.private/journal.md` › Backlog.
+The re-raise trigger this file named could not fire until the same day. Lighthouse 13 (`@lhci/cli` `^0.16.0`, first proposed in #766) replaced `render-blocking-resources` with `render-blocking-insight`; LHCI maps the old `warn` onto the new ID unless that ID is set, and `frontend/lighthouserc.js` set it `off`. It now reads `['warn', { minScore: 0.5, maxLength: 1 }]`: every run scored 0.5 (the one shared stylesheet, 0 ms FCP/LCP savings, 12 of 12 on run 43786290084), so it warns when savings become real or a second resource blocks (`.claude/rules/frontend-build.md` › Lighthouse).
 
 Re-raise when `render-blocking-insight` warns on a prerendered document, or LCP needs headroom.

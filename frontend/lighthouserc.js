@@ -37,19 +37,18 @@ module.exports = {
         'color-contrast': 'warn',
         'image-alt': 'error',
         label: 'error',
-        // Relaxed rules for development / static hosting
-        'uses-http2': 'off',
-        'uses-long-cache-ttl': 'off',
+        // Relaxed rules for development / static hosting. Lighthouse 13 audit IDs
+        // throughout: LHCI maps a dropped ID to its replacement only until "a future
+        // version", and skips the mapping when the replacement is set explicitly.
+        'modern-http-insight': 'off', // was uses-http2
+        'cache-insight': 'off', // was uses-long-cache-ttl
         'robots-txt': 'off',
         // CI-specific relaxations — these fail in CI but pass in production
         canonical: 'off', // No backend serving canonical in CI preview
         'errors-in-console': 'error', // CI runs a backend and no analytics, so all 4 pages score 1 (run 39899543778); an error now is a real one
         'inspector-issues': 'warn',
-        'legacy-javascript': 'error',
-        'uses-text-compression': 'off', // vite preview has no gzip; production nginx compresses
-        // Blog images are external URLs (author-controlled content, not code)
-        'efficient-animated-content': 'warn',
-        'prioritize-lcp-image': 'warn', // LCP image is dynamic blog content, can't statically preload
+        'legacy-javascript-insight': 'error', // was legacy-javascript
+        'document-latency-insight': 'off', // was uses-text-compression: vite preview has no gzip; production nginx compresses
         // Bundle size insights — warn only, not block
         'total-byte-weight': 'warn',
         'unused-javascript': 'warn',
@@ -57,12 +56,16 @@ module.exports = {
         // (13,924 B, ~77% unused per page on #766's run); one cached sheet is the design.
         'unused-css-rules': 'warn',
         'network-dependency-tree-insight': 'off',
-        'render-blocking-insight': 'off',
-        'render-blocking-resources': 'warn',
-        // Image optimization insights — CI serves unoptimized static assets
+        // Was `off`, which also voided the `render-blocking-resources` warn LHCI maps
+        // onto it. Every run scores 0.5: one shared stylesheet, 0 ms FCP/LCP savings
+        // (12 of 12 on run 43786290084). A metric-savings audit scores 0 only when
+        // savings are real, so minScore 0.5 warns on that regression; maxLength
+        // overrides the preset's 0 (options merge) and warns on a second resource.
+        'render-blocking-insight': ['warn', { minScore: 0.5, maxLength: 1 }],
+        // Image optimization insights — CI serves unoptimized static assets. Also
+        // covers the dropped efficient-animated-content, uses-responsive-images and
+        // modern-image-formats, whose mapped `warn`s this explicit `off` voided.
         'image-delivery-insight': 'off',
-        'uses-responsive-images': 'warn',
-        'modern-image-formats': 'warn',
         // CLS can spike in CI due to lazy-loaded components without backend
         'cls-culprits-insight': 'off',
         // Accessibility — CI preview may render differently than production
@@ -74,9 +77,9 @@ module.exports = {
         'font-display-insight': 'off',
         // Third-party cookies — GA removed; Sentry lazy-loaded
         'third-party-cookies': 'warn',
-        // LCP insights — CI preview server behaves differently
+        // LCP insights — CI preview server behaves differently. Also covers the
+        // dropped prioritize-lcp-image and lcp-lazy-loaded (blog images are dynamic).
         'lcp-discovery-insight': 'off',
-        'lcp-lazy-loaded': 'warn',
         'forced-reflow-insight': 'warn',
       },
     },
