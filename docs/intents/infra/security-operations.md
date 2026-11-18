@@ -133,6 +133,12 @@ Each alarm filed a generic issue. The cause was in the host report (`.private/op
   - Cause, part 2: the host job rerun after that deploy (2026-11-14T02:13:13Z) reported `dependencies: true` and `images: false`, with 21 `backend` findings: Alpine `krb5-libs` `1.22.2-r1`, fixed in `1.22.3-r0` (16 HIGH, 5 MEDIUM). The 00:31 KST refresh candidate (`3458cf90…`) already had `1.22.3-r0`. The 11:07 KST deploy of `fd17f997` rebuilt the backend as `997fb77c…`, reusing an `apk upgrade` layer from 2026-11-09 09:34 KST, because `ARG GIT_COMMIT` sat below that layer.
   - Fix: #777 (`76dc4218`) declares `GIT_COMMIT` before `apk upgrade` in `backend/Dockerfile`. Its own deploy ran the upgrade uncached (`krb5-libs (1.22.2-r1 -> 1.22.3-r0)`) and completed at 02:24:13Z.
   - Recovery: host job at 2026-11-14T02:24:54Z (all four services `clean`), then run 43546168012, which closed the issue at 02:25:09Z. Dependabot alert #11 turned `fixed` at 02:11:25Z, about 6 min after #775 merged.
+- **#806** (run 44226012020, from the report of 2026-11-17T17:00:10Z; `dependencies`, `images`; open as of 2026-11-18)
+  - Cause, part 1: GHSA-mfr8-8qww-v76h (`next` `>= 16.3.0, <= 16.4.4`, MEDIUM, published 2026-11-16T18:51Z), 1 finding in the Umami builder lock and 1 in the running `umami` image (`next@16.4.2`). Dependabot alerts #12, #13.
+  - Triage: the 02:40 run diagnosed it and edited the same files, but did not publish: `paths outside the allowlist: docker/umami/verify.sh, docker/umami/verify.ts`. Every Umami Next bump needs those two files, so this class of fix never yields a draft PR.
+  - Fix: #807 (`e7b0bf96`), Next 16.4.6, Umami `3.4.0-security-6`. Host job rerun at 2026-11-18T03:05:19Z: `images: true`, all four services `clean`, both Umami locks 0.
+  - Cause, part 2: that rerun still had `dependencies: false`, from `npm-audit` 20 HIGH, all GHSA-fc5q-39xc-vjpf (`picomatch` `<= 4.0.7`, ReDoS; range updated 2026-11-17T15:56Z). The 02:00 run had reported 0. `4.0.7` is the newest release, so no fix exists; upstream PRs #262–#266 were open. All 20 are dev dependencies (`npm audit --omit=dev` reports 0). Dependabot alert #14 is the same advisory on the Umami builder lock (`4.0.4`, `4.0.5`); the runner lock has no `picomatch`, and Trivy did not flag it there.
+  - Decision (owner, 2026-11-18): wait for the upstream release, with no ignore and no `--omit=dev`. The issue stays open until then.
 
 Lessons, each measured in one of these alarms:
 
