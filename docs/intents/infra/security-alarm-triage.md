@@ -17,7 +17,7 @@ updated: 2026-11-01
 - **Constraints**:
   - The repo is public. Issue bodies and workflow logs never carry package inventories or host details. A PR may name packages and advisory IDs, as #714 did.
   - The production checkout serves `auto-deploy.sh` and holds `backend/logs/maintenance.lock`, so triage never edits it.
-  - Risk acceptance (a `trivyignore` entry, a dismissed alert) is the owner's decision (`security-operations.md` › Lessons).
+  - Risk acceptance (a `trivyignore` or `scripts/security/npm-audit-ignore.json` entry, a dismissed alert) is the owner's decision (`security-operations.md` › Lessons).
   - Gotcha #6 (never `npm audit fix`) and #13 (rolldown bindings) apply to any lockfile the agent writes. `guard-bash.sh` enforces #6.
 - **Measured on 2026-11-01 (read-only over SSH)**:
   - Claude Code `2.1.288` is installed at `~/.local/bin/claude`. Its credentials are in the login Keychain and there is no `.credentials.json`. Cron may not be able to read the Keychain, the same trap as Gotcha #17.
@@ -64,7 +64,7 @@ updated: 2026-11-01
 - **Out of scope**:
   - `backup`, `offsite` and `refresh` failures. They need host state, not a code change, and remain manual.
   - Dependabot PR triage. It was deferred, so revisit it after this runs on real alarms.
-  - Merging, deploying, rerunning the host job, and adding `trivyignore` entries all stay with the owner.
+  - Merging, deploying, rerunning the host job, and adding `trivyignore` or `npm-audit-ignore.json` entries all stay with the owner.
   - The `analyze:bundle` source-map problem found in #713 is a separate issue.
 - **Done when**:
   1. `npm run check:scripts` passes, including new tests that cover each skip condition and the exact argv and allowlist passed to `claude`.

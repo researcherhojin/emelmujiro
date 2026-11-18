@@ -20,7 +20,7 @@ Follow this procedure, which is how past alarms were fixed (`docs/intents/infra/
 2. Reproduce locally. Run `npm ci --legacy-peer-deps`, then `node scripts/security/scan-dependencies.ts`. Run the image scan only if you can read its JSON; never start Docker.
 3. Fix each finding with the smallest change: a patch or minor bump in the lockfile, a raised floor in `overrides`, or a Dockerfile pin. Read `CLAUDE.md` Gotchas #3, #6, #8, #13 and #14 first. Never run `npm audit fix`. After any lockfile change, confirm `@rolldown/binding-linux-x64-gnu` is still listed in `package-lock.json`.
 4. If a fix requires a major upgrade, check that every consumer of the package still works. If one breaks, do not force it.
-5. **Never add or extend an ignore entry** (`trivyignore.yaml`, a dismissed alert, an expiry). Accepting a risk is the owner's decision. Write the case for or against it in the diagnosis instead.
+5. **Never add or extend an ignore entry** (`trivyignore.yaml`, `scripts/security/npm-audit-ignore.json`, a dismissed alert, an expiry). Accepting a risk is the owner's decision. Write the case for or against it in the diagnosis instead.
 6. Verify with `npm run lint --workspace=frontend`, `npm run type-check --workspace=frontend`, `npm test --workspace=frontend -- --run`, `npm run check:scripts` and `node scripts/security/scan-dependencies.ts`. Record each result.
 7. If you changed files, leave them uncommitted in the working tree and write `{{PR}}`:
    - The first line is a conventional commit subject (`scripts/repo/check-commit-msg.sh`). It becomes the commit message and the PR title.
