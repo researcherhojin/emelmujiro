@@ -18,6 +18,9 @@ const config: KnipConfig = {
         'tests/*.test.ts',
       ],
       project: ['**/*.ts'],
+      // A system executable: tests/maintenance-lock.test.ts runs the repo Makefile.
+      // The top-level ignoreBinaries applies to the root workspace only.
+      ignoreBinaries: ['make'],
     },
     frontend: {
       entry: ['src/App.tsx', 'scripts/*.ts', 'scripts/visual-diff/*.ts'],
