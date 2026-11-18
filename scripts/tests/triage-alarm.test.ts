@@ -6,8 +6,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {
+  PINNED,
   branchName,
   checkChanges,
+  onlyPinChanged,
   claudeArgs,
   claudeEnv,
   decide,
@@ -173,6 +175,7 @@ function triageRepo(t: { after: (fn: () => void) => void }) {
   git(clone, 'config', 'user.email', 'test@example.com');
   for (const file of ['package.json', 'package-lock.json', '.github/workflows/watchdog.yml'])
     write(clone, file, '{}\n');
+  write(clone, 'docker/umami/verify.ts', pinLine('1.2.3'));
   git(clone, 'add', '.');
   git(clone, 'commit', '--quiet', '-m', 'init');
   git(clone, 'push', '--quiet', 'origin', 'main');
@@ -183,6 +186,9 @@ function triageRepo(t: { after: (fn: () => void) => void }) {
   const hooks = path.join(REPO_ROOT, 'scripts/security/triage-hooks');
   return { remote, clone, run, hooks, base: git(clone, 'rev-parse', 'HEAD'), git };
 }
+
+const pinLine = (version: string) =>
+  `assert.equal(require('next/package.json').version, '${version}');\n`;
 
 function write(root: string, file: string, content: string) {
   fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
@@ -297,4 +303,147 @@ test('allowlist covers what a dependency or image fix needs', () => {
     null
   );
   assert.equal(branchName('fix(deps)!: Bump X/Y to 2.0', now), 'triage/2026-11-02-bump-x-y-to-2-0');
+});
+
+// The pin moves #807 made, applied backwards to the tracked files.
+const tracked = (file: string) => fs.readFileSync(path.join(REPO_ROOT, file), 'utf8');
+const previous = (text: string) =>
+  text
+    .replace(/(next\/package\.json'\)\.version, ')[\d.]+/, '$116.4.2')
+    .replace(/(emelmujiro\/umami:)[^}]+/, '$13.4.0-security-5');
+const pinOf = (file: string) => PINNED.find(([pattern]) => pattern.test(file))![1];
+
+test('the Umami version pins may move, and nothing else in those files', () => {
+  for (const file of ['docker/umami/verify.ts', 'docker/umami/verify.sh']) {
+    const after = tracked(file);
+    const before = previous(after);
+    const pin = pinOf(file);
+    assert.notEqual(before, after, file);
+    assert.equal(onlyPinChanged(before, after, pin), true, file);
+    const lines = after.split('\n');
+    const other = lines.findIndex((line) => line.trim() && !pin.test(line));
+    const edited = lines.map((line, index) => (index === other ? `${line} ` : line)).join('\n');
+    assert.equal(onlyPinChanged(before, edited, pin), false, `${file}: one more line`);
+    assert.equal(onlyPinChanged(before, `${after}\nextra`, pin), false, `${file}: inserted line`);
+    assert.equal(onlyPinChanged(before, null, pin), false, `${file}: deleted`);
+    assert.equal(onlyPinChanged(null, after, pin), false, `${file}: created`);
+    assert.equal(onlyPinChanged(before, after.replace('\n', '\r\n'), pin), false, `${file}: CR`);
+  }
+  const sh = tracked('docker/umami/verify.sh');
+  for (const tag of [
+    'evil/umami:3.4.0-security-7',
+    'emelmujiro/umami:$(id)',
+    'emelmujiro/umami:latest',
+  ])
+    assert.equal(
+      onlyPinChanged(
+        sh,
+        sh.replace(/emelmujiro\/umami:[^}]+/, tag),
+        pinOf('docker/umami/verify.sh')
+      ),
+      false,
+      tag
+    );
+  const ts = tracked('docker/umami/verify.ts');
+  assert.equal(
+    onlyPinChanged(
+      ts,
+      ts.replace(/(version, '[\d.]+')/, '$1 || true'),
+      pinOf('docker/umami/verify.ts')
+    ),
+    false
+  );
+});
+
+test('the refused triage run of #806 would now publish, and a pin file needs the content check', () => {
+  const files = [
+    'CHANGELOG.md',
+    'docker-compose.yml',
+    'docker/umami/Dockerfile',
+    'docker/umami/package.json',
+    'docker/umami/pnpm-lock.yaml',
+    'docker/umami/verify.sh',
+    'docker/umami/verify.ts',
+  ];
+  assert.equal(
+    checkChanges(
+      files,
+      'a',
+      'a',
+      'title',
+      () => false,
+      () => true
+    ),
+    null
+  );
+  // The default refuses, so a caller that forgets the content check publishes nothing.
+  assert.equal(
+    checkChanges(files, 'a', 'a', 'title'),
+    'changes beyond the version pin: docker/umami/verify.sh, docker/umami/verify.ts'
+  );
+  assert.equal(
+    checkChanges(
+      ['docker/umami/README.md'],
+      'a',
+      'a',
+      'title',
+      () => false,
+      () => true
+    ),
+    'paths outside the allowlist: docker/umami/README.md'
+  );
+});
+
+test('publish takes a pin move and refuses a new, linked or chmod-ed pin file', (t) => {
+  const attempt = (change: (repo: ReturnType<typeof triageRepo>) => void) => {
+    const repo = triageRepo(t);
+    change(repo);
+    const calls: string[] = [];
+    const result = publish({
+      ...repo,
+      token: 'token',
+      now,
+      command: (binary) => {
+        calls.push(binary);
+        return 0;
+      },
+    });
+    return result.publish ? 'published' : result.reason;
+  };
+  const verify = 'docker/umami/verify.ts';
+  assert.equal(
+    attempt((r) => write(r.clone, verify, pinLine('1.2.4'))),
+    'published'
+  );
+  const beyond = (file: string) => `changes beyond the version pin: ${file}`;
+  assert.equal(
+    attempt((r) =>
+      write(
+        r.clone,
+        'docker/umami/verify.sh',
+        'image=${UMAMI_TEST_IMAGE:-emelmujiro/umami:1.0.0-security-1}\n'
+      )
+    ),
+    beyond('docker/umami/verify.sh')
+  );
+  assert.equal(
+    attempt((r) => {
+      const target = path.join(r.run, 'linked.ts');
+      fs.writeFileSync(target, pinLine('1.2.4'));
+      fs.rmSync(path.join(r.clone, verify));
+      fs.symlinkSync(target, path.join(r.clone, verify));
+    }),
+    beyond(verify)
+  );
+  assert.equal(
+    attempt((r) => {
+      write(r.clone, verify, pinLine('1.2.4'));
+      fs.chmodSync(path.join(r.clone, verify), 0o755);
+    }),
+    beyond(verify)
+  );
+  assert.equal(
+    attempt((r) => fs.rmSync(path.join(r.clone, verify))),
+    beyond(verify)
+  );
 });

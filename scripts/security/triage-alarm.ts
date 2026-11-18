@@ -265,6 +265,34 @@ const PUBLISHABLE = [
   /^CHANGELOG\.md$/,
 ];
 
+// Files a fix must touch but that are not build inputs: only these lines may
+// change, and only from one pinned version to another. An Umami Next bump moves
+// the version assert and the default test image tag (#806).
+export const PINNED: [RegExp, RegExp][] = [
+  [
+    /^docker\/umami\/verify\.ts$/,
+    /^assert\.equal\(require\('next\/package\.json'\)\.version, '\d+\.\d+\.\d+'\);$/,
+  ],
+  [
+    /^docker\/umami\/verify\.sh$/,
+    /^image=\$\{UMAMI_TEST_IMAGE:-emelmujiro\/umami:\d+\.\d+\.\d+-security-\d+\}$/,
+  ],
+];
+
+// True only when both sides exist, have the same line count, and every line
+// that differs matches the pin pattern on both sides.
+export function onlyPinChanged(base: string | null, tree: string | null, pin: RegExp): boolean {
+  if (base === null || tree === null || base.includes('\r') || tree.includes('\r')) return false;
+  const before = base.split('\n');
+  const after = tree.split('\n');
+  return (
+    before.length === after.length &&
+    before.every(
+      (line, index) => line === after[index] || (pin.test(line) && pin.test(after[index]))
+    )
+  );
+}
+
 export type Publication = { publish: true; branch: string } | { publish: false; reason: string };
 
 // Host details the public PR text must not carry.
@@ -281,12 +309,21 @@ export function checkChanges(
   head: string,
   base: string,
   pr: string | null,
-  scriptsChanged: (file: string) => boolean = () => false
+  scriptsChanged: (file: string) => boolean = () => false,
+  pinOnly: (file: string, pin: RegExp) => boolean = () => false
 ) {
   if (head !== base) return 'HEAD moved off the recorded base';
   if (changed.length === 0) return 'no changes';
-  const refused = changed.filter((file) => !PUBLISHABLE.some((pattern) => pattern.test(file)));
+  const pinOf = (file: string) => PINNED.find(([pattern]) => pattern.test(file))?.[1];
+  const refused = changed.filter(
+    (file) => !PUBLISHABLE.some((pattern) => pattern.test(file)) && !pinOf(file)
+  );
   if (refused.length > 0) return `paths outside the allowlist: ${refused.join(', ')}`;
+  const beyond = changed.filter((file) => {
+    const pin = pinOf(file);
+    return pin && !pinOnly(file, pin);
+  });
+  if (beyond.length > 0) return `changes beyond the version pin: ${beyond.join(', ')}`;
   // A manifest's scripts define the scans and CI steps; a fix never needs them.
   const scripts = changed.filter((file) => file.endsWith('package.json') && scriptsChanged(file));
   if (scripts.length > 0) return `package.json scripts changed: ${scripts.join(', ')}`;
@@ -353,6 +390,15 @@ export function publish(options: {
     const result = spawnSync('git', [...forced, 'show', `${base}:${file}`], { encoding: 'utf8' });
     return result.status === 0 ? result.stdout : null;
   };
+  // A pin file must stay a regular file with its base mode: the text check
+  // reads through a symlink, and git would commit the link or the new mode.
+  const sameMode = (file: string) => {
+    const stat = fs.lstatSync(path.join(clone, file), { throwIfNoEntry: false });
+    if (!stat?.isFile()) return false;
+    const listed = spawnSync('git', [...forced, 'ls-tree', base, '--', file], { encoding: 'utf8' });
+    const mode = listed.status === 0 ? listed.stdout.split(' ')[0] : null;
+    return mode === ((stat.mode & 0o111) !== 0 ? '100755' : '100644');
+  };
   const inTree = (file: string) =>
     fs.existsSync(path.join(clone, file)) ? fs.readFileSync(path.join(clone, file), 'utf8') : null;
   const refused = checkChanges(
@@ -360,7 +406,8 @@ export function publish(options: {
     read(['rev-parse', 'HEAD']).trim(),
     base,
     pr,
-    (file) => manifestScripts(atBase(file)) !== manifestScripts(inTree(file))
+    (file) => manifestScripts(atBase(file)) !== manifestScripts(inTree(file)),
+    (file, pin) => sameMode(file) && onlyPinChanged(atBase(file), inTree(file), pin)
   );
   if (refused || !pr) return { publish: false, reason: refused ?? 'missing pr.md title' };
 

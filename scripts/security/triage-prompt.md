@@ -28,7 +28,7 @@ Follow this procedure, which is how past alarms were fixed (`docs/intents/infra/
    - Include a `CHANGELOG.md` entry under `## Merged since [1.0.0]` among your changes.
    - The body may name packages, versions and advisory IDs. It must not contain host names, paths outside the repository, container or image IDs, or report contents beyond those findings.
    - The open alarm issue is {{ISSUE}}. Reference it when there is one.
-   - After you finish, a separate step commits, pushes and opens the draft PR. It does that only if every changed file is one a dependency or image fix needs: manifests, lock files, Docker build files, `docker-compose.yml`, Umami patches and `CHANGELOG.md`. Remove any other file you created, such as a scratch script, or nothing is published.
+   - After you finish, a separate step commits, pushes and opens the draft PR. It does that only if every changed file is one a dependency or image fix needs: manifests, lock files, Docker build files, `docker-compose.yml`, Umami patches and `CHANGELOG.md`. In `docker/umami/verify.ts` and `docker/umami/verify.sh` only the Next version assert and the default `emelmujiro/umami:<version>-security-<n>` image tag may change; leave `docker/umami/README.md` for the owner and say so in the PR body. Remove any other file you created, such as a scratch script, or nothing is published.
 8. Always write `{{DIAGNOSIS}}`, including when you open no PR. Cover each finding, its fix or why none is safe, every verification result, any command that was refused, and whether you wrote `{{PR}}`.
 
 Stop after step 8. Do not touch anything outside this clone, `{{PR}}` and `{{DIAGNOSIS}}`.
