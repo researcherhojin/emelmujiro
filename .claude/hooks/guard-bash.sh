@@ -36,7 +36,7 @@ block() {
   exit 2
 }
 
-# Gotcha #6: `npm audit fix --force` downgrades @lhci/cli to 0.1.0.
+# Gotcha #6: `npm audit fix --force` downgrades @lhci/cli (the offered target moves with the advisory set).
 if printf '%s' "$cmd" | grep -Eq '(^|[^[:alnum:]_-])npm[[:space:]]+audit[[:space:]]+fix([^[:alnum:]_-]|$)'; then
   block 'never run `npm audit fix` (CLAUDE.md Gotcha #6). Bump the direct parent instead; plain `npm audit` is fine.'
 fi
