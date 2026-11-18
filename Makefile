@@ -89,7 +89,7 @@ test-ci:
 	npx concurrently -n fe,be -c cyan,green "cd frontend && npx vitest run --coverage" "cd backend && DATABASE_URL='' uv run coverage run --source=api manage.py test && uv run coverage report"
 
 lint:
-	cd frontend && npx eslint src
+	cd frontend && npm run lint
 	cd backend && uv run black --check . && uv run flake8
 
 lint-fix:

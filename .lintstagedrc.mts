@@ -10,7 +10,7 @@ export default {
       .map((f) => path.relative(path.join(import.meta.dirname, 'frontend'), f))
       .join(' ');
     return [
-      `cd frontend && npx eslint --fix ${relFiles}`,
+      `cd frontend && npx eslint --fix --max-warnings=0 ${relFiles}`,
       `prettier --write ${filenames.join(' ')}`,
     ];
   },
