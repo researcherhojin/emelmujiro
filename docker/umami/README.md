@@ -10,7 +10,7 @@ dependencies are rebuilt from source. Dependabot bumps that image's tag on its
 own, so it can run ahead of the application (3.5.0 for `geo/` since #796); the
 application version moves only through the steps under Updating the recipe.
 
-The builder uses Next 16.4.2, sharp 0.35.5 and shell-quote 1.11.0.
+The builder uses Next 16.4.6, sharp 0.35.5 and shell-quote 1.11.0.
 Build dependency fixes also cover MCP server and client 2.3.0, brace-expansion
 1.1.21, 2.1.7 and 5.0.12, fast-uri 3.1.9, source-map-js 1.2.2,
 postcss-selector-parser 7.1.6, undici 8.12.2, serialize-javascript 7.1.3,
@@ -33,7 +33,7 @@ CLI, so migrations still execute before the server starts as UID 1001.
 From the repository root:
 
 ```sh
-docker build -t emelmujiro/umami:3.4.0-security-5 docker/umami
+docker build -t emelmujiro/umami:3.4.0-security-6 docker/umami
 sh docker/umami/verify.sh
 ```
 
