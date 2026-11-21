@@ -121,7 +121,7 @@ services:
       # Same reason as umami-db: keep the image ID stable across rebuilds.
       provenance: false
       sbom: false
-    image: emelmujiro/umami:3.4.0-security-6
+    image: emelmujiro/umami:3.4.0-security-7
     container_name: emelmujiro-umami
     restart: unless-stopped
     security_opt:

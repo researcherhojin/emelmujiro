@@ -17,7 +17,9 @@ postcss-selector-parser 7.1.6, undici 8.12.2, serialize-javascript 7.1.3,
 zod 4.6.7, vite 8.1.6, vitest 4.1.12, minimatch 11.0.3 and glob 14.0.3
 (GHSA-g3hv-75wg-m249, GHSA-3g3m-2fjr-6pw4). `@redocly/openapi-core` 1.34.19 is
 patched to import minimatch 11's named export. Both dependency
-graphs retain upstream's deepmerge-ts 8.0.2 and mysql2 3.23.1 security overrides.
+graphs retain upstream's deepmerge-ts 8.0.2 and mysql2 3.23.1 security overrides,
+and both force effect 3.22.1 (GHSA-7589-6fvf-x4pw, #818): `@prisma/config`
+7.10.0 and 7.10.1 pin effect 3.20.0 exactly.
 The builder lock backports deepmerge PR #274's `__proto__` rejection for
 deepmerge 4.3.1 because npm has no patched release; a build-time regression
 check covers the vulnerable null-target and null-prototype cases. The runtime
@@ -37,7 +39,7 @@ CLI, so migrations still execute before the server starts as UID 1001.
 From the repository root:
 
 ```sh
-docker build -t emelmujiro/umami:3.4.0-security-6 docker/umami
+docker build -t emelmujiro/umami:3.4.0-security-7 docker/umami
 sh docker/umami/verify.sh
 ```
 
