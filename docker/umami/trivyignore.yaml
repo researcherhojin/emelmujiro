@@ -10,19 +10,3 @@ vulnerabilities:
       No patched npm release. patches/deepmerge@4.3.1.patch backports the
       upstream __proto__ rejection, the image build verifies it, and the
       production runner lock has no deepmerge (#699).
-  - id: CVE-2026-112366
-    purls:
-      - pkg:npm/picomatch@4.0.4
-      - pkg:npm/picomatch@4.0.5
-    expired_at: 2026-12-02
-    statement: >-
-      No patched picomatch release (GHSA-fc5q-39xc-vjpf). picomatch 4.0.4 and
-      4.0.5 run only in the builder (build tooling over repository globs); the
-      production runner lock has no picomatch (#806).
-  - id: GHSA-fc5q-39xc-vjpf
-    purls:
-      - pkg:npm/picomatch@4.0.4
-      - pkg:npm/picomatch@4.0.5
-    expired_at: 2026-12-02
-    statement: >-
-      Same advisory under its GHSA ID (#806).

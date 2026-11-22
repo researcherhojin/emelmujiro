@@ -1,8 +1,1 @@
-[
-  {
-    "id": "GHSA-fc5q-39xc-vjpf",
-    "packages": ["picomatch"],
-    "expires": "2026-12-02",
-    "statement": "picomatch <= 4.0.7 ReDoS through repeated extended globs (CVE-2026-112366). 4.0.7 is the newest release, so no fix exists; upstream fix PRs #262-#269 were open on 2026-11-18. Only dev tools reach it (cspell, vite, vitest, knip, lint-staged) and they match repository-controlled patterns; nothing ships it (#806)."
-  }
-]
+[]

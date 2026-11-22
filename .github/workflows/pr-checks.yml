@@ -552,9 +552,8 @@ jobs:
           severity: "CRITICAL,HIGH"
           cache: "false"
           # cspell:ignore trivyignores
-          # The Umami builder lock's expiring accepted risks (#806). Every entry
-          # is scoped by purl, so reading it repo-wide widens nothing; the
-          # action takes a single YAML ignore file.
+          # The action takes one YAML ignore file. Use the Umami builder's
+          # package-scoped and expiring exceptions for this scan.
           trivyignores: "docker/umami/trivyignore.yaml"
 
   # Shared build job for bundle-analysis and lighthouse

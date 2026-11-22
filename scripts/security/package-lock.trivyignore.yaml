@@ -1,19 +1,4 @@
 # Accepted dependency-scan risks for package-lock.json only
 # (scripts/security/dependencies.ts). Every entry expires, so the scheduled
 # scan fails again and forces a re-review instead of hiding a finding forever.
-vulnerabilities:
-  # Trivy reports the CVE when the advisory has one; both IDs are listed so the
-  # entry holds whichever its database uses.
-  - id: CVE-2026-112366
-    purls:
-      - pkg:npm/picomatch@4.0.7
-    expired_at: 2026-12-02
-    statement: >-
-      No patched picomatch release (GHSA-fc5q-39xc-vjpf); dev-only, see
-      scripts/security/npm-audit-ignore.json (#806).
-  - id: GHSA-fc5q-39xc-vjpf
-    purls:
-      - pkg:npm/picomatch@4.0.7
-    expired_at: 2026-12-02
-    statement: >-
-      Same advisory under its GHSA ID (#806).
+vulnerabilities: []
