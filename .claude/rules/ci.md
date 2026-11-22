@@ -110,6 +110,7 @@ commands stay scheduler-free. `/security-report` on the deployment
 webhook requires its existing secret and returns only fresh boolean outcomes.
 The Security Operations Watchdog rejects reports or independent backup receipts
 older than 36 hours and files a generic GitHub issue, closing it on recovery.
+The proposed receipt-window change is in the [remote backup plan](../../docs/intents/infra/offsite-remote-path.md).
 Package inventories, host details, backup contents, and keys never appear in
 issue bodies or workflow logs. Webhook code changes require the
 service restart described in `.private/operations.md`.
