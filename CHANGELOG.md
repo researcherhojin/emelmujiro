@@ -8,6 +8,8 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(frontend): preserve PostCSS source filenames by defining custom animations in the Tailwind CSS theme. Add opt-in Brave mobile emulation, type-check the Playwright configuration, and scope the teaching history check to the localized main content.
+- chore(repo): ignore machine-local agent files, credential files, and backup archives. Document the public and local file boundaries.
 - fix(tooling): pass staged paths as separate arguments to the frontend and backend linters and test paths containing spaces in CI. Preserve unrelated cron jobs and clear the refresh marker after removing the project's schedules. Keep retention days out of shell command text, remove legacy Compose flags from the environment template, exclude backend test modules from Codecov, and include frontend CSS in Knip's project files.
 - fix(backend): limit security statistics error handling to Django database errors and document the weekly compatibility review and editor checks.
 - fix(compat): register Link and Underline once with Tiptap 3, drop the removed Django XSS filter setting from configuration and security checks, and disable the legacy filter on Django and nginx responses.

@@ -92,9 +92,11 @@ make update-test-counts    # Regenerate README test counts locally (CI auto-sync
 make health                # Docker health diagnostic (containers, resources, endpoints)
 npm run security:dependencies  # Audit npm dependencies and scan all four lock files
 
-# From frontend/: npm run validate (lint + type-check + coverage) and npm run test:e2e (Playwright, 5 profiles).
+# From frontend/: npm run validate (lint + type-check + coverage) and npm run test:e2e (Playwright).
 # Single-test, serve:build, bundle-analysis, route-check and visual-diff commands are listed once, in CLAUDE.md → Commands.
 ```
+
+For Mobile Chrome, Mobile Safari, and optional Brave emulation, see the [mobile browser checks](CONTRIBUTING.md#mobile-browser-checks).
 
 The dependency audit includes development dependencies. Run `npm run security:setup` to install the pinned Trivy binary and `npm run security:images` on the Docker host to scan its running images. Detailed reports stay in `backend/logs/security/`. [Security runbook](docs/intents/infra/security-monitoring.md#manual-operation) · [npm audit documentation](https://docs.npmjs.com/cli/v11/commands/npm-audit/) · [Trivy vulnerability scanning](https://trivy.dev/docs/latest/guide/scanner/vulnerability/)
 
@@ -139,7 +141,7 @@ The dependency audit includes development dependencies. Run `npm run security:se
 - **SEO and performance.** JSON-LD, 10 prerendered routes, and a multilingual sitemap. CI checks bundle size and runs Lighthouse. [Build and SEO rules](.claude/rules/frontend-build.md)
 - **Security.** The app sanitizes blog HTML and validates uploads. Scheduled checks audit dependencies and running images and verify encrypted backups can be restored. [Backend security](.claude/rules/backend.md#security) · [Security operations](docs/intents/infra/security-operations.md)
 - **Privacy policy.** Korean and English pages cover collection, retention, and user rights at `/privacy` and `/en/privacy`.
-- **Tests.** Vitest (1301 tests), Django unittest (455 tests), Node sitemap regression tests (12 tests), and Playwright E2E (5 profiles).
+- **Tests.** Vitest (1301 tests), Django unittest (455 tests), Node sitemap regression tests (12 tests), and Playwright E2E (5 default profiles).
 - **CI/CD.** GitHub Actions checks pull requests, deploys verified `main` commits, and monitors deployment drift. [CI and deployment rules](.claude/rules/ci.md)
 
 ## Documentation

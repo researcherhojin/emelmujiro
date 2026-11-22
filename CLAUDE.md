@@ -79,6 +79,8 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 
 **Two-device sync helpers**: two artifacts don't move via `git push` — `.private/` (via `./scripts/dev/sync-private.sh push|pull|dry`, never `--delete`) and the deploy-host/production drift report (`./scripts/dev/check-machine-sync.sh`). Run the second before any push if a session may have happened on the other machine; it caught a silent 16-commit production drift. Host details in `.private/operations.md`.
 
+**Public and local files.** Keep host runbooks in `.private/` and personal agent instructions in `*.local.md` files. Review shared rules and hooks as public files. See Local-only files in [CONTRIBUTING.md](CONTRIBUTING.md).
+
 **Umami analytics**: self-hosted behind nginx, not publicly exposed; the dashboard is not routed and only the tracking endpoint is proxied. Secrets live in the gitignored root `.env` and are required via `${VAR:?}`. Ports, the exact nginx location and the data-destroying password-reset procedure: `.private/operations.md`.
 
 ## Code Conventions
@@ -141,7 +143,7 @@ Quick code-level traps that cost time when missed. Each entry is its bold rule. 
 6. **Never run `npm audit fix` (or `--force`)** — `--force` downgrades `@lhci/cli` (from `0.16.0`) and destroys Lighthouse CI; the offered `fixAvailable` target moves with the advisory set (`0.1.0`, then `0.12.0`, then `0.3.5` on 2026-10-22).
 7. **`frontend/.env.production` is intentionally tracked in git** — `.gitignore` line 5 has `!frontend/.env.production` (negation pattern). Do **not** `git rm` it — it's load-bearing for `scripts/deploy/auto-deploy.sh`.
 8. **Dependabot does NOT bump react and react-dom together** — its pairing of a package with its `@types/*` companion covers `react-dom` + `@types/react-dom`, not `react`, and no `react*` group exists on the surviving `/` npm ecosystem. Vitest then crashes with `Incompatible React versions`.
-9. **E2E nav selectors must scope to `<nav aria-label="Main navigation">`** — Korean nav labels (`강의이력`, `인사이트`, `문의하기`) appear in BOTH top navbar AND the footer's `메뉴 목록`, so a bare `getByRole('button', { name: '강의이력' })` hits Playwright strict-mode and fails.
+9. **Scope E2E selectors to their landmarks.** Navigation and footer labels can overlap. Use the `Main navigation` landmark for navigation and `getByRole('main')` for page content. Check the localized heading and subtitle inside that landmark.
 10. **A CI-skip marker in a commit message body causes self-skip — now rejected by `scripts/repo/check-commit-msg.sh`** — GitHub Actions parses the **entire** commit message (subject + body) for all five markers (`[skip ci]`, `[ci skip]`, `[no ci]`, `[skip actions]`, `[actions skip]`), so documenting the mechanism in prose skips CI for that commit.
 11. **`set -e` does NOT exit on `FOO=$(failing_cmd)`** — command substitution masks the exit code. Use `if ! FOO=$(cmd); then exit 1; fi` when the exit code matters. Both `scripts/repo/update-test-counts.sh` (was reading passing-count from failing test run) and `scripts/deploy/auto-deploy.sh` (was reporting success after health check timeout) had this bug. See `99e1a81`.
 12. **`Auto-Merge Dependabot` job auto-merges only `semver-patch`** — `pr-checks.yml`'s `Merge patch updates` step runs a retried bare `gh pr merge --squash` only for `version-update:semver-patch`; patch + minor are auto-approved by `Auto-approve patch and minor updates`, and minor + major are **held for human review**.

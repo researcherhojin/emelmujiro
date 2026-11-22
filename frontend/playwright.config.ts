@@ -1,4 +1,8 @@
+/// <reference types="node" />
+
 import { defineConfig, devices } from '@playwright/test';
+
+const braveExecutable = process.env.PLAYWRIGHT_BRAVE_EXECUTABLE;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -49,6 +53,17 @@ export default defineConfig({
       name: 'Mobile Safari',
       use: { ...devices['iPhone 12'] },
     },
+    ...(braveExecutable
+      ? [
+          {
+            name: 'Mobile Brave',
+            use: {
+              ...devices['Pixel 5'],
+              launchOptions: { executablePath: braveExecutable },
+            },
+          },
+        ]
+      : []),
 
     /* Test against branded browsers. */
     // {

@@ -1,3 +1,5 @@
+# cspell:ignore netrc pgpass
+
 # Environment variables
 .env
 .env.*
@@ -101,6 +103,8 @@ Thumbs.db
 !.claude/settings.json
 # Shared workflow: the /intent and gotchas skills and the intent-reviewer subagent. Other skills under .claude/skills/ are per-machine installs and stay ignored.
 !.claude/agents/
+/.claude/agents/*
+!/.claude/agents/intent-reviewer.md
 !.claude/skills/
 .claude/skills/*
 !.claude/skills/intent/
@@ -108,11 +112,18 @@ Thumbs.db
 
 # Internal-only notes — never tracked
 .private/
+*.local.md
 
 # Per-machine session state (codex, etc.)
 .context/
+/.codex/
 
 # Secrets / credentials — prevent accidental commit
+/.aws/
+/.ssh/
+.netrc
+.pgpass
+*.cms
 *.pem
 *.key
 *.p12
@@ -120,6 +131,7 @@ Thumbs.db
 *.crt
 *.jks
 id_rsa*
+id_ecdsa*
 id_ed25519*
 .htpasswd
 

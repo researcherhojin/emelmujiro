@@ -40,6 +40,24 @@ See the [README commands](README.md#useful-commands) and [single-test invocation
 - **Container images**: PostgreSQL, Umami and nginx security recipes live under `docker/`. After changing one, run `sh docker/postgres/verify.sh`, build Umami and run `sh docker/umami/verify.sh`, or build `docker/nginx` and run `sh docker/nginx/verify.sh <image> frontend/nginx.conf`; each uses disposable containers (and Umami a disposable network) and removes them. PR CI's `Docker Images` job runs the same build and check for any PR that changes a file other than Markdown in one of those directories; the nginx check also runs on a `docker-compose.yml` or `frontend/nginx.conf` change.
 - **Browser artifacts**: `.playwright-cli/` and `output/playwright/` are local generated output, excluded from Git and spelling checks.
 
+### Mobile browser checks
+
+Install Chromium and WebKit from `frontend/` before running the mobile checks.
+
+```bash
+npx playwright install chromium webkit
+npm run test:e2e -- --project "Mobile Chrome" --project "Mobile Safari"
+PLAYWRIGHT_BRAVE_EXECUTABLE="/path/to/Brave Browser" npm run test:e2e -- --project "Mobile Brave"
+```
+
+The Brave project uses the installed desktop executable with the Pixel 5 viewport and touch profile. Verify Brave Shields and device-specific behavior in the mobile app when those are in scope. [Playwright browser emulation](https://playwright.dev/docs/browsers) · [Brave browser engines and Shields](https://brave.com/about/)
+
+## Local-only files
+
+Keep private runbooks, host details, and personal agent instructions under `.private/` or in `*.local.md` files. Store credentials in the environment or in local credential files. Use `git check-ignore -v -- <path>` to check the rule for an untracked file and `git ls-files -- <path>` to check whether Git already tracks it. Ignore rules apply to untracked files. If a credential reaches a commit, revoke or rotate it first. [Git ignore rules](https://git-scm.com/docs/gitignore) · [GitHub sensitive data guidance](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository)
+
+Treat `frontend/.env.production` as public build configuration. Vite can bundle `VITE_*` values into browser assets. [Vite environment variables](https://vite.dev/guide/env-and-mode#env-variables)
+
 ## Questions
 
 - [GitHub Issues](https://github.com/researcherhojin/emelmujiro/issues)

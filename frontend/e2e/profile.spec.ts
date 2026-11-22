@@ -6,8 +6,11 @@ test.describe('Teaching History Page', () => {
   });
 
   test('displays page title and subtitle', async ({ page }) => {
-    await expect(page.locator('h1')).toBeVisible();
-    await expect(page.getByText('TEACHING HISTORY')).toBeVisible();
+    const main = page.getByRole('main');
+    await expect(main.getByRole('heading', { level: 1, name: '강의이력' })).toBeVisible();
+    await expect(
+      main.getByText('기업 · 공공기관 · 대학교 대상 AI 교육 이력', { exact: true })
+    ).toBeVisible();
   });
 
   test('displays year sections with teaching entries', async ({ page }) => {

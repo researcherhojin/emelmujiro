@@ -7,6 +7,7 @@ Full-stack monorepo (**React 19 + Vite** frontend, **Django 6 + DRF** backend), 
 ## Read first by task
 
 - UI / page work → `.claude/rules/frontend.md`
+- Browser checks → Mobile browser checks in [CONTRIBUTING.md](CONTRIBUTING.md)
 - Backend / API / migrations → `.claude/rules/backend.md`
 - Build, deploy, CI, or a red check → `.claude/rules/ci.md` + `.claude/rules/frontend-build.md` + `.claude/rules/backend.md` (migrations) + `CLAUDE.md` → `Constraints`.
 - Running containers and log checks → [README deployment checks](README.md) and [CI operational logs](.claude/rules/ci.md).
@@ -84,6 +85,7 @@ cd backend && DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPI
 - **Never run `npm audit fix` / `--force`** — it downgrades `@lhci/cli` and destroys Lighthouse CI (the advisory's offered target moves: `0.1.0`, `0.12.0`, `0.3.5`).
 - Keep every root `package.json` `overrides` entry; each one is tested against its consumers (Gotchas #3, #6, #14). npm reads `overrides` only from the root, so never add them to `frontend/package.json`. Sibling `@tiptap/*` deps must all share one `^3.x` pin (or `Node`/`MISSING_EXPORT` errors appear).
 - **Never put a literal secret in a command you run.** Agent tools can store approved commands verbatim in local settings, and one stored command once held the live deploy secret (`.claude/rules/claude-config.md`). Read secrets from a file or variable inside the command.
+- Keep shared instructions in this file, `CLAUDE.md` and `.claude/rules/`. Put personal instructions and private host notes in `.private/` or `*.local.md` files. See Local-only files in [CONTRIBUTING.md](CONTRIBUTING.md).
 - `main` has **no required status checks** — direct push to `main` is the intentional solo hotfix path; guardrails are the drift/watchdog workflows, not CI blocking.
 - Spelling: run `npx cspell trace <word>` first — the `npm`, `softwareTerms` and `software-tools` dictionaries are on, so package names usually need nothing. A **real word** they miss goes in `cspell.json`'s `words`; a **deliberate non-word** goes in a file-scoped `# cspell:ignore` comment, not the dictionary.
 

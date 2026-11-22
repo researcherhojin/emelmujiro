@@ -21,6 +21,7 @@
     "eslint.config.ts",
     "tailwind.config.mts",
     "postcss.config.mts",
+    "playwright.config.ts",
     "types/*.d.ts"
   ]
 }

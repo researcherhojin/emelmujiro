@@ -1,6 +1,6 @@
 /**
- * Tailwind CSS 4 entry. The theme, dark mode and typography plugin still live
- * in tailwind.config.mts, loaded through @config. Sources are listed explicitly
+ * Tailwind CSS 4 entry. Colors, dark mode and the typography plugin live in
+ * tailwind.config.mts, loaded through @config. Sources are listed explicitly
  * (source(none)) so test files and e2e specs never emit utilities, as the v3
  * `content` exclusions did.
  */
@@ -13,6 +13,104 @@
 @source not "./**/*.test.{js,jsx,ts,tsx}";
 @source not "./setupTests.ts";
 @source not "./test-utils/**";
+
+@theme inline {
+  --animate-scroll: scroll 32s linear infinite;
+  --animate-scroll-reverse: scroll-reverse 32s linear infinite;
+  --animate-scroll-testimonial: scroll-testimonial 32s linear infinite;
+  --animate-scroll-testimonial-reverse: scroll-testimonial-reverse 32s linear infinite;
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  --animate-fade-up-sm: fade-up-sm 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  --animate-fade-up-delay: fade-up-delay 0.4s ease-out 0.2s forwards;
+  --animate-dot-bounce: dot-bounce 0.6s ease-in-out infinite;
+  --animate-scale-pulse: scale-pulse 1.5s ease-in-out infinite;
+
+  /* Both carousels render two copies, so a half-width shift loops seamlessly. */
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes scroll-reverse {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  @keyframes scroll-testimonial {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes scroll-testimonial-reverse {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fade-up-sm {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fade-up-delay {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes dot-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(-10px);
+      opacity: 0.5;
+    }
+  }
+  @keyframes scale-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.5);
+      opacity: 0.5;
+    }
+  }
+}
 
 /*
  * v4 changed the default border color from gray-200 to currentColor; this
