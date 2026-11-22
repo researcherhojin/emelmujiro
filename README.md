@@ -78,6 +78,8 @@ npm run dev                                               # Frontend :5173 + Bac
 
 The local and Docker backends both use port 8000, so run one at a time.
 
+For a local Compose stack, the root `.env` supplies port settings and the two Umami credentials. Use URL-safe values in place of the placeholders in `.env.example`. Compose reads Django server settings separately from `backend/.env.production`. [Docker Compose interpolation](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/)
+
 ### Useful Commands
 
 Run from the repo root unless noted otherwise.

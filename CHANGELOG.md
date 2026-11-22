@@ -8,6 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(tooling): pass staged paths as separate arguments to the frontend and backend linters and test paths containing spaces in CI. Preserve unrelated cron jobs and clear the refresh marker after removing the project's schedules. Keep retention days out of shell command text, remove legacy Compose flags from the environment template, exclude backend test modules from Codecov, and include frontend CSS in Knip's project files.
 - fix(backend): limit security statistics error handling to Django database errors and document the weekly compatibility review and editor checks.
 - fix(compat): register Link and Underline once with Tiptap 3, drop the removed Django XSS filter setting from configuration and security checks, and disable the legacy filter on Django and nginx responses.
 - fix(backend): paginate and serialize public English search results from the rows checked for translation freshness. An edit between the search and pagination no longer leaves a result with its English translation missing.

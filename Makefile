@@ -26,14 +26,11 @@ setup-dev-machine:
 
 # verify-setup: standalone setup health check. Used by setup-dev-machine.sh
 # Phase 9 AND can be run independently after manual setup or as a sanity
-# check on an existing machine. Each step echoes ✓/✗ — exits non-zero on
-# any failure.
+# check on an existing machine. Missing Chromium warns so local development
+# can continue without it.
 #
-# NOTE: production .env files (backend/.env.production, frontend/.env.production)
-# are intentionally NOT checked here. They only exist on Mac mini (the
-# auto-deploy source) and in CI secrets — by design they never reach a
-# dev-only machine like a MacBook. See setup-dev-machine.sh header for
-# the least-privilege rationale.
+# Backend production secrets live on the deploy host. The tracked
+# frontend/.env.production contains public build settings.
 verify-setup:
 	@echo "═══ verify-setup ═══"
 	@command -v node >/dev/null 2>&1 && echo "✓ node $$(node --version)" || (echo "✗ node not on PATH"; exit 1)
@@ -134,88 +131,87 @@ createsuperuser:
 update-test-counts:
 	./scripts/repo/update-test-counts.sh
 
+cleanup-visits: export VISIT_RETENTION_DAYS = $(if $(DAYS),$(DAYS),90)
 cleanup-visits:
-	@SAFE_DAYS="$(if $(DAYS),$(DAYS),90)"; \
-	if ! echo "$$SAFE_DAYS" | grep -qE '^[0-9]+$$'; then \
-		echo "Error: DAYS must be a number"; exit 1; \
-	fi; \
-	docker compose exec backend /app/.venv/bin/python manage.py cleanup_sitevisits --days "$$SAFE_DAYS"
+	@case "$$VISIT_RETENTION_DAYS" in ''|*[!0-9]*) echo "Error: DAYS must be a number" >&2; exit 1 ;; esac; \
+	docker compose exec backend /app/.venv/bin/python manage.py cleanup_sitevisits --days "$$VISIT_RETENTION_DAYS"
+
+define read-crontab
+CRON_COPY="$$(mktemp)" || exit 1; \
+trap 'rm -f "$$CRON_COPY" "$$CRON_COPY.err"' EXIT HUP INT TERM; \
+if ! LC_ALL=C crontab -l > "$$CRON_COPY" 2> "$$CRON_COPY.err"; then \
+	if ! grep -q 'no crontab for' "$$CRON_COPY.err"; then cat "$$CRON_COPY.err" >&2; exit 1; fi; \
+fi;
+endef
 
 setup-cron:
-	@mkdir -p $(CURDIR)/backend/logs
+	@mkdir -p '$(CURDIR)/backend/logs'
 	@DOCKER_BIN="$$(command -v docker)"; \
 	if [ -z "$$DOCKER_BIN" ]; then \
 		echo "Error: docker not found in PATH. Install Docker Desktop first."; exit 1; \
 	fi; \
 	echo "Adding daily SiteVisit cleanup cron job (3 AM)..."; \
 	echo "Using docker binary: $$DOCKER_BIN"; \
-	(crontab -l 2>/dev/null | grep -v cleanup_sitevisits; \
-	 echo "0 3 * * * cd '$(CURDIR)' && $$DOCKER_BIN compose exec -T backend /app/.venv/bin/python manage.py cleanup_sitevisits --days 90 >> '$(CURDIR)/backend/logs/sitevisit-cleanup.log' 2>&1") | crontab -; \
+	$(read-crontab) \
+	(grep -Fv "'$(CURDIR)/backend/logs/sitevisit-cleanup.log'" "$$CRON_COPY"; \
+	 echo "0 3 * * * cd '$(CURDIR)' && '$$DOCKER_BIN' compose exec -T backend /app/.venv/bin/python manage.py cleanup_sitevisits --days 90 >> '$(CURDIR)/backend/logs/sitevisit-cleanup.log' 2>&1") | crontab - || exit 1; \
 	echo "Cron job added. Verify with: crontab -l"
 
 setup-token-cron: ## Remove expired JWT records daily without invalidating active tokens
-	@mkdir -p $(CURDIR)/backend/logs
+	@mkdir -p '$(CURDIR)/backend/logs'
 	@DOCKER_BIN="$$(command -v docker)"; \
 	if [ -z "$$DOCKER_BIN" ]; then \
 		echo "Error: docker not found in PATH."; exit 1; \
 	fi; \
-	CRON_COPY="$$(mktemp)" || exit 1; \
-	trap 'rm -f "$$CRON_COPY" "$$CRON_COPY.err"' EXIT HUP INT TERM; \
-	if ! LC_ALL=C crontab -l > "$$CRON_COPY" 2> "$$CRON_COPY.err"; then \
-		if ! grep -q 'no crontab for' "$$CRON_COPY.err"; then \
-			cat "$$CRON_COPY.err" >&2; exit 1; \
-		fi; \
-	fi; \
-	(grep -v 'manage.py flushexpiredtokens' "$$CRON_COPY"; \
-	 echo "15 3 * * * cd '$(CURDIR)' && $$DOCKER_BIN compose exec -T backend /app/.venv/bin/python manage.py flushexpiredtokens >> '$(CURDIR)/backend/logs/token-cleanup.log' 2>&1") | crontab -
+	$(read-crontab) \
+	(grep -Fv "'$(CURDIR)/backend/logs/token-cleanup.log'" "$$CRON_COPY"; \
+	 echo "15 3 * * * cd '$(CURDIR)' && '$$DOCKER_BIN' compose exec -T backend /app/.venv/bin/python manage.py flushexpiredtokens >> '$(CURDIR)/backend/logs/token-cleanup.log' 2>&1") | crontab -
 
 setup-security-cron: ## Schedule private backups, restore checks, and full security scans
-	@mkdir -p $(CURDIR)/backend/logs
+	@mkdir -p '$(CURDIR)/backend/logs'
 	@NODE_BIN="$$(command -v node)"; \
 	if [ -z "$$NODE_BIN" ]; then echo "Error: node not found."; exit 1; fi; \
-	CRON_COPY="$$(mktemp)" || exit 1; \
-	trap 'rm -f "$$CRON_COPY" "$$CRON_COPY.err"' EXIT HUP INT TERM; \
-	if ! LC_ALL=C crontab -l > "$$CRON_COPY" 2> "$$CRON_COPY.err"; then \
-		if ! grep -q 'no crontab for' "$$CRON_COPY.err"; then cat "$$CRON_COPY.err" >&2; exit 1; fi; \
-	fi; \
-	(grep -v 'scripts/security/scheduled-security.ts' "$$CRON_COPY"; \
+	$(read-crontab) \
+	(grep -Fv "'$(CURDIR)/backend/logs/security-schedule.log'" "$$CRON_COPY"; \
 	 echo "0 2 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/security/scheduled-security.ts >> '$(CURDIR)/backend/logs/security-schedule.log' 2>&1") | crontab -
 
 setup-triage-cron: ## Triage failed dependency or image scans into a draft PR at 02:40
-	@mkdir -p $(CURDIR)/backend/logs
+	@mkdir -p '$(CURDIR)/backend/logs'
 	@NODE_BIN="$$(command -v node)"; \
 	if [ -z "$$NODE_BIN" ]; then echo "Error: node not found."; exit 1; fi; \
-	CRON_COPY="$$(mktemp)" || exit 1; \
-	trap 'rm -f "$$CRON_COPY" "$$CRON_COPY.err"' EXIT HUP INT TERM; \
-	if ! LC_ALL=C crontab -l > "$$CRON_COPY" 2> "$$CRON_COPY.err"; then \
-		if ! grep -q 'no crontab for' "$$CRON_COPY.err"; then cat "$$CRON_COPY.err" >&2; exit 1; fi; \
-	fi; \
-	(grep -v 'scripts/security/triage-alarm.ts' "$$CRON_COPY"; \
+	$(read-crontab) \
+	(grep -Fv "'$(CURDIR)/backend/logs/security-triage.log'" "$$CRON_COPY"; \
 	 echo "40 2 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/security/triage-alarm.ts >> '$(CURDIR)/backend/logs/security-triage.log' 2>&1") | crontab -
 
 setup-health-cron: ## Install health check cron (every 5 min, logs failures and warnings only)
-	@mkdir -p $(CURDIR)/backend/logs
+	@mkdir -p '$(CURDIR)/backend/logs'
 	@echo "Adding health check cron job (every 5 min)..."
-	@(crontab -l 2>/dev/null | grep -v health-check; \
+	@$(read-crontab) \
+	(grep -Fv "'$(CURDIR)/backend/logs/health-check.log'" "$$CRON_COPY"; \
 	 echo "*/5 * * * * cd '$(CURDIR)' && ./scripts/deploy/health-check.sh --quiet >> '$(CURDIR)/backend/logs/health-check.log' 2>&1") | crontab -
 	@echo "Cron job added. Verify with: crontab -l"
 	@echo "Failures will be logged to: backend/logs/health-check.log"
 
 remove-cron:
-	@echo "Removing cron jobs..."
-	@(crontab -l 2>/dev/null | grep -v cleanup_sitevisits | grep -v health-check | grep -v flushexpiredtokens | grep -v scheduled-security | grep -v refresh-images) | crontab -
-	@echo "Cron jobs removed."
+	@$(read-crontab) \
+	if [ -s "$$CRON_COPY" ]; then \
+		grep -Fv \
+			-e "'$(CURDIR)/backend/logs/sitevisit-cleanup.log'" \
+			-e "'$(CURDIR)/backend/logs/token-cleanup.log'" \
+			-e "'$(CURDIR)/backend/logs/security-schedule.log'" \
+			-e "'$(CURDIR)/backend/logs/security-triage.log'" \
+			-e "'$(CURDIR)/backend/logs/health-check.log'" \
+			-e "'$(CURDIR)/backend/logs/image-refresh.log'" "$$CRON_COPY" | crontab - || exit 1; \
+	fi; \
+	rm -f '$(CURDIR)/backend/logs/security/refresh-enabled' || exit 1; \
+	echo "Project cron jobs removed."
 
 
 setup-image-refresh-cron: ## Schedule verified image builds and automatic replacement nightly
 	@mkdir -p '$(CURDIR)/backend/logs/security'
 	@NODE_BIN="$$(command -v node)"; \
 	if [ -z "$$NODE_BIN" ]; then echo "Error: node not found."; exit 1; fi; \
-	CRON_COPY="$$(mktemp)" || exit 1; \
-	trap 'rm -f "$$CRON_COPY" "$$CRON_COPY.err"' EXIT HUP INT TERM; \
-	if ! LC_ALL=C crontab -l > "$$CRON_COPY" 2> "$$CRON_COPY.err"; then \
-		if ! grep -q 'no crontab for' "$$CRON_COPY.err"; then cat "$$CRON_COPY.err" >&2; exit 1; fi; \
-	fi; \
-	if ! (grep -v 'scripts/maintenance/refresh-images.ts' "$$CRON_COPY"; \
+	$(read-crontab) \
+	if ! (grep -Fv "'$(CURDIR)/backend/logs/image-refresh.log'" "$$CRON_COPY"; \
 	 echo "30 0 * * * cd '$(CURDIR)' && '$$NODE_BIN' scripts/maintenance/refresh-images.ts >> '$(CURDIR)/backend/logs/image-refresh.log' 2>&1") | crontab -; then exit 1; fi; \
 	touch '$(CURDIR)/backend/logs/security/refresh-enabled'

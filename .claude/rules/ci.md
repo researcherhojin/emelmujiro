@@ -48,6 +48,7 @@ Never substitute an image tag for a running container's image ID.
 
 - **cron's `PATH` is `/usr/bin:/bin`, which has no `docker`.** Call it by absolute path (`make setup-cron` bakes in `command -v docker`) or prepend the Docker paths in the script, as `auto-deploy.sh` and `health-check.sh` do. A bare `docker` made every `health-check.sh` cron run exit `127` before its first check (28727c6a). Test a cron script with `env -i PATH=/usr/bin:/bin HOME=$HOME`, not from a login shell.
 - **All three Django file logs rotate**: `access.log`, `debug.log` and `security.log` are each a `RotatingFileHandler` capped at 5 MB with 3 backups (`backupCount: 3`, so 4 files, ~20 MB). Copy that shape (#605, #606) for any new file log; the cron-written `backend/logs/health-check.log` is outside Django and not rotated by it.
+- **Cron targets preserve other jobs.** The `Makefile` identifies entries by their repo-specific log paths. `make remove-cron` removes the six schedules for the current checkout and clears the refresh watchdog marker after a successful crontab write. The regression test uses a stub crontab.
 
 **CI job gating: no PR job waits on a precondition job, and every cosmetic or policy check lives in `Repo Checks (informational)`, which nothing depends on.**
 

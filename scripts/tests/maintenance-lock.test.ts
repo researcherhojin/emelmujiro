@@ -105,3 +105,65 @@ test('cron installation failure does not arm refresh; successful installation pr
   assert.match(cron, /30 0 \* \* \*/);
   assert.match(cron, /backend\/logs\/image-refresh.log/);
 });
+
+test('cron removal preserves other jobs and only disarms refresh after a successful write', (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'remove cron '));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const bin = path.join(directory, 'bin');
+  const marker = path.join(directory, 'backend/logs/security/refresh-enabled');
+  const capture = path.join(directory, 'captured');
+  fs.mkdirSync(bin);
+  fs.mkdirSync(path.dirname(marker), { recursive: true });
+  fs.writeFileSync(marker, '');
+  fs.writeFileSync(
+    path.join(directory, 'original'),
+    [
+      `40 2 * * * cd '${directory}' && node scripts/security/triage-alarm.ts >> '${directory}/backend/logs/security-triage.log' 2>&1`,
+      `30 0 * * * cd '${directory}' && node scripts/maintenance/refresh-images.ts >> '${directory}/backend/logs/image-refresh.log' 2>&1`,
+      "30 0 * * * cd '/another checkout' && node scripts/maintenance/refresh-images.ts >> '/another checkout/backend/logs/image-refresh.log' 2>&1",
+      '0 3 * * * existing-job',
+    ].join('\n') + '\n'
+  );
+  fs.writeFileSync(
+    path.join(bin, 'crontab'),
+    '#!/bin/sh\nif [ "$1" = -l ]; then\n  if [ "$CRON_READ" -ne 0 ]; then echo "read failed" >&2; exit "$CRON_READ"; fi\n  cat "$CRON_ORIGINAL"; exit 0\nfi\ncat > "$CRON_CAPTURE"\nexit "$CRON_WRITE"\n',
+    { mode: 0o700 }
+  );
+
+  for (const [read, write] of [
+    ['1', '0'],
+    ['0', '1'],
+    ['0', '0'],
+  ]) {
+    const result = spawnSync(
+      'make',
+      [
+        '-f',
+        new URL('../../Makefile', import.meta.url).pathname,
+        'remove-cron',
+        `CURDIR=${directory}`,
+      ],
+      {
+        env: {
+          ...process.env,
+          PATH: `${bin}:${process.env.PATH}`,
+          CRON_ORIGINAL: path.join(directory, 'original'),
+          CRON_CAPTURE: capture,
+          CRON_READ: read,
+          CRON_WRITE: write,
+        },
+        encoding: 'utf8',
+      }
+    );
+    const success = read === '0' && write === '0';
+    assert.equal(result.status === 0, success, result.stderr);
+    assert.equal(fs.existsSync(marker), !success);
+    if (read !== '0') assert.equal(fs.existsSync(capture), false);
+  }
+
+  const cron = fs.readFileSync(capture, 'utf8');
+  assert.match(cron, /existing-job/);
+  assert.match(cron, /another checkout.*image-refresh\.log/);
+  assert.doesNotMatch(cron, /security-triage\.log/);
+  assert.ok(!cron.includes(directory));
+});

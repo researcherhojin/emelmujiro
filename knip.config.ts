@@ -24,7 +24,7 @@ const config: KnipConfig = {
     },
     frontend: {
       entry: ['src/App.tsx', 'scripts/*.ts', 'scripts/visual-diff/*.ts'],
-      project: ['src/**/*.{ts,tsx}'],
+      project: ['src/**/*.{ts,tsx,css}'],
       ignore: [
         // Test helpers (renderWithProviders, etc.) — imported from test files only
         'src/test-utils/**',

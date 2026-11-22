@@ -25,7 +25,7 @@ Full-stack monorepo (React 19 + Django 6), self-hosted via Docker behind a Cloud
 - **Frontend**: http://localhost:5173 (Vite, NOT port 3000). Build output: `build/` (NOT `dist/`). Import alias `@` → `src/`
 - **Backend**: http://localhost:8000. Single app: `api/`. Uses **uv** (NOT pip)
 - **Dev proxy**: Vite proxies `/api` → `http://127.0.0.1:8000` (no CORS issues in dev)
-- **`scripts/` holds folders only** (plus `package.json`, `tsconfig.json`): `deploy/`, `security/`, `maintenance/`, `backup/`, `repo/` (CI and hook checks), `dev/` (local machine), `shared/`, `tests/`. A new script goes into one of them; host crontab, launchd and LaunchAgent entries name these paths, so a move needs the host switched in the same change (#712).
+- **Put new scripts in a named subdirectory of `scripts/`.** Its root holds `package.json` and `tsconfig.json`. Host crontab and launchd entries refer to script paths, so update those references when moving a script (#712).
 - **Node ≥ 24**, **Python 3.12** required. Husky runs lint-staged on `pre-commit`, `scripts/repo/check-commit-msg.sh` on `commit-msg`, and `scripts/repo/check-changelog.sh` on a `pre-push` to `main` (warns, never blocks)
 
 > Maintainer-local, gitignored, synced via `scripts/dev/sync-private.sh`: design rationale in `.private/strategy.md`; session log + opsec notes in `.private/journal.md`; secret setup in `.private/secrets-setup.md`; **host topology, deploy forensics and incident history in `.private/operations.md`**. The repo is public, so those moved out on 2026-09-28; each entry left an actionable summary behind, and this file remains the source of truth for the rules themselves. Past git history (pre-`01c4db8`) retains earlier strategy versions.
