@@ -3262,7 +3262,11 @@ class DjangoAdminTestCase(TestCase):
         from .admin import ContactAdmin
 
         contact = Contact.objects.create(
-            name="Tester", email="t@test.com", subject="Subj", message="Message here", ip_address="1234567890123456789"
+            name="Tester",
+            email="t@test.com",
+            subject="Subj",
+            message="Message here",
+            ip_address="2001:db8:1234:5678::1",
         )
         admin_instance = ContactAdmin(Contact, admin.site)
         result = admin_instance.ip_address_short(contact)
@@ -3406,7 +3410,7 @@ class DjangoAdminTestCase(TestCase):
         """ip_address_short truncates long IP"""
         from .admin import NewsletterSubscriptionAdmin
 
-        sub = NewsletterSubscription.objects.create(email="n@test.com", ip_address="1234567890123456789")
+        sub = NewsletterSubscription.objects.create(email="n@test.com", ip_address="2001:db8:1234:5678::1")
         admin_instance = NewsletterSubscriptionAdmin(NewsletterSubscription, admin.site)
         result = admin_instance.ip_address_short(sub)
         self.assertTrue(result.endswith("..."))
