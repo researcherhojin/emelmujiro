@@ -1,9 +1,11 @@
-from django.core.management.base import BaseCommand
-from django.core.cache import cache
-from django.conf import settings
-from django.utils import timezone
-from datetime import timedelta
 import logging
+from datetime import timedelta
+
+from django.conf import settings
+from django.core.cache import cache
+from django.core.management.base import BaseCommand
+from django.db import DatabaseError
+from django.utils import timezone
 
 from api.constants import block_count_key, rate_limit_key, temp_block_key
 
@@ -54,7 +56,6 @@ class Command(BaseCommand):
 
         # 2. Check security headers
         security_headers = [
-            "SECURE_BROWSER_XSS_FILTER",
             "SECURE_CONTENT_TYPE_NOSNIFF",
             "X_FRAME_OPTIONS",
         ]
@@ -106,27 +107,19 @@ class Command(BaseCommand):
         """Display security statistics"""
         self.stdout.write(self.style.SUCCESS("=== 보안 통계 ==="))
 
-        # In production, fetch stats from the database
         from api.models import ContactAttempt, SiteVisit
 
+        now = timezone.now()
+        today = now.date()
         try:
-            # Today's stats
-            today = timezone.now().date()
             today_contacts = ContactAttempt.objects.filter(last_attempt__date=today).count()
-
             today_visits = SiteVisit.objects.filter(visit_time__date=today).count()
+            week_contacts = ContactAttempt.objects.filter(last_attempt__gte=now - timedelta(days=7)).count()
+        except DatabaseError as exc:
+            self.stdout.write(self.style.ERROR(f"통계 조회 중 오류 발생: {exc!s}"))
+            return
 
-            # Weekly stats
-            week_ago = timezone.now() - timedelta(days=7)
-            week_contacts = ContactAttempt.objects.filter(last_attempt__gte=week_ago).count()
-
-            # No blocked-IP count: FileBasedCache stores keys as hashed file
-            # names, so temp_block_key() entries cannot be enumerated. The
-            # count this printed was a hardcoded 0; `--action=unblock --ip <ip>` clears one.
-
-            self.stdout.write(f"📊 오늘 문의 시도: {today_contacts}건")
-            self.stdout.write(f"📊 오늘 사이트 방문: {today_visits}건")
-            self.stdout.write(f"📊 주간 문의 시도: {week_contacts}건")
-
-        except Exception as e:
-            self.stdout.write(self.style.ERROR(f"통계 조회 중 오류 발생: {str(e)}"))
+        # FileBasedCache hashes keys, so blocked IPs cannot be counted here.
+        self.stdout.write(f"📊 오늘 문의 시도: {today_contacts}건")
+        self.stdout.write(f"📊 오늘 사이트 방문: {today_visits}건")
+        self.stdout.write(f"📊 주간 문의 시도: {week_contacts}건")

@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
+import { Editor, type EditorOptions } from '@tiptap/react';
 import { vi } from 'vitest';
 
 // Mock logger
@@ -41,6 +42,7 @@ const mockEditor = {
 let useEditorReturn: typeof mockEditor | null = null;
 // Capture the config passed to useEditor so we can invoke callbacks
 interface EditorConfig {
+  extensions: EditorOptions['extensions'];
   onUpdate: (params: { editor: { getHTML: () => string; getText: () => string } }) => void;
   editorProps: {
     handleDrop: (view: unknown, event: DragEvent, slice: unknown, moved: boolean) => boolean;
@@ -49,27 +51,14 @@ interface EditorConfig {
 }
 let capturedConfig: EditorConfig | null = null;
 
-vi.mock('@tiptap/react', () => ({
+vi.mock('@tiptap/react', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@tiptap/react')>()),
   useEditor: (config: EditorConfig) => {
     capturedConfig = config;
     return useEditorReturn;
   },
   EditorContent: ({ editor }: { editor: unknown }) =>
     editor ? <div data-testid="editor-content">Editor Content</div> : null,
-}));
-
-vi.mock('@tiptap/starter-kit', () => ({ default: { configure: vi.fn() } }));
-vi.mock('@tiptap/extension-placeholder', () => ({ default: { configure: vi.fn() } }));
-vi.mock('@tiptap/extension-image', () => ({ default: { configure: vi.fn() } }));
-vi.mock('@tiptap/extension-link', () => ({ default: { configure: vi.fn() } }));
-vi.mock('@tiptap/extension-underline', () => ({ default: {} }));
-vi.mock('@tiptap/extension-task-list', () => ({ default: {} }));
-vi.mock('@tiptap/extension-task-item', () => ({ default: { configure: vi.fn() } }));
-vi.mock('@tiptap/extension-typography', () => ({ default: {} }));
-vi.mock('@tiptap/extension-code-block-lowlight', () => ({ default: { configure: vi.fn() } }));
-vi.mock('lowlight', () => ({
-  common: {},
-  createLowlight: vi.fn().mockReturnValue({}),
 }));
 
 // Mock child components that depend on editor internals
@@ -138,6 +127,21 @@ describe('TipTapEditor', () => {
     render(<TipTapEditor onChange={mockOnChange} />);
     // Component should use t('blog.editorPlaceholder') as fallback
     expect(screen.getByTestId('editor-content')).toBeInTheDocument();
+  });
+
+  it('registers each extension once and preserves the custom link options', () => {
+    render(<TipTapEditor onChange={mockOnChange} />);
+    const editor = new Editor({ element: null, extensions: capturedConfig!.extensions });
+
+    try {
+      const extensions = editor.extensionManager.extensions;
+      const names = extensions.map(({ name }) => name);
+      expect(new Set(names).size).toBe(names.length);
+      expect(names).toContain('underline');
+      expect(extensions.find(({ name }) => name === 'link')?.options.openOnClick).toBe(false);
+    } finally {
+      editor.destroy();
+    }
   });
 
   describe('onUpdate callback', () => {

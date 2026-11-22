@@ -193,7 +193,7 @@ class ContentSecurityMiddleware:
 
         response["X-Content-Type-Options"] = "nosniff"
         response["X-Frame-Options"] = "DENY"
-        response["X-XSS-Protection"] = "1; mode=block"
+        response["X-XSS-Protection"] = "0"
         response["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
         # Hide server info in API responses

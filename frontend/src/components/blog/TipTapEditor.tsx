@@ -44,6 +44,8 @@ const TipTapEditor: React.FC<TipTapEditorProps> = ({ content = '', onChange, pla
     extensions: [
       StarterKit.configure({
         codeBlock: false,
+        link: false,
+        underline: false,
       }),
       Placeholder.configure({ placeholder: resolvedPlaceholder }),
       Image.configure({

@@ -10,7 +10,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.mail import BadHeaderError
-from django.db import IntegrityError, models
+from django.db import DatabaseError, IntegrityError, models
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone as django_timezone
@@ -224,6 +224,29 @@ class BlogPostEnglishSearchTestCase(APITestCase):
         self.assertEqual(self.slugs({"search": "english description", "lang": "en"}), [self.post.slug])
         self.assertEqual(self.slugs({"search": "english body", "lang": "en"}), [self.post.slug])
 
+    def test_english_search_uses_one_snapshot_during_an_edit(self):
+        from unittest.mock import patch
+
+        from .pagination import StandardPagination
+
+        paginate = StandardPagination.paginate_queryset
+
+        def edit_before_pagination(paginator, posts, request, view=None):
+            BlogPost.objects.filter(pk=self.post.pk).update(description="한국어 설명 수정")
+            return paginate(paginator, posts, request, view)
+
+        params = {"search": "gradient", "lang": "en", "page_size": 1}
+        with patch.object(StandardPagination, "paginate_queryset", autospec=True, side_effect=edit_before_pagination):
+            response = self.client.get(self.url, params)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["count"], 1)
+        self.assertTrue(response.data["results"][0]["is_translated"])
+        self.assertEqual(response.data["results"][0]["title_en"], self.post.title_en)
+        after_edit = self.client.get(self.url, params)
+        self.assertEqual(after_edit.data["count"], 0)
+        self.assertEqual(after_edit.data["results"], [])
+
     def test_stale_translation_is_hidden_from_public_reads_and_search(self):
         from django.core.cache import cache
 
@@ -239,6 +262,8 @@ class BlogPostEnglishSearchTestCase(APITestCase):
             self.assertEqual(data["tags_en"], [])
         self.assertEqual(self.slugs({"search": "gradient", "lang": "en"}), [])
         self.assertEqual(self.slugs({"search": "한국어", "lang": "en"}), [self.post.slug])
+        response = self.client.get(detail_url, {"search": "gradient", "lang": "en"})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         staff = User.objects.create_user(username="translation-editor", is_staff=True)
         self.client.force_authenticate(user=staff)
@@ -2536,6 +2561,10 @@ class ContentSecurityMiddlewareTestCase(TestCase):
         response = self.client.get("/api/health/")
         self.assertEqual(response["X-Frame-Options"], "DENY")
 
+    def test_legacy_xss_filter_is_disabled(self):
+        response = self.client.get("/api/health/")
+        self.assertEqual(response["X-XSS-Protection"], "0")
+
     def test_referrer_policy_header(self):
         """Response includes Referrer-Policy header"""
         response = self.client.get("/api/health/")
@@ -4543,7 +4572,6 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
         SECRET_KEY="a" * 50,
         ALLOWED_HOSTS=["emelmujiro.com"],
         CORS_ALLOW_ALL_ORIGINS=False,
-        SECURE_BROWSER_XSS_FILTER=True,
         SECURE_CONTENT_TYPE_NOSNIFF=True,
         X_FRAME_OPTIONS="DENY",
         EMAIL_HOST_USER="user@example.com",
@@ -4576,7 +4604,6 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
         DEBUG=False,
         SECRET_KEY="a" * 50,
         ALLOWED_HOSTS=["emelmujiro.com"],
-        SECURE_BROWSER_XSS_FILTER=False,
         SECURE_CONTENT_TYPE_NOSNIFF=False,
         X_FRAME_OPTIONS="",
     )
@@ -4589,12 +4616,10 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
         out = StringIO()
         call_command("security_check", "--action=check", stdout=out)
         output = out.getvalue()
-        self.assertIn("SECURE_BROWSER_XSS_FILTER", output)
         self.assertIn("SECURE_CONTENT_TYPE_NOSNIFF", output)
         self.assertIn("X_FRAME_OPTIONS", output)
 
     def test_security_check_stats_db_error(self):
-        """security_check stats handles DB errors gracefully (lines 150-151)"""
         from io import StringIO
         from unittest.mock import patch
 
@@ -4602,10 +4627,21 @@ class SecurityCheckEdgeCasesTestCase(TestCase):
 
         out = StringIO()
         with patch("api.models.SiteVisit.objects") as mock_qs:
-            mock_qs.filter.side_effect = Exception("DB error")
+            mock_qs.filter.side_effect = DatabaseError("DB error")
             call_command("security_check", "--action=stats", stdout=out)
-            output = out.getvalue()
-            self.assertIn("오류 발생", output)
+
+        self.assertIn("오류 발생: DB error", out.getvalue())
+
+    def test_security_check_stats_propagates_unexpected_errors(self):
+        from io import StringIO
+        from unittest.mock import patch
+
+        from django.core.management import call_command
+
+        with patch("api.models.SiteVisit.objects") as mock_qs:
+            mock_qs.filter.side_effect = RuntimeError("Unexpected error")
+            with self.assertRaisesMessage(RuntimeError, "Unexpected error"):
+                call_command("security_check", "--action=stats", stdout=StringIO())
 
 
 @override_settings(

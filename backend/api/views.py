@@ -14,7 +14,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.mail import BadHeaderError, send_mail
 from django.core.validators import validate_email
 from django.db.models import Count, F, Q
-from django.http import HttpRequest
+from django.http import Http404, HttpRequest
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import mixins, status, viewsets
@@ -171,6 +171,17 @@ class BlogPostViewSet(viewsets.ModelViewSet):
             return BlogPostWriteSerializer
         return BlogPostSerializer
 
+    def _uses_public_english_search(self):
+        return (
+            not self.request.user.is_staff
+            and self.request.query_params.get("lang") == "en"
+            and bool(self.request.query_params.get("search"))
+        )
+
+    @staticmethod
+    def _matches_search(post):
+        return getattr(post, "matches_korean_search", True) or post.is_translated
+
     def get_queryset(self):
         queryset = super().get_queryset()
 
@@ -198,33 +209,29 @@ class BlogPostViewSet(viewsets.ModelViewSet):
             # Korean ones, because /en still lists untranslated posts in Korean.
             # Without lang=en the query is exactly the Korean-only one.
             if self.request.query_params.get("lang") == "en":
-                english_match = (
+                if self._uses_public_english_search():
+                    queryset = queryset.annotate(matches_korean_search=match)
+                match |= (
                     Q(title_en__icontains=search)
                     | Q(description_en__icontains=search)
                     | Q(content_html_en__icontains=search)
                 )
-                if is_staff:
-                    match |= english_match
-                else:
-                    candidates = (
-                        queryset.filter(english_match)
-                        .exclude(match)
-                        .order_by()
-                        .only(
-                            "title",
-                            "description",
-                            "content_html",
-                            "translation_source_hash",
-                            "title_en",
-                            "description_en",
-                            "content_html_en",
-                        )
-                    )
-                    translated_ids = [post.pk for post in candidates.iterator() if post.is_translated]
-                    match |= english_match & Q(pk__in=translated_ids)
             queryset = queryset.filter(match)
 
         return queryset
+
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        if self.action == "list" and self._uses_public_english_search():
+            # Base pagination counts and serializes the same rows checked for freshness.
+            return [post for post in queryset.iterator() if self._matches_search(post)]
+        return queryset
+
+    def get_object(self):
+        post = super().get_object()
+        if not self._matches_search(post):
+            raise Http404
+        return post
 
     def perform_create(self, serializer):
         author = self.request.user.get_full_name() or self.request.user.username
