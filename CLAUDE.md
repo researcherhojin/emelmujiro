@@ -54,7 +54,7 @@ npm run visual:capture     # screenshot a served build; visual:compare diffs two
 npm run knip                                                                  # Dead code detection. Run from root
 npm run spell                                                                 # cspell over tracked files + .claude/{rules,hooks,skills/intent,skills/gotchas,agents} + .github. Run from root
 uv sync --extra dev                                                           # Install backend deps (NOT --dev). Run from backend/
-uv run python manage.py test                                                  # Django unittest (NOT pytest). Needs DATABASE_URL=""
+DATABASE_URL="" uv run python manage.py test                                 # Django unittest on SQLite. Run from backend/
 DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPITestCase          # Single backend test class
 uv run black . && uv run flake8 .                                             # Format + lint (line length 120)
 
@@ -94,6 +94,11 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
 - **All UI strings via i18n** — `useTranslation()` in components, `i18n.t()` in data files. No hardcoded user-facing text.
 - **No `window.alert()` / `window.prompt()`** — toast or inline UI.
 - **Logger import**: `import logger from '../utils/logger'` (default export). Use `env.IS_DEVELOPMENT` for environment checks.
+- **Links in instruction files** use a relative file path. Name the section in the link text or nearby prose when needed. VS Code's prompt diagnostics can treat a local `#heading` fragment as part of the filename.
+
+## Dependency compatibility
+
+Dependabot checks for version updates on Mondays at 09:00 KST. When reviewing the merged changes, compare the resolved versions in `package-lock.json` and `backend/uv.lock` with the packages' official release notes. Verify the affected code paths with the installed packages. A real editor or build check can catch integration behavior that mocks and type checks miss. See Gotchas #8, #13, and #14 for React, Rolldown, and Tiptap lock checks. [Dependabot version updates](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-version-updates)
 
 ## Development Flow
 

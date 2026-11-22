@@ -2,7 +2,7 @@
 status: shipped
 module: infra
 created: 2026-10-23
-updated: 2026-10-28
+updated: 2026-11-22
 ---
 
 # Verify and automate security operations
@@ -143,6 +143,10 @@ Each alarm filed a generic issue. The cause was in the host report (`.private/op
   - Fix: #811 (`30d29aae`). Host job rerun at 2026-11-18T07:02:23Z: all four report booleans true, `npm-audit: 0 findings, scanner exit 1`. The running Umami image holds only Next's compiled `picomatch`, whose `package.json` has no version, so Trivy does not inventory it.
   - Follow-ups the same day: #812 lets the triage publish the two Umami version-pin lines (`security-alarm-triage.md` › Amended 2026-11-18), and #813 gives the PR `Security Scan` the Umami ignore file after its refreshed DB failed #812 on picomatch `4.0.5`.
   - Recovery: the owner ran `refresh-images.ts` by hand (a manual run over SSH had been refused in auto mode), which ended `success: true, phase: complete`; then run 44260500584 succeeded and closed the issue at 2026-11-18T07:38:56Z.
+  - Follow-up (2026-11-22): GitHub withdrew GHSA-fc5q-39xc-vjpf on 2026-11-18. The CVE record remains published. Before removing the npm and Trivy exceptions, a raw npm audit including dev dependencies returned zero findings. Trivy 0.76.1 with a database built at 2026-11-22T07:05Z also returned zero findings across all four lock files with ignores disabled. [GitHub advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf) · [CVE record](https://github.com/CVEProject/cvelistV5/blob/main/cves/2026/112xxx/CVE-2026-112366.json)
+- **#818** ([failed watchdog run](https://github.com/researcherhojin/emelmujiro/actions/runs/44853726430))
+  - Cause: `effect@3.20.0` in both Umami locks matched GHSA-7589-6fvf-x4pw. Both locks now force `3.22.1` in #819 (`7d374c55`). [Upstream advisory](https://github.com/advisories/GHSA-7589-6fvf-x4pw) · [Umami image recipe](../../../docker/umami/README.md)
+  - Recovery: [watchdog run 44969827332](https://github.com/researcherhojin/emelmujiro/actions/runs/44969827332) succeeded, and [issue #818](https://github.com/researcherhojin/emelmujiro/issues/818) closed at 2026-11-22T01:06:09Z.
 
 Lessons, each measured in one of these alarms:
 

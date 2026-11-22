@@ -2,7 +2,7 @@
 status: shipped
 module: backend
 created: 2026-10-23
-updated: 2026-10-23
+updated: 2026-11-22
 ---
 
 # Security review fixes
@@ -77,3 +77,7 @@ Later on 2026-10-23, owner-shared dashboard screenshots confirmed deployment
 of the login rate limiting rule. This supersedes the initial inspection blocker;
 no live blocking test was run. Follow-up evidence and remaining limits are in
 [security operations](../infra/security-operations.md#outcome).
+
+### Translation visibility follow-up
+
+On 2026-11-22, `a344f0bd` limited public blog responses and English search to complete, current translations. Staff reads retain the saved English fields, and public responses preserve the field names. The PostgreSQL verification exposed two invalid IP fixtures in unrelated admin tests. `c4abc6bc` replaced them with valid IPv6 values, and the Django suite passed 452 tests on both SQLite and isolated PostgreSQL 15.20. The public health endpoint returned `c4abc6bc` after deployment. [Backend response rules](../../../.claude/rules/backend.md#architecture) · [Main CI/CD run](https://github.com/researcherhojin/emelmujiro/actions/runs/45017514543)

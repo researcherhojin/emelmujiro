@@ -64,15 +64,19 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ```bash
 git clone https://github.com/researcherhojin/emelmujiro.git
 cd emelmujiro
+```
 
+On macOS, `make setup-dev-machine` installs dependencies, creates local environment files and applies migrations. Then run `make verify-setup` and `npm run dev`.
+
+For a manual setup, create `backend/.env` from `backend/.env.example`, set a local `SECRET_KEY` and `DEBUG=True`, and leave `DATABASE_URL` empty to use SQLite. Then run the commands below. [Django deployment checklist](https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/#secret-key)
+
+```bash
 make install                                              # npm install + uv sync --extra dev
-cd backend && uv run python manage.py migrate && cd ..    # First-time DB setup
+(cd backend && uv run python manage.py migrate)           # First-time DB setup
 npm run dev                                               # Frontend :5173 + Backend :8000
 ```
 
-**Fresh macOS machine?** `make setup-dev-machine` handles the full bootstrap (brew deps, `make install`, local `.env`, Django migrations). Re-runnable health check: `make verify-setup`.
-
-Operational rules, architecture details, and conventions: [CLAUDE.md](CLAUDE.md).
+The local and Docker backends both use port 8000, so run one at a time.
 
 ### Useful Commands
 
@@ -84,68 +88,65 @@ make lint                  # All linters
 make lint-fix              # Auto-fix lint issues
 make update-test-counts    # Regenerate README test counts locally (CI auto-syncs on main)
 make health                # Docker health diagnostic (containers, resources, endpoints)
+npm run security:dependencies  # Audit npm dependencies and scan all four lock files
 
 # From frontend/: npm run validate (lint + type-check + coverage) and npm run test:e2e (Playwright, 5 profiles).
 # Single-test, serve:build, bundle-analysis, route-check and visual-diff commands are listed once, in CLAUDE.md → Commands.
 ```
 
+The dependency audit includes development dependencies. Run `npm run security:setup` to install the pinned Trivy binary and `npm run security:images` on the Docker host to scan its running images. Detailed reports stay in `backend/logs/security/`. [Security runbook](docs/intents/infra/security-monitoring.md#manual-operation) · [npm audit documentation](https://docs.npmjs.com/cli/v11/commands/npm-audit/) · [Trivy vulnerability scanning](https://trivy.dev/docs/latest/guide/scanner/vulnerability/)
+
+### Deployment checks
+
+1. **Check container health.** From the repository root on the Docker host, confirm all four services report `healthy`.
+
+   ```bash
+   make ps
+   ```
+
+2. **Review recent logs.** On the Docker host, check the last 24 hours for startup errors and HTTP `5xx` responses. The command returns at most 200 lines per container. [Docker Compose logs](https://docs.docker.com/reference/cli/docker/compose/logs/)
+
+   ```bash
+   docker compose logs --since 24h --tail 200 backend frontend umami umami-db
+   ```
+
+3. **Verify the deployed commit.** Confirm `status` is `healthy` and `commit` matches the SHA tested by the run that triggered the deployment. [Main CI/CD](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml)
+
+   ```bash
+   curl -fsS https://emelmujiro.com/api/health/
+   ```
+
 ## Architecture
 
-```mermaid
-graph LR
-    subgraph Client["Browser"]
-        React["React 19 SPA\nVite + Tailwind"]
-    end
+![Emelmujiro architecture showing browser traffic, Cloudflare Tunnel, Docker services, data stores, and deployment](.github/assets/architecture.svg)
 
-    subgraph CF["Cloudflare"]
-        Tunnel["Cloudflare Tunnel"]
-    end
+- **Website and API.** Cloudflare Tunnel routes the website to nginx and the API hostname directly to Gunicorn and Django. nginx serves the frontend build and also proxies same-origin `/api` requests.
+- **Application data and analytics.** Django stores application data in SQLite. nginx forwards the tracker endpoint to Umami, which stores analytics in PostgreSQL 15.
+- **Deployment.** GitHub Actions tests the commit and calls the deploy webhook. The host builds the frontend and backend. Django applies migrations at startup, and the public health endpoint reports the deployed commit.
 
-    subgraph Host["Self-hosted (Docker · 127.0.0.1 only)"]
-        Nginx["nginx (alpine)\nStatic + prerendered pages"]
-        Gunicorn["Gunicorn 3w 2t\nSecurity MW + file cache"]
-        DRF["Django 6 + DRF"]
-        DB[(SQLite\nsqlite_data volume)]
-        Umami["Umami Analytics"]
-        UmamiDB[(PostgreSQL 15)]
-    end
+[Cloudflare Tunnel documentation](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/) · [Deployment rules](.claude/rules/backend.md#deployment) · [Umami image recipe](docker/umami/README.md)
 
-    Sentry["Sentry (SaaS)\nwired, DSN unset"]
-    GHA["GitHub Actions\nCI + deploy trigger"]
+## Key features
 
-    React -->|emelmujiro.com| Tunnel
-    React -->|api.emelmujiro.com| Tunnel
-    Tunnel -->|:8080| Nginx
-    Tunnel -->|:8000 API| Gunicorn
-    Nginx -.->|/api - not used by the SPA| Gunicorn
-    Nginx -->|/umami/api/send| Umami
-    Gunicorn --> DRF
-    DRF --> DB
-    Umami --> UmamiDB
-    React -.->|errors, when a DSN is set| Sentry
-    GHA -.->|deploy webhook| Tunnel
-    Tunnel -.->|auto-deploy.sh on the host: build/ + backend image, migrations applied on container start| Host
+- **Bilingual routes.** Korean pages use the default URLs. English pages use `/en`.
+- **Teaching history.** Browse 47 entries from 2022–2026 and filter by four organization types.
+- **Insights.** Rich-text posts support images, likes, and threaded comments. English pages show current translations and fall back to Korean. [Blog API rules](.claude/rules/backend.md#architecture)
+- **Authentication.** HttpOnly JWT cookies, CSRF protection, and token revocation after password changes. [Authentication tests](CONTRIBUTING.md#testing)
+- **Testimonials.** Two scrolling rows feature enterprise and 고용노동부 K-디지털 reviews.
+- **Monitoring.** Self-hosted Umami analytics and scheduled Docker health checks. [Operations runbook](docs/intents/infra/security-monitoring.md#manual-operation)
+- **SEO and performance.** JSON-LD, 10 prerendered routes, and a multilingual sitemap. CI checks bundle size and runs Lighthouse. [Build and SEO rules](.claude/rules/frontend-build.md)
+- **Security.** The app sanitizes blog HTML and validates uploads. Scheduled checks audit dependencies and running images and verify encrypted backups can be restored. [Backend security](.claude/rules/backend.md#security) · [Security operations](docs/intents/infra/security-operations.md)
+- **Privacy policy.** Korean and English pages cover collection, retention, and user rights at `/privacy` and `/en/privacy`.
+- **Tests.** Vitest (1301 tests), Django unittest (455 tests), Node sitemap regression tests (12 tests), and Playwright E2E (5 profiles).
+- **CI/CD.** GitHub Actions checks pull requests, deploys verified `main` commits, and monitors deployment drift. [CI and deployment rules](.claude/rules/ci.md)
 
-    style Tunnel fill:#F3E8FF,stroke:#7C3AED
-    style Host fill:#ECFDF5,stroke:#059669
-    style CF fill:#FEF3C7,stroke:#D97706
-    style Sentry fill:#FEF9C3,stroke:#CA8A04
-```
+## Documentation
 
-## Key Features
-
-- **Bilingual (i18n)** — URL-based routing: Korean default (`/contact`), English `/en/contact`
-- **Teaching History** — 47 entries across 5 years (2022–2026), org type filter (4 categories)
-- **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, and nested comments. Complete, current English translations appear on `/en/insights/:slug` and in the public blog API and English search. The English page falls back to Korean when a translation is unavailable.
-- **Auth** — httpOnly cookie JWT with shared-promise refresh queue, CSRF-protected cookie writes and login/refresh, and password-change token revocation
-- **Testimonials** — Enterprise + 고용노동부 K-디지털 reviews, dual-row auto-scroll carousel
-- **Monitoring** — Umami analytics (self-hosted, zero external scripts) + Docker health check (`make health`; a 5-minute cron appends only failures and warnings, timestamped, to `backend/logs/health-check.log`). Sentry is wired behind a lazy-loaded shim but inactive: `VITE_SENTRY_DSN` is unset in production, so `initSentry()` returns early and no DSN ships in the bundle. No Sentry project exists; enabling it starts with a new project and DSN
-- **SEO** — Search Console, sitemap, hreflang (blog posts only when translated; untranslated `/en` posts canonicalize to Korean), JSON-LD structured data, SSG prerendering of 10 routes. The Insights list uses the live API at build time; failed API calls or incomplete sitemap inventories abort the build. Article detail pages render client-side.
-- **Performance** — Vendor chunk splitting, Lighthouse CI assertions, < 10MB bundle budget
-- **Security** — DOMPurify HTML sanitization, CI `${{ }}` injection prevention, uuid4 uploads with bounded image decoding, trusted-client-IP throttling, draft comment access controls, production CORS restrictions, HSTS on both hosts, Docker log rotation (10 MB × 3 files per container), and nightly encrypted backups with isolated restore verification plus full dependency and running-image audits, checked daily by a watchdog that opens an issue on failure
-- **Privacy Policy** — 13-section bilingual page compliant with Korean PIPA Article 30
-- **Tests** — Vitest (1300 tests) + Django unittest (452 tests) + Node sitemap regression tests (12 tests) + Playwright E2E (5 profiles)
-- **CI/CD** — GitHub Actions: lint, type-check, test, Trivy security scan, bundle size, Lighthouse, Docker builds of the images a PR changes, Codecov, auto-deploy via webhook, plus self-healing guards that redeploy on production drift, open an issue when that redeploy does not land, and alarm when a commit reaches `main` untested
+- [Contributing](CONTRIBUTING.md) and [repository rules](CLAUDE.md)
+- [Frontend](.claude/rules/frontend.md), [build and routing](.claude/rules/frontend-build.md), and [backend](.claude/rules/backend.md)
+- [CI and deployment](.claude/rules/ci.md), [security operation history](docs/intents/infra/security-operations.md#alarm-history), and [Umami image recipe](docker/umami/README.md)
+- [Module intents and their statuses](docs/intents/README.md#modules)
+- [Security reporting contact](https://emelmujiro.com/.well-known/security.txt)
 
 ## License
 

@@ -1,0 +1,86 @@
+<!-- cspell:ignore labelledby Segoe Consolas dasharray linecap linejoin -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="740" viewBox="0 0 1200 740" role="img" aria-labelledby="title description">
+  <title id="title">Emelmujiro service architecture</title>
+  <desc id="description">Browsers reach nginx and Django through separate Cloudflare Tunnel routes. nginx serves the React site and forwards analytics to Umami. Django uses SQLite, while Umami uses PostgreSQL. GitHub Actions triggers deployment through a webhook, and the public health endpoint reports the deployed commit.</desc>
+  <defs>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #17243a; }
+      .title { font-size: 34px; font-weight: 750; }
+      .section { font-size: 14px; font-weight: 750; letter-spacing: 1.5px; fill: #465670; }
+      .heading { font-size: 20px; font-weight: 700; }
+      .body { font-size: 15px; fill: #465670; }
+      .label { font-size: 12px; fill: #465670; }
+      .route { font-size: 11px; fill: #465670; }
+      .code { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: 13px; font-weight: 600; }
+      .flow { fill: none; stroke: #526983; stroke-width: 2; marker-end: url(#arrow); }
+      .aux { stroke-dasharray: 5 4; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1 9 5 1 9" fill="none" stroke="#526983" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <rect x="1" y="1" width="1198" height="738" rx="24" fill="#fff" stroke="#b4bfce" stroke-width="2"/>
+  <text x="40" y="58" class="title">Emelmujiro architecture</text>
+  <text x="40" y="86" class="body">Public requests, application data, and deployment</text>
+
+  <text x="40" y="160" class="section">CLIENT</text>
+  <rect x="40" y="205" width="180" height="138" rx="14" fill="#f3f6fa" stroke="#9daebf"/>
+  <text x="58" y="242" class="heading">Web browser</text>
+  <text x="58" y="270" class="body">React 19 app</text>
+  <text x="58" y="295" class="body">Korean and English</text>
+
+  <rect x="270" y="123" width="218" height="421" rx="18" fill="#fffcf6" stroke="#c59650" stroke-width="1.5"/>
+  <text x="288" y="160" class="section">CLOUDFLARE TUNNEL</text>
+  <rect x="288" y="190" width="180" height="86" rx="12" fill="#fff1d7" stroke="#c59650"/>
+  <text x="302" y="221" class="heading">Website</text>
+  <text x="302" y="247" class="code">emelmujiro.com</text>
+  <rect x="288" y="333" width="180" height="88" rx="12" fill="#fff1d7" stroke="#c59650"/>
+  <text x="302" y="364" class="heading">Public API</text>
+  <text x="302" y="390" class="code">api.emelmujiro.com</text>
+  <text x="288" y="491" class="body">Routes HTTPS traffic</text>
+  <text x="288" y="514" class="body">to the local services</text>
+
+  <rect x="527" y="123" width="639" height="421" rx="18" fill="#f8fbff" stroke="#7b9ec6" stroke-width="1.5"/>
+  <text x="549" y="160" class="section">DOCKER COMPOSE</text>
+  <text x="1142" y="160" class="label" text-anchor="end">Host ports bind to loopback</text>
+
+  <rect x="552" y="190" width="260" height="86" rx="12" fill="#e6f1fb" stroke="#74a1cf"/>
+  <text x="570" y="223" class="heading">nginx</text>
+  <text x="570" y="250" class="body">Static files and prerendered pages</text>
+  <rect x="552" y="333" width="260" height="88" rx="12" fill="#e6f1fb" stroke="#74a1cf"/>
+  <text x="570" y="366" class="heading">Gunicorn + Django</text>
+  <text x="570" y="393" class="body">REST API and Django admin</text>
+
+  <rect x="906" y="190" width="228" height="86" rx="12" fill="#e6f6ee" stroke="#6eab8e"/>
+  <text x="924" y="223" class="heading">Umami</text>
+  <text x="924" y="250" class="body">Self-hosted analytics</text>
+  <rect x="906" y="333" width="228" height="88" rx="12" fill="#f1f5fa" stroke="#9daebf"/>
+  <text x="924" y="366" class="heading">SQLite</text>
+  <text x="924" y="393" class="body">Application data volume</text>
+  <rect x="906" y="445" width="228" height="80" rx="12" fill="#e6f6ee" stroke="#6eab8e"/>
+  <text x="924" y="477" class="heading">PostgreSQL 15</text>
+  <text x="924" y="503" class="body">Analytics data volume</text>
+
+  <path d="M220 234H287" class="flow"/>
+  <path d="M220 274h26v103h41" class="flow"/>
+  <path d="M468 233h83" class="flow"/>
+  <path d="M468 377h83" class="flow"/>
+  <path d="M812 233h93" class="flow"/>
+  <text x="859" y="221" class="route" text-anchor="middle">/umami/api/send</text>
+  <path d="M682 276v56" class="flow aux"/>
+  <text x="695" y="308" class="label">/api proxy</text>
+  <path d="M812 377h93" class="flow"/>
+  <path d="M1134 234h16v251h-15" class="flow"/>
+
+  <rect x="40" y="577" width="1126" height="123" rx="16" fill="#f6f8fb" stroke="#9daebf"/>
+  <text x="60" y="607" class="section">DELIVERY AND VERIFICATION</text>
+  <text x="60" y="647" class="heading">GitHub Actions</text>
+  <text x="60" y="673" class="body">Tests the main commit</text>
+  <path d="M338 644h60" class="flow"/>
+  <text x="423" y="647" class="heading">Deploy webhook</text>
+  <text x="423" y="673" class="body">Triggers the host build and deploy</text>
+  <path d="M752 644h60" class="flow"/>
+  <text x="837" y="647" class="heading">Public health API</text>
+  <text x="837" y="673" class="body">Reports health and deployed commit</text>
+</svg>

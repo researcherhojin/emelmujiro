@@ -24,10 +24,10 @@ The builder lock backports deepmerge PR #274's `__proto__` rejection for
 deepmerge 4.3.1 because npm has no patched release; a build-time regression
 check covers the vulnerable null-target and null-prototype cases. The runtime
 lock contains no deepmerge package.
-picomatch 4.0.4 and 4.0.5 in the builder lock fall in GHSA-fc5q-39xc-vjpf,
-which has no fixed release. `trivyignore.yaml` accepts them until 2026-12-02
-(#806). The runtime lock has no picomatch, and the copy that Next compiles in
-has no version for an image scan to match.
+The builder lock includes picomatch 4.0.4 and 4.0.5. GitHub withdrew
+GHSA-fc5q-39xc-vjpf, and a fresh Trivy scan of the builder lock cleared both
+advisory IDs without an ignore entry on 2026-11-22. The copy compiled into Next
+has no version for an image scan to match. [GitHub advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf) · [#806 alarm history](../../docs/intents/infra/security-operations.md#alarm-history)
 The upstream Dockerfile's separate runtime install omitted those overrides; this
 recipe gives that install its own frozen lockfile. Runtime contains no global
 npm, pnpm or Yarn installation, and no curl: the Compose healthcheck uses BusyBox

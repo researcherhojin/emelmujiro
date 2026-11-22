@@ -33,6 +33,19 @@ docs/intents/
 
 Modules are folders, created when the first intent needs one: `blog`, `seo`, `contact`, `infra` (Docker, nginx, deploy, cron), `ci`, `frontend`, `backend`, `claude` (Claude Code setup: `CLAUDE.md`, rules, hooks, settings). The slug is kebab-case and names the outcome, not the mechanism (`health-check-alerting`, not `add-gh-issue-to-cron`).
 
+## Modules
+
+| Module                   | Intent records                                                                                                   | Current rules                                                               |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| [Backend](backend/)      | [Blog API consumers](backend/blog-api-consumers.md), [security fixes](backend/security-review-fixes.md)          | [Backend rules](../../.claude/rules/backend.md)                             |
+| [Blog](blog/)            | [Article prerender decision](blog/prerender-posts.md)                                                            | [Build and SEO rules](../../.claude/rules/frontend-build.md)                |
+| [CI](ci/)                | [Private repository readiness](ci/private-repo-readiness.md), [image checks](ci/docker-image-checks.md)          | [CI rules](../../.claude/rules/ci.md)                                       |
+| [Contact](contact/)      | [Contact form decision](contact/replace-google-form.md)                                                          | [Privacy schema and UI rules](../../.claude/rules/frontend.md#architecture) |
+| [Frontend](frontend/)    | [Carousel pause decision](frontend/carousel-pause-control.md), [critical CSS decision](frontend/critical-css.md) | [Frontend rules](../../.claude/rules/frontend.md)                           |
+| [Infrastructure](infra/) | [Security operations](infra/security-operations.md), [backup remote path](infra/offsite-remote-path.md)          | [Security runbook](infra/security-monitoring.md#manual-operation)           |
+
+Each intent's front matter identifies its status. Use the linked rules and worktree for current behavior. Shipped outcomes and dated measurements record the state observed at the time.
+
 ## Status
 
 `status:` in the front matter is one of:

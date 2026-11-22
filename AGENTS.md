@@ -9,8 +9,11 @@ Full-stack monorepo (**React 19 + Vite** frontend, **Django 6 + DRF** backend), 
 - UI / page work → `.claude/rules/frontend.md`
 - Backend / API / migrations → `.claude/rules/backend.md`
 - Build, deploy, CI, or a red check → `.claude/rules/ci.md` + `.claude/rules/frontend-build.md` + `.claude/rules/backend.md` (migrations) + `CLAUDE.md` → `Constraints`.
+- Running containers and log checks → [README deployment checks](README.md) and [CI operational logs](.claude/rules/ci.md).
 - A `Security operations require attention` issue → `.claude/rules/ci.md` → Scheduled security operations and Nightly image refresh, then `docs/intents/infra/security-operations.md` (one section per past alarm). For `dependencies` or `images`, check for a draft `triage/*` PR from the 02:40 triage (`docs/intents/infra/security-alarm-triage.md`).
 - Dependency bumps → `CLAUDE.md` → `Gotchas` (numbered; the numbers are cited from commits and never change). Each rule's fix steps and evidence are in `.claude/skills/gotchas/SKILL.md` under the same number.
+- Weekly dependency follow-up → `CLAUDE.md` → `Dependency compatibility`. Review the locked versions and verify the code paths affected by upstream changes.
+- Editor diagnostics → [Backend tooling](.claude/rules/backend.md) for Ruff and `CLAUDE.md` → `Code Conventions` for links in instruction files.
 - Planned work → `docs/intents/<module>/<slug>.md` (workflow and statuses in `docs/intents/README.md`): Intent → Spec → Plan → implement → `shipped` with an `Outcome`, then deleted unless a living doc cites it. Read the file's `status` before starting.
 - `main-ci-cd.yml`, `pr-checks.yml` are the CI source of truth; cite job/step **by name, not line number** (they move often).
 
@@ -23,6 +26,7 @@ Full-stack monorepo (**React 19 + Vite** frontend, **Django 6 + DRF** backend), 
   npm run dev                        # fe :5173 + be :8000 (NOT port 3000)
   ```
 - `make setup-dev-machine` bootstraps a fresh macOS box; `make verify-setup` is the re-runnable health check.
+- For manual setup, use the environment file instructions under `Getting Started` in the [README](README.md) before running migrations.
 - **Don't run local dev backend and Docker backend together** — both bind `:8000`, and their DBs are independent (local SQLite vs the Docker volume).
 
 ## Commands (non-obvious ones)
@@ -69,7 +73,7 @@ cd backend && DATABASE_URL="" uv run python manage.py test api.tests.BlogPostAPI
 - **Conventional Commits, English-only subject:** `type(scope): description` — `feat fix docs style refactor test chore perf deps-dev deps ci`. **No CI-skip markers anywhere in the message** (subject _or_ body — GHA scans the whole thing); escape brackets to write about one (`\[skip ci\]`). `scripts/repo/check-commit-msg.sh` is the source of truth; edit the accepted types there, never inline. Branches `feature/*` | `fix/*`; one issue per PR, ≤ 3 commits.
 - **Every shipped change gets a `CHANGELOG.md` entry** under `## Merged since [1.0.0]` (newest first). `scripts/repo/check-changelog.sh` warns, never blocks, when a change outside `docs/intents/` has none — in PR CI and in the husky `pre-push` hook for direct pushes to `main`. Husky also runs lint-staged on `pre-commit` and `check-commit-msg.sh` on `commit-msg`; don't bypass them.
 - **i18n is mandatory** — `useTranslation()` in components, `i18n.t()` in data files; no hardcoded user-facing text. **English comments only.** No `window.alert/prompt` (use toast/inline).
-- **Public blog responses and English search use only complete, current translations.** Keep the public list uncached so edits in Django admin take effect immediately. See [Backend rules](.claude/rules/backend.md#architecture) for translation freshness and staff reads.
+- **Public blog responses and English search use only complete, current translations.** Keep the public list uncached so edits in Django admin take effect immediately. See [Backend rules](.claude/rules/backend.md) for translation freshness and staff reads.
 - **Tailwind is 4.x with v3-parity shims** (`@config` JS theme, pinned v3 palette and prose colors, compat rules in `src/index.css`; details in `.claude/rules/frontend-build.md`); PostCSS uses `@tailwindcss/postcss`; no dynamic class interpolation. Measure a palette, shim or shared-style change with `npm run visual:capture` / `visual:compare`, never by eye. The v5 major is dependabot-ignored.
 - **Env var prefix is `VITE_`** (legacy `REACT_APP_` still resolves via a shim). `frontend/.env.production` is **tracked in git on purpose** — do not `git rm` it.
 - **`react`/`react-dom` must stay version-parity** — Dependabot bumps them separately and Vitest then crashes with `Incompatible React versions`; check parity after any react merge.

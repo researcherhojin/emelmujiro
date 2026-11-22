@@ -2,7 +2,7 @@
 status: dropped
 module: blog
 created: 2026-10-17
-updated: 2026-11-16
+updated: 2026-11-22
 ---
 
 # A crawler that does not run JavaScript sees each post's own title, description and canonical
@@ -37,3 +37,5 @@ updated: 2026-11-16
 Dropped on 2026-11-16 (owner delegated the decision), option (c). Search Console answered both open questions: on 2026-11-10 URL Inspection read `URL이 Google에 등록되어 있음` for the H100 post, the Overview counted 15 indexed and 2 not, and the two not indexed are `/en/` (an intended 301 to `/en`) and `/en/privacy` (raw bytes clean), not posts. The "Discovered – currently not indexed" bucket held 0 pages after validation passed on 2026-11-07. So Google indexes posts from the rendered DOM, and prerendering them would add a redeploy per publish and a stale-snapshot window (Constraints) for no measured gain.
 
 Re-raise if a post URL appears in a not-indexed bucket with its rendered head correct, or if a crawler that does not run JavaScript becomes a target.
+
+On 2026-11-22, the route consistency check still classified `/insights/:slug` and its English equivalent as client-rendered routes. The sitemap test still gives English URLs only to posts with a current translation. [Current build rules](../../../.claude/rules/frontend-build.md#frontend-build-rules) · [Google Search Central on JavaScript rendering](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics)

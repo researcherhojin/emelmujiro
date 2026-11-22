@@ -2,7 +2,7 @@
 status: shipped
 module: infra
 created: 2026-11-01
-updated: 2026-11-01
+updated: 2026-11-22
 ---
 
 <!-- cspell:ignore unsandboxed sandboxed npmjs EPERM Dockerfiles fsmonitor netrc -->

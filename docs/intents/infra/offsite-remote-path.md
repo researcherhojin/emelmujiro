@@ -2,7 +2,7 @@
 status: approved
 module: infra
 created: 2026-11-08
-updated: 2026-11-14
+updated: 2026-11-22
 ---
 
 # The independent backup copy keeps arriving when the MacBook is off the home LAN
@@ -25,6 +25,8 @@ updated: 2026-11-14
 - **Open questions**: none. Deferred on 2026-11-08; the owner answered both on 2026-11-14:
   - **Remote path: SSH through the existing Cloudflare Tunnel**, behind Cloudflare Access with a service token. Rejected: Tailscale (a third-party daemon and account on the production host) and R2 push (the largest change, and a new receipt path).
   - **Relax the receipt window to 168 h (7 days).** A MacBook that is asleep or away for a week no longer alarms; the independent copy may then be up to 7 days old. Rejected: keeping 36 h, 48 h and 72 h.
+
+The 2026-11-22 source review found that the approved plan is still pending. [`pull-backup.py`](../../../scripts/backup/pull-backup.py) accepts one `--host`, and [`offsiteFresh()`](../../../scripts/security/operations.ts) still uses 36 hours. The 168-hour window in the Spec belongs to the proposed fallback path.
 
 ## Spec
 

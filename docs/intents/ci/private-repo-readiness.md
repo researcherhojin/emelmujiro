@@ -2,12 +2,14 @@
 status: approved
 module: ci
 created: 2026-11-18
-updated: 2026-11-18
+updated: 2026-11-22
 ---
 
 # The repository can go private without losing CI, deploys or its safeguards
 
 <!-- cspell:ignore lightningcss jitconfig cutover -->
+
+On 2026-11-22, the [PR checks](../../../.github/workflows/pr-checks.yml) and [main pipeline](../../../.github/workflows/main-ci-cd.yml) still used `ubuntu-24.04` GitHub-hosted runners. The self-hosted runner, cache key changes, and secret scan in this document remain an approved plan. The billing and cache measurements below are from the November 18 baseline. [GitHub Actions runners](https://docs.github.com/en/actions/concepts/runners/github-hosted-runners)
 
 ## Intent
 

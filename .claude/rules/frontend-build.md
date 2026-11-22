@@ -18,6 +18,8 @@ paths:
 
 # Frontend build rules
 
+**Blog metadata reflects two update schedules.** The article page obtains `is_translated` from the live API and uses it for the rendered canonical and hreflang links. `generate-sitemap.ts` reads the same flag at build time. A saved edit takes effect in article responses immediately, and `sitemap.xml` reflects it after the next successful frontend build and deployment. [Google Search Central on rendered metadata](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics)
+
 **SEO**: `main.tsx` uses `createRoot()` (never `hydrateRoot`). Do NOT add static meta/title/OG to `index.html` — `SEOHelmet` handles everything. `SEOHelmet` auto-computes canonical from `location.pathname` — do NOT pass a `url` prop (English pages get wrong canonical). Untranslated content passes `translated={false}`: canonical goes to the Korean URL on both paths, no hreflang. For blog posts that prop and `generate-sitemap.ts` (en URL + hreflang, or ko only) follow the API's `is_translated`, true only when `title_en`, `description_en` and `content_html_en` are all filled and the Korean title/description/`content_html` still match `translation_source_hash` (a Korean edit withdraws the English page until re-saved or re-confirmed in Django admin); `utils/localizePost.ts` swaps those fields in on `/en`. Page titles must NOT include `| 에멜무지로` suffix (appended automatically).
 
 **KakaoTalk WebView**: `window.__appLoaded` must be set in `AppLayout` (router layout), NOT at provider level. iOS uses `kakaotalk://web/openExternal`; Android uses `intent://...#Intent;scheme=kakaotalk;end`. Android WebView is Chrome-based, so the banner is hidden; only error fallback uses the intent scheme.

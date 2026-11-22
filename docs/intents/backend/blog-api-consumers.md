@@ -21,7 +21,7 @@ updated: 2026-11-22
 - **Outcome wanted**: a count of `/api/blog-posts/` requests whose referer is not `emelmujiro.com` **and** whose user-agent is not a browser, over enough days to mean something, with crawlers and scanners separated by user-agent.
 - **Affected systems**: none until the measurement says otherwise; `access.log` survives deploys via the logs volume and rotates at 5 MB × 3 backups.
 - **Constraints**: a zero count over a few days is weak evidence, not proof — a monthly or seasonal consumer would not appear.
-- **Open questions**: if consumers exist, does the API need a version or an announcement channel? The translation change keeps the response keys and blanks English values for incomplete or outdated translations. Its effect on external consumers remains unmeasured. See [Backend rules](../../../.claude/rules/backend.md#architecture).
+- **Open questions**: if consumers exist, does the API need a version or an announcement channel? The translation change keeps the response keys and blanks English values for incomplete or outdated translations. The 2026-11-22 deployment check covered public list, detail and English search. That check did not measure external use. See [Backend rules](../../../.claude/rules/backend.md#architecture) and the [translation deployment evidence](security-review-fixes.md#translation-visibility-follow-up).
 
 ## Spec
 

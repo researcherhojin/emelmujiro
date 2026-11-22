@@ -8,6 +8,11 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(backend): limit security statistics error handling to Django database errors and document the weekly compatibility review and editor checks.
+- fix(compat): register Link and Underline once with Tiptap 3, drop the removed Django XSS filter setting from configuration and security checks, and disable the legacy filter on Django and nginx responses.
+- fix(backend): paginate and serialize public English search results from the rows checked for translation freshness. An edit between the search and pagination no longer leaves a result with its English translation missing.
+- docs: refresh the README's local setup and deployment checks, illustrate the public traffic and deployment architecture, index the intent modules, and align the module rules with current translation, logging, backup and CI behavior.
+- fix(security): remove the npm and Trivy exceptions for picomatch after GitHub withdrew GHSA-fc5q-39xc-vjpf. A raw npm audit and all four Trivy lockfile scans reported zero findings without ignores. Update the README and security runbooks to reflect the scan behavior and the remaining Umami builder exception.
 - test(backend): use valid IPv6 addresses in the contact and newsletter admin truncation tests so PostgreSQL can run the same assertions as SQLite.
 - fix(backend): blank incomplete or outdated translations in public blog responses and exclude their English text from public search. Resolve the public list on each request so an edit in Django admin takes effect immediately.
 - fix(security): Umami's builder and runtime locks force `effect` 3.22.1, and the image moves to `3.4.0-security-7`. GHSA-7589-6fvf-x4pw (`effect` `<= 3.22.0`, HIGH, ReDoS in `Schema.TemplateLiteral`, published 2026-11-19T20:51Z) matched `effect@3.20.0` in both locks (Dependabot alerts #16, #17) and failed watchdog run 44853726430 (#818). `@prisma/config` 7.10.0 pins it exactly, and so does the newest 7.10.1, so a Prisma bump cannot fix it; a `pnpm-workspace.yaml` override in each lock can. Each lock diff is 9 lines.

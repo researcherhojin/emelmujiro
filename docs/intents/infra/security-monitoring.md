@@ -2,7 +2,7 @@
 status: shipped
 module: infra
 created: 2026-10-22
-updated: 2026-10-22
+updated: 2026-11-22
 ---
 
 # Run reproducible local security audits with typed operational modules
@@ -141,9 +141,18 @@ The tool installer writes to `backend/.cache/security-tools/`, already ignored b
 Git and excluded from the backend Docker context. Detailed reports go to
 `backend/logs/security/`, also ignored. Dependency
 reports are in its `dependencies/` directory; `summary.json` is the image report.
-Exit 0 means the requested scan completed with no findings; exit 1 means findings
-or an incomplete/failed check. A stored image report older than 36 hours is
-rejected by `security:report`; rerun the manual image scan to refresh it.
+For dependency scans, exit 0 means every scanner completed with no unaccepted
+findings. The npm scan includes development dependencies and uses the registry's
+audit data. Trivy checks each lockfile against its vulnerability database and
+applies the configured lockfile-specific exceptions. Exit 1 means unresolved
+findings or an incomplete check. A stored image report older than 36 hours
+requires a fresh image scan before `security:report` will accept it.
+[npm audit documentation](https://docs.npmjs.com/cli/v11/commands/npm-audit/) · [Trivy filtering](https://trivy.dev/docs/latest/guide/configuration/filtering/)
+
+Before removing an exception for a withdrawn advisory, rerun the affected scans
+with current advisory data and the exception disabled. Check the advisory and
+CVE IDs, since npm and Trivy can update on different schedules. Record the scan
+results and Trivy database timestamp in the [alarm history](security-operations.md#alarm-history).
 
 From another directory, invoke an entry by its absolute path, such as
 `node /path/to/repository/scripts/security/scan-dependencies.ts`, or use

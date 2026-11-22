@@ -2,10 +2,12 @@
 status: shipped
 module: infra
 created: 2026-10-22
-updated: 2026-10-28
+updated: 2026-11-22
 ---
 
 # Remediate remaining dependency and container findings
+
+This record covers the October 2026 fixes and scans. See the [security operations history](security-operations.md#alarm-history) for later alarms and recovery evidence.
 
 <!-- cspell:ignore modelcontextprotocol emnapi tmpfs bidi Bidi -->
 

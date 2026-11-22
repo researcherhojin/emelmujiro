@@ -2,7 +2,7 @@
 status: dropped
 module: frontend
 created: 2026-10-17
-updated: 2026-11-16
+updated: 2026-11-22
 ---
 
 # Main CSS is inlined for first paint, if the render-blocking audit ever needs it
@@ -24,4 +24,4 @@ Dropped on 2026-11-16 (owner delegated the decision): there is still no problem 
 
 The re-raise trigger this file named could not fire until the same day. Lighthouse 13 (`@lhci/cli` `^0.16.0`, first proposed in #766) replaced `render-blocking-resources` with `render-blocking-insight`; LHCI maps the old `warn` onto the new ID unless that ID is set, and `frontend/lighthouserc.js` set it `off`. It now reads `['warn', { minScore: 0.5, maxLength: 1 }]`: every run scored 0.5 (the one shared stylesheet, 0 ms FCP/LCP savings, 12 of 12 on run 43786290084), so it warns when savings become real or a second resource blocks (`.claude/rules/frontend-build.md` › Lighthouse).
 
-Re-raise when `render-blocking-insight` warns on a prerendered document, or LCP needs headroom.
+Re-raise when `render-blocking-insight` warns on a prerendered document or LCP needs headroom. The PR Lighthouse job measures the hydrated app via Vite preview. When it warns, confirm the finding against a production build served by `npm run serve:build` before reopening this intent. [Build rules](../../../.claude/rules/frontend-build.md#frontend-build-rules) · [Chrome's render-blocking insight](https://developer.chrome.com/docs/performance/insights/render-blocking)

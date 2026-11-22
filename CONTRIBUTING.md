@@ -29,11 +29,12 @@ Fork → clone → follow [README — Getting Started](README.md#getting-started
 
 ## Testing
 
-Commands are in [README — Useful Commands](README.md#useful-commands); single-test invocations are in CLAUDE.md `Commands`.
+See the [README commands](README.md#useful-commands) and [single-test invocations](CLAUDE.md#commands). Use `DATABASE_URL=""` for the default Django suite so it runs against SQLite. PostgreSQL-specific verification uses an isolated test database. [Backend testing rules](.claude/rules/backend.md#testing)
 
 - **Coverage** aims for 100 %; [`codecov.yml`](codecov.yml) fails below 99 % per project and 87 % on the patch.
 - **Backend test output is noisy on purpose** — negative-path tests log errors. Trust `Ran N tests` + `OK` and exit code 0.
 - **Sitemap generation**: run `node --test frontend/scripts/test-generate-sitemap.ts` from the root. API errors or incomplete pagination must abort generation without replacing the existing sitemap.
+- **Security configuration changes**: use the [manual audit commands](docs/intents/infra/security-monitoring.md#manual-operation) and record the scanner results. A Docker image audit requires a host running the images to be checked.
 - **Cookie authentication**: browser writes bootstrap a token from `GET /api/auth/csrf/` and send `X-CSRFToken`. Login and refresh also require CSRF; password changes revoke earlier tokens. Regression tests live in `backend/api/test_security.py` and `frontend/src/services/__tests__/api.csrf.test.ts`.
 - **Image uploads**: `backend/api/validators.py` decodes uploaded JPEG, PNG and GIF files and caps frame dimensions, total pixels and animation frames. Add real encoded fixtures for changes; upload API regression tests are in `backend/api/test_upload_security.py`.
 - **Container images**: PostgreSQL, Umami and nginx security recipes live under `docker/`. After changing one, run `sh docker/postgres/verify.sh`, build Umami and run `sh docker/umami/verify.sh`, or build `docker/nginx` and run `sh docker/nginx/verify.sh <image> frontend/nginx.conf`; each uses disposable containers (and Umami a disposable network) and removes them. PR CI's `Docker Images` job runs the same build and check for any PR that changes a file other than Markdown in one of those directories; the nginx check also runs on a `docker-compose.yml` or `frontend/nginx.conf` change.
@@ -42,4 +43,5 @@ Commands are in [README — Useful Commands](README.md#useful-commands); single-
 ## Questions
 
 - [GitHub Issues](https://github.com/researcherhojin/emelmujiro/issues)
+- [Security reporting contact](https://emelmujiro.com/.well-known/security.txt)
 - contact@emelmujiro.com
