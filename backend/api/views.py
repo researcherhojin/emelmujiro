@@ -26,7 +26,6 @@ from rest_framework.views import APIView
 
 from .constants import (
     CACHE_BLOG_CATEGORIES,
-    CACHE_BLOG_POST_LIST,
     MAX_FAILED_CONTACT_ATTEMPTS,
     ONE_DAY,
     ONE_HOUR,
@@ -176,7 +175,8 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
 
         # Admins see all posts (including drafts); public sees only published
-        if not (self.request.user and self.request.user.is_staff):
+        is_staff = self.request.user.is_staff
+        if not is_staff:
             queryset = queryset.filter(is_published=True)
 
         category = self.request.query_params.get("category", None)
@@ -188,6 +188,8 @@ class BlogPostViewSet(viewsets.ModelViewSet):
             valid_categories = [c[0] for c in BlogPost.CATEGORY_CHOICES]
             if category in valid_categories:
                 queryset = queryset.filter(category=category)
+        if featured and featured.lower() == "true":
+            queryset = queryset.filter(is_featured=True)
         if search:
             # Limit search query length to prevent abuse
             search = search[:200]
@@ -196,14 +198,31 @@ class BlogPostViewSet(viewsets.ModelViewSet):
             # Korean ones, because /en still lists untranslated posts in Korean.
             # Without lang=en the query is exactly the Korean-only one.
             if self.request.query_params.get("lang") == "en":
-                match |= (
+                english_match = (
                     Q(title_en__icontains=search)
                     | Q(description_en__icontains=search)
                     | Q(content_html_en__icontains=search)
                 )
+                if is_staff:
+                    match |= english_match
+                else:
+                    candidates = (
+                        queryset.filter(english_match)
+                        .exclude(match)
+                        .order_by()
+                        .only(
+                            "title",
+                            "description",
+                            "content_html",
+                            "translation_source_hash",
+                            "title_en",
+                            "description_en",
+                            "content_html_en",
+                        )
+                    )
+                    translated_ids = [post.pk for post in candidates.iterator() if post.is_translated]
+                    match |= english_match & Q(pk__in=translated_ids)
             queryset = queryset.filter(match)
-        if featured and featured.lower() == "true":
-            queryset = queryset.filter(is_featured=True)
 
         return queryset
 
@@ -211,17 +230,14 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         author = self.request.user.get_full_name() or self.request.user.username
         serializer.save(author=author)
         cache.delete(CACHE_BLOG_CATEGORIES)
-        cache.delete(CACHE_BLOG_POST_LIST)
 
     def perform_update(self, serializer):
         serializer.save()
         cache.delete(CACHE_BLOG_CATEGORIES)
-        cache.delete(CACHE_BLOG_POST_LIST)
 
     def perform_destroy(self, instance):
         instance.delete()
         cache.delete(CACHE_BLOG_CATEGORIES)
-        cache.delete(CACHE_BLOG_POST_LIST)
 
     def retrieve(self, request, *args, **kwargs):
         """Retrieve individual post with view count increment and visit log"""
@@ -245,20 +261,6 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         """List posts with visit log"""
         log_site_visit(request)
 
-        # Cache the bare public list (no query string at all) for 30 seconds.
-        # The key is fixed, so any parameter that shapes the response must
-        # bypass it: allow-listing filters missed `page_size`, and a cold-cache
-        # `?page_size=1` then served a 1-item list to every bare request.
-        is_public = not (request.user and request.user.is_staff)
-        if is_public and not request.query_params:
-            cache_key = CACHE_BLOG_POST_LIST
-            cached = cache.get(cache_key)
-            if cached is not None:
-                return Response(cached)
-            response = super().list(request, *args, **kwargs)
-            cache.set(cache_key, response.data, timeout=30)
-            return response
-
         return super().list(request, *args, **kwargs)
 
     @action(detail=True, methods=["post"], url_path="toggle-publish")
@@ -268,7 +270,6 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         post.is_published = not post.is_published
         post.save(update_fields=["is_published", "updated_at"])
         cache.delete(CACHE_BLOG_CATEGORIES)
-        cache.delete(CACHE_BLOG_POST_LIST)
         return Response({"id": post.id, "is_published": post.is_published})
 
     @action(detail=True, methods=["post"], url_path="like", permission_classes=[AllowAny])

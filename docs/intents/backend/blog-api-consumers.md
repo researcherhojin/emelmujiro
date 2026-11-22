@@ -2,7 +2,7 @@
 status: draft
 module: backend
 created: 2026-10-17
-updated: 2026-10-18
+updated: 2026-11-22
 ---
 
 # It is known whether anything outside the site consumes the blog API
@@ -21,8 +21,7 @@ updated: 2026-10-18
 - **Outcome wanted**: a count of `/api/blog-posts/` requests whose referer is not `emelmujiro.com` **and** whose user-agent is not a browser, over enough days to mean something, with crawlers and scanners separated by user-agent.
 - **Affected systems**: none until the measurement says otherwise; `access.log` survives deploys via the logs volume and rotates at 5 MB × 3 backups.
 - **Constraints**: a zero count over a few days is weak evidence, not proof — a monthly or seasonal consumer would not appear.
-- **Open questions**: if consumers exist, does the API need a version or an announcement channel? The field names are already a written contract (`.claude/rules/frontend.md`, Blog snake_case); they are just not versioned.
-- **Not urgent**: nothing is known to be broken and no breaking change is planned.
+- **Open questions**: if consumers exist, does the API need a version or an announcement channel? The translation change keeps the response keys and blanks English values for incomplete or outdated translations. Its effect on external consumers remains unmeasured. See [Backend rules](../../../.claude/rules/backend.md#architecture).
 
 ## Spec
 

@@ -136,7 +136,7 @@ graph LR
 
 - **Bilingual (i18n)** — URL-based routing: Korean default (`/contact`), English `/en/contact`
 - **Teaching History** — 47 entries across 5 years (2022–2026), org type filter (4 categories)
-- **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, nested comments, optional per-post English translation served at `/en/insights/:slug`
+- **Insights (Blog)** — TipTap rich text editor, slug URLs (`/insights/:slug`), image upload, IP-based likes, and nested comments. Complete, current English translations appear on `/en/insights/:slug` and in the public blog API and English search. The English page falls back to Korean when a translation is unavailable.
 - **Auth** — httpOnly cookie JWT with shared-promise refresh queue, CSRF-protected cookie writes and login/refresh, and password-change token revocation
 - **Testimonials** — Enterprise + 고용노동부 K-디지털 reviews, dual-row auto-scroll carousel
 - **Monitoring** — Umami analytics (self-hosted, zero external scripts) + Docker health check (`make health`; a 5-minute cron appends only failures and warnings, timestamped, to `backend/logs/health-check.log`). Sentry is wired behind a lazy-loaded shim but inactive: `VITE_SENTRY_DSN` is unset in production, so `initSentry()` returns early and no DSN ships in the bundle. No Sentry project exists; enabling it starts with a new project and DSN

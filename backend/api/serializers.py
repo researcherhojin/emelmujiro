@@ -104,6 +104,13 @@ class BlogPostSerializer(serializers.ModelSerializer):
     formatted_date = serializers.SerializerMethodField()
     relative_date = serializers.SerializerMethodField()
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get("request")
+        if not data["is_translated"] and not (request and request.user.is_staff):
+            data.update(title_en="", description_en="", content_html_en="", tags_en=[])
+        return data
+
     class Meta:
         model = BlogPost
         fields: ClassVar[list[str]] = [

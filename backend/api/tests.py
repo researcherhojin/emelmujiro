@@ -81,6 +81,8 @@ class BlogPostAPITestCase(APITestCase):
             post.save()
             data = self.client.get(url).data
             self.assertEqual(data["is_translated"], expected, fields)
+            if not expected:
+                self.assertEqual((data["title_en"], data["description_en"], data["content_html_en"]), ("", "", ""))
         self.assertEqual(data["title_en"], "T")
         self.assertEqual(data["content_html_en"], "<p>B</p>")
         self.assertEqual(data["tags_en"], [])
@@ -221,6 +223,41 @@ class BlogPostEnglishSearchTestCase(APITestCase):
     def test_english_description_and_body_match_with_lang_en(self):
         self.assertEqual(self.slugs({"search": "english description", "lang": "en"}), [self.post.slug])
         self.assertEqual(self.slugs({"search": "english body", "lang": "en"}), [self.post.slug])
+
+    def test_stale_translation_is_hidden_from_public_reads_and_search(self):
+        from django.core.cache import cache
+
+        cache.clear()
+        self.assertEqual(self.client.get(self.url).data["results"][0]["title_en"], self.post.title_en)
+        BlogPost.objects.filter(pk=self.post.pk).update(description="한국어 설명 수정", tags_en=["example"])
+
+        detail_url = reverse("blog-detail", kwargs={"slug": self.post.slug})
+        for data in (self.client.get(self.url).data["results"][0], self.client.get(detail_url).data):
+            self.assertFalse(data["is_translated"])
+            self.assertTrue(data["translation_outdated"])
+            self.assertEqual((data["title_en"], data["description_en"], data["content_html_en"]), ("", "", ""))
+            self.assertEqual(data["tags_en"], [])
+        self.assertEqual(self.slugs({"search": "gradient", "lang": "en"}), [])
+        self.assertEqual(self.slugs({"search": "한국어", "lang": "en"}), [self.post.slug])
+
+        staff = User.objects.create_user(username="translation-editor", is_staff=True)
+        self.client.force_authenticate(user=staff)
+        self.assertEqual(self.client.get(detail_url).data["title_en"], self.post.title_en)
+        self.assertEqual(self.slugs({"search": "gradient", "lang": "en"}), [self.post.slug])
+
+    def test_login_does_not_grant_access_to_stale_translation(self):
+        reader = User.objects.create_user(username="translation-reader")
+        access_token = RefreshToken.for_user(reader).access_token
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
+
+        detail_url = reverse("blog-detail", kwargs={"slug": self.post.slug})
+        self.assertEqual(self.client.get(detail_url).data["title_en"], self.post.title_en)
+
+        BlogPost.objects.filter(pk=self.post.pk).update(description="한국어 설명 수정")
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title_en"], "")
+        self.assertEqual(self.slugs({"search": "gradient", "lang": "en"}), [])
 
 
 @override_settings(REST_FRAMEWORK={**NO_THROTTLE})
@@ -1151,8 +1188,7 @@ class CategoryCacheTestCase(APITestCase):
 
         cache.clear()
 
-    def test_blog_list_cache_ignores_parameterized_requests(self):
-        """A ?page_size request must neither fill nor read the bare-list cache"""
+    def test_blog_list_applies_page_size_and_reflects_new_posts(self):
         for i in range(3):
             BlogPost.objects.create(title=f"P{i}", description="D", content="C", category="ai")
         url = reverse("blog-list")
@@ -1162,10 +1198,8 @@ class CategoryCacheTestCase(APITestCase):
         bare = self.client.get(url)
         self.assertEqual(len(bare.data["results"]), 3)
 
-        # The bare list is cached: a new post is not visible until expiry
         BlogPost.objects.create(title="P3", description="D", content="C", category="ai")
-        self.assertEqual(len(self.client.get(url).data["results"]), 3)
-        # ...while a parameterized request still reads the database
+        self.assertEqual(len(self.client.get(url).data["results"]), 4)
         self.assertEqual(self.client.get(url, {"page_size": 10}).data["count"], 4)
 
     def test_category_list_is_cached(self):
