@@ -27,10 +27,10 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.3.5-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tailwind Typography](https://img.shields.io/badge/Typography-0.5.20-06B6D4?logo=tailwindcss&logoColor=white)
 ![i18next](https://img.shields.io/badge/i18next-27.1.2-26A69A?logo=i18next&logoColor=white)
-![react-i18next](https://img.shields.io/badge/React_i18next-18.0.1-26A69A?logo=i18next&logoColor=white)
+![react-i18next](https://img.shields.io/badge/React_i18next-18.0.3-26A69A?logo=i18next&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-1.21.1-5A29E4?logo=axios&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.34.0-1a1a2e)
-![DOMPurify](https://img.shields.io/badge/DOMPurify-3.4.17-4B32C3)
+![DOMPurify](https://img.shields.io/badge/DOMPurify-3.4.18-4B32C3)
 
 **Backend**<br/>
 ![Django](https://img.shields.io/badge/Django-6.1.3-092E20?logo=django&logoColor=white)
@@ -42,7 +42,7 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 **Testing**<br/>
 ![Vitest](https://img.shields.io/badge/Vitest-5.1.0-6E9F18?logo=vitest&logoColor=white)
 ![Testing Library](https://img.shields.io/badge/Testing_Library-16.3.3-E33332?logo=testinglibrary&logoColor=white)
-![Playwright](https://img.shields.io/badge/Playwright-1.65.0-2EAD33?logo=playwright&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-1.65.1-2EAD33?logo=playwright&logoColor=white)
 ![Lighthouse](https://img.shields.io/badge/Lighthouse_CI-Desktop-F44B21?logo=lighthouse&logoColor=white)
 
 **Infra**<br/>
