@@ -88,4 +88,4 @@ paths:
 
 - It runs `vite build --sourcemap` into the gitignored `build-analyze/`, because `vite.config.mts` emits no maps for production and `build/` is what nginx serves.
 - It passes `--no-border-checks`, because rolldown's maps end lines at column `Infinity`, which source-map-explorer otherwise rejects.
-- The `rolldown-runtime` and `sentry-impl` stubs (under 1 KB) have no maps and are skipped with a warning.
+- The `rolldown-runtime` stub has no map and is skipped with a warning.

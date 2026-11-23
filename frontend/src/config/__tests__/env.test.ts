@@ -15,8 +15,6 @@ describe('env config', () => {
       expect(env).toBeDefined();
       expect(env).toHaveProperty('API_URL');
       expect(env).toHaveProperty('ENABLE_ANALYTICS');
-      expect(env).toHaveProperty('ENABLE_SENTRY');
-      expect(env).toHaveProperty('SENTRY_DSN');
       expect(env).toHaveProperty('UMAMI_HOST');
       expect(env).toHaveProperty('UMAMI_WEBSITE_ID');
       expect(env).toHaveProperty('APP_NAME');
@@ -40,7 +38,6 @@ describe('env config', () => {
       expect(env.APP_NAME).toBe('Emelmujiro');
       expect(env.APP_VERSION).toBe('1.0.0');
       expect(env.PUBLIC_URL).toBe('');
-      expect(env.SENTRY_DSN).toBe('');
       expect(env.UMAMI_HOST).toBe('');
       expect(env.UMAMI_WEBSITE_ID).toBe('');
     });
@@ -49,14 +46,12 @@ describe('env config', () => {
       const { env } = await import('../env');
 
       expect(typeof env.ENABLE_ANALYTICS).toBe('boolean');
-      expect(typeof env.ENABLE_SENTRY).toBe('boolean');
     });
 
-    it('should default ENABLE_ANALYTICS and ENABLE_SENTRY to false', async () => {
+    it('should default ENABLE_ANALYTICS to false', async () => {
       const { env } = await import('../env');
 
       expect(env.ENABLE_ANALYTICS).toBe(false);
-      expect(env.ENABLE_SENTRY).toBe(false);
     });
 
     it('should have API_URL as a string containing /api', async () => {
@@ -86,20 +81,10 @@ describe('env config', () => {
 
     it('should use VITE_ prefixed var for feature flags', async () => {
       vi.stubEnv('VITE_ENABLE_ANALYTICS', 'true');
-      vi.stubEnv('VITE_ENABLE_SENTRY', 'true');
 
       const { env } = await import('../env');
 
       expect(env.ENABLE_ANALYTICS).toBe(true);
-      expect(env.ENABLE_SENTRY).toBe(true);
-    });
-
-    it('should use VITE_ prefixed var for SENTRY_DSN', async () => {
-      vi.stubEnv('VITE_SENTRY_DSN', 'https://sentry.example.com/123');
-
-      const { env } = await import('../env');
-
-      expect(env.SENTRY_DSN).toBe('https://sentry.example.com/123');
     });
   });
 

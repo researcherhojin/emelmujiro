@@ -17,7 +17,7 @@ Each section holds the evidence and fix steps for the CLAUDE.md Gotcha with the 
 
 ## #7
 
-- Every `VITE_*` is inlined into the public client bundle at build time, so `VITE_UMAMI_HOST` / `VITE_SENTRY_DSN` / `VITE_API_URL` are all **public by design** (DevTools shows them on any page load).
+- Every `VITE_*` is inlined into the public client bundle at build time, so `VITE_UMAMI_HOST` / `VITE_API_URL` are all **public by design** (DevTools shows them on any page load).
 - Asymmetry is deliberate: `backend/.env.production` = real server-side secrets → gitignored; `frontend/.env.production` = compile-time public config → tracked.
 
 ## #8

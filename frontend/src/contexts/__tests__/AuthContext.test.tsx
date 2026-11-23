@@ -19,11 +19,6 @@ vi.mock('../../i18n', () => ({
   default: { t: (key: string) => key, language: 'ko' },
 }));
 
-vi.mock('../../utils/sentry', () => ({
-  setUserContext: vi.fn(),
-  clearUserContext: vi.fn(),
-}));
-
 // Test component to consume the context
 const TestComponent: React.FC = () => {
   const { user, isAuthenticated, loading, error, login, logout, updateUser, clearError } =

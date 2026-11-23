@@ -1,10 +1,5 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-// Mock sentry before importing logger
-vi.mock('../sentry', () => ({
-  captureException: vi.fn(),
-}));
-
 import Logger from '../logger';
 
 describe('Logger', () => {
@@ -113,26 +108,25 @@ describe('Logger', () => {
       vi.resetModules();
     });
 
-    it('should not crash when error method is called in non-dev mode', () => {
-      // Temporarily set isDevelopment to false and enableInProduction to true
-      // so shouldLog('error') returns true and reportToErrorService (lines 71-78) runs
-      const instance = Logger as unknown as {
-        isDevelopment: boolean;
-        config: { enableInProduction: boolean; logLevel: string };
-      };
-      const originalIsDev = instance.isDevelopment;
-      const originalEnable = instance.config.enableInProduction;
-      instance.isDevelopment = false;
-      instance.config.enableInProduction = true;
+    it('logs errors in production when logging is enabled', async () => {
+      vi.resetModules();
+      vi.doMock('../../config/env', () => ({
+        default: { IS_DEVELOPMENT: false },
+        getEnvVar: (key: string) => (key === 'ENABLE_LOGGING' ? 'true' : undefined),
+      }));
 
-      // Should not throw — triggers reportToErrorService with Error instance (line 78 branch 1)
-      expect(() => Logger.error('Production error', new Error('test'))).not.toThrow();
-      // Triggers reportToErrorService with non-Error (line 78 branch 2: new Error(message))
-      expect(() => Logger.error('String error', 'not an Error' as unknown)).not.toThrow();
-
-      // Restore
-      instance.isDevelopment = originalIsDev;
-      instance.config.enableInProduction = originalEnable;
+      try {
+        const { default: prodLogger } = await import('../logger');
+        const error = new Error('test');
+        prodLogger.error('Production error', error);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          expect.stringContaining('[ERROR] Production error'),
+          error
+        );
+      } finally {
+        vi.doUnmock('../../config/env');
+        vi.resetModules();
+      }
     });
   });
 });

@@ -258,8 +258,20 @@ jobs:
           echo "README test counts present ($README_FE frontend + $README_BE backend)"
 
       - name: Check README badge versions match package-lock.json and uv.lock
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
           ERRORS=0
+          MISMATCHES=0
+          report_mismatch() {
+            MISMATCHES=$((MISMATCHES + 1))
+            if [ "$PR_AUTHOR" = 'dependabot[bot]' ]; then
+              echo "::warning::$1"
+            else
+              echo "❌ $1"
+            fi
+          }
+
           # Backend runtime badges resolve through backend/uv.lock, not
           # pyproject.toml: pyproject mixes exact pins (gunicorn==26.0.0) with
           # floors (coverage>=7.15.4), and a floor is not the installed version.
@@ -285,8 +297,7 @@ jobs:
               echo "❌ no /badge/${name}- badge in README.md"
               ERRORS=$((ERRORS + 1))
             elif [ "$lock_ver" != "$badge_ver" ]; then
-              echo "❌ $name badge: $badge_ver ≠ uv.lock: $lock_ver"
-              ERRORS=$((ERRORS + 1))
+              report_mismatch "$name badge: $badge_ver ≠ uv.lock: $lock_ver"
             fi
           }
           check_badge() {
@@ -303,8 +314,7 @@ jobs:
               echo "❌ no /badge/${name}- badge in README.md"
               ERRORS=$((ERRORS + 1))
             elif [ "$pkg_ver" != "$badge_ver" ]; then
-              echo "❌ $name badge: $badge_ver ≠ package-lock.json: $pkg_ver"
-              ERRORS=$((ERRORS + 1))
+              report_mismatch "$name badge: $badge_ver ≠ package-lock.json: $pkg_ver"
             fi
           }
           # Badge order mirrors README section layout (frontend / testing).
@@ -330,12 +340,18 @@ jobs:
           check_backend_badge "SimpleJWT" "djangorestframework-simplejwt"
           check_backend_badge "Gunicorn" "gunicorn"
           if [ "$ERRORS" -gt 0 ]; then
-            echo "❌ $ERRORS README badge(s) missing or out of sync with package-lock.json / uv.lock"
-            echo "A version mismatch: run scripts/repo/sync-readme-badges.sh (auto-heals on main via the readme-sync job)."
-            echo "A missing badge or package: that script skips it, so restore it, or remove the badge, its line here and its entry in scripts/repo/sync-readme-badges.sh together."
+            echo "❌ $ERRORS README badge(s) or lockfile entries missing"
+            echo "Restore each missing badge or package, or remove its entries from README, this check and scripts/repo/sync-readme-badges.sh together."
             exit 1
           fi
-          echo "All README badges match package-lock.json and uv.lock"
+          if [ "$MISMATCHES" -eq 0 ]; then
+            echo "All README badges match package-lock.json and uv.lock"
+          elif [ "$PR_AUTHOR" = 'dependabot[bot]' ]; then
+            echo "$MISMATCHES README badge(s) will be synced by the readme-sync job on main."
+          else
+            echo "❌ $MISMATCHES README badge(s) out of sync. Run scripts/repo/sync-readme-badges.sh."
+            exit 1
+          fi
 
       # Placed here, not at the top of the job: the bash-only checks above need
       # no dependencies, so a failure in one of them ends the job without paying
