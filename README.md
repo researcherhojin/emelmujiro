@@ -26,7 +26,7 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![React Router](https://img.shields.io/badge/React_Router-8.5.1-CA4245?logo=reactrouter&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.3.5-06B6D4?logo=tailwindcss&logoColor=white)
 ![Tailwind Typography](https://img.shields.io/badge/Typography-0.5.20-06B6D4?logo=tailwindcss&logoColor=white)
-![i18next](https://img.shields.io/badge/i18next-27.1.2-26A69A?logo=i18next&logoColor=white)
+![i18next](https://img.shields.io/badge/i18next-27.2.2-26A69A?logo=i18next&logoColor=white)
 ![react-i18next](https://img.shields.io/badge/React_i18next-18.0.3-26A69A?logo=i18next&logoColor=white)
 ![Axios](https://img.shields.io/badge/Axios-1.21.1-5A29E4?logo=axios&logoColor=white)
 ![TipTap](https://img.shields.io/badge/TipTap-3.34.0-1a1a2e)
@@ -40,7 +40,7 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
 
 **Testing**<br/>
-![Vitest](https://img.shields.io/badge/Vitest-5.1.0-6E9F18?logo=vitest&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-5.1.1-6E9F18?logo=vitest&logoColor=white)
 ![Testing Library](https://img.shields.io/badge/Testing_Library-16.3.3-E33332?logo=testinglibrary&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-1.65.1-2EAD33?logo=playwright&logoColor=white)
 ![Lighthouse](https://img.shields.io/badge/Lighthouse_CI-Desktop-F44B21?logo=lighthouse&logoColor=white)
@@ -141,7 +141,7 @@ The dependency audit includes development dependencies. Run `npm run security:se
 - **SEO and performance.** JSON-LD, 10 prerendered routes, and a multilingual sitemap. CI checks bundle size and runs Lighthouse. [Build and SEO rules](.claude/rules/frontend-build.md)
 - **Security.** The app sanitizes blog HTML and validates uploads. Scheduled checks audit dependencies and running images and verify encrypted backups can be restored. [Backend security](.claude/rules/backend.md#security) · [Security operations](docs/intents/infra/security-operations.md)
 - **Privacy policy.** Korean and English pages cover collection, retention, and user rights at `/privacy` and `/en/privacy`.
-- **Tests.** Vitest (1301 tests), Django unittest (455 tests), Node sitemap regression tests (12 tests), and Playwright E2E (5 default profiles).
+- **Tests.** Vitest (1273 tests), Django unittest (455 tests), Node sitemap regression tests (12 tests), and Playwright E2E (5 default profiles).
 - **CI/CD.** GitHub Actions checks pull requests, deploys verified `main` commits, and monitors deployment drift. [CI and deployment rules](.claude/rules/ci.md)
 
 ## Documentation

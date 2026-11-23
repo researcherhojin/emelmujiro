@@ -17,10 +17,8 @@
 #   8. Configure git for two-device safety (pull.rebase, autoStash)
 #   9. Verify the setup (calls `make verify-setup`)
 #
-# DESIGN: This script does NOT manage production secrets. Production
-# .env.production files (real SECRET_KEY, real reCAPTCHA, real Sentry
-# DSN) live ONLY on the machine that runs `auto-deploy.sh` (Mac mini)
-# and in GitHub Actions secrets — they intentionally never reach a
+# DESIGN: This script does NOT manage production secrets. Backend production
+# secrets live on the deploy host and in GitHub Actions secrets, outside any
 # dev-only machine like a MacBook. Principle of least privilege: a
 # stolen/lost MacBook cannot leak production credentials.
 #

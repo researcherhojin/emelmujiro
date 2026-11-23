@@ -33,9 +33,7 @@ export const env = {
   ),
   // Feature Flags
   ENABLE_ANALYTICS: getEnvVar('REACT_APP_ENABLE_ANALYTICS', 'false') === 'true',
-  ENABLE_SENTRY: getEnvVar('REACT_APP_ENABLE_SENTRY', 'false') === 'true',
   // Third Party Keys
-  SENTRY_DSN: getEnvVar('REACT_APP_SENTRY_DSN', ''),
   UMAMI_HOST: getEnvVar('REACT_APP_UMAMI_HOST', ''),
   UMAMI_WEBSITE_ID: getEnvVar('REACT_APP_UMAMI_WEBSITE_ID', ''),
 

@@ -4,13 +4,9 @@ import './index.css';
 import App from './App';
 import env from './config/env';
 import logger from './utils/logger';
-import { initSentry } from './utils/sentry';
 import { initAnalytics } from './utils/analytics';
 import { initPerformanceMonitoring, checkPerformanceBudget } from './utils/webVitals';
 import { registerChunkReload } from './utils/chunkReload';
-
-// Initialize Sentry error tracking (no-op unless VITE_ENABLE_SENTRY=true and VITE_SENTRY_DSN is set)
-initSentry();
 
 // Initialize analytics (no-op until Umami is provisioned)
 initAnalytics();

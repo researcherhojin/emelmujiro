@@ -79,9 +79,6 @@ export default defineConfig({
           if (id.includes('node_modules/i18next/') || id.includes('node_modules/react-i18next/') || id.includes('node_modules/i18next-browser-languagedetector/') || id.includes('/src/i18n')) {
             return 'i18n';
           }
-          if (id.includes('node_modules/@sentry/')) {
-            return 'sentry';
-          }
           if (id.includes('node_modules/axios/')) {
             return 'http-vendor';
           }

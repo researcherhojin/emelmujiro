@@ -3,7 +3,6 @@
  * Disables console.log in production
  */
 import env, { getEnvVar } from '../config/env';
-import { captureException } from './sentry';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -65,19 +64,7 @@ class Logger {
   error(message: string, error?: Error | unknown): void {
     if (this.shouldLog('error')) {
       console.error(this.formatMessage('error', message), error || '');
-
-      // Send to error reporting service in production
-      if (!this.isDevelopment && error) {
-        this.reportToErrorService(message, error);
-      }
     }
-  }
-
-  // Send to error reporting service (Sentry)
-  private reportToErrorService(message: string, error: unknown): void {
-    captureException(error instanceof Error ? error : new Error(message), {
-      message,
-    });
   }
 }
 

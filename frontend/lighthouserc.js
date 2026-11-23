@@ -75,7 +75,7 @@ module.exports = {
         'dom-size-insight': 'off',
         // Font display — Pretendard CDN may not set font-display in CI
         'font-display-insight': 'off',
-        // Third-party cookies — GA removed; Sentry lazy-loaded
+        // Third-party cookies from the contact form
         'third-party-cookies': 'warn',
         // LCP insights — CI preview server behaves differently. Also covers the
         // dropped prioritize-lcp-image and lcp-lazy-loaded (blog images are dynamic).

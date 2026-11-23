@@ -11,8 +11,6 @@ const { mockEnv } = vi.hoisted(() => ({
     IS_DEVELOPMENT: true,
     IS_TEST: true,
     API_URL: 'http://localhost:8000/api',
-    ENABLE_SENTRY: false,
-    SENTRY_DSN: '',
     ENABLE_ANALYTICS: false,
     UMAMI_HOST: '',
     UMAMI_WEBSITE_ID: '',

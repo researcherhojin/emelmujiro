@@ -1,5 +1,5 @@
 # cspell:ignore gosu setgroups setgid setuid
-FROM postgres:15.19-alpine3.24
+FROM postgres:15.20-alpine3.24
 
 # Keep the official root entrypoint and its directory ownership setup. Its only
 # gosu invocation switches to the named postgres user before starting the server.

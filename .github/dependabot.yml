@@ -52,7 +52,7 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
-    # One group only, for `@tiptap/*` (Gotcha #14). Filed one PR per package,
+    # For `@tiptap/*` (Gotcha #14), filed one PR per package,
     # the siblings split the tree three Mondays running: 2026-11-02 (patch
     # auto-merges; `main` failed tsc), 11-09 (minors #741/#749, bundled by hand
     # in #756) and 11-16 (patch auto-merges #782-#785 and #793 left `pm`,
@@ -71,6 +71,15 @@ updates:
       tiptap:
         patterns:
           - "@tiptap/*"
+        update-types:
+          - "minor"
+          - "patch"
+      vitest:
+        # Coverage and UI require the same Vitest version.
+        patterns:
+          - "vitest"
+          - "@vitest/coverage-v8"
+          - "@vitest/ui"
         update-types:
           - "minor"
           - "patch"

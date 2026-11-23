@@ -62,12 +62,6 @@ vi.mock('../../services/api', () => ({
   },
 }));
 
-// Mock sentry
-vi.mock('../../utils/sentry', () => ({
-  setUserContext: vi.fn(),
-  clearUserContext: vi.fn(),
-}));
-
 import { useNotification, NotificationProvider } from '../NotificationContext';
 import { AuthProvider } from '../AuthContext';
 
