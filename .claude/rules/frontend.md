@@ -53,6 +53,8 @@ Principles, not specifics. UI strings live in `frontend/src/i18n/locales/`; CSS 
 
 ## Testing
 
+- **Vitest lives at the workspace root.** Keep `vitest`, `@vitest/coverage-v8`, and `@vitest/ui` on the same version. In #825, npm moved Vitest into `frontend/node_modules` while jest-dom stayed at the root, breaking its runtime import and matcher types. Dependabot groups the three minor and patch updates. Verify with a clean install and `npm run validate --workspace frontend`. [jest-dom Vitest integration](https://github.com/testing-library/jest-dom#with-vitest) · [npm package folders](https://docs.npmjs.com/cli/v11/configuring-npm/folders/)
+
 - `TipTapEditor` registers custom Link and Underline extensions, so disable both bundled copies in Tiptap 3's `StarterKit`. The editor regression test instantiates the installed editor and checks extension names and link options. [Tiptap StarterKit documentation](https://tiptap.dev/docs/editor/extensions/functionality/starterkit)
 
 Global mocks in `setupTests.ts` (do NOT re-mock): `react-i18next` (`t: key => key`, `language: 'ko'`, `Trans` passthrough), `lucide-react`, `react-helmet-async`, browser APIs. The `lucide-react` mock is a Proxy that returns a component for any name, so Vitest cannot catch an icon removed upstream; on a `lucide-react` bump the gate is `tsc` in `Build for Analysis`. A test that needs a custom `t()` re-mocks `react-i18next` locally (17 files do; #584); copy the shape from `setupTests.ts`, not from memory.

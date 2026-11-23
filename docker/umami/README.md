@@ -1,6 +1,6 @@
 # Umami security build
 
-<!-- cspell:ignore redocly -->
+<!-- cspell:ignore bpchar redocly -->
 
 This rebuild keeps Umami 3.4.0 application code and migrations at upstream commit
 `ec0ff50388c264ed8ce46f00967e92f7e71476ae`. The Dockerfile verifies the source
@@ -63,6 +63,21 @@ Scan the final image with Trivy and retain its JSON report. A successful build
 alone does not establish that all reported vulnerabilities have been removed.
 Alpine package upgrades resolve against the current stable repositories; record
 the final image digest alongside the scan for the deployed artifact.
+
+## Database verification
+
+The database recipe, Compose image tag, and the default test image in
+`verify.sh` use PostgreSQL 15.20 (#839). The PostgreSQL image check verifies
+initialization and persistence across a restart. The Umami image check verifies
+migrations, login, and event persistence against a disposable database.
+
+For a PostgreSQL minor update, check the upstream migration notes against the
+existing database before rollout. Check the running version after deployment
+and rebuild the indexes the release identifies as affected. For 15.20, one
+`bpchar` index was rebuilt with `REINDEX INDEX CONCURRENTLY`. The replacement
+index was valid and ready, and both analytics containers reported healthy.
+[PostgreSQL 15.20 migration notes](https://www.postgresql.org/docs/release/15.20/) ·
+[REINDEX documentation](https://www.postgresql.org/docs/15/sql-reindex.html)
 
 ## Updating the recipe
 

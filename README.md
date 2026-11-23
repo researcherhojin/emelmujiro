@@ -120,6 +120,8 @@ The dependency audit includes development dependencies. Run `npm run security:se
    curl -fsS https://emelmujiro.com/api/health/
    ```
 
+4. **After an analytics database upgrade, verify PostgreSQL separately.** Check the running server version and follow the release's instructions for any affected indexes. [Umami database verification](docker/umami/README.md#database-verification)
+
 ## Architecture
 
 ![Emelmujiro architecture showing browser traffic, Cloudflare Tunnel, Docker services, data stores, and deployment](.github/assets/architecture.svg)
@@ -137,7 +139,7 @@ The dependency audit includes development dependencies. Run `npm run security:se
 - **Insights.** Rich-text posts support images, likes, and threaded comments. English pages show current translations and fall back to Korean. [Blog API rules](.claude/rules/backend.md#architecture)
 - **Authentication.** HttpOnly JWT cookies, CSRF protection, and token revocation after password changes. [Authentication tests](CONTRIBUTING.md#testing)
 - **Testimonials.** Two scrolling rows feature enterprise and 고용노동부 K-디지털 reviews.
-- **Monitoring.** Self-hosted Umami analytics and scheduled Docker health checks. [Operations runbook](docs/intents/infra/security-monitoring.md#manual-operation)
+- **Monitoring and error recovery.** Self-hosted Umami analytics and scheduled Docker health checks. React shows a localized retry screen after rendering errors. [Operations runbook](docs/intents/infra/security-monitoring.md#manual-operation)
 - **SEO and performance.** JSON-LD, 10 prerendered routes, and a multilingual sitemap. CI checks bundle size and runs Lighthouse. [Build and SEO rules](.claude/rules/frontend-build.md)
 - **Security.** The app sanitizes blog HTML and validates uploads. Scheduled checks audit dependencies and running images and verify encrypted backups can be restored. [Backend security](.claude/rules/backend.md#security) · [Security operations](docs/intents/infra/security-operations.md)
 - **Privacy policy.** Korean and English pages cover collection, retention, and user rights at `/privacy` and `/en/privacy`.
