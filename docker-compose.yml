@@ -94,7 +94,7 @@ services:
       # can still read its .Image (an index digest changed on every build).
       provenance: false
       sbom: false
-    image: emelmujiro/postgres:15.20-security-1
+    image: emelmujiro/postgres:15.19-security-1
     container_name: emelmujiro-umami-db
     restart: unless-stopped
     stop_grace_period: 30s

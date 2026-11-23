@@ -10,7 +10,6 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 - chore(frontend): remove the retired Sentry integration, its client configuration and its privacy disclosures. React error fallback and opt-in console logging remain available.
 - deps: update i18next to 27.2.2, ESLint to 10.15.0, the TypeScript ESLint parser and plugin to 8.73.0, and Knip to 6.46.1. Remove the direct `form-data` dependency because Axios already requires 4.0.6 or newer within its major range.
-- deps(infra): update the Umami database image and its verification fixture to PostgreSQL 15.20. The upstream release keeps the PostgreSQL 15 data format and calls for reviewing existing indexes against its REINDEX notes before rollout.
 - fix(ci): declare Vitest, its coverage provider, and its UI at the workspace root so the hoisted jest-dom adapter can resolve Vitest. Update them together to 5.1.1 and group their Dependabot minor and patch updates. Report README badge version mismatches on Dependabot PRs as warnings until the main workflow syncs them.
 - fix(frontend): preserve PostCSS source filenames by defining custom animations in the Tailwind CSS theme. Add opt-in Brave mobile emulation, type-check the Playwright configuration, and scope the teaching history check to the localized main content.
 - chore(repo): ignore machine-local agent files, credential files, and backup archives. Document the public and local file boundaries.
