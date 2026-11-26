@@ -34,8 +34,10 @@ Each section holds the evidence and fix steps for the CLAUDE.md Gotcha with the 
 ## #10
 
 - It happened 10 times on `main` before the guard, including `66cef64b`, the commit that fixed the deploy path.
+- The checker rejects a true `skip-checks` trailer before exemptions. Run `bash scripts/repo/test-check-commit-msg.sh` to cover both documented spellings, the README sync exception and the Git `commit-msg` hook. [GitHub Actions skip instructions](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/skip-workflow-runs) · [Git trailers](https://git-scm.com/docs/git-interpret-trailers)
 - The guard scans the whole message **before** the merge/autosquash/revert/dependabot exemptions, so a generated subject cannot carry one through. Escape to write about it (`\[skip ci\]`); `git commit --no-verify` is the escape for genuine skip intent.
 - The `Sync README Badges` bot is exempt **by shape, not exact text** — `chore(readme):` scope, marker as the final subject token, no body — because its message has changed twice and an exact pin would redden the bot on the next edit.
+- The watchdog can inspect the commit history. It also checks the author email and requires the diff to contain only `README.md` before exempting a sync commit. Verify selection with `bash scripts/repo/test-pipeline-watchdog-target.sh`. [Git first-parent history](https://git-scm.com/docs/git-log#Documentation/git-log.txt---first-parent)
 
 ## #12
 

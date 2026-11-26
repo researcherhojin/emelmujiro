@@ -89,7 +89,7 @@ Build, runtime, and infrastructure rules. Violating these breaks deploys, securi
   - **`scripts/repo/check-commit-msg.sh` is the single source of truth** — the `.husky/commit-msg` hook and the `pr-checks.yml` step both call it, so edit the type list there and never re-inline the regex in a caller.
   - `deps-dev` exists because dependabot writes `deps-dev(deps-dev):` and the skip pattern exempts it, so a human finishing one of its PRs by hand needs the same type available.
   - Exempt: merge commits, `fixup!`/`squash!`/`amend!` (autosquash rewrites them away), `Revert "…"`, and dependabot's formats.
-  - English-only is machine-enforced as ASCII on the **subject line only** — the body is not inspected — so `git commit --no-verify` is the escape for a subject that genuinely needs a non-ASCII proper noun.
+  - English-only is machine-enforced as ASCII on the **subject line only**, so `git commit --no-verify` is the escape for a subject that genuinely needs a non-ASCII proper noun.
 - **Branch naming**: `feature/name` or `fix/description`.
 - **ESLint flat config** (`eslint.config.ts`, loaded through `jiti`, NOT `.eslintrc`). Zero warnings is a **gate**: `npm run lint` (PR checks, `make lint`, `validate`) and the pre-commit `eslint --fix` both pass `--max-warnings=0`.
 - **English comments only**.
@@ -114,11 +114,11 @@ Dependabot checks for version updates on Mondays at 09:00 KST. When reviewing th
   - Retiring the release number says nothing about API compatibility — `backend/api/` serves blog list and retrieval anonymously, so external consumers cannot be ruled out from this repo.
 - **CHANGELOG on Ship**: append the entry under `## Merged since [1.0.0]`; `scripts/repo/check-changelog.sh` warns, never blocks, when a change outside `docs/intents/` has none (`ci.md` › CHANGELOG entry). Do **not** re-section it by date or cut it into releases — there is no measured benefit to pay the reconstruction cost for. `[1.0.0]` stays as a historical record.
 - **PR discipline**: one issue per PR, ≤ 3 commits, no mid-PR scope expansion (deferred work → new issue).
-- **CI-skip guard**: only the `Sync README Badges` bot may carry the literal; every other commit is rejected by `scripts/repo/check-commit-msg.sh` (Gotcha #10). Escape it to write about it.
+- **CI-skip guard**: the Git `commit-msg` hook and PR CI call the same checker. The Pipeline Watchdog exempts only the generated README-only sync commit. See Gotcha #10 for both regression commands. [Git hooks](https://git-scm.com/docs/githooks#_commit_msg)
 
 ### Skip rules
 
-- **Typo / comment / single-line README**: Think → Build → Ship.
+- **Typo / comment / single-line README**: Think → Build → Ship. When changing a README count, version badge, or build claim, run the matching check in [CI rules, README drift gates](.claude/rules/ci.md).
 - **Hotfix on live bug**: Think → Build → Test → Ship → Reflect.
 - **Refactor touching ≥ 3 files or any `Constraints` section (including those moved to `.claude/rules/ci.md` and `frontend-build.md`)**: full 7 phases mandatory.
 - **Semver-compatible dependency bump**: Review → Test → Ship.
@@ -144,7 +144,7 @@ Quick code-level traps that cost time when missed. Each entry is its bold rule. 
 7. **`frontend/.env.production` is intentionally tracked in git** — `.gitignore` line 5 has `!frontend/.env.production` (negation pattern). Do **not** `git rm` it — it's load-bearing for `scripts/deploy/auto-deploy.sh`.
 8. **Dependabot does NOT bump react and react-dom together** — its pairing of a package with its `@types/*` companion covers `react-dom` + `@types/react-dom`, not `react`, and no `react*` group exists on the surviving `/` npm ecosystem. Vitest then crashes with `Incompatible React versions`.
 9. **Scope E2E selectors to their landmarks.** Navigation and footer labels can overlap. Use the `Main navigation` landmark for navigation and `getByRole('main')` for page content. Check the localized heading and subtitle inside that landmark.
-10. **A CI-skip marker in a commit message body causes self-skip — now rejected by `scripts/repo/check-commit-msg.sh`** — GitHub Actions parses the **entire** commit message (subject + body) for all five markers (`[skip ci]`, `[ci skip]`, `[no ci]`, `[skip actions]`, `[actions skip]`), so documenting the mechanism in prose skips CI for that commit.
+10. **Keep CI enabled for contributor commits.** GitHub Actions recognizes five bracketed markers anywhere in the subject or body and a true `skip-checks` trailer. The commit-message checker rejects both before generic exemptions. Escape brackets when discussing a marker. [GitHub Actions skip instructions](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/skip-workflow-runs)
 11. **`set -e` does NOT exit on `FOO=$(failing_cmd)`** — command substitution masks the exit code. Use `if ! FOO=$(cmd); then exit 1; fi` when the exit code matters. Both `scripts/repo/update-test-counts.sh` (was reading passing-count from failing test run) and `scripts/deploy/auto-deploy.sh` (was reporting success after health check timeout) had this bug. See `99e1a81`.
 12. **`Auto-Merge Dependabot` job auto-merges only `semver-patch`** — `pr-checks.yml`'s `Merge patch updates` step runs a retried bare `gh pr merge --squash` only for `version-update:semver-patch`; patch + minor are auto-approved by `Auto-approve patch and minor updates`, and minor + major are **held for human review**.
 13. **`npm install` on macOS writes only host-platform `@rolldown/binding-*` to lockfile** (npm #4828) — Apple Silicon yields a single `binding-darwin-arm64` entry; CI on `ubuntu-24.04` then fails with `Cannot find module '@rolldown/binding-linux-x64-gnu'` (vite 8 uses rolldown; vitest shares it).

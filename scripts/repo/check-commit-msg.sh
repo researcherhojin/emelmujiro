@@ -40,6 +40,16 @@ if [ -z "$subject" ]; then
   exit 1
 fi
 
+# GitHub also recognizes skip-checks in the final trailer block.
+if ! trailers=$(git -c trailer.separators=: interpret-trailers --parse <<<"$message"); then
+  echo "❌ Could not parse commit message trailers." >&2
+  exit 1
+fi
+if grep -Eqi '^skip-checks:[[:blank:]]*true[[:blank:]]*$' <<<"$trailers"; then
+  echo "❌ Remove the skip-checks trailer to keep GitHub Actions enabled."
+  exit 1
+fi
+
 # CI-skip markers, checked against the WHOLE message and BEFORE every exemption
 # below. GitHub parses the entire commit message — subject and body alike — so
 # prose *describing* the trap triggers it. Measured across this repo's history:

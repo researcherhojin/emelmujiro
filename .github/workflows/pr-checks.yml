@@ -172,6 +172,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Test commit-message checker
+        run: bash scripts/repo/test-check-commit-msg.sh
+
+      - name: Test Pipeline Watchdog target selection
+        run: bash scripts/repo/test-pipeline-watchdog-target.sh
+
       - name: Check commit messages
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}

@@ -65,18 +65,8 @@ jobs:
       - name: Pick the commit that should have been tested
         id: target
         run: |
-          # readme-sync pushes its own commit with a skip-ci marker, which
-          # correctly has no run of its own. Walk past those to the newest
-          # commit the pipeline was supposed to cover. -F because the marker
-          # is a bracket expression to grep, not a literal, without it.
-          LINE=$(git log -50 --format='%H %cI %s' | grep -vF '[skip ci]' | head -1)
-          if [ -z "$LINE" ]; then
-            echo "::error::No non-skip-ci commit in the last 50 on main"
-            exit 1
-          fi
-          SHA=${LINE%% *}
-          REST=${LINE#* }
-          COMMITTED=${REST%% *}
+          TARGET=$(bash scripts/repo/pipeline-watchdog-target.sh)
+          read -r SHA COMMITTED <<<"$TARGET"
           {
             echo "sha=$SHA"
             echo "committed=$COMMITTED"

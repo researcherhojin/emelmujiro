@@ -8,6 +8,9 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- fix(ci): limit the Pipeline Watchdog exemption to README-only sync commits from the Actions bot and verify watchdog selection and the Git commit hook in disposable repositories. Document how to reproduce README counts and builds from locked dependencies.
+- fix(ci): reject the GitHub Actions `skip-checks` trailer in the commit-message checker. Cover both documented spellings and the README sync exception in PR CI.
+- docs(repo): clarify contributor commands, GitHub Actions skip behavior, and changelog exceptions. Refresh the README setup, Chromium build prerequisite, deployment checks and PostgreSQL pin, and align the Django reference links with 6.1.
 - deps(infra): update the Umami database image and its verification fixture to PostgreSQL 15.20 (#839, replacing #833). After CI verified initialization, restart, and Umami event persistence, deploy `a0ceedb6` upgraded the existing database. Rebuilt the one affected `bpchar` index concurrently per the [15.20 release notes](https://www.postgresql.org/docs/release/15.20/). The index was valid and ready afterward, and both analytics containers reported healthy.
 - deps-dev: update CSpell to 10.5.2 (#838), jest-dom to 8.0.0 (#836), PostCSS to 8.5.33 (#837), and jsdom to 31.0.1 (#835). [jest-dom 8](https://github.com/testing-library/jest-dom/releases/tag/v8.0.0) supports Vitest 5 and drops support for earlier versions.
 - chore(frontend): remove the retired Sentry browser integration, its client configuration and its privacy disclosures (#834, replacing #829). React error fallback and opt-in console logging remain available. Verified the frontend bundle and removed the Sentry endpoint allowance from the production CSP. Lighthouse uses `@sentry/node` as a transitive development dependency.

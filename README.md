@@ -53,13 +53,13 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?logo=githubactions&logoColor=white)
 ![Cloudflare](https://img.shields.io/badge/Cloudflare-Tunnel-F38020?logo=cloudflare&logoColor=white)
 ![Umami](https://img.shields.io/badge/Umami-Self--hosted-000000?logo=umami&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15.20-4169E1?logo=postgresql&logoColor=white)
 ![Dependabot](https://img.shields.io/badge/Dependabot-Enabled-025E8C?logo=dependabot&logoColor=white)
 ![Trivy](https://img.shields.io/badge/Trivy-Security_Scan-1904DA?logo=aqua&logoColor=white)
 
 ## Getting Started
 
-**Prerequisites**: Node >= 24, Python 3.12, [uv](https://docs.astral.sh/uv/)
+Use Node.js 24 or newer and Python 3.12 with uv. The repository declares the Node minimum in [package.json](package.json) and pins Python in [backend/.python-version](backend/.python-version). [uv Python versions](https://docs.astral.sh/uv/concepts/python-versions/)
 
 ```bash
 git clone https://github.com/researcherhojin/emelmujiro.git
@@ -68,7 +68,7 @@ cd emelmujiro
 
 On macOS, `make setup-dev-machine` installs dependencies, creates local environment files and applies migrations. Then run `make verify-setup` and `npm run dev`.
 
-For a manual setup, create `backend/.env` from `backend/.env.example`, set a local `SECRET_KEY` and `DEBUG=True`, and leave `DATABASE_URL` empty to use SQLite. Then run the commands below. [Django deployment checklist](https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/#secret-key)
+For a manual setup, create `backend/.env` from `backend/.env.example`, set a local `SECRET_KEY` and `DEBUG=True`, and leave `DATABASE_URL` empty to use SQLite. Then run the commands below. [Django deployment checklist](https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/#secret-key)
 
 ```bash
 make install                                              # npm install + uv sync --extra dev
@@ -78,16 +78,24 @@ npm run dev                                               # Frontend :5173 + Bac
 
 The local and Docker backends both use port 8000, so run one at a time.
 
-For a local Compose stack, the root `.env` supplies port settings and the two Umami credentials. Use URL-safe values in place of the placeholders in `.env.example`. Compose reads Django server settings separately from `backend/.env.production`. [Docker Compose interpolation](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/)
+Install Playwright's Chromium before building the frontend and rerun the install when the locked Playwright version changes. The build opens Chromium to prerender pages and reads the public blog API to generate the sitemap. Install the other Playwright browsers to run their E2E profiles. [Playwright browser installation](https://playwright.dev/docs/browsers)
+
+```bash
+(cd frontend && npx playwright install chromium)
+npm run build
+```
+
+For a Compose stack, create the root `.env` from `.env.example` and replace the two Umami credential placeholders with URL-safe values. Supply Django settings separately in the gitignored `backend/.env.production`. The macOS bootstrap prepares local development settings. [Docker Compose interpolation](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/) · [Backend deployment rules](.claude/rules/backend.md#deployment)
 
 ### Useful Commands
 
 Run from the repo root unless noted otherwise.
 
 ```bash
-make test                  # All tests (frontend + backend)
-make lint                  # All linters
-make lint-fix              # Auto-fix lint issues
+make test                  # Vitest and Django tests
+make test-ci               # Vitest and Django tests with coverage
+make lint                  # ESLint, Black check, and Flake8
+make lint-fix              # ESLint fixes and Black formatting
 make update-test-counts    # Regenerate README test counts locally (CI auto-syncs on main)
 make health                # Docker health diagnostic (containers, resources, endpoints)
 npm run security:dependencies  # Audit npm dependencies and scan all four lock files
@@ -108,16 +116,17 @@ The dependency audit includes development dependencies. Run `npm run security:se
    make ps
    ```
 
-2. **Review recent logs.** On the Docker host, check the last 24 hours for startup errors and HTTP `5xx` responses. The command returns at most 200 lines per container. [Docker Compose logs](https://docs.docker.com/reference/cli/docker/compose/logs/)
+2. **Review recent logs.** The command samples up to 200 retained lines per service container from the last 24 hours. Look for startup errors and HTTP `5xx` responses. For Django's separate rotating file logs, see the CI operations rules. [Docker Compose logs](https://docs.docker.com/reference/cli/docker/compose/logs/) · [Operational logs](.claude/rules/ci.md#ci-and-repo-automation-rules)
 
    ```bash
    docker compose logs --since 24h --tail 200 backend frontend umami umami-db
    ```
 
-3. **Verify the deployed commit.** Confirm `status` is `healthy` and `commit` matches the SHA tested by the run that triggered the deployment. [Main CI/CD](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml)
+3. **Verify the deployed commit.** Confirm both URLs report `status: healthy` and the same `commit` SHA tested by the run that triggered the deployment. The site URL exercises nginx's API proxy. The API subdomain exercises the tunnel's direct backend route. [Main CI/CD](https://github.com/researcherhojin/emelmujiro/actions/workflows/main-ci-cd.yml)
 
    ```bash
    curl -fsS https://emelmujiro.com/api/health/
+   curl -fsS https://api.emelmujiro.com/api/health/
    ```
 
 4. **After an analytics database upgrade, verify PostgreSQL separately.** Check the running server version and follow the release's instructions for any affected indexes. [Umami database verification](docker/umami/README.md#database-verification)
@@ -126,6 +135,7 @@ The dependency audit includes development dependencies. Run `npm run security:se
 
 ![Emelmujiro architecture showing browser traffic, Cloudflare Tunnel, Docker services, data stores, and deployment](.github/assets/architecture.svg)
 
+- **Repository layout.** React code and tests live in `frontend/src/`, static assets in `frontend/public/`, and browser tests in `frontend/e2e/`. Django settings live in `backend/config/`, with the API and its tests in `backend/api/`. Deployment and maintenance scripts live in `scripts/`, and container recipes in `docker/`.
 - **Website and API.** Cloudflare Tunnel routes the website to nginx and the API hostname directly to Gunicorn and Django. nginx serves the frontend build and also proxies same-origin `/api` requests.
 - **Application data and analytics.** Django stores application data in SQLite. nginx forwards the tracker endpoint to Umami, which stores analytics in PostgreSQL 15.
 - **Deployment.** GitHub Actions tests the commit and calls the deploy webhook. The host builds the frontend and backend. Django applies migrations at startup, and the public health endpoint reports the deployed commit.
@@ -143,12 +153,12 @@ The dependency audit includes development dependencies. Run `npm run security:se
 - **SEO and performance.** JSON-LD, 10 prerendered routes, and a multilingual sitemap. CI checks bundle size and runs Lighthouse. [Build and SEO rules](.claude/rules/frontend-build.md)
 - **Security.** The app sanitizes blog HTML and validates uploads. Scheduled checks audit dependencies and running images and verify encrypted backups can be restored. [Backend security](.claude/rules/backend.md#security) · [Security operations](docs/intents/infra/security-operations.md)
 - **Privacy policy.** Korean and English pages cover collection, retention, and user rights at `/privacy` and `/en/privacy`.
-- **Tests.** Vitest (1273 tests), Django unittest (455 tests), Node sitemap regression tests (12 tests), and Playwright E2E (5 default profiles).
+- **Tests.** Vitest (1273 tests), Django unittest (455 tests), Node sitemap regression tests (12 tests), and Playwright E2E (5 default profiles). PR CI runs the Chromium project. [Local browser checks](CONTRIBUTING.md#mobile-browser-checks)
 - **CI/CD.** GitHub Actions checks pull requests, deploys verified `main` commits, and monitors deployment drift. [CI and deployment rules](.claude/rules/ci.md)
 
 ## Documentation
 
-- [Contributing](CONTRIBUTING.md) and [repository rules](CLAUDE.md)
+- [Contributing](CONTRIBUTING.md), [repository guidelines](AGENTS.md), and [operational rules](CLAUDE.md)
 - [Frontend](.claude/rules/frontend.md), [build and routing](.claude/rules/frontend-build.md), and [backend](.claude/rules/backend.md)
 - [CI and deployment](.claude/rules/ci.md), [security operation history](docs/intents/infra/security-operations.md#alarm-history), and [Umami image recipe](docker/umami/README.md)
 - [Module intents and their statuses](docs/intents/README.md#modules)
