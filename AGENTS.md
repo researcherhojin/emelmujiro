@@ -20,7 +20,7 @@ Full-stack monorepo (**React 19 + Vite** frontend, **Django 6 + DRF** backend), 
 
 ## Setup & environment
 
-- **Node ≥ 24, Python 3.12, `uv`** (not pip). The root `package.json` declares one npm workspace, `frontend/`; the backend (`backend/`) uses `uv`.
+- **Use Node.js 24 for local development and CI parity.** The root `package.json` sets 24 as the minimum major and declares one npm workspace, `frontend/`. The backend (`backend/`) uses Python 3.12 and `uv`. See Gotcha #16 in [CLAUDE.md](CLAUDE.md) before changing the Node baseline.
   ```bash
   make install                       # npm install + uv sync --extra dev
   cd backend && uv run python manage.py migrate && cd ..   # first-time only

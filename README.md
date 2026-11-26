@@ -59,7 +59,7 @@ AI education, consulting & development — React 19 + Django 6 monorepo, self-ho
 
 ## Getting Started
 
-Use Node.js 24 or newer and Python 3.12 with uv. The repository declares the Node minimum in [package.json](package.json) and pins Python in [backend/.python-version](backend/.python-version). [uv Python versions](https://docs.astral.sh/uv/concepts/python-versions/)
+Use Node.js 24 to match CI and Python 3.12 with uv. [package.json](package.json) declares 24 as the minimum supported Node major, and [backend/.python-version](backend/.python-version) pins Python for this repository. [Node.js release schedule](https://nodejs.org/en/about/previous-releases) · [uv Python versions](https://docs.astral.sh/uv/concepts/python-versions/)
 
 ```bash
 git clone https://github.com/researcherhojin/emelmujiro.git

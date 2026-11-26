@@ -26,7 +26,7 @@ Full-stack monorepo (React 19 + Django 6), self-hosted via Docker behind a Cloud
 - **Backend**: http://localhost:8000. Single app: `api/`. Uses **uv** (NOT pip)
 - **Dev proxy**: Vite proxies `/api` → `http://127.0.0.1:8000` (no CORS issues in dev)
 - **Put new scripts in a named subdirectory of `scripts/`.** Its root holds `package.json` and `tsconfig.json`. Host crontab and launchd entries refer to script paths, so update those references when moving a script (#712).
-- **Node ≥ 24**, **Python 3.12** required. Husky runs lint-staged on `pre-commit`, `scripts/repo/check-commit-msg.sh` on `commit-msg`, and `scripts/repo/check-changelog.sh` on a `pre-push` to `main` (warns, never blocks)
+- **Node.js 24 is the development and CI baseline** and the minimum declared in `package.json`. The backend uses **Python 3.12**. Husky runs lint-staged on `pre-commit`, `scripts/repo/check-commit-msg.sh` on `commit-msg`, and the warning-only `scripts/repo/check-changelog.sh` on pushes to `main`.
 
 > Maintainer-local, gitignored, synced via `scripts/dev/sync-private.sh`: design rationale in `.private/strategy.md`; session log + opsec notes in `.private/journal.md`; secret setup in `.private/secrets-setup.md`; **host topology, deploy forensics and incident history in `.private/operations.md`**. The repo is public, so those moved out on 2026-09-28; each entry left an actionable summary behind, and this file remains the source of truth for the rules themselves. Past git history (pre-`01c4db8`) retains earlier strategy versions.
 

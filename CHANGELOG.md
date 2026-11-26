@@ -8,6 +8,7 @@ Retiring the release number is not a statement about API compatibility. `backend
 
 ## Merged since [1.0.0]
 
+- docs(repo): document Node.js 24 as the development and CI baseline and the minimum declared by the workspace.
 - fix(ci): limit the Pipeline Watchdog exemption to README-only sync commits from the Actions bot and verify watchdog selection and the Git commit hook in disposable repositories. Document how to reproduce README counts and builds from locked dependencies.
 - fix(ci): reject the GitHub Actions `skip-checks` trailer in the commit-message checker. Cover both documented spellings and the README sync exception in PR CI.
 - docs(repo): clarify contributor commands, GitHub Actions skip behavior, and changelog exceptions. Refresh the README setup, Chromium build prerequisite, deployment checks and PostgreSQL pin, and align the Django reference links with 6.1.
